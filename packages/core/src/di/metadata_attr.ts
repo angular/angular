@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import type {AbstractType} from '../interface/type';
 import {ɵɵinjectAttribute} from '../render3/instructions/di_attr';
 import {makeParamDecorator} from '../util/decorators';
 
@@ -46,7 +47,7 @@ export interface AttributeDecorator {
  *
  * @publicApi
  */
-export interface Attribute {
+export interface Attribute extends AbstractType<string> {
   /**
    * The name of the attribute whose value can be injected.
    */
@@ -59,7 +60,11 @@ export interface Attribute {
  * @Annotation
  * @publicApi
  */
-export const Attribute: AttributeDecorator = makeParamDecorator(
-    'Attribute',
-    (attributeName?: string) =>
-        ({attributeName, __NG_ELEMENT_ID__: () => ɵɵinjectAttribute(attributeName!)}));
+export const Attribute: AttributeDecorator =
+    makeParamDecorator('Attribute', (attributeName?: string) => {
+      return ({
+        attributeName,
+        toString: () => `Attribute ${attributeName}`,
+        __NG_ELEMENT_ID__: () => ɵɵinjectAttribute(attributeName!)
+      });
+    });

@@ -3449,6 +3449,30 @@ describe('di', () => {
       expect(fixture.nativeElement.innerHTML).toEqual('default value');
     });
 
+    it('should be able to inject an attribute', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(new Attribute('some-attr'));
+        missingValue = inject(new Attribute('does-not-exist'), {optional: true});
+      }
+
+      @Component({
+        standalone: true,
+        template: '<div dir some-attr="foo"></div>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      const {value, missingValue} = fixture.componentInstance.dir;
+
+      expect(value).toBe('foo');
+      expect(missingValue).toBe(null);
+    });
+
     describe('with an options object argument', () => {
       it('should be able to optionally inject a service', () => {
         const TOKEN = new InjectionToken<string>('TOKEN');

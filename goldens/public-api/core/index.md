@@ -136,7 +136,7 @@ export function assertNotInReactiveContext(debugFn: Function, extraContext?: str
 export function assertPlatform(requiredToken: any): PlatformRef;
 
 // @public
-export interface Attribute {
+export interface Attribute extends AbstractType<string> {
     attributeName: string;
 }
 
