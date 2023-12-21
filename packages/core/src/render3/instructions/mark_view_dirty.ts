@@ -9,6 +9,7 @@
 import {isRootView} from '../interfaces/type_checks';
 import {ENVIRONMENT, FLAGS, LView, LViewFlags} from '../interfaces/view';
 import {getLViewParent} from '../util/view_traversal_utils';
+import {viewAttachedToChangeDetector} from '../util/view_utils';
 
 /**
  * Marks current view and all ancestors dirty.
@@ -27,7 +28,8 @@ export function markViewDirty(lView: LView): LView|null {
     lView[FLAGS] |= LViewFlags.Dirty;
     const parent = getLViewParent(lView);
     // Stop traversing up as soon as you find a root view that wasn't attached to any container
-    if (isRootView(lView) && !parent) {
+    // or the view is detached.
+    if (!viewAttachedToChangeDetector(lView) || (isRootView(lView) && !parent)) {
       return lView;
     }
     // continue otherwise
