@@ -76,6 +76,7 @@ copy_to_directory(
     name = "tutorials",
     srcs = [
         "//adev/src/content/tutorials/first-app",
+        "//adev/src/content/tutorials/homepage",
         "//adev/src/content/tutorials/learn-angular",
         "//adev/src/content/tutorials/playground",
     ],
