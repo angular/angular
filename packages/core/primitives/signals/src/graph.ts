@@ -20,11 +20,12 @@ let activeConsumer: ReactiveNode|null = null;
 let inNotificationPhase = false;
 
 type Version = number&{__brand: 'Version'};
+type EpochVersion = number&{__brand: 'EpochVersion'};
 
 /**
  * Global epoch counter. Incremented whenever a source signal is set.
  */
-let epoch: Version = 1 as Version;
+let epoch: EpochVersion = 0 as EpochVersion;
 
 /**
  * Symbol used to tell `Signal`s apart from other functions.
@@ -57,7 +58,7 @@ export function isReactive(value: unknown): value is Reactive {
 
 export const REACTIVE_NODE: ReactiveNode = {
   version: 0 as Version,
-  lastCleanEpoch: 0 as Version,
+  lastCleanEpoch: 0 as EpochVersion,
   dirty: false,
   producerNode: undefined,
   producerLastReadVersion: undefined,
@@ -100,7 +101,7 @@ export interface ReactiveNode {
    * This allows skipping of some polling operations in the case where no signals have been set
    * since this node was last read.
    */
-  lastCleanEpoch: Version;
+  lastCleanEpoch: EpochVersion;
 
   /**
    * Whether this node (in its consumer capacity) is dirty.
@@ -251,7 +252,7 @@ export function producerAccessed(node: ReactiveNode): void {
  * Called by source producers (that is, not computeds) whenever their values change.
  */
 export function producerIncrementEpoch(): void {
-  epoch++;
+  epoch = (epoch + 1) >>> 0 as EpochVersion;
 }
 
 /**
