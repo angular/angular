@@ -13,6 +13,7 @@ import {Reexport, ReferenceEmitter} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
 import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
+import {Telemetry, TelemetryScope} from '../../telemetry';
 import {ImportManager} from '../../translator';
 import {TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
@@ -72,9 +73,12 @@ export enum HandlerPrecedence {
  *
  * @param `D` The type of decorator metadata produced by `detect`.
  * @param `A` The type of analysis metadata produced by `analyze`.
+ * @param `S` The type of the semantic symbol produced by `symbol`.
  * @param `R` The type of resolution metadata produced by `resolve`.
+ * @param `T` The type of the telemetry scope produced by `telemetryScope`.
  */
-export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
+export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R,
+                                                  T extends TelemetryScope = TelemetryScope> {
   readonly name: string;
 
   /**
@@ -113,6 +117,19 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
    * in the `register` phase, which is guaranteed to run even for incremental builds.
    */
   analyze(node: ClassDeclaration, metadata: Readonly<D>): AnalysisOutput<A>;
+
+  /**
+   * Determines which telemetry scope is used to record the telemetry of descendants in, as well as
+   * the telemetry scope that is used in `recordTelemetry` to record specific telemetry data for
+   * this trait.
+   */
+  telemetryScope?(telemetry: Telemetry): T;
+
+  /**
+   * Gathers telemetry data based on the trait's analysis result. The provided `telemetry` object is
+   * intended to be mutated according to the analysis data.
+   */
+  recordTelemetry?(node: ClassDeclaration, telemetry: T, analysis: A): void;
 
   /**
    * React to a change in a resource file by updating the `analysis` or `resolution`, under the

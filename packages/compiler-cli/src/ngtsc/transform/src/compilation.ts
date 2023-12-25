@@ -16,7 +16,7 @@ import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semanti
 import {IndexingContext} from '../../indexer';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
-import {Telemetry} from '../../telemetry';
+import {recordNodeTelemetry, Telemetry, TelemetryScope} from '../../telemetry';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFile} from '../../util/src/typescript';
@@ -137,7 +137,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
     // analyze() really wants to return `Promise<void>|void`, but TypeScript cannot narrow a return
     // type of 'void', so `undefined` is used instead.
-    const promises: Promise<void>[] = [];
+    const preanalyzePromises = preanalyze ?
+        new Map<PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>, Promise<void>>() :
+        null;
 
     // Local compilation does not support incremental build.
     const priorWork = (this.compilationMode !== CompilationMode.LOCAL) ?
@@ -165,14 +167,32 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       return;
     }
 
+    // Lazily initialize telemetry upon actually recording telemetry data.
+    let telemetry: Telemetry|null = null;
+    let telemetryScope: TelemetryScope|null = null;
+    const acquireTelemetry = () => telemetry ??= new Telemetry();
+    const acquireTelemetryScope = () => telemetryScope ??= acquireTelemetry().global;
+
     const visit = (node: ts.Node): void => {
+      const previousTelemetryScope = telemetryScope;
       if (this.reflector.isClass(node)) {
-        this.analyzeClass(node, preanalyze ? promises : null);
+        const traits = this.analyzeClass(node, preanalyzePromises);
+        if (traits !== null) {
+          telemetryScope = this.recordTelemetry(node, traits, preanalyzePromises, acquireTelemetry);
+        }
       }
+
+      recordNodeTelemetry(node, acquireTelemetryScope, this.reflector);
+
       ts.forEachChild(node, visit);
+      telemetryScope = previousTelemetryScope;
     };
 
     visit(sf);
+
+    if (telemetry !== null) {
+      this.fileTelemetry.set(sf, telemetry);
+    }
 
     if (!this.fileToClasses.has(sf)) {
       // If no traits were detected in the source file we record the source file itself to not have
@@ -181,11 +201,51 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       this.filesWithoutTraits.add(sf);
     }
 
-    if (preanalyze && promises.length > 0) {
-      return Promise.all(promises).then(() => undefined as void);
+    if (preanalyzePromises !== null && preanalyzePromises.size > 0) {
+      return Promise.all(preanalyzePromises.values()).then(() => undefined as void);
     } else {
       return undefined;
     }
+  }
+
+  private recordTelemetry(
+      clazz: ClassDeclaration,
+      traits: PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[],
+      preanalyzePromises:
+          Map<PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>, Promise<void>>|null,
+      acquireTelemetry: () => Telemetry): TelemetryScope|null {
+    const leadingTrait =
+        traits.find(trait => trait.handler.precedence === HandlerPrecedence.PRIMARY) ??
+        traits.find(trait => trait.handler.precedence === HandlerPrecedence.SHARED) ?? traits[0];
+    if (leadingTrait.handler.telemetryScope === undefined) {
+      return null;
+    }
+
+    // Determine the telemetry scope to use for the class and its children.
+    const telemetryScope = leadingTrait.handler.telemetryScope(acquireTelemetry());
+    if (leadingTrait.handler.recordTelemetry === undefined) {
+      return telemetryScope;
+    }
+
+    // Telemetry is recorded after the analysis phase has completed, at which point the trait
+    // should have transitioned from the pending state to the analyzed state.
+    const record = (trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>) => {
+      if (trait.state === TraitState.Analyzed && trait.analysis !== null) {
+        leadingTrait.handler.recordTelemetry!(clazz, telemetryScope, trait.analysis);
+      }
+    };
+
+    if (preanalyzePromises !== null && preanalyzePromises.has(leadingTrait)) {
+      // The analysis phase was asynchronous, so delay recording telemetry until after
+      // analysis has completed.
+      const pendingAnalysis = preanalyzePromises.get(leadingTrait)!;
+      preanalyzePromises.set(leadingTrait, pendingAnalysis.then(() => record(leadingTrait)));
+    } else {
+      // Analysis ran synchronously, record the telemetry synchronously as well.
+      record(leadingTrait);
+    }
+
+    return telemetryScope;
   }
 
   recordFor(clazz: ClassDeclaration): ClassRecord|null {
@@ -196,17 +256,23 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
   }
 
-  getAnalyzedRecords(): Map<ts.SourceFile, ClassRecord[]> {
-    const result = new Map<ts.SourceFile, ClassRecord[]>();
+  getAnalyzedRecords(): Map<ts.SourceFile, FileAnalysis<ClassRecord>> {
+    const result = new Map<ts.SourceFile, FileAnalysis<ClassRecord>>();
     for (const [sf, classes] of this.fileToClasses) {
       const records: ClassRecord[] = [];
       for (const clazz of classes) {
         records.push(this.classes.get(clazz)!);
       }
-      result.set(sf, records);
+      result.set(sf, {
+        records,
+        telemetry: this.fileTelemetry.has(sf) ? this.fileTelemetry.get(sf)! : null,
+      });
     }
     for (const sf of this.filesWithoutTraits) {
-      result.set(sf, []);
+      result.set(sf, {
+        records: [],
+        telemetry: this.fileTelemetry.has(sf) ? this.fileTelemetry.get(sf)! : null,
+      });
     }
     return result;
   }
@@ -370,19 +436,21 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     return symbol;
   }
 
-  private analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
+  private analyzeClass(
+      clazz: ClassDeclaration,
+      preanalyzePromises:
+          Map<PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>, Promise<void>>|
+      null): PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[]|null {
     const traits = this.scanClassForTraits(clazz);
 
     if (traits === null) {
       // There are no Ivy traits on the class, so it can safely be skipped.
-      return;
+      return null;
     }
 
     for (const trait of traits) {
-      const analyze = () => this.analyzeTrait(clazz, trait);
-
       let preanalysis: Promise<void>|null = null;
-      if (preanalyzeQueue !== null && trait.handler.preanalyze !== undefined) {
+      if (preanalyzePromises !== null && trait.handler.preanalyze !== undefined) {
         // Attempt to run preanalysis. This could fail with a `FatalDiagnosticError`; catch it if it
         // does.
         try {
@@ -390,18 +458,22 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
         } catch (err) {
           if (err instanceof FatalDiagnosticError) {
             trait.toAnalyzed(null, [err.toDiagnostic()], null);
-            return;
+            return traits;
           } else {
             throw err;
           }
         }
       }
+
+      const analyze = () => this.analyzeTrait(clazz, trait);
       if (preanalysis !== null) {
-        preanalyzeQueue!.push(preanalysis.then(analyze));
+        preanalyzePromises!.set(trait, preanalysis.then(analyze));
       } else {
         analyze();
       }
     }
+
+    return traits;
   }
 
   private analyzeTrait(

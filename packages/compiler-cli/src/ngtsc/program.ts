@@ -23,6 +23,7 @@ import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPha
 import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
 import {retagAllTsFiles, untagAllTsFiles} from './shims';
+import {Telemetry} from './telemetry';
 import {OptimizeFor} from './typecheck/api';
 
 /**
@@ -362,6 +363,10 @@ export class NgtscProgram implements api.Program {
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {
     throw new Error('Method not implemented.');
+  }
+
+  getTelemetry(): Telemetry {
+    return this.compiler.getTelemetry();
   }
 }
 

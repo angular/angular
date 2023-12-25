@@ -9,6 +9,9 @@
 import ts from 'typescript';
 
 import {ExtendedTsCompilerHost, NgCompilerOptions} from '../ngtsc/core/api';
+import {Telemetry} from '../ngtsc/telemetry';
+
+export {ComponentTelemetry, DirectiveTelemetry, InjectableTelemetry, NgModuleTelemetry, PipeTelemetry, Telemetry, TelemetryScope} from '../ngtsc/telemetry';
 
 export const DEFAULT_ERROR_CODE = 100;
 export const UNKNOWN_ERROR_CODE = 500;
@@ -258,4 +261,10 @@ export interface Program {
    * @internal
    */
   getEmittedSourceFiles(): Map<string, ts.SourceFile>;
+
+  /**
+   * Returns the telemetry data that was gathered for the complete program during the analysis
+   * phase.
+   */
+  getTelemetry(): Telemetry;
 }

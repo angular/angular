@@ -28,6 +28,7 @@ import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from
 import {AdapterResourceLoader} from '../../resource';
 import {ComponentScopeReader, CompoundComponentScopeReader, LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
+import {Telemetry} from '../../telemetry';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
@@ -403,6 +404,18 @@ export class NgCompiler {
         this.compilation.templateTypeChecker.invalidateClass(clazz);
       }
     });
+  }
+
+  /**
+   * Computes telemetry data for all analyzed source files in the compilation unit.
+   */
+  getTelemetry(): Telemetry {
+    const {traitCompiler} = this.ensureAnalyzed();
+    const telemetry = new Telemetry();
+    for (const fileTelemetry of traitCompiler.getTelemetryRecords().values()) {
+      telemetry.merge(fileTelemetry);
+    }
+    return telemetry;
   }
 
   /**
