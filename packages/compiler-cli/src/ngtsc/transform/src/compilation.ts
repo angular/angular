@@ -11,11 +11,12 @@ import ts from 'typescript';
 
 import {SourceFileTypeIdentifier} from '../../core/api';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {IncrementalBuild} from '../../incremental/api';
+import {FileAnalysis, IncrementalBuild} from '../../incremental/api';
 import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
+import {Telemetry} from '../../telemetry';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFile} from '../../util/src/typescript';
@@ -90,6 +91,12 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
    */
   private filesWithoutTraits = new Set<ts.SourceFile>();
 
+  /**
+   * Tracks the recorded telemetry for all source files that have been analyzed. Source files
+   * without telemetry data are not present.
+   */
+  private fileTelemetry = new Map<ts.SourceFile, Telemetry>;
+
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
   private handlersByName =
@@ -139,14 +146,19 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     if (priorWork !== null) {
       this.perf.eventCount(PerfEvent.SourceFileReuseAnalysis);
 
-      if (priorWork.length > 0) {
-        for (const priorRecord of priorWork) {
+      const {records, telemetry} = priorWork;
+      if (records.length > 0) {
+        for (const priorRecord of records) {
           this.adopt(priorRecord);
         }
 
-        this.perf.eventCount(PerfEvent.TraitReuseAnalysis, priorWork.length);
+        this.perf.eventCount(PerfEvent.TraitReuseAnalysis, records.length);
       } else {
         this.filesWithoutTraits.add(sf);
+      }
+
+      if (telemetry !== null) {
+        this.fileTelemetry.set(sf, telemetry);
       }
 
       // Skip the rest of analysis, as this file's prior traits are being reused.
@@ -197,6 +209,10 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       result.set(sf, []);
     }
     return result;
+  }
+
+  getTelemetryRecords(): Map<ts.SourceFile, Telemetry> {
+    return this.fileTelemetry;
   }
 
   /**

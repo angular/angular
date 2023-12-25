@@ -11,6 +11,7 @@ import ts from 'typescript';
 import {AbsoluteFsPath} from '../../file_system';
 import {ClassRecord} from '../../transform';
 import {FileTypeCheckingData} from '../../typecheck/src/checker';
+import {FileAnalysis} from '../api';
 import {SemanticDepGraph} from '../semantic_graph';
 
 import {FileDependencyGraph} from './dependency_tracking';
@@ -56,7 +57,7 @@ export interface AnalyzedIncrementalState {
    * The analysis data from a prior compilation. This stores the trait information for all source
    * files that was present in a prior compilation.
    */
-  priorAnalysis: Map<ts.SourceFile, ClassRecord[]>;
+  priorAnalysis: Map<ts.SourceFile, FileAnalysis<ClassRecord>>;
 
   /**
    * All generated template type-checking files produced as part of this compilation, or `null` if

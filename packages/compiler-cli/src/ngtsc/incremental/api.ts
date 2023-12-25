@@ -7,7 +7,21 @@
  */
 
 import ts from 'typescript';
+
 import {AbsoluteFsPath} from '../file_system';
+import {Telemetry} from '../telemetry';
+
+export interface FileAnalysis<AnalysisT> {
+  /**
+   * The individual records that were captured during analysis of a source file.
+   */
+  records: AnalysisT[];
+
+  /**
+   * The telemetry data that was recorded during analysis of a source file.
+   */
+  telemetry: Telemetry|null;
+}
 
 /**
  * Interface of the incremental build engine.
@@ -21,7 +35,7 @@ export interface IncrementalBuild<AnalysisT, FileTypeCheckDataT> {
   /**
    * Retrieve the prior analysis work, if any, done for the given source file.
    */
-  priorAnalysisFor(sf: ts.SourceFile): AnalysisT[]|null;
+  priorAnalysisFor(sf: ts.SourceFile): FileAnalysis<AnalysisT>|null;
 
   /**
    * Retrieve the prior type-checking work, if any, that's been done for the given source file.

@@ -14,7 +14,7 @@ import {MaybeSourceFileWithOriginalFile, NgOriginalFile} from '../../program_dri
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {FileTypeCheckingData} from '../../typecheck';
 import {toUnredirectedSourceFile} from '../../util/src/typescript';
-import {IncrementalBuild} from '../api';
+import {FileAnalysis, IncrementalBuild} from '../api';
 import {SemanticDepGraphUpdater} from '../semantic_graph';
 
 import {FileDependencyGraph} from './dependency_tracking';
@@ -293,7 +293,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
     this._state.emitted.add(absoluteFromSourceFile(sf));
   }
 
-  priorAnalysisFor(sf: ts.SourceFile): ClassRecord[]|null {
+  priorAnalysisFor(sf: ts.SourceFile): FileAnalysis<ClassRecord>|null {
     if (this.step === null) {
       return null;
     }
