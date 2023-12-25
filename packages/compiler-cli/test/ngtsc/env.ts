@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CustomTransformers, defaultGatherDiagnostics, Program} from '@angular/compiler-cli';
+import {CustomTransformers, defaultGatherDiagnostics, exitCodeFromResult, Program, Telemetry} from '@angular/compiler-cli';
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
 import * as api from '@angular/compiler-cli/src/transformers/api';
 import ts from 'typescript';
@@ -265,8 +265,30 @@ export class NgtscTestEnvironment {
     const program = createProgram({rootNames, host, options});
     await program.loadNgStructureAsync();
 
-    // ngtsc only produces ts.Diagnostic messages.
-    return defaultGatherDiagnostics(program as api.Program) as ts.Diagnostic[];
+    return defaultGatherDiagnostics(program);
+  }
+
+  async driveTelemetry(preload: boolean, expectedExitCode: number = 0): Promise<Telemetry> {
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
+    const host = createCompilerHost({options});
+    if (this.changedResources !== null) {
+      host.getModifiedResourceFiles = () => this.changedResources!;
+    }
+    const program =
+        createProgram({rootNames, host, options, oldProgram: this.oldProgram ?? undefined});
+    if (preload) {
+      await program.loadNgStructureAsync();
+    }
+    const diagnostics = defaultGatherDiagnostics(program);
+    const exitCode = exitCodeFromResult(diagnostics);
+    expect(exitCode)
+        .withContext(`Unexpected exit code. Diagnostics:
+${ts.formatDiagnosticsWithColorAndContext(diagnostics, host)}`)
+        .toBe(expectedExitCode);
+    if (this.multiCompileHostExt !== null) {
+      this.oldProgram = program;
+    }
+    return program.getTelemetry();
   }
 
   driveTemplateTypeChecker(): {program: ts.Program, checker: TemplateTypeChecker} {
