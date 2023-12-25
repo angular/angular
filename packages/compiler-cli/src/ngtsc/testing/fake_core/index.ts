@@ -58,6 +58,8 @@ export class ɵNgModuleFactory<T> {
   constructor(public clazz: T) {}
 }
 
+export declare function inject<T>(token: T): T;
+
 export class InjectionToken<T> {
   constructor(description: string) {}
 }
@@ -121,6 +123,10 @@ export interface TrackByFunction<T> {
 }
 
 export type Signal<T> = () => T;
+
+export declare function signal<T>(value: T): Signal<T>;
+export declare function computed<T>(fn: () => T): Signal<T>;
+export declare function effect(fn: () => void): void;
 
 /**
  * -------
