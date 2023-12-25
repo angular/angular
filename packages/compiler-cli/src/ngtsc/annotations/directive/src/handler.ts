@@ -16,6 +16,7 @@ import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
+import {DirectiveTelemetry, Telemetry} from '../../../telemetry';
 import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, InjectableClassRegistry, isAngularDecorator, readBaseClass, ReferencesRegistry, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
 
@@ -46,8 +47,8 @@ export interface DirectiveHandlerData {
   rawHostDirectives: ts.Expression|null;
 }
 
-export class DirectiveDecoratorHandler implements
-    DecoratorHandler<Decorator|null, DirectiveHandlerData, DirectiveSymbol, unknown> {
+export class DirectiveDecoratorHandler implements DecoratorHandler<
+    Decorator|null, DirectiveHandlerData, DirectiveSymbol, unknown, DirectiveTelemetry> {
   constructor(
       private reflector: ReflectionHost,
       private evaluator: PartialEvaluator,
@@ -134,6 +135,21 @@ export class DirectiveDecoratorHandler implements
         decorator: decorator?.node as ts.Decorator | null ?? null,
       }
     };
+  }
+
+  telemetryScope(telemetry: Telemetry): DirectiveTelemetry {
+    return telemetry.directives;
+  }
+
+  recordTelemetry(
+      node: ClassDeclaration, telemetry: DirectiveTelemetry, analysis: DirectiveHandlerData): void {
+    telemetry.amount++;
+    if (Array.isArray(analysis.meta.deps)) {
+      telemetry.ctorInjections += analysis.meta.deps.length;
+    }
+    if (analysis.meta.isStandalone) {
+      telemetry.standalone++;
+    }
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): DirectiveSymbol {

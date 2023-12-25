@@ -18,6 +18,7 @@ import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral,} from '../../../reflection';
 import {LocalModuleScopeRegistry, ScopeData} from '../../../scope';
 import {getDiagnosticNode} from '../../../scope/src/util';
+import {NgModuleTelemetry, Telemetry} from '../../../telemetry';
 import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {getSourceFile} from '../../../util/src/typescript';
 import {combineResolvers, compileDeclareFactory, compileNgFactoryDefField, createValueHasWrongTypeError, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getProviderDiagnostics, getValidConstructorDependencies, InjectableClassRegistry, isExpressionForwardReference, ReferencesRegistry, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
@@ -524,6 +525,18 @@ export class NgModuleDecoratorHandler implements
         decorator: decorator?.node as ts.Decorator | null ?? null,
       },
     };
+  }
+
+  telemetryScope(telemetry: Telemetry): NgModuleTelemetry {
+    return telemetry.ngModule;
+  }
+
+  recordTelemetry(node: ClassDeclaration, telemetry: NgModuleTelemetry, analysis: NgModuleAnalysis):
+      void {
+    telemetry.amount++;
+    if (Array.isArray(analysis.fac.deps)) {
+      telemetry.ctorInjections += analysis.fac.deps.length;
+    }
   }
 
   symbol(node: ClassDeclaration, analysis: NgModuleAnalysis): NgModuleSymbol {

@@ -17,6 +17,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
+import {PipeTelemetry, Telemetry} from '../../telemetry';
 import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
 import {compileDeclareFactory, compileNgFactoryDefField, compileResults, createValueHasWrongTypeError, extractClassMetadata, findAngularDecorator, getValidConstructorDependencies, InjectableClassRegistry, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference,} from '../common';
 
@@ -146,6 +147,21 @@ export class PipeDecoratorHandler implements
         decorator: decorator?.node as ts.Decorator | null ?? null,
       },
     };
+  }
+
+  telemetryScope(telemetry: Telemetry): PipeTelemetry {
+    return telemetry.pipes;
+  }
+
+  recordTelemetry(node: ClassDeclaration, telemetry: PipeTelemetry, analysis: PipeHandlerData):
+      void {
+    telemetry.amount++;
+    if (Array.isArray(analysis.meta.deps)) {
+      telemetry.ctorInjections += analysis.meta.deps.length;
+    }
+    if (analysis.meta.isStandalone) {
+      telemetry.standalone++;
+    }
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): PipeSymbol {

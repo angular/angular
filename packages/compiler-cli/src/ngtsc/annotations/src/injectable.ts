@@ -14,6 +14,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {InjectableTelemetry, Telemetry} from '../../telemetry';
 import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
 import {checkInheritanceOfInjectable, compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField, extractClassMetadata, findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference,} from '../common';
 
@@ -28,7 +29,7 @@ export interface InjectableHandlerData {
  * Adapts the `compileInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
 export class InjectableDecoratorHandler implements
-    DecoratorHandler<Decorator, InjectableHandlerData, null, unknown> {
+    DecoratorHandler<Decorator, InjectableHandlerData, null, unknown, InjectableTelemetry> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private isCore: boolean, private strictCtorDeps: boolean,
@@ -82,6 +83,19 @@ export class InjectableDecoratorHandler implements
             decorators.every(current => !isAngularCore(current) || current.name === 'Injectable')
       },
     };
+  }
+
+  telemetryScope(telemetry: Telemetry): InjectableTelemetry {
+    return telemetry.injectables;
+  }
+
+  recordTelemetry(
+      node: ClassDeclaration, telemetry: InjectableTelemetry,
+      analysis: InjectableHandlerData): void {
+    telemetry.amount++;
+    if (Array.isArray(analysis.ctorDeps)) {
+      telemetry.ctorInjections += analysis.ctorDeps.length;
+    }
   }
 
   symbol(): null {

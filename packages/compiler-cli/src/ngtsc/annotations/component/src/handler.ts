@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, BoundTarget, compileClassDebugInfo, compileClassMetadata, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DeferBlockTemplateDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
+import {AnimationTriggerNames, BoundTarget, ChangeDetectionStrategy, compileClassDebugInfo, compileClassMetadata, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DeferBlockTemplateDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -21,6 +21,7 @@ import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, DtsModuleScopeResolver, LocalModuleScopeRegistry, makeNotStandaloneDiagnostic, makeUnknownComponentImportDiagnostic, TypeCheckScopeRegistry} from '../../../scope';
+import {ComponentTelemetry, Telemetry} from '../../../telemetry';
 import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
@@ -61,8 +62,9 @@ const isUsedPipe = (decl: AnyUsedType): decl is UsedPipe =>
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler implements
-    DecoratorHandler<Decorator, ComponentAnalysisData, ComponentSymbol, ComponentResolutionData> {
+export class ComponentDecoratorHandler implements DecoratorHandler<
+    Decorator, ComponentAnalysisData, ComponentSymbol, ComponentResolutionData,
+    ComponentTelemetry> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private metaReader: MetadataReader,
@@ -506,6 +508,45 @@ export class ComponentDecoratorHandler implements
     };
 
     return output;
+  }
+
+  telemetryScope(telemetry: Telemetry): ComponentTelemetry {
+    return telemetry.components;
+  }
+
+  recordTelemetry(
+      node: ClassDeclaration, telemetry: ComponentTelemetry,
+      analysis: ComponentAnalysisData): void {
+    telemetry.amount++;
+    if (Array.isArray(analysis.meta.deps)) {
+      telemetry.ctorInjections += analysis.meta.deps.length;
+    }
+    if (analysis.meta.isStandalone) {
+      telemetry.standalone++;
+    }
+
+    if (analysis.meta.changeDetection === ChangeDetectionStrategy.OnPush) {
+      telemetry.onPush++;
+    }
+
+    switch (analysis.meta.encapsulation) {
+      case ViewEncapsulation.None:
+        telemetry.noEncapsulation++;
+        break;
+      case ViewEncapsulation.ShadowDom:
+        telemetry.shadowDomEncapsulation++;
+        break;
+    }
+
+    if (analysis.template.declaration.isInline) {
+      telemetry.inlineTemplate++;
+    }
+    if (analysis.styleUrls !== null) {
+      telemetry.externalStyles += analysis.styleUrls.length;
+    }
+    if (analysis.inlineStyles !== null) {
+      telemetry.inlineStyles += analysis.inlineStyles.length;
+    }
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>): ComponentSymbol {
