@@ -137,6 +137,7 @@ export function refreshView<T>(
   // Start component reactive context
   // - We might already be in a reactive context if this is an embedded view of the host.
   // - We might be descending into a view that needs a consumer.
+  lView[FLAGS] |= LViewFlags.ExecutingRefresh;
   enterView(lView);
   let prevConsumer: ReactiveNode|null = null;
   let currentConsumer: ReactiveLViewConsumer|null = null;
@@ -277,6 +278,7 @@ export function refreshView<T>(
       maybeReturnReactiveLViewConsumer(currentConsumer);
     }
     leaveView();
+    lView[FLAGS] &= ~LViewFlags.ExecutingRefresh;
   }
 }
 

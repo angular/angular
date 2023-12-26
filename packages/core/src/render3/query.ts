@@ -23,18 +23,32 @@ import {storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, MOVED_VIEWS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata} from './interfaces/query';
-import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
-import {getCurrentTNode, getLView, getTView} from './state';
+import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from './state';
+import {isCreationMode, markViewForRefresh} from './util/view_utils';
 
 class LQuery_<T> implements LQuery<T> {
   matches: (T|null)[]|null = null;
-  constructor(public queryList: QueryList<T>) {}
+
+  constructor(public queryList: QueryList<T>, private readonly lView: LView) {}
+
   clone(): LQuery<T> {
-    return new LQuery_(this.queryList);
+    return new LQuery_(this.queryList, this.lView);
   }
+
   setDirty(): void {
+    if (this.queryList.dirty) {
+      return;
+    }
+
     this.queryList.setDirty();
+
+    // If we aren't already refreshing the owner of this query, ensure that it _does_ get refreshed
+    // during change detection.
+    if (!(this.lView[FLAGS] & LViewFlags.ExecutingRefresh)) {
+      markViewForRefresh(this.lView);
+    }
   }
 }
 
@@ -436,7 +450,7 @@ function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags): number 
   storeCleanupWithContext(tView, lView, queryList, queryList.destroy);
 
   const lQueries = (lView[QUERIES] ??= new LQueries_()).queries;
-  return lQueries.push(new LQuery_(queryList)) - 1;
+  return lQueries.push(new LQuery_(queryList, lView)) - 1;
 }
 
 export function createViewQuery<T>(
