@@ -464,7 +464,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   private constructor(
       private bindings: Map<AST, Reference|Variable>,
-      private symbols: Map<Reference|Variable, ScopedNode>, private usedPipes: Set<string>,
+      private symbols: Map<Reference|Variable, ScopedNode>, private usedPipes: Map<string, number>,
       private eagerPipes: Set<string>, private deferBlocks: Set<DeferredBlock>,
       private nestingLevel: Map<ScopedNode, number>, private scope: Scope,
       private rootNode: ScopedNode|null, private level: number) {
@@ -501,14 +501,14 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     expressions: Map<AST, Reference|Variable>,
     symbols: Map<Variable|Reference, Template>,
     nestingLevel: Map<ScopedNode, number>,
-    usedPipes: Set<string>,
+    usedPipes: Map<string, number>,
     eagerPipes: Set<string>,
     deferBlocks: Set<DeferredBlock>,
   } {
     const expressions = new Map<AST, Reference|Variable>();
     const symbols = new Map<Variable|Reference, Template>();
     const nestingLevel = new Map<ScopedNode, number>();
-    const usedPipes = new Set<string>();
+    const usedPipes = new Map<string, number>();
     const eagerPipes = new Set<string>();
     const template = nodes instanceof Template ? nodes : null;
     const deferBlocks = new Set<DeferredBlock>();
@@ -664,7 +664,8 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     text.value.visit(this);
   }
   override visitPipe(ast: BindingPipe, context: any): any {
-    this.usedPipes.add(ast.name);
+    const count = this.usedPipes.get(ast.name) ?? 0;
+    this.usedPipes.set(ast.name, count + 1);
     if (!this.scope.isDeferred) {
       this.eagerPipes.add(ast.name);
     }
@@ -730,7 +731,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
       private symbols: Map<Reference|Variable, Template>,
       private nestingLevel: Map<ScopedNode, number>,
       private scopedNodeEntities: Map<ScopedNode|null, ReadonlySet<Reference|Variable>>,
-      private usedPipes: Set<string>, private eagerPipes: Set<string>,
+      private usedPipes: Map<string, number>, private eagerPipes: Set<string>,
       private deferredBlocks: Set<DeferredBlock>) {}
 
   getEntitiesInScope(node: ScopedNode|null): ReadonlySet<Reference|Variable> {
@@ -774,11 +775,15 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   }
 
   getUsedPipes(): string[] {
-    return Array.from(this.usedPipes);
+    return Array.from(this.usedPipes.keys());
   }
 
   getEagerlyUsedPipes(): string[] {
     return Array.from(this.eagerPipes);
+  }
+
+  getPipeUsages(name: string): number {
+    return this.usedPipes.get(name) ?? 0;
   }
 
   getDeferBlocks(): DeferredBlock[] {

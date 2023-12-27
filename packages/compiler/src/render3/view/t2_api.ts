@@ -217,6 +217,11 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
   getEagerlyUsedPipes(): string[];
 
   /**
+   * Get the usage count of the provided pipe name.
+   */
+  getPipeUsages(name: string): number;
+
+  /**
    * Get a list of all `@defer` blocks used by the target.
    */
   getDeferBlocks(): DeferredBlock[];

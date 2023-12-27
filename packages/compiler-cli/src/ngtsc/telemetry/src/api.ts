@@ -120,6 +120,11 @@ export class ComponentTelemetry extends DirectiveTelemetry {
    */
   onPush = 0;
 
+  /**
+   * Total number of `async` pipe usages.
+   */
+  asyncPipe = 0;
+
   override merge(other: ComponentTelemetry): void {
     super.merge(other);
     this.inlineTemplate += other.inlineTemplate;
@@ -128,6 +133,7 @@ export class ComponentTelemetry extends DirectiveTelemetry {
     this.noEncapsulation += other.noEncapsulation;
     this.shadowDomEncapsulation += other.shadowDomEncapsulation;
     this.onPush += other.onPush;
+    this.asyncPipe += other.asyncPipe;
   }
 }
 

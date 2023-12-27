@@ -547,6 +547,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<
     if (analysis.inlineStyles !== null) {
       telemetry.inlineStyles += analysis.inlineStyles.length;
     }
+
+    const binder = new R3TargetBinder(new SelectorMatcher());
+    const bound = binder.bind({template: analysis.template.nodes});
+    telemetry.asyncPipe += bound.getPipeUsages('async');
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>): ComponentSymbol {

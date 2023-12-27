@@ -10,7 +10,7 @@ import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
-const testFiles = loadStandardTestFiles();
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
 runInEachFileSystem(() => {
   describe('ngtsc telemetry', () => {
@@ -182,27 +182,35 @@ runInEachFileSystem(() => {
         it('should record component telemetry', async () => {
           env.write('comp1.ts', `
             import {Component} from '@angular/core';
+            import {CommonModule} from '@angular/common';
 
             @Component({
+              standalone: true,
+              imports: [CommonModule],
               templateUrl: './comp1.html',
               styleUrls: ['./comp1-1.css', './comp1-2.css'],
             })
-            export class TestComp1 {}
+            export class TestComp1 {
+              text$ = null;
+            }
           `);
-          env.write('comp1.html', '');
+          env.write('comp1.html', `<div>{{ text$ | async }}</div>{{ text$ | async }}`);
           env.write('comp1-1.css', '');
           env.write('comp1-2.css', '');
           env.write('comp2.ts', `
             import {Component, ViewEncapsulation} from '@angular/core';
+            import {CommonModule} from '@angular/common';
             import {TestComp1} from './comp1';
 
             @Component({
               standalone: true,
-              template: '<div></div>',
+              imports: [CommonModule],
+              template: '<div [innerHTML]="text$ | async"></div>',
               styles: 'div { color: red; }',
               encapsulation: ViewEncapsulation.Emulated,
             })
             export class TestComp2 {
+              text$ = null;
               constructor(comp: TestComp1) {}
             }
           `);
@@ -239,13 +247,14 @@ runInEachFileSystem(() => {
           const telemetry = await driveTelemetry();
           expect(telemetry.components.amount).toBe(5);
           expect(telemetry.components.ctorInjections).toBe(1);
-          expect(telemetry.components.standalone).toBe(1);
+          expect(telemetry.components.standalone).toBe(2);
           expect(telemetry.components.inlineTemplate).toBe(4);
           expect(telemetry.components.inlineStyles).toBe(1);
           expect(telemetry.components.externalStyles).toBe(2);
           expect(telemetry.components.noEncapsulation).toBe(2);
           expect(telemetry.components.shadowDomEncapsulation).toBe(1);
           expect(telemetry.components.onPush).toBe(2);
+          expect(telemetry.components.asyncPipe).toBe(3);
         });
 
         it('should record pipe telemetry', async () => {

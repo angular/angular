@@ -85,10 +85,29 @@ export declare class IndexPipe {
   static ɵpipe: ɵɵPipeDeclaration<IndexPipe, 'index'>;
 }
 
+export declare class AsyncPipe {
+  transform(value: unknown): unknown;
+
+  static ɵpipe: ɵɵPipeDeclaration<AsyncPipe, 'async'>;
+}
+
 export declare class CommonModule {
   static ɵmod: ɵɵNgModuleDeclaration<
       CommonModule,
-      [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet],
-      never,
-      [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet]>;
+      [
+        typeof NgForOf,
+        typeof NgIf,
+        typeof DatePipe,
+        typeof IndexPipe,
+        typeof NgTemplateOutlet,
+        typeof AsyncPipe,
+      ],
+      never, [
+        typeof NgForOf,
+        typeof NgIf,
+        typeof DatePipe,
+        typeof IndexPipe,
+        typeof NgTemplateOutlet,
+        typeof AsyncPipe,
+      ]>;
 }

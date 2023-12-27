@@ -719,5 +719,15 @@ describe('t2 binding', () => {
       const res = binder.bind({template: template.nodes});
       expect(res.getUsedPipes()).toEqual(['number', 'date']);
     });
+
+    it('should count pipe usages', () => {
+      const template =
+          parseTemplate('<person [age]="age|number">{{ age|number|once }}</person>', '', {});
+      const binder = new R3TargetBinder(makeSelectorMatcher());
+      const res = binder.bind({template: template.nodes});
+      expect(res.getPipeUsages('unused')).toEqual(0);
+      expect(res.getPipeUsages('once')).toEqual(1);
+      expect(res.getPipeUsages('number')).toEqual(2);
+    });
   });
 });
