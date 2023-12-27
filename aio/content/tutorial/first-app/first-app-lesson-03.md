@@ -63,7 +63,7 @@ In the **Edit** pane of your IDE:
 
 In this step, you will copy over the pre-written styles for the `HousingLocationComponent` to your app so that the app renders properly.
 
-1. Open `src/app/housing-location/housing-location.css`, and paste the styles below into the file:
+1. Open `src/app/housing-location/housing-location.component.css`, and paste the styles below into the file:
 
     <code-example header="Add CSS styles to housing location to the component in src/app/housing-location/housing-location.component.css" path="first-app-lesson-03/src/app/housing-location/housing-location.component.css"></code-example>
 
