@@ -9,7 +9,7 @@ import {AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOpt
 
 import {invalidQuery} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
-import {copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
+import {interpolateParams, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, AstVisitor, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationTimelineInstruction, createTimelineInstruction} from './animation_timeline_instruction';
@@ -89,8 +89,7 @@ const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
  * from all previous animation steps. Therefore when a keyframe is created it would also be missing
  * from all previous keyframes up until where it is first used. For the timeline keyframe generation
  * to properly fill in the style it will place the previous value (the value from the parent
- * timeline) or a default value of `*` into the backFill map. The `copyStyles` method in util.ts
- * handles propagating that backfill map to the styles object.
+ * timeline) or a default value of `*` into the backFill map.
  *
  * When a sub-timeline is created it will have its own backFill property. This is done so that
  * styles present within the sub-timeline do not accidentally seep into the previous/future timeline
@@ -802,7 +801,7 @@ export class TimelineBuilder {
 
     let finalKeyframes: Array<ɵStyleDataMap> = [];
     this._keyframes.forEach((keyframe, time) => {
-      const finalKeyframe = copyStyles(keyframe, new Map(), this._backFill);
+      const finalKeyframe = new Map([...this._backFill, ...keyframe]);
       finalKeyframe.forEach((value, prop) => {
         if (value === PRE_STYLE) {
           preStyleProps.add(prop);
@@ -816,8 +815,8 @@ export class TimelineBuilder {
       finalKeyframes.push(finalKeyframe);
     });
 
-    const preProps: string[] = preStyleProps.size ? iteratorToArray(preStyleProps.values()) : [];
-    const postProps: string[] = postStyleProps.size ? iteratorToArray(postStyleProps.values()) : [];
+    const preProps: string[] = [...preStyleProps.values()];
+    const postProps: string[] = [...postStyleProps.values()];
 
     // special case for a 0-second animation (which is designed just to place styles onscreen)
     if (isEmpty) {
@@ -858,11 +857,11 @@ class SubTimelineBuilder extends TimelineBuilder {
       const startingGap = delay / totalTime;
 
       // the original starting keyframe now starts once the delay is done
-      const newFirstKeyframe = copyStyles(keyframes[0]);
+      const newFirstKeyframe = new Map(keyframes[0]);
       newFirstKeyframe.set('offset', 0);
       newKeyframes.push(newFirstKeyframe);
 
-      const oldFirstKeyframe = copyStyles(keyframes[0]);
+      const oldFirstKeyframe = new Map(keyframes[0]);
       oldFirstKeyframe.set('offset', roundOffset(startingGap));
       newKeyframes.push(oldFirstKeyframe);
 
@@ -884,7 +883,7 @@ class SubTimelineBuilder extends TimelineBuilder {
       // offsets between 1 ... n -1 are all warped by the keyframe stretch
       const limit = keyframes.length - 1;
       for (let i = 1; i <= limit; i++) {
-        let kf = copyStyles(keyframes[i]);
+        let kf = new Map(keyframes[i]);
         const oldOffset = kf.get('offset') as number;
         const timeAtKeyframe = delay + oldOffset * duration;
         kf.set('offset', roundOffset(timeAtKeyframe / totalTime));
@@ -915,12 +914,14 @@ function flattenStyles(input: Array<(ɵStyleDataMap | string)>, allStyles: ɵSty
   let allProperties: string[]|IterableIterator<string>;
   input.forEach(token => {
     if (token === '*') {
-      allProperties = allProperties || allStyles.keys();
+      allProperties ??= allStyles.keys();
       for (let prop of allProperties) {
         styles.set(prop, AUTO_STYLE);
       }
     } else {
-      copyStyles(token as ɵStyleDataMap, styles);
+      for (let [prop, val] of token as ɵStyleDataMap) {
+        styles.set(prop, val);
+      }
     }
   });
   return styles;

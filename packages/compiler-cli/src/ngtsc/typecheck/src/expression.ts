@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {TypeCheckingConfig} from '../api';
 
 import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
-import {tsCastToAny} from './ts_util';
+import {tsCastToAny, tsNumericExpression} from './ts_util';
 
 export const NULL_AS_ANY = ts.factory.createAsExpression(
     ts.factory.createNull(), ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
@@ -198,7 +198,7 @@ class AstTranslator implements AstVisitor {
     } else if (typeof ast.value === 'string') {
       node = ts.factory.createStringLiteral(ast.value);
     } else if (typeof ast.value === 'number') {
-      node = ts.factory.createNumericLiteral(ast.value);
+      node = tsNumericExpression(ast.value);
     } else if (typeof ast.value === 'boolean') {
       node = ast.value ? ts.factory.createTrue() : ts.factory.createFalse();
     } else {

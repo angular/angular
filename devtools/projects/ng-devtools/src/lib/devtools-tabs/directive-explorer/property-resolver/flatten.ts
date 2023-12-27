@@ -37,7 +37,7 @@ const getChildren = (prop: Property): Property[]|undefined => {
   if ((descriptor.type === PropType.Object || descriptor.type === PropType.Array) &&
       !(descriptor.value instanceof Observable)) {
     return arrayifyProps(descriptor.value || {}, prop);
-  } else {
-    console.error('Unexpected data type', descriptor, 'in property', prop);
   }
+  console.error('Unexpected data type', descriptor, 'in property', prop);
+  return;
 };

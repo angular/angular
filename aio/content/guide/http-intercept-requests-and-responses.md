@@ -14,7 +14,7 @@ To implement an interceptor, declare a class that implements the `intercept()` m
 
 Here is a do-nothing `noop` interceptor that passes the request through without touching it:
 
-<code-example header="app/http-interceptors/noop-interceptor.ts" path="http/src/app/http-interceptors/noop-interceptor.ts"></code-example>
+<code-example header="app/http-interceptors/noop-interceptor.ts" path="http/src/app/http-interceptors/noop-interceptor.ts" region="noop"></code-example>
 
 The `intercept` method transforms a request into an `Observable` that eventually returns the HTTP response.
 In this sense, each interceptor is fully capable of handling the request entirely by itself.
@@ -46,41 +46,48 @@ This is a common middleware pattern found in frameworks such as Express.js.
 
 ## Provide the interceptor
 
-The `NoopInterceptor` is a service managed by Angular's [dependency injection (DI)](guide/dependency-injection) system.
-Like other services, you must provide the interceptor class before the app can use it.
+The `NoopInterceptor` is like a service managed by Angular's [dependency injection (DI)](guide/dependency-injection) system.
+As with other services, you must provide the interceptor class before the app can use it.
 
-Because interceptors are optional dependencies of the `HttpClient` service, you must provide them in the same injector or a parent of the injector that provides `HttpClient`.
-Interceptors provided *after* DI creates the `HttpClient` are ignored.
-
-This app provides `HttpClient` in the app's root injector, as a side-effect of importing the `HttpClientModule` in `AppModule`.
-You should provide interceptors in `AppModule` as well.
-
-After importing the `HTTP_INTERCEPTORS` injection token from `@angular/common/http`, write the `NoopInterceptor` provider like this:
-
-<code-example path="http/src/app/http-interceptors/index.ts" region="noop-provider"></code-example>
+Write a provider for it like this one:
+<code-example path="http/src/app/http-interceptors/noop-interceptor.ts" region="noop-provider"></code-example>
 
 Notice the `multi: true` option.
 This required setting tells Angular that `HTTP_INTERCEPTORS` is a token for a *multiprovider* that injects an array of values, rather than a single value.
 
-You *could* add this provider directly to the providers array of the `AppModule`.
-However, it's rather verbose and there's a good chance that you'll create more interceptors and provide them in the same way.
+Because interceptors are optional dependencies of the `HttpClient` service, you must provide them in the same injector or a parent of the injector that provides `HttpClient`.
+Interceptors provided *after* DI creates the `HttpClient` are ignored.
+
+This app provides `HttpClient` in the app's root injector by adding the `HttpClientModule` to the `providers` array of the `bootstrapApplication()` in `main.ts`.
+You should provide interceptors there as well.
+
+<code-example path="http/src/main.ts" region="noop-provider"></code-example>
+
+## Providing many interceptors
+
+There's a good chance that you'll create more interceptors.
+
+You *could* add each provider to the `providers` array of the `bootstrapApplication()` as you did for the `NoopInterceptor`.
+
+That's rather verbose and there's a good chance that you'll make a bookkeeping mistake trying to remember to add each one.
+
 You must also pay [close attention to the order](#interceptor-order) in which you provide these interceptors.
 
-Consider creating a "barrel" file that gathers all the interceptor providers into an `httpInterceptorProviders` array, starting with this first one, the `NoopInterceptor`.
+Consider creating a "barrel" file that gathers _all the interceptor providers_ into a single `httpInterceptorProviders` array.
 
 <code-example header="app/http-interceptors/index.ts" path="http/src/app/http-interceptors/index.ts" region="interceptor-providers"></code-example>
 
-Then import and add it to the `AppModule` `providers array` like this:
-
-<code-example header="app/app.module.ts (interceptor providers)" path="http/src/app/app.module.ts" region="interceptor-providers"></code-example>
-
-As you create new interceptors, add them to the `httpInterceptorProviders` array and you won't have to revisit the `AppModule`.
-
 <div class="alert is-helpful">
 
-There are many more interceptors in the complete sample code.
+These interceptors are defined in the complete sample code.
 
 </div>
+
+Then import this array and add it to the `bootstrapApplication()` `providers` in `main.ts` like this:
+
+<code-example header="main.ts (interceptor providers)" path="http/src/main.ts" region="interceptor-providers"></code-example>
+
+As you create new interceptors, add them to the `httpInterceptorProviders` array and you won't have to revisit `main.ts`.
 
 ## Interceptor order
 
@@ -186,4 +193,4 @@ newReq = req.clone({ body: null }); // clear the body
 
 </code-example>
 
-@reviewed 2023-03-16
+@reviewed 2023-08-16

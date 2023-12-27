@@ -1,5 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "ng_module", "ng_package", "tsec_test")
+load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,7 +25,6 @@ ng_module(
         "//packages/platform-browser/animations",
         "//packages/zone.js/lib:zone_d_ts",
         "@npm//@types/node",
-        "@npm//domino",
         "@npm//rxjs",
         "@npm//xhr2",
     ],
@@ -66,6 +66,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//adev:__pkg__",
         "//aio:__pkg__",
         "//aio/content/examples:__subpackages__",
         "//aio/tools/examples:__pkg__",
@@ -95,4 +96,11 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "platform-server_docs",
+    srcs = [":files_for_docgen"],
+    entry_point = ":index.ts",
+    module_name = "@angular/platform-server",
 )

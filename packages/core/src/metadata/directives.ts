@@ -308,7 +308,7 @@ export interface Directive {
    * If a binding changes, Angular updates the directive's host element.
    *
    * When the key is a property of the host element, the property value is
-   * the propagated to the specified DOM property.
+   * propagated to the specified DOM property.
    *
    * When the key is a static attribute in the DOM, the attribute value
    * is propagated to the specified property in the host element.
@@ -574,8 +574,13 @@ export interface Component extends Directive {
   template?: string;
 
   /**
-   * One or more relative paths or absolute URLs for files containing CSS stylesheets to use
+   * One relative paths or an absolute URL for files containing CSS stylesheet to use
    * in this component.
+   */
+  styleUrl?: string;
+
+  /**
+   * Relative paths or absolute URLs for files containing CSS stylesheets to use in this component.
    */
   styleUrls?: string[];
 
@@ -583,7 +588,7 @@ export interface Component extends Directive {
    * One or more inline CSS stylesheets to use
    * in this component.
    */
-  styles?: string[];
+  styles?: string|string[];
 
   /**
    * One or more animation `trigger()` calls, containing
@@ -632,12 +637,6 @@ export interface Component extends Directive {
    * guide](guide/standalone-components).
    */
   standalone?: boolean;
-
-  /**
-   * // TODO(signals): Remove internal and add public documentation.
-   * @internal
-   */
-  signals?: boolean;
 
   /**
    * The imports property specifies the standalone component's template dependencies — those
@@ -774,20 +773,26 @@ export interface InputDecorator {
    * one of which is given a special binding name.
    *
    * ```typescript
+   * import { Component, Input, numberAttribute, booleanAttribute } from '@angular/core';
    * @Component({
    *   selector: 'bank-account',
    *   template: `
    *     Bank Name: {{bankName}}
    *     Account Id: {{id}}
+   *     Account Status: {{status ? 'Active' : 'InActive'}}
    *   `
    * })
    * class BankAccount {
    *   // This property is bound using its original name.
-   *   @Input() bankName: string;
-   *   // this property value is bound to a different property name
+   *   // Defining argument required as true inside the Input Decorator
+   *   // makes this property deceleration as mandatory
+   *   @Input({ required: true }) bankName!: string;
+   *   // Argument alias makes this property value is bound to a different property name
    *   // when this component is instantiated in a template.
-   *   @Input('account-id') id: string;
-   *
+   *   // Argument transform convert the input value from string to number
+   *   @Input({ alias:'account-id', transform: numberAttribute }) id: number;
+   *   // Argument transform the input value from string to boolean
+   *   @Input({ transform: booleanAttribute }) status: boolean;
    *   // this property is not bound, and is not automatically updated by Angular
    *   normalizedBankName: string;
    * }
@@ -795,7 +800,7 @@ export interface InputDecorator {
    * @Component({
    *   selector: 'app',
    *   template: `
-   *     <bank-account bankName="RBC" account-id="4747"></bank-account>
+   *     <bank-account bankName="RBC" account-id="4747" status="true"></bank-account>
    *   `
    * })
    * class App {}
@@ -894,23 +899,35 @@ export const Output: OutputDecorator = makePropDecorator('Output', (alias?: stri
  */
 export interface HostBindingDecorator {
   /**
-   * Decorator that marks a DOM property as a host-binding property and supplies configuration
-   * metadata.
-   * Angular automatically checks host property bindings during change detection, and
-   * if a binding changes it updates the host element of the directive.
+   * Decorator that marks a DOM property or an element class, style or attribute as a host-binding
+   * property and supplies configuration metadata. Angular automatically checks host bindings during
+   * change detection, and if a binding changes it updates the host element of the directive.
    *
    * @usageNotes
    *
    * The following example creates a directive that sets the `valid` and `invalid`
-   * properties on the DOM element that has an `ngModel` directive on it.
+   * class, a style color, and an id on the DOM element that has an `ngModel` directive on it.
    *
    * ```typescript
    * @Directive({selector: '[ngModel]'})
    * class NgModelStatus {
    *   constructor(public control: NgModel) {}
+   *   // class bindings
    *   @HostBinding('class.valid') get valid() { return this.control.valid; }
    *   @HostBinding('class.invalid') get invalid() { return this.control.invalid; }
-   * }
+   *
+   *   // style binding
+   *   @HostBinding('style.color') get color() { return this.control.valid ? 'green': 'red'; }
+   *
+   *   // style binding also supports a style unit extension
+   *   @HostBinding('style.width.px') @Input() width: number = 500;
+   *
+   *   // attribute binding
+   *   @HostBinding('attr.aria-required')
+   *   @Input() required: boolean = false;
+   *
+   *   // property binding
+   *   @HostBinding('id') get id() { return this.control.value?.length ? 'odd':  'even'; }
    *
    * @Component({
    *   selector: 'app',
@@ -934,6 +951,10 @@ export interface HostBindingDecorator {
 export interface HostBinding {
   /**
    * The DOM property that is bound to a data property.
+   * This field also accepts:
+   *   * classes, prefixed by `class.`
+   *   * styles, prefixed by `style.`
+   *   * attributes, prefixed by `attr.`
    */
   hostPropertyName?: string;
 }

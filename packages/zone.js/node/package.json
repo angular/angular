@@ -1,8 +1,0 @@
-{
-  "name": "zone-node",
-  "description": "Zone.js for NodeJS",
-  "main": "../bundles/zone-node.umd.js",
-  "module": "../fesm2015/zone-node.js",
-  "es2015": "../fesm2015/zone-node.js",
-  "fesm2015": "../fesm2015/zone-node.js"
-}

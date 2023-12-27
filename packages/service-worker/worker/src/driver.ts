@@ -446,13 +446,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     // Notify the client about this activation.
     const current = this.versions.get(this.latestHash!)!;
-    const notice = {
-      type: 'UPDATE_ACTIVATED',
-      previous,
-      current: this.mergeHashWithAppData(current.manifest, this.latestHash!),
-    };
 
-    client.postMessage(notice);
     return true;
   }
 
@@ -640,7 +634,6 @@ export class Driver implements Debuggable, UpdateSource {
         await this.scheduleInitialization(this.versions.get(hash)!);
       } catch (err) {
         this.debugger.log(err as Error, `initialize: schedule init of ${hash}`);
-        return false;
       }
     }));
   }

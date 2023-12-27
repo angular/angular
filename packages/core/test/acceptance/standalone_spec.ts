@@ -378,7 +378,7 @@ describe('standalone components, directives, and pipes', () => {
        expect(fixture.nativeElement.textContent).toBe('Inner(NodeOverrideService)');
      });
 
-  it('should consult ambient providers before environement injector when inserting a component dynamically',
+  it('should consult ambient providers before environment injector when inserting a component dynamically',
      () => {
        class Service {
          constructor(readonly value = 'Service') {}
@@ -426,7 +426,7 @@ describe('standalone components, directives, and pipes', () => {
        fixture.detectChanges();
 
        // The Service (an ambient provider) gets injected here as the standalone injector is a child
-       // of the user-created environement injector.
+       // of the user-created environment injector.
        expect(fixture.nativeElement.textContent).toBe('Inner(Service)');
      });
 
@@ -765,7 +765,7 @@ describe('standalone components, directives, and pipes', () => {
           tag}' is an Angular component, then verify that it is included in the '@Component.imports' of this component.`;
       const message2 = `2. If '${
           tag}' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.`;
-      return new RegExp(`${prefix}\s*\n\s*${message1}\s*\n\s*${message2}`);
+      return new RegExp(`${prefix}s*\ns*${message1}s*\ns*${message2}`);
     };
 
     it('should warn the user when an unknown element is present', () => {

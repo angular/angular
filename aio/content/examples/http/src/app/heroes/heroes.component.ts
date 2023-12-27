@@ -1,11 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Hero } from './hero';
 import { HeroesService } from './heroes.service';
 
 @Component({
+  standalone: true,
   selector: 'app-heroes',
   templateUrl: './heroes.component.html',
+  imports: [ CommonModule, FormsModule ],
   providers: [HeroesService],
   styleUrls: ['./heroes.component.css']
 })

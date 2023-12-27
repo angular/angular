@@ -42,7 +42,7 @@ export function isI18nRootNode(meta?: i18n.I18nMeta): meta is i18n.Message {
   return meta instanceof i18n.Message;
 }
 
-export function isSingleI18nIcu(meta?: i18n.I18nMeta): boolean {
+export function isSingleI18nIcu(meta?: i18n.I18nMeta): meta is i18n.I18nMeta&{nodes: [i18n.Icu]} {
   return isI18nRootNode(meta) && meta.nodes.length === 1 && meta.nodes[0] instanceof i18n.Icu;
 }
 

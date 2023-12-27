@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, forwardRef, NgModule, Pipe, Type} from '@angular/core';
-import {NgModuleDef} from '@angular/core/src/r3_symbols';
-import {ComponentType, NgModuleType} from '@angular/core/src/render3';
+import {Component, Directive, forwardRef, NgModule, Pipe} from '@angular/core';
 
+import {NgModuleDef} from '../../src/r3_symbols';
+import {ComponentType, NgModuleType, ɵsetClassDebugInfo, ɵɵdefineComponent} from '../../src/render3';
 import {TEST_ONLY} from '../../src/render3/deps_tracker/deps_tracker';
 
 const {DepsTracker} = TEST_ONLY;
@@ -76,45 +76,46 @@ describe('runtime dependency tracker', () => {
         });
       });
 
-      it('should include the exported scope of an exported module in the exported scope', () => {
-        @Directive({})
-        class Directive1 {
-        }
+      it('should include the exported scope of an exported module in the exported scope and compilation scope',
+         () => {
+           @Directive({})
+           class Directive1 {
+           }
 
-        @Pipe({name: 'pipe1'})
-        class Pipe1 {
-        }
+           @Pipe({name: 'pipe1'})
+           class Pipe1 {
+           }
 
-        @Component({})
-        class Component1 {
-        }
+           @Component({})
+           class Component1 {
+           }
 
-        @NgModule({
-          exports: [Directive1, Pipe1, Component1],
-        })
-        class SubModule {
-        }
+           @NgModule({
+             exports: [Directive1, Pipe1, Component1],
+           })
+           class SubModule {
+           }
 
-        @NgModule({
-          exports: [SubModule],
-        })
-        class MainModule {
-        }
+           @NgModule({
+             exports: [SubModule],
+           })
+           class MainModule {
+           }
 
-        const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
+           const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
 
-        expect(ans.exported).toEqual({
-          pipes: new Set([Pipe1]),
-          directives: new Set([Directive1, Component1]),
-        });
+           expect(ans.exported).toEqual({
+             pipes: new Set([Pipe1]),
+             directives: new Set([Directive1, Component1]),
+           });
 
-        expect(ans.compilation).toEqual({
-          pipes: new Set(),
-          directives: new Set(),
-        });
-      });
+           expect(ans.compilation).toEqual({
+             pipes: new Set([Pipe1]),
+             directives: new Set([Directive1, Component1]),
+           });
+         });
 
-      it('should combine the directly exported elements with the exported scope of exported module',
+      it('should combine the directly exported elements with the exported scope of exported module in both exported and compilation scopes',
          () => {
            @Directive({})
            class Directive1 {
@@ -139,7 +140,7 @@ describe('runtime dependency tracker', () => {
            }
 
            @NgModule({
-             exports: [SubModule, MainComponent, Directive1, Pipe1, Component1],
+             exports: [SubModule, MainComponent],
            })
            class MainModule {
            }
@@ -152,8 +153,8 @@ describe('runtime dependency tracker', () => {
            });
 
            expect(ans.compilation).toEqual({
-             pipes: new Set(),
-             directives: new Set(),
+             pipes: new Set([Pipe1]),
+             directives: new Set([Directive1, Component1]),
            });
          });
     });
@@ -371,7 +372,7 @@ describe('runtime dependency tracker', () => {
           directives: new Set([Component1]),
         });
 
-        // Modify the the module
+        // Modify the module
         (MainModule as NgModuleType).ɵmod.declarations = [];
 
         ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
@@ -400,7 +401,7 @@ describe('runtime dependency tracker', () => {
           directives: new Set([Component1]),
         });
 
-        // Modify the the module
+        // Modify the module
         (MainModule as NgModuleType).ɵmod.declarations = [];
         depsTracker.clearScopeCacheFor(MainModule as NgModuleType);
 
@@ -620,7 +621,7 @@ describe('runtime dependency tracker', () => {
            });
          });
 
-      it('should include the exported scope of an exported forward ref module in the exported scope when compiling in JIT mode',
+      it('should include the exported scope of an exported forward ref module in the exported and compilation scope when compiling in JIT mode',
          () => {
            @NgModule({exports: [forwardRef(() => SubModule)]})
            class MainModule {
@@ -645,8 +646,8 @@ describe('runtime dependency tracker', () => {
            const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
 
            expect(ans.compilation).toEqual({
-             pipes: new Set(),
-             directives: new Set(),
+             pipes: new Set([Pipe1]),
+             directives: new Set([Component1, Directive1]),
            });
            expect(ans.exported).toEqual({
              pipes: new Set([Pipe1]),
@@ -654,7 +655,7 @@ describe('runtime dependency tracker', () => {
            });
          });
 
-      it('should include the exported scope of an exported forward ref module in the exported scope when compiling in AOT mode',
+      it('should include the exported scope of an exported forward ref module in the exported and compilation scopes when compiling in AOT mode',
          () => {
            class MainModule {}
            (MainModule as NgModuleType).ɵmod = createNgModuleDef({exports: () => ([SubModule])});
@@ -678,8 +679,8 @@ describe('runtime dependency tracker', () => {
            const ans = depsTracker.getNgModuleScope(MainModule as NgModuleType);
 
            expect(ans.compilation).toEqual({
-             pipes: new Set(),
-             directives: new Set(),
+             pipes: new Set([Pipe1]),
+             directives: new Set([Component1, Directive1]),
            });
            expect(ans.exported).toEqual({
              pipes: new Set([Pipe1]),
@@ -700,6 +701,7 @@ describe('runtime dependency tracker', () => {
          expect(ans.compilation).toEqual({
            pipes: new Set([]),
            directives: new Set([MainComponent]),
+           ngModules: new Set([]),
          });
        });
 
@@ -725,6 +727,33 @@ describe('runtime dependency tracker', () => {
          expect(ans.compilation).toEqual({
            pipes: new Set([Pipe1]),
            directives: new Set([MainComponent, Component1, Directive1]),
+           ngModules: new Set([]),
+         });
+       });
+
+    it('should include the imported standalone component/directive/pipes in the compilation scope - nested array case',
+       () => {
+         @Component({standalone: true})
+         class Component1 {
+         }
+
+         @Directive({standalone: true})
+         class Directive1 {
+         }
+
+         @Pipe({name: 'pipe1', standalone: true})
+         class Pipe1 {
+         }
+
+         class MainComponent {}
+
+         const ans = depsTracker.getStandaloneComponentScope(
+             MainComponent as ComponentType<any>, [[[Component1], Directive1], [[[Pipe1]]]]);
+
+         expect(ans.compilation).toEqual({
+           pipes: new Set([Pipe1]),
+           directives: new Set([MainComponent, Component1, Directive1]),
+           ngModules: new Set([]),
          });
        });
 
@@ -741,7 +770,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation.isPoisoned).toBeTrue();
     });
 
-    it('should include the exported scope of an imported module in the compilation scope', () => {
+    it('should include the imported module and its exported scope in the compilation scope', () => {
       @Directive({})
       class Directive1 {
       }
@@ -773,8 +802,46 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+        ngModules: new Set([SubSubModule]),
       });
     });
+
+    it('should include the imported module and its exported scope in the compilation scope - case of nested array imports',
+       () => {
+         @Directive({})
+         class Directive1 {
+         }
+
+         @Pipe({name: 'pipe1'})
+         class Pipe1 {
+         }
+
+         @Component({})
+         class Component1 {
+         }
+
+         @Component({})
+         class PrivateComponent {
+         }
+
+         @NgModule({
+           exports: [Directive1, Component1, Pipe1],
+           declarations: [PrivateComponent],
+         })
+         class SubSubModule {
+         }
+
+         class MainComponent {}
+
+         const ans = depsTracker.getStandaloneComponentScope(
+             MainComponent as ComponentType<any>, [[SubSubModule]]);
+
+         expect(ans.compilation).toEqual({
+           pipes: new Set([Pipe1]),
+           directives: new Set([MainComponent, Component1, Directive1]),
+           ngModules: new Set([SubSubModule]),
+         });
+       });
 
     it('should resolve the imported forward refs and include them in the compilation scope', () => {
       @Component({standalone: true})
@@ -816,8 +883,54 @@ describe('runtime dependency tracker', () => {
         pipes: new Set([Pipe1, SubModulePipe]),
         directives: new Set(
             [MainComponent, Component1, Directive1, SubModuleComponent, SubModuleDirective]),
+        ngModules: new Set([SubModule]),
       });
     });
+
+    it('should resolve the imported forward refs and include them in the compilation scope - case of nested array imports',
+       () => {
+         @Component({standalone: true})
+         class Component1 {
+         }
+
+         @Directive({standalone: true})
+         class Directive1 {
+         }
+
+         @Pipe({name: 'pipe1', standalone: true})
+         class Pipe1 {
+         }
+
+         @Component({})
+         class SubModuleComponent {
+         }
+
+         @Directive({})
+         class SubModuleDirective {
+         }
+
+         @Pipe({name: 'submodule pipe'})
+         class SubModulePipe {
+         }
+
+         @NgModule({exports: [SubModuleComponent, SubModulePipe, SubModuleDirective]})
+         class SubModule {
+         }
+
+         class MainComponent {}
+
+         const ans = depsTracker.getStandaloneComponentScope(MainComponent as ComponentType<any>, [
+           [forwardRef(() => Component1)], [forwardRef(() => Directive1)],
+           [forwardRef(() => Pipe1)], [forwardRef(() => SubModule)]
+         ]);
+
+         expect(ans.compilation).toEqual({
+           pipes: new Set([Pipe1, SubModulePipe]),
+           directives: new Set(
+               [MainComponent, Component1, Directive1, SubModuleComponent, SubModuleDirective]),
+           ngModules: new Set([SubModule]),
+         });
+       });
 
     it('should cache the computed scopes', () => {
       @Component({standalone: true})
@@ -840,6 +953,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+        ngModules: new Set([]),
       });
 
       ans = depsTracker.getStandaloneComponentScope(MainComponent as ComponentType<any>, []);
@@ -847,6 +961,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+        ngModules: new Set([]),
       });
     });
 
@@ -873,6 +988,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([Pipe1]),
         directives: new Set([MainComponent, Component1, Directive1]),
+        ngModules: new Set([]),
       });
 
       depsTracker.clearScopeCacheFor(MainComponent as ComponentType<any>);
@@ -881,6 +997,7 @@ describe('runtime dependency tracker', () => {
       expect(ans.compilation).toEqual({
         pipes: new Set([]),
         directives: new Set([MainComponent]),
+        ngModules: new Set([]),
       });
     });
   });
@@ -948,10 +1065,15 @@ describe('runtime dependency tracker', () => {
            ]));
          });
 
-      it('should return empty deps if component has no registered module', () => {
+      it('should return empty dependencies if component has no registered module', () => {
         @Component({})
         class MainComponent {
         }
+        ɵsetClassDebugInfo(MainComponent, {
+          className: 'MainComponent',
+          filePath: 'main.ts',
+          lineNumber: 11,
+        });
 
         const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
 
@@ -986,18 +1108,9 @@ describe('runtime dependency tracker', () => {
         class MainComponent {
         }
 
-        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, []);
+        const ans = depsTracker.getComponentDependencies(MainComponent as ComponentType<any>);
 
         expect(ans.dependencies).toEqual([MainComponent]);
-      });
-
-      it('should throw if no import is provided', () => {
-        @Component({standalone: true})
-        class MainComponent {
-        }
-
-        expect(() => depsTracker.getComponentDependencies(MainComponent as ComponentType<any>))
-            .toThrow();
       });
 
       it('should include imported standalone component/directive/pipe', () => {
@@ -1076,7 +1189,7 @@ describe('runtime dependency tracker', () => {
         expect(ans.dependencies).toEqual([]);
       });
 
-      it('should include the exported scope of imported module', () => {
+      it('should include the imported module and its exported scope', () => {
         @Component({})
         class Component1 {
         }
@@ -1103,11 +1216,15 @@ describe('runtime dependency tracker', () => {
             depsTracker.getComponentDependencies(MainComponent as ComponentType<any>, [SubModule]);
 
         expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
-          MainComponent, Component1, Directive1, Pipe1
+          MainComponent,
+          Component1,
+          Directive1,
+          Pipe1,
+          SubModule,
         ]));
       });
 
-      it('should include the exported scope of imported forward ref module', () => {
+      it('should include the imported forward ref module and its exported scope', () => {
         @Component({})
         class Component1 {
         }
@@ -1134,7 +1251,7 @@ describe('runtime dependency tracker', () => {
             MainComponent as ComponentType<any>, [forwardRef(() => SubModule)]);
 
         expect(ans.dependencies).toEqual(jasmine.arrayWithExactContents([
-          MainComponent, Component1, Directive1, Pipe1
+          MainComponent, Component1, Directive1, Pipe1, SubModule
         ]));
       });
 
@@ -1161,6 +1278,47 @@ describe('runtime dependency tracker', () => {
           MainComponent, Component1
         ]));
       });
+    });
+  });
+
+  describe('isOrphanComponent method', () => {
+    it('should return true for non-standalone component without NgModule', () => {
+      @Component({})
+      class MainComponent {
+      }
+
+      expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeTrue();
+    });
+
+    it('should return false for standalone component', () => {
+      @Component({
+        standalone: true,
+      })
+      class MainComponent {
+      }
+
+      expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeFalse();
+    });
+
+    it('should return false for non-standalone component with its NgModule', () => {
+      @Component({})
+      class MainComponent {
+      }
+
+      @NgModule({
+        declarations: [MainComponent],
+      })
+      class MainModule {
+      }
+      depsTracker.registerNgModule(MainModule as NgModuleType, {});
+
+      expect(depsTracker.isOrphanComponent(MainComponent as ComponentType<any>)).toBeFalse();
+    });
+
+    it('should return false for class which is not a component', () => {
+      class RandomClass {}
+
+      expect(depsTracker.isOrphanComponent(RandomClass as ComponentType<any>)).toBeFalse();
     });
   });
 });

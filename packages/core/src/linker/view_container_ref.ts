@@ -22,14 +22,15 @@ import {addToViewTree, createLContainer} from '../render3/instructions/shared';
 import {CONTAINER_HEADER_OFFSET, DEHYDRATED_VIEWS, LContainer, NATIVE, VIEW_REFS} from '../render3/interfaces/container';
 import {NodeInjectorOffset} from '../render3/interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from '../render3/interfaces/node';
-import {RComment, RElement, RNode} from '../render3/interfaces/renderer_dom';
+import {RComment, RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
-import {addViewToContainer, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
+import {destroyLView, detachView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from '../render3/util/injector_utils';
 import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
+import {addLViewToLContainer, shouldAddViewToDom} from '../render3/view_manipulation';
 import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertDefined, assertEqual, assertGreaterThan, assertLessThan, throwError} from '../util/assert';
@@ -49,6 +50,40 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  *
  * A view container instance can contain other view containers,
  * creating a [view hierarchy](guide/glossary#view-hierarchy).
+ *
+ * @usageNotes
+ *
+ * The example below demonstrates how the `createComponent` function can be used
+ * to create an instance of a ComponentRef dynamically and attach it to an ApplicationRef,
+ * so that it gets included into change detection cycles.
+ *
+ * Note: the example uses standalone components, but the function can also be used for
+ * non-standalone components (declared in an NgModule) as well.
+ *
+ * ```typescript
+ * @Component({
+ *   standalone: true,
+ *   selector: 'dynamic',
+ *   template: `<span>This is a content of a dynamic component.</span>`,
+ * })
+ * class DynamicComponent {
+ *   vcr = inject(ViewContainerRef);
+ * }
+ *
+ * @Component({
+ *   standalone: true,
+ *   selector: 'app',
+ *   template: `<main>Hi! This is the main content.</main>`,
+ * })
+ * class AppComponent {
+ *   vcr = inject(ViewContainerRef);
+ *
+ *   ngAfterViewInit() {
+ *     const compRef = this.vcr.createComponent(DynamicComponent);
+ *     compRef.changeDetectorRef.detectChanges();
+ *   }
+ * }
+ * ```
  *
  * @see {@link ComponentRef}
  * @see {@link EmbeddedViewRef}
@@ -309,13 +344,10 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       injector = indexOrOptions.injector;
     }
 
-    const hydrationInfo = findMatchingDehydratedView(this._lContainer, templateRef.ssrId);
-    const viewRef = templateRef.createEmbeddedViewImpl(context || <any>{}, injector, hydrationInfo);
-    // If there is a matching dehydrated view, but the host TNode is located in the skip
-    // hydration block, this means that the content was detached (as a part of the skip
-    // hydration logic) and it needs to be appended into the DOM.
-    const skipDomInsertion = !!hydrationInfo && !hasInSkipHydrationBlockFlag(this._hostTNode);
-    this.insertImpl(viewRef, index, skipDomInsertion);
+    const dehydratedView = findMatchingDehydratedView(this._lContainer, templateRef.ssrId);
+    const viewRef =
+        templateRef.createEmbeddedViewImpl(context || <any>{}, injector, dehydratedView);
+    this.insertImpl(viewRef, index, shouldAddViewToDom(this._hostTNode, dehydratedView));
     return viewRef;
   }
 
@@ -349,7 +381,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
 
     // This function supports 2 signatures and we need to handle options correctly for both:
     //   1. When first argument is a Component type. This signature also requires extra
-    //      options to be provided as as object (more ergonomic option).
+    //      options to be provided as object (more ergonomic option).
     //   2. First argument is a Component factory. In this case extra options are represented as
     //      positional arguments. This signature is less ergonomic and will be deprecated.
     if (isComponentFactory) {
@@ -432,21 +464,17 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     const rNode = dehydratedView?.firstChild ?? null;
     const componentRef =
         componentFactory.create(contextInjector, projectableNodes, rNode, environmentInjector);
-    // If there is a matching dehydrated view, but the host TNode is located in the skip
-    // hydration block, this means that the content was detached (as a part of the skip
-    // hydration logic) and it needs to be appended into the DOM.
-    const skipDomInsertion = !!dehydratedView && !hasInSkipHydrationBlockFlag(this._hostTNode);
-    this.insertImpl(componentRef.hostView, index, skipDomInsertion);
+    this.insertImpl(
+        componentRef.hostView, index, shouldAddViewToDom(this._hostTNode, dehydratedView));
     return componentRef;
   }
 
   override insert(viewRef: ViewRef, index?: number): ViewRef {
-    return this.insertImpl(viewRef, index, false);
+    return this.insertImpl(viewRef, index, true);
   }
 
-  private insertImpl(viewRef: ViewRef, index?: number, skipDomInsertion?: boolean): ViewRef {
+  private insertImpl(viewRef: ViewRef, index?: number, addToDOM?: boolean): ViewRef {
     const lView = (viewRef as R3ViewRef<any>)._lView!;
-    const tView = lView[TVIEW];
 
     if (ngDevMode && viewRef.destroyed) {
       throw new Error('Cannot insert a destroyed View in a ViewContainer!');
@@ -483,17 +511,8 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     // Logical operation of adding `LView` to `LContainer`
     const adjustedIdx = this._adjustIndex(index);
     const lContainer = this._lContainer;
-    insertView(tView, lView, lContainer, adjustedIdx);
 
-    // Physical operation of adding the DOM nodes.
-    if (!skipDomInsertion) {
-      const beforeNode = getBeforeNodeForView(adjustedIdx, lContainer);
-      const renderer = lView[RENDERER];
-      const parentRNode = nativeParentNode(renderer, lContainer[NATIVE] as RElement | RComment);
-      if (parentRNode !== null) {
-        addViewToContainer(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
-      }
-    }
+    addLViewToLContainer(lContainer, lView, adjustedIdx, addToDOM);
 
     (viewRef as R3ViewRef<any>).attachToViewContainerRef();
     addToArray(getOrCreateViewRefs(lContainer), adjustedIdx, viewRef);
@@ -609,6 +628,26 @@ function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
 }
 
 let _locateOrCreateAnchorNode = createAnchorNode;
+let _populateDehydratedViewsInLContainer: typeof populateDehydratedViewsInLContainerImpl =
+    (lContainer: LContainer, tNode: TNode, hostLView: LView) => false;  // noop by default
+
+/**
+ * Looks up dehydrated views that belong to a given LContainer and populates
+ * this information into the `LContainer[DEHYDRATED_VIEWS]` slot. When running
+ * in client-only mode, this function is a noop.
+ *
+ * @param lContainer LContainer that should be populated.
+ * @param tNode Corresponding TNode.
+ * @param hostLView LView that hosts LContainer.
+ * @returns a boolean flag that indicates whether a populating operation
+ *   was successful. The operation might be unsuccessful in case is has completed
+ *   previously, we are rendering in client-only mode or this content is located
+ *   in a skip hydration section.
+ */
+export function populateDehydratedViewsInLContainer(
+    lContainer: LContainer, tNode: TNode, hostLView: LView): boolean {
+  return _populateDehydratedViewsInLContainer(lContainer, tNode, hostLView);
+}
 
 /**
  * Regular creation mode: an anchor is created and
@@ -633,30 +672,31 @@ function createAnchorNode(
 }
 
 /**
- * Hydration logic that looks up:
- *  - an anchor node in the DOM and stores the node in `lContainer[NATIVE]`
- *  - all dehydrated views in this container and puts them into `lContainer[DEHYDRATED_VIEWS]`
+ * Hydration logic that looks up all dehydrated views in this container
+ * and puts them into `lContainer[DEHYDRATED_VIEWS]` slot.
+ *
+ * @returns a boolean flag that indicates whether a populating operation
+ *   was successful. The operation might be unsuccessful in case is has completed
+ *   previously, we are rendering in client-only mode or this content is located
+ *   in a skip hydration section.
  */
-function locateOrCreateAnchorNode(
-    lContainer: LContainer, hostLView: LView, hostTNode: TNode, slotValue: any) {
+function populateDehydratedViewsInLContainerImpl(
+    lContainer: LContainer, tNode: TNode, hostLView: LView): boolean {
   // We already have a native element (anchor) set and the process
   // of finding dehydrated views happened (so the `lContainer[DEHYDRATED_VIEWS]`
   // is not null), exit early.
-  if (lContainer[NATIVE] && lContainer[DEHYDRATED_VIEWS]) return;
+  if (lContainer[NATIVE] && lContainer[DEHYDRATED_VIEWS]) {
+    return true;
+  }
 
   const hydrationInfo = hostLView[HYDRATION];
-  const noOffsetIndex = hostTNode.index - HEADER_OFFSET;
-
-  // TODO(akushnir): this should really be a single condition, refactor the code
-  // to use `hasInSkipHydrationBlockFlag` logic inside `isInSkipHydrationBlock`.
-  const skipHydration = isInSkipHydrationBlock(hostTNode) || hasInSkipHydrationBlockFlag(hostTNode);
-
-  const isNodeCreationMode =
-      !hydrationInfo || skipHydration || isDisconnectedNode(hydrationInfo, noOffsetIndex);
+  const noOffsetIndex = tNode.index - HEADER_OFFSET;
+  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock(tNode) ||
+      isDisconnectedNode(hydrationInfo, noOffsetIndex);
 
   // Regular creation mode.
   if (isNodeCreationMode) {
-    return createAnchorNode(lContainer, hostLView, hostTNode, slotValue);
+    return false;
   }
 
   // Hydration mode, looking up an anchor node and dehydrated views in DOM.
@@ -673,7 +713,7 @@ function locateOrCreateAnchorNode(
       locateDehydratedViewsInContainer(currentRNode!, serializedViews!);
 
   if (ngDevMode) {
-    validateMatchingNode(commentNode, Node.COMMENT_NODE, null, hostLView, hostTNode, true);
+    validateMatchingNode(commentNode, Node.COMMENT_NODE, null, hostLView, tNode, true);
     // Do not throw in case this node is already claimed (thus `false` as a second
     // argument). If this container is created based on an `<ng-template>`, the comment
     // node would be already claimed from the `template` instruction. If an element acts
@@ -684,8 +724,21 @@ function locateOrCreateAnchorNode(
 
   lContainer[NATIVE] = commentNode as RComment;
   lContainer[DEHYDRATED_VIEWS] = dehydratedViews;
+
+  return true;
+}
+
+function locateOrCreateAnchorNode(
+    lContainer: LContainer, hostLView: LView, hostTNode: TNode, slotValue: any): void {
+  if (!_populateDehydratedViewsInLContainer(lContainer, hostTNode, hostLView)) {
+    // Populating dehydrated views operation returned `false`, which indicates
+    // that the logic was running in client-only mode, this an anchor comment
+    // node should be created for this container.
+    createAnchorNode(lContainer, hostLView, hostTNode, slotValue);
+  }
 }
 
 export function enableLocateOrCreateContainerRefImpl() {
   _locateOrCreateAnchorNode = locateOrCreateAnchorNode;
+  _populateDehydratedViewsInLContainer = populateDehydratedViewsInLContainerImpl;
 }

@@ -11,7 +11,9 @@ It isn't part of the Angular core and thus is in its own library package, `@angu
 
 Import what you need from it as you would from any other Angular package.
 
-<code-example header="src/app/app.module.ts (import)" path="router/src/app/app.module.1.ts" region="import-router"></code-example>
+```
+import { provideRouter } from '@angular/router';
+```
 
 <div class="alert is-helpful">
 
@@ -27,14 +29,33 @@ A routed Angular application has one singleton instance of the `Router` service.
 When the browser's URL changes, that router looks for a corresponding `Route` from which it can determine the component to display.
 
 A router has no routes until you configure it.
-The following example creates five route definitions, configures the router via the `RouterModule.forRoot()` method, and adds the result to the `imports` array of the `AppModule`'.
+The following example creates five route definitions, configures the router via the `provideRouter` method, and adds the result to the `providers` array of the `ApplicationConfig`'.
 
-<code-example header="src/app/app.module.ts (excerpt)" path="router/src/app/app.module.0.ts"></code-example>
+```
+const appRoutes: Routes = [
+  { path: 'crisis-center', component: CrisisListComponent },
+  { path: 'hero/:id',      component: HeroDetailComponent },
+  {
+    path: 'heroes',
+    component: HeroListComponent,
+    data: { title: 'Heroes List' }
+  },
+  { path: '',
+    redirectTo: '/heroes',
+    pathMatch: 'full'
+  },
+  { path: '**', component: PageNotFoundComponent }
+];
+
+export const appConfig: ApplicationConfig = {
+    providers: [provideRouter(routes, withDebugTracing())]
+}
+```
 
 <a id="example-config"></a>
 
-The `appRoutes` array of routes describes how to navigate.
-Pass it to the `RouterModule.forRoot()` method in the module `imports` to configure the router.
+The `routes` array of routes describes how to navigate.
+Pass it to the `provideRouter` method in the `ApplicationConfig` `providers` to configure the router.
 
 Each `Route` maps a URL `path` to a component.
 There are no leading slashes in the path.
@@ -52,10 +73,10 @@ Use the [resolve guard](guide/router-tutorial-toh#resolve-guard) to retrieve dyn
 The empty path in the fourth route represents the default path for the application &mdash;the place to go when the path in the URL is empty, as it typically is at the start.
 This default route redirects to the route for the `/heroes` URL and, therefore, displays the `HeroesListComponent`.
 
-If you need to see what events are happening during the navigation lifecycle, there is the `enableTracing` option as part of the router's default configuration.
+If you need to see what events are happening during the navigation lifecycle, there is the `withDebugTracing` feature.
 This outputs each router event that took place during each navigation lifecycle to the browser console.
-Use `enableTracing` only for debugging purposes.
-You set the `enableTracing: true` option in the object passed as the second argument to the `RouterModule.forRoot()` method.
+Use `withDebugTracing` only for debugging purposes.
+You set the `withDebugTracing` option in the object passed as the second argument to the `provideRouter` method.
 
 <a id="basics-router-outlet"></a>
 
@@ -175,7 +196,7 @@ These events are shown in the following table.
 | [`NavigationError`](api/router/NavigationError)           | Triggered when navigation fails due to an unexpected error.                                                                                                                           |
 | [`Scroll`](api/router/Scroll)                             | Represents a scrolling event.                                                                                                                                                         |
 
-When you enable the `enableTracing` option, Angular logs these events to the console.
+When you enable the `withDebugTracing` feature, Angular logs these events to the console.
 For an example of filtering router navigation events, see the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
 
 ## Router terminology
@@ -185,6 +206,7 @@ Here are the key `Router` terms and their meanings:
 | Router part           | Details |
 |:---                   |:---     |
 | `Router`              | Displays the application component for the active URL. Manages navigation from one component to the next.                                                                                        |
+| `provideRouter`       | provides the necessary service providers for navigating through application views.                                                                                        |
 | `RouterModule`        | A separate NgModule that provides the necessary service providers and directives for navigating through application views.                                                                       |
 | `Routes`              | Defines an array of Routes, each mapping a URL path to a component.                                                                                                                              |
 | `Route`               | Defines how the router should navigate to a component based on a URL pattern. Most routes consist of a path and a component type.                                                                |
@@ -202,4 +224,4 @@ Here are the key `Router` terms and their meanings:
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-29

@@ -489,8 +489,8 @@ describe('Animation Router Tests', function() {
 
          constructor(private container: ContainerCmp, private route: ActivatedRoute) {
            this.route.data.subscribe(data => {
-             this.container.log.push(`DEPTH ${data.depth}`);
-             this.depth = data.depth;
+             this.container.log.push(`DEPTH ${data['depth']}`);
+             this.depth = data['depth'];
            });
          }
        }

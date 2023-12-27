@@ -12,7 +12,7 @@
     {
       "name": "browsers",
       "type": "string",
-      "description": "Override which browsers tests are run against."
+      "description": "Override which browsers tests are run against. Set to `false` to not use any browser."
     },
     {
       "name": "code-coverage",

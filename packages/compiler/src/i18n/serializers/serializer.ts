@@ -77,6 +77,12 @@ export class SimplePlaceholderMapper extends i18n.RecurseVisitor implements Plac
     this.visitPlaceholderName(ph.name);
   }
 
+  override visitBlockPlaceholder(ph: i18n.BlockPlaceholder, context?: any): any {
+    this.visitPlaceholderName(ph.startName);
+    super.visitBlockPlaceholder(ph, context);
+    this.visitPlaceholderName(ph.closeName);
+  }
+
   override visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     this.visitPlaceholderName(ph.name);
   }

@@ -22,6 +22,7 @@ import {makeTemplateDiagnostic} from '../diagnostics';
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
+import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
@@ -210,7 +211,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
       schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
-      parseErrors: ParseError[]|null, isStandalone: boolean): void {
+      parseErrors: ParseError[]|null, isStandalone: boolean, preserveWhitespaces: boolean): void {
     if (!this.host.shouldCheckComponent(ref.node)) {
       return;
     }
@@ -293,7 +294,8 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       boundTarget,
       pipes,
       schemas,
-      isStandalone
+      isStandalone,
+      preserveWhitespaces,
     };
     this.perf.eventCount(PerfEvent.GenerateTcb);
     if (inliningRequirement !== TcbInliningRequirement.None &&
@@ -337,7 +339,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const ops = this.opMap.get(sf)!;
 
     // Push a `TypeCtorOp` into the operation queue for the source file.
-    ops.push(new TypeCtorOp(ref, ctorMeta));
+    ops.push(new TypeCtorOp(ref, this.reflector, ctorMeta));
     fileData.hasInlines = true;
   }
 
@@ -549,7 +551,7 @@ class InlineTcbOp implements Op {
 class TypeCtorOp implements Op {
   constructor(
       readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
-      readonly meta: TypeCtorMetadata) {}
+      readonly reflector: ReflectionHost, readonly meta: TypeCtorMetadata) {}
 
   /**
    * Type constructor operations are inserted immediately before the end of the directive class.
@@ -560,7 +562,8 @@ class TypeCtorOp implements Op {
 
   execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
       string {
-    const tcb = generateInlineTypeCtor(this.ref.node, this.meta);
+    const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, this.reflector, sf);
+    const tcb = generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);
   }
 }

@@ -128,7 +128,17 @@ export abstract class AssetGroup {
 
       // Look for a cached response. If one exists, it can be used to resolve the fetch
       // operation.
-      const cachedResponse = await cache.match(req, this.config.cacheQueryOptions);
+      let cachedResponse: Response|undefined;
+      try {
+        // Safari 16.4/17 is known to sometimes throw an unexpected internal error on cache access
+        // This try/catch is here as a workaround to prevent a failure of the handleFetch
+        // as the Driver falls back to safeFetch on critical errors.
+        // See #50378
+        cachedResponse = await cache.match(req, this.config.cacheQueryOptions);
+      } catch (error) {
+        throw new SwCriticalError(`Cache is throwing while looking for a match: ${error}`);
+      }
+
       if (cachedResponse !== undefined) {
         // A response has already been cached (which presumably matches the hash for this
         // resource). Check whether it's safe to serve this resource from cache.
@@ -529,8 +539,19 @@ export class PrefetchAssetGroup extends AssetGroup {
       // Construct the Request for this url.
       const req = this.adapter.newRequest(url);
 
-      // First, check the cache to see if there is already a copy of this resource.
-      const alreadyCached = (await cache.match(req, this.config.cacheQueryOptions)) !== undefined;
+      let alreadyCached = false;
+      try {
+        // Safari 16.4/17 is known to sometimes throw an unexpected internal error on cache access
+        // This try/catch is here as a workaround to prevent a failure of the handleFetch
+        // as the Driver falls back to safeFetch on critical errors.
+        // See #50378
+
+        // First, check the cache to see if there is already a copy of this resource.
+        alreadyCached = (await cache.match(req, this.config.cacheQueryOptions)) !== undefined;
+      } catch (error) {
+        throw new SwCriticalError(
+            `Cache is throwing while looking for a match in a PrefetchAssetGroup: ${error}`);
+      }
 
       // If the resource is in the cache already, it can be skipped.
       if (alreadyCached) {
@@ -607,8 +628,19 @@ export class LazyAssetGroup extends AssetGroup {
       // Construct the Request for this url.
       const req = this.adapter.newRequest(url);
 
-      // First, check the cache to see if there is already a copy of this resource.
-      const alreadyCached = (await cache.match(req, this.config.cacheQueryOptions)) !== undefined;
+      let alreadyCached = false;
+      try {
+        // Safari 16.4/17 is known to sometimes throw an unexpected internal error on cache access
+        // This try/catch is here as a workaround to prevent a failure of the handleFetch
+        // as the Driver falls back to safeFetch on critical errors.
+        // See #50378
+
+        // First, check the cache to see if there is already a copy of this resource.
+        alreadyCached = (await cache.match(req, this.config.cacheQueryOptions)) !== undefined;
+      } catch (error) {
+        throw new SwCriticalError(
+            `Cache is throwing while looking for a match in a LazyAssetGroup: ${error}`);
+      }
 
       // If the resource is in the cache already, it can be skipped.
       if (alreadyCached) {

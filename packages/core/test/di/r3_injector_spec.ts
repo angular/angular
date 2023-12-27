@@ -9,7 +9,6 @@
 import {InjectFlags, InjectionToken, INJECTOR, Injector, Optional, ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵinject} from '@angular/core';
 import {createInjector} from '@angular/core/src/di/create_injector';
 import {R3Injector} from '@angular/core/src/di/r3_injector';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('InjectorDef-based createInjector()', () => {
   class CircularA {
@@ -352,19 +351,19 @@ describe('InjectorDef-based createInjector()', () => {
 
   it('injects a service with dependencies', () => {
     const instance = injector.get(ServiceWithDep);
-    expect(instance instanceof ServiceWithDep);
+    expect(instance instanceof ServiceWithDep).toBeTrue();
     expect(instance.service).toBe(injector.get(Service));
   });
 
   it('injects a service with optional dependencies', () => {
     const instance = injector.get(ServiceWithOptionalDep);
-    expect(instance instanceof ServiceWithOptionalDep);
+    expect(instance instanceof ServiceWithOptionalDep).toBeTrue();
     expect(instance.service).toBe(null);
   });
 
   it('injects a service with dependencies on multi-providers', () => {
     const instance = injector.get(ServiceWithMultiDep);
-    expect(instance instanceof ServiceWithMultiDep);
+    expect(instance instanceof ServiceWithMultiDep).toBeTrue();
     expect(instance.locale).toEqual(['en', 'es']);
   });
 
@@ -375,7 +374,7 @@ describe('InjectorDef-based createInjector()', () => {
 
   it('injects an injector with dependencies', () => {
     const instance = injector.get(InjectorWithDep);
-    expect(instance instanceof InjectorWithDep);
+    expect(instance instanceof InjectorWithDep).toBeTrue();
     expect(instance.service).toBe(injector.get(Service));
   });
 

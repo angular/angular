@@ -1,6 +1,6 @@
 # Injection context
 
-The dependency injection (DI) system relies internaly on a runtime context where the current injector is available. 
+The dependency injection (DI) system relies internally on a runtime context where the current injector is available. 
 This means that injectors can only work when code is executed in this context. 
 
 The injection context is available in these situations: 
@@ -9,7 +9,7 @@ The injection context is available in these situations:
 * In the initializer for fields of such classes.
 * In the factory function specified for `useFactory` of a `Provider` or an `@Injectable`.
 * In the `factory` function specified for an `InjectionToken`.
-* Within a stack frame that is run in a injection context.
+* Within a stack frame that is run in an injection context.
 
 Knowing when your are in an injection context, will allow you to use the [`inject`](api/core/inject) function to inject instances.
 

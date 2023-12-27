@@ -72,11 +72,11 @@
   and continued on my way.
 </p>
 
-<p><i>&lt;select&gt; with &lt;span&gt;</i></p>
+<p><em>&lt;select&gt; with &lt;span&gt;</em></p>
 
 <div>
   Pick your favorite hero
-  (<label><input type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
+  (<label for="show-sad"><input id="show-sad" type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
 </div>
 <select [(ngModel)]="hero">
   <span *ngFor="let h of heroes">
@@ -86,11 +86,11 @@
   </span>
 </select>
 
-<p><i>&lt;select&gt; with &lt;ng-container&gt;</i></p>
+<p><em>&lt;select&gt; with &lt;ng-container&gt;</em></p>
 <!-- #docregion select-ngcontainer -->
 <div>
   Pick your favorite hero
-  (<label><input type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
+  (<label for="showSad"><input id="showSad" type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
 </div>
 <select [(ngModel)]="hero">
   <ng-container *ngFor="let h of heroes">
@@ -134,10 +134,10 @@
 
 <div>Pick your favorite hero</div>
 <p>
-  <label *ngFor="let h of heroes">
-    <input type="radio" name="heroes" [(ngModel)]="hero" [value]="h">{{h.name}}
+  <label for="hero-{{h}}" *ngFor="let h of heroes">
+    <input id="hero-{{h}}" type="radio" name="heroes" [(ngModel)]="hero" [value]="h">{{h.name}}
   </label>
-  <label><input type="radio" name="heroes" (click)="hero = null">None of the above</label>
+  <label for="none-of-the-above"><input id="none-of-the-above" type="radio" name="heroes" (click)="hero = null">None of the above</label>
 </p>
 
 <h4>NgSwitch</h4>

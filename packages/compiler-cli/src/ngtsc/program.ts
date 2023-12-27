@@ -15,6 +15,7 @@ import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
+import {DocEntry} from './docs';
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, resolve} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
@@ -50,6 +51,12 @@ export class NgtscProgram implements api.Program {
     // First, check whether the current TS version is supported.
     if (!options.disableTypeScriptVersionCheck) {
       verifySupportedTypeScriptVersion();
+    }
+
+    // In local compilation mode there are almost always (many) emit errors due to imports that
+    // cannot be resolved. So we should emit regardless.
+    if (options.compilationMode === 'experimental-local') {
+      options.noEmitOnError = false;
     }
 
     const reuseProgram = oldProgram?.compiler.getCurrentProgram();
@@ -156,6 +163,12 @@ export class NgtscProgram implements api.Program {
   getTsSemanticDiagnostics(
       sourceFile?: ts.SourceFile|undefined,
       cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
+    // No TS semantic check should be done in local compilation mode, as it is always full of errors
+    // due to cross file imports.
+    if (this.options.compilationMode === 'experimental-local') {
+      return [];
+    }
+
     return this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptDiagnostics, () => {
       const ignoredFiles = this.compiler.ignoreForDiagnostics;
       let res: readonly ts.Diagnostic[];
@@ -333,6 +346,18 @@ export class NgtscProgram implements api.Program {
 
   getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {
     return this.compiler.getIndexedComponents();
+  }
+
+  /**
+   * Gets information for the current program that may be used to generate API
+   * reference documentation. This includes Angular-specific information, such
+   * as component inputs and outputs.
+   *
+   * @param entryPoint Path to the entry point for the package for which API
+   *     docs should be extracted.
+   */
+  getApiDocumentation(entryPoint: string): DocEntry[] {
+    return this.compiler.getApiDocumentation(entryPoint);
   }
 
   getEmittedSourceFiles(): Map<string, ts.SourceFile> {

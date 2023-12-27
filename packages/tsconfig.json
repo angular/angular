@@ -13,6 +13,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "strictPropertyInitialization": true,
     "outDir": "../dist/all/@angular",
     "noImplicitAny": true,
@@ -27,10 +29,10 @@
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es2020", "dom"],
+    "lib": ["es2020", "dom", "dom.iterable"],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "types": ["angular"]
+    "types": ["angular", "dom-navigation"]
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true

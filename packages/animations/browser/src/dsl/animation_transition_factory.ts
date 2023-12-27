@@ -9,7 +9,7 @@ import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
-import {copyObj, interpolateParams, iteratorToArray} from '../util';
+import {interpolateParams} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
@@ -96,10 +96,10 @@ export class AnimationTransitionFactory {
       checkNonAnimatableInTimelines(timelines, this._triggerName, driver);
     }
 
-    const queriedElementsList = iteratorToArray(queriedElements.values());
     return createTransitionInstruction(
         element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-        nextStateStyles, timelines, queriedElementsList, preStyleMap, postStyleMap, totalTime);
+        nextStateStyles, timelines, [...queriedElements.values()], preStyleMap, postStyleMap,
+        totalTime);
   }
 }
 
@@ -168,14 +168,12 @@ function oneOrMoreTransitionsMatch(
 }
 
 function applyParamDefaults(userParams: Record<string, any>, defaults: Record<string, any>) {
-  const result: Record<string, any> = copyObj(defaults);
-
-  for (const key in userParams) {
-    if (userParams.hasOwnProperty(key) && userParams[key] != null) {
-      result[key] = userParams[key];
+  const result: Record<string, any> = {...defaults};
+  Object.entries(userParams).forEach(([key, value]) => {
+    if (value != null) {
+      result[key] = value;
     }
-  }
-
+  });
   return result;
 }
 
@@ -186,13 +184,7 @@ export class AnimationStateStyles {
 
   buildStyles(params: {[key: string]: any}, errors: Error[]): ɵStyleDataMap {
     const finalStyles: ɵStyleDataMap = new Map();
-    const combinedParams = copyObj(this.defaultParams);
-    Object.keys(params).forEach(key => {
-      const value = params[key];
-      if (value !== null) {
-        combinedParams[key] = value;
-      }
-    });
+    const combinedParams = applyParamDefaults(params, this.defaultParams);
     this.styles.styles.forEach(value => {
       if (typeof value !== 'string') {
         value.forEach((val, prop) => {

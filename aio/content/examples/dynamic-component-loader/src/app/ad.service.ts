@@ -1,30 +1,34 @@
 // #docregion
-import { Injectable } from '@angular/core';
-
-import { HeroJobAdComponent } from './hero-job-ad.component';
+import { Injectable, Type } from '@angular/core';
 import { HeroProfileComponent } from './hero-profile.component';
-import { AdItem } from './ad-item';
+import { HeroJobAdComponent } from './hero-job-ad.component';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AdService {
   getAds() {
     return [
-      new AdItem(
-        HeroProfileComponent,
-        { name: 'Bombasto', bio: 'Brave as they come' }
-      ),
-      new AdItem(
-        HeroProfileComponent,
-        { name: 'Dr. IQ', bio: 'Smart as they come' }
-      ),
-      new AdItem(
-        HeroJobAdComponent,
-        { headline: 'Hiring for several positions', body: 'Submit your resume today!' }
-      ),
-      new AdItem(
-        HeroJobAdComponent,
-        { headline: 'Openings in all departments', body: 'Apply today' }
-      )
-    ];
+      {
+        component: HeroProfileComponent,
+        inputs: { name: 'Dr. IQ', bio: 'Smart as they come' },
+      },
+      {
+        component: HeroProfileComponent,
+        inputs: { name: 'Bombasto', bio: 'Brave as they come' },
+      },
+      {
+        component: HeroJobAdComponent,
+        inputs: {
+          headline: 'Hiring for several positions',
+          body: 'Submit your resume today!',
+        },
+      },
+      {
+        component: HeroJobAdComponent,
+        inputs: {
+          headline: 'Openings in all departments',
+          body: 'Apply today',
+        },
+      },
+    ] as {component: Type<any>, inputs: Record<string, unknown>}[];
   }
 }

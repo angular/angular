@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 // #docregion eventemitter
 
 @Component({
+  standalone: true,
   selector: 'app-zippy',
   template: `
     <div class="zippy">
@@ -38,9 +39,11 @@ export class ZippyComponent {
 // #docregion pipe
 
 @Component({
+  standalone: true,
   selector: 'async-observable-pipe',
   template: `<div><code>observable|async</code>:
-       Time: {{ time | async }}</div>`
+       Time: {{ time | async }}</div>`,
+  imports: [CommonModule]
 })
 export class AsyncObservablePipeComponent {
   time = new Observable<string>(observer => {
@@ -53,9 +56,10 @@ export class AsyncObservablePipeComponent {
 // #docregion router
 
 import { Router, NavigationStart } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter } from 'rxjs';
 
 @Component({
+  standalone: true,
   selector: 'app-routable',
   template: 'Routable1Component template'
 })
@@ -83,11 +87,12 @@ export class Routable1Component implements OnInit {
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
+  standalone: true,
   selector: 'app-routable',
   template: 'Routable2Component template'
 })
 export class Routable2Component implements OnInit {
-  constructor(private activatedRoute: ActivatedRoute) {}
+  constructor(private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
     this.activatedRoute.url
@@ -103,10 +108,11 @@ export class Routable2Component implements OnInit {
 import { FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'my-component',
-  template: 'MyComponent Template'
+  standalone: true,
+  selector: 'app-hero-form',
+  template: 'Hero Form Template'
 })
-export class MyComponent implements OnInit {
+export class HeroFormComponent implements OnInit {
   nameChangeLog: string[] = [];
   heroForm!: FormGroup;
 
@@ -123,12 +129,3 @@ export class MyComponent implements OnInit {
 
 // #enddocregion forms
 
-
-
-@NgModule({
-  imports: [CommonModule],
-  declarations:
-      [ZippyComponent, AsyncObservablePipeComponent, Routable1Component, Routable2Component, MyComponent]
-})
-export class AppModule {
-}

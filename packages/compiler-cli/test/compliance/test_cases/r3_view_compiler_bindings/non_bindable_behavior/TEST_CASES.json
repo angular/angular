@@ -10,11 +10,14 @@
         {
           "failureMessage": "Incorrect handling of local refs for host element",
           "files": [
-            "local_ref_on_host.js"
+            {
+              "generated": "local_ref_on_host.js",
+              "expected": "local_ref_on_host.template.js",
+              "templatePipelineExpected": "local_ref_on_host.pipeline.js"
+            }
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not have local refs for nested elements",
@@ -28,8 +31,7 @@
             "local_ref_on_nested.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not process property bindings and listeners",
@@ -43,8 +45,7 @@
             "property_bindings_and_listeners.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not generate extra instructions for elements with no children",
@@ -58,8 +59,7 @@
             "no_child_elements.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

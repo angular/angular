@@ -106,8 +106,8 @@ The browser refreshes and now the hero's name is displayed in capital letters.
 
 The word `uppercase` in the interpolation binding after the pipe <code>&verbar;</code> character, activates the built-in `UppercasePipe`.
 
-[Pipes](guide/pipes) are a good way to format strings, currency amounts, dates, and other display data.
-Angular ships with several built-in pipes and you can create your own.
+[Pipes](guide/pipes-overview) are a good way to format strings, currency amounts, dates, and other display data.
+Angular ships with several built-in pipes, and you can create your own.
 
 ## Edit the hero
 
@@ -220,5 +220,9 @@ Here are the code files discussed on this page.
 *   You learned about the `AppModule`.
 *   You imported the `FormsModule` in the `AppModule` so that Angular would recognize and apply the `ngModel` directive.
 *   You learned the importance of declaring components in the `AppModule`.
+
+## Next steps
+
+*  [2. Display a list](tutorial/tour-of-heroes/toh-pt2)
 
 @reviewed 2022-02-28

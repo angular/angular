@@ -5,12 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {isNode} from '../../lib/common/utils';
 import {ifEnvSupports, ifEnvSupportsWithDone, isFirefox, isSafari} from '../test-util';
 
 declare const global: any;
 
 describe(
-    'fetch', ifEnvSupports('fetch', function() {
+    'fetch', isNode ? () => {
+      it('is untested for node as the fetch implementation is experimental', () => {});
+    } : ifEnvSupports('fetch', function() {
       let testZone: Zone;
       beforeEach(() => {
         testZone = Zone.current.fork({name: 'TestZone'});

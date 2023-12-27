@@ -15,18 +15,17 @@ import {HttpDownloadProgressEvent, HttpErrorResponse, HttpHeaderResponse, HttpPa
 import {FetchBackend, FetchFactory} from '../src/fetch';
 
 function trackEvents(obs: Observable<any>): Promise<any[]> {
-  return obs
-      .pipe(
-          // We don't want the promise to fail on HttpErrorResponse
-          catchError((e) => of(e)),
-          scan(
-              (acc, event) => {
-                acc.push(event);
-                return acc;
-              },
-              [] as any[]),
-          )
-      .toPromise();
+  return obs.pipe(
+                // We don't want the promise to fail on HttpErrorResponse
+                catchError((e) => of(e)),
+                scan(
+                    (acc, event) => {
+                      acc.push(event);
+                      return acc;
+                    },
+                    [] as any[]),
+                )
+             .toPromise() as Promise<any[]>;
 }
 
 const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
@@ -80,7 +79,7 @@ describe('FetchBackend', async () => {
 
   it('should be able to retry', ((done) => {
        const handle = backend.handle(TEST_POST);
-       // Skippin both HttpSentEvent (from the 1st subscription + retry)
+       // Skipping both HttpSentEvent (from the 1st subscription + retry)
        handle.pipe(retry(1), skip(2)).subscribe((response) => {
          expect(response.type).toBe(HttpEventType.Response);
          expect((response as HttpResponse<any>).body).toBe('some response');
@@ -215,6 +214,16 @@ describe('FetchBackend', async () => {
     expect(events.length).toBe(2);
     const res = events[1] as HttpResponse<{data: string}>;
     expect(res.body!.data).toBe('some data');
+  });
+
+  it('handles a blob with a mime type', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'blob'})));
+    const type = 'aplication/pdf';
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', new Blob(), {'Content-Type': type});
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as HttpResponse<Blob>;
+    expect(res.body?.type).toBe(type);
   });
 
   it('emits unsuccessful responses via the error path', done => {
@@ -400,12 +409,18 @@ export class MockFetchFactory extends FetchFactory {
         return this.promise;
       }
 
-  mockFlush(status: number, statusText: string, body?: string): void {
+  mockFlush(
+      status: number, statusText: string, body?: string|Blob, headers?: Record<string, string>):
+      void {
     this.clearWarningTimeout?.();
-    this.response.setupBodyStream(body);
-
-    const response =
-        new Response(this.response.stream, {statusText, headers: this.response.headers});
+    if (typeof body === 'string') {
+      this.response.setupBodyStream(body);
+    } else {
+      this.response.setBody(body);
+    }
+    const response = new Response(
+        this.response.stream,
+        {statusText, headers: {...this.response.headers, ...(headers ?? {})}});
 
     // Have to be set outside the constructor because it might throw
     // RangeError: init["status"] must be in the range of 200 to 599, inclusive
@@ -458,17 +473,22 @@ class MockFetchResponse {
   private sub$ = new Subject<any>();
   public stream = new ReadableStream({
 
-    start: (controler) => {
+    start: (controller) => {
       this.sub$.subscribe({
         next: (val) => {
-          controler.enqueue(new TextEncoder().encode(val));
+          controller.enqueue(new TextEncoder().encode(val));
         },
         complete: () => {
-          controler.close();
+          controller.close();
         }
       });
     },
   });
+
+  public setBody(body: any) {
+    this.sub$.next(body);
+    this.sub$.complete();
+  }
 
   public setupBodyStream(body?: string) {
     if (body && this.progress.length) {

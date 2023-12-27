@@ -13,8 +13,21 @@
             "verifyUniqueConsts"
           ]
         }
+      ]
+    },
+    {
+      "description": "should support i18n message with multiple pipes",
+      "inputFiles": [
+        "multiple_pipes.ts"
       ],
-      "skipForTemplatePipeline": true
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
     }
   ]
 }

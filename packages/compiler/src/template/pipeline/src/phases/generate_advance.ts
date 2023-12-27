@@ -7,25 +7,25 @@
  */
 
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 /**
  * Generate `ir.AdvanceOp`s in between `ir.UpdateOp`s that ensure the runtime's implicit slot
  * context will be advanced correctly.
  */
-export function phaseGenerateAdvance(cpl: ComponentCompilation): void {
-  for (const [_, view] of cpl.views) {
+export function generateAdvance(job: CompilationJob): void {
+  for (const unit of job.units) {
     // First build a map of all of the declarations in the view that have assigned slots.
     const slotMap = new Map<ir.XrefId, number>();
-    for (const op of view.create) {
+    for (const op of unit.create) {
       if (!ir.hasConsumesSlotTrait(op)) {
         continue;
-      } else if (op.slot === null) {
+      } else if (op.handle.slot === null) {
         throw new Error(
             `AssertionError: expected slots to have been allocated before generating advance() calls`);
       }
 
-      slotMap.set(op.xref, op.slot);
+      slotMap.set(op.xref, op.handle.slot);
     }
 
     // Next, step through the update operations and generate `ir.AdvanceOp`s as required to ensure
@@ -34,14 +34,14 @@ export function phaseGenerateAdvance(cpl: ComponentCompilation): void {
     //
     // To do that, we track what the runtime's slot counter will be through the update operations.
     let slotContext = 0;
-    for (const op of view.update) {
+    for (const op of unit.update) {
       if (!ir.hasDependsOnSlotContextTrait(op)) {
         // `op` doesn't depend on the slot counter, so it can be skipped.
         continue;
       } else if (!slotMap.has(op.target)) {
         // We expect ops that _do_ depend on the slot counter to point at declarations that exist in
         // the `slotMap`.
-        throw new Error(`AssertionError: reference to unknown slot for var ${op.target}`);
+        throw new Error(`AssertionError: reference to unknown slot for target ${op.target}`);
       }
 
       const slot = slotMap.get(op.target)!;
@@ -54,7 +54,8 @@ export function phaseGenerateAdvance(cpl: ComponentCompilation): void {
           throw new Error(`AssertionError: slot counter should never need to move backwards`);
         }
 
-        ir.OpList.insertBefore<ir.UpdateOp>(ir.createAdvanceOp(delta), op);
+        ir.OpList.insertBefore<ir.UpdateOp>(
+            ir.createAdvanceOp(delta, (op as ir.DependsOnSlotContextOpTrait).sourceSpan), op);
         slotContext = slot;
       }
     }

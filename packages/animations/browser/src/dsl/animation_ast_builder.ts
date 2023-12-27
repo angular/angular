@@ -10,7 +10,7 @@ import {AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata,
 import {invalidDefinition, invalidKeyframes, invalidOffset, invalidParallelAnimation, invalidProperty, invalidStagger, invalidState, invalidStyleValue, invalidTrigger, keyframeOffsetsOutOfOrder, keyframesMissingOffsets} from '../error_helpers';
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetDefaultValue} from '../render/shared';
-import {convertToMap, copyObj, extractStyleParams, iteratorToArray, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, normalizeAnimationEntry, resolveTiming, SUBSTITUTION_EXPR_START, validateStyleParams, visitDslNode} from '../util';
+import {extractStyleParams, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, normalizeAnimationEntry, resolveTiming, SUBSTITUTION_EXPR_START, validateStyleParams, visitDslNode} from '../util';
 import {pushUnrecognizedPropertiesWarning} from '../warning_helpers';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
@@ -18,7 +18,7 @@ import {AnimationDslVisitor} from './animation_dsl_visitor';
 import {parseTransitionExpr} from './animation_transition_expr';
 
 const SELF_TOKEN = ':self';
-const SELF_TOKEN_REGEX = new RegExp(`\s*${SELF_TOKEN}\s*,?`, 'g');
+const SELF_TOKEN_REGEX = new RegExp(`s*${SELF_TOKEN}s*,?`, 'g');
 
 /*
  * [Validation]
@@ -152,8 +152,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         }
       });
       if (missingSubs.size) {
-        const missingSubsArr = iteratorToArray(missingSubs.values());
-        context.errors.push(invalidState(metadata.name, missingSubsArr));
+        context.errors.push(invalidState(metadata.name, [...missingSubs.values()]));
       }
     }
 
@@ -263,7 +262,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
           context.errors.push(invalidStyleValue(styleTuple));
         }
       } else {
-        styles.push(convertToMap(styleTuple));
+        styles.push(new Map(Object.entries(styleTuple)));
       }
     }
 
@@ -501,7 +500,7 @@ function normalizeSelector(selector: string): [string, boolean] {
 
 
 function normalizeParams(obj: {[key: string]: any}|any): {[key: string]: any}|null {
-  return obj ? copyObj(obj) : null;
+  return obj ? {...obj} : null;
 }
 
 export type StyleTimeTuple = {
@@ -570,7 +569,7 @@ function constructTimingAst(value: string|number|AnimateTimings, errors: Error[]
 
 function normalizeAnimationOptions(options: AnimationOptions|null): AnimationOptions {
   if (options) {
-    options = copyObj(options);
+    options = {...options};
     if (options['params']) {
       options['params'] = normalizeParams(options['params'])!;
     }

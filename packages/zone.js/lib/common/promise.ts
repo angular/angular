@@ -23,7 +23,7 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
   const __symbol__ = api.symbol;
   const _uncaughtPromiseErrors: UncaughtPromiseError[] = [];
   const isDisableWrappingUncaughtPromiseRejection =
-      global[__symbol__('DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION')] === true;
+      global[__symbol__('DISABLE_WRAPPING_UNCAUGHT_PROMISE_REJECTION')] !== false;
   const symbolPromise = __symbol__('Promise');
   const symbolThen = __symbol__('then');
   const creationTrace = '__creationTrace__';
@@ -292,11 +292,27 @@ Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePr
     }
 
     static resolve<R>(value: R): Promise<R> {
+      if (value instanceof ZoneAwarePromise) {
+        return value;
+      }
       return resolvePromise(<ZoneAwarePromise<R>>new this(null as any), RESOLVED, value);
     }
 
     static reject<U>(error: U): Promise<U> {
       return resolvePromise(<ZoneAwarePromise<U>>new this(null as any), REJECTED, error);
+    }
+
+    static withResolvers<T>(): {
+      promise: Promise<T>,
+      resolve: (value?: T|PromiseLike<T>) => void,
+      reject: (error?: any) => void
+    } {
+      const result: any = {};
+      result.promise = new ZoneAwarePromise((res, rej) => {
+        result.resolve = res;
+        result.reject = rej;
+      });
+      return result;
     }
 
     static any<T>(values: Iterable<PromiseLike<T>>): Promise<T> {

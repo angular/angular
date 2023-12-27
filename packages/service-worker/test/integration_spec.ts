@@ -31,7 +31,7 @@ const dist = new MockFileSystemBuilder().addFile('/only.txt', 'this is only').bu
 const distUpdate = new MockFileSystemBuilder().addFile('/only.txt', 'this is only v2').build();
 
 function obsToSinglePromise<T>(obs: Observable<T>): Promise<T> {
-  return obs.pipe(take(1)).toPromise();
+  return obs.pipe(take(1)).toPromise() as Promise<T>;
 }
 
 const manifest: Manifest = {
@@ -116,7 +116,7 @@ describe('ngsw + companion lib', () => {
     const update = new SwUpdate(comm);
     scope.updateServerState(serverUpdate);
 
-    const gotUpdateNotice = (async () => await obsToSinglePromise(update.available))();
+    const gotUpdateNotice = (async () => await obsToSinglePromise(update.versionUpdates))();
 
     await update.checkForUpdate();
     await gotUpdateNotice;

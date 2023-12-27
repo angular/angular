@@ -12,11 +12,9 @@ import {Browser} from '../browser';
 import {SaucelabsDaemon} from './saucelabs-daemon';
 
 const args = process.argv.slice(2);
-const username = process.env.SAUCE_USERNAME;
-const accessKey = process.env.SAUCE_ACCESS_KEY;
-const tunnelIdentifier = process.env.SAUCE_TUNNEL_IDENTIFIER;
-
-const buildName = process.env.CIRCLECI ? `circleci-${process.env.CIRCLE_BUILD_NUM}` : 'localdev';
+const username = process.env['SAUCE_USERNAME'];
+const accessKey = process.env['SAUCE_ACCESS_KEY'];
+const tunnelIdentifier = process.env['SAUCE_TUNNEL_IDENTIFIER'];
 
 if (!username || !accessKey) {
   throw Error('Please set the `SAUCE_USERNAME` and `SAUCE_ACCESS_KEY` variables.');
@@ -47,7 +45,7 @@ if (!parallelExecutions) {
 const daemon = new SaucelabsDaemon(
     username,
     accessKey,
-    process.env.CIRCLE_BUILD_NUM!,
+    process.env['CIRCLE_BUILD_NUM']!,
     Object.values(customLaunchers) as Browser[],
     parallelExecutions,
     sauceConnect,

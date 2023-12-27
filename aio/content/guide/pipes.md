@@ -42,71 +42,69 @@ To use pipes you should have a basic understanding of the following:
 
 ## Using a pipe in a template
 
-To apply a pipe, use the pipe \(`|`) character within a template expression as shown in the following code example, along with the *name* of the pipe, which is `date` for the built-in [`DatePipe`](api/common/DatePipe).
-The tabs in the example show the following:
+To apply a pipe, use the pipe operator (`|`) within a template expression as shown in the following code example.
 
-| Files                         | Details |
-|:---                           |:---     |
-| `app.component.html`          | Uses `date` in a separate template to display a birthday.                                           |
-| `hero-birthday1.component.ts` | Uses the same pipe as part of an in-line template in a component that also sets the birthday value. |
+<code-example header="birthday.component.html (template)" path="pipes/src/app/birthday.component.html"></code-example>
 
-<code-tabs>
-    <code-pane header="src/app/app.component.html" region="hero-birthday-template" path="pipes/src/app/app.component.html"></code-pane>
-    <code-pane header="src/app/hero-birthday1.component.ts" path="pipes/src/app/hero-birthday1.component.ts"></code-pane>
-</code-tabs>
+The component's `birthday` value flows through the pipe operator (`|`) to the [`DatePipe`](api/common/DatePipe) whose pipe name is `date`.
+The pipe renders the date in the default format as **Apr 15, 1988**.
 
-The component's `birthday` value flows through the pipe operator, `|` to the [`date`](api/common/DatePipe) function.
+Look at the component class.
+
+<code-example header="birthday.component.ts (class)" path="pipes/src/app/birthday.component.ts"></code-example>
+
+Because this is a [standalone component](guide/standalone-components), it imports the `DatePipe` from `@angular/common`, the source of all built-in pipes.
 
 <a id="parameterizing-a-pipe"></a>
 
 ## Transforming data with parameters and chained pipes
 
-Use optional parameters to fine-tune a pipe's output.
-For example, use the [`CurrencyPipe`](api/common/CurrencyPipe "API reference") with a country code such as EUR as a parameter.
-The template expression `{{ amount | currency:'EUR' }}` transforms the `amount` to currency in euros.
-Follow the pipe name \(`currency`\) with a colon \(`:`\) character and the parameter value \(`'EUR'`\).
+Some pipes have *optional* parameters to fine-tune the pipe's output.
 
-If the pipe accepts multiple parameters, separate the values with colons.
-For example, `{{ amount | currency:'EUR':'Euros '}}` adds the second parameter, the string literal `'Euros '`, to the output string.
-Use any valid template expression as a parameter, such as a string literal or a component property.
+For example, the [`CurrencyPipe`](api/common/CurrencyPipe "API reference") accepts a country code as a parameter.
+To specify the parameter, follow the pipe name (`currency`) with a colon (`:`) and the parameter value (a country code).
 
-Some pipes require at least one parameter and allow more optional parameters, such as [`SlicePipe`](api/common/SlicePipe "API reference for SlicePipe").
-For example, `{{ slice:1:5 }}` creates a new array or string containing a subset of the elements starting with element `1` and ending with element `5`.
+The template expression `{{ amount | currency:'EUR' }}` displays the amount, prefixed with the Euros symbol (€).
 
-### Example: Formatting a date
+Some pipes accept multiple *optional* parameters. Pass each parameter to the pipe, separated by colons.
 
-The tabs in the following example demonstrates toggling between two different formats \(`'shortDate'` and `'fullDate'`\):
+For example, `{{ amount | currency:'EUR':'Euros '}}` displays the amount with the label "Euros" (the second parameter) instead of the Euros symbol.
 
-*   The `app.component.html` template uses a format parameter for the [`DatePipe`](api/common/DatePipe) \(named `date`\) to show the date as **04/15/88**.
-*   The `hero-birthday2.component.ts` component binds the pipe's format parameter to the component's `format` property in the `template` section, and adds a button for a click event bound to the component's `toggleFormat()` method.
-*   The `hero-birthday2.component.ts` component's `toggleFormat()` method toggles the component's `format` property between a short form \(`'shortDate'`\) and a longer form \(`'fullDate'`\).
+Some pipes, such as [`SlicePipe`](/api/common/SlicePipe "API reference for SlicePipe"), *require* at least one parameter and may allow more *optional* parameters. 
 
-<code-tabs>
-    <code-pane header="src/app/app.component.html" region="format-birthday" path="pipes/src/app/app.component.html"></code-pane>
-    <code-pane header="src/app/hero-birthday2.component.ts (template)" region="template" path="pipes/src/app/hero-birthday2.component.ts"></code-pane>
-    <code-pane header="src/app/hero-birthday2.component.ts (class)" region="class" path="pipes/src/app/hero-birthday2.component.ts"></code-pane>
-</code-tabs>
+The expression `{{ anArray | slice:1:5 }}` displays a new string containing a subset of the elements starting with element `1` and ending with element `5`.
 
-Clicking the **Toggle Format** button alternates the date format between **04/15/1988** and **Friday, April 15, 1988**.
+## Example: Formatting a date
 
-<div class="alert is-helpful">
-
-For `date` pipe format options, see [DatePipe](api/common/DatePipe "DatePipe API Reference page").
-
-</div>
-
-### Example: Applying two formats by chaining pipes
-
-Chain pipes so that the output of one pipe becomes the input to the next.
-
-In the following example, chained pipes first apply a format to a date value, then convert the formatted date to uppercase characters.
-The first tab for the `src/app/app.component.html` template chains `DatePipe` and `UpperCasePipe` to display the birthday as **APR 15, 1988**.
-The second tab for the `src/app/app.component.html` template passes the `fullDate` parameter to `date` before chaining to `uppercase`, which produces **FRIDAY, APRIL 15, 1988**.
+The following example demonstrates two ways to format a hero's birthdate with the [`DatePipe`](api/common/DatePipe "API reference").
 
 <code-tabs>
-    <code-pane header="src/app/app.component.html (1)" region="chained-birthday" path="pipes/src/app/app.component.html"></code-pane>
-    <code-pane header="src/app/app.component.html (2)" region="chained-parameter-birthday" path="pipes/src/app/app.component.html"></code-pane>
+    <code-pane header="birthday-formatting.component.html (template)" path="pipes/src/app/birthday-formatting.component.html"></code-pane>
+    <code-pane header="birthday-formatting.component.ts (class)" path="pipes/src/app/birthday-formatting.component.ts"></code-pane>
 </code-tabs>
+
+In the template, the first expression passes the birthdate to the `DatePipe` *with a literal* date format parameter, "shortDate". The output is **04/15/88**.
+
+The second expression passes the birthdate to the `DatePipe` with a date format parameter *bound to a component property* (`format`). 
+
+Clicking the "Toggle" button switches that property value between two of the [many possible pre-defined formats](api/common/DatePipe#pre-defined-format-options), `'mediumDate'` and `'fullDate'`. The output is either **April 15, 1988** or **Friday, April 15, 1988**.
+
+The page displays the birthdate in the specified format.
+
+## Example: Chaining two pipes together
+
+Connect multiple pipes, using "pipe chaining syntax", so that the output of one pipe becomes the input to the next.
+
+The following example passes the birthdate to the `DatePipe` and then forwards the result to the [`UpperCasePipe`](api/common/UpperCasePipe "API reference") pipe, using "pipe chaining syntax".
+
+Once again, it demonstrates the `DatePipe` both *with* and *without* a format parameter. Note that both results (**APR 15, 1988** and **FRIDAY, APRIL 15, 1988**) are in uppercase.
+
+<code-tabs>
+    <code-pane header="birthday-pipe-chaining.component.html (template)" path="pipes/src/app/birthday-pipe-chaining.component.html"></code-pane>
+    <code-pane header="birthday-pipe-chaining.component.ts (class)" path="pipes/src/app/birthday-pipe-chaining.component.ts"></code-pane>
+</code-tabs>
+
+Switch to the class file to see that this is a [standalone component](guide/standalone-components); it imports the two pipes from `@angular/common`, the source of all built-in pipes.
 
 <a id="Custom-pipes"></a>
 
@@ -382,12 +380,27 @@ The built-in [JsonPipe](api/common/JsonPipe "API description for JsonPipe") prov
 
 ## Pipes and precedence
 
-The pipe operator has a higher precedence than the ternary operator \(`?:`\), which means `a ? b : c | x` is parsed as `a ? b : (c | x)`.
-The pipe operator cannot be used without parentheses in the first and second operands of `?:`.
+Sometimes you want to choose between two values, based on some condition, before passing the choice to the pipe. You could use the JavaScript ternary operator (`?:`) in the template to make that choice.
 
-Due to precedence, if you want a pipe to apply to the result of a ternary, wrap the entire expression in parentheses; for example, `(a ? b : c) | x`.
+Beware! The pipe operator has a higher precedence than the JavaScript ternary operator (`?:`).
 
-<code-example header="src/app/precedence.component.html" path="pipes/src/app/precedence.component.html" region="precedence"></code-example>
+If you simply write the expression as if it were evaluated left-to-right, you might be surprised by the result. For example, 
+```
+condition ? a : b | pipe 
+```
+is parsed as 
+```
+condition ? a : (b | pipe)
+``` 
+The value of `b` passes through `pipe`; the value of `a` *will not*.
+
+If you want the pipe to apply to the result of the ternary expression, wrap the entire expression in parentheses. For example, 
+```
+(condition ? a : b) | pipe
+```
+In general, you should always use parentheses to be sure Angular evaluates the expression as you intend.
+
+The "Pipes and Precedence" section of the <live-example noDownload>pipes example</live-example> explores this issue in more detail.
 
 <!-- links -->
 
@@ -395,4 +408,4 @@ Due to precedence, if you want a pipe to apply to the result of a ternary, wrap 
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-08-14

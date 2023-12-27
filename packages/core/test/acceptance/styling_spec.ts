@@ -12,7 +12,6 @@ import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {TestBed} from '@angular/core/testing';
 import {getElementClasses, getElementStyles, getSortedClassName, getSortedStyle} from '@angular/core/testing/src/styling';
 import {By, DomSanitizer, SafeStyle} from '@angular/platform-browser';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {expectPerfCounters} from '@angular/private/testing';
 
 describe('styling', () => {
@@ -2476,10 +2475,10 @@ describe('styling', () => {
        }
 
        const header = fixture.nativeElement.querySelector('header');
-       expect(header.classList.contains('header'));
+       expect(header.classList.contains('header')).toBeTrue();
 
        const footer = fixture.nativeElement.querySelector('footer');
-       expect(footer.classList.contains('footer'));
+       expect(footer.classList.contains('footer')).toBeTrue();
 
        expect(getItemElements().length).toEqual(3);
        expect(getItemClasses()).toEqual([
@@ -2955,7 +2954,7 @@ describe('styling', () => {
     dirInstance.setStyles();
 
     const div = fixture.debugElement.children[0];
-    expect(div.styles.transform).toMatch(/translate3d\(0px\s*,\s*0px\s*,\s*0px\)/);
+    expect(div.styles['transform']).toMatch(/translate3d\(0px\s*,\s*0px\s*,\s*0px\)/);
     expect(div.classes['my-class']).toBe(true);
   });
 
@@ -2985,15 +2984,15 @@ describe('styling', () => {
 
     // camel case
     dirInstance.renderer.setStyle(nativeEl, 'backgroundColor', 'red');
-    expect(div.styles.backgroundColor).toBe('red');
+    expect(div.styles['backgroundColor']).toBe('red');
     dirInstance.renderer.removeStyle(nativeEl, 'backgroundColor');
-    expect(div.styles.backgroundColor).toBe('');
+    expect(div.styles['backgroundColor']).toBe('');
 
     // kebab case
     dirInstance.renderer.setStyle(nativeEl, 'background-color', 'red');
-    expect(div.styles.backgroundColor).toBe('red');
+    expect(div.styles['backgroundColor']).toBe('red');
     dirInstance.renderer.removeStyle(nativeEl, 'background-color');
-    expect(div.styles.backgroundColor).toBe('');
+    expect(div.styles['backgroundColor']).toBe('');
   });
 
   it('should not set classes when falsy value is passed while a sanitizer is present', () => {
@@ -3695,6 +3694,25 @@ describe('styling', () => {
     fixture.detectChanges();
 
     expect(logs).toEqual([]);
+  });
+
+  it('should support `styles` as a string', () => {
+    if (!isBrowser) {
+      return;
+    }
+
+    @Component({
+      template: `<span>Hello</span>`,
+      styles: `span {font-size: 10px}`,
+    })
+    class Cmp {
+    }
+    TestBed.configureTestingModule({declarations: [Cmp]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const span = fixture.nativeElement.querySelector('span') as HTMLElement;
+    expect(getComputedStyle(span).getPropertyValue('font-size')).toBe('10px');
   });
 
   describe('regression', () => {

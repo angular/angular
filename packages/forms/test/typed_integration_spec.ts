@@ -262,7 +262,7 @@ describe('Typed Class', () => {
       c.setControl('c', new FormControl(0));
       c.setControl('notpresent', new FormControl(0));
       c.removeControl('c');
-      c.controls.d.valueChanges.subscribe((v) => {});
+      c.controls['d'].valueChanges.subscribe(() => {});
     });
 
     it('supports groups with explicit named interface types', () => {

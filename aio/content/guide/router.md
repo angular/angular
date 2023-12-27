@@ -4,14 +4,14 @@ This topic describes how to implement many of the common tasks associated with a
 
 <a id="basics"></a>
 
-## Generate an application with routing enabled
+## Generate an application
 
-The following command uses the Angular CLI to generate a basic Angular application with an application routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
+The following command uses the Angular CLI to generate a basic Angular application with application routes.
 The application name in the following example is `routing-app`.
 
 <code-example format="shell" language="shell">
 
-ng new routing-app --routing --defaults
+ng new routing-app
 
 </code-example>
 
@@ -44,21 +44,17 @@ The CLI automatically appends `Component`, so if you were to write `first-compon
 <header><code>&lt;base href&gt;</code></header>
 
 This guide works with a CLI-generated Angular application.
-If you are working manually, make sure that you have `<base href="/">` in the `<head>` of your index.html file.
-This assumes that the `app` folder is the application root, and uses `"/"`.
 
 </div>
 
 ### Importing your new components
 
-To use your new components, import them into `AppRoutingModule` at the top of the file, as follows:
+To use your new components, import them into `app.routes.ts` at the top of the file, as follows:
 
-<code-example header="AppRoutingModule (excerpt)">
-
-import { FirstComponent } from './first/first.component';
-import { SecondComponent } from './second/second.component';
-
-</code-example>
+```
+import {FirstComponent} from './first/first.component';
+import {SecondComponent} from './second/second.component';
+```
 
 <a id="basic-route"></a>
 
@@ -66,20 +62,27 @@ import { SecondComponent } from './second/second.component';
 
 There are three fundamental building blocks to creating a route.
 
-Import the `AppRoutingModule` into `AppModule` and add it to the `imports` array.
+Import the routes into `app.config.ts` and add it to the `provideRouter` function.
 
 The Angular CLI performs this step for you.
 However, if you are creating an application manually or working with an existing, non-CLI application, verify that the imports and configuration are correct.
-The following is the default `AppModule` using the CLI with the `--routing` flag.
+The following is the default `ApplicationConfig` using the CLI.
 
-<code-example header="Default CLI AppModule with routing" path="router/src/app/app.module.8.ts"></code-example>
+```
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(routes)]
+};
+```
 
-1.  Import `RouterModule` and `Routes` into your routing module.
+1.  Set up a `Routes` array for your routes
 
     The Angular CLI performs this step automatically.
-    The CLI also sets up a `Routes` array for your routes and configures the `imports` and `exports` arrays for `@NgModule()`.
 
-    <code-example header="CLI application routing module" path="router/src/app/app-routing.module.7.ts"></code-example>
+```
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [];
+```
 
 1.  Define your routes in your `Routes` array.
 
@@ -87,7 +90,12 @@ The following is the default `AppModule` using the CLI with the `--routing` flag
     The first property, `path`, defines the URL path for the route.
     The second property, `component`, defines the component Angular should use for the corresponding path.
 
-    <code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.8.ts" region="routes"></code-example>
+```
+const routes: Routes = [
+  { path: 'first-component', component: FirstComponent },
+  { path: 'second-component', component: SecondComponent },
+];
+```
 
 1.  Add your routes to your application.
 
@@ -98,7 +106,32 @@ The following is the default `AppModule` using the CLI with the `--routing` flag
     Next, update your component template to include `<router-outlet>`.
     This element informs Angular to update the application view with the component for the selected route.
 
-    <code-example header="Template with routerLink and router-outlet" path="router/src/app/app.component.7.html"></code-example>
+```
+<h1>Angular Router App</h1>
+<nav>
+  <ul>
+    <li><a routerLink="/first-component" routerLinkActive="active" ariaCurrentWhenActive="page">First Component</a></li>
+    <li><a routerLink="/second-component" routerLinkActive="active" ariaCurrentWhenActive="page">Second Component</a></li>
+  </ul>
+</nav>
+<!-- The routed views render in the <router-outlet>-->
+<router-outlet></router-outlet>
+```
+
+   You also need to add the `RouterLink`, `RouterLinkActive`, and `RouterOutlet` to the imports array of `AppComponent`.
+
+```
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'routing-app';
+}
+```
 
 <a id="route-order"></a>
 
@@ -150,11 +183,9 @@ The Angular router selects this route any time the requested URL doesn't match a
 
 To set up a wildcard route, add the following code to your `routes` definition.
 
-<code-example header="AppRoutingModule (excerpt)">
-
+```
 { path: '**', component: &lt;component-name&gt; }
-
-</code-example>
+```
 
 The two asterisks, `**`, indicate to Angular that this `routes` definition is a wildcard route.
 For the component property, you can define any component in your application.
@@ -168,7 +199,13 @@ For more detail on why order matters for routes, see [Route order](guide/router#
 
 To display a 404 page, set up a [wildcard route](guide/router#wildcard-route-how-to) with the `component` property set to the component you'd like to use for your 404 page as follows:
 
-<code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.8.ts" region="routes-with-wildcard"></code-example>
+```
+const routes: Routes = [
+  { path: 'first-component', component: FirstComponent },
+  { path: 'second-component', component: SecondComponent },
+  { path: '**', component: PageNotFoundComponent },  // Wildcard route for a 404 page
+];
+```
 
 The last route with the `path` of `**` is a wildcard route.
 The router selects this route if the requested URL doesn't match any of the paths earlier in the list and sends the user to the `PageNotFoundComponent`.
@@ -177,7 +214,14 @@ The router selects this route if the requested URL doesn't match any of the path
 
 To set up a redirect, configure a route with the `path` you want to redirect from, the `component` you want to redirect to, and a `pathMatch` value that tells the router how to match the URL.
 
-<code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.8.ts" region="redirect"></code-example>
+```
+const routes: Routes = [
+  { path: 'first-component', component: FirstComponent },
+  { path: 'second-component', component: SecondComponent },
+  { path: '',   redirectTo: '/first-component', pathMatch: 'full' }, // redirect to `first-component`
+  { path: '**', component: PageNotFoundComponent },  // Wildcard route for a 404 page
+];
+```
 
 In this example, the third route is a redirect so that the router defaults to the `first-component` route.
 Notice that this redirect precedes the wildcard route.
@@ -196,12 +240,40 @@ This means you're adding a second `<router-outlet>` to your app, because it is i
 In this example, there are two additional child components, `child-a`, and `child-b`.
 Here, `FirstComponent` has its own `<nav>` and a second `<router-outlet>` in addition to the one in `AppComponent`.
 
-<code-example header="In the template" path="router/src/app/app.component.8.html" region="child-routes"></code-example>
+```
+<h2>First Component</h2>
+
+<nav>
+  <ul>
+    <li><a routerLink="child-a">Child A</a></li>
+    <li><a routerLink="child-b">Child B</a></li>
+  </ul>
+</nav>
+
+<router-outlet></router-outlet>
+```
 
 A child route is like any other route, in that it needs both a `path` and a `component`.
 The one difference is that you place child routes in a `children` array within the parent route.
 
-<code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.9.ts" region="child-routes"></code-example>
+```
+const routes: Routes = [
+  {
+    path: 'first-component',
+    component: FirstComponent, // this is the component with the <router-outlet> in the template
+    children: [
+      {
+        path: 'child-a', // child route path
+        component: ChildAComponent, // child route component that the router renders
+      },
+      {
+        path: 'child-b',
+        component: ChildBComponent, // another child route component that the router renders
+      },
+    ],
+  },
+];
+```
 
 <a id="setting-the-page-title"></a>
 
@@ -210,7 +282,29 @@ The one difference is that you place child routes in a `children` array within t
 Each page in your application should have a unique title so that they can be identified in the browser history.
 The `Router` sets the document's title using the `title` property from the `Route` config.
 
-<code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.10.ts" region="page-title"></code-example>
+```
+const routes: Routes = [
+  {
+    path: 'first-component',
+    title: 'First component',
+    component: FirstComponent,  // this is the component with the <router-outlet> in the template
+    children: [
+      {
+        path: 'child-a',  // child route path
+        title: resolvedChildATitle,
+        component: ChildAComponent,  // child route component that the router renders
+      },
+      {
+        path: 'child-b',
+        title: 'child b',
+        component: ChildBComponent,  // another child route component that the router renders
+      },
+    ],
+  },
+];
+
+const resolvedChildATitle: ResolveFn<string> = () => Promise.resolve('child a');
+```
 
 <div class="alert is-helpful">
 
@@ -220,7 +314,29 @@ The `Router` sets the document's title using the `title` property from the `Rout
 
 You can also provide a custom title strategy by extending the `TitleStrategy`.
 
-<code-example header="AppRoutingModule (excerpt)" path="router/src/app/app-routing.module.10.ts" region="custom-page-title"></code-example>
+```
+@Injectable({providedIn: 'root'})
+export class TemplatePageTitleStrategy extends TitleStrategy {
+  constructor(private readonly title: Title) {
+    super();
+  }
+
+  override updateTitle(routerState: RouterStateSnapshot) {
+    const title = this.buildTitle(routerState);
+    if (title !== undefined) {
+      this.title.setTitle(`My Application | ${title}`);
+    }
+  }
+}
+
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    {provide: TitleStrategy, useClass: TemplatePageTitleStrategy},
+  ]
+};
+```
 
 <a id="using-relative-paths"></a>
 
@@ -231,7 +347,16 @@ The following example shows a relative route to another component, `second-compo
 `FirstComponent` and `SecondComponent` are at the same level in the tree, however, the link to `SecondComponent` is situated within the `FirstComponent`, meaning that the router has to go up a level and then into the second directory to find the `SecondComponent`.
 Rather than writing out the whole path to get to `SecondComponent`, use the `../` notation to go up a level.
 
-<code-example header="In the template" path="router/src/app/app.component.8.html" region="relative-route"></code-example>
+```
+<h2>First Component</h2>
+
+<nav>
+  <ul>
+    <li><a routerLink="../second-component">Relative Route to second component</a></li>
+  </ul>
+</nav>
+<router-outlet></router-outlet>
+```
 
 In addition to `../`, use `./` or no leading slash to specify the current level.
 
@@ -243,7 +368,11 @@ In the component class, import `NavigationExtras` from the `@angular/router`.
 Then use `relativeTo` in your navigation method.
 After the link parameters array, which here contains `items`, add an object with the `relativeTo` property set to the `ActivatedRoute`, which is `this.route`.
 
-<code-example header="RelativeTo" path="router/src/app/app.component.4.ts" region="relative-to">
+```
+  goToItems() {
+    this.router.navigate(['items'], { relativeTo: this.route });
+  }
+```
 
 The `navigate()` arguments configure the router to use the current route as a basis upon which to append `items`.
 
@@ -332,10 +461,10 @@ gotoItems(hero: Hero) {
 
 ## Lazy loading
 
-You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the application launches.
+You can configure your routes to be lazy loaded, which means that Angular only loads routs as needed, rather than loading all routes when the application launches.
 Additionally, preload parts of your application in the background to improve the user experience.
 
-For more information on lazy loading and preloading see the dedicated guide [Lazy loading NgModules](guide/lazy-loading-ngmodules).
+For more information on lazy loading and preloading see the dedicated guide [Lazy loading](guide/lazy-loading-ngmodules).
 
 ## Preventing unauthorized access
 
@@ -372,7 +501,7 @@ export const yourGuardFunction: CanActivateFn = (
 </code-example>
 In your routing module, use the appropriate property in your `routes` configuration.
 Here, `canActivate` tells the router to mediate navigation to this particular route.
-<code-example header="Routing module (excerpt)">
+<code-example header="Routes configuration (excerpt)">
 {
   path: '/your-path',
   component: YourComponent,
@@ -392,22 +521,32 @@ A link parameters array holds the following ingredients for router navigation:
 
 Bind the `RouterLink` directive to such an array like this:
 
-<code-example header="src/app/app.component.ts (h-anchor)" path="router/src/app/app.component.3.ts" region="h-anchor"></code-example>
+```
+<a [routerLink]="['/heroes']">Heroes</a>
+```
 
 The following is a two-element array when specifying a route parameter:
 
-<code-example header="src/app/heroes/hero-list/hero-list.component.html (nav-to-detail)" path="router/src/app/heroes/hero-list/hero-list.component.1.html" region="nav-to-detail"></code-example>
+```
+<a [routerLink]="['/hero', hero.id]">
+  <span class="badge">{{ hero.id }}</span>{{ hero.name }}
+</a>
+```
 
 Provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 
-<code-example header="src/app/app.component.ts (cc-query-params)" path="router/src/app/app.component.3.ts" region="cc-query-params"></code-example>
+```
+<a [routerLink]="['/crisis-center', { foo: 'foo' }]">Crisis Center</a>
+```
 
 These three examples cover the needs of an application with one level of routing.
 However, with a child router, such as in the crisis center, you create new link array possibilities.
 
 The following minimal `RouterLink` example builds upon a specified [default child route](guide/router-tutorial-toh#a-crisis-center-with-child-routes) for the crisis center.
 
-<code-example header="src/app/app.component.ts (cc-anchor-w-default)" path="router/src/app/app.component.3.ts" region="cc-anchor-w-default"></code-example>
+```
+<a [routerLink]="['/crisis-center']">Crisis Center</a>
+```
 
 Review the following:
 
@@ -418,7 +557,9 @@ Review the following:
 
 Consider the following router link that navigates from the root of the application down to the Dragon Crisis:
 
-<code-example header="src/app/app.component.ts (Dragon-anchor)" path="router/src/app/app.component.3.ts" region="Dragon-anchor"></code-example>
+```
+<a [routerLink]="['/crisis-center', 1]">Dragon Crisis</a>
+```
 
 *   The first item in the array identifies the parent route \(`/crisis-center`\)
 *   There are no parameters for this parent route
@@ -429,7 +570,17 @@ Consider the following router link that navigates from the root of the applicati
 
 You could also redefine the `AppComponent` template with Crisis Center routes exclusively:
 
-<code-example header="src/app/app.component.ts (template)" path="router/src/app/app.component.3.ts" region="template"></code-example>
+```
+template: `
+  <h1 class="title">Angular Router</h1>
+  <nav>
+    <a [routerLink]="['/crisis-center']">Crisis Center</a>
+    <a [routerLink]="['/crisis-center/1', { foo: 'foo' }]">Dragon Crisis</a>
+    <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
+  </nav>
+  <router-outlet></router-outlet>
+`
+```
 
 In summary, you can write applications with one, two or more levels of routing.
 The link parameters array affords the flexibility to represent any routing depth and any legal sequence of route paths, \(required\) router parameters, and \(optional\) route parameter objects.
@@ -469,7 +620,7 @@ The router supports both styles with two `LocationStrategy` providers:
 | `PathLocationStrategy` | The default "HTML5 pushState" style. |
 | `HashLocationStrategy` | The "hash URL" style.                |
 
-The `RouterModule.forRoot()` function sets the `LocationStrategy` to the `PathLocationStrategy`, which makes it the default strategy.
+The `provideRouter` function sets the `LocationStrategy` to the `PathLocationStrategy`, which makes it the default strategy.
 You also have the option of switching to the `HashLocationStrategy` with an override during the bootstrapping process.
 
 <div class="alert is-helpful">
@@ -557,9 +708,16 @@ For more complete information on how `<base href>` is used to construct target U
 
 ### `HashLocationStrategy`
 
-Use `HashLocationStrategy` by providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot()` in the `AppModule`.
+Use `HashLocationStrategy` by adding the `withHashLocation` feature to the `provideRouter` function  of the `provideRouter` in the `ApplicationConfiguration`.
 
-<code-example header="src/app/app.module.ts (hash URL strategy)" path="router/src/app/app.module.6.ts"></code-example>
+```
+  providers: [
+    provideRouter(appRoutes, withHashLocation())
+  ]
+```
+
+When using `RouterModule.forRoot`, this is configured with the `useHash: true` in the second argument: `RouterModule.forRoot(routes, {useHash: true})`.
+
 
 <!-- links -->
 
@@ -567,4 +725,4 @@ Use `HashLocationStrategy` by providing the `useHash: true` in an object as the 
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-10-24

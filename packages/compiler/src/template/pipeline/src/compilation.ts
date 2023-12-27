@@ -8,22 +8,117 @@
 
 import {ConstantPool} from '../../../constant_pool';
 import * as o from '../../../output/output_ast';
+import * as t from '../../../render3/r3_ast';
+import {R3DeferBlockMetadata} from '../../../render3/view/api';
 import * as ir from '../ir';
+
+export enum CompilationJobKind {
+  Tmpl,
+  Host,
+  Both,  // A special value used to indicate that some logic applies to both compilation types
+}
+
+/**
+ * An entire ongoing compilation, which will result in one or more template functions when complete.
+ * Contains one or more corresponding compilation units.
+ */
+export abstract class CompilationJob {
+  constructor(
+      readonly componentName: string, readonly pool: ConstantPool,
+      readonly compatibility: ir.CompatibilityMode) {}
+
+  kind: CompilationJobKind = CompilationJobKind.Both;
+
+  /**
+   * A compilation job will contain one or more compilation units.
+   */
+  abstract get units(): Iterable<CompilationUnit>;
+
+  /**
+   * The root compilation unit, such as the component's template, or the host binding's compilation
+   * unit.
+   */
+  abstract root: CompilationUnit;
+
+  /**
+   * A unique string used to identify this kind of job, and generate the template function (as a
+   * suffix of the name).
+   */
+  abstract fnSuffix: string;
+
+  /**
+   * Generate a new unique `ir.XrefId` in this job.
+   */
+  allocateXrefId(): ir.XrefId {
+    return this.nextXrefId++ as ir.XrefId;
+  }
+
+  /**
+   * Tracks the next `ir.XrefId` which can be assigned as template structures are ingested.
+   */
+  private nextXrefId: ir.XrefId = 0 as ir.XrefId;
+}
 
 /**
  * Compilation-in-progress of a whole component's template, including the main template and any
  * embedded views or host bindings.
  */
-export class ComponentCompilation {
-  /**
-   * Tracks the next `ir.XrefId` which can be assigned as template structures are ingested.
-   */
-  private nextXrefId: ir.XrefId = 0 as ir.XrefId;
+export class ComponentCompilationJob extends CompilationJob {
+  constructor(
+      componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode,
+      readonly relativeContextFilePath: string, readonly i18nUseExternalIds: boolean,
+      readonly deferBlocksMeta: Map<t.DeferredBlock, R3DeferBlockMetadata>) {
+    super(componentName, pool, compatibility);
+    this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
+    this.views.set(this.root.xref, this.root);
+  }
+
+  override kind = CompilationJobKind.Tmpl;
+
+  override readonly fnSuffix: string = 'Template';
 
   /**
-   * Map of view IDs to `ViewCompilation`s.
+   * The root view, representing the component's template.
    */
-  readonly views = new Map<ir.XrefId, ViewCompilation>();
+  override readonly root: ViewCompilationUnit;
+
+  readonly views = new Map<ir.XrefId, ViewCompilationUnit>();
+
+  /**
+   * Causes ngContentSelectors to be emitted, for content projection slots in the view. Possibly a
+   * reference into the constant pool.
+   */
+  public contentSelectors: o.Expression|null = null;
+
+  /**
+   * Add a `ViewCompilation` for a new embedded view to this compilation.
+   */
+  allocateView(parent: ir.XrefId): ViewCompilationUnit {
+    const view = new ViewCompilationUnit(this, this.allocateXrefId(), parent);
+    this.views.set(view.xref, view);
+    return view;
+  }
+
+  override get units(): Iterable<ViewCompilationUnit> {
+    return this.views.values();
+  }
+
+  /**
+   * Add a constant `o.Expression` to the compilation and return its index in the `consts` array.
+   */
+  addConst(newConst: o.Expression, initializers?: o.Statement[]): ir.ConstIndex {
+    for (let idx = 0; idx < this.consts.length; idx++) {
+      if (this.consts[idx].isEquivalent(newConst)) {
+        return idx as ir.ConstIndex;
+      }
+    }
+    const idx = this.consts.length;
+    this.consts.push(newConst);
+    if (initializers) {
+      this.constsInitializers.push(...initializers);
+    }
+    return idx as ir.ConstIndex;
+  }
 
   /**
    * Constant expressions used by operations within this component's compilation.
@@ -33,62 +128,17 @@ export class ComponentCompilation {
   readonly consts: o.Expression[] = [];
 
   /**
-   * The root view, representing the component's template.
+   * Initialization statements needed to set up the consts.
    */
-  readonly root: ViewCompilation;
-
-  constructor(readonly componentName: string, readonly pool: ConstantPool) {
-    // Allocate the root view.
-    const root = new ViewCompilation(this, this.allocateXrefId(), null);
-    this.views.set(root.xref, root);
-    this.root = root;
-  }
-
-  /**
-   * Add a `ViewCompilation` for a new embedded view to this compilation.
-   */
-  allocateView(parent: ir.XrefId): ViewCompilation {
-    const view = new ViewCompilation(this, this.allocateXrefId(), parent);
-    this.views.set(view.xref, view);
-    return view;
-  }
-
-  /**
-   * Generate a new unique `ir.XrefId`.
-   */
-  allocateXrefId(): ir.XrefId {
-    return this.nextXrefId++ as ir.XrefId;
-  }
-
-  /**
-   * Add a constant `o.Expression` to the compilation and return its index in the `consts` array.
-   */
-  addConst(newConst: o.Expression): ir.ConstIndex {
-    for (let idx = 0; idx < this.consts.length; idx++) {
-      if (this.consts[idx].isEquivalent(newConst)) {
-        return idx as ir.ConstIndex;
-      }
-    }
-    const idx = this.consts.length;
-    this.consts.push(newConst);
-    return idx as ir.ConstIndex;
-  }
+  readonly constsInitializers: o.Statement[] = [];
 }
 
 /**
- * Compilation-in-progress of an individual view within a template.
+ * A compilation unit is compiled into a template function. Some example units are views and host
+ * bindings.
  */
-export class ViewCompilation {
-  constructor(
-      readonly tpl: ComponentCompilation, readonly xref: ir.XrefId,
-      readonly parent: ir.XrefId|null) {}
-
-  /**
-   * Name of the function which will be generated for this view.
-   *
-   * May be `null` if not yet determined.
-   */
-  fnName: string|null = null;
+export abstract class CompilationUnit {
+  constructor(readonly xref: ir.XrefId) {}
 
   /**
    * List of creation operations for this view.
@@ -103,16 +153,16 @@ export class ViewCompilation {
   readonly update = new ir.OpList<ir.UpdateOp>();
 
   /**
-   * Map of declared variables available within this view to the property on the context object
-   * which they alias.
+   * The enclosing job, which might contain several individual compilation units.
    */
-  readonly contextVariables = new Map<string, string>();
+  abstract readonly job: CompilationJob;
 
   /**
-   * Number of declaration slots used within this view, or `null` if slots have not yet been
-   * allocated.
+   * Name of the function which will be generated for this unit.
+   *
+   * May be `null` if not yet determined.
    */
-  decls: number|null = null;
+  fnName: string|null = null;
 
   /**
    * Number of variable slots used within this view, or `null` if variables have not yet been
@@ -138,4 +188,63 @@ export class ViewCompilation {
       yield op;
     }
   }
+}
+
+/**
+ * Compilation-in-progress of an individual view within a template.
+ */
+export class ViewCompilationUnit extends CompilationUnit {
+  constructor(
+      readonly job: ComponentCompilationJob, xref: ir.XrefId, readonly parent: ir.XrefId|null) {
+    super(xref);
+  }
+
+  /**
+   * Map of declared variables available within this view to the property on the context object
+   * which they alias.
+   */
+  readonly contextVariables = new Map<string, string>();
+
+  /**
+   * Set of aliases available within this view. An alias is a variable whose provided expression is
+   * inlined at every location it is used. It may also depend on context variables, by name.
+   */
+  readonly aliases = new Set<ir.AliasVariable>();
+
+  /**
+   * Number of declaration slots used within this view, or `null` if slots have not yet been
+   * allocated.
+   */
+  decls: number|null = null;
+}
+
+/**
+ * Compilation-in-progress of a host binding, which contains a single unit for that host binding.
+ */
+export class HostBindingCompilationJob extends CompilationJob {
+  constructor(componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode) {
+    super(componentName, pool, compatibility);
+    this.root = new HostBindingCompilationUnit(this);
+  }
+
+  override kind = CompilationJobKind.Host;
+
+  override readonly fnSuffix: string = 'HostBindings';
+
+  override readonly root: HostBindingCompilationUnit;
+
+  override get units(): Iterable<HostBindingCompilationUnit> {
+    return [this.root];
+  }
+}
+
+export class HostBindingCompilationUnit extends CompilationUnit {
+  constructor(readonly job: HostBindingCompilationJob) {
+    super(0 as ir.XrefId);
+  }
+
+  /**
+   * Much like an element can have attributes, so can a host binding function.
+   */
+  attributes: o.LiteralArrayExpr|null = null;
 }

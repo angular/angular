@@ -1,0 +1,10 @@
+{
+  "description": "Attribute Directive",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2,3].*"
+  ],
+  "file": "src/app/highlight.directive.ts",
+  "tags": ["attribute", "directive"]
+}

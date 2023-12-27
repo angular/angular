@@ -17,7 +17,7 @@ import {Todo} from './todo';
   styleUrls: ['./todo.component.scss'],
 })
 export class TodoComponent {
-  @Input() todo: Todo;
+  @Input() todo!: Todo;
   @Output() update = new EventEmitter();
   @Output() delete = new EventEmitter();
 

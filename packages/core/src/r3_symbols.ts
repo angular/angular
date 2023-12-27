@@ -26,7 +26,7 @@ export {ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵInjectableDeclaration} fro
 export {NgModuleDef} from './metadata/ng_module_def';
 export {ɵɵdefineNgModule} from './render3/definition';
 export {ɵɵFactoryDeclaration, ɵɵInjectorDeclaration, ɵɵNgModuleDeclaration} from './render3/interfaces/public_definitions';
-export {setClassMetadata} from './render3/metadata';
+export {setClassMetadata, setClassMetadataAsync} from './render3/metadata';
 export {NgModuleFactory} from './render3/ng_module_ref';
 export {noSideEffects as ɵnoSideEffects} from './util/closure';
 

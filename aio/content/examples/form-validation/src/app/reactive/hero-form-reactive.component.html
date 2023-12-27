@@ -1,26 +1,32 @@
- <!-- #docregion -->
+<!-- #docregion -->
 <div class="container">
-
   <h2>Reactive Form</h2>
 
   <form [formGroup]="heroForm" #formDir="ngForm">
-
     <div [hidden]="formDir.submitted">
-
-      <div class="cross-validation" [class.cross-validation-error]="heroForm.errors?.['identityRevealed'] && (heroForm.touched || heroForm.dirty)">
+      <div
+        class="cross-validation"
+        [class.cross-validation-error]="
+          heroForm.errors?.['identityRevealed'] &&
+          (heroForm.touched || heroForm.dirty)
+        "
+      >
         <div class="form-group">
-
           <label for="name">Name</label>
           <!-- #docregion name-with-error-msg -->
-          <input type="text" id="name" class="form-control"
-                formControlName="name" required>
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            formControlName="name"
+            required
+          />
 
-          <div *ngIf="name.invalid && (name.dirty || name.touched)"
-              class="alert alert-danger">
-
-            <div *ngIf="name.errors?.['required']">
-              Name is required.
-            </div>
+          <div
+            *ngIf="name.invalid && (name.dirty || name.touched)"
+            class="alert alert-danger"
+          >
+            <div *ngIf="name.errors?.['required']">Name is required.</div>
             <div *ngIf="name.errors?.['minlength']">
               Name must be at least 4 characters long.
             </div>
@@ -33,11 +39,18 @@
 
         <div class="form-group">
           <label for="alterEgo">Alter Ego</label>
-          <input type="text" id="alterEgo" class="form-control"
-              formControlName="alterEgo">
+          <input
+            type="text"
+            id="alterEgo"
+            class="form-control"
+            formControlName="alterEgo"
+          />
 
           <div *ngIf="alterEgo.pending">Validating...</div>
-          <div *ngIf="alterEgo.invalid" class="alert alert-danger alter-ego-errors">
+          <div
+            *ngIf="alterEgo.invalid"
+            class="alert alert-danger alter-ego-errors"
+          >
             <div *ngIf="alterEgo.errors?.['uniqueAlterEgo']">
               Alter ego is already taken.
             </div>
@@ -45,17 +58,27 @@
         </div>
 
         <!-- #docregion cross-validation-error-message -->
-        <div *ngIf="heroForm.errors?.['identityRevealed'] && (heroForm.touched || heroForm.dirty)" class="cross-validation-error-message alert alert-danger">
-            Name cannot match alter ego.
+        <div
+          *ngIf="
+            heroForm.errors?.['identityRevealed'] &&
+            (heroForm.touched || heroForm.dirty)
+          "
+          class="cross-validation-error-message alert alert-danger"
+        >
+          Name cannot match alter ego.
         </div>
         <!-- #enddocregion cross-validation-error-message -->
       </div>
 
       <div class="form-group">
         <label for="power">Hero Power</label>
-        <select id="power" class="form-control"
-            formControlName="power" required>
-          <option *ngFor="let p of powers" [value]="p">{{p}}</option>
+        <select
+          id="power"
+          class="form-control"
+          formControlName="power"
+          required
+        >
+          <option *ngFor="let p of powers" [value]="p">{{ p }}</option>
         </select>
 
         <div *ngIf="power.invalid && power.touched" class="alert alert-danger">
@@ -64,11 +87,20 @@
       </div>
 
       <p>Complete the form to enable the Submit button.</p>
-      <button type="submit"
-              class="btn btn-default"
-              [disabled]="heroForm.invalid">Submit</button>
-      <button type="button" class="btn btn-default"
-             (click)="formDir.resetForm({})">Reset</button>
+      <button
+        type="submit"
+        class="btn btn-default"
+        [disabled]="heroForm.invalid"
+      >
+        Submit
+      </button>
+      <button
+        type="button"
+        class="btn btn-default"
+        (click)="formDir.resetForm({})"
+      >
+        Reset
+      </button>
     </div>
   </form>
 

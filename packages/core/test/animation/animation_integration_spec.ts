@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {animate, animateChild, animation, AnimationEvent, AnimationMetadata, AnimationOptions, AUTO_STYLE, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver as NoopAnimationDriver} from '@angular/animations/browser';
+import {AnimationDriver, NoopAnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, Inject, RendererFactory2, ViewChild, ViewContainerRef} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';

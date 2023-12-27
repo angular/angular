@@ -88,7 +88,7 @@ In addition, using the `onActionClick` property on the `data` object, you can ti
       {"action": "foo", "title": "Open new tab"},
       {"action": "bar", "title": "Focus last"},
       {"action": "baz", "title": "Navigate last"},
-      {"action": "qux", "title": "Send request in the background"}
+      {"action": "qux", "title": "Send request in the background"},
       {"action": "other", "title": "Just notify existing clients"}
     ],
     "data": {

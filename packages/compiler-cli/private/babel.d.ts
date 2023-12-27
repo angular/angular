@@ -5,23 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import { BabelFile, types as t } from '@babel/core';
-
-/**
- * Augment some Babel types to add symbols that we rely on, but are not included in the Babel typings.
- */
-
-declare module '@babel/traverse' {
-  interface Hub {
-    file: BabelFile;
-  }
-}
-
-declare module '@babel/core' {
-  interface BabelFile {
-    buildCodeFrameError(node: t.Node, message: string): Error;
-  }
-}
 
 // The following modules are declared to work around a limitation in tsc_wrapped's `strict_deps`
 // check. Since Babel uses scoped packages, the corresponding lookup for declaration files in the
@@ -37,6 +20,9 @@ declare module '@babel/core' {
 // that is not governed by Bazel, and therefore not expected by the `strict_deps` rule.
 // Declaring the modules here allows `strict_deps` to always find a declaration of the modules
 // in an input file to the compilation, therefore accepting the module import.
-declare module '@babel/generator' {}
-declare module '@babel/template' {}
-declare module '@babel/parser' {}
+declare module '@babel/core' {
+  export * from '@types/babel__core';
+}
+declare module '@babel/generator' {
+  export { default } from '@types/babel__generator';
+}

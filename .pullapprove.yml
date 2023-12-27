@@ -57,9 +57,7 @@
 version: 3
 
 availability:
-  users_unavailable:
-    - atscott
-    - devversion
+  users_unavailable: []
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -184,6 +182,8 @@ groups:
         - crisbeto
         - devversion
         - dylhunn
+        - jessicajaniuk
+        - AndrewKushnir
 
   # =========================================================
   #  Framework: Core
@@ -313,6 +313,7 @@ groups:
           'aio/content/guide/pipes.md',
           'aio/content/guide/pipes-custom-data-trans.md',
           'aio/content/guide/pipes-overview.md',
+          'aio/content/guide/pipe-precedence.md',
           'aio/content/guide/pipes-transform-data.md',
           'aio/content/guide/pipe-template.md',
           'aio/content/examples/pipes/**/{*,.*}',
@@ -338,8 +339,12 @@ groups:
           'aio/content/examples/view-encapsulation/**/{*,.*}',
           'aio/content/images/guide/view-encapsulation/**/{*,.*}',
           'aio/content/special-elements/**/{*,.*}',
+          'aio/content/blocks/**/{*,.*}',
           'aio/content/guide/hydration.md',
-          'aio/content/guide/signals.md'
+          'aio/content/guide/defer.md',
+          'aio/content/guide/signals.md',
+          'aio/content/guide/control_flow.md',
+          'aio/content/examples/injection-token/**/{*,.*}',
           ])
     reviewers:
       users:
@@ -516,8 +521,8 @@ groups:
         contains_any_globs(files, [
           'packages/platform-server/**/{*,.*}',
           'aio/content/guide/prerendering.md',
-          'aio/content/guide/universal.md',
-          'aio/content/examples/universal/**/{*,.*}'
+          'aio/content/guide/ssr.md',
+          'aio/content/examples/ssr/**/{*,.*}',
           ])
     reviewers:
       users:
@@ -921,13 +926,7 @@ groups:
           'aio/content/guide/releases.md',
           'aio/content/guide/updating.md',
           'aio/content/guide/deprecations.md',
-          'aio/content/guide/migration-legacy-message-id.md',
           'aio/content/examples/deprecation-guide/**/{*,.*}',
-          'aio/content/guide/migration-renderer.md',
-          'aio/content/guide/migration-undecorated-classes.md',
-          'aio/content/guide/migration-dynamic-flag.md',
-          'aio/content/guide/migration-injectable.md',
-          'aio/content/guide/migration-localize.md',
           'aio/content/guide/migration-module-with-providers.md',
           'aio/content/guide/static-query-migration.md',
           'aio/content/guide/update-to-latest-version.md',
@@ -941,6 +940,7 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
+        - jessicajaniuk
         - jelbourn
 
   # =========================================================
@@ -1058,6 +1058,22 @@ groups:
         - mgechev
 
   # =========================================================
+  #  Docs: Angular Dev Site
+  # =========================================================
+  angular-dev:
+    <<: *defaults
+    conditions:
+      - >
+        contains_any_globs(files, [
+          'adev/**/{.*,*}'
+          ])
+    reviewers:
+      users:
+        - twerske
+        - josephperrott
+        - jelbourn
+
+  # =========================================================
   #  Docs-infra
   # =========================================================
   docs-infra:
@@ -1130,6 +1146,7 @@ groups:
       users:
         - AleksanderBodurri
         - devversion
+        - dgp1130
         - josephperrott
         - mgechev
         - twerske
@@ -1167,9 +1184,11 @@ groups:
           'tools/esm-interop/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
           'tools/legacy-saucelabs/**/{*,.*}',
+          'tools/manual_api_docs/**/{*,.*}',
+          'tools/npm-patches/**/{*,.*}',
           'tools/rxjs/**/{*,.*}',
-          'tools/saucelabs/**/{*,.*}',
           'tools/saucelabs-daemon/**/{*,.*}',
+          'tools/saucelabs/**/{*,.*}',
           'tools/symbol-extractor/**/{*,.*}',
           'tools/testing/**/{*,.*}',
           'tools/tslint/**/{*,.*}',

@@ -179,7 +179,7 @@ Because each service method returns a different kind of `Observable` result, `ha
 
 ### Tap into the Observable
 
-The `getHeros()` method taps into the flow of observable values and sends a message, using the `log()` method, to the message area at the bottom of the page.
+The `getHeroes()` method taps into the flow of observable values and sends a message, using the `log()` method, to the message area at the bottom of the page.
 
 The RxJS `tap()` operator enables this ability by looking at the observable values, doing something with those values, and passing them along.
 The `tap()` callback doesn't access the values themselves.
@@ -443,7 +443,7 @@ Each operator works as follows:
 <div class="alert is-helpful">
 
 With the [`switchMap` operator](https://www.learnrxjs.io/learn-rxjs/operators/transformation/switchmap), every qualifying key event can trigger an `HttpClient.get()` method call.
-Even with a 300&nbsp;ms pause between requests, you could have many HTTP requests in flight and they may not return in the order sent.
+Even with a 300&nbsp;ms pause between requests, you could have many HTTP requests in flight, and they may not return in the order sent.
 
 `switchMap()` preserves the original request order while returning only the observable from the most recent HTTP method call.
 Results from prior calls are canceled and discarded.

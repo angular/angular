@@ -10,8 +10,7 @@ import {Compiler, Component, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getM
 import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleType} from '@angular/core/src/render3';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
-import {ComponentFixture, inject} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest, setAllowDuplicateNgModuleIdsForTest} from '../../src/linker/ng_module_registration';
@@ -102,13 +101,9 @@ describe('NgModule', () => {
       componentDef.TView = null;
     }
 
-    const ngModule = createModule(moduleType, injector);
+    createModule(moduleType, injector);
 
-    const cf = ngModule.componentFactoryResolver.resolveComponentFactory(compType)!;
-
-    const comp = cf.create(Injector.NULL);
-
-    return new ComponentFixture(comp, null, false);
+    return TestBed.createComponent(compType);
   }
 
   describe('errors', () => {
@@ -770,7 +765,7 @@ describe('NgModule', () => {
         class MyService1 {
           public innerService: MyService2;
           constructor(injector: Injector) {
-            // Create MyService2 before it it's initialized by TestModule.
+            // Create MyService2 before it's initialized by TestModule.
             this.innerService = injector.get(MyService2);
           }
         }

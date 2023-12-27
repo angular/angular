@@ -66,8 +66,13 @@ mat-toolbar.app-toolbar {
       transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
+    // TODO: this override is necessary, because the menu is using
+    // the wrong kind of button (text button instead of icon button).
     & .mat-icon {
       position: inherit;
+      width: 24px;
+      height: 24px;
+      margin: 0;
     }
   }
 

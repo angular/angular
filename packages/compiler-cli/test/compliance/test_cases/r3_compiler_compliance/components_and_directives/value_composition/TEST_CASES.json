@@ -61,6 +61,10 @@
             }
           ]
         }
+      ],
+      "compilationModeFilter": [
+        "full compile",
+        "local compile"
       ]
     },
     {
@@ -229,8 +233,7 @@
             "array_literals.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support 9+ bindings in array literals",
@@ -244,8 +247,7 @@
             "array_literals_many.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support object literals",
@@ -259,8 +261,7 @@
             "object_literals.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support expressions nested deeply in object/array literals",
@@ -274,8 +275,7 @@
             "literal_nested_expression.js"
           ]
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should support number literals with separators",

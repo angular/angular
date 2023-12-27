@@ -1,6 +1,6 @@
 decls: 7,
 vars: 5,
-consts: function() {
+consts: () => {
   __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ one }}'}}, {})
   __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ two | uppercase }}'}}, {})
   __i18nMsg__('My i18n block #{$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]], {original_code: {'interpolation': '{{ three + four + five }}'}}, {})

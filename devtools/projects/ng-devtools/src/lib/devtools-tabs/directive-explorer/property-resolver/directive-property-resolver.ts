@@ -8,7 +8,7 @@
 
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {ViewEncapsulation} from '@angular/core';
-import {Descriptor, DirectivePosition, Events, MessageBus, NestedProp, Properties} from 'protocol';
+import {Descriptor, DirectiveMetadata, DirectivePosition, Events, MessageBus, NestedProp, Properties} from 'protocol';
 
 import {FlatNode, Property} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';
@@ -52,7 +52,11 @@ export class DirectivePropertyResolver {
   constructor(
       private _messageBus: MessageBus<Events>, private _props: Properties,
       private _directivePosition: DirectivePosition) {
-    this._initDataSources();
+    const {inputProps, outputProps, stateProps} = this._classifyProperties();
+
+    this._inputsDataSource = this._createDataSourceFromProps(inputProps);
+    this._outputsDataSource = this._createDataSourceFromProps(outputProps);
+    this._stateDataSource = this._createDataSourceFromProps(stateProps);
   }
 
   get directiveInputControls(): DirectiveTreeData {
@@ -65,6 +69,10 @@ export class DirectivePropertyResolver {
 
   get directiveStateControls(): DirectiveTreeData {
     return getDirectiveControls(this._stateDataSource);
+  }
+
+  get directiveMetadata(): DirectiveMetadata|undefined {
+    return this._props.metadata;
   }
 
   get directiveProperties(): {[name: string]: Descriptor} {
@@ -105,14 +113,6 @@ export class DirectivePropertyResolver {
     const keyPath = constructPathOfKeysToPropertyValue(node.prop);
     this._messageBus.emit('updateState', [{directiveId, keyPath, newValue}]);
     node.prop.descriptor.value = newValue;
-  }
-
-  private _initDataSources(): void {
-    const {inputProps, outputProps, stateProps} = this._classifyProperties();
-
-    this._inputsDataSource = this._createDataSourceFromProps(inputProps);
-    this._outputsDataSource = this._createDataSourceFromProps(outputProps);
-    this._stateDataSource = this._createDataSourceFromProps(stateProps);
   }
 
   private _createDataSourceFromProps(props: {[name: string]: Descriptor}): PropertyDataSource {

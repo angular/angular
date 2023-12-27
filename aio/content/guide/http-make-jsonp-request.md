@@ -7,25 +7,19 @@ Apps can use the `HttpClient` to make [JSONP](https://en.wikipedia.org/wiki/JSON
 Angular JSONP requests return an `Observable`.
 Follow the pattern for subscribing to observables and use the RxJS `map` operator to transform the response before using the [async pipe](api/common/AsyncPipe) to manage the results.
 
-In Angular, use JSONP by including `HttpClientJsonpModule` in the `NgModule` imports.
-In the following example, the `searchHeroes()` method uses a JSONP request to query for heroes whose names contain the search term.
+Enable JSONP by providing the `HttpClientJsonpModule` in the `bootstrapApplication` providers array in `main.ts` like this:
 
-<code-example format="typescript" language="typescript">
+<code-example path="http/src/main.ts" region="jsonp"></code-example>
 
-/* GET heroes whose name contains search term */
-searchHeroes(term: string): Observable {
-  term = term.trim();
+In the following example, the `searchHeroesJsonp()` method uses a JSONP request to query for heroes whose names contain the search term acquired from the user.
 
-  const heroesURL = `&dollar;{this.heroesURL}?&dollar;{term}`;
-  return this.http.jsonp(heroesUrl, 'callback').pipe(
-      catchError(this.handleError('searchHeroes', [])) // then handle the error
-    );
-}
-
+<code-example path="http/src/app/heroes/heroes.service.ts" region="searchHeroesJsonp">
 </code-example>
 
-This request passes the `heroesURL` as the first parameter and the callback function name as the second parameter.
-The response is wrapped in the callback function, which takes the observables returned by the JSONP method and pipes them through to the error handler.
+This request passes the `heroesUrl` with the search term as the first parameter and the standard callback function name, `callback`, as the second parameter.
+
+You may have to `map` the Observable response from the `http.jsonp` method to the intended data type 
+as this example does with `jsonpResultToHeroes`.
 
 ## Request non-JSON data
 
@@ -44,4 +38,4 @@ A `download()` method in the `DownloaderComponent` initiates the request by subs
 
 <a id="error-handling"></a>
 
-@reviewed 2022-11-03
+@reviewed 2023-08-17

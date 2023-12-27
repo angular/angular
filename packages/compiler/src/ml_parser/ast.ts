@@ -16,8 +16,7 @@ interface BaseNode {
   visit(visitor: Visitor, context: any): any;
 }
 
-export type Node =
-    Attribute|Comment|Element|Expansion|ExpansionCase|Text|BlockGroup|Block|BlockParameter;
+export type Node = Attribute|Comment|Element|Expansion|ExpansionCase|Text|Block|BlockParameter;
 
 export abstract class NodeWithI18n implements BaseNode {
   constructor(public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
@@ -87,23 +86,16 @@ export class Comment implements BaseNode {
   }
 }
 
-export class BlockGroup implements BaseNode {
-  constructor(
-      public blocks: Block[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null = null) {}
-
-  visit(visitor: Visitor, context: any) {
-    return visitor.visitBlockGroup(this, context);
-  }
-}
-
-export class Block implements BaseNode {
+export class Block extends NodeWithI18n {
   constructor(
       public name: string, public parameters: BlockParameter[], public children: Node[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan,
-      public endSourceSpan: ParseSourceSpan|null = null) {}
+      sourceSpan: ParseSourceSpan, public nameSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan, public endSourceSpan: ParseSourceSpan|null = null,
+      i18n?: I18nMeta) {
+    super(sourceSpan, i18n);
+  }
 
-  visit(visitor: Visitor, context: any) {
+  override visit(visitor: Visitor, context: any) {
     return visitor.visitBlock(this, context);
   }
 }
@@ -127,7 +119,6 @@ export interface Visitor {
   visitComment(comment: Comment, context: any): any;
   visitExpansion(expansion: Expansion, context: any): any;
   visitExpansionCase(expansionCase: ExpansionCase, context: any): any;
-  visitBlockGroup(group: BlockGroup, context: any): any;
   visitBlock(block: Block, context: any): any;
   visitBlockParameter(parameter: BlockParameter, context: any): any;
 }
@@ -168,12 +159,6 @@ export class RecursiveVisitor implements Visitor {
   }
 
   visitExpansionCase(ast: ExpansionCase, context: any): any {}
-
-  visitBlockGroup(ast: BlockGroup, context: any): any {
-    this.visitChildren(context, visit => {
-      visit(ast.blocks);
-    });
-  }
 
   visitBlock(block: Block, context: any): any {
     this.visitChildren(context, visit => {

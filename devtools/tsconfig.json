@@ -13,7 +13,9 @@
     "outDir": "bazel-out/darwin-fastbuild/bin",
     "sourceMap": true,
     "declaration": true,
-    "strictNullChecks": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
@@ -51,7 +53,7 @@
     },
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
+    "strictTemplates": true,
     "strictInjectionParameters": true
   }
 }

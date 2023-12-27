@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/zone-patch-promise-test",
-  "main": "../../bundles/zone-patch-promise-test.umd.js",
-  "fesm2015": "../../fesm2015/zone-patch-promise-test.js",
-  "es2015": "../../fesm2015/zone-patch-promise-test.js",
-  "module": "../../fesm2015/zone-patch-promise-test.js"
-}

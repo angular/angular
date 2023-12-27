@@ -11,14 +11,24 @@
  * @description
  * Entry point from which you should import all public core APIs.
  */
+
+export * from './authoring';
+// Input is exported separately as this file is exempted from JSCompiler's
+// conformance requirement for inferred const exports.
+// See: https://docs.google.com/document/d/1RXb1wYwsbJotO1KBgSDsAtKpduGmIHod9ADxuXcAvV4/edit?tab=t.0
+export {input as ɵinput} from './authoring/input';
+
 export * from './metadata';
 export * from './version';
 export {TypeDecorator} from './util/decorators';
 export * from './di';
-export {createPlatform, assertPlatform, destroyPlatform, getPlatform, BootstrapOptions, NgZoneOptions, PlatformRef, ApplicationRef, provideZoneChangeDetection, createPlatformFactory, NgProbeToken, APP_BOOTSTRAP_LISTENER} from './application_ref';
+export {BootstrapOptions, ApplicationRef, NgProbeToken, APP_BOOTSTRAP_LISTENER} from './application/application_ref';
+export {PlatformRef} from './platform/platform_ref';
+export {createPlatform, createPlatformFactory, assertPlatform, destroyPlatform, getPlatform} from './platform/platform';
+export {provideZoneChangeDetection, NgZoneOptions} from './change_detection/scheduling/ng_zone_scheduling';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
-export {APP_ID, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER, PLATFORM_ID, ANIMATION_MODULE_TYPE, CSP_NONCE} from './application_tokens';
-export {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
+export {APP_ID, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER, PLATFORM_ID, ANIMATION_MODULE_TYPE, CSP_NONCE} from './application/application_tokens';
+export {APP_INITIALIZER, ApplicationInitStatus} from './application/application_init';
 export * from './zone';
 export * from './render';
 export * from './linker';
@@ -26,9 +36,9 @@ export * from './linker/ng_module_factory_loader_impl';
 export {DebugElement, DebugEventListener, DebugNode, asNativeElements, getDebugNode, Predicate} from './debug/debug_node';
 export {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter} from './testability/testability';
 export * from './change_detection';
-export * from './platform_core_providers';
+export * from './platform/platform_core_providers';
 export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, DEFAULT_CURRENCY_CODE, MissingTranslationStrategy} from './i18n/tokens';
-export {ApplicationModule} from './application_module';
+export {ApplicationModule} from './application/application_module';
 export {AbstractType, Type} from './interface/type';
 export {EventEmitter} from './event_emitter';
 export {ErrorHandler} from './error_handler';
@@ -40,7 +50,8 @@ export {Sanitizer} from './sanitization/sanitizer';
 export {createNgModule, createNgModuleRef, createEnvironmentInjector} from './render3/ng_module_ref';
 export {createComponent, reflectComponentType, ComponentMirror} from './render3/component';
 export {isStandalone} from './render3/definition';
-export {ApplicationConfig, mergeApplicationConfig} from './application_config';
+export {AfterRenderRef, AfterRenderOptions, AfterRenderPhase, afterRender, afterNextRender} from './render3/after_render_hooks';
+export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 
@@ -49,7 +60,7 @@ if (typeof ngDevMode !== 'undefined' && ngDevMode) {
   // This helper is to give a reasonable error message to people upgrading to v9 that have not yet
   // installed `@angular/localize` in their app.
   // tslint:disable-next-line: no-toplevel-property-access
-  global.$localize = global.$localize || function() {
+  global.$localize ??= function() {
     throw new Error(
         'It looks like your application or one of its dependencies is using i18n.\n' +
         'Angular 9 introduced a global `$localize()` function that needs to be loaded.\n' +

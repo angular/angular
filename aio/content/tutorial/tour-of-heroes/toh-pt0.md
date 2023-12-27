@@ -1,6 +1,7 @@
 # Create a new project
 
-Use the `ng new` command to start creating your **Tour of Heroes** application.
+Use the `ng new` command to start creating your **Tour of Heroes** application. <br>
+<b>Please note:</b> Starting in Angular version 17 new projects will be [standalone by default](https://angular.io/guide/standalone-components). To create a project with the using `NgModule` use the option `ng new --no-standalone`
 
 This tutorial:
 
@@ -152,4 +153,8 @@ Here are the code files discussed on this page.
 *   You learned that Angular components display data
 *   You used the double curly braces of interpolation to display the application title
 
-@reviewed 2022-02-28
+## Next steps
+
+*  [1. The hero editor](tutorial/tour-of-heroes/toh-pt1)
+
+@reviewed 2023-08-30

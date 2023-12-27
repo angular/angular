@@ -2,8 +2,8 @@
 
 This tutorial shows you how to:
 
-* Expand the Tour of Heroes application to display a list of heroes.
-* Allow users to select a hero and display the hero's details.
+- Expand the Tour of Heroes application to display a list of heroes.
+- Allow users to select a hero and display the hero's details.
 
 <div class="alert is-helpful">
 
@@ -33,6 +33,10 @@ In `HeroesComponent` class, define a component property called `heroes` to expos
 
 ### List heroes with `*ngFor`
 
+In the `HeroesComponent` component file, import the `NgFor` directive and add it to the imports array.
+
+<code-example header="src/app/heroes/heroes.component.ts" path="toh-pt2/src/app/heroes/heroes.component.ts" region="import-ngfor"></code-example>
+
 Open the `HeroesComponent` template file and make the following changes:
 
 1.  Add an `<h2>` at the top.
@@ -41,7 +45,7 @@ Open the `HeroesComponent` template file and make the following changes:
 4.  Place a `<button>` inside the `<li>` that displays properties of a `hero` inside `<span>` elements.
 5.  Add CSS classes to style the component.
 
-to look like this:
+It should look similar to the following:
 
 <code-example header="heroes.component.html (heroes template)" path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list"></code-example>
 
@@ -50,13 +54,13 @@ To have access to each individual hero and list them all, add an `*ngFor` to the
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li"></code-example>
 
-The [`*ngFor`](guide/built-in-directives#ngFor) is Angular's *repeater* directive.
+The [`*ngFor`](guide/built-in-directives#ngFor) is Angular's _repeater_ directive.
 It repeats the host element for each element in a list.
 
 The syntax in this example is as follows:
 
-| Syntax   | Details |
-|:---      |:---     |
+| Syntax   | Details                                                                            |
+| :------- | :--------------------------------------------------------------------------------- |
 | `<li>`   | The host element.                                                                  |
 | `heroes` | Holds the mock heroes list from the `HeroesComponent` class, the mock heroes list. |
 | `hero`   | Holds the current hero object for each iteration through the list.                 |
@@ -132,7 +136,7 @@ In the next section, define an `onSelect()` method in `HeroesComponent` to displ
 
 ### Add the click event handler
 
-Rename the component's `hero` property to `selectedHero` but don't assign any value to it since there is no *selected hero* when the application starts.
+Rename the component's `hero` property to `selectedHero` but don't assign any value to it since there is no _selected hero_ when the application starts.
 
 Add the following `onSelect()` method, which assigns the clicked hero from the template to the component's `selectedHero`.
 
@@ -147,7 +151,7 @@ Add the following to `heroes.component.html` beneath the list section:
 
 <code-example header="heroes.component.html (selected hero details)" path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details"></code-example>
 
-The hero details should only be displayed when a hero is selected. When a component is created initially, there is no selected hero. Add the `*ngIf` directive to the `<div>` that wraps the hero details. This directive tells Angular to render the section only when the `selectedHero` is defined after it has been selected by clicking on a hero.
+The hero details should only be displayed when a hero is selected. When a component is created initially, there is no selected hero. Import the `NgIf` directive in your component (similar to `NgFor`) and add the `*ngIf` directive to the `<div>` that wraps the hero details. This directive tells Angular to render the section only when the `selectedHero` is defined after it has been selected by clicking on a hero.
 
 <div class="alert is-important">
 
@@ -196,10 +200,14 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 
 ## Summary
 
-*   The Tour of Heroes application displays a list of heroes with a detail view.
-*   The user can select a hero and see that hero's details.
-*   You used `*ngFor` to display a list.
-*   You used `*ngIf` to conditionally include or exclude a block of HTML.
-*   You can toggle a CSS style class with a `class` binding.
+* The Tour of Heroes application displays a list of heroes with a detail view.
+* The user can select a hero and see that hero's details.
+* You used `*ngFor` to display a list.
+* You used `*ngIf` to conditionally include or exclude a block of HTML.
+* You can toggle a CSS style class with a `class` binding.
 
-@reviewed 2022-05-23
+## Next steps
+
+*  [3. Create a feature component](tutorial/tour-of-heroes/toh-pt3)
+
+@reviewed 2023-08-30

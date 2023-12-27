@@ -13,6 +13,8 @@ import {RouterModule} from '@angular/router';
 import {BasicComponent} from './e2e/basic/basic';
 import {FillModeFailingComponent, FillModePassingComponent} from './e2e/fill-mode/fill-mode';
 import {ImageDistortionFailingComponent, ImageDistortionPassingComponent} from './e2e/image-distortion/image-distortion';
+import {ImagePerfWarningsLazyComponent} from './e2e/image-perf-warnings-lazy/image-perf-warnings-lazy';
+import {ImagePerfWarningsOversizedComponent} from './e2e/image-perf-warnings-oversized/image-perf-warnings-oversized';
 import {LcpCheckComponent} from './e2e/lcp-check/lcp-check';
 import {OversizedImageComponentFailing, OversizedImageComponentPassing} from './e2e/oversized-image/oversized-image';
 import {PreconnectCheckComponent} from './e2e/preconnect-check/preconnect-check';
@@ -34,6 +36,8 @@ const ROUTES = [
   // Paths below are used for e2e testing:
   {path: 'e2e/basic', component: BasicComponent},
   {path: 'e2e/lcp-check', component: LcpCheckComponent},
+  {path: 'e2e/image-perf-warnings-lazy', component: ImagePerfWarningsLazyComponent},
+  {path: 'e2e/image-perf-warnings-oversized', component: ImagePerfWarningsOversizedComponent},
   {path: 'e2e/preconnect-check', component: PreconnectCheckComponent},
   {path: 'e2e/image-distortion-passing', component: ImageDistortionPassingComponent},
   {path: 'e2e/image-distortion-failing', component: ImageDistortionFailingComponent},

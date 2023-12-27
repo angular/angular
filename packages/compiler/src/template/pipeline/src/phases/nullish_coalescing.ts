@@ -8,19 +8,24 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
-
-export function phaseNullishCoalescing(cpl: ComponentCompilation): void {
-  for (const view of cpl.views.values()) {
-    for (const op of view.ops()) {
+/**
+ * Nullish coalescing expressions such as `a ?? b` have different semantics in Angular templates as
+ * compared to JavaScript. In particular, they default to `null` instead of `undefined`. Therefore,
+ * we replace them with ternary expressions, assigning temporaries as needed to avoid re-evaluating
+ * the same sub-expression multiple times.
+ */
+export function generateNullishCoalesceExpressions(job: CompilationJob): void {
+  for (const unit of job.units) {
+    for (const op of unit.ops()) {
       ir.transformExpressionsInOp(op, expr => {
         if (!(expr instanceof o.BinaryOperatorExpr) ||
             expr.operator !== o.BinaryOperator.NullishCoalesce) {
           return expr;
         }
 
-        const assignment = new ir.AssignTemporaryExpr(expr.lhs.clone(), cpl.allocateXrefId());
+        const assignment = new ir.AssignTemporaryExpr(expr.lhs.clone(), job.allocateXrefId());
         const read = new ir.ReadTemporaryExpr(assignment.xref);
 
         // TODO: When not in compatibility mode for TemplateDefinitionBuilder, we can just emit

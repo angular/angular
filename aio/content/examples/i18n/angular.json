@@ -29,14 +29,14 @@
         // #docregion build-localize-true, build-single-locale, missing-translation-error
         "build": {
           // #enddocregion build-single-locale
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             // #enddocregion build-production-french, missing-translation-error
             "localize": true,
             // #enddocregion build-localize-true
             "outputPath": "dist",
             "index": "src/index.html",
-            "main": "src/main.ts",
+            "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
@@ -67,12 +67,9 @@
             },
             "development": {
               "localize": false,
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             },
             // #docregion build-single-locale, build-production-french
             "fr": {
@@ -88,15 +85,15 @@
           "configurations": {
             // #enddocregion build-single-locale
             "production": {
-              "browserTarget": "angular.io-example:build:production"
+              "buildTarget": "angular.io-example:build:production"
             },
             // #enddocregion build-production-french
             "development": {
-              "browserTarget": "angular.io-example:build:development"
+              "buildTarget": "angular.io-example:build:development"
             },
             // #docregion build-single-locale, build-production-french
             "fr": {
-              "browserTarget": "angular.io-example:build:development,fr"
+              "buildTarget": "angular.io-example:build:development,fr"
             }
           },
           // #enddocregion build-single-locale, build-production-french
@@ -107,7 +104,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular.io-example:build"
+            "buildTarget": "angular.io-example:build"
           }
         },
         "test": {

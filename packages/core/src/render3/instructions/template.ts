@@ -9,6 +9,7 @@ import {validateMatchingNode, validateNodeExists} from '../../hydration/error_ha
 import {TEMPLATES} from '../../hydration/interfaces';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
 import {calcSerializedContainerSize, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
+import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertEqual} from '../../util/assert';
 import {assertFirstCreatePass} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -74,7 +75,7 @@ function templateFirstCreatePass(
 export function ɵɵtemplate(
     index: number, templateFn: ComponentTemplate<any>|null, decls: number, vars: number,
     tagName?: string|null, attrsIndex?: number|null, localRefsIndex?: number|null,
-    localRefExtractor?: LocalRefExtractor) {
+    localRefExtractor?: LocalRefExtractor): typeof ɵɵtemplate {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
@@ -92,7 +93,14 @@ export function ɵɵtemplate(
   }
   attachPatchData(comment, lView);
 
-  addToViewTree(lView, lView[adjustedIndex] = createLContainer(comment, lView, comment, tNode));
+  const lContainer = createLContainer(comment, lView, comment, tNode);
+  lView[adjustedIndex] = lContainer;
+  addToViewTree(lView, lContainer);
+
+  // If hydration is enabled, looks up dehydrated views in the DOM
+  // using hydration annotation info and stores those views on LContainer.
+  // In client-only mode, this function is a noop.
+  populateDehydratedViewsInLContainer(lContainer, tNode, lView);
 
   if (isDirectiveHost(tNode)) {
     createDirectivesInstances(tView, lView, tNode);
@@ -101,6 +109,8 @@ export function ɵɵtemplate(
   if (localRefsIndex != null) {
     saveResolvedLocalsInData(lView, tNode, localRefExtractor);
   }
+
+  return ɵɵtemplate;
 }
 
 let _locateOrCreateContainerAnchor = createContainerAnchorImpl;

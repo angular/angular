@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BoundTarget, ImplicitReceiver, ParseSourceSpan, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 
 import {ClassDeclaration, DeclarationNode} from '../../reflection';
 
@@ -238,10 +238,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitDeferredBlock(deferred: TmplAstDeferredBlock) {
-    this.visitAll(deferred.children);
-    deferred.placeholder?.visit(this);
-    deferred.loading?.visit(this);
-    deferred.error?.visit(this);
+    deferred.visitAll(this);
   }
 
   override visitDeferredBlockPlaceholder(block: TmplAstDeferredBlockPlaceholder) {
@@ -253,6 +250,44 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   }
 
   override visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading) {
+    this.visitAll(block.children);
+  }
+
+  override visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {
+    if (trigger instanceof TmplAstBoundDeferredTrigger) {
+      this.visitExpression(trigger.value);
+    }
+  }
+
+  override visitSwitchBlock(block: TmplAstSwitchBlock) {
+    this.visitExpression(block.expression);
+    this.visitAll(block.cases);
+  }
+
+  override visitSwitchBlockCase(block: TmplAstSwitchBlockCase) {
+    block.expression && this.visitExpression(block.expression);
+    this.visitAll(block.children);
+  }
+
+  override visitForLoopBlock(block: TmplAstForLoopBlock): void {
+    block.item.visit(this);
+    this.visitAll(Object.values(block.contextVariables));
+    this.visitExpression(block.expression);
+    this.visitAll(block.children);
+    block.empty?.visit(this);
+  }
+
+  override visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty): void {
+    this.visitAll(block.children);
+  }
+
+  override visitIfBlock(block: TmplAstIfBlock): void {
+    this.visitAll(block.branches);
+  }
+
+  override visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
+    block.expression && this.visitExpression(block.expression);
+    block.expressionAlias?.visit(this);
     this.visitAll(block.children);
   }
 

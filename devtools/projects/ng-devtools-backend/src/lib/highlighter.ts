@@ -15,7 +15,7 @@ interface Type<T> extends Function {
   new(...args: any[]): T;
 }
 
-export const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
+const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
 
 function init(): void {
   if (overlay) {
@@ -28,12 +28,10 @@ function init(): void {
   overlay.style.pointerEvents = 'none';
   overlay.style.display = 'flex';
   overlay.style.borderRadius = '3px';
-  overlay.setAttribute('id', DEV_TOOLS_HIGHLIGHT_NODE_ID);
+  overlay.id = DEV_TOOLS_HIGHLIGHT_NODE_ID;
   overlayContent = document.createElement('div');
   overlayContent.style.backgroundColor = 'rgba(104, 182, 255, 0.9)';
   overlayContent.style.position = 'absolute';
-  overlayContent.style.bottom = '-23px';
-  overlayContent.style.right = '0px';
   overlayContent.style.fontFamily = 'monospace';
   overlayContent.style.fontSize = '11px';
   overlayContent.style.padding = '2px 3px';
@@ -61,14 +59,11 @@ export const findComponentAndHost =
     };
 
 // Todo(aleksanderbodurri): this should not be part of the highlighter, move this somewhere else
-export const getDirectiveName = (dir: Type<unknown>|undefined|null): string => {
-  if (dir) {
-    return dir.constructor.name;
-  }
-  return 'unknown';
-};
+export function getDirectiveName(dir: Type<unknown>|undefined|null): string {
+  return dir ? dir.constructor.name : 'unknown';
+}
 
-export const highlight = (el: HTMLElement): void => {
+export function highlight(el: HTMLElement): void {
   const cmp = findComponentAndHost(el).component;
   const rect = getComponentRect(el);
 
@@ -88,7 +83,7 @@ export const highlight = (el: HTMLElement): void => {
     }
     showOverlay(rect, content);
   }
-};
+}
 
 export function unHighlight(): void {
   if (overlay && overlay.parentNode) {
@@ -106,7 +101,7 @@ export function inDoc(node: any): boolean {
       !!(parent && parent.nodeType === 1 && doc.contains(parent));
 }
 
-export function getComponentRect(el: Node): DOMRect|ClientRect|undefined {
+function getComponentRect(el: Node): DOMRect|undefined {
   if (!(el instanceof HTMLElement)) {
     return;
   }
@@ -116,24 +111,51 @@ export function getComponentRect(el: Node): DOMRect|ClientRect|undefined {
   return el.getBoundingClientRect();
 }
 
-interface OverlayDimensionsAndPosition {
-  width: number;
-  height: number;
-  top: number;
-  left: number;
-}
-
-function showOverlay(
-    {width = 0, height = 0, top = 0, left = 0}: OverlayDimensionsAndPosition,
-    content: any[] = []): void {
+function showOverlay(dimensions: DOMRect, content: Node[]): void {
+  const {width, height, top, left} = dimensions;
   overlay.style.width = ~~width + 'px';
   overlay.style.height = ~~height + 'px';
   overlay.style.top = ~~top + 'px';
   overlay.style.left = ~~left + 'px';
 
+  positionOverlayContent(dimensions);
   overlayContent.replaceChildren();
 
   content.forEach((child) => overlayContent.appendChild(child));
 
   document.body.appendChild(overlay);
+}
+
+function positionOverlayContent(dimensions: DOMRect) {
+  const {innerWidth: viewportWidth, innerHeight: viewportHeight} = window;
+  const style = overlayContent.style;
+  const yOffset = 23;
+  const yOffsetValue = `-${yOffset}px`;
+
+  // Clear any previous positioning styles.
+  style.top = style.bottom = style.left = style.right = '';
+
+  // Attempt to position the content element so that it's always in the
+  // viewport along the Y axis. Prefer to position on the bottom.
+  if ((dimensions.bottom + yOffset) <= viewportHeight) {
+    style.bottom = yOffsetValue;
+    // If it doesn't fit on the bottom, try to position on top.
+  } else if (dimensions.top - yOffset >= 0) {
+    style.top = yOffsetValue;
+    // Otherwise offset from the bottom until it fits on the screen.
+  } else {
+    style.bottom = `${Math.max(dimensions.bottom - viewportHeight, 0)}px`;
+  }
+
+  // Attempt to position the content element so that it's always in the
+  // viewport along the X axis. Prefer to position on the right.
+  if (dimensions.right <= viewportWidth) {
+    style.right = '0';
+    // If it doesn't fit on the right, try to position on left.
+  } else if (dimensions.left >= 0) {
+    style.left = '0';
+    // Otherwise offset from the right until it fits on the screen.
+  } else {
+    style.right = `${Math.max(dimensions.right - viewportWidth, 0)}px`;
+  }
 }

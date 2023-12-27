@@ -17,6 +17,6 @@ import {IndexedNode} from '../directive-forest/index-forest';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyTabHeaderComponent {
-  @Input() currentSelectedElement: IndexedNode;
+  @Input({required: true}) currentSelectedElement!: IndexedNode;
   @Input() currentDirectives: string[]|undefined;
 }

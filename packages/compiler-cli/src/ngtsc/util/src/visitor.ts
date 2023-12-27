@@ -78,7 +78,7 @@ export abstract class Visitor {
     // is completed.
     let visitedNode: T|null = null;
 
-    node = ts.visitEachChild(node, child => this._visit(child, context), context) as T;
+    node = ts.visitEachChild(node, child => child && this._visit(child, context), context) as T;
 
     if (ts.isClassDeclaration(node)) {
       visitedNode =
@@ -90,7 +90,7 @@ export abstract class Visitor {
 
     // If the visited node has a `statements` array then process them, maybe replacing the visited
     // node and adding additional statements.
-    if (ts.isBlock(visitedNode) || ts.isSourceFile(visitedNode)) {
+    if (visitedNode && (ts.isBlock(visitedNode) || ts.isSourceFile(visitedNode))) {
       visitedNode = this._maybeProcessStatements(visitedNode);
     }
 

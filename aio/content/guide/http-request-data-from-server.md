@@ -1,10 +1,10 @@
 # HTTP: Request data from a server
 
 Use the [`HttpClient.get()`](api/common/http/HttpClient#get) method to fetch data from a server.
-The asynchronous method sends an HTTP request, and returns an Observable that emits the requested data when the response is received.
-The return type varies based on the `observe` and `responseType` values that you pass to the call.
 
-The `get()` method takes two arguments; the endpoint URL from which to fetch, and an *options* object that is used to configure the request.
+This asynchronous method sends an HTTP request, and returns an [Observable](guide/observables-in-angular) that emits the requested data when the response is received.
+
+The `get(url, options)` method takes two arguments; the string endpoint URL from which to fetch, and an *optional options* object to configure the request.
 
 <code-example format="typescript" language="typescript">
 
@@ -22,7 +22,9 @@ options: {
 Important options include the *observe* and *responseType* properties.
 
 *   The *observe* option specifies how much of the response to return
-*   The *responseType* option specifies the format in which to return data
+*   The *responseType* option specifies the desired format of the returned data
+
+To better understand the `observe` and `responseType` option types, [see below](#string-union-types).
 
 <div class="alert is-helpful">
 
@@ -39,25 +41,39 @@ In the `ConfigService` example, the app needs a configuration file on the server
 <code-example header="assets/config.json" path="http/src/assets/config.json"></code-example>
 
 To fetch this kind of data, the `get()` call needs the following options: `{observe: 'body', responseType: 'json'}`.
-These are the default values for those options, so the following examples do not pass the options object.
+*These are the **default values** for those options*, so most `get()` calls - and most of the following examples - do not pass the options object.
 Later sections show some of the additional option possibilities.
 
 <a id="config-service"></a>
 
-The example conforms to the best practices for creating scalable solutions by defining a re-usable [injectable service](guide/glossary#service "service definition") to perform the data-handling functionality.
-In addition to fetching data, the service can post-process the data, add error handling, and add retry logic.
+### Handle data access in a service class
 
-The `ConfigService` fetches this file using the `HttpClient.get()` method.
+The example conforms to the best practice for maintainable solutions by isolating the data-access functionality in a re-usable [injectable service](guide/glossary#service "service definition") separate from the component.
+
+The `ConfigService` fetches the JSON file using the `HttpClient.get()` method.
 
 <code-example header="app/config/config.service.ts (getConfig v.1)" path="http/src/app/config/config.service.ts" region="getConfig_1"></code-example>
 
-The `ConfigComponent` injects the `ConfigService` and calls the `getConfig` service method.
+Notice that `get` was called 
+* without an *options* value because the server endpoint returns JSON and JSON is the default data format.
+* with a generic, `Config`, that indicates the data return type; you'll [learn why shortly](#typed-response).
 
-Because the service method returns an `Observable` of configuration data, the component *subscribes* to the method's return value.
-The subscription callback performs minimal post-processing.
-It copies the data fields into the component's `config` object, which is data-bound in the component template for display.
+In addition to fetching data, the service can post-process the data, 
+[add error handling](guide/http-handle-request-errors), 
+and add retry logic.
+
+### Present the data in the component
+
+The `ConfigComponent` injects the `ConfigService` in its constructor and offers a `showConfig` method, which calls the  service's  `getConfig` method.
 
 <code-example header="app/config/config.component.ts (showConfig v.1)" path="http/src/app/config/config.component.ts" region="v1"></code-example>
+
+Because the service's `getConfig` method returns an `Observable` of configuration data, the component *subscribes* to the method's return value.
+
+If you didn't subscribe, the service would not have issued an HTTP request and there would be no config data to display. You will [understand why shortly](#always-subscribe).
+
+This example subscription callback performs minimal post-processing.
+It copies the data fields into the component's `config` object, which is data-bound in the component template for display.
 
 <a id="always-subscribe"></a>
 
@@ -69,7 +85,9 @@ This is true for *all* `HttpClient` *methods*.
 
 <div class="alert is-helpful">
 
-You should always unsubscribe from an observable when a component is destroyed.
+In general, you should unsubscribe from an observable when a component is destroyed.
+
+You don't have to unsubscribe from `HttpClient` observables because they unsubscribe automatically after the server request responds or times out. Most developers choose not to unsubscribe. None of this guide's examples unsubscribe.
 
 </div>
 
@@ -113,45 +131,60 @@ It is up to the server to ensure that the type specified by the server API is re
 
 </div>
 
-To specify the response object type, first define an interface with the required properties.
+Suppose you made the `get` call without specifying the return type like this:
+<code-example header="Config Service - get without result type (not so good)" path="http/src/app/config/config.service.ts" region="untyped_response">
+</code-example>
+
+The return type would be `Object`, To access its properties you would have to explicitly convert them with `as any` like this: 
+
+<code-example header="Config Component - without result type (not so good)" path="http/src/app/config/config.component.ts"  region="untyped_response">
+</code-example>
+
+It's safer and less clumsy if the returned object has the desired type.
+
+Begin by defining an interface with the required properties.
 Use an interface rather than a class, because the response is a plain object that cannot be automatically converted to an instance of a class.
 
 <code-example path="http/src/app/config/config.service.ts" region="config-interface"></code-example>
 
-Next, specify that interface as the `HttpClient.get()` call's type parameter in the service.
+Now, specify that interface as the `HttpClient.get()` call's type parameter in the service.
 
-<code-example header="app/config/config.service.ts (getConfig v.2)" path="http/src/app/config/config.service.ts" region="getConfig_2"></code-example>
-
-<div class="alert is-helpful">
-
-When you pass an interface as a type parameter to the `HttpClient.get()` method, use the [RxJS `map` operator](guide/rx-library#operators) to transform the response data as needed by the UI.
-You can then pass the transformed data to the [async pipe](api/common/AsyncPipe).
-
-</div>
+<code-example header="Config Service - get with result type (better)" path="http/src/app/config/config.service.ts" region="getConfig_2"></code-example>
 
 The callback in the updated component method receives a typed data object, which is easier and safer to consume:
 
-<code-example header="app/config/config.component.ts (showConfig v.2)" path="http/src/app/config/config.component.ts" region="v2"></code-example>
-
-To access properties that are defined in an interface, you must explicitly convert the plain object you get from the JSON to the required response type.
-For example, the following `subscribe` callback receives `data` as an Object, and then type-casts it in order to access the properties.
-
-<code-example format="typescript" language="typescript">
-
-.subscribe(data =&gt; this.config = {
-  heroesUrl: (data as any).heroesUrl,
-  textfile:  (data as any).textfile,
-});
-
+<code-example header="Config Component - with typed response" path="http/src/app/config/config.component.ts"  region="typed_response">
 </code-example>
 
+You can go a step further and clone the result directly into the component's `config` property with [destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#description).
+
+<code-example header="Config Component - with destructured assignment" path="http/src/app/config/config.component.ts" region="v2"></code-example>
+
+
+## Reading the full response
+
+In the previous example, the call to `HttpClient.get()` did not specify any options.
+By default, it returned the JSON data contained in the response body.
+
+You might need more information about the transaction than is contained in the response body.
+Sometimes servers return special headers or status codes to indicate certain conditions that are important to the application workflow.
+
+Tell `HttpClient` that you want the full response with the `observe` option of the `get()` method:
+
+<code-example path="http/src/app/config/config.service.ts" region="getConfigResponse"></code-example>
+
+Now `HttpClient.get()` returns an `Observable` of type `HttpResponse` rather than just the JSON data contained in the body.
+
+The component's `showConfigResponse()` method displays the response headers as well as the configuration:
+
+<code-example header="app/config/config.component.ts (showConfigResponse)" path="http/src/app/config/config.component.ts" region="showConfigResponse"></code-example>
+
+As you can see, the response object has a `body` property of the correct type.
+
 <a id="string-union-types"></a>
+## The `observe` and `responseType` options
 
-<div class="callout is-important">
-
-<header><code>observe</code> and <code>response</code> types</header>
-
-The types of the `observe` and `response` options are *string unions*, rather than plain strings.
+The types of the `observe` and `responseType` options are *string unions*, rather than plain strings.
 
 <code-example format="typescript" language="typescript">
 
@@ -198,24 +231,4 @@ client.get('/foo', options);
 
 </div>
 
-## Reading the full response
-
-In the previous example, the call to `HttpClient.get()` did not specify any options.
-By default, it returned the JSON data contained in the response body.
-
-You might need more information about the transaction than is contained in the response body.
-Sometimes servers return special headers or status codes to indicate certain conditions that are important to the application workflow.
-
-Tell `HttpClient` that you want the full response with the `observe` option of the `get()` method:
-
-<code-example path="http/src/app/config/config.service.ts" region="getConfigResponse"></code-example>
-
-Now `HttpClient.get()` returns an `Observable` of type `HttpResponse` rather than just the JSON data contained in the body.
-
-The component's `showConfigResponse()` method displays the response headers as well as the configuration:
-
-<code-example header="app/config/config.component.ts (showConfigResponse)" path="http/src/app/config/config.component.ts" region="showConfigResponse"></code-example>
-
-As you can see, the response object has a `body` property of the correct type.
-
-@reviewed 2023-02-27
+@reviewed 2023-08-18

@@ -3,12 +3,6 @@
 **Angular Signals** is a system that granularly tracks how and where your state is used throughout an application, allowing the framework to optimize
 rendering updates.
 
-<div class="alert is-important">
-
-Angular signals are available for [developer preview](/guide/releases#developer-preview). They're ready for you to try, but may change before they are stable.
-
-</div>
-
 ## What are signals?
 
 A **signal** is a wrapper around a value that can notify interested consumers when that value changes. Signals can contain any value, from simple primitives to complex data structures.
@@ -39,17 +33,6 @@ or use the `.update()` operation to compute a new value from the previous one:
 ```ts
 // Increment the count by 1.
 count.update(value => value + 1);
-```
-
-When working with signals that contain objects, it's sometimes useful to mutate that object directly. For example, if the object is an array, you may want to push a new value without replacing the array entirely. To make an internal change like this, use the `.mutate` method:
-
-```ts
-const todos = signal([{title: 'Learn signals', done: false}]);
-
-todos.mutate(value => {
-  // Change the first TODO in the array to 'done: true' without replacing it.
-  value[0].done = true;
-});
 ```
 
 Writable signals have the type `WritableSignal`.
@@ -122,6 +105,8 @@ effect(() => {
 Effects always run **at least once.** When an effect runs, it tracks any signal value reads. Whenever any of these signal values change, the effect runs again. Similar to computed signals, effects keep track of their dependencies dynamically, and only track signals which were read in the most recent execution.
 
 Effects always execute **asynchronously**, during the change detection process.
+
+Note: the `effect()` API is still in [developer preview](/guide/releases#developer-preview) as we work to integrate signal-based reactivity into the core framework.
 
 ### Use cases for effects
 
@@ -208,8 +193,6 @@ data.set(['test']);
 ```
 
 Equality functions can be provided to both writable and computed signals.
-
-For writable signals, `.mutate()` does not check for equality because it mutates the current value without producing a new reference.
 
 ### Reading without tracking dependencies
 

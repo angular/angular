@@ -47,7 +47,7 @@ Congratulations, your application has been converted to standalone 🎉. These a
 * Find and remove any remaining `NgModule` declarations: since the ["Remove unnecessary NgModules" step](#remove-unnecessary-ngmodules) cannot remove all modules automatically, you may have to remove the remaining declarations manually.
 * Run the project's unit tests and fix any failures.
 * Run any code formatters, if the project uses automatic formatting.
-* Run any linters in your project and fix new warnings. Some linters support a `--fix` flag that may resolve so warnings automatically.
+* Run any linters in your project and fix new warnings. Some linters support a `--fix` flag that may resolve some of your warnings automatically.
 
 ## Migration modes
 The migration has the following modes:

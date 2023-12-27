@@ -1,6 +1,6 @@
 # Testing Pipes
 
-You can test [pipes](guide/pipes) without the Angular testing utilities.
+You can test [pipes](guide/pipes-overview) without the Angular testing utilities.
 
 <div class="alert is-helpful">
 
@@ -41,4 +41,4 @@ Consider adding component tests such as this one:
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-07

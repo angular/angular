@@ -8,8 +8,10 @@
 
 import {ConstantPool} from '../../constant_pool';
 import {BindingType, Interpolation} from '../../expression_parser/ast';
+import {splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
+import {CssSelector} from '../../selector';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {ForwardRefHandling} from '../util';
@@ -21,12 +23,12 @@ import {isI18nAttribute} from './i18n/util';
 /**
  * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
  * quotes. Note: we do not wrap all keys into quotes, as it may have impact on minification and may
- * bot work in some cases when object keys are mangled by minifier.
+ * not work in some cases when object keys are mangled by a minifier.
  *
  * TODO(FW-1136): this is a temporary solution, we need to come up with a better way of working with
  * inputs that contain potentially unsafe chars.
  */
-const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
+export const UNSAFE_OBJECT_KEY_NAME_REGEXP = /[-.]/;
 
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';
@@ -48,6 +50,9 @@ export const NON_BINDABLE_ATTR = 'ngNonBindable';
 
 /** Name for the variable keeping track of the context returned by `ɵɵrestoreView`. */
 export const RESTORED_VIEW_CONTEXT_NAME = 'restoredCtx';
+
+/** Special value representing a direct access to a template's context. */
+export const DIRECT_CONTEXT_REFERENCE = '#context';
 
 /**
  * Maximum length of a single instruction chain. Because our output AST uses recursion, we're
@@ -110,6 +115,7 @@ const CHAINABLE_INSTRUCTIONS = new Set([
   R3.textInterpolate7,
   R3.textInterpolate8,
   R3.textInterpolateV,
+  R3.templateCreate,
 ]);
 
 /**
@@ -162,6 +168,12 @@ export function asLiteral(value: any): o.Expression {
   return o.literal(value, o.INFERRED_TYPE);
 }
 
+/**
+ * Serializes inputs and outputs for `defineDirective` and `defineComponent`.
+ *
+ * This will attempt to generate optimized data structures to minimize memory or
+ * file size of fully compiled applications.
+ */
 export function conditionallyCreateDirectiveBindingLiteral(
     map: Record<string, string|{
       classPropertyName: string;
@@ -258,13 +270,44 @@ export class DefinitionMap<T = any> {
 
   set(key: keyof T, value: o.Expression|null): void {
     if (value) {
-      this.values.push({key: key as string, value, quoted: false});
+      const existing = this.values.find(value => value.key === key);
+
+      if (existing) {
+        existing.value = value;
+      } else {
+        this.values.push({key: key as string, value, quoted: false});
+      }
     }
   }
 
   toLiteralMap(): o.LiteralMapExpr {
     return o.literalMap(this.values);
   }
+}
+
+/**
+ * Creates a `CssSelector` from an AST node.
+ */
+export function createCssSelectorFromNode(node: t.Element|t.Template): CssSelector {
+  const elementName = node instanceof t.Element ? node.name : 'ng-template';
+  const attributes = getAttrsForDirectiveMatching(node);
+  const cssSelector = new CssSelector();
+  const elementNameNoNs = splitNsName(elementName)[1];
+
+  cssSelector.setElement(elementNameNoNs);
+
+  Object.getOwnPropertyNames(attributes).forEach((name) => {
+    const nameNoNs = splitNsName(name)[1];
+    const value = attributes[name];
+
+    cssSelector.addAttribute(nameNoNs, value);
+    if (name.toLowerCase() === 'class') {
+      const classes = value.trim().split(/\s+/);
+      classes.forEach(className => cssSelector.addClassName(className));
+    }
+  });
+
+  return cssSelector;
 }
 
 /**
@@ -276,8 +319,7 @@ export class DefinitionMap<T = any> {
  * object maps a property name to its (static) value. For any bindings, this map simply maps the
  * property name to an empty string.
  */
-export function getAttrsForDirectiveMatching(elOrTpl: t.Element|
-                                             t.Template): {[name: string]: string} {
+function getAttrsForDirectiveMatching(elOrTpl: t.Element|t.Template): {[name: string]: string} {
   const attributesMap: {[name: string]: string} = {};
 
 

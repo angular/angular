@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/proxy",
-  "main": "../../bundles/proxy.umd.js",
-  "fesm2015": "../../fesm2015/proxy.js",
-  "es2015": "../../fesm2015/proxy.js",
-  "module": "../../fesm2015/proxy.js"
-}

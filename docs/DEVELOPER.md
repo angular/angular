@@ -26,10 +26,13 @@ following products on your development machine:
   **Windows Users**: Git Bash or an equivalent shell is required\
   *Windows Powershell and cmd shells are not supported [#46780](https://github.com/angular/angular/issues/46780) so some commands might fail*
 
-* [Node.js](https://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
-  run tests, and generate distributable files.
+* [Node.js](https://nodejs.org), (version specified in [`.nvmrc`](../.nvmrc)) which is used to run a development web server,
+  run tests, and generate distributable files.  
+  `.nvmrc` is read by [nvm](https://github.com/nvm-sh/nvm) commands like `nvm install` and `nvm use`.
 
 * [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
+
+* On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow the [instructions](https://bazel.build/install/windows#installing-compilers-and-language-runtimes)
 
 * Optional: [Java](https://openjdk.java.net/) version 7 or higher than required by [Closure Compiler](https://developers.google.com/closure/compiler). Most developers will not need this. Java is required for running some integration tests.
 
@@ -237,7 +240,7 @@ and create it if it doesn't exist.
 
 #### VS Code
 
-1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=DevonDCarew.bazel-code) extension for VS Code.
+1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=BazelBuild.vscode-bazel) extension for VS Code.
 
 #### WebStorm / IntelliJ
 1. Install the [Bazel](https://plugins.jetbrains.com/plugin/8609-bazel) plugin

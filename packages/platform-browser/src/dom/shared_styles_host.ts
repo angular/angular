@@ -156,15 +156,14 @@ export class SharedStylesHost implements OnDestroy {
         styleEl.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
       }
 
+      host.appendChild(styleEl);
+
       return styleEl;
     }
   }
 
   private addStyleToHost(host: Node, style: string): void {
     const styleEl = this.getStyleElement(host, style);
-
-    host.appendChild(styleEl);
-
     const styleRef = this.styleRef;
     const styleElRef = styleRef.get(style)?.elements;
     if (styleElRef) {

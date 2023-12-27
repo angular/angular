@@ -28,7 +28,7 @@ export async function getProjectTsConfigPaths(tree: Tree):
       }
 
       for (const [, options] of allTargetOptions(target)) {
-        const tsConfig = options.tsConfig;
+        const tsConfig = options['tsConfig'];
         // Filter out tsconfig files that don't exist in the CLI project.
         if (typeof tsConfig !== 'string' || !tree.exists(tsConfig)) {
           continue;

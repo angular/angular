@@ -7,7 +7,7 @@
  */
 
 import {HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, ViewportScroller} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject, Inject, InjectionToken, ModuleWithProviders, NgModule, NgProbeToken, NgZone, Optional, Provider, SkipSelf, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, Provider, SkipSelf, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {EmptyOutletComponent} from './components/empty_outlet';
 import {RouterLink} from './directives/router_link';
@@ -16,7 +16,7 @@ import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
 import {NavigationTransitions} from './navigation_transition';
-import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading} from './provide_router';
+import {getBootstrapListener, rootRoute, ROUTER_IS_PROVIDED, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withPreloading, withViewTransitions} from './provide_router';
 import {Router} from './router';
 import {ExtraOptions, ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader, ROUTES} from './router_config_loader';
@@ -54,10 +54,6 @@ export const ROUTER_PROVIDERS: Provider[] = [
   (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: ROUTER_IS_PROVIDED, useValue: true} :
                                                     [],
 ];
-
-export function routerNgProbeToken() {
-  return new NgProbeToken('Router', Router);
-}
 
 /**
  * @description
@@ -123,9 +119,9 @@ export class RouterModule {
         config?.useHash ? provideHashLocationStrategy() : providePathLocationStrategy(),
         provideRouterScroller(),
         config?.preloadingStrategy ? withPreloading(config.preloadingStrategy).ɵproviders : [],
-        {provide: NgProbeToken, multi: true, useFactory: routerNgProbeToken},
         config?.initialNavigation ? provideInitialNavigation(config) : [],
         config?.bindToComponentInputs ? withComponentInputBinding().ɵproviders : [],
+        config?.enableViewTransitions ? withViewTransitions().ɵproviders : [],
         provideRouterInitializer(),
       ],
     };

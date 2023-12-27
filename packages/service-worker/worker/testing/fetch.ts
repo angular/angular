@@ -94,6 +94,10 @@ export class MockHeaders implements Headers {
   values() {
     return this.map.values();
   }
+
+  getSetCookie(): string[] {
+    return [];
+  }
 }
 
 export class MockRequest extends MockBody implements Request {

@@ -8,27 +8,32 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {ComponentCompilation, ViewCompilation} from '../compilation';
+import type {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
 
-export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
-  for (const view of cpl.views.values()) {
-    view.create.prepend([
+/**
+ * When inside of a listener, we may need access to one or more enclosing views. Therefore, each
+ * view should save the current view, and each listener must have the ability to restore the
+ * appropriate view. We eagerly generate all save view variables; they will be optimized away later.
+ */
+export function saveAndRestoreView(job: ComponentCompilationJob): void {
+  for (const unit of job.units) {
+    unit.create.prepend([
       ir.createVariableOp<ir.CreateOp>(
-          view.tpl.allocateXrefId(), {
+          unit.job.allocateXrefId(), {
             kind: ir.SemanticVariableKind.SavedView,
             name: null,
-            view: view.xref,
+            view: unit.xref,
           },
-          new ir.GetCurrentViewExpr()),
+          new ir.GetCurrentViewExpr(), ir.VariableFlags.None),
     ]);
 
-    for (const op of view.create) {
+    for (const op of unit.create) {
       if (op.kind !== ir.OpKind.Listener) {
         continue;
       }
 
       // Embedded views always need the save/restore view operation.
-      let needsRestoreView = view !== cpl.root;
+      let needsRestoreView = unit !== job.root;
 
       if (!needsRestoreView) {
         for (const handlerOp of op.handlerOps) {
@@ -42,21 +47,21 @@ export function phaseSaveRestoreView(cpl: ComponentCompilation): void {
       }
 
       if (needsRestoreView) {
-        addSaveRestoreViewOperationToListener(view, op);
+        addSaveRestoreViewOperationToListener(unit, op);
       }
     }
   }
 }
 
-function addSaveRestoreViewOperationToListener(view: ViewCompilation, op: ir.ListenerOp) {
+function addSaveRestoreViewOperationToListener(unit: ViewCompilationUnit, op: ir.ListenerOp) {
   op.handlerOps.prepend([
     ir.createVariableOp<ir.UpdateOp>(
-        view.tpl.allocateXrefId(), {
+        unit.job.allocateXrefId(), {
           kind: ir.SemanticVariableKind.Context,
           name: null,
-          view: view.xref,
+          view: unit.xref,
         },
-        new ir.RestoreViewExpr(view.xref)),
+        new ir.RestoreViewExpr(unit.xref), ir.VariableFlags.None),
   ]);
 
   // The "restore view" operation in listeners requires a call to `resetView` to reset the

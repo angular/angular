@@ -14,6 +14,13 @@ import {CompileResult, initMockTestFileSystem} from './compile_test';
 import {CompilationMode, ComplianceTest, Expectation, getAllComplianceTests} from './get_compliance_tests';
 
 function transformExpectation(expectation: Expectation, isLocalCompilation: boolean): void {
+  if (USE_TEMPLATE_PIPELINE) {
+    expectation.files =
+        expectation.files.map(pair => ({
+                                expected: pair.templatePipelineExpected || pair.expected,
+                                generated: pair.generated,
+                              }));
+  }
   if (isLocalCompilation) {
     expectation.files =
         expectation.files.map(pair => ({
@@ -56,7 +63,7 @@ export function runTests(
       describe(`[${test.relativePath}]`, () => {
         const itFn = test.focusTest ? fit : test.excludeTest ? xit : it;
         itFn(test.description, () => {
-          if (type === 'linked compile' && test.compilerOptions?.target === 'ES5') {
+          if (type === 'linked compile' && test.compilerOptions?.['target'] === 'ES5') {
             throw new Error(
                 `The "${type}" scenario does not support ES5 output.\n` +
                 `Did you mean to set \`"compilationModeFilter": ["full compile"]\` in "${

@@ -8,7 +8,6 @@
 
 import {Component, Injector, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
@@ -317,6 +316,27 @@ describe('TemplateRef', () => {
       fixture.detectChanges();
       button.click();
       expect(events).toEqual(['Frodo', 'Bilbo']);
+    });
+
+    it('should warn if the context of an embedded view ref is replaced', () => {
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
+      fixture.componentInstance.containerRef.insert(viewRef);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Frodo');
+      spyOn(console, 'warn');
+
+      viewRef.context = {name: 'Bilbo'};
+      fixture.detectChanges();
+
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(
+              'Replacing the `context` object of an `EmbeddedViewRef` is deprecated'));
+      expect(fixture.nativeElement.textContent).toBe('Bilbo');
     });
   });
 });

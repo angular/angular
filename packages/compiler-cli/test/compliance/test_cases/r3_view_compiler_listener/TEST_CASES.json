@@ -16,8 +16,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should create listener instruction on other components",
@@ -34,8 +33,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should create multiple listener instructions that share a view snapshot",
@@ -64,6 +62,7 @@
           "files": [
             {
               "expected": "local_ref_before_listener_template.js",
+              "templatePipelineExpected": "local_ref_before_listener.pipeline.js",
               "generated": "local_ref_before_listener.js"
             }
           ],
@@ -78,8 +77,7 @@
           ],
           "failureMessage": "Incorrect factory"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple listeners on the same element",
@@ -96,8 +94,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple listeners across elements",
@@ -114,8 +111,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should chain multiple listeners on the same template",
@@ -132,8 +128,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should not generate the $event argument if it is not being used in a template",
@@ -201,8 +196,7 @@
           ],
           "failureMessage": "Incorrect event listener"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should preserve accesses to $event if it is done through `this` in a listener",
@@ -216,8 +210,7 @@
               "expected": "event_explicit_access_template.js",
               "generated": "event_explicit_access.js"
             }
-          ],
-          "failureMessage": "Incorrect event listener"
+          ]
         }
       ]
     },
@@ -287,8 +280,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should reference correct context in listener inside embedded view",
@@ -300,13 +292,58 @@
           "files": [
             {
               "expected": "embedded_view_listener_context_template.js",
+              "templatePipelineExpected": "embedded_view_listener_context_template.pipeline.js",
               "generated": "embedded_view_listener_context.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
+      ]
+    },
+    {
+      "description": "should generate a simple two-way binding",
+      "inputFiles": [
+        "simple_two_way.ts"
       ],
-      "skipForTemplatePipeline": true
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "simple_two_way_template.js",
+              "generated": "simple_two_way.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a nested two-way binding",
+      "inputFiles": [
+        "nested_two_way.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_two_way_template.js",
+              "generated": "nested_two_way.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate listener with multiple statements",
+      "inputFiles": [
+        "multiple_statements.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

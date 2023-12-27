@@ -1,6 +1,6 @@
 # Angular components overview
 
-Components are the main building block for Angular applications.
+Components are the main building blocks for Angular applications.
 Each component consists of:
 
 *   An HTML template that declares what renders on the page
@@ -98,7 +98,7 @@ Every component requires a CSS *selector*. A selector instructs Angular to insta
 For example, consider a component `hello-world.component.ts` that defines its selector as `app-hello-world`.
 This selector instructs Angular to instantiate this component any time the tag `<app-hello-world>` appears in a template.
 
-Specify a component's selector by adding a `selector` statement to the `@Component` decorator.
+Specify a component's selector by adding a `selector` property to the `@Component` decorator.
 
 <code-example path="component-overview/src/app/component-overview/component-overview.component.ts" region="selector"></code-example>
 
@@ -123,7 +123,7 @@ For example:
 <div class="alert is-helpful">
 
 An Angular component requires a template defined using `template` or `templateUrl`.
-You cannot have both statements in a component.
+You cannot have both properties in a component.
 
 </div>
 
@@ -155,4 +155,4 @@ The `styles` property takes an array of strings that contain the CSS rule declar
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-07-29

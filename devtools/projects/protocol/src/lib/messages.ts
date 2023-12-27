@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '@angular/core';
+import {InjectionToken, InjectOptions, Injector, Type, ViewEncapsulation} from '@angular/core';
+import {SingleProvider} from '@angular/core/src/di/provider_collection';
 
 export interface DirectiveType {
   name: string;
@@ -25,6 +26,45 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   component: CmpType|null;
   children: DevToolsNode<DirType, CmpType>[];
   nativeElement?: Node;
+  resolutionPath?: SerializedInjector[];
+}
+
+export interface SerializedInjector {
+  id: string;
+  name: string;
+  type: string;
+  node?: DevToolsNode;
+  providers?: number;
+}
+
+/**
+ * Duplicate of the ProviderRecord interface from Angular framework to prevent
+ * needing to publically expose the interface from the framework.
+ */
+export interface ProviderRecord {
+  token: Type<unknown>;
+  isViewProvider: boolean;
+  provider: SingleProvider;
+  importPath?: (Injector|Type<unknown>)[];
+}
+
+export interface SerializedProviderRecord {
+  token: string;
+  type: 'type'|'existing'|'class'|'value'|'factory'|'multi';
+  multi: boolean;
+  isViewProvider: boolean;
+  index?: number|number[];
+}
+
+/**
+ * Duplicate of the InjectedService interface from Angular framework to prevent
+ * needing to publicly expose the interface from the framework.
+ */
+export interface InjectedService {
+  token?: Type<unknown>|InjectionToken<unknown>;
+  value: unknown;
+  flags?: InjectOptions;
+  providedIn: Injector;
 }
 
 export enum PropType {
@@ -41,6 +81,7 @@ export enum PropType {
   Date,
   Array,
   Set,
+  Map,
   Unknown,
 }
 
@@ -61,6 +102,15 @@ export interface DirectiveMetadata {
   outputs: {[name: string]: string};
   encapsulation: ViewEncapsulation;
   onPush: boolean;
+  dependencies?: SerializedInjectedService[];
+}
+
+export interface SerializedInjectedService {
+  token: string;
+  value: string;
+  position: number[];
+  flags?: InjectOptions;
+  resolutionPath?: SerializedInjector[];
 }
 
 export interface Properties {
@@ -164,6 +214,11 @@ export interface Route {
 
 export type Topic = keyof Events;
 
+export interface InjectorGraphViewQuery {
+  directivePosition: DirectivePosition;
+  paramIndex: number;
+}
+
 export interface Events {
   handshake: () => void;
   shutdown: () => void;
@@ -201,4 +256,11 @@ export interface Events {
 
   enableTimingAPI: () => void;
   disableTimingAPI: () => void;
+
+  // todo: type properly
+  getInjectorProviders: (injector: SerializedInjector) => void;
+  latestInjectorProviders:
+      (injector: SerializedInjector, providers: SerializedProviderRecord[]) => void;
+
+  logProvider: (injector: SerializedInjector, providers: SerializedProviderRecord) => void;
 }

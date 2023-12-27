@@ -24,8 +24,9 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * `CommonModule` is included, the `ngSwitch` would also be covered.
  */
 export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Map([
-  ['ngIf', 'NgIf'], ['ngFor', 'NgFor'], ['ngSwitchCase', 'NgSwitchCase'],
-  ['ngSwitchDefault', 'NgSwitchDefault']
+  ['ngIf', {directive: 'NgIf', builtIn: '@if'}], ['ngFor', {directive: 'NgFor', builtIn: '@for'}],
+  ['ngSwitchCase', {directive: 'NgSwitchCase', builtIn: '@switch with @case'}],
+  ['ngSwitchDefault', {directive: 'NgSwitchDefault', builtIn: '@switch with @default'}]
 ]);
 
 /**
@@ -68,13 +69,14 @@ class MissingControlFlowDirectiveCheck extends
     }
 
     const sourceSpan = controlFlowAttr.keySpan || controlFlowAttr.sourceSpan;
-    const correspondingImport = KNOWN_CONTROL_FLOW_DIRECTIVES.get(controlFlowAttr.name);
+    const directiveAndBuiltIn = KNOWN_CONTROL_FLOW_DIRECTIVES.get(controlFlowAttr.name);
     const errorMessage =
         `The \`*${controlFlowAttr.name}\` directive was used in the template, ` +
         `but neither the \`${
-            correspondingImport}\` directive nor the \`CommonModule\` was imported. ` +
-        `Please make sure that either the \`${
-            correspondingImport}\` directive or the \`CommonModule\` ` +
+            directiveAndBuiltIn?.directive}\` directive nor the \`CommonModule\` was imported. ` +
+        `Use Angular's built-in control flow ${directiveAndBuiltIn?.builtIn} or ` +
+        `make sure that either the \`${
+            directiveAndBuiltIn?.directive}\` directive or the \`CommonModule\` ` +
         `is included in the \`@Component.imports\` array of this component.`;
     const diagnostic = ctx.makeTemplateDiagnostic(sourceSpan, errorMessage);
     return [diagnostic];

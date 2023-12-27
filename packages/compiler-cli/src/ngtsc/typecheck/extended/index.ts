@@ -9,6 +9,7 @@
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../diagnostics';
 
 import {TemplateCheckFactory} from './api';
+import {factory as interpolatedSignalNotInvoked} from './checks/interpolated_signal_not_invoked';
 import {factory as invalidBananaInBoxFactory} from './checks/invalid_banana_in_box';
 import {factory as missingControlFlowDirectiveFactory} from './checks/missing_control_flow_directive';
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
@@ -21,11 +22,14 @@ export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
 export const ALL_DIAGNOSTIC_FACTORIES:
     readonly TemplateCheckFactory<ErrorCode, ExtendedTemplateDiagnosticName>[] = [
-      invalidBananaInBoxFactory,
-      nullishCoalescingNotNullableFactory,
-      optionalChainNotNullableFactory,
-      missingControlFlowDirectiveFactory,
-      textAttributeNotBindingFactory,
-      missingNgForOfLetFactory,
-      suffixNotSupportedFactory,
+      invalidBananaInBoxFactory, nullishCoalescingNotNullableFactory,
+      optionalChainNotNullableFactory, missingControlFlowDirectiveFactory,
+      textAttributeNotBindingFactory, missingNgForOfLetFactory, suffixNotSupportedFactory,
+      interpolatedSignalNotInvoked
     ];
+
+
+export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
+  ExtendedTemplateDiagnosticName.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION,
+  ...ALL_DIAGNOSTIC_FACTORIES.map(factory => factory.name)
+]);

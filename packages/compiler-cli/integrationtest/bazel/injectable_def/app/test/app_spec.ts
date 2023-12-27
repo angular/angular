@@ -151,7 +151,7 @@ describe('ngInjectableDef Bazel Integration', () => {
       constructor(public value: boolean) {}
     }
 
-    // ChildServices exteds ParentService but does not have @Injectable
+    // ChildServices extends ParentService but does not have @Injectable
     class ChildService extends ParentService {}
 
     TestBed.configureTestingModule({});
@@ -169,7 +169,7 @@ describe('ngInjectableDef Bazel Integration', () => {
          constructor(public value: string) {}
        }
 
-       // ChildServices exteds ParentService but does not have @Injectable
+       // ChildServices extends ParentService but does not have @Injectable
        class ChildService extends ParentService {
          constructor(value: string) {
            super(value);

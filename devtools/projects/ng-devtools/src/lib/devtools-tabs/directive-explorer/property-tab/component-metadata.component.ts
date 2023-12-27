@@ -19,7 +19,7 @@ import {ElementPropertyResolver} from '../property-resolver/element-property-res
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComponentMetadataComponent {
-  @Input() currentSelectedComponent: ComponentType;
+  @Input({required: true}) currentSelectedComponent!: ComponentType;
 
   constructor(private _nestedProps: ElementPropertyResolver) {}
 
@@ -37,6 +37,7 @@ export class ComponentMetadataComponent {
     if (encapsulationIndex !== undefined) {
       return this.viewEncapsulationModes[encapsulationIndex];
     }
+    return undefined;
   }
 
   get changeDetectionStrategy(): string|undefined {

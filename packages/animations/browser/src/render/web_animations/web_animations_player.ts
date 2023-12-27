@@ -10,8 +10,6 @@ import {AnimationPlayer, ɵStyleDataMap} from '@angular/animations';
 import {computeStyle} from '../../util';
 import {SpecialCasedStyles} from '../special_cased_styles';
 
-import {DOMAnimation} from './dom_animation';
-
 export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
@@ -31,7 +29,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _originalOnStartFns: Function[] = [];
 
   // using non-null assertion because it's re(set) by init();
-  public readonly domPlayer!: DOMAnimation;
+  public readonly domPlayer!: Animation;
   public time = 0;
 
   public parentPlayer: AnimationPlayer|null = null;
@@ -67,7 +65,14 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     // @ts-expect-error overwriting a readonly property
     this.domPlayer = this._triggerWebAnimation(this.element, keyframes, this.options);
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : new Map();
-    this.domPlayer.addEventListener('finish', () => this._onFinish());
+    const onFinish = () => this._onFinish();
+    this.domPlayer.addEventListener('finish', onFinish);
+    this.onDestroy(() => {
+      // We must remove the `finish` event listener once an animation has completed all its
+      // iterations. This action is necessary to prevent a memory leak since the listener captures
+      // `this`, creating a closure that prevents `this` from being garbage collected.
+      this.domPlayer.removeEventListener('finish', onFinish);
+    });
   }
 
   private _preparePlayerBeforeStart() {
@@ -88,10 +93,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   /** @internal */
-  _triggerWebAnimation(element: any, keyframes: Array<ɵStyleDataMap>, options: any): DOMAnimation {
-    // jscompiler doesn't seem to know animate is a native property because it's not fully
-    // supported yet across common browsers (we polyfill it for Edge/Safari) [CL #143630929]
-    return element['animate'](this._convertKeyframesToObject(keyframes), options) as DOMAnimation;
+  _triggerWebAnimation(element: HTMLElement, keyframes: Array<ɵStyleDataMap>, options: any):
+      Animation {
+    return element.animate(this._convertKeyframesToObject(keyframes), options);
   }
 
   onStart(fn: () => void): void {
@@ -180,7 +184,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   getPosition(): number {
-    return this.domPlayer.currentTime / this.time;
+    // tsc is complaining with TS2362 without the conversion to number
+    return +(this.domPlayer.currentTime ?? 0) / this.time;
   }
 
   get totalTime(): number {

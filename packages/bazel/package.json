@@ -5,7 +5,7 @@
   "author": "angular",
   "license": "MIT",
   "engines": {
-    "node": "^16.14.0 || >=18.10.0"
+    "node": "^18.13.0 || >=20.9.0"
   },
   "bin": {
     "ngc-wrapped": "./src/ngc-wrapped/index.mjs",
@@ -24,7 +24,6 @@
   "dependencies": {
     "@microsoft/api-extractor": "^7.24.2",
     "magic-string": "^0.30.0",
-    "tsickle": "^0.46.3",
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
@@ -36,7 +35,7 @@
     "rollup": "^2.56.3",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "terser": "^5.9.0",
-    "typescript": ">=4.9.3 <5.2"
+    "typescript": ">=5.2 <5.4"
   },
   "peerDependenciesMeta": {
     "terser": {

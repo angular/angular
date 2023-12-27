@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {booleanAttribute, Directive, ElementRef, inject, InjectionToken, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {booleanAttribute, Directive, ElementRef, inject, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵIMAGE_CONFIG as IMAGE_CONFIG, ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS, ɵImageConfig as ImageConfig, ɵperformanceMarkFeature as performanceMarkFeature, ɵRuntimeError as RuntimeError, ɵSafeValue as SafeValue, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
 import {isPlatformServer} from '../../platform_id';
@@ -87,39 +87,13 @@ const FIXED_SRCSET_HEIGHT_LIMIT = 1080;
 export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo];
 
 /**
- * A configuration object for the NgOptimizedImage directive. Contains:
- * - breakpoints: An array of integer breakpoints used to generate
- *      srcsets for responsive images.
- *
- * Learn more about the responsive image configuration in [the NgOptimizedImage
- * guide](guide/image-directive).
- * @publicApi
- */
-export type ImageConfig = {
-  breakpoints?: number[]
-};
-
-const defaultConfig: ImageConfig = {
-  breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-};
-
-/**
- * Injection token that configures the image optimized image functionality.
- *
- * @see {@link NgOptimizedImage}
- * @publicApi
- */
-export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
-    'ImageConfig', {providedIn: 'root', factory: () => defaultConfig});
-
-/**
  * Directive that improves image loading performance by enforcing best practices.
  *
  * `NgOptimizedImage` ensures that the loading of the Largest Contentful Paint (LCP) image is
  * prioritized by:
  * - Automatically setting the `fetchpriority` attribute on the `<img>` tag
  * - Lazy loading non-priority images by default
- * - Asserting that there is a corresponding preconnect link tag in the document head
+ * - Automatically generating a preconnect link tag in the document head
  *
  * In addition, the directive:
  * - Generates appropriate asset URLs if a corresponding `ImageLoader` function is provided
@@ -245,7 +219,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
    * Image name will be processed by the image loader and the final URL will be applied as the `src`
    * property of the image.
    */
-  @Input({required: true}) ngSrc!: string;
+  @Input({required: true, transform: unwrapSafeUrl}) ngSrc!: string;
 
   /**
    * A comma separated list of width or density descriptors.
@@ -328,6 +302,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
   /** @nodoc */
   ngOnInit() {
+    performanceMarkFeature('NgOptimizedImage');
+
     if (ngDevMode) {
       const ngZone = this.injector.get(NgZone);
       assertNonEmptyInput(this, 'ngSrc', this.ngSrc);
@@ -537,8 +513,13 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   }
 
   private shouldGenerateAutomaticSrcset(): boolean {
+    let oversizedImage = false;
+    if (!this.sizes) {
+      oversizedImage =
+          this.width! > FIXED_SRCSET_WIDTH_LIMIT || this.height! > FIXED_SRCSET_HEIGHT_LIMIT;
+    }
     return !this.disableOptimizedSrcset && !this.srcset && this.imageLoader !== noopImageLoader &&
-        !(this.width! > FIXED_SRCSET_WIDTH_LIMIT || this.height! > FIXED_SRCSET_HEIGHT_LIMIT);
+        !oversizedImage;
   }
 
   /** @nodoc */
@@ -565,7 +546,7 @@ function processConfig(config: ImageConfig): ImageConfig {
   if (config.breakpoints) {
     sortedBreakpoints.breakpoints = config.breakpoints.sort((a, b) => a - b);
   }
-  return Object.assign({}, defaultConfig, config, sortedBreakpoints);
+  return Object.assign({}, IMAGE_CONFIG_DEFAULTS, config, sortedBreakpoints);
 }
 
 /***** Assert functions *****/
@@ -765,8 +746,9 @@ function assertGreaterThanZero(dir: NgOptimizedImage, inputValue: unknown, input
  */
 function assertNoImageDistortion(
     dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
-  const removeListenerFn = renderer.listen(img, 'load', () => {
-    removeListenerFn();
+  const removeLoadListenerFn = renderer.listen(img, 'load', () => {
+    removeLoadListenerFn();
+    removeErrorListenerFn();
     const computedStyle = window.getComputedStyle(img);
     let renderedWidth = parseFloat(computedStyle.getPropertyValue('width'));
     let renderedHeight = parseFloat(computedStyle.getPropertyValue('height'));
@@ -847,6 +829,15 @@ function assertNoImageDistortion(
       }
     }
   });
+
+  // We only listen to the `error` event to remove the `load` event listener because it will not be
+  // fired if the image fails to load. This is done to prevent memory leaks in development mode
+  // because image elements aren't garbage-collected properly. It happens because zone.js stores the
+  // event listener directly on the element and closures capture `dir`.
+  const removeErrorListenerFn = renderer.listen(img, 'error', () => {
+    removeLoadListenerFn();
+    removeErrorListenerFn();
+  });
 }
 
 /**
@@ -889,8 +880,9 @@ function assertEmptyWidthAndHeight(dir: NgOptimizedImage) {
  */
 function assertNonZeroRenderedHeight(
     dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2) {
-  const removeListenerFn = renderer.listen(img, 'load', () => {
-    removeListenerFn();
+  const removeLoadListenerFn = renderer.listen(img, 'load', () => {
+    removeLoadListenerFn();
+    removeErrorListenerFn();
     const renderedHeight = img.clientHeight;
     if (dir.fill && renderedHeight === 0) {
       console.warn(formatRuntimeError(
@@ -901,6 +893,12 @@ function assertNonZeroRenderedHeight(
               `To fix this problem, make sure the container element has the CSS 'position' ` +
               `property defined and the height of the element is not zero.`));
     }
+  });
+
+  // See comments in the `assertNoImageDistortion`.
+  const removeErrorListenerFn = renderer.listen(img, 'error', () => {
+    removeLoadListenerFn();
+    removeErrorListenerFn();
   });
 }
 
@@ -992,4 +990,13 @@ function assertNoLoaderParamsWithoutLoader(dir: NgOptimizedImage, imageLoader: I
 
 function round(input: number): number|string {
   return Number.isInteger(input) ? input : input.toFixed(2);
+}
+
+// Transform function to handle SafeValue input for ngSrc. This doesn't do any sanitization,
+// as that is not needed for img.src and img.srcset. This transform is purely for compatibility.
+function unwrapSafeUrl(value: string|SafeValue): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  return unwrapSafeValue(value);
 }

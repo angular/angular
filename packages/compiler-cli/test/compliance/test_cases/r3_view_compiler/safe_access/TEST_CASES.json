@@ -16,8 +16,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle deep safe property reads inside templates",
@@ -31,8 +30,7 @@
               "expected": "safe_access_deep_template.js",
               "generated": "safe_access_deep.js"
             }
-          ],
-          "failureMessage": "Incorrect template"
+          ]
         }
       ]
     },
@@ -46,6 +44,7 @@
           "files": [
             {
               "expected": "safe_access_temporaries_template.js",
+              "templatePipelineExpected": "safe_access_temporaries_template.pipeline.js",
               "generated": "safe_access_temporaries.js"
             }
           ],
@@ -68,8 +67,7 @@
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle safe calls inside templates",
@@ -81,13 +79,13 @@
           "files": [
             {
               "expected": "safe_call_template.js",
+              "templatePipelineExpected": "safe_call_template.pipeline.js",
               "generated": "safe_call.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     },
     {
       "description": "should handle non-null assertions after a safe access",
@@ -99,13 +97,13 @@
           "files": [
             {
               "expected": "safe_access_non_null_template.js",
+              "templatePipelineExpected": "safe_access_non_null_template.pipeline.js",
               "generated": "safe_access_non_null.js"
             }
           ],
           "failureMessage": "Incorrect template"
         }
-      ],
-      "skipForTemplatePipeline": true
+      ]
     }
   ]
 }

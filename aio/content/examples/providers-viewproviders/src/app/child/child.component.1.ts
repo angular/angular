@@ -3,6 +3,7 @@ import { FlowerService } from '../flower.service';
 
 // #docregion flowerservice
 @Component({
+  standalone: true,
   selector: 'app-child',
   templateUrl: './child.component.html',
   styleUrls: ['./child.component.css'],

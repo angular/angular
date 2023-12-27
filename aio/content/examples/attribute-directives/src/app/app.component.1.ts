@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
-  templateUrl: './app.component.1.html'
+  templateUrl: './app.component.1.html',
 })
 // #docregion class
 export class AppComponent {

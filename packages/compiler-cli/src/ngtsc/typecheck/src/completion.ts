@@ -215,7 +215,7 @@ export class CompletionEngine {
 
     // The bound template already has details about the references and variables in scope in the
     // `context` template - they just need to be converted to `Completion`s.
-    for (const node of this.data.boundTarget.getEntitiesInTemplateScope(context)) {
+    for (const node of this.data.boundTarget.getEntitiesInScope(context)) {
       if (node instanceof TmplAstReference) {
         templateContext.set(node.name, {
           kind: CompletionKind.Reference,

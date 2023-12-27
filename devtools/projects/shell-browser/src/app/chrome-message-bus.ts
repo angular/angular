@@ -42,10 +42,10 @@ export class ChromeMessageBus extends MessageBus<Events> {
     };
   }
 
-  on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
+  override on<E extends keyof Events>(topic: E, cb: Events[E]): () => void {
     const listener = (msg: ChromeMessage<Events, keyof Events>): void => {
       if (msg.topic === topic) {
-        cb.apply(null, msg.args);
+        (cb as any).apply(null, msg.args);
       }
     };
     this._port.onMessage.addListener(listener);
@@ -56,28 +56,29 @@ export class ChromeMessageBus extends MessageBus<Events> {
     };
   }
 
-  once<E extends keyof Events>(topic: E, cb: Events[E]): void {
+  override once<E extends keyof Events>(topic: E, cb: Events[E]): void {
     const listener = (msg: ChromeMessage<Events, keyof Events>) => {
       if (msg.topic === topic) {
-        cb.apply(null, msg.args);
+        (cb as any).apply(null, msg.args);
         this._port.onMessage.removeListener(listener);
       }
     };
     this._port.onMessage.addListener(listener);
   }
 
-  emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
+  override emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     if (this._disconnected) {
       return false;
     }
     this._port.postMessage({
       topic,
       args,
+      __ignore_ng_zone__: true,
     });
     return true;
   }
 
-  destroy(): void {
+  override destroy(): void {
     this._listeners.forEach((l) => window.removeEventListener('message', l));
     this._listeners = [];
   }

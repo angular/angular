@@ -4,11 +4,13 @@
 
 ```ts
 
+/// <reference types="@angular/compiler-cli/private/babel" />
+
 import { AbsoluteFsPath } from '@angular/compiler-cli/private/localize';
 import { Element as Element_2 } from '@angular/compiler';
 import { Logger } from '@angular/compiler-cli/private/localize';
 import { MessageId } from '@angular/localize';
-import { NodePath } from '@babel/traverse';
+import { NodePath } from '@babel/core';
 import { ParseError } from '@angular/compiler';
 import { PathManipulation } from '@angular/compiler-cli/private/localize';
 import { PluginObj } from '@babel/core';

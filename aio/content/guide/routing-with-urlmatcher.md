@@ -62,22 +62,24 @@ In addition to the default Angular application framework, you will also create a
 
 ## Configure your routes for your application
 
-With your application framework in place, you next need to add routing capabilities to the `app.module.ts` file.
+With your application framework in place, you next need to add routing capabilities to the `app.config.ts` file.
 As a part of this process, you will create a custom URL matcher that looks for a Twitter handle in the URL.
 This handle is identified by a preceding `@` symbol.
 
-1.  In your code editor, open your `app.module.ts` file.
-1.  Add an `import` statement for Angular's `RouterModule` and `UrlMatcher`.
+1.  In your code editor, open your `app.config.ts` file.
+1.  Add an `import` statement for Angular's `provideRouter` and `withComponentInputBinding` as well as the application routes.
 
-    <code-example header="src/app/app.module.ts" path="routing-with-urlmatcher/src/app/app.module.ts" region="import"></code-example>
+    ```
+    import {provideRouter, withComponentInputBinding} from '@angular/router';
 
-1.  In the imports array, add a `RouterModule.forRoot([])` statement.
+    import {routes} from './app.routes';
+    ```
 
-    <code-example header="src/app/app.module.ts" path="routing-with-urlmatcher/src/app/app.module.ts" region="imports-array"></code-example>
+1.  In the providers array, add a `provideRouter(routes, withComponentInputBinding())` statement.
 
-1.  Define the custom route matcher by adding the following code to the `RouterModule.forRoot()` statement.
+1.  Define the custom route matcher by adding the following code to the application routes.
 
-    <code-example header="src/app/app.module.ts" path="routing-with-urlmatcher/src/app/app.module.ts" region="matcher"></code-example>
+    <code-example header="src/app/app.routes.ts" path="routing-with-urlmatcher/src/app/app.routes.ts" region="matcher"></code-example>
 
 This custom matcher is a function that performs the following tasks:
 
@@ -93,27 +95,17 @@ Define child routes or lazy loaded routes as you would with any other route.
 
 </div>
 
-## Subscribe to the route parameters
+## Reading the route parameters
 
-With the custom matcher in place, you now need to subscribe to the route parameters in the `profile` component.
+With the custom matcher in place, you can now bind the route parameter in the `profile` component.
 
-1.  In your code editor, open your `profile.component.ts` file.
-1.  Add an `import` statement for Angular's `ActivatedRoute` and `ParamMap`.
+In your code editor, open your `profile.component.ts` file and create an `Input` matching the `username` parameter.
+We added the `withComponentInputBinding` feature earlier
+in `provideRouter`. This allows the `Router` to bind information directly to the route components.
 
-    <code-example header="src/app/profile/profile.component.ts" path="routing-with-urlmatcher/src/app/profile/profile.component.ts" region="activated-route-and-parammap"></code-example>
-
-1.  Add an `import` statement for RxJS `map`.
-
-    <code-example header="src/app/profile/profile.component.ts" path="routing-with-urlmatcher/src/app/profile/profile.component.ts" region="rxjs-map"></code-example>
-
-1.  Subscribe to the `username` route parameter.
-
-    <code-example header="src/app/profile/profile.component.ts" path="routing-with-urlmatcher/src/app/profile/profile.component.ts" region="subscribe"></code-example>
-
-1.  Inject the `ActivatedRoute` into the component's constructor.
-
-    <code-example header="src/app/profile/profile.component.ts" path="routing-with-urlmatcher/src/app/profile/profile.component.ts" region="activatedroute"></code-example>
-
+```
+@Input() username!: string;
+```
 ## Test your custom URL matcher
 
 With your code in place, you can now test your custom URL matcher.
@@ -154,4 +146,4 @@ This content is based on [Custom Route Matching with the Angular Router](https:/
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-10-24

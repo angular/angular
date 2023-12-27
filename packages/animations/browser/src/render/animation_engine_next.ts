@@ -29,10 +29,10 @@ export class AnimationEngine {
   public onRemovalComplete = (element: any, context: any) => {};
 
   constructor(
-      private bodyNode: any, private _driver: AnimationDriver,
+      doc: Document, private _driver: AnimationDriver,
       private _normalizer: AnimationStyleNormalizer) {
-    this._transitionEngine = new TransitionAnimationEngine(bodyNode, _driver, _normalizer);
-    this._timelineEngine = new TimelineAnimationEngine(bodyNode, _driver, _normalizer);
+    this._transitionEngine = new TransitionAnimationEngine(doc.body, _driver, _normalizer);
+    this._timelineEngine = new TimelineAnimationEngine(doc.body, _driver, _normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
         this.onRemovalComplete(element, context);

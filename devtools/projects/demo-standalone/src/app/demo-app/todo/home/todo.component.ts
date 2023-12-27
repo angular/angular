@@ -21,7 +21,7 @@ export interface Todo {
   selector: 'app-todo',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, TooltipDirective],
+  imports: [TooltipDirective],
   styles: [`
       .destroy {
         cursor: pointer;
@@ -45,7 +45,7 @@ export interface Todo {
   `
 })
 export class TodoComponent {
-  @Input() todo: Todo;
+  @Input() todo!: Todo;
   @Output() update = new EventEmitter();
   @Output() delete = new EventEmitter();
 

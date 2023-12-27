@@ -149,6 +149,12 @@ class I18nToHtmlVisitor implements i18n.Visitor {
     return this._convertToText(this._srcMsg.placeholderToMessage[ph.name]);
   }
 
+  visitBlockPlaceholder(ph: i18n.BlockPlaceholder, context?: any): string {
+    const params = ph.parameters.length === 0 ? '' : ` (${ph.parameters.join('; ')})`;
+    const children = ph.children.map((c: i18n.Node) => c.visit(this)).join('');
+    return `@${ph.name}${params} {${children}}`;
+  }
+
   /**
    * Convert a source message to a translated text string:
    * - text nodes are replaced with their translation,

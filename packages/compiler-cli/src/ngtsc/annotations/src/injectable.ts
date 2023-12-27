@@ -14,7 +14,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult,} from '../../transform';
 import {checkInheritanceOfInjectable, compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField, extractClassMetadata, findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference,} from '../common';
 
 export interface InjectableHandlerData {
@@ -33,7 +33,7 @@ export class InjectableDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private isCore: boolean, private strictCtorDeps: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
-      private includeClassMetadata: boolean,
+      private includeClassMetadata: boolean, private readonly compilationMode: CompilationMode,
       /**
        * What to do if the injectable already contains a ɵprov property.
        *
@@ -156,8 +156,13 @@ export class InjectableDecoratorHandler implements
     if (ɵprov === undefined) {
       // Only add a new ɵprov if there is not one already
       const res = compileInjectableFn(analysis.meta);
-      results.push(
-          {name: 'ɵprov', initializer: res.expression, statements: res.statements, type: res.type});
+      results.push({
+        name: 'ɵprov',
+        initializer: res.expression,
+        statements: res.statements,
+        type: res.type,
+        deferrableImports: null
+      });
     }
 
     return results;

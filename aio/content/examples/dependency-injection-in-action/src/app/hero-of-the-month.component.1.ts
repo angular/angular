@@ -3,13 +3,16 @@
 import { Component, NgModule } from '@angular/core';
 import { LoggerService } from './logger.service';
 import { MinimalLogger } from './minimal-logger.service';
+import { NgFor } from '@angular/common';
 
 // #docregion
 @Component({
+  standalone: true,
   selector: 'app-hero-of-the-month',
   templateUrl: './hero-of-the-month.component.html',
   // TODO: move this aliasing, `useExisting` provider to the AppModule
-  providers: [{ provide: MinimalLogger, useExisting: LoggerService }]
+  providers: [{ provide: MinimalLogger, useExisting: LoggerService }],
+  imports: [NgFor]
 })
 export class HeroOfTheMonthComponent {
   logs: string[] = [];
@@ -18,9 +21,3 @@ export class HeroOfTheMonthComponent {
   }
 }
 // #enddocregion
-
-// This NgModule exists only to avoid the Angular language service's "undeclared component" error
-@NgModule({
-  declarations: [ HeroOfTheMonthComponent ]
-})
-export class NoopModule {}

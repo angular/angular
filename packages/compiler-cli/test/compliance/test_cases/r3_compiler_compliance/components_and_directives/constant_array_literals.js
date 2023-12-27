@@ -1,5 +1,5 @@
-const $c0$ = function () { return []; };
-const $c1$ = function () { return [0, 1, 2]; };
+const $c0$ = () => [];
+const $c1$ = () => [0, 1, 2];
 // ...
 MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,

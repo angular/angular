@@ -18,6 +18,9 @@ export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec}
 export {HttpFeature, HttpFeatureKind, provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from './src/provider';
 export {HttpRequest} from './src/request';
 export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpStatusCode, HttpUploadProgressEvent, HttpUserEvent} from './src/response';
-export {withHttpTransferCache as ɵwithHttpTransferCache} from './src/transfer_cache';
+export {HttpTransferCacheOptions, withHttpTransferCache as ɵwithHttpTransferCache} from './src/transfer_cache';
 export {HttpXhrBackend} from './src/xhr';
 export {HttpXsrfTokenExtractor} from './src/xsrf';
+
+// Private exports
+export * from './src/private_export';

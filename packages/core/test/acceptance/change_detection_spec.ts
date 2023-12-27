@@ -8,7 +8,7 @@
 
 
 import {CommonModule} from '@angular/common';
-import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, inject, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ɵgetEnsureDirtyViewsAreAlwaysReachable, ɵsetEnsureDirtyViewsAreAlwaysReachable} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
@@ -66,49 +66,68 @@ describe('change detection', () => {
       expect(viewRef.rootNodes[0]).toHaveText('change-detected');
     });
 
+    it('should not detect changes for OnPush embedded views when they are not dirty', () => {
+      @Component({
+        selector: 'onpush',
+        template: '',
+        standalone: true,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class OnPushComponent {
+        checks = 0;
+        cdRef = inject(ChangeDetectorRef);
+        ngDoCheck() {
+          this.checks++;
+        }
+      }
+
+      @Component({template: '<ng-template #template></ng-template>', standalone: true})
+      class Container {
+        @ViewChild('template', {read: ViewContainerRef, static: true}) vcr!: ViewContainerRef;
+      }
+      const fixture = TestBed.createComponent(Container);
+      const ref = fixture.componentInstance.vcr!.createComponent(OnPushComponent);
+
+      fixture.detectChanges(false);
+      expect(ref.instance.checks).toBe(1);
+
+      fixture.detectChanges(false);
+      expect(ref.instance.checks).toBe(1);
+
+      ref.instance.cdRef.markForCheck();
+      fixture.detectChanges(false);
+      expect(ref.instance.checks).toBe(2);
+    });
+
     it('should not detect changes in child embedded views while they are detached', () => {
       const counters = {componentView: 0, embeddedView: 0};
 
       @Component({
         template: `
-          <button (click)="noop()">Trigger change detection</button>
           <div>{{increment('componentView')}}</div>
           <ng-template #vm="vm" viewManipulation>{{increment('embeddedView')}}</ng-template>
         `,
-        changeDetection: ChangeDetectionStrategy.OnPush
       })
       class App {
         increment(counter: 'componentView'|'embeddedView') {
           counters[counter]++;
         }
-        noop() {}
       }
 
       TestBed.configureTestingModule({declarations: [App, ViewManipulation]});
       const fixture = TestBed.createComponent(App);
-      const vm: ViewManipulation = fixture.debugElement.childNodes[2].references['vm'];
-      const button = fixture.nativeElement.querySelector('button');
+      const vm: ViewManipulation = fixture.debugElement.childNodes[1].references['vm'];
       const viewRef = vm.insertIntoVcRef();
-      fixture.detectChanges();
-
-      expect(counters).toEqual({componentView: 1, embeddedView: 1});
-
-      button.click();
-      fixture.detectChanges();
-      expect(counters).toEqual({componentView: 2, embeddedView: 2});
-
       viewRef.detach();
-      button.click();
       fixture.detectChanges();
 
-      expect(counters).toEqual({componentView: 3, embeddedView: 2});
+      expect(counters).toEqual({componentView: 2, embeddedView: 0});
 
       // Re-attach the view to ensure that the process can be reversed.
       viewRef.reattach();
-      button.click();
       fixture.detectChanges();
 
-      expect(counters).toEqual({componentView: 4, embeddedView: 3});
+      expect(counters).toEqual({componentView: 4, embeddedView: 2});
     });
 
     it('should not detect changes in child component views while they are detached', () => {
@@ -165,16 +184,17 @@ describe('change detection', () => {
 
   describe('markForCheck', () => {
     it('should mark OnPush ancestor of dynamically created component views as dirty', () => {
+      const previous = ɵgetEnsureDirtyViewsAreAlwaysReachable();
+      ɵsetEnsureDirtyViewsAreAlwaysReachable(true);
       @Component({
         selector: `test-cmpt`,
         template: `{{counter}}|<ng-template #vc></ng-template>`,
-        changeDetection: ChangeDetectionStrategy.OnPush
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        standalone: true,
       })
       class TestCmpt {
         counter = 0;
         @ViewChild('vc', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
-
-        constructor() {}
 
         createComponentView<T>(cmptType: Type<T>): ComponentRef<T> {
           return this.vcRef.createComponent(cmptType);
@@ -183,17 +203,13 @@ describe('change detection', () => {
 
       @Component({
         selector: 'dynamic-cmpt',
-        template: `dynamic`,
+        template: `dynamic|{{binding}}`,
+        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush
       })
       class DynamicCmpt {
+        @Input() binding = 'binding';
       }
-
-      @NgModule({declarations: [DynamicCmpt]})
-      class DynamicModule {
-      }
-
-      TestBed.configureTestingModule({imports: [DynamicModule], declarations: [TestCmpt]});
 
       const fixture = TestBed.createComponent(TestCmpt);
 
@@ -202,20 +218,34 @@ describe('change detection', () => {
       fixture.detectChanges(false);
       expect(fixture.nativeElement).toHaveText('0|');
 
-      // insert a dynamic component
+      // insert a dynamic component, but do not specifically mark parent dirty
+      // (dynamic components with OnPush flag are created with the `Dirty` flag)
       const dynamicCmptRef = fixture.componentInstance.createComponentView(DynamicCmpt);
       fixture.detectChanges(false);
-      expect(fixture.nativeElement).toHaveText('0|dynamic');
+      expect(fixture.nativeElement).toHaveText('0|dynamic|binding');
 
       // update model in the OnPush component - should not update UI
       fixture.componentInstance.counter = 1;
       fixture.detectChanges(false);
-      expect(fixture.nativeElement).toHaveText('0|dynamic');
+      expect(fixture.nativeElement).toHaveText('0|dynamic|binding');
 
       // now mark the dynamically inserted component as dirty
       dynamicCmptRef.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
-      expect(fixture.nativeElement).toHaveText('1|dynamic');
+      expect(fixture.nativeElement).toHaveText('1|dynamic|binding');
+
+      // Update, mark for check, and detach before change detection, should not update
+      dynamicCmptRef.setInput('binding', 'updatedBinding');
+      dynamicCmptRef.changeDetectorRef.markForCheck();
+      dynamicCmptRef.changeDetectorRef.detach();
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement).toHaveText('1|dynamic|binding');
+
+      // reattaching and run CD from the top should update
+      dynamicCmptRef.changeDetectorRef.reattach();
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement).toHaveText('1|dynamic|updatedBinding');
+      ɵsetEnsureDirtyViewsAreAlwaysReachable(previous);
     });
 
     it('should support re-enterant change detection', () => {

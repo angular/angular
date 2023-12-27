@@ -60,11 +60,11 @@ The Angular Router displays components based on the browser's URL and [your defi
 
 In this section, you'll use the Angular Router to combine the `products` data and route information to display the specific details for each product.
 
-1.  In `product-details.component.ts`, import `ActivatedRoute` from `@angular/router`, and the `products` array from `../products`.
+1.  In `product-details.component.ts`, import `ActivatedRoute` from `@angular/router`, import `OnInit` from `@angular/core`, and the `products` array from `../products`.
 
     <code-example header="src/app/product-details/product-details.component.ts" path="getting-started/src/app/product-details/product-details.component.1.ts" region="imports"></code-example>
 
-1.  Define the `product` property.
+1.  Define the `product` property. The `implements OnInit` statement indicates that the class implements the `OnInit` interface, requiring the implementation of the `ngOnInit` method for initialization tasks when the component is created.
 
     <code-example header="src/app/product-details/product-details.component.ts" path="getting-started/src/app/product-details/product-details.component.1.ts" region="product-prop"></code-example>
 
@@ -94,7 +94,7 @@ In this section, you'll use the Angular Router to combine the `products` data an
 
     The line, `<h4>{{ product.price | currency }}</h4>`, uses the `currency` pipe to transform `product.price` from a number to a currency string.
     A pipe is a way you can transform data in your HTML template.
-    For more information about Angular pipes, see [Pipes](guide/pipes "Pipes").
+    For more information about Angular pipes, see [Pipes](guide/pipes-overview "Pipes").
 
 When users click on a name in the product list, the router navigates them to the distinct URL for the product, shows the `ProductDetailsComponent`, and displays the product details.
 

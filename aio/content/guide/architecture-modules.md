@@ -1,12 +1,19 @@
 # Introduction to modules
 
 Angular applications are modular and Angular has its own modularity system called *NgModules*.
+
+<div class="alert is-critical">
+
+Older Angular applications are built with `NgModules`.
+While this is no longer the preferred approach, many existing applications are still built with `NgModules`.
+
+This page offers an overview of that concept; [learn more here](guide/ngmodules).
+
+</div>
+
 NgModules are containers for a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities.
 They can contain components, service providers, and other code files whose scope is defined by the containing NgModule.
 They can import functionality that is exported from other NgModules, and export selected functionality for use by other NgModules.
-
-Every Angular application has at least one NgModule class, [the *root module*](guide/bootstrapping), which is conventionally named `AppModule` and resides in a file named `app.module.ts`.
-You launch your application by *bootstrapping* the root NgModule.
 
 While a small application might have only one NgModule, most applications have many more *feature modules*.
 The *root* NgModule for an application is so named because it can include child NgModules in a hierarchy of any depth.
@@ -84,9 +91,9 @@ In JavaScript each *file* is a module and all objects defined in the file belong
 The module declares some objects to be public by marking them with the `export` key word.
 Other JavaScript modules use *import statements* to access public objects from other modules.
 
-<code-example path="architecture/src/app/app.module.ts" region="imports"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="imports"></code-example>
 
-<code-example path="architecture/src/app/app.module.ts" region="export"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="export"></code-example>
 
 <div class="alert is-helpful">
 

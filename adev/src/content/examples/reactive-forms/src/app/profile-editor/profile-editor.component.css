@@ -1,0 +1,11 @@
+/* ProfileEditorComponent's private CSS styles */
+
+form {
+  padding-top: 1rem;
+}
+
+label {
+  display: block;
+  margin: .5em 0;
+  font-weight: bold;
+}

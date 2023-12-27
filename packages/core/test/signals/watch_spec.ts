@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, signal, Watch} from '@angular/core/src/signals';
+import {computed, signal} from '@angular/core';
+import {createWatch} from '@angular/core/primitives/signals';
 
 import {flushEffects, resetEffects, testingEffect} from './effect_util';
+
+const NOOP_FN = () => {};
 
 describe('watchers', () => {
   afterEach(() => {
@@ -46,7 +49,6 @@ describe('watchers', () => {
     const countA = signal(0);
     const countB = signal(100);
     const useCountA = signal(true);
-
 
     const runLog: number[] = [];
     testingEffect(() => {
@@ -162,7 +164,7 @@ describe('watchers', () => {
   it('should throw an error when reading a signal during the notification phase', () => {
     const source = signal(0);
     let ranScheduler = false;
-    const watch = new Watch(
+    const w = createWatch(
         () => {
           source();
         },
@@ -173,10 +175,77 @@ describe('watchers', () => {
         false);
 
     // Run the effect manually to initiate dependency tracking.
-    watch.run();
+    w.run();
 
     // Changing the signal will attempt to schedule the effect.
     source.set(1);
     expect(ranScheduler).toBeTrue();
+  });
+
+  describe('destroy', () => {
+    it('should not run destroyed watchers', () => {
+      let watchRuns = 0;
+      const watchRef = createWatch(() => {
+        watchRuns++;
+      }, NOOP_FN, false);
+
+      watchRef.run();
+      expect(watchRuns).toBe(1);
+
+      watchRef.destroy();
+      watchRef.run();
+      expect(watchRuns).toBe(1);
+    });
+
+    it('should disconnect destroyed watches from the reactive graph', () => {
+      const counter = signal(0);
+
+      let scheduleCount = 0;
+      const watchRef = createWatch(() => counter(), () => scheduleCount++, false);
+
+      // watches are _not_ scheduled by default, run it for the first time to capture
+      // dependencies
+      watchRef.run();
+      expect(scheduleCount).toBe(0);
+
+      watchRef.destroy();
+      counter.set(1);
+      expect(scheduleCount).toBe(0);
+    });
+
+    it('should not schedule destroyed watches', () => {
+      let scheduleCount = 0;
+      const watchRef = createWatch(NOOP_FN, () => scheduleCount++, false);
+
+      // watches are _not_ scheduled by default
+      expect(scheduleCount).toBe(0);
+
+      watchRef.notify();
+      expect(scheduleCount).toBe(1);
+
+      watchRef.destroy();
+      watchRef.notify();
+      expect(scheduleCount).toBe(1);
+    });
+
+    it('should not run cleanup functions after destroy', () => {
+      const counter = signal(0);
+      let cleanupRuns = 0;
+      const watchRef = createWatch((onCleanup) => {
+        counter();
+        onCleanup(() => cleanupRuns++);
+      }, NOOP_FN, false);
+
+      // initial run to register cleanup function
+      watchRef.run();
+
+      watchRef.destroy();
+      // cleanup functions run on destroy
+      expect(cleanupRuns).toBe(1);
+
+      // subsequent destroy should be noop
+      watchRef.destroy();
+      expect(cleanupRuns).toBe(1);
+    });
   });
 });

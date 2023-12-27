@@ -93,12 +93,10 @@ v16 - v19
 | `@angular/core`                     | [`NgModuleFactory`](#core)                                                                                 | v13           | v16         |
 | `@angular/core`                     | [`ComponentFactory`](#core)                                                                                | v13           | v16         |
 | `@angular/core`                     | [`ComponentFactoryResolver`](#core)                                                                        | v13           | v16         |
-| `@angular/core`                     | [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](#core)                    | v13           | v16         |
 | `@angular/platform-browser-dynamic` | [`JitCompilerFactory`](#platform-browser-dynamic)                                                          | v13           | v16         |
 | `@angular/platform-browser-dynamic` | [`RESOURCE_CACHE_PROVIDER`](#platform-browser-dynamic)                                                     | v13           | v16         |
 | `@angular/platform-server`          | [`ServerTransferStateModule`](#platform-server)                                                            | v14           | v16         |
-| `@angular/service-worker`           | [`SwUpdate#activated`](api/service-worker/SwUpdate#activated)                                              | v13           | v16         |
-| `@angular/service-worker`           | [`SwUpdate#available`](api/service-worker/SwUpdate#available)                                              | v13           | v16         |
+| `@angular/platform-browser`         | [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition)                                                          | v16           | v18         |
 
 ### Deprecated features that can be removed in v17 or later
 
@@ -124,6 +122,15 @@ v16 - v19
 | `@angular/platform-browser`         | [`BrowserModule.withServerTransition`](api/platform-browser/BrowserModule#withservertransition)            | v16           | v18         |
 | `@angular/platform-browser`         | [`makeStateKey`, `StateKey` and `TransferState`](#platform-browser), symbols were moved to `@angular/core`                                        | v16           | v18         |
 
+
+### Deprecated features that can be removed in v19 or later
+
+| Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
+|:---                                 |:---                                                                                                        |:---           |:---               |
+| `@angular/animations` | `AnimationDriver.NOOP` | v17 | v19 |
+| `@angular/core` | `PACKAGE_ROOT_URL` | v17 | v19 |
+| `@angular/core` | `NgProbeToken` | v17 | v19 |
+
 ### Deprecated features with no planned removal version
 
 | Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
@@ -142,6 +149,14 @@ This section contains a complete list all deprecated APIs, with details to help 
 In the [API reference section](api) of this site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [Status: deprecated](api?status=deprecated).
 
 </div>
+
+<a id="animations"></a>
+
+### &commat;angular/animations
+
+| API                                                                                           | Replacement                                         | Deprecation announced | Details |
+|:---                                                                                           |:---                                                 |:---                   |:---     |
+| [AnimationDriver.NOOP](api/animations/browser/AnimationDriver#NOOP) | `NoopAnimationDriver` | v17 | Create a new  `NoopAnimationDriver` directly instead of calling `AnimationDriver.NOOP`
 
 <a id="common"></a>
 
@@ -175,11 +190,11 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 | [Factory-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent) | [Type-based signature of `ViewContainerRef.createComponent`](api/core/ViewContainerRef#createComponent)                                                           | v13                   | Angular no longer requires component factories to dynamically create components. Use different signature of the `createComponent` method, which allows passing Component class directly.                                                                           |
 | [`ComponentFactory`](api/core/ComponentFactory)                                                            | Use non-factory based framework APIs.                                                                                                                             | v13                   | Since Ivy, Component factories are not required. Angular provides other APIs where Component classes can be used directly.                                                                                                                                         |
 | [`ComponentFactoryResolver`](api/core/ComponentFactoryResolver)                                            | Use non-factory based framework APIs.                                                                                                                             | v13                   | Since Ivy, Component factories are not required, thus there is no need to resolve them.                                                                                                                                                                            |
-| [`CompilerOptions.useJit and CompilerOptions.missingTranslation config options`](api/core/CompilerOptions) | none                                                                                                                                                              | v13                   | Since Ivy, those config options are unused, passing them has no effect.                                                                                                                                                                                            |
 | [`providedIn`](api/core/Injectable#providedIn) with NgModule | Prefer `'root'` providers, or use NgModule `providers` if scoping to an NgModule is necessary | v15 | none |
 | [`providedIn: 'any'`](api/core/Injectable#providedIn) | none | v15 | This option has confusing semantics and nearly zero usage. |
 | [`EnvironmentInjector.runInContext`](api/core/EnvironmentInjector#runInContext) | `runInInjectionContext`  | v16 | `runInInjectionContext` is a more flexible operation which supports element injectors as well |
 | [`@Component.moduleId`](api/core/Component#moduleId) | none | v16 |
+| [`NgProbeToken`](api/core/NgProbeToken) | none | v16 | `ng.prob` was replaced by `ng.getComponent` since Ivy
 
 
 <a id="testing"></a>
@@ -199,7 +214,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 |:---                                        |:---                               |:---                   |:---     |
 | [`RouterLinkWithHref` directive](api/router/RouterLinkWithHref) | Use `RouterLink` instead. | v15                   | The `RouterLinkWithHref` directive code was merged into `RouterLink`. Now the `RouterLink` directive can be used for all elements that have `routerLink` attribute. |
 | [`provideRoutes` function](api/router/provideRoutes) | Use `ROUTES` `InjectionToken` instead. | v15                   | The `provideRoutes` helper function is minimally useful and can be unintentionally used instead of `provideRouter` due to similar spelling. |
-| [`setupTestingRouter` function](api/router/testing/setupTestingRouter) | Use `provideRouter` or `RouterModule` instead. | v15.1                   | The `setupTestingRouter` function is not necessary. The `Router` is initialized based on the DI configuration in tests as it would be in production. |
 | [class and `InjectionToken` guards and resolvers](api/router/DeprecatedGuard) | Use plain JavaScript functions instead. | v15.2                   | Functional guards are simpler and more powerful than class and token-based guards. |
 
 
@@ -239,15 +253,6 @@ In the [API reference section](api) of this site, deprecated APIs are indicated 
 |:---                                                                         |:---                                                                          |:---                   |:---     |
 | [`ngModel` with reactive forms](#ngmodel-reactive)                          | [`FormControlDirective`](api/forms/FormControlDirective)                     | v6                    | none    |
 | [`FormBuilder.group` legacy options parameter](api/forms/FormBuilder#group) | [`AbstractControlOptions` parameter value](api/forms/AbstractControlOptions) | v11                   | none    |
-
-<a id="service-worker"></a>
-
-### &commat;angular/service-worker
-
-| API                                                           | Replacement                                                                            | Deprecation announced | Details |
-|:---                                                           |:---                                                                                    |:---                   |:---     |
-| [`SwUpdate#activated`](api/service-worker/SwUpdate#activated) | [`SwUpdate#activateUpdate()` return value](api/service-worker/SwUpdate#activateUpdate) | v13                   | The return value of `SwUpdate#activateUpdate()` indicates whether an update was successfully activated.                                                                    |
-| [`SwUpdate#available`](api/service-worker/SwUpdate#available) | [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates)                | v13                   | The behavior of `SwUpdate#available` can be rebuilt by filtering for `VersionReadyEvent` events on [`SwUpdate#versionUpdates`](api/service-worker/SwUpdate#versionUpdates) |
 
 <a id="upgrade"></a>
 
@@ -321,9 +326,9 @@ Support for using the `ngModel` input property and `ngModelChange` event with re
 
 Now deprecated:
 
-<code-example path="deprecation-guide/src/app/app.component.html" region="deprecated-example"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.component.html" region="deprecated-example"></code-example>
 
-<code-example path="deprecation-guide/src/app/app.component.ts" region="deprecated-example"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.component.ts" region="deprecated-example"></code-example>
 
 This support was deprecated for several reasons.
 First, developers found this pattern confusing.
@@ -335,13 +340,14 @@ Setting the value in the template violates the template-agnostic principles behi
 
 To update your code before support is removed, decide whether to stick with reactive form directives \(and get/set values using reactive forms patterns\) or switch to template-driven directives.
 
-**After** \(choice 1 - use reactive forms\):
+**After** \(choice 1 - with reactive forms\):
 
-<code-example path="deprecation-guide/src/app/app.component.html" region="reactive-form-example"></code-example>
+<!-- Standalone Reactive Forms are not ready as of 2023-09-25; move example to deprecated -->
+<code-example path="deprecation-guide/src/deprecated/app.component.html" region="reactive-form-example"></code-example>
 
 <code-example path="deprecation-guide/src/app/app.component.ts" region="reactive-form-example"></code-example>
 
-**After** \(choice 2 - use template-driven forms\):
+**After** \(choice 2 - with template-driven forms\):
 
 <code-example path="deprecation-guide/src/app/app.component.html" region="template-driven-form-example"></code-example>
 
@@ -350,7 +356,7 @@ To update your code before support is removed, decide whether to stick with reac
 By default, when you use this pattern, you get a deprecation warning once in dev mode.
 You can choose to silence this warning by configuring `ReactiveFormsModule` at import time:
 
-<code-example path="deprecation-guide/src/app/app.module.ts" region="reactive-form-no-warning"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" region="reactive-form-no-warning"></code-example>
 
 Alternatively, you can choose to surface a separate warning for each instance of this pattern with a configuration value of `"always"`.
 This may help to track down where in the code the pattern is being used as the code is being updated.
@@ -366,7 +372,12 @@ be converted to functions by instead using `inject` to get dependencies.
 
 For testing a function `canActivate` guard, using `TestBed` and `TestBed.runInInjectionContext` is recommended.
 Test mocks and stubs can be provided through DI with `{provide: X, useValue: StubX}`.
-Functional guards can also be written in a way that's either testable with
+
+You can also continue to use your class-based guards and pass in the mock dependencies.
+When used in the route definition, you can map these guards to functions using the helper
+functions in the router package `mapToCanMatch`, `mapToCanActivate`, etc.
+
+Finally, functional guards can be written in a way that's either testable with
 `runInInjectionContext` or by passing mock implementations of dependencies.
 For example:
 
@@ -379,7 +390,7 @@ export function myGuardWithMockableDeps(
 
 const route = {
   path: 'admin',
-  canActivate: [myGuardWithMockableDeps]
+  canActivate: [() => myGuardWithMockableDeps()]
 }
 ```
 
@@ -419,21 +430,17 @@ They should all be configured using other methods, all of which have been
 documented.
 
 The following strategies are meant to be configured by registering the
-application strategy in DI via the `providers` in the root `NgModule` or
-`bootstrapApplication`:
+application strategy in DI via the `providers` in the configuration of `bootstrapApplication()` for a "Standalone" app or 
+in the root `app.module` of an NgModule app:
 * `routeReuseStrategy`
-* `titleStrategy`
-* `urlHandlingStrategy`
 
-The following options are meant to be configured using the options
-available in `RouterModule.forRoot` or `provideRouter` and `withRouterConfig`.
+The following options are meant to be configured using the options object
+of `withRouterConfig()` passed to `provideRouter` for a "Standalone" app or
+passed to `RouterModule.forRoot()` in the root `app.module` of an NgModule app:
 * `onSameUrlNavigation`
-* `paramsInheritanceStrategy`
-* `urlUpdateStrategy`
-* `canceledNavigationResolution`
 * `errorHandler`
 
-The following options are deprecated in entirely:
+The following options are deprecated entirely:
 * `malformedUriErrorHandler` - URI parsing errors should be handled in the `UrlSerializer` instead.
 * `errorHandler` - Subscribe to the `Router` events and filter for `NavigationError` instead.
 
@@ -449,7 +456,18 @@ goals as `CanLoad` but with the addition of allowing the navigation to match oth
 
 <a id="loadChildren"></a>
 
-### `loadChildren` string syntax
+### `loadChildren` string syntax (NgModule)
+
+<div class="alert is-critical">
+
+This deprecation notice applies only to lazy loading of [NgModules](guide/ngmodules).
+
+["Standalone"](guide/standalone-components) applications do not reference modules. 
+They can lazy load a component with `loadComponent` 
+or an array of child routes with `loadChildren` as 
+[discussed here](guide/standalone-components#routing-and-lazy-loading). 
+
+</div>
 
 When Angular first introduced lazy routes, there wasn't browser support for dynamically loading additional JavaScript.
 Angular created its own scheme using the syntax `loadChildren: './lazy/lazy.module#LazyModule'` and built tooling to support it.
@@ -459,11 +477,11 @@ In version 8, the string syntax for the [`loadChildren`](api/router/LoadChildren
 
 **Before**:
 
-<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="lazyload-deprecated-syntax"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" language="typescript" region="lazyload-deprecated-syntax"></code-example>
 
 **After**:
 
-<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="lazyload-syntax"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" language="typescript" region="lazyload-syntax"></code-example>
 
 <div class="alert is-helpful">
 
@@ -506,7 +524,7 @@ See the [dedicated migration guide for static queries](guide/static-query-migrat
 
 The following pattern is deprecated:
 
-<code-example path="deprecation-guide/src/app/app.component.ts" language="typescript" region="template-with-input-deprecated"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.component.ts" language="typescript" region="template-with-input-deprecated"></code-example>
 
 Rather than using this pattern, separate the two decorators into their own
 properties and add fallback logic as in the following example:
@@ -520,7 +538,7 @@ properties and add fallback logic as in the following example:
 In the following example, the two-way binding means that `optionName`
 should be written when the `valueChange` event fires.
 
-<code-example path="deprecation-guide/src/app/app.component.1.html" region="two-way-template-deprecated"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.component.html" region="two-way-template-deprecated"></code-example>
 
 However, in practice, Angular ignores two-way bindings to template variables.
 Starting in version 8, attempting to write to template variables is deprecated.
@@ -574,29 +592,11 @@ For example:
 
 **Before**:
 
-<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="ModuleWithProvidersNonGeneric"></code-example>
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" language="typescript" region="ModuleWithProvidersNonGeneric"></code-example>
 
 **After**:
 
-<code-example path="deprecation-guide/src/app/app.module.ts" language="typescript" region="ModuleWithProvidersGeneric"></code-example>
-
-<!--
-
-### Internet Explorer 11
-
-Angular support for Microsoft's Internet Explorer 11 \(IE11\) is deprecated and will be removed in Angular v13.
-Ending IE11 support allows Angular to take advantage of web platform APIs present only in evergreen browsers, resulting in better APIs for developers and more capabilities for application users.
-An additional motivation behind this removal is the drop in global usage of IE11 to just ~1% \(as of March 2021\).
-For full rationale and discussion behind this deprecation, see [RFC: Internet Explorer 11 support deprecation and removal](https://github.com/angular/angular/issues/41840).
-
-<div class="alert is-helpful">
-
-**NOTE**: <br />
-IE11 will be supported in Angular v12 LTS releases through November 2022.
-
-</div>
-
--->
+<code-example path="deprecation-guide/src/deprecated/app.module.ts" language="typescript" region="ModuleWithProvidersGeneric"></code-example>
 
 <a id="input-setter-coercion"></a>
 
@@ -612,11 +612,11 @@ This means that input coercion fields are no longer needed, as their effects can
 
 For example, the following directive:
 
-<code-example path="deprecation-guide/src/app/submit-button/submit-button.component.ts" language="typescript" region="submitButtonNarrow"></code-example>
+<code-example path="deprecation-guide/src/app/submit-button.component.ts" language="typescript" region="submitButtonNarrow"></code-example>
 
 can be refactored as follows:
 
-<code-example path="deprecation-guide/src/app/submit-button/submit-button.component.ts" language="typescript" region="submitButton"></code-example>
+<code-example path="deprecation-guide/src/app/submit-button.component.ts" language="typescript" region="submitButton"></code-example>
 
 <a id="full-template-type-check"></a>
 
@@ -748,4 +748,4 @@ If you rely on the behavior that the same object instance should cause change de
 
 <!-- end links -->
 
-@reviewed 2023-05-03
+@reviewed 2023-09-26

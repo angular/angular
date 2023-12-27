@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
+import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 import {isNamedClassDeclaration} from './util';
 
@@ -17,7 +17,7 @@ import {isNamedClassDeclaration} from './util';
  */
 
 export class TypeScriptReflectionHost implements ReflectionHost {
-  constructor(protected checker: ts.TypeChecker) {}
+  constructor(protected checker: ts.TypeChecker, private readonly isLocalCompilation = false) {}
 
   getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
     const decorators =
@@ -77,7 +77,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         }
       }
 
-      const typeValueReference = typeToValue(typeNode, this.checker);
+      const typeValueReference = typeToValue(typeNode, this.checker, this.isLocalCompilation);
 
       return {
         name,
@@ -255,7 +255,11 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       return null;
     }
 
-    return {from: importDecl.moduleSpecifier.text, name: getExportedName(decl, id)};
+    return {
+      from: importDecl.moduleSpecifier.text,
+      name: getExportedName(decl, id),
+      node: importDecl,
+    };
   }
 
   /**
@@ -304,6 +308,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {
       from: importDeclaration.moduleSpecifier.text,
       name: id.text,
+      node: namespaceDeclaration.parent.parent,
     };
   }
 
@@ -334,10 +339,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     const importInfo = originalId && this.getImportOfIdentifier(originalId);
-    const viaModule =
-        importInfo !== null && importInfo.from !== null && !importInfo.from.startsWith('.') ?
-        importInfo.from :
-        null;
 
     // Now, resolve the Symbol to its declaration by following any and all aliases.
     while (symbol.flags & ts.SymbolFlags.Alias) {
@@ -349,12 +350,12 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (symbol.valueDeclaration !== undefined) {
       return {
         node: symbol.valueDeclaration,
-        viaModule,
+        viaModule: this._viaModule(symbol.valueDeclaration, originalId, importInfo),
       };
     } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
       return {
         node: symbol.declarations[0],
-        viaModule,
+        viaModule: this._viaModule(symbol.declarations[0], originalId, importInfo),
       };
     } else {
       return null;
@@ -491,6 +492,19 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
 
     return exportSet;
+  }
+
+  private _viaModule(
+      declaration: ts.Declaration, originalId: ts.Identifier|null, importInfo: Import|null): string
+      |AmbientImport|null {
+    if (importInfo === null && originalId !== null &&
+        declaration.getSourceFile() !== originalId.getSourceFile()) {
+      return AmbientImport;
+    }
+
+    return importInfo !== null && importInfo.from !== null && !importInfo.from.startsWith('.') ?
+        importInfo.from :
+        null;
   }
 }
 
@@ -659,7 +673,7 @@ function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.I
  * Return the ImportDeclaration for the given `node` if it is either an `ImportSpecifier` or a
  * `NamespaceImport`. If not return `null`.
  */
-function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
+export function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
   return ts.isImportSpecifier(node) ? node.parent!.parent!.parent! :
       ts.isNamespaceImport(node)    ? node.parent.parent :
                                       null;

@@ -1,7 +1,0 @@
-{
-  "name": "zone.js/zone-patch-jsonp",
-  "main": "../../bundles/zone-patch-jsonp.umd.js",
-  "fesm2015": "../../fesm2015/zone-patch-jsonp.js",
-  "es2015": "../../fesm2015/zone-patch-jsonp.js",
-  "module": "../../fesm2015/zone-patch-jsonp.js"
-}

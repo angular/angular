@@ -31,14 +31,6 @@ export interface TestOnlyOptions {
   _enableTemplateTypeChecker?: boolean;
 
   /**
-   * Names of the blocks that should be enabled. E.g. `_enabledBlockTypes: ['defer']`
-   * would allow usages of `{#defer}{/defer}` in templates.
-   *
-   * @internal
-   */
-  _enabledBlockTypes?: string[];
-
-  /**
    * An option to enable ngtsc's internal performance tracing.
    *
    * This should be a path to a JSON file where trace information will be written. This is sensitive
@@ -74,6 +66,14 @@ export interface InternalOptions {
    * @internal
    */
   supportJitMode?: boolean;
+
+  /**
+   * Whether block syntax is enabled in the compiler. Defaults to true.
+   * Used in the language service to disable the new syntax for projects that aren't on v17.
+   *
+   * @internal
+   */
+  _enableBlockSyntax?: boolean;
 }
 
 /**

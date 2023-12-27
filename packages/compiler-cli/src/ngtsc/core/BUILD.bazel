@@ -16,6 +16,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/annotations/common",
         "//packages/compiler-cli/src/ngtsc/cycles",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/docs",
         "//packages/compiler-cli/src/ngtsc/entry_point",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/imports",

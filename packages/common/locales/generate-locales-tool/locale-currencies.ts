@@ -18,7 +18,7 @@ export function generateLocaleCurrencies(
   const currencies: any = {};
 
   Object.keys(currenciesData).forEach(code => {
-    let symbolsArray = [];
+    let symbolsArray: any[] = [];
     const symbol = currenciesData[code].symbol;
     const symbolNarrow = currenciesData[code]['symbol-alt-narrow'];
     if (symbol && symbol !== code) {
@@ -66,6 +66,7 @@ export function getCurrencySettings(localeName: string, localeData: CldrLocaleDa
         if (currency[key]._from && !currency[key]._to) {
           return currentCurrency = key;
         }
+        return false;
       });
     });
 

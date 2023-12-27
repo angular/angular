@@ -14,7 +14,8 @@
       &.deprecated,
       &.security,
       &.impure-pipe,
-      &.dev-preview {
+      &.dev-preview,
+      &.experimental {
         background-color: constants.$brightred;
       }
 
@@ -30,7 +31,8 @@
       color: constants.$white;
       background-color: constants.$accentblue;
 
-      @each $name, $symbol in constants.$api-symbols {
+      @each $name,
+      $symbol in constants.$api-symbols {
         &.#{$name} {
           background: map.get($symbol, background);
         }

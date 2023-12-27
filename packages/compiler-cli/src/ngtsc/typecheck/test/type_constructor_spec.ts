@@ -170,11 +170,12 @@ TestClass.ngTypeCtor({value: 'test'});
                     classPropertyName: 'baz',
                     bindingPropertyName: 'baz',
                     required: false,
+                    isSignal: false,
                     transform: {
-                      type: ts.factory.createUnionTypeNode([
+                      type: new Reference(ts.factory.createUnionTypeNode([
                         ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
                         ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-                      ]),
+                      ])),
                       node: ts.factory.createFunctionDeclaration(
                           undefined, undefined, undefined, undefined, [], undefined, undefined)
                     }

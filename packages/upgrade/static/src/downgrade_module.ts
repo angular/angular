@@ -9,9 +9,7 @@
 import {Injector, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider, Type} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import {IInjectorService, IProvideService, module_ as angularModule} from '../../src/common/src/angular1';
-import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {destroyApp, getDowngradedModuleCount, isFunction, isNgModuleType, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
+import {ɵangular1, ɵconstants, ɵutil} from '../common';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
@@ -366,16 +364,16 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  */
 export function downgradeModule<T>(moduleOrBootstrapFn: Type<T>|NgModuleFactory<T>|(
     (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
-  const lazyModuleName = `${UPGRADE_MODULE_NAME}.lazy${++moduleUid}`;
-  const lazyModuleRefKey = `${LAZY_MODULE_REF}${lazyModuleName}`;
-  const lazyInjectorKey = `${INJECTOR_KEY}${lazyModuleName}`;
+  const lazyModuleName = `${ɵconstants.UPGRADE_MODULE_NAME}.lazy${++moduleUid}`;
+  const lazyModuleRefKey = `${ɵconstants.LAZY_MODULE_REF}${lazyModuleName}`;
+  const lazyInjectorKey = `${ɵconstants.INJECTOR_KEY}${lazyModuleName}`;
 
   let bootstrapFn: (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>;
-  if (isNgModuleType(moduleOrBootstrapFn)) {
+  if (ɵutil.isNgModuleType(moduleOrBootstrapFn)) {
     // NgModule class
     bootstrapFn = (extraProviders: StaticProvider[]) =>
         platformBrowser(extraProviders).bootstrapModule(moduleOrBootstrapFn);
-  } else if (!isFunction(moduleOrBootstrapFn)) {
+  } else if (!ɵutil.isFunction(moduleOrBootstrapFn)) {
     // NgModule factory
     bootstrapFn = (extraProviders: StaticProvider[]) =>
         platformBrowser(extraProviders).bootstrapModuleFactory(moduleOrBootstrapFn);
@@ -387,9 +385,9 @@ export function downgradeModule<T>(moduleOrBootstrapFn: Type<T>|NgModuleFactory<
   let injector: Injector;
 
   // Create an ng1 module to bootstrap.
-  angularModule(lazyModuleName, [])
-      .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Lite)
-      .factory(INJECTOR_KEY, [lazyInjectorKey, identity])
+  ɵangular1.module_(lazyModuleName, [])
+      .constant(ɵconstants.UPGRADE_APP_TYPE_KEY, ɵutil.UpgradeAppType.Lite)
+      .factory(ɵconstants.INJECTOR_KEY, [lazyInjectorKey, identity])
       .factory(
           lazyInjectorKey,
           () => {
@@ -400,24 +398,24 @@ export function downgradeModule<T>(moduleOrBootstrapFn: Type<T>|NgModuleFactory<
             }
             return injector;
           })
-      .factory(LAZY_MODULE_REF, [lazyModuleRefKey, identity])
+      .factory(ɵconstants.LAZY_MODULE_REF, [lazyModuleRefKey, identity])
       .factory(
           lazyModuleRefKey,
           [
-            $INJECTOR,
-            ($injector: IInjectorService) => {
+            ɵconstants.$INJECTOR,
+            ($injector: ɵangular1.IInjectorService) => {
               setTempInjectorRef($injector);
-              const result: LazyModuleRef = {
+              const result: ɵutil.LazyModuleRef = {
                 promise: bootstrapFn(angular1Providers).then(ref => {
                   injector = result.injector = new NgAdapterInjector(ref.injector);
-                  injector.get($INJECTOR);
+                  injector.get(ɵconstants.$INJECTOR);
 
                   // Destroy the AngularJS app once the Angular `PlatformRef` is destroyed.
                   // This does not happen in a typical SPA scenario, but it might be useful for
                   // other use-cases where disposing of an Angular/AngularJS app is necessary
                   // (such as Hot Module Replacement (HMR)).
                   // See https://github.com/angular/angular/issues/39935.
-                  injector.get(PlatformRef).onDestroy(() => destroyApp($injector));
+                  injector.get(PlatformRef).onDestroy(() => ɵutil.destroyApp($injector));
 
                   return injector;
                 })
@@ -426,9 +424,11 @@ export function downgradeModule<T>(moduleOrBootstrapFn: Type<T>|NgModuleFactory<
             }
           ])
       .config([
-        $INJECTOR, $PROVIDE,
-        ($injector: IInjectorService, $provide: IProvideService) => {
-          $provide.constant(DOWNGRADED_MODULE_COUNT_KEY, getDowngradedModuleCount($injector) + 1);
+        ɵconstants.$INJECTOR, ɵconstants.$PROVIDE,
+        ($injector: ɵangular1.IInjectorService, $provide: ɵangular1.IProvideService) => {
+          $provide.constant(
+              ɵconstants.DOWNGRADED_MODULE_COUNT_KEY,
+              ɵutil.getDowngradedModuleCount($injector) + 1);
         }
       ]);
 

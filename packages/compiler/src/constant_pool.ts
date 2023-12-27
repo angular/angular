@@ -188,6 +188,33 @@ export class ConstantPool {
     }
   }
 
+  // TODO: useUniqueName(false) is necessary for naming compatibility with
+  // TemplateDefinitionBuilder, but should be removed once Template Pipeline is the default.
+  getSharedFunctionReference(
+      fn: o.FunctionExpr|o.ArrowFunctionExpr, prefix: string,
+      useUniqueName: boolean = true): o.Expression {
+    const isArrow = fn instanceof o.ArrowFunctionExpr;
+
+    for (const current of this.statements) {
+      // Arrow functions are saved as variables so we check if the
+      // value of the variable is the same as the arrow function.
+      if (isArrow && current instanceof o.DeclareVarStmt && current.value?.isEquivalent(fn)) {
+        return o.variable(current.name);
+      }
+
+      // Function declarations are saved as function statements
+      // so we compare them directly to the passed-in function.
+      if (!isArrow && current instanceof o.DeclareFunctionStmt && fn.isEquivalent(current)) {
+        return o.variable(current.name);
+      }
+    }
+
+    // Otherwise declare the function.
+    const name = useUniqueName ? this.uniqueName(prefix) : prefix;
+    this.statements.push(fn.toDeclStmt(name, o.StmtModifier.Final));
+    return o.variable(name);
+  }
+
   private _getLiteralFactory(
       key: string, values: o.Expression[], resultMap: (parameters: o.Expression[]) => o.Expression):
       {literalFactory: o.Expression, literalFactoryArguments: o.Expression[]} {
@@ -199,7 +226,7 @@ export class ConstantPool {
       const parameters =
           resultExpressions.filter(isVariable).map(e => new o.FnParam(e.name!, o.DYNAMIC_TYPE));
       const pureFunctionDeclaration =
-          o.fn(parameters, [new o.ReturnStatement(resultMap(resultExpressions))], o.INFERRED_TYPE);
+          o.arrowFn(parameters, resultMap(resultExpressions), o.INFERRED_TYPE);
       const name = this.freshName();
       this.statements.push(o.variable(name)
                                .set(pureFunctionDeclaration)

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵENABLED_SSR_FEATURES as ENABLED_SSR_FEATURES, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED} from '@angular/core';
-import {first} from 'rxjs/operators';
+import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵwhenStable as whenStable} from '@angular/core';
 
 import {PlatformState} from './platform_state';
 import {platformServer} from './server';
@@ -32,17 +31,25 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
 }
 
 /**
+ * Creates a marker comment node and append it into the `<body>`.
+ * Some CDNs have mechanisms to remove all comment node from HTML.
+ * This behaviour breaks hydration, so we'll detect on the client side if this
+ * marker comment is still available or else throw an error
+ */
+function appendSsrContentIntegrityMarker(doc: Document) {
+  // Adding a ng hydration marken comment
+  const comment = doc.createComment(SSR_CONTENT_INTEGRITY_MARKER);
+  doc.body.firstChild ? doc.body.insertBefore(comment, doc.body.firstChild) :
+                        doc.body.append(comment);
+}
+
+/**
  * Adds the `ng-server-context` attribute to host elements of all bootstrapped components
  * within a given application.
  */
 function appendServerContextInfo(applicationRef: ApplicationRef) {
   const injector = applicationRef.injector;
   let serverContext = sanitizeServerContext(injector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
-  const features = injector.get(ENABLED_SSR_FEATURES);
-  if (features.size > 0) {
-    // Append features information into the server context value.
-    serverContext += `|${Array.from(features).join(',')}`;
-  }
   applicationRef.components.forEach(componentRef => {
     const renderer = componentRef.injector.get(Renderer2);
     const element = componentRef.location.nativeElement;
@@ -56,11 +63,13 @@ async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef)
   const environmentInjector = applicationRef.injector;
 
   // Block until application is stable.
-  await applicationRef.isStable.pipe((first((isStable: boolean) => isStable))).toPromise();
+  await whenStable(applicationRef);
 
   const platformState = platformRef.injector.get(PlatformState);
   if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
-    annotateForHydration(applicationRef, platformState.getDocument());
+    const doc = platformState.getDocument();
+    appendSsrContentIntegrityMarker(doc);
+    annotateForHydration(applicationRef, doc);
   }
 
   // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.
@@ -168,7 +177,6 @@ export async function renderModule<T>(moduleType: Type<T>, options: {
  * @returns A Promise, that returns serialized (to a string) rendered page, once resolved.
  *
  * @publicApi
- * @developerPreview
  */
 export async function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
   document?: string|Document,

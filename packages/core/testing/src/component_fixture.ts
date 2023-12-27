@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, NgZone, RendererFactory2} from '@angular/core';
+import {ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵgetDeferBlocks as getDeferBlocks, ɵZoneAwareQueueingScheduler as ZoneAwareQueueingScheduler} from '@angular/core';
 import {Subscription} from 'rxjs';
+
+import {DeferBlockFixture} from './defer';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
 
 
 /**
@@ -46,32 +49,32 @@ export class ComponentFixture<T> {
   private _isDestroyed: boolean = false;
   private _resolve: ((result: boolean) => void)|null = null;
   private _promise: Promise<boolean>|null = null;
-  private _onUnstableSubscription: Subscription|null = null;
-  private _onStableSubscription: Subscription|null = null;
-  private _onMicrotaskEmptySubscription: Subscription|null = null;
-  private _onErrorSubscription: Subscription|null = null;
+  public ngZone =
+      inject(ComponentFixtureNoNgZone, {optional: true}) ? null : inject(NgZone, {optional: true});
+  private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
+  private effectRunner = inject(ZoneAwareQueueingScheduler, {optional: true});
+  private _subscriptions = new Subscription();
 
-  constructor(
-      public componentRef: ComponentRef<T>, public ngZone: NgZone|null,
-      private _autoDetect: boolean) {
+  /** @nodoc */
+  constructor(public componentRef: ComponentRef<T>) {
     this.changeDetectorRef = componentRef.changeDetectorRef;
     this.elementRef = componentRef.location;
     this.debugElement = <DebugElement>getDebugNode(this.elementRef.nativeElement);
     this.componentInstance = componentRef.instance;
     this.nativeElement = this.elementRef.nativeElement;
     this.componentRef = componentRef;
-    this.ngZone = ngZone;
 
+    const ngZone = this.ngZone;
     if (ngZone) {
       // Create subscriptions outside the NgZone so that the callbacks run oustide
       // of NgZone.
       ngZone.runOutsideAngular(() => {
-        this._onUnstableSubscription = ngZone.onUnstable.subscribe({
+        this._subscriptions.add(ngZone.onUnstable.subscribe({
           next: () => {
             this._isStable = false;
           }
-        });
-        this._onMicrotaskEmptySubscription = ngZone.onMicrotaskEmpty.subscribe({
+        }));
+        this._subscriptions.add(ngZone.onMicrotaskEmpty.subscribe({
           next: () => {
             if (this._autoDetect) {
               // Do a change detection run with checkNoChanges set to true to check
@@ -79,8 +82,8 @@ export class ComponentFixture<T> {
               this.detectChanges(true);
             }
           }
-        });
-        this._onStableSubscription = ngZone.onStable.subscribe({
+        }));
+        this._subscriptions.add(ngZone.onStable.subscribe({
           next: () => {
             this._isStable = true;
             // Check whether there is a pending whenStable() completer to resolve.
@@ -99,13 +102,13 @@ export class ComponentFixture<T> {
               });
             }
           }
-        });
+        }));
 
-        this._onErrorSubscription = ngZone.onError.subscribe({
+        this._subscriptions.add(ngZone.onError.subscribe({
           next: (error: any) => {
             throw error;
           }
-        });
+        }));
       });
     }
   }
@@ -121,6 +124,7 @@ export class ComponentFixture<T> {
    * Trigger a change detection cycle for the component.
    */
   detectChanges(checkNoChanges: boolean = true): void {
+    this.effectRunner?.flush();
     if (this.ngZone != null) {
       // Run the change detection inside the NgZone so that any async tasks as part of the change
       // detection are captured by the zone and can be waited for in isStable.
@@ -131,6 +135,9 @@ export class ComponentFixture<T> {
       // Running without zone. Just do the change detection.
       this._tick(checkNoChanges);
     }
+    // Run any effects that were created/dirtied during change detection. Such effects might become
+    // dirty in response to input signals changing.
+    this.effectRunner?.flush();
   }
 
   /**
@@ -158,7 +165,7 @@ export class ComponentFixture<T> {
    * yet.
    */
   isStable(): boolean {
-    return this._isStable && !this.ngZone!.hasPendingMacrotasks;
+    return this._isStable && !this.ngZone?.hasPendingMacrotasks;
   }
 
   /**
@@ -178,6 +185,24 @@ export class ComponentFixture<T> {
       });
       return this._promise;
     }
+  }
+
+  /**
+   * Retrieves all defer block fixtures in the component fixture.
+   *
+   * @developerPreview
+   */
+  getDeferBlocks(): Promise<DeferBlockFixture[]> {
+    const deferBlocks: DeferBlockDetails[] = [];
+    const lView = (this.componentRef.hostView as any)['_lView'];
+    getDeferBlocks(lView, deferBlocks);
+
+    const deferBlockFixtures = [];
+    for (const block of deferBlocks) {
+      deferBlockFixtures.push(new DeferBlockFixture(block, this));
+    }
+
+    return Promise.resolve(deferBlockFixtures);
   }
 
 
@@ -205,22 +230,7 @@ export class ComponentFixture<T> {
   destroy(): void {
     if (!this._isDestroyed) {
       this.componentRef.destroy();
-      if (this._onUnstableSubscription != null) {
-        this._onUnstableSubscription.unsubscribe();
-        this._onUnstableSubscription = null;
-      }
-      if (this._onStableSubscription != null) {
-        this._onStableSubscription.unsubscribe();
-        this._onStableSubscription = null;
-      }
-      if (this._onMicrotaskEmptySubscription != null) {
-        this._onMicrotaskEmptySubscription.unsubscribe();
-        this._onMicrotaskEmptySubscription = null;
-      }
-      if (this._onErrorSubscription != null) {
-        this._onErrorSubscription.unsubscribe();
-        this._onErrorSubscription = null;
-      }
+      this._subscriptions.unsubscribe();
       this._isDestroyed = true;
     }
   }

@@ -3,6 +3,7 @@
   "description": "Assert that users with module: nodenext in their tsconfig can import our packages",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
     "@angular/common": "file:../../dist/packages-dist/common",

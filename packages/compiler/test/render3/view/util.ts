@@ -10,9 +10,9 @@ import * as e from '../../../src/expression_parser/ast';
 import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
 import * as html from '../../../src/ml_parser/ast';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
 import {ParseTreeResult} from '../../../src/ml_parser/parser';
 import * as a from '../../../src/render3/r3_ast';
 import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
@@ -145,14 +145,11 @@ export function parseR3(input: string, options: {
   preserveWhitespaces?: boolean,
   leadingTriviaChars?: string[],
   ignoreError?: boolean,
-  enabledBlockTypes?: string[],
 } = {}): Render3ParseResult {
   const htmlParser = new HtmlParser();
-  const enabledBlockTypes = new Set(options.enabledBlockTypes ?? []);
   const parseResult = htmlParser.parse(input, 'path:://to/template', {
     tokenizeExpansionForms: true,
     leadingTriviaChars: options.leadingTriviaChars ?? LEADING_TRIVIA_CHARS,
-    tokenizeBlocks: enabledBlockTypes.size > 0,
   });
 
   if (parseResult.errors.length > 0 && !options.ignoreError) {
@@ -172,8 +169,7 @@ export function parseR3(input: string, options: {
       ['onEvent'], ['onEvent']);
   const bindingParser =
       new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, []);
-  const r3Result = htmlAstToRender3Ast(
-      htmlNodes, bindingParser, {collectCommentNodes: false, enabledBlockTypes});
+  const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser, {collectCommentNodes: false});
 
   if (r3Result.errors.length > 0 && !options.ignoreError) {
     const msg = r3Result.errors.map(e => e.toString()).join('\n');

@@ -8,6 +8,7 @@
 import ts from 'typescript';
 
 import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './api/ast_factory';
+import {tsNumericExpression} from './ts_util';
 
 /**
  * Different optimizers use different annotations on a function or method call to indicate its pure
@@ -133,6 +134,18 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
         undefined, body);
   }
 
+  createArrowFunctionExpression(parameters: string[], body: ts.Statement|ts.Expression):
+      ts.Expression {
+    if (ts.isStatement(body) && !ts.isBlock(body)) {
+      throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
+    }
+
+    return ts.factory.createArrowFunction(
+        undefined, undefined,
+        parameters.map(param => ts.factory.createParameterDeclaration(undefined, undefined, param)),
+        undefined, undefined, body);
+  }
+
   createIdentifier = ts.factory.createIdentifier;
 
   createIfStatement(
@@ -149,7 +162,7 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     } else if (typeof value === 'boolean') {
       return value ? ts.factory.createTrue() : ts.factory.createFalse();
     } else if (typeof value === 'number') {
-      return ts.factory.createNumericLiteral(value);
+      return tsNumericExpression(value);
     } else {
       return ts.factory.createStringLiteral(value);
     }

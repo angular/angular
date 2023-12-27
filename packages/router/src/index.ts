@@ -13,10 +13,12 @@ export {RouterLinkActive} from './directives/router_link_active';
 export {RouterOutlet, RouterOutletContract} from './directives/router_outlet';
 export {ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, Event, EventType, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationCancellationCode as NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouterEvent, RoutesRecognized, Scroll} from './events';
 export {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn, Data, DefaultExport, LoadChildren, LoadChildrenCallback, NavigationBehaviorOptions, OnSameUrlNavigation, QueryParamsHandling, ResolveData, ResolveFn, Route, Routes, RunGuardsAndResolvers, UrlMatcher, UrlMatchResult} from './models';
+export {ViewTransitionInfo, ViewTransitionsFeatureOptions} from './utils/view_transition';
+
 export * from './models_deprecated';
 export {Navigation, NavigationExtras, UrlCreationOptions} from './navigation_transition';
 export {DefaultTitleStrategy, TitleStrategy} from './page_title_strategy';
-export {DebugTracingFeature, DisabledInitialNavigationFeature, EnabledBlockingInitialNavigationFeature, InitialNavigationFeature, InMemoryScrollingFeature, NavigationErrorHandlerFeature, PreloadingFeature, provideRouter, provideRoutes, RouterConfigurationFeature, RouterFeature, RouterFeatures, RouterHashLocationFeature, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withHashLocation, withInMemoryScrolling, withNavigationErrorHandler, withPreloading, withRouterConfig} from './provide_router';
+export {DebugTracingFeature, DisabledInitialNavigationFeature, withViewTransitions, ViewTransitionsFeature, EnabledBlockingInitialNavigationFeature, InitialNavigationFeature, InMemoryScrollingFeature, NavigationErrorHandlerFeature, PreloadingFeature, provideRouter, provideRoutes, RouterConfigurationFeature, RouterFeature, RouterFeatures, RouterHashLocationFeature, withComponentInputBinding, withDebugTracing, withDisabledInitialNavigation, withEnabledBlockingInitialNavigation, withHashLocation, withInMemoryScrolling, withNavigationErrorHandler, withPreloading, withRouterConfig} from './provide_router';
 export {BaseRouteReuseStrategy, DetachedRouteHandle, RouteReuseStrategy} from './route_reuse_strategy';
 export {Router} from './router';
 export {ExtraOptions, InitialNavigation, InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';

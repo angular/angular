@@ -107,7 +107,7 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
     const attrs: Record<string, string> = {id};
     const ctype = getCtypeForPlaceholder(id);
     if (ctype !== null) {
-      attrs.ctype = ctype;
+      attrs['ctype'] = ctype;
     }
     if (text !== undefined) {
       attrs['equiv-text'] = text;

@@ -4,6 +4,7 @@ import { AnimalService } from './animal.service';
 
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ]

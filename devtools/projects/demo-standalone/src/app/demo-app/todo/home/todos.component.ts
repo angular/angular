@@ -38,7 +38,7 @@ export class TodosFilter implements PipeTransform {
   }
 }
 
-const fib = (n: number) => {
+const fib = (n: number): number => {
   if (n === 1 || n === 2) {
     return 1;
   }
@@ -47,15 +47,13 @@ const fib = (n: number) => {
 
 @Component({
   selector: 'app-todos',
-  imports: [NgForOf, RouterLink, TodoComponent, SamplePipe, TodosFilter, TooltipDirective],
+  imports: [RouterLink, TodoComponent, SamplePipe, TodosFilter, TooltipDirective],
   standalone: true,
   template: `
     <a [routerLink]="">Home</a>
     <a [routerLink]="">Home</a>
     <a [routerLink]="">Home</a>
-
     <p>{{ 'Sample text processed by a pipe' | sample }}</p>
-
     <section class="todoapp">
       <header class="header">
         <h1>todos</h1>
@@ -65,13 +63,14 @@ const fib = (n: number) => {
         <input id="toggle-all" class="toggle-all" type="checkbox" />
         <label for="toggle-all">Mark all as complete</label>
         <ul class="todo-list">
-          <app-todo
-            appTooltip
-            *ngFor="let todo of todos | todosFilter: filterValue"
-            [todo]="todo"
-            (delete)="onDelete($event)"
-            (update)="onChange($event)"
-          ></app-todo>
+          @for (todo of todos | todosFilter: filterValue; track todo) {
+            <app-todo
+              appTooltip
+              [todo]="todo"
+              (delete)="onDelete($event)"
+              (update)="onChange($event)"
+            />
+          }
         </ul>
       </section>
       <footer class="footer">
@@ -81,7 +80,7 @@ const fib = (n: number) => {
         <button class="clear-completed" (click)="clearCompleted()">Clear completed</button>
       </footer>
     </section>
-  `
+    `
 })
 export class TodosComponent implements OnInit, OnDestroy {
   todos: Todo[] = [
@@ -101,7 +100,7 @@ export class TodosComponent implements OnInit, OnDestroy {
   @Output() delete = new EventEmitter();
   @Output() add = new EventEmitter();
 
-  private hashListener: EventListenerOrEventListenerObject;
+  private hashListener!: EventListenerOrEventListenerObject;
 
   constructor(private cdRef: ChangeDetectorRef) {}
 

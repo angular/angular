@@ -162,7 +162,7 @@ function allTests(os: string) {
 
       const jsContents = env.getContents('test.js');
       expect(jsContents).toContain('Service.ɵprov =');
-      expect(jsContents).toContain('factory: function () { return (() => new Service())(); }');
+      expect(jsContents).toContain('factory: () => (() => new Service())()');
       expect(jsContents).toContain('Service_Factory(t) { return new (t || Service)(); }');
       expect(jsContents).toContain(', providedIn: \'root\' });');
       expect(jsContents).not.toContain('__decorate');
@@ -257,7 +257,7 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain(
               'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };');
-      expect(jsContents).toContain('providedIn: i0.forwardRef(function () { return Mod; }) })');
+      expect(jsContents).toContain('providedIn: i0.forwardRef(() => Mod) })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
@@ -537,6 +537,21 @@ function allTests(os: string) {
               'never, never, never>');
     });
 
+    it('should error when supportJitMode is false and forbidOrphanComponents is true', () => {
+      env.tsconfig({
+        supportJitMode: false,
+        forbidOrphanComponents: true,
+      });
+      env.write('test.ts', '');
+
+      const diagnostics = env.driveDiagnostics();
+
+      expect(diagnostics).toEqual([jasmine.objectContaining({
+        messageText: jasmine.stringMatching(
+            /JIT mode support \("supportJitMode" option\) cannot be disabled when forbidOrphanComponents is set to true/),
+      })]);
+    });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
@@ -564,7 +579,7 @@ function allTests(os: string) {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ function () {');
+          expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ (() => {');
           expect(jsContents)
               .toContain(
                   '(ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir);');
@@ -660,29 +675,19 @@ function allTests(os: string) {
 
           const verifyOutput = (jsContents: string) => {
             // verify that there is no pattern that triggers automatic semicolon
-            // insertion by checking that there are no return statements not wrapped in
-            // parentheses
-            expect(trim(jsContents)).not.toContain(trim(`
-              return /**
-              * @return {?}
-              */
-            `));
+            // insertion by checking that there are no function return statements
+            // not wrapped in parentheses
+            expect(trim(jsContents)).not.toMatch(/return\s+function/);
             expect(trim(jsContents)).toContain(trim(`
               [{
                   provide: 'token-a',
                   useFactory: ((service) => {
-                      return (/**
-                      * @return {?}
-                      */
-                      () => service.id);
+                      return (() => service.id);
                   })
               }, {
                   provide: 'token-b',
                   useFactory: (function (service) {
-                      return (/**
-                      * @return {?}
-                      */
-                      function () { return service.id; });
+                      return (function () { return service.id; });
                   })
               }]
             `));
@@ -1609,7 +1614,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('bootstrap: function () { return [Foo]; }');
+      expect(jsContents).toContain('bootstrap: () => [Foo]');
     });
 
     it('should compile NgModules with references to forward declared directives', () => {
@@ -1628,7 +1633,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('declarations: function () { return [Foo]; }');
+      expect(jsContents).toContain('declarations: () => [Foo]');
     });
 
     it('should compile NgModules with references to forward declared imports', () => {
@@ -1647,7 +1652,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('imports: function () { return [BarModule]; }');
+      expect(jsContents).toContain('imports: () => [BarModule]');
     });
 
     it('should compile NgModules with references to forward declared exports', () => {
@@ -1666,7 +1671,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('exports: function () { return [BarModule]; }');
+      expect(jsContents).toContain('exports: () => [BarModule]');
     });
 
     it('should use relative import for forward references that were resolved from a relative file',
@@ -4799,7 +4804,7 @@ function allTests(os: string) {
           .toContain('function Base_Factory(t) { return new (t || Base)(i0.ɵɵinject(Dep)); }');
       expect(jsContents)
           .toContain(
-              'function () { let ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; }();');
+              '(() => { let ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; })();');
       expect(jsContents)
           .toContain('function GrandChild_Factory(t) { return new (t || GrandChild)(); }');
     });
@@ -4825,7 +4830,7 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ function () { let ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; }();');
+              '/*@__PURE__*/ (() => { let ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; })();');
     });
 
     it('should wrap "directives" in component metadata in a closure when forward references are present',
@@ -4854,7 +4859,7 @@ function allTests(os: string) {
          env.driveMain();
 
          const jsContents = env.getContents('test.js');
-         expect(jsContents).toContain('dependencies: function () { return [CmpB]; }');
+         expect(jsContents).toContain('dependencies: () => [CmpB]');
        });
 
     it('should wrap setClassMetadata in an iife with ngDevMode guard', () => {
@@ -4869,7 +4874,7 @@ function allTests(os: string) {
       const jsContents = env.getContents('test.js').replace(/\s+/g, ' ');
       expect(jsContents)
           .toContain(
-              `(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
+              `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ` +
               `i0.ɵsetClassMetadata(Service, [{ type: Injectable, args: [{ providedIn: 'root' }] }], null, null); })();`);
     });
 
@@ -6654,119 +6659,6 @@ function allTests(os: string) {
       expect(afterCount).toBe(1);
     });
 
-    // These tests trigger the Tsickle compiler which asserts that the file-paths
-    // are valid for the real OS. When on non-Windows systems it doesn't like paths
-    // that start with `C:`.
-    if (os !== 'Windows' || platform() === 'win32') {
-      describe('@fileoverview Closure annotations', () => {
-        it('should be produced if not present in source file', () => {
-          env.tsconfig({
-            'annotateForClosureCompiler': true,
-          });
-          env.write(`test.ts`, `
-        import {Component} from '@angular/core';
-
-        @Component({
-          template: '<div class="test"></div>',
-        })
-        export class SomeComp {}
-      `);
-
-          env.driveMain();
-          const jsContents = env.getContents('test.js');
-          const fileoverview = `
-        /**
-         * @fileoverview added by tsickle
-         * Generated from: test.ts
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-        });
-
-        it('should be produced for empty source files', () => {
-          env.tsconfig({
-            'annotateForClosureCompiler': true,
-          });
-          env.write(`test.ts`, ``);
-
-          env.driveMain();
-          const jsContents = env.getContents('test.js');
-          const fileoverview = `
-        /**
-         * @fileoverview added by tsickle
-         * Generated from: test.ts
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-        });
-
-        it('should always be at the very beginning of a script (if placed above imports)', () => {
-          env.tsconfig({
-            'annotateForClosureCompiler': true,
-          });
-          env.write(`test.ts`, `
-        /**
-         * @fileoverview Some Comp overview
-         * @modName {some_comp}
-         */
-
-        import {Component} from '@angular/core';
-
-        @Component({
-          template: '<div class="test"></div>',
-        })
-        export class SomeComp {}
-      `);
-
-          env.driveMain();
-          const jsContents = env.getContents('test.js');
-          const fileoverview = `
-        /**
-         *
-         * @fileoverview Some Comp overview
-         * Generated from: test.ts
-         * @modName {some_comp}
-         *
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-          expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-        });
-
-        it('should always be at the very beginning of a script (if placed above non-imports)',
-           () => {
-             env.tsconfig({
-               'annotateForClosureCompiler': true,
-             });
-             env.write(`test.ts`, `
-        /**
-         * @fileoverview Some Comp overview
-         * @modName {some_comp}
-         */
-
-        const testConst = 'testConstValue';
-        const testFn = function() { return true; }
-      `);
-
-             env.driveMain();
-             const jsContents = env.getContents('test.js');
-             const fileoverview = `
-        /**
-         *
-         * @fileoverview Some Comp overview
-         * Generated from: test.ts
-         * @modName {some_comp}
-         *
-         * @suppress {checkTypes,const,extraRequire,missingOverride,missingRequire,missingReturn,unusedPrivateMembers,uselessCode}
-         */
-      `;
-             expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
-           });
-      });
-    }
-
     describe('sanitization', () => {
       it('should generate sanitizers for unsafe attributes in hostBindings fn in Directives',
          () => {
@@ -7558,6 +7450,61 @@ function allTests(os: string) {
                 '"div[_ngcontent-%COMP%] { background: url(/b.png); }", ' +
                 // Large string should be called from function definition.
                 '_c0()]');
+      });
+
+      it('should process `styles` as a string', () => {
+        env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '',
+          styles: 'h2 {width: 10px}'
+        })
+        export class TestCmp {}
+      `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('styles: ["h2[_ngcontent-%COMP%] {width: 10px}"]');
+      });
+
+      it('should process `styleUrl`', () => {
+        env.write('dir/styles.css', 'h2 {width: 10px}');
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            styleUrl: 'dir/styles.css',
+            template: '',
+          })
+          export class TestCmp {}
+        `);
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).not.toContain('styleUrl');
+        expect(jsContents).toContain('styles: ["h2[_ngcontent-%COMP%] {width: 10px}"]');
+      });
+
+      it('should produce a diagnostic if both `styleUrls` and `styleUrl` are defined', () => {
+        env.write('dir/styles.css', 'h2 {width: 10px}');
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            styleUrl: 'dir/styles.css',
+            styleUrls: ['dir/styles.css'],
+            template: '',
+          })
+          export class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain('@Component cannot define both `styleUrl` and `styleUrls`');
       });
     });
 
@@ -8548,6 +8495,25 @@ function allTests(os: string) {
          expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
        });
 
+    it('should be able to turn off control flow using a compiler flag', () => {
+      env.tsconfig({_enableBlockSyntax: false});
+      env.write('/test.ts', `
+        import { Component } from '@angular/core';
+
+        @Component({
+          standalone: true,
+          template: 'My email is foo@bar.com',
+        })
+        export class TestCmp {}
+      `);
+
+      env.driveMain();
+
+      // If blocks are enabled, this test will fail since `@bar.com` is an incomplete block.
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('text(0, "My email is foo@bar.com")');
+    });
+
     describe('InjectorDef emit optimizations for standalone', () => {
       it('should not filter components out of NgModule.imports', () => {
         env.write('test.ts', `
@@ -8766,7 +8732,7 @@ function allTests(os: string) {
         expect(jsContents).toContain(`import { externalToNumber } from 'external';`);
         expect(jsContents).toContain('inputs: { value: ["value", "value", externalToNumber] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
-        expect(dtsContents).toContain('import * as i1 from "./node_modules/external/index";');
+        expect(dtsContents).toContain('import * as i1 from "external";');
         expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
       });
 
@@ -8797,8 +8763,35 @@ function allTests(os: string) {
         expect(jsContents)
             .toContain('inputs: { value: ["value", "value", (value) => value ? 1 : 0] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
-        expect(dtsContents).toContain('import * as i1 from "./node_modules/external/index";');
+        expect(dtsContents).toContain('import * as i1 from "external";');
         expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
+      });
+
+      it('should compile an input referencing an imported function with literal types', () => {
+        env.write('/transforms.ts', `
+          export function toBoolean(value: boolean | '' | 'true' | 'false'): boolean {
+            return !!value;
+          }
+        `);
+        env.write('/test.ts', `
+          import {Directive, Input} from '@angular/core';
+          import {toBoolean} from './transforms';
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: toBoolean}) value!: number;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { value: ["value", "value", toBoolean] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents)
+            .toContain(`static ngAcceptInputType_value: boolean | "" | "true" | "false";`);
       });
 
       it('should compile a directive input with a transform function with a `this` typing', () => {
@@ -8870,26 +8863,822 @@ function allTests(os: string) {
             .toContain('features: [i0.ɵɵInputTransformsFeature, i0.ɵɵInheritDefinitionFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
+
+      it('should compile an input with using an ambient type in the transform function', () => {
+        env.write('node_modules/external/index.d.ts', `
+          import {ElementRef} from '@angular/core';
+
+          export declare function coerceElement(value: HTMLElement | ElementRef<HTMLElement>): HTMLElement;
+        `);
+
+        env.write('/test.ts', `
+          import {Directive, Input, Component} from '@angular/core';
+          import {coerceElement} from 'external';
+
+          @Directive({standalone: true})
+          export class Dir {
+            @Input({transform: coerceElement}) element!: HTMLElement;
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        const dtsContents = env.getContents('test.d.ts');
+
+        expect(jsContents).toContain('inputs: { element: ["element", "element", coerceElement] }');
+        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+        expect(dtsContents)
+            .toContain(
+                'static ngAcceptInputType_element: HTMLElement | i0.ElementRef<HTMLElement>;');
+      });
     });
 
-    // TODO: replace with tests for `defer`.
-    // TODO: maybe put deferred tests in a separate file?
     describe('deferred blocks', () => {
-      it('should not error for deferred blocks', () => {
-        env.tsconfig({_enabledBlockTypes: ['defer']});
+      it('should handle deferred blocks', () => {
+        env.write('cmp-a.ts', `
+          import { Component } from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'cmp-a',
+            template: 'CmpA!'
+          })
+          export class CmpA {}
+        `);
+
         env.write('/test.ts', `
-          import {Component} from '@angular/core';
+          import { Component } from '@angular/core';
+          import { CmpA } from './cmp-a';
+
+          @Component({
+            selector: 'local-dep',
+            standalone: true,
+            template: 'Local dependency',
+          })
+          export class LocalDep {}
 
           @Component({
             selector: 'test-cmp',
-            template: '{#defer}hello{/defer}',
+            standalone: true,
+            imports: [CmpA, LocalDep],
+            template: \`
+              @defer {
+                <cmp-a />
+                <local-dep />
+              }
+            \`,
           })
           export class TestCmp {}
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+        expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA), LocalDep]');
+
+        // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
+        // via dynamic imports and an original import can be removed.
+        expect(jsContents).not.toContain('import { CmpA }');
+      });
+
+      it('should include timer scheduler function when ' +
+             '`after` or `minimum` parameters are used',
+         () => {
+           env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+           env.write('/test.ts', `
+              import { Component } from '@angular/core';
+              import { CmpA } from './cmp-a';
+
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                imports: [CmpA],
+                template: \`
+                  @defer {
+                    <cmp-a />
+                  } @loading (after 500ms; minimum 300ms) {
+                    Loading...
+                  }
+                \`,
+              })
+              export class TestCmp {}
+            `);
+
+           env.driveMain();
+
+           const jsContents = env.getContents('test.js');
+           expect(jsContents)
+               .toContain(
+                   'ɵɵdefer(2, 0, TestCmp_Defer_2_DepsFn, 1, null, null, 0, null, i0.ɵɵdeferEnableTimerScheduling)');
+         });
+
+      describe('imports', () => {
+        it('should retain regular imports when symbol is eagerly referenced', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA } from './cmp-a';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA],
+              template: \`
+                @defer {
+                  <cmp-a />
+                }
+              \`,
+            })
+            export class TestCmp {
+              constructor() {
+                // This line retains the regular import of CmpA,
+                // since it's eagerly referenced in the code.
+                console.log(CmpA);
+              }
+            }
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+
+          // The dependency function doesn't have a dynamic import, because `CmpA`
+          // was eagerly referenced in component's code, thus regular import can not be removed.
+          expect(jsContents).toContain('() => [CmpA]');
+          expect(jsContents).toContain('import { CmpA }');
+        });
+
+        it('should retain regular imports when one of the symbols is eagerly referenced', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-b',
+              template: 'CmpB!'
+            })
+            export class CmpB {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA, CmpB } from './cmp-a';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA, CmpB],
+              template: \`
+                @defer {
+                  <cmp-a />
+                  <cmp-b />
+                }
+              \`,
+            })
+            export class TestCmp {
+              constructor() {
+                // This line retains the regular import of CmpA,
+                // since it's eagerly referenced in the code.
+                console.log(CmpA);
+              }
+            }
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+
+          // The dependency function doesn't have a dynamic import, because `CmpA`
+          // was eagerly referenced in component's code, thus regular import can not be removed.
+          // This also affects `CmpB`, since it was extracted from the same import.
+          expect(jsContents).toContain('() => [CmpA, CmpB]');
+          expect(jsContents).toContain('import { CmpA, CmpB }');
+        });
+
+        it('should drop regular imports when none of the symbols are eagerly referenced', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-b',
+              template: 'CmpB!'
+            })
+            export class CmpB {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA, CmpB } from './cmp-a';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA, CmpB],
+              template: \`
+                @defer {
+                  <cmp-a />
+                  <cmp-b />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+
+          // Both `CmpA` and `CmpB` were used inside the defer block and were not
+          // referenced elsewhere, so we generate dynamic imports and drop a regular one.
+          expect(jsContents)
+              .toContain(
+                  '() => [' +
+                  'import("./cmp-a").then(m => m.CmpA), ' +
+                  'import("./cmp-a").then(m => m.CmpB)]');
+          expect(jsContents).not.toContain('import { CmpA, CmpB }');
+        });
+
+        it('should lazy-load dependency referenced with a fowrardRef', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component, forwardRef } from '@angular/core';
+            import { CmpA } from './cmp-a';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [forwardRef(() => CmpA)],
+              template: \`
+                @defer {
+                  <cmp-a />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+
+          // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
+          // via dynamic imports and an original import can be removed.
+          expect(jsContents).not.toContain('import { CmpA }');
+        });
+
+        it('should drop imports when one is deferrable and the rest are type-only imports', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            export class Foo {}
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA, type Foo } from './cmp-a';
+
+            export const foo: Foo = {};
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA],
+              template: \`
+                @defer {
+                  <cmp-a />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+          expect(jsContents).not.toContain('import { CmpA }');
+        });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other has a single type-only element',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import { type Foo } from './cmp-a';
+
+                export const foo: Foo = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other is type-only at the declaration level',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import type { Foo, CmpA as CmpAlias } from './cmp-a';
+
+                export const foo: Foo|CmpAlias = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports to the same file when one is deferrable and the other is a type-only import of all symbols',
+           () => {
+             env.write('cmp-a.ts', `
+                import { Component } from '@angular/core';
+
+                export class Foo {}
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+                import { Component } from '@angular/core';
+                import { CmpA } from './cmp-a';
+                import type * as allCmpA from './cmp-a';
+
+                export const foo: allCmpA.Foo|allCmpA.CmpA = {};
+
+                @Component({
+                  selector: 'test-cmp',
+                  standalone: true,
+                  imports: [CmpA],
+                  template: \`
+                    @defer {
+                      <cmp-a />
+                    }
+                  \`,
+                })
+                export class TestCmp {}
+              `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+             expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.CmpA)]');
+             expect(jsContents).not.toContain('import { CmpA }');
+           });
+
+        it('should drop multiple imports of deferrable symbols from the same file', () => {
+          env.write('cmps.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-b',
+              template: 'CmpB!'
+            })
+            export class CmpB {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import { CmpA } from './cmps';
+            import { CmpB } from './cmps';
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA, CmpB],
+              template: \`
+                @defer {
+                  <cmp-a />
+                  <cmp-b />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents)
+              .toContain(
+                  '() => [import("./cmps").then(m => m.CmpA), import("./cmps").then(m => m.CmpB)]');
+          expect(jsContents).not.toContain('import { CmpA }');
+          expect(jsContents).not.toContain('import { CmpB }');
+        });
+      });
+
+      it('should detect pipe used in the `when` trigger as an eager dependency', () => {
+        env.write('test-pipe.ts', `
+          import { Pipe } from '@angular/core';
+
+          @Pipe({name: 'test', standalone: true})
+          export class TestPipe {
+            transform() {
+              return 1;
+            }
+          }
+        `);
+
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+          import { TestPipe } from './test-pipe';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [TestPipe],
+            template: '@defer (when 1 | test) { hello }',
+          })
+          export class TestCmp {
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('dependencies: [TestPipe]');
+      });
+
+      it('should detect pipe used in the `prefetch when` trigger as an eager dependency', () => {
+        env.write('test-pipe.ts', `
+          import { Pipe } from '@angular/core';
+
+          @Pipe({name: 'test', standalone: true})
+          export class TestPipe {
+            transform() {
+              return 1;
+            }
+          }
+        `);
+
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+          import { TestPipe } from './test-pipe';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [TestPipe],
+            template: '@defer (when 1 | test) { hello }',
+          })
+          export class TestCmp {
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('dependencies: [TestPipe]');
+      });
+
+      it('should detect pipe used both in a trigger and the deferred content as eager', () => {
+        env.write('test-pipe.ts', `
+          import { Pipe } from '@angular/core';
+
+          @Pipe({name: 'test', standalone: true})
+          export class TestPipe {
+            transform() {
+              return 1;
+            }
+          }
+        `);
+
+        env.write('/test.ts', `
+          import { Component } from '@angular/core';
+          import { TestPipe } from './test-pipe';
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [TestPipe],
+            template: '@defer (when 1 | test) { {{1 | test}} }',
+          })
+          export class TestCmp {
+          }
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('dependencies: [TestPipe]');
+      });
+
+      describe('setClassMetadataAsync', () => {
+        it('should generate setClassMetadataAsync for components with defer blocks', () => {
+          env.write('cmp-a.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import {Component} from '@angular/core';
+            import {CmpA} from './cmp-a';
+
+            @Component({
+              selector: 'local-dep',
+              standalone: true,
+              template: 'Local dependency',
+            })
+            export class LocalDep {}
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA, LocalDep],
+              template: \`
+                @defer {
+                  <cmp-a />
+                  <local-dep />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents)
+              .toContain(
+                  // ngDevMode check is present
+                  '(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
+                  // Main `setClassMetadataAsync` call
+                  'i0.ɵsetClassMetadataAsync(TestCmp, ' +
+                  // Dependency loading function (note: no local `LocalDep` here)
+                  '() => [import("./cmp-a").then(m => m.CmpA)], ' +
+                  // Callback that invokes `setClassMetadata` at the end
+                  'CmpA => { i0.ɵsetClassMetadata(TestCmp');
+        });
+
+        it('should *not* generate setClassMetadataAsync for components with defer blocks ' +
+               'when dependencies are eagerly referenced as well',
+           () => {
+             env.write('cmp-a.ts', `
+                import {Component} from '@angular/core';
+
+                @Component({
+                  standalone: true,
+                  selector: 'cmp-a',
+                  template: 'CmpA!'
+                })
+                export class CmpA {}
+              `);
+
+             env.write('/test.ts', `
+              import {Component} from '@angular/core';
+              import {CmpA} from './cmp-a';
+
+              @Component({
+                selector: 'test-cmp',
+                standalone: true,
+                imports: [CmpA],
+                template: \`
+                  @defer {
+                    <cmp-a />
+                  }
+                \`,
+              })
+              export class TestCmp {
+                constructor() {
+                  // This eager reference retains 'CmpA' symbol as eager.
+                  console.log(CmpA);
+                }
+              }
+            `);
+
+             env.driveMain();
+
+             const jsContents = env.getContents('test.js');
+
+             // Dependency function eagerly references `CmpA`.
+             expect(jsContents).toContain('() => [CmpA]');
+
+             // The `setClassMetadataAsync` wasn't generated, since there are no deferrable
+             // symbols.
+             expect(jsContents).not.toContain('setClassMetadataAsync');
+
+             // But the regular `setClassMetadata` is present.
+             expect(jsContents).toContain('setClassMetadata');
+           });
+      });
+    });
+
+    describe('debug info', () => {
+      it('should set forbidOrphanRendering debug info for component when the option forbidOrphanComponents is set',
+         () => {
+           env.write('tsconfig.json', JSON.stringify({
+             extends: './tsconfig-base.json',
+             angularCompilerOptions: {
+               forbidOrphanComponents: true,
+             },
+           }));
+           env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '...',
+            })
+            export class Comp {}
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toMatch('forbidOrphanRendering: true');
+         });
+
+      it('should set forbidOrphanRendering debug info for standalone components when the option forbidOrphanComponents is set',
+         () => {
+           env.write('tsconfig.json', JSON.stringify({
+             extends: './tsconfig-base.json',
+             angularCompilerOptions: {
+               forbidOrphanComponents: true,
+             },
+           }));
+           env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+
+            @Component({
+              standalone: true,
+              template: '...',
+            })
+            export class Comp {}
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).toMatch('forbidOrphanRendering: true');
+         });
+
+      it('should not set forbidOrphanRendering debug info when the option forbidOrphanComponents is not set',
+         () => {
+           env.write(`test.ts`, `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '...',
+          })
+          export class Comp {}
       `);
 
-        const diags = env.driveDiagnostics();
-        expect(diags.length).toBe(0);
-      });
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents).not.toMatch('forbidOrphanRendering:');
+         });
     });
   });
 

@@ -3,12 +3,17 @@
 <!-- #docregion input-parent -->
 <app-item-detail [item]="currentItem"></app-item-detail>
 <!-- #enddocregion input-parent -->
+
+<!-- #docregion input-parent-metadata -->
+<app-item-detail-metadata [item]="currentItem" [itemAvailability]="true"></app-item-detail-metadata>
+<!-- #enddocregion input-parent-metadata -->
+
 <hr>
 
 <!-- #docregion output-parent -->
 <app-item-output (newItemEvent)="addItem($event)"></app-item-output>
 <!-- #enddocregion output-parent -->
-<h3>Parent component receiving value via @Output()</h3>
+<h3>Parent component receiving value via &#64;Output()</h3>
 
 <ul>
   <li *ngFor="let item of items">{{item}}</li>

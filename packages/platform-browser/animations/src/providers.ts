@@ -6,14 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationBuilder} from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵNoopAnimationDriver as NoopAnimationDriver, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer} from '@angular/animations/browser';
+import {AnimationDriver, NoopAnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationRendererFactory as AnimationRendererFactory, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer} from '@angular/animations/browser';
 import {DOCUMENT} from '@angular/common';
 import {ANIMATION_MODULE_TYPE, ApplicationRef, Inject, Injectable, NgZone, OnDestroy, Provider, RendererFactory2} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
-
-import {BrowserAnimationBuilder} from './animation_builder';
-import {AnimationRendererFactory} from './animation_renderer';
 
 @Injectable()
 export class InjectableAnimationEngine extends AnimationEngine implements OnDestroy {
@@ -21,9 +17,9 @@ export class InjectableAnimationEngine extends AnimationEngine implements OnDest
   // Since the `ApplicationRef` should be created earlier before the `AnimationEngine`, they
   // both have `ngOnDestroy` hooks and `flush()` must be called after all views are destroyed.
   constructor(
-      @Inject(DOCUMENT) doc: any, driver: AnimationDriver, normalizer: AnimationStyleNormalizer,
-      appRef: ApplicationRef) {
-    super(doc.body, driver, normalizer);
+      @Inject(DOCUMENT) doc: Document, driver: AnimationDriver,
+      normalizer: AnimationStyleNormalizer, appRef: ApplicationRef) {
+    super(doc, driver, normalizer);
   }
 
   ngOnDestroy(): void {
@@ -41,7 +37,6 @@ export function instantiateRendererFactory(
 }
 
 const SHARED_ANIMATION_PROVIDERS: Provider[] = [
-  {provide: AnimationBuilder, useClass: BrowserAnimationBuilder},
   {provide: AnimationStyleNormalizer, useFactory: instantiateDefaultStyleNormalizer},
   {provide: AnimationEngine, useClass: InjectableAnimationEngine}, {
     provide: RendererFactory2,

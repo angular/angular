@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, DOCUMENT} from '@angular/common';
+import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig} from '@angular/common';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
 import {Component, PLATFORM_ID, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {withHead} from '@angular/private/testing';
 
 import {PRELOADED_IMAGES} from '../..//src/directives/ng_optimized_image/tokens';
 import {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
-import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, IMAGE_CONFIG, ImageConfig, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
@@ -720,6 +721,30 @@ describe('Image directive', () => {
         fixture.detectChanges();
       }).not.toThrowError(new RegExp('was updated after initialization'));
     });
+    it('should accept a safeUrl ngSrc value', () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `<img
+              [ngSrc]="bypassImage"
+              width="400"
+              height="600"
+            >`
+      })
+      class TestComponent {
+        rawImage = `javascript:alert("Hi there")`;
+        bypassImage: SafeResourceUrl;
+        constructor(private sanitizer: DomSanitizer) {
+          this.bypassImage = sanitizer.bypassSecurityTrustResourceUrl(this.rawImage);
+        }
+      }
+      setupTestingModule({component: TestComponent});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      let nativeElement = fixture.nativeElement as HTMLElement;
+      let img = nativeElement.querySelector('img')!;
+      expect(img.src).toContain(`${IMG_BASE_URL}/javascript:alert`);
+    });
   });
 
   describe('lazy loading', () => {
@@ -1162,8 +1187,8 @@ describe('Image directive', () => {
     //   transforms2: {example2: "bar"}
     // }
     const nestedImageLoader = (config: ImageLoaderConfig) => {
-      return `${config.src}/${config.loaderParams?.transforms1.example1}/${
-          config.loaderParams?.transforms2.example2}`;
+      return `${config.src}/${config.loaderParams?.['transforms1'].example1}/${
+          config.loaderParams?.['transforms2'].example2}`;
     };
 
     it('should set `src` to match `ngSrc` if image loader is not provided', () => {
@@ -1375,7 +1400,7 @@ describe('Image directive', () => {
     it('should pass data payload from loaderParams to custom image loaders', () => {
       setupTestingModule({imageLoader: imageLoaderWithData});
       const template = `
-        <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50" 
+        <img ngSrc="${IMG_BASE_URL}/img.png" width="150" height="50"
           [loaderParams]="{testProp1: 'testValue1', testProp2: 'testValue2'}" />
       `;
       const fixture = createTestComponent(template);
@@ -1770,6 +1795,38 @@ describe('Image directive', () => {
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
         expect(img.getAttribute('srcset')).toBeNull();
+      });
+
+      it('should add a responsive srcset to the img element if height is too large', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `<img ngSrc="img" width="1100" height="2400" sizes="100vw">`;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=750 750w, ${
+                IMG_BASE_URL}/img?w=828 828w, ${IMG_BASE_URL}/img?w=1080 1080w, ${
+                IMG_BASE_URL}/img?w=1200 1200w, ${IMG_BASE_URL}/img?w=1920 1920w, ${
+                IMG_BASE_URL}/img?w=2048 2048w, ${IMG_BASE_URL}/img?w=3840 3840w`);
+      });
+
+      it('should add a responsive srcset to the img element if width is too large', () => {
+        setupTestingModule({imageLoader});
+
+        const template = `<img ngSrc="img" width="3000" height="400" sizes="100vw">`;
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        expect(img.getAttribute('srcset'))
+            .toBe(`${IMG_BASE_URL}/img?w=640 640w, ${IMG_BASE_URL}/img?w=750 750w, ${
+                IMG_BASE_URL}/img?w=828 828w, ${IMG_BASE_URL}/img?w=1080 1080w, ${
+                IMG_BASE_URL}/img?w=1200 1200w, ${IMG_BASE_URL}/img?w=1920 1920w, ${
+                IMG_BASE_URL}/img?w=2048 2048w, ${IMG_BASE_URL}/img?w=3840 3840w`);
       });
 
       it('should use a custom breakpoint set if one is provided', () => {

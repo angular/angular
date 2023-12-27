@@ -100,7 +100,7 @@ export declare interface AnimateChildOptions extends AnimationOptions {
  *
  * @publicApi
  */
-export const enum AnimationMetadataType {
+export enum AnimationMetadataType {
   /**
    * Associates a named animation state with a set of CSS styles.
    * See [`state()`](api/animations/state)

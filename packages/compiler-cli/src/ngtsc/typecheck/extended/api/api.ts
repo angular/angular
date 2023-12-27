@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstIcu, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, ParseSourceSpan, RecursiveAstVisitor, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstUnknownBlock, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {NgCompilerOptions} from '../../../core/api';
@@ -147,6 +147,7 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
   visitVariable(variable: TmplAstVariable): void {}
   visitReference(reference: TmplAstReference): void {}
   visitTextAttribute(attribute: TmplAstTextAttribute): void {}
+  visitUnknownBlock(block: TmplAstUnknownBlock): void {}
   visitBoundAttribute(attribute: TmplAstBoundAttribute): void {
     this.visitAst(attribute.value);
   }
@@ -161,12 +162,7 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
 
 
   visitDeferredBlock(deferred: TmplAstDeferredBlock): void {
-    this.visitAllNodes(deferred.children);
-    this.visitAllNodes(deferred.triggers);
-    this.visitAllNodes(deferred.prefetchTriggers);
-    deferred.placeholder && this.visit(deferred.placeholder);
-    deferred.loading && this.visit(deferred.loading);
-    deferred.error && this.visit(deferred.error);
+    deferred.visitAll(this);
   }
 
   visitDeferredTrigger(trigger: TmplAstDeferredTrigger): void {
@@ -184,6 +180,38 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
   }
 
   visitDeferredBlockLoading(block: TmplAstDeferredBlockLoading): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitSwitchBlock(block: TmplAstSwitchBlock): void {
+    this.visitAst(block.expression);
+    this.visitAllNodes(block.cases);
+  }
+
+  visitSwitchBlockCase(block: TmplAstSwitchBlockCase): void {
+    block.expression && this.visitAst(block.expression);
+    this.visitAllNodes(block.children);
+  }
+
+  visitForLoopBlock(block: TmplAstForLoopBlock): void {
+    block.item.visit(this);
+    this.visitAllNodes(Object.values(block.contextVariables));
+    this.visitAst(block.expression);
+    this.visitAllNodes(block.children);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: TmplAstForLoopBlockEmpty): void {
+    this.visitAllNodes(block.children);
+  }
+
+  visitIfBlock(block: TmplAstIfBlock): void {
+    this.visitAllNodes(block.branches);
+  }
+
+  visitIfBlockBranch(block: TmplAstIfBlockBranch): void {
+    block.expression && this.visitAst(block.expression);
+    block.expressionAlias?.visit(this);
     this.visitAllNodes(block.children);
   }
 

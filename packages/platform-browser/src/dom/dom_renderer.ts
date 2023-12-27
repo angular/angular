@@ -32,13 +32,13 @@ export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 /**
  * The default value for the `REMOVE_STYLES_ON_COMPONENT_DESTROY` DI token.
  */
-const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = false;
+const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = true;
 
 /**
  * A [DI token](guide/glossary#di-token "DI token definition") that indicates whether styles
  * of destroyed components should be removed from DOM.
  *
- * By default, the value is set to `false`. This will be changed in the next major version.
+ * By default, the value is set to `true`.
  * @publicApi
  */
 export const REMOVE_STYLES_ON_COMPONENT_DESTROY =
@@ -145,6 +145,12 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
 
 class DefaultDomRenderer2 implements Renderer2 {
   data: {[key: string]: any} = Object.create(null);
+
+  /**
+   * By default this renderer throws when encountering synthetic properties
+   * This can be disabled for example by the AsyncAnimationRendererFactory
+   */
+  throwOnSyntheticProps = true;
 
   constructor(
       private readonly eventManager: EventManager, private readonly doc: Document,
@@ -273,7 +279,12 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setProperty(el: any, name: string, value: any): void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && checkNoSyntheticProp(name, 'property');
+    if (el == null) {
+      return;
+    }
+
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.throwOnSyntheticProps &&
+        checkNoSyntheticProp(name, 'property');
     el[name] = value;
   }
 
@@ -283,7 +294,8 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
       () => void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && checkNoSyntheticProp(event, 'listener');
+    (typeof ngDevMode === 'undefined' || ngDevMode) && this.throwOnSyntheticProps &&
+        checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
       target = getDOM().getGlobalEventTarget(this.doc, target);
       if (!target) {

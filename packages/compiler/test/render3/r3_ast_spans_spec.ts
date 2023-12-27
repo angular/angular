@@ -106,20 +106,54 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    const blocks: t.Node[] = [];
-    deferred.placeholder && blocks.push(deferred.placeholder);
-    deferred.loading && blocks.push(deferred.loading);
-    deferred.error && blocks.push(deferred.error);
     this.result.push([
       'DeferredBlock', humanizeSpan(deferred.sourceSpan), humanizeSpan(deferred.startSourceSpan),
       humanizeSpan(deferred.endSourceSpan)
     ]);
-    this.visitAll([
-      deferred.triggers,
-      deferred.prefetchTriggers,
-      deferred.children,
-      blocks,
+    deferred.visitAll(this);
+  }
+
+  visitSwitchBlock(block: t.SwitchBlock): void {
+    this.result.push([
+      'SwitchBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
     ]);
+    this.visitAll([block.cases]);
+  }
+
+  visitSwitchBlockCase(block: t.SwitchBlockCase): void {
+    this.result.push(
+        ['SwitchBlockCase', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
+  }
+
+  visitForLoopBlock(block: t.ForLoopBlock): void {
+    this.result.push([
+      'ForLoopBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.children]);
+    block.empty?.visit(this);
+  }
+
+  visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {
+    this.result.push(
+        ['ForLoopBlockEmpty', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
+  }
+
+  visitIfBlock(block: t.IfBlock): void {
+    this.result.push([
+      'IfBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan)
+    ]);
+    this.visitAll([block.branches]);
+  }
+
+  visitIfBlockBranch(block: t.IfBlockBranch): void {
+    this.result.push(
+        ['IfBlockBranch', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.visitAll([block.children]);
   }
 
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
@@ -170,6 +204,10 @@ class R3AstSourceSpans implements t.Visitor<void> {
     this.visitAll([block.children]);
   }
 
+  visitUnknownBlock(block: t.UnknownBlock): void {
+    this.result.push(['UnknownBlock', humanizeSpan(block.sourceSpan)]);
+  }
+
   private visitAll(nodes: t.Node[][]) {
     nodes.forEach(node => t.visitAll(this, node));
   }
@@ -182,9 +220,8 @@ function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
   return span.toString();
 }
 
-function expectFromHtml(html: string, enabledBlockTypes?: string[]) {
-  const res = parse(html, {enabledBlockTypes});
-  return expectFromR3Nodes(res.nodes);
+function expectFromHtml(html: string) {
+  return expectFromR3Nodes(parse(html).nodes);
 }
 
 function expectFromR3Nodes(nodes: t.Node[]) {
@@ -575,40 +612,29 @@ describe('R3 AST source spans', () => {
 
   describe('deferred blocks', () => {
     it('is correct for deferred blocks', () => {
-      const html = '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
+      const html =
+          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
           'interaction(button), viewport(container); prefetch on immediate; ' +
-          'prefetch when isDataLoaded()}' +
-          '<calendar-cmp [date]="current"/>' +
-          '{:loading minimum 1s; after 100ms}' +
-          'Loading...' +
-          '{:placeholder minimum 500}' +
-          'Placeholder content!' +
-          '{:error}' +
-          'Loading failed :(' +
-          '{/defer}';
+          'prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}' +
+          '@loading (minimum 1s; after 100ms) {Loading...}' +
+          '@placeholder (minimum 500) {Placeholder content!}' +
+          '@error {Loading failed :(}';
 
-      expectFromHtml(html, ['defer']).toEqual([
+      expectFromHtml(html).toEqual([
         [
           'DeferredBlock',
-          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
-              'interaction(button), viewport(container); prefetch on immediate; ' +
-              'prefetch when isDataLoaded()}<calendar-cmp [date]="current"/>' +
-              '{:loading minimum 1s; after 100ms}Loading...' +
-              '{:placeholder minimum 500}Placeholder content!' +
-              '{:error}Loading failed :({/defer}',
-          '{#defer when isVisible() && foo; on hover, timer(10s), idle, immediate, ' +
-              'interaction(button), viewport(container); prefetch on immediate; ' +
-              'prefetch when isDataLoaded()}',
-          '{/defer}'
+          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}@loading (minimum 1s; after 100ms) {Loading...}@placeholder (minimum 500) {Placeholder content!}@error {Loading failed :(}',
+          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {',
+          '}'
         ],
         ['BoundDeferredTrigger', 'when isVisible() && foo'],
-        ['HoverDeferredTrigger', 'hover'],
+        ['HoverDeferredTrigger', 'on hover(button)'],
         ['TimerDeferredTrigger', 'timer(10s)'],
         ['IdleDeferredTrigger', 'idle'],
         ['ImmediateDeferredTrigger', 'immediate'],
         ['InteractionDeferredTrigger', 'interaction(button)'],
         ['ViewportDeferredTrigger', 'viewport(container)'],
-        ['ImmediateDeferredTrigger', 'immediate'],
+        ['ImmediateDeferredTrigger', 'prefetch on immediate'],
         ['BoundDeferredTrigger', 'prefetch when isDataLoaded()'],
         [
           'Element', '<calendar-cmp [date]="current"/>', '<calendar-cmp [date]="current"/>',
@@ -616,17 +642,90 @@ describe('R3 AST source spans', () => {
         ],
         ['BoundAttribute', '[date]="current"', 'date', 'current'],
         [
-          'DeferredBlockPlaceholder', '{:placeholder minimum 500}Placeholder content!',
-          '{:placeholder minimum 500}', '<empty>'
+          'DeferredBlockPlaceholder', '@placeholder (minimum 500) {Placeholder content!}',
+          '@placeholder (minimum 500) {', '}'
         ],
         ['Text', 'Placeholder content!'],
         [
-          'DeferredBlockLoading', '{:loading minimum 1s; after 100ms}Loading...',
-          '{:loading minimum 1s; after 100ms}', '<empty>'
+          'DeferredBlockLoading', '@loading (minimum 1s; after 100ms) {Loading...}',
+          '@loading (minimum 1s; after 100ms) {', '}'
         ],
         ['Text', 'Loading...'],
-        ['DeferredBlockError', '{:error}Loading failed :(', '{:error}', '<empty>'],
+        ['DeferredBlockError', '@error {Loading failed :(}', '@error {', '}'],
         ['Text', 'Loading failed :('],
+      ]);
+    });
+  });
+
+  describe('switch blocks', () => {
+    it('is correct for switch blocks', () => {
+      const html = `@switch (cond.kind) {` +
+          `@case (x()) {X case}` +
+          `@case ('hello') {Y case}` +
+          `@case (42) {Z case}` +
+          `@default {No case matched}` +
+          `}`;
+
+      expectFromHtml(html).toEqual([
+        [
+          'SwitchBlock',
+          '@switch (cond.kind) {@case (x()) {X case}@case (\'hello\') {Y case}@case (42) {Z case}@default {No case matched}}',
+          '@switch (cond.kind) {', '}'
+        ],
+        ['SwitchBlockCase', '@case (x()) {X case}', '@case (x()) {'],
+        ['Text', 'X case'],
+        ['SwitchBlockCase', '@case (\'hello\') {Y case}', '@case (\'hello\') {'],
+        ['Text', 'Y case'],
+        ['SwitchBlockCase', '@case (42) {Z case}', '@case (42) {'],
+        ['Text', 'Z case'],
+        ['SwitchBlockCase', '@default {No case matched}', '@default {'],
+        ['Text', 'No case matched'],
+      ]);
+    });
+  });
+
+  describe('for loop blocks', () => {
+    it('is correct for loop blocks', () => {
+      const html = `@for (item of items.foo.bar; track item.id) {<h1>{{ item }}</h1>}` +
+          `@empty {There were no items in the list.}`;
+
+      expectFromHtml(html).toEqual([
+        [
+          'ForLoopBlock',
+          '@for (item of items.foo.bar; track item.id) {<h1>{{ item }}</h1>}@empty {There were no items in the list.}',
+          '@for (item of items.foo.bar; track item.id) {', '}'
+        ],
+        ['Element', '<h1>{{ item }}</h1>', '<h1>', '</h1>'],
+        ['BoundText', '{{ item }}'],
+        ['ForLoopBlockEmpty', '@empty {There were no items in the list.}', '@empty {'],
+        ['Text', 'There were no items in the list.'],
+      ]);
+    });
+  });
+
+  describe('if blocks', () => {
+    it('is correct for if blocks', () => {
+      const html = `@if (cond.expr; as foo) {Main case was true!}` +
+          `@else if (other.expr) {Extra case was true!}` +
+          `@else {False case!}`;
+
+      expectFromHtml(html).toEqual([
+        [
+          'IfBlock',
+          '@if (cond.expr; as foo) {Main case was true!}@else if (other.expr) {Extra case was true!}@else {False case!}',
+          '@if (cond.expr; as foo) {', '}'
+        ],
+        [
+          'IfBlockBranch', '@if (cond.expr; as foo) {Main case was true!}',
+          '@if (cond.expr; as foo) {'
+        ],
+        ['Text', 'Main case was true!'],
+        [
+          'IfBlockBranch', '@else if (other.expr) {Extra case was true!}', '@else if (other.expr) {'
+        ],
+        ['Text', 'Extra case was true!'],
+        ['IfBlockBranch', '@else {False case!}', '@else {'],
+        ['Text', 'False case!'],
       ]);
     });
   });

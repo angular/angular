@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ProcessProvidersFunction} from '../../di/interface/provider';
+import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
@@ -38,6 +38,13 @@ export type ViewQueriesFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => v
  */
 export type ContentQueriesFunction<T> =
     <U extends T>(rf: RenderFlags, ctx: U, directiveIndex: number) => void;
+
+export interface ClassDebugInfo {
+  className: string;
+  filePath?: string;
+  lineNumber?: number;
+  forbidOrphanRendering?: boolean;
+}
 
 /**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)
@@ -108,6 +115,9 @@ export interface DirectiveDef<T> {
    * A dictionary mapping the private names of inputs to their transformation functions.
    * Note: the private names are used for the keys, rather than the public ones, because public
    * names can be re-aliased in host directives which would invalidate the lookup.
+   *
+   * Note: Signal inputs will not have transforms captured here. This is because their
+   * transform function is already integrated into the `InputSignal`.
    */
   readonly inputTransforms: {[classPropertyName: string]: InputTransformFunction}|null;
 
@@ -226,6 +236,12 @@ export interface DirectiveDef<T> {
   readonly features: DirectiveDefFeature[]|null;
 
   /**
+   * Info related to debugging/troubleshooting for this component. This info is only available in
+   * dev mode.
+   */
+  debugInfo: ClassDebugInfo|null;
+
+  /**
    * Function that will add the host directives to the list of matches during directive matching.
    * Patched onto the definition by the `HostDirectivesFeature`.
    * @param currentDef Definition that has been matched.
@@ -321,7 +337,10 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * Defines arbitrary developer-defined data to be stored on a renderer instance.
    * This is useful for renderers that delegate to other renderers.
    */
-  readonly data: {[kind: string]: any};
+  readonly data: {
+    [kind: string]: any,
+    animation?: any[],
+  };
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
@@ -485,13 +504,17 @@ export type DirectiveDefListOrFactory = (() => DirectiveDefList)|DirectiveDefLis
 
 export type DirectiveDefList = (DirectiveDef<any>|ComponentDef<any>)[];
 
+export type DependencyDef = DirectiveDef<unknown>|ComponentDef<unknown>|PipeDef<unknown>;
+
 export type DirectiveTypesOrFactory = (() => DirectiveTypeList)|DirectiveTypeList;
 
 export type DirectiveTypeList =
     (DirectiveType<any>|ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-export type DependencyTypeList = (DirectiveType<any>|ComponentType<any>|PipeType<any>|Type<any>)[];
+export type DependencyType = DirectiveType<any>|ComponentType<any>|PipeType<any>|Type<any>;
+
+export type DependencyTypeList = Array<DependencyType>;
 
 export type TypeOrFactory<T> = T|(() => T);
 
@@ -511,24 +534,42 @@ export type PipeTypesOrFactory = (() => PipeTypeList)|PipeTypeList;
 export type PipeTypeList =
     (PipeType<any>|Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
-
-// Note: This hack is necessary so we don't erroneously get a circular dependency
-// failure based on types.
-export const unusedValueExportToPlacateAjd = 1;
-
 /**
- * NgModule scope info as provided by NgModule decorator.
+ * NgModule scope info as provided by AoT compiler
+ *
+ * In full compilation Ivy resolved all the "module with providers" and forward refs the whole array
+ * if at least one element is forward refed. So we end up with type `Type<any>[]|(() =>
+ * Type<any>[])`.
+ *
+ * In local mode the compiler passes the raw info as they are to the runtime functions as it is not
+ * possible to resolve them any further due to limited info at compile time. So we end up with type
+ * `RawScopeInfoFromDecorator[]`.
  */
 export interface NgModuleScopeInfoFromDecorator {
   /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[]|(() => Type<any>[]);
+  declarations?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
 
-  /** List of modules or `ModuleWithProviders` imported by this module. */
-  imports?: Type<any>[]|(() => Type<any>[]);
+  /** List of modules or `ModuleWithProviders` or standalone components imported by this module. */
+  imports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
 
   /**
    * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
    * module.
    */
-  exports?: Type<any>[]|(() => Type<any>[]);
+  exports?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
+
+  /**
+   * The set of components that are bootstrapped when this module is bootstrapped. This field is
+   * only available in local compilation mode. In full compilation mode bootstrap info is passed
+   * directly to the module def runtime after statically analyzed and resolved.
+   */
+  bootstrap?: Type<any>[]|(() => Type<any>[])|RawScopeInfoFromDecorator[];
 }
+
+/**
+ * The array element type passed to:
+ *  - NgModule's annotation imports/exports/declarations fields
+ *  - standalone component annotation imports field
+ */
+export type RawScopeInfoFromDecorator =
+    Type<any>|ModuleWithProviders<any>|(() => Type<any>)|(() => ModuleWithProviders<any>)|any[];

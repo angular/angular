@@ -56,13 +56,15 @@ const contributorsFilePath = join(__dirname, '../content/marketing/contributors.
 
     // Check validated websites to confirm they can be reached via fetch.
     try {
-      const result = await fetch(url, {method: 'HEAD'});
+      const result = await fetch(url, {method: 'HEAD', headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+      }});
       if (!result.ok) {
         // If the url is for linkedin.com and the status returned is a `999`, we can assume that
         // the page is working as expected as linkedin.com returns a `999` status for
         // non-browser based requests.  Other pages returning a `999` may still indicate an
         // error in the request for the page.
-        if (result.status === 999 && url.hostname.includes('linkedin.com')) {
+        if ([405, 999].includes(result.status) && url.hostname === 'linkedin.com') {
           return;
         }
 
@@ -95,5 +97,6 @@ const contributorsFilePath = join(__dirname, '../content/marketing/contributors.
       console.log(`${key}  ${website} Error: ${message}`);
     });
     console.groupEnd();
+    process.exitCode = 1;
   }
 })();

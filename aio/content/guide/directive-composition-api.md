@@ -16,6 +16,7 @@ works similarly to applying the `MenuBehavior` to the `<admin-menu>` element in 
 
 ```typescript
 @Component({
+  standalone: true,
   selector: 'admin-menu',
   template: 'admin-menu.html',
   hostDirectives: [MenuBehavior],
@@ -43,6 +44,7 @@ in your component's API by expanding the entry in `hostDirectives`:
 
 ```typescript
 @Component({
+  standalone: true,
   selector: 'admin-menu',
   template: 'admin-menu.html',
   hostDirectives: [{
@@ -58,7 +60,6 @@ By explicitly specifying the inputs and outputs, consumers of the component with
 bind them in a template:
 
 ```html
-
 <admin-menu menuId="top-menu" (menuClosed)="logMenuClosed()">
 ```
 
@@ -67,6 +68,7 @@ component:
 
 ```typescript
 @Component({
+  standalone: true,
   selector: 'admin-menu',
   template: 'admin-menu.html',
   hostDirectives: [{
@@ -79,7 +81,6 @@ export class AdminMenu { }
 ```
 
 ```html
-
 <admin-menu id="top-menu" (closed)="logMenuClosed()">
 ```
 
@@ -105,12 +106,14 @@ export class Tooltip { }
 
 // MenuWithTooltip can compose behaviors from multiple other directives
 @Directive({
+  standalone: true,
   hostDirectives: [Tooltip, Menu],
 })
 export class MenuWithTooltip { }
 
 // CustomWidget can apply the already-composed behaviors from MenuWithTooltip
 @Directive({
+  standalone: true,
   hostDirectives: [MenuWithTooltip],
 })
 export class SpecializedMenuWithTooltip { }
@@ -128,6 +131,7 @@ The following example shows minimal use of a host directive:
 
 ```typescript
 @Component({
+  standalone: true,
   selector: 'admin-menu',
   template: 'admin-menu.html',
   hostDirectives: [MenuBehavior],
@@ -155,11 +159,13 @@ example.
 export class Tooltip { }
 
 @Directive({
+  standalone: true,
   hostDirectives: [Tooltip],
 })
 export class CustomTooltip { }
 
 @Directive({
+  standalone: true,
   hostDirectives: [CustomTooltip],
 })
 export class EvenMoreCustomTooltip { }
@@ -200,6 +206,7 @@ The following example shows a component that applies several host directives.
 
 ```typescript
 @Component({
+  standalone: true,
   hostDirectives: [
     DisabledState,
     RequiredState,

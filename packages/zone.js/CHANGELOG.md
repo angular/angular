@@ -1,3 +1,60 @@
+## [0.14.2](https://github.com/angular/angular/compare/zone.js-0.14.1...zone.js-0.14.2) (2023-11-03)
+
+
+### Bug Fixes
+
+* **zone.js:** disable wrapping unhandled promise error by default ([6d7eb35](https://github.com/angular/angular/commit/6d7eb3548c5fc3aedb4a52ff2010141343748e90))
+
+
+
+## [14.0.1](https://github.com/angular/angular/compare/zone.js-0.14.0...zone.js-14.0.1) (2023-10-25)
+
+
+### Bug Fixes
+
+* **zone.js:** use `globalThis` instead of `global` and `window` ([#52367](https://github.com/angular/angular/issues/52367)) ([def719e](https://github.com/angular/angular/commit/def719e2cac50bbf1cda4a2c4bf96de2d4ba4bfd))
+
+
+
+# [0.14.0](https://github.com/angular/angular/compare/zone.js-0.13.3...zone.js-0.14.0) (2023-09-14)
+
+
+### Features
+
+* **zone.js:** remove legacy files and access to deep imports ([#51752](https://github.com/angular/angular/issues/51752)) ([a8efc60](https://github.com/angular/angular/commit/a8efc605ea9c3cf03d85b5c567218202e304fef9))
+
+
+### BREAKING CHANGES
+
+* **zone.js:** Deep and legacy `dist/` imports like `zone.js/bundles/zone-testing.js` and `zone.js/dist/zone` are no longer allowed. `zone-testing-bundle` and `zone-testing-node-bundle` are also no longer part of the package.
+
+The proper way to import `zone.js` and `zone.js/testing` is:
+```js
+import 'zone.js';
+import 'zone.js/testing';
+```
+
+
+
+## [0.13.3](https://github.com/angular/angular/compare/zone.js-0.13.2...zone.js-0.13.3) (2023-09-12)
+
+
+### Bug Fixes
+
+* **zone.js:** rename `typings` conditional export to `types` ([#51737](https://github.com/angular/angular/issues/51737)) ([74755c4](https://github.com/angular/angular/commit/74755c4b5e6d4d62d2c81f35e6152bb8649fbb5c))
+* **zone.js:** temporary allow deep imports ([#51737](https://github.com/angular/angular/issues/51737)) ([e86d6db](https://github.com/angular/angular/commit/e86d6dba27997cb2cad13c43ac5e94eeb7a67725))
+
+
+
+## [0.13.2](https://github.com/angular/angular/compare/zone.js-0.13.1...zone.js-0.13.2) (2023-09-07)
+
+
+### Bug Fixes
+
+* **zone.js:** add conditional exports to zone.js package ([#51652](https://github.com/angular/angular/issues/51652)) ([4798ec4](https://github.com/angular/angular/commit/4798ec41668d47fd5e1504c61d96d5e56dcff345))
+
+
+
 ## [v0.13.1](https://github.com/angular/angular/compare/zone.js-0.13.0...zone.js-v0.13.1) (2023-06-09)
 
 
@@ -84,7 +141,7 @@ the task is explicitly cancelled, e.g with `clearInterval(id)`.
 - **zone.js:** fix several test cases which trigger `done()` multiple times ([#45025](https://github.com/angular/angular/issues/45025)) ([d5565cc](https://github.com/angular/angular/commit/d5565ccdb4573a47eb329b09c6852c1ae39672a6))
 - **zone.js:** only one listener should also re-throw an error correctly ([#41868](https://github.com/angular/angular/issues/41868)) ([299f92c](https://github.com/angular/angular/commit/299f92c3b62a43c94cff4a204f9e41c46a159efc)), closes [#41867](https://github.com/angular/angular/issues/41867) [/github.com/angular/angular/pull/41562#issuecomment-822696973](https://github.com//github.com/angular/angular/pull/41562/issues/issuecomment-822696973)
 - **zone.js:** patch global instead of Mocha object ([#45047](https://github.com/angular/angular/issues/45047)) ([8efbdb5](https://github.com/angular/angular/commit/8efbdb57c11a6c632f69d7e142a632b6a853fa46)), closes [#42834](https://github.com/angular/angular/issues/42834)
-- **zone.js:** should continue to executue listeners when throw error ([#41562](https://github.com/angular/angular/issues/41562)) ([008eaf3](https://github.com/angular/angular/commit/008eaf3b7df90b2cdd9c83e229d23d4014d6dbc9)), closes [#41522](https://github.com/angular/angular/issues/41522)
+- **zone.js:** should continue to execute listeners when throw error ([#41562](https://github.com/angular/angular/issues/41562)) ([008eaf3](https://github.com/angular/angular/commit/008eaf3b7df90b2cdd9c83e229d23d4014d6dbc9)), closes [#41522](https://github.com/angular/angular/issues/41522)
 - **zone.js:** update several flaky cases ([#41526](https://github.com/angular/angular/issues/41526)) ([25a83eb](https://github.com/angular/angular/commit/25a83eb264aa19fc4616cea45e04d790b9bcd777)), closes [#41434](https://github.com/angular/angular/issues/41434)
 
 ### Features

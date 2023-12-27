@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {leadingComment} from '@angular/compiler';
-import {types as t} from '@babel/core';
+import {template, types as t} from '@babel/core';
 import _generate from '@babel/generator';
-import _template from '@babel/template';
 
 import {BabelAstFactory} from '../../src/ast/babel_ast_factory';
 
@@ -18,8 +17,8 @@ const generate = (_generate as any)['default'] as typeof _generate;
 
 // Exposes shorthands for the `expression` and `statement`
 // methods exposed by `@babel/template`.
-const expression = _template.expression;
-const statement = _template.statement;
+const expression = template.expression;
+const statement = template.statement;
 
 describe('BabelAstFactory', () => {
   let factory: BabelAstFactory;
@@ -173,6 +172,39 @@ describe('BabelAstFactory', () => {
         '}',
       ].join('\n'));
     });
+  });
+
+  describe('createArrowFunctionExpression()', () => {
+    it('should create an arrow function with an implicit return if a single statement is provided',
+       () => {
+         const expr = expression.ast`arg2 + arg1`;
+         const fn = factory.createArrowFunctionExpression(['arg1', 'arg2'], expr);
+         expect(generate(fn).code).toEqual('(arg1, arg2) => arg2 + arg1');
+       });
+
+    it('should create an arrow function with an implicit return object literal', () => {
+      const expr = expression.ast`{a: 1, b: 2}`;
+      const fn = factory.createArrowFunctionExpression([], expr);
+      expect(generate(fn).code).toEqual([
+        '() => ({',
+        '  a: 1,',
+        '  b: 2',
+        '})',
+      ].join('\n'));
+    });
+
+    it('should create an arrow function with a body when an array of statements is provided',
+       () => {
+         const stmts = statement.ast`{x = 10; y = 20; return x + y;}`;
+         const fn = factory.createArrowFunctionExpression(['arg1', 'arg2'], stmts);
+         expect(generate(fn).code).toEqual([
+           '(arg1, arg2) => {',
+           '  x = 10;',
+           '  y = 20;',
+           '  return x + y;',
+           '}',
+         ].join('\n'));
+       });
   });
 
   describe('createIdentifier()', () => {

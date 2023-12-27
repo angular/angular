@@ -17,6 +17,7 @@ import {NOOP_PERF_RECORDER} from '../../../perf';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../scope';
 import {getDeclaration, makeProgram} from '../../../testing';
+import {CompilationMode} from '../../../transform';
 import {InjectableClassRegistry, NoopReferencesRegistry} from '../../common';
 import {DirectiveDecoratorHandler} from '../index';
 
@@ -109,6 +110,8 @@ runInEachFileSystem(() => {
         selector: '[dir]',
         isStructural: false,
         animationTriggerNames: null,
+        ngContentSelectors: null,
+        preserveWhitespaces: false,
       };
       matcher.addSelectables(CssSelector.parse('[dir]'), [dirMeta]);
 
@@ -177,7 +180,8 @@ runInEachFileSystem(() => {
         /*isCore*/ false,
         /*strictCtorDeps*/ false,
         /*semanticDepGraphUpdater*/ null,
-        /*annotateForClosureCompiler*/ false, NOOP_PERF_RECORDER, /*includeClassMetadata*/ true);
+        /*annotateForClosureCompiler*/ false, NOOP_PERF_RECORDER, /*includeClassMetadata*/ true,
+        /*compilationMode */ CompilationMode.FULL);
 
     const DirNode = getDeclaration(program, _('/entry.ts'), dirName, isNamedClassDeclaration);
 

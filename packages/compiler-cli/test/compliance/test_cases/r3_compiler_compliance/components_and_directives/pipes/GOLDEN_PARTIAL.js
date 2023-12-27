@@ -161,7 +161,7 @@ MyPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.0-PLA
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, decorators: [{
             type: Pipe,
             args: [{ name: 'myPipe' }]
-        }], ctorParameters: function () { return [{ type: i0.ChangeDetectorRef }]; } });
+        }], ctorParameters: () => [{ type: i0.ChangeDetectorRef }] });
 export class MyOtherPipe {
     constructor(changeDetectorRef) { }
     transform(value, ...args) {
@@ -173,9 +173,9 @@ MyOtherPipe.ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOtherPipe, decorators: [{
             type: Pipe,
             args: [{ name: 'myOtherPipe' }]
-        }], ctorParameters: function () { return [{ type: i0.ChangeDetectorRef, decorators: [{
+        }], ctorParameters: () => [{ type: i0.ChangeDetectorRef, decorators: [{
                     type: Optional
-                }] }]; } });
+                }] }] });
 export class MyApp {
     constructor() {
         this.name = 'World';

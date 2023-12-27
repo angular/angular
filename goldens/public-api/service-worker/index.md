@@ -66,11 +66,7 @@ export abstract class SwRegistrationOptions {
 // @public
 export class SwUpdate {
     constructor(sw: NgswCommChannel);
-    // @deprecated
-    readonly activated: Observable<UpdateActivatedEvent>;
     activateUpdate(): Promise<boolean>;
-    // @deprecated
-    readonly available: Observable<UpdateAvailableEvent>;
     checkForUpdate(): Promise<boolean>;
     get isEnabled(): boolean;
     readonly unrecoverable: Observable<UnrecoverableStateEvent>;
@@ -87,38 +83,6 @@ export interface UnrecoverableStateEvent {
     reason: string;
     // (undocumented)
     type: 'UNRECOVERABLE_STATE';
-}
-
-// @public @deprecated
-export interface UpdateActivatedEvent {
-    // (undocumented)
-    current: {
-        hash: string;
-        appData?: Object;
-    };
-    // (undocumented)
-    previous?: {
-        hash: string;
-        appData?: Object;
-    };
-    // (undocumented)
-    type: 'UPDATE_ACTIVATED';
-}
-
-// @public @deprecated
-export interface UpdateAvailableEvent {
-    // (undocumented)
-    available: {
-        hash: string;
-        appData?: Object;
-    };
-    // (undocumented)
-    current: {
-        hash: string;
-        appData?: Object;
-    };
-    // (undocumented)
-    type: 'UPDATE_AVAILABLE';
 }
 
 // @public

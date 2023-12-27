@@ -1,0 +1,41 @@
+<h2>Angular and Content Projection</h2>
+
+<!-- #docregion single-slot -->
+<app-zippy-basic>
+  <p>Is content projection cool?</p>
+</app-zippy-basic>
+<!-- #enddocregion single-slot -->
+
+<hr />
+
+<!-- #docregion multi-slot -->
+<app-zippy-multislot>
+  <p question>
+    Is content projection cool?
+  </p>
+  <p>Let's learn about content projection!</p>
+</app-zippy-multislot>
+<!-- #enddocregion multi-slot -->
+
+<hr />
+
+<h2>Here's a zippy</h2>
+
+<app-example-zippy>
+  <button type="button" appExampleZippyToggle>Is content project cool?</button>
+  <!-- #docregion ng-template-->
+  <ng-template appExampleZippyContent>
+    It depends on what you do with it.
+  </ng-template>
+  <!-- #enddocregion ng-template -->
+</app-example-zippy>
+
+<hr />
+<app-zippy-ngprojectas>
+  <p>Let's learn about content projection!</p>
+  <!-- #docregion ngprojectas-->
+  <ng-container ngProjectAs="[question]">
+    <p>Is content projection cool?</p>
+  </ng-container>
+  <!-- #enddocregion-->
+</app-zippy-ngprojectas>

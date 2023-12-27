@@ -32,8 +32,9 @@
     "strictInjectionParameters": true,
     // #enddocregion angular-compiler-options
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": true,
     // #docregion angular-compiler-options
+    "disableTypeScriptVersionCheck": true
   }
 }
 // #enddocregion angular-compiler-options

@@ -20,7 +20,7 @@ In the **Terminal** pane of your IDE:
 
 1.  In your project directory, navigate to the `first-app` directory.
 1.  Run this command to install the dependencies needed to run the app.
-    
+
     <code-example format="shell" language="shell">
 
     npm install
@@ -52,7 +52,7 @@ In the **Explorer** pane of your IDE:
     1.  In the file explorer, find the Angular app files (`/src`).
         1.  `index.html` is the app's top level HTML template.
         1.  `style.css` is the app's top level style sheet.
-        1.  `main.ts` is where the app start running.
+        1.  `main.ts` is where the app starts running.
         1.  `favicon.ico` is the app's icon, just as you would find in any web site.
     1.  In the file explorer, find the Angular app's component files (`/app`).
         1.  `app.component.ts` is the source file that describes the `app-root` component.
@@ -120,4 +120,4 @@ For more information about the topics covered in this lesson, visit:
 * [Angular Components](/guide/component-overview)
 * [Creating applications with the Angular CLI](/cli)
 
-  @reviewed 2023-07-10
+@reviewed 2023-10-24

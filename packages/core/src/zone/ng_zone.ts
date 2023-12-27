@@ -6,10 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {merge, Observable, Observer, Subscription} from 'rxjs';
-import {share} from 'rxjs/operators';
 
-import {inject, InjectionToken} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
 import {global} from '../util/global';
@@ -419,6 +416,10 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
     onInvokeTask:
         (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
          applyArgs: any): any => {
+          if (shouldBeIgnoredByZone(applyArgs)) {
+            return delegate.invokeTask(target, task, applyThis, applyArgs);
+          }
+
           try {
             onEnter(zone);
             return delegate.invokeTask(target, task, applyThis, applyArgs);
@@ -522,66 +523,38 @@ export class NoopNgZone implements NgZone {
   }
 }
 
-/**
- * Token used to drive ApplicationRef.isStable
- *
- * TODO: This should be moved entirely to NgZone (as a breaking change) so it can be tree-shakeable
- * for `NoopNgZone` which is always just an `Observable` of `true`. Additionally, we should consider
- * whether the property on `NgZone` should be `Observable` or `Signal`.
- */
-export const ZONE_IS_STABLE_OBSERVABLE =
-    new InjectionToken<Observable<boolean>>(ngDevMode ? 'isStable Observable' : '', {
-      providedIn: 'root',
-      // TODO(atscott): Replace this with a suitable default like `new
-      // BehaviorSubject(true).asObservable`. Again, long term this won't exist on ApplicationRef at
-      // all but until we can remove it, we need a default value zoneless.
-      factory: isStableFactory,
-    });
 
-export function isStableFactory() {
-  const zone = inject(NgZone);
-  let _stable = true;
-  const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
-    _stable = zone.isStable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks;
-    zone.runOutsideAngular(() => {
-      observer.next(_stable);
-      observer.complete();
-    });
-  });
+function shouldBeIgnoredByZone(applyArgs: unknown): boolean {
+  if (!Array.isArray(applyArgs)) {
+    return false;
+  }
 
-  const isStable = new Observable<boolean>((observer: Observer<boolean>) => {
-    // Create the subscription to onStable outside the Angular Zone so that
-    // the callback is run outside the Angular Zone.
-    let stableSub: Subscription;
-    zone.runOutsideAngular(() => {
-      stableSub = zone.onStable.subscribe(() => {
-        NgZone.assertNotInAngularZone();
+  // We should only ever get 1 arg passed through to invokeTask.
+  // Short circuit here incase that behavior changes.
+  if (applyArgs.length !== 1) {
+    return false;
+  }
 
-        // Check whether there are no pending macro/micro tasks in the next tick
-        // to allow for NgZone to update the state.
-        queueMicrotask(() => {
-          if (!_stable && !zone.hasPendingMacrotasks && !zone.hasPendingMicrotasks) {
-            _stable = true;
-            observer.next(true);
-          }
-        });
-      });
-    });
+  // Prevent triggering change detection when the __ignore_ng_zone__ flag is detected.
+  return applyArgs[0].data?.['__ignore_ng_zone__'] === true;
+}
 
-    const unstableSub: Subscription = zone.onUnstable.subscribe(() => {
-      NgZone.assertInAngularZone();
-      if (_stable) {
-        _stable = false;
-        zone.runOutsideAngular(() => {
-          observer.next(false);
-        });
-      }
-    });
 
-    return () => {
-      stableSub.unsubscribe();
-      unstableSub.unsubscribe();
-    };
-  });
-  return merge(isCurrentlyStable, isStable.pipe(share()));
+// Set of options recognized by the NgZone.
+export interface InternalNgZoneOptions {
+  enableLongStackTrace: boolean;
+  shouldCoalesceEventChangeDetection: boolean;
+  shouldCoalesceRunChangeDetection: boolean;
+}
+
+
+export function getNgZone(
+    ngZoneToUse: NgZone|'zone.js'|'noop' = 'zone.js', options: InternalNgZoneOptions): NgZone {
+  if (ngZoneToUse === 'noop') {
+    return new NoopNgZone();
+  }
+  if (ngZoneToUse === 'zone.js') {
+    return new NgZone(options);
+  }
+  return ngZoneToUse;
 }

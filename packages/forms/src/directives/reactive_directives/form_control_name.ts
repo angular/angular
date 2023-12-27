@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges, SkipSelf} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Provider, Self, SimpleChanges, SkipSelf, ɵWritable as Writable} from '@angular/core';
 
 import {FormControl} from '../../model/form_control';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -203,7 +203,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpControl() {
     this._checkParentType();
-    (this as {control: FormControl}).control = this.formDirective.addControl(this);
+    (this as Writable<this>).control = this.formDirective.addControl(this);
     this._added = true;
   }
 }

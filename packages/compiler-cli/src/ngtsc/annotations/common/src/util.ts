@@ -331,10 +331,16 @@ export function createSourceSpan(node: ts.Node): ParseSourceSpan {
  */
 export function compileResults(
     fac: CompileResult, def: R3CompiledExpression, metadataStmt: Statement|null, propName: string,
-    additionalFields: CompileResult[]|null): CompileResult[] {
+    additionalFields: CompileResult[]|null, deferrableImports: Set<ts.ImportDeclaration>|null,
+    debugInfo: Statement|null = null): CompileResult[] {
   const statements = def.statements;
+
   if (metadataStmt !== null) {
     statements.push(metadataStmt);
+  }
+
+  if (debugInfo !== null) {
+    statements.push(debugInfo);
   }
 
   const results = [
@@ -344,6 +350,7 @@ export function compileResults(
       initializer: def.expression,
       statements: def.statements,
       type: def.type,
+      deferrableImports,
     },
   ];
 

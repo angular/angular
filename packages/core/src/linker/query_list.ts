@@ -9,6 +9,7 @@
 import {Observable} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
+import {Writable} from '../interface/type';
 import {arrayEquals, flatten} from '../util/array_utils';
 
 function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
@@ -46,7 +47,7 @@ export class QueryList<T> implements Iterable<T> {
   public readonly dirty = true;
   private _results: Array<T> = [];
   private _changesDetected: boolean = false;
-  private _changes: EventEmitter<QueryList<T>>|null = null;
+  private _changes: EventEmitter<QueryList<T>>|undefined = undefined;
 
   readonly length: number = 0;
   readonly first: T = undefined!;
@@ -56,7 +57,7 @@ export class QueryList<T> implements Iterable<T> {
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
    */
   get changes(): Observable<any> {
-    return this._changes || (this._changes = new EventEmitter());
+    return this._changes ??= new EventEmitter();
   }
 
   /**
@@ -154,16 +155,13 @@ export class QueryList<T> implements Iterable<T> {
    *    are compared as is (without any pre-processing).
    */
   reset(resultsTree: Array<T|any[]>, identityAccessor?: (value: T) => unknown): void {
-    // Cast to `QueryListInternal` so that we can mutate fields which are readonly for the usage of
-    // QueryList (but not for QueryList itself.)
-    const self = this as QueryListInternal<T>;
-    (self as {dirty: boolean}).dirty = false;
+    (this as {dirty: boolean}).dirty = false;
     const newResultFlat = flatten(resultsTree);
-    if (this._changesDetected = !arrayEquals(self._results, newResultFlat, identityAccessor)) {
-      self._results = newResultFlat;
-      self.length = newResultFlat.length;
-      self.last = newResultFlat[this.length - 1];
-      self.first = newResultFlat[0];
+    if (this._changesDetected = !arrayEquals(this._results, newResultFlat, identityAccessor)) {
+      this._results = newResultFlat;
+      (this as Writable<this>).length = newResultFlat.length;
+      (this as Writable<this>).last = newResultFlat[this.length - 1];
+      (this as Writable<this>).first = newResultFlat[0];
     }
   }
 
@@ -171,7 +169,7 @@ export class QueryList<T> implements Iterable<T> {
    * Triggers a change event by emitting on the `changes` {@link EventEmitter}.
    */
   notifyOnChanges(): void {
-    if (this._changes && (this._changesDetected || !this._emitDistinctChangesOnly))
+    if (this._changes !== undefined && (this._changesDetected || !this._emitDistinctChangesOnly))
       this._changes.emit(this);
   }
 
@@ -182,8 +180,10 @@ export class QueryList<T> implements Iterable<T> {
 
   /** internal */
   destroy(): void {
-    (this.changes as EventEmitter<any>).complete();
-    (this.changes as EventEmitter<any>).unsubscribe();
+    if (this._changes !== undefined) {
+      this._changes.complete();
+      this._changes.unsubscribe();
+    }
   }
 
   // The implementation of `Symbol.iterator` should be declared here, but this would cause
@@ -192,15 +192,4 @@ export class QueryList<T> implements Iterable<T> {
   // implement the Iterable interface. This is required for template type-checking of NgFor loops
   // over QueryLists to work correctly, since QueryList must be assignable to NgIterable.
   [Symbol.iterator]!: () => Iterator<T>;
-}
-
-/**
- * Internal set of APIs used by the framework. (not to be made public)
- */
-interface QueryListInternal<T> extends QueryList<T> {
-  reset(a: any[]): void;
-  notifyOnChanges(): void;
-  length: number;
-  last: T;
-  first: T;
 }

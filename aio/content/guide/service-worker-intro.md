@@ -48,7 +48,7 @@ The file, called `ngsw.json` \(not to be confused with the [web app manifest](ht
 When an update to the application is deployed, the contents of the manifest change, informing the service worker that a new version of the application should be downloaded and cached.
 This manifest is generated from a CLI-generated configuration file called `ngsw-config.json`.
 
-Installing the Angular service worker is as straightforward as including an `NgModule`.
+Installing the Angular service worker is as straightforward as [running an Angular CLI command](guide/service-worker-getting-started#cli-command).
 In addition to registering the Angular service worker with the browser, this also makes a few services available for injection which interact with the service worker and can be used to control it.
 For example, an application can ask to be notified when a new update becomes available, or an application can ask the service worker to check the server for available updates.
 
@@ -73,7 +73,7 @@ More specifically:
 
 *   The browser does not download the service worker script and the `ngsw.json` manifest file
 *   Active attempts to interact with the service worker, such as calling `SwUpdate.checkForUpdate()`, return rejected promises
-*   The observable events of related services, such as `SwUpdate.available`, are not triggered
+*   The observable events of related services, such as `SwUpdate.versionUpdates`, are not triggered
 
 It is highly recommended that you ensure that your application works even without service worker support in the browser.
 Although an unsupported browser ignores service worker caching, it still reports errors if the application attempts to interact with the service worker.
@@ -86,11 +86,11 @@ To learn more about other browsers that are service worker ready, see the [Can I
 
 The rest of the articles in this section specifically address the Angular implementation of service workers.
 
-*   [App Shell](guide/app-shell)
 *   [Service Worker Communication](guide/service-worker-communications)
 *   [Service Worker Notifications](guide/service-worker-notifications)
 *   [Service Worker in Production](guide/service-worker-devops)
 *   [Service Worker Configuration](guide/service-worker-config)
+*   [App Shell](guide/app-shell)
 
 For more information about service workers in general, see [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers).
 
@@ -101,7 +101,7 @@ For additional recommendations and examples, see:
 *   [Precaching with Angular Service Worker](https://web.dev/precaching-with-the-angular-service-worker)
 *   [Creating a PWA with Angular CLI](https://web.dev/creating-pwa-with-angular-cli)
 
-## Next steps
+## Next step
 
 To begin using Angular service workers, see [Getting Started with service workers](guide/service-worker-getting-started).
 
@@ -111,4 +111,4 @@ To begin using Angular service workers, see [Getting Started with service worker
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-06

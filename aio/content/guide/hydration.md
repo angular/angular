@@ -1,18 +1,12 @@
 # Hydration
 
-<div class="alert is-important">
-
-The hydration feature is available for [developer preview](/guide/releases#developer-preview). It's ready for you to try, but it might change before it is stable.
-
-</div>
-
 ## What is hydration
 
 Hydration is the process that restores the server side rendered application on the client. This includes things like reusing the server rendered DOM structures, persisting the application state, transferring application data that was retrieved already by the server, and other processes.
 
 ## Why is hydration important?
 
-Hydration improves application performance by avoiding extra work to re-create DOM nodes. Instead, Angular tries to match existing DOM elements to the applications structure at runtime and reuses DOM nodes when possible. This results in a performance improvement that can be measured using [Core Web Vitals (CWV)](https://web.dev/learn-core-web-vitals/) statistics, such as reducing the First Input Delay ([FID](https://web.dev/fid/)) and Largest Contentful Paint ([LCP](https://web.dev/lcp/)), as well as Cumulative Layout Shift ([CLS](https://web.dev/cls/)). Improving these numbers also affects things like SEO performance.
+Hydration improves application performance by avoiding extra work to re-create DOM nodes. Instead, Angular tries to match existing DOM elements to the applications structure at runtime and reuses DOM nodes when possible. This results in a performance improvement that can be measured using [Core Web Vitals (CWV)](https://web.dev/learn-core-web-vitals/) statistics, such as reducing the First-contentful paint [FCP](https://developer.chrome.com/en/docs/lighthouse/performance/first-contentful-paint/) and Largest Contentful Paint ([LCP](https://web.dev/lcp/)), as well as Cumulative Layout Shift ([CLS](https://web.dev/cls/)). Improving these numbers also affects things like SEO performance.
 
 Without hydration enabled, server side rendered Angular applications will destroy and re-render the application's DOM, which may result in a visible UI flicker. This re-rendering can negatively impact [Core Web Vitals](https://web.dev/learn-core-web-vitals/) like [LCP](https://web.dev/lcp/) and cause a layout shift. Enabling hydration allows the existing DOM to be re-used and prevents a flicker.
 
@@ -20,7 +14,7 @@ Without hydration enabled, server side rendered Angular applications will destro
 
 ## How do you enable hydration in Angular
 
-Before you can get started with hydration, you must have a server side rendered (SSR) application. Follow the [Angular Universal Guide](/guide/universal) to enable server side rendering first. Once you have SSR working with your application, you can enable hydration by visiting your main app component or module and importing `provideClientHydration` from `@angular/platform-browser`. You'll then add that provider to your app's bootstrapping providers list.
+Before you can get started with hydration, you must have a server side rendered (SSR) application. Follow the [Angular SSR Guide](/guide/ssr) to enable server side rendering first. Once you have SSR working with your application, you can enable hydration by visiting your main app component or module and importing `provideClientHydration` from `@angular/platform-browser`. You'll then add that provider to your app's bootstrapping providers list.
 
 ```typescript
 import {
@@ -68,7 +62,7 @@ After you've followed these steps and have started up your server, load your app
 While running an application in dev mode, you can confirm hydration is enabled by opening the Developer Tools in your browser and viewing the console. You should see a message that includes hydration-related stats, such as the number of components and nodes hydrated.
 
 <div class="alert is-helpful">
-  
+
 Angular calculates the stats based on all components rendered on a page, including those that come from third-party libraries.
 
 </div>
@@ -101,7 +95,7 @@ It is best to refactor your component to avoid this sort of DOM manipulation. Tr
 
 ### Valid HTML structure
 
-There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration. 
+There are a few cases where if you have a component template that does not have valid HTML structure, this could result in a DOM mismatch error during hydration.
 
 As an example, here are some of the most common cases of this issue.
 
@@ -124,6 +118,13 @@ Make sure that this setting is set **consistently** in `tsconfig.server.json` fo
 If you choose to set this setting in your tsconfig, we recommend to set it only in `tsconfig.app.json` which by default the `tsconfig.server.json` will inherit it from.
 
 </div>
+
+<a id="cdn-configuration"></a>
+### CDN Optimizations
+
+Many CDNs offer a feature that will try to optimize your rendered application by stripping all nodes from the rendered DOM that it thinks are unnecessary, which includes comment nodes. Comment nodes are an essential part of Angular's functioning and are critical for hydration to work. You will need to disable this CDN feature in order to ensure your application loads and hydrates.
+
+If CDN optimization is enabled and you have hydration enabled, when you attempt to load the page you will encounter error [NG0507](https://angular.io/errors/NG0507). If you see this error, you should go and disable the CDN optimization.
 
 ### Custom or Noop Zone.js are not yet supported
 
@@ -184,4 +185,4 @@ re-rendering those components from scratch.
 
 There are a number of third party libraries that depend on DOM manipulation to be able to render. D3 charts is a prime example. These libraries worked without hydration, but they may cause DOM mismatch errors when hydration is enabled. For now, if you encounter DOM mismatch errors using one of these libraries, you can add the `ngSkipHydration` attribute to the component that renders using that library.
 
-@reviewed 2023-06-21
+@reviewed 2023-08-14

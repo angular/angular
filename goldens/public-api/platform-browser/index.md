@@ -10,6 +10,7 @@ import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
 import { DebugNode } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
+import { HttpTransferCacheOptions } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
@@ -93,6 +94,15 @@ export class EventManager {
 }
 
 // @public
+export abstract class EventManagerPlugin {
+    constructor(_doc: any);
+    abstract addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
+    // (undocumented)
+    manager: EventManager;
+    abstract supports(eventName: string): boolean;
+}
+
+// @public
 export const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
 // @public
@@ -143,11 +153,11 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
 }
 
 // @public
-export const enum HydrationFeatureKind {
+export enum HydrationFeatureKind {
     // (undocumented)
-    NoDomReuseFeature = 0,
+    HttpTransferCacheOptions = 1,
     // (undocumented)
-    NoHttpTransferCache = 1
+    NoHttpTransferCache = 0
 }
 
 // @public @deprecated
@@ -246,7 +256,7 @@ export const TransferState: {
 export const VERSION: Version;
 
 // @public
-export function withNoDomReuse(): HydrationFeature<HydrationFeatureKind.NoDomReuseFeature>;
+export function withHttpTransferCacheOptions(options: HttpTransferCacheOptions): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions>;
 
 // @public
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache>;

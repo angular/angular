@@ -9,11 +9,15 @@
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 
-import type {ComponentCompilation} from '../compilation';
+import type {CompilationJob, ComponentCompilationJob} from '../compilation';
 
-export function phasePipeVariadic(cpl: ComponentCompilation): void {
-  for (const view of cpl.views.values()) {
-    for (const op of view.update) {
+/**
+ * Pipes that accept more than 4 arguments are variadic, and are handled with a different runtime
+ * instruction.
+ */
+export function createVariadicPipes(job: CompilationJob): void {
+  for (const unit of job.units) {
+    for (const op of unit.update) {
       ir.transformExpressionsInOp(op, expr => {
         if (!(expr instanceof ir.PipeBindingExpr)) {
           return expr;
@@ -25,7 +29,7 @@ export function phasePipeVariadic(cpl: ComponentCompilation): void {
         }
 
         return new ir.PipeBindingVariadicExpr(
-            expr.target, expr.name, o.literalArr(expr.args), expr.args.length);
+            expr.target, expr.targetSlot, expr.name, o.literalArr(expr.args), expr.args.length);
       }, ir.VisitorContextFlag.None);
     }
   }

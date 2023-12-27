@@ -7,10 +7,14 @@
  */
 
 import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {DeferBlockBehavior} from '@angular/core/testing';
 import {TestBed, TestBedImpl} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {NgModuleType} from '../src/render3';
+import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
+import {setClassMetadataAsync} from '../src/render3/metadata';
 import {TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from '../testing/src/test_bed_common';
 
 const NAME = new InjectionToken<string>('name');
@@ -171,6 +175,56 @@ describe('TestBed with Standalone types', () => {
     TestBed.resetTestingModule();
   });
 
+  it('should override dependencies of standalone components', () => {
+    @Component({
+      selector: 'dep',
+      standalone: true,
+      template: 'main dep',
+    })
+    class MainDep {
+    }
+
+    @Component({
+      selector: 'dep',
+      standalone: true,
+      template: 'mock dep',
+    })
+    class MockDep {
+    }
+
+    @Component({
+      selector: 'app-root',
+      standalone: true,
+      imports: [MainDep],
+      template: '<dep />',
+    })
+    class AppComponent {
+    }
+
+    TestBed.configureTestingModule({imports: [AppComponent]});
+
+    let fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    // No overrides defined, expecting main dependency to be used.
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>main dep</dep>');
+
+    // Emulate an end of a test.
+    TestBed.resetTestingModule();
+
+    // Emulate the start of a next test, make sure previous overrides
+    // are not persisted across tests.
+    TestBed.configureTestingModule({imports: [AppComponent]});
+    TestBed.overrideComponent(AppComponent, {set: {imports: [MockDep]}});
+
+    fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    // Main dependency was overridden, expect to see a mock.
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>mock dep</dep>');
+  });
+
+
   it('should override providers on standalone component itself', () => {
     const A = new InjectionToken('A');
 
@@ -192,6 +246,57 @@ describe('TestBed with Standalone types', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.innerHTML).toBe('Overridden A');
+  });
+
+  it('should override providers on components used as standalone component dependency', () => {
+    @Injectable()
+    class Service {
+      id = 'Service(original)';
+    }
+
+    @Injectable()
+    class MockService {
+      id = 'Service(mock)';
+    }
+
+    @Component({
+      selector: 'dep',
+      standalone: true,
+      template: '{{ service.id }}',
+      providers: [Service],
+    })
+    class Dep {
+      service = inject(Service);
+    }
+
+    @Component({
+      standalone: true,
+      template: '<dep />',
+      imports: [Dep],
+    })
+    class MyStandaloneComp {
+    }
+
+    TestBed.configureTestingModule({imports: [MyStandaloneComp]});
+    TestBed.overrideProvider(Service, {useFactory: () => new MockService()});
+
+    let fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>Service(mock)</dep>');
+
+    // Emulate an end of a test.
+    TestBed.resetTestingModule();
+
+    // Emulate the start of a next test, make sure previous overrides
+    // are not persisted across tests.
+    TestBed.configureTestingModule({imports: [MyStandaloneComp]});
+
+    fixture = TestBed.createComponent(MyStandaloneComp);
+    fixture.detectChanges();
+
+    // No provider overrides, expect original provider value to be used.
+    expect(fixture.nativeElement.innerHTML).toBe('<dep>Service(original)</dep>');
   });
 
   it('should override providers in standalone component dependencies via overrideProvider', () => {
@@ -598,8 +703,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const divElement = fixture.debugElement.query(By.css('div'));
-    expect(divElement.properties.id).toEqual('one');
-    expect(divElement.properties.title).toEqual('some title');
+    expect(divElement.properties['id']).toEqual('one');
+    expect(divElement.properties['title']).toEqual('some title');
   });
 
   it('should give the ability to access interpolated properties on a node', () => {
@@ -607,8 +712,8 @@ describe('TestBed', () => {
     fixture.detectChanges();
 
     const paragraphEl = fixture.debugElement.query(By.css('p'));
-    expect(paragraphEl.properties.title).toEqual('( some label - some title )');
-    expect(paragraphEl.properties.id).toEqual('[ some label ] [ some title ]');
+    expect(paragraphEl.properties['title']).toEqual('( some label - some title )');
+    expect(paragraphEl.properties['id']).toEqual('[ some label ] [ some title ]');
   });
 
   it('should give access to the node injector', () => {
@@ -646,7 +751,7 @@ describe('TestBed', () => {
     const withRefsCmp = TestBed.createComponent(WithRefsCmp);
     const firstDivDebugEl = withRefsCmp.debugElement.query(By.css('div'));
     // assert that a native element is referenced by a local ref
-    expect(firstDivDebugEl.references.firstDiv.tagName.toLowerCase()).toBe('div');
+    expect(firstDivDebugEl.references['firstDiv'].tagName.toLowerCase()).toBe('div');
   });
 
   it('should give the ability to query by directive', () => {
@@ -1460,6 +1565,127 @@ describe('TestBed', () => {
     });
   });
 
+  describe('defer blocks', () => {
+    /**
+     * Function returns a class that represents AOT-compiled version of the following Component:
+     *
+     * @Component({
+     *  standalone: true,
+     *  imports: [...],
+     *  selector: '...',
+     *  template: '...',
+     * })
+     * class ComponentClass {}
+     *
+     * This is needed to closer match the behavior of AOT pre-compiled components (compiled
+     * outside of TestBed) for cases when defer blocks are used.
+     */
+    const getAOTCompiledComponent =
+        (selector: string, dependencies: Array<Type<unknown>> = [],
+         deferrableDependencies: Array<Type<unknown>> = []) => {
+          class ComponentClass {
+            static ɵfac = () => new ComponentClass();
+            static ɵcmp = defineComponent({
+              standalone: true,
+              type: ComponentClass,
+              selectors: [[selector]],
+              decls: 2,
+              vars: 0,
+              dependencies,
+              consts: [['dir']],
+              template:
+                  (rf: any, ctx: any) => {
+                    if (rf & 1) {
+                      elementStart(0, 'div', 0);
+                      text(1, `${selector} cmp!`);
+                      elementEnd();
+                    }
+                  }
+            });
+          }
+          setClassMetadataAsync(
+              ComponentClass,
+              function() {
+                const promises: Array<Promise<Type<unknown>>> = deferrableDependencies.map(
+                    // Emulates a dynamic import, e.g. `import('./cmp-a').then(m => m.CmpA)`
+                    dep => new Promise((resolve) => setTimeout(() => resolve(dep))));
+                return promises;
+              },
+              function(...deferrableSymbols) {
+                setClassMetadata(
+                    ComponentClass, [{
+                      type: Component,
+                      args: [{
+                        selector,
+                        standalone: true,
+                        imports: [...dependencies, ...deferrableSymbols],
+                        template: `<div>root cmp!</div>`,
+                      }]
+                    }],
+                    null, null);
+              });
+          return ComponentClass;
+        };
+
+    it('should handle async metadata on root and nested components', async () => {
+      @Component({
+        standalone: true,
+        selector: 'cmp-a',
+        template: 'CmpA!',
+      })
+      class CmpA {
+      }
+
+      const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], [CmpA]);
+      const RootAotComponent = getAOTCompiledComponent('root', [], [NestedAotComponent]);
+
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      TestBed.overrideComponent(
+          RootAotComponent, {set: {template: `Override of a root template! <nested-cmp />`}});
+      TestBed.overrideComponent(
+          NestedAotComponent, {set: {template: `Override of a nested template! <cmp-a />`}});
+
+      await TestBed.compileComponents();
+
+      const fixture = TestBed.createComponent(RootAotComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+          .toBe('Override of a root template! Override of a nested template! CmpA!');
+    });
+
+    it('should allow import overrides on components with async metadata', async () => {
+      @Component({
+        standalone: true,
+        selector: 'cmp-a',
+        template: 'CmpA!',
+      })
+      class CmpA {
+      }
+
+      const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], []);
+      const RootAotComponent = getAOTCompiledComponent('root', [], []);
+
+      TestBed.configureTestingModule({imports: [RootAotComponent]});
+
+      TestBed.overrideComponent(RootAotComponent, {
+        set: {
+          // Adding an import that was not present originally
+          imports: [NestedAotComponent],
+          template: `Override of a root template! <nested-cmp />`,
+        }
+      });
+
+      await TestBed.compileComponents();
+
+      const fixture = TestBed.createComponent(RootAotComponent);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent)
+          .toBe('Override of a root template! nested-cmp cmp!');
+    });
+  });
 
   describe('AOT pre-compiled components', () => {
     /**
@@ -1628,10 +1854,9 @@ describe('TestBed', () => {
       expect(cmpDefBeforeReset.pipeDefs().length).toEqual(1);
       expect(cmpDefBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
 
-      const modDefBeforeReset = (SomeModule as any).ɵmod;
-      const transitiveScope = modDefBeforeReset.transitiveCompileScopes.compilation;
-      expect(transitiveScope.pipes.size).toEqual(1);
-      expect(transitiveScope.directives.size).toEqual(2);
+      const scopeBeforeReset = depsTracker.getNgModuleScope(SomeModule as NgModuleType);
+      expect(scopeBeforeReset.compilation.pipes.size).toEqual(1);
+      expect(scopeBeforeReset.compilation.directives.size).toEqual(2);
 
       TestBed.resetTestingModule();
 
@@ -1639,8 +1864,18 @@ describe('TestBed', () => {
       expect(cmpDefAfterReset.pipeDefs).toBe(null);
       expect(cmpDefAfterReset.directiveDefs).toBe(null);
 
-      const modDefAfterReset = (SomeModule as any).ɵmod;
-      expect(modDefAfterReset.transitiveCompileScopes).toBe(null);
+      const scopeAfterReset = depsTracker.getNgModuleScope(SomeModule as NgModuleType);
+
+      expect(scopeAfterReset).toEqual({
+        compilation: {
+          pipes: new Set(),
+          directives: new Set([SomeComponent]),
+        },
+        exported: {
+          pipes: new Set(),
+          directives: new Set(),
+        }
+      });
     });
 
     it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)', () => {
@@ -1909,6 +2144,27 @@ describe('TestBed', () => {
   });
 });
 
+describe('TestBed defer block behavior', () => {
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  it('should default defer block behavior to manual', () => {
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
+  });
+
+  it('should be able to configure defer block behavior', () => {
+    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
+  });
+
+  it('should reset the defer block behavior back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
+    TestBed.resetTestingModule();
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
+  });
+});
 
 describe('TestBed module teardown', () => {
   beforeEach(() => {

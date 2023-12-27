@@ -200,7 +200,7 @@ runInEachFileSystem(() => {
             'i0.ɵɵsetComponentScope(ModuleCmp, function () { return [i1.StandaloneCmp]; }, []);');
 
         const cmpJs = env.getContents('component.js');
-        expect(cmpJs).toContain('dependencies: function () { return [Module, i1.ModuleCmp]; }');
+        expect(cmpJs).toContain('dependencies: () => [Module, i1.ModuleCmp]');
       });
 
       it('should error when a non-standalone component tries to use imports', () => {
@@ -250,7 +250,7 @@ runInEachFileSystem(() => {
 
         // verify schemas are not included in the generated code
         const jsCodeAoT = jsCode.slice(
-            0, jsCode.indexOf('(function () { (typeof ngDevMode === "undefined" || ngDevMode)'));
+            0, jsCode.indexOf('(() => { (typeof ngDevMode === "undefined" || ngDevMode)'));
         expect(jsCodeAoT).not.toContain('schemas: [NO_ERRORS_SCHEMA]');
       });
 
@@ -578,7 +578,7 @@ runInEachFileSystem(() => {
 
         expect(diags.length).toBe(0);
         expect(jsCode).toContain('standalone: true');
-        expect(jsCode).toContain('dependencies: function () { return [StandaloneComponent]; }');
+        expect(jsCode).toContain('dependencies: () => [StandaloneComponent]');
       });
     });
 

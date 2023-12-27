@@ -4,7 +4,11 @@
 
 ## Creating standalone components
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/x5PZwb4XurU" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="video-container">
+
+<iframe src="https://www.youtube.com/embed/x5PZwb4XurU" title="Getting started with standalone components" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+</div>
 
 ### The `standalone` flag and component `imports`
 
@@ -170,7 +174,7 @@ export default [
   {path: 'home', component: AdminHomeComponent},
   {path: 'users', component: AdminUsersComponent},
   // ...
-] as Route[];
+] satisfies Route[];
 ```
 
 ### Providing services to a subset of routes

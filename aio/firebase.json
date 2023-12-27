@@ -215,7 +215,13 @@
 
       // Analytics pages that have been deleted in v15
       {"type": 301, "source": "/cli/usage-analytics-gathering", "destination": "/cli/analytics"},
-      {"type": 301, "source": "/analytics", "destination": "/cli/analytics"}
+      {"type": 301, "source": "/analytics", "destination": "/cli/analytics"},
+
+      // Deprecated error messages
+      {"type": 301, "source": "/errors/NG6999", "destination": "https://v13.angular.io/errors/NG6999"},
+
+      // Universal has been renamed to ssr
+      {"type": 301, "source": "/guide/universal", "destination": "/guide/ssr"}
     ],
     "rewrites": [
       {

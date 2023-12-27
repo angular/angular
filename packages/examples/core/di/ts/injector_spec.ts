@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, InjectFlags, InjectionToken, InjectOptions, Injector, ProviderToken, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
+import {inject, InjectFlags, InjectionToken, InjectOptions, Injector, ProviderToken, ɵInjectorProfilerContext, ɵsetCurrentInjector as setCurrentInjector, ɵsetInjectorProfilerContext} from '@angular/core';
+
 
 class MockRootScopeInjector implements Injector {
   constructor(readonly parent: Injector) {}
@@ -16,10 +17,13 @@ class MockRootScopeInjector implements Injector {
       flags: InjectFlags|InjectOptions = InjectFlags.Default): T {
     if ((token as any).ɵprov && (token as any).ɵprov.providedIn === 'root') {
       const old = setCurrentInjector(this);
+      const previousInjectorProfilerContext =
+          ɵsetInjectorProfilerContext({injector: this, token: null});
       try {
         return (token as any).ɵprov.factory();
       } finally {
         setCurrentInjector(old);
+        ɵsetInjectorProfilerContext(previousInjectorProfilerContext);
       }
     }
     return this.parent.get(token, defaultValue, flags);

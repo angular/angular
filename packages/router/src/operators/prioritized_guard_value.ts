@@ -7,11 +7,11 @@
  */
 
 import {combineLatest, Observable, OperatorFunction} from 'rxjs';
-import {filter, map, scan, startWith, switchMap, take} from 'rxjs/operators';
+import {filter, map, startWith, switchMap, take} from 'rxjs/operators';
 
-import {isUrlTree, UrlTree} from '../url_tree';
+import {UrlTree} from '../url_tree';
 
-const INITIAL_VALUE = Symbol('INITIAL_VALUE');
+const INITIAL_VALUE = /* @__PURE__ */ Symbol('INITIAL_VALUE');
 declare type INTERIM_VALUES = typeof INITIAL_VALUE | boolean | UrlTree;
 
 export function prioritizedGuardValue():

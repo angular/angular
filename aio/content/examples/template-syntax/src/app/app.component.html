@@ -350,7 +350,7 @@ button</button>
 <div id="two-way-1">
   <app-sizer [(size)]="fontSizePx"></app-sizer>
   <div [style.font-size.px]="fontSizePx">Resizable Text</div>
-  <label>FontSize (px): <input [(ngModel)]="fontSizePx"></label>
+  <label for="font-size">FontSize (px): <input id="font-size" [(ngModel)]="fontSizePx"></label>
 </div>
 <br>
 <div id="two-way-2">
@@ -393,9 +393,9 @@ without NgModel
 
 <!-- not used in chapter -->
 <br>
-<label>saveable   <input type="checkbox" [(ngModel)]="canSave"></label> |
-<label>modified:  <input type="checkbox" [value]="!isUnchanged" (change)="isUnchanged=!isUnchanged"></label> |
-<label>special:   <input type="checkbox" [(ngModel)]="isSpecial"></label>
+<label for="canSave">saveable   <input type="checkbox" id="canSave" [(ngModel)]="canSave"></label> |
+<label for="isUnchanged">modified:  <input type="checkbox" id="isUnchanged" [value]="!isUnchanged" (change)="isUnchanged=!isUnchanged"></label> |
+<label for="isSpecial">special:   <input type="checkbox" id="isSpecial" [(ngModel)]="isSpecial"></label>
 <button type="button" (click)="setCurrentClasses()">Refresh currentClasses</button>
 <br><br>
 <div [ngClass]="currentClasses">
@@ -426,9 +426,9 @@ without NgModel
 
 <!-- not used in chapter -->
 <br>
-<label>italic: <input type="checkbox" [(ngModel)]="canSave"></label> |
-<label>normal: <input type="checkbox" [(ngModel)]="isUnchanged"></label> |
-<label>xlarge: <input type="checkbox" [(ngModel)]="isSpecial"></label>
+<label for="canSave">italic: <input id="canSave" type="checkbox" [(ngModel)]="canSave"></label> |
+<label for="isUnchanged">normal: <input id="isUnchanged" type="checkbox" [(ngModel)]="isUnchanged"></label> |
+<label for="isSpecial">xlarge: <input id="isSpecial" type="checkbox" [(ngModel)]="isSpecial"></label>
 <button type="button" (click)="setCurrentStyles()">Refresh currentStyles</button>
 <br><br>
 <div [ngStyle]="currentStyles">
@@ -551,8 +551,8 @@ without NgModel
 
 <p>Pick your favorite hero</p>
 <div>
-  <label *ngFor="let h of heroes">
-    <input type="radio" name="heroes" [(ngModel)]="currentHero" [value]="h">{{h.name}}
+  <label for="hero-{{h}}" *ngFor="let h of heroes">
+    <input id="hero-{{h}}" type="radio" name="heroes" [(ngModel)]="currentHero" [value]="h">{{h.name}}
   </label>
 </div>
 
@@ -610,11 +610,11 @@ without NgModel
 </div>
 
 <!-- pipe with configuration argument => "February 25, 1970" -->
-<div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
+<div>Birthdate: {{currentHero.birthdate | date:'longDate'}}</div>
 
 <div>{{currentHero | json}}</div>
 
-<div>Birthdate: {{(currentHero?.birthdate | date:'longDate') | uppercase}}</div>
+<div>Birthdate: {{(currentHero.birthdate | date:'longDate') | uppercase}}</div>
 
 <div>
   <!-- pipe price to USD and display the $ symbol -->
@@ -631,7 +631,7 @@ without NgModel
 </div>
 
 <div>
-  The current hero's name is {{currentHero?.name}}
+  The current hero's name is {{currentHero.name}}
 </div>
 
 <div>

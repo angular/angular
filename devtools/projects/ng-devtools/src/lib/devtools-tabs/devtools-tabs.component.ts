@@ -7,10 +7,9 @@
  */
 
 import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MatLegacySlideToggleChange as MatSlideToggleChange} from '@angular/material/legacy-slide-toggle';
-import {MatLegacyTabNav as MatTabNav} from '@angular/material/legacy-tabs';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MatTabNav} from '@angular/material/tabs';
 import {Events, MessageBus, Route} from 'protocol';
-import {Subscription} from 'rxjs';
 
 import {ApplicationEnvironment} from '../application-environment/index';
 import {Theme, ThemeService} from '../theme-service';
@@ -18,43 +17,49 @@ import {Theme, ThemeService} from '../theme-service';
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {TabUpdate} from './tab-update/index';
 
+type Tabs = 'Components'|'Profiler'|'Router Tree'|'Injector Tree';
+
 @Component({
   selector: 'ng-devtools-tabs',
   templateUrl: './devtools-tabs.component.html',
   styleUrls: ['./devtools-tabs.component.scss'],
 })
-export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   @Input() angularVersion: string|undefined = undefined;
-  @ViewChild(DirectiveExplorerComponent) directiveExplorer: DirectiveExplorerComponent;
-  @ViewChild('navBar', {static: true}) navbar: MatTabNav;
+  @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
+  @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
 
-  activeTab: 'Components'|'Profiler'|'Router Tree' = 'Components';
+  activeTab: Tabs = 'Components';
 
   inspectorRunning = false;
   routerTreeEnabled = false;
   showCommentNodes = false;
+  timingAPIEnabled = false;
 
-  private _currentThemeSubscription: Subscription;
-  currentTheme: Theme;
+  currentTheme!: Theme;
 
   routes: Route[] = [];
 
   constructor(
-      public tabUpdate: TabUpdate, public themeService: ThemeService,
+      public tabUpdate: TabUpdate,
+      public themeService: ThemeService,
       private _messageBus: MessageBus<Events>,
-      private _applicationEnvironment: ApplicationEnvironment) {}
-
-  ngOnInit(): void {
-    this._currentThemeSubscription =
-        this.themeService.currentTheme.subscribe((theme) => (this.currentTheme = theme));
+      private _applicationEnvironment: ApplicationEnvironment,
+  ) {
+    this.themeService.currentTheme.pipe(takeUntilDestroyed())
+        .subscribe((theme) => (this.currentTheme = theme));
 
     this._messageBus.on('updateRouterTree', (routes) => {
       this.routes = routes || [];
     });
   }
 
-  get tabs(): string[] {
-    const alwaysShown = ['Components', 'Profiler'];
+  ngOnInit(): void {
+    this.navbar.stretchTabs = false;
+  }
+
+  get tabs(): Tabs[] {
+    const alwaysShown: Tabs[] = ['Components', 'Profiler', 'Injector Tree'];
     return this.routes.length === 0 ? alwaysShown : [...alwaysShown, 'Router Tree'];
   }
 
@@ -62,15 +67,11 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.navbar.disablePagination = true;
   }
 
-  ngOnDestroy(): void {
-    this._currentThemeSubscription.unsubscribe();
-  }
-
   get latestSHA(): string {
     return this._applicationEnvironment.environment.LATEST_SHA.slice(0, 8);
   }
 
-  changeTab(tab: 'Profiler'|'Components'|'Router Tree'): void {
+  changeTab(tab: Tabs): void {
     this.activeTab = tab;
     this.tabUpdate.notify();
     if (tab === 'Router Tree') {
@@ -86,7 +87,6 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   emitInspectorEvent(): void {
     if (this.inspectorRunning) {
       this._messageBus.emit('inspectorStart');
-      this.changeTab('Components');
     } else {
       this._messageBus.emit('inspectorEnd');
       this._messageBus.emit('removeHighlightOverlay');
@@ -97,8 +97,9 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.inspectorRunning = !this.inspectorRunning;
   }
 
-  toggleTimingAPI(change: MatSlideToggleChange): void {
-    change.checked ? this._messageBus.emit('enableTimingAPI') :
-                     this._messageBus.emit('disableTimingAPI');
+  toggleTimingAPI(): void {
+    this.timingAPIEnabled = !this.timingAPIEnabled;
+    this.timingAPIEnabled ? this._messageBus.emit('enableTimingAPI') :
+                            this._messageBus.emit('disableTimingAPI');
   }
 }

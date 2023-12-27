@@ -16,11 +16,11 @@ type CreationHook =
      position: ElementPosition) => void;
 
 type LifecycleStartHook =
-    (componentOrDirective: any, hook: keyof LifecycleProfile|'unknown', node: Node, id: number,
+    (componentOrDirective: any, hook: keyof LifecycleProfile, node: Node, id: number,
      isComponent: boolean) => void;
 
 type LifecycleEndHook =
-    (componentOrDirective: any, hook: keyof LifecycleProfile|'unknown', node: Node, id: number,
+    (componentOrDirective: any, hook: keyof LifecycleProfile, node: Node, id: number,
      isComponent: boolean) => void;
 
 type ChangeDetectionStartHook =
@@ -157,7 +157,7 @@ export abstract class Profiler {
     this._hooks.forEach((config) => {
       const cb = config[name];
       if (typeof cb === 'function') {
-        cb.apply(null, args);
+        (cb as any).apply(null, args);
       }
     });
   }

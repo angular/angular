@@ -28,6 +28,10 @@ const TYPE = 1;
 const ELEMENT = 0;
 const LVIEW_TVIEW = 1;
 
+
+// Big oversimplification of the LView structure.
+type LView = Array<any>;
+
 export const isLContainer = (value: any): boolean => {
   return Array.isArray(value) && value[TYPE] === true;
 };
@@ -37,7 +41,7 @@ const isLView = (value: any): boolean => {
 };
 
 export const METADATA_PROPERTY_NAME = '__ngContext__';
-export const getLViewFromDirectiveOrElementInstance = (dir: any): null|{} => {
+export function getLViewFromDirectiveOrElementInstance(dir: any): null|LView {
   if (!dir) {
     return null;
   }
@@ -49,7 +53,7 @@ export const getLViewFromDirectiveOrElementInstance = (dir: any): null|{} => {
     return context;
   }
   return context.lView;
-};
+}
 
 export const getDirectiveHostElement = (dir: any) => {
   if (!dir) {

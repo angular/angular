@@ -64,6 +64,22 @@ export enum OpKind {
   ContainerEnd,
 
   /**
+   * An operation disable binding for subsequent elements, which are descendants of a non-bindable
+   * node.
+   */
+  DisableBindings,
+
+  /**
+   * An op to conditionally render a template.
+   */
+  Conditional,
+
+  /**
+   * An operation to re-enable binding, after it was previously disabled.
+   */
+  EnableBindings,
+
+  /**
    * An operation to render a text node.
    */
   Text,
@@ -77,6 +93,12 @@ export enum OpKind {
    * An operation to interpolate text into a text node.
    */
   InterpolateText,
+
+  /**
+   * An intermediate binding op, that has not yet been processed into an individual property,
+   * attribute, style, etc.
+   */
+  Binding,
 
   /**
    * An operation to bind an expression to a property of an element.
@@ -104,26 +126,6 @@ export enum OpKind {
   ClassMap,
 
   /**
-   * An operation to interpolate text into a property binding.
-   */
-  InterpolateProperty,
-
-  /**
-   * An operation to interpolate text into a style property binding.
-   */
-  InterpolateStyleProp,
-
-  /**
-   * An operation to interpolate text into a style mapping.
-   */
-  InterpolateStyleMap,
-
-  /**
-   * An operation to interpolate text into a class mapping.
-   */
-  InterpolateClassMap,
-
-  /**
    * An operation to advance the runtime's implicit slot context during the update phase of a view.
    */
   Advance,
@@ -139,9 +141,109 @@ export enum OpKind {
   Attribute,
 
   /**
-   * An operation to interpolate text into an attribute binding.
+   * An attribute that has been extracted for inclusion in the consts array.
    */
-  InterpolateAttribute,
+  ExtractedAttribute,
+
+  /**
+   * An operation that configures a `@defer` block.
+   */
+  Defer,
+
+  /**
+   * An operation that controls when a `@defer` loads.
+   */
+  DeferOn,
+
+  /**
+   * An operation that controls when a `@defer` loads, using a custom expression as the condition.
+   */
+  DeferWhen,
+
+  /**
+   * An i18n message that has been extracted for inclusion in the consts array.
+   */
+  I18nMessage,
+
+  /**
+   * A host binding property.
+   */
+  HostProperty,
+
+  /**
+   * A namespace change, which causes the subsequent elements to be processed as either HTML or SVG.
+   */
+  Namespace,
+
+  /**
+   * Configure a content projeciton definition for the view.
+   */
+  ProjectionDef,
+
+  /**
+   * Create a content projection slot.
+   */
+  Projection,
+
+  /**
+   * Create a repeater creation instruction op.
+   */
+  RepeaterCreate,
+
+  /**
+   * An update up for a repeater.
+   */
+  Repeater,
+
+  /**
+   * The start of an i18n block.
+   */
+  I18nStart,
+
+  /**
+   * A self-closing i18n on a single element.
+   */
+  I18n,
+
+  /**
+   * The end of an i18n block.
+   */
+  I18nEnd,
+
+  /**
+   * An expression in an i18n message.
+   */
+  I18nExpression,
+
+  /**
+   * An instruction that applies a set of i18n expressions.
+   */
+  I18nApply,
+
+  /**
+   * An instruction to create an ICU expression.
+   */
+  IcuStart,
+
+  /**
+   * An instruction to update an ICU expression.
+   */
+  IcuEnd,
+
+  /**
+   * An instruction representing a placeholder in an ICU expression.
+   */
+  IcuPlaceholder,
+
+  /**
+   * An i18n context containing information needed to generate an i18n message.
+   */
+  I18nContext,
+
+  /**
+   * A creation op that corresponds to i18n attributes on an element.
+   */
+  I18nAttributes,
 }
 
 /**
@@ -157,6 +259,11 @@ export enum ExpressionKind {
    * A reference to the current view context.
    */
   Context,
+
+  /**
+   * A reference to the view context, for use inside a track function.
+   */
+  TrackContext,
 
   /**
    * Read of a variable declared in a `VariableOp`.
@@ -242,8 +349,49 @@ export enum ExpressionKind {
    * A reference to a temporary variable.
    */
   ReadTemporaryExpr,
+
+  /**
+   * An expression representing a sanitizer function.
+   */
+  SanitizerExpr,
+
+  /**
+   * An expression representing a function to create trusted values.
+   */
+  TrustedValueFnExpr,
+
+  /**
+   * An expression that will cause a literal slot index to be emitted.
+   */
+  SlotLiteralExpr,
+
+  /**
+   * A test expression for a conditional op.
+   */
+  ConditionalCase,
+
+  /**
+   * A variable for use inside a repeater, providing one of the ambiently-available context
+   * properties ($even, $first, etc.).
+   */
+  DerivedRepeaterVar,
+
+  /**
+   * An expression that will be automatically extracted to the component const array.
+   */
+  ConstCollected,
 }
 
+export enum VariableFlags {
+  None = 0b0000,
+
+  /**
+   * Always inline this variable, regardless of the number of times it's used.
+   * An `AlwaysInline` variable may not depend on context, because doing so may cause side effects
+   * that are illegal when multi-inlined. (The optimizer will enforce this constraint.)
+   */
+  AlwaysInline = 0b0001,
+}
 /**
  * Distinguishes between different kinds of `SemanticVariable`s.
  */
@@ -262,4 +410,179 @@ export enum SemanticVariableKind {
    * Represents a saved state that can be used to restore a view in a listener handler function.
    */
   SavedView,
+
+  /**
+   * An alias generated by a special embedded view type (e.g. a `@for` block).
+   */
+  Alias,
+}
+
+/**
+ * Whether to compile in compatibilty mode. In compatibility mode, the template pipeline will
+ * attempt to match the output of `TemplateDefinitionBuilder` as exactly as possible, at the cost
+ * of producing quirky or larger code in some cases.
+ */
+export enum CompatibilityMode {
+  Normal,
+  TemplateDefinitionBuilder,
+}
+
+/**
+ * Enumeration of the different kinds of `@defer` secondary blocks.
+ */
+export enum DeferSecondaryKind {
+  Loading,
+  Placeholder,
+  Error,
+}
+
+/**
+ * Enumeration of the types of attributes which can be applied to an element.
+ */
+export enum BindingKind {
+  /**
+   * Static attributes.
+   */
+  Attribute,
+
+  /**
+   * Class bindings.
+   */
+  ClassName,
+
+  /**
+   * Style bindings.
+   */
+  StyleProperty,
+
+  /**
+   * Dynamic property bindings.
+   */
+  Property,
+
+  /**
+   * Property or attribute bindings on a template.
+   */
+  Template,
+
+  /**
+   * Internationalized attributes.
+   */
+  I18n,
+
+  /**
+   * Animation property bindings.
+   */
+  Animation,
+}
+
+/**
+ * Enumeration of possible times i18n params can be resolved.
+ */
+export enum I18nParamResolutionTime {
+  /**
+   * Param is resolved at message creation time. Most params should be resolved at message creation
+   * time. However, ICU params need to be handled in post-processing.
+   */
+  Creation,
+
+  /**
+   * Param is resolved during post-processing. This should be used for params who's value comes from
+   * an ICU.
+   */
+  Postproccessing
+}
+
+/**
+ * The contexts in which an i18n expression can be used.
+ */
+export enum I18nExpressionFor {
+  /**
+   * This expression is used as a value (i.e. inside an i18n block).
+   */
+  I18nText,
+
+  /**
+   * This expression is used in a binding.
+   */
+  I18nAttribute,
+}
+
+/**
+ * Flags that describe what an i18n param value. These determine how the value is serialized into
+ * the final map.
+ */
+export enum I18nParamValueFlags {
+  None = 0b0000,
+
+  /**
+   *  This value represtents an element tag.
+   */
+  ElementTag = 0b1,
+
+  /**
+   * This value represents a template tag.
+   */
+  TemplateTag = 0b10,
+
+  /**
+   * This value represents the opening of a tag.
+   */
+  OpenTag = 0b0100,
+
+  /**
+   * This value represents the closing of a tag.
+   */
+  CloseTag = 0b1000,
+
+  /**
+   * This value represents an i18n expression index.
+   */
+  ExpressionIndex = 0b10000
+}
+
+/**
+ * Whether the active namespace is HTML, MathML, or SVG mode.
+ */
+export enum Namespace {
+  HTML,
+  SVG,
+  Math,
+}
+
+/**
+ * The type of a `@defer` trigger, for use in the ir.
+ */
+export enum DeferTriggerKind {
+  Idle,
+  Immediate,
+  Timer,
+  Hover,
+  Interaction,
+  Viewport,
+}
+
+/**
+ * Repeaters implicitly define these derived variables, and child nodes may read them.
+ */
+export enum DerivedRepeaterVarIdentity {
+  First,
+  Last,
+  Even,
+  Odd,
+}
+
+/**
+ * Kinds of i18n contexts. They can be created because of root i18n blocks, or ICUs.
+ */
+export enum I18nContextKind {
+  RootI18n,
+  Icu,
+  Attr
+}
+
+export enum TemplateKind {
+  NgTemplate,
+  Structural,
+  Block
 }

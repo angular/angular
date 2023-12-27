@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem} from '../src/ngtsc/file_system';
 
 import {NgCompilerOptions} from './ngtsc/core/api';
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
@@ -131,10 +131,10 @@ export function readConfiguration(
             config, parseConfigHost, basePath, existingCompilerOptions, configFileName);
 
     let emitFlags = api.EmitFlags.Default;
-    if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
+    if (!(options['skipMetadataEmit'] || options['flatModuleOutFile'])) {
       emitFlags |= api.EmitFlags.Metadata;
     }
-    if (options.skipTemplateCodegen) {
+    if (options['skipTemplateCodegen']) {
       emitFlags = emitFlags & ~api.EmitFlags.Codegen;
     }
     return {project: projectFile, rootNames, projectReferences, options, errors, emitFlags};
@@ -192,11 +192,8 @@ function getExtendedConfigPathWorker(
     } =
         ts.nodeModuleNameResolver(
             extendsValue, configFile,
-            // TODO(crisbeto): the `moduleResolution` should be ts.ModuleResolutionKind.Node10, but
-            // it is temporarily hardcoded to the raw value while we're on TS 4.9 internally where
-            // the key is called `NodeJs`. The hardcoded value should be removed once the internal
-            // monorepo is on TS 5.0.
-            {moduleResolution: 2, resolveJsonModule: true}, parseConfigHost);
+            {moduleResolution: ts.ModuleResolutionKind.Node10, resolveJsonModule: true},
+            parseConfigHost);
     if (resolvedModule) {
       return absoluteFrom(resolvedModule.resolvedFileName);
     }

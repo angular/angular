@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { NgFor } from '@angular/common';
 
 import { CUSTOMERS } from './customers';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
+  imports: [ NgFor ],
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {

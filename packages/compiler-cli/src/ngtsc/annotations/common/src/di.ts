@@ -14,6 +14,7 @@ import {ClassDeclaration, CtorParameter, ReflectionHost, TypeValueReferenceKind,
 
 import {isAngularCore, valueReferenceToExpression} from './util';
 
+
 export type ConstructorDeps = {
   deps: R3DependencyMetadata[];
 }|{
@@ -41,6 +42,7 @@ export function getConstructorDependencies(
   }
   ctorParams.forEach((param, idx) => {
     let token = valueReferenceToExpression(param.typeValueReference);
+
     let attributeNameType: Expression|null = null;
     let optional = false, self = false, skipSelf = false, host = false;
 
@@ -95,13 +97,13 @@ export function getConstructorDependencies(
       deps.push({token, attributeNameType, optional, self, skipSelf, host});
     }
   });
+
   if (errors.length === 0) {
     return {deps};
   } else {
     return {deps: null, errors};
   }
 }
-
 
 /**
  * Convert `ConstructorDeps` into the `R3DependencyMetadata` array for those deps if they're valid,

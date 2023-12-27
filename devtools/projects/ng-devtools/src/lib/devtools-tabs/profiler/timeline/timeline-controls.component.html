@@ -7,9 +7,8 @@
         class="filter-input"
         (keyup)="filter.emit($event.target.value)"
         placeholder="duration: >30 source: click"
-      />
+        />
     </mat-form-field>
-
     <mat-form-field [class.hidden]="!record">
       <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
         <mat-option [value]="flameGraphMode"> Flame graph </mat-option>
@@ -18,36 +17,41 @@
       </mat-select>
     </mat-form-field>
   </div>
-
   <div
     class="details"
     [class.flame-details]="visualizationMode == flameGraphMode"
     [class.bar-details]="visualizationMode == barGraphMode"
-  >
-    <label *ngIf="estimatedFrameRate >= 60 && record">
-      Time spent: <span class="value">{{ record?.duration | number }} ms</span>
-    </label>
-
-    <label class="warning-label" *ngIf="estimatedFrameRate < 60 && record">
-      Time spent: <span class="value">{{ record?.duration | number }} ms</span>
-    </label>
-
-    <label class="warning-label" *ngIf="estimatedFrameRate < 60 && record">
-      Frame rate: <span class="value">{{ estimatedFrameRate }} fps</span>
-    </label>
-
-    <label *ngIf="record?.source && record">
-      Source: <span class="value">{{ record?.source }}</span>
-    </label>
-
-    <mat-checkbox
-      *ngIf="visualizationMode == flameGraphMode"
-      [checked]="changeDetection"
-      (change)="this.toggleChangeDetection.emit(!changeDetection)"
     >
-      Show only change detection
-    </mat-checkbox>
+    @if (estimatedFrameRate >= 60 && record) {
+      <label>
+        Time spent: <span class="value">{{ record?.duration | number }} ms</span>
+      </label>
+    }
+    @if (estimatedFrameRate < 60 && record) {
+      <label class="warning-label">
+        Time spent: <span class="value">{{ record?.duration | number }} ms</span>
+      </label>
+    }
+    @if (estimatedFrameRate < 60 && record) {
+      <label class="warning-label">
+        Frame rate: <span class="value">{{ estimatedFrameRate }} fps</span>
+      </label>
+    }
+    @if (record?.source && record) {
+      <label>
+        Source: <span class="value">{{ record?.source }}</span>
+      </label>
+    }
+    @if (visualizationMode == flameGraphMode) {
+      <mat-checkbox
+        [checked]="changeDetection"
+        (change)="this.toggleChangeDetection.emit(!changeDetection)"
+        >
+        Show only change detection
+      </mat-checkbox>
+    }
   </div>
-
-  <button *ngIf="!empty" mat-stroked-button (click)="exportProfile.emit()">Save Profile</button>
+  @if (!empty) {
+    <button mat-stroked-button (click)="exportProfile.emit()">Save Profile</button>
+  }
 </div>

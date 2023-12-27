@@ -6,26 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, InputMap, InputTransformFunction, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, LegacyInputPartialMapping, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveDependencyFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeDependencyFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, R3TemplateDependencyFacade} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/defaults';
 import {DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
+import {DeferredBlock, DeferredBlockTriggers, DeferredTrigger, Element} from './render3/r3_ast';
 import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata} from './render3/r3_factory';
 import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3NgModuleMetadataKind, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
+import type {BoundTarget} from './render3/view/t2_api';
+import {R3TargetBinder} from './render3/view/t2_binder';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
+import {SelectorMatcher} from './selector';
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
@@ -177,7 +180,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       facade: R3ComponentMetadataFacade): any {
     // Parse the template and check for errors.
-    const {template, interpolation} = parseJitTemplate(
+    const {template, interpolation, deferBlocks} = parseJitTemplate(
         facade.template, facade.name, sourceMapUrl, facade.preserveWhitespaces,
         facade.interpolation);
 
@@ -189,10 +192,16 @@ export class CompilerFacadeImpl implements CompilerFacade {
       template,
       declarations: facade.declarations.map(convertDeclarationFacadeToMetadata),
       declarationListEmitMode: DeclarationListEmitMode.Direct,
+      deferBlocks,
+
+      // TODO: leaving empty in JIT mode for now,
+      // to be implemented as one of the next steps.
+      deferrableDeclToImportDecl: new Map(),
+
       styles: [...facade.styles, ...template.styles],
       encapsulation: facade.encapsulation,
       interpolation,
-      changeDetection: facade.changeDetection,
+      changeDetection: facade.changeDetection ?? null,
       animations: facade.animations != null ? new WrappedNodeExpr(facade.animations) : null,
       viewProviders: facade.viewProviders != null ? new WrappedNodeExpr(facade.viewProviders) :
                                                     null,
@@ -316,7 +325,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
   const inputsFromMetadata = parseInputsArray(facade.inputs || []);
   const outputsFromMetadata = parseMappingStringArray(facade.outputs || []);
   const propMetadata = facade.propMetadata;
-  const inputsFromType: InputMap = {};
+  const inputsFromType: Record<string, R3InputMetadata> = {};
   const outputsFromType: Record<string, string> = {};
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
@@ -326,6 +335,8 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
             bindingPropertyName: ann.alias || field,
             classPropertyName: field,
             required: ann.required || false,
+            // TODO(signals): Support JIT signal inputs via decorator transform.
+            isSignal: false,
             transformFunction: ann.transform != null ? new WrappedNodeExpr(ann.transform) : null,
           };
         } else if (isOutput(ann)) {
@@ -359,7 +370,7 @@ function convertDeclareDirectiveFacadeToMetadata(
     type: wrapReference(declaration.type),
     typeSourceSpan,
     selector: declaration.selector ?? null,
-    inputs: declaration.inputs ? inputsMappingToInputMetadata(declaration.inputs) : {},
+    inputs: declaration.inputs ? inputsPartialMetadataToInputMetadata(declaration.inputs) : {},
     outputs: declaration.outputs ?? {},
     host: convertHostDeclarationToMetadata(declaration.host),
     queries: (declaration.queries ?? []).map(convertQueryDeclarationToMetadata),
@@ -426,7 +437,7 @@ function convertOpaqueValuesToExpressions(obj: {[key: string]: OpaqueValue}):
 function convertDeclareComponentFacadeToMetadata(
     decl: R3DeclareComponentFacade, typeSourceSpan: ParseSourceSpan,
     sourceMapUrl: string): R3ComponentMetadata<R3TemplateDependencyMetadata> {
-  const {template, interpolation} = parseJitTemplate(
+  const {template, interpolation, deferBlocks} = parseJitTemplate(
       decl.template, decl.type.name, sourceMapUrl, decl.preserveWhitespaces ?? false,
       decl.interpolation);
 
@@ -463,6 +474,12 @@ function convertDeclareComponentFacadeToMetadata(
     viewProviders: decl.viewProviders !== undefined ? new WrappedNodeExpr(decl.viewProviders) :
                                                       null,
     animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
+    deferBlocks,
+
+    // TODO: leaving empty in JIT mode for now,
+    // to be implemented as one of the next steps.
+    deferrableDeclToImportDecl: new Map(),
+
     changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
     interpolation,
@@ -524,16 +541,19 @@ function parseJitTemplate(
   const interpolationConfig =
       interpolation ? InterpolationConfig.fromArray(interpolation) : DEFAULT_INTERPOLATION_CONFIG;
   // Parse the template and check for errors.
-  const parsed = parseTemplate(template, sourceMapUrl, {
-    preserveWhitespaces,
-    interpolationConfig,
-    enabledBlockTypes: new Set(),  // TODO: enable deferred blocks when testing in JIT mode.
-  });
+  const parsed = parseTemplate(template, sourceMapUrl, {preserveWhitespaces, interpolationConfig});
   if (parsed.errors !== null) {
     const errors = parsed.errors.map(err => err.toString()).join(', ');
     throw new Error(`Errors during JIT compilation of template for ${typeName}: ${errors}`);
   }
-  return {template: parsed, interpolation: interpolationConfig};
+  const binder = new R3TargetBinder(new SelectorMatcher());
+  const boundTarget = binder.bind({template: parsed.nodes});
+
+  return {
+    template: parsed,
+    interpolation: interpolationConfig,
+    deferBlocks: createR3DeferredMetadata(boundTarget)
+  };
 }
 
 /**
@@ -603,6 +623,33 @@ function createR3DependencyMetadata(
   return {token, attributeNameType, host, optional, self, skipSelf};
 }
 
+function createR3DeferredMetadata(boundTarget: BoundTarget<any>):
+    Map<DeferredBlock, R3DeferBlockMetadata> {
+  const deferredBlocks = boundTarget.getDeferBlocks();
+  const meta = new Map<DeferredBlock, R3DeferBlockMetadata>();
+
+  for (const block of deferredBlocks) {
+    const triggerElements = new Map<DeferredTrigger, Element>();
+
+    resolveDeferTriggers(block, block.triggers, boundTarget, triggerElements);
+    resolveDeferTriggers(block, block.prefetchTriggers, boundTarget, triggerElements);
+
+    // TODO: leaving `deps` empty in JIT mode for now, to be implemented as one of the next steps.
+    meta.set(block, {deps: [], triggerElements});
+  }
+
+  return meta;
+}
+
+function resolveDeferTriggers(
+    block: DeferredBlock, triggers: DeferredBlockTriggers, boundTarget: BoundTarget<any>,
+    triggerElements: Map<DeferredTrigger, Element|null>): void {
+  Object.keys(triggers).forEach(key => {
+    const trigger = triggers[key as keyof DeferredBlockTriggers]!;
+    triggerElements.set(trigger, boundTarget.getDeferredTriggerTarget(block, trigger));
+  });
+}
+
 function extractHostBindings(
     propMetadata: {[key: string]: any[]}, sourceSpan: ParseSourceSpan,
     host?: {[key: string]: string}): ParsedHostBindings {
@@ -652,39 +699,69 @@ function isOutput(value: any): value is Output {
   return value.ngMetadataName === 'Output';
 }
 
-function inputsMappingToInputMetadata(inputs: Record<string, string|[string, string, InputTransformFunction?]>) {
-  return Object.keys(inputs).reduce<InputMap>((result, key) => {
-    const value = inputs[key];
+function inputsPartialMetadataToInputMetadata(
+    inputs: NonNullable<R3DeclareDirectiveFacade['inputs']>) {
+  return Object.keys(inputs).reduce<Record<string, R3InputMetadata>>(
+      (result, minifiedClassName) => {
+        const value = inputs[minifiedClassName];
 
-    if (typeof value === 'string') {
-      result[key] = {
-        bindingPropertyName: value,
-        classPropertyName: value,
-        transformFunction: null,
-        required: false,
-      };
-    } else {
-      result[key] = {
-        bindingPropertyName: value[0],
-        classPropertyName: value[1],
-        transformFunction: value[2] ? new WrappedNodeExpr(value[2]) : null,
-        required: false,
-      };
-    }
+        // Handle legacy partial input output.
+        if (typeof value === 'string' || Array.isArray(value)) {
+          result[minifiedClassName] = parseLegacyInputPartialOutput(value);
+        } else {
+          result[minifiedClassName] = {
+            bindingPropertyName: value.publicName,
+            classPropertyName: minifiedClassName,
+            transformFunction: value.transformFunction !== null ?
+                new WrappedNodeExpr(value.transformFunction) :
+                null,
+            required: value.isRequired,
+            isSignal: value.isSignal,
+          };
+        }
 
-    return result;
-  }, {});
+        return result;
+      },
+      {});
+}
+
+/**
+ * Parses the legacy input partial output. For more details see `partial/directive.ts`.
+ * TODO(legacy-partial-output-inputs): Remove in v18.
+ */
+function parseLegacyInputPartialOutput(value: LegacyInputPartialMapping): R3InputMetadata {
+  if (typeof value === 'string') {
+    return {
+      bindingPropertyName: value,
+      classPropertyName: value,
+      transformFunction: null,
+      required: false,
+      // legacy partial output does not capture signal inputs.
+      isSignal: false,
+    };
+  }
+
+  return {
+    bindingPropertyName: value[0],
+    classPropertyName: value[1],
+    transformFunction: value[2] ? new WrappedNodeExpr(value[2]) : null,
+    required: false,
+    // legacy partial output does not capture signal inputs.
+    isSignal: false,
+  };
 }
 
 function parseInputsArray(
     values: (string|{name: string, alias?: string, required?: boolean, transform?: Function})[]) {
-  return values.reduce<InputMap>((results, value) => {
+  return values.reduce<Record<string, R3InputMetadata>>((results, value) => {
     if (typeof value === 'string') {
       const [bindingPropertyName, classPropertyName] = parseMappingString(value);
       results[classPropertyName] = {
         bindingPropertyName,
         classPropertyName,
         required: false,
+        // Signal inputs not supported for the inputs array.
+        isSignal: false,
         transformFunction: null,
       };
     } else {
@@ -692,6 +769,8 @@ function parseInputsArray(
         bindingPropertyName: value.alias || value.name,
         classPropertyName: value.name,
         required: value.required || false,
+        // Signal inputs not supported for the inputs array.
+        isSignal: false,
         transformFunction: value.transform != null ? new WrappedNodeExpr(value.transform) : null,
       };
     }

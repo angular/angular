@@ -74,6 +74,33 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.print(ast, `}`);
     return null;
   }
+  override visitArrowFunctionExpr(ast: o.ArrowFunctionExpr, ctx: EmitterVisitorContext): any {
+    ctx.print(ast, '(');
+    this._visitParams(ast.params, ctx);
+    ctx.print(ast, ') =>');
+
+    if (Array.isArray(ast.body)) {
+      ctx.println(ast, `{`);
+      ctx.incIndent();
+      this.visitAllStatements(ast.body, ctx);
+      ctx.decIndent();
+      ctx.print(ast, `}`);
+    } else {
+      const isObjectLiteral = ast.body instanceof o.LiteralMapExpr;
+
+      if (isObjectLiteral) {
+        ctx.print(ast, '(');
+      }
+
+      ast.body.visitExpression(this, ctx);
+
+      if (isObjectLiteral) {
+        ctx.print(ast, ')');
+      }
+    }
+
+    return null;
+  }
   override visitDeclareFunctionStmt(stmt: o.DeclareFunctionStmt, ctx: EmitterVisitorContext): any {
     ctx.print(stmt, `function ${stmt.name}(`);
     this._visitParams(stmt.params, ctx);

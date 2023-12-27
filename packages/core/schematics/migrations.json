@@ -1,14 +1,19 @@
 {
   "schematics": {
-    "migration-v16-remove-module-id": {
-      "version": "16.0.0",
-      "description": "As of Angular v16, the `moduleId` property of `@Component` is deprecated as it no longer has any effect.",
-      "factory": "./migrations/remove-module-id/bundle"
+    "block-template-entities": {
+      "version": "17.0.0",
+      "description": "Angular v17 introduces a new control flow syntax that uses the @ and } characters. This migration replaces the existing usages with their corresponding HTML entities.",
+      "factory": "./migrations/block-template-entities/bundle"
     },
-    "migration-v16-guard-and-resolve-interfaces": {
-      "version": "16.0.0",
-      "description": "In Angular version 15.2, the guard and resolver interfaces (CanActivate, Resolve, etc) were deprecated. This migration removes imports and 'implements' clauses that contain them.",
-      "factory": "./migrations/guard-and-resolve-interfaces/bundle"
+    "migration-v17-compiler-options": {
+      "version": "17.0.0",
+      "description": "CompilerOption.useJit and CompilerOption.missingTranslation are unused under Ivy. This migration removes their usage",
+      "factory": "./migrations/compiler-options/bundle"
+    },
+    "migration-transfer-state": {
+      "version": "17.0.0",
+      "description": "Updates `TransferState`, `makeStateKey`, `StateKey` imports from `@angular/platform-browser` to `@angular/core`.",
+      "factory": "./migrations/transfer-state/bundle"
     }
   }
 }

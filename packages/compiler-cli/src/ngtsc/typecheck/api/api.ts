@@ -84,6 +84,11 @@ export interface TypeCheckBlockMetadata {
    * A boolean indicating whether the component is standalone.
    */
   isStandalone: boolean;
+
+  /**
+   * A boolean indicating whether the component preserves whitespaces in its template.
+   */
+  preserveWhitespaces: boolean;
 }
 
 export interface TypeCtorMetadata {
@@ -272,6 +277,11 @@ export interface TypeCheckingConfig {
    * This is currently an unsupported feature.
    */
   checkQueries: false;
+
+  /**
+   * Whether to check if control flow syntax will prevent a node from being projected.
+   */
+  controlFlowPreventingContentProjection: 'error'|'warning'|'suppress';
 
   /**
    * Whether to use any generic types of the context component.

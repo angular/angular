@@ -1,6 +1,6 @@
 decls: 1,
 vars: 1,
-consts: function() {
+consts: () => {
   __i18nIcuMsg__('{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}', [['VAR_SELECT', String.raw`\uFFFD0\uFFFD`]], {})
   return [
     $i18n_0$

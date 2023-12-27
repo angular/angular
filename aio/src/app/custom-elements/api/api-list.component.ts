@@ -47,6 +47,7 @@ export class ApiListComponent implements OnInit {
     { value: 'decorator', title: 'Decorator' },
     { value: 'directive', title: 'Directive' },
     { value: 'element', title: 'Element'},
+    { value: 'block', title: 'Block'},
     { value: 'enum', title: 'Enum' },
     { value: 'function', title: 'Function' },
     { value: 'interface', title: 'Interface' },

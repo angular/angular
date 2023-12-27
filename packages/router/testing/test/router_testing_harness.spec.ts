@@ -14,6 +14,8 @@ import {RouterTestingHarness} from '@angular/router/testing';
 import {of} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
+import {withRouterConfig} from '../../src/provide_router';
+
 describe('navigateForTest', () => {
   it('gives null for the activatedComponent when no routes are configured', async () => {
     TestBed.configureTestingModule({providers: [provideRouter([])]});
@@ -52,15 +54,20 @@ describe('navigateForTest', () => {
 
   it('throws error if routing throws', async () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([{
-        path: '',
-        canActivate: [() => {
-          throw new Error('oh no');
-        }],
-        children: []
-      }])]
+      providers: [provideRouter(
+          [
+            {
+              path: 'e',
+              canActivate: [() => {
+                throw new Error('oh no');
+              }],
+              children: []
+            },
+          ],
+          withRouterConfig({resolveNavigationPromiseOnError: true}))]
     });
-    await expectAsync(RouterTestingHarness.create('/')).toBeRejected();
+    const harness = await RouterTestingHarness.create();
+    await expectAsync(harness.navigateByUrl('e')).toBeResolvedTo(null);
   });
 
   it('can observe param changes on routed component with second navigation', async () => {
@@ -99,6 +106,20 @@ describe('navigateForTest', () => {
        const harness = await RouterTestingHarness.create();
        await expectAsync(harness.navigateByUrl('/123', OtherCmp)).toBeRejected();
      });
+
+  it('throws an error if navigation fails but expected a component instance', async () => {
+    @Component({standalone: true, template: ''})
+    class TestCmp {
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([{path: '**', canActivate: [() => false], component: TestCmp}]),
+      ]
+    });
+    const harness = await RouterTestingHarness.create();
+    await expectAsync(harness.navigateByUrl('/123', TestCmp)).toBeRejected();
+  });
 
   it('waits for redirects using router.navigate', async () => {
     @Component({standalone: true, template: 'test'})

@@ -7,6 +7,7 @@
  */
 // This module specifier is intentionally a relative path to allow bundling the code directly
 // into the package.
+// @ng_package: ignore-cross-repo-import
 import {computeMsgId} from '../../../../compiler/src/i18n/digest';
 
 import {BLOCK_MARKER, ID_SEPARATOR, LEGACY_ID_INDICATOR, MEANING_SEPARATOR} from './constants';
@@ -32,11 +33,15 @@ export type SourceMessage = string;
  * I.E. the message that indicates what will be translated to.
  *
  * Uses `{$placeholder-name}` to indicate a placeholder.
+ *
+ * @publicApi
  */
 export type TargetMessage = string;
 
 /**
  * A string that uniquely identifies a message, to be used for matching translations.
+ *
+ * @publicApi
  */
 export type MessageId = string;
 

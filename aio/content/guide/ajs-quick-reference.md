@@ -42,7 +42,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
 | AngularJS                                                                                                                                                                                                                                                                                                                                                                                                                   | Angular |
 |:---                                                                                                                                                                                                                                                                                                                                                                                                                         |:---     |
-| <header><code>ng-app</code></header> <code-example hideCopy format="html" language="html"> &lt;body ng-app="movieHunter"&gt; </code-example> The application startup process is called **bootstrapping**. <br /> Although you can bootstrap an AngularJS application in code, many applications bootstrap declaratively with the `ng-app` directive, giving it the name of the module \(`movieHunter`\) of the application. | <header>Bootstrapping</header> <code-example header="main.ts" format="typescript" hideCopy language="typescript" path="ajs-quick-reference/src/main.ts"></code-example> <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts" header="app.module.ts"></code-example> Angular does not have a bootstrap directive. To launch the application in code, explicitly bootstrap the root module \(`AppModule`\) of the application in `main.ts` and the root component \(`AppComponent`\) of the application in `app.module.ts`. |
+| <header><code>ng-app</code></header> <code-example hideCopy format="html" language="html"> &lt;body ng-app="movieHunter"&gt; </code-example> The application startup process is called **bootstrapping**. <br /> Although you can bootstrap an AngularJS application in code, many applications bootstrap declaratively with the `ng-app` directive, giving it the name of the module \(`movieHunter`\) of the application. | <header>Bootstrapping</header> <code-example header="main.ts" format="typescript" hideCopy language="typescript" path="ajs-quick-reference/src/main.ts">Angular does not have a bootstrap directive. To launch the application in code, explicitly bootstrap the application's root component \(`AppComponent`\) in `main.ts`.|
 
 ### `ng-class` &rarr; `ngClass`
 
@@ -170,12 +170,11 @@ For more information on pipes, see [Pipes][AioGuidePipes].
 |:---                                                                                                                                                                                                                                                                                                         |:---     |
 | <header><code>orderBy</code></header> <code-example hideCopy format="html" language="html"> &lt;tr ng-repeat="movie in movieList &verbar; orderBy : 'title'"&gt; </code-example> Displays the collection in the order specified by the expression. In this example, the movie title orders the `movieList`. | <header>none</header> For performance reasons, no comparable pipe exists in Angular. Instead, use component code to order or sort results. If you need the same ordering or sorting code in several templates, consider building a custom pipe. |
 
-## Modules / controllers / components
-
-In both AngularJS and Angular, modules help you organize your application into cohesive blocks of features.
+## Controllers and Components
 
 In AngularJS, you write the code that provides the model and the methods for the view in a **controller**.
-In Angular, you build a **component**.
+
+In Angular, you build a **component** which typically acquires its model from an **injected service**.
 
 Because much AngularJS code is in JavaScript, JavaScript code is shown in the AngularJS column.
 The Angular code is shown using TypeScript.
@@ -184,25 +183,21 @@ The Angular code is shown using TypeScript.
 
 | AngularJS                                                                                                                                                                                                                                                                                                                                      | Angular |
 |:---                                                                                                                                                                                                                                                                                                                                            |:---     |
-| <header>IIFE</header> <code-example hideCopy format="typescript" language="typescript"> ( &NewLine;&nbsp; function () { &NewLine;&nbsp;&nbsp;&nbsp; &hellip; &NewLine;&nbsp; }() &NewLine;); </code-example> In AngularJS, an IIFE around controller code keeps it out of the global namespace. | <header>none</header> This is a nonissue in Angular because ES 2015 modules handle the namespace for you. <br /> For more information on modules, see the [Modules][AioGuideArchitectureModules] section of the [Architecture Overview][AioGuideArchitecture]. |
+| <header>IIFE</header> <code-example hideCopy format="typescript" language="typescript"> ( &NewLine;&nbsp; function () { &NewLine;&nbsp;&nbsp;&nbsp; &hellip; &NewLine;&nbsp; }() &NewLine;); </code-example> In AngularJS, an IIFE around controller code keeps it out of the global namespace. | <header>none</header> This is a nonissue in Angular because ES 2015 modules handle the namespace for you. |
 
-### Angular modules &rarr; `NgModules`
 
-| AngularJS                                                                                                                                                                                                                                                                                                                                                                                                                           | Angular |
-|:---                                                                                                                                                                                                                                                                                                                                                                                                                                 |:---     |
-| <header>Angular modules</header> <code-example hideCopy format="typescript" language="typescript"> angular .module( &NewLine;&nbsp; "movieHunter", &NewLine;&nbsp; [ &NewLine;&nbsp;&nbsp;&nbsp; "ngRoute" &NewLine;&nbsp; ] &NewLine;); </code-example> In AngularJS, an Angular module keeps track of controllers, services, and other code. The second argument defines the list of other modules that this module depends upon. | <header><code>NgModules</code></header> <code-example hideCopy path="ajs-quick-reference/src/app/app.module.1.ts"></code-example> NgModules, defined with the `NgModule` decorator, serve the same purpose: <ul> <li>`imports`: specifies the list of other modules that this module depends upon</li> <li>`declaration`: keeps track of your components, pipes, and directives.</li> </ul> For more information on modules, see [NgModules][AioGuideNgmodules]. |
 
 ### Controller registration &rarr; component decorator
 
 | AngularJS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Angular |
 |:---                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |:---     |
-| <header>Controller registration</header> <code-example hideCopy format="typescript" language="typescript"> angular .module( &NewLine;&nbsp; "movieHunter" &NewLine;) .controller( &NewLine;&nbsp; "MovieListCtrl", &NewLine;&nbsp; [ &NewLine;&nbsp;&nbsp;&nbsp; "movieService", &NewLine;&nbsp;&nbsp;&nbsp; MovieListCtrl &NewLine;&nbsp; ] &NewLine;); </code-example> AngularJS has code in each controller that looks up an appropriate Angular module and registers the controller with that module. <br /> The first argument is the controller name. The second argument defines the string names of all dependencies injected into this controller, and a reference to the controller function. | <header>Component decorator</header> <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component"></code-example> Angular adds a decorator to the component class to provide any required metadata. The `@Component` decorator declares that the class is a component and provides metadata about that component such as its selector, or tag, and its template. <br /> This is how you associate a template with logic, which is defined in the component class. <br /> For more information, see the [Components][AioGuideArchitectureComponents] section of the [Architecture Overview][AioGuideArchitecture] page. |
+| <header>Controller registration</header> <code-example hideCopy format="typescript" language="typescript"> angular .module( &NewLine;&nbsp; "movieHunter" &NewLine;) .controller( &NewLine;&nbsp; "MovieListCtrl", &NewLine;&nbsp; [ &NewLine;&nbsp;&nbsp;&nbsp; "movieService", &NewLine;&nbsp;&nbsp;&nbsp; MovieListCtrl &NewLine;&nbsp; ] &NewLine;); </code-example> AngularJS has code in each controller that looks up an appropriate AngularJS module and registers the controller with that module. <br /> The first argument is the controller name. The second argument defines the string names of all dependencies injected into this controller, and a reference to the controller function. | <header>Component decorator</header> <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="component"></code-example> Angular adds a decorator to the component class to provide any required metadata. The `@Component` decorator declares that the class is a component and provides metadata about that component such as its selector, or tag, and its template. <br /> This is how you associate a template with logic, which is defined in the component class. <br /> For more information, see the [Components][AioGuideArchitectureComponents] section of the [Architecture Overview][AioGuideArchitecture] page. |
 
 ### Controller function &rarr; component class
 
 | AngularJS                                                                                                                                                                                                                                                      | Angular |
 |:---                                                                                                                                                                                                                                                            |:---     |
-| <header>Controller function</header> <code-example hideCopy format="typescript" language="typescript"> function MovieListCtrl(movieService) { &NewLine; } </code-example> In AngularJS, you write the code for the model and methods in a controller function. | <header>Component class</header> <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="class"></code-example> In Angular, you create a component class to contain the data model and control methods. Use the TypeScript <code>export</code> keyword to export the class so that the component can be imported into NgModules. <br /> For more information, see the [Components][AioGuideArchitectureComponents] section of the [Architecture Overview][AioGuideArchitecture] page. |
+| <header>Controller function</header> <code-example hideCopy format="typescript" language="typescript"> function MovieListCtrl(movieService) { &NewLine; } </code-example> In AngularJS, you write the code for the model and methods in a controller function. | <header>Component class</header> <code-example hideCopy path="ajs-quick-reference/src/app/movie-list.component.ts" region="class"></code-example> In Angular, you create a component class to contain the data model and control methods. Use the TypeScript <code>export</code> keyword to export the class so that the component can be imported into other classes. <br /> For more information, see the [Components][AioGuideArchitectureComponents] section of the [Architecture Overview][AioGuideArchitecture] page. |
 
 ### Dependency injection &rarr; dependency injection
 
@@ -234,7 +229,7 @@ Now you can also encapsulate a style sheet within a specific component.
 
 [AioGuideArchitecture]: guide/architecture "Introduction to Angular concepts | Angular"
 [AioGuideArchitectureComponents]: guide/architecture#components "Components - Introduction to Angular concepts | Angular"
-[AioGuideArchitectureModules]: guide/architecture#modules "Modules - Introduction to Angular concepts | Angular"
+
 [AioGuideArchitectureServicesAndDependencyInjection]: guide/architecture#services-and-dependency-injection "Services and dependency injection - Introduction to Angular concepts | Angular"
 
 [AioGuideAttributeBinding]: guide/attribute-binding "Attribute, class, and style bindings | Angular"
@@ -248,8 +243,6 @@ Now you can also encapsulate a style sheet within a specific component.
 [AioGuideEventBinding]: guide/event-binding "Event binding | Angular"
 
 [AioGuideInterpolation]: guide/interpolation "Text interpolation | Angular"
-
-[AioGuideNgmodules]: guide/ngmodules "NgModules | Angular"
 
 [AioGuidePipes]: guide/pipes "Transforming Data Using Pipes | Angular"
 
@@ -267,4 +260,4 @@ Now you can also encapsulate a style sheet within a specific component.
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-25

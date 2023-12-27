@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {initMockFileSystem} from '../../file_system/testing';
+import {Reference} from '../../imports';
 import {TypeCheckingConfig} from '../api';
 import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from '../testing';
 
@@ -608,13 +609,14 @@ describe('type check blocks', () => {
           bindingPropertyName: 'fieldA',
           classPropertyName: 'fieldA',
           required: false,
+          isSignal: false,
           transform: {
             node: ts.factory.createFunctionDeclaration(
                 undefined, undefined, undefined, undefined, [], undefined, undefined),
-            type: ts.factory.createUnionTypeNode([
+            type: new Reference(ts.factory.createUnionTypeNode([
               ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
               ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-            ])
+            ]))
           },
         },
       },
@@ -786,6 +788,7 @@ describe('type check blocks', () => {
       enableTemplateTypeChecker: false,
       useInlineTypeConstructors: true,
       suggestionsForSuboptimalTypeInference: false,
+      controlFlowPreventingContentProjection: 'warning',
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -1354,5 +1357,270 @@ describe('type check blocks', () => {
          expect(block).toContain('_t1.hostInput = (1)');
          expect(block).toContain('_t1["hostOutput"].subscribe');
        });
+  });
+
+  describe('deferred blocks', () => {
+    it('should generate bindings inside deferred blocks', () => {
+      const TEMPLATE = `
+        @defer {
+          {{main()}}
+        } @placeholder {
+          {{placeholder()}}
+        } @loading {
+          {{loading()}}
+        } @error {
+          {{error()}}
+        }
+      `;
+
+      expect(tcb(TEMPLATE))
+          .toContain(
+              '"" + ((this).main()); "" + ((this).placeholder()); "" + ((this).loading()); "" + ((this).error());');
+    });
+
+    it('should generate `when` trigger', () => {
+      const TEMPLATE = `
+        @defer (when shouldShow() && isVisible) {
+          {{main()}}
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+    });
+
+    it('should generate `prefetch when` trigger', () => {
+      const TEMPLATE = `
+        @defer (prefetch when shouldShow() && isVisible) {
+          {{main()}}
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+    });
+  });
+
+  describe('conditional blocks', () => {
+    it('should generate an if block', () => {
+      const TEMPLATE = `
+        @if (expr === 0) {
+          {{main()}}
+        } @else if (expr1 === 1) {
+          {{one()}}
+        } @else if (expr2 === 2) {
+          {{two()}}
+        } @else {
+          {{other()}}
+        }
+      `;
+
+      expect(tcb(TEMPLATE))
+          .toContain(
+              'if ((((this).expr)) === (0)) { "" + ((this).main()); } ' +
+              'else if ((((this).expr1)) === (1)) { "" + ((this).one()); } ' +
+              'else if ((((this).expr2)) === (2)) { "" + ((this).two()); } ' +
+              'else { "" + ((this).other()); }');
+    });
+
+    it('should generate a guard expression for listener inside conditional', () => {
+      const TEMPLATE = `
+        @if (expr === 0) {
+          <button (click)="zero()"></button>
+        } @else if (expr === 1) {
+          <button (click)="one()"></button>
+        } @else if (expr === 2) {
+          <button (click)="two()"></button>
+        } @else {
+          <button (click)="otherwise()"></button>
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+
+      expect(result).toContain(`if ((((this).expr)) === (0)) (this).zero();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && (((this).expr)) === (1)) (this).one();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && (((this).expr)) === (2)) (this).two();`);
+      expect(result).toContain(
+          `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && !((((this).expr)) === (2))) (this).otherwise();`);
+    });
+
+    it('should generate an if block with an `as` expression', () => {
+      const TEMPLATE = `@if (expr === 1; as alias) {
+        {{alias}}
+      }`;
+
+      expect(tcb(TEMPLATE))
+          .toContain('var _t1 = (((this).expr)) === (1); if (_t1) { "" + (_t1); } }');
+    });
+
+    it('should generate a switch block', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            {{one()}}
+          }
+          @case (2) {
+            {{two()}}
+          }
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE))
+          .toContain(
+              'if ((((this).expr)) === 1) { "" + ((this).one()); } else if ' +
+              '((((this).expr)) === 2) { "" + ((this).two()); } else { "" + ((this).default()); }');
+    });
+
+    it('should generate a switch block that only has a default case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @default {
+            {{default()}}
+          }
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain('{ "" + ((this).default()); }');
+    });
+
+    it('should generate a guard expression for a listener inside a switch case', () => {
+      const TEMPLATE = `
+        @switch (expr) {
+          @case (1) {
+            <button (click)="one()"></button>
+          }
+          @case (2) {
+            <button (click)="two()"></button>
+          }
+          @default {
+            <button (click)="default()"></button>
+          }
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+
+      expect(result).toContain(`if ((((this).expr)) === 1) (this).one();`);
+      expect(result).toContain(`if ((((this).expr)) === 2) (this).two();`);
+      expect(result).toContain(
+          `if ((((this).expr)) !== 1 && (((this).expr)) !== 2) (this).default();`);
+    });
+
+    it('should generate a switch block inside a template', () => {
+      const TEMPLATE = `
+        <ng-template let-expr="exp">
+          @switch (expr()) {
+            @case ('one') {
+              {{one()}}
+            }
+            @case ('two') {
+              {{two()}}
+            }
+            @default {
+              {{default()}}
+            }
+          }
+        </ng-template>
+      `;
+
+      expect(tcb(TEMPLATE))
+          .toContain(
+              'var _t1: any = null!; { var _t2 = (_t1.exp); _t2(); ' +
+              'if ((_t2()) === "one") { "" + ((this).one()); } ' +
+              'else if ((_t2()) === "two") { "" + ((this).two()); } ' +
+              'else { "" + ((this).default()); } }');
+    });
+  });
+
+  describe('for loop blocks', () => {
+    it('should generate a for block', () => {
+      const TEMPLATE = `
+        @for (item of items; track item) {
+          {{main(item)}}
+        } @empty {
+          {{empty()}}
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('"" + ((this).main(_t1))');
+      expect(result).toContain('"" + ((this).empty())');
+    });
+
+    it('should generate a for block with implicit variables', () => {
+      const TEMPLATE = `
+        @for (item of items; track item) {
+          {{$index}} {{$first}} {{$last}} {{$even}} {{$odd}} {{$count}}
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('var _t2: number = null!;');
+      expect(result).toContain('var _t3: boolean = null! as boolean;');
+      expect(result).toContain('var _t4: boolean = null! as boolean;');
+      expect(result).toContain('var _t5: boolean = null! as boolean;');
+      expect(result).toContain('var _t6: boolean = null! as boolean;');
+      expect(result).toContain('var _t7: number = null!;');
+      expect(result).toContain('"" + (_t2) + (_t3) + (_t4) + (_t5) + (_t6) + (_t7)');
+    });
+
+    it('should generate a for block with aliased variables', () => {
+      const TEMPLATE = `
+        @for (item of items; track item; let i = $index, f = $first, l = $last, e = $even, o = $odd, c = $count) {
+          {{i}} {{f}} {{l}} {{e}} {{o}} {{c}}
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('var _t2: number = null!;');
+      expect(result).toContain('var _t3: boolean = null! as boolean;');
+      expect(result).toContain('var _t4: boolean = null! as boolean;');
+      expect(result).toContain('var _t5: boolean = null! as boolean;');
+      expect(result).toContain('var _t6: boolean = null! as boolean;');
+      expect(result).toContain('var _t7: number = null!;');
+      expect(result).toContain('"" + (_t2) + (_t3) + (_t4) + (_t5) + (_t6) + (_t7)');
+    });
+
+    it('should read an implicit variable from the component scope if it is aliased', () => {
+      const TEMPLATE = `
+        @for (item of items; track item; let i = $index) { {{$index}} {{i}} }
+      `;
+
+      const result = tcb(TEMPLATE);
+      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).toContain('var _t2: number = null!;');
+      expect(result).toContain('"" + (((this).$index)) + (_t2)');
+    });
+
+    it('should read variable from a parent for loop', () => {
+      const TEMPLATE = `
+        @for (item of items; track item; let indexAlias = $index) {
+          {{item}} {{indexAlias}}
+
+          @for (inner of item.items; track inner) {
+            {{item}} {{indexAlias}} {{inner}} {{$index}}
+          }
+        }
+      `;
+
+      const result = tcb(TEMPLATE);
+      expect(result).toContain('for (const _t1 of ((this).items)!) { var _t2: number = null!;');
+      expect(result).toContain('"" + (_t1) + (_t2)');
+      expect(result).toContain('for (const _t3 of ((_t1).items)!) { var _t4: number = null!;');
+      expect(result).toContain('"" + (_t1) + (_t2) + (_t3) + (_t4)');
+    });
+
+    it('should generate the tracking expression of a for loop', () => {
+      const result = tcb(`@for (item of items; track trackingFn($index, item, prop)) {}`);
+      expect(result).toContain('for (const _t1 of ((this).items)!) { var _t2: number = null!;');
+      expect(result).toContain('(this).trackingFn(_t2, _t1, ((this).prop));');
+    });
   });
 });

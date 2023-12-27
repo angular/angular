@@ -8,6 +8,7 @@
 
 import {Route} from './models';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+import {UrlTree} from './url_tree';
 
 /**
  * Identifies the call or event that triggered a navigation.
@@ -26,7 +27,7 @@ export const IMPERATIVE_NAVIGATION = 'imperative';
  *
  * @publicApi
  */
-export const enum EventType {
+export enum EventType {
   NavigationStart,
   NavigationEnd,
   NavigationCancel,
@@ -170,7 +171,7 @@ export class NavigationEnd extends RouterEvent {
  *
  * @publicApi
  */
-export const enum NavigationCancellationCode {
+export enum NavigationCancellationCode {
   /**
    * A navigation failed because a guard returned a `UrlTree` to redirect.
    */
@@ -195,7 +196,7 @@ export const enum NavigationCancellationCode {
  *
  * @publicApi
  */
-export const enum NavigationSkippedCode {
+export enum NavigationSkippedCode {
   /**
    * A navigation was skipped because the navigation URL was the same as the current Router URL.
    */
@@ -432,7 +433,7 @@ export class ResolveStart extends RouterEvent {
 
 /**
  * An event triggered at the end of the Resolve phase of routing.
- * @see {@link ResolveStart}.
+ * @see {@link ResolveStart}
  *
  * @publicApi
  */
@@ -595,6 +596,12 @@ export class Scroll {
     return `Scroll(anchor: '${this.anchor}', position: '${pos}')`;
   }
 }
+
+export class BeforeActivateRoutes {}
+export class RedirectRequest {
+  constructor(readonly url: UrlTree) {}
+}
+export type PrivateRouterEvents = BeforeActivateRoutes|RedirectRequest;
 
 /**
  * Router events that allow you to track the lifecycle of the router.

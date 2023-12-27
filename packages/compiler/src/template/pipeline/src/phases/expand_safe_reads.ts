@@ -8,22 +8,23 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {ComponentCompilation} from '../compilation';
+import {CompilationJob} from '../compilation';
 
 interface SafeTransformContext {
-  cpl: ComponentCompilation;
-  compatibility: boolean;
+  job: CompilationJob;
 }
 
 /**
- * Finds all unresolved safe read expressions, and converts them into the appropriate output AST
- * reads, guarded by null checks.
+ * Safe read expressions such as `a?.b` have different semantics in Angular templates as
+ * compared to JavaScript. In particular, they default to `null` instead of `undefined`. This phase
+ * finds all unresolved safe read expressions, and converts them into the appropriate output AST
+ * reads, guarded by null checks. We generate temporaries as needed, to avoid re-evaluating the same
+ * sub-expression multiple times.
  */
-export function phaseExpandSafeReads(cpl: ComponentCompilation, compatibility: boolean): void {
-  for (const [_, view] of cpl.views) {
-    for (const op of view.ops()) {
-      ir.transformExpressionsInOp(
-          op, e => safeTransform(e, {cpl, compatibility}), ir.VisitorContextFlag.None);
+export function expandSafeReads(job: CompilationJob): void {
+  for (const unit of job.units) {
+    for (const op of unit.ops()) {
+      ir.transformExpressionsInOp(op, e => safeTransform(e, {job}), ir.VisitorContextFlag.None);
       ir.transformExpressionsInOp(op, ternaryTransform, ir.VisitorContextFlag.None);
     }
   }
@@ -86,7 +87,9 @@ function eliminateTemporaryAssignments(
       // temporary variables to themselves. This happens because some subexpression that the
       // temporary refers to, possibly through nested temporaries, has a function call. We copy that
       // behavior here.
-      return ctx.compatibility ? new ir.AssignTemporaryExpr(read, read.xref) : read;
+      return ctx.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder ?
+          new ir.AssignTemporaryExpr(read, read.xref) :
+          read;
     }
     return e;
   }, ir.VisitorContextFlag.None);
@@ -103,7 +106,7 @@ function safeTernaryWithTemporary(
     ctx: SafeTransformContext): ir.SafeTernaryExpr {
   let result: [o.Expression, o.Expression];
   if (needsTemporaryInSafeAccess(guard)) {
-    const xref = ctx.cpl.allocateXrefId();
+    const xref = ctx.job.allocateXrefId();
     result = [new ir.AssignTemporaryExpr(guard, xref), new ir.ReadTemporaryExpr(xref)];
   } else {
     result = [guard, guard.clone()];
@@ -117,8 +120,9 @@ function safeTernaryWithTemporary(
 }
 
 function isSafeAccessExpression(e: o.Expression): e is ir.SafePropertyReadExpr|
-    ir.SafeKeyedReadExpr {
-  return e instanceof ir.SafePropertyReadExpr || e instanceof ir.SafeKeyedReadExpr;
+    ir.SafeKeyedReadExpr|ir.SafeInvokeFunctionExpr {
+  return e instanceof ir.SafePropertyReadExpr || e instanceof ir.SafeKeyedReadExpr ||
+      e instanceof ir.SafeInvokeFunctionExpr;
 }
 
 function isUnsafeAccessExpression(e: o.Expression): e is o.ReadPropExpr|o.ReadKeyExpr|
@@ -128,7 +132,7 @@ function isUnsafeAccessExpression(e: o.Expression): e is o.ReadPropExpr|o.ReadKe
 }
 
 function isAccessExpression(e: o.Expression): e is o.ReadPropExpr|ir.SafePropertyReadExpr|
-    o.ReadKeyExpr|ir.SafeKeyedReadExpr|o.InvokeFunctionExpr {
+    o.ReadKeyExpr|ir.SafeKeyedReadExpr|o.InvokeFunctionExpr|ir.SafeInvokeFunctionExpr {
   return isSafeAccessExpression(e) || isUnsafeAccessExpression(e);
 }
 
@@ -146,11 +150,6 @@ function deepestSafeTernary(e: o.Expression): ir.SafeTernaryExpr|null {
 // TODO: When strict compatibility with TemplateDefinitionBuilder is not required, we can use `&&`
 // instead to save some code size.
 function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression {
-  if (e instanceof ir.SafeInvokeFunctionExpr) {
-    // TODO: Implement safe function calls in a subsequent commit.
-    return new o.InvokeFunctionExpr(e.receiver, e.args);
-  }
-
   if (!isAccessExpression(e)) {
     return e;
   }
@@ -170,6 +169,10 @@ function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression
       dst.expr = dst.expr.key(e.index);
       return e.receiver;
     }
+    if (e instanceof ir.SafeInvokeFunctionExpr) {
+      dst.expr = safeTernaryWithTemporary(dst.expr, (r: o.Expression) => r.callFn(e.args), ctx);
+      return e.receiver;
+    }
     if (e instanceof ir.SafePropertyReadExpr) {
       dst.expr = safeTernaryWithTemporary(dst.expr, (r: o.Expression) => r.prop(e.name), ctx);
       return e.receiver;
@@ -179,6 +182,9 @@ function safeTransform(e: o.Expression, ctx: SafeTransformContext): o.Expression
       return e.receiver;
     }
   } else {
+    if (e instanceof ir.SafeInvokeFunctionExpr) {
+      return safeTernaryWithTemporary(e.receiver, (r: o.Expression) => r.callFn(e.args), ctx);
+    }
     if (e instanceof ir.SafePropertyReadExpr) {
       return safeTernaryWithTemporary(e.receiver, (r: o.Expression) => r.prop(e.name), ctx);
     }

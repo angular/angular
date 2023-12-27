@@ -8,10 +8,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import multimatch from 'multimatch';
 import esbuild from 'esbuild';
 import fs from 'fs';
-import glob from 'glob';
+import glob from 'fast-glob';
 import {dirname, join, isAbsolute, relative} from 'path';
 import url from 'url';
 import ts from 'typescript';
@@ -72,35 +71,35 @@ async function main() {
  * part of the legacy Saucelabs test job.
  */
 async function findSpecFiles() {
-  const baseTestFiles = glob.sync('**/*_spec.js', {absolute: true, cwd: legacyOutputDir});
+  const baseDirPattern = glob.convertPathToPattern(legacyOutputDir);
+  const ignore = [
+    '/_testing_init/**',
+    '/**/e2e_test/**',
+    '/**/*node_only_spec.js',
+    '/benchpress/**',
+    '/compiler-cli/**',
+    '/compiler-cli/src/ngtsc/**',
+    '/compiler-cli/test/compliance/**',
+    '/compiler-cli/test/ngtsc/**',
+    '/compiler/test/aot/**',
+    '/compiler/test/render3/**',
+    '/core/test/bundling/**',
+    '/core/schematics/test/**',
+    '/core/test/render3/ivy/**',
+    '/core/test/render3/jit/**',
+    '/core/test/render3/perf/**',
+    '/elements/schematics/**',
+    '/examples/**/e2e_test/*',
+    '/language-service/**',
+    '/platform-server/**',
+    '/localize/**/test/**',
+    '/localize/schematics/**',
+    '/router/**/test/**',
+    '/zone.js/**/test/**',
+    '/platform-browser/testing/e2e_util.js',
+  ].map((partial) => baseDirPattern + partial);
 
-  return multimatch(baseTestFiles, [
-    '**/*',
-    `!${legacyOutputDir}/_testing_init/**`,
-    `!${legacyOutputDir}/**/e2e_test/**`,
-    `!${legacyOutputDir}/**/*node_only_spec.js`,
-    `!${legacyOutputDir}/benchpress/**`,
-    `!${legacyOutputDir}/compiler-cli/**`,
-    `!${legacyOutputDir}/compiler-cli/src/ngtsc/**`,
-    `!${legacyOutputDir}/compiler-cli/test/compliance/**`,
-    `!${legacyOutputDir}/compiler-cli/test/ngtsc/**`,
-    `!${legacyOutputDir}/compiler/test/aot/**`,
-    `!${legacyOutputDir}/compiler/test/render3/**`,
-    `!${legacyOutputDir}/core/test/bundling/**`,
-    `!${legacyOutputDir}/core/schematics/test/**`,
-    `!${legacyOutputDir}/core/test/render3/ivy/**`,
-    `!${legacyOutputDir}/core/test/render3/jit/**`,
-    `!${legacyOutputDir}/core/test/render3/perf/**`,
-    `!${legacyOutputDir}/elements/schematics/**`,
-    `!${legacyOutputDir}/examples/**/e2e_test/*`,
-    `!${legacyOutputDir}/language-service/**`,
-    `!${legacyOutputDir}/platform-server/**`,
-    `!${legacyOutputDir}/localize/**/test/**`,
-    `!${legacyOutputDir}/localize/schematics/**`,
-    `!${legacyOutputDir}/router/**/test/**`,
-    `!${legacyOutputDir}/zone.js/**/test/**`,
-    `!${legacyOutputDir}/platform-browser/testing/e2e_util.js`,
-  ]);
+  return glob.sync('**/*_spec.js', {absolute: true, cwd: legacyOutputDir, ignore});
 }
 
 /**

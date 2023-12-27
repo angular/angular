@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../../core';
+import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
 import {ComponentType, DependencyTypeList, DirectiveType, NgModuleScopeInfoFromDecorator, PipeType} from '../interfaces/definition';
 
@@ -29,6 +29,16 @@ interface ScopeData {
   isPoisoned?: boolean;
 }
 
+/**
+ * Represents scope data for standalone components as calculated during runtime by the deps
+ * tracker.
+ */
+interface StandaloneCompScopeData extends ScopeData {
+  // Standalone components include the imported NgModules in their dependencies in order to
+  // determine their injector info. The following field stores the set of such NgModules.
+  ngModules: Set<NgModuleType<any>>;
+}
+
 /** Represents scope data for NgModule as calculated during runtime by the deps tracker. */
 export interface NgModuleScope {
   compilation: ScopeData;
@@ -39,7 +49,7 @@ export interface NgModuleScope {
  * Represents scope data for standalone component as calculated during runtime by the deps tracker.
  */
 export interface StandaloneComponentScope {
-  compilation: ScopeData;
+  compilation: StandaloneCompScopeData;
 }
 
 /** Component dependencies info as calculated during runtime by the deps tracker. */
@@ -84,7 +94,7 @@ export interface DepsTrackerApi {
    * The main application of this method is for test beds where we want to clear the cache to
    * enforce scope update after overriding.
    */
-  clearScopeCacheFor(type: ComponentType<any>|NgModuleType): void;
+  clearScopeCacheFor(type: Type<any>): void;
 
   /**
    * Returns the scope of NgModule. Mainly to be used by JIT and test bed.
@@ -107,4 +117,10 @@ export interface DepsTrackerApi {
   getStandaloneComponentScope(
       type: ComponentType<any>,
       rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope;
+
+  /**
+   * Checks if the NgModule declaring the component is not loaded into the browser yet. Always
+   * returns false for standalone components.
+   */
+  isOrphanComponent(cmp: ComponentType<any>): boolean;
 }

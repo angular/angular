@@ -50,8 +50,10 @@ This example shows some of the most useful `@Component` configuration options:
 
 | Configuration options | Details |
 |:---                   |:---     |
+| `standalone`          | `true` when this is a self-describing, ["Standalone"](guide/standalone-components) component.  If `false` or unspecified, the component must be declared in an [ngModule](guide/ngmodules) which is an older style. Prefer `true` if you can. |
 | `selector`            | A CSS selector that tells Angular to create and insert an instance of this component wherever it finds the corresponding tag in template HTML. For example, if an application's HTML contains `<app-hero-list></app-hero-list>`, then Angular inserts an instance of the `HeroListComponent` view between those tags. |
-| `templateUrl`         | The module-relative address of this component's HTML template. Alternatively, you can provide the HTML template inline, as the value of the `template` property. This template defines the component's *host view*.                                                                                                  |
+| `templateUrl`         | The relative address of this component's HTML template. Alternatively, you can provide the HTML template inline, as the value of the `template` property. This template defines the component's *host view*.                                                                                                  |
+| `imports`             | An array of the components, directives, and packages that your template references. Essential for "Standalone" components.                                                                  |
 | `providers`           | An array of [providers](guide/glossary#provider) for services that the component requires. In the example, this tells Angular how to provide the `HeroService` instance that the component's constructor uses to get the list of heroes to display.                                                                   |
 
 ## Templates and views
@@ -74,8 +76,6 @@ The component can also define a *view hierarchy*, which contains *embedded views
 <img alt="Component tree" class="left" src="generated/images/guide/architecture/component-tree.png">
 
 </div>
-
-A view hierarchy can include views from components in the same NgModule and from those in different NgModules.
 
 ## Template syntax
 
@@ -157,7 +157,7 @@ A class with the `@Pipe` decorator defines a function that transforms input valu
 Angular defines various pipes, such as the [date](api/common/DatePipe) pipe and [currency](api/common/CurrencyPipe) pipe. For a complete list, see the [Pipes API list](api?type=pipe).
 You can also define new pipes.
 
-To specify a value transformation in an HTML template, use the [pipe operator (`|`)](guide/pipes).
+To specify a value transformation in an HTML template, use the [pipe operator (`|`)](guide/pipes-overview).
 
 <code-example format="html" language="html">
 
@@ -242,4 +242,4 @@ Learn more in the [Attribute Directives](guide/attribute-directives) and [Struct
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-09-25

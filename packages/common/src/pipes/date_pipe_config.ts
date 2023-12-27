@@ -15,8 +15,8 @@
  * @publicApi
  */
 export interface DatePipeConfig {
-  dateFormat: string;
-  timezone: string;
+  dateFormat?: string;
+  timezone?: string;
 }
 
 /**

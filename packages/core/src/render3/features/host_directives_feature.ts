@@ -11,7 +11,7 @@ import {Type} from '../../interface/type';
 import {assertEqual} from '../../util/assert';
 import {EMPTY_OBJ} from '../../util/empty';
 import {getComponentDef, getDirectiveDef} from '../definition';
-import {DirectiveDef, HostDirectiveBindingMap, HostDirectiveDef, HostDirectiveDefs} from '../interfaces/definition';
+import {DirectiveDef, DirectiveDefFeature, HostDirectiveBindingMap, HostDirectiveDef, HostDirectiveDefs} from '../interfaces/definition';
 
 /** Values that can be used to define a host directive through the `HostDirectivesFeature`. */
 type HostDirectiveConfig = Type<unknown>|{
@@ -42,9 +42,8 @@ type HostDirectiveConfig = Type<unknown>|{
  */
 export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig[]|
                                         (() => HostDirectiveConfig[])) {
-  return (definition: DirectiveDef<unknown>) => {
-    definition.findHostDirectiveDefs = findHostDirectiveDefs;
-    definition.hostDirectives =
+  const feature: DirectiveDefFeature = (definition: DirectiveDef<unknown>) => {
+    const resolved =
         (Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives()).map(dir => {
           return typeof dir === 'function' ?
               {directive: resolveForwardRef(dir), inputs: EMPTY_OBJ, outputs: EMPTY_OBJ} :
@@ -54,7 +53,15 @@ export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig
                 outputs: bindingArrayToMap(dir.outputs)
               };
         });
+    if (definition.hostDirectives === null) {
+      definition.findHostDirectiveDefs = findHostDirectiveDefs;
+      definition.hostDirectives = resolved;
+    } else {
+      definition.hostDirectives.unshift(...resolved);
+    }
   };
+  feature.ngInherit = true;
+  return feature;
 }
 
 function findHostDirectiveDefs(
@@ -65,7 +72,7 @@ function findHostDirectiveDefs(
       const hostDirectiveDef = getDirectiveDef(hostDirectiveConfig.directive)!;
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        validateHostDirective(hostDirectiveConfig, hostDirectiveDef, matchedDefs);
+        validateHostDirective(hostDirectiveConfig, hostDirectiveDef);
       }
 
       // We need to patch the `declaredInputs` so that
@@ -144,11 +151,10 @@ function patchDeclaredInputs(
  * Verifies that the host directive has been configured correctly.
  * @param hostDirectiveConfig Host directive configuration object.
  * @param directiveDef Directive definition of the host directive.
- * @param matchedDefs Directives that have been matched so far.
  */
 function validateHostDirective(
-    hostDirectiveConfig: HostDirectiveDef<unknown>, directiveDef: DirectiveDef<any>|null,
-    matchedDefs: DirectiveDef<unknown>[]): asserts directiveDef is DirectiveDef<unknown> {
+    hostDirectiveConfig: HostDirectiveDef<unknown>,
+    directiveDef: DirectiveDef<any>|null): asserts directiveDef is DirectiveDef<unknown> {
   const type = hostDirectiveConfig.directive;
 
   if (directiveDef === null) {
@@ -168,13 +174,6 @@ function validateHostDirective(
     throw new RuntimeError(
         RuntimeErrorCode.HOST_DIRECTIVE_NOT_STANDALONE,
         `Host directive ${directiveDef.type.name} must be standalone.`);
-  }
-
-  if (matchedDefs.indexOf(directiveDef) > -1) {
-    throw new RuntimeError(
-        RuntimeErrorCode.DUPLICATE_DIRECTITVE,
-        `Directive ${directiveDef.type.name} matches multiple times on the same element. ` +
-            `Directives can only match an element once.`);
   }
 
   validateMappings('input', directiveDef, hostDirectiveConfig.inputs);

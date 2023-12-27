@@ -33,7 +33,7 @@ want Bazel to create several symlinks in your project directory
 `.bazelrc` file.
 
 [GitHub]: https://github.com/bazelbuild/rules_typescript
-[bazelrc doc]: https://bazel.build/versions/master/docs/bazel-user-manual.html#bazelrc
+[bazelrc doc]: https://bazel.build/run/bazelrc
 
 ## Building Angular
 
@@ -51,6 +51,7 @@ new as of May 2017 and not very stable yet.
 - Test package in node: `yarn test packages/core/test:test`
 - Test package in karma: `yarn test packages/core/test:test_web`
 - Test all packages: `yarn test packages/...`
+- Test angular.io app locally: `yarn test //aio/... --config=aio_local_deps`
 
 **Note**: The ellipsis in the last command above are not meant to be substituted by a package name, but
 are used by Bazel as a wildcard to execute all tests in the specified path. To execute all the tests for a

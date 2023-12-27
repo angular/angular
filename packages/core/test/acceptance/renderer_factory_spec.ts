@@ -7,7 +7,7 @@
  */
 
 import {AnimationEvent} from '@angular/animations';
-import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
+import {ɵAnimationEngine, ɵAnimationRendererFactory, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
@@ -17,7 +17,6 @@ import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {EventManager, ɵSharedStylesHost} from '@angular/platform-browser';
-import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -153,7 +152,7 @@ describe('renderer factory lifecycle', () => {
       TestBed.createComponent(AnimComp);
 
       const data = lastCapturedType!.data;
-      expect(data.animation).toEqual([]);
+      expect(data['animation']).toEqual([]);
     });
 
     it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
@@ -249,7 +248,7 @@ describe('animation renderer factory', () => {
       declarations: [SomeComponentWithAnimation, SomeComponent],
       providers: [{
         provide: RendererFactory2,
-        useFactory: (d: any) => rendererFactory = getAnimationRendererFactory2(d),
+        useFactory: (d: Document) => rendererFactory = getAnimationRendererFactory2(d),
         deps: [DOCUMENT]
       }]
     });
@@ -319,7 +318,7 @@ describe('animation renderer factory', () => {
   });
 });
 
-function getRendererFactory2(document: any): RendererFactory2 {
+function getRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([], fakeNgZone);
   const appId = 'app-id';
@@ -335,12 +334,12 @@ function getRendererFactory2(document: any): RendererFactory2 {
   return rendererFactory;
 }
 
-function getAnimationRendererFactory2(document: any): RendererFactory2 {
+function getAnimationRendererFactory2(document: Document): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   return new ɵAnimationRendererFactory(
       getRendererFactory2(document),
       new ɵAnimationEngine(
-          document.body, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
+          document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
       fakeNgZone);
 }
 
@@ -355,7 +354,7 @@ describe('custom renderer', () => {
   /**
    * Creates a patched renderer factory that creates elements with a shape different than DOM node
    */
-  function createPatchedRendererFactory(document: any) {
+  function createPatchedRendererFactory(document: Document) {
     let rendererFactory = getRendererFactory2(document);
     const origCreateRenderer = rendererFactory.createRenderer;
     rendererFactory.createRenderer = function(element: any, type: RendererType2|null) {
@@ -376,7 +375,7 @@ describe('custom renderer', () => {
       declarations: [SomeComponent],
       providers: [{
         provide: RendererFactory2,
-        useFactory: (document: any) => createPatchedRendererFactory(document),
+        useFactory: (document: Document) => createPatchedRendererFactory(document),
         deps: [DOCUMENT]
       }]
     });
@@ -431,7 +430,7 @@ describe('Renderer2 destruction hooks', () => {
       declarations: [SimpleApp, AppWithComponents, BasicComponent],
       providers: [{
         provide: RendererFactory2,
-        useFactory: (document: any) => getRendererFactory2(document),
+        useFactory: (document: Document) => getRendererFactory2(document),
         deps: [DOCUMENT]
       }]
     });

@@ -1,7 +1,7 @@
 decls: 4,
 vars: 0,
-consts: function() {
-  __i18nMsg__(' Hello {$startTagNgContainer}there {$startTagStrong}!{$closeTagStrong}{$closeTagNgContainer}', [['startTagNgContainer', String.raw`\uFFFD#2\uFFFD`], ['startTagStrong', String.raw`\uFFFD#3\uFFFD`], ['closeTagStrong', String.raw`\uFFFD/#3\uFFFD`], ['closeTagNgContainer', String.raw`\uFFFD/#2\uFFFD`]], {original_code: {'startTagNgContainer': '<ng-container>', 'startTagStrong': '<strong>', 'closeTagStrong': '</strong>', 'closeTagNgContainer': '</ng-container>'}}, {})
+consts: () => {
+  __i18nMsg__(' Hello {$startTagNgContainer}there {$startTagStrong}!{$closeTagStrong}{$closeTagNgContainer}', [['closeTagNgContainer', String.raw`\uFFFD/#2\uFFFD`], ['closeTagStrong', String.raw`\uFFFD/#3\uFFFD`], ['startTagNgContainer', String.raw`\uFFFD#2\uFFFD`], ['startTagStrong', String.raw`\uFFFD#3\uFFFD`]], {original_code: {'closeTagNgContainer': '</ng-container>', 'closeTagStrong': '</strong>', 'startTagNgContainer': '<ng-container>', 'startTagStrong': '<strong>'}}, {})
  return [
    $i18n_0$
  ];
