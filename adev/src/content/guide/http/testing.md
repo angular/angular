@@ -8,12 +8,13 @@ At the end, tests can verify that the app made no unexpected requests.
 
 ## Setup for testing
 
-To begin testing usage of `HttpClient`, configure `TestBed` and include `provideHttpClientTesting` in your test's setup. This configures `HttpClient` to use a test backend instead of the real network. It also provides `HttpTestingController`, which you'll use to interact with the test backend, set expectations about which requests have been made, and flush responses to those requests. `HttpTestingController` can be injected from `TestBed` once configured.
+To begin testing usage of `HttpClient`, configure `TestBed` and include `provideHttpClient()` and `provideHttpClientTesting` in your test's setup. This configures `HttpClient` to use a test backend instead of the real network. It also provides `HttpTestingController`, which you'll use to interact with the test backend, set expectations about which requests have been made, and flush responses to those requests. `HttpTestingController` can be injected from `TestBed` once configured.
 
 <docs-code language="ts">
 TestBed.configureTestingModule({
   providers: [
     // ... other test providers
+    provideHttpClient(),
     provideHttpClientTesting(),
   ],
 });
@@ -31,6 +32,7 @@ For example, you can write a test that expects a GET request to occur and provid
 TestBed.configureTestingModule({
   providers: [
     ConfigService,
+    provideHttpClient(),
     provideHttpClientTesting(),
   ],
 });
