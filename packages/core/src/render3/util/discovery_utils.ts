@@ -17,8 +17,8 @@ import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, TVIEW, TViewType} from '../interfaces/view';
 
-import {getLViewParent, getRootContext} from './view_traversal_utils';
-import {unwrapRNode} from './view_utils';
+import {getRootContext} from './view_traversal_utils';
+import {getLViewParent, unwrapRNode} from './view_utils';
 
 
 

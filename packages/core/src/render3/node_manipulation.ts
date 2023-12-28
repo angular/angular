@@ -30,8 +30,7 @@ import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER,
 import {assertTNodeType} from './node_assert';
 import {profiler, ProfilerEvent} from './profiler';
 import {setUpAttributes} from './util/attrs_utils';
-import {getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, unwrapRNode, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
+import {getLViewParent, getNativeByTNode, unwrapRNode, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
