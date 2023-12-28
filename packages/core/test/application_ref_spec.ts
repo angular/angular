@@ -8,7 +8,7 @@
 
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {ResourceLoader} from '@angular/compiler';
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, EnvironmentInjector, InjectionToken, LOCALE_ID, NgModule, NgZone, PlatformRef, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ChangeDetectionStrategy, Compiler, CompilerFactory, Component, EnvironmentInjector, InjectionToken, LOCALE_ID, NgModule, NgZone, PlatformRef, RendererFactory2, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {createEnvironmentInjector, getLocaleId} from '@angular/core/src/render3';
@@ -630,6 +630,32 @@ describe('bootstrap', () => {
       appRef.tick();
       expect(appRef.viewCount).toBe(0);
       expect(comp.nativeElement).toHaveText('Initial');
+    });
+
+    it('should not dirty host bindings of views not marked for check', () => {
+      @Component({
+        template: '',
+        host: {'[class]': 'clazz'},
+        standalone: true,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class HostBindingComp {
+        clazz = 'initial';
+      }
+      const comp = TestBed.createComponent(HostBindingComp);
+      const appRef = TestBed.inject(ApplicationRef);
+
+      appRef.attachView(comp.componentRef.hostView);
+      appRef.tick();
+      expect(comp.nativeElement.outerHTML).toContain('initial');
+
+      comp.componentInstance.clazz = 'new';
+      appRef.tick();
+      expect(comp.nativeElement.outerHTML).toContain('initial');
+
+      comp.changeDetectorRef.markForCheck();
+      appRef.tick();
+      expect(comp.nativeElement.outerHTML).toContain('new');
     });
 
     it('should detach attached views if they are destroyed', () => {

@@ -107,7 +107,7 @@ export const enum ChangeDetectionMode {
    */
   Global,
   /**
-   * In `Targeted` mode, only views with the `RefreshView` flag are refreshed.
+   * In `Targeted` mode, only views with the `RefreshView` flag or updated signals are refreshed.
    */
   Targeted,
 }
