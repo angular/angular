@@ -715,24 +715,11 @@ function shouldRecheckView(view: LView): boolean {
 }
 
 function detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
-  let mode: ChangeDetectionMode;
-  if (isFirstPass) {
-    // The first pass is always in Global mode, which includes `CheckAlways` views.
-    mode = ChangeDetectionMode.Global;
-    // Add `RefreshView` flag to ensure this view is refreshed if not already dirty.
-    // `RefreshView` flag is used intentionally over `Dirty` because it gets cleared before
-    // executing any of the actual refresh code while the `Dirty` flag doesn't get cleared
-    // until the end of the refresh. Using `RefreshView` prevents creating a potential
-    // difference in the state of the LViewFlags during template execution.
-    lView[FLAGS] |= LViewFlags.RefreshView;
-  } else if (lView[FLAGS] & LViewFlags.Dirty) {
-    // The root view has been explicitly marked for check, so check it in Global mode.
-    mode = ChangeDetectionMode.Global;
-  } else {
-    // The view has not been marked for check, but contains a view marked for refresh
-    // (likely via a signal). Start this change detection in Targeted mode to skip the root
-    // view and check just the view(s) that need refreshed.
-    mode = ChangeDetectionMode.Targeted;
-  }
+  const mode = isFirstPass || lView[FLAGS] & LViewFlags.Dirty ?
+      // The first pass is always in Global mode, which includes `CheckAlways` views.
+      // If the root view has been explicitly marked for check, we also need Global mode.
+      ChangeDetectionMode.Global :
+      // Only refresh views with the `RefreshView` flag or views is a changed signal
+      ChangeDetectionMode.Targeted;
   detectChangesInternal(lView, notifyErrorHandler, mode);
 }
