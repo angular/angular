@@ -227,6 +227,17 @@ describe('navigation', () => {
       expect(locals.popStateEvents.length).toBe(1);
     });
 
+    it('push URL relative', async () => {
+      locals.pendingInterceptOptions.push({});
+      await locals.navigation.navigate('/a/b/c').finished;
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/a/b/c');
+      locals.pendingInterceptOptions.push({
+        handler: () => Promise.resolve(),
+      });
+      await locals.navigation.navigate('../').finished;
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/a/');
+    });
+
     it('replace URL', async () => {
       const initialEntry = locals.navigation.currentEntry;
       locals.pendingInterceptOptions.push({});
