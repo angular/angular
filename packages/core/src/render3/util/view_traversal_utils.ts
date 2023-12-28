@@ -22,7 +22,7 @@ import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT} from '../in
 export function getLViewParent(lView: LView): LView|null {
   ngDevMode && assertLView(lView);
   const parent = lView[PARENT];
-  return isLContainer(parent) ? parent[PARENT]! : parent;
+  return isLContainer(parent) ? parent[PARENT] : parent;
 }
 
 /**
