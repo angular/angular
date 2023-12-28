@@ -103,7 +103,7 @@ export class FakeNavigation implements Navigation {
     }
     const currentInitialEntry = this.entriesArr[0];
     this.entriesArr[0] = new FakeNavigationHistoryEntry(
-        url,
+        new URL(url).toString(),
         {
           index: 0,
           key: currentInitialEntry?.key ?? String(this.nextKey++),
@@ -138,7 +138,7 @@ export class FakeNavigation implements Navigation {
       url: string,
       options?: NavigationNavigateOptions,
       ): FakeNavigationResult {
-    const fromUrl = new URL(this.currentEntry.url!, this.currentEntry.url!);
+    const fromUrl = new URL(this.currentEntry.url!);
     const toUrl = new URL(url, this.currentEntry.url!);
 
     let navigationType: NavigationTypeString;
@@ -158,7 +158,7 @@ export class FakeNavigation implements Navigation {
     const destination = new FakeNavigationDestination({
       url: toUrl.toString(),
       state: options?.state,
-      sameDocument: fromUrl.hostname === toUrl.hostname,
+      sameDocument: hashChange,
       historyState: null,
     });
     const result = new InternalNavigationResult();
@@ -195,7 +195,7 @@ export class FakeNavigation implements Navigation {
       _title: string,
       url?: string,
       ): void {
-    const fromUrl = new URL(this.currentEntry.url!, this.currentEntry.url!);
+    const fromUrl = new URL(this.currentEntry.url!);
     const toUrl = url ? new URL(url, this.currentEntry.url!) : fromUrl;
 
     const hashChange = isHashChange(fromUrl, toUrl);
@@ -220,7 +220,7 @@ export class FakeNavigation implements Navigation {
 
   /** Equivalent to `navigation.traverseTo()`. */
   traverseTo(key: string, options?: NavigationOptions): FakeNavigationResult {
-    const fromUrl = new URL(this.currentEntry.url!, this.currentEntry.url!);
+    const fromUrl = new URL(this.currentEntry.url!);
     const entry = this.findEntry(key);
     if (!entry) {
       const domException = new DOMException(
@@ -339,7 +339,7 @@ export class FakeNavigation implements Navigation {
       if (targetIndex >= this.entriesArr.length || targetIndex < 0) {
         return;
       }
-      const fromUrl = new URL(this.currentEntry.url!, this.currentEntry.url!);
+      const fromUrl = new URL(this.currentEntry.url!);
       const entry = this.entriesArr[targetIndex];
       const hashChange = isHashChange(fromUrl, new URL(entry.url!, this.currentEntry.url!));
       const destination = new FakeNavigationDestination({

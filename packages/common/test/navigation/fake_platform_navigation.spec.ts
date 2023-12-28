@@ -231,6 +231,9 @@ describe('navigation', () => {
       locals.pendingInterceptOptions.push({});
       await locals.navigation.navigate('/a/b/c').finished;
       expect(locals.navigation.currentEntry.url).toBe('https://test.com/a/b/c');
+      locals.pendingInterceptOptions.push({
+        handler: () => Promise.resolve(),
+      });
       await locals.navigation.navigate('../').finished;
       expect(locals.navigation.currentEntry.url).toBe('https://test.com/a/');
     });
@@ -477,7 +480,7 @@ describe('navigation', () => {
       const {committed, finished} = locals.navigation.navigate('/test');
       expect(locals.navigateEvents.length).toBe(1);
       await expectAsync(committed).toBePending();
-      expect(locals.navigation.currentEntry.url).toBe('https://test.com');
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
       locals.navigateEvents[0].commit();
       const committedEntry = await committed;
       expect(committedEntry)
@@ -512,7 +515,7 @@ describe('navigation', () => {
       const {committed, finished} = locals.navigation.navigate('/test');
       expect(locals.navigateEvents.length).toBe(1);
       await expectAsync(committed).toBePending();
-      expect(locals.navigation.currentEntry.url).toBe('https://test.com');
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
       handlerFinishedResolve(undefined);
       const committedEntry = await committed;
       expect(committedEntry)
@@ -576,7 +579,7 @@ describe('navigation', () => {
       expect(locals.navigateEvents.length).toBe(1);
       const navigateEvent = locals.navigateEvents[0];
       await expectAsync(committed).toBePending();
-      expect(locals.navigation.currentEntry.url).toBe('https://test.com');
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
       navigateEvent.commit();
       expect(() => {
         navigateEvent.commit();
@@ -599,7 +602,7 @@ describe('navigation', () => {
       const {committed, finished} = locals.navigation.navigate('/test');
       expect(locals.navigateEvents.length).toBe(1);
       await expectAsync(committed).toBePending();
-      expect(locals.navigation.currentEntry.url).toBe('https://test.com');
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
       handlerFinishedResolve(undefined);
       const committedEntry = await committed;
       expect(committedEntry)
