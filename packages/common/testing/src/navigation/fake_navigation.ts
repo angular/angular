@@ -83,22 +83,17 @@ export class FakeNavigation implements Navigation {
     return this.currentEntryIndex < this.entriesArr.length - 1;
   }
 
-  constructor(private readonly window: Window, private readonly baseURI: string) {
+  constructor(private readonly window: Window, startURL: `http${string}`) {
     // First entry.
-    this.setInitialEntryForTesting('.');
+    this.setInitialEntryForTesting(startURL);
   }
 
   /**
    * Sets the initial entry.
    */
-  setInitialEntryForTesting(
-      url: string,
-      options: {
-        historyState: unknown;
-        // Allows setting the URL without resolving it against the base.
-        absoluteUrl?: boolean;
-        state?: unknown;
-      } = {historyState: null},
+  private setInitialEntryForTesting(
+      url: `http${string}`,
+      options: {historyState: unknown; state?: unknown;} = {historyState: null},
   ) {
     if (!this.canSetInitialEntry) {
       throw new Error(
@@ -108,7 +103,7 @@ export class FakeNavigation implements Navigation {
     }
     const currentInitialEntry = this.entriesArr[0];
     this.entriesArr[0] = new FakeNavigationHistoryEntry(
-        options.absoluteUrl ? url : new URL(url, this.baseURI).toString(),
+        new URL(url).toString(),
         {
           index: 0,
           key: currentInitialEntry?.key ?? String(this.nextKey++),
@@ -143,8 +138,8 @@ export class FakeNavigation implements Navigation {
       url: string,
       options?: NavigationNavigateOptions,
       ): FakeNavigationResult {
-    const fromUrl = new URL(this.currentEntry.url!, this.baseURI);
-    const toUrl = new URL(url, this.baseURI);
+    const fromUrl = new URL(this.currentEntry.url!);
+    const toUrl = new URL(url, this.currentEntry.url!);
 
     let navigationType: NavigationTypeString;
     if (!options?.history || options.history === 'auto') {
@@ -200,8 +195,8 @@ export class FakeNavigation implements Navigation {
       _title: string,
       url?: string,
       ): void {
-    const fromUrl = new URL(this.currentEntry.url!, this.baseURI);
-    const toUrl = url ? new URL(url, this.baseURI) : fromUrl;
+    const fromUrl = new URL(this.currentEntry.url!);
+    const toUrl = url ? new URL(url, this.currentEntry.url!) : fromUrl;
 
     const hashChange = isHashChange(fromUrl, toUrl);
 
@@ -225,7 +220,7 @@ export class FakeNavigation implements Navigation {
 
   /** Equivalent to `navigation.traverseTo()`. */
   traverseTo(key: string, options?: NavigationOptions): FakeNavigationResult {
-    const fromUrl = new URL(this.currentEntry.url!, this.baseURI);
+    const fromUrl = new URL(this.currentEntry.url!);
     const entry = this.findEntry(key);
     if (!entry) {
       const domException = new DOMException(
@@ -255,7 +250,7 @@ export class FakeNavigation implements Navigation {
       };
     }
 
-    const hashChange = isHashChange(fromUrl, new URL(entry.url!, this.baseURI));
+    const hashChange = isHashChange(fromUrl, new URL(entry.url!, this.currentEntry.url!));
     const destination = new FakeNavigationDestination({
       url: entry.url!,
       state: entry.getState(),
@@ -344,9 +339,9 @@ export class FakeNavigation implements Navigation {
       if (targetIndex >= this.entriesArr.length || targetIndex < 0) {
         return;
       }
-      const fromUrl = new URL(this.currentEntry.url!, this.baseURI);
+      const fromUrl = new URL(this.currentEntry.url!);
       const entry = this.entriesArr[targetIndex];
-      const hashChange = isHashChange(fromUrl, new URL(entry.url!, this.baseURI));
+      const hashChange = isHashChange(fromUrl, new URL(entry.url!, this.currentEntry.url!));
       const destination = new FakeNavigationDestination({
         url: entry.url!,
         state: entry.getState(),
