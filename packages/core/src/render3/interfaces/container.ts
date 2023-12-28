@@ -128,9 +128,4 @@ export enum LContainerFlags {
    * This flag, once set, is never unset for the `LContainer`.
    */
   HasTransplantedViews = 1 << 1,
-  /**
-   * Indicates that this LContainer has a view underneath it that needs to be refreshed during
-   * change detection.
-   */
-  HasChildViewsToRefresh = 1 << 2,
 }
