@@ -66,6 +66,46 @@ describe('effects', () => {
     expect(lastError.message).toBe('fail!');
   });
 
+  it('should be usable inside an ErrorHandler', async () => {
+    const shouldError = signal(false);
+    let lastError: any = null;
+
+    class FakeErrorHandler extends ErrorHandler {
+      constructor() {
+        super();
+        effect(() => {
+          if (shouldError()) {
+            throw new Error('fail!');
+          }
+        });
+      }
+
+      override handleError(error: any): void {
+        lastError = error;
+      }
+    }
+
+    @Component({
+      standalone: true,
+      template: '',
+      providers: [{provide: ErrorHandler, useClass: FakeErrorHandler}]
+    })
+    class App {
+      errorHandler = inject(ErrorHandler);
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.errorHandler).toBeInstanceOf(FakeErrorHandler);
+    expect(lastError).toBe(null);
+
+    shouldError.set(true);
+    fixture.detectChanges();
+
+    expect(lastError?.message).toBe('fail!');
+  });
+
   it('should run effect cleanup function on destroy', async () => {
     let counterLog: number[] = [];
     let cleanupCount = 0;
