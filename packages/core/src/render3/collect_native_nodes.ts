@@ -15,8 +15,7 @@ import {isLContainer} from './interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, HOST, LView, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {getProjectionNodes} from './node_manipulation';
-import {getLViewParent} from './util/view_traversal_utils';
-import {unwrapRNode} from './util/view_utils';
+import {getLViewParent, unwrapRNode} from './util/view_utils';
 
 
 export function collectNativeNodes(
