@@ -1323,7 +1323,7 @@ describe('Integration', () => {
          router.navigateByUrl('/simple');
          advance(fixture);
 
-         location.go('/blocked#2');
+         location.go('/blocked');
          location.historyGo(0);
 
          advance(fixture);
@@ -3567,15 +3567,18 @@ describe('Integration', () => {
              ]);
              createRoot(router, RootCmp);
              router.navigateByUrl('/one');
-             const urlChanges: PopStateEvent[] = [];
-             location.subscribe((change) => {
+             const urlChanges: string[] = [];
+             location.onUrlChange((change) => {
                urlChanges.push(change);
              });
 
              tick();
 
              expect(location.path()).toEqual('/redirected');
-             expect(urlChanges).toEqual([]);
+             expect(urlChanges).toEqual(['/one', '/redirected']);
+             location.back();
+             tick();
+             expect(location.path()).toEqual('');
            }));
 
         it('should resolve navigateByUrl promise after redirect finishes', fakeAsync(() => {
