@@ -31,10 +31,10 @@ export function onIdle(callback: VoidFunction, lView: LView) {
  * Note: we wrap the `requestIdleCallback` call into a function, so that it can be
  * overridden/mocked in test environment and picked up by the runtime code.
  */
-const _requestIdleCallback = () =>
-    typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
-const _cancelIdleCallback = () =>
-    typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
+const supportsIdleCallback = () =>
+    typeof requestIdleCallback !== 'undefined' && typeof cancelIdleCallback !== 'undefined';
+const _requestIdleCallback = () => supportsIdleCallback() ? requestIdleCallback : setTimeout;
+const _cancelIdleCallback = () => supportsIdleCallback() ? cancelIdleCallback : clearTimeout;
 
 /**
  * Helper service to schedule `requestIdleCallback`s for batches of defer blocks,
