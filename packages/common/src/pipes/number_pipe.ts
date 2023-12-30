@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DEFAULT_CURRENCY_CODE, Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {DEFAULT_CURRENCY_CODE, inject, Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 
-import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
+import {formatCurrency, formatNumber, formatPercent, parseDigitInfo} from '../i18n/format_number';
+import {useIntl} from '../i18n/intl';
 import {getCurrencySymbol} from '../i18n/locale_data_api';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
-
 
 /**
  * @ngModule CommonModule
@@ -82,6 +82,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
   standalone: true,
 })
 export class DecimalPipe implements PipeTransform {
+  private useIntl = useIntl();
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
   transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
@@ -101,8 +102,18 @@ export class DecimalPipe implements PipeTransform {
     locale = locale || this._locale;
 
     try {
-      const num = strToNumber(value);
-      return formatNumber(num, locale, digitsInfo);
+      if (!this.useIntl) {
+        const num = strToNumber(value);
+        return formatNumber(num, locale, digitsInfo);
+      } else {
+        const num = strToNumber(value);
+        const {maximumFractionDigits, minimumIntegerDigits, minimumFractionDigits} =
+            parseDigitInfo(digitsInfo);
+        return Intl
+            .NumberFormat(
+                locale, {maximumFractionDigits, minimumIntegerDigits, minimumFractionDigits})
+            .format(num);
+      }
     } catch (error) {
       throw invalidPipeArgumentError(DecimalPipe, (error as Error).message);
     }
@@ -134,6 +145,8 @@ export class DecimalPipe implements PipeTransform {
   standalone: true,
 })
 export class PercentPipe implements PipeTransform {
+  private useIntl = useIntl();
+
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
   transform(value: number|string, digitsInfo?: string, locale?: string): string|null;
@@ -160,8 +173,22 @@ export class PercentPipe implements PipeTransform {
     if (!isValue(value)) return null;
     locale = locale || this._locale;
     try {
-      const num = strToNumber(value);
-      return formatPercent(num, locale, digitsInfo);
+      if (!this.useIntl) {
+        const num = strToNumber(value);
+        return formatPercent(num, locale, digitsInfo);
+      } else {
+        const num = strToNumber(value);
+        const {maximumFractionDigits, minimumIntegerDigits, minimumFractionDigits} =
+            parseDigitInfo(digitsInfo);
+        return Intl
+            .NumberFormat(locale, {
+              maximumFractionDigits,
+              minimumIntegerDigits,
+              minimumFractionDigits,
+              style: 'percent'
+            })
+            .format(num);
+      }
     } catch (error) {
       throw invalidPipeArgumentError(PercentPipe, (error as Error).message);
     }
@@ -194,6 +221,8 @@ export class PercentPipe implements PipeTransform {
   standalone: true,
 })
 export class CurrencyPipe implements PipeTransform {
+  private useIntl = useIntl();
+
   constructor(
       @Inject(LOCALE_ID) private _locale: string,
       @Inject(DEFAULT_CURRENCY_CODE) private _defaultCurrencyCode: string = 'USD') {}
@@ -269,8 +298,66 @@ export class CurrencyPipe implements PipeTransform {
     }
 
     try {
-      const num = strToNumber(value);
-      return formatCurrency(num, locale, currency, currencyCode, digitsInfo);
+      if (!this.useIntl) {
+        const num = strToNumber(value);
+        return formatCurrency(num, locale, currency, currencyCode, digitsInfo);
+      } else {
+        const num = strToNumber(value);
+        const {maximumFractionDigits, minimumIntegerDigits, minimumFractionDigits} =
+            parseDigitInfo(digitsInfo);
+
+
+
+        if (display === 'symbol-narrow') {
+          display = 'narrowSymbol';
+        }
+
+        // TODO: remove `as any` when tsconfig is updated
+        const isCurrencySupported =
+            (Intl as any).supportedValuesOf('currency').includes(currencyCode);
+        const isValidDisplay = ['name', 'code', 'symbol', 'narrowSymbol'].includes(display);
+
+        const formatter = Intl.NumberFormat(locale, {
+          maximumFractionDigits: isCurrencySupported ? maximumFractionDigits :
+                                                       Math.max(maximumFractionDigits ?? 0, 2),
+          minimumIntegerDigits,
+          minimumFractionDigits,
+          style: isCurrencySupported ? 'currency' : undefined,
+          currencyDisplay: isValidDisplay && display ? display : undefined,
+          currency: isCurrencySupported ? currencyCode : undefined,
+        });
+
+        let formatted: string;
+        if (display && isValidDisplay) {
+          formatted = formatter.format(num);
+        } else if (!isValidDisplay) {
+          // Here we handle a valid currrency with a custom display
+
+          const parts = formatter.formatToParts(num);
+          formatted = parts
+                          .map((part) => {
+                            if (part.type === 'currency') {
+                              part.value = display as string;
+                            }
+                            return part;
+                          })
+                          .filter((part) => part.type !== 'literal')
+                          .map(part => part.value)
+                          .join('');
+        } else {
+          // In the case of an empty string in `display` we retrives the formated parts and drop the
+          // currency and literal parts
+          const parts = formatter.formatToParts(num);
+          formatted = parts.filter((part) => part.type !== 'currency' && part.type !== 'literal')
+                          .map(part => part.value)
+                          .join('');
+        }
+
+        if (!isCurrencySupported) {
+          formatted = `${isValidDisplay ? currencyCode : display}${formatted}`;
+        }
+        return formatted;
+      }
     } catch (error) {
       throw invalidPipeArgumentError(CurrencyPipe, (error as Error).message);
     }

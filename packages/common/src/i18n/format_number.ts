@@ -468,3 +468,37 @@ export function parseIntAutoRadix(text: string): number {
   }
   return result;
 }
+
+export function parseDigitInfo(digitsInfo?: string) {
+  let minimumIntegerDigits: undefined|number, minimumFractionDigits: undefined|number,
+      maximumFractionDigits: undefined|number;
+  if (digitsInfo) {
+    const parts = digitsInfo.match(NUMBER_FORMAT_REGEXP);
+    if (parts === null) {
+      throw new Error(`${digitsInfo} is not a valid digit info`);
+    }
+    const minIntPart = parts[1];
+    const minFractionPart = parts[3];
+    const maxFractionPart = parts[5];
+    if (minIntPart != null) {
+      minimumIntegerDigits = parseIntAutoRadix(minIntPart);
+    }
+    if (minFractionPart != null) {
+      minimumFractionDigits = parseIntAutoRadix(minFractionPart);
+    }
+    if (maxFractionPart != null) {
+      maximumFractionDigits = parseIntAutoRadix(maxFractionPart);
+    } else if (
+        minFractionPart != null && minimumFractionDigits != null && maximumFractionDigits != null &&
+        minimumFractionDigits > maximumFractionDigits) {
+      maximumFractionDigits = minimumFractionDigits;
+    }
+  }
+
+  return {
+    // Intl minimumIntegerDigits bounds are 1...21, the angular DigitsInfo allows 0
+    minimumIntegerDigits: minimumIntegerDigits === 0 ? 1 : minimumIntegerDigits,
+    minimumFractionDigits,
+    maximumFractionDigits,
+  };
+}
