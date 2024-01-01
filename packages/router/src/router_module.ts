@@ -31,9 +31,6 @@ import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
  */
 const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkActive, EmptyOutletComponent];
 
-/**
- * @docsNotRequired
- */
 export const ROUTER_FORROOT_GUARD = new InjectionToken<void>(
     (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router duplicate forRoot guard' :
                                                       'ROUTER_FORROOT_GUARD');

@@ -81,8 +81,7 @@ export class ActivatedRouteSnapshot {
 
 // @public
 export class ActivationEnd {
-    constructor(
-    snapshot: ActivatedRouteSnapshot);
+    constructor(snapshot: ActivatedRouteSnapshot);
     // (undocumented)
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
@@ -93,8 +92,7 @@ export class ActivationEnd {
 
 // @public
 export class ActivationStart {
-    constructor(
-    snapshot: ActivatedRouteSnapshot);
+    constructor(snapshot: ActivatedRouteSnapshot);
     // (undocumented)
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
@@ -159,8 +157,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => Observable<bo
 
 // @public
 export class ChildActivationEnd {
-    constructor(
-    snapshot: ActivatedRouteSnapshot);
+    constructor(snapshot: ActivatedRouteSnapshot);
     // (undocumented)
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
@@ -171,8 +168,7 @@ export class ChildActivationEnd {
 
 // @public
 export class ChildActivationStart {
-    constructor(
-    snapshot: ActivatedRouteSnapshot);
+    constructor(snapshot: ActivatedRouteSnapshot);
     // (undocumented)
     snapshot: ActivatedRouteSnapshot;
     // (undocumented)
@@ -307,12 +303,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
 
 // @public
 export class GuardsCheckEnd extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
-    urlAfterRedirects: string,
-    state: RouterStateSnapshot,
-    shouldActivate: boolean);
+    constructor(id: number, url: string, urlAfterRedirects: string, state: RouterStateSnapshot, shouldActivate: boolean);
     // (undocumented)
     shouldActivate: boolean;
     // (undocumented)
@@ -327,11 +318,7 @@ export class GuardsCheckEnd extends RouterEvent {
 
 // @public
 export class GuardsCheckStart extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
-    urlAfterRedirects: string,
-    state: RouterStateSnapshot);
+    constructor(id: number, url: string, urlAfterRedirects: string, state: RouterStateSnapshot);
     // (undocumented)
     state: RouterStateSnapshot;
     // (undocumented)
@@ -420,9 +407,7 @@ export interface NavigationBehaviorOptions {
 
 // @public
 export class NavigationCancel extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
+    constructor(id: number, url: string,
     reason: string,
     code?: NavigationCancellationCode | undefined);
     readonly code?: NavigationCancellationCode | undefined;
@@ -443,10 +428,7 @@ export enum NavigationCancellationCode {
 
 // @public
 export class NavigationEnd extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
-    urlAfterRedirects: string);
+    constructor(id: number, url: string, urlAfterRedirects: string);
     // (undocumented)
     toString(): string;
     // (undocumented)
@@ -457,10 +439,7 @@ export class NavigationEnd extends RouterEvent {
 
 // @public
 export class NavigationError extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
-    error: any,
+    constructor(id: number, url: string, error: any,
     target?: RouterStateSnapshot | undefined);
     // (undocumented)
     error: any;
@@ -480,9 +459,7 @@ export interface NavigationExtras extends UrlCreationOptions, NavigationBehavior
 
 // @public
 export class NavigationSkipped extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
+    constructor(id: number, url: string,
     reason: string,
     code?: NavigationSkippedCode | undefined);
     readonly code?: NavigationSkippedCode | undefined;
@@ -499,11 +476,7 @@ export enum NavigationSkippedCode {
 
 // @public
 export class NavigationStart extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
-    navigationTrigger?: NavigationTrigger,
-    restoredState?: {
+    constructor(id: number, url: string, navigationTrigger?: NavigationTrigger, restoredState?: {
         [k: string]: any;
         navigationId: number;
     } | null);
@@ -602,11 +575,7 @@ export type ResolveData = {
 
 // @public
 export class ResolveEnd extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
-    urlAfterRedirects: string,
-    state: RouterStateSnapshot);
+    constructor(id: number, url: string, urlAfterRedirects: string, state: RouterStateSnapshot);
     // (undocumented)
     state: RouterStateSnapshot;
     // (undocumented)
@@ -622,11 +591,7 @@ export type ResolveFn<T> = (route: ActivatedRouteSnapshot, state: RouterStateSna
 
 // @public
 export class ResolveStart extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
-    urlAfterRedirects: string,
-    state: RouterStateSnapshot);
+    constructor(id: number, url: string, urlAfterRedirects: string, state: RouterStateSnapshot);
     // (undocumented)
     state: RouterStateSnapshot;
     // (undocumented)
@@ -663,8 +628,7 @@ export interface Route {
 
 // @public
 export class RouteConfigLoadEnd {
-    constructor(
-    route: Route);
+    constructor(route: Route);
     // (undocumented)
     route: Route;
     // (undocumented)
@@ -675,8 +639,7 @@ export class RouteConfigLoadEnd {
 
 // @public
 export class RouteConfigLoadStart {
-    constructor(
-    route: Route);
+    constructor(route: Route);
     // (undocumented)
     route: Route;
     // (undocumented)
@@ -945,11 +908,7 @@ export type Routes = Route[];
 
 // @public
 export class RoutesRecognized extends RouterEvent {
-    constructor(
-    id: number,
-    url: string,
-    urlAfterRedirects: string,
-    state: RouterStateSnapshot);
+    constructor(id: number, url: string, urlAfterRedirects: string, state: RouterStateSnapshot);
     // (undocumented)
     state: RouterStateSnapshot;
     // (undocumented)
@@ -965,10 +924,7 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
 
 // @public
 export class Scroll {
-    constructor(
-    routerEvent: NavigationEnd | NavigationSkipped,
-    position: [number, number] | null,
-    anchor: string | null);
+    constructor(routerEvent: NavigationEnd | NavigationSkipped, position: [number, number] | null, anchor: string | null);
     // (undocumented)
     readonly anchor: string | null;
     // (undocumented)

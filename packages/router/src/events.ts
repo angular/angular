@@ -117,20 +117,13 @@ export class NavigationStart extends RouterEvent {
   restoredState?: {[k: string]: any, navigationId: number}|null;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      navigationTrigger: NavigationTrigger = 'imperative',
-      /** @docsNotRequired */
+      id: number, url: string, navigationTrigger: NavigationTrigger = 'imperative',
       restoredState: {[k: string]: any, navigationId: number}|null = null) {
     super(id, url);
     this.navigationTrigger = navigationTrigger;
     this.restoredState = restoredState;
   }
 
-  /** @docsNotRequired */
   override toString(): string {
     return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
   }
@@ -148,17 +141,10 @@ export class NavigationStart extends RouterEvent {
 export class NavigationEnd extends RouterEvent {
   readonly type = EventType.NavigationEnd;
 
-  constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string) {
+  constructor(id: number, url: string, public urlAfterRedirects: string) {
     super(id, url);
   }
 
-  /** @docsNotRequired */
   override toString(): string {
     return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
         this.urlAfterRedirects}')`;
@@ -225,10 +211,7 @@ export class NavigationCancel extends RouterEvent {
   readonly type = EventType.NavigationCancel;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
+      id: number, url: string,
       /**
        * A description of why the navigation was cancelled. For debug purposes only. Use `code`
        * instead for a stable cancellation reason that can be used in production.
@@ -243,7 +226,6 @@ export class NavigationCancel extends RouterEvent {
     super(id, url);
   }
 
-  /** @docsNotRequired */
   override toString(): string {
     return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
   }
@@ -261,10 +243,7 @@ export class NavigationSkipped extends RouterEvent {
   readonly type = EventType.NavigationSkipped;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
+      id: number, url: string,
       /**
        * A description of why the navigation was skipped. For debug purposes only. Use `code`
        * instead for a stable skipped reason that can be used in production.
@@ -293,12 +272,7 @@ export class NavigationError extends RouterEvent {
   readonly type = EventType.NavigationError;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public error: any,
+      id: number, url: string, public error: any,
       /**
        * The target of the navigation when the error occurred.
        *
@@ -309,7 +283,6 @@ export class NavigationError extends RouterEvent {
     super(id, url);
   }
 
-  /** @docsNotRequired */
   override toString(): string {
     return `NavigationError(id: ${this.id}, url: '${this.url}', error: ${this.error})`;
   }
@@ -324,18 +297,11 @@ export class RoutesRecognized extends RouterEvent {
   readonly type = EventType.RoutesRecognized;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
+      id: number, url: string, public urlAfterRedirects: string,
       public state: RouterStateSnapshot) {
     super(id, url);
   }
 
-  /** @docsNotRequired */
   override toString(): string {
     return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
         this.urlAfterRedirects}', state: ${this.state})`;
@@ -353,13 +319,7 @@ export class GuardsCheckStart extends RouterEvent {
   readonly type = EventType.GuardsCheckStart;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
+      id: number, url: string, public urlAfterRedirects: string,
       public state: RouterStateSnapshot) {
     super(id, url);
   }
@@ -381,15 +341,7 @@ export class GuardsCheckEnd extends RouterEvent {
   readonly type = EventType.GuardsCheckEnd;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
-      public state: RouterStateSnapshot,
-      /** @docsNotRequired */
+      id: number, url: string, public urlAfterRedirects: string, public state: RouterStateSnapshot,
       public shouldActivate: boolean) {
     super(id, url);
   }
@@ -414,13 +366,7 @@ export class ResolveStart extends RouterEvent {
   readonly type = EventType.ResolveStart;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
+      id: number, url: string, public urlAfterRedirects: string,
       public state: RouterStateSnapshot) {
     super(id, url);
   }
@@ -441,13 +387,7 @@ export class ResolveEnd extends RouterEvent {
   readonly type = EventType.ResolveEnd;
 
   constructor(
-      /** @docsNotRequired */
-      id: number,
-      /** @docsNotRequired */
-      url: string,
-      /** @docsNotRequired */
-      public urlAfterRedirects: string,
-      /** @docsNotRequired */
+      id: number, url: string, public urlAfterRedirects: string,
       public state: RouterStateSnapshot) {
     super(id, url);
   }
@@ -468,9 +408,7 @@ export class ResolveEnd extends RouterEvent {
 export class RouteConfigLoadStart {
   readonly type = EventType.RouteConfigLoadStart;
 
-  constructor(
-      /** @docsNotRequired */
-      public route: Route) {}
+  constructor(public route: Route) {}
   toString(): string {
     return `RouteConfigLoadStart(path: ${this.route.path})`;
   }
@@ -486,9 +424,7 @@ export class RouteConfigLoadStart {
 export class RouteConfigLoadEnd {
   readonly type = EventType.RouteConfigLoadEnd;
 
-  constructor(
-      /** @docsNotRequired */
-      public route: Route) {}
+  constructor(public route: Route) {}
   toString(): string {
     return `RouteConfigLoadEnd(path: ${this.route.path})`;
   }
@@ -505,9 +441,7 @@ export class RouteConfigLoadEnd {
 export class ChildActivationStart {
   readonly type = EventType.ChildActivationStart;
 
-  constructor(
-      /** @docsNotRequired */
-      public snapshot: ActivatedRouteSnapshot) {}
+  constructor(public snapshot: ActivatedRouteSnapshot) {}
   toString(): string {
     const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
     return `ChildActivationStart(path: '${path}')`;
@@ -524,9 +458,7 @@ export class ChildActivationStart {
 export class ChildActivationEnd {
   readonly type = EventType.ChildActivationEnd;
 
-  constructor(
-      /** @docsNotRequired */
-      public snapshot: ActivatedRouteSnapshot) {}
+  constructor(public snapshot: ActivatedRouteSnapshot) {}
   toString(): string {
     const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
     return `ChildActivationEnd(path: '${path}')`;
@@ -544,9 +476,7 @@ export class ChildActivationEnd {
 export class ActivationStart {
   readonly type = EventType.ActivationStart;
 
-  constructor(
-      /** @docsNotRequired */
-      public snapshot: ActivatedRouteSnapshot) {}
+  constructor(public snapshot: ActivatedRouteSnapshot) {}
   toString(): string {
     const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
     return `ActivationStart(path: '${path}')`;
@@ -564,9 +494,7 @@ export class ActivationStart {
 export class ActivationEnd {
   readonly type = EventType.ActivationEnd;
 
-  constructor(
-      /** @docsNotRequired */
-      public snapshot: ActivatedRouteSnapshot) {}
+  constructor(public snapshot: ActivatedRouteSnapshot) {}
   toString(): string {
     const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
     return `ActivationEnd(path: '${path}')`;
@@ -582,13 +510,10 @@ export class Scroll {
   readonly type = EventType.Scroll;
 
   constructor(
-      /** @docsNotRequired */
       readonly routerEvent: NavigationEnd|NavigationSkipped,
 
-      /** @docsNotRequired */
       readonly position: [number, number]|null,
 
-      /** @docsNotRequired */
       readonly anchor: string|null) {}
 
   toString(): string {

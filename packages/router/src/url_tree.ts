@@ -214,7 +214,6 @@ export class UrlTree {
     return this._queryParamMap;
   }
 
-  /** @docsNotRequired */
   toString(): string {
     return DEFAULT_SERIALIZER.serialize(this);
   }
@@ -251,7 +250,6 @@ export class UrlSegmentGroup {
     return Object.keys(this.children).length;
   }
 
-  /** @docsNotRequired */
   toString(): string {
     return serializePaths(this);
   }
@@ -302,7 +300,6 @@ export class UrlSegment {
     return this._parameterMap;
   }
 
-  /** @docsNotRequired */
   toString(): string {
     return serializePath(this);
   }
