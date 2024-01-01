@@ -49,9 +49,10 @@ export interface LocationUpgradeConfig {
  * @publicApi
  */
 export const LOCATION_UPGRADE_CONFIGURATION =
-    new InjectionToken<LocationUpgradeConfig>('LOCATION_UPGRADE_CONFIGURATION');
+    new InjectionToken<LocationUpgradeConfig>(ngDevMode ? 'LOCATION_UPGRADE_CONFIGURATION' : '');
 
-const APP_BASE_HREF_RESOLVED = new InjectionToken<string>('APP_BASE_HREF_RESOLVED');
+const APP_BASE_HREF_RESOLVED =
+    new InjectionToken<string>(ngDevMode ? 'APP_BASE_HREF_RESOLVED' : '');
 
 /**
  * `NgModule` used for providing and configuring Angular's Unified Location Service for upgrading.

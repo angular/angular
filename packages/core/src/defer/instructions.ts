@@ -40,9 +40,11 @@ import {addDepsToRegistry, assertDeferredDependenciesLoaded, getLDeferBlockDetai
 
 /**
  * **INTERNAL**, avoid referencing it in application code.
- *
+ * *
  * Injector token that allows to provide `DeferBlockDependencyInterceptor` class
  * implementation.
+ *
+ * This token is only injected in devMode
  */
 export const DEFER_BLOCK_DEPENDENCY_INTERCEPTOR =
     new InjectionToken<DeferBlockDependencyInterceptor>('DEFER_BLOCK_DEPENDENCY_INTERCEPTOR');

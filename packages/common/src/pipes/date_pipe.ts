@@ -19,7 +19,8 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * @deprecated use DATE_PIPE_DEFAULT_OPTIONS token to configure DatePipe
  */
-export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>('DATE_PIPE_DEFAULT_TIMEZONE');
+export const DATE_PIPE_DEFAULT_TIMEZONE =
+    new InjectionToken<string>(ngDevMode ? 'DATE_PIPE_DEFAULT_TIMEZONE' : '');
 
 /**
  * DI token that allows to provide default configuration for the `DatePipe` instances in an
@@ -53,7 +54,7 @@ export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>('DATE_PIPE_
  * ```
  */
 export const DATE_PIPE_DEFAULT_OPTIONS =
-    new InjectionToken<DatePipeConfig>('DATE_PIPE_DEFAULT_OPTIONS');
+    new InjectionToken<DatePipeConfig>(ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '');
 
 // clang-format off
 /**

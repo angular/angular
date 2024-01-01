@@ -30,7 +30,7 @@ import {getNgZone} from '../zone/ng_zone';
  * entire class tree-shakeable.
  */
 export const PLATFORM_DESTROY_LISTENERS =
-    new InjectionToken<Set<VoidFunction>>('PlatformDestroyListeners');
+    new InjectionToken<Set<VoidFunction>>(ngDevMode ? 'PlatformDestroyListeners' : '');
 
 /**
  * The Angular platform is the entry point for Angular on a web page.

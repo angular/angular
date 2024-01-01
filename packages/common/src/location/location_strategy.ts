@@ -40,7 +40,7 @@ export abstract class LocationStrategy {
   abstract forward(): void;
   abstract back(): void;
   historyGo?(relativePosition: number): void {
-    throw new Error('Not implemented');
+    throw new Error(ngDevMode ? 'Not implemented' : '');
   }
   abstract onPopState(fn: LocationChangeListener): void;
   abstract getBaseHref(): string;
@@ -69,7 +69,7 @@ export abstract class LocationStrategy {
  *
  * @publicApi
  */
-export const APP_BASE_HREF = new InjectionToken<string>('appBaseHref');
+export const APP_BASE_HREF = new InjectionToken<string>(ngDevMode ? 'appBaseHref' : '');
 
 /**
  * @description

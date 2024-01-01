@@ -15,16 +15,16 @@ import {HttpHandlerFn, HttpInterceptor} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
-export const XSRF_ENABLED = new InjectionToken<boolean>('XSRF_ENABLED');
+export const XSRF_ENABLED = new InjectionToken<boolean>(ngDevMode ? 'XSRF_ENABLED' : '');
 
 export const XSRF_DEFAULT_COOKIE_NAME = 'XSRF-TOKEN';
-export const XSRF_COOKIE_NAME = new InjectionToken<string>('XSRF_COOKIE_NAME', {
+export const XSRF_COOKIE_NAME = new InjectionToken<string>(ngDevMode ? 'XSRF_COOKIE_NAME' : '', {
   providedIn: 'root',
   factory: () => XSRF_DEFAULT_COOKIE_NAME,
 });
 
 export const XSRF_DEFAULT_HEADER_NAME = 'X-XSRF-TOKEN';
-export const XSRF_HEADER_NAME = new InjectionToken<string>('XSRF_HEADER_NAME', {
+export const XSRF_HEADER_NAME = new InjectionToken<string>(ngDevMode ? 'XSRF_HEADER_NAME' : '', {
   providedIn: 'root',
   factory: () => XSRF_DEFAULT_HEADER_NAME,
 });

@@ -65,7 +65,7 @@ export type ImageLoaderInfo = {
  * @see {@link NgOptimizedImage}
  * @publicApi
  */
-export const IMAGE_LOADER = new InjectionToken<ImageLoader>('ImageLoader', {
+export const IMAGE_LOADER = new InjectionToken<ImageLoader>(ngDevMode ? 'ImageLoader' : '', {
   providedIn: 'root',
   factory: () => noopImageLoader,
 });

@@ -32,7 +32,8 @@ function _isAndroid(): boolean {
  * the "compositionend" event occurs.
  * @publicApi
  */
-export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionEventMode');
+export const COMPOSITION_BUFFER_MODE =
+    new InjectionToken<boolean>(ngDevMode ? 'CompositionEventMode' : '');
 
 /**
  * The default `ControlValueAccessor` for writing a value and listening to changes on input

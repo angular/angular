@@ -37,7 +37,7 @@ const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '
  * @publicApi
  */
 export const PRECONNECT_CHECK_BLOCKLIST =
-    new InjectionToken<Array<string|string[]>>('PRECONNECT_CHECK_BLOCKLIST');
+    new InjectionToken<Array<string|string[]>>(ngDevMode ? 'PRECONNECT_CHECK_BLOCKLIST' : '');
 
 /**
  * Contains the logic to detect whether an image, marked with the "priority" attribute

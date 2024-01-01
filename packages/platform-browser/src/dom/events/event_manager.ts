@@ -17,7 +17,7 @@ import {RuntimeErrorCode} from '../../errors';
  * @publicApi
  */
 export const EVENT_MANAGER_PLUGINS =
-    new InjectionToken<EventManagerPlugin[]>('EventManagerPlugins');
+    new InjectionToken<EventManagerPlugin[]>(ngDevMode ? 'EventManagerPlugins' : '');
 
 /**
  * An injectable service that provides event management for Angular

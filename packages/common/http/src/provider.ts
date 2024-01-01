@@ -132,7 +132,8 @@ export function withInterceptors(interceptorFns: HttpInterceptorFn[]):
   }));
 }
 
-const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>('LEGACY_INTERCEPTOR_FN');
+const LEGACY_INTERCEPTOR_FN =
+    new InjectionToken<HttpInterceptorFn>(ngDevMode ? 'LEGACY_INTERCEPTOR_FN' : '');
 
 /**
  * Includes class-based interceptors configured using a multi-provider in the current injector into
