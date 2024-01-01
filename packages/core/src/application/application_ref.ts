@@ -54,7 +54,8 @@ import {ApplicationInitStatus} from './application_init';
  * @publicApi
  */
 export const APP_BOOTSTRAP_LISTENER =
-    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
+    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>(
+        ngDevMode ? 'appBootstrapListener' : '');
 
 export function compileNgModuleFactory<M>(
     injector: Injector, options: CompilerOptions,
