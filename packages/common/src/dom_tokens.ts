@@ -15,4 +15,4 @@ import {InjectionToken} from '@angular/core';
  *
  * @publicApi
  */
-export const DOCUMENT = new InjectionToken<Document>('DocumentToken');
+export const DOCUMENT = new InjectionToken<Document>(ngDevMode ? 'DocumentToken' : '');
