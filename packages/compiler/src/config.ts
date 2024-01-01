@@ -20,8 +20,6 @@ export class CompilerConfig {
     strictInjectionParameters
   }: {
     defaultEncapsulation?: ViewEncapsulation,
-    useJit?: boolean,
-    missingTranslation?: MissingTranslationStrategy|null,
     preserveWhitespaces?: boolean,
     strictInjectionParameters?: boolean,
   } = {}) {
