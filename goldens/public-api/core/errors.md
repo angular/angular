@@ -59,7 +59,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     IMPORT_PROVIDERS_FROM_STANDALONE = 800,
     // (undocumented)
-    INFINITE_CHANGE_DETECTION = 102,
+    INFINITE_CHANGE_DETECTION = 103,
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
     // (undocumented)

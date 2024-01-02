@@ -30,7 +30,7 @@ export const enum RuntimeErrorCode {
   // Change Detection Errors
   EXPRESSION_CHANGED_AFTER_CHECKED = -100,
   RECURSIVE_APPLICATION_REF_TICK = 101,
-  INFINITE_CHANGE_DETECTION = 102,
+  INFINITE_CHANGE_DETECTION = 103,
 
   // Dependency Injection Errors
   CYCLIC_DI_DEPENDENCY = -200,

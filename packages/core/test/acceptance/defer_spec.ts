@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, createComponent, Directive, EnvironmentInjector, ErrorHandler, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, Directive, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
@@ -2720,13 +2720,14 @@ describe('@defer', () => {
          expect(spy).toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
        }));
 
-    // TODO(atscott): This should work without NgZone
-    it('should bind the trigger events inside the NgZone', fakeAsync(() => {
+    it('should remove placeholder content on interaction', fakeAsync(() => {
          @Component({
            standalone: true,
            template: `
            @defer (on interaction(trigger)) {
              Main content
+           } @placeholder {
+            <div>placeholder</div>
            }
 
            <button #trigger></button>
@@ -2734,22 +2735,23 @@ describe('@defer', () => {
          })
          class MyCmp {
          }
+         TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
 
          const appRef = TestBed.inject(ApplicationRef);
-         const eventsInZone: Record<string, boolean> = {};
+         const zone = TestBed.inject(NgZone);
          const componentRef =
              createComponent(MyCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
          const button = componentRef.location.nativeElement.querySelector('button');
-
-         spyOn(button, 'addEventListener').and.callFake((name: string) => {
-           eventsInZone[name] = NgZone.isInAngularZone();
+         zone.run(() => {
+           appRef.attachView(componentRef.hostView);
          });
-         appRef.attachView(componentRef.hostView);
-         TestBed.inject(NgZone).run(() => {
-           appRef.tick();
+         expect(componentRef.location.nativeElement.innerHTML).toContain('<div>placeholder</div>');
+         zone.run(() => {
+           button.click();
          });
-
-         expect(eventsInZone).toEqual({click: true, keydown: true});
+         tick();
+         expect(componentRef.location.nativeElement.innerHTML)
+             .not.toContain('<div>placeholder</div>');
        }));
 
     it('should prefetch resources on interaction', fakeAsync(() => {
@@ -3051,41 +3053,6 @@ describe('@defer', () => {
          expect(spy).toHaveBeenCalledTimes(2);
          expect(spy).toHaveBeenCalledWith('mouseenter', jasmine.any(Function), jasmine.any(Object));
          expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
-       }));
-
-    // TODO(atscott): This should work without NgZone
-    it('should bind the trigger events inside the NgZone', fakeAsync(() => {
-         @Component({
-           standalone: true,
-           template: `
-          @defer (on hover(trigger)) {
-            Main content
-          }
-
-          <button #trigger></button>
-        `
-         })
-         class MyCmp {
-         }
-
-         const appRef = TestBed.inject(ApplicationRef);
-         const eventsInZone: Record<string, boolean> = {};
-         const component =
-             createComponent(MyCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
-         const button = component.location.nativeElement.querySelector('button');
-
-         spyOn(button, 'addEventListener').and.callFake((name: string) => {
-           eventsInZone[name] = NgZone.isInAngularZone();
-         });
-         appRef.attachView(component.hostView);
-         TestBed.inject(NgZone).run(() => {
-           appRef.tick();
-         });
-
-         expect(eventsInZone).toEqual({
-           mouseenter: true,
-           focusin: true,
-         });
        }));
 
     it('should prefetch resources on hover', fakeAsync(() => {

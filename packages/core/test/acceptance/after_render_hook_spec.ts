@@ -164,6 +164,65 @@ describe('after render hooks', () => {
         expect(compInstance.afterRenderCount).toBe(2);
       });
 
+      it('should run with ComponentFixture.detectChanges', () => {
+        @Component({selector: 'dynamic-comp'})
+        class DynamicComp {
+          afterRenderCount = 0;
+
+          constructor() {
+            afterRender(() => {
+              this.afterRenderCount++;
+            });
+          }
+        }
+
+        @Component({selector: 'comp'})
+        class Comp {
+          afterRenderCount = 0;
+          changeDetectorRef = inject(ChangeDetectorRef);
+          viewContainerRef = inject(ViewContainerRef);
+
+          constructor() {
+            afterRender(() => {
+              this.afterRenderCount++;
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        const fixture = TestBed.createComponent(Comp);
+        const compInstance = fixture.componentInstance;
+        const viewContainerRef = compInstance.viewContainerRef;
+        const dynamicCompRef = viewContainerRef.createComponent(DynamicComp);
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(1);
+
+        // Running change detection at the dynamicCompRef level
+        dynamicCompRef.changeDetectorRef.detectChanges();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(1);
+
+        // Running change detection at the compInstance level
+        compInstance.changeDetectorRef.detectChanges();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(0);
+        expect(compInstance.afterRenderCount).toBe(1);
+
+        // Running change detection at the Application level
+        fixture.detectChanges();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(2);
+
+
+        // Running change detection after removing view.
+        viewContainerRef.remove();
+        fixture.detectChanges();
+        expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
+        expect(compInstance.afterRenderCount).toBe(3);
+      });
+
       it('should run all hooks after outer change detection', () => {
         let log: string[] = [];
 
