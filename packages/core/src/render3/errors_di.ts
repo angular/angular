@@ -51,8 +51,8 @@ export function throwInvalidProviderError(
 
 /** Throws an error when a token is not found in DI. */
 export function throwProviderNotFoundError(token: any, injectorName?: string): never {
-  const injectorDetails = injectorName ? ` in ${injectorName}` : '';
-  throw new RuntimeError(
-      RuntimeErrorCode.PROVIDER_NOT_FOUND,
-      ngDevMode && `No provider for ${stringifyForError(token)} found${injectorDetails}`);
+  const errorMessage = ngDevMode &&
+      `No provider for ${stringifyForError(token)} found${
+                           injectorName ? ` in ${injectorName}` : ''}`;
+  throw new RuntimeError(RuntimeErrorCode.PROVIDER_NOT_FOUND, errorMessage);
 }
