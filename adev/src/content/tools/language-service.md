@@ -5,7 +5,7 @@ It works with external templates in separate HTML files, and also with in-line t
 
 ## Configuring compiler options for the Angular Language Service
 
-To enable the latest Language Service features, set the `strictTemplates` option in `tsconfig.json` by setting `strictTemplates` to `true,` as shown in the following example:
+To enable the latest Language Service features, set the `strictTemplates` option in `tsconfig.json` by setting `strictTemplates` to `true`, as shown in the following example:
 
 <docs-code language="json">
 
