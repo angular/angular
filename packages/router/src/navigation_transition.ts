@@ -463,7 +463,7 @@ export class NavigationTransitions {
                                  restoredState);
                              this.events.next(navStart);
                              const targetSnapshot =
-                                 createEmptyState(extractedUrl, this.rootComponentType).snapshot;
+                                 createEmptyState(this.rootComponentType).snapshot;
 
                              this.currentTransition = overallTransitionState = {
                                ...t,

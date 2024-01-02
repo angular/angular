@@ -17,7 +17,7 @@ import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy';
 import {RouterConfigLoader} from '../src/router_config_loader';
 import {ActivatedRoute, advanceActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
 describe('create router state', async () => {
@@ -26,8 +26,7 @@ describe('create router state', async () => {
     reuseStrategy = new DefaultRouteReuseStrategy();
   });
 
-  const emptyState = () =>
-      createEmptyState(new (UrlTree as any)(new UrlSegmentGroup([], {}), {}, null!), RootComponent);
+  const emptyState = () => createEmptyState(RootComponent);
 
   it('should create new state', async () => {
     const state = createRouterState(
