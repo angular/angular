@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import type {ProviderToken} from '../di';
 import {isEnvironmentProviders} from '../di/interface/provider';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -50,7 +51,8 @@ export function throwInvalidProviderError(
 
 
 /** Throws an error when a token is not found in DI. */
-export function throwProviderNotFoundError(token: any, injectorName?: string): never {
+export function throwProviderNotFoundError(
+    token: ProviderToken<unknown>, injectorName?: string): never {
   const errorMessage = ngDevMode &&
       `No provider for ${stringifyForError(token)} found${
                            injectorName ? ` in ${injectorName}` : ''}`;
