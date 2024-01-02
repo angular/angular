@@ -9,7 +9,6 @@
 import {InjectionToken} from '@angular/core';
 
 import {OnSameUrlNavigation} from './models';
-import {UrlSerializer, UrlTree} from './url_tree';
 
 
 /**
