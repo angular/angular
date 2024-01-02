@@ -59,7 +59,7 @@ export function injectRootLimpMode<T>(
   }
   if (flags & InjectFlags.Optional) return null;
   if (notFoundValue !== undefined) return notFoundValue;
-  throwProviderNotFoundError(stringify(token), 'Injector');
+  throwProviderNotFoundError(token, 'Injector');
 }
 
 
