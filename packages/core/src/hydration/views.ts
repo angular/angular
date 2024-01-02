@@ -53,8 +53,7 @@ export function locateDehydratedViewsInContainer(
  * stored on a given lContainer.
  * Returns `null` by default, when hydration is not enabled.
  */
-let _findMatchingDehydratedViewImpl: typeof findMatchingDehydratedViewImpl =
-    (lContainer: LContainer, template: string|null) => null;
+let _findMatchingDehydratedViewImpl: typeof findMatchingDehydratedViewImpl = () => null;
 
 /**
  * Retrieves the next dehydrated view from the LContainer and verifies that

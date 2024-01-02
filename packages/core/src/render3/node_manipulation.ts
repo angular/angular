@@ -315,8 +315,7 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
           'A projected view should belong to a non-empty projected views collection');
   const movedViews = declarationContainer[MOVED_VIEWS]!;
   const declarationViewIndex = movedViews.indexOf(lView);
-  const insertionLContainer = lView[PARENT] as LContainer;
-  ngDevMode && assertLContainer(insertionLContainer);
+  ngDevMode && assertLContainer(lView[PARENT]);
   movedViews.splice(declarationViewIndex, 1);
 }
 
