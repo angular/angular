@@ -12,7 +12,7 @@ import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './models';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET, RouteTitleKey} from './shared';
-import {equalSegments, UrlSegment, UrlTree} from './url_tree';
+import {equalSegments, UrlSegment} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
@@ -62,8 +62,8 @@ export class RouterState extends Tree<ActivatedRoute> {
   }
 }
 
-export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>|null): RouterState {
-  const snapshot = createEmptyStateSnapshot(urlTree, rootComponent);
+export function createEmptyState(rootComponent: Type<any>|null): RouterState {
+  const snapshot = createEmptyStateSnapshot(rootComponent);
   const emptyUrl = new BehaviorSubject([new UrlSegment('', {})]);
   const emptyParams = new BehaviorSubject({});
   const emptyData = new BehaviorSubject({});
@@ -76,8 +76,7 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>|null
   return new RouterState(new TreeNode<ActivatedRoute>(activated, []), snapshot);
 }
 
-export function createEmptyStateSnapshot(
-    urlTree: UrlTree, rootComponent: Type<any>|null): RouterStateSnapshot {
+export function createEmptyStateSnapshot(rootComponent: Type<any>|null): RouterStateSnapshot {
   const emptyParams = {};
   const emptyData = {};
   const emptyQueryParams = {};

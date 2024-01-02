@@ -128,7 +128,7 @@ export class HistoryStateManager extends StateManager {
     return this.restoredState()?.ɵrouterPageId ?? this.currentPageId;
   }
 
-  private routerState = createEmptyState(this.currentUrlTree, null);
+  private routerState = createEmptyState(null);
 
   override getRouterState() {
     return this.routerState;

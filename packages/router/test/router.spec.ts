@@ -145,7 +145,7 @@ describe('Router', () => {
     });
 
     beforeEach(inject([Logger], (_logger: Logger) => {
-      empty = createEmptyStateSnapshot(serializer.parse('/'), null!);
+      empty = createEmptyStateSnapshot(null);
       logger = _logger;
       events = [];
     }));
