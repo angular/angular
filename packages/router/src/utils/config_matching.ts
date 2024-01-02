@@ -120,7 +120,7 @@ export function split(
     const s = new UrlSegmentGroup(
         segmentGroup.segments,
         addEmptyPathsToChildrenIfNeeded(
-            segmentGroup, consumedSegments, slicedSegments, config, segmentGroup.children));
+            segmentGroup, slicedSegments, config, segmentGroup.children));
     return {segmentGroup: s, slicedSegments};
   }
 
@@ -129,8 +129,7 @@ export function split(
 }
 
 function addEmptyPathsToChildrenIfNeeded(
-    segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
-    routes: Route[],
+    segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[],
     children: {[name: string]: UrlSegmentGroup}): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
   for (const r of routes) {
