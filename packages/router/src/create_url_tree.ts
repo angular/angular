@@ -12,7 +12,7 @@ import {RuntimeErrorCode} from './errors';
 import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {last, shallowEqual} from './utils/collection';
+import {shallowEqual} from './utils/collection';
 
 
 /**
@@ -187,7 +187,7 @@ class Navigation {
     }
 
     const cmdWithOutlet = commands.find(isCommandWithOutlets);
-    if (cmdWithOutlet && cmdWithOutlet !== last(commands)) {
+    if (cmdWithOutlet && cmdWithOutlet !== commands.at(-1)) {
       throw new RuntimeError(
           RuntimeErrorCode.MISPLACED_OUTLETS_COMMAND,
           (typeof ngDevMode === 'undefined' || ngDevMode) &&

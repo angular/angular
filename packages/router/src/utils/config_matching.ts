@@ -15,7 +15,6 @@ import {runCanMatchGuards} from '../operators/check_guards';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from '../shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer} from '../url_tree';
 
-import {last} from './collection';
 import {getOrCreateRouteInjectorIfNeeded, getOutlet} from './config';
 
 export interface MatchResult {
@@ -96,7 +95,7 @@ export function match(
 function createWildcardMatchResult(segments: UrlSegment[]): MatchResult {
   return {
     matched: true,
-    parameters: segments.length > 0 ? last(segments)!.parameters : {},
+    parameters: segments.at(-1)?.parameters ?? {},
     consumedSegments: segments,
     remainingSegments: [],
     positionalParamSegments: {},
