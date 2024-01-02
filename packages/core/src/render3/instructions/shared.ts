@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {consumerAfterComputation, consumerBeforeComputation, setActiveConsumer} from '@angular/core/primitives/signals';
+import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {Injector} from '../../di/injector';
 import {ErrorHandler} from '../../error_handler';
@@ -37,6 +37,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {Renderer} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
+import {TStylingRange} from '../interfaces/styling';
 import {isComponentDef, isComponentHost, isContentQueryHost} from '../interfaces/type_checks';
 import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, EMBEDDED_VIEW_INJECTOR, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, HYDRATION, ID, INJECTOR, LView, LViewEnvironment, LViewFlags, NEXT, PARENT, REACTIVE_TEMPLATE_CONSUMER, RENDERER, T_HOST, TData, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
@@ -471,8 +472,7 @@ export function applyRootElementTransform(rootElement: HTMLElement) {
  *
  * @param rootElement the app root HTML Element
  */
-let _applyRootElementTransformImpl: typeof applyRootElementTransformImpl =
-    (rootElement: HTMLElement) => null;
+let _applyRootElementTransformImpl: typeof applyRootElementTransformImpl = () => null;
 
 /**
  * Processes text node markers before hydration begins. This replaces any special comment
@@ -605,8 +605,8 @@ export function createTNode(
     classes: null,
     classesWithoutHost: null,
     residualClasses: undefined,
-    classBindings: 0 as any,
-    styleBindings: 0 as any,
+    classBindings: 0 as TStylingRange,
+    styleBindings: 0 as TStylingRange,
   };
   if (ngDevMode) {
     // For performance reasons it is important that the tNode retains the same shape during runtime.
