@@ -34,7 +34,7 @@
 ## Notes
 
 - See [scripts/tutorials/README.md](/scripts/tutorials/README.md) for more information about the tutorials script.
-- See [projects/angular-dev/src/content/tutorials/README.md](/projects/angular-dev/src/content/tutorials/README.md) for more information about the tutorials content.
+- See [adev/src/content/tutorials/README.md](/adev/src/content/tutorials/README.md) for more information about the tutorials content.
 
 ---
 
