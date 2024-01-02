@@ -628,8 +628,8 @@ function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
 }
 
 let _locateOrCreateAnchorNode = createAnchorNode;
-let _populateDehydratedViewsInLContainer: typeof populateDehydratedViewsInLContainerImpl =
-    (lContainer: LContainer, tNode: TNode, hostLView: LView) => false;  // noop by default
+let _populateDehydratedViewsInLContainer: typeof populateDehydratedViewsInLContainerImpl = () =>
+    false;  // noop by default
 
 /**
  * Looks up dehydrated views that belong to a given LContainer and populates

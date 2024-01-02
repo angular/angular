@@ -72,8 +72,7 @@ export const enum TextNodeMarker {
  * @param injector Injector that this component has access to.
  * @param isRootView Specifies whether we trying to read hydration info for the root view.
  */
-let _retrieveHydrationInfoImpl: typeof retrieveHydrationInfoImpl =
-    (rNode: RElement, injector: Injector, isRootView?: boolean) => null;
+let _retrieveHydrationInfoImpl: typeof retrieveHydrationInfoImpl = () => null;
 
 export function retrieveHydrationInfoImpl(
     rNode: RElement, injector: Injector, isRootView = false): DehydratedView|null {

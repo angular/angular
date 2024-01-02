@@ -483,13 +483,12 @@ export class ApplicationRef {
 
     if (!initStatus.done) {
       const standalone = !isComponentFactory && isStandalone(componentOrFactory);
-      const errorMessage =
+      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) &&
           'Cannot bootstrap as there are still asynchronous initializers running.' +
-          (standalone ? '' :
-                        ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
-      throw new RuntimeError(
-          RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING,
-          (typeof ngDevMode === 'undefined' || ngDevMode) && errorMessage);
+              (standalone ?
+                   '' :
+                   ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
+      throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
     }
 
     let componentFactory: ComponentFactory<C>;
