@@ -82,9 +82,35 @@ const OVERSIZED_IMAGE_TOLERANCE = 1000;
 const FIXED_SRCSET_WIDTH_LIMIT = 1920;
 const FIXED_SRCSET_HEIGHT_LIMIT = 1080;
 
+/**
+ * Default blur radius of the CSS filter used on placeholder images, in pixels
+ */
+export const PLACEHOLDER_BLUR_AMOUNT = 15;
+
+/**
+ * Used to warn or error when the user provides an overly large dataURL for the placeholder
+ * attribute.
+ * Character count of Base64 images is 1 character per byte, and base64 encoding is approximately
+ * 33% larger than base images, so 4000 characters is around 3KB on disk and 10000 characters is
+ * around 7.7KB. Experimentally, 4000 characters is about 20x20px in PNG or medium-quality JPEG
+ * format, and 10,000 is around 50x50px, but there's quite a bit of variation depending on how the
+ * image is saved.
+ */
+export const DATA_URL_WARN_LIMIT = 4000;
+export const DATA_URL_ERROR_LIMIT = 10000;
 
 /** Info about built-in loaders we can test for. */
 export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo];
+
+/**
+ * Config options used in rendering placeholder images.
+ *
+ * @see {@link NgOptimizedImage}
+ * @publicApi
+ */
+export interface ImagePlaceholderConfig {
+  blur?: boolean;
+}
 
 /**
  * Directive that improves image loading performance by enforcing best practices.
@@ -191,7 +217,13 @@ export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinary
     '[style.position]': 'fill ? "absolute" : null',
     '[style.width]': 'fill ? "100%" : null',
     '[style.height]': 'fill ? "100%" : null',
-    '[style.inset]': 'fill ? "0px" : null'
+    '[style.inset]': 'fill ? "0" : null',
+    '[style.background-size]': 'placeholder ? "cover" : null',
+    '[style.background-position]': 'placeholder ? "50% 50%" : null',
+    '[style.background-repeat]': 'placeholder ? "no-repeat" : null',
+    '[style.background-image]': 'placeholder ? generatePlaceholder(placeholder) : null',
+    '[style.filter]': `placeholder && shouldBlurPlaceholder(placeholderConfig) ? "blur(${
+        PLACEHOLDER_BLUR_AMOUNT}px)" : null`
   }
 })
 export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
@@ -285,6 +317,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   @Input({transform: booleanAttribute}) fill = false;
 
   /**
+   * A URL or data URL for an image to be used as a placeholder while this image loads.
+   */
+  @Input({transform: booleanOrDataUrlAttribute}) placeholder?: string|boolean;
+
+  /**
+   * Configuration object for placeholder settings. Options:
+   *   * blur: Setting this to false disables the automatic CSS blur.
+   */
+  @Input() placeholderConfig?: ImagePlaceholderConfig;
+
+  /**
    * Value of the `src` attribute if set on the host `<img>` element.
    * This input is exclusively read to assert that `src` is not set in conflict
    * with `ngSrc` and that images don't start to load until a lazy loading strategy is set.
@@ -337,6 +380,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       if (!this.ngSrcset) {
         assertNoComplexSizes(this);
       }
+      assertValidPlaceholder(this, this.imageLoader);
       assertNotMissingBuiltInLoader(this.ngSrc, this.imageLoader);
       assertNoNgSrcsetWithoutLoader(this, this.imageLoader);
       assertNoLoaderParamsWithoutLoader(this, this.imageLoader);
@@ -352,6 +396,9 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         const checker = this.injector.get(PreconnectLinkChecker);
         checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
       }
+    }
+    if (this.placeholder) {
+      this.removePlaceholderOnLoad(this, this.imgElement, this.renderer);
     }
     this.setHostAttributes();
   }
@@ -522,6 +569,49 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         !oversizedImage;
   }
 
+  /**
+   * Returns an image url formatted for use with the CSS background-image property. Expects one of:
+   * * A base64 encoded image, which is wrapped and passed through.
+   * * A boolean. If true, calls the image loader to generate a small placeholder url.
+   */
+  private generatePlaceholder(placeholderInput: string|boolean): string|boolean|null {
+    const {placeholderResolution} = this.config;
+    if (placeholderInput === true) {
+      return `url(${
+          this.callImageLoader(
+              {src: this.ngSrc, width: placeholderResolution, isPlaceholder: true})})`;
+    } else if (typeof placeholderInput === 'string' && placeholderInput.startsWith('data:')) {
+      return `url(${placeholderInput})`;
+    }
+    return null;
+  }
+
+  /**
+   * Determines if blur should be applied, based on an optional boolean
+   * property `blur` within the optional configuration object `placeholderConfig`.
+   */
+  private shouldBlurPlaceholder(placeholderConfig?: ImagePlaceholderConfig): boolean {
+    if (!placeholderConfig || !placeholderConfig.hasOwnProperty('blur')) {
+      return true;
+    }
+    return Boolean(placeholderConfig.blur);
+  }
+
+  private removePlaceholderOnLoad(
+      dir: NgOptimizedImage, img: HTMLImageElement, renderer: Renderer2): void {
+    const removeLoadListenerFn = renderer.listen(img, 'load', () => {
+      removeLoadListenerFn();
+      removeErrorListenerFn();
+      dir.placeholder = false;
+    });
+
+    const removeErrorListenerFn = renderer.listen(img, 'error', () => {
+      removeLoadListenerFn();
+      removeErrorListenerFn();
+      dir.placeholder = false;
+    });
+  }
+
   /** @nodoc */
   ngOnDestroy() {
     if (ngDevMode) {
@@ -609,6 +699,72 @@ function assertNoComplexSizes(dir: NgOptimizedImage) {
             `pixel values. For automatic \`srcset\` generation, \`sizes\` must only include responsive ` +
             `values, such as \`sizes="50vw"\` or \`sizes="(min-width: 768px) 50vw, 100vw"\`. ` +
             `To fix this, modify the \`sizes\` attribute, or provide your own \`ngSrcset\` value directly.`);
+  }
+}
+
+function assertValidPlaceholder(dir: NgOptimizedImage, imageLoader: ImageLoader) {
+  assertNoPlaceholderConfigWithoutPlaceholder(dir);
+  assertNoRelativePlaceholderWithoutLoader(dir, imageLoader);
+  assertNoOversizedDataUrl(dir);
+}
+
+/**
+ * Verifies that placeholderConfig isn't being used without placeholder
+ */
+function assertNoPlaceholderConfigWithoutPlaceholder(dir: NgOptimizedImage) {
+  if (dir.placeholderConfig && !dir.placeholder) {
+    throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        `${
+            imgDirectiveDetails(
+                dir.ngSrc, false)} \`placeholderConfig\` options were provided for an ` +
+            `image that does not use the \`placeholder\` attribute, and will have no effect.`);
+  }
+}
+
+/**
+ * Warns if a relative URL placeholder is specified, but no loader is present to provide the small
+ * image.
+ */
+function assertNoRelativePlaceholderWithoutLoader(dir: NgOptimizedImage, imageLoader: ImageLoader) {
+  if (dir.placeholder === true && imageLoader === noopImageLoader) {
+    throw new RuntimeError(
+        RuntimeErrorCode.MISSING_NECESSARY_LOADER,
+        `${imgDirectiveDetails(dir.ngSrc)} the \`placeholder\` attribute is set to true but ` +
+            `no image loader is configured (i.e. the default one is being used), ` +
+            `which would result in the same image being used for the primary image and its placeholder. ` +
+            `To fix this, provide a loader or remove the \`placeholder\` attribute from the image.`);
+  }
+}
+
+/**
+ * Warns or throws an error if an oversized dataURL placeholder is provided.
+ */
+function assertNoOversizedDataUrl(dir: NgOptimizedImage) {
+  if (dir.placeholder && typeof dir.placeholder === 'string' &&
+      dir.placeholder.startsWith('data:')) {
+    if (dir.placeholder.length > DATA_URL_ERROR_LIMIT) {
+      throw new RuntimeError(
+          RuntimeErrorCode.OVERSIZED_PLACEHOLDER,
+          `${
+              imgDirectiveDetails(
+                  dir.ngSrc)} the \`placeholder\` attribute is set to a data URL which is longer ` +
+              `than ${
+                  DATA_URL_ERROR_LIMIT} characters. This is strongly discouraged, as large inline placeholders ` +
+              `directly increase the bundle size of Angular and hurt page load performance. To fix this, generate ` +
+              `a smaller data URL placeholder.`);
+    }
+    if (dir.placeholder.length > DATA_URL_WARN_LIMIT) {
+      console.warn(formatRuntimeError(
+          RuntimeErrorCode.OVERSIZED_PLACEHOLDER,
+          `${
+              imgDirectiveDetails(
+                  dir.ngSrc)} the \`placeholder\` attribute is set to a data URL which is longer ` +
+              `than ${
+                  DATA_URL_WARN_LIMIT} characters. This is discouraged, as large inline placeholders ` +
+              `directly increase the bundle size of Angular and hurt page load performance. For better loading performance, ` +
+              `generate a smaller data URL placeholder.`));
+    }
   }
 }
 
@@ -999,4 +1155,13 @@ function unwrapSafeUrl(value: string|SafeValue): string {
     return value;
   }
   return unwrapSafeValue(value);
+}
+
+// Transform function to handle inputs which may be booleans, strings, or string representations
+// of boolean values. Used for the placeholder attribute.
+export function booleanOrDataUrlAttribute(value: boolean|string): boolean|string {
+  if (typeof value === 'string' && value.startsWith(`data:`)) {
+    return value;
+  }
+  return booleanAttribute(value);
 }

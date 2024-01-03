@@ -27,5 +27,5 @@ export {PLATFORM_BROWSER_ID as ɵPLATFORM_BROWSER_ID, PLATFORM_SERVER_ID as ɵPL
 export {VERSION} from './version';
 export {ViewportScroller, NullViewportScroller as ɵNullViewportScroller} from './viewport_scroller';
 export {XhrFactory} from './xhr';
-export {IMAGE_CONFIG, ImageConfig, IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImage, PRECONNECT_CHECK_BLOCKLIST, provideCloudflareLoader, provideCloudinaryLoader, provideImageKitLoader, provideImgixLoader} from './directives/ng_optimized_image';
+export {IMAGE_CONFIG, ImageConfig, IMAGE_LOADER, ImageLoader, ImageLoaderConfig, NgOptimizedImage, ImagePlaceholderConfig, PRECONNECT_CHECK_BLOCKLIST, provideCloudflareLoader, provideCloudinaryLoader, provideImageKitLoader, provideImgixLoader} from './directives/ng_optimized_image';
 export {normalizeQueryParams as ɵnormalizeQueryParams} from './location/util';

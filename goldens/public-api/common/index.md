@@ -325,11 +325,18 @@ export type ImageLoader = (config: ImageLoaderConfig) => string;
 
 // @public
 export interface ImageLoaderConfig {
+    isPlaceholder?: boolean;
     loaderParams?: {
         [key: string]: any;
     };
     src: string;
     width?: number;
+}
+
+// @public
+export interface ImagePlaceholderConfig {
+    // (undocumented)
+    blur?: boolean;
 }
 
 // @public
@@ -617,6 +624,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // (undocumented)
     static ngAcceptInputType_ngSrc: string | i0.ɵSafeValue;
     // (undocumented)
+    static ngAcceptInputType_placeholder: boolean | string;
+    // (undocumented)
     static ngAcceptInputType_priority: unknown;
     // (undocumented)
     static ngAcceptInputType_width: unknown;
@@ -628,11 +637,13 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     ngOnInit(): void;
     ngSrc: string;
     ngSrcset: string;
+    placeholder?: string | boolean;
+    placeholderConfig?: ImagePlaceholderConfig;
     priority: boolean;
     sizes?: string;
     width: number | undefined;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "alias": "ngSrc"; "required": true; }; "ngSrcset": { "alias": "ngSrcset"; "required": false; }; "sizes": { "alias": "sizes"; "required": false; }; "width": { "alias": "width"; "required": false; }; "height": { "alias": "height"; "required": false; }; "loading": { "alias": "loading"; "required": false; }; "priority": { "alias": "priority"; "required": false; }; "loaderParams": { "alias": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "alias": "disableOptimizedSrcset"; "required": false; }; "fill": { "alias": "fill"; "required": false; }; "src": { "alias": "src"; "required": false; }; "srcset": { "alias": "srcset"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "alias": "ngSrc"; "required": true; }; "ngSrcset": { "alias": "ngSrcset"; "required": false; }; "sizes": { "alias": "sizes"; "required": false; }; "width": { "alias": "width"; "required": false; }; "height": { "alias": "height"; "required": false; }; "loading": { "alias": "loading"; "required": false; }; "priority": { "alias": "priority"; "required": false; }; "loaderParams": { "alias": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "alias": "disableOptimizedSrcset"; "required": false; }; "fill": { "alias": "fill"; "required": false; }; "placeholder": { "alias": "placeholder"; "required": false; }; "placeholderConfig": { "alias": "placeholderConfig"; "required": false; }; "src": { "alias": "src"; "required": false; }; "srcset": { "alias": "srcset"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }

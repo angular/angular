@@ -130,12 +130,14 @@ export const CSP_NONCE = new InjectionToken<string|null>('CSP nonce', {
  */
 export type ImageConfig = {
   breakpoints?: number[],
+  placeholderResolution?: number,
   disableImageSizeWarning?: boolean,
   disableImageLazyLoadWarning?: boolean,
 };
 
 export const IMAGE_CONFIG_DEFAULTS: ImageConfig = {
   breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+  placeholderResolution: 30,
   disableImageSizeWarning: false,
   disableImageLazyLoadWarning: false,
 };
