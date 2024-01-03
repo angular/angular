@@ -17,7 +17,7 @@ import {withHead} from '@angular/private/testing';
 
 import {PRELOADED_IMAGES} from '../..//src/directives/ng_optimized_image/tokens';
 import {createImageLoader, IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from '../../src/directives/ng_optimized_image/image_loaders/image_loader';
-import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, NgOptimizedImage, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
+import {ABSOLUTE_SRCSET_DENSITY_CAP, assertValidNgSrcset, DATA_URL_ERROR_LIMIT, DATA_URL_WARN_LIMIT, NgOptimizedImage, PLACEHOLDER_BLUR_AMOUNT, RECOMMENDED_SRCSET_DENSITY_CAP} from '../../src/directives/ng_optimized_image/ng_optimized_image';
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
@@ -928,7 +928,7 @@ describe('Image directive', () => {
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('style')?.replace(/\s/g, ''))
-          .toBe('position:absolute;width:100%;height:100%;inset:0px;');
+          .toMatch('position:absolute;width:100%;height:100%;inset:0');
     });
     it('should augment existing styles in fill mode', () => {
       setupTestingModule();
@@ -940,8 +940,8 @@ describe('Image directive', () => {
       const nativeElement = fixture.nativeElement as HTMLElement;
       const img = nativeElement.querySelector('img')!;
       expect(img.getAttribute('style')?.replace(/\s/g, ''))
-          .toBe(
-              'border-radius:5px;padding:10px;position:absolute;width:100%;height:100%;inset:0px;');
+          .toMatch(
+              'border-radius:5px;padding:10px;position:absolute;width:100%;height:100%;inset:0');
     });
     it('should not add fill styles if not in fill mode', () => {
       setupTestingModule();
@@ -994,6 +994,222 @@ describe('Image directive', () => {
               `${IMG_BASE_URL}/path/img.png 1080w, ${IMG_BASE_URL}/path/img.png 1200w, ${
                   IMG_BASE_URL}/path/img.png 1920w, ` +
               `${IMG_BASE_URL}/path/img.png 2048w, ${IMG_BASE_URL}/path/img.png 3840w`);
+    });
+  });
+
+  describe('placeholder attribute', () => {
+    const imageLoader = (config: ImageLoaderConfig) => {
+      let paramsString = '';
+      if (config.isPlaceholder) {
+        paramsString = 'ph=true';
+      }
+      let queryString = `${config.width ? 'w=' + config.width + '&' : ''}${paramsString}`;
+      return `${IMG_BASE_URL}/${config.src}?${queryString}`;
+    };
+
+    it('should add background size, position, and repeat styling if the placeholder attribute is present',
+       () => {
+         setupTestingModule();
+         const template =
+             '<img ngSrc="path/img.png" width="400" height="300" placeholder="path/img.png" />';
+
+         const fixture = createTestComponent(template);
+         fixture.detectChanges();
+         const nativeElement = fixture.nativeElement as HTMLElement;
+         const img = nativeElement.querySelector('img')!;
+         const styles = parseInlineStyles(img);
+         expect(styles.get('background-size')).toBe('cover');
+         expect(styles.get('background-position')).toBe('50%50%');
+         expect(styles.get('background-repeat')).toBe('no-repeat');
+       });
+
+    it('should not add background styles if the placeholder attribute is not present', () => {
+      setupTestingModule();
+      const template = '<img ngSrc="path/img.png" width="400" height="300">';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      const styles = parseInlineStyles(img);
+      expect(styles.get('background-size')).toBeUndefined();
+      expect(styles.get('background-position')).toBeUndefined();
+      expect(styles.get('background-repeat')).toBeUndefined();
+      expect(styles.get('background-image')).toBeUndefined();
+    });
+
+    it('should add a background-image tag when placeholder is provided as a boolean', () => {
+      setupTestingModule({imageLoader});
+      const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder="true" />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      const styles = parseInlineStyles(img);
+      // Double quotes removed to account for different browser behavior.
+      expect(styles.get('background-image')?.replace(/"/g, ''))
+          .toBe(`url(${IMG_BASE_URL}/path/img.png?w=30&ph=true)`);
+    });
+
+    if (!isNode) {
+      // DataURLs get stripped from background-image attribute in Node, but not browsers.
+      it('should add a background-image tag when placeholder is provided as a data URL', () => {
+        setupTestingModule({imageLoader});
+        const template =
+            '<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEU" />';
+
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        const nativeElement = fixture.nativeElement as HTMLElement;
+        const img = nativeElement.querySelector('img')!;
+        const styles = parseInlineStyles(img);
+        // Double quotes removed to account for different browser behavior.
+        expect(img.getAttribute('style')?.replace(/"/g, '').replace(/\s/g, ''))
+            .toBe(
+                `background-size:cover;background-position:50%50%;background-repeat:no-repeat;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEU);filter:blur(${
+                    PLACEHOLDER_BLUR_AMOUNT}px);`);
+      });
+    }
+    it('should add a background-image tag when placeholder is provided without value', () => {
+      setupTestingModule({imageLoader});
+      const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      const styles = parseInlineStyles(img);
+      // Double quotes removed to account for different browser behavior.
+      expect(styles.get('background-image')?.replace(/"/g, ''))
+          .toBe(`url(${IMG_BASE_URL}/path/img.png?w=30&ph=true)`);
+    });
+
+    it('should use the placeholderResolution set in imageConfig', () => {
+      const imageConfig = {
+        placeholderResolution: 30,
+      };
+      setupTestingModule({imageLoader, imageConfig});
+      const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      const styles = parseInlineStyles(img);
+      // Double quotes removed to account for different browser behavior.
+      expect(styles.get('background-image')?.replace(/"/g, ''))
+          .toBe(`url(${IMG_BASE_URL}/path/img.png?w=30&ph=true)`);
+    });
+
+    it('should apply a background blur to images with a placeholder', () => {
+      setupTestingModule({imageLoader});
+      const template =
+          '<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEU" />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      const styles = parseInlineStyles(img);
+      expect(styles.get('filter')).toBe(`blur(${PLACEHOLDER_BLUR_AMOUNT}px)`);
+    });
+
+    it('should not apply a background blur to placeholders with blur=false', () => {
+      setupTestingModule({imageLoader});
+      const template =
+          '<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEU" [placeholderConfig]="{blur: false}" />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      const styles = parseInlineStyles(img);
+      expect(styles.get('filter')).toBeUndefined();
+    });
+
+    it('should throw if placeholderConfig is provided without placeholder', () => {
+      setupTestingModule();
+
+      const template =
+          '<img ngSrc="path/img.png" width="400" height="300" [placeholderConfig]="{blur: false}">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              `NG02952: The NgOptimizedImage directive has detected that \`placeholderConfig\` options were ` +
+              `provided for an image that does not use the \`placeholder\` attribute, and will have no effect.`);
+    });
+
+    it('should throw if placeholderConfig with blur=true is provided without placeholder', () => {
+      setupTestingModule();
+
+      const template =
+          '<img ngSrc="path/img.png" width="400" height="300" [placeholderConfig]="{blur: true}">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              `NG02952: The NgOptimizedImage directive has detected that \`placeholderConfig\` options were ` +
+              `provided for an image that does not use the \`placeholder\` attribute, and will have no effect.`);
+    });
+
+    it('should throw if there is no image loader but `ngSrcset` is present', () => {
+      setUpModuleNoLoader();
+
+      const template = `<img ngSrc="img.png" width="150" height="50" placeholder="true">`;
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              `NG0${
+                  RuntimeErrorCode
+                      .MISSING_NECESSARY_LOADER}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="img.png"\`) ` +
+              `has detected that the \`placeholder\` attribute is set to true but no image loader is configured (i.e. the default one is being used), which ` +
+              `would result in the same image being used for the primary image and its placeholder. To fix this, provide a loader or remove the \`placeholder\` attribute from the image.`);
+    });
+
+    it('should throw if a very large inline placeholder is supplied', () => {
+      setupTestingModule();
+
+      const template =
+          `<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,${
+          'a'.repeat(DATA_URL_ERROR_LIMIT + 100)}">`;
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      })
+          .toThrowError(
+              `NG0${
+                  RuntimeErrorCode
+                      .OVERSIZED_PLACEHOLDER}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="path/img.png"\`) ` +
+              `has detected that the \`placeholder\` attribute is set to a data URL which is longer than ${
+                  DATA_URL_ERROR_LIMIT} characters. This is strongly ` +
+              `discouraged, as large inline placeholders directly increase the bundle size of Angular and hurt page load performance. To fix this, generate a smaller data URL placeholder.`);
+    });
+    it('should warn if a large inline placeholder is supplied', () => {
+      setUpModuleNoLoader();
+
+      const template =
+          `<img ngSrc="path/img.png" width="400" height="300" placeholder="data:image/png;base64,${
+          'a'.repeat(DATA_URL_WARN_LIMIT + 100)}">`;
+      const fixture = createTestComponent(template);
+      const consoleWarnSpy = spyOn(console, 'warn');
+      fixture.detectChanges();
+
+      expect(consoleWarnSpy.calls.count()).toBe(1);
+      expect(consoleWarnSpy.calls.argsFor(0)[0])
+          .toBe(
+              `NG0${
+                  RuntimeErrorCode
+                      .OVERSIZED_PLACEHOLDER}: The NgOptimizedImage directive (activated on an <img> element with the \`ngSrc="path/img.png"\`) ` +
+              `has detected that the \`placeholder\` attribute is set to a data URL which is longer than ${
+                  DATA_URL_WARN_LIMIT} characters. This is discouraged, ` +
+              `as large inline placeholders directly increase the bundle size of Angular and hurt page load performance. For better loading ` +
+              `performance, generate a smaller data URL placeholder.`);
     });
   });
 
@@ -1950,4 +2166,16 @@ function setUpModuleNoLoader() {
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
   return TestBed.overrideComponent(TestComponent, {set: {template: template}})
       .createComponent(TestComponent);
+}
+
+function parseInlineStyles(img: HTMLImageElement): Map<string, string> {
+  const styles = new Map();
+  const rawStyles = img.getAttribute('style')?.replace(/\s/g, '');
+  if (rawStyles) {
+    rawStyles.split(';').forEach(style => {
+      const styleTuple = style.split(':');
+      styles.set(styleTuple[0], styleTuple.slice(1).join(':'));
+    });
+  }
+  return styles;
 }
