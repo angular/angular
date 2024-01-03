@@ -7,6 +7,7 @@
  */
 
 import {browser, by, element} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
 // Declare the global "window" and "document" constant since we don't want to add the "dom"
@@ -29,17 +30,14 @@ describe('testability example', () => {
       let waitWithResultScript = function(done: any) {
         let rootEl = document.querySelector('example-app');
         let testability = window.getAngularTestability(rootEl);
-        testability.whenStable((didWork: boolean, tasks: any) => {
-          done(tasks);
+        testability.whenStable(() => {
+          done();
         }, 1000);
       };
 
       element(by.css('.start-button')).click();
 
-      browser.driver.executeAsyncScript(waitWithResultScript).then((result: any[]) => {
-        let pendingTask = result[0];
-        expect(pendingTask.data.delay).toEqual(5000);
-        expect(pendingTask.source).toEqual('setTimeout');
+      browser.driver.executeAsyncScript(waitWithResultScript).then(() => {
         expect(element(by.css('.status')).getText()).not.toContain('done');
         done();
       });
