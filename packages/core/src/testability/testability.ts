@@ -7,6 +7,7 @@
  */
 
 import {Inject, Injectable, InjectionToken} from '../di';
+import {PendingTasks} from '../pending_tasks';
 import {NgZone} from '../zone/ng_zone';
 
 /**
@@ -85,7 +86,7 @@ export const TESTABILITY_GETTER = new InjectionToken<GetTestability>('');
  */
 @Injectable()
 export class Testability implements PublicTestability {
-  private _isZoneStable: boolean = true;
+  private _isStable = true;
   /**
    * Whether any work was done since the last 'whenStable' callback. This is
    * useful to detect if this could have potentially destabilized another
@@ -99,7 +100,8 @@ export class Testability implements PublicTestability {
 
   constructor(
       private _ngZone: NgZone, private registry: TestabilityRegistry,
-      @Inject(TESTABILITY_GETTER) testabilityGetter: GetTestability) {
+      @Inject(TESTABILITY_GETTER) testabilityGetter: GetTestability,
+      private readonly pendingTasks: PendingTasks) {
     // If there was no Testability logic registered in the global scope
     // before, register the current testability getter as a global one.
     if (!_testabilityGetter) {
@@ -114,23 +116,11 @@ export class Testability implements PublicTestability {
   }
 
   private _watchAngularEvents(): void {
-    this._ngZone.onUnstable.subscribe({
-      next: () => {
-        this._didWork = true;
-        this._isZoneStable = false;
+    this.pendingTasks.hasPendingTasks.subscribe((pending) => {
+      this._isStable = !pending;
+      if (!pending) {
+        this._runCallbacksIfReady();
       }
-    });
-
-    this._ngZone.runOutsideAngular(() => {
-      this._ngZone.onStable.subscribe({
-        next: () => {
-          NgZone.assertNotInAngularZone();
-          queueMicrotask(() => {
-            this._isZoneStable = true;
-            this._runCallbacksIfReady();
-          });
-        }
-      });
     });
   }
 
@@ -138,7 +128,7 @@ export class Testability implements PublicTestability {
    * Whether an associated application is stable
    */
   isStable(): boolean {
-    return this._isZoneStable && !this._ngZone.hasPendingMacrotasks;
+    return this._isStable;
   }
 
   private _runCallbacksIfReady(): void {
