@@ -1249,6 +1249,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitSwitchBlock(block: t.SwitchBlock): void {
+    if (block.cases.length === 0) {
+      return;
+    }
+
     // We have to process the block in two steps: once here and again in the update instruction
     // callback in order to generate the correct expressions when pipes or pure functions are used.
     const caseData = block.cases.map(currentCase => {
