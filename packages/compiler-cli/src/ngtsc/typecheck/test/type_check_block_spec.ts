@@ -1534,6 +1534,10 @@ describe('type check blocks', () => {
               'else if ((_t2()) === "two") { "" + ((this).two()); } ' +
               'else { "" + ((this).default()); } }');
     });
+
+    it('should handle an empty switch block', () => {
+      expect(tcb('@switch (expr) {}')).toContain('if (true) { ((this).expr); }');
+    });
   });
 
   describe('for loop blocks', () => {
