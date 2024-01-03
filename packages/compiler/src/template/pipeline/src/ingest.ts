@@ -383,6 +383,11 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
  * Ingest an `@switch` block into the given `ViewCompilation`.
  */
 function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock): void {
+  // Don't ingest empty switches since they won't render anything.
+  if (switchBlock.cases.length === 0) {
+    return;
+  }
+
   let firstXref: ir.XrefId|null = null;
   let firstSlotHandle: ir.SlotHandle|null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
