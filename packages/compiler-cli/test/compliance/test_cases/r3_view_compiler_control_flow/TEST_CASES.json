@@ -71,6 +71,23 @@
       ]
     },
     {
+      "description": "should not generate code for empty switch blocks",
+      "inputFiles": [
+        "empty_switch.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "empty_switch_template.js",
+              "generated": "empty_switch.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a basic if block",
       "inputFiles": [
         "basic_if.ts"
