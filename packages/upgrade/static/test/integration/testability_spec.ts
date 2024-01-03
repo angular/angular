@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {destroyPlatform, NgModule, Testability} from '@angular/core';
-import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {destroyPlatform, NgModule, Testability, NgZone} from '@angular/core';
 import {fakeAsync, flush, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -78,19 +77,19 @@ withEachNg1Version(() => {
       const element = html('<div></div>');
 
       bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-        const ng2Testability: Testability = upgrade.injector.get(Testability);
-        ng2Testability.increasePendingRequestCount();
+        const zone = upgrade.injector.get(NgZone);
         let ng2Stable = false;
         let ng1Stable = false;
+
+        zone.run(() => {
+          setTimeout(() => {
+            ng2Stable = true;
+          }, 100);
+        });
 
         angular.getTestability(element).whenStable(() => {
           ng1Stable = true;
         });
-
-        setTimeout(() => {
-          ng2Stable = true;
-          ng2Testability.decreasePendingRequestCount();
-        }, 100);
 
         expect(ng1Stable).toEqual(false);
         expect(ng2Stable).toEqual(false);
