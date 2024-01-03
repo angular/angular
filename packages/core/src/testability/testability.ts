@@ -81,7 +81,6 @@ export const TESTABILITY_GETTER = new InjectionToken<GetTestability>('');
  */
 @Injectable()
 export class Testability implements PublicTestability {
-  private _pendingCount: number = 0;
   private _isZoneStable: boolean = true;
   private _callbacks: WaitCallback[] = [];
 
@@ -124,32 +123,10 @@ export class Testability implements PublicTestability {
   }
 
   /**
-   * Increases the number of pending request
-   * @deprecated pending requests are now tracked with zones.
-   */
-  increasePendingRequestCount(): number {
-    this._pendingCount += 1;
-    return this._pendingCount;
-  }
-
-  /**
-   * Decreases the number of pending request
-   * @deprecated pending requests are now tracked with zones
-   */
-  decreasePendingRequestCount(): number {
-    this._pendingCount -= 1;
-    if (this._pendingCount < 0) {
-      throw new Error('pending async requests below zero');
-    }
-    this._runCallbacksIfReady();
-    return this._pendingCount;
-  }
-
-  /**
    * Whether an associated application is stable
    */
   isStable(): boolean {
-    return this._isZoneStable && this._pendingCount === 0 && !this._ngZone.hasPendingMacrotasks;
+    return this._isZoneStable && !this._ngZone.hasPendingMacrotasks;
   }
 
   private _runCallbacksIfReady(): void {
@@ -226,13 +203,6 @@ export class Testability implements PublicTestability {
     this._runCallbacksIfReady();
   }
 
-  /**
-   * Get the number of pending requests
-   * @deprecated pending requests are now tracked with zones
-   */
-  getPendingRequestCount(): number {
-    return this._pendingCount;
-  }
   /**
    * Registers an application with a testability hook so that it can be tracked.
    * @param token token of application, root element

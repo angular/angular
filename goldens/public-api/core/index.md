@@ -1596,13 +1596,7 @@ export abstract class TemplateRef<C> {
 // @public
 export class Testability implements PublicTestability {
     constructor(_ngZone: NgZone, registry: TestabilityRegistry, testabilityGetter: GetTestability);
-    // @deprecated
-    decreasePendingRequestCount(): number;
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
-    // @deprecated
-    getPendingRequestCount(): number;
-    // @deprecated
-    increasePendingRequestCount(): number;
     isStable(): boolean;
     whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void;
     // (undocumented)

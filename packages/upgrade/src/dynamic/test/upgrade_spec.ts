@@ -3419,19 +3419,19 @@ withEachNg1Version(() => {
         angular.module_('ng1', []);
         const element = html('<div></div>');
         adapter.bootstrap(element, ['ng1']).ready((ref) => {
-          const ng2Testability: Testability = ref.ng2Injector.get(Testability);
-          ng2Testability.increasePendingRequestCount();
+          const zone = ref.ng2Injector.get(NgZone);
           let ng2Stable = false;
+
+          zone.run(() => {
+            setTimeout(() => {
+              ng2Stable = true;
+            }, 100);
+          });
 
           angular.getTestability(element).whenStable(() => {
             expect(ng2Stable).toEqual(true);
             ref.dispose();
           });
-
-          setTimeout(() => {
-            ng2Stable = true;
-            ng2Testability.decreasePendingRequestCount();
-          }, 100);
         });
       }));
     });
