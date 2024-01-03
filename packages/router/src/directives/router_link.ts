@@ -161,6 +161,13 @@ export class RouterLink implements OnChanges, OnDestroy {
    */
   @Input() state?: {[k: string]: any};
   /**
+   * Passed to {@link Router#navigateByUrl} as part of the
+   * `NavigationBehaviorOptions`.
+   * @see {@link NavigationBehaviorOptions#info}
+   * @see {@link Router#navigateByUrl}
+   */
+  @Input() info?: unknown;
+  /**
    * Passed to {@link Router#createUrlTree} as part of the
    * `UrlCreationOptions`.
    * Specify a value here when you do not want to use the default value
@@ -287,6 +294,7 @@ export class RouterLink implements OnChanges, OnDestroy {
       skipLocationChange: this.skipLocationChange,
       replaceUrl: this.replaceUrl,
       state: this.state,
+      info: this.info,
     };
     this.router.navigateByUrl(this.urlTree, extras);
 

@@ -7,13 +7,13 @@
  */
 
 import {CommonModule, HashLocationStrategy, Location, LocationStrategy, PlatformLocation, PopStateEvent} from '@angular/common';
-import {ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, QueryList, Type, ViewChild, ViewChildren, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, Component, EnvironmentInjector, inject as coreInject, Inject, Injectable, InjectionToken, NgModule, NgModuleRef, NgZone, OnDestroy, QueryList, Type, ViewChild, ViewChildren, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, ChildActivationEnd, ChildActivationStart, DefaultUrlSerializer, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouteReuseStrategy, RouterEvent, RouterLink, RouterLinkActive, RouterModule, RouterOutlet, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
-import {concat, EMPTY, Observable, Observer, of, Subscription} from 'rxjs';
+import {concat, EMPTY, firstValueFrom, Observable, Observer, of, Subscription} from 'rxjs';
 import {delay, filter, first, last, map, mapTo, takeWhile, tap} from 'rxjs/operators';
 
 import {CanActivateChildFn, CanActivateFn, CanMatchFn, Data, ResolveFn} from '../src/models';
@@ -156,6 +156,37 @@ describe('Integration', () => {
 
       await router.navigateByUrl('/simple', {info: 'navigation info'});
       expect(observedInfo).toEqual('navigation info');
+    });
+
+    it('should set transient navigation info for routerlink', async () => {
+      let observedInfo: unknown;
+      const router = TestBed.inject(Router);
+      router.resetConfig([
+        {
+          path: 'simple',
+          component: SimpleCmp,
+          canActivate: [() => {
+            observedInfo = coreInject(Router).getCurrentNavigation()?.extras?.info;
+            return true;
+          }]
+        },
+      ]);
+      @Component({
+        standalone: true,
+        imports: [RouterLink],
+        template: `<a #simpleLink [routerLink]="'/simple'" [info]="simpleLink"></a>`
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.autoDetectChanges();
+      const anchor = fixture.nativeElement.querySelector('a');
+      anchor.click();
+      await fixture.whenStable();
+
+      // An example use-case might be to pass the clicked link along with the navigation information
+      expect(observedInfo).toBeInstanceOf(HTMLAnchorElement);
     });
 
     it('should make transient navigation info available in redirect', async () => {
