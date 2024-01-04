@@ -23,4 +23,5 @@ if (typeof window == 'undefined') {
   (global as any).Element = domino.impl.Element;
   (global as any).isBrowser = false;
   (global as any).isNode = true;
+  (global as any).Event = domino.impl.Event;
 }

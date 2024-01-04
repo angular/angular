@@ -16,7 +16,6 @@ export function setDomTypes() {
   // NB: Any changes here should also be done in `packages/platform-server/init/src/shims.ts`.
   Object.assign(globalThis, domino.impl);
   (globalThis as any)['KeyboardEvent'] = domino.impl.Event;
-  (globalThis as any)['Event'] = domino.impl.Event;
 }
 
 /**
