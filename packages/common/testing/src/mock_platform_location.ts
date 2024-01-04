@@ -257,7 +257,7 @@ export class MockPlatformLocation implements PlatformLocation {
  * Mock implementation of URL state.
  */
 @Injectable()
-export class NavigationBasedMockPlatformLocation implements PlatformLocation {
+export class FakeNavigationPlatformLocation implements PlatformLocation {
   private _platformNavigation = inject(PlatformNavigation) as FakeNavigation;
   private window = inject(DOCUMENT).defaultView!;
 
