@@ -221,8 +221,46 @@ describe('Angular with NoopNgZone', () => {
       expect(fixture.location.nativeElement.innerText).toEqual('binding');
     });
 
+    it('when destroying a view', async () => {
+      @Component({
+        template: '{{"binding"}}',
+        standalone: true,
+      })
+      class DynamicCmp {
+        elementRef = inject(ElementRef);
+      }
+      @Component({
+        template: '<ng-template #ref></ng-template>',
+        standalone: true,
+      })
+      class TestComponent {
+        @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+      }
+
+      const fixture = await createAndAttachComponent(TestComponent);
+      const component =
+          createComponent(DynamicCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+
+      fixture.instance.viewContainer.insert(component.hostView);
+      await nextRender();
+      expect(fixture.location.nativeElement.innerText).toEqual('binding');
+      fixture.instance.viewContainer.remove();
+      await nextRender();
+      expect(fixture.location.nativeElement.innerText).toEqual('');
+
+      const component2 =
+          createComponent(DynamicCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+      fixture.instance.viewContainer.insert(component2.hostView);
+      await nextRender();
+      expect(fixture.location.nativeElement.innerText).toEqual('binding');
+      component2.destroy();
+      await nextRender();
+      expect(fixture.location.nativeElement.innerText).toEqual('');
+    });
+
     it('when attaching view to ApplicationRef', async () => {
       @Component({
+        selector: 'dynamic-cmp',
         template: '{{"binding"}}',
         standalone: true,
       })
@@ -234,18 +272,27 @@ describe('Angular with NoopNgZone', () => {
       const appRef = TestBed.inject(ApplicationRef);
       const component = createComponent(DynamicCmp, {environmentInjector});
       expect(scheduler.hasPendingChangeDetection).toBe(false);
-      expect(component.instance.elementRef.nativeElement.innerText).toEqual('');
+      const host = document.createElement('div');
+      host.appendChild(component.instance.elementRef.nativeElement);
+      expect(host.innerHTML).toEqual('<dynamic-cmp></dynamic-cmp>');
 
       appRef.attachView(component.hostView);
-      expect(scheduler.hasPendingChangeDetection).toBe(true);
       await nextRender();
-      expect(component.instance.elementRef.nativeElement.innerText).toEqual('binding');
+      expect(host.innerHTML).toEqual('<dynamic-cmp>binding</dynamic-cmp>');
 
-      // Don't need to run CD on detach because DOM nodes are just removed
-      // That said, queries need to be updated and currently only update during CD but that's an
-      // unrelated change that needs to happen.
+      const component2 = createComponent(DynamicCmp, {environmentInjector});
+      // TODO(atscott): Only needed because renderFactory will not run if ApplicationRef has no
+      // views This should likely be fixed in ApplicationRef
+      appRef.attachView(component2.hostView);
       appRef.detachView(component.hostView);
-      expect(scheduler.hasPendingChangeDetection).toBe(false);
+      // DOM is not synchronously removed because change detection hasn't run
+      expect(host.innerHTML).toEqual('<dynamic-cmp>binding</dynamic-cmp>');
+      expect(scheduler.hasPendingChangeDetection).toBe(true);
+      // TODO(atscott): Can use nextRender once ApplicationRef.tick flushes afterRender hooks rather
+      // than view.detectChanges
+      await new Promise(resolve => setTimeout(resolve, 1));
+      expect(host.innerHTML).toEqual('');
+      host.appendChild(component.instance.elementRef.nativeElement);
       // reattaching non-dirty view does not notify scheduler
       appRef.attachView(component.hostView);
       expect(scheduler.hasPendingChangeDetection).toBe(false);
