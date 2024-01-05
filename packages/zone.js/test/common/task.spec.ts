@@ -801,12 +801,12 @@ describe('task lifecycle', () => {
              ]);
        }));
 
-    it('should throw error when try to cancel a microTask', testFnWithLoggedTransitionTo(() => {
+    it('should be able to cancel a microTask', testFnWithLoggedTransitionTo(() => {
          Zone.current.fork({name: 'testMicroTaskZone'}).run(() => {
            const task = Zone.current.scheduleMicroTask('testMicroTask', () => {}, undefined, noop);
            expect(() => {
              Zone.current.cancelTask(task);
-           }).toThrowError('Task is not cancelable');
+           }).not.toThrow();
          });
        }));
 
