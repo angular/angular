@@ -1,9 +1,12 @@
 load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "nodejs_test", "ts_library")
 
 ts_library(
-    name = "signal_input_signature_test_lib",
+    name = "signal_authoring_signature_test_lib",
     testonly = True,
-    srcs = ["signal_input_signature_test.ts"],
+    srcs = [
+        "signal_input_signature_test.ts",
+        "signal_queries_signature_test.ts",
+    ],
     deps = ["//packages/core"],
 )
 
@@ -19,7 +22,7 @@ ts_library(
 nodejs_test(
     name = "type_test",
     data = [
-        ":signal_input_signature_test_lib",
+        ":signal_authoring_signature_test_lib",
         ":type_tester_lib",
     ],
     entry_point = ":type_tester.ts",
