@@ -39,7 +39,7 @@ The `HomeComponent` already contains an input field that you will use to capture
         &lt;input type="text" placeholder="Filter by city" #filter&gt;
     </docs-code>
 
-    This example uses a [template reference variable](/guide/templatess) to get access to the `input` element as its value.
+    This example uses a [template reference variable](/guide/templates) to get access to the `input` element as its value.
 
 1. Next, update the component template to attach an event handler to the "Search" button.
 
