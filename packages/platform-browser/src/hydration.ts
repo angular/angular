@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
+import {HttpTransferCacheOptions, ɵprovideTransferCacheInterceptor, ɵwithTransferCacheOptions,} from '@angular/common/http';
 import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration,} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
@@ -43,7 +43,8 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
 
 /**
  * Disables HTTP transfer cache. Effectively causes HTTP requests to be performed twice: once on the
- * server and other one on the browser.
+ * server and other one on the browser except if {@link transferCacheInterceptorFn} is manually
+ * provided in {@link withInterceptors} function.
  *
  * @publicApi
  */
@@ -65,9 +66,8 @@ export function withNoHttpTransferCache():
 export function withHttpTransferCacheOptions(
     options: HttpTransferCacheOptions,
     ): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions> {
-  // This feature has no providers and acts as a flag to pass options to the HTTP transfer cache.
   return hydrationFeature(
-      HydrationFeatureKind.HttpTransferCacheOptions, ɵwithHttpTransferCache(options));
+      HydrationFeatureKind.HttpTransferCacheOptions, ɵwithTransferCacheOptions(options));
 }
 
 /**
@@ -145,8 +145,6 @@ export function provideClientHydration(...features: HydrationFeature<HydrationFe
     EnvironmentProviders {
   const providers: Provider[] = [];
   const featuresKind = new Set<HydrationFeatureKind>();
-  const hasHttpTransferCacheOptions =
-      featuresKind.has(HydrationFeatureKind.HttpTransferCacheOptions);
 
   for (const {ɵproviders, ɵkind} of features) {
     featuresKind.add(ɵkind);
@@ -156,19 +154,14 @@ export function provideClientHydration(...features: HydrationFeature<HydrationFe
     }
   }
 
-  if (typeof ngDevMode !== 'undefined' && ngDevMode &&
-      featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) && hasHttpTransferCacheOptions) {
-    // TODO: Make this a runtime error
-    throw new Error(
-        'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.');
-  }
+  const hasCustomCacheOptions = featuresKind.has(HydrationFeatureKind.HttpTransferCacheOptions);
+  const hasNoHttpTransferCache = featuresKind.has(HydrationFeatureKind.NoHttpTransferCache);
 
   return makeEnvironmentProviders([
     (typeof ngDevMode !== 'undefined' && ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
     withDomHydration(),
-    ((featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions) ?
-         [] :
-         ɵwithHttpTransferCache({})),
+    hasCustomCacheOptions ? [] : ɵwithTransferCacheOptions({}),
+    hasNoHttpTransferCache ? [] : ɵprovideTransferCacheInterceptor(),
     providers,
   ]);
 }

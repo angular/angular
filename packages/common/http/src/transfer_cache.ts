@@ -25,7 +25,7 @@ import {tap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
-import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
+import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn, HttpInterceptorFn} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 
@@ -87,6 +87,12 @@ const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
  */
 const ALLOWED_METHODS = ['GET', 'HEAD'];
 
+/**
+ * An interceptor that will cache GET and HEAD requests performed via HttpClient between server and
+ * client. The caching behavior can be customized with {@link withHttpTransferCacheOptions}.
+ *
+ * @publicApi
+ */
 export function transferCacheInterceptorFn(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
@@ -245,7 +251,7 @@ function generateHash(value: string): string {
  * load time.
  *
  */
-export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): Provider[] {
+export function withTransferCacheOptions(cacheOptions: HttpTransferCacheOptions): Provider[] {
   return [
     {
       provide: CACHE_OPTIONS,
@@ -253,12 +259,6 @@ export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): P
         performanceMarkFeature('NgHttpTransferCache');
         return {isCacheActive: true, ...cacheOptions};
       },
-    },
-    {
-      provide: HTTP_ROOT_INTERCEPTOR_FNS,
-      useValue: transferCacheInterceptorFn,
-      multi: true,
-      deps: [TransferState, CACHE_OPTIONS],
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,
@@ -273,6 +273,17 @@ export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): P
           });
         };
       },
+    },
+  ];
+}
+
+export function provideTransferCacheInterceptor(): Provider[] {
+  return [
+    {
+      provide: HTTP_ROOT_INTERCEPTOR_FNS,
+      useValue: transferCacheInterceptorFn,
+      multi: true,
+      deps: [TransferState, CACHE_OPTIONS],
     },
   ];
 }

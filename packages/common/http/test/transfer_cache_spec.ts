@@ -21,7 +21,8 @@ import {
   STATUS,
   STATUS_TEXT,
   URL,
-  withHttpTransferCache,
+  provideTransferCacheInterceptor,
+  withTransferCacheOptions,
 } from '../src/transfer_cache';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
@@ -36,7 +37,7 @@ describe('TransferCache', () => {
   @Component({selector: 'test-app-http', template: 'hello'})
   class SomeComponent {}
 
-  describe('withHttpTransferCache', () => {
+  describe('provideTransferCacheInterceptor', () => {
     let isStable: BehaviorSubject<boolean>;
 
     function makeRequestAndExpectOne(url: string, body: string, params?: RequestParams): string;
@@ -50,9 +51,7 @@ describe('TransferCache', () => {
       TestBed.inject(HttpClient)
         .request(params?.method ?? 'GET', url, params)
         .subscribe((r) => (response = r));
-      TestBed.inject(HttpTestingController)
-        .expectOne(url)
-        .flush(body, {headers: params?.headers});
+      TestBed.inject(HttpTestingController).expectOne(url).flush(body, {headers: params?.headers});
       return response;
     }
 
@@ -84,7 +83,8 @@ describe('TransferCache', () => {
           providers: [
             {provide: DOCUMENT, useFactory: () => document},
             {provide: ApplicationRef, useClass: ApplicationRefPatched},
-            withHttpTransferCache({}),
+            provideTransferCacheInterceptor(),
+            withTransferCacheOptions({}),
             provideHttpClient(),
             provideHttpClientTesting(),
           ],
@@ -280,7 +280,8 @@ describe('TransferCache', () => {
             providers: [
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
-              withHttpTransferCache({
+              provideTransferCacheInterceptor(),
+              withTransferCacheOptions({
                 filter: (req) => {
                   if (req.url.includes('include')) {
                     return true;

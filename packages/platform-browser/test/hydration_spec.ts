@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {HttpClient, HttpTransferCacheOptions, provideHttpClient} from '@angular/common/http';
+import {HttpClient, HttpTransferCacheOptions, provideHttpClient, transferCacheInterceptorFn, withInterceptors} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {ApplicationRef, Component, Injectable, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
@@ -90,6 +90,33 @@ describe('provideClientHydration', () => {
       makeRequestAndExpectOne('/test-1', 'foo', false);
       // Do the same call, this time should pass through as cache is disabled.
       makeRequestAndExpectOne('/test-1', 'foo');
+    });
+  });
+
+  describe('withNoHttpTransferCache and transferCacheInterceptorFn manually provided', () => {
+    beforeEach(withBody(
+        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
+          TestBed.resetTestingModule();
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              provideClientHydration(withNoHttpTransferCache()),
+              provideHttpClient(withInterceptors([transferCacheInterceptorFn])),
+              provideHttpClientTesting(),
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+        }));
+
+    it(`should use cached HTTP calls`, () => {
+      makeRequestAndExpectOne('/test-1', 'foo');
+      // Do the same call, this time it should served from cache.
+      makeRequestAndExpectNone('/test-1');
     });
   });
 

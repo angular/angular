@@ -2393,6 +2393,9 @@ export class JsonpInterceptor {
 export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]): EnvironmentProviders;
 
 // @public
+export function transferCacheInterceptorFn(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>>;
+
+// @public
 export function withFetch(): HttpFeature<HttpFeatureKind.Fetch>;
 
 // @public
