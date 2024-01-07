@@ -60,10 +60,11 @@ emulated encapsulation.
 
 In emulated mode, Angular supports
 the [`:host`](https://developer.mozilla.org/en-US/docs/Web/CSS/:host)
-and [`:host-context`](https://developer.mozilla.org/en-US/docs/Web/CSS/:host-context) pseudo
+and [`:host-context()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:host-context) pseudo
 classes without
 using [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM).
-During compilation, the framework transforms these pseudo classes into attributes. Angular's
+During compilation, the framework transforms these pseudo classes into attributes so it doesn't 
+comply with these native pseudo classes' rules at runtime (e.g. browser compatibility, specificity). Angular's
 emulated encapsulation mode does not support any other pseudo classes related to Shadow DOM, such
 as `::shadow` or `::part`.
 
