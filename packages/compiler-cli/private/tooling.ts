@@ -51,18 +51,18 @@ export const GLOBAL_DEFS_FOR_TERSER_WITH_AOT = {
  *    added that will declare the input as a signal input while also capturing the necessary
  *    metadata
  */
-export function angularJitApplicationTransform(program: ts.Program):
-    ts.TransformerFactory<ts.SourceFile> {
+export function angularJitApplicationTransform(
+    program: ts.Program, isCore = false): ts.TransformerFactory<ts.SourceFile> {
   const typeChecker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(typeChecker);
   const evaluator = new PartialEvaluator(reflectionHost, typeChecker, null);
 
   const downlevelDecoratorTransform = getDownlevelDecoratorsTransform(
-      typeChecker, reflectionHost, [], /* isCore */ false,
+      typeChecker, reflectionHost, [], isCore,
       /* enableClosureCompiler */ false);
 
   const inputSignalMetadataTransform =
-      getInputSignalsMetadataTransform(reflectionHost, evaluator, /* isCore */ false);
+      getInputSignalsMetadataTransform(reflectionHost, evaluator, isCore);
 
   return (ctx) => {
     return (sourceFile) => {
