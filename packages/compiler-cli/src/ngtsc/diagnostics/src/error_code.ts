@@ -23,6 +23,11 @@ export enum ErrorCode {
   VALUE_HAS_WRONG_TYPE = 1010,
   VALUE_NOT_LITERAL = 1011,
 
+  /** Raised when a signal input is also annotated with `@Input` (for JIT this is allowed). */
+  SIGNAL_INPUT_AND_DISALLOWED_DECORATOR = 1050,
+  /** Raised when a signal input is also declared in the decorator `inputs` field. */
+  SIGNAL_INPUT_AND_INPUTS_ARRAY_COLLISION = 1051,
+
   COMPONENT_MISSING_TEMPLATE = 2001,
   PIPE_MISSING_NAME = 2002,
   PARAM_MISSING_TOKEN = 2003,
