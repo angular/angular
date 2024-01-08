@@ -67,10 +67,7 @@ export class NgClass implements DoCheck {
 
   private stateMap = new Map<string, CssClassState>();
 
-  constructor(
-      // leaving references to differs in place since flex layout is extending NgClass...
-      private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
-      private _ngEl: ElementRef, private _renderer: Renderer2) {}
+  constructor(private _ngEl: ElementRef, private _renderer: Renderer2) {}
 
   @Input('class')
   set klass(value: string) {
