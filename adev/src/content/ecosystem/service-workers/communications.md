@@ -78,7 +78,7 @@ For example, imagine the following scenario:
 1. After some time, a new version of the application is deployed to the server.
     This newer version includes the files `index.html`, `main.<main-hash-2>.js` and `lazy-chunk.<lazy-hash-2>.js`.
 
-IMPORANT: The hashes are different now, because the content of the files changed. The old version is no longer available on the server.
+IMPORTANT: The hashes are different now, because the content of the files changed. The old version is no longer available on the server.
 
 1. In the meantime, the user's browser decides to evict `lazy-chunk.<lazy-hash-1>.js` from its cache.
     Browsers might decide to evict specific (or all) resources from a cache in order to reclaim disk space.
