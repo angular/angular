@@ -7,11 +7,12 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {AfterViewInit, Component, computed, ContentChildren, createComponent, createEnvironmentInjector, destroyPlatform, effect, EnvironmentInjector, ErrorHandler, inject, Injectable, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, ApplicationRef, Component, computed, ContentChildren, createComponent, createEnvironmentInjector, destroyPlatform, effect, EnvironmentInjector, ErrorHandler, inject, Injectable, Injector, Input, NgZone, OnChanges, QueryList, signal, SimpleChanges, ViewChild, ViewContainerRef} from '@angular/core';
 import {toObservable} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
+import {filter, firstValueFrom, map} from 'rxjs';
 
 describe('effects', () => {
   beforeEach(destroyPlatform);
@@ -43,6 +44,34 @@ describe('effects', () => {
 
        expect(log).not.toEqual(['angular', 'angular']);
      }));
+
+  it('should contribute to application stableness when an effect is pending', async () => {
+    const someSignal = signal('initial');
+
+    @Component({
+      standalone: true,
+      template: '',
+    })
+    class App {
+      unused = effect(() => someSignal());
+    }
+
+    const appRef = TestBed.inject(ApplicationRef);
+    const componentRef =
+        createComponent(App, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+    // Effect is not scheduled until change detection runs for the component
+    await expectAsync(firstValueFrom(appRef.isStable)).toBeResolvedTo(true);
+
+    componentRef.changeDetectorRef.detectChanges();
+    const stableEmits: boolean[] = [];
+    const p = firstValueFrom(appRef.isStable.pipe(
+        map(stable => {
+          stableEmits.push(stable);
+          return stableEmits;
+        }),
+        filter(emits => emits.length === 2)));
+    await expectAsync(p).toBeResolvedTo([false, true]);
+  });
 
   it('should propagate errors to the ErrorHandler', () => {
     let run = false;
