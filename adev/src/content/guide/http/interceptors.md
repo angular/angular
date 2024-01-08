@@ -39,7 +39,7 @@ In order for this interceptor to actually intercept requests, you must configure
 
 ## Configuring interceptors
 
-You declare the set of interceptors to use when when configuring `HttpClient` through dependency injection, by using the `withInterceptors` feature:
+You declare the set of interceptors to use when configuring `HttpClient` through dependency injection, by using the `withInterceptors` feature:
 
 <docs-code language="ts">
 bootstrapApplication(AppComponent, {providers: [
