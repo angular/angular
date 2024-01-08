@@ -58,7 +58,7 @@ Add a `@loading` block to the `@defer` block. The `@loading` block is where you 
 
 <docs-step title="Add a minimum duration">
 
-Both `@placeholder` and `@loading` sections have optional parameters to prevent flickering from occuring when loading happens quickly. `@placeholder` has `minimum` and `@loading` has `minimum` and `after`. Add a `minimum` duration to the `@loading` block so it will be rendered for at least 2 seconds.
+Both `@placeholder` and `@loading` sections have optional parameters to prevent flickering from occurring when loading happens quickly. `@placeholder` has `minimum` and `@loading` has `minimum` and `after`. Add a `minimum` duration to the `@loading` block so it will be rendered for at least 2 seconds.
 
 <docs-code language="html" highlight="[5]">
 @defer {
