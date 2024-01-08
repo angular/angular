@@ -796,10 +796,6 @@ function parseInputFields(
   const inputs = {} as Record<string, InputMapping>;
 
   for (const member of members) {
-    if (member.isStatic) {
-      continue;
-    }
-
     const classPropertyName = member.name;
     const inputMapping = tryParseInputFieldMapping(
         clazz,
@@ -812,6 +808,13 @@ function parseInputFields(
     );
     if (inputMapping === null) {
       continue;
+    }
+
+    if (member.isStatic) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INPUT_DECLARED_ON_STATIC_MEMBER, member.node ?? clazz,
+          `Input "${member.name}" is incorrectly declared as static member of "${
+              clazz.name.text}".`);
     }
 
     // Validate that signal inputs are not accidentally declared in the `inputs` metadata.
