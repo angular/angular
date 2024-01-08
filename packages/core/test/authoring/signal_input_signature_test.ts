@@ -14,7 +14,7 @@
 
 import {input} from '../../src/authoring/input';
 // import preserved to simplify `.d.ts` emit and simplify the `type_tester` logic.
-import {InputSignal} from '../../src/authoring/input_signal';
+import {InputSignal, InputSignalWithTransform} from '../../src/authoring/input_signal';
 
 export class InputSignatureTest {
   /** string | undefined */

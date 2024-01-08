@@ -21,7 +21,8 @@ function isTestClass(classDeclaration: ts.ClassDeclaration): boolean {
   return classDeclaration.name !== undefined && classDeclaration.name.text.endsWith('Test');
 }
 
-function testFile(testFileName: string, signalType: string, inferWriteType: boolean): boolean {
+function testFile(
+    testFileName: string, getType: (v: string) => string, inferWriteType: boolean): boolean {
   const fileContent = fs.readFileSync(path.join(containingDir, `${testFileName}.d.ts`), 'utf8');
   const sourceFile = ts.createSourceFile('test.ts', fileContent, ts.ScriptTarget.ESNext, true);
   const testClazz = sourceFile.statements.find(
@@ -45,13 +46,8 @@ function testFile(testFileName: string, signalType: string, inferWriteType: bool
     }
 
     // strip comment start, and beginning (plus whitespace).
-    let expectedTypeComment = leadingComments[0].replace(/(^\/\*\*?\s*|\s*\*+\/$)/g, '');
-    // expand shorthands where ReadT is the same as WriteT.
-    if (inferWriteType && !expectedTypeComment.includes(',')) {
-      expectedTypeComment = `${expectedTypeComment}, ${expectedTypeComment}`;
-    }
-
-    const expectedType = `${signalType}<${expectedTypeComment}>`;
+    const expectedTypeComment = leadingComments[0].replace(/(^\/\*\*?\s*|\s*\*+\/$)/g, '');
+    const expectedType = getType(expectedTypeComment);
     // strip excess whitespace or newlines.
     const got = member.type?.getText().replace(/(\n+|\s\s+)/g, '');
 
@@ -67,8 +63,10 @@ function testFile(testFileName: string, signalType: string, inferWriteType: bool
 async function main() {
   let failing = false;
 
-  failing ||= testFile('signal_input_signature_test', 'InputSignal', true);
-  failing ||= testFile('signal_queries_signature_test', 'Signal', false);
+  failing ||= testFile(
+      'signal_input_signature_test',
+      v => v.includes(',') ? `InputSignalWithTransform<${v}>` : `InputSignal<${v}>`, true);
+  failing ||= testFile('signal_queries_signature_test', v => `Signal<${v}>`, false);
 
   if (failing) {
     throw new Error('Failing assertions');
