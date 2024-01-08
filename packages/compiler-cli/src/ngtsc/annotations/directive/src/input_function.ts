@@ -99,18 +99,17 @@ function extractPropertyTarget(node: ts.Expression): ts.Identifier|null {
  */
 function isReferenceToInputFunction(
     target: ts.Identifier, coreModule: string|undefined, reflector: ReflectionHost): boolean {
-  const decl = reflector.getDeclarationOfIdentifier(target);
-  if (decl === null || !ts.isVariableDeclaration(decl.node) || decl.node.name === undefined ||
-      !ts.isIdentifier(decl.node.name)) {
-    // The initializer isn't a declared, identifier named variable declaration.
-    return false;
+  let targetImport: {name: string}|null = reflector.getImportOfIdentifier(target);
+  if (targetImport === null) {
+    if (coreModule !== undefined) {
+      return false;
+    }
+    // We are compiling the core module, where no import can be present.
+    targetImport = {name: target.text};
   }
-  if (coreModule !== undefined && decl.viaModule !== coreModule) {
-    // The initializer is matching so far, but in the wrong module.
-    return false;
-  }
+
   // TODO(signal-input-public): Clean this up.
-  return decl.node.name.text === 'input' || decl.node.name.text === 'ɵinput';
+  return targetImport.name === 'input' || targetImport.name === 'ɵinput';
 }
 
 /**
