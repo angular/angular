@@ -70,6 +70,23 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should fail if signal input is declared on static member', () => {
+      env.write('test.ts', `
+        import {Directive, input} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          static data = input('test');
+        }
+      `);
+      const diagnostics = env.driveDiagnostics();
+      expect(diagnostics).toEqual([
+        jasmine.objectContaining({
+          messageText: 'Input "data" is incorrectly declared as static member of "TestDir".',
+        }),
+      ]);
+    });
+
     it('should handle an alias configured, primitive valued input', () => {
       env.write('test.ts', `
         import {Directive, input} from '@angular/core';

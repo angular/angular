@@ -2136,6 +2136,23 @@ function allTests(os: string) {
             `Failed to resolve @Directive.inputs to an array Value is of type 'string'.`);
       });
 
+      it('should throw if decorator input is declared on static member', () => {
+        env.write('test.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive()
+          export class TestDir {
+            @Input() static someInput: string = '';
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining({
+            messageText: 'Input "someInput" is incorrectly declared as static member of "TestDir".',
+          }),
+        ]);
+      });
+
       it(`should throw error if @Directive.outputs has wrong type`, () => {
         env.tsconfig({});
         env.write('test.ts', `
