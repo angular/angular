@@ -21,6 +21,7 @@ import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 
 import {assertNotInReactiveContext} from './asserts';
 import {performanceMarkFeature} from '../../util/performance';
+import {PendingTasks} from '../../pending_tasks';
 
 
 /**
@@ -82,18 +83,21 @@ export abstract class EffectScheduler {
  * when.
  */
 export class ZoneAwareEffectScheduler implements EffectScheduler {
-  private hasQueuedFlush = false;
   private queuedEffectCount = 0;
   private queues = new Map<Zone|null, Set<SchedulableEffect>>();
+  private readonly pendingTasks = inject(PendingTasks);
+  private taskId: number|null = null;
 
   scheduleEffect(handle: SchedulableEffect): void {
     this.enqueue(handle);
 
-    if (!this.hasQueuedFlush) {
-      queueMicrotask(() => this.flush());
-      // Leave `hasQueuedFlush` as `true` so we don't queue another microtask if more effects are
-      // scheduled during flushing. We are guaranteed to empty the whole queue during flush.
-      this.hasQueuedFlush = false;
+    if (this.taskId === null) {
+      const taskId = this.taskId = this.pendingTasks.add();
+      queueMicrotask(() => {
+        this.flush();
+        this.pendingTasks.remove(taskId);
+        this.taskId = null;
+      });
     }
   }
 

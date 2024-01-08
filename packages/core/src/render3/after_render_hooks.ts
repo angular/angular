@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertNotInReactiveContext} from '../core_reactivity_export_internal';
 import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {ErrorHandler} from '../error_handler';
 import {DestroyRef} from '../linker/destroy_ref';
+import {assertNotInReactiveContext} from '../render3/reactivity/asserts';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone/ng_zone';
 
@@ -129,7 +129,7 @@ export interface InternalAfterNextRenderOptions {
   injector?: Injector;
   /**
    * When true, the hook will execute both on client and on the server.
-   * 
+   *
    * When false or undefined, the hook only executes in the browser.
    */
   runOnServer?: boolean;
