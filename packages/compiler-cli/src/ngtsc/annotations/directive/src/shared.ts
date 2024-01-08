@@ -34,7 +34,7 @@ const QUERY_TYPES = new Set([
  * the module.
  */
 export function extractDirectiveMetadata(
-    clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
+    clazz: ClassDeclaration, decorator: Readonly<Decorator>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, refEmitter: ReferenceEmitter,
     referencesRegistry: ReferencesRegistry, isCore: boolean, annotateForClosureCompiler: boolean,
     compilationMode: CompilationMode, defaultSelector: string|null = null): {
@@ -46,7 +46,7 @@ export function extractDirectiveMetadata(
   hostDirectives: HostDirectiveMeta[] | null, rawHostDirectives: ts.Expression | null,
 }|undefined {
   let directive: Map<string, ts.Expression>;
-  if (decorator === null || decorator.args === null || decorator.args.length === 0) {
+  if (decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
   } else if (decorator.args.length !== 1) {
     throw new FatalDiagnosticError(
@@ -81,7 +81,8 @@ export function extractDirectiveMetadata(
   const inputsFromMeta =
       parseInputsArray(clazz, directive, evaluator, reflector, refEmitter, compilationMode);
   const inputsFromFields = parseInputFields(
-      clazz, members, evaluator, reflector, refEmitter, coreModule, compilationMode);
+      clazz, members, evaluator, reflector, refEmitter, coreModule, compilationMode, inputsFromMeta,
+      decorator);
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
 
   // And outputs.
@@ -716,8 +717,16 @@ function tryParseInputFieldMapping(
     compilationMode: CompilationMode): InputMapping|null {
   const classPropertyName = member.name;
 
-  // Look for a decorator first.
   const decorator = tryGetDecoratorOnMember(member, 'Input', coreModule);
+  const signalInputMapping = tryParseSignalInputMapping(member, reflector, evaluator, coreModule);
+
+  if (decorator !== null && signalInputMapping !== null) {
+    throw new FatalDiagnosticError(
+        ErrorCode.SIGNAL_INPUT_AND_DISALLOWED_DECORATOR, decorator.node,
+        `Using @Input with a signal input is not allowed.`);
+  }
+
+  // Check `@Input` case.
   if (decorator !== null) {
     if (decorator.args !== null && decorator.args.length > 1) {
       throw new FatalDiagnosticError(
@@ -771,7 +780,6 @@ function tryParseInputFieldMapping(
   }
 
   // Look for signal inputs. e.g. `memberName = input()`
-  const signalInputMapping = tryParseSignalInputMapping(member, reflector, evaluator, coreModule);
   if (signalInputMapping !== null) {
     return signalInputMapping;
   }
@@ -783,7 +791,8 @@ function tryParseInputFieldMapping(
 function parseInputFields(
     clazz: ClassDeclaration, members: ClassMember[], evaluator: PartialEvaluator,
     reflector: ReflectionHost, refEmitter: ReferenceEmitter, coreModule: string|undefined,
-    compilationMode: CompilationMode): Record<string, InputMapping> {
+    compilationMode: CompilationMode, inputsFromClassDecorator: Record<string, InputMapping>,
+    classDecorator: Decorator): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
 
   for (const member of members) {
@@ -801,9 +810,18 @@ function parseInputFields(
         refEmitter,
         compilationMode,
     );
-    if (inputMapping !== null) {
-      inputs[classPropertyName] = inputMapping;
+    if (inputMapping === null) {
+      continue;
     }
+
+    // Validate that signal inputs are not accidentally declared in the `inputs` metadata.
+    if (inputMapping.isSignal && inputsFromClassDecorator.hasOwnProperty(classPropertyName)) {
+      throw new FatalDiagnosticError(
+          ErrorCode.SIGNAL_INPUT_AND_INPUTS_ARRAY_COLLISION, member.node ?? clazz,
+          `Input "${member.name}" is also declared as non-signal in @${classDecorator.name}.`);
+    }
+
+    inputs[classPropertyName] = inputMapping;
   }
 
   return inputs;
