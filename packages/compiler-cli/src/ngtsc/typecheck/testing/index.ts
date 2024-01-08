@@ -141,29 +141,30 @@ export function angularCoreDts(): TestFile {
     const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol;
     export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol;
 
-    export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
+    export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
       [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
       [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
     }
+    export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {}
 
     export function inputFunction<ReadT>(): InputSignal<ReadT|undefined>;
     export function inputFunction<ReadT>(
         initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
     export function inputFunction<ReadT, WriteT>(
         initialValue: ReadT,
-        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
     export function inputFunction<ReadT, WriteT>(
         _initialValue?: ReadT,
-        _opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
+        _opts?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT|undefined, WriteT> {
       return null!;
     }
 
     export function inputRequiredFunction<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>):
         InputSignal<ReadT>;
     export function inputRequiredFunction<ReadT, WriteT>(
-        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
-    export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputOptions<ReadT, WriteT>):
-        InputSignal<ReadT, WriteT> {
+        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
+    export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputSignalWithTransform<ReadT, WriteT>):
+        InputSignalWithTransform<ReadT, WriteT> {
       return null!;
     }
 
@@ -174,8 +175,10 @@ export function angularCoreDts(): TestFile {
       return inputFunction as InputFunction;
     })();
 
+    export type Signal<T> = (() => T);
+
     export type ɵUnwrapInputSignalWriteType<Field> =
-        Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+        Field extends InputSignalWithTransform<unknown, infer WriteT>? WriteT : never;
     export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
       [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
     };

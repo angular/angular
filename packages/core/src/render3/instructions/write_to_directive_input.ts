@@ -8,7 +8,7 @@
 
 import {setActiveConsumer, SIGNAL} from '@angular/core/primitives/signals';
 
-import {InputSignal} from '../../authoring/input_signal';
+import {InputSignalWithTransform} from '../../authoring/input_signal';
 import {InputSignalNode} from '../../authoring/input_signal_node';
 import {applyValueToInputField} from '../apply_value_input_field';
 import {DirectiveDef, InputFlags} from '../interfaces/definition';
@@ -24,7 +24,7 @@ export function writeToDirectiveInput<T>(
     // additional megamorphic accesses for accessing the instance field.
     let inputSignalNode: InputSignalNode<unknown, unknown>|null = null;
     if ((flags & InputFlags.SignalBased) !== 0) {
-      const field = (instance as any)[privateName] as InputSignal<unknown, unknown>;
+      const field = (instance as any)[privateName] as InputSignalWithTransform<unknown, unknown>;
       inputSignalNode = field[SIGNAL];
     }
 
