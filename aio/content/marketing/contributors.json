@@ -45,6 +45,14 @@
     "picture": "alan-agius4.jpg",
     "bio": "Angular CLI Member, Loves TypeScript, Build Tools, Food, Beer & Coffee :)"
   },
+  "alejandrocuba": {
+    "name": "Alejandro Cuba Ruiz",
+    "picture": "alejandrocuba.jpg",
+    "twitter": "zorphdark",
+    "website": "https://alejandrocuba.com/",
+    "bio": "Alejandro is a Principal Software Engineer, co-organizer of the Angular Community Meetup, and a member of the ng-Champions program at ng-conf. As the host of the Angularidades podcast, he engages in conversations with front-end developers and visual designers from the Spanish-speaking community.",
+    "groups": ["GDE"]
+  },
   "alisaduncan": {
     "name": "Alisa Duncan",
     "picture": "alisaduncan.jpg",
