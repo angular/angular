@@ -54,19 +54,47 @@ export const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
 export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
 
 /**
- * `InputSignal` is represents a special `Signal` for a directive/component input.
+ * `InputSignalWithTransform` represents a special `Signal` for a
+ * directive/component input with a `transform` function.
+ *
+ * Signal inputs with transforms capture an extra generic for their transform write
+ * type. Transforms can expand the accepted bound values for an input while ensuring
+ * value retrievals of the signal input are still matching the generic input type.
+ *
+ * ```ts
+ * class MyDir {
+ *   disabled = input(false, {
+ *     transform: (v: string|boolean) => convertToBoolean(v),
+ *   }); // InputSignalWithTransform<boolean, string|boolean>
+ *
+ *   click() {
+ *     this.disabled() // always returns a `boolean`.
+ *   }
+ * }
+ * ```
+ *
+ * @see {@link InputSignal} for additional information.
+ *
+ * @developerPreview
+ */
+export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
+  [SIGNAL]: InputSignalNode<ReadT, WriteT>;
+  [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+}
+
+/**
+ * `InputSignal` represents a special `Signal` for a directive/component input.
  *
  * An input signal is similar to a non-writable signal except that it also
  * carries additional type-information for transforms, and that Angular internally
  * updates the signal whenever a new value is bound.
  *
+ * @see {@link InputOptionsWithTransform} for inputs with transforms.
+ *
  * @developerPreview
  */
-export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
-  [SIGNAL]: InputSignalNode<ReadT, WriteT>;
-  [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
-  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
-}
+export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {}
 
 /**
  * Creates an input signal.
@@ -76,7 +104,8 @@ export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
  * @param options Additional options for the input. e.g. a transform, or an alias.
  */
 export function createInputSignal<ReadT, WriteT>(
-    initialValue: ReadT, options?: InputOptions<ReadT, WriteT>): InputSignal<ReadT, WriteT> {
+    initialValue: ReadT,
+    options?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT> {
   const node: InputSignalNode<ReadT, WriteT> = Object.create(INPUT_SIGNAL_NODE);
 
   node.value = initialValue;
@@ -104,5 +133,5 @@ export function createInputSignal<ReadT, WriteT>(
     inputValueFn.toString = () => `[Input Signal: ${inputValueFn()}]`;
   }
 
-  return inputValueFn as InputSignal<ReadT, WriteT>;
+  return inputValueFn as InputSignalWithTransform<ReadT, WriteT>;
 }
