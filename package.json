@@ -47,7 +47,7 @@
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
-    "@angular-devkit/build-angular": "https://github.com/angular/angular-devkit-build-angular-builds.git#1b52fd8f8ba69fdf77c20436b4925ecbb2ed7646",
+    "@angular-devkit/build-angular": "17.1.0-rc.0",
     "@angular-devkit/core": "17.1.0-rc.0",
     "@angular-devkit/schematics": "17.1.0-rc.0",
     "@angular/cdk": "17.1.0-next.3",
