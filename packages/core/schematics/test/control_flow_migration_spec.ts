@@ -3497,6 +3497,78 @@ describe('control flow migration', () => {
 
       expect(content).toBe(result);
     });
+
+    it('should handle empty cases safely without offset issues', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: 'comp.html',
+        })
+        class DeclareComp {}
+      `);
+
+      writeFile('/comp.html', [
+        `<ng-container *ngIf="generic; else specific">`,
+        `  <ng-container [ngSwitch]="dueWhen">`,
+        `    <ng-container *ngSwitchCase="due.NOW">`,
+        `      <p>Now></p>`,
+        `    </ng-container>`,
+        `    <ng-container *ngSwitchCase="due.SOON">`,
+        `      <p>Soon></p>`,
+        `    </ng-container>`,
+        `    <ng-container *ngSwitchDefault></ng-container>`,
+        `  </ng-container>`,
+        `</ng-container>`,
+        `<ng-template #specific>`,
+        `  <ng-container [ngSwitch]="dueWhen">`,
+        `    <ng-container *ngSwitchCase="due.NOW">`,
+        `      <p>Now></p>`,
+        `    </ng-container>`,
+        `    <ng-container *ngSwitchCase="due.SOON">`,
+        `      <p>Soon></p>`,
+        `    </ng-container>`,
+        `    <ng-container *ngSwitchDefault>`,
+        `      <p>Default></p>`,
+        `    </ng-container>`,
+        `  </ng-container>`,
+        `</ng-template>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+
+      const expected = [
+        `@if (generic) {`,
+        `  @switch (dueWhen) {`,
+        `    @case (due.NOW) {`,
+        `      <p>Now></p>`,
+        `    }`,
+        `    @case (due.SOON) {`,
+        `      <p>Soon></p>`,
+        `    }`,
+        `    @default {`,
+        `    }`,
+        `  }`,
+        `} @else {`,
+        `  @switch (dueWhen) {`,
+        `    @case (due.NOW) {`,
+        `      <p>Now></p>`,
+        `    }`,
+        `    @case (due.SOON) {`,
+        `      <p>Soon></p>`,
+        `    }`,
+        `    @default {`,
+        `      <p>Default></p>`,
+        `    }`,
+        `  }`,
+        `}\n`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('error handling', () => {
