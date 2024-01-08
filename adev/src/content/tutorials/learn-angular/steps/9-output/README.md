@@ -1,6 +1,6 @@
 # Component Communication with `@Output`
 
-When working with components it may be required to notify other components that something has happened. Perhaps a button has been clicked, an item has been added/removed from a list or some other important update has occured. In this scenario components need to communicate with parent components.
+When working with components it may be required to notify other components that something has happened. Perhaps a button has been clicked, an item has been added/removed from a list or some other important update has occurred. In this scenario components need to communicate with parent components.
 
 Angular uses the `@Output` decorator to enable this type of behavior.
 
