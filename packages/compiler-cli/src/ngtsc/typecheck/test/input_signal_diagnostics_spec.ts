@@ -27,7 +27,7 @@ runInEachFileSystem(() => {
         [
           {
             id: 'binding via attribute',
-            inputs: {'show': {type: 'InputSignal<boolean, boolean>', isSignal: true}},
+            inputs: {'show': {type: 'InputSignal<boolean>', isSignal: true}},
             template: `<div dir show="works">`,
             expected: [
               `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
@@ -35,34 +35,32 @@ runInEachFileSystem(() => {
           },
           {
             id: 'explicit inline true binding',
-            inputs: {'show': {type: 'InputSignal<boolean, boolean>', isSignal: true}},
+            inputs: {'show': {type: 'InputSignal<boolean>', isSignal: true}},
             template: `<div dir [show]="true">`,
             expected: [],
           },
           {
             id: 'explicit inline false binding',
-            inputs: {'show': {type: 'InputSignal<boolean, boolean>', isSignal: true}},
+            inputs: {'show': {type: 'InputSignal<boolean>', isSignal: true}},
             template: `<div dir [show]="false">`,
             expected: [],
           },
           {
             id: 'explicit binding using component field',
-            inputs: {'show': {type: 'InputSignal<boolean, boolean>', isSignal: true}},
+            inputs: {'show': {type: 'InputSignal<boolean>', isSignal: true}},
             template: `<div dir [show]="prop">`,
             component: 'prop = true;',
             expected: [],
           },
           {
             id: 'complex object input',
-            inputs:
-                {'show': {type: 'InputSignal<{works: boolean}, {works: boolean}>', isSignal: true}},
+            inputs: {'show': {type: 'InputSignal<{works: boolean}>', isSignal: true}},
             template: `<div dir [show]="{works: true}">`,
             expected: [],
           },
           {
             id: 'complex object input, unexpected extra fields',
-            inputs:
-                {'show': {type: 'InputSignal<{works: boolean}, {works: boolean}>', isSignal: true}},
+            inputs: {'show': {type: 'InputSignal<{works: boolean}>', isSignal: true}},
             template: `<div dir [show]="{works: true, extraField: true}">`,
             expected: [
               jasmine.stringContaining(
@@ -71,8 +69,7 @@ runInEachFileSystem(() => {
           },
           {
             id: 'complex object input, missing fields',
-            inputs:
-                {'show': {type: 'InputSignal<{works: boolean}, {works: boolean}>', isSignal: true}},
+            inputs: {'show': {type: 'InputSignal<{works: boolean}>', isSignal: true}},
             template: `<div dir [show]="{}">`,
             expected: [
               `TestComponent.html(1, 11): Property 'works' is missing in type '{}' but required in type '{ works: boolean; }'.`
@@ -83,7 +80,7 @@ runInEachFileSystem(() => {
             id: 'mixing zone and signal inputs, valid',
             inputs: {
               zoneProp: {type: 'string', isSignal: false},
-              signalProp: {type: 'InputSignal<string, string>', isSignal: true},
+              signalProp: {type: 'InputSignal<string>', isSignal: true},
             },
             template: `<div dir [zoneProp]="'works'" [signalProp]="'stringVal'">`,
             expected: []
@@ -92,7 +89,7 @@ runInEachFileSystem(() => {
             id: 'mixing zone and signal inputs, invalid zone binding',
             inputs: {
               zoneProp: {type: 'string', isSignal: false},
-              signalProp: {type: 'InputSignal<string, string>', isSignal: true},
+              signalProp: {type: 'InputSignal<string>', isSignal: true},
             },
             template: `<div dir [zoneProp]="false" [signalProp]="'stringVal'">`,
             expected:
@@ -102,7 +99,7 @@ runInEachFileSystem(() => {
             id: 'mixing zone and signal inputs, invalid signal binding',
             inputs: {
               zoneProp: {type: 'string', isSignal: false},
-              signalProp: {type: 'InputSignal<string, string>', isSignal: true},
+              signalProp: {type: 'InputSignal<string>', isSignal: true},
             },
             template: `<div dir [zoneProp]="'works'" [signalProp]="{}">`,
             expected: [`TestComponent.html(1, 32): Type '{}' is not assignable to type 'string'.`]
@@ -111,7 +108,7 @@ runInEachFileSystem(() => {
             id: 'mixing zone and signal inputs, both invalid',
             inputs: {
               zoneProp: {type: 'string', isSignal: false},
-              signalProp: {type: 'InputSignal<string, string>', isSignal: true},
+              signalProp: {type: 'InputSignal<string>', isSignal: true},
             },
             template: `<div dir [zoneProp]="false" [signalProp]="{}">`,
             expected: [
@@ -123,11 +120,7 @@ runInEachFileSystem(() => {
           {
             id: 'disallows access to private input',
             inputs: {
-              pattern: {
-                type: 'InputSignal<string, string>',
-                isSignal: true,
-                restrictionModifier: 'private'
-              }
+              pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'}
             },
             template: `<div dir [pattern]="'works'">`,
             expected: [
@@ -137,11 +130,8 @@ runInEachFileSystem(() => {
           {
             id: 'disallows access to protected input',
             inputs: {
-              pattern: {
-                type: 'InputSignal<string, string>',
-                isSignal: true,
-                restrictionModifier: 'protected'
-              }
+              pattern:
+                  {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'protected'}
             },
             template: `<div dir [pattern]="'works'">`,
             expected: [
@@ -154,11 +144,8 @@ runInEachFileSystem(() => {
             // be perfectly fine to keep the `input()` member as readonly.
             id: 'allows access to readonly input',
             inputs: {
-              pattern: {
-                type: 'InputSignal<string, string>',
-                isSignal: true,
-                restrictionModifier: 'readonly'
-              }
+              pattern:
+                  {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'readonly'}
             },
             template: `<div dir [pattern]="'works'">`,
             expected: [],
@@ -167,11 +154,7 @@ runInEachFileSystem(() => {
           {
             id: 'allow access to private input if modifiers are explicitly ignored',
             inputs: {
-              pattern: {
-                type: 'InputSignal<string, string>',
-                isSignal: true,
-                restrictionModifier: 'private'
-              }
+              pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'}
             },
             template: `<div dir [pattern]="'works'">`,
             expected: [],
@@ -182,11 +165,8 @@ runInEachFileSystem(() => {
           {
             id: 'allow access to protected input if modifiers are explicitly ignored',
             inputs: {
-              pattern: {
-                type: 'InputSignal<string, string>',
-                isSignal: true,
-                restrictionModifier: 'protected'
-              }
+              pattern:
+                  {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'protected'}
             },
             template: `<div dir [pattern]="'works'">`,
             expected: [],
@@ -197,11 +177,8 @@ runInEachFileSystem(() => {
           {
             id: 'allow access to readonly input if modifiers are explicitly ignored',
             inputs: {
-              pattern: {
-                type: 'InputSignal<string, string>',
-                isSignal: true,
-                restrictionModifier: 'readonly'
-              }
+              pattern:
+                  {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'readonly'}
             },
             template: `<div dir [pattern]="'works'">`,
             expected: [],
@@ -212,11 +189,7 @@ runInEachFileSystem(() => {
           {
             id: 'allow access to private input if modifiers are explicitly ignored, but error if not assignable',
             inputs: {
-              pattern: {
-                type: 'InputSignal<string, string>',
-                isSignal: true,
-                restrictionModifier: 'private'
-              }
+              pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'}
             },
             template: `<div dir [pattern]="false">`,
             expected: [
@@ -231,7 +204,7 @@ runInEachFileSystem(() => {
             id: 'coercion members are not respected',
             inputs: {
               pattern: {
-                type: 'InputSignal<string, string>',
+                type: 'InputSignal<string>',
                 isSignal: true,
               },
             },
@@ -248,7 +221,7 @@ runInEachFileSystem(() => {
             id: 'signal inputs write transform type respected',
             inputs: {
               pattern: {
-                type: 'InputSignal<string, string|boolean>',
+                type: 'InputSignalWithTransform<string, string|boolean>',
                 isSignal: true,
               },
             },
@@ -260,11 +233,11 @@ runInEachFileSystem(() => {
             id: 'generic inference and binding to directive, all signal inputs',
             inputs: {
               gen: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               },
               other: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               }
             },
@@ -278,7 +251,7 @@ runInEachFileSystem(() => {
             id: 'generic inference and binding to directive, mix of zone and signal',
             inputs: {
               gen: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               },
               other: {
@@ -296,11 +269,11 @@ runInEachFileSystem(() => {
             id: 'generic inference and binding to directive (with `extends boolean`), all signal inputs',
             inputs: {
               gen: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               },
               other: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               }
             },
@@ -314,7 +287,7 @@ runInEachFileSystem(() => {
             id: 'generic inference and binding to directive (with `extends boolean`), mix of zone and signal inputs',
             inputs: {
               gen: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               },
               other: {
@@ -332,11 +305,11 @@ runInEachFileSystem(() => {
             id: 'generic multi-inference and bindings to directive, all signal inputs',
             inputs: {
               gen: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               },
               other: {
-                type: 'InputSignal<U, U>',
+                type: 'InputSignal<U>',
                 isSignal: true,
               }
             },
@@ -356,7 +329,7 @@ runInEachFileSystem(() => {
             id: 'generic multi-inference and bindings to directive, mix of zone and signal inputs',
             inputs: {
               gen: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               },
               other: {
@@ -380,11 +353,11 @@ runInEachFileSystem(() => {
             id: 'generic multi-inference and bindings to directive, more complicated generic inference',
             inputs: {
               gen: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               },
               other: {
-                type: 'InputSignal<{u: U}, {u: U}>',
+                type: 'InputSignal<{u: U}>',
                 isSignal: true,
               }
             },
@@ -405,7 +378,7 @@ runInEachFileSystem(() => {
             id: 'differing WriteT and ReadT, superset union, valid binding',
             inputs: {
               bla: {
-                type: 'InputSignal<boolean, boolean|string>',
+                type: 'InputSignalWithTransform<boolean, boolean|string>',
                 isSignal: true,
               },
             },
@@ -416,7 +389,7 @@ runInEachFileSystem(() => {
             id: 'differing WriteT and ReadT, superset union, invalid binding',
             inputs: {
               bla: {
-                type: 'InputSignal<boolean, boolean|string>',
+                type: 'InputSignalWithTransform<boolean, boolean|string>',
                 isSignal: true,
               },
             },
@@ -429,7 +402,7 @@ runInEachFileSystem(() => {
             id: 'differing WriteT and ReadT, divergent, valid binding',
             inputs: {
               bla: {
-                type: 'InputSignal<boolean, string>',
+                type: 'InputSignalWithTransform<boolean, string>',
                 isSignal: true,
               },
             },
@@ -440,7 +413,7 @@ runInEachFileSystem(() => {
             id: 'differing WriteT and ReadT, divergent, invalid binding',
             inputs: {
               bla: {
-                type: 'InputSignal<boolean, string>',
+                type: 'InputSignalWithTransform<boolean, string>',
                 isSignal: true,
               },
             },
@@ -453,7 +426,7 @@ runInEachFileSystem(() => {
             id: 'differing WriteT and ReadT, generic ctor inference',
             inputs: {
               bla: {
-                type: 'InputSignal<string, T>',
+                type: 'InputSignalWithTransform<string, T>',
                 isSignal: true,
               },
             },
@@ -476,7 +449,7 @@ runInEachFileSystem(() => {
             id: 'inline constructor generic inference',
             inputs: {
               bla: {
-                type: 'InputSignal<T, T>',
+                type: 'InputSignal<T>',
                 isSignal: true,
               },
             },
@@ -503,7 +476,7 @@ runInEachFileSystem(() => {
                 c.inputs[inputName].type}`);
 
         const testComponent = `
-              import {InputSignal} from '@angular/core';
+              import {InputSignal, InputSignalWithTransform} from '@angular/core';
 
               ${c.extraFileContent ?? ''}
 

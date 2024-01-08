@@ -141,41 +141,28 @@ export type InputOptionsWithTransform<ReadT, WriteT> =
 const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
 export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
 
-export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
+export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
   [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
   [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
 }
+export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {}
 
-export function inputFunction<ReadT>(): InputSignal<ReadT|undefined>;
-export function inputFunction<ReadT>(
-    initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-export function inputFunction<ReadT, WriteT>(
-    initialValue: ReadT,
-    opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
-export function inputFunction<ReadT, WriteT>(
-    _initialValue?: ReadT,
-    _opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
-  return null!;
+export interface InputFunction {
+  <ReadT>(): InputSignal<ReadT|undefined>;
+  <ReadT>(initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+  <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>):
+      InputSignalWithTransform<ReadT, WriteT>;
+
+  required: {
+    <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;<ReadT, WriteT>(
+        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
+  };
 }
 
-export function inputRequiredFunction<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>):
-    InputSignal<ReadT>;
-export function inputRequiredFunction<ReadT, WriteT>(
-    opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
-export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputOptions<ReadT, WriteT>):
-    InputSignal<ReadT, WriteT> {
-  return null!;
-}
-
-export type InputFunction = typeof inputFunction&{required: typeof inputRequiredFunction};
-
-export const input: InputFunction = (() => {
-  (inputFunction as any).required = inputRequiredFunction;
-  return inputFunction as InputFunction;
-})();
+export const input: InputFunction = null!;
 
 export type ɵUnwrapInputSignalWriteType<Field> =
-    Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+    Field extends InputSignalWithTransform<unknown, infer WriteT>? WriteT : never;
 export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
   [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
 };

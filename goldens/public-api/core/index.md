@@ -883,10 +883,10 @@ export interface InputFunction {
     // (undocumented)
     <ReadT>(initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
     // (undocumented)
-    <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+    <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
     required: {
         <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-        <ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+        <ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
     };
 }
 
@@ -905,7 +905,11 @@ export type InputOptionsWithoutTransform<ReadT> = Omit<InputOptions<ReadT, ReadT
 export type InputOptionsWithTransform<ReadT, WriteT> = Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>> & InputOptions<ReadT, WriteT>;
 
 // @public
-export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
+export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {
+}
+
+// @public
+export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
     // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
     // (undocumented)
