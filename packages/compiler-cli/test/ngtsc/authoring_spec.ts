@@ -36,6 +36,40 @@ runInEachFileSystem(() => {
       expect(js).toContain('inputs: { data: [i0.ɵɵInputFlags.SignalBased, "data"] }');
     });
 
+    it('should fail if @Input is applied on signal input member', () => {
+      env.write('test.ts', `
+        import {Directive, Input, input} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          @Input() data = input('test');
+        }
+      `);
+      const diagnostics = env.driveDiagnostics();
+      expect(diagnostics).toEqual([jasmine.objectContaining({
+        messageText: `Using @Input with a signal input is not allowed.`,
+      })]);
+    });
+
+    it('should fail if signal input is also declared in `inputs` decorator field.', () => {
+      env.write('test.ts', `
+        import {Directive, input} from '@angular/core';
+
+        @Directive({
+          inputs: ['data'],
+        })
+        export class TestDir {
+          data = input('test');
+        }
+      `);
+      const diagnostics = env.driveDiagnostics();
+      expect(diagnostics).toEqual([
+        jasmine.objectContaining({
+          messageText: 'Input "data" is also declared as non-signal in @Directive.',
+        }),
+      ]);
+    });
+
     it('should handle an alias configured, primitive valued input', () => {
       env.write('test.ts', `
         import {Directive, input} from '@angular/core';
