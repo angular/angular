@@ -28,4 +28,5 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]),
+    visibility = ["//visibility:public"],
 )

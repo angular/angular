@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package")
-load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_module", "ng_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -72,7 +71,10 @@ filegroup(
 
 generate_api_docs(
     name = "forms_docs",
-    srcs = [":files_for_docgen"],
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
     entry_point = ":index.ts",
     module_name = "@angular/forms",
 )

@@ -136,7 +136,9 @@ filegroup(
 
 generate_api_docs(
     name = "core_docs",
-    srcs = [":files_for_docgen"],
+    srcs = [
+        "//packages:common_files_and_deps_for_docs",
+    ],
     entry_point = ":index.ts",
     module_name = "@angular/core",
 )
