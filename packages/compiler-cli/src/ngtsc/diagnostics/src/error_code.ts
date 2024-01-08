@@ -28,6 +28,9 @@ export enum ErrorCode {
   /** Raised when a signal input is also declared in the decorator `inputs` field. */
   SIGNAL_INPUT_AND_INPUTS_ARRAY_COLLISION = 1051,
 
+  /** A signal input, or decorator input is declared on a static class member. */
+  INPUT_DECLARED_ON_STATIC_MEMBER = 1100,
+
   COMPONENT_MISSING_TEMPLATE = 2001,
   PIPE_MISSING_NAME = 2002,
   PARAM_MISSING_TOKEN = 2003,
