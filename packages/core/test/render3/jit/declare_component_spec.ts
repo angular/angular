@@ -75,7 +75,7 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       inputs: {
-        'bindingName': ['minifiedClassProperty', InputFlags.HasTransform],
+        'bindingName': ['minifiedClassProperty', InputFlags.HasDecoratorInputTransform],
       },
       inputTransforms: {
         'minifiedClassProperty': transformFn,
