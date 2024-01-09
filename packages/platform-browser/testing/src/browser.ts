@@ -36,8 +36,6 @@ export const platformBrowserTesting =
     {provide: APP_ID, useValue: 'a'},
     provideZoneChangeDetection(),
     {provide: PlatformLocation, useClass: MockPlatformLocation},
-    {provide: ZoneAwareQueueingScheduler},
-    {provide: EffectScheduler, useExisting: ZoneAwareQueueingScheduler},
   ]
 })
 export class BrowserTestingModule {

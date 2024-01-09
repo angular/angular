@@ -146,7 +146,8 @@ export class ZoneAwareQueueingScheduler implements EffectScheduler, FlushableEff
  */
 export class ZoneAwareMicrotaskScheduler implements EffectScheduler {
   private hasQueuedFlush = false;
-  private delegate = new ZoneAwareQueueingScheduler();
+  private delegate = inject(ZoneAwareQueueingScheduler);
+
   private flushTask = () => {
     // Leave `hasQueuedFlush` as `true` so we don't queue another microtask if more effects are
     // scheduled during flushing. The flush of the `ZoneAwareQueueingScheduler` delegate is
