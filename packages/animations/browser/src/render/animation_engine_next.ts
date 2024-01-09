@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
+import {ɵChangeDetectionScheduler as ChangeDetectionScheduler} from '@angular/core';
 
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
@@ -30,8 +31,9 @@ export class AnimationEngine {
 
   constructor(
       doc: Document, private _driver: AnimationDriver,
-      private _normalizer: AnimationStyleNormalizer) {
-    this._transitionEngine = new TransitionAnimationEngine(doc.body, _driver, _normalizer);
+      private _normalizer: AnimationStyleNormalizer, scheduler: ChangeDetectionScheduler|null) {
+    this._transitionEngine =
+        new TransitionAnimationEngine(doc.body, _driver, _normalizer, scheduler);
     this._timelineEngine = new TimelineAnimationEngine(doc.body, _driver, _normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
