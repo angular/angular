@@ -7,21 +7,21 @@
  */
 
 import {AsyncPipe} from '@angular/common';
-import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, ElementRef, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, Input, NgZone, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
+import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, Input, NgZone, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {withBody} from '@angular/private/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {filter, take, tap} from 'rxjs/operators';
 
 describe('Angular with NoopNgZone', () => {
-  function whenStable(): Promise<boolean> {
-    return firstValueFrom(TestBed.inject(EnvironmentInjector)
-                              .get(ApplicationRef)
-                              .isStable.pipe(filter(stable => stable)));
+  function whenStable(applicationRef = TestBed.inject(ApplicationRef)): Promise<boolean> {
+    return firstValueFrom(applicationRef.isStable.pipe(filter(stable => stable)));
   }
 
-  function isStable(): boolean {
-    const injector = TestBed.inject(EnvironmentInjector);
+  function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
     return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
   }
 
@@ -216,7 +216,7 @@ describe('Angular with NoopNgZone', () => {
       expect(componentRef.location.nativeElement.innerText).toEqual('binding');
     });
 
-    it('when destroying a view', async () => {
+    it('when destroying a view (with animations)', async () => {
       @Component({
         template: '{{"binding"}}',
         standalone: true,
@@ -249,9 +249,47 @@ describe('Angular with NoopNgZone', () => {
       await whenStable();
       expect(fixture.location.nativeElement.innerText).toEqual('binding');
       component2.destroy();
+      expect(isStable()).toBe(false);
       await whenStable();
       expect(fixture.location.nativeElement.innerText).toEqual('');
     });
+
+    it('when destroying a view (*no* animations)', withBody('<app></app>', async () => {
+         destroyPlatform();
+         @Component({
+           template: '{{"binding"}}',
+           standalone: true,
+         })
+         class DynamicCmp {
+           elementRef = inject(ElementRef);
+         }
+         @Component({
+           selector: 'app',
+           template: '<ng-template #ref></ng-template>',
+           standalone: true,
+         })
+         class App {
+           @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+         }
+         const applicationRef = await bootstrapApplication(App, {
+           providers: [
+             provideZonelessChangeDetection(),
+             {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+           ]
+         });
+         const appViewRef = (applicationRef as any)._views[0] as {context: App, rootNodes: any[]};
+         await whenStable(applicationRef);
+
+         const component2 =
+             createComponent(DynamicCmp, {environmentInjector: applicationRef.injector});
+         appViewRef.context.viewContainer.insert(component2.hostView);
+         expect(isStable(applicationRef.injector)).toBe(false);
+         await whenStable(applicationRef);
+         component2.destroy();
+         expect(isStable(applicationRef.injector)).toBe(true);
+         expect(appViewRef.rootNodes[0].innerText).toEqual('');
+         destroyPlatform();
+       }));
 
     it('when attaching view to ApplicationRef', async () => {
       @Component({
