@@ -35,7 +35,7 @@ function MyComponent_Template(rf, ctx) {
 		i0.ɵɵtext(5, " ");
 		i0.ɵɵelementEnd();
 	} if (rf & 2) {
-		i0.ɵɵadvance(1);
+		i0.ɵɵadvance();
 		i0.ɵɵi18nExp(ctx.someField);
 		i0.ɵɵi18nApply(1);
 		i0.ɵɵadvance(3);

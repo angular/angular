@@ -53,12 +53,12 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵtemplate(2, $MyComponent_div_2_Template$, 4, 1, "div", 1)(3, $MyComponent_div_3_Template$, 4, 2, "div", 2);
   }
   if (rf & 2) {
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp(ctx.gender);
     $r3$.ɵɵi18nApply(1);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵproperty("ngIf", ctx.visible);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵproperty("ngIf", ctx.available);
   }
 }

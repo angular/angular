@@ -68,7 +68,7 @@ template: function MyComponent_Template(rf, ctx) {
   if (rf & 2) {
     $r3$.ɵɵadvance(2);
     $r3$.ɵɵproperty("ngIf", ctx.visible);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵproperty("ngIf", !ctx.visible);
   }
 }

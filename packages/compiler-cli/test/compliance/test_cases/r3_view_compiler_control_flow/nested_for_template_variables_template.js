@@ -17,7 +17,7 @@ function MyApp_For_3_Template(rf, ctx) {
   if (rf & 2) {
     const $item_r1$ = ctx.$implicit;
     $r3$.ɵɵtextInterpolate1(" ", $item_r1$.name, " ");
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵrepeater($item_r1$.subItems);
   }
 }
@@ -30,9 +30,9 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵrepeater(ctx.items);
   }
 }
