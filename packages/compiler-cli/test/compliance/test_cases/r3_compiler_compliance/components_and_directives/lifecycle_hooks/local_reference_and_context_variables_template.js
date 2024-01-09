@@ -7,7 +7,7 @@ function MyComponent_div_0_span_3_Template(rf, ctx) {
   if (rf & 2) {
     const $item$ = $i0$.ɵɵnextContext().$implicit;
     const $foo$ = $i0$.ɵɵreference(2);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $i0$.ɵɵtextInterpolate2(" ", $foo$, " - ", $item$, " ");
   }
 }

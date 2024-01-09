@@ -135,12 +135,7 @@ export function namespaceMath(): ir.CreateOp {
 }
 
 export function advance(delta: number, sourceSpan: ParseSourceSpan): ir.UpdateOp {
-  return call(
-      Identifiers.advance,
-      [
-        o.literal(delta),
-      ],
-      sourceSpan);
+  return call(Identifiers.advance, delta > 1 ? [o.literal(delta)] : [], sourceSpan);
 }
 
 export function reference(slot: number): o.Expression {

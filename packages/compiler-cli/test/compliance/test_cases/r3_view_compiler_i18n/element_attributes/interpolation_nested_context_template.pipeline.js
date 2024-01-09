@@ -7,7 +7,7 @@ function MyComponent_div_0_Template(rf, ctx) {
 	}
 	if (rf & 2) {
 	  const $outer_r1$ = ctx.$implicit;
-	  $r3$.ɵɵadvance(1);
+	  $r3$.ɵɵadvance();
 	  $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 1, $outer_r1$));
 	  $r3$.ɵɵi18nApply(3);
 	}
@@ -31,4 +31,3 @@ function MyComponent_div_0_Template(rf, ctx) {
 	  $r3$.ɵɵproperty("ngForOf", ctx.items);
 	}
   }
-  

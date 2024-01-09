@@ -80,7 +80,7 @@ function MyApp_For_1_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $ctx_r0$ = $r3$.ɵɵnextContext();
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵrepeater($ctx_r0$.items);
   }
 }
