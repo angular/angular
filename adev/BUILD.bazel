@@ -1,6 +1,6 @@
 load("//:packages.bzl", "link_packages")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
-load("@npm//@angular-devkit/architect-cli:index.bzl", "architect")
+load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,6 +19,13 @@ APPLICATION_FILES = [
         # isn't needed.
         "src/generated/**/*",
     ],
+)
+
+TEST_FILES = APPLICATION_FILES + [
+    "karma.conf.js",
+    "tsconfig.spec.json",
+] + glob(
+    ["**/*.spec.ts"],
 )
 
 APPLICATION_DEPS = link_packages([
@@ -69,6 +76,21 @@ APPLICATION_DEPS = link_packages([
     "@npm//angular-split",
 ])
 
+TEST_DEPS = APPLICATION_DEPS + link_packages([
+    "@npm//@angular/platform-browser-dynamic",
+    "@npm//@angular/build-tooling/bazel/browsers/chromium",
+    "@npm//@types/jasmine",
+    "@npm//@types/node",
+    "@npm//assert",
+    "@npm//jasmine",
+    "@npm//jasmine-core",
+    "@npm//karma-chrome-launcher",
+    "@npm//karma-coverage",
+    "@npm//karma-jasmine",
+    "@npm//karma-jasmine-html-reporter",
+    "//aio/tools:windows-chromium-path",
+])
+
 copy_to_bin(
     name = "application_files_bin",
     srcs = APPLICATION_FILES,
@@ -98,5 +120,21 @@ architect(
     chdir = package_name(),
     data = APPLICATION_DEPS + [
         ":application_files_bin",
+    ],
+)
+
+architect_test(
+    name = "test",
+    args = [
+        "angular-dev:test",
+        "--no-watch",
+    ],
+    chdir = package_name(),
+    data = TEST_DEPS + TEST_FILES,
+    env = {
+        "CHROME_BIN": "../$(CHROMIUM)",
+    },
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
     ],
 )
