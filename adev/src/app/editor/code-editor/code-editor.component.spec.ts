@@ -19,7 +19,7 @@ import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 
 import {CodeEditor, REQUIRED_FILES} from './code-editor.component';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
-import {FakeChangeDetectorRef} from '../../../../../shared/src/lib/utils/test-utils.spec';
+import {FakeChangeDetectorRef} from '@angular/docs/testing';
 import {TutorialType} from '@angular/docs';
 
 const files = [
