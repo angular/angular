@@ -8,16 +8,9 @@
 import {TestBed} from '@angular/core/testing';
 import type {FileSystemTree} from '@webcontainer/api';
 
-import type {
-  TutorialConfig,
-  TutorialMetadata,
-} from '@angular/docs';
-import {
-  TUTORIALS_COMMON_DIRECTORY,
-  TUTORIALS_METADATA_WEB_PATH,
-  TUTORIALS_SOURCE_CODE_WEB_PATH,
-  TutorialType,
-} from '@angular/docs';
+import type {TutorialConfig, TutorialMetadata} from '@angular/docs';
+import {TUTORIALS_ASSETS_WEB_PATH} from '../editor/constants';
+import {TutorialType} from '@angular/docs';
 import {EmbeddedTutorialManager} from './embedded-tutorial-manager.service';
 
 describe('EmbeddedTutorialManager', () => {
@@ -252,13 +245,7 @@ describe('EmbeddedTutorialManager', () => {
           },
         },
       };
-      const commonSourceCode: FileSystemTree = {
-        'common.ts': {
-          file: {
-            contents: 'code',
-          },
-        },
-      };
+      
       const metadata: TutorialMetadata = {
         tutorialFiles: {'app.js': ''},
         openFiles: ['app.js'],
@@ -271,14 +258,13 @@ describe('EmbeddedTutorialManager', () => {
 
       const fetchMock = spyOn(window, 'fetch');
       fetchMock.and.returnValues(
-        Promise.resolve(new Response(JSON.stringify(commonSourceCode))),
         Promise.resolve(new Response(JSON.stringify(tutorialSourceCode))),
         Promise.resolve(new Response(JSON.stringify(metadata))),
       );
 
       await service.fetchAndSetTutorialFiles(tutorial);
 
-      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
 
       expect(service.tutorialId()).toEqual(tutorial);
       expect(service.tutorialFilesystemTree()).toEqual(tutorialSourceCode);
@@ -289,8 +275,6 @@ describe('EmbeddedTutorialManager', () => {
 
       expect(service.type()).toEqual(metadata.type);
 
-      expect(service.commonFilesystemTree()).toEqual(commonSourceCode);
-
       expect(service.hiddenFiles()).toEqual(metadata.hiddenFiles);
       expect(service.answerFiles()).toEqual(metadata.answerFiles!);
     });
@@ -299,15 +283,11 @@ describe('EmbeddedTutorialManager', () => {
       const fetchMock = spyOn(window, 'fetch');
 
       fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)
         .and.returnValues(Promise.resolve(new Response(null, {status: 404})));
 
       fetchMock
-        .withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`)
         .and.returnValues(Promise.resolve(new Response(null, {status: 404})));
 
       await expectAsync(service.fetchAndSetTutorialFiles(tutorial)).toBeRejectedWithError(
@@ -315,38 +295,15 @@ describe('EmbeddedTutorialManager', () => {
       );
     });
 
-    it('should throw an error if the tutorial common project cannot be fetched', async () => {
-      const fetchMock = spyOn(window, 'fetch');
-
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
-        .and.returnValues(Promise.resolve(new Response(null, {status: 404})));
-
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      fetchMock
-        .withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      await expectAsync(service.fetchAndSetTutorialFiles(tutorial)).toBeRejectedWithError(
-        'Missing source code for tutorial common',
-      );
-    });
 
     it('should not set shouldReinstallDependencies if project did not change', async () => {
       const fetchMock = spyOn(window, 'fetch');
 
       fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)
         .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
 
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      fetchMock.withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`).and.returnValues(
+      fetchMock.withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`).and.returnValues(
         Promise.resolve(
           new Response(
             JSON.stringify({
@@ -368,15 +325,12 @@ describe('EmbeddedTutorialManager', () => {
     it('should trigger shouldReInstallDependencies if new metadata has different dependencies', async () => {
       const fetchMock = spyOn(window, 'fetch');
 
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
 
       fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)
         .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
 
-      fetchMock.withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`).and.returnValues(
+      fetchMock.withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`).and.returnValues(
         Promise.resolve(
           new Response(
             JSON.stringify({
@@ -404,14 +358,10 @@ describe('EmbeddedTutorialManager', () => {
       const fetchMock = spyOn(window, 'fetch');
 
       fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)
         .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
 
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      fetchMock.withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`).and.returnValues(
+      fetchMock.withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`).and.returnValues(
         Promise.resolve(
           new Response(
             JSON.stringify({
@@ -437,14 +387,10 @@ describe('EmbeddedTutorialManager', () => {
       const fetchMock = spyOn(window, 'fetch');
 
       fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)
         .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
 
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      fetchMock.withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`).and.returnValues(
+      fetchMock.withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`).and.returnValues(
         Promise.resolve(
           new Response(
             JSON.stringify({
@@ -472,16 +418,12 @@ describe('EmbeddedTutorialManager', () => {
       const fetchMock = spyOn(window, 'fetch');
 
       fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)
         .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
 
       const allFiles = ['file1.ts', 'file2.ts'];
 
-      fetchMock.withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`).and.returnValues(
+      fetchMock.withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`).and.returnValues(
         Promise.resolve(
           new Response(
             JSON.stringify({
@@ -507,16 +449,12 @@ describe('EmbeddedTutorialManager', () => {
       const fetchMock = spyOn(window, 'fetch');
 
       fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)
         .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
 
       const allFiles = ['file1.ts', 'file2.ts'];
 
-      fetchMock.withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`).and.returnValues(
+      fetchMock.withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`).and.returnValues(
         Promise.resolve(
           new Response(
             JSON.stringify({
@@ -539,16 +477,12 @@ describe('EmbeddedTutorialManager', () => {
       const fetchMock = spyOn(window, 'fetch');
 
       fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${TUTORIALS_COMMON_DIRECTORY}.json`)
-        .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
-
-      fetchMock
-        .withArgs(`${TUTORIALS_SOURCE_CODE_WEB_PATH}/${tutorial}.json`)
+        .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)
         .and.returnValues(Promise.resolve(new Response('{}', {status: 200})));
 
       const allFiles = ['file1.ts', 'file2.ts'];
 
-      fetchMock.withArgs(`${TUTORIALS_METADATA_WEB_PATH}/${tutorial}.json`).and.returnValues(
+      fetchMock.withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`).and.returnValues(
         Promise.resolve(
           new Response(
             JSON.stringify({
