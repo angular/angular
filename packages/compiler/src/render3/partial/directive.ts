@@ -114,9 +114,9 @@ function getMinimumVersionForPartialOutput(meta: R3DirectiveMetadata): string {
   // Note: in order to allow consuming Angular libraries that have been compiled with 16.1+ in
   // Angular 16.0, we only force a minimum version of 16.1 if input transform feature as introduced
   // in 16.1 is actually used.
-  const hasTransformFunctions =
+  const hasDecoratorTransformFunctions =
       Object.values(meta.inputs).some(input => input.transformFunction !== null);
-  if (hasTransformFunctions) {
+  if (hasDecoratorTransformFunctions) {
     minVersion = '16.1.0';
   }
 
