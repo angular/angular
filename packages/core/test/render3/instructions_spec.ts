@@ -47,7 +47,7 @@ describe('instructions', () => {
       }).toThrow();
       expect(() => {
         t.update(() => {
-          ɵɵadvance(1);
+          ɵɵadvance();
         });
       }).toThrow();
     });
