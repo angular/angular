@@ -339,7 +339,7 @@ function getAnimationRendererFactory2(document: Document): RendererFactory2 {
   return new ɵAnimationRendererFactory(
       getRendererFactory2(document),
       new ɵAnimationEngine(
-          document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
+          document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer(), null),
       fakeNgZone);
 }
 

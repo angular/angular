@@ -173,9 +173,6 @@ export function addViewToDOM(
  * @param lView the `LView` to be detached.
  */
 export function detachViewFromDOM(tView: TView, lView: LView) {
-  // The scheduler must be notified because the animation engine is what actually does the DOM
-  // removal and only runs at the end of change detection.
-  lView[ENVIRONMENT].changeDetectionScheduler?.notify();
   applyView(tView, lView, lView[RENDERER], WalkTNodeTreeAction.Detach, null, null);
 }
 

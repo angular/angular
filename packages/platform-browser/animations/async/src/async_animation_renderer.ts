@@ -7,13 +7,14 @@
  */
 
 import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory} from '@angular/animations/browser';
-import {NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵAnimationRendererType as AnimationRendererType, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ɵAnimationRendererType as AnimationRendererType, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
 
 const ANIMATION_PREFIX = '@';
 
 export class AsyncAnimationRendererFactory implements RendererFactory2 {
   private _rendererFactoryPromise: Promise<AnimationRendererFactory>|null = null;
+  private readonly scheduler = inject(ChangeDetectionScheduler, {optional: true});
 
   /**
    *
@@ -22,7 +23,9 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
   constructor(
       private doc: Document, private delegate: RendererFactory2, private zone: NgZone,
       private animationType: 'animations'|'noop', private moduleImpl?: Promise<{
-        ɵcreateEngine: (type: 'animations'|'noop', doc: Document) => AnimationEngine,
+        ɵcreateEngine:
+            (type: 'animations'|'noop', doc: Document,
+             scheduler: ChangeDetectionScheduler|null) => AnimationEngine,
         ɵAnimationRendererFactory: typeof AnimationRendererFactory
       }>) {}
 
@@ -44,7 +47,7 @@ export class AsyncAnimationRendererFactory implements RendererFactory2 {
         .then(({ɵcreateEngine, ɵAnimationRendererFactory}) => {
           // We can't create the renderer yet because we might need the hostElement and the type
           // Both are provided in createRenderer().
-          const engine = ɵcreateEngine(this.animationType, this.doc);
+          const engine = ɵcreateEngine(this.animationType, this.doc, this.scheduler);
           const rendererFactory = new ɵAnimationRendererFactory(this.delegate, engine, this.zone);
           this.delegate = rendererFactory;
           return rendererFactory;

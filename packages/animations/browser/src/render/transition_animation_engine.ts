@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationOptions, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer as AnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
-import {ɵWritable as Writable} from '@angular/core';
+import {ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵWritable as Writable} from '@angular/core';
 
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {AnimationTransitionFactory} from '../dsl/animation_transition_factory';
@@ -547,7 +547,8 @@ export class TransitionAnimationEngine {
 
   constructor(
       public bodyNode: any, public driver: AnimationDriver,
-      private _normalizer: AnimationStyleNormalizer) {}
+      private _normalizer: AnimationStyleNormalizer,
+      private readonly scheduler: ChangeDetectionScheduler|null) {}
 
   get queuedPlayers(): TransitionAnimationPlayer[] {
     const players: TransitionAnimationPlayer[] = [];
@@ -738,6 +739,7 @@ export class TransitionAnimationEngine {
 
   removeNode(namespaceId: string, element: any, context: any): void {
     if (isElementNode(element)) {
+      this.scheduler?.notify();
       const ns = namespaceId ? this._fetchNamespace(namespaceId) : null;
       if (ns) {
         ns.removeNode(element, context);
