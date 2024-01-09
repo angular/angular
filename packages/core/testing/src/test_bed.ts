@@ -27,6 +27,7 @@ import {
   Type,
   ɵconvertToBitFlags as convertToBitFlags,
   ɵDeferBlockBehavior as DeferBlockBehavior,
+  ɵEffectScheduler as EffectScheduler,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
@@ -38,7 +39,6 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ɵZoneAwareQueueingScheduler as ZoneAwareQueueingScheduler,
 } from '@angular/core';
 
 /* clang-format on */
@@ -782,7 +782,7 @@ export class TestBedImpl implements TestBed {
    * @developerPreview
    */
   flushEffects(): void {
-    this.inject(ZoneAwareQueueingScheduler).flush();
+    this.inject(EffectScheduler).flush();
   }
 }
 

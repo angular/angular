@@ -12,7 +12,7 @@ import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
-import type {FlushableEffectRunner} from '../reactivity/effect';
+import type {EffectScheduler} from '../reactivity/effect';
 import type {AfterRenderEventManager} from '../after_render_hooks';
 
 import {LContainer} from './container';
@@ -369,7 +369,7 @@ export interface LViewEnvironment {
   sanitizer: Sanitizer|null;
 
   /** Container for reactivity system `effect`s. */
-  inlineEffectRunner: FlushableEffectRunner|null;
+  inlineEffectRunner: EffectScheduler|null;
 
   /** Container for after render hooks */
   afterRenderEventManager: AfterRenderEventManager|null;
