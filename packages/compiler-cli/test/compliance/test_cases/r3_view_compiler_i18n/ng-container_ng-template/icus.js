@@ -27,7 +27,7 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵtemplate(2, MyComponent_ng_template_2_Template, 1, 1, "ng-template");
   }
   if (rf & 2) {
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp(ctx.gender);
     $r3$.ɵɵi18nApply(1);
   }

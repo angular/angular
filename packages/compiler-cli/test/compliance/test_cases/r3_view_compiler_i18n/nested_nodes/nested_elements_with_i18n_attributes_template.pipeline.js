@@ -35,13 +35,13 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵadvance(2);
     $r3$.ɵɵi18nExp(ctx.valueB)(ctx.valueC);
     $r3$.ɵɵi18nApply(3);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp(ctx.valueA);
     $r3$.ɵɵi18nApply(1);
     $r3$.ɵɵadvance(4);
     $r3$.ɵɵi18nExp(ctx.valueE);
     $r3$.ɵɵi18nApply(8);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(6, 5, ctx.valueD));
     $r3$.ɵɵi18nApply(5);
   }
