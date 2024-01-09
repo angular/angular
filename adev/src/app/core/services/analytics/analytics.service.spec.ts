@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '@angular/core';
-import {WINDOW} from '@angular/docs';
+import {ENVIRONMENT, WINDOW} from '@angular/docs';
 import {AnalyticsService} from './analytics.service';
 
 describe('AnalyticsService', () => {
@@ -36,6 +36,7 @@ describe('AnalyticsService', () => {
 
     injector = Injector.create({
       providers: [
+        {provide: ENVIRONMENT, useValue: {}},
         {provide: AnalyticsService, deps: [WINDOW]},
         {provide: WINDOW, useFactory: () => mockWindow, deps: []},
       ],
