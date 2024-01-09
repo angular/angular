@@ -19,7 +19,7 @@ import {
   EmbeddedEditor,
   EmbeddedTutorialManager,
   NodeRuntimeSandbox
-} from '@angular/docs';
+} from '../../editor';
 
 import {mockAsyncProvider} from '../../core/services/inject-async';
 import Tutorial from './tutorial.component';
