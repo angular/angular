@@ -173,6 +173,10 @@ export class SpyLocation implements Location {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
+  asObservable() {
+    return this._subject.asObservable();
+  }
+
   normalize(url: string): string {
     return null!;
   }
