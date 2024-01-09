@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, effect, inject, Injector} from '@angular/core';
+import {Component, effect, inject, Injector, NgZone, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('effects in TestBed', () => {
@@ -84,5 +84,31 @@ describe('effects in TestBed', () => {
       // Then the effect runs.
       'Effect',
     ]);
+  });
+
+  it('will flush effects automatically when using autoDetectChanges', async () => {
+    const val = signal('initial');
+    let observed = '';
+    @Component({
+      selector: 'test-cmp',
+      standalone: true,
+      template: '',
+    })
+    class Cmp {
+      constructor() {
+        effect(() => {
+          observed = val();
+        });
+      }
+    }
+
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.autoDetectChanges();
+
+    expect(observed).toBe('initial');
+    val.set('new');
+    expect(observed).toBe('initial');
+    await fixture.whenStable();
+    expect(observed).toBe('new');
   });
 });
