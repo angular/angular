@@ -15,11 +15,6 @@ function supportJasmineSpec() {
 (supportJasmineSpec as any).message = 'jasmine spec';
 
 ifEnvSupports(supportJasmineSpec, () => {
-  beforeEach(() => {
-    // assert that each jasmine run has a task, so that drainMicrotask works properly.
-    expect(Zone.currentTask).toBeTruthy();
-  });
-
   describe('jasmine', () => {
     let throwOnAsync = false;
     let beforeEachZone: Zone|null = null;

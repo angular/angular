@@ -266,7 +266,8 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
           // All functions are done, clear the test zone.
           this.testProxyZone = null;
           this.testProxyZoneSpec = null;
-          ambientZone.scheduleMicroTask('jasmine.onComplete', fn);
+          // Run fn in the ambientZone to reset Zone context.
+          ambientZone.run(fn);
         })(attrs.onComplete);
       }
 
@@ -344,17 +345,7 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
 
       this.testProxyZoneSpec = new ProxyZoneSpec();
       this.testProxyZone = ambientZone.fork(this.testProxyZoneSpec);
-      if (!Zone.currentTask) {
-        // if we are not running in a task then if someone would register a
-        // element.addEventListener and then calling element.click() the
-        // addEventListener callback would think that it is the top most task and would
-        // drain the microtask queue on element.click() which would be incorrect.
-        // For this reason we always force a task when running jasmine tests.
-        Zone.current.scheduleMicroTask(
-            'jasmine.execute().forceTask', () => QueueRunner.prototype.execute.call(this));
-      } else {
-        _super.prototype.execute.call(this);
-      }
+      _super.prototype.execute.call(this);
     };
     return ZoneQueueRunner;
   })(QueueRunner);

@@ -151,13 +151,7 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
     return mochaOriginal.beforeEach.apply(this, wrapTestInZone(arguments));
   };
 
-  ((originalRunTest, originalRun) => {
-    Mocha.Runner.prototype.runTest = function(fn: Function) {
-      Zone.current.scheduleMicroTask('mocha.forceTask', () => {
-        originalRunTest.call(this, fn);
-      });
-    };
-
+  ((originalRun) => {
     Mocha.Runner.prototype.run = function(fn: Function) {
       this.on('test', (e: any) => {
         testZone = rootZone.fork(new ProxyZoneSpec());
@@ -176,5 +170,5 @@ Zone.__load_patch('mocha', (global: any, Zone: ZoneType) => {
 
       return originalRun.call(this, fn);
     };
-  })(Mocha.Runner.prototype.runTest, Mocha.Runner.prototype.run);
+  })(Mocha.Runner.prototype.run);
 });
