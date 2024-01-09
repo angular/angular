@@ -8,7 +8,7 @@
 import {animate, AnimationPlayer, AnimationTriggerMetadata, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory, ɵBaseAnimationRenderer as BaseAnimationRenderer} from '@angular/animations/browser';
 import {DOCUMENT} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, Component, Injectable, NgZone, Renderer2, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
+import {ANIMATION_MODULE_TYPE, Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild, ɵChangeDetectionScheduler as ChangeDetectionScheduler} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {InjectableAnimationEngine} from '@angular/platform-browser/animations/src/providers';
@@ -37,7 +37,9 @@ describe('AnimationRenderer', () => {
               (doc: Document, renderer: DomRendererFactory2, zone: NgZone,
                engine: MockAnimationEngine) => {
                 const animationModule = {
-                  ɵcreateEngine: (_: 'animations'|'noop', _2: Document): AnimationEngine => engine,
+                  ɵcreateEngine:
+                      (_: 'animations'|'noop', _2: Document, _3: ChangeDetectionScheduler|null):
+                          AnimationEngine => engine,
                   ɵAnimationEngine: MockAnimationEngine as any,
                   ɵAnimationRenderer: AnimationRenderer,
                   ɵBaseAnimationRenderer: BaseAnimationRenderer,

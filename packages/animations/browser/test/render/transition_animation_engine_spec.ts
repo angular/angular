@@ -38,7 +38,7 @@ describe('TransitionAnimationEngine', () => {
 
   function makeEngine(normalizer?: AnimationStyleNormalizer) {
     const engine = new TransitionAnimationEngine(
-        getBodyNode(), driver, normalizer || new NoopAnimationStyleNormalizer());
+        getBodyNode(), driver, normalizer || new NoopAnimationStyleNormalizer(), null);
     engine.createNamespace(DEFAULT_NAMESPACE_ID, element);
     return engine;
   }
