@@ -16,7 +16,7 @@ function MyComponent_ng_template_2_ng_template_2_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $ctx_r1$ = $r3$.ɵɵnextContext(2);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵi18nExp($ctx_r1$.valueB);
     $r3$.ɵɵi18nApply(0);
   }

@@ -36,12 +36,12 @@ function MyComponent_ng_content_6_Template(rf, ctx) {
     i0.ɵɵi18nStart(0, 0, 6);
     i0.ɵɵprojection(1, 0, ["*ngIf", "flag"]);
     i0.ɵɵi18nEnd();
-  } 
+  }
 }
 …
 decls: 7,
 vars: 5,
-consts: () => { 
+consts: () => {
   __i18nMsgWithPostprocess__('{$tagImg}{$startTagOtherComponent}{$closeTagOtherComponent}{$startTagNgTemplate}{$closeTagNgTemplate}{$startTagNgContainer}{$closeTagNgContainer}{$startTagNgContent}{$closeTagNgContent}', [['closeTagNgContainer', String.raw`\uFFFD/#1:5\uFFFD\uFFFD/*5:5\uFFFD`], ['closeTagNgContent', String.raw`\uFFFD/#1:6\uFFFD\uFFFD/*6:6\uFFFD`], ['closeTagNgTemplate', String.raw`[\uFFFD/*1:4\uFFFD|\uFFFD/*4:3\uFFFD]`], ['closeTagOtherComponent', String.raw`\uFFFD/#1:2\uFFFD\uFFFD/*3:2\uFFFD`], ['startTagNgContainer', String.raw`\uFFFD*5:5\uFFFD\uFFFD#1:5\uFFFD`], ['startTagNgContent', String.raw`\uFFFD*6:6\uFFFD\uFFFD#1:6\uFFFD`], ['startTagNgTemplate', String.raw`[\uFFFD*4:3\uFFFD|\uFFFD*1:4\uFFFD]`], ['startTagOtherComponent', String.raw`\uFFFD*3:2\uFFFD\uFFFD#1:2\uFFFD`], ['tagImg', String.raw`\uFFFD*2:1\uFFFD\uFFFD/*2:1\uFFFD\uFFFD#1:1\uFFFD\uFFFD/#1:1\uFFFD\uFFFD*2:1\uFFFD\uFFFD/*2:1\uFFFD`]], {original_code: { 'closeTagNgContainer': '<ng-container *ngIf=\"flag\" />', 'closeTagNgContent': '<ng-content *ngIf=\"flag\" />', 'closeTagNgTemplate': '<ng-template *ngIf=\"flag\" />', 'closeTagOtherComponent': '<other-component *ngIf=\"flag\" />', 'startTagNgContainer': '<ng-container *ngIf=\"flag\" />', 'startTagNgContent': '<ng-content *ngIf=\"flag\" />', 'startTagNgTemplate': '<ng-template *ngIf=\"flag\" />', 'startTagOtherComponent': '<other-component *ngIf=\"flag\" />', 'tagImg': '<img *ngIf=\"flag\" />'}}, {}, [])
   return [$i18n_0$, [4, "ngIf"]];
 },
@@ -57,13 +57,13 @@ template: function MyComponent_Template(rf, ctx) {
   if (rf & 2) {
     i0.ɵɵadvance(2);
     i0.ɵɵproperty("ngIf", ctx.flag);
-    i0.ɵɵadvance(1);
+    i0.ɵɵadvance();
     i0.ɵɵproperty("ngIf", ctx.flag);
-    i0.ɵɵadvance(1);
+    i0.ɵɵadvance();
     i0.ɵɵproperty("ngIf", ctx.flag);
-    i0.ɵɵadvance(1);
+    i0.ɵɵadvance();
     i0.ɵɵproperty("ngIf", ctx.flag);
-    i0.ɵɵadvance(1);
+    i0.ɵɵadvance();
     i0.ɵɵproperty("ngIf", ctx.flag);
   }
 }

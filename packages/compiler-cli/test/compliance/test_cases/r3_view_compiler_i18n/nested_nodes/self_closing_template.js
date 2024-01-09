@@ -36,9 +36,9 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵtemplate(1, MyComponent_img_1_Template, 1, 0, "img", 1)(2, MyComponent_img_2_Template, 2, 1, "img", 2);
   }
   if (rf & 2) {
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵproperty("ngIf", ctx.visible);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵproperty("ngIf", ctx.visible);
   }
 }

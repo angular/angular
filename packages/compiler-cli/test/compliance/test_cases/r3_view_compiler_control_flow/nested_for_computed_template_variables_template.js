@@ -29,7 +29,7 @@ function MyApp_For_1_For_2_Template(rf, ctx) {
     $r3$.ɵɵtextInterpolate4(" Inner vars: ", $index_r8$ % 2 !== 0, " ", $index_r8$ % 2 === 0, " ", $index_r8$ === 0, " ", $index_r8$ === $count_r10$ - 1, " ");
     $r3$.ɵɵadvance(2);
     $r3$.ɵɵtextInterpolate4(" Outer vars: ", $index_1_r3$ % 2 !== 0, " ", $index_1_r3$ % 2 === 0, " ", $index_1_r3$ === 0, " ", $index_1_r3$ === $count_1_r5$ - 1, " ");
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵrepeater($ctx_r6$.items);
   }
 }
@@ -41,7 +41,7 @@ function MyApp_For_1_Template(rf, ctx) {
     const $count_r4$ = ctx.$count;
     const $ctx_r0$ = $r3$.ɵɵnextContext();
     $r3$.ɵɵtextInterpolate4(" Outer vars: ", $index_r2$ % 2 !== 0, " ", $index_r2$ % 2 === 0, " ", $index_r2$ === 0, " ", $index_r2$ === $count_r4$ - 1, " ");
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵrepeater($ctx_r0$.items);
   }
 }

@@ -18,7 +18,7 @@ template: function MyComponent_Template(rf, ctx) {
     i0.ɵɵelementEnd();
   }
   if (rf & 2) {
-    i0.ɵɵadvance(1);
+    i0.ɵɵadvance();
     i0.ɵɵproperty("ngIf", ctx.condition);
   }
 }
