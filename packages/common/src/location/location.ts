@@ -265,6 +265,13 @@ export class Location implements OnDestroy {
   }
 
   /**
+   * @returns the observable to subscribe to the platform's `popState` events.
+   */
+  asObservable() {
+    return this._subject.asObservable();
+  }
+
+  /**
    * Normalizes URL parameters by prepending with `?` if needed.
    *
    * @param  params String of URL parameters.
