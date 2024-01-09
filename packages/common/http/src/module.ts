@@ -23,6 +23,8 @@ import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XS
  * and the default header name is `X-XSRF-TOKEN`.
  *
  * @publicApi
+ * @deprecated Use withXsrfConfiguration({cookieName: 'XSRF-TOKEN', headerName: 'X-XSRF-TOKEN'}) as
+ *     providers instead or `withNoXsrfProtection` if you want to disabled XSRF protection.
  */
 @NgModule({
   providers: [
@@ -76,6 +78,7 @@ export class HttpClientXsrfModule {
  * multiprovider for built-in [DI token](guide/glossary#di-token) `HTTP_INTERCEPTORS`.
  *
  * @publicApi
+ * @deprecated use `provideHttpClient(withInterceptorsFromDi())` as providers instead
  */
 @NgModule({
   /**
@@ -96,6 +99,7 @@ export class HttpClientModule {
  * with method JSONP, where they are rejected.
  *
  * @publicApi
+ * @deprecated `withJsonpSupport()` as providers instead
  */
 @NgModule({
   providers: [

@@ -1828,7 +1828,7 @@ export class HttpClient {
     static ɵprov: i0.ɵɵInjectableDeclaration<HttpClient>;
 }
 
-// @public
+// @public @deprecated
 export class HttpClientJsonpModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientJsonpModule, never>;
@@ -1838,7 +1838,7 @@ export class HttpClientJsonpModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientJsonpModule, never, never, never>;
 }
 
-// @public
+// @public @deprecated
 export class HttpClientModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientModule, never>;
@@ -1848,7 +1848,7 @@ export class HttpClientModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientModule, never, never, never>;
 }
 
-// @public
+// @public @deprecated
 export class HttpClientXsrfModule {
     static disable(): ModuleWithProviders<HttpClientXsrfModule>;
     static withOptions(options?: {
