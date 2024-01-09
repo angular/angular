@@ -12,7 +12,7 @@ import * as i1 from '@angular/common/http';
 import { Observer } from 'rxjs';
 import { Provider } from '@angular/core';
 
-// @public
+// @public @deprecated
 export class HttpClientTestingModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientTestingModule, never>;
