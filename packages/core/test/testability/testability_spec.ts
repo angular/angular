@@ -77,88 +77,6 @@ describe('Testability', () => {
     // (injected into a constructor) across all instances.
     setTestabilityGetter(null! as GetTestability);
   });
-  describe('Pending count logic', () => {
-    it('should start with a pending count of 0', () => {
-      expect(testability.getPendingRequestCount()).toEqual(0);
-    });
-
-    it('should fire whenstable callbacks if pending count is 0', waitForAsync(() => {
-         testability.whenStable(execute);
-
-         microTask(() => {
-           expect(execute).toHaveBeenCalled();
-         });
-       }));
-
-    it('should not fire whenstable callbacks synchronously if pending count is 0', () => {
-      testability.whenStable(execute);
-      expect(execute).not.toHaveBeenCalled();
-    });
-
-    it('should not call whenstable callbacks when there are pending counts', waitForAsync(() => {
-         testability.increasePendingRequestCount();
-         testability.increasePendingRequestCount();
-         testability.whenStable(execute);
-
-         microTask(() => {
-           expect(execute).not.toHaveBeenCalled();
-           testability.decreasePendingRequestCount();
-
-           microTask(() => {
-             expect(execute).not.toHaveBeenCalled();
-           });
-         });
-       }));
-
-    it('should fire whenstable callbacks when pending drops to 0', waitForAsync(() => {
-         testability.increasePendingRequestCount();
-         testability.whenStable(execute);
-
-         microTask(() => {
-           expect(execute).not.toHaveBeenCalled();
-           testability.decreasePendingRequestCount();
-
-           microTask(() => {
-             expect(execute).toHaveBeenCalled();
-           });
-         });
-       }));
-
-    it('should not fire whenstable callbacks synchronously when pending drops to 0',
-       waitForAsync(() => {
-         testability.increasePendingRequestCount();
-         testability.whenStable(execute);
-         testability.decreasePendingRequestCount();
-
-         expect(execute).not.toHaveBeenCalled();
-       }));
-
-    it('should fire whenstable callbacks with didWork if pending count is 0', waitForAsync(() => {
-         microTask(() => {
-           testability.whenStable(execute);
-
-           microTask(() => {
-             expect(execute).toHaveBeenCalledWith(false);
-           });
-         });
-       }));
-
-    it('should fire whenstable callbacks with didWork when pending drops to 0', waitForAsync(() => {
-         testability.increasePendingRequestCount();
-         testability.whenStable(execute);
-
-         testability.decreasePendingRequestCount();
-
-         microTask(() => {
-           expect(execute).toHaveBeenCalledWith(true);
-           testability.whenStable(execute2);
-
-           microTask(() => {
-             expect(execute2).toHaveBeenCalledWith(false);
-           });
-         });
-       }));
-  });
 
   describe('NgZone callback logic', () => {
     describe('whenStable with timeout', () => {
@@ -301,45 +219,6 @@ describe('Testability', () => {
 
       expect(execute).not.toHaveBeenCalled();
     });
-
-    it('should not fire whenstable callback when event did not finish', fakeAsync(() => {
-         ngZone.unstable();
-         testability.increasePendingRequestCount();
-         testability.whenStable(execute);
-
-         tick();
-         expect(execute).not.toHaveBeenCalled();
-         testability.decreasePendingRequestCount();
-
-         tick();
-         expect(execute).not.toHaveBeenCalled();
-         ngZone.stable();
-
-         tick();
-         expect(execute).toHaveBeenCalled();
-       }));
-
-    it('should not fire whenstable callback when there are pending counts', fakeAsync(() => {
-         ngZone.unstable();
-         testability.increasePendingRequestCount();
-         testability.increasePendingRequestCount();
-         testability.whenStable(execute);
-
-         tick();
-         expect(execute).not.toHaveBeenCalled();
-         ngZone.stable();
-
-         tick();
-         expect(execute).not.toHaveBeenCalled();
-         testability.decreasePendingRequestCount();
-
-         tick();
-         expect(execute).not.toHaveBeenCalled();
-         testability.decreasePendingRequestCount();
-
-         tick();
-         expect(execute).toHaveBeenCalled();
-       }));
 
     it('should fire whenstable callback with didWork if event is already finished',
        fakeAsync(() => {
