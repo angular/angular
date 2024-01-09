@@ -12,9 +12,6 @@ With hierarchical dependency injection, you can isolate sections of the applicat
 
 ## Types of injector hierarchies
 
-Injectors in Angular have rules that you can leverage to achieve the desired visibility of injectables in your applications.
-By understanding these rules, you can determine whether to declare a provider at the application level, in a Component, or in a Directive.
-
 Angular has two injector hierarchies:
 
 | Injector hierarchies        | Details |
