@@ -1053,12 +1053,12 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
 
         expect(jsContents)
-            .toContain('inputs: { x: [i0.ɵɵInputFlags.HasTransform, "x", "x", externalFunc] }');
+            .toContain(
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", externalFunc] }');
       });
 
-      it('should generate input info for transform function imported externally using namespace',
-         () => {
-           env.write('test.ts', `
+      it('should generate input info for transform function imported externally using namespace', () => {
+        env.write('test.ts', `
         import {Component, NgModule, Input} from '@angular/core';
         import * as n from './some_where';
 
@@ -1071,13 +1071,13 @@ runInEachFileSystem(() => {
         }
      `);
 
-           env.driveMain();
-           const jsContents = env.getContents('test.js');
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
 
-           expect(jsContents)
-               .toContain(
-                   'inputs: { x: [i0.ɵɵInputFlags.HasTransform, "x", "x", n.externalFunc] }');
-         });
+        expect(jsContents)
+            .toContain(
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", n.externalFunc] }');
+      });
 
       it('should generate input info for transform function defined locally', () => {
         env.write('test.ts', `
@@ -1100,7 +1100,8 @@ runInEachFileSystem(() => {
         const jsContents = env.getContents('test.js');
 
         expect(jsContents)
-            .toContain('inputs: { x: [i0.ɵɵInputFlags.HasTransform, "x", "x", localFunc] }');
+            .toContain(
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", localFunc] }');
       });
 
       it('should generate input info for inline transform function', () => {
@@ -1121,7 +1122,7 @@ runInEachFileSystem(() => {
 
         expect(jsContents)
             .toContain(
-                'inputs: { x: [i0.ɵɵInputFlags.HasTransform, "x", "x", (v) => v + \'TRANSFORMED!\'] }');
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", (v) => v + \'TRANSFORMED!\'] }');
       });
 
       it('should not check inline function param type', () => {
@@ -1142,7 +1143,7 @@ runInEachFileSystem(() => {
 
         expect(jsContents)
             .toContain(
-                'inputs: { x: [i0.ɵɵInputFlags.HasTransform, "x", "x", v => v + \'TRANSFORMED!\'] }');
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", v => v + \'TRANSFORMED!\'] }');
       });
     });
   });

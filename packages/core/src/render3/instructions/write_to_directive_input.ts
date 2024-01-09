@@ -28,12 +28,14 @@ export function writeToDirectiveInput<T>(
       inputSignalNode = field[SIGNAL];
     }
 
-    if ((flags & InputFlags.HasTransform) !== 0) {
-      if (inputSignalNode !== null) {
-        value = inputSignalNode.transformFn!(value);
-      } else {
-        value = def.inputTransforms![privateName]!.call(instance, value);
-      }
+    // If there is a signal node and a transform, run it before potentially
+    // delegating to features like `NgOnChanges`.
+    if (inputSignalNode !== null && inputSignalNode.transformFn !== undefined) {
+      value = inputSignalNode.transformFn(value);
+    }
+    // If there is a decorator input transform, run it.
+    if ((flags & InputFlags.HasDecoratorInputTransform) !== 0) {
+      value = def.inputTransforms![privateName]!.call(instance, value);
     }
 
     if (def.setInput !== null) {

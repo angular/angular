@@ -43,7 +43,7 @@ export interface Input {
 export enum InputFlags {
   None = 0,
   SignalBased = 1 << 0,
-  HasTransform = 1 << 1,
+  HasDecoratorInputTransform = 1 << 1,
 }
 
 export interface Output {
