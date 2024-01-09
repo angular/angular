@@ -92,7 +92,14 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
 
   // Make sure to refer to ngDevMode as ['ngDevMode'] for closure.
   const allowNgDevModeTrue = locationString.indexOf('ngDevMode=false') === -1;
-  global['ngDevMode'] = allowNgDevModeTrue && newCounters;
+  if (!allowNgDevModeTrue) {
+    global['ngDevMode'] = false;
+  } else {
+    if (typeof global['ngDevMode'] !== 'object') {
+      global['ngDevMode'] = {};
+    }
+    Object.assign(global['ngDevMode'], newCounters);
+  }
   return newCounters;
 }
 
@@ -123,7 +130,7 @@ export function initNgDevMode(): boolean {
   // If the `ngDevMode` is not an object, then it means we have not created the perf counters
   // yet.
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
-    if (typeof ngDevMode !== 'object') {
+    if (typeof ngDevMode !== 'object' || Object.keys(ngDevMode).length === 0) {
       ngDevModeResetPerfCounters();
     }
     return typeof ngDevMode !== 'undefined' && !!ngDevMode;
