@@ -31,7 +31,6 @@ export {
   EffectCleanupFn,
   EffectCleanupRegisterFn,
   EffectScheduler as ɵEffectScheduler,
-  ZoneAwareQueueingScheduler as ɵZoneAwareQueueingScheduler
 } from './render3/reactivity/effect';
 export {
   assertNotInReactiveContext,
