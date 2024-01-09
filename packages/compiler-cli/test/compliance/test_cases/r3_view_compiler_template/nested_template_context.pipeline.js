@@ -12,18 +12,18 @@ function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 	  $i0$.ɵɵtext(1);
 	  $i0$.ɵɵelementEnd();
 	}
-  
+
 	if (rf & 2) {
 	  const $inner1$ = ctx.$implicit;
 	  const $middle1$ = $i0$.ɵɵnextContext().$implicit;
 	  const $outer1$ = $i0$.ɵɵnextContext().$implicit;
 	  const $myComp1$ = $i0$.ɵɵnextContext();
 	  $i0$.ɵɵproperty("title", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component));
-	  $r3$.ɵɵadvance(1);
+	  $r3$.ɵɵadvance();
 	  $i0$.ɵɵtextInterpolate1(" ", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component), " ");
 	}
   }
-  
+
   function MyComponent_ul_0_li_1_Template(rf, ctx) {
 	if (rf & 1) {
 	  $i0$.ɵɵelementStart(0, "li");
@@ -32,11 +32,11 @@ function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 	}
 	if (rf & 2) {
 	  const $myComp2$ = $i0$.ɵɵnextContext(2);
-	  $r3$.ɵɵadvance(1);
+	  $r3$.ɵɵadvance();
 	  $i0$.ɵɵproperty("ngForOf", $myComp2$.items);
 	}
   }
-  
+
   function MyComponent_ul_0_Template(rf, ctx) {
 	if (rf & 1) {
 	  $i0$.ɵɵelementStart(0, "ul");
@@ -45,7 +45,7 @@ function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 	}
 	if (rf & 2) {
 	  const $outer2$ = ctx.$implicit;
-	  $r3$.ɵɵadvance(1);
+	  $r3$.ɵɵadvance();
 	  $i0$.ɵɵproperty("ngForOf", $outer2$.items);
 	}
   }
@@ -63,4 +63,3 @@ function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 	  $i0$.ɵɵproperty("ngForOf", ctx.items);
 	}
   }
-  

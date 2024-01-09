@@ -21,9 +21,8 @@ consts: () => {
 		i0.ɵɵadvance(2);
 		i0.ɵɵi18nExp(ctx.attr);
 		i0.ɵɵi18nApply(3);
-		i0.ɵɵadvance(1);
+		i0.ɵɵadvance();
 		i0.ɵɵi18nExp(ctx.text);
 		i0.ɵɵi18nApply(1);
 	}
   }
-  

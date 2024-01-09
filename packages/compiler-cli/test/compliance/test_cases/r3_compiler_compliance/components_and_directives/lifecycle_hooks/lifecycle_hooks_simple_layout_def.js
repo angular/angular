@@ -10,7 +10,7 @@ SimpleLayout.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     }
     if (rf & 2) {
       $r3$.ɵɵproperty("name", ctx.name1);
-      $r3$.ɵɵadvance(1);
+      $r3$.ɵɵadvance();
       $r3$.ɵɵproperty("name", ctx.name2);
     }
   },
