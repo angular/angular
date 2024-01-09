@@ -100,7 +100,7 @@ architect(
     name = "build",
     args = [
         "angular-dev:build",
-        "--output-path=build-app",
+        "--output-path=build",
     ],
     chdir = "$(RULEDIR)",
     data = APPLICATION_DEPS + [
