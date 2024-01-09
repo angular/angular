@@ -15,7 +15,7 @@ import {TutorialType} from '@angular/docs';
 import {
   FakeWebContainer,
   FakeWebContainerProcess,
-} from '../../../../shared/src/lib/utils/test-utils.spec';
+} from '@angular/docs/testing';
 import {AlertManager} from './alert-manager.service';
 import {EmbeddedTutorialManager} from './embedded-tutorial-manager.service';
 import {LoadingStep} from './enums/loading-steps';
