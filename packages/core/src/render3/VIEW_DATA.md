@@ -99,7 +99,7 @@ class MyApp {
       }
       if (rf & RenderFlags.Update) {
         ɵɵproperty('title', ctx.name);
-        ɵɵadvance(1);
+        ɵɵadvance();
         ɵɵtextInterpolate1('Hello ', ctx.name, '!');
       }
       ...

@@ -1,6 +1,6 @@
 {
   "name": "zone.js",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "description": "Zones for JavaScript",
   "main": "./bundles/zone.umd.js",
   "module": "./fesm2015/zone.js",
@@ -22,7 +22,6 @@
     "mock-require": "3.0.3"
   },
   "scripts": {
-    "closuretest": "./scripts/closure/closure_compiler.sh",
     "electrontest": "cd test/extra && node electron.js",
     "jest:test": "jest --config ./test/jest/jest.config.js ./test/jest/jest.spec.js",
     "jest:nodetest": "jest --config ./test/jest/jest.node.config.js ./test/jest/jest.spec.js",

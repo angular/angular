@@ -15,19 +15,19 @@ import {ImportManager} from '../../translator';
  * Can optionally add extra statements (e.g. new constants) before the body as well.
  */
 export function addImports(
-    importManager: ImportManager, sf: ts.SourceFile,
+    factory = ts.factory, importManager: ImportManager, sf: ts.SourceFile,
     extraStatements: ts.Statement[] = []): ts.SourceFile {
   // Generate the import statements to prepend.
   const addedImports = importManager.getAllImports(sf.fileName).map(i => {
-    const qualifier = ts.factory.createIdentifier(i.qualifier.text);
-    const importClause = ts.factory.createImportClause(
+    const qualifier = factory.createIdentifier(i.qualifier.text);
+    const importClause = factory.createImportClause(
         /* isTypeOnly */ false,
         /* name */ undefined,
-        /* namedBindings */ ts.factory.createNamespaceImport(qualifier));
-    const decl = ts.factory.createImportDeclaration(
+        /* namedBindings */ factory.createNamespaceImport(qualifier));
+    const decl = factory.createImportDeclaration(
         /* modifiers */ undefined,
         /* importClause */ importClause,
-        /* moduleSpecifier */ ts.factory.createStringLiteral(i.specifier));
+        /* moduleSpecifier */ factory.createStringLiteral(i.specifier));
 
     // Set the qualifier's original TS node to the `ts.ImportDeclaration`. This allows downstream
     // transforms such as tsickle to properly process references to this import.
@@ -51,8 +51,8 @@ export function addImports(
     // If we prepend imports, we also prepend NotEmittedStatement to use it as an anchor
     // for @fileoverview Closure annotation. If there is no @fileoverview annotations, this
     // statement would be a noop.
-    const fileoverviewAnchorStmt = ts.factory.createNotEmittedStatement(sf);
-    return ts.factory.updateSourceFile(sf, ts.factory.createNodeArray([
+    const fileoverviewAnchorStmt = factory.createNotEmittedStatement(sf);
+    return factory.updateSourceFile(sf, factory.createNodeArray([
       fileoverviewAnchorStmt, ...existingImports, ...addedImports, ...extraStatements, ...body
     ]));
   }

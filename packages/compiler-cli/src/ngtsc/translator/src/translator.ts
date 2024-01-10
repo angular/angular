@@ -21,6 +21,7 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.Bigger, '>'],
   [o.BinaryOperator.BiggerEquals, '>='],
   [o.BinaryOperator.BitwiseAnd, '&'],
+  [o.BinaryOperator.BitwiseOr, '|'],
   [o.BinaryOperator.Divide, '/'],
   [o.BinaryOperator.Equals, '=='],
   [o.BinaryOperator.Identical, '==='],

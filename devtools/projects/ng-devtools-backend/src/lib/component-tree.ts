@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {ComponentExplorerViewQuery, DirectiveMetadata, DirectivesProperties, ElementPosition, InjectedService, PropertyQueryTypes, ProviderRecord, SerializedInjectedService, SerializedInjector, SerializedProviderRecord, UpdatedStateData,} from 'protocol';
+import {ComponentExplorerViewQuery, DirectiveMetadata, DirectivesProperties, ElementPosition, PropertyQueryTypes, SerializedInjectedService, SerializedInjector, SerializedProviderRecord, UpdatedStateData,} from 'protocol';
 
 import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
+import {ngDebugApiIsSupported, ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {deeplySerializeSelectedProperties, serializeDirectiveState,} from './state-serializer/state-serializer';
 
 // Need to be kept in sync with Angular framework
@@ -21,9 +21,9 @@ enum ChangeDetectionStrategy {
 }
 
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
-import type {ClassProvider, ExistingProvider, FactoryProvider, InjectionToken, Injector, Type, ValueProvider,} from '@angular/core';
 
-const ngDebug = () => (window as any).ng;
+import type {ClassProvider, ExistingProvider, FactoryProvider, InjectOptions, InjectionToken, Injector, Type, ValueProvider, ɵComponentDebugMetadata as ComponentDebugMetadata, ɵProviderRecord as ProviderRecord} from '@angular/core';
+
 export const injectorToId = new WeakMap<Injector|HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
 export const idToInjector = new Map<string, Injector>();
@@ -34,32 +34,8 @@ export function getInjectorId() {
   return `${injectorId++}`;
 }
 
-export function hasDiDebugAPIs(): boolean {
-  if (!ngDebugApiIsSupported('ɵgetInjectorResolutionPath')) {
-    return false;
-  }
-  if (!ngDebugApiIsSupported('ɵgetDependenciesFromInjectable')) {
-    return false;
-  }
-  if (!ngDebugApiIsSupported('ɵgetInjectorProviders')) {
-    return false;
-  }
-  if (!ngDebugApiIsSupported('ɵgetInjectorMetadata')) {
-    return false;
-  }
-
-  return true;
-}
-
-export function ngDebugApiIsSupported(api: string): boolean {
-  const ng = ngDebug();
-  return typeof ng[api] === 'function';
-}
-
-export function getInjectorMetadata(
-    injector: Injector,
-    ): {type: string; source: HTMLElement | string | null}|null {
-  return ngDebug().ɵgetInjectorMetadata(injector);
+function getInjectorMetadata(injector: Injector) {
+  return ngDebugClient().ɵgetInjectorMetadata(injector);
 }
 
 export function getInjectorResolutionPath(injector: Injector): Injector[] {
@@ -67,23 +43,23 @@ export function getInjectorResolutionPath(injector: Injector): Injector[] {
     return [];
   }
 
-  return ngDebug().ɵgetInjectorResolutionPath(injector);
+  return ngDebugClient().ɵgetInjectorResolutionPath(injector);
 }
 
 export function getInjectorFromElementNode(element: Node): Injector|null {
-  return ngDebug().getInjector(element);
+  return ngDebugClient().getInjector(element);
 }
 
-export function getDirectivesFromElement(element: HTMLElement):
+function getDirectivesFromElement(element: HTMLElement):
     {component: unknown|null; directives: unknown[];} {
   let component = null;
   if (element instanceof Element) {
-    component = ngDebug().getComponent(element);
+    component = ngDebugClient().getComponent(element);
   }
 
   return {
     component,
-    directives: ngDebug().getDirectives(element),
+    directives: ngDebugClient().getDirectives(element),
   };
 }
 
@@ -101,17 +77,15 @@ export const getLatestComponentState = (
 
   const directiveProperties: DirectivesProperties = {};
 
-  const injector = ngDebug().getInjector(node.nativeElement);
+  const injector = ngDebugClient().getInjector(node.nativeElement!);
 
-  let resolutionPathWithProviders: {injector: Injector; providers: ProviderRecord[]}[] = [];
-  if (hasDiDebugAPIs()) {
-    resolutionPathWithProviders =
-        getInjectorResolutionPath(injector).map((injector) => ({
-                                                  injector,
-                                                  providers: getInjectorProviders(injector),
-                                                }));
-  }
-
+  const injectors = getInjectorResolutionPath(injector);
+  const resolutionPathWithProviders = !ngDebugDependencyInjectionApiIsSupported() ?
+      [] :
+      injectors.map((injector) => ({
+                      injector,
+                      providers: getInjectorProviders(injector),
+                    }));
   const populateResultSet = (dir: DirectiveInstanceType|ComponentInstanceType) => {
     const {instance, name} = dir;
     const metadata = getDirectiveMetadata(instance);
@@ -149,7 +123,7 @@ export const getLatestComponentState = (
   };
 };
 
-export function serializeElementInjectorWithId(injector: Injector): SerializedInjector|null {
+function serializeElementInjectorWithId(injector: Injector): SerializedInjector|null {
   let id: string;
   const element = getElementInjectorElement(injector);
 
@@ -171,7 +145,7 @@ export function serializeElementInjectorWithId(injector: Injector): SerializedIn
   return {id, ...serializedInjector};
 }
 
-export function serializeInjectorWithId(injector: Injector): SerializedInjector|null {
+function serializeInjectorWithId(injector: Injector): SerializedInjector|null {
   if (isElementInjector(injector)) {
     return serializeElementInjectorWithId(injector);
   } else {
@@ -179,7 +153,7 @@ export function serializeInjectorWithId(injector: Injector): SerializedInjector|
   }
 }
 
-export function serializeEnvironmentInjectorWithId(injector: Injector): SerializedInjector|null {
+function serializeEnvironmentInjectorWithId(injector: Injector): SerializedInjector|null {
   let id: string;
 
   if (!injectorToId.has(injector)) {
@@ -210,18 +184,16 @@ const enum DirectiveMetadataKey {
 // Gets directive metadata. For newer versions of Angular (v12+) it uses
 // the global `getDirectiveMetadata`. For prior versions of the framework
 // the method directly interacts with the directive/component definition.
-export const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
-  const getMetadata = (window as any).ng.getDirectiveMetadata;
-  if (getMetadata) {
-    const metadata = getMetadata(dir);
-    if (metadata) {
-      return {
-        inputs: metadata.inputs,
-        outputs: metadata.outputs,
-        encapsulation: metadata.encapsulation,
-        onPush: metadata.changeDetection === ChangeDetectionStrategy.OnPush,
-      };
-    }
+const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
+  const getMetadata = ngDebugClient().getDirectiveMetadata;
+  const metadata = getMetadata?.(dir) as ComponentDebugMetadata;
+  if (metadata) {
+    return {
+      inputs: metadata.inputs,
+      outputs: metadata.outputs,
+      encapsulation: metadata.encapsulation,
+      onPush: metadata.changeDetection === ChangeDetectionStrategy.OnPush,
+    };
   }
 
   // Used in older Angular versions, prior to the introduction of `getDirectiveMetadata`.
@@ -242,12 +214,12 @@ export const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
   };
 };
 
-export function getInjectorProviders(injector: Injector): ProviderRecord[] {
+export function getInjectorProviders(injector: Injector) {
   if (isNullInjector(injector)) {
     return [];
   }
 
-  return ngDebug().ɵgetInjectorProviders(injector);
+  return ngDebugClient().ɵgetInjectorProviders(injector);
 }
 
 const getDependenciesForDirective = (
@@ -259,12 +231,8 @@ const getDependenciesForDirective = (
     return [];
   }
 
-  let dependencies: InjectedService[] = ngDebug()
-                                            .ɵgetDependenciesFromInjectable(
-                                                injector,
-                                                directive,
-                                                )
-                                            .dependencies;
+  let dependencies =
+      ngDebugClient().ɵgetDependenciesFromInjectable(injector, directive)?.dependencies ?? [];
   const serializedInjectedServices: SerializedInjectedService[] = [];
 
   let position = 0;
@@ -285,10 +253,10 @@ const getDependenciesForDirective = (
     // +
     // the import path from the providing injector to the feature module that provided the
     // dependency (2)
-    const dependencyResolutionPath = [
+    const dependencyResolutionPath: SerializedInjector[] = [
       // (1)
       ...resolutionPath.slice(0, foundInjectorIndex + 1)
-          .map((node) => serializeInjectorWithId(node.injector)),
+          .map((node) => serializeInjectorWithId(node.injector)!),
 
       // (2)
       // We slice the import path to remove the first element because this is the same
@@ -296,13 +264,13 @@ const getDependenciesForDirective = (
       ...(foundProvider?.importPath ?? []).slice(1).map((node) => {
         return {type: 'imported-module', name: valueToLabel(node), id: getInjectorId()};
       }),
-    ] as SerializedInjector[];
+    ];
 
     if (dependency.token && isInjectionToken(dependency.token)) {
       serializedInjectedServices.push({
         token: dependency.token!.toString(),
         value: valueToLabel(dependency.value),
-        flags: dependency.flags,
+        flags: dependency.flags as InjectOptions,
         position: [position++],
         resolutionPath: dependencyResolutionPath,
       });
@@ -312,7 +280,7 @@ const getDependenciesForDirective = (
     serializedInjectedServices.push({
       token: valueToLabel(dependency.token),
       value: valueToLabel(dependency.value),
-      flags: dependency.flags,
+      flags: dependency.flags as InjectOptions,
       position: [position++],
       resolutionPath: dependencyResolutionPath,
     });
@@ -321,7 +289,7 @@ const getDependenciesForDirective = (
   return serializedInjectedServices;
 };
 
-export const valueToLabel = (value: any): string => {
+const valueToLabel = (value: any): string => {
   if (isInjectionToken(value)) {
     return `InjectionToken(${value['_desc']})`;
   }
@@ -360,7 +328,7 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
   }
 
   if (metadata.type === 'element') {
-    const source = metadata.source! as HTMLElement;
+    const source = metadata.source as HTMLElement;
     const name = stripUnderscore(elementToDirectiveNames(source)[0]);
 
     return {type: 'element', name, providers};
@@ -377,7 +345,7 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
       }
     }
 
-    return {type: 'environment', name: stripUnderscore(metadata.source as string), providers};
+    return {type: 'environment', name: stripUnderscore(metadata.source ?? ''), providers};
   }
 
   console.error('Angular DevTools: Could not serialize injector.', injector);
@@ -444,13 +412,8 @@ export function getElementInjectorElement(elementInjector: Injector): HTMLElemen
   return getInjectorMetadata(elementInjector)!.source as HTMLElement;
 }
 
-export function isInjectionToken(token: Type<unknown>|InjectionToken<unknown>): boolean {
+function isInjectionToken(token: Type<unknown>|InjectionToken<unknown>): boolean {
   return token.constructor.name === 'InjectionToken';
-}
-
-export function isEnvironmentInjector(injector: Injector) {
-  const metadata = getInjectorMetadata(injector);
-  return metadata !== null && metadata.type === 'environment';
 }
 
 export function isElementInjector(injector: Injector) {
@@ -480,12 +443,10 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
 };
 
 const getRoots = () => {
-  const roots = Array.from(
-                    document.documentElement.querySelectorAll('[ng-version]'),
-                    ) as HTMLElement[];
+  const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]'));
 
-  const isTopLevel = (element: HTMLElement) => {
-    let parent: HTMLElement|null = element;
+  const isTopLevel = (element: Element) => {
+    let parent: Element|null = element;
 
     while (parent?.parentElement) {
       parent = parent.parentElement;
@@ -541,7 +502,7 @@ export const findNodeFromSerializedPosition = (
 };
 
 export const updateState = (updatedStateData: UpdatedStateData): void => {
-  const ngd = ngDebug();
+  const ng = ngDebugClient();
   const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest());
   if (!node) {
     console.warn(
@@ -554,13 +515,13 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
   if (updatedStateData.directiveId.directive !== undefined) {
     const directive = node.directives[updatedStateData.directiveId.directive].instance;
     mutateComponentOrDirective(updatedStateData, directive);
-    ngd.applyChanges(ngd.getOwningComponent(directive));
+    ng.applyChanges(ng.getOwningComponent(directive)!);
     return;
   }
   if (node.component) {
     const comp = node.component.instance;
     mutateComponentOrDirective(updatedStateData, comp);
-    ngd.applyChanges(comp);
+    ng.applyChanges(comp);
     return;
   }
 };

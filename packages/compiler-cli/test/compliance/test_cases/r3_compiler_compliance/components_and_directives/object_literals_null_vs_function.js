@@ -13,7 +13,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     }
     if (rf & 2) {
       $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction0(2, $c0$));
-      $r3$.ɵɵadvance(1);
+      $r3$.ɵɵadvance();
       $r3$.ɵɵproperty("dir", $r3$.ɵɵpureFunction1(3, $c1$, ctx.getFoo()));
     }
   },
