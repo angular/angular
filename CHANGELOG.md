@@ -1,3 +1,35 @@
+<a name="17.0.9"></a>
+# 17.0.9 (2024-01-10)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c22b513b3f](https://github.com/angular/angular/commit/c22b513b3f45c49baf4d6e571735aa4aa33b7845) | fix | remove unused parameters from the ngClass constructor ([#53831](https://github.com/angular/angular/pull/53831)) |
+| [bd9f89d1c8](https://github.com/angular/angular/commit/bd9f89d1c8e295f00ef3399c6bedca4e2ce0e89e) | fix | server-side rendering error when using in-memory scrolling ([#53683](https://github.com/angular/angular/pull/53683)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [92fd6cc42e](https://github.com/angular/angular/commit/92fd6cc42e0a217f4575404ea8e2af462f14ae18) | fix | generate less code for advance instructions ([#53845](https://github.com/angular/angular/pull/53845)) |
+| [6a41961fbd](https://github.com/angular/angular/commit/6a41961fbdf921f7a3ab82e92185eab751c0d153) | fix | ignore empty switch blocks ([#53776](https://github.com/angular/angular/pull/53776)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7309463697](https://github.com/angular/angular/commit/7309463697110d848781bfe81f04b6070c759928) | fix | interpolatedSignalNotInvoked diagnostic ([#53585](https://github.com/angular/angular/pull/53585)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [441db5123f](https://github.com/angular/angular/commit/441db5123f368c5fe3a505a79b97309e8400250f) | fix | `afterRender` hooks now only run on `ApplicationRef.tick` ([#52455](https://github.com/angular/angular/pull/52455)) |
+| [f9120d79cb](https://github.com/angular/angular/commit/f9120d79cb88a9f14c4baa6981f71a5afbd984e1) | fix | allow effect to be used inside an ErrorHandler ([#53713](https://github.com/angular/angular/pull/53713)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e92c86b77f](https://github.com/angular/angular/commit/e92c86b77ff7d400c034740ee0ad68acb626a22f) | fix | Fix empty switch case offset bug in cf migration ([#53839](https://github.com/angular/angular/pull/53839)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [91cb16fde9](https://github.com/angular/angular/commit/91cb16fde9ff68bcdc760428c47f4ebf3e476bd2) | fix | Do not delete global Event ([#53659](https://github.com/angular/angular/pull/53659)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.0.8"></a>
 # 17.0.8 (2023-12-21)
 ### compiler
