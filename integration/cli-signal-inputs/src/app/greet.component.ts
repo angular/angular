@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, ɵinput} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, input} from '@angular/core';
 
 @Component({
   selector: 'greet',
@@ -8,8 +8,8 @@ import {ChangeDetectionStrategy, Component, Input, ɵinput} from '@angular/core'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GreetComponent {
-  firstName = ɵinput.required<string>();
-  lastName = ɵinput(undefined, {
+  firstName = input.required<string>();
+  lastName = input(undefined, {
     transform: (v?: string) => v === undefined ? 'transformed-fallback' : `ng-${v}`,
   });
 
