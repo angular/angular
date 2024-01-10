@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertInInjectionContext, DestroyRef, effect, EffectRef, inject, Injector, Signal, untracked} from '@angular/core';
+import {assertInInjectionContext, DestroyRef, effect, inject, Injector, Signal, untracked} from '@angular/core';
 import {Observable, ReplaySubject} from 'rxjs';
 
 /**
