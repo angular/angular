@@ -34,7 +34,6 @@ const coreModuleName = '@angular/core';
  */
 export function getInputSignalsMetadataTransform(
     host: ReflectionHost,
-    evaluator: PartialEvaluator,
     isCore: boolean,
     ): ts.TransformerFactory<ts.SourceFile> {
   return (ctx) => {
@@ -43,7 +42,7 @@ export function getInputSignalsMetadataTransform(
 
       sourceFile = ts.visitNode(
           sourceFile,
-          createTransformVisitor(ctx, host, evaluator, importManager, isCore),
+          createTransformVisitor(ctx, host, importManager, isCore),
           ts.isSourceFile,
       );
 
@@ -64,7 +63,6 @@ export function getInputSignalsMetadataTransform(
 function createTransformVisitor(
     ctx: ts.TransformationContext,
     host: ReflectionHost,
-    evaluator: PartialEvaluator,
     importManager: ImportManager,
     isCore: boolean,
     ): ts.Visitor<ts.Node, ts.Node> {
@@ -74,8 +72,7 @@ function createTransformVisitor(
           (d) => decoratorsWithInputs.some((name) => isAngularDecorator(d, name, isCore)));
 
       if (angularDecorator !== undefined) {
-        return visitClassDeclaration(
-            ctx, host, evaluator, importManager, node, angularDecorator, isCore);
+        return visitClassDeclaration(ctx, host, importManager, node, angularDecorator, isCore);
       }
     }
 
@@ -88,7 +85,6 @@ function createTransformVisitor(
 function visitClassDeclaration(
     ctx: ts.TransformationContext,
     host: ReflectionHost,
-    evaluator: PartialEvaluator,
     importManager: ImportManager,
     clazz: ts.ClassDeclaration,
     classDecorator: Decorator,
@@ -110,7 +106,6 @@ function visitClassDeclaration(
     const inputMapping = tryParseSignalInputMapping(
         {name: member.name.text, value: member.initializer ?? null},
         host,
-        evaluator,
         isCore ? coreModuleName : undefined,
     );
     if (inputMapping === null) {

@@ -718,7 +718,7 @@ function tryParseInputFieldMapping(
   const classPropertyName = member.name;
 
   const decorator = tryGetDecoratorOnMember(member, 'Input', coreModule);
-  const signalInputMapping = tryParseSignalInputMapping(member, reflector, evaluator, coreModule);
+  const signalInputMapping = tryParseSignalInputMapping(member, reflector, coreModule);
 
   if (decorator !== null && signalInputMapping !== null) {
     throw new FatalDiagnosticError(

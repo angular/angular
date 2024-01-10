@@ -8,9 +8,9 @@
 
 import ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {InputMapping} from '../../../metadata';
-import {PartialEvaluator} from '../../../partial_evaluator';
-import {ClassMember, ReflectionHost} from '../../../reflection';
+import {ClassMember, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 
 /** Metadata describing an input declared via the `input` function. */
 interface InputMemberMetadata {
@@ -45,8 +45,7 @@ function tryParseInputInitializerAndOptions(
   }
 
   // Case 1: No `required`.
-  // TODO(signal-input-public): Clean this up.
-  if (target.text === 'input' || target.text === 'ɵinput') {
+  if (target.text === 'input') {
     if (!isReferenceToInputFunction(target, coreModule, reflector)) {
       return null;
     }
@@ -108,8 +107,32 @@ function isReferenceToInputFunction(
     targetImport = {name: target.text};
   }
 
-  // TODO(signal-input-public): Clean this up.
-  return targetImport.name === 'input' || targetImport.name === 'ɵinput';
+  return targetImport.name === 'input';
+}
+
+/** Parses and validates the input function options expression. */
+function parseAndValidateOptions(optionsNode: ts.Expression): {alias: string|undefined} {
+  if (!ts.isObjectLiteralExpression(optionsNode)) {
+    throw new FatalDiagnosticError(
+        ErrorCode.VALUE_HAS_WRONG_TYPE, optionsNode,
+        'Argument needs to be an object literal that is statically analyzable.');
+  }
+
+  const options = reflectObjectLiteral(optionsNode);
+  let alias: string|undefined = undefined;
+
+  if (options.has('alias')) {
+    const aliasExpr = options.get('alias')!;
+    if (!ts.isStringLiteralLike(aliasExpr)) {
+      throw new FatalDiagnosticError(
+          ErrorCode.VALUE_HAS_WRONG_TYPE, aliasExpr,
+          'Alias needs to be a string that is statically analyzable.');
+    }
+
+    alias = aliasExpr.text;
+  }
+
+  return {alias};
 }
 
 /**
@@ -118,25 +141,20 @@ function isReferenceToInputFunction(
  */
 export function tryParseSignalInputMapping(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
-    evaluator: PartialEvaluator, coreModule: string|undefined): InputMapping|null {
+    coreModule: string|undefined): InputMapping|null {
   const signalInput = tryParseInputInitializerAndOptions(member, reflector, coreModule);
   if (signalInput === null) {
     return null;
   }
 
   const optionsNode = signalInput.optionsNode;
-  const options = optionsNode !== undefined ? evaluator.evaluate(optionsNode) : null;
+  const options = optionsNode !== undefined ? parseAndValidateOptions(optionsNode) : null;
   const classPropertyName = member.name;
-
-  let bindingPropertyName = classPropertyName;
-  if (options instanceof Map && typeof options.get('alias') === 'string') {
-    bindingPropertyName = options.get('alias') as string;
-  }
 
   return {
     isSignal: true,
     classPropertyName,
-    bindingPropertyName,
+    bindingPropertyName: options?.alias ?? classPropertyName,
     required: signalInput.isRequired,
     // Signal inputs do not capture complex transform metadata.
     // See more details in the `transform` type of `InputMapping`.
