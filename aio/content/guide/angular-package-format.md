@@ -347,8 +347,8 @@ This is because the tslib version is tied to the TypeScript version used to comp
 
 ## Examples
 
-*   [@angular/core package](https://unpkg.com/browse/@angular/core@13.0.0-rc.0)
-*   [@angular/material package](https://unpkg.com/browse/@angular/material@13.0.0-rc.0)
+*   [@angular/core package](https://unpkg.com/browse/@angular/core@17.0.0/)
+*   [@angular/material package](https://unpkg.com/browse/@angular/material@17.0.0/)
 
 ## Definition of terms
 
