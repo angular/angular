@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, Directive, effect, ɵinput as input} from '@angular/core';
+import {Component, computed, Directive, effect, input} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('signal inputs', () => {
