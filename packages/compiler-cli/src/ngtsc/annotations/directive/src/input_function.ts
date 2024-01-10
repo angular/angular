@@ -8,10 +8,12 @@
 
 import ts from 'typescript';
 
+import {InputMapping} from '../../../metadata';
+import {PartialEvaluator} from '../../../partial_evaluator';
 import {ClassMember, ReflectionHost} from '../../../reflection';
 
 /** Metadata describing an input declared via the `input` function. */
-export interface InputMemberMetadata {
+interface InputMemberMetadata {
   /** Node referring to the call expression. */
   inputCall: ts.CallExpression;
   /** Node referring to the options expression, if specified. */
@@ -24,8 +26,8 @@ export interface InputMemberMetadata {
  * Attempts to identify and parse an Angular input that is declared
  * as a class member using the `input`/`input.required` functions.
  */
-export function tryParseInputInitializerAndOptions(
-    member: ClassMember, reflector: ReflectionHost,
+function tryParseInputInitializerAndOptions(
+    member: Pick<ClassMember, 'value'>, reflector: ReflectionHost,
     coreModule: string|undefined): InputMemberMetadata|null {
   if (member.value === null || !ts.isCallExpression(member.value)) {
     return null;
@@ -97,16 +99,47 @@ function extractPropertyTarget(node: ts.Expression): ts.Identifier|null {
  */
 function isReferenceToInputFunction(
     target: ts.Identifier, coreModule: string|undefined, reflector: ReflectionHost): boolean {
-  const decl = reflector.getDeclarationOfIdentifier(target);
-  if (decl === null || !ts.isVariableDeclaration(decl.node) || decl.node.name === undefined ||
-      !ts.isIdentifier(decl.node.name)) {
-    // The initializer isn't a declared, identifier named variable declaration.
-    return false;
+  let targetImport: {name: string}|null = reflector.getImportOfIdentifier(target);
+  if (targetImport === null) {
+    if (coreModule !== undefined) {
+      return false;
+    }
+    // We are compiling the core module, where no import can be present.
+    targetImport = {name: target.text};
   }
-  if (coreModule !== undefined && decl.viaModule !== coreModule) {
-    // The initializer is matching so far, but in the wrong module.
-    return false;
-  }
+
   // TODO(signal-input-public): Clean this up.
-  return decl.node.name.text === 'input' || decl.node.name.text === 'ɵinput';
+  return targetImport.name === 'input' || targetImport.name === 'ɵinput';
+}
+
+/**
+ * Attempts to parse a signal input class member. Returns the parsed
+ * input mapping if possible.
+ */
+export function tryParseSignalInputMapping(
+    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
+    evaluator: PartialEvaluator, coreModule: string|undefined): InputMapping|null {
+  const signalInput = tryParseInputInitializerAndOptions(member, reflector, coreModule);
+  if (signalInput === null) {
+    return null;
+  }
+
+  const optionsNode = signalInput.optionsNode;
+  const options = optionsNode !== undefined ? evaluator.evaluate(optionsNode) : null;
+  const classPropertyName = member.name;
+
+  let bindingPropertyName = classPropertyName;
+  if (options instanceof Map && typeof options.get('alias') === 'string') {
+    bindingPropertyName = options.get('alias') as string;
+  }
+
+  return {
+    isSignal: true,
+    classPropertyName,
+    bindingPropertyName,
+    required: signalInput.isRequired,
+    // Signal inputs do not capture complex transform metadata.
+    // See more details in the `transform` type of `InputMapping`.
+    transform: null,
+  };
 }

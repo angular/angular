@@ -1867,7 +1867,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         throw new Error('advance instruction can only go forwards');
       }
 
-      this.instructionFn(this._updateCodeFns, span, R3.advance, [o.literal(delta)]);
+      this.instructionFn(
+          this._updateCodeFns, span, R3.advance, delta > 1 ? [o.literal(delta)] : []);
       this._currentIndex = nodeIndex;
     }
   }

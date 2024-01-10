@@ -36,6 +36,7 @@ const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
   '>': ts.SyntaxKind.GreaterThanToken,
   '>=': ts.SyntaxKind.GreaterThanEqualsToken,
   '&': ts.SyntaxKind.AmpersandToken,
+  '|': ts.SyntaxKind.BarToken,
   '/': ts.SyntaxKind.SlashToken,
   '==': ts.SyntaxKind.EqualsEqualsToken,
   '===': ts.SyntaxKind.EqualsEqualsEqualsToken,

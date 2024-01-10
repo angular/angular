@@ -17,9 +17,9 @@ function MyApp_Template(rf, ctx) {
   }
   if (rf & 2) {
     let $MyApp_contFlowTmp$;
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵconditional(2, ($MyApp_contFlowTmp$ = ctx.value()) ? 2 : -1, $MyApp_contFlowTmp$);
   }
 }

@@ -6,7 +6,7 @@ function MyComponent_li_1_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $item$ = ctx.$implicit;
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate($item$.name);
   }
 }
@@ -24,7 +24,7 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
       $r3$.ɵɵelementEnd();
     }
     if (rf & 2) {
-      $r3$.ɵɵadvance(1);
+      $r3$.ɵɵadvance();
       $r3$.ɵɵproperty("forOf", ctx.items);
     }
   },

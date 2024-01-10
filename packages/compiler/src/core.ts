@@ -34,13 +34,16 @@ export interface Input {
   alias?: string;
   required?: boolean;
   transform?: (value: any) => any;
+  // Note: This field is marked as `internal` in `@angular/core`, but in the compiler
+  // we rely on it for JIT processing at runtime.
+  isSignal: boolean;
 }
 
 /** Flags describing an input for a directive. */
 export enum InputFlags {
   None = 0,
   SignalBased = 1 << 0,
-  HasTransform = 1 << 1,
+  HasDecoratorInputTransform = 1 << 1,
 }
 
 export interface Output {

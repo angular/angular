@@ -25,7 +25,7 @@ const legacyTsconfigPath = join(packagesDir, 'tsconfig-legacy-saucelabs.json');
 const legacyOutputDir = join(distDir, 'legacy-test-out');
 
 const outFile = join(distDir, 'legacy-test-bundle.spec.js');
-const decoratorDownlevelOutFile = join(distDir, 'legacy-decorator-downlevel-bundle.mjs');
+const jitTransformOutFile = join(distDir, 'legacy-test-jit-transform-bundle.mjs');
 
 /**
  * This script builds the whole library in `angular/angular` together with its
@@ -37,7 +37,7 @@ const decoratorDownlevelOutFile = join(distDir, 'legacy-decorator-downlevel-bund
  * less files through the remote browser service tunnels.
  */
 async function main() {
-  await transpileDecoratorDownlevelTransform();
+  await transpileJitTransformTransform();
   await compileProjectWithTsc();
 
   const specEntryPointFile = await createEntryPointSpecFile();
@@ -151,9 +151,8 @@ async function createResolveEsbuildPlugin() {
     name: 'ng-resolve-esbuild',
     setup: (build) => {
       build.onResolve({filter: /(@angular\/|angular-in-memory-web-api|zone.js)/}, async (args) => {
-        const matchedPattern = Array.from(resolveMappings.keys()).find((pattern) =>
-          args.path.match(pattern)
-        );
+        const matchedPattern =
+            Array.from(resolveMappings.keys()).find((pattern) => args.path.match(pattern));
 
         if (matchedPattern === undefined) {
           return undefined;
@@ -180,27 +179,27 @@ async function createResolveEsbuildPlugin() {
 }
 
 /**
- * Creates an ESM bundle for the downlevel decorator transform. The decorator
- * downlevel transform can then be used later when we compile the sources and tests.
+ * Creates an ESM bundle for the JIT transform. The JIT transform can then
+ * be used later when we compile the sources and tests.
  *
- * Note: This layer of indirection needs to exist since we cannot load TS directly
+ * Note: This layer of indirection needs to exist as we cannot load TS directly
  * from an ES module. Running ESBuild first allows us to also transpile the TS fast.
  */
-async function transpileDecoratorDownlevelTransform() {
+async function transpileJitTransformTransform() {
   const result = await esbuild.build({
     bundle: true,
     sourceRoot: projectDir,
     platform: 'node',
     target: 'es2020',
     format: 'esm',
-    outfile: decoratorDownlevelOutFile,
+    outfile: jitTransformOutFile,
     external: ['typescript'],
     sourcemap: true,
-    entryPoints: [join(containingDir, 'downlevel_decorator_transform.ts')],
+    entryPoints: [join(containingDir, 'jit_transform_bundle_main.ts')],
   });
 
   if (result.errors.length) {
-    throw Error('Could not build decorator downlevel bundle. See errors above.');
+    throw Error('Could not build JIT transform bundle. See errors above.');
   }
 }
 
@@ -209,16 +208,14 @@ async function transpileDecoratorDownlevelTransform() {
  * JS output of the packages and tests.
  */
 async function compileProjectWithTsc() {
-  const {legacyCompilationDownlevelDecoratorTransform} = await import(
-    url.pathToFileURL(decoratorDownlevelOutFile)
-  );
+  const {angularJitApplicationTransform} = await import(url.pathToFileURL(jitTransformOutFile));
   const config = parseTsconfigFile(legacyTsconfigPath, dirname(legacyTsconfigPath));
   const program = ts.createProgram(config.fileNames, config.options);
 
   const result = program.emit(undefined, undefined, undefined, undefined, {
-    // We need to downlevel constructor parameters to make ES2015 JIT work. More details
-    // here: https://github.com/angular/angular/pull/37382.
-    before: [legacyCompilationDownlevelDecoratorTransform(program)],
+    // We need the JIT transform to make ES2015 JIT work and signal inputs.
+    // More details on the ES2015 forwardRef issue: https://github.com/angular/angular/pull/37382.
+    before: [angularJitApplicationTransform(program, /* isCore */ true)],
   });
 
   const diagnostics = [
@@ -228,13 +225,11 @@ async function compileProjectWithTsc() {
   ];
 
   if (diagnostics.length) {
-    console.error(
-      ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-        getCanonicalFileName: (fileName) => fileName,
-        getCurrentDirectory: () => program.getCurrentDirectory(),
-        getNewLine: () => '\n',
-      })
-    );
+    console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, {
+      getCanonicalFileName: (fileName) => fileName,
+      getCurrentDirectory: () => program.getCurrentDirectory(),
+      getNewLine: () => '\n',
+    }));
 
     throw new Error('Compilation failed. See errors above.');
   }

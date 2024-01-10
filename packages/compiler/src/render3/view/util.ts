@@ -207,27 +207,27 @@ export function conditionallyCreateDirectiveBindingLiteral(
       publicName = value.bindingPropertyName;
 
       const differentDeclaringName = publicName !== declaredName;
-      const hasTransform = value.transformFunction !== null;
+      const hasDecoratorInputTransform = value.transformFunction !== null;
 
       // Build up input flags
       let flags: o.Expression|null = null;
       if (value.isSignal) {
-        flags = bitwiseAndInputFlagsExpr(InputFlags.SignalBased, flags);
+        flags = bitwiseOrInputFlagsExpr(InputFlags.SignalBased, flags);
       }
-      if (value.transformFunction !== null) {
-        flags = bitwiseAndInputFlagsExpr(InputFlags.HasTransform, flags);
+      if (hasDecoratorInputTransform) {
+        flags = bitwiseOrInputFlagsExpr(InputFlags.HasDecoratorInputTransform, flags);
       }
 
-      // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), or support
-      // transform functions, or store flag information if there is any.
-      if (forInputs && (differentDeclaringName || hasTransform || flags !== null)) {
+      // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), support
+      // decorator input transform functions, or store flag information if there is any.
+      if (forInputs && (differentDeclaringName || hasDecoratorInputTransform || flags !== null)) {
         const flagsExpr = flags ?? o.importExpr(R3.InputFlags).prop(InputFlags[InputFlags.None]);
         const result: o.Expression[] = [flagsExpr, asLiteral(publicName)];
 
-        if (differentDeclaringName || hasTransform) {
+        if (differentDeclaringName || hasDecoratorInputTransform) {
           result.push(asLiteral(declaredName));
 
-          if (hasTransform) {
+          if (hasDecoratorInputTransform) {
             result.push(value.transformFunction!);
           }
         }
@@ -253,15 +253,11 @@ function getInputFlagExpr(flag: InputFlags): o.Expression {
 }
 
 /** Combines a given input flag with an existing flag expression, if present. */
-function bitwiseAndInputFlagsExpr(flag: InputFlags, expr: o.Expression|null): o.Expression {
+function bitwiseOrInputFlagsExpr(flag: InputFlags, expr: o.Expression|null): o.Expression {
   if (expr === null) {
     return getInputFlagExpr(flag);
   }
-  return new o.BinaryOperatorExpr(
-      o.BinaryOperator.BitwiseAnd,
-      expr,
-      getInputFlagExpr(flag),
-  );
+  return getInputFlagExpr(flag).bitwiseOr(expr);
 }
 
 /**
