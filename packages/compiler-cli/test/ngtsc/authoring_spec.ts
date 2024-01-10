@@ -70,6 +70,48 @@ runInEachFileSystem(() => {
       ]);
     });
 
+    it('should fail if signal input declares a non-statically analyzable alias', () => {
+      env.write('test.ts', `
+        import {Directive, input} from '@angular/core';
+
+        const ALIAS = 'bla';
+
+        @Directive({
+          inputs: ['data'],
+        })
+        export class TestDir {
+          data = input('test', {alias: ALIAS});
+        }
+      `);
+      const diagnostics = env.driveDiagnostics();
+      expect(diagnostics).toEqual([
+        jasmine.objectContaining({
+          messageText: 'Alias needs to be a string that is statically analyzable.',
+        }),
+      ]);
+    });
+
+    it('should fail if signal input declares a non-statically analyzable options', () => {
+      env.write('test.ts', `
+        import {Directive, input} from '@angular/core';
+
+        const OPTIONS = {};
+
+        @Directive({
+          inputs: ['data'],
+        })
+        export class TestDir {
+          data = input('test', OPTIONS);
+        }
+      `);
+      const diagnostics = env.driveDiagnostics();
+      expect(diagnostics).toEqual([
+        jasmine.objectContaining({
+          messageText: 'Argument needs to be an object literal that is statically analyzable.',
+        }),
+      ]);
+    });
+
     it('should fail if signal input is declared on static member', () => {
       env.write('test.ts', `
         import {Directive, input} from '@angular/core';

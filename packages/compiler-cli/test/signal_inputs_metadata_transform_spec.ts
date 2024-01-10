@@ -8,7 +8,6 @@
 
 import ts from 'typescript';
 
-import {PartialEvaluator} from '../src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
 import {getDownlevelDecoratorsTransform, getInputSignalsMetadataTransform} from '../src/transformers/jit_transforms';
 
@@ -51,10 +50,9 @@ describe('signal inputs metadata transform', () => {
     const testFile = program.getSourceFile(TEST_FILE_INPUT);
     const typeChecker = program.getTypeChecker();
     const reflectionHost = new TypeScriptReflectionHost(typeChecker);
-    const evaluator = new PartialEvaluator(reflectionHost, typeChecker, null);
     const transformers: ts.CustomTransformers = {
       before: [
-        getInputSignalsMetadataTransform(reflectionHost, evaluator, /* isCore */ false),
+        getInputSignalsMetadataTransform(reflectionHost, /* isCore */ false),
       ]
     };
 
@@ -177,34 +175,6 @@ describe('signal inputs metadata transform', () => {
         ], MyDir.prototype, "nonSignalInput", void 0);
     `));
   });
-
-  it('should add `@Input` decorator for signal inputs with alias options, resolving ' +
-         'references in input options',
-     () => {
-       const result = transform(`
-        import {input, Directive} from '@angular/core';
-
-        const aliases = {
-          a: 'public1',
-          b: 'public2',
-        }
-
-        @Directive({})
-        class MyDir {
-          someInput = input(null, {alias: aliases.a});
-          someInput2 = input.required<string>({alias: aliases.b});
-        }
-      `);
-
-       expect(result).toContain(omitLeadingWhitespace(`
-        __decorate([
-          i0.Input({ isSignal: true, alias: "public1", required: false, transform: undefined })
-          ], MyDir.prototype, "someInput", void 0);
-        __decorate([
-          i0.Input({ isSignal: true, alias: "public2", required: true, transform: undefined })
-          ], MyDir.prototype, "someInput2", void 0);
-      `));
-     });
 
   it('should not transform signal inputs with an existing `@Input` decorator', () => {
     // This is expected to not happen because technically the TS code for signal inputs
