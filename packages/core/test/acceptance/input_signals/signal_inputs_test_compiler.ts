@@ -30,8 +30,7 @@ async function main() {
   const evaluator = new PartialEvaluator(host, program.getTypeChecker(), null);
   const outputFile = ts.transform(
       program.getSourceFile(inputTsExecPath)!,
-      [getInputSignalsMetadataTransform(host, evaluator, /* isCore */ false)],
-      program.getCompilerOptions());
+      [getInputSignalsMetadataTransform(host, /* isCore */ false)], program.getCompilerOptions());
 
   await fs.promises.writeFile(
       outputExecPath, ts.createPrinter().printFile(outputFile.transformed[0]));

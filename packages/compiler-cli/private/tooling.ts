@@ -61,8 +61,7 @@ export function angularJitApplicationTransform(
       typeChecker, reflectionHost, [], isCore,
       /* enableClosureCompiler */ false);
 
-  const inputSignalMetadataTransform =
-      getInputSignalsMetadataTransform(reflectionHost, evaluator, isCore);
+  const inputSignalMetadataTransform = getInputSignalsMetadataTransform(reflectionHost, isCore);
 
   return (ctx) => {
     return (sourceFile) => {
