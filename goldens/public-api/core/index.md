@@ -1677,12 +1677,6 @@ export interface WritableSignal<T> extends Signal<T> {
     update(updateFn: (value: T) => T): void;
 }
 
-// @public (undocumented)
-export function ɵinputFunctionForApiGuard<ReadT, WriteT>(initialValue?: ReadT, opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT | undefined, WriteT>;
-
-// @public (undocumented)
-export function ɵinputFunctionRequiredForApiGuard<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
-
 // (No @packageDocumentation comment for this package)
 
 ```
