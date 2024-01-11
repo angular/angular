@@ -105,16 +105,80 @@ export function angularCoreDts(): TestFile {
 
     export declare type NgIterable<T> = Array<T> | Iterable<T>;
 
-    export declare const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol;
-    export declare const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol;
+    /**
+     * -------
+     * Signals
+     * ------
+     */
 
-    export declare type InputSignal<ReadT, WriteT = ReadT> = (() => ReadT)&{
+    export declare const SIGNAL: unique symbol;
+    export declare type Signal<T> = (() => T) & {
+      [SIGNAL]: unknown;
+    };
+    export declare function signal<T>(initialValue: T): WritableSignal<T>;
+    export declare function computed<T>(computation: () => T): Signal<T>;
+
+    export interface WritableSignal<T> extends Signal<T> {
+      asReadonly(): Signal<T>;
+    }
+
+    /**
+     * -------
+     * Signal inputs
+     * ------
+     */
+
+    export interface InputOptions<ReadT, WriteT> {
+      alias?: string;
+      transform?: (v: WriteT) => ReadT;
+    }
+
+    export type InputOptionsWithoutTransform<ReadT> =
+        InputOptions<ReadT, ReadT>&{transform?: undefined};
+    export type InputOptionsWithTransform<ReadT, WriteT> =
+        Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>>&InputOptions<ReadT, WriteT>;
+
+    const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol;
+    export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol;
+
+    export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
       [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
       [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
-    };
+    }
 
-    export type ɵUnwrapInputSignalWriteType<Field> = Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
-    export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {[P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>};
+    export function inputFunction<ReadT>(): InputSignal<ReadT|undefined>;
+    export function inputFunction<ReadT>(
+        initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+    export function inputFunction<ReadT, WriteT>(
+        initialValue: ReadT,
+        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+    export function inputFunction<ReadT, WriteT>(
+        _initialValue?: ReadT,
+        _opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
+      return null!;
+    }
+
+    export function inputRequiredFunction<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>):
+        InputSignal<ReadT>;
+    export function inputRequiredFunction<ReadT, WriteT>(
+        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+    export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputOptions<ReadT, WriteT>):
+        InputSignal<ReadT, WriteT> {
+      return null!;
+    }
+
+    export type InputFunction = typeof inputFunction&{required: typeof inputRequiredFunction};
+
+    export const input: InputFunction = (() => {
+      (inputFunction as any).required = inputRequiredFunction;
+      return inputFunction as InputFunction;
+    })();
+
+    export type ɵUnwrapInputSignalWriteType<Field> =
+        Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+    export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
+      [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
+    };
    `
   };
 }
