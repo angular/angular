@@ -462,11 +462,20 @@ function getFirstThursdayOfYear(year: number) {
   );
 }
 
-function getThursdayThisWeek(datetime: Date) {
+/**
+ *  ISO Week starts on day 1 (Monday) and ends with day 0 (Sunday)
+ */
+export function getThursdayThisIsoWeek(datetime: Date) {
+  // getDay returns 0-6 range with sunday as 0.
+  const currentDay = datetime.getDay();
+
+  // On a Sunday, read the previous Thursday since ISO weeks start on Monday.
+  const deltaToThursday = currentDay === 0 ? -3 : THURSDAY - currentDay;
+
   return createDate(
     datetime.getFullYear(),
     datetime.getMonth(),
-    datetime.getDate() + (THURSDAY - datetime.getDay()),
+    datetime.getDate() + deltaToThursday,
   );
 }
 
@@ -479,7 +488,7 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
       const today = date.getDate();
       result = 1 + Math.floor((today + nbDaysBefore1stDayOfMonth) / 7);
     } else {
-      const thisThurs = getThursdayThisWeek(date);
+      const thisThurs = getThursdayThisIsoWeek(date);
       // Some days of a year are part of next year according to ISO 8601.
       // Compute the firstThurs from the year of this week's Thursday
       const firstThurs = getFirstThursdayOfYear(thisThurs.getFullYear());
@@ -496,7 +505,7 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
  */
 function weekNumberingYearGetter(size: number, trim = false): DateFormatter {
   return function (date: Date, locale: string) {
-    const thisThurs = getThursdayThisWeek(date);
+    const thisThurs = getThursdayThisIsoWeek(date);
     const weekNumberingYear = thisThurs.getFullYear();
     return padNumber(
       weekNumberingYear,

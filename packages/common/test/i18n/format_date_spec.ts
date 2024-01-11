@@ -13,7 +13,12 @@ import localeFi from '@angular/common/locales/fi';
 import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
-import {formatDate, isDate, toDate} from '@angular/common/src/i18n/format_date';
+import {
+  formatDate,
+  getThursdayThisIsoWeek,
+  isDate,
+  toDate,
+} from '@angular/common/src/i18n/format_date';
 import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 describe('Format date', () => {
@@ -444,11 +449,31 @@ describe('Format date', () => {
     // https://github.com/angular/angular/issues/38739
     it('should return correct ISO 8601 week-numbering year for dates close to year end/beginning', () => {
       expect(formatDate('2013-12-27', 'YYYY', 'en')).toEqual('2013');
-      expect(formatDate('2013-12-29', 'YYYY', 'en')).toEqual('2014');
+      expect(formatDate('2013-12-29', 'YYYY', 'en')).toEqual('2013');
+      expect(formatDate('2013-12-31', 'YYYY', 'en')).toEqual('2014');
+
+      // Dec. 31st is a Sunday, last day of the last week of 2023
+      expect(formatDate('2023-12-31', 'YYYY', 'en')).toEqual('2023');
+
       expect(formatDate('2010-01-02', 'YYYY', 'en')).toEqual('2009');
       expect(formatDate('2010-01-04', 'YYYY', 'en')).toEqual('2010');
       expect(formatDate('0049-01-01', 'YYYY', 'en')).toEqual('0048');
       expect(formatDate('0049-01-04', 'YYYY', 'en')).toEqual('0049');
+    });
+
+    // https://github.com/angular/angular/issues/53813
+    it('should return correct ISO 8601 week number close to year end/beginning', () => {
+      expect(formatDate('2013-12-27', 'w', 'en')).toEqual('52');
+      expect(formatDate('2013-12-29', 'w', 'en')).toEqual('52');
+      expect(formatDate('2013-12-31', 'w', 'en')).toEqual('1');
+
+      // Dec. 31st is a Sunday, last day of the last week of 2023
+      expect(formatDate('2023-12-31', 'w', 'en')).toEqual('52');
+
+      expect(formatDate('2010-01-02', 'w', 'en')).toEqual('53');
+      expect(formatDate('2010-01-04', 'w', 'en')).toEqual('1');
+      expect(formatDate('0049-01-01', 'w', 'en')).toEqual('53');
+      expect(formatDate('0049-01-04', 'w', 'en')).toEqual('1');
     });
 
     // https://github.com/angular/angular/issues/40377
@@ -463,6 +488,17 @@ describe('Format date', () => {
     // https://github.com/angular/angular/issues/26922
     it('should support fullDate in finnish, which uses standalone week day', () => {
       expect(formatDate(date, 'fullDate', 'fi')).toMatch('maanantai 15. kesäkuuta 2015');
+    });
+
+    it('should return thursday date of the same week', () => {
+      // Dec. 31st is a Sunday, last day of the last week of 2023
+      expect(getThursdayThisIsoWeek(new Date('2023-12-31'))).toEqual(new Date('2023-12-28'));
+
+      // Dec. 29th is a Thursday
+      expect(getThursdayThisIsoWeek(new Date('2022-12-29'))).toEqual(new Date('2022-12-29'));
+
+      // Jan 01st is a Monday
+      expect(getThursdayThisIsoWeek(new Date('2024-01-01'))).toEqual(new Date('2024-01-04'));
     });
   });
 });
