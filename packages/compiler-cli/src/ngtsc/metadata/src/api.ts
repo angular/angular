@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
+import {DirectiveMeta as T2DirectiveMeta, Expression, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -261,8 +261,14 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
 
 /** Metadata collected about an additional directive that is being applied to a directive host. */
 export interface HostDirectiveMeta {
-  /** Reference to the host directive class. */
-  directive: Reference<ClassDeclaration>;
+  /**
+   * Reference to the host directive class.
+   *
+   * Only in local compilation mode this can be Expression
+   * which indicates the expression could not be resolved due to being imported from some external
+   * file. In this case, the expression is the raw expression as appears in the decorator.
+   */
+  directive: Reference<ClassDeclaration>|Expression;
 
   /** Whether the reference to the host directive is a forward reference. */
   isForwardReference: boolean;
@@ -272,6 +278,22 @@ export interface HostDirectiveMeta {
 
   /** Outputs from the host directive that have been exposed. */
   outputs: {[publicName: string]: string}|null;
+}
+
+/**
+ * Metadata collected about an additional directive that is being applied to a directive host in
+ * global compilation mode.
+ */
+export interface HostDirectiveMetaForGlobalMode extends HostDirectiveMeta {
+  directive: Reference<ClassDeclaration>;
+}
+
+/**
+ * Metadata collected about an additional directive that is being applied to a directive host in
+ * local compilation mode.
+ */
+export interface HostDirectiveMetaForLocalMode extends HostDirectiveMeta {
+  directive: Expression;
 }
 
 /**
