@@ -12,7 +12,7 @@ import {OwningModule, Reference} from '../../imports';
 import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
-import {DirectiveMeta, DirectiveTypeCheckMeta, InputMapping, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
+import {DirectiveMeta, DirectiveTypeCheckMeta, HostDirectiveMeta, HostDirectiveMetaForGlobalMode, InputMapping, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 export function extractReferencesFromType(
@@ -256,4 +256,9 @@ function afterUnderscore(str: string): string {
 export function hasInjectableFields(clazz: ClassDeclaration, host: ReflectionHost): boolean {
   const members = host.getMembersOfClass(clazz);
   return members.some(({isStatic, name}) => isStatic && (name === 'ɵprov' || name === 'ɵfac'));
+}
+
+export function isHostDirectiveMetaForGlobalMode(hostDirectiveMeta: HostDirectiveMeta):
+    hostDirectiveMeta is HostDirectiveMetaForGlobalMode {
+  return hostDirectiveMeta.directive instanceof Reference;
 }

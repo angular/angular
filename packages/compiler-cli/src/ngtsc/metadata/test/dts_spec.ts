@@ -12,6 +12,7 @@ import {OwningModule, Reference} from '../../imports';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {loadFakeCore, makeProgram} from '../../testing';
 import {DtsMetadataReader} from '../src/dts';
+import {isHostDirectiveMetaForGlobalMode} from '../src/util';
 
 runInEachFileSystem(() => {
   beforeEach(() => {
@@ -216,12 +217,14 @@ runInEachFileSystem(() => {
     const dtsReader = new DtsMetadataReader(typeChecker, new TypeScriptReflectionHost(typeChecker));
 
     const meta = dtsReader.getDirectiveMetadata(new Reference(clazz))!;
-    const hostDirectives = meta.hostDirectives?.map(hostDir => ({
-                                                      name: hostDir.directive.debugName,
-                                                      directive: hostDir.directive,
-                                                      inputs: hostDir.inputs,
-                                                      outputs: hostDir.outputs
-                                                    }));
+    const hostDirectives = meta.hostDirectives?.map(
+        hostDir => ({
+          name: isHostDirectiveMetaForGlobalMode(hostDir) ? hostDir.directive.debugName :
+                                                            'Unresolved host dir',
+          directive: hostDir.directive,
+          inputs: hostDir.inputs,
+          outputs: hostDir.outputs
+        }));
 
     expect(hostDirectives).toEqual([
       {

@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {Reference} from '../../../imports';
-import {ClassPropertyName, DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, MetadataReader} from '../../../metadata';
+import {ClassPropertyName, DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, isHostDirectiveMetaForGlobalMode, MetadataReader} from '../../../metadata';
 import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
@@ -161,6 +161,10 @@ export function validateHostDirectives(
   const diagnostics: ts.DiagnosticWithLocation[] = [];
 
   for (const current of hostDirectives) {
+    if (!isHostDirectiveMetaForGlobalMode(current)) {
+      throw new Error('Impossible state: diagnostics code path for local compilation');
+    }
+
     const hostMeta = flattenInheritedDirectiveMetadata(metaReader, current.directive);
 
     if (hostMeta === null) {
@@ -202,6 +206,10 @@ function validateHostDirectiveMappings(
     bindingType: 'input'|'output', hostDirectiveMeta: HostDirectiveMeta, meta: DirectiveMeta,
     origin: ts.Expression, diagnostics: ts.DiagnosticWithLocation[],
     requiredBindings: Set<ClassPropertyName>|null) {
+  if (!isHostDirectiveMetaForGlobalMode(hostDirectiveMeta)) {
+    throw new Error('Impossible state: diagnostics code path for local compilation');
+  }
+
   const className = meta.name;
   const hostDirectiveMappings =
       bindingType === 'input' ? hostDirectiveMeta.inputs : hostDirectiveMeta.outputs;

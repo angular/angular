@@ -11,6 +11,7 @@ import {ClassDeclaration} from '../../reflection';
 import {ClassPropertyMapping, InputOrOutput} from '../src/property_mapping';
 
 import {flattenInheritedDirectiveMetadata} from './inheritance';
+import {isHostDirectiveMetaForGlobalMode} from './util';
 
 const EMPTY_ARRAY: ReadonlyArray<any> = [];
 
@@ -41,6 +42,10 @@ export class HostDirectivesResolver {
       directives: NonNullable<DirectiveMeta['hostDirectives']>,
       results: DirectiveMeta[]): ReadonlyArray<DirectiveMeta> {
     for (const current of directives) {
+      if (!isHostDirectiveMetaForGlobalMode(current)) {
+        throw new Error('Impossible state: resolving code path in local compilation mode');
+      }
+
       const hostMeta = flattenInheritedDirectiveMetadata(this.metaReader, current.directive);
 
       // This case has been checked for already and produces a diagnostic
