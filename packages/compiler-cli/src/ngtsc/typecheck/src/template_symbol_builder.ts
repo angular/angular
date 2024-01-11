@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, Call, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
-import {HostDirectiveMeta} from '../../metadata';
+import {HostDirectiveMeta, isHostDirectiveMetaForGlobalMode} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader} from '../../scope';
 import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
@@ -161,6 +161,10 @@ export class SymbolBuilder {
       host: TmplAstTemplate|TmplAstElement, hostDirectives: HostDirectiveMeta[],
       symbols: DirectiveSymbol[]): void {
     for (const current of hostDirectives) {
+      if (!isHostDirectiveMetaForGlobalMode(current)) {
+        throw new Error('Impossible state: typecheck code path in local compilation mode.');
+      }
+
       if (!ts.isClassDeclaration(current.directive.node)) {
         continue;
       }
