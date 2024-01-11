@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3HostDirectiveMetadata, R3InputMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3HostDirectiveMetadata, R3InputMetadata, R3QueryMetadata, R3Reference, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
-import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputMapping} from '../../../metadata';
+import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputMapping, isHostDirectiveMetaForGlobalMode} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, FunctionDefinition, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
-import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
+import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, isExpressionForwardReference, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
 
 import {tryParseSignalInputMapping} from './input_function';
 
@@ -197,15 +197,24 @@ export function extractDirectiveMetadata(
   const usesInheritance = reflector.hasBaseClass(clazz);
   const sourceFile = clazz.getSourceFile();
   const type = wrapTypeReference(reflector, clazz);
-  const rawHostDirectives = directive.get('hostDirectives') || null;
-  const hostDirectives =
-      rawHostDirectives === null ? null : extractHostDirectives(rawHostDirectives, evaluator);
 
-  if (hostDirectives !== null) {
-    // The template type-checker will need to import host directive types, so add them
-    // as referenced by `clazz`. This will ensure that libraries are required to export
-    // host directives which are visible from publicly exported components.
-    referencesRegistry.add(clazz, ...hostDirectives.map(hostDir => hostDir.directive));
+  const rawHostDirectives = directive.get('hostDirectives') || null;
+  const hostDirectives = rawHostDirectives === null ?
+      null :
+      extractHostDirectives(rawHostDirectives, evaluator, compilationMode);
+
+  if (compilationMode !== CompilationMode.LOCAL && hostDirectives !== null) {
+    // In global compilation mode where we do type checking, the template type-checker will need to
+    // import host directive types, so add them as referenced by `clazz`. This will ensure that
+    // libraries are required to export host directives which are visible from publicly exported
+    // components.
+    referencesRegistry.add(clazz, ...hostDirectives.map(hostDir => {
+      if (!isHostDirectiveMetaForGlobalMode(hostDir)) {
+        throw new Error('Impossible state');
+      }
+
+      return hostDir.directive;
+    }));
   }
 
   const metadata: R3DirectiveMetadata = {
@@ -1048,7 +1057,8 @@ function evaluateHostExpressionBindings(
  * @param rawHostDirectives Expression that defined the `hostDirectives`.
  */
 function extractHostDirectives(
-    rawHostDirectives: ts.Expression, evaluator: PartialEvaluator): HostDirectiveMeta[] {
+    rawHostDirectives: ts.Expression, evaluator: PartialEvaluator,
+    compilationMode: CompilationMode): HostDirectiveMeta[] {
   const resolved = evaluator.evaluate(rawHostDirectives, forwardRefResolver);
   if (!Array.isArray(resolved)) {
     throw createValueHasWrongTypeError(
@@ -1058,21 +1068,50 @@ function extractHostDirectives(
   return resolved.map(value => {
     const hostReference = value instanceof Map ? value.get('directive') : value;
 
-    if (!(hostReference instanceof Reference)) {
-      throw createValueHasWrongTypeError(
-          rawHostDirectives, hostReference, 'Host directive must be a reference');
+    // Diagnostics
+    if (compilationMode !== CompilationMode.LOCAL) {
+      if (!(hostReference instanceof Reference)) {
+        throw createValueHasWrongTypeError(
+            rawHostDirectives, hostReference, 'Host directive must be a reference');
+      }
+
+      if (!isNamedClassDeclaration(hostReference.node)) {
+        throw createValueHasWrongTypeError(
+            rawHostDirectives, hostReference, 'Host directive reference must be a class');
+      }
     }
 
-    if (!isNamedClassDeclaration(hostReference.node)) {
-      throw createValueHasWrongTypeError(
-          rawHostDirectives, hostReference, 'Host directive reference must be a class');
+    let directive: Reference<ClassDeclaration>|Expression;
+    let nameForErrors = (fieldName: string) => '@Directive.hostDirectives';
+    if (compilationMode === CompilationMode.LOCAL && hostReference instanceof DynamicValue) {
+      // At the moment in local compilation we only support simple array for host directives, i.e.,
+      // an array consisting of the directive identifiers. We don't support forward refs or other
+      // expressions applied on externally imported directives. The main reason is simplicity, and
+      // that almost nobody wants to use host directives this way (e.g., what would be the point of
+      // forward ref for imported symbols?!)
+      if (!ts.isIdentifier(hostReference.node) &&
+          !ts.isPropertyAccessExpression(hostReference.node)) {
+        throw new FatalDiagnosticError(
+            ErrorCode.LOCAL_COMPILATION_HOST_DIRECTIVE_INVALID, hostReference.node,
+            `In local compilation mode, host directive cannot be an expression`);
+      }
+
+      directive = new WrappedNodeExpr(hostReference.node);
+    } else if (hostReference instanceof Reference) {
+      directive = hostReference as Reference<ClassDeclaration>;
+      nameForErrors = (fieldName: string) => `@Directive.hostDirectives.${
+          (directive as Reference<ClassDeclaration>).node.name.text}.${fieldName}`;
+    } else {
+      throw new Error('Impossible state');
     }
 
     const meta: HostDirectiveMeta = {
-      directive: hostReference as Reference<ClassDeclaration>,
-      isForwardReference: hostReference.synthetic,
-      inputs: parseHostDirectivesMapping('inputs', value, hostReference.node, rawHostDirectives),
-      outputs: parseHostDirectivesMapping('outputs', value, hostReference.node, rawHostDirectives),
+      directive,
+      isForwardReference: hostReference instanceof Reference && hostReference.synthetic,
+      inputs:
+          parseHostDirectivesMapping('inputs', value, nameForErrors('input'), rawHostDirectives),
+      outputs:
+          parseHostDirectivesMapping('outputs', value, nameForErrors('output'), rawHostDirectives),
     };
 
     return meta;
@@ -1087,10 +1126,9 @@ function extractHostDirectives(
  * @param sourceExpression Expression that the host directive is referenced in.
  */
 function parseHostDirectivesMapping(
-    field: 'inputs'|'outputs', resolvedValue: ResolvedValue, classReference: ClassDeclaration,
+    field: 'inputs'|'outputs', resolvedValue: ResolvedValue, nameForErrors: string,
     sourceExpression: ts.Expression): {[bindingPropertyName: string]: string}|null {
   if (resolvedValue instanceof Map && resolvedValue.has(field)) {
-    const nameForErrors = `@Directive.hostDirectives.${classReference.name.text}.${field}`;
     const rawInputs = resolvedValue.get(field);
 
     if (isStringArrayOrDie(rawInputs, nameForErrors, sourceExpression)) {
@@ -1105,9 +1143,19 @@ function parseHostDirectivesMapping(
 function toHostDirectiveMetadata(
     hostDirective: HostDirectiveMeta, context: ts.SourceFile,
     refEmitter: ReferenceEmitter): R3HostDirectiveMetadata {
+  let directive: R3Reference;
+  if (hostDirective.directive instanceof Reference) {
+    directive =
+        toR3Reference(hostDirective.directive.node, hostDirective.directive, context, refEmitter);
+  } else {
+    directive = {
+      value: hostDirective.directive,
+      type: hostDirective.directive,
+    };
+  }
+
   return {
-    directive:
-        toR3Reference(hostDirective.directive.node, hostDirective.directive, context, refEmitter),
+    directive,
     isForwardReference: hostDirective.isForwardReference,
     inputs: hostDirective.inputs || null,
     outputs: hostDirective.outputs || null
