@@ -7,6 +7,7 @@
  */
 
 import {browser, by, element} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
 // Declare the global "window" and "document" constant since we don't want to add the "dom"

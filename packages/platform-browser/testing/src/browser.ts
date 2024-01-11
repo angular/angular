@@ -7,7 +7,7 @@
  */
 import {PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {APP_ID, createPlatformFactory, NgModule, PLATFORM_INITIALIZER, platformCore, provideZoneChangeDetection, StaticProvider, ɵEffectScheduler as EffectScheduler, ɵZoneAwareQueueingScheduler as ZoneAwareQueueingScheduler} from '@angular/core';
+import {APP_ID, createPlatformFactory, NgModule, PLATFORM_INITIALIZER, platformCore, provideZoneChangeDetection, StaticProvider} from '@angular/core';
 import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
 function initBrowserTests() {

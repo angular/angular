@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵZoneAwareQueueingScheduler as ZoneAwareQueueingScheduler} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {DeferBlockFixture} from './defer';
@@ -52,7 +52,7 @@ export class ComponentFixture<T> {
   private readonly noZoneOptionIsSet = inject(ComponentFixtureNoNgZone, {optional: true});
   private _ngZone: NgZone = this.noZoneOptionIsSet ? new NoopNgZone() : inject(NgZone);
   private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
-  private effectRunner = inject(ZoneAwareQueueingScheduler);
+  private effectRunner = inject(EffectScheduler);
   private _subscriptions = new Subscription();
   // Inject ApplicationRef to ensure NgZone stableness causes after render hooks to run
   // This will likely happen as a result of fixture.detectChanges because it calls ngZone.run
