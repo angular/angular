@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, NgComponentOutlet} from '@angular/common';
-import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, inject, Injectable, Injector, Input, isStandalone, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, createEnvironmentInjector, Directive, EnvironmentInjector, forwardRef, inject, Injectable, Injector, Input, isStandalone, NgModule, NO_ERRORS_SCHEMA, OnInit, Pipe, PipeTransform, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('standalone components, directives, and pipes', () => {
@@ -584,7 +584,7 @@ describe('standalone components, directives, and pipes', () => {
     @Component({
       selector: 'test',
       standalone: true,
-      imports: [forwardRef(() => null)],
+      imports: [forwardRef(() => null as any as Type<any>)],
       template: '',
     })
     class TestComponent {
