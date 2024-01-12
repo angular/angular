@@ -21,7 +21,7 @@ import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3NgModuleMetadataKind, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import type {BoundTarget} from './render3/view/t2_api';
 import {R3TargetBinder} from './render3/view/t2_binder';
@@ -195,6 +195,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       deferBlocks,
       deferrableTypes: new Map(),
       deferrableDeclToImportDecl: new Map(),
+      deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
 
       styles: [...facade.styles, ...template.styles],
       encapsulation: facade.encapsulation,
@@ -477,6 +478,7 @@ function convertDeclareComponentFacadeToMetadata(
     deferBlocks,
     deferrableTypes: new Map(),
     deferrableDeclToImportDecl: new Map(),
+    deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
 
     changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
