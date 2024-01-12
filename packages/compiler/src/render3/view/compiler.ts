@@ -26,7 +26,7 @@ import {BoundEvent} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
 
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
@@ -219,11 +219,9 @@ export function compileComponentFromMetadata(
     // This is the main path currently used in compilation, which compiles the template with the
     // legacy `TemplateDefinitionBuilder`.
 
-    // `deferrableTypes` become available only when local compilation mode is
-    // activated, in which case we generate a single function with all deferred
-    // dependencies.
     let allDeferrableDepsFn: o.ReadVarExpr|null = null;
-    if (meta.deferBlocks.size > 0 && meta.deferrableTypes.size > 0) {
+    if (meta.deferBlocks.size > 0 && meta.deferrableTypes.size > 0 &&
+        meta.deferBlockDepsEmitMode === DeferBlockDepsEmitMode.PerComponent) {
       const fnName = `${templateTypeName}_DeferFn`;
       allDeferrableDepsFn = createDeferredDepsFunction(constantPool, fnName, meta.deferrableTypes);
     }
