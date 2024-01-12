@@ -25,7 +25,7 @@ import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
 type TsConfigOptionsValue =
     string|boolean|number|null|TsConfigOptionsValue[]|{[key: string]: TsConfigOptionsValue};
-type TsConfigOptions = {
+export type TsConfigOptions = {
   [key: string]: TsConfigOptionsValue;
 };
 
