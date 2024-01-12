@@ -542,6 +542,10 @@ export class ComponentDecoratorHandler implements
   }
 
   register(node: ClassDeclaration, analysis: ComponentAnalysisData): void {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return;
+    }
+
     // Register this component's information with the `MetadataRegistry`. This ensures that
     // the information about the component is available during the compile() phase.
     const ref = new Reference(node);
@@ -652,6 +656,10 @@ export class ComponentDecoratorHandler implements
   resolve(
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       symbol: ComponentSymbol): ResolveResult<ComponentResolutionData> {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return {};
+    }
+
     if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
       symbol.baseClass = this.semanticDepGraphUpdater.getSymbol(analysis.baseClass.node);
     }
@@ -1100,7 +1108,7 @@ export class ComponentDecoratorHandler implements
 
   compileLocal(
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
-      pool: ConstantPool): CompileResult[] {
+      resolution: Readonly<Partial<ComponentResolutionData>>, pool: ConstantPool): CompileResult[] {
     if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
       return [];
     }
