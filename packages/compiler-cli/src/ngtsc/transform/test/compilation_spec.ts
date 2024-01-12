@@ -340,21 +340,21 @@ runInEachFileSystem(() => {
         }
       }
 
-      it('should not run resolve phase', () => {
+      it('should invoke `resolve` phase', () => {
         const contents = `
           export class Test {}
         `;
         const handler = new TestDecoratorHandler();
-        spyOn(handler, 'resolve');
+        spyOn(handler, 'resolve').and.callThrough();
         const {compiler, sourceFile} = setup(contents, [handler], CompilationMode.LOCAL);
 
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
 
-        expect(handler.resolve).not.toHaveBeenCalled();
+        expect(handler.resolve).toHaveBeenCalled();
       });
 
-      it('should not register', () => {
+      it('should invoke `register` phase', () => {
         const contents = `
           export class Test {}
         `;
@@ -365,7 +365,7 @@ runInEachFileSystem(() => {
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
 
-        expect(handler.register).not.toHaveBeenCalled();
+        expect(handler.register).toHaveBeenCalled();
       });
 
       it('should not call extendedTemplateCheck', () => {
