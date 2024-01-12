@@ -3658,7 +3658,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
-            .toContain('HostBindDirective');
+            .toContain('Unable to import symbol HostBindDirective');
       });
 
       it('should check bindings to inherited host directive inputs', () => {
