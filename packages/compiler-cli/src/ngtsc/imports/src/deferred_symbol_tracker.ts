@@ -8,17 +8,11 @@
 
 import ts from 'typescript';
 
+import {ClassDeclaration} from '../../reflection';
 import {getContainingImportDeclaration} from '../../reflection/src/typescript';
 
 const AssumeEager = 'AssumeEager';
 type AssumeEager = typeof AssumeEager;
-
-/**
- * A marker indicating that a symbol from an import declaration
- * was referenced in a `@Component.deferredImports` list.
- */
-const ExplicitlyDeferred = 'ExplicitlyDeferred';
-type ExplicitlyDeferred = typeof ExplicitlyDeferred;
 
 /**
  * Maps imported symbol name to a set of locations where the symbols is used
@@ -34,7 +28,13 @@ type SymbolMap = Map<string, Set<ts.Identifier>|AssumeEager>;
  * in favor of using a dynamic import for cases when defer blocks are used.
  */
 export class DeferredSymbolTracker {
-  private readonly imports = new Map<ts.ImportDeclaration, ExplicitlyDeferred|SymbolMap>();
+  private readonly imports = new Map<ts.ImportDeclaration, SymbolMap>();
+
+  /**
+   * Map of a component class -> all import declarations that bring symbols
+   * used within `@Component.deferredImports` field.
+   */
+  private readonly explicitlyDeferredImports = new Map<ClassDeclaration, ts.ImportDeclaration[]>();
 
   constructor(
       private readonly typeChecker: ts.TypeChecker,
@@ -86,31 +86,46 @@ export class DeferredSymbolTracker {
   }
 
   /**
-   * Marks a given import declaration as explicitly deferred, since it's
-   * used in the `@Component.deferredImports` field.
+   * Retrieves a list of import declarations that contain symbols used within
+   * `@Component.deferredImports` of a specific component class, but those imports
+   * can not be removed, since there are other symbols imported alongside deferred
+   * components.
    */
-  markAsExplicitlyDeferred(importDecl: ts.ImportDeclaration): void {
-    this.imports.set(importDecl, ExplicitlyDeferred);
+  getNonRemovableDeferredImports(sourceFile: ts.SourceFile, classDecl: ClassDeclaration):
+      ts.ImportDeclaration[] {
+    const affectedImports: ts.ImportDeclaration[] = [];
+    const importDecls = this.explicitlyDeferredImports.get(classDecl) ?? [];
+    for (const importDecl of importDecls) {
+      if (importDecl.getSourceFile() === sourceFile && !this.canDefer(importDecl)) {
+        affectedImports.push(importDecl);
+      }
+    }
+    return affectedImports;
   }
 
   /**
    * Marks a given identifier and an associated import declaration as a candidate
    * for defer loading.
    */
-  markAsDeferrableCandidate(identifier: ts.Identifier, importDecl: ts.ImportDeclaration): void {
-    if (this.onlyExplicitDeferDependencyImports) {
+  markAsDeferrableCandidate(
+      identifier: ts.Identifier, importDecl: ts.ImportDeclaration,
+      componentClassDecl: ClassDeclaration, isExplicitlyDeferred: boolean): void {
+    if (this.onlyExplicitDeferDependencyImports && !isExplicitlyDeferred) {
       // Ignore deferrable candidates when only explicit deferred imports mode is enabled.
       // In that mode only dependencies from the `@Component.deferredImports` field are
       // defer-loadable.
       return;
     }
 
-    let symbolMap = this.imports.get(importDecl);
-
-    // Do we come across this import as a part of `@Component.deferredImports` already?
-    if (symbolMap === ExplicitlyDeferred) {
-      return;
+    if (isExplicitlyDeferred) {
+      if (this.explicitlyDeferredImports.has(componentClassDecl)) {
+        this.explicitlyDeferredImports.get(componentClassDecl)!.push(importDecl);
+      } else {
+        this.explicitlyDeferredImports.set(componentClassDecl, [importDecl]);
+      }
     }
+
+    let symbolMap = this.imports.get(importDecl);
 
     // Do we come across this import for the first time?
     if (!symbolMap) {
@@ -147,10 +162,6 @@ export class DeferredSymbolTracker {
     }
 
     const symbolsMap = this.imports.get(importDecl)!;
-    if (symbolsMap === ExplicitlyDeferred) {
-      return true;
-    }
-
     for (const [symbol, refs] of symbolsMap) {
       if (refs === AssumeEager || refs.size > 0) {
         // There may be still eager references to this symbol.

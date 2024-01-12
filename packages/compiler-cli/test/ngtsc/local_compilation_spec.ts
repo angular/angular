@@ -12,7 +12,7 @@ import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment, TsConfigOptions} from './env';
 
 const testFiles = loadStandardTestFiles();
 
@@ -20,8 +20,7 @@ runInEachFileSystem(() => {
   describe('local compilation', () => {
     let env!: NgtscTestEnvironment;
 
-    beforeEach(() => {
-      env = NgtscTestEnvironment.setup(testFiles);
+    function tsconfig(extraOpts: TsConfigOptions = {}) {
       const tsconfig: {[key: string]: any} = {
         extends: '../tsconfig-base.json',
         compilerOptions: {
@@ -30,9 +29,15 @@ runInEachFileSystem(() => {
         },
         angularCompilerOptions: {
           compilationMode: 'experimental-local',
+          ...extraOpts,
         },
       };
       env.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
+    }
+
+    beforeEach(() => {
+      env = NgtscTestEnvironment.setup(testFiles);
+      tsconfig();
     });
 
     it('should produce no TS semantic diagnostics', () => {
@@ -460,8 +465,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        // If there is no style, don't generate css selectors on elements by setting encapsulation
-        // to none (=2)
+        // If there is no style, don't generate css selectors on elements by setting
+        // encapsulation to none (=2)
         expect(jsContents).toContain('encapsulation: 2');
       });
     });
@@ -1148,6 +1153,10 @@ runInEachFileSystem(() => {
     });
 
     describe('@defer', () => {
+      beforeEach(() => {
+        tsconfig({onlyExplicitDeferDependencyImports: true});
+      });
+
       it('should handle `@Component.deferredImports` field', () => {
         env.write('deferred-a.ts', `
           import {Component} from '@angular/core';
@@ -1357,6 +1366,179 @@ runInEachFileSystem(() => {
                    'import("./deferred-a").then(m => m.DeferredCmpA), ' +
                    'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
                    '(DeferredCmpA, DeferredCmpB) => {');
+         });
+
+      it('should support importing multiple deferrable deps from a single file ' +
+             'and use them within `@Component.deferrableImports` field',
+         () => {
+           env.write('deferred-deps.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-a',
+                template: 'DeferredCmpA contents',
+              })
+              export class DeferredCmpA {
+              }
+
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-b',
+                template: 'DeferredCmpB contents',
+              })
+              export class DeferredCmpB {
+              }
+            `);
+
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+
+              // This import brings multiple symbols, but all of them are
+              // used within @Component.deferredImports, thus this import
+              // can be removed in favor of dynamic imports.
+              import {DeferredCmpA, DeferredCmpB} from './deferred-deps';
+
+              @Component({
+                standalone: true,
+                deferredImports: [DeferredCmpA],
+                template: \`
+                  @defer {
+                    <deferred-cmp-a />
+                  }
+                \`,
+              })
+              export class AppCmpA {}
+
+              @Component({
+                standalone: true,
+                deferredImports: [DeferredCmpB],
+                template: \`
+                  @defer {
+                    <deferred-cmp-b />
+                  }
+                \`,
+              })
+              export class AppCmpB {}
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Expect that we generate 2 different defer functions
+           // (one for each component).
+           expect(jsContents)
+               .toContain(
+                   'const AppCmpA_DeferFn = () => [' +
+                   'import("./deferred-deps").then(m => m.DeferredCmpA)]');
+           expect(jsContents)
+               .toContain(
+                   'const AppCmpB_DeferFn = () => [' +
+                   'import("./deferred-deps").then(m => m.DeferredCmpB)]');
+
+           // Make sure there are no eager imports present in the output.
+           expect(jsContents).not.toContain(`from './deferred-deps'`);
+
+           // Defer instructions use per-component dependency function.
+           expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpA_DeferFn)');
+           expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpB_DeferFn)');
+
+           // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
+           expect(jsContents)
+               .toContain(
+                   'ɵsetClassMetadataAsync(AppCmpA, () => [' +
+                   'import("./deferred-deps").then(m => m.DeferredCmpA)]');
+           expect(jsContents)
+               .toContain(
+                   'ɵsetClassMetadataAsync(AppCmpB, () => [' +
+                   'import("./deferred-deps").then(m => m.DeferredCmpB)]');
+         });
+
+      it('should produce a diagnostic in case imports with symbols used ' +
+             'in `deferredImports` can not be removed',
+         () => {
+           env.write('deferred-deps.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-a',
+                template: 'DeferredCmpA contents',
+              })
+              export class DeferredCmpA {
+              }
+
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-b',
+                template: 'DeferredCmpB contents',
+              })
+              export class DeferredCmpB {
+              }
+
+              export function utilityFn() {}
+            `);
+
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+
+              // This import can not be removed, since it'd contain
+              // 'utilityFn' symbol once we remove 'DeferredCmpA' and
+              // 'DeferredCmpB' and generate a dynamic import for it.
+              // In this situation compiler produces a diagnostic to
+              // indicate that.
+              import {DeferredCmpA, DeferredCmpB, utilityFn} from './deferred-deps';
+
+              @Component({
+                standalone: true,
+                deferredImports: [DeferredCmpA],
+                template: \`
+                  @defer {
+                    <deferred-cmp-a />
+                  }
+                \`,
+              })
+              export class AppCmpA {
+                ngOnInit() {
+                  utilityFn();
+                }
+              }
+
+              @Component({
+                standalone: true,
+                deferredImports: [DeferredCmpB],
+                template: \`
+                  @defer {
+                    <deferred-cmp-b />
+                  }
+                \`,
+              })
+              export class AppCmpB {}
+
+              @Component({
+                standalone: true,
+                template: 'Component without any dependencies'
+              })
+              export class ComponentWithoutDeps {}
+            `);
+
+           const diags = env.driveDiagnostics();
+
+           // Expect 2 diagnostics: one for each component `AppCmpA` and `AppCmpB`,
+           // since both of them refer to symbols from an import declaration that
+           // can not be removed.
+           expect(diags.length).toBe(2);
+
+           const components = ['AppCmpA', 'AppCmpB'];
+           for (let i = 0; i < components.length; i++) {
+             const component = components[i];
+             const {code, messageText} = diags[i];
+             expect(code).toBe(ngErrorCode(ErrorCode.DEFERRED_DEPENDENCY_IMPORTED_EAGERLY));
+             expect(messageText)
+                 .toContain(
+                     'This import contains symbols used in the `@Component.deferredImports` ' +
+                     `array of the \`${component}\` component`);
+           }
          });
     });
   });

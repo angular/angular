@@ -126,6 +126,31 @@ export interface R3DirectiveMetadata {
 }
 
 /**
+ * Defines how dynamic imports for deferred dependencies should be emitted in the
+ * generated output:
+ *  - either in a function on per-component basis (in case of local compilation)
+ *  - or in a function on per-block basis (in full compilation mode)
+ */
+export const enum DeferBlockDepsEmitMode {
+  /**
+   * Dynamic imports are grouped on per-block basis.
+   *
+   * This is used in full compilation mode, when compiler has more information
+   * about particular dependencies that belong to this block.
+   */
+  PerBlock,
+
+  /**
+   * Dynamic imports are grouped on per-component basis.
+   *
+   * In local compilation, compiler doesn't have enough information to determine
+   * which deferred dependencies belong to which block. In this case we group all
+   * dynamic imports into a single file on per-component basis.
+   */
+  PerComponent,
+}
+
+/**
  * Specifies how a list of declaration type references should be emitted into the generated code.
  */
 export const enum DeclarationListEmitMode {
@@ -248,13 +273,14 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>;
 
   /**
+   * Defines how dynamic imports for deferred dependencies should be grouped:
+   *  - either in a function on per-component basis (in case of local compilation)
+   *  - or in a function on per-block basis (in full compilation mode)
+   */
+  deferBlockDepsEmitMode: DeferBlockDepsEmitMode;
+
+  /**
    * Map of deferrable symbol names -> corresponding import paths.
-   *
-   * This map is populated **only** in local compilation mode and used by the
-   * TemplateDefinitionBuilder to produce a defer function that loads
-   * all dependencies. In full compilation mode this information is defined
-   * on a `@defer` block level instead and dependency function is generated
-   * on per-block level.
    */
   deferrableTypes: Map<string, string>;
 
