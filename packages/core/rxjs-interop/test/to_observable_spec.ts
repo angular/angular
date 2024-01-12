@@ -50,6 +50,26 @@ describe('toObservable()', () => {
     expect(await counterValues).toEqual([0, 1, 3]);
   });
 
+  it('should produce an observable that tracks a reactive function', async () => {
+    const counter = signal(0);
+    const counterValues =
+        toObservable(() => counter() * 2, {injector}).pipe(take(3), toArray()).toPromise();
+
+    // Initial effect execution, emits 0.
+    flushEffects();
+
+    counter.set(1);
+    // Emits 2.
+    flushEffects();
+
+    counter.set(2);
+    counter.set(3);
+    // Emits 6 (ignores 2 as it was batched by the effect).
+    flushEffects();
+
+    expect(await counterValues).toEqual([0, 2, 6]);
+  });
+
   it('should propagate errors from the signal', () => {
     const source = signal(1);
     const counter = computed(() => {

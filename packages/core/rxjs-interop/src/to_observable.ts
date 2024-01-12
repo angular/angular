@@ -25,16 +25,17 @@ export interface ToObservableOptions {
 }
 
 /**
- * Exposes the value of an Angular `Signal` as an RxJS `Observable`.
+ * Exposes the value of an Angular `Signal`, or any reactive getter (i.e. a function that reads
+ * signals) as an RxJS `Observable`.
  *
- * The signal's value will be propagated into the `Observable`'s subscribers using an `effect`.
+ * The reactive value will be propagated into the `Observable`'s subscribers using an `effect`.
  *
  * `toObservable` must be called in an injection context unless an injector is provided via options.
  *
  * @developerPreview
  */
 export function toObservable<T>(
-    source: Signal<T>,
+    source: Signal<T>|(() => T),
     options?: ToObservableOptions,
     ): Observable<T> {
   !options?.injector && assertInInjectionContext(toObservable);
