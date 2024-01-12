@@ -89,13 +89,21 @@ export class InjectableDecoratorHandler implements
   }
 
   register(node: ClassDeclaration, analysis: InjectableHandlerData): void {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return;
+    }
+
     this.injectableRegistry.registerInjectable(node, {
       ctorDeps: analysis.ctorDeps,
     });
   }
 
-  resolve(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>, symbol: null):
+  resolve(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>):
       ResolveResult<unknown> {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return {};
+    }
+
     if (requiresValidCtor(analysis.meta)) {
       const diagnostic = checkInheritanceOfInjectable(
           node, this.injectableRegistry, this.reflector, this.evaluator, this.strictCtorDeps,
