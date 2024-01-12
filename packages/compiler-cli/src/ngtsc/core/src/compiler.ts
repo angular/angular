@@ -434,13 +434,26 @@ export class NgCompiler {
    * If a `ts.SourceFile` is passed, only diagnostics related to that file are returned.
    */
   getDiagnosticsForFile(file: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[] {
-    const diagnostics: ts.Diagnostic[] = [];
-    diagnostics.push(
-        ...this.getNonTemplateDiagnostics().filter(diag => diag.file === file),
-        ...this.getTemplateDiagnosticsForFile(file, optimizeFor));
-    if (this.options.strictTemplates) {
-      diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
+    const diagnostics: ts.Diagnostic[] =
+        [...this.getNonTemplateDiagnostics().filter(diag => diag.file === file)];
+
+    try {
+      diagnostics.push(...this.getTemplateDiagnosticsForFile(file, optimizeFor));
+      if (this.options.strictTemplates) {
+        diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
+      }
+    } catch (e) {
+      // Type check code may throw fatal diagnostic errors if e.g. the type check
+      // block cannot be generated. Gracefully return the associated diagnostic.
+      // Note: If a fatal diagnostic is raised, do not repeat the same diagnostics
+      // by running the extended template checking code, which will attempt to
+      // generate the same TCB.
+      if (e instanceof FatalDiagnosticError) {
+        diagnostics.push(e.toDiagnostic());
+      }
+      throw e;
     }
+
     return this.addMessageTextDetails(diagnostics);
   }
 
@@ -896,14 +909,7 @@ export class NgCompiler {
     // Get the diagnostics.
     const diagnostics: ts.Diagnostic[] = [];
     if (!sf.isDeclarationFile && !this.adapter.isShim(sf)) {
-      try {
-        diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf, optimizeFor));
-      } catch (err) {
-        if (!(err instanceof FatalDiagnosticError)) {
-          throw err;
-        }
-        diagnostics.push(err.toDiagnostic());
-      }
+      diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf, optimizeFor));
     }
 
     const program = this.programDriver.getProgram();
