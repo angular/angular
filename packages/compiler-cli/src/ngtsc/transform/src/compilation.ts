@@ -411,20 +411,13 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
 
     const symbol = this.makeSymbolForTrait(trait.handler, clazz, result.analysis ?? null);
-    if (this.compilationMode !== CompilationMode.LOCAL && result.analysis !== undefined &&
-        trait.handler.register !== undefined) {
+    if (result.analysis !== undefined && trait.handler.register !== undefined) {
       trait.handler.register(clazz, result.analysis);
     }
     trait = trait.toAnalyzed(result.analysis ?? null, result.diagnostics ?? null, symbol);
   }
 
   resolve(): void {
-    // No resolving needed for local compilation (only analysis and compile will be done in this
-    // mode)
-    if (this.compilationMode === CompilationMode.LOCAL) {
-      return;
-    }
-
     const classes = this.classes.keys();
     for (const clazz of classes) {
       const record = this.classes.get(clazz)!;
@@ -484,7 +477,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
    * `ts.SourceFile`.
    */
   typeCheck(sf: ts.SourceFile, ctx: TypeCheckContext): void {
-    if (!this.fileToClasses.has(sf)) {
+    if (!this.fileToClasses.has(sf) || this.compilationMode === CompilationMode.LOCAL) {
       return;
     }
 
@@ -596,24 +589,20 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 
     for (const trait of record.traits) {
       let compileRes: CompileResult|CompileResult[];
+
+      if (trait.state !== TraitState.Resolved || containsErrors(trait.analysisDiagnostics) ||
+          containsErrors(trait.resolveDiagnostics)) {
+        // Cannot compile a trait that is not resolved, or had any errors in its declaration.
+        continue;
+      }
+
       if (this.compilationMode === CompilationMode.LOCAL) {
-        if (trait.state !== TraitState.Analyzed || trait.analysis === null ||
-            containsErrors(trait.analysisDiagnostics)) {
-          // Cannot compile a trait in local mode that is not analyzed, or had any errors in its
-          // declaration.
-          continue;
-        }
         // `trait.analysis` is non-null asserted here because TypeScript does not recognize that
         // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
         // `Readonly` works.
-        compileRes = trait.handler.compileLocal(clazz, trait.analysis!, constantPool);
+        compileRes =
+            trait.handler.compileLocal(clazz, trait.analysis!, trait.resolution!, constantPool);
       } else {
-        if (trait.state !== TraitState.Resolved || containsErrors(trait.analysisDiagnostics) ||
-            containsErrors(trait.resolveDiagnostics)) {
-          // Cannot compile a trait in global mode that is not resolved, or had any errors in its
-          // declaration.
-          continue;
-        }
         // `trait.resolution` is non-null asserted below because TypeScript does not recognize that
         // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
         // `Readonly` works.
