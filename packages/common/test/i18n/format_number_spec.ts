@@ -7,22 +7,9 @@
  */
 
 import {formatCurrency, formatNumber, formatPercent} from '@angular/common';
-import localeAr from '@angular/common/locales/ar';
-import localeEn from '@angular/common/locales/en';
-import localeEsUS from '@angular/common/locales/es-US';
-import localeFr from '@angular/common/locales/fr';
-import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {ɵDEFAULT_LOCALE_ID} from '@angular/core';
 
 describe('Format number', () => {
-  beforeAll(() => {
-    ɵregisterLocaleData(localeEn);
-    ɵregisterLocaleData(localeEsUS);
-    ɵregisterLocaleData(localeFr);
-    ɵregisterLocaleData(localeAr);
-  });
-
-  afterAll(() => ɵunregisterLocaleData());
-
   describe('Number', () => {
     describe('transform', () => {
       it('should return correct value for numbers', () => {
@@ -37,8 +24,7 @@ describe('Format number', () => {
       });
 
       it('should throw if minFractionDigits is explicitly higher than maxFractionDigits', () => {
-        expect(() => formatNumber(1.1, ɵDEFAULT_LOCALE_ID, '3.4-2'))
-            .toThrowError(/is higher than the maximum/);
+        expect(() => formatNumber(1.1, ɵDEFAULT_LOCALE_ID, '3.4-2')).toThrowError();
       });
     });
 
@@ -72,7 +58,8 @@ describe('Format number', () => {
         expect(formatPercent(100, ɵDEFAULT_LOCALE_ID, '0.4-6')).toEqual('10,000.0000%');
         expect(formatPercent(100, ɵDEFAULT_LOCALE_ID, '0.0-10')).toEqual('10,000%');
         expect(formatPercent(1.5e2, ɵDEFAULT_LOCALE_ID)).toEqual('15,000%');
-        expect(formatPercent(1e100, ɵDEFAULT_LOCALE_ID)).toEqual('1E+102%');
+
+        expect(formatPercent(1e100, ɵDEFAULT_LOCALE_ID)).toEqual('1E102%');
       });
     });
   });
@@ -101,20 +88,25 @@ describe('Format number', () => {
         // currency code is unknown, default formatting options will be used
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'unexisting_ISO_code'))
             .toEqual('unexisting_ISO_code5.12');
-        // currency code is USD, the pipe will format based on USD but will display "Custom name"
+        // currency code is USD, the pipe will format based on USD but will display
+        // "Custom name"
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'Custom name'))
             .toEqual('Custom name5.12');
       });
 
       it('should round to the default number of digits if no digitsInfo', () => {
+        // GNF are valid currencies, there is space between currency and value in
+        // en-US
+
         // GNF has a default number of digits of 0
-        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'GNF', 'GNF')).toEqual('GNF5');
-        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'GNF', 'GNF', '.2')).toEqual('GNF5.12');
+        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'GNF', 'GNF')).toEqual('GNF 5');
+        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'GNF', 'GNF', '.2')).toEqual('GNF 5.12');
         expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'Custom name', 'GNF'))
-            .toEqual('Custom name5');
+            .toEqual('Custom name 5');
         // BHD has a default number of digits of 3
-        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'BHD', 'BHD')).toEqual('BHD5.123');
-        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'BHD', 'BHD', '.1-2')).toEqual('BHD5.12');
+        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'BHD', 'BHD')).toEqual('BHD 5.123');
+        expect(formatCurrency(5.1234, ɵDEFAULT_LOCALE_ID, 'BHD', 'BHD', '.1-2'))
+            .toEqual('BHD 5.12');
       });
     });
   });

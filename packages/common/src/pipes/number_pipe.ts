@@ -252,25 +252,16 @@ export class CurrencyPipe implements PipeTransform {
     locale = locale || this._locale;
 
     if (typeof display === 'boolean') {
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {
+      if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
         console.warn(
             `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
       }
       display = display ? 'symbol' : 'code';
     }
 
-    let currency: string = currencyCode || this._defaultCurrencyCode;
-    if (display !== 'code') {
-      if (display === 'symbol' || display === 'symbol-narrow') {
-        currency = getCurrencySymbol(currency, display === 'symbol' ? 'wide' : 'narrow', locale);
-      } else {
-        currency = display;
-      }
-    }
-
     try {
       const num = strToNumber(value);
-      return formatCurrency(num, locale, currency, currencyCode, digitsInfo);
+      return formatCurrency(num, locale, display, currencyCode, digitsInfo);
     } catch (error) {
       throw invalidPipeArgumentError(CurrencyPipe, (error as Error).message);
     }

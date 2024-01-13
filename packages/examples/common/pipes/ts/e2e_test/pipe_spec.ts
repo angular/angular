@@ -100,11 +100,11 @@ describe('pipe', () => {
       const examples = element.all(by.css('currency-pipe p'));
       expect(examples.get(0).getText()).toEqual('A: $0.26');
       expect(examples.get(1).getText()).toEqual('A: CA$0.26');
-      expect(examples.get(2).getText()).toEqual('A: CAD0.26');
+      expect(examples.get(2).getText()).toEqual('A: CAD 0.26');
       expect(examples.get(3).getText()).toEqual('B: CA$0,001.35');
       expect(examples.get(4).getText()).toEqual('B: $0,001.35');
       expect(examples.get(5).getText()).toEqual('B: 0\u202f001,35 $CA');
-      expect(examples.get(6).getText()).toEqual('B: CLP1');
+      expect(examples.get(6).getText()).toEqual('B: CLP 1');
     });
   });
 });
