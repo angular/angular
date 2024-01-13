@@ -500,12 +500,14 @@ function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols
   return data[ɵLocaleDataIndex.Currencies];
 }
 
+const pluralMapping = ['zero', 'one', 'two', 'few', 'many'];
+
 /**
  * @alias core/ɵgetLocalePluralCase
  * @publicApi
  */
 export const getLocalePluralCase: (locale: string) => ((value: number) => Plural) =
-    ɵgetLocalePluralCase;
+    (locale: string) => (value) => pluralMapping.indexOf(ɵgetLocalePluralCase(locale)(value));
 
 function checkFullData(data: any) {
   if (!data[ɵLocaleDataIndex.ExtraData]) {

@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, LOCALE_ID} from '@angular/core';
-
-import {getLocalePluralCase, Plural} from './locale_data_api';
+import {Inject, Injectable, LOCALE_ID, ɵgetLocalePluralCase,} from '@angular/core';
 
 /**
  * @publicApi
@@ -55,26 +53,16 @@ export function getPluralCategory(
  */
 @Injectable()
 export class NgLocaleLocalization extends NgLocalization {
+  private readonly isSupported: boolean;
+
   constructor(@Inject(LOCALE_ID) protected locale: string) {
     super();
+    this.isSupported = Intl.PluralRules.supportedLocalesOf(locale).length > 0;
   }
 
   override getPluralCategory(value: any, locale?: string): string {
-    const plural = getLocalePluralCase(locale || this.locale)(value);
-
-    switch (plural) {
-      case Plural.Zero:
-        return 'zero';
-      case Plural.One:
-        return 'one';
-      case Plural.Two:
-        return 'two';
-      case Plural.Few:
-        return 'few';
-      case Plural.Many:
-        return 'many';
-      default:
-        return 'other';
-    }
+    // Force unknown locale to return 'other'
+    // calling the private ɵgetLocalePluralCase for a direct access to the plural case string.
+    return this.isSupported ? ɵgetLocalePluralCase(locale || this.locale)(value) : 'other';
   }
 }

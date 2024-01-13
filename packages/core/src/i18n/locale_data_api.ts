@@ -15,6 +15,8 @@ import localeEn from './locale_en';
  */
 let LOCALE_DATA: {[localeId: string]: any} = {};
 
+export const PLURALS_DATA: {[localeId: string]: Intl.PluralRules} = {};
+
 /**
  * Register locale data to be used internally by Angular. See the
  * ["I18n guide"](guide/i18n-common-format-data-locale) to know how to import additional locale
@@ -90,12 +92,10 @@ export function getLocaleCurrencyCode(locale: string): string|null {
  * @see {@link NgPlural}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  */
-export function getLocalePluralCase(locale: string): (value: number) => number {
-  const data = findLocaleData(locale);
-  return data[LocaleDataIndex.PluralCase];
+export function getLocalePluralCase(locale: string): (value: number) => string {
+  PLURALS_DATA[locale] ??= new Intl.PluralRules(locale);
+  return (value: number) => PLURALS_DATA[locale].select(value);
 }
-
-
 
 /**
  * Helper function to get the given `normalizedLocale` from `LOCALE_DATA`
