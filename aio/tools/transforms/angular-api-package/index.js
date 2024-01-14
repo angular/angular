@@ -113,6 +113,7 @@ module.exports =
             'localize/init/index.ts',
             'platform-browser/index.ts',
             'platform-browser/animations/index.ts',
+            'platform-browser/animations/async/index.ts',
             'platform-browser/testing/index.ts',
             'platform-browser-dynamic/index.ts',
             'platform-browser-dynamic/testing/index.ts',
