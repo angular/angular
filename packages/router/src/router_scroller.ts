@@ -35,8 +35,8 @@ export class RouterScroller implements OnDestroy {
         anchorScrolling?: 'disabled'|'enabled'
       } = {}) {
     // Default both options to 'disabled'
-    options.scrollPositionRestoration = options.scrollPositionRestoration || 'disabled';
-    options.anchorScrolling = options.anchorScrolling || 'disabled';
+    options.scrollPositionRestoration ||= 'disabled';
+    options.anchorScrolling ||= 'disabled';
   }
 
   init(): void {
