@@ -65,8 +65,7 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
   override path(includeHash: boolean = false): string {
     // the hash value is always prefixed with a `#`
     // and if it is empty then it will stay empty
-    let path = this._platformLocation.hash;
-    if (path == null) path = '#';
+    const path = this._platformLocation.hash ?? '#';
 
     return path.length > 0 ? path.substring(1) : path;
   }

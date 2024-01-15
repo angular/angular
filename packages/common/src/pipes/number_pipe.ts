@@ -98,7 +98,7 @@ export class DecimalPipe implements PipeTransform {
       |null {
     if (!isValue(value)) return null;
 
-    locale = locale || this._locale;
+    locale ||= this._locale;
 
     try {
       const num = strToNumber(value);
@@ -158,7 +158,7 @@ export class PercentPipe implements PipeTransform {
   transform(value: number|string|null|undefined, digitsInfo?: string, locale?: string): string
       |null {
     if (!isValue(value)) return null;
-    locale = locale || this._locale;
+    locale ||= this._locale;
     try {
       const num = strToNumber(value);
       return formatPercent(num, locale, digitsInfo);
@@ -249,7 +249,7 @@ export class CurrencyPipe implements PipeTransform {
       locale?: string): string|null {
     if (!isValue(value)) return null;
 
-    locale = locale || this._locale;
+    locale ||= this._locale;
 
     if (typeof display === 'boolean') {
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && <any>console && <any>console.warn) {

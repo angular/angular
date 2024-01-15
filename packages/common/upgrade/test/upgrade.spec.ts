@@ -66,9 +66,7 @@ export class $rootScopeMock {
   }
 
   $on(evt: string, fn: any) {
-    if (!this.events[evt]) {
-      this.events[evt] = [];
-    }
+    this.events[evt] ||= [];
     this.events[evt].push(fn);
   }
 
