@@ -147,7 +147,7 @@ export class NgSwitch {
                       this._ngSwitch)}", but this is no longer the case with the stricter equality check. ` +
               'Your comparison results return different results using === vs. == and you should adjust your ngSwitch expression and / or values to conform with the strict equality requirements.'));
     }
-    this._lastCasesMatched = this._lastCasesMatched || matched;
+    this._lastCasesMatched ||= matched;
     this._lastCaseCheckIndex++;
     if (this._lastCaseCheckIndex === this._caseCount) {
       this._updateDefaultCases(!this._lastCasesMatched);

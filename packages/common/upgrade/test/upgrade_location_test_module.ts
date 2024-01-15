@@ -51,9 +51,8 @@ export class LocationUpgradeTestModule {
           useFactory: (appBaseHref?: string) => {
             if (config && config.appBaseHref != null) {
               appBaseHref = config.appBaseHref;
-            } else if (appBaseHref == null) {
-              appBaseHref = '';
             }
+            appBaseHref ??= '';
             return new MockPlatformLocation(
                 {startUrl: config && config.startUrl, appBaseHref: appBaseHref});
           },

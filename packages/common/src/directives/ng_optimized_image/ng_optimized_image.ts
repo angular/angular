@@ -360,9 +360,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     // Must set width/height explicitly in case they are bound (in which case they will
     // only be reflected and not found by the browser)
     if (this.fill) {
-      if (!this.sizes) {
-        this.sizes = '100vw';
-      }
+      this.sizes ||= '100vw';
     } else {
       this.setHostAttribute('width', this.width!.toString());
       this.setHostAttribute('height', this.height!.toString());

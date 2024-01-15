@@ -13,9 +13,7 @@ export function getDOM(): DomAdapter {
 }
 
 export function setRootDomAdapter(adapter: DomAdapter) {
-  if (!_DOM) {
-    _DOM = adapter;
-  }
+  _DOM ??= adapter;
 }
 
 /* tslint:disable:requireParameterType */
