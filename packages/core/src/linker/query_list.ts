@@ -71,7 +71,7 @@ export class QueryList<T> implements Iterable<T> {
     // the constructor.
     // [Symbol.iterator](): Iterator<T> { ... }
     const proto = QueryList.prototype;
-    if (!proto[Symbol.iterator]) proto[Symbol.iterator] = symbolIterator;
+    proto[Symbol.iterator] ||= symbolIterator;
   }
 
   /**

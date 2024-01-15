@@ -186,7 +186,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       }
     }
 
-    environmentInjector = environmentInjector || this.ngModule;
+    environmentInjector ??= this.ngModule;
 
     let realEnvironmentInjector = environmentInjector instanceof EnvironmentInjector ?
         environmentInjector :

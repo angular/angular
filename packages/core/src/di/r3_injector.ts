@@ -300,7 +300,7 @@ export class R3Injector extends EnvironmentInjector {
       return nextInjector.get(token, notFoundValue);
     } catch (e: any) {
       if (e.name === 'NullInjectorError') {
-        const path: any[] = e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || [];
+        const path: any[] = e[NG_TEMP_TOKEN_PATH] ||= [];
         path.unshift(stringify(token));
         if (previousInjector) {
           // We still have a parent injector, keep throwing

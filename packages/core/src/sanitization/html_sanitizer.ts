@@ -244,7 +244,7 @@ let inertBodyHelper: InertBodyHelper;
 export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): TrustedHTML|string {
   let inertBodyElement: HTMLElement|null = null;
   try {
-    inertBodyHelper = inertBodyHelper || getInertBodyHelper(defaultDoc);
+    inertBodyHelper ??= getInertBodyHelper(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
     inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);

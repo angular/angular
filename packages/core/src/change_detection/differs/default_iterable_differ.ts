@@ -93,7 +93,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
           addRemoveOffset++;
         } else {
           // INVARIANT:  currentIndex < previousIndex
-          if (!moveOffsets) moveOffsets = [];
+          moveOffsets ||= [];
           const localMovePreviousIndex = adjPreviousIndex - addRemoveOffset;
           const localCurrentIndex = currentIndex! - addRemoveOffset;
           if (localMovePreviousIndex != localCurrentIndex) {
@@ -152,7 +152,7 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 
   diff(collection: NgIterable<V>|null|undefined): DefaultIterableDiffer<V>|null {
-    if (collection == null) collection = [];
+    collection ??= [];
     if (!isListLikeIterable(collection)) {
       throw new RuntimeError(
           RuntimeErrorCode.INVALID_DIFFER_INPUT,

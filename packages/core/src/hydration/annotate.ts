@@ -66,9 +66,7 @@ let tViewSsrId = 0;
  * at runtime.
  */
 function getSsrId(tView: TView): string {
-  if (!tView.ssrId) {
-    tView.ssrId = `t${tViewSsrId++}`;
-  }
+  tView.ssrId ||= `t${tViewSsrId++}`;
   return tView.ssrId;
 }
 

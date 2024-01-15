@@ -89,11 +89,11 @@ export function testChangesAsString(
     {map, previous, additions, changes, removals}:
         {map?: any[], previous?: any[], additions?: any[], changes?: any[], removals?: any[]}):
     string {
-  if (!map) map = [];
-  if (!previous) previous = [];
-  if (!additions) additions = [];
-  if (!changes) changes = [];
-  if (!removals) removals = [];
+  map ??= [];
+  previous ??= [];
+  additions ??= [];
+  changes ??= [];
+  removals ??= [];
 
   return 'map: ' + map.join(', ') + '\n' +
       'previous: ' + previous.join(', ') + '\n' +

@@ -1924,7 +1924,7 @@ describe('styling', () => {
     class Cmp {
       public c: {[key: string]: any}|null = null;
       updateClasses(classes: string) {
-        const c = this.c || (this.c = {});
+        const c = (this.c ||= {});
         Object.keys(this.c).forEach(className => {
           c[className] = false;
         });
@@ -1935,7 +1935,7 @@ describe('styling', () => {
 
       public s: {[key: string]: any}|null = null;
       updateStyles(prop: string, value: string|number|null) {
-        const s = this.s || (this.s = {});
+        const s = (this.s ||= {});
         Object.assign(s, {[prop]: value});
       }
 

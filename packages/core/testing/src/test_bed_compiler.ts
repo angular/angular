@@ -301,9 +301,7 @@ export class TestBedCompiler {
     if (needsAsyncResources) {
       let resourceLoader: ResourceLoader;
       let resolver = (url: string): Promise<string> => {
-        if (!resourceLoader) {
-          resourceLoader = this.injector.get(ResourceLoader);
-        }
+        resourceLoader ||= this.injector.get(ResourceLoader);
         return Promise.resolve(resourceLoader.get(url));
       };
       await ɵresolveComponentResources(resolver);
@@ -395,7 +393,7 @@ export class TestBedCompiler {
             `Please call \`await TestBed.compileComponents()\` before running this test.`);
       }
 
-      needsAsyncResources = needsAsyncResources || ɵisComponentDefPendingResolution(declaration);
+      needsAsyncResources ||= ɵisComponentDefPendingResolution(declaration);
 
       const metadata = this.resolvers.component.resolve(declaration);
       if (metadata === null) {

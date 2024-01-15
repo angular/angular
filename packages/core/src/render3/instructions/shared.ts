@@ -1128,7 +1128,7 @@ function findDirectiveDefMatches(
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i] as ComponentDef<any>| DirectiveDef<any>;
       if (isNodeMatchingSelectorList(tNode, def.selectors!, /* isProjectionMode */ false)) {
-        matches || (matches = []);
+        matches ??= [];
 
         if (isComponentDef(def)) {
           if (ngDevMode) {
@@ -1154,7 +1154,7 @@ function findDirectiveDefMatches(
           // 4. Selector-matched directives.
           if (def.findHostDirectiveDefs !== null) {
             const hostDirectiveMatches: DirectiveDef<unknown>[] = [];
-            hostDirectiveDefs = hostDirectiveDefs || new Map();
+            hostDirectiveDefs ??= new Map();
             def.findHostDirectiveDefs(def, hostDirectiveMatches, hostDirectiveDefs);
             // Add all host directives declared on this component, followed by the component itself.
             // Host directives should execute first so the host has a chance to override changes
@@ -1171,7 +1171,7 @@ function findDirectiveDefMatches(
           }
         } else {
           // Append any host directives to the matches first.
-          hostDirectiveDefs = hostDirectiveDefs || new Map();
+          hostDirectiveDefs ??= new Map();
           def.findHostDirectiveDefs?.(def, matches, hostDirectiveDefs);
           matches.push(def);
         }
@@ -1399,7 +1399,7 @@ function generateInitialInputs(
     if (typeof attrName === 'number') break;
 
     if (inputs.hasOwnProperty(attrName as string)) {
-      if (inputsToStore === null) inputsToStore = [];
+      inputsToStore ??= [];
 
       // Find the input's public name from the input store. Note that we can be found easier
       // through the directive def, but we want to do it using the inputs store so that it can
@@ -1557,7 +1557,7 @@ export function storePropertyBindingMetadata(
   // binding meta-data to decide if one should be stored (or if was stored already).
   if (tData[bindingIndex] === null) {
     if (tNode.inputs == null || !tNode.inputs[propertyName]) {
-      const propBindingIdxs = tNode.propertyBindings || (tNode.propertyBindings = []);
+      const propBindingIdxs = (tNode.propertyBindings ??= []);
       propBindingIdxs.push(bindingIndex);
       let bindingMetadata = propertyName;
       if (interpolationParts.length > 0) {
@@ -1571,11 +1571,11 @@ export function storePropertyBindingMetadata(
 
 export function getOrCreateLViewCleanup(view: LView): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return view[CLEANUP] || (view[CLEANUP] = []);
+  return (view[CLEANUP] ||= []);
 }
 
 export function getOrCreateTViewCleanup(tView: TView): any[] {
-  return tView.cleanup || (tView.cleanup = []);
+  return (tView.cleanup ||= []);
 }
 
 /**

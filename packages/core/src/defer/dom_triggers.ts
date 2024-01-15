@@ -148,7 +148,7 @@ export function onViewport(
   const ngZone = injector.get(NgZone);
   let entry = viewportTriggers.get(trigger);
 
-  intersectionObserver = intersectionObserver || ngZone.runOutsideAngular(() => {
+  intersectionObserver ??= ngZone.runOutsideAngular(() => {
     return new IntersectionObserver(entries => {
       for (const current of entries) {
         // Only invoke the callbacks if the specific element is intersecting.

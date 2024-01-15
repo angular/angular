@@ -739,9 +739,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
       if (closeMultiLineElRegex.test(line)) {
         // multi line self closing tag
         indent = indent.slice(2);
-        if (openSelfClosingEl) {
-          openSelfClosingEl = false;
-        }
+        openSelfClosingEl &&= false;
       }
 
       // this matches a self closing element that doesn't have a / in the >

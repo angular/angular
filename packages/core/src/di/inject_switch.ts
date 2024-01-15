@@ -54,8 +54,7 @@ export function injectRootLimpMode<T>(
     token: ProviderToken<T>, notFoundValue: T|undefined, flags: InjectFlags): T|null {
   const injectableDef: ɵɵInjectableDeclaration<T>|null = getInjectableDef(token);
   if (injectableDef && injectableDef.providedIn == 'root') {
-    return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
-                                               injectableDef.value;
+    return injectableDef.value ??= injectableDef.factory();
   }
   if (flags & InjectFlags.Optional) return null;
   if (notFoundValue !== undefined) return notFoundValue;

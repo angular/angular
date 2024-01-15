@@ -91,7 +91,7 @@ function ngOnChangesSetInput<T>(
   ngDevMode && assertString(declaredName, 'Name of input in ngOnChanges has to be a string');
   const simpleChangesStore = getSimpleChangesStore(instance) ||
       setSimpleChangesStore(instance, {previous: EMPTY_OBJ, current: null});
-  const current = simpleChangesStore.current || (simpleChangesStore.current = {});
+  const current = (simpleChangesStore.current ??= {});
   const previous = simpleChangesStore.previous;
   const previousChange = previous[declaredName];
   current[declaredName] = new SimpleChange(

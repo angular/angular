@@ -221,7 +221,7 @@ export function destroyViewTree(rootView: LView): void {
         }
         lViewOrLContainer = lViewOrLContainer[PARENT];
       }
-      if (lViewOrLContainer === null) lViewOrLContainer = rootView;
+      lViewOrLContainer ??= rootView;
       if (isLView(lViewOrLContainer)) {
         cleanUpView(lViewOrLContainer[TVIEW], lViewOrLContainer);
       }

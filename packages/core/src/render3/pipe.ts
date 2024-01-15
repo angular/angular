@@ -51,7 +51,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
     pipeDef = tView.data[adjustedIndex] as PipeDef<any>;
   }
 
-  const pipeFactory = pipeDef.factory || (pipeDef.factory = getFactoryDef(pipeDef.type, true));
+  const pipeFactory = (pipeDef.factory ??= getFactoryDef(pipeDef.type, true));
 
   let previousInjectorProfilerContext: InjectorProfilerContext;
   if (ngDevMode) {

@@ -174,7 +174,7 @@ export class TestBedImpl implements TestBed {
   private static _INSTANCE: TestBedImpl|null = null;
 
   static get INSTANCE(): TestBedImpl {
-    return TestBedImpl._INSTANCE = TestBedImpl._INSTANCE || new TestBedImpl();
+    return TestBedImpl._INSTANCE ??= new TestBedImpl();
   }
 
   /**

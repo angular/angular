@@ -384,7 +384,7 @@ function stringifyCSSSelector(selector: CssSelector): string {
       mode = valueOrMarker;
       // According to CssSelector spec, once we come across `SelectorFlags.NOT` flag, the negative
       // mode is maintained for remaining chunks of a selector.
-      isNegativeMode = isNegativeMode || !isPositive(mode);
+      isNegativeMode ||= !isPositive(mode);
     }
     i++;
   }

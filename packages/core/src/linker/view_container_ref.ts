@@ -575,7 +575,7 @@ function getViewRefs(lContainer: LContainer): ViewRef[]|null {
 }
 
 function getOrCreateViewRefs(lContainer: LContainer): ViewRef[] {
-  return (lContainer[VIEW_REFS] || (lContainer[VIEW_REFS] = [])) as ViewRef[];
+  return (lContainer[VIEW_REFS] ||= []) as ViewRef[];
 }
 
 /**

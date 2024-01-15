@@ -91,9 +91,7 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
     // ngFor loop, all the views will be created together before update mode runs and turns
     // off firstCreatePass. If we don't set it here, instances will perform directive
     // matching, etc again and again.
-    if (tView.firstCreatePass) {
-      tView.firstCreatePass = false;
-    }
+    tView.firstCreatePass &&= false;
 
     // We resolve content queries specifically marked as `static` in creation mode. Dynamic
     // content queries are resolved during change detection (i.e. update mode), after embedded

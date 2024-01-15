@@ -32,9 +32,9 @@ describe('locale data api', () => {
     registerLocaleData(localeEnAU);
 
     // Simulate some locale data existing on the global already
-    global.ng = global.ng || {};
-    global.ng.common = global.ng.common || {locales: {}};
-    global.ng.common.locales = global.ng.common.locales || {};
+    global.ng ||= {};
+    global.ng.common ||= {locales: {}};
+    global.ng.common.locales ||= {};
     global.ng.common.locales['fr'] = fakeGlobalFr;
     global.ng.common.locales['de'] = localeDe;
     global.ng.common.locales['de-ch'] = localeDeCH;

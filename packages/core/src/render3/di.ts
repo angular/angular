@@ -121,9 +121,7 @@ export function bloomAdd(
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
   // we can easily retrieve the ID and hash it into the bloom bit that should be checked.
-  if (id == null) {
-    id = (type as any)[NG_ELEMENT_ID] = nextNgElementId++;
-  }
+  id ??= (type as any)[NG_ELEMENT_ID] = nextNgElementId++;
 
   // We only have BLOOM_SIZE (256) slots in our bloom filter (8 buckets * 32 bits each),
   // so all unique IDs must be modulo-ed into a number from 0 - 255 to fit into the filter.

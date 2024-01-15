@@ -524,7 +524,7 @@ function createTQuery(tView: TView, metadata: TQueryMetadata, nodeIndex: number)
 }
 
 function saveContentQueryAndDirectiveIndex(tView: TView, directiveIndex: number) {
-  const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
+  const tViewContentQueries = (tView.contentQueries ||= []);
   const lastSavedDirectiveIndex =
       tViewContentQueries.length ? tViewContentQueries[tViewContentQueries.length - 1] : -1;
   if (directiveIndex !== lastSavedDirectiveIndex) {

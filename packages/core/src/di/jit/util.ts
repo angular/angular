@@ -16,7 +16,7 @@ import {Attribute} from '../metadata_attr';
 let _reflect: ReflectionCapabilities|null = null;
 
 export function getReflect(): ReflectionCapabilities {
-  return (_reflect = _reflect || new ReflectionCapabilities());
+  return (_reflect ||= new ReflectionCapabilities());
 }
 
 export function reflectDependencies(type: Type<any>): R3DependencyMetadataFacade[] {

@@ -127,7 +127,7 @@ export function makeParamDecorator(
           parameters.push(null);
         }
 
-        (parameters[index] = parameters[index] || []).push(annotationInstance);
+        (parameters[index] ||= []).push(annotationInstance);
         return cls;
       }
     }

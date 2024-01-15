@@ -217,9 +217,7 @@ class TestComp {
 
 function createComponentFixture<T>(
     template: string, providers?: Provider[]|null, comp?: Type<T>): ComponentFixture<T> {
-  if (!comp) {
-    comp = <any>TestComp;
-  }
+  comp ||= <any>TestComp;
   TestBed.overrideComponent(comp!, {set: {template}});
   if (providers && providers.length) {
     TestBed.overrideComponent(comp!, {add: {providers: providers}});

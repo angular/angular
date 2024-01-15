@@ -40,7 +40,7 @@ export function createInjectorWithoutInjectorInstances(
     additionalProviders || EMPTY_ARRAY,
     importProvidersFrom(defType),
   ];
-  name = name || (typeof defType === 'object' ? undefined : stringify(defType));
+  name ||= (typeof defType === 'object' ? undefined : stringify(defType));
 
   return new R3Injector(providers, parent || getNullInjector(), name || null, scopes);
 }

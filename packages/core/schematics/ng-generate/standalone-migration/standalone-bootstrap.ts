@@ -170,7 +170,7 @@ function migrateBootstrapCall(
   tracker.insertText(moduleSourceFile, analysis.metadata.getEnd(), ' */');
 
   if (providers && ts.isPropertyAssignment(providers)) {
-    nodeLookup = nodeLookup || getNodeLookup(moduleSourceFile);
+    nodeLookup ||= getNodeLookup(moduleSourceFile);
 
     if (ts.isArrayLiteralExpression(providers.initializer)) {
       providersInNewCall.push(...providers.initializer.elements);
@@ -182,7 +182,7 @@ function migrateBootstrapCall(
   }
 
   if (imports && ts.isPropertyAssignment(imports)) {
-    nodeLookup = nodeLookup || getNodeLookup(moduleSourceFile);
+    nodeLookup ||= getNodeLookup(moduleSourceFile);
     migrateImportsForBootstrapCall(
         sourceFile, imports, nodeLookup, moduleImportsInNewCall, providersInNewCall, tracker,
         nodesToCopy, referenceResolver, typeChecker);

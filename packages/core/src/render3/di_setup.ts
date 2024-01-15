@@ -210,7 +210,7 @@ function registerDestroyHooksIfSupported(
     const ngOnDestroy = prototype.ngOnDestroy;
 
     if (ngOnDestroy) {
-      const hooks = tView.destroyHooks || (tView.destroyHooks = []);
+      const hooks = (tView.destroyHooks ??= []);
 
       if (!providerIsTypeProvider && ((provider as ClassProvider)).multi) {
         ngDevMode &&

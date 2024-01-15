@@ -124,7 +124,7 @@ export function ɵɵprojection(
       getOrCreateTNode(tView, HEADER_OFFSET + nodeIndex, TNodeType.Projection, null, attrs || null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
-  if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;
+  tProjectionNode.projection ??= selectorIndex;
 
   // `<ng-content>` has no content
   setCurrentTNodeAsNotParent();

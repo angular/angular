@@ -127,13 +127,8 @@ class EventEmitter_ extends Subject<any> {
     if (this.__isAsync) {
       errorFn = _wrapInTimeout(errorFn);
 
-      if (nextFn) {
-        nextFn = _wrapInTimeout(nextFn);
-      }
-
-      if (completeFn) {
-        completeFn = _wrapInTimeout(completeFn);
-      }
+      nextFn &&= _wrapInTimeout(nextFn);
+      completeFn &&= _wrapInTimeout(completeFn);
     }
 
     const sink = super.subscribe({next: nextFn, error: errorFn, complete: completeFn});

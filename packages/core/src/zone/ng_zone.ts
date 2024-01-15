@@ -392,15 +392,13 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
     // coalescing eventTasks. The benefit of this is that the "fake" container eventTask
     //  will prevent the microtasks queue from getting drained in between the coalescing
     // eventTask execution.
-    if (!zone.fakeTopEventTask) {
-      zone.fakeTopEventTask = Zone.root.scheduleEventTask('fakeTopEventTask', () => {
-        zone.lastRequestAnimationFrameId = -1;
-        updateMicroTaskStatus(zone);
-        zone.isCheckStableRunning = true;
-        checkStable(zone);
-        zone.isCheckStableRunning = false;
-      }, undefined, () => {}, () => {});
-    }
+    zone.fakeTopEventTask ??= Zone.root.scheduleEventTask('fakeTopEventTask', () => {
+      zone.lastRequestAnimationFrameId = -1;
+      updateMicroTaskStatus(zone);
+      zone.isCheckStableRunning = true;
+      checkStable(zone);
+      zone.isCheckStableRunning = false;
+    }, undefined, () => {}, () => {});
     zone.fakeTopEventTask.invoke();
   });
   updateMicroTaskStatus(zone);
