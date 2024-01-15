@@ -85,7 +85,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    */
   expectOne(match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string):
       TestRequest {
-    description = description || this.descriptionFromMatcher(match);
+    description ||= this.descriptionFromMatcher(match);
     const matches = this.match(match);
     if (matches.length > 1) {
       throw new Error(`Expected one matching request for criteria "${description}", found ${
@@ -109,7 +109,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    */
   expectNone(match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string):
       void {
-    description = description || this.descriptionFromMatcher(match);
+    description ||= this.descriptionFromMatcher(match);
     const matches = this.match(match);
     if (matches.length > 0) {
       throw new Error(`Expected zero matching requests for criteria "${description}", found ${

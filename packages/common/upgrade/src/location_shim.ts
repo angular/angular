@@ -385,9 +385,7 @@ export class $locationShim {
 
     this.parseAppUrl(pathUrl);
 
-    if (!this.$$path) {
-      this.$$path = '/';
-    }
+    this.$$path ||= '/';
     this.composeUrls();
   }
 

@@ -238,9 +238,8 @@ export class JsonpClientBackend implements HttpBackend {
     // Issue #34818
     // Changing <script>'s ownerDocument will prevent it from execution.
     // https://html.spec.whatwg.org/multipage/scripting.html#execute-the-script-block
-    if (!foreignDocument) {
-      foreignDocument = (this.document.implementation as DOMImplementation).createHTMLDocument();
-    }
+    foreignDocument ??= (this.document.implementation as DOMImplementation).createHTMLDocument();
+
     foreignDocument.adoptNode(script);
   }
 }
