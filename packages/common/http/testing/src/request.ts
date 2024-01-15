@@ -70,9 +70,9 @@ export class TestRequest {
     if (opts.status === undefined) {
       if (body === null) {
         status = HttpStatusCode.NoContent;
-        statusText = statusText || 'No Content';
+        statusText ||= 'No Content';
       } else {
-        statusText = statusText || 'OK';
+        statusText ||= 'OK';
       }
     }
     if (statusText === undefined) {

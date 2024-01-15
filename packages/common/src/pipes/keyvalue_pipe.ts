@@ -90,10 +90,8 @@ export class KeyValuePipe implements PipeTransform {
       return null;
     }
 
-    if (!this.differ) {
-      // make a differ for whatever type we've been passed in
-      this.differ = this.differs.find(input).create();
-    }
+    // make a differ for whatever type we've been passed in
+    this.differ ??= this.differs.find(input).create();
 
     const differChanges: KeyValueChanges<K, V>|null = this.differ.diff(input as any);
     const compareFnChanged = compareFn !== this.compareFn;

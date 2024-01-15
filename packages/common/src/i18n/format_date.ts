@@ -135,7 +135,7 @@ function createDate(year: number, month: number, date: number): Date {
 
 function getNamedFormat(locale: string, format: string): string {
   const localeId = getLocaleId(locale);
-  NAMED_FORMATS[localeId] = NAMED_FORMATS[localeId] || {};
+  NAMED_FORMATS[localeId] ??= {};
 
   if (NAMED_FORMATS[localeId][format]) {
     return NAMED_FORMATS[localeId][format];

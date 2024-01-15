@@ -145,11 +145,9 @@ export class SpyLocation implements Location {
   onUrlChange(fn: (url: string, state: unknown) => void): VoidFunction {
     this._urlChangeListeners.push(fn);
 
-    if (!this._urlChangeSubscription) {
-      this._urlChangeSubscription = this.subscribe(v => {
-        this._notifyUrlChangeListeners(v.url, v.state);
-      });
-    }
+    this._urlChangeSubscription ??= this.subscribe(v => {
+      this._notifyUrlChangeListeners(v.url, v.state);
+    });
 
     return () => {
       const fnIndex = this._urlChangeListeners.indexOf(fn);

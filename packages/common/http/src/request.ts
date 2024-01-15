@@ -290,14 +290,10 @@ export class HttpRequest<T> {
     }
 
     // If no headers have been passed in, construct a new HttpHeaders instance.
-    if (!this.headers) {
-      this.headers = new HttpHeaders();
-    }
+    this.headers ??= new HttpHeaders();
 
     // If no context have been passed in, construct a new HttpContext instance.
-    if (!this.context) {
-      this.context = new HttpContext();
-    }
+    this.context ??= new HttpContext();
 
     // If no parameters have been passed in, construct a new HttpUrlEncodedParams instance.
     if (!this.params) {
