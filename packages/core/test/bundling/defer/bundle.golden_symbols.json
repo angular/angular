@@ -1698,6 +1698,9 @@
     "name": "init_pure_function"
   },
   {
+    "name": "init_queries"
+  },
+  {
     "name": "init_query"
   },
   {
