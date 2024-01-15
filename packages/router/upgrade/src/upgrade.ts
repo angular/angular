@@ -125,9 +125,7 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'has
  */
 let anchor: HTMLAnchorElement|undefined;
 function resolveUrl(url: string): {pathname: string, search: string, hash: string} {
-  if (!anchor) {
-    anchor = document.createElement('a');
-  }
+  anchor ??= document.createElement('a');
 
   anchor.setAttribute('href', url);
   anchor.setAttribute('href', anchor.href);
