@@ -208,9 +208,7 @@ export class UrlTree {
   }
 
   get queryParamMap(): ParamMap {
-    if (!this._queryParamMap) {
-      this._queryParamMap = convertToParamMap(this.queryParams);
-    }
+    this._queryParamMap ??= convertToParamMap(this.queryParams);
     return this._queryParamMap;
   }
 
@@ -296,9 +294,7 @@ export class UrlSegment {
       public parameters: {[name: string]: string}) {}
 
   get parameterMap(): ParamMap {
-    if (!this._parameterMap) {
-      this._parameterMap = convertToParamMap(this.parameters);
-    }
+    this._parameterMap ??= convertToParamMap(this.parameters);
     return this._parameterMap;
   }
 
