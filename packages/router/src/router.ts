@@ -249,16 +249,14 @@ export class Router {
     // Don't need to use Zone.wrap any more, because zone.js
     // already patch onPopState, so location change callback will
     // run into ngZone
-    if (!this.nonRouterCurrentEntryChangeSubscription) {
-      this.nonRouterCurrentEntryChangeSubscription =
-          this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state) => {
-            // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-            // hybrid apps.
-            setTimeout(() => {
-              this.navigateToSyncWithBrowser(url, 'popstate', state);
-            }, 0);
-          });
-    }
+    this.nonRouterCurrentEntryChangeSubscription ??=
+        this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state) => {
+          // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
+          // hybrid apps.
+          setTimeout(() => {
+            this.navigateToSyncWithBrowser(url, 'popstate', state);
+          }, 0);
+        });
   }
 
   /**

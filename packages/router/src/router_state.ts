@@ -194,9 +194,7 @@ export class ActivatedRoute {
    * The map supports retrieving single and multiple values from the same parameter.
    */
   get paramMap(): Observable<ParamMap> {
-    if (!this._paramMap) {
-      this._paramMap = this.params.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
-    }
+    this._paramMap ??= this.params.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
     return this._paramMap;
   }
 
@@ -205,10 +203,8 @@ export class ActivatedRoute {
    * The map supports retrieving single and multiple values from the query parameter.
    */
   get queryParamMap(): Observable<ParamMap> {
-    if (!this._queryParamMap) {
-      this._queryParamMap =
-          this.queryParams.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
-    }
+    this._queryParamMap ??=
+        this.queryParams.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
     return this._queryParamMap;
   }
 
@@ -384,16 +380,12 @@ export class ActivatedRouteSnapshot {
   }
 
   get paramMap(): ParamMap {
-    if (!this._paramMap) {
-      this._paramMap = convertToParamMap(this.params);
-    }
+    this._paramMap ??= convertToParamMap(this.params);
     return this._paramMap;
   }
 
   get queryParamMap(): ParamMap {
-    if (!this._queryParamMap) {
-      this._queryParamMap = convertToParamMap(this.queryParams);
-    }
+    this._queryParamMap ??= convertToParamMap(this.queryParams);
     return this._queryParamMap;
   }
 
