@@ -2058,6 +2058,9 @@
     "name": "ɵɵattribute"
   },
   {
+    "name": "ɵɵcontentQuery"
+  },
+  {
     "name": "ɵɵdefineComponent"
   },
   {

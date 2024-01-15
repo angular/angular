@@ -91,6 +91,11 @@ export {
   ɵɵpropertyInterpolate8,
   ɵɵpropertyInterpolateV,
 
+  ɵɵcontentQuery,
+  ɵɵloadQuery,
+  ɵɵqueryRefresh,
+  ɵɵviewQuery,
+
   ɵɵreference,
 
   ɵɵrepeater,
@@ -198,11 +203,6 @@ export {
   ɵɵpureFunction8,
   ɵɵpureFunctionV,
 } from './pure_function';
-export {
-  ɵɵcontentQuery,
-  ɵɵloadQuery,
-  ɵɵqueryRefresh,
-  ɵɵviewQuery} from './query';
 export {
   ɵɵdisableBindings,
 
