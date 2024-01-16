@@ -30,5 +30,4 @@ import {TodosFilter} from './todos.pipe';
   declarations: [SamplePipe, TodosComponent, TodoComponent, TodosFilter, TooltipDirective],
   exports: [TodosComponent],
 })
-export class HomeModule {
-}
+export class HomeModule {}

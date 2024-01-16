@@ -8,7 +8,10 @@
 
 import {findNodeFromSerializedPosition} from 'ng-devtools-backend';
 
-import {buildDirectiveForest, queryDirectiveForest} from '../../../ng-devtools-backend/src/lib/component-tree';
+import {
+  buildDirectiveForest,
+  queryDirectiveForest,
+} from '../../../ng-devtools-backend/src/lib/component-tree';
 
 export const initializeExtendedWindowOperations = () => {
   extendWindowOperations(globalThis, {inspectedApplication: chromeWindowExtensions});
@@ -25,8 +28,10 @@ const extendWindowOperations = <T extends {}>(target: any, classImpl: T) => {
 };
 
 const chromeWindowExtensions = {
-  findConstructorByPosition: (serializedId: string, directiveIndex: number):
-                                 Element | undefined => {
+  findConstructorByPosition: (
+    serializedId: string,
+    directiveIndex: number,
+  ): Element | undefined => {
     const node = findNodeFromSerializedPosition(serializedId);
     if (node === null) {
       console.error(`Cannot find element associated with node ${serializedId}`);
@@ -37,7 +42,8 @@ const chromeWindowExtensions = {
         return node.directives[directiveIndex].instance.constructor;
       } else {
         console.error(
-            `Could not find the directive in the current node at index ${directiveIndex}`);
+          `Could not find the directive in the current node at index ${directiveIndex}`,
+        );
         return;
       }
     }
@@ -64,9 +70,10 @@ const chromeWindowExtensions = {
       return undefined;
     }
 
-    const isDirective = directivePosition.directive !== undefined &&
-        node.directives[directivePosition.directive] &&
-        typeof node.directives[directivePosition.directive] === 'object';
+    const isDirective =
+      directivePosition.directive !== undefined &&
+      node.directives[directivePosition.directive] &&
+      typeof node.directives[directivePosition.directive] === 'object';
     if (isDirective) {
       return traverseDirective(node.directives[directivePosition.directive].instance, objectPath);
     }

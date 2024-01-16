@@ -60,5 +60,4 @@ import {TimelineComponent} from './timeline.component';
     FrameSelectorComponent,
   ],
 })
-export class TimelineModule {
-}
+export class TimelineModule {}

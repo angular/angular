@@ -29,8 +29,10 @@ export const main = () => {
 
   port.onDisconnect.addListener(handleDisconnect);
 
-  const localMessageBus =
-      new SamePageMessageBus('angular-devtools-content-script', 'angular-devtools-backend');
+  const localMessageBus = new SamePageMessageBus(
+    'angular-devtools-content-script',
+    'angular-devtools-backend',
+  );
   const chromeMessageBus = new ChromeMessageBus(port);
 
   const handshakeWithBackend = (): void => {

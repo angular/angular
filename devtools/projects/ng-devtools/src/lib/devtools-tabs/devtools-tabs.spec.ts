@@ -24,8 +24,7 @@ import {TabUpdate} from './tab-update/index';
   selector: 'ng-directive-explorer',
   template: '',
 })
-export class MockDirectiveExplorerComponent {
-}
+export class MockDirectiveExplorerComponent {}
 
 describe('DevtoolsTabsComponent', () => {
   let messageBusMock: MessageBus<Events>;

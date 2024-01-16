@@ -12,7 +12,6 @@ import {FormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 
-
 export interface DialogData {
   animal: string;
   name: string;
@@ -39,8 +38,9 @@ export interface DialogData {
 })
 export class DialogComponent {
   constructor(
-      public dialogRef: MatDialogRef<DialogComponent>,
-      @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+    public dialogRef: MatDialogRef<DialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+  ) {}
 
   onNoClick(): void {
     this.dialogRef.close();

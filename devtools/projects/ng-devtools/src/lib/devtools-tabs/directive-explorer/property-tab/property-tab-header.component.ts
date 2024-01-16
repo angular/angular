@@ -18,5 +18,5 @@ import {IndexedNode} from '../directive-forest/index-forest';
 })
 export class PropertyTabHeaderComponent {
   @Input({required: true}) currentSelectedElement!: IndexedNode;
-  @Input() currentDirectives: string[]|undefined;
+  @Input() currentDirectives: string[] | undefined;
 }

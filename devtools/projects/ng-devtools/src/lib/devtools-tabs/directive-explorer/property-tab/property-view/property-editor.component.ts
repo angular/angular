@@ -6,11 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewChecked, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output,} from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {ContainerType} from 'protocol';
 
-type EditorType = string|number|boolean;
-type EditorResult = EditorType|Array<EditorType>;
+type EditorType = string | number | boolean;
+type EditorResult = EditorType | Array<EditorType>;
 
 enum PropertyEditorState {
   Read,
@@ -43,7 +52,10 @@ export class PropertyEditorComponent implements AfterViewChecked, OnInit {
   valueToSubmit!: EditorResult;
   currentPropertyState = this.readState;
 
-  constructor(private _cd: ChangeDetectorRef, private _elementRef: ElementRef) {}
+  constructor(
+    private _cd: ChangeDetectorRef,
+    private _elementRef: ElementRef,
+  ) {}
 
   ngOnInit(): void {
     this.valueToSubmit = this.initialValue;

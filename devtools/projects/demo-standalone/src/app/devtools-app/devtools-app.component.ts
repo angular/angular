@@ -19,33 +19,39 @@ import {IFrameMessageBus} from '../../../../../src/iframe-message-bus';
     {
       provide: MessageBus,
       useFactory(): MessageBus<Events> {
-        return new PriorityAwareMessageBus(new IFrameMessageBus(
-            'angular-devtools', 'angular-devtools-backend',
+        return new PriorityAwareMessageBus(
+          new IFrameMessageBus(
+            'angular-devtools',
+            'angular-devtools-backend',
             // tslint:disable-next-line: no-non-null-assertion
-            () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!));
+            () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!,
+          ),
+        );
       },
     },
   ],
-  styles: [`
-    iframe {
-      height: 340px;
-      width: 100%;
-      border: 0;
-    }
+  styles: [
+    `
+      iframe {
+        height: 340px;
+        width: 100%;
+        border: 0;
+      }
 
-    .devtools-wrapper {
-      height: calc(100vh - 345px);
-    }
-  `],
+      .devtools-wrapper {
+        height: calc(100vh - 345px);
+      }
+    `,
+  ],
   template: `
     <iframe #ref src="demo-app/todos/app" id="sample-app"></iframe>
     <br />
     <div class="devtools-wrapper">
       <ng-devtools></ng-devtools>
     </div>
-  `
+  `,
 })
 export class DevToolsComponent {
-  messageBus: IFrameMessageBus|null = null;
+  messageBus: IFrameMessageBus | null = null;
   @ViewChild('ref') iframe!: ElementRef;
 }

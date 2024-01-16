@@ -23,7 +23,11 @@ import {ResolutionPathComponent} from '../../../dependency-injection/resolution-
 import {PropertyEditorComponent} from './property-editor.component';
 import {PropertyPreviewComponent} from './property-preview.component';
 import {PropertyTabBodyComponent} from './property-tab-body.component';
-import {DependencyViewerComponent, InjectedServicesComponent, PropertyViewBodyComponent} from './property-view-body.component';
+import {
+  DependencyViewerComponent,
+  InjectedServicesComponent,
+  PropertyViewBodyComponent,
+} from './property-view-body.component';
 import {PropertyViewHeaderComponent} from './property-view-header.component';
 import {PropertyViewTreeComponent} from './property-view-tree.component';
 import {PropertyViewComponent} from './property-view.component';
@@ -41,9 +45,17 @@ import {PropertyViewComponent} from './property-view.component';
     DependencyViewerComponent,
   ],
   imports: [
-    MatToolbarModule, MatButtonModule, MatIconModule, MatTreeModule, MatTooltipModule,
-    MatChipsModule, CommonModule, MatExpansionModule, DragDropModule, FormsModule,
-    ResolutionPathComponent
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTreeModule,
+    MatTooltipModule,
+    MatChipsModule,
+    CommonModule,
+    MatExpansionModule,
+    DragDropModule,
+    FormsModule,
+    ResolutionPathComponent,
   ],
   exports: [
     PropertyViewComponent,
@@ -55,5 +67,4 @@ import {PropertyViewComponent} from './property-view.component';
     PropertyEditorComponent,
   ],
 })
-export class PropertyViewModule {
-}
+export class PropertyViewModule {}

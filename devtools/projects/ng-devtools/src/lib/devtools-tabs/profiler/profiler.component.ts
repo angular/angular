@@ -14,7 +14,7 @@ import {Subject, Subscription} from 'rxjs';
 import {FileApiService} from './file-api-service';
 import {ProfilerImportDialogComponent} from './profiler-import-dialog.component';
 
-type State = 'idle'|'recording'|'visualizing';
+type State = 'idle' | 'recording' | 'visualizing';
 
 const SUPPORTED_VERSIONS = [1];
 const PROFILER_VERSION = 1;
@@ -32,9 +32,9 @@ export class ProfilerComponent implements OnInit {
   private _buffer: ProfilerFrame[] = [];
 
   constructor(
-      private _fileApiService: FileApiService,
-      private _messageBus: MessageBus<Events>,
-      public dialog: MatDialog,
+    private _fileApiService: FileApiService,
+    private _messageBus: MessageBus<Events>,
+    public dialog: MatDialog,
   ) {
     this._fileApiService.uploadedData.subscribe((importedFile) => {
       if (importedFile.error) {

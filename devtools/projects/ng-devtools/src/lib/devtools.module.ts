@@ -19,5 +19,4 @@ import {DevToolsComponent} from './devtools.component';
   imports: [CommonModule, DevToolsTabModule, MatProgressSpinnerModule, MatTooltipModule],
   exports: [DevToolsComponent],
 })
-export class DevToolsModule {
-}
+export class DevToolsModule {}
