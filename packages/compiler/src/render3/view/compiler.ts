@@ -27,9 +27,10 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
 
 import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
+import {createQueryCreateCall} from './query_generation';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
-import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
+import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
 
 
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
@@ -407,55 +408,6 @@ function compileDeclarationList(
   }
 }
 
-function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression[] {
-  const parameters = [getQueryPredicate(query, constantPool), o.literal(toQueryFlags(query))];
-  if (query.read) {
-    parameters.push(query.read);
-  }
-  return parameters;
-}
-
-/**
- * A set of flags to be used with Queries.
- *
- * NOTE: Ensure changes here are in sync with `packages/core/src/render3/interfaces/query.ts`
- */
-export const enum QueryFlags {
-  /**
-   * No flags
-   */
-  none = 0b0000,
-
-  /**
-   * Whether or not the query should descend into children.
-   */
-  descendants = 0b0001,
-
-  /**
-   * The query can be computed statically and hence can be assigned eagerly.
-   *
-   * NOTE: Backwards compatibility with ViewEngine.
-   */
-  isStatic = 0b0010,
-
-  /**
-   * If the `QueryList` should fire change event only if actual change to query was computed (vs old
-   * behavior where the change was fired whenever the query was recomputed, even if the recomputed
-   * query resulted in the same list.)
-   */
-  emitDistinctChangesOnly = 0b0100,
-}
-
-/**
- * Translates query flags into `TQueryFlags` type in packages/core/src/render3/interfaces/query.ts
- * @param query
- */
-function toQueryFlags(query: R3QueryMetadata): number {
-  return (query.descendants ? QueryFlags.descendants : QueryFlags.none) |
-      (query.static ? QueryFlags.isStatic : QueryFlags.none) |
-      (query.emitDistinctChangesOnly ? QueryFlags.emitDistinctChangesOnly : QueryFlags.none);
-}
-
 function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):
     o.Expression[] {
   const values: o.Expression[] = [];
@@ -474,11 +426,20 @@ function createContentQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   for (const query of queries) {
-    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
-    createStatements.push(
-        o.importExpr(R3.contentQuery)
-            .callFn([o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any])
-            .toStmt());
+    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null) or
+    //                r3.contentQuerySignal(dirIndex, propName, somePredicate, <flags>, <read>).
+    createStatements.push(createQueryCreateCall(
+                              query, constantPool,
+                              {nonSignal: R3.contentQuery, signalBased: R3.contentQuerySignal},
+                              /* prependParams */[o.variable('dirIndex')])
+                              .toStmt());
+
+    // Signal queries update lazily and we just advance the index.
+    // TODO: Chaining?
+    if (query.isSignal) {
+      updateStatements.push(o.importExpr(R3.queryAdvance).callFn([]).toStmt());
+      continue;
+    }
 
     // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
     const temporary = tempAllocator();
@@ -586,10 +547,20 @@ function createViewQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   viewQueries.forEach((query: R3QueryMetadata) => {
-    // creation, e.g. r3.viewQuery(somePredicate, true);
-    const queryDefinition =
-        o.importExpr(R3.viewQuery).callFn(prepareQueryParams(query, constantPool));
-    createStatements.push(queryDefinition.toStmt());
+    // creation call, e.g. r3.viewQuery(somePredicate, true) or
+    //                r3.viewQuerySignal(ctx.prop, somePredicate, true);
+    const queryDefinitionCall = createQueryCreateCall(query, constantPool, {
+      signalBased: R3.viewQuerySignal,
+      nonSignal: R3.viewQuery,
+    });
+    createStatements.push(queryDefinitionCall.toStmt());
+
+    // Signal queries update lazily and we just advance the index.
+    // TODO: Chaining?
+    if (query.isSignal) {
+      updateStatements.push(o.importExpr(R3.queryAdvance).callFn([]).toStmt());
+      return;
+    }
 
     // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
     const temporary = tempAllocator();
