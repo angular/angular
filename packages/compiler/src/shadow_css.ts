@@ -27,6 +27,12 @@ const animationKeywords = new Set([
 ]);
 
 /**
+ * The following array contains all of the CSS at-rule identifiers which are scoped.
+ */
+const scopedAtRuleIdentifiers =
+    ['@media', '@supports', '@document', '@layer', '@container', '@scope', '@starting-style'];
+
+/**
  * The following class has its origin from a port of shadowCSS from webcomponents.js to TypeScript.
  * It has since diverge in many ways to tailor Angular's needs.
  *
@@ -557,10 +563,7 @@ export class ShadowCss {
       let content = rule.content;
       if (rule.selector[0] !== '@') {
         selector = this._scopeSelector(rule.selector, scopeSelector, hostSelector);
-      } else if (
-          rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
-          rule.selector.startsWith('@document') || rule.selector.startsWith('@layer') ||
-          rule.selector.startsWith('@container') || rule.selector.startsWith('@scope')) {
+      } else if (scopedAtRuleIdentifiers.some(atRule => rule.selector.startsWith(atRule))) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
         content = this._stripScopingSelectors(rule.content);
