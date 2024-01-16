@@ -81,7 +81,7 @@ export function extractDirectiveMetadata(
   const inputsFromMeta =
       parseInputsArray(clazz, directive, evaluator, reflector, refEmitter, compilationMode);
   const inputsFromFields = parseInputFields(
-      clazz, members, evaluator, reflector, refEmitter, coreModule, compilationMode, inputsFromMeta,
+      clazz, members, evaluator, reflector, refEmitter, isCore, compilationMode, inputsFromMeta,
       decorator);
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
 
@@ -703,31 +703,27 @@ function parseInputsArray(
 
 /** Attempts to find a given Angular decorator on the class member. */
 function tryGetDecoratorOnMember(
-    member: ClassMember, decoratorName: string, coreModule: string|undefined): Decorator|null {
+    member: ClassMember, decoratorName: string, isCore: boolean): Decorator|null {
   if (member.decorators === null) {
     return null;
   }
 
   for (const decorator of member.decorators) {
-    if (decorator.import === null || decorator.import.name !== decoratorName) {
-      continue;
+    if (isAngularDecorator(decorator, decoratorName, isCore)) {
+      return decorator;
     }
-    if (coreModule !== undefined && decorator.import.from !== coreModule) {
-      continue;
-    }
-    return decorator;
   }
   return null;
 }
 
 function tryParseInputFieldMapping(
     clazz: ClassDeclaration, member: ClassMember, evaluator: PartialEvaluator,
-    reflector: ReflectionHost, coreModule: string|undefined, refEmitter: ReferenceEmitter,
+    reflector: ReflectionHost, isCore: boolean, refEmitter: ReferenceEmitter,
     compilationMode: CompilationMode): InputMapping|null {
   const classPropertyName = member.name;
 
-  const decorator = tryGetDecoratorOnMember(member, 'Input', coreModule);
-  const signalInputMapping = tryParseSignalInputMapping(member, reflector, coreModule);
+  const decorator = tryGetDecoratorOnMember(member, 'Input', isCore);
+  const signalInputMapping = tryParseSignalInputMapping(member, reflector, isCore);
 
   if (decorator !== null && signalInputMapping !== null) {
     throw new FatalDiagnosticError(
@@ -799,7 +795,7 @@ function tryParseInputFieldMapping(
 /** Parses the class members that declare inputs (via decorator or initializer). */
 function parseInputFields(
     clazz: ClassDeclaration, members: ClassMember[], evaluator: PartialEvaluator,
-    reflector: ReflectionHost, refEmitter: ReferenceEmitter, coreModule: string|undefined,
+    reflector: ReflectionHost, refEmitter: ReferenceEmitter, isCore: boolean,
     compilationMode: CompilationMode, inputsFromClassDecorator: Record<string, InputMapping>,
     classDecorator: Decorator): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
@@ -811,7 +807,7 @@ function parseInputFields(
         member,
         evaluator,
         reflector,
-        coreModule,
+        isCore,
         refEmitter,
         compilationMode,
     );

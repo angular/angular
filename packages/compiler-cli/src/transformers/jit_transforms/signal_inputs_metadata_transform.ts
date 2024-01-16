@@ -106,7 +106,7 @@ function visitClassDeclaration(
     const inputMapping = tryParseSignalInputMapping(
         {name: member.name.text, value: member.initializer ?? null},
         host,
-        isCore ? coreModuleName : undefined,
+        isCore,
     );
     if (inputMapping === null) {
       return member;
