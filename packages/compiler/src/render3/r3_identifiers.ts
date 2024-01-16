@@ -350,6 +350,11 @@ export class Identifiers {
   static loadQuery: o.ExternalReference = {name: 'ɵɵloadQuery', moduleName: CORE};
   static contentQuery: o.ExternalReference = {name: 'ɵɵcontentQuery', moduleName: CORE};
 
+  // Signal queries
+  static viewQuerySignal: o.ExternalReference = {name: 'ɵɵviewQuerySignal', moduleName: CORE};
+  static contentQuerySignal: o.ExternalReference = {name: 'ɵɵcontentQuerySignal', moduleName: CORE};
+  static queryAdvance: o.ExternalReference = {name: 'ɵɵqueryAdvance', moduleName: CORE};
+
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵɵNgOnChangesFeature', moduleName: CORE};
 
   static InheritDefinitionFeature:
