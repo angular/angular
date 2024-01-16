@@ -35,5 +35,4 @@ import {TimelineModule} from './timeline/timeline.module';
   ],
   exports: [ProfilerComponent],
 })
-export class ProfilerModule {
-}
+export class ProfilerModule {}

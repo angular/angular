@@ -8,7 +8,7 @@
 
 import {DirectiveProfile, ElementProfile, LifecycleProfile, ProfilerFrame} from 'protocol';
 
-const mergeProperty = (mergeInProp: number|undefined, value: number|undefined) => {
+const mergeProperty = (mergeInProp: number | undefined, value: number | undefined) => {
   if (mergeInProp === undefined) {
     return value;
   }
@@ -52,7 +52,7 @@ const mergeFrame = (mergeIn: ProfilerFrame, second: ProfilerFrame) => {
   mergeDirectives(mergeIn.directives, second.directives);
 };
 
-export const mergeFrames = (frames: ProfilerFrame[]): ProfilerFrame|null => {
+export const mergeFrames = (frames: ProfilerFrame[]): ProfilerFrame | null => {
   if (!frames || !frames.length) {
     return null;
   }

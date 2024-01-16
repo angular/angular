@@ -15,15 +15,16 @@ export class ChromeApplicationOperations extends ApplicationOperations {
   override viewSource(position: ElementPosition, directiveIndex: number): void {
     if (chrome.devtools) {
       chrome.devtools.inspectedWindow.eval(
-          `inspect(inspectedApplication.findConstructorByPosition('${position}', ${
-              directiveIndex}))`);
+        `inspect(inspectedApplication.findConstructorByPosition('${position}', ${directiveIndex}))`,
+      );
     }
   }
 
   override selectDomElement(position: ElementPosition): void {
     if (chrome.devtools) {
       chrome.devtools.inspectedWindow.eval(
-          `inspect(inspectedApplication.findDomElementByPosition('${position}'))`);
+        `inspect(inspectedApplication.findDomElementByPosition('${position}'))`,
+      );
     }
   }
 
@@ -34,7 +35,8 @@ export class ChromeApplicationOperations extends ApplicationOperations {
         objectPath,
       };
       chrome.devtools.inspectedWindow.eval(
-          `inspect(inspectedApplication.findPropertyByPosition('${JSON.stringify(args)}'))`);
+        `inspect(inspectedApplication.findPropertyByPosition('${JSON.stringify(args)}'))`,
+      );
     }
   }
 }

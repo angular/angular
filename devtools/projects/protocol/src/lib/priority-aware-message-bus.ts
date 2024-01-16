@@ -52,7 +52,9 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
   private _inProgress: TopicsInProgress = {};
 
   constructor(
-      private _bus: MessageBus<Events>, private _setTimeout: typeof setTimeout = setTimeout) {
+    private _bus: MessageBus<Events>,
+    private _setTimeout: typeof setTimeout = setTimeout,
+  ) {
     super();
   }
 

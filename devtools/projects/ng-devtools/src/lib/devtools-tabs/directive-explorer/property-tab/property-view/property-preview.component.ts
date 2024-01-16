@@ -21,7 +21,9 @@ export class PropertyPreviewComponent {
   @Output() inspect = new EventEmitter<void>();
 
   get isClickableProp(): boolean {
-    return this.node.prop.descriptor.type === PropType.Function ||
-        this.node.prop.descriptor.type === PropType.HTMLNode;
+    return (
+      this.node.prop.descriptor.type === PropType.Function ||
+      this.node.prop.descriptor.type === PropType.HTMLNode
+    );
   }
 }
