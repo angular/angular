@@ -13,13 +13,13 @@ import {IPC_PORT} from '../ipc-defaults';
 import {BackgroundServiceSendMessages, EndTestMessage, StartTestMessage} from '../ipc-messages';
 
 export function SaucelabsLauncher(
-    this: any,
-    args: Browser,
-    config: unknown,
-    logger: any,
-    baseLauncherDecorator: any,
-    captureTimeoutLauncherDecorator: any,
-    retryLauncherDecorator: any,
+  this: any,
+  args: Browser,
+  config: unknown,
+  logger: any,
+  baseLauncherDecorator: any,
+  captureTimeoutLauncherDecorator: any,
+  retryLauncherDecorator: any,
 ) {
   // Apply base class mixins. This would be nice to have typed, but this is a low-priority now.
   baseLauncherDecorator(this);
@@ -27,12 +27,13 @@ export function SaucelabsLauncher(
   retryLauncherDecorator(this);
 
   const log = logger.create('SaucelabsLauncher');
-  const browserDisplayName = args.browserName +
-      (args.browserVersion ? ' ' + args.browserVersion : '') +
-      (args.platformName ? ' (' + args.platformName + ')' : '');
+  const browserDisplayName =
+    args.browserName +
+    (args.browserVersion ? ' ' + args.browserVersion : '') +
+    (args.platformName ? ' (' + args.platformName + ')' : '');
   const testSuiteDescription = process.env['TEST_TARGET'] ?? '<unknown>';
 
-  let daemonConnection: Socket|null = null;
+  let daemonConnection: Socket | null = null;
 
   // Setup Browser name that will be printed out by Karma.
   this.name = browserDisplayName + ' on SauceLabs (daemon)';
@@ -40,11 +41,10 @@ export function SaucelabsLauncher(
   this.on('start', (pageUrl: string) => {
     daemonConnection = createConnection({port: IPC_PORT}, () => _startBrowserTest(pageUrl, args));
 
-    daemonConnection.on(
-        'data',
-        b => _processMessage(JSON.parse(b.toString()) as BackgroundServiceSendMessages),
+    daemonConnection.on('data', (b) =>
+      _processMessage(JSON.parse(b.toString()) as BackgroundServiceSendMessages),
     );
-    daemonConnection.on('error', err => {
+    daemonConnection.on('error', (err) => {
       log.error(err);
 
       // Notify karma about the failure.
@@ -62,8 +62,8 @@ export function SaucelabsLauncher(
     switch (message.type) {
       case 'browser-not-ready':
         log.error(
-            'Browser %s is not ready in the Saucelabs background service.',
-            browserDisplayName,
+          'Browser %s is not ready in the Saucelabs background service.',
+          browserDisplayName,
         );
         this._done('failure');
     }
@@ -72,7 +72,7 @@ export function SaucelabsLauncher(
   const _startBrowserTest = (pageUrl: string, browser: Browser) => {
     log.info('Starting browser %s test in daemon with URL: %s', browserDisplayName, pageUrl);
     daemonConnection!.write(
-        JSON.stringify(new StartTestMessage(pageUrl, getUniqueId(browser), testSuiteDescription)),
+      JSON.stringify(new StartTestMessage(pageUrl, getUniqueId(browser), testSuiteDescription)),
     );
   };
 
