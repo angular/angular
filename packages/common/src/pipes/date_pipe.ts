@@ -217,7 +217,6 @@ export const DATE_PIPE_DEFAULT_OPTIONS =
 // clang-format on
 @Pipe({
   name: 'date',
-  pure: true,
   standalone: true,
 })
 export class DatePipe implements PipeTransform {
