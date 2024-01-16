@@ -45,8 +45,12 @@ class TypedefWalker extends RuleWalker {
         if (this.hasInternalAnnotation(ranges[i])) return;
       }
     }
-    this.addFailure(this.createFailure(
-        node.getStart(), node.getWidth(),
-        `module-private member ${node.name?.getText()} must be annotated @internal`));
+    this.addFailure(
+      this.createFailure(
+        node.getStart(),
+        node.getWidth(),
+        `module-private member ${node.name?.getText()} must be annotated @internal`,
+      ),
+    );
   }
 }
