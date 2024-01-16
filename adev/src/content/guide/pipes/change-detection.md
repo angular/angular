@@ -58,7 +58,7 @@ The tabs for the example show the following:
 | Files                          | Details |
 |:---                            |:---     |
 | flying-heroes.component.html   | Template with the new pipe used. |
-| flying-heroes.pipe.ts          | File with custom pipe that filters flying heros. |
+| flying-heroes.pipe.ts          | File with custom pipe that filters flying heroes. |
 
 <docs-code-multifile path="adev/src/content/examples/pipes/src/app/flying-heroes.component.ts_FlyingHeroesComponent" preview>
     <docs-code header="src/app/flying-heroes.component.html" path="adev/src/content/examples/pipes/src/app/flying-heroes.component.html" visibleRegion="template-flying-heroes"/>
