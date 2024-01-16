@@ -9,7 +9,11 @@
 import {createServer, Server, Socket} from 'net';
 
 import {IPC_PORT} from '../ipc-defaults';
-import {BackgroundServiceReceiveMessages, InternalErrorMessage, NoAvailableBrowserMessage} from '../ipc-messages';
+import {
+  BackgroundServiceReceiveMessages,
+  InternalErrorMessage,
+  NoAvailableBrowserMessage,
+} from '../ipc-messages';
 
 import {SaucelabsDaemon} from './saucelabs-daemon';
 
@@ -27,30 +31,30 @@ export class IpcServer {
 
   constructor(private _service: SaucelabsDaemon) {
     this._server = createServer(this._connectionHandler.bind(this));
-    this._server.listen(
-        IPC_PORT, () => console.info(`Daemon IPC server listening (pid ${process.pid}).`));
+    this._server.listen(IPC_PORT, () =>
+      console.info(`Daemon IPC server listening (pid ${process.pid}).`),
+    );
   }
 
   private _connectionHandler(socket: Socket) {
     const socketId = nextSocketId++;
     this._connections.set(socketId, socket);
-    socket.on('data', b => {
+    socket.on('data', (b) => {
       this._processMessage(
-              socket,
-              socketId,
-              JSON.parse(b.toString()) as BackgroundServiceReceiveMessages,
-              )
-          .catch((err) => {
-            console.error(err);
-            this._sendInternalError(socket, err.toString());
-          });
+        socket,
+        socketId,
+        JSON.parse(b.toString()) as BackgroundServiceReceiveMessages,
+      ).catch((err) => {
+        console.error(err);
+        this._sendInternalError(socket, err.toString());
+      });
     });
   }
 
   private async _processMessage(
-      socket: Socket,
-      socketId: number,
-      message: BackgroundServiceReceiveMessages,
+    socket: Socket,
+    socketId: number,
+    message: BackgroundServiceReceiveMessages,
   ) {
     switch (message.type) {
       case 'start-test':
