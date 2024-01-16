@@ -27,26 +27,28 @@ const browserAction = (() => {
 // By default use the black and white icon.
 // Replace it only when we detect an Angular app.
 browserAction.setIcon(
-    {
-      path: {
-        16: chrome.runtime.getURL(`assets/icon-bw16.png`),
-        48: chrome.runtime.getURL(`assets/icon-bw48.png`),
-        128: chrome.runtime.getURL(`assets/icon-bw128.png`),
-      },
+  {
+    path: {
+      16: chrome.runtime.getURL(`assets/icon-bw16.png`),
+      48: chrome.runtime.getURL(`assets/icon-bw48.png`),
+      128: chrome.runtime.getURL(`assets/icon-bw128.png`),
     },
-    () => {});
+  },
+  () => {},
+);
 
 const ports: {
   [tab: string]:
-      |{
-        'content-script': chrome.runtime.Port|null;
-        devtools: chrome.runtime.Port|null;
-      }|undefined;
+    | {
+        'content-script': chrome.runtime.Port | null;
+        devtools: chrome.runtime.Port | null;
+      }
+    | undefined;
 } = {};
 
 chrome.runtime.onConnect.addListener((port) => {
-  let tab: string|null = null;
-  let name: 'devtools'|'content-script'|null = null;
+  let tab: string | null = null;
+  let name: 'devtools' | 'content-script' | null = null;
   // tslint:disable-next-line:no-console
   console.log('Connection event in the background script');
 
@@ -109,9 +111,11 @@ const installContentScript = (tabId: number) => {
 
   if (isManifestV3) {
     chrome.scripting.executeScript(
-        {files: ['app/content_script_bundle.js'], target: {tabId}}, () => {
-          chrome.scripting.executeScript({func: () => (globalThis as any).main(), target: {tabId}});
-        });
+      {files: ['app/content_script_bundle.js'], target: {tabId}},
+      () => {
+        chrome.scripting.executeScript({func: () => (globalThis as any).main(), target: {tabId}});
+      },
+    );
 
     return;
   }
@@ -124,40 +128,42 @@ const installContentScript = (tabId: number) => {
   });
 };
 
-const doublePipe =
-    (devtoolsPort: chrome.runtime.Port|null, contentScriptPort: chrome.runtime.Port,
-     tab: string) => {
-      if (devtoolsPort === null) {
-        console.warn('DevTools port is equal to null');
-        return;
-      }
+const doublePipe = (
+  devtoolsPort: chrome.runtime.Port | null,
+  contentScriptPort: chrome.runtime.Port,
+  tab: string,
+) => {
+  if (devtoolsPort === null) {
+    console.warn('DevTools port is equal to null');
+    return;
+  }
 
-      // tslint:disable-next-line:no-console
-      console.log('Creating two-way communication channel', Date.now(), ports);
+  // tslint:disable-next-line:no-console
+  console.log('Creating two-way communication channel', Date.now(), ports);
 
-      const onDevToolsMessage = (message: chrome.runtime.Port) => {
-        contentScriptPort.postMessage(message);
-      };
-      devtoolsPort.onMessage.addListener(onDevToolsMessage);
+  const onDevToolsMessage = (message: chrome.runtime.Port) => {
+    contentScriptPort.postMessage(message);
+  };
+  devtoolsPort.onMessage.addListener(onDevToolsMessage);
 
-      const onContentScriptMessage = (message: chrome.runtime.Port) => {
-        devtoolsPort.postMessage(message);
-      };
-      contentScriptPort.onMessage.addListener(onContentScriptMessage);
+  const onContentScriptMessage = (message: chrome.runtime.Port) => {
+    devtoolsPort.postMessage(message);
+  };
+  contentScriptPort.onMessage.addListener(onContentScriptMessage);
 
-      const shutdown = (source: string) => {
-        // tslint:disable-next-line:no-console
-        console.log('Disconnecting', source);
+  const shutdown = (source: string) => {
+    // tslint:disable-next-line:no-console
+    console.log('Disconnecting', source);
 
-        devtoolsPort.onMessage.removeListener(onDevToolsMessage);
-        contentScriptPort.onMessage.removeListener(onContentScriptMessage);
-        devtoolsPort.disconnect();
-        contentScriptPort.disconnect();
-        ports[tab] = undefined;
-      };
-      devtoolsPort.onDisconnect.addListener(shutdown.bind(null, 'devtools'));
-      contentScriptPort.onDisconnect.addListener(shutdown.bind(null, 'content-script'));
-    };
+    devtoolsPort.onMessage.removeListener(onDevToolsMessage);
+    contentScriptPort.onMessage.removeListener(onContentScriptMessage);
+    devtoolsPort.disconnect();
+    contentScriptPort.disconnect();
+    ports[tab] = undefined;
+  };
+  devtoolsPort.onDisconnect.addListener(shutdown.bind(null, 'devtools'));
+  contentScriptPort.onDisconnect.addListener(shutdown.bind(null, 'content-script'));
+};
 
 const getPopUpName = (ng: AngularDetection) => {
   if (!ng.isAngular) {
@@ -184,14 +190,15 @@ chrome.runtime.onMessage.addListener((req: AngularDetection, sender) => {
   }
   if (sender && sender.tab && req.isAngular) {
     browserAction.setIcon(
-        {
-          tabId: sender.tab.id,
-          path: {
-            16: chrome.runtime.getURL(`assets/icon16.png`),
-            48: chrome.runtime.getURL(`assets/icon48.png`),
-            128: chrome.runtime.getURL(`assets/icon128.png`),
-          },
+      {
+        tabId: sender.tab.id,
+        path: {
+          16: chrome.runtime.getURL(`assets/icon16.png`),
+          48: chrome.runtime.getURL(`assets/icon48.png`),
+          128: chrome.runtime.getURL(`assets/icon128.png`),
         },
-        () => {});
+      },
+      () => {},
+    );
   }
 });

@@ -183,8 +183,10 @@ const tree4: DevToolsNode = {
 
 describe('ComponentDataSource', () => {
   let dataSource: ComponentDataSource;
-  const treeControl =
-      new FlatTreeControl<FlatNode>((node) => node.level, (node) => node.expandable);
+  const treeControl = new FlatTreeControl<FlatNode>(
+    (node) => node.level,
+    (node) => node.expandable,
+  );
 
   beforeEach(() => (dataSource = new ComponentDataSource(treeControl)));
 

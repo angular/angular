@@ -24,8 +24,8 @@ describe('Comment nodes', () => {
   it('should find comment nodes when the setting is enabled', () => {
     showComments();
     cy.get('.tree-wrapper')
-        .find('.tree-node:contains("#comment")')
-        .its('length')
-        .should('not.eq', 0);
+      .find('.tree-node:contains("#comment")')
+      .its('length')
+      .should('not.eq', 0);
   });
 });

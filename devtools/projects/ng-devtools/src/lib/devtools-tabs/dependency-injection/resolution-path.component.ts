@@ -14,20 +14,26 @@ import {InjectorTreeNode, InjectorTreeVisualizer} from './injector-tree-visualiz
 @Component({
   selector: 'ng-resolution-path',
   template: `
-      <section class="injector-graph">
-        <svg #svgContainer>
-            <g #mainGroup></g>
-        </svg>
-      </section>
+    <section class="injector-graph">
+      <svg #svgContainer>
+        <g #mainGroup></g>
+      </svg>
+    </section>
+  `,
+  styles: [
+    `
+      :host {
+        display: block;
+      }
     `,
-  styles: [`:host { display: block; }`],
-  standalone: true
+  ],
+  standalone: true,
 })
 export class ResolutionPathComponent implements OnDestroy, AfterViewInit {
   @ViewChild('svgContainer', {static: true}) private svgContainer!: ElementRef;
   @ViewChild('mainGroup', {static: true}) private g!: ElementRef;
 
-  @Input() orientation: 'horizontal'|'vertical' = 'horizontal';
+  @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
 
   private injectorTree!: InjectorTreeVisualizer;
   private pathNode!: InjectorTreeNode;
@@ -56,10 +62,13 @@ export class ResolutionPathComponent implements OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.injectorTree =
-        new InjectorTreeVisualizer(this.svgContainer.nativeElement, this.g.nativeElement, {
-          orientation: this.orientation,
-        });
+    this.injectorTree = new InjectorTreeVisualizer(
+      this.svgContainer.nativeElement,
+      this.g.nativeElement,
+      {
+        orientation: this.orientation,
+      },
+    );
 
     if (this.pathNode) {
       this.injectorTree.render(this.pathNode);

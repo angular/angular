@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {appIsAngular, appIsAngularInDevMode, appIsAngularIvy, appIsSupportedAngularVersion} from 'shared-utils';
+import {
+  appIsAngular,
+  appIsAngularInDevMode,
+  appIsAngularIvy,
+  appIsSupportedAngularVersion,
+} from 'shared-utils';
 
 export interface AngularDetection {
   // This is necessary because the runtime
@@ -28,14 +33,15 @@ function detectAngular(win: Window): void {
   const isIvy = appIsAngularIvy();
 
   win.postMessage(
-      {
-        isIvy,
-        isAngular,
-        isDebugMode,
-        isSupportedAngularVersion,
-        isAngularDevTools: true,
-      } as AngularDetection,
-      '*');
+    {
+      isIvy,
+      isAngular,
+      isDebugMode,
+      isSupportedAngularVersion,
+      isAngularDevTools: true,
+    } as AngularDetection,
+    '*',
+  );
 
   if (!isAngular) {
     setTimeout(() => detectAngular(win), 1000);

@@ -17,9 +17,9 @@ describe('edit properties of directive in the property view tab', () => {
     beforeEach(() => {
       // select todo node in component tree
       cy.get('.tree-wrapper')
-          .find('.tree-node:contains("app-todo[TooltipDirective]")')
-          .first()
-          .click({force: true});
+        .find('.tree-node:contains("app-todo[TooltipDirective]")')
+        .first()
+        .click({force: true});
     });
 
     it('should be able to enable editMode', () => {
@@ -28,13 +28,13 @@ describe('edit properties of directive in the property view tab', () => {
       });
 
       cy.get('.explorer-panel:contains("app-todo")')
-          .find('ng-property-view mat-tree-node:contains("editMode")')
-          .find('ng-property-editor .editor')
-          .click({force: true})
-          .find('.editor-input')
-          .clear()
-          .type('true')
-          .type('{enter}');
+        .find('ng-property-view mat-tree-node:contains("editMode")')
+        .find('ng-property-editor .editor')
+        .click({force: true})
+        .find('.editor-input')
+        .clear()
+        .type('true')
+        .type('{enter}');
 
       cy.enter('#sample-app').then((getBody) => {
         getBody().find('app-todo input.edit').should('be.visible');
@@ -45,8 +45,8 @@ describe('edit properties of directive in the property view tab', () => {
       beforeEach(() => {
         // expand todo state
         cy.get('.explorer-panel:contains("app-todo")')
-            .find('ng-property-view mat-tree-node:contains("todo")')
-            .click();
+          .find('ng-property-view mat-tree-node:contains("todo")')
+          .click();
       });
 
       it('should change todo label in app when edited', () => {
@@ -57,13 +57,13 @@ describe('edit properties of directive in the property view tab', () => {
 
         // find label variable and run through edit logic
         cy.get('.explorer-panel:contains("app-todo")')
-            .find('ng-property-view mat-tree-node:contains("label")')
-            .find('ng-property-editor .editor')
-            .click()
-            .find('.editor-input')
-            .clear()
-            .type('Buy cookies')
-            .type('{enter}');
+          .find('ng-property-view mat-tree-node:contains("label")')
+          .find('ng-property-editor .editor')
+          .click()
+          .find('.editor-input')
+          .clear()
+          .type('Buy cookies')
+          .type('{enter}');
 
         // assert that the page has been updated
         cy.enter('#sample-app').then((getBody) => {
@@ -79,13 +79,13 @@ describe('edit properties of directive in the property view tab', () => {
 
         // find completed variable and run through edit logic
         cy.get('.explorer-panel:contains("app-todo")')
-            .find('ng-property-view mat-tree-node:contains("completed")')
-            .find('ng-property-editor .editor')
-            .click()
-            .find('.editor-input')
-            .clear()
-            .type('true')
-            .type('{enter}');
+          .find('ng-property-view mat-tree-node:contains("completed")')
+          .find('ng-property-editor .editor')
+          .click()
+          .find('.editor-input')
+          .clear()
+          .type('true')
+          .type('{enter}');
 
         // assert that the page has been updated
         cy.enter('#sample-app').then((getBody) => {

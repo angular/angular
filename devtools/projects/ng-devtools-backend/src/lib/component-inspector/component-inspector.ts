@@ -14,7 +14,7 @@ import {initializeOrGetDirectiveForestHooks} from '../hooks';
 import {ComponentTreeNode} from '../interfaces';
 
 interface Type<T> extends Function {
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }
 export interface ComponentInspectorOptions {
   onComponentEnter: (id: number) => void;
@@ -28,11 +28,13 @@ export class ComponentInspector {
   private readonly _onComponentSelect;
   private readonly _onComponentLeave;
 
-  constructor(componentOptions: ComponentInspectorOptions = {
-    onComponentEnter: () => {},
-    onComponentLeave: () => {},
-    onComponentSelect: () => {},
-  }) {
+  constructor(
+    componentOptions: ComponentInspectorOptions = {
+      onComponentEnter: () => {},
+      onComponentLeave: () => {},
+      onComponentSelect: () => {},
+    },
+  ) {
     this.bindMethods();
     this._onComponentEnter = componentOptions.onComponentEnter;
     this._onComponentSelect = componentOptions.onComponentSelect;
@@ -57,7 +59,8 @@ export class ComponentInspector {
 
     if (this._selectedComponent.component && this._selectedComponent.host) {
       this._onComponentSelect(
-          initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!);
+        initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!,
+      );
     }
   }
 
@@ -73,7 +76,8 @@ export class ComponentInspector {
     if (this._selectedComponent.component && this._selectedComponent.host) {
       highlight(this._selectedComponent.host);
       this._onComponentEnter(
-          initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!);
+        initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!,
+      );
     }
   }
 
@@ -93,7 +97,7 @@ export class ComponentInspector {
 
   highlightByPosition(position: ElementPosition): void {
     const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
-    const elementToHighlight: HTMLElement|null = findNodeInForest(position, forest);
+    const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
     if (elementToHighlight) {
       highlight(elementToHighlight);
     }

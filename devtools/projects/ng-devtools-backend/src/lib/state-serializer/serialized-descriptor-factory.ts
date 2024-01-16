@@ -15,7 +15,7 @@ import {getDescriptor, getKeys} from './object-utils';
 // todo(aleksanderbodurri) pull this out of this file
 const METADATA_PROPERTY_NAME = '__ngContext__';
 
-type NestedType = PropType.Array|PropType.Object;
+type NestedType = PropType.Array | PropType.Object;
 
 export interface CompositeType {
   type: Extract<PropType, NestedType>;
@@ -29,7 +29,7 @@ export interface TerminalType {
   containerType: ContainerType;
 }
 
-export type PropertyData = TerminalType|CompositeType;
+export type PropertyData = TerminalType | CompositeType;
 
 export type Formatter<Result> = {
   [key in PropType]: (data: any) => Result;
@@ -73,107 +73,121 @@ const typeToDescriptorPreview: Formatter<string> = {
   [PropType.Unknown]: (_: any) => 'unknown',
 };
 
-type Key = string|number;
-type NestedSerializerFn =
-    (instance: any, propName: string|number, nodes: NestedProp[], isReadonly: boolean,
-     currentLevel: number, level?: number) => Descriptor;
+type Key = string | number;
+type NestedSerializerFn = (
+  instance: any,
+  propName: string | number,
+  nodes: NestedProp[],
+  isReadonly: boolean,
+  currentLevel: number,
+  level?: number,
+) => Descriptor;
 
 const ignoreList: Set<Key> = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
-const shallowPropTypeToTreeMetaData:
-    Record<Exclude<PropType, NestedType>, {editable: boolean, expandable: boolean}> = {
-      [PropType.String]: {
-        editable: true,
-        expandable: false,
-      },
-      [PropType.BigInt]: {
-        editable: false,
-        expandable: false,
-      },
-      [PropType.Boolean]: {
-        editable: true,
-        expandable: false,
-      },
-      [PropType.Number]: {
-        editable: true,
-        expandable: false,
-      },
-      [PropType.Date]: {
-        editable: false,
-        expandable: false,
-      },
-      [PropType.Null]: {
-        editable: true,
-        expandable: false,
-      },
-      [PropType.Undefined]: {
-        editable: true,
-        expandable: false,
-      },
-      [PropType.Symbol]: {
-        editable: false,
-        expandable: false,
-      },
-      [PropType.Function]: {
-        editable: false,
-        expandable: false,
-      },
-      [PropType.HTMLNode]: {
-        editable: false,
-        expandable: false,
-      },
-      [PropType.Unknown]: {
-        editable: false,
-        expandable: false,
-      },
-      [PropType.Set]: {
-        editable: false,
-        expandable: false,
-      },
-      [PropType.Map]: {
-        editable: false,
-        expandable: false,
-      },
-    };
+const shallowPropTypeToTreeMetaData: Record<
+  Exclude<PropType, NestedType>,
+  {editable: boolean; expandable: boolean}
+> = {
+  [PropType.String]: {
+    editable: true,
+    expandable: false,
+  },
+  [PropType.BigInt]: {
+    editable: false,
+    expandable: false,
+  },
+  [PropType.Boolean]: {
+    editable: true,
+    expandable: false,
+  },
+  [PropType.Number]: {
+    editable: true,
+    expandable: false,
+  },
+  [PropType.Date]: {
+    editable: false,
+    expandable: false,
+  },
+  [PropType.Null]: {
+    editable: true,
+    expandable: false,
+  },
+  [PropType.Undefined]: {
+    editable: true,
+    expandable: false,
+  },
+  [PropType.Symbol]: {
+    editable: false,
+    expandable: false,
+  },
+  [PropType.Function]: {
+    editable: false,
+    expandable: false,
+  },
+  [PropType.HTMLNode]: {
+    editable: false,
+    expandable: false,
+  },
+  [PropType.Unknown]: {
+    editable: false,
+    expandable: false,
+  },
+  [PropType.Set]: {
+    editable: false,
+    expandable: false,
+  },
+  [PropType.Map]: {
+    editable: false,
+    expandable: false,
+  },
+};
 
-const isEditable =
-    (descriptor: PropertyDescriptor|undefined, propName: string|number, propData: TerminalType,
-     isGetterOrSetter: boolean) => {
-      if (propData.containerType === 'ReadonlySignal') {
-        return false;
-      }
+const isEditable = (
+  descriptor: PropertyDescriptor | undefined,
+  propName: string | number,
+  propData: TerminalType,
+  isGetterOrSetter: boolean,
+) => {
+  if (propData.containerType === 'ReadonlySignal') {
+    return false;
+  }
 
-      if (typeof propName === 'symbol') {
-        return false;
-      }
+  if (typeof propName === 'symbol') {
+    return false;
+  }
 
-      if (isGetterOrSetter) {
-        return false;
-      }
+  if (isGetterOrSetter) {
+    return false;
+  }
 
-      if (descriptor?.writable === false) {
-        return false;
-      }
+  if (descriptor?.writable === false) {
+    return false;
+  }
 
-      return shallowPropTypeToTreeMetaData[propData.type].editable;
-    };
+  return shallowPropTypeToTreeMetaData[propData.type].editable;
+};
 
 const isGetterOrSetter = (descriptor: any): boolean =>
-    (descriptor?.set || descriptor?.get) && !('value' in descriptor);
+  (descriptor?.set || descriptor?.get) && !('value' in descriptor);
 
-const getPreview = (propData: TerminalType|CompositeType, isGetterOrSetter: boolean) => {
+const getPreview = (propData: TerminalType | CompositeType, isGetterOrSetter: boolean) => {
   if (propData.containerType === 'ReadonlySignal') {
     return `Readonly Signal(${typeToDescriptorPreview[propData.type](propData.prop())})`;
   } else if (propData.containerType === 'WritableSignal') {
     return `Signal(${typeToDescriptorPreview[propData.type](propData.prop())})`;
   }
-  return !isGetterOrSetter ? typeToDescriptorPreview[propData.type](propData.prop) :
-                             typeToDescriptorPreview[PropType.Function]({name: ''});
+  return !isGetterOrSetter
+    ? typeToDescriptorPreview[propData.type](propData.prop)
+    : typeToDescriptorPreview[PropType.Function]({name: ''});
 };
 
 export function createShallowSerializedDescriptor(
-    instance: any, propName: string|number, propData: TerminalType,
-    isReadonly: boolean): Descriptor {
+  instance: any,
+  propName: string | number,
+  propData: TerminalType,
+  isReadonly: boolean,
+): Descriptor {
   const {type, containerType} = propData;
 
   const descriptor = getDescriptor(instance, propName as string);
@@ -195,10 +209,18 @@ export function createShallowSerializedDescriptor(
 }
 
 export function createLevelSerializedDescriptor(
-    instance: {}, propName: string|number, propData: CompositeType, levelOptions: LevelOptions,
-    continuation: (
-        instance: any, propName: string|number, isReadonly: boolean, level?: number,
-        max?: number) => Descriptor): Descriptor {
+  instance: {},
+  propName: string | number,
+  propData: CompositeType,
+  levelOptions: LevelOptions,
+  continuation: (
+    instance: any,
+    propName: string | number,
+    isReadonly: boolean,
+    level?: number,
+    max?: number,
+  ) => Descriptor,
+): Descriptor {
   const {type, prop, containerType} = propData;
 
   const descriptor = getDescriptor(instance, propName as string);
@@ -223,8 +245,13 @@ export function createLevelSerializedDescriptor(
 }
 
 export function createNestedSerializedDescriptor(
-    instance: {}, propName: string|number, propData: CompositeType, levelOptions: LevelOptions,
-    nodes: NestedProp[], nestedSerializer: NestedSerializerFn): Descriptor {
+  instance: {},
+  propName: string | number,
+  propData: CompositeType,
+  levelOptions: LevelOptions,
+  nodes: NestedProp[],
+  nestedSerializer: NestedSerializerFn,
+): Descriptor {
   const {type, prop, containerType} = propData;
 
   const descriptor = getDescriptor(instance, propName as string);
@@ -248,49 +275,75 @@ export function createNestedSerializedDescriptor(
 }
 
 function getNestedDescriptorValue(
-    propData: CompositeType, levelOptions: LevelOptions, nodes: NestedProp[],
-    nestedSerializer: NestedSerializerFn) {
+  propData: CompositeType,
+  levelOptions: LevelOptions,
+  nodes: NestedProp[],
+  nestedSerializer: NestedSerializerFn,
+) {
   const {type, prop} = propData;
   const {currentLevel} = levelOptions;
   const value = unwrapSignal(prop);
 
   switch (type) {
     case PropType.Array:
-      return nodes.map(
-          (nestedProp) => nestedSerializer(
-              value, nestedProp.name, nestedProp.children, false, currentLevel + 1));
+      return nodes.map((nestedProp) =>
+        nestedSerializer(value, nestedProp.name, nestedProp.children, false, currentLevel + 1),
+      );
     case PropType.Object:
-      return nodes.reduce((accumulator, nestedProp) => {
-        if (prop.hasOwnProperty(nestedProp.name) && !ignoreList.has(nestedProp.name)) {
-          accumulator[nestedProp.name] = nestedSerializer(
-              value, nestedProp.name, nestedProp.children, false, currentLevel + 1);
-        }
-        return accumulator;
-      }, {} as Record<string, Descriptor>);
+      return nodes.reduce(
+        (accumulator, nestedProp) => {
+          if (prop.hasOwnProperty(nestedProp.name) && !ignoreList.has(nestedProp.name)) {
+            accumulator[nestedProp.name] = nestedSerializer(
+              value,
+              nestedProp.name,
+              nestedProp.children,
+              false,
+              currentLevel + 1,
+            );
+          }
+          return accumulator;
+        },
+        {} as Record<string, Descriptor>,
+      );
   }
 }
 
 function getLevelDescriptorValue(
-    propData: CompositeType, levelOptions: LevelOptions,
-    continuation: (
-        instance: any, propName: string|number, isReadonly: boolean, level?: number,
-        max?: number) => Descriptor) {
+  propData: CompositeType,
+  levelOptions: LevelOptions,
+  continuation: (
+    instance: any,
+    propName: string | number,
+    isReadonly: boolean,
+    level?: number,
+    max?: number,
+  ) => Descriptor,
+) {
   const {type, prop} = propData;
   const {currentLevel, level} = levelOptions;
   const value = unwrapSignal(prop);
   const isReadonly = isSignal(prop);
   switch (type) {
     case PropType.Array:
-      return prop.map(
-          (_: any, idx: number) => continuation(value, idx, isReadonly, currentLevel + 1, level));
+      return prop.map((_: any, idx: number) =>
+        continuation(value, idx, isReadonly, currentLevel + 1, level),
+      );
     case PropType.Object:
-      return getKeys(prop).reduce((accumulator, propName) => {
-        if (!ignoreList.has(propName)) {
-          accumulator[propName] =
-              continuation(value, propName, isReadonly, currentLevel + 1, level);
-        }
-        return accumulator;
-      }, {} as Record<string, Descriptor>);
+      return getKeys(prop).reduce(
+        (accumulator, propName) => {
+          if (!ignoreList.has(propName)) {
+            accumulator[propName] = continuation(
+              value,
+              propName,
+              isReadonly,
+              currentLevel + 1,
+              level,
+            );
+          }
+          return accumulator;
+        },
+        {} as Record<string, Descriptor>,
+      );
   }
 }
 

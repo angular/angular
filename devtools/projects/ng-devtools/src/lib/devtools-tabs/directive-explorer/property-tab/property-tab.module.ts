@@ -21,10 +21,13 @@ import {PropertyViewModule} from './property-view/property-view.module';
 @NgModule({
   declarations: [PropertyTabComponent, PropertyTabHeaderComponent, ComponentMetadataComponent],
   imports: [
-    PropertyViewModule, CommonModule, MatButtonModule, MatExpansionModule, MatIconModule,
-    MatTooltipModule
+    PropertyViewModule,
+    CommonModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatTooltipModule,
   ],
   exports: [PropertyTabComponent],
 })
-export class PropertyTabModule {
-}
+export class PropertyTabModule {}

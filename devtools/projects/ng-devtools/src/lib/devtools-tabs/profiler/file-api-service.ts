@@ -33,8 +33,9 @@ export class FileApiService {
   saveObjectAsJSON(object: object): void {
     const downloadLink = document.createElement('a');
     downloadLink.download = `NgDevTools-Profile-${toISO8601Compact(new Date())}.json`;
-    downloadLink.href =
-        URL.createObjectURL(new Blob([JSON.stringify(object)], {type: 'application/json'}));
+    downloadLink.href = URL.createObjectURL(
+      new Blob([JSON.stringify(object)], {type: 'application/json'}),
+    );
     downloadLink.click();
     setTimeout(() => URL.revokeObjectURL(downloadLink.href));
   }

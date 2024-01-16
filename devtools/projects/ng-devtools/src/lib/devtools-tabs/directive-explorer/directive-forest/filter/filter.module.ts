@@ -19,5 +19,4 @@ import {FilterComponent} from './filter.component';
   imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule],
   exports: [FilterComponent],
 })
-export class FilterModule {
-}
+export class FilterModule {}

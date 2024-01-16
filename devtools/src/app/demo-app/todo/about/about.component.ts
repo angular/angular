@@ -17,5 +17,4 @@ import {Component} from '@angular/core';
     <a [routerLink]="">Home</a>
   `,
 })
-export class AboutComponent {
-}
+export class AboutComponent {}

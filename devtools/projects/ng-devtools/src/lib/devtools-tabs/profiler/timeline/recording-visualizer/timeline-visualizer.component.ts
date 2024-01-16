@@ -14,7 +14,7 @@ import {FlamegraphNode} from '../record-formatter/flamegraph-formatter';
 import {VisualizationMode} from '../visualization-mode';
 
 export interface SelectedEntry {
-  entry: BargraphNode|FlamegraphNode;
+  entry: BargraphNode | FlamegraphNode;
   selectedDirectives: SelectedDirective[];
   parentHierarchy?: {name: string}[];
 }
@@ -43,7 +43,7 @@ export class TimelineVisualizerComponent {
 
   cmpVisualizationModes = VisualizationMode;
 
-  selectedEntry: BargraphNode|FlamegraphNode|null = null;
+  selectedEntry: BargraphNode | FlamegraphNode | null = null;
   selectedDirectives: SelectedDirective[] = [];
   parentHierarchy: {name: string}[] = [];
 
