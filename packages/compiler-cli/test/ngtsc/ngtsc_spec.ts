@@ -6823,11 +6823,12 @@ function allTests(os: string) {
     });
 
     describe('NgModule export aliasing', () => {
-      it('should use an alias to import a directive from a deep dependency', () => {
-        env.tsconfig({'_useHostForImportGeneration': true});
+      it('should use an alias to import a directive from a deep dependency when _useHostForImportAndAliasGeneration is set',
+         () => {
+           env.tsconfig({'_useHostForImportAndAliasGeneration': true});
 
-        // 'alpha' declares the directive which will ultimately be imported.
-        env.write('alpha.d.ts', `
+           // 'alpha' declares the directive which will ultimately be imported.
+           env.write('alpha.d.ts', `
         import {ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration} from '@angular/core';
 
         export declare class ExternalDir {
@@ -6839,8 +6840,8 @@ function allTests(os: string) {
         }
       `);
 
-        // 'beta' re-exports AlphaModule from alpha.
-        env.write('beta.d.ts', `
+           // 'beta' re-exports AlphaModule from alpha.
+           env.write('beta.d.ts', `
         import {ɵɵNgModuleDeclaration} from '@angular/core';
         import {AlphaModule} from './alpha';
 
@@ -6849,9 +6850,9 @@ function allTests(os: string) {
         }
       `);
 
-        // The application imports BetaModule from beta, gaining visibility of
-        // ExternalDir from alpha.
-        env.write('test.ts', `
+           // The application imports BetaModule from beta, gaining visibility of
+           // ExternalDir from alpha.
+           env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
         import {BetaModule} from './beta';
 
@@ -6867,17 +6868,71 @@ function allTests(os: string) {
         })
         export class Module {}
       `);
-        env.driveMain();
-        const jsContents = env.getContents('test.js');
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
 
-        // Expect that ExternalDir from alpha is imported via the re-export from beta.
-        expect(jsContents).toContain('import * as i1 from "root/beta";');
-        expect(jsContents).toContain('dependencies: [i1.\u0275ng$root$alpha$$ExternalDir]');
-      });
+           // Expect that ExternalDir from alpha is imported via the re-export from beta.
+           expect(jsContents).toContain('import * as i1 from "root/beta";');
+           expect(jsContents).toContain('dependencies: [i1.\u0275ng$root$alpha$$ExternalDir]');
+         });
 
-      it('should write alias ES2015 exports for NgModule exported directives', () => {
-        env.tsconfig({'_useHostForImportGeneration': true});
-        env.write('external.d.ts', `
+      it('should directly import a directive from a deep dependency when _useHostForImportGeneration is set',
+         () => {
+           env.tsconfig({'_useHostForImportGeneration': true});
+
+           // 'alpha' declares the directive which will ultimately be imported.
+           env.write('alpha.d.ts', `
+        import {ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration} from '@angular/core';
+
+        export declare class ExternalDir {
+          static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, never, never, never>;
+        }
+
+        export declare class AlphaModule {
+          static ɵmod: ɵɵNgModuleDeclaration<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+        }
+      `);
+
+           // 'beta' re-exports AlphaModule from alpha.
+           env.write('beta.d.ts', `
+        import {ɵɵNgModuleDeclaration} from '@angular/core';
+        import {AlphaModule} from './alpha';
+
+        export declare class BetaModule {
+          static ɵmod: ɵɵNgModuleDeclaration<AlphaModule, never, never, [typeof AlphaModule]>;
+        }
+      `);
+
+           // The application imports BetaModule from beta, gaining visibility of
+           // ExternalDir from alpha.
+           env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {BetaModule} from './beta';
+
+        @Component({
+          selector: 'cmp',
+          template: '<div test></div>',
+        })
+        export class Cmp {}
+
+        @NgModule({
+          declarations: [Cmp],
+          imports: [BetaModule],
+        })
+        export class Module {}
+      `);
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Expect that ExternalDir from alpha is imported via the re-export from beta.
+           expect(jsContents).toContain('import * as i1 from "root/alpha";');
+           expect(jsContents).toContain('dependencies: [i1.ExternalDir]');
+         });
+
+      it('should write alias ES2015 exports for NgModule exported directives when _useHostForImportAndAliasGeneration is set',
+         () => {
+           env.tsconfig({'_useHostForImportAndAliasGeneration': true});
+           env.write('external.d.ts', `
         import {ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration} from '@angular/core';
         import {LibModule} from './lib';
 
@@ -6889,7 +6944,7 @@ function allTests(os: string) {
           static ɵmod: ɵɵNgModuleDeclaration<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir, typeof LibModule]>;
         }
       `);
-        env.write('lib.d.ts', `
+           env.write('lib.d.ts', `
         import {ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration} from '@angular/core';
 
         export declare class LibDir {
@@ -6900,7 +6955,7 @@ function allTests(os: string) {
           static ɵmod: ɵɵNgModuleDeclaration<LibModule, [typeof LibDir], never, [typeof LibDir]>;
         }
       `);
-        env.write('foo.ts', `
+           env.write('foo.ts', `
         import {Directive, NgModule} from '@angular/core';
         import {ExternalModule} from './external';
 
@@ -6913,7 +6968,7 @@ function allTests(os: string) {
         })
         export class FooModule {}
       `);
-        env.write('index.ts', `
+           env.write('index.ts', `
         import {Component, NgModule} from '@angular/core';
         import {FooModule} from './foo';
 
@@ -6929,14 +6984,76 @@ function allTests(os: string) {
         })
         export class IndexModule {}
       `);
-        env.driveMain();
-        const jsContents = env.getContents('index.js');
-        expect(jsContents)
-            .toContain('export { FooDir as \u0275ng$root$foo$$FooDir } from "root/foo";');
-      });
+           env.driveMain();
+           const jsContents = env.getContents('index.js');
+           expect(jsContents)
+               .toContain('export { FooDir as \u0275ng$root$foo$$FooDir } from "root/foo";');
+         });
+
+      it('should not write alias ES2015 exports for NgModule exported directives when _useHostForImportGeneration is set',
+         () => {
+           env.tsconfig({'_useHostForImportGeneration': true});
+           env.write('external.d.ts', `
+        import {ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration} from '@angular/core';
+        import {LibModule} from './lib';
+
+        export declare class ExternalDir {
+          static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, never, never, never>;
+        }
+
+        export declare class ExternalModule {
+          static ɵmod: ɵɵNgModuleDeclaration<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir, typeof LibModule]>;
+        }
+      `);
+           env.write('lib.d.ts', `
+        import {ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration} from '@angular/core';
+
+        export declare class LibDir {
+          static ɵdir: ɵɵDirectiveDeclaration<LibDir, '[lib]', never, never, never, never>;
+        }
+
+        export declare class LibModule {
+          static ɵmod: ɵɵNgModuleDeclaration<LibModule, [typeof LibDir], never, [typeof LibDir]>;
+        }
+      `);
+           env.write('foo.ts', `
+        import {Directive, NgModule} from '@angular/core';
+        import {ExternalModule} from './external';
+
+        @Directive({selector: '[foo]'})
+        export class FooDir {}
+
+        @NgModule({
+          declarations: [FooDir],
+          exports: [FooDir, ExternalModule]
+        })
+        export class FooModule {}
+      `);
+           env.write('index.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {FooModule} from './foo';
+
+        @Component({
+          selector: 'index',
+          template: '<div foo test lib></div>',
+        })
+        export class IndexCmp {}
+
+        @NgModule({
+          declarations: [IndexCmp],
+          exports: [FooModule],
+        })
+        export class IndexModule {}
+      `);
+           env.driveMain();
+           const jsContents = env.getContents('index.js');
+           expect(jsContents)
+               .not.toMatch(
+                   /export\s+\{\s*FooDir\s+as\s+ \u0275ng$root$foo$$FooDir\s*\}\s+from\s+"root\/foo";/);
+         });
 
       it('should escape unusual characters in aliased filenames', () => {
-        env.tsconfig({'_useHostForImportGeneration': true});
+        env.tsconfig({'_useHostForImportAndAliasGeneration': true});
         env.write('other._$test.ts', `
         import {Directive, NgModule} from '@angular/core';
 

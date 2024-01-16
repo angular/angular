@@ -985,7 +985,9 @@ export class NgCompiler {
     // Construct the ReferenceEmitter.
     let refEmitter: ReferenceEmitter;
     let aliasingHost: AliasingHost|null = null;
-    if (this.adapter.unifiedModulesHost === null || !this.options['_useHostForImportGeneration']) {
+    if (this.adapter.unifiedModulesHost === null ||
+        (!this.options['_useHostForImportGeneration'] &&
+         !this.options['_useHostForImportAndAliasGeneration'])) {
       let localImportStrategy: ReferenceEmitStrategy;
 
       // The strategy used for local, in-project imports depends on whether TS has been configured
@@ -1031,11 +1033,14 @@ export class NgCompiler {
         // First, try to use local identifiers if available.
         new LocalIdentifierStrategy(),
         // Then use aliased references (this is a workaround to StrictDeps checks).
-        new AliasStrategy(),
+        ...(this.options['_useHostForImportAndAliasGeneration'] ? [new AliasStrategy()] : []),
         // Then use fileNameToModuleName to emit imports.
         new UnifiedModulesStrategy(reflector, this.adapter.unifiedModulesHost),
       ]);
-      aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
+
+      if (this.options['_useHostForImportAndAliasGeneration']) {
+        aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
+      }
     }
 
     const evaluator =
