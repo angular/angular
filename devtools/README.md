@@ -4,14 +4,7 @@ Angular DevTools is a browser DevTools extension for debugging and profiling Ang
 
 ## Installing and Running locally
 
-To setup your local development environment for Angular DevTools, perform the following steps:
-
-```bash
-git clone git://github.com/angular/angular
-cd angular
-yarn
-yarn run devtools:devserver
-```
+To setup your local development environment for Angular DevTools, see [DEVELOPING.md](./DEVELOPING.md)
 
 ## Publish Angular DevTools
 
