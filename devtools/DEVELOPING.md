@@ -4,14 +4,18 @@ To setup your development environment run:
 
 ```
 git clone git@github.com:angular/angular
-cd devtools
 yarn
 ```
 
 To run the extension in development mode run:
 
 ```
-ng serve
+yarn devtools:devserver
+```
+
+You can also run a standalone version of the demo app with
+```
+yarn devtools:devserver:demo-standalone
 ```
 
 This would start a development server that you can access on <http://localhost:4200>. In development, Angular DevTools uses a "development shell." This is different from "chrome shell" in a way, that it runs the user's app in an iframe. DevTools then communicate with the user's app via message passing.
@@ -21,13 +25,15 @@ This would start a development server that you can access on <http://localhost:4
 To build the Angular DevTools Chrome extension run:
 
 ```
-npm run release
+yarn devtools:build:chrome 
 ```
 
-This would output the production assets of the app in `dist/shell-browser`. If you want to build the extension with development settings (i.e., not minified sources), just run:
+You can then install the extension from `dist/bin/devtools/projects/shell-browser/src/prodapp` following the guide from [here](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked).
 
+
+You can also build the extension for Firefox with:
 ```
-ng build shell-browser
+yarn devtools:build:firefox
 ```
 
-Later on, you can install the extension from `dist/shell-browser` following the guide from [here](https://developer.chrome.com/apps/external_extensions).
+In Firefox, to load the extension, you can go to the about:debugging page, click the "This Firefox" option and then click the Load Temporary Add-on button. You'll have to select the manifest file in `dist/bin/devtools/projects/shell-browser/src/prodapp` directly.
