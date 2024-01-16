@@ -8,7 +8,10 @@
 
 import {DevToolsNode, SerializedInjector} from 'protocol';
 
-import {InjectorTreeD3Node, InjectorTreeNode} from '../dependency-injection/injector-tree-visualizer';
+import {
+  InjectorTreeD3Node,
+  InjectorTreeNode,
+} from '../dependency-injection/injector-tree-visualizer';
 
 export interface InjectorPath {
   node: DevToolsNode;
@@ -42,12 +45,15 @@ export function equalInjector(a: SerializedInjector, b: SerializedInjector): boo
 }
 
 export function findExistingPath(
-    path: InjectorTreeNode[], value: SerializedInjector): InjectorTreeNode|null {
-  return path.find(injector => equalInjector(injector.injector, value)) || null;
+  path: InjectorTreeNode[],
+  value: SerializedInjector,
+): InjectorTreeNode | null {
+  return path.find((injector) => equalInjector(injector.injector, value)) || null;
 }
 
-export function transformInjectorResolutionPathsIntoTree(injectorPaths: InjectorPath[]):
-    InjectorTreeNode {
+export function transformInjectorResolutionPathsIntoTree(
+  injectorPaths: InjectorPath[],
+): InjectorTreeNode {
   const injectorTree: InjectorTreeNode[] = [];
   const injectorIdToNode = new Map<string, DevToolsNode>();
 
@@ -83,8 +89,9 @@ export function transformInjectorResolutionPathsIntoTree(injectorPaths: Injector
   return hiddenRoot as any;
 }
 
-export function grabInjectorPathsFromDirectiveForest(directiveForest: DevToolsNode[]):
-    InjectorPath[] {
+export function grabInjectorPathsFromDirectiveForest(
+  directiveForest: DevToolsNode[],
+): InjectorPath[] {
   const injectorPaths: InjectorPath[] = [];
 
   const grabInjectorPaths = (node: DevToolsNode) => {
@@ -92,7 +99,7 @@ export function grabInjectorPathsFromDirectiveForest(directiveForest: DevToolsNo
       injectorPaths.push({node, path: node.resolutionPath.slice().reverse()});
     }
 
-    node.children.forEach(child => grabInjectorPaths(child));
+    node.children.forEach((child) => grabInjectorPaths(child));
   };
 
   for (const directive of directiveForest) {
@@ -103,7 +110,8 @@ export function grabInjectorPathsFromDirectiveForest(directiveForest: DevToolsNo
 }
 
 export function splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths: InjectorPath[]): {
-  elementPaths: InjectorPath[]; environmentPaths: InjectorPath[];
+  elementPaths: InjectorPath[];
+  environmentPaths: InjectorPath[];
   startingElementToEnvironmentPath: Map<string, SerializedInjector[]>;
 } {
   const elementPaths: InjectorPath[] = [];
@@ -111,7 +119,7 @@ export function splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths: 
   const startingElementToEnvironmentPath = new Map<string, SerializedInjector[]>();
 
   injectorPaths.forEach(({node, path}) => {
-    const firstElementIndex = path.findIndex(injector => injector.type === 'element');
+    const firstElementIndex = path.findIndex((injector) => injector.type === 'element');
 
     // split the path into two paths,
     // one for the element injector and one for the environment injector
@@ -131,15 +139,18 @@ export function splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths: 
     if (elementPath[elementPath.length - 1]) {
       // reverse each path to get the paths starting from the starting element
       startingElementToEnvironmentPath.set(
-          elementPath[elementPath.length - 1].id, environmentPath.slice().reverse());
+        elementPath[elementPath.length - 1].id,
+        environmentPath.slice().reverse(),
+      );
     }
   });
 
   return {
-    elementPaths:
-        elementPaths.filter(({path}) => path.every(injector => injector.type === 'element')),
+    elementPaths: elementPaths.filter(({path}) =>
+      path.every((injector) => injector.type === 'element'),
+    ),
     environmentPaths,
-    startingElementToEnvironmentPath
+    startingElementToEnvironmentPath,
   };
 }
 
@@ -188,17 +199,20 @@ const ANGULAR_DIRECTIVES = [
   'RouterLinkActive',
   'RouterLinkWithHref',
   'RouterOutlet',
-  'UpgradeComponent'
+  'UpgradeComponent',
 ];
 
 const ignoredAngularInjectors = new Set([
-  'Null Injector', ...ANGULAR_DIRECTIVES, ...ANGULAR_DIRECTIVES.map(directive => `_${directive}`)
+  'Null Injector',
+  ...ANGULAR_DIRECTIVES,
+  ...ANGULAR_DIRECTIVES.map((directive) => `_${directive}`),
 ]);
 
 export function filterOutInjectorsWithNoProviders(injectorPaths: InjectorPath[]): InjectorPath[] {
   for (const injectorPath of injectorPaths) {
-    injectorPath.path =
-        injectorPath.path.filter(({providers}) => providers === undefined || providers > 0);
+    injectorPath.path = injectorPath.path.filter(
+      ({providers}) => providers === undefined || providers > 0,
+    );
   }
 
   return injectorPaths;
@@ -206,6 +220,6 @@ export function filterOutInjectorsWithNoProviders(injectorPaths: InjectorPath[])
 
 export function filterOutAngularInjectors(injectorPaths: InjectorPath[]): InjectorPath[] {
   return injectorPaths.map(({node, path}) => {
-    return {node, path: path.filter(injector => !ignoredAngularInjectors.has(injector.name))};
+    return {node, path: path.filter((injector) => !ignoredAngularInjectors.has(injector.name))};
   });
 }

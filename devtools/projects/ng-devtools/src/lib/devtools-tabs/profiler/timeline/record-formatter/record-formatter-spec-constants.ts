@@ -334,15 +334,10 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD: FlamegraphNode[] = [
                                     changeDetected: true,
                                     children: [],
                                     instances: 1,
-                                    original: NESTED_RECORD[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0],
+                                    original:
+                                      NESTED_RECORD[0].children[0].children[0].children[0]
+                                        .children[0].children[0].children[0].children[0]
+                                        .children[0],
                                   },
                                   {
                                     value: 0,
@@ -350,15 +345,10 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD: FlamegraphNode[] = [
                                     changeDetected: true,
                                     children: [],
                                     instances: 1,
-                                    original: NESTED_RECORD[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[1],
+                                    original:
+                                      NESTED_RECORD[0].children[0].children[0].children[0]
+                                        .children[0].children[0].children[0].children[0]
+                                        .children[1],
                                   },
                                   {
                                     value: 0,
@@ -366,38 +356,28 @@ export const NESTED_FORMATTED_FLAMEGRAPH_RECORD: FlamegraphNode[] = [
                                     changeDetected: true,
                                     children: [],
                                     instances: 1,
-                                    original: NESTED_RECORD[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[0]
-                                                  .children[2],
+                                    original:
+                                      NESTED_RECORD[0].children[0].children[0].children[0]
+                                        .children[0].children[0].children[0].children[0]
+                                        .children[2],
                                   },
                                 ],
                                 instances: 1,
-                                original: NESTED_RECORD[0]
-                                              .children[0]
-                                              .children[0]
-                                              .children[0]
-                                              .children[0]
-                                              .children[0]
-                                              .children[0]
-                                              .children[0],
+                                original:
+                                  NESTED_RECORD[0].children[0].children[0].children[0].children[0]
+                                    .children[0].children[0].children[0],
                               },
                             ],
                             instances: 1,
                             original:
-                                NESTED_RECORD[0].children[0].children[0].children[0].children
-                                    [0].children
-                                        [0].children[0],
+                              NESTED_RECORD[0].children[0].children[0].children[0].children[0]
+                                .children[0].children[0],
                           },
                         ],
                         instances: 1,
-                        original: NESTED_RECORD[0].children[0].children[0].children[0].children
-                                      [0].children[0],
+                        original:
+                          NESTED_RECORD[0].children[0].children[0].children[0].children[0]
+                            .children[0],
                       },
                     ],
                     instances: 1,

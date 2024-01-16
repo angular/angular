@@ -22,8 +22,7 @@ const fib = (n: number): number => {
 })
 export class HeavyComponent {
   @Input()
-  set foo(_: any) {
-  }
+  set foo(_: any) {}
 
   state = {
     nested: {
@@ -31,14 +30,12 @@ export class HeavyComponent {
         foo: 1,
         bar: 2,
       },
-      [Symbol(3)]():
-          number {
-            return 1.618;
-          },
-      get foo():
-          number {
-            return 42;
-          },
+      [Symbol(3)](): number {
+        return 1.618;
+      },
+      get foo(): number {
+        return 42;
+      },
     },
   };
   calculate(): number {

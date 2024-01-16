@@ -10,56 +10,60 @@ import {ComponentTreeNode} from '../interfaces';
 import {ngDebugClient} from '../ng-debug-api/ng-debug-api';
 import {isCustomElement} from '../utils';
 
-const extractViewTree =
-    (domNode: Node|Element, result: ComponentTreeNode[],
-     getComponent: (element: Element) => {} | null,
-     getDirectives: (node: Node) => {}[]): ComponentTreeNode[] => {
-      const directives = getDirectives(domNode);
-      if (!directives.length && !(domNode instanceof Element)) {
-        return result;
-      }
-      const componentTreeNode: ComponentTreeNode = {
-        children: [],
-        component: null,
-        directives: directives.map((dir) => {
-          return {
-            instance: dir,
-            name: dir.constructor.name,
-          };
-        }),
-        element: domNode.nodeName.toLowerCase(),
-        nativeElement: domNode,
+const extractViewTree = (
+  domNode: Node | Element,
+  result: ComponentTreeNode[],
+  getComponent: (element: Element) => {} | null,
+  getDirectives: (node: Node) => {}[],
+): ComponentTreeNode[] => {
+  const directives = getDirectives(domNode);
+  if (!directives.length && !(domNode instanceof Element)) {
+    return result;
+  }
+  const componentTreeNode: ComponentTreeNode = {
+    children: [],
+    component: null,
+    directives: directives.map((dir) => {
+      return {
+        instance: dir,
+        name: dir.constructor.name,
       };
-      if (!(domNode instanceof Element)) {
-        result.push(componentTreeNode);
-        return result;
-      }
-      const component = getComponent(domNode);
-      if (component) {
-        componentTreeNode.component = {
-          instance: component,
-          isElement: isCustomElement(domNode),
-          name: domNode.nodeName.toLowerCase(),
-        };
-      }
-      if (component || componentTreeNode.directives.length) {
-        result.push(componentTreeNode);
-      }
-      if (componentTreeNode.component || componentTreeNode.directives.length) {
-        domNode.childNodes.forEach(
-            (node) =>
-                extractViewTree(node, componentTreeNode.children, getComponent, getDirectives));
-      } else {
-        domNode.childNodes.forEach(
-            (node) => extractViewTree(node, result, getComponent, getDirectives));
-      }
-      return result;
+    }),
+    element: domNode.nodeName.toLowerCase(),
+    nativeElement: domNode,
+  };
+  if (!(domNode instanceof Element)) {
+    result.push(componentTreeNode);
+    return result;
+  }
+  const component = getComponent(domNode);
+  if (component) {
+    componentTreeNode.component = {
+      instance: component,
+      isElement: isCustomElement(domNode),
+      name: domNode.nodeName.toLowerCase(),
     };
+  }
+  if (component || componentTreeNode.directives.length) {
+    result.push(componentTreeNode);
+  }
+  if (componentTreeNode.component || componentTreeNode.directives.length) {
+    domNode.childNodes.forEach((node) =>
+      extractViewTree(node, componentTreeNode.children, getComponent, getDirectives),
+    );
+  } else {
+    domNode.childNodes.forEach((node) =>
+      extractViewTree(node, result, getComponent, getDirectives),
+    );
+  }
+  return result;
+};
 
 export class RTreeStrategy {
   supports(): boolean {
-    return (['getDirectiveMetadata', 'getComponent', 'getDirectives'] as const)
-        .every((method) => typeof ngDebugClient()[method] === 'function');
+    return (['getDirectiveMetadata', 'getComponent', 'getDirectives'] as const).every(
+      (method) => typeof ngDebugClient()[method] === 'function',
+    );
   }
 
   build(element: Element): ComponentTreeNode[] {

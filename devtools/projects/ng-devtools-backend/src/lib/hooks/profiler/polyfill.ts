@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getDirectiveHostElement, getLViewFromDirectiveOrElementInstance, METADATA_PROPERTY_NAME,} from '../../directive-forest';
+import {
+  getDirectiveHostElement,
+  getLViewFromDirectiveOrElementInstance,
+  METADATA_PROPERTY_NAME,
+} from '../../directive-forest';
 import {runOutsideAngular} from '../../utils';
 import {IdentityTracker, NodeArray} from '../identity-tracker';
 
@@ -82,7 +86,7 @@ export class PatchingProfiler extends Profiler {
     if (original.patched) {
       return;
     }
-    declarations.tView.template = function(_: any, component: any): void {
+    declarations.tView.template = function (_: any, component: any): void {
       if (!self._inChangeDetection) {
         self._inChangeDetection = true;
         runOutsideAngular(() => {
@@ -122,7 +126,7 @@ export class PatchingProfiler extends Profiler {
         }
         if (typeof el === 'function') {
           const self = this;
-          current[idx] = function(): any {
+          current[idx] = function (): any {
             // We currently don't want to notify the consumer
             // for execution of lifecycle hooks of services and pipes.
             // These two abstractions don't have `__ngContext__`, and

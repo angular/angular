@@ -30,5 +30,4 @@ import {FilterModule} from './filter/filter.module';
   ],
   exports: [DirectiveForestComponent, BreadcrumbsModule],
 })
-export class DirectiveForestModule {
-}
+export class DirectiveForestModule {}

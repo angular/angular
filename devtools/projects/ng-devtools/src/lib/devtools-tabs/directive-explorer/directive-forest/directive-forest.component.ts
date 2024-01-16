@@ -8,7 +8,18 @@
 
 import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
 
@@ -30,7 +41,7 @@ export class DirectiveForestComponent {
     this._latestForest = forest;
     const result = this._updateForest(forest);
     const changed =
-        result.movedItems.length || result.newItems.length || result.removedItems.length;
+      result.movedItems.length || result.newItems.length || result.removedItems.length;
     if (this.currentSelectedElement && changed) {
       this._reselectNodeOnUpdate();
     }
@@ -42,9 +53,9 @@ export class DirectiveForestComponent {
     this.forest = this._latestForest;
   }
 
-  @Output() selectNode = new EventEmitter<IndexedNode|null>();
+  @Output() selectNode = new EventEmitter<IndexedNode | null>();
   @Output() selectDomElement = new EventEmitter<IndexedNode>();
-  @Output() setParents = new EventEmitter<FlatNode[]|null>();
+  @Output() setParents = new EventEmitter<FlatNode[] | null>();
   @Output() highlightComponent = new EventEmitter<ElementPosition>();
   @Output() removeComponentHighlight = new EventEmitter<void>();
   @Output() toggleInspector = new EventEmitter<void>();
@@ -54,28 +65,32 @@ export class DirectiveForestComponent {
   filterRegex = new RegExp('.^');
   currentlyMatchedIndex = -1;
 
-  selectedNode: FlatNode|null = null;
+  selectedNode: FlatNode | null = null;
   parents!: FlatNode[];
 
-  private _highlightIDinTreeFromElement: number|null = null;
+  private _highlightIDinTreeFromElement: number | null = null;
   private _showCommentNodes = false;
   private _latestForest!: DevToolsNode[];
 
-  set highlightIDinTreeFromElement(id: number|null) {
+  set highlightIDinTreeFromElement(id: number | null) {
     this._highlightIDinTreeFromElement = id;
     this._cdr.markForCheck();
   }
 
-  readonly treeControl =
-      new FlatTreeControl<FlatNode>((node) => node!.level, (node) => node.expandable);
+  readonly treeControl = new FlatTreeControl<FlatNode>(
+    (node) => node!.level,
+    (node) => node.expandable,
+  );
   readonly dataSource = new ComponentDataSource(this.treeControl);
   readonly itemHeight = 18;
 
   private _initialized = false;
 
   constructor(
-      private _tabUpdate: TabUpdate, private _messageBus: MessageBus<Events>,
-      private _cdr: ChangeDetectorRef) {
+    private _tabUpdate: TabUpdate,
+    private _messageBus: MessageBus<Events>,
+    private _cdr: ChangeDetectorRef,
+  ) {
     this.subscribeToInspectorEvents();
     this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
       if (this.viewport) {
@@ -111,8 +126,9 @@ export class DirectiveForestComponent {
   }
 
   handleSelect(node: FlatNode): void {
-    this.currentlyMatchedIndex =
-        this.dataSource.data.findIndex((matchedNode) => matchedNode.id === node.id);
+    this.currentlyMatchedIndex = this.dataSource.data.findIndex(
+      (matchedNode) => matchedNode.id === node.id,
+    );
     this.selectAndEnsureVisible(node);
   }
 
@@ -156,8 +172,9 @@ export class DirectiveForestComponent {
   }
 
   private _reselectNodeOnUpdate(): void {
-    const nodeThatStillExists =
-        this.dataSource.getFlatNodeFromIndexedNode(this.currentSelectedElement);
+    const nodeThatStillExists = this.dataSource.getFlatNodeFromIndexedNode(
+      this.currentSelectedElement,
+    );
     if (nodeThatStillExists) {
       this.select(nodeThatStillExists);
     } else {
@@ -165,8 +182,11 @@ export class DirectiveForestComponent {
     }
   }
 
-  private _updateForest(forest: DevToolsNode[]):
-      {newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[];} {
+  private _updateForest(forest: DevToolsNode[]): {
+    newItems: FlatNode[];
+    movedItems: FlatNode[];
+    removedItems: FlatNode[];
+  } {
     const result = this.dataSource.update(forest, this._showCommentNodes);
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
@@ -184,8 +204,9 @@ export class DirectiveForestComponent {
     this.parents = [];
     for (let i = 1; i <= position.length; i++) {
       const current = position.slice(0, i);
-      const selectedNode =
-          this.dataSource.data.find((item) => item.position.toString() === current.toString());
+      const selectedNode = this.dataSource.data.find(
+        (item) => item.position.toString() === current.toString(),
+      );
 
       // We might not be able to find the parent if the user has hidden the comment nodes.
       if (selectedNode) {
@@ -279,8 +300,10 @@ export class DirectiveForestComponent {
   }
 
   isMatched(node: FlatNode): boolean {
-    return this.filterRegex.test(node.name.toLowerCase()) ||
-        this.filterRegex.test(node.directives.toLowerCase());
+    return (
+      this.filterRegex.test(node.name.toLowerCase()) ||
+      this.filterRegex.test(node.directives.toLowerCase())
+    );
   }
 
   handleFilter(filterText: string): void {
@@ -324,8 +347,9 @@ export class DirectiveForestComponent {
 
   prevMatched(): void {
     const indexesOfMatchedNodes = this._findMatchedNodes();
-    this.currentlyMatchedIndex = (this.currentlyMatchedIndex - 1 + indexesOfMatchedNodes.length) %
-        indexesOfMatchedNodes.length;
+    this.currentlyMatchedIndex =
+      (this.currentlyMatchedIndex - 1 + indexesOfMatchedNodes.length) %
+      indexesOfMatchedNodes.length;
     const indexToSelect = indexesOfMatchedNodes[this.currentlyMatchedIndex];
     const nodeToSelect = this.dataSource.data[indexToSelect];
     if (indexToSelect !== undefined) {
@@ -352,11 +376,13 @@ export class DirectiveForestComponent {
   }
 
   isHighlighted(node: FlatNode): boolean {
-    return !!this._highlightIDinTreeFromElement &&
-        this._highlightIDinTreeFromElement === node.original.component?.id;
+    return (
+      !!this._highlightIDinTreeFromElement &&
+      this._highlightIDinTreeFromElement === node.original.component?.id
+    );
   }
 
-  isElement(node: FlatNode): boolean|null {
+  isElement(node: FlatNode): boolean | null {
     return node.original.component && node.original.component.isElement;
   }
 }

@@ -13,5 +13,4 @@ import {Component} from '@angular/core';
   templateUrl: './recording-dialog.component.html',
   styleUrls: ['./recording-dialog.component.scss'],
 })
-export class RecordingDialogComponent {
-}
+export class RecordingDialogComponent {}

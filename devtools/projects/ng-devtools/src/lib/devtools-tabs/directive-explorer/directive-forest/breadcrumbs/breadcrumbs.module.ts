@@ -19,5 +19,4 @@ import {BreadcrumbsComponent} from './breadcrumbs.component';
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule],
   exports: [BreadcrumbsComponent],
 })
-export class BreadcrumbsModule {
-}
+export class BreadcrumbsModule {}
