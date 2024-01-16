@@ -30,7 +30,6 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  */
 @Pipe({
   name: 'i18nPlural',
-  pure: true,
   standalone: true,
 })
 export class I18nPluralPipe implements PipeTransform {
