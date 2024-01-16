@@ -8,7 +8,6 @@
 
 import ts from 'typescript';
 
-
 export interface Symbol {
   name: string;
 }
@@ -65,8 +64,8 @@ export class SymbolExtractor {
           classDecl.name && symbols.push({name: stripSuffix(classDecl.name.getText())});
           break;
         default:
-          // Left for easier debugging.
-          // console.log('###', ts.SyntaxKind[child.kind], child.getText());
+        // Left for easier debugging.
+        // console.log('###', ts.SyntaxKind[child.kind], child.getText());
       }
     }
     visitor(source);
@@ -74,7 +73,7 @@ export class SymbolExtractor {
     return symbols;
   }
 
-  static diff(actual: Symbol[], expected: string|((Symbol | string)[])): {[name: string]: number} {
+  static diff(actual: Symbol[], expected: string | (Symbol | string)[]): {[name: string]: number} {
     if (typeof expected == 'string') {
       expected = JSON.parse(expected) as string[];
     }
@@ -83,7 +82,7 @@ export class SymbolExtractor {
     // All symbols in the golden file start out with a count corresponding to the number of symbols
     // with that name. Once they are matched with symbols in the actual output, the count should
     // even out to 0.
-    expected.forEach(nameOrSymbol => {
+    expected.forEach((nameOrSymbol) => {
       const symbolName = typeof nameOrSymbol == 'string' ? nameOrSymbol : nameOrSymbol.name;
       diff[symbolName] = (diff[symbolName] || 0) + 1;
     });
@@ -98,16 +97,18 @@ export class SymbolExtractor {
     return diff;
   }
 
-
-  constructor(private path: string, private contents: string) {
+  constructor(
+    private path: string,
+    private contents: string,
+  ) {
     this.actual = SymbolExtractor.parse(path, contents);
   }
 
-  expect(expectedSymbols: (string|Symbol)[]) {
+  expect(expectedSymbols: (string | Symbol)[]) {
     expect(SymbolExtractor.diff(this.actual, expectedSymbols)).toEqual({});
   }
 
-  compareAndPrintError(goldenFilePath: string, expected: string|((Symbol | string)[])): boolean {
+  compareAndPrintError(goldenFilePath: string, expected: string | (Symbol | string)[]): boolean {
     let passed = true;
     const diff = SymbolExtractor.diff(this.actual, expected);
     Object.keys(diff).forEach((key) => {
