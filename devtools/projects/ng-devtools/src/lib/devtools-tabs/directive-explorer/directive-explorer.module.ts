@@ -39,5 +39,4 @@ import {PropertyTabModule} from './property-tab/property-tab.module';
     MatTooltipModule,
   ],
 })
-export class DirectiveExplorerModule {
-}
+export class DirectiveExplorerModule {}

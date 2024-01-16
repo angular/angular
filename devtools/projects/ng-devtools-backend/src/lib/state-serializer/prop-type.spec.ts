@@ -73,11 +73,14 @@ describe('getPropType', () => {
       propTypeName: 'Set',
     },
     {
-      expression:
-          new Map<unknown, unknown>([['name', 'John'], ['age', 40], [{id: 123}, undefined]]),
+      expression: new Map<unknown, unknown>([
+        ['name', 'John'],
+        ['age', 40],
+        [{id: 123}, undefined],
+      ]),
       propType: PropType.Map,
       propTypeName: 'Map',
-    }
+    },
   ];
   for (const {expression, propType, propTypeName} of testCases) {
     it(`should determine ${String(expression)} as PropType:${propTypeName}(${propType})`, () => {

@@ -13,14 +13,14 @@ import {FlatNode} from './element-property-resolver';
 export const getExpandedDirectiveProperties = (data: FlatNode[]): NestedProp[] => {
   const getChildren = (prop: Descriptor) => {
     if ((prop.type === PropType.Object || prop.type === PropType.Array) && prop.value) {
-      return Object.entries(prop.value).map(([k, v]: [
-                                              string, any
-                                            ]): {name: number|string, children: NestedProp[]} => {
-        return {
-          name: prop.type === PropType.Array ? parseInt(k, 10) : k,
-          children: getChildren(v),
-        };
-      });
+      return Object.entries(prop.value).map(
+        ([k, v]: [string, any]): {name: number | string; children: NestedProp[]} => {
+          return {
+            name: prop.type === PropType.Array ? parseInt(k, 10) : k,
+            children: getChildren(v),
+          };
+        },
+      );
     }
     return [];
   };

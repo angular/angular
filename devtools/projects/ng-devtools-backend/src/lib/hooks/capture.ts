@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveProfile, ElementPosition, ElementProfile, LifecycleProfile, ProfilerFrame} from 'protocol';
+import {
+  DirectiveProfile,
+  ElementPosition,
+  ElementProfile,
+  LifecycleProfile,
+  ProfilerFrame,
+} from 'protocol';
 
 import {getDirectiveName} from '../highlighter';
 import {ComponentTreeNode} from '../interfaces';
@@ -59,16 +65,20 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
     // We flush here because it's possible the current node to overwrite
     // an existing removed node.
     onCreate(
-        directive: any, node: Node, _: number, isComponent: boolean, position: ElementPosition):
-        void {
-          eventMap.set(directive, {
-            isElement: isCustomElement(node),
-            name: getDirectiveName(directive),
-            isComponent,
-            lifecycle: {},
-            outputs: {},
-          });
-        },
+      directive: any,
+      node: Node,
+      _: number,
+      isComponent: boolean,
+      position: ElementPosition,
+    ): void {
+      eventMap.set(directive, {
+        isElement: isCustomElement(node),
+        name: getDirectiveName(directive),
+        isComponent,
+        lifecycle: {},
+        outputs: {},
+      });
+    },
     onChangeDetectionStart(component: any, node: Node): void {
       startEvent(timeStartMap, component, 'changeDetection');
       if (!inChangeDetection) {
@@ -111,22 +121,31 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
         console.warn('Could not find profile for', component);
       }
     },
-    onDestroy(directive: any, node: Node, _: number, isComponent: boolean, __: ElementPosition):
-        void {
-          // Make sure we reflect such directives in the report.
-          if (!eventMap.has(directive)) {
-            eventMap.set(directive, {
-              isElement: isComponent && isCustomElement(node),
-              name: getDirectiveName(directive),
-              isComponent,
-              lifecycle: {},
-              outputs: {},
-            });
-          }
-        },
+    onDestroy(
+      directive: any,
+      node: Node,
+      _: number,
+      isComponent: boolean,
+      __: ElementPosition,
+    ): void {
+      // Make sure we reflect such directives in the report.
+      if (!eventMap.has(directive)) {
+        eventMap.set(directive, {
+          isElement: isComponent && isCustomElement(node),
+          name: getDirectiveName(directive),
+          isComponent,
+          lifecycle: {},
+          outputs: {},
+        });
+      }
+    },
     onLifecycleHookStart(
-        directive: any, hookName: keyof LifecycleProfile, node: Node, __: number,
-        isComponent: boolean): void {
+      directive: any,
+      hookName: keyof LifecycleProfile,
+      node: Node,
+      __: number,
+      isComponent: boolean,
+    ): void {
       startEvent(timeStartMap, directive, hookName);
       if (!eventMap.has(directive)) {
         eventMap.set(directive, {
@@ -139,7 +158,12 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       }
     },
     onLifecycleHookEnd(
-        directive: any, hookName: keyof LifecycleProfile, _: Node, __: number, ___: boolean): void {
+      directive: any,
+      hookName: keyof LifecycleProfile,
+      _: Node,
+      __: number,
+      ___: boolean,
+    ): void {
       const dir = eventMap.get(directive);
       const startTimestamp = getEventStart(timeStartMap, directive, hookName);
       if (startTimestamp === undefined) {
@@ -153,19 +177,23 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       dir.lifecycle[hookName] = (dir.lifecycle[hookName] || 0) + duration;
       frameDuration += duration;
     },
-    onOutputStart(componentOrDirective: any, outputName: string, node: Node, isComponent: boolean):
-        void {
-          startEvent(timeStartMap, componentOrDirective, outputName);
-          if (!eventMap.has(componentOrDirective)) {
-            eventMap.set(componentOrDirective, {
-              isElement: isCustomElement(node),
-              name: getDirectiveName(componentOrDirective),
-              isComponent,
-              lifecycle: {},
-              outputs: {},
-            });
-          }
-        },
+    onOutputStart(
+      componentOrDirective: any,
+      outputName: string,
+      node: Node,
+      isComponent: boolean,
+    ): void {
+      startEvent(timeStartMap, componentOrDirective, outputName);
+      if (!eventMap.has(componentOrDirective)) {
+        eventMap.set(componentOrDirective, {
+          isElement: isCustomElement(node),
+          name: getDirectiveName(componentOrDirective),
+          isComponent,
+          lifecycle: {},
+          outputs: {},
+        });
+      }
+    },
     onOutputEnd(componentOrDirective: any, outputName: string): void {
       const name = outputName;
       const entry = eventMap.get(componentOrDirective);
@@ -175,8 +203,10 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       }
       if (!entry) {
         console.warn(
-            'Could not find directive or component in onOutputEnd callback', componentOrDirective,
-            outputName);
+          'Could not find directive or component in onOutputEnd callback',
+          componentOrDirective,
+          outputName,
+        );
         return;
       }
       const duration = performance.now() - startTimestamp;
@@ -215,33 +245,36 @@ const insertOrMerge = (lastFrame: ElementProfile, profile: DirectiveProfile) => 
   }
 };
 
-const insertElementProfile =
-    (frames: ElementProfile[], position: ElementPosition, profile?: DirectiveProfile) => {
-      if (!profile) {
-        return;
-      }
-      const original = frames;
-      for (let i = 0; i < position.length - 1; i++) {
-        const pos = position[i];
-        if (!frames[pos]) {
-          // TODO(mgechev): consider how to ensure we don't hit this case
-          console.warn('Unable to find parent node for', profile, original);
-          return;
-        }
-        frames = frames[pos].children;
-      }
-      const lastIdx = position[position.length - 1];
-      let lastFrame: ElementProfile = {
-        children: [],
-        directives: [],
-      };
-      if (frames[lastIdx]) {
-        lastFrame = frames[lastIdx];
-      } else {
-        frames[lastIdx] = lastFrame;
-      }
-      insertOrMerge(lastFrame, profile);
-    };
+const insertElementProfile = (
+  frames: ElementProfile[],
+  position: ElementPosition,
+  profile?: DirectiveProfile,
+) => {
+  if (!profile) {
+    return;
+  }
+  const original = frames;
+  for (let i = 0; i < position.length - 1; i++) {
+    const pos = position[i];
+    if (!frames[pos]) {
+      // TODO(mgechev): consider how to ensure we don't hit this case
+      console.warn('Unable to find parent node for', profile, original);
+      return;
+    }
+    frames = frames[pos].children;
+  }
+  const lastIdx = position[position.length - 1];
+  let lastFrame: ElementProfile = {
+    children: [],
+    directives: [],
+  };
+  if (frames[lastIdx]) {
+    lastFrame = frames[lastIdx];
+  } else {
+    frames[lastIdx] = lastFrame;
+  }
+  insertOrMerge(lastFrame, profile);
+};
 
 const prepareInitialFrame = (source: string, duration: number) => {
   const frame: ProfilerFrame = {
@@ -252,7 +285,7 @@ const prepareInitialFrame = (source: string, duration: number) => {
   const directiveForestHooks = initializeOrGetDirectiveForestHooks();
   const directiveForest = directiveForestHooks.getIndexedDirectiveForest();
   const traverse = (node: ComponentTreeNode, children = frame.directives) => {
-    let position: ElementPosition|undefined;
+    let position: ElementPosition | undefined;
     if (node.component) {
       position = directiveForestHooks.getDirectivePosition(node.component.instance);
     } else {

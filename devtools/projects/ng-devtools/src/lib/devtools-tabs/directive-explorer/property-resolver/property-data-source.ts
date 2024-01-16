@@ -20,7 +20,7 @@ import {arrayifyProps} from './arrayify-props';
 import {FlatNode, Property} from './element-property-resolver';
 
 const trackBy: TrackByFunction<FlatNode> = (_: number, item: FlatNode) =>
-    `#${item.prop.name}#${item.prop.descriptor.preview}#${item.level}`;
+  `#${item.prop.name}#${item.prop.descriptor.preview}#${item.level}`;
 
 export class PropertyDataSource extends DataSource<FlatNode> {
   private _data = new BehaviorSubject<FlatNode[]>([]);
@@ -29,10 +29,12 @@ export class PropertyDataSource extends DataSource<FlatNode> {
   private _differ = new DefaultIterableDiffer<FlatNode>(trackBy);
 
   constructor(
-      props: {[prop: string]: Descriptor},
-      private _treeFlattener: MatTreeFlattener<Property, FlatNode>,
-      private _treeControl: FlatTreeControl<FlatNode>, private _entityPosition: DirectivePosition,
-      private _messageBus: MessageBus<Events>) {
+    props: {[prop: string]: Descriptor},
+    private _treeFlattener: MatTreeFlattener<Property, FlatNode>,
+    private _treeControl: FlatTreeControl<FlatNode>,
+    private _entityPosition: DirectivePosition,
+    private _messageBus: MessageBus<Events>,
+  ) {
     super();
     this._data.next(this._treeFlattener.flattenNodes(arrayifyProps(props)));
   }
@@ -66,14 +68,20 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     });
     this._subscriptions.push(s);
 
-    const changes =
-        [collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._data];
+    const changes = [
+      collectionViewer.viewChange,
+      this._treeControl.expansionModel.changed,
+      this._data,
+    ];
 
-    return merge<unknown[]>(...changes).pipe(map(() => {
-      this._expandedData.next(
-          this._treeFlattener.expandFlattenedNodes(this.data, this._treeControl));
-      return this._expandedData.value;
-    }));
+    return merge<unknown[]>(...changes).pipe(
+      map(() => {
+        this._expandedData.next(
+          this._treeFlattener.expandFlattenedNodes(this.data, this._treeControl),
+        );
+        return this._expandedData.value;
+      }),
+    );
   }
 
   override disconnect(): void {
@@ -104,14 +112,16 @@ export class PropertyDataSource extends DataSource<FlatNode> {
     this._messageBus.emit('getNestedProperties', [this._entityPosition, parentPath]);
 
     this._messageBus.once(
-        'nestedProperties', (position: DirectivePosition, data: Properties, _path: string[]) => {
-          node.prop.descriptor.value = data.props;
-          this._treeControl.expand(node);
-          const props = arrayifyProps(data.props, node.prop);
-          const flatNodes = this._treeFlattener.flattenNodes(props);
-          flatNodes.forEach((f) => (f.level += node.level + 1));
-          this.data.splice(index + 1, 0, ...flatNodes);
-          this._data.next(this.data);
-        });
+      'nestedProperties',
+      (position: DirectivePosition, data: Properties, _path: string[]) => {
+        node.prop.descriptor.value = data.props;
+        this._treeControl.expand(node);
+        const props = arrayifyProps(data.props, node.prop);
+        const flatNodes = this._treeFlattener.flattenNodes(props);
+        flatNodes.forEach((f) => (f.level += node.level + 1));
+        this.data.splice(index + 1, 0, ...flatNodes);
+        this._data.next(this.data);
+      },
+    );
   }
 }
