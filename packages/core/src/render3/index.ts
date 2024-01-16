@@ -92,9 +92,13 @@ export {
   ɵɵpropertyInterpolateV,
 
   ɵɵcontentQuery,
+  ɵɵcontentQuerySignal,
+
   ɵɵloadQuery,
   ɵɵqueryRefresh,
+  ɵɵqueryAdvance,
   ɵɵviewQuery,
+  ɵɵviewQuerySignal,
 
   ɵɵreference,
 

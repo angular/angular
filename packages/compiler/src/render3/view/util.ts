@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool} from '../../constant_pool';
 import {InputFlags} from '../../core';
 import {BindingType, Interpolation} from '../../expression_parser/ast';
 import {splitNsName} from '../../ml_parser/tags';
@@ -15,9 +14,7 @@ import {ParseSourceSpan} from '../../parse_util';
 import {CssSelector} from '../../selector';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {ForwardRefHandling} from '../util';
 
-import {R3QueryMetadata} from './api';
 import {isI18nAttribute} from './i18n/util';
 
 
@@ -268,30 +265,6 @@ export function trimTrailingNulls(parameters: o.Expression[]): o.Expression[] {
     parameters.pop();
   }
   return parameters;
-}
-
-export function getQueryPredicate(
-    query: R3QueryMetadata, constantPool: ConstantPool): o.Expression {
-  if (Array.isArray(query.predicate)) {
-    let predicate: o.Expression[] = [];
-    query.predicate.forEach((selector: string): void => {
-      // Each item in predicates array may contain strings with comma-separated refs
-      // (for ex. 'ref, ref1, ..., refN'), thus we extract individual refs and store them
-      // as separate array entities
-      const selectors = selector.split(',').map(token => o.literal(token.trim()));
-      predicate.push(...selectors);
-    });
-    return constantPool.getConstLiteral(o.literalArr(predicate), true);
-  } else {
-    // The original predicate may have been wrapped in a `forwardRef()` call.
-    switch (query.predicate.forwardRef) {
-      case ForwardRefHandling.None:
-      case ForwardRefHandling.Unwrapped:
-        return query.predicate.expression;
-      case ForwardRefHandling.Wrapped:
-        return o.importExpr(R3.resolveForwardRef).callFn([query.predicate.expression]);
-    }
-  }
 }
 
 /**
