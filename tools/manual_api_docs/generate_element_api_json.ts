@@ -15,7 +15,7 @@ function main() {
   const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
   const [srcs, outputFileExecRootRelativePath] = rawParamLines;
 
-  const entries: DocEntry[] = srcs.split(',').map(sourceFilePath => {
+  const entries: DocEntry[] = srcs.split(',').map((sourceFilePath) => {
     const fileContent = readFileSync(sourceFilePath, {encoding: 'utf8'});
 
     return {

@@ -5,7 +5,10 @@ import {FormatConfig} from '@angular/ng-dev';
  */
 export const format: FormatConfig = {
   'prettier': {
-    'matchers': ['**/*.{yaml,yml}'],
+    'matchers': [
+      '**/*.{yaml,yml}',
+      'tools/**/*.{js,ts}',
+    ],
   },
   'clang-format': {
     'matchers': [
@@ -31,6 +34,9 @@ export const format: FormatConfig = {
       '!packages/common/src/i18n/currencies.ts',
       // Temporarily disable formatting for adev
       '!adev/**',
+
+      // Migrated to prettier
+      '!tools/**/*.{js,ts}',
     ],
   },
   'buildifier': true,
