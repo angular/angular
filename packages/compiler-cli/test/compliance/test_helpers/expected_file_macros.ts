@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AttributeMarker, SelectorFlags} from '@angular/compiler/src/core';
-import {QueryFlags} from '@angular/compiler/src/render3/view/compiler';
+import {QueryFlags} from '@angular/compiler/src/render3/view/query_generation';
 
 import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Options, Placeholder, resetMessageIndex} from './i18n_helpers';
 
