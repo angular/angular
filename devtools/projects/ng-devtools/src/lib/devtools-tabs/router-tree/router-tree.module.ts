@@ -18,5 +18,4 @@ import {RouterTreeComponent} from './router-tree.component';
   imports: [CommonModule, MatDialogModule, MatSelectModule],
   exports: [RouterTreeComponent],
 })
-export class RouterTreeModule {
-}
+export class RouterTreeModule {}

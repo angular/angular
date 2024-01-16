@@ -25,12 +25,19 @@ import {TabUpdate} from './tab-update/index';
 @NgModule({
   declarations: [DevToolsTabsComponent],
   imports: [
-    MatTabsModule, MatIconModule, DirectiveExplorerModule, ProfilerModule, RouterTreeModule,
-    CommonModule, MatMenuModule, MatButtonModule, MatSlideToggleModule, MatTooltipModule,
-    InjectorTreeComponent
+    MatTabsModule,
+    MatIconModule,
+    DirectiveExplorerModule,
+    ProfilerModule,
+    RouterTreeModule,
+    CommonModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatSlideToggleModule,
+    MatTooltipModule,
+    InjectorTreeComponent,
   ],
   providers: [TabUpdate],
   exports: [DevToolsTabsComponent],
 })
-export class DevToolsTabModule {
-}
+export class DevToolsTabModule {}

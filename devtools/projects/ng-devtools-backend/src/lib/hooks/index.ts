@@ -15,9 +15,9 @@ import {DirectiveForestHooks} from './hooks';
 const markName = (s: string, method: Method) => `🅰️ ${s}#${method}`;
 
 const supportsPerformance =
-    globalThis.performance && typeof globalThis.performance.getEntriesByName === 'function';
+  globalThis.performance && typeof globalThis.performance.getEntriesByName === 'function';
 
-type Method = keyof LifecycleProfile|'changeDetection'|string;
+type Method = keyof LifecycleProfile | 'changeDetection' | string;
 
 const recordMark = (s: string, method: Method) => {
   if (supportsPerformance) {

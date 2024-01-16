@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, ElementRef, EventEmitter, Input, Output, signal, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import {ZippyComponent} from './zippy.component';
 
@@ -34,7 +44,7 @@ export class DemoAppComponent {
     return {...original, age: original.age + 1};
   });
 
-  getTitle(): '► Click to expand'|'▼ Click to collapse' {
+  getTitle(): '► Click to expand' | '▼ Click to collapse' {
     if (!this.zippy || !this.zippy.visible) {
       return '► Click to expand';
     }

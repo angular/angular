@@ -13,7 +13,12 @@ import {isSignal, unwrapSignal} from '../utils';
 
 import {getKeys} from './object-utils';
 import {getPropType} from './prop-type';
-import {createLevelSerializedDescriptor, createNestedSerializedDescriptor, createShallowSerializedDescriptor, PropertyData,} from './serialized-descriptor-factory';
+import {
+  createLevelSerializedDescriptor,
+  createNestedSerializedDescriptor,
+  createShallowSerializedDescriptor,
+  PropertyData,
+} from './serialized-descriptor-factory';
 
 // todo(aleksanderbodurri) pull this out of this file
 const METADATA_PROPERTY_NAME = '__ngContext__';
@@ -23,23 +28,32 @@ const ignoreList = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 const MAX_LEVEL = 1;
 
 function nestedSerializer(
-    instance: any, propName: string|number, nodes: NestedProp[], isReadonly: boolean,
-    currentLevel = 0, level = MAX_LEVEL): Descriptor {
+  instance: any,
+  propName: string | number,
+  nodes: NestedProp[],
+  isReadonly: boolean,
+  currentLevel = 0,
+  level = MAX_LEVEL,
+): Descriptor {
   instance = unwrapSignal(instance);
   const serializableInstance = instance[propName];
   const propData: PropertyData = {
     prop: serializableInstance,
     type: getPropType(serializableInstance),
-    containerType: getContainerType(serializableInstance)
+    containerType: getContainerType(serializableInstance),
   };
 
   if (currentLevel < level) {
-    const continuation =
-        (instance: any, propName: string|number, isReadonly: boolean, nestedLevel?: number,
-         _?: number) => {
-          const nodeChildren = nodes.find((v) => v.name === propName)?.children ?? [];
-          return nestedSerializer(instance, propName, nodeChildren, isReadonly, nestedLevel, level);
-        };
+    const continuation = (
+      instance: any,
+      propName: string | number,
+      isReadonly: boolean,
+      nestedLevel?: number,
+      _?: number,
+    ) => {
+      const nodeChildren = nodes.find((v) => v.name === propName)?.children ?? [];
+      return nestedSerializer(instance, propName, nodeChildren, isReadonly, nestedLevel, level);
+    };
 
     return levelSerializer(instance, propName, isReadonly, currentLevel, level, continuation);
   }
@@ -48,27 +62,43 @@ function nestedSerializer(
     case PropType.Array:
     case PropType.Object:
       return createNestedSerializedDescriptor(
-          instance, propName, propData, {level, currentLevel}, nodes, nestedSerializer);
+        instance,
+        propName,
+        propData,
+        {level, currentLevel},
+        nodes,
+        nestedSerializer,
+      );
     default:
       return createShallowSerializedDescriptor(instance, propName, propData, isReadonly);
   }
 }
 
 function levelSerializer(
-    instance: any, propName: string|number, isReadonly: boolean, currentLevel = 0,
-    level = MAX_LEVEL, continuation = levelSerializer): Descriptor {
+  instance: any,
+  propName: string | number,
+  isReadonly: boolean,
+  currentLevel = 0,
+  level = MAX_LEVEL,
+  continuation = levelSerializer,
+): Descriptor {
   const serializableInstance = instance[propName];
   const propData: PropertyData = {
     prop: serializableInstance,
     type: getPropType(serializableInstance),
-    containerType: getContainerType(serializableInstance)
+    containerType: getContainerType(serializableInstance),
   };
 
   switch (propData.type) {
     case PropType.Array:
     case PropType.Object:
       return createLevelSerializedDescriptor(
-          instance, propName, propData, {level, currentLevel}, continuation);
+        instance,
+        propName,
+        propData,
+        {level, currentLevel},
+        continuation,
+      );
     default:
       return createShallowSerializedDescriptor(instance, propName, propData, isReadonly);
   }
@@ -88,7 +118,9 @@ export function serializeDirectiveState(instance: object): Record<string, Descri
 }
 
 export function deeplySerializeSelectedProperties(
-    instance: object, props: NestedProp[]): Record<string, Descriptor> {
+  instance: object,
+  props: NestedProp[],
+): Record<string, Descriptor> {
   const result: Record<string, Descriptor> = {};
   const isReadonly = isSignal(instance);
   getKeys(instance).forEach((prop) => {
@@ -104,7 +136,6 @@ export function deeplySerializeSelectedProperties(
   });
   return result;
 }
-
 
 function getContainerType(instance: unknown): ContainerType {
   if (isSignal(instance)) {

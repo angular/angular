@@ -83,9 +83,9 @@ describe('Search items in component tree', () => {
     const amountOfBreadcrumbButtons = 4;
     const amountOfScrollButtons = 2;
     cy.get('ng-breadcrumbs')
-        .find('button')
-        .its('length')
-        .should('eq', amountOfScrollButtons + amountOfBreadcrumbButtons);
+      .find('button')
+      .its('length')
+      .should('eq', amountOfScrollButtons + amountOfBreadcrumbButtons);
 
     // should display correct text in explorer panel
     checkComponentName('app-todos');

@@ -32,10 +32,13 @@ import {TreeMapVisualizerComponent} from './tree-map-visualizer.component';
     BargraphVisualizerComponent,
   ],
   imports: [
-    CommonModule, NgxFlamegraphModule, MatTooltipModule, MatToolbarModule, MatCardModule,
-    AngularSplitModule
+    CommonModule,
+    NgxFlamegraphModule,
+    MatTooltipModule,
+    MatToolbarModule,
+    MatCardModule,
+    AngularSplitModule,
   ],
   exports: [TimelineVisualizerComponent],
 })
-export class RecordingVisualizerModule {
-}
+export class RecordingVisualizerModule {}

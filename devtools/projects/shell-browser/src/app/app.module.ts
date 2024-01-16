@@ -29,5 +29,4 @@ import {ChromeApplicationOperations} from './chrome-application-operations';
     },
   ],
 })
-export class AppModule {
-}
+export class AppModule {}

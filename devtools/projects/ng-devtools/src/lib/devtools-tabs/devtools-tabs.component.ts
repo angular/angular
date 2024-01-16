@@ -17,7 +17,7 @@ import {Theme, ThemeService} from '../theme-service';
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {TabUpdate} from './tab-update/index';
 
-type Tabs = 'Components'|'Profiler'|'Router Tree'|'Injector Tree';
+type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -25,7 +25,7 @@ type Tabs = 'Components'|'Profiler'|'Router Tree'|'Injector Tree';
   styleUrls: ['./devtools-tabs.component.scss'],
 })
 export class DevToolsTabsComponent implements OnInit, AfterViewInit {
-  @Input() angularVersion: string|undefined = undefined;
+  @Input() angularVersion: string | undefined = undefined;
   @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
   @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
 
@@ -41,13 +41,14 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   routes: Route[] = [];
 
   constructor(
-      public tabUpdate: TabUpdate,
-      public themeService: ThemeService,
-      private _messageBus: MessageBus<Events>,
-      private _applicationEnvironment: ApplicationEnvironment,
+    public tabUpdate: TabUpdate,
+    public themeService: ThemeService,
+    private _messageBus: MessageBus<Events>,
+    private _applicationEnvironment: ApplicationEnvironment,
   ) {
-    this.themeService.currentTheme.pipe(takeUntilDestroyed())
-        .subscribe((theme) => (this.currentTheme = theme));
+    this.themeService.currentTheme
+      .pipe(takeUntilDestroyed())
+      .subscribe((theme) => (this.currentTheme = theme));
 
     this._messageBus.on('updateRouterTree', (routes) => {
       this.routes = routes || [];
@@ -99,7 +100,8 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
 
   toggleTimingAPI(): void {
     this.timingAPIEnabled = !this.timingAPIEnabled;
-    this.timingAPIEnabled ? this._messageBus.emit('enableTimingAPI') :
-                            this._messageBus.emit('disableTimingAPI');
+    this.timingAPIEnabled
+      ? this._messageBus.emit('enableTimingAPI')
+      : this._messageBus.emit('disableTimingAPI');
   }
 }

@@ -17,7 +17,7 @@ import {VisualizationMode} from './visualization-mode';
   styleUrls: ['./timeline-controls.component.scss'],
 })
 export class TimelineControlsComponent {
-  @Input() record: ProfilerFrame|undefined;
+  @Input() record: ProfilerFrame | undefined;
   @Input({required: true}) estimatedFrameRate!: number;
   @Input({required: true}) visualizationMode!: VisualizationMode;
   @Input({required: true}) empty!: boolean;

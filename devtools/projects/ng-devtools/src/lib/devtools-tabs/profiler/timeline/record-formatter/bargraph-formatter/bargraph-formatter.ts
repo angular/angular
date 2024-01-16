@@ -16,7 +16,7 @@ export interface BargraphNode {
   value: number;
   label: string;
   original: ElementProfile;
-  count: number;  // number of merged nodes with the same label
+  count: number; // number of merged nodes with the same label
   directives?: DirectiveProfile[];
 }
 
@@ -55,7 +55,10 @@ export class BarGraphFormatter extends RecordFormatter<BargraphNode[]> {
   }
 
   override addFrame(
-      nodes: BargraphNode[], elements: ElementProfile[], parents: ElementProfile[] = []): number {
+    nodes: BargraphNode[],
+    elements: ElementProfile[],
+    parents: ElementProfile[] = [],
+  ): number {
     let timeSpent = 0;
     elements.forEach((element) => {
       // Possibly undefined because of the insertion on the backend.

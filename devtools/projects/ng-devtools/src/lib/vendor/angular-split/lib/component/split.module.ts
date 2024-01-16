@@ -9,5 +9,4 @@ import {SplitAreaDirective} from './splitArea.directive';
   declarations: [SplitAreaDirective, SplitComponent],
   exports: [SplitAreaDirective, SplitComponent],
 })
-export class SplitModule {
-}
+export class SplitModule {}
