@@ -204,7 +204,8 @@ export class NgtscTestEnvironment {
     }
     this.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
 
-    if (extraOpts['_useHostForImportGeneration'] === true) {
+    if (extraOpts['_useHostForImportGeneration'] ||
+        extraOpts['_useHostForImportAndAliasGeneration']) {
       setWrapHostForTest(makeWrapHost(new FileNameToModuleNameHost(this.fs)));
     }
   }
