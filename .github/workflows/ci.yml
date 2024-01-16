@@ -123,7 +123,7 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Build adev to ensure it continues to work
-        run: yarn bazel build --config=aio_local_deps //adev:build
+        run: yarn bazel test --config=aio_local_deps //adev:test
 
   aio-local:
     runs-on:
