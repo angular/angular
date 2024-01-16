@@ -15,8 +15,9 @@ try {
   // This can be fixed using the --preserve-symlinks-main flag which
   // is introduced in node 10.2.0
   console.warn(
-      `Running postinstall-patches.js script in an external repository requires --preserve-symlinks-main node flag introduced in node 10.2.0. ` +
-      `Current node version is ${process.version}. Node called with '${process.argv.join(' ')}'.`);
+    `Running postinstall-patches.js script in an external repository requires --preserve-symlinks-main node flag introduced in node 10.2.0. ` +
+      `Current node version is ${process.version}. Node called with '${process.argv.join(' ')}'.`,
+  );
   process.exit(0);
 }
 
