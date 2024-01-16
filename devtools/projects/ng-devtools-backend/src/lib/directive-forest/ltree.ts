@@ -28,7 +28,6 @@ const TYPE = 1;
 const ELEMENT = 0;
 const LVIEW_TVIEW = 1;
 
-
 // Big oversimplification of the LView structure.
 type LView = Array<any>;
 
@@ -41,7 +40,7 @@ const isLView = (value: unknown): value is LView => {
 };
 
 export const METADATA_PROPERTY_NAME = '__ngContext__';
-export function getLViewFromDirectiveOrElementInstance(dir: any): null|LView {
+export function getLViewFromDirectiveOrElementInstance(dir: any): null | LView {
   if (!dir) {
     return null;
   }
@@ -80,7 +79,7 @@ export class LTreeStrategy {
 
   private _getNode(lView: LView, data: any, idx: number): ComponentTreeNode {
     const directives: DirectiveInstanceType[] = [];
-    let component: ComponentInstanceType|null = null;
+    let component: ComponentInstanceType | null = null;
     const tNode = data[idx];
     const node = lView[idx][ELEMENT];
     const element = (node.tagName || node.nodeName).toLowerCase();

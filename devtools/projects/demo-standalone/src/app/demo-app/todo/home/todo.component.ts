@@ -22,17 +22,21 @@ export interface Todo {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [TooltipDirective],
-  styles: [`
+  styles: [
+    `
       .destroy {
         cursor: pointer;
         display: unset !important;
       }
-    `],
+    `,
+  ],
   template: `
     <li [class.completed]="todo.completed">
       <div class="view" appTooltip>
         <input class="toggle" type="checkbox" [checked]="todo.completed" (change)="toggle()" />
-        <label (dblclick)="enableEditMode()" [style.display]="editMode ? 'none' : 'block'">{{ todo.label }}</label>
+        <label (dblclick)="enableEditMode()" [style.display]="editMode ? 'none' : 'block'">{{
+          todo.label
+        }}</label>
         <button class="destroy" (click)="delete.emit(todo)"></button>
       </div>
       <input
@@ -42,7 +46,7 @@ export interface Todo {
         (keydown.enter)="completeEdit($any($event.target).value)"
       />
     </li>
-  `
+  `,
 })
 export class TodoComponent {
   @Input() todo!: Todo;

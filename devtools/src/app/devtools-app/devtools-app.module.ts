@@ -27,5 +27,4 @@ import {DevToolsComponent} from './devtools-app.component';
     ]),
   ],
 })
-export class DevToolsModule {
-}
+export class DevToolsModule {}
