@@ -13,7 +13,7 @@ import {Router, RouterOutlet} from '@angular/router';
   selector: 'app-root',
   template: `<router-outlet></router-outlet>`,
   standalone: true,
-  imports: [RouterOutlet]
+  imports: [RouterOutlet],
 })
 export class AppComponent {
   constructor(public router: Router) {}

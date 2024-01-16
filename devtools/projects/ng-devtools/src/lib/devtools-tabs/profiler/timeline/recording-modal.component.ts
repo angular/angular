@@ -13,5 +13,4 @@ import {Component} from '@angular/core';
   templateUrl: './recording-modal.component.html',
   styleUrls: ['./recording-modal.component.scss'],
 })
-export class RecordingModalComponent {
-}
+export class RecordingModalComponent {}

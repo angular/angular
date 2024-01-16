@@ -20,17 +20,15 @@ import {ThemeService} from './theme-service';
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
   animations: [
-    trigger(
-        'enterAnimation',
-        [
-          transition(':enter', [style({opacity: 0}), animate('200ms', style({opacity: 1}))]),
-          transition(':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))]),
-        ]),
+    trigger('enterAnimation', [
+      transition(':enter', [style({opacity: 0}), animate('200ms', style({opacity: 1}))]),
+      transition(':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))]),
+    ]),
   ],
 })
 export class DevToolsComponent implements OnInit, OnDestroy {
-  angularExists: boolean|null = null;
-  angularVersion: string|boolean|undefined = undefined;
+  angularExists: boolean | null = null;
+  angularVersion: string | boolean | undefined = undefined;
   angularIsInDevMode = true;
   ivy!: boolean;
 
@@ -38,8 +36,11 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   private readonly _chromeStyleName = 'chrome_styles.css';
 
   constructor(
-      private _messageBus: MessageBus<Events>, private _themeService: ThemeService,
-      private _platform: Platform, @Inject(DOCUMENT) private _document: Document) {}
+    private _messageBus: MessageBus<Events>,
+    private _themeService: ThemeService,
+    private _platform: Platform,
+    @Inject(DOCUMENT) private _document: Document,
+  ) {}
 
   private _interval$ = interval(500).subscribe((attempt) => {
     if (attempt === 10) {
@@ -59,8 +60,9 @@ export class DevToolsComponent implements OnInit, OnDestroy {
       this._interval$.unsubscribe();
     });
 
-    const browserStyleName =
-        this._platform.FIREFOX ? this._firefoxStyleName : this._chromeStyleName;
+    const browserStyleName = this._platform.FIREFOX
+      ? this._firefoxStyleName
+      : this._chromeStyleName;
     this._loadStyle(browserStyleName);
   }
 

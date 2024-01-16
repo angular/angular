@@ -13,7 +13,10 @@ type AnyEventCallback<Ev> = <E extends keyof Ev>(topic: E, args: Parameters<Ev[E
 export class SamePageMessageBus extends MessageBus<Events> {
   private _listeners: any[] = [];
 
-  constructor(private _source: string, private _destination: string) {
+  constructor(
+    private _source: string,
+    private _destination: string,
+  ) {
     super();
   }
 
@@ -64,13 +67,14 @@ export class SamePageMessageBus extends MessageBus<Events> {
 
   override emit<E extends keyof Events>(topic: E, args?: Parameters<Events[E]>): boolean {
     window.postMessage(
-        {
-          source: this._source,
-          topic,
-          args,
-          __ignore_ng_zone__: true,
-        },
-        '*');
+      {
+        source: this._source,
+        topic,
+        args,
+        __ignore_ng_zone__: true,
+      },
+      '*',
+    );
     return true;
   }
 

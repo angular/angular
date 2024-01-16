@@ -36,15 +36,17 @@ export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
   private resize$ = new Subject<void>();
   private _throttledResizeSubscription!: Subscription;
 
-  private _resizeObserver: ResizeObserver =
-      new ResizeObserver(() => this._ngZone.run(() => this.resize$.next()));
+  private _resizeObserver: ResizeObserver = new ResizeObserver(() =>
+    this._ngZone.run(() => this.resize$.next()),
+  );
   private treeMapRecords!: TreeMapNode;
 
   @ViewChild('webTree', {static: true}) tree!: ElementRef<HTMLElement>;
 
   ngOnInit(): void {
-    this._throttledResizeSubscription =
-        this.resize$.pipe(debounceTime(100)).subscribe(() => this._renderTree());
+    this._throttledResizeSubscription = this.resize$
+      .pipe(debounceTime(100))
+      .subscribe(() => this._renderTree());
     this._resizeObserver.observe(this.tree.nativeElement);
   }
 

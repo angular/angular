@@ -11,32 +11,64 @@ import {Subject} from 'rxjs';
 
 import {NodeArray} from '../identity-tracker';
 
-type CreationHook =
-    (componentOrDirective: any, node: Node, id: number, isComponent: boolean,
-     position: ElementPosition) => void;
+type CreationHook = (
+  componentOrDirective: any,
+  node: Node,
+  id: number,
+  isComponent: boolean,
+  position: ElementPosition,
+) => void;
 
-type LifecycleStartHook =
-    (componentOrDirective: any, hook: keyof LifecycleProfile, node: Node, id: number,
-     isComponent: boolean) => void;
+type LifecycleStartHook = (
+  componentOrDirective: any,
+  hook: keyof LifecycleProfile,
+  node: Node,
+  id: number,
+  isComponent: boolean,
+) => void;
 
-type LifecycleEndHook =
-    (componentOrDirective: any, hook: keyof LifecycleProfile, node: Node, id: number,
-     isComponent: boolean) => void;
+type LifecycleEndHook = (
+  componentOrDirective: any,
+  hook: keyof LifecycleProfile,
+  node: Node,
+  id: number,
+  isComponent: boolean,
+) => void;
 
-type ChangeDetectionStartHook =
-    (component: any, node: Node, id: number, position: ElementPosition) => void;
+type ChangeDetectionStartHook = (
+  component: any,
+  node: Node,
+  id: number,
+  position: ElementPosition,
+) => void;
 
-type ChangeDetectionEndHook = (component: any, node: Node, id: number, position: ElementPosition) =>
-    void;
+type ChangeDetectionEndHook = (
+  component: any,
+  node: Node,
+  id: number,
+  position: ElementPosition,
+) => void;
 
-type DestroyHook =
-    (componentOrDirective: any, node: Node, id: number, isComponent: boolean,
-     position: ElementPosition) => void;
+type DestroyHook = (
+  componentOrDirective: any,
+  node: Node,
+  id: number,
+  isComponent: boolean,
+  position: ElementPosition,
+) => void;
 
-type OutputStartHook =
-    (componentOrDirective: any, outputName: string, node: Node, isComponent: boolean) => void;
-type OutputEndHook =
-    (componentOrDirective: any, outputName: string, node: Node, isComponent: boolean) => void;
+type OutputStartHook = (
+  componentOrDirective: any,
+  outputName: string,
+  node: Node,
+  isComponent: boolean,
+) => void;
+type OutputEndHook = (
+  componentOrDirective: any,
+  outputName: string,
+  node: Node,
+  isComponent: boolean,
+) => void;
 
 export interface Hooks {
   onCreate: CreationHook;
@@ -79,8 +111,12 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onCreate(
-      _: any, __: Node, id: number|undefined, ___: boolean,
-      position: ElementPosition|undefined): void {
+    _: any,
+    __: Node,
+    id: number | undefined,
+    ___: boolean,
+    position: ElementPosition | undefined,
+  ): void {
     if (id === undefined || position === undefined) {
       return;
     }
@@ -89,8 +125,12 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onDestroy(
-      _: any, __: Node, id: number|undefined, ___: boolean,
-      position: ElementPosition|undefined): void {
+    _: any,
+    __: Node,
+    id: number | undefined,
+    ___: boolean,
+    position: ElementPosition | undefined,
+  ): void {
     if (id === undefined || position === undefined) {
       return;
     }
@@ -99,7 +139,11 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onChangeDetectionStart(
-      _: any, __: Node, id: number|undefined, position: ElementPosition|undefined): void {
+    _: any,
+    __: Node,
+    id: number | undefined,
+    position: ElementPosition | undefined,
+  ): void {
     if (id === undefined || position === undefined) {
       return;
     }
@@ -108,7 +152,11 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onChangeDetectionEnd(
-      _: any, __: Node, id: number|undefined, position: ElementPosition|undefined): void {
+    _: any,
+    __: Node,
+    id: number | undefined,
+    position: ElementPosition | undefined,
+  ): void {
     if (id === undefined || position === undefined) {
       return;
     }
@@ -117,8 +165,12 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onLifecycleHookStart(
-      _: any, __: keyof LifecycleProfile|'unknown', ___: Node, id: number|undefined,
-      ____: boolean): void {
+    _: any,
+    __: keyof LifecycleProfile | 'unknown',
+    ___: Node,
+    id: number | undefined,
+    ____: boolean,
+  ): void {
     if (id === undefined) {
       return;
     }
@@ -127,8 +179,12 @@ export abstract class Profiler {
 
   /** @internal */
   protected _onLifecycleHookEnd(
-      _: any, __: keyof LifecycleProfile|'unknown', ___: Node, id: number|undefined,
-      ____: boolean): void {
+    _: any,
+    __: keyof LifecycleProfile | 'unknown',
+    ___: Node,
+    id: number | undefined,
+    ____: boolean,
+  ): void {
     if (id === undefined) {
       return;
     }
@@ -136,8 +192,13 @@ export abstract class Profiler {
   }
 
   /** @internal */
-  protected _onOutputStart(_: any, __: string, ___: Node, id: number|undefined, ____: boolean):
-      void {
+  protected _onOutputStart(
+    _: any,
+    __: string,
+    ___: Node,
+    id: number | undefined,
+    ____: boolean,
+  ): void {
     if (id === undefined) {
       return;
     }
@@ -145,7 +206,13 @@ export abstract class Profiler {
   }
 
   /** @internal */
-  protected _onOutputEnd(_: any, __: string, ___: Node, id: number|undefined, ____: boolean): void {
+  protected _onOutputEnd(
+    _: any,
+    __: string,
+    ___: Node,
+    id: number | undefined,
+    ____: boolean,
+  ): void {
     if (id === undefined) {
       return;
     }
@@ -176,7 +243,7 @@ const hookNames = [
 
 const hookMethodNames = new Set(hookNames.map((hook) => `ng${hook}`));
 
-export const getLifeCycleName = (obj: {}, fn: any): keyof LifecycleProfile|'unknown' => {
+export const getLifeCycleName = (obj: {}, fn: any): keyof LifecycleProfile | 'unknown' => {
   const proto = Object.getPrototypeOf(obj);
   const keys = Object.getOwnPropertyNames(proto);
   for (const propName of keys) {

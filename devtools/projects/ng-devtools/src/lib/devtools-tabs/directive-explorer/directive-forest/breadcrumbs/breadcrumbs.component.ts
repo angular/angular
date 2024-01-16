@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, ViewChild,} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
@@ -31,8 +42,9 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   updateScrollButtonVisibility$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.updateScrollButtonVisibility$.pipe(debounceTime(100))
-        .subscribe(() => this.updateScrollButtonVisibility());
+    this.updateScrollButtonVisibility$
+      .pipe(debounceTime(100))
+      .subscribe(() => this.updateScrollButtonVisibility());
   }
 
   ngAfterViewInit(): void {

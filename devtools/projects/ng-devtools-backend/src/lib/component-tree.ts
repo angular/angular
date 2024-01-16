@@ -5,11 +5,28 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ComponentExplorerViewQuery, DirectiveMetadata, DirectivesProperties, ElementPosition, PropertyQueryTypes, SerializedInjectedService, SerializedInjector, SerializedProviderRecord, UpdatedStateData,} from 'protocol';
+import {
+  ComponentExplorerViewQuery,
+  DirectiveMetadata,
+  DirectivesProperties,
+  ElementPosition,
+  PropertyQueryTypes,
+  SerializedInjectedService,
+  SerializedInjector,
+  SerializedProviderRecord,
+  UpdatedStateData,
+} from 'protocol';
 
 import {buildDirectiveTree, getLViewFromDirectiveOrElementInstance} from './directive-forest/index';
-import {ngDebugApiIsSupported, ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
-import {deeplySerializeSelectedProperties, serializeDirectiveState,} from './state-serializer/state-serializer';
+import {
+  ngDebugApiIsSupported,
+  ngDebugClient,
+  ngDebugDependencyInjectionApiIsSupported,
+} from './ng-debug-api/ng-debug-api';
+import {
+  deeplySerializeSelectedProperties,
+  serializeDirectiveState,
+} from './state-serializer/state-serializer';
 
 // Need to be kept in sync with Angular framework
 // We can't directly import it from framework now
@@ -22,9 +39,20 @@ enum ChangeDetectionStrategy {
 
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from './interfaces';
 
-import type {ClassProvider, ExistingProvider, FactoryProvider, InjectOptions, InjectionToken, Injector, Type, ValueProvider, ɵComponentDebugMetadata as ComponentDebugMetadata, ɵProviderRecord as ProviderRecord} from '@angular/core';
+import type {
+  ClassProvider,
+  ExistingProvider,
+  FactoryProvider,
+  InjectOptions,
+  InjectionToken,
+  Injector,
+  Type,
+  ValueProvider,
+  ɵComponentDebugMetadata as ComponentDebugMetadata,
+  ɵProviderRecord as ProviderRecord,
+} from '@angular/core';
 
-export const injectorToId = new WeakMap<Injector|HTMLElement, string>();
+export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
 export const idToInjector = new Map<string, Injector>();
 export const injectorsSeen = new Set<string>();
@@ -46,12 +74,14 @@ export function getInjectorResolutionPath(injector: Injector): Injector[] {
   return ngDebugClient().ɵgetInjectorResolutionPath(injector);
 }
 
-export function getInjectorFromElementNode(element: Node): Injector|null {
+export function getInjectorFromElementNode(element: Node): Injector | null {
   return ngDebugClient().getInjector(element);
 }
 
-function getDirectivesFromElement(element: HTMLElement):
-    {component: unknown|null; directives: unknown[];} {
+function getDirectivesFromElement(element: HTMLElement): {
+  component: unknown | null;
+  directives: unknown[];
+} {
   let component = null;
   if (element instanceof Element) {
     component = ngDebugClient().getComponent(element);
@@ -64,9 +94,9 @@ function getDirectivesFromElement(element: HTMLElement):
 }
 
 export const getLatestComponentState = (
-    query: ComponentExplorerViewQuery,
-    directiveForest?: ComponentTreeNode[],
-    ): {directiveProperties: DirectivesProperties}|undefined => {
+  query: ComponentExplorerViewQuery,
+  directiveForest?: ComponentTreeNode[],
+): {directiveProperties: DirectivesProperties} | undefined => {
   // if a directive forest is passed in we don't have to build the forest again.
   directiveForest = directiveForest ?? buildDirectiveForest();
 
@@ -80,19 +110,19 @@ export const getLatestComponentState = (
   const injector = ngDebugClient().getInjector(node.nativeElement!);
 
   const injectors = getInjectorResolutionPath(injector);
-  const resolutionPathWithProviders = !ngDebugDependencyInjectionApiIsSupported() ?
-      [] :
-      injectors.map((injector) => ({
-                      injector,
-                      providers: getInjectorProviders(injector),
-                    }));
-  const populateResultSet = (dir: DirectiveInstanceType|ComponentInstanceType) => {
+  const resolutionPathWithProviders = !ngDebugDependencyInjectionApiIsSupported()
+    ? []
+    : injectors.map((injector) => ({
+        injector,
+        providers: getInjectorProviders(injector),
+      }));
+  const populateResultSet = (dir: DirectiveInstanceType | ComponentInstanceType) => {
     const {instance, name} = dir;
     const metadata = getDirectiveMetadata(instance);
     metadata.dependencies = getDependenciesForDirective(
-        injector,
-        resolutionPathWithProviders,
-        instance.constructor,
+      injector,
+      resolutionPathWithProviders,
+      instance.constructor,
     );
 
     if (query.propertyQuery.type === PropertyQueryTypes.All) {
@@ -105,9 +135,9 @@ export const getLatestComponentState = (
     if (query.propertyQuery.type === PropertyQueryTypes.Specified) {
       directiveProperties[name] = {
         props: deeplySerializeSelectedProperties(
-            instance,
-            query.propertyQuery.properties[name] || [],
-            ),
+          instance,
+          query.propertyQuery.properties[name] || [],
+        ),
         metadata,
       };
     }
@@ -123,7 +153,7 @@ export const getLatestComponentState = (
   };
 };
 
-function serializeElementInjectorWithId(injector: Injector): SerializedInjector|null {
+function serializeElementInjectorWithId(injector: Injector): SerializedInjector | null {
   let id: string;
   const element = getElementInjectorElement(injector);
 
@@ -145,7 +175,7 @@ function serializeElementInjectorWithId(injector: Injector): SerializedInjector|
   return {id, ...serializedInjector};
 }
 
-function serializeInjectorWithId(injector: Injector): SerializedInjector|null {
+function serializeInjectorWithId(injector: Injector): SerializedInjector | null {
   if (isElementInjector(injector)) {
     return serializeElementInjectorWithId(injector);
   } else {
@@ -153,7 +183,7 @@ function serializeInjectorWithId(injector: Injector): SerializedInjector|null {
   }
 }
 
-function serializeEnvironmentInjectorWithId(injector: Injector): SerializedInjector|null {
+function serializeEnvironmentInjectorWithId(injector: Injector): SerializedInjector | null {
   let id: string;
 
   if (!injectorToId.has(injector)) {
@@ -223,16 +253,16 @@ export function getInjectorProviders(injector: Injector) {
 }
 
 const getDependenciesForDirective = (
-    injector: Injector,
-    resolutionPath: {injector: Injector; providers: ProviderRecord[]}[],
-    directive: any,
-    ): SerializedInjectedService[] => {
+  injector: Injector,
+  resolutionPath: {injector: Injector; providers: ProviderRecord[]}[],
+  directive: any,
+): SerializedInjectedService[] => {
   if (!ngDebugApiIsSupported('ɵgetDependenciesFromInjectable')) {
     return [];
   }
 
   let dependencies =
-      ngDebugClient().ɵgetDependenciesFromInjectable(injector, directive)?.dependencies ?? [];
+    ngDebugClient().ɵgetDependenciesFromInjectable(injector, directive)?.dependencies ?? [];
   const serializedInjectedServices: SerializedInjectedService[] = [];
 
   let position = 0;
@@ -255,8 +285,9 @@ const getDependenciesForDirective = (
     // dependency (2)
     const dependencyResolutionPath: SerializedInjector[] = [
       // (1)
-      ...resolutionPath.slice(0, foundInjectorIndex + 1)
-          .map((node) => serializeInjectorWithId(node.injector)!),
+      ...resolutionPath
+        .slice(0, foundInjectorIndex + 1)
+        .map((node) => serializeInjectorWithId(node.injector)!),
 
       // (2)
       // We slice the import path to remove the first element because this is the same
@@ -313,7 +344,7 @@ function stripUnderscore(str: string): string {
   return str;
 }
 
-export function serializeInjector(injector: Injector): Omit<SerializedInjector, 'id'>|null {
+export function serializeInjector(injector: Injector): Omit<SerializedInjector, 'id'> | null {
   const metadata = getInjectorMetadata(injector);
 
   if (metadata === null) {
@@ -353,11 +384,11 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
 }
 
 export function serializeProviderRecord(
-    providerRecord: ProviderRecord,
-    index: number,
-    hasImportPath = false,
-    ): SerializedProviderRecord {
-  let type: 'type'|'class'|'value'|'factory'|'existing' = 'type';
+  providerRecord: ProviderRecord,
+  index: number,
+  hasImportPath = false,
+): SerializedProviderRecord {
+  let type: 'type' | 'class' | 'value' | 'factory' | 'existing' = 'type';
   let multi = false;
 
   if (typeof providerRecord.provider === 'object') {
@@ -377,7 +408,11 @@ export function serializeProviderRecord(
   }
 
   const serializedProvider: {
-    token: string; type: typeof type; multi: boolean; isViewProvider: boolean; index: number;
+    token: string;
+    type: typeof type;
+    multi: boolean;
+    isViewProvider: boolean;
+    index: number;
     importPath?: string[];
   } = {
     token: valueToLabel(providerRecord.token),
@@ -388,10 +423,9 @@ export function serializeProviderRecord(
   };
 
   if (hasImportPath) {
-    serializedProvider['importPath'] = (providerRecord.importPath ?? [])
-                                           .map(
-                                               (injector) => valueToLabel(injector),
-                                           );
+    serializedProvider['importPath'] = (providerRecord.importPath ?? []).map((injector) =>
+      valueToLabel(injector),
+    );
   }
 
   return serializedProvider;
@@ -400,8 +434,8 @@ export function serializeProviderRecord(
 function elementToDirectiveNames(element: HTMLElement): string[] {
   const {component, directives} = getDirectivesFromElement(element);
   return [component, ...directives]
-      .map((dir) => dir?.constructor?.name ?? '')
-      .filter((dir) => !!dir);
+    .map((dir) => dir?.constructor?.name ?? '')
+    .filter((dir) => !!dir);
 }
 
 export function getElementInjectorElement(elementInjector: Injector): HTMLElement {
@@ -412,7 +446,7 @@ export function getElementInjectorElement(elementInjector: Injector): HTMLElemen
   return getInjectorMetadata(elementInjector)!.source as HTMLElement;
 }
 
-function isInjectionToken(token: Type<unknown>|InjectionToken<unknown>): boolean {
+function isInjectionToken(token: Type<unknown> | InjectionToken<unknown>): boolean {
   return token.constructor.name === 'InjectionToken';
 }
 
@@ -446,7 +480,7 @@ const getRoots = () => {
   const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]'));
 
   const isTopLevel = (element: Element) => {
-    let parent: Element|null = element;
+    let parent: Element | null = element;
 
     while (parent?.parentElement) {
       parent = parent.parentElement;
@@ -469,13 +503,13 @@ export const buildDirectiveForest = (): ComponentTreeNode[] => {
 // Based on an ElementID we return a specific component node.
 // If we can't find any, we return null.
 export const queryDirectiveForest = (
-    position: ElementPosition,
-    forest: ComponentTreeNode[],
-    ): ComponentTreeNode|null => {
+  position: ElementPosition,
+  forest: ComponentTreeNode[],
+): ComponentTreeNode | null => {
   if (!position.length) {
     return null;
   }
-  let node: null|ComponentTreeNode = null;
+  let node: null | ComponentTreeNode = null;
   for (const i of position) {
     node = forest[i];
     if (!node) {
@@ -487,16 +521,16 @@ export const queryDirectiveForest = (
 };
 
 export const findNodeInForest = (
-    position: ElementPosition,
-    forest: ComponentTreeNode[],
-    ): HTMLElement|null => {
-  const foundComponent: ComponentTreeNode|null = queryDirectiveForest(position, forest);
+  position: ElementPosition,
+  forest: ComponentTreeNode[],
+): HTMLElement | null => {
+  const foundComponent: ComponentTreeNode | null = queryDirectiveForest(position, forest);
   return foundComponent ? (foundComponent.nativeElement as HTMLElement) : null;
 };
 
 export const findNodeFromSerializedPosition = (
-    serializedPosition: string,
-    ): ComponentTreeNode|null => {
+  serializedPosition: string,
+): ComponentTreeNode | null => {
   const position: number[] = serializedPosition.split(',').map((index) => parseInt(index, 10));
   return queryDirectiveForest(position, buildDirectiveForest());
 };
@@ -506,9 +540,9 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
   const node = queryDirectiveForest(updatedStateData.directiveId.element, buildDirectiveForest());
   if (!node) {
     console.warn(
-        'Could not update the state of component',
-        updatedStateData,
-        'because the component was not found',
+      'Could not update the state of component',
+      updatedStateData,
+      'because the component was not found',
     );
     return;
   }
@@ -541,15 +575,14 @@ const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDi
   // the line below could throw an error.
   try {
     parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
-  } catch {
-  }
+  } catch {}
 };
 
 export function serializeResolutionPath(resolutionPath: Injector[]): SerializedInjector[] {
   const serializedResolutionPath: SerializedInjector[] = [];
 
   for (const injector of resolutionPath) {
-    let serializedInjectorWithId: SerializedInjector|null = null;
+    let serializedInjectorWithId: SerializedInjector | null = null;
 
     if (isElementInjector(injector)) {
       serializedInjectorWithId = serializeElementInjectorWithId(injector);

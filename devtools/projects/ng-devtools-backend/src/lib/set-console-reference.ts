@@ -12,7 +12,7 @@ import {arrayEquals} from 'shared-utils';
 import {ComponentTreeNode} from './interfaces';
 
 interface ConsoleReferenceNode {
-  node: ComponentTreeNode|null;
+  node: ComponentTreeNode | null;
   position: ElementPosition;
 }
 
@@ -35,8 +35,9 @@ const _setConsoleReference = (referenceNode: ConsoleReferenceNode) => {
 };
 
 const prepareCurrentReferencesForInsertion = (referenceNode: ConsoleReferenceNode) => {
-  const foundIndex = nodesForConsoleReference.findIndex(
-      (nodeToLookFor) => arrayEquals(nodeToLookFor.position, referenceNode.position));
+  const foundIndex = nodesForConsoleReference.findIndex((nodeToLookFor) =>
+    arrayEquals(nodeToLookFor.position, referenceNode.position),
+  );
   if (foundIndex !== -1) {
     nodesForConsoleReference.splice(foundIndex, 1);
   } else if (nodesForConsoleReference.length === CAPACITY) {
@@ -45,12 +46,12 @@ const prepareCurrentReferencesForInsertion = (referenceNode: ConsoleReferenceNod
 };
 
 const assignConsoleReferencesFrom = (referenceNodes: ConsoleReferenceNode[]) => {
-  referenceNodes.forEach(
-      (referenceNode, index) =>
-          setDirectiveKey(referenceNode.node, getConsoleReferenceWithIndexOf(index)));
+  referenceNodes.forEach((referenceNode, index) =>
+    setDirectiveKey(referenceNode.node, getConsoleReferenceWithIndexOf(index)),
+  );
 };
 
-const setDirectiveKey = (node: ComponentTreeNode|null, key: string) => {
+const setDirectiveKey = (node: ComponentTreeNode | null, key: string) => {
   Object.defineProperty(window, key, {
     get: () => {
       if (node?.component) {
@@ -66,4 +67,4 @@ const setDirectiveKey = (node: ComponentTreeNode|null, key: string) => {
 };
 
 const getConsoleReferenceWithIndexOf = (consoleReferenceIndex: number) =>
-    `${CONSOLE_REFERENCE_PREFIX}${consoleReferenceIndex}`;
+  `${CONSOLE_REFERENCE_PREFIX}${consoleReferenceIndex}`;

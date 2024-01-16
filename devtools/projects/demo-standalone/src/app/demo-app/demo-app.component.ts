@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, EventEmitter, inject, Injector, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Injector,
+  Input,
+  Output,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {createCustomElement} from '@angular/elements';
 import {RouterOutlet} from '@angular/router';
 import {initializeMessageBus} from 'ng-devtools-backend';
@@ -23,7 +34,7 @@ import {ZippyComponent} from './zippy.component';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [HeavyComponent, RouterOutlet],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DemoAppComponent {
   @ViewChild(ZippyComponent) zippy!: ZippyComponent;
@@ -40,7 +51,7 @@ export class DemoAppComponent {
     customElements.define('app-zippy', el as any);
   }
 
-  getTitle(): '► Click to expand'|'▼ Click to collapse' {
+  getTitle(): '► Click to expand' | '▼ Click to collapse' {
     if (!this.zippy || !this.zippy.visible) {
       return '► Click to expand';
     }
@@ -61,5 +72,10 @@ export const ROUTES = [
   },
 ];
 
-initializeMessageBus(new ZoneUnawareIFrameMessageBus(
-    'angular-devtools-backend', 'angular-devtools', () => window.parent));
+initializeMessageBus(
+  new ZoneUnawareIFrameMessageBus(
+    'angular-devtools-backend',
+    'angular-devtools',
+    () => window.parent,
+  ),
+);

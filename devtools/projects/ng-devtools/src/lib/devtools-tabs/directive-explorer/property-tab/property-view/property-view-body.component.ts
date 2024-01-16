@@ -10,7 +10,10 @@ import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DirectivePosition, SerializedInjectedService} from 'protocol';
 
-import {DirectivePropertyResolver, DirectiveTreeData} from '../../property-resolver/directive-property-resolver';
+import {
+  DirectivePropertyResolver,
+  DirectiveTreeData,
+} from '../../property-resolver/directive-property-resolver';
 import {FlatNode} from '../../property-resolver/element-property-resolver';
 
 @Component({
@@ -29,8 +32,11 @@ export class PropertyViewBodyComponent {
   categoryOrder = [0, 1, 2];
 
   get panels(): {
-    title: string; hidden: boolean; controls: DirectiveTreeData; documentation: string,
-                                                                 class: string;
+    title: string;
+    hidden: boolean;
+    controls: DirectiveTreeData;
+    documentation: string;
+    class: string;
   }[] {
     return [
       {
@@ -58,8 +64,11 @@ export class PropertyViewBodyComponent {
   }
 
   get controlsLoaded(): boolean {
-    return !!this.directiveStateControls && !!this.directiveOutputControls &&
-        !!this.directiveInputControls;
+    return (
+      !!this.directiveStateControls &&
+      !!this.directiveOutputControls &&
+      !!this.directiveInputControls
+    );
   }
 
   updateValue({node, newValue}: {node: FlatNode; newValue: any}): void {
@@ -78,7 +87,6 @@ export class PropertyViewBodyComponent {
   }
 }
 
-
 @Component({
   selector: 'ng-dependency-viewer',
   template: `
@@ -87,23 +95,25 @@ export class PropertyViewBodyComponent {
         <mat-expansion-panel-header collapsedHeight="35px" expandedHeight="35px">
           <mat-panel-title>
             <mat-chip-listbox>
-              <mat-chip matTooltipPosition="left" matTooltip="Dependency injection token" (click)="$event.stopPropagation();">{{dependency.token}}</mat-chip>
+              <mat-chip
+                matTooltipPosition="left"
+                matTooltip="Dependency injection token"
+                (click)="$event.stopPropagation()"
+                >{{ dependency.token }}</mat-chip
+              >
             </mat-chip-listbox>
           </mat-panel-title>
           <mat-panel-description>
             <mat-chip-listbox>
               <div class="di-flags">
                 @if (dependency.flags?.optional) {
-                  <mat-chip [highlighted]="true" color="primary">Optional</mat-chip>
-                }
-                @if (dependency.flags?.host) {
-                  <mat-chip [highlighted]="true" color="primary">Host</mat-chip>
-                }
-                @if (dependency.flags?.self) {
-                  <mat-chip [highlighted]="true" color="primary">Self</mat-chip>
-                }
-                @if (dependency.flags?.skipSelf) {
-                  <mat-chip [highlighted]="true" color="primary">SkipSelf</mat-chip>
+                <mat-chip [highlighted]="true" color="primary">Optional</mat-chip>
+                } @if (dependency.flags?.host) {
+                <mat-chip [highlighted]="true" color="primary">Host</mat-chip>
+                } @if (dependency.flags?.self) {
+                <mat-chip [highlighted]="true" color="primary">Self</mat-chip>
+                } @if (dependency.flags?.skipSelf) {
+                <mat-chip [highlighted]="true" color="primary">SkipSelf</mat-chip>
                 }
               </div>
             </mat-chip-listbox>
@@ -112,30 +122,32 @@ export class PropertyViewBodyComponent {
         <ng-resolution-path [path]="dependency.resolutionPath"></ng-resolution-path>
       </mat-expansion-panel>
     </mat-accordion>
-    `,
-  styles: [`
-    .di-flags {
-      display: flex;
-      flex-wrap: nowrap;
-    }
-
-    :host-context(.dark-theme) ng-resolution-path {
-      background: #1a1a1a;
-    }
-
-    ng-resolution-path {
-      border-top: 1px solid black;
-      display: block;
-      overflow-x: scroll;
-      background: #f3f3f3;
-    }
-
-    :host {
-      mat-chip {
-        --mdc-chip-container-height: 18px;
+  `,
+  styles: [
+    `
+      .di-flags {
+        display: flex;
+        flex-wrap: nowrap;
       }
-    }
-    `]
+
+      :host-context(.dark-theme) ng-resolution-path {
+        background: #1a1a1a;
+      }
+
+      ng-resolution-path {
+        border-top: 1px solid black;
+        display: block;
+        overflow-x: scroll;
+        background: #f3f3f3;
+      }
+
+      :host {
+        mat-chip {
+          --mdc-chip-container-height: 18px;
+        }
+      }
+    `,
+  ],
 })
 export class DependencyViewerComponent {
   @Input({required: true}) dependency!: SerializedInjectedService;
@@ -143,16 +155,17 @@ export class DependencyViewerComponent {
 
 @Component({
   selector: 'ng-injected-services',
-  template: `
-    @for (dependency of dependencies; track dependency.position[0]) {
-      <ng-dependency-viewer [dependency]="dependency" />
-   }`,
-  styles: [`
+  template: ` @for (dependency of dependencies; track dependency.position[0]) {
+    <ng-dependency-viewer [dependency]="dependency" />
+    }`,
+  styles: [
+    `
       ng-dependency-viewer {
         border-bottom: 1px solid color-mix(in srgb, currentColor, #bdbdbd 85%);
         display: block;
       }
-    `]
+    `,
+  ],
 })
 export class InjectedServicesComponent {
   @Input({required: true}) controller!: DirectivePropertyResolver;

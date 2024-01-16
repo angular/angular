@@ -18,15 +18,19 @@ import {IFrameMessageBus} from '../../iframe-message-bus';
     {
       provide: MessageBus,
       useFactory(): MessageBus<Events> {
-        return new PriorityAwareMessageBus(new IFrameMessageBus(
-            'angular-devtools', 'angular-devtools-backend',
+        return new PriorityAwareMessageBus(
+          new IFrameMessageBus(
+            'angular-devtools',
+            'angular-devtools-backend',
             // tslint:disable-next-line: no-non-null-assertion
-            () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!));
+            () => (document.querySelector('#sample-app') as HTMLIFrameElement).contentWindow!,
+          ),
+        );
       },
     },
   ],
 })
 export class DevToolsComponent {
-  messageBus: IFrameMessageBus|null = null;
+  messageBus: IFrameMessageBus | null = null;
   @ViewChild('ref') iframe!: ElementRef;
 }

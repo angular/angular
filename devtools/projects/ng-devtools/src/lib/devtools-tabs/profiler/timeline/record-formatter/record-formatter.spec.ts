@@ -28,13 +28,15 @@ describe('getValue cases', () => {
   it('calculates value with  no lifecycle hooks', () => {
     element = {
       children: [],
-      directives: [{
-        changeDetection: 10,
-        isElement: false,
-        isComponent: true,
-        lifecycle: {},
-        name: 'AppComponent'
-      }],
+      directives: [
+        {
+          changeDetection: 10,
+          isElement: false,
+          isComponent: true,
+          lifecycle: {},
+          name: 'AppComponent',
+        },
+      ],
     };
     expect(formatter.getValue(element)).toBe(10);
   });
@@ -48,7 +50,7 @@ describe('getValue cases', () => {
           isElement: false,
           name: 'NgForOf',
           lifecycle: {ngDoCheck: 5},
-          changeDetection: 0
+          changeDetection: 0,
         },
       ],
     };
@@ -64,7 +66,7 @@ describe('getValue cases', () => {
           isElement: false,
           name: 'NgForOf',
           lifecycle: {ngDoCheck: 5},
-          changeDetection: 10
+          changeDetection: 10,
         },
       ],
     };
@@ -143,7 +145,7 @@ describe('getLabel cases', () => {
           isComponent: true,
           lifecycle: {},
           outputs: {},
-          name: 'TodoComponent'
+          name: 'TodoComponent',
         },
       ],
     };
@@ -176,7 +178,7 @@ describe('getLabel cases', () => {
           isComponent: true,
           lifecycle: {},
           outputs: {},
-          name: 'TodoComponent'
+          name: 'TodoComponent',
         },
       ],
     };
