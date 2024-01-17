@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {openBrowser, runBenchmark, verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {
+  openBrowser,
+  runBenchmark,
+  verifyNoBrowserErrors,
+} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$, by, element} from 'protractor';
 
 /** List of possible scenarios that should be tested.  */
@@ -108,13 +112,13 @@ function detectChanges() {
  * Runs the styling benchmark with the given id and worker. The worker describes
  * the actions that should run for preparation and measurement.
  */
-function runStylingBenchmark(id: string, worker: {prepare: () => void, work: () => void}) {
+function runStylingBenchmark(id: string, worker: {prepare: () => void; work: () => void}) {
   return runBenchmark({
     id,
     url: '/',
     params: [],
     ignoreBrowserSynchronization: true,
     prepare: worker.prepare,
-    work: worker.work
+    work: worker.work,
   });
 }
