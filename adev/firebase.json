@@ -1,7 +1,7 @@
 {
   "hosting": {
     "target": "angular-docs",
-    "public": "../dist/bin/adev/build/browser",
+    "public": "./build/browser",
     "ignore": ["**/.*"],
     "headers": [
       {
