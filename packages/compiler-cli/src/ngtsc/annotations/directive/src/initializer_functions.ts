@@ -22,7 +22,8 @@ import {ClassMember, ReflectionHost} from '../../../reflection';
  * declared through initializer APIs.
  */
 
-export type InitializerApiFunction = 'input';
+export type InitializerApiFunction =
+    'input'|'viewChild'|'viewChildren'|'contentChild'|'contentChildren';
 
 /**
  * Metadata describing an Angular class member that was recognized through
