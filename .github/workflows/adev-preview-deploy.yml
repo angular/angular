@@ -45,6 +45,6 @@ jobs:
           github-token: '${{secrets.GITHUB_TOKEN}}'
           workflow-artifact-name: 'adev-preview'
           firebase-config-dir: './adev'
-          firebase-public-dir: './dist/bin/adev/build/browser'
+          firebase-public-dir: './adev/build/browser'
           firebase-project-id: '${{env.PREVIEW_PROJECT}}'
           firebase-service-key: '${{secrets.FIREBASE_PREVIEW_SERVICE_TOKEN}}'
