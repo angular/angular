@@ -14,7 +14,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
   selector: 'deep',
   standalone: true,
   imports: [NgIf],
-  template: `<deep *ngIf="depth > 1" [depth]="depth - 1" /> Level: {{depth}}`,
+  template: `<deep *ngIf="depth > 1" [depth]="depth - 1" /> Level: {{ depth }}`,
 })
 class Deep {
   @Input({required: true}) depth: number;
@@ -31,30 +31,34 @@ class Deep {
     <button id="addNewProperty" (click)="addNewProperty()">Add new property</button>
 
     <ng-template #templateRef let-implicit let-a="a" let-b="b" let-deep="deep" let-new="new">
-      <p>Implicit: {{implicit}}</p>
-      <p>A: {{a}}</p>
-      <p>B: {{b}}</p>
-      <p>Deep: {{deep.next.text}}</p>
-      <p>New: {{new}}</p>
+      <p>Implicit: {{ implicit }}</p>
+      <p>A: {{ a }}</p>
+      <p>B: {{ b }}</p>
+      <p>Deep: {{ deep.next.text }}</p>
+      <p>New: {{ new }}</p>
 
       <deep [depth]="20" />
     </ng-template>
 
     <div>
       <p>Outlet</p>
-      <ng-template [ngTemplateOutlet]="templateRef"
-                   [ngTemplateOutletContext]="context" />
+      <ng-template [ngTemplateOutlet]="templateRef" [ngTemplateOutletContext]="context" />
     </div>
-    `,
+  `,
 })
 class AppComponent {
-  context:
-      {$implicit: unknown, a: unknown, b: unknown, deep: {next: {text: unknown}}, new?: unknown} = {
-        $implicit: 'Default Implicit',
-        a: 'Default A',
-        b: 'Default B',
-        deep: {next: {text: 'Default deep text'}},
-      };
+  context: {
+    $implicit: unknown;
+    a: unknown;
+    b: unknown;
+    deep: {next: {text: unknown}};
+    new?: unknown;
+  } = {
+    $implicit: 'Default Implicit',
+    a: 'Default A',
+    b: 'Default B',
+    deep: {next: {text: 'Default deep text'}},
+  };
 
   swapOutFull() {
     this.context = {

@@ -12,8 +12,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({
   selector: 'error-app',
-  template: `
-           <button class="errorButton" (click)="createError()">create error</button>`
+  template: ` <button class="errorButton" (click)="createError()">create error</button>`,
 })
 export class ErrorComponent {
   createError(): void {
@@ -22,7 +21,6 @@ export class ErrorComponent {
 }
 
 @NgModule({declarations: [ErrorComponent], bootstrap: [ErrorComponent], imports: [BrowserModule]})
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

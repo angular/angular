@@ -42,8 +42,8 @@ export class RedDec {
   viewProviders: [GreetingService],
   // Expressions in the template (like {{greeting}}) are evaluated in the
   // context of the HelloCmp class below.
-  template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>
-           <button class="changeButton" (click)="changeGreeting()">change greeting</button>`
+  template: `<div class="greeting">{{ greeting }} <span red>world</span>!</div>
+    <button class="changeButton" (click)="changeGreeting()">change greeting</button>`,
 })
 export class HelloCmp {
   greeting: string;
@@ -58,7 +58,6 @@ export class HelloCmp {
 }
 
 @NgModule({declarations: [HelloCmp, RedDec], bootstrap: [HelloCmp], imports: [BrowserModule]})
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

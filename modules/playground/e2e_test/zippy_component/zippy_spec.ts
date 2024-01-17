@@ -9,17 +9,17 @@
 import {verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {browser, by, element} from 'protractor';
 
-describe('Zippy Component', function() {
+describe('Zippy Component', function () {
   afterEach(verifyNoBrowserErrors);
 
-  describe('zippy', function() {
+  describe('zippy', function () {
     const URL = '/';
 
-    beforeEach(function() {
+    beforeEach(function () {
       browser.get(URL);
     });
 
-    it('should change the zippy title depending on it\'s state', function() {
+    it("should change the zippy title depending on it's state", function () {
       const zippyTitle = element(by.css('.zippy__title'));
 
       expect(zippyTitle.getText()).toEqual('▾ Details');
@@ -27,11 +27,11 @@ describe('Zippy Component', function() {
       expect(zippyTitle.getText()).toEqual('▸ Details');
     });
 
-    it('should have zippy content', function() {
+    it('should have zippy content', function () {
       expect(element(by.css('.zippy__content')).getText()).toEqual('This is some content.');
     });
 
-    it('should toggle when the zippy title is clicked', function() {
+    it('should toggle when the zippy title is clicked', function () {
       element(by.css('.zippy__title')).click();
       expect(element(by.css('.zippy__content')).isDisplayed()).toEqual(false);
       element(by.css('.zippy__title')).click();
