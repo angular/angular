@@ -62,7 +62,7 @@ export function toR3Reference(
   };
 }
 
-export function isAngularCore(decorator: Decorator): decorator is Decorator&{import: Import} {
+export function isAngularCore(decorator: Decorator): decorator is(Decorator & {import: Import}) {
   return decorator.import !== null && decorator.import.from === '@angular/core';
 }
 
@@ -82,6 +82,17 @@ export function isAngularDecorator(decorator: Decorator, name: string, isCore: b
     return decorator.import.name === name;
   }
   return false;
+}
+
+export function getAngularDecorators(
+    decorators: Decorator[], names: readonly string[], isCore: boolean) {
+  return decorators.filter(decorator => {
+    const name = isCore ? decorator.name : decorator.import?.name;
+    if (name === undefined || !names.includes(name)) {
+      return false;
+    }
+    return isCore || isAngularCore(decorator);
+  });
 }
 
 /**
