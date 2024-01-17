@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
@@ -20,8 +21,8 @@ import {stringify} from '../util/stringify';
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref_fn'}
  * @publicApi
  */
-export interface ForwardRefFn<T> {
-  (): T;
+export interface ForwardRefFn {
+  (): any;
 }
 
 const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeProperty});
@@ -65,12 +66,12 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  *
  * @publicApi
  */
-export function forwardRef<T>(forwardRefFn: ForwardRefFn<T>): T {
+export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
   (<any>forwardRefFn).toString = function() {
     return stringify(this());
   };
-  return (<T><any>forwardRefFn);
+  return (<Type<any>><any>forwardRefFn);
 }
 
 /**
