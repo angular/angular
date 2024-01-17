@@ -16,9 +16,8 @@ import {JsonpCmp} from './app/jsonp_comp';
 @NgModule({
   bootstrap: [JsonpCmp],
   declarations: [JsonpCmp],
-  imports: [BrowserModule, HttpClientModule, HttpClientJsonpModule]
+  imports: [BrowserModule, HttpClientModule, HttpClientJsonpModule],
 })
-export class ExampleModule {
-}
+export class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

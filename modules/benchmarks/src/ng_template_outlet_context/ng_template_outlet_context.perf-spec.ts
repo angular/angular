@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {
+  runBenchmark,
+  verifyNoBrowserErrors,
+} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$} from 'protractor';
 
 interface Worker {
@@ -19,28 +22,28 @@ const SwapFullContext = {
   id: 'swapFullContext',
   work: () => {
     $('#swapOutFull').click();
-  }
+  },
 };
 
 const ModifyContextProperty = {
   id: 'modifyContextProperty',
   work: () => {
     $('#modifyProperty').click();
-  }
+  },
 };
 
 const ModifyContextDeepProperty = {
   id: 'modifyContextDeepProperty',
   work: () => {
     $('#modifyDeepProperty').click();
-  }
+  },
 };
 
 const AddNewContextProperty = {
   id: 'addNewContextProperty',
   work: () => {
     $('#addNewProperty').click();
-  }
+  },
 };
 
 const scenarios = [
@@ -56,19 +59,22 @@ describe('ng_template_outlet_context benchmark spec', () => {
   scenarios.forEach((worker) => {
     describe(worker.id, () => {
       it('should run for ng2', async () => {
-        await runBenchmarkScenario(
-            {url: '/', id: `ngTemplateOutletContext.ng2.${worker.id}`, worker: worker});
+        await runBenchmarkScenario({
+          url: '/',
+          id: `ngTemplateOutletContext.ng2.${worker.id}`,
+          worker: worker,
+        });
       });
     });
   });
 
-  function runBenchmarkScenario(config: {id: string, url: string, worker: Worker}) {
+  function runBenchmarkScenario(config: {id: string; url: string; worker: Worker}) {
     return runBenchmark({
       id: config.id,
       url: config.url,
       ignoreBrowserSynchronization: true,
       prepare: config.worker.prepare,
-      work: config.worker.work
+      work: config.worker.work,
     });
   }
 });
