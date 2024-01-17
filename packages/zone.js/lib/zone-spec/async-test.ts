@@ -8,7 +8,7 @@
 
 import {ZoneType} from '../zone-impl';
 
-const _global: any =
+const __global: any =
     typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global;
 class AsyncTestZoneSpec implements ZoneSpec {
   static symbolParentUnresolved = Zone.__symbol__('parentUnresolved');
@@ -30,7 +30,7 @@ class AsyncTestZoneSpec implements ZoneSpec {
     this.name = 'asyncTestZone for ' + namePrefix;
     this.properties = {'AsyncTestZoneSpec': this};
     this.supportWaitUnresolvedChainedPromise =
-        _global[Zone.__symbol__('supportWaitUnResolvedChainedPromise')] === true;
+        __global[Zone.__symbol__('supportWaitUnResolvedChainedPromise')] === true;
   }
 
   isUnresolvedChainedPromisePending() {
