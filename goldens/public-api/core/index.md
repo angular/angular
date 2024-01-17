@@ -646,12 +646,12 @@ export interface FactorySansProvider {
 }
 
 // @public
-export function forwardRef<T>(forwardRefFn: ForwardRefFn<T>): T;
+export function forwardRef(forwardRefFn: ForwardRefFn): Type<any>;
 
 // @public
-export interface ForwardRefFn<T> {
+export interface ForwardRefFn {
     // (undocumented)
-    (): T;
+    (): any;
 }
 
 // @public (undocumented)
