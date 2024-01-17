@@ -2149,20 +2149,20 @@ describe('TestBed defer block behavior', () => {
     TestBed.resetTestingModule();
   });
 
-  it('should default defer block behavior to manual', () => {
-    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
+  it('should default defer block behavior to playthrough', () => {
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
   });
 
   it('should be able to configure defer block behavior', () => {
-    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
-    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
+    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Manual});
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
   });
 
   it('should reset the defer block behavior back to the default when TestBed is reset', () => {
-    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
-    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
-    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Manual});
     expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
+    TestBed.resetTestingModule();
+    expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
   });
 });
 

@@ -50,6 +50,8 @@ import {MetadataOverride} from './metadata_override';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
 import {TestBedCompiler} from './test_bed_compiler';
 
+const DEFER_BLOCK_DEFAULT_BEHAVIOR = DeferBlockBehavior.Playthrough;
+
 /**
  * Static methods implemented by the `TestBed`.
  *
@@ -205,7 +207,7 @@ export class TestBedImpl implements TestBed {
    * Defer block behavior option that specifies whether defer blocks will be triggered manually
    * or set to play through.
    */
-  private _instanceDeferBlockBehavior = DeferBlockBehavior.Manual;
+  private _instanceDeferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
 
   /**
    * "Error on unknown elements" option that has been configured at the `TestBed` instance level.
@@ -481,7 +483,7 @@ export class TestBedImpl implements TestBed {
         this._instanceTeardownOptions = undefined;
         this._instanceErrorOnUnknownElementsOption = undefined;
         this._instanceErrorOnUnknownPropertiesOption = undefined;
-        this._instanceDeferBlockBehavior = DeferBlockBehavior.Manual;
+        this._instanceDeferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
       }
     }
     return this;
@@ -512,7 +514,7 @@ export class TestBedImpl implements TestBed {
     this._instanceTeardownOptions = moduleDef.teardown;
     this._instanceErrorOnUnknownElementsOption = moduleDef.errorOnUnknownElements;
     this._instanceErrorOnUnknownPropertiesOption = moduleDef.errorOnUnknownProperties;
-    this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior ?? DeferBlockBehavior.Manual;
+    this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior ?? DEFER_BLOCK_DEFAULT_BEHAVIOR;
     // Store the current value of the strict mode option,
     // so we can restore it later
     this._previousErrorOnUnknownElementsOption = getUnknownElementStrictMode();
