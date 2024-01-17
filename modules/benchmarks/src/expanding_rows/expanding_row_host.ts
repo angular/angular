@@ -6,11 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, Component, ContentChildren, ElementRef, EventEmitter, forwardRef, HostListener, Input, OnDestroy, Output, QueryList, ViewChild} from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ContentChildren,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  HostListener,
+  Input,
+  OnDestroy,
+  Output,
+  QueryList,
+  ViewChild,
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 
-import {EXPANDING_ROW_HOST_INJECTION_TOKEN, ExpandingRow, ExpandingRowHostBase} from './expanding_row';
-
+import {
+  EXPANDING_ROW_HOST_INJECTION_TOKEN,
+  ExpandingRow,
+  ExpandingRowHostBase,
+} from './expanding_row';
 
 /**
  * We use this class in <cfc-expanding-row/> template to identify the row.
@@ -26,7 +44,7 @@ export const EXPANDING_ROW_KEYPRESS_THORTTLE_MS = 50;
  * This type union is created to make arguments of handleUpOrDownPress*
  * methods in ExpandingRowHost class more readable.
  */
-type UpOrDown = 'up'|'down';
+type UpOrDown = 'up' | 'down';
 
 /**
  * This is the wrapper directive for the cfc-expanding-row components. Note that
@@ -35,16 +53,9 @@ type UpOrDown = 'up'|'down';
  */
 @Component({
   selector: 'cfc-expanding-row-host',
-  template: `
-    <div #firstFocusable
-      (focus)="focusOnLastFocusedRow()"
-      tabindex="0">
-    </div>
+  template: ` <div #firstFocusable (focus)="focusOnLastFocusedRow()" tabindex="0"></div>
     <ng-content></ng-content>
-    <div #lastFocusable
-      (focus)="focusOnLastFocusedRow()"
-      tabindex="0">
-    </div>`,
+    <div #lastFocusable (focus)="focusOnLastFocusedRow()" tabindex="0"></div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: EXPANDING_ROW_HOST_INJECTION_TOKEN, useExisting: ExpandingRowHost}],
 })
@@ -278,8 +289,7 @@ export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowH
    * - Enter: Expands the focused row.
    */
   @HostListener('keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent) {
-  }
+  handleKeyDown(event: KeyboardEvent) {}
 
   /**
    * Recursively returns true if target HTMLElement is within a
@@ -318,7 +328,7 @@ export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowH
    * Check if element is collapsible.  Elements marked as uncollapsible will not collapse an
    * open row when clicked.
    */
-  isCollapsible(element: HTMLElement|null): boolean {
+  isCollapsible(element: HTMLElement | null): boolean {
     const clickRoot = this.getClickRootElement();
     while (element && element !== clickRoot) {
       if (element.hasAttribute('cfcUncollapsible')) {
@@ -383,7 +393,7 @@ export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowH
    * Gets the HTML element described by scrollElementSelector @Input value.
    * We need this value for scroll adjustments.
    */
-  private getScrollElement(): HTMLElement|undefined {
+  private getScrollElement(): HTMLElement | undefined {
     if (!this.scrollElementSelector) {
       return undefined;
     }
@@ -421,9 +431,10 @@ export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowH
   }
 
   /** Returns the HTMLElement that is the currently focused row summary. */
-  private focusedRowSummary(): HTMLElement|undefined {
-    return this.focusedRow ? this.focusedRow.summaryViewChild.mainElementRef.nativeElement :
-                             undefined;
+  private focusedRowSummary(): HTMLElement | undefined {
+    return this.focusedRow
+      ? this.focusedRow.summaryViewChild.mainElementRef.nativeElement
+      : undefined;
   }
 
   /**
@@ -446,8 +457,10 @@ export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowH
 
     // If row is expanded but focus is inside the expanded element, arrow
     // key presses should not do anything.
-    if (this.expandedRow &&
-        document.activeElement !== this.expandedRow.expandingRowMainElement.nativeElement) {
+    if (
+      this.expandedRow &&
+      document.activeElement !== this.expandedRow.expandingRowMainElement.nativeElement
+    ) {
       return;
     }
 
@@ -460,12 +473,12 @@ export class ExpandingRowHost implements AfterViewInit, OnDestroy, ExpandingRowH
     // the list of expanding rows, so we must reset the variable here
     this.lastFocusedRow = undefined;
 
-    const rowToLookFor: ExpandingRow|undefined = this.expandedRow || this.focusedRow;
+    const rowToLookFor: ExpandingRow | undefined = this.expandedRow || this.focusedRow;
     if (!rowToLookFor) {
       return;
     }
 
-    const isFocus: boolean = (rowToLookFor === this.focusedRow);
+    const isFocus: boolean = rowToLookFor === this.focusedRow;
 
     const rowIndex: number = this.getRowIndex(rowToLookFor);
     const contentRowsArray: ExpandingRow[] = this.contentRows.toArray();

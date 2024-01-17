@@ -8,6 +8,7 @@ export const format: FormatConfig = {
     'matchers': [
       '**/*.{yaml,yml}',
       'tools/**/*.{js,ts}',
+      'modules/**/*.{js,ts}',
     ],
   },
   'clang-format': {
@@ -37,6 +38,7 @@ export const format: FormatConfig = {
 
       // Migrated to prettier
       '!tools/**/*.{js,ts}',
+      '!modules/**/*.{js,ts}',
     ],
   },
   'buildifier': true,

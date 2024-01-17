@@ -14,7 +14,5 @@ import {AppComponent} from '../table';
 syncUrlParamsToForm();
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideProtractorTestingSupport(),
-  ],
-}).then(appRef => init(appRef, false /* insertSsrContent */));
+  providers: [provideProtractorTestingSupport()],
+}).then((appRef) => init(appRef, false /* insertSsrContent */));

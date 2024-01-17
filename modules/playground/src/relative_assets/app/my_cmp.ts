@@ -13,5 +13,4 @@ import {Component} from '@angular/core';
   templateUrl: './tpl.html',
   styleUrls: ['./style.css'],
 })
-export class MyCmp {
-}
+export class MyCmp {}
