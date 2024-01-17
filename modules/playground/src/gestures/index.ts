@@ -30,7 +30,6 @@ class GesturesCmp {
 }
 
 @NgModule({declarations: [GesturesCmp], bootstrap: [GesturesCmp], imports: [BrowserModule]})
-class ExampleModule {
-}
+class ExampleModule {}
 
 platformBrowserDynamic().bootstrapModule(ExampleModule);

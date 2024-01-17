@@ -15,7 +15,6 @@ import {ClassBindingsComponent} from './class_bindings.component';
   declarations: [AppComponent, ClassBindingsComponent],
   imports: [BrowserModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

@@ -14,7 +14,11 @@ export abstract class KeyModel {
 }
 
 export class Todo extends KeyModel {
-  constructor(key: number, public title: string, public completed: boolean) {
+  constructor(
+    key: number,
+    public title: string,
+    public completed: boolean,
+  ) {
     super(key);
   }
 }

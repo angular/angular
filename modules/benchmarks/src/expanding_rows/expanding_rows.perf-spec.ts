@@ -18,7 +18,7 @@ describe('benchmarks', () => {
       ignoreBrowserSynchronization: true,
       params: [],
       prepare: () => $('#reset').click(),
-      work: () => $('#init').click()
+      work: () => $('#init').click(),
     });
   });
 });
