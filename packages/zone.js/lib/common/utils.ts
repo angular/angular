@@ -13,6 +13,8 @@
 
 /// <reference types="node"/>
 
+import {__symbol__} from '../zone-impl';
+
 // issue #989, to reduce bundle size, use short name
 /** Object.getOwnPropertyDescriptor */
 export const ObjectGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
@@ -29,15 +31,15 @@ export const ADD_EVENT_LISTENER_STR = 'addEventListener';
 /** removeEventListener string const */
 export const REMOVE_EVENT_LISTENER_STR = 'removeEventListener';
 /** zoneSymbol addEventListener */
-export const ZONE_SYMBOL_ADD_EVENT_LISTENER = Zone.__symbol__(ADD_EVENT_LISTENER_STR);
+export const ZONE_SYMBOL_ADD_EVENT_LISTENER = __symbol__(ADD_EVENT_LISTENER_STR);
 /** zoneSymbol removeEventListener */
-export const ZONE_SYMBOL_REMOVE_EVENT_LISTENER = Zone.__symbol__(REMOVE_EVENT_LISTENER_STR);
+export const ZONE_SYMBOL_REMOVE_EVENT_LISTENER = __symbol__(REMOVE_EVENT_LISTENER_STR);
 /** true string const */
 export const TRUE_STR = 'true';
 /** false string const */
 export const FALSE_STR = 'false';
 /** Zone symbol prefix string const. */
-export const ZONE_SYMBOL_PREFIX = Zone.__symbol__('');
+export const ZONE_SYMBOL_PREFIX = __symbol__('');
 
 export function wrapWithCurrentZone<T extends Function>(callback: T, source: string): T {
   return Zone.current.wrap(callback, source);
@@ -52,7 +54,7 @@ export function scheduleMacroTaskWithCurrentZone(
 // Hack since TypeScript isn't compiling this for a worker.
 declare const WorkerGlobalScope: any;
 
-export const zoneSymbol = Zone.__symbol__;
+export const zoneSymbol = __symbol__;
 const isWindowExists = typeof window !== 'undefined';
 const internalWindow: any = isWindowExists ? window : undefined;
 const _global: any = isWindowExists && internalWindow || globalThis;
