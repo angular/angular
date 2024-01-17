@@ -1224,13 +1224,13 @@
     "name": "optimizeGroupPlayer"
   },
   {
-    "name": "options"
-  },
-  {
     "name": "parseAndConvertBindingsForDefinition"
   },
   {
     "name": "parseTimelineCommand"
+  },
+  {
+    "name": "performanceMarkFeature"
   },
   {
     "name": "processInjectorTypesWithProviders"
