@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ZoneType} from '../zone-impl';
+import {__symbol__, ZoneType} from '../zone-impl';
 
 const __global: any =
     typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || global;
 class AsyncTestZoneSpec implements ZoneSpec {
-  static symbolParentUnresolved = Zone.__symbol__('parentUnresolved');
+  static symbolParentUnresolved = __symbol__('parentUnresolved');
 
   _pendingMicroTasks: boolean = false;
   _pendingMacroTasks: boolean = false;
@@ -30,7 +30,7 @@ class AsyncTestZoneSpec implements ZoneSpec {
     this.name = 'asyncTestZone for ' + namePrefix;
     this.properties = {'AsyncTestZoneSpec': this};
     this.supportWaitUnresolvedChainedPromise =
-        __global[Zone.__symbol__('supportWaitUnResolvedChainedPromise')] === true;
+        __global[__symbol__('supportWaitUnResolvedChainedPromise')] === true;
   }
 
   isUnresolvedChainedPromisePending() {
