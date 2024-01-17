@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ModuleWithProviders, NgModule, Provider} from '@angular/core';
+import {ModuleWithProviders, NgModule, Provider, ɵperformanceMarkFeature as performanceMarkFeature} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from './providers';
@@ -81,6 +81,7 @@ export class BrowserAnimationsModule {
  * @publicApi
  */
 export function provideAnimations(): Provider[] {
+  performanceMarkFeature('NgEagerAnimations');
   // Return a copy to prevent changes to the original array in case any in-place
   // alterations are performed to the `provideAnimations` call results in app code.
   return [...BROWSER_ANIMATIONS_PROVIDERS];
