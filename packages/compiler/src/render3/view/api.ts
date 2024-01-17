@@ -450,6 +450,12 @@ export interface R3QueryMetadata {
   /**
    * Either an expression representing a type or `InjectionToken` for the query
    * predicate, or a set of string selectors.
+   *
+   * Note: At compile time we split selectors as an optimization that avoids this
+   * extra work at runtime creation phase.
+   *
+   * Notably, if the selector is not statically analyzable due to an expression,
+   * the selectors may need to be split up at runtime.
    */
   predicate: MaybeForwardRefExpression|string[];
 
@@ -483,6 +489,8 @@ export interface R3QueryMetadata {
    * runs. This means that the query results can contain nodes inside *ngIf or *ngFor views, but
    * the results will not be available in the ngOnInit hook (only in the ngAfterContentInit for
    * content hooks and ngAfterViewInit for view hooks).
+   *
+   * Note: For signal-based queries, this option does not have any effect.
    */
   static: boolean;
 
