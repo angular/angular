@@ -210,12 +210,13 @@ export interface DeferBlockConfig {
 export enum DeferBlockBehavior {
   /**
    * Manual triggering mode for defer blocks. Provides control over when defer blocks render
-   * and which state they render. This is the default behavior in test environments.
+   * and which state they render.
    */
   Manual,
 
   /**
    * Playthrough mode for defer blocks. This mode behaves like defer blocks would in a browser.
+   * This is the default behavior in test environments.
    */
   Playthrough,
 }
