@@ -15,7 +15,7 @@ Use `ng generate` to create a new component named `heroes`.
 
 <code-example format="shell" language="shell">
 
-ng generate component heroes
+ng generate component --standalone heroes
 
 </code-example>
 
