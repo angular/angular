@@ -8,6 +8,7 @@
 
 import ts from 'typescript';
 
+import {ClassDeclaration} from '../../reflection';
 import {getContainingImportDeclaration} from '../../reflection/src/typescript';
 
 const AssumeEager = 'AssumeEager';
@@ -28,7 +29,12 @@ type SymbolMap = Map<string, Set<ts.Identifier>|AssumeEager>;
  */
 export class DeferredSymbolTracker {
   private readonly imports = new Map<ts.ImportDeclaration, SymbolMap>();
-  private readonly explicitlyDeferredImports = new Set<ts.ImportDeclaration>();
+
+  /**
+   * Map of a component class -> all import declarations that bring symbols
+   * used within `@Component.deferredImports` field.
+   */
+  private readonly explicitlyDeferredImports = new Map<ClassDeclaration, ts.ImportDeclaration[]>();
 
   constructor(
       private readonly typeChecker: ts.TypeChecker,
@@ -81,12 +87,15 @@ export class DeferredSymbolTracker {
 
   /**
    * Retrieves a list of import declarations that contain symbols used within
-   * `@Component.deferredImports`, but those imports can not be removed, since
-   * there are other symbols imported alongside deferred components.
+   * `@Component.deferredImports` of a specific component class, but those imports
+   * can not be removed, since there are other symbols imported alongside deferred
+   * components.
    */
-  getNonRemovableDeferredImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
+  getNonRemovableDeferredImports(sourceFile: ts.SourceFile, classDecl: ClassDeclaration):
+      ts.ImportDeclaration[] {
     const affectedImports: ts.ImportDeclaration[] = [];
-    for (const importDecl of this.explicitlyDeferredImports) {
+    const importDecls = this.explicitlyDeferredImports.get(classDecl) ?? [];
+    for (const importDecl of importDecls) {
       if (importDecl.getSourceFile() === sourceFile && !this.canDefer(importDecl)) {
         affectedImports.push(importDecl);
       }
@@ -100,7 +109,7 @@ export class DeferredSymbolTracker {
    */
   markAsDeferrableCandidate(
       identifier: ts.Identifier, importDecl: ts.ImportDeclaration,
-      isExplicitlyDeferred: boolean): void {
+      componentClassDecl: ClassDeclaration, isExplicitlyDeferred: boolean): void {
     if (this.onlyExplicitDeferDependencyImports && !isExplicitlyDeferred) {
       // Ignore deferrable candidates when only explicit deferred imports mode is enabled.
       // In that mode only dependencies from the `@Component.deferredImports` field are
@@ -109,7 +118,11 @@ export class DeferredSymbolTracker {
     }
 
     if (isExplicitlyDeferred) {
-      this.explicitlyDeferredImports.add(importDecl);
+      if (this.explicitlyDeferredImports.has(componentClassDecl)) {
+        this.explicitlyDeferredImports.get(componentClassDecl)!.push(importDecl);
+      } else {
+        this.explicitlyDeferredImports.set(componentClassDecl, [importDecl]);
+      }
     }
 
     let symbolMap = this.imports.get(importDecl);

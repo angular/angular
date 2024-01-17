@@ -1514,16 +1514,31 @@ runInEachFileSystem(() => {
                 \`,
               })
               export class AppCmpB {}
+
+              @Component({
+                standalone: true,
+                template: 'Component without any dependencies'
+              })
+              export class ComponentWithoutDeps {}
             `);
 
            const diags = env.driveDiagnostics();
-           expect(diags.length > 0).toBe(true);
 
-           const {code, messageText} = diags[0];
-           expect(code).toBe(ngErrorCode(ErrorCode.DEFERRED_DEPENDENCY_IMPORTED_EAGERLY));
-           expect(messageText)
-               .toContain(
-                   'This import contains symbols used in the `@Component.deferredImports` array');
+           // Expect 2 diagnostics: one for each component `AppCmpA` and `AppCmpB`,
+           // since both of them refer to symbols from an import declaration that
+           // can not be removed.
+           expect(diags.length).toBe(2);
+
+           const components = ['AppCmpA', 'AppCmpB'];
+           for (let i = 0; i < components.length; i++) {
+             const component = components[i];
+             const {code, messageText} = diags[i];
+             expect(code).toBe(ngErrorCode(ErrorCode.DEFERRED_DEPENDENCY_IMPORTED_EAGERLY));
+             expect(messageText)
+                 .toContain(
+                     'This import contains symbols used in the `@Component.deferredImports` ' +
+                     `array of the \`${component}\` component`);
+           }
          });
     });
   });
