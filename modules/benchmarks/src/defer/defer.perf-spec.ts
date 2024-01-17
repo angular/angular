@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {
+  runBenchmark,
+  verifyNoBrowserErrors,
+} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$} from 'protractor';
 
 interface Worker {
@@ -18,7 +21,7 @@ interface Worker {
 const CreateWorker: Worker = {
   id: 'create',
   prepare: () => $('#destroyDom').click(),
-  work: () => $('#createDom').click()
+  work: () => $('#createDom').click(),
 };
 
 const UpdateWorker: Worker = {
@@ -26,7 +29,7 @@ const UpdateWorker: Worker = {
   prepare: () => {
     $('#createDom').click();
   },
-  work: () => $('#createDom').click()
+  work: () => $('#createDom').click(),
 };
 
 // In order to make sure that we don't change the ids of the benchmarks, we need to
@@ -54,14 +57,21 @@ describe('defer benchmark perf', () => {
   });
 });
 
-function runTableBenchmark(
-    config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
+function runTableBenchmark(config: {
+  id: string;
+  url: string;
+  ignoreBrowserSynchronization?: boolean;
+  worker: Worker;
+}) {
   return runBenchmark({
     id: config.id,
     url: config.url,
     ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
-    params: [{name: 'cols', value: 40}, {name: 'rows', value: 200}],
+    params: [
+      {name: 'cols', value: 40},
+      {name: 'rows', value: 200},
+    ],
     prepare: config.worker.prepare,
-    work: config.worker.work
+    work: config.worker.work,
   });
 }

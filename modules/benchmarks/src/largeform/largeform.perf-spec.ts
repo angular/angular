@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {
+  runBenchmark,
+  verifyNoBrowserErrors,
+} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$} from 'protractor';
 
 interface Worker {
@@ -20,7 +23,7 @@ const CreateAndDestroyWorker = {
   work: () => {
     $('#createDom').click();
     $('#destroyDom').click();
-  }
+  },
 };
 
 describe('largeform benchmark spec', () => {
@@ -34,15 +37,19 @@ describe('largeform benchmark spec', () => {
     });
   });
 
-  function runLargeFormBenchmark(
-      config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
+  function runLargeFormBenchmark(config: {
+    id: string;
+    url: string;
+    ignoreBrowserSynchronization?: boolean;
+    worker: Worker;
+  }) {
     return runBenchmark({
       id: config.id,
       url: config.url,
       params: [{name: 'copies', value: 8}],
       ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
       prepare: config.worker.prepare,
-      work: config.worker.work
+      work: config.worker.work,
     });
   }
 });

@@ -9,12 +9,12 @@
 import {verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {browser, by, element} from 'protractor';
 
-describe('Template-Driven Forms', function() {
+describe('Template-Driven Forms', function () {
   afterEach(verifyNoBrowserErrors);
 
   const URL = '/';
 
-  it('should display errors', function() {
+  it('should display errors', function () {
     browser.get(URL);
 
     const form = element.all(by.css('form')).first();
