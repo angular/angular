@@ -45,7 +45,7 @@ export class SignalQuerySignatureTest {
   /** QueryType | undefined */
   viewChildTypeLocatorNoRead = viewChild(QueryType);
 
-  /** QueryType | undefined */
+  /** any */
   viewChildTypeLocatorForwardRefNoRead = viewChild(forwardRef(() => QueryType));
 
   /** QueryType | undefined */
@@ -104,7 +104,7 @@ export class SignalQuerySignatureTest {
   /** readonly QueryType[]*/
   viewChildrenTypeLocatorNoRead = viewChildren(QueryType);
 
-  /** readonly QueryType[] */
+  /** readonly any[] */
   viewChildrenTypeLocatorForwardRefNoRead = viewChildren(forwardRef(() => QueryType));
 
   /** readonly QueryType[] */
@@ -138,7 +138,7 @@ export class SignalQuerySignatureTest {
   /** QueryType | undefined */
   contentChildTypeLocatorNoRead = contentChild(QueryType);
 
-  /** QueryType | undefined */
+  /** any */
   contentChildTypeLocatorForwardRefNoRead = contentChild(forwardRef(() => QueryType));
 
   /** QueryType | undefined */
@@ -197,7 +197,7 @@ export class SignalQuerySignatureTest {
   /** readonly QueryType[]*/
   contentChildrenTypeLocatorNoRead = contentChildren(QueryType);
 
-  /** readonly QueryType[] */
+  /** readonly any[] */
   contentChildrenTypeLocatorForwardRefNoRead = contentChildren(forwardRef(() => QueryType));
 
   /** readonly QueryType[] */
