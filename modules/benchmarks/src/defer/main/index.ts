@@ -15,7 +15,5 @@ import {AppComponent} from './app.component';
 syncUrlParamsToForm();
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideProtractorTestingSupport(),
-  ],
+  providers: [provideProtractorTestingSupport()],
 }).then(init);
