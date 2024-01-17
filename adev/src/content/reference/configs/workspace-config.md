@@ -224,7 +224,7 @@ For details of those options and their possible values, see the [Angular CLI Ref
 
 ## Complex configuration values
 
-The `assets`, `index`, `styles`, and `scripts` options can have either simple path string values, or object values with specific fields.
+The `assets`, `index`, `outputPath`, `styles`, and `scripts` options can have either simple path string values, or object values with specific fields.
 The `sourceMap` and `optimization` options can be set to a simple boolean value. They can also be given a complex value using the configuration file.
 
 The following sections provide more details of how these complex values are used in each case.
@@ -418,6 +418,7 @@ Several options can be used to fine-tune the optimization of an application.
 |:---              |:---                                                                                                                      |:---        |:---           |
 | `minify`         | Minify CSS definitions by removing extraneous whitespace and comments, merging identifiers, and minimizing values.       | `boolean`  | `true`        |
 | `inlineCritical` | Extract and inline critical CSS definitions to improve [First Contentful Paint](https://web.dev/first-contentful-paint). | `boolean`  | `true`        |
+| `removeSpecialComments` | Remove comments in global CSS that contains `@license` or `@preserve` or that starts with `//!` or `/*!`.         | `boolean`  | `true`        |
 
 #### Fonts optimization options
 
@@ -508,3 +509,16 @@ When supplying the value as a string the filename of the specified path will be 
 |:---      |:---                                                                                                                                                                              |:---        |:---             |
 | `input`  | The path of a file to use for the application's generated HTML index.                                                                                                            | `string`   | None (required) |
 | `output` | The output path of the application's generated HTML index file. The full provided path will be used and will be considered relative to the application's configured output path. | `string`   | `index.html`    |
+
+### Output path configuration
+
+The `outputPath` option can be either a String which will be used as the `base` value or an Object for more fine-tune configuration.
+
+Several options can be used to fine-tune the output structure of an application.
+
+| Options   | Details                                                                            | Value type | Default value |
+|:---       |:---                                                                                |:---        |:---           |
+| `base`    | Specify the output path relative to workspace root.                                | `string`   |               |
+| `browser` | The output directory name for your browser build is within the base output path. This can be safely served to users.       | `string`   | `browser`     |
+| `server`  | The output directory name of your server build within the output path base.        | `string`   | `server`      |
+| `media`   | The output directory name for your media files located within the output browser directory. These media files are commonly referred to as resources in CSS files. | `string`   | `media`       |
