@@ -33,13 +33,13 @@ export class AppComponent {
     <table>
       <tbody>
         @for (row of data; track $index) {
-          <tr>
-            @for (cell of row; track $index) {
-              <td [style.backgroundColor]="getColor(cell.row)">
-                {{cell.value + '!'}}
-              </td>
-            }
-          </tr>
+        <tr>
+          @for (cell of row; track $index) {
+          <td [style.backgroundColor]="getColor(cell.row)">
+            {{ cell.value + '!' }}
+          </td>
+          }
+        </tr>
         }
       </tbody>
     </table>
@@ -60,8 +60,6 @@ export function setupTransferState(cols: string, rows: string) {
   // This script contains hydration annotation for the `TableComponent` component.
   // Note: if you change the `TableComponent` template, make sure to update this
   // annotation as well.
-  script.textContent =
-      `{"__nghData__":[{"t":{"3":"t0"},"c":{"3":[{"i":"t0","r":1,"t":{"2":"t1"},"c":{"2":[{"i":"t1","r":1,"x":${
-          cols}}]},"x":${rows}}]}}]}`;
+  script.textContent = `{"__nghData__":[{"t":{"3":"t0"},"c":{"3":[{"i":"t0","r":1,"t":{"2":"t1"},"c":{"2":[{"i":"t1","r":1,"x":${cols}}]},"x":${rows}}]}}]}`;
   document.body.insertBefore(script, document.body.firstChild);
 }

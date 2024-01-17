@@ -34,9 +34,6 @@ import {ExpandingRowUncollapsible} from './expanding_row_uncollapsible';
     ExpandingRowSummary,
     ExpandingRowUncollapsible,
   ],
-  imports: [
-    CommonModule,
-  ],
+  imports: [CommonModule],
 })
-export class ExpandingRowModule {
-}
+export class ExpandingRowModule {}

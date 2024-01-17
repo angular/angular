@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {
+  runBenchmark,
+  verifyNoBrowserErrors,
+} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
 import {$} from 'protractor';
 
 interface Worker {
@@ -18,7 +21,7 @@ interface Worker {
 const Create1KWorker: Worker = {
   id: 'create1K',
   prepare: () => $('#deleteAll').click(),
-  work: () => $('#create1KRows').click()
+  work: () => $('#create1KRows').click(),
 };
 
 const Delete1KWorker: Worker = {
@@ -26,7 +29,7 @@ const Delete1KWorker: Worker = {
   prepare: () => $('#create1KRows').click(),
   work: () => {
     $('#deleteAll').click();
-  }
+  },
 };
 
 const UpdateWorker: Worker = {
@@ -34,7 +37,7 @@ const UpdateWorker: Worker = {
   prepare: () => $('#create1KRows').click(),
   work: () => {
     $('#update').click();
-  }
+  },
 };
 
 const SwapWorker: Worker = {
@@ -42,7 +45,7 @@ const SwapWorker: Worker = {
   prepare: () => $('#create1KRows').click(),
   work: () => {
     $('#swap').click();
-  }
+  },
 };
 
 // In order to make sure that we don't change the ids of the benchmarks, we need to
@@ -63,21 +66,25 @@ describe('js-web-frameworks benchmark perf', () => {
           id: `js-web-frameworks.${testPackageName}.${worker.id}`,
           url: '/',
           ignoreBrowserSynchronization: true,
-          worker: worker
+          worker: worker,
         });
       });
     });
   });
 });
 
-function runTableBenchmark(
-    config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
+function runTableBenchmark(config: {
+  id: string;
+  url: string;
+  ignoreBrowserSynchronization?: boolean;
+  worker: Worker;
+}) {
   return runBenchmark({
     id: config.id,
     url: config.url,
     ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
     params: [],
     prepare: config.worker.prepare,
-    work: config.worker.work
+    work: config.worker.work,
   });
 }

@@ -16,13 +16,18 @@ let trustedGreyColor: SafeStyle;
 
 @Component({
   selector: 'largetable',
-  template: `<table><tbody>
-    <tr *ngFor="let row of data; trackBy: trackByIndex">
-      <td *ngFor="let cell of row; trackBy: trackByIndex" [style.backgroundColor]="getColor(cell.row)">
-      {{cell.value}}
-      </td>
-    </tr>
-  </tbody></table>`,
+  template: `<table>
+    <tbody>
+      <tr *ngFor="let row of data; trackBy: trackByIndex">
+        <td
+          *ngFor="let cell of row; trackBy: trackByIndex"
+          [style.backgroundColor]="getColor(cell.row)"
+        >
+          {{ cell.value }}
+        </td>
+      </tr>
+    </tbody>
+  </table>`,
 })
 export class TableComponent {
   @Input() data: TableCell[][] = emptyTable;
