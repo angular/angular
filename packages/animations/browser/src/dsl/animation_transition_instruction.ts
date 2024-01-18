@@ -8,7 +8,10 @@
 
 import {ɵStyleDataMap} from '@angular/animations';
 
-import {AnimationEngineInstruction, AnimationTransitionInstructionType} from '../render/animation_engine_instruction';
+import {
+  AnimationEngineInstruction,
+  AnimationTransitionInstructionType,
+} from '../render/animation_engine_instruction';
 
 import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 
@@ -29,11 +32,20 @@ export interface AnimationTransitionInstruction extends AnimationEngineInstructi
 }
 
 export function createTransitionInstruction(
-    element: any, triggerName: string, fromState: string, toState: string,
-    isRemovalTransition: boolean, fromStyles: ɵStyleDataMap, toStyles: ɵStyleDataMap,
-    timelines: AnimationTimelineInstruction[], queriedElements: any[],
-    preStyleProps: Map<any, Set<string>>, postStyleProps: Map<any, Set<string>>, totalTime: number,
-    errors?: Error[]): AnimationTransitionInstruction {
+  element: any,
+  triggerName: string,
+  fromState: string,
+  toState: string,
+  isRemovalTransition: boolean,
+  fromStyles: ɵStyleDataMap,
+  toStyles: ɵStyleDataMap,
+  timelines: AnimationTimelineInstruction[],
+  queriedElements: any[],
+  preStyleProps: Map<any, Set<string>>,
+  postStyleProps: Map<any, Set<string>>,
+  totalTime: number,
+  errors?: Error[],
+): AnimationTransitionInstruction {
   return {
     type: AnimationTransitionInstructionType.TransitionAnimation,
     element,
@@ -48,6 +60,6 @@ export function createTransitionInstruction(
     preStyleProps,
     postStyleProps,
     totalTime,
-    errors
+    errors,
   };
 }
