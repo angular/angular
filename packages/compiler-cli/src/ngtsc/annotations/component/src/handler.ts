@@ -12,7 +12,7 @@ import ts from 'typescript';
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {absoluteFrom, relative} from '../../../file_system';
-import {assertSuccessfulReferenceEmit, DeferredSymbolTracker, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
+import {assertSuccessfulReferenceEmit, DeferredSymbolTracker, ImportedFile, LocalCompilationExtraImportsTracker, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {DependencyTracker} from '../../../incremental/api';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
 import {IndexingContext} from '../../../indexer';
@@ -87,7 +87,9 @@ export class ComponentDecoratorHandler implements
       private readonly compilationMode: CompilationMode,
       private readonly deferredSymbolTracker: DeferredSymbolTracker,
       private readonly forbidOrphanRendering: boolean, private readonly enableBlockSyntax: boolean,
-      private readonly useTemplatePipeline: boolean) {
+      private readonly useTemplatePipeline: boolean,
+      private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|
+      null) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
@@ -559,10 +561,6 @@ export class ComponentDecoratorHandler implements
   }
 
   register(node: ClassDeclaration, analysis: ComponentAnalysisData): void {
-    if (this.compilationMode === CompilationMode.LOCAL) {
-      return;
-    }
-
     // Register this component's information with the `MetadataRegistry`. This ensures that
     // the information about the component is available during the compile() phase.
     const ref = new Reference(node);

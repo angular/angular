@@ -561,10 +561,6 @@ export class NgModuleDecoratorHandler implements
   }
 
   register(node: ClassDeclaration, analysis: NgModuleAnalysis): void {
-    if (this.compilationMode === CompilationMode.LOCAL) {
-      return;
-    }
-
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
     // during the compile() phase, the module's metadata is available for selector scope
     // computation.
