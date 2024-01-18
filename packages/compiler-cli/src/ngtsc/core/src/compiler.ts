@@ -1145,7 +1145,8 @@ export class NgCompiler {
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
           supportTestBed, compilationMode, deferredSymbolsTracker,
           !!this.options.forbidOrphanComponents, this.enableBlockSyntax,
-          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE),
+          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE,
+          localCompilationExtraImportsTracker),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1157,13 +1158,15 @@ export class NgCompiler {
           this.delegatingPerfRecorder,
           supportTestBed, compilationMode,
           this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE,
+          !!this.options.generateExtraImportsInLocalMode,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
           reflector, evaluator, metaRegistry, ngModuleScopeRegistry, injectableRegistry, isCore,
-          this.delegatingPerfRecorder, supportTestBed, compilationMode),
+          this.delegatingPerfRecorder, supportTestBed, compilationMode,
+          !!this.options.generateExtraImportsInLocalMode),
       new InjectableDecoratorHandler(
           reflector, evaluator, isCore, strictCtorDeps, injectableRegistry,
           this.delegatingPerfRecorder, supportTestBed, compilationMode),
