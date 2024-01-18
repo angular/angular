@@ -2007,8 +2007,7 @@ function allTests(os: string) {
           }
         `);
         verifyThrownError(
-            ErrorCode.DECORATOR_COLLISION,
-            'Cannot have multiple query decorators on the same class member');
+            ErrorCode.DECORATOR_COLLISION, 'Cannot combine multiple query decorators.');
       });
 
       ['ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren'].forEach(decorator => {
