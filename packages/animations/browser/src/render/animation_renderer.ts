@@ -14,7 +14,7 @@ import {AnimationRenderer, BaseAnimationRenderer} from './renderer';
 // Define a recursive type to allow for nested arrays of `AnimationTriggerMetadata`. Note that an
 // interface declaration is used as TypeScript prior to 3.7 does not support recursive type
 // references, see https://github.com/microsoft/TypeScript/pull/33050 for details.
-type NestedAnimationTriggerMetadata = AnimationTriggerMetadata|RecursiveAnimationTriggerMetadata;
+type NestedAnimationTriggerMetadata = AnimationTriggerMetadata | RecursiveAnimationTriggerMetadata;
 interface RecursiveAnimationTriggerMetadata extends Array<NestedAnimationTriggerMetadata> {}
 
 export class AnimationRendererFactory implements RendererFactory2 {
@@ -25,7 +25,10 @@ export class AnimationRendererFactory implements RendererFactory2 {
   private _cdRecurDepth = 0;
 
   constructor(
-      private delegate: RendererFactory2, private engine: AnimationEngine, private _zone: NgZone) {
+    private delegate: RendererFactory2,
+    private engine: AnimationEngine,
+    private _zone: NgZone,
+  ) {
     engine.onRemovalComplete = (element: any, delegate: Renderer2) => {
       // Note: if a component element has a leave animation, and a host leave animation,
       // the view engine will call `removeChild` for the parent
@@ -46,13 +49,17 @@ export class AnimationRendererFactory implements RendererFactory2 {
     const delegate = this.delegate.createRenderer(hostElement, type);
     if (!hostElement || !type?.data?.['animation']) {
       const cache = this._rendererCache;
-      let renderer: BaseAnimationRenderer|undefined = cache.get(delegate);
+      let renderer: BaseAnimationRenderer | undefined = cache.get(delegate);
       if (!renderer) {
         // Ensure that the renderer is removed from the cache on destroy
         // since it may contain references to detached DOM nodes.
         const onRendererDestroy = () => cache.delete(delegate);
-        renderer =
-            new BaseAnimationRenderer(EMPTY_NAMESPACE_ID, delegate, this.engine, onRendererDestroy);
+        renderer = new BaseAnimationRenderer(
+          EMPTY_NAMESPACE_ID,
+          delegate,
+          this.engine,
+          onRendererDestroy,
+        );
         // only cache this result when the base renderer is used
         cache.set(delegate, renderer);
       }
@@ -102,7 +109,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     if (animationCallbacksBuffer.length == 0) {
       queueMicrotask(() => {
         this._zone.run(() => {
-          animationCallbacksBuffer.forEach(tuple => {
+          animationCallbacksBuffer.forEach((tuple) => {
             const [fn, data] = tuple;
             fn(data);
           });

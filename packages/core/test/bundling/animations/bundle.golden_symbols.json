@@ -585,6 +585,9 @@
     "name": "ZoneStablePendingTask"
   },
   {
+    "name": "_AnimationDriver"
+  },
+  {
     "name": "_CACHED_BODY"
   },
   {
@@ -595,6 +598,9 @@
   },
   {
     "name": "_NullComponentFactoryResolver"
+  },
+  {
+    "name": "_SpecialCasedStyles"
   },
   {
     "name": "__forward_ref__"

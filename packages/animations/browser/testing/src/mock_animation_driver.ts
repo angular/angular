@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵStyleDataMap} from '@angular/animations';
-import {AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcamelCaseToDashCase, ɵcontainsElement as containsElement, ɵgetParentElement as getParentElement, ɵinvokeQuery as invokeQuery, ɵnormalizeKeyframes as normalizeKeyframes, ɵvalidateStyleProperty as validateStyleProperty, ɵvalidateWebAnimatableStyleProperty} from '@angular/animations/browser';
+import {
+  AnimationDriver,
+  ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge,
+  ɵcamelCaseToDashCase,
+  ɵcontainsElement as containsElement,
+  ɵgetParentElement as getParentElement,
+  ɵinvokeQuery as invokeQuery,
+  ɵnormalizeKeyframes as normalizeKeyframes,
+  ɵvalidateStyleProperty as validateStyleProperty,
+  ɵvalidateWebAnimatableStyleProperty,
+} from '@angular/animations/browser';
 
 /**
  * @publicApi
@@ -44,10 +54,21 @@ export class MockAnimationDriver implements AnimationDriver {
   }
 
   animate(
-      element: any, keyframes: Array<ɵStyleDataMap>, duration: number, delay: number,
-      easing: string, previousPlayers: any[] = []): MockAnimationPlayer {
-    const player =
-        new MockAnimationPlayer(element, keyframes, duration, delay, easing, previousPlayers);
+    element: any,
+    keyframes: Array<ɵStyleDataMap>,
+    duration: number,
+    delay: number,
+    easing: string,
+    previousPlayers: any[] = [],
+  ): MockAnimationPlayer {
+    const player = new MockAnimationPlayer(
+      element,
+      keyframes,
+      duration,
+      delay,
+      easing,
+      previousPlayers,
+    );
     MockAnimationDriver.log.push(<AnimationPlayer>player);
     return player;
   }
@@ -65,14 +86,19 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
   private _keyframes: Array<ɵStyleDataMap> = [];
 
   constructor(
-      public element: any, public keyframes: Array<ɵStyleDataMap>, public duration: number,
-      public delay: number, public easing: string, public previousPlayers: any[]) {
+    public element: any,
+    public keyframes: Array<ɵStyleDataMap>,
+    public duration: number,
+    public delay: number,
+    public easing: string,
+    public previousPlayers: any[],
+  ) {
     super(duration, delay);
 
     this._keyframes = normalizeKeyframes(keyframes);
 
     if (allowPreviousPlayerStylesMerge(duration, delay)) {
-      previousPlayers.forEach(player => {
+      previousPlayers.forEach((player) => {
         if (player instanceof MockAnimationPlayer) {
           const styles = player.currentSnapshot;
           styles.forEach((val, prop) => this.previousStyles.set(prop, val));
@@ -89,7 +115,7 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
   /** @internal */
   override init() {
     super.init();
-    this._onInitFns.forEach(fn => fn());
+    this._onInitFns.forEach((fn) => fn());
     this._onInitFns = [];
   }
 
@@ -129,7 +155,7 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
       // when assembling the captured styles, it's important that
       // we build the keyframe styles in the following order:
       // {other styles within keyframes, ... previousStyles }
-      this._keyframes.forEach(kf => {
+      this._keyframes.forEach((kf) => {
         for (let [prop, val] of kf) {
           if (prop !== 'offset') {
             captures.set(prop, this.__finished ? val : AUTO_STYLE);
