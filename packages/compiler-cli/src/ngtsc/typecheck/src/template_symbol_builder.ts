@@ -111,7 +111,7 @@ export class SymbolBuilder {
     const elementSourceSpan = element.startSourceSpan ?? element.sourceSpan;
     const tcbSourceFile = this.typeCheckBlock.getSourceFile();
     // directives could be either:
-    // - var _t1: TestDir /*T:D*/ = (null!);
+    // - var _t1: TestDir /*T:D*/ = null! as TestDir;
     // - var _t1 /*T:D*/ = _ctor1({});
     const isDirectiveDeclaration = (node: ts.Node): node is ts.TypeNode|ts.Identifier =>
         (ts.isTypeNode(node) || ts.isIdentifier(node)) && ts.isVariableDeclaration(node.parent) &&
@@ -429,19 +429,25 @@ export class SymbolBuilder {
   private getSymbolOfVariable(variable: TmplAstVariable): VariableSymbol|null {
     const node = findFirstMatchingNode(
         this.typeCheckBlock, {withSpan: variable.sourceSpan, filter: ts.isVariableDeclaration});
-    if (node === null || node.initializer === undefined) {
+    if (node === null) {
       return null;
     }
 
-    const expressionSymbol = this.getSymbolOfTsNode(node.initializer);
-    if (expressionSymbol === null) {
+    let nodeValueSymbol: TsNodeSymbolInfo|null = null;
+    if (ts.isForOfStatement(node.parent.parent)) {
+      nodeValueSymbol = this.getSymbolOfTsNode(node);
+    } else if (node.initializer !== undefined) {
+      nodeValueSymbol = this.getSymbolOfTsNode(node.initializer);
+    }
+
+    if (nodeValueSymbol === null) {
       return null;
     }
 
     return {
-      tsType: expressionSymbol.tsType,
-      tsSymbol: expressionSymbol.tsSymbol,
-      initializerLocation: expressionSymbol.tcbLocation,
+      tsType: nodeValueSymbol.tsType,
+      tsSymbol: nodeValueSymbol.tsSymbol,
+      initializerLocation: nodeValueSymbol.tcbLocation,
       kind: SymbolKind.Variable,
       declaration: variable,
       localVarLocation: {

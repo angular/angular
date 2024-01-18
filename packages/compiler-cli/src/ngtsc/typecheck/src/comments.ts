@@ -44,6 +44,7 @@ export enum ExpressionIdentifier {
   DIRECTIVE = 'DIR',
   COMPONENT_COMPLETION = 'COMPCOMP',
   EVENT_PARAMETER = 'EP',
+  VARIABLE_AS_EXPRESSION = 'VAE',
 }
 
 /** Tags the node with the given expression identifier. */
