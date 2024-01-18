@@ -298,10 +298,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#7b39da844cd89dfa5fe0d36905fef3cb88843bc7":
-  version "0.0.0-cef5d14b65c8f8afe7ee57858512c57d953813a4"
-  uid "7b39da844cd89dfa5fe0d36905fef3cb88843bc7"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#7b39da844cd89dfa5fe0d36905fef3cb88843bc7"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#8a32f9fd9af99832f337db9fe29842797121e96d":
+  version "0.0.0-ae9155d1083fd8390e98bfe09a5ccf89f0375b52"
+  uid "8a32f9fd9af99832f337db9fe29842797121e96d"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#8a32f9fd9af99832f337db9fe29842797121e96d"
   dependencies:
     "@angular-devkit/build-angular" "17.1.0-rc.1"
     "@angular/benchpress" "0.3.0"
@@ -332,7 +332,7 @@
     marked-mangle "^1.1.4"
     preact "^10.17.1"
     preact-render-to-string "^6.2.1"
-    prettier "3.1.1"
+    prettier "3.2.2"
     protractor "^7.0.0"
     selenium-webdriver "4.16.0"
     send "^0.18.0"
@@ -398,10 +398,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#6e74bb73d632c175f8fc2b4b32e53a726209730c":
-  version "0.0.0-cef5d14b65c8f8afe7ee57858512c57d953813a4"
-  uid "6e74bb73d632c175f8fc2b4b32e53a726209730c"
-  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#6e74bb73d632c175f8fc2b4b32e53a726209730c"
+"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#1ff2479610f1f145433b95bbe85f6606e6e975c1":
+  version "0.0.0-ae9155d1083fd8390e98bfe09a5ccf89f0375b52"
+  uid "1ff2479610f1f145433b95bbe85f6606e6e975c1"
+  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#1ff2479610f1f145433b95bbe85f6606e6e975c1"
   dependencies:
     "@angular/cdk" "17.1.0-rc.0"
     "@angular/common" "17.1.0-rc.0"
@@ -486,10 +486,10 @@
     "@material/typography" "15.0.0-canary.7f224ddd4.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#7b5591af54266cba8147d162285bc7211196365d":
-  version "0.0.0-cef5d14b65c8f8afe7ee57858512c57d953813a4"
-  uid "7b5591af54266cba8147d162285bc7211196365d"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#7b5591af54266cba8147d162285bc7211196365d"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#cdbbb64c01e02d4edda03d66fa0919504d8c5dfc":
+  version "0.0.0-ae9155d1083fd8390e98bfe09a5ccf89f0375b52"
+  uid cdbbb64c01e02d4edda03d66fa0919504d8c5dfc
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#cdbbb64c01e02d4edda03d66fa0919504d8c5dfc"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -13448,10 +13448,10 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
 
-prettier@3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.1.1.tgz#6ba9f23165d690b6cbdaa88cb0807278f7019848"
-  integrity sha512-22UbSzg8luF4UuZtzgiUOfcGM8s4tjBv6dJRT7j275NXsy2jb4aJa4NNveul5x4eqlF1wuhuR2RElK71RvmVaw==
+prettier@3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.2.tgz#96e580f7ca9c96090ad054616c0c4597e2844b65"
+  integrity sha512-HTByuKZzw7utPiDO523Tt2pLtEyK7OibUD9suEJQrPUCYQqrHr74GGX6VidMrovbf/I50mPqr8j/II6oBAuc5A==
 
 prettier@^3.0.0:
   version "3.0.3"
