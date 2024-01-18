@@ -179,3 +179,9 @@ export type ɵUnwrapInputSignalWriteType<Field> =
 export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
   [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
 };
+
+/** Signal-based queries */
+export const viewChild: any = null!;
+export const viewChildren: any = null!;
+export const contentChild: any = null!;
+export const contentChildren: any = null!;
