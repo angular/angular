@@ -14,7 +14,6 @@ import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../../src/util';
 import {MockAnimationDriver} from '../../testing';
 import {makeTrigger} from '../shared';
 
-
 describe('AnimationTrigger', () => {
   // these tests are only meant to be run within the DOM (for now)
   if (isNode) {
@@ -43,9 +42,9 @@ describe('AnimationTrigger', () => {
     it('should throw an error when a transition within a trigger contains an invalid expression', () => {
       expect(() => {
         makeTrigger('name', [transition('somethingThatIsWrong', animate(3333))]);
-      })
-          .toThrowError(
-              /- NG03015: The provided transition expression "somethingThatIsWrong" is not supported/);
+      }).toThrowError(
+        /- NG03015: The provided transition expression "somethingThatIsWrong" is not supported/,
+      );
     });
 
     it('should throw an error if an animation alias is used that is not yet supported', () => {
@@ -64,28 +63,35 @@ describe('AnimationTrigger', () => {
         transition('off => on', animate(1000)),
       ]);
 
-      expect(result.states.get('on')!.buildStyles({}, []))
-          .toEqual(new Map<string, string|number>([['width', 0]]));
-      expect(result.states.get('off')!.buildStyles({}, []))
-          .toEqual(new Map<string, string|number>([['width', 100]]));
+      expect(result.states.get('on')!.buildStyles({}, [])).toEqual(
+        new Map<string, string | number>([['width', 0]]),
+      );
+      expect(result.states.get('off')!.buildStyles({}, [])).toEqual(
+        new Map<string, string | number>([['width', 100]]),
+      );
       expect(result.transitionFactories.length).toEqual(2);
     });
 
     it('should allow multiple state values to use the same styles', () => {
       const result = makeTrigger('name', [
-        state('on, off', style({width: 50})), transition('on => off', animate(1000)),
-        transition('off => on', animate(1000))
+        state('on, off', style({width: 50})),
+        transition('on => off', animate(1000)),
+        transition('off => on', animate(1000)),
       ]);
 
-      expect(result.states.get('on')!.buildStyles({}, []))
-          .toEqual(new Map<string, string|number>([['width', 50]]));
-      expect(result.states.get('off')!.buildStyles({}, []))
-          .toEqual(new Map<string, string|number>([['width', 50]]));
+      expect(result.states.get('on')!.buildStyles({}, [])).toEqual(
+        new Map<string, string | number>([['width', 50]]),
+      );
+      expect(result.states.get('off')!.buildStyles({}, [])).toEqual(
+        new Map<string, string | number>([['width', 50]]),
+      );
     });
 
     it('should find the first transition that matches', () => {
-      const result = makeTrigger(
-          'name', [transition('a => b', animate(1234)), transition('b => c', animate(5678))]);
+      const result = makeTrigger('name', [
+        transition('a => b', animate(1234)),
+        transition('b => c', animate(5678)),
+      ]);
 
       const trans = buildTransition(result, element, 'b', 'c')!;
       expect(trans.timelines.length).toEqual(1);
@@ -95,8 +101,9 @@ describe('AnimationTrigger', () => {
 
     it('should find a transition with a `*` value', () => {
       const result = makeTrigger('name', [
-        transition('* => b', animate(1234)), transition('b => *', animate(5678)),
-        transition('* => *', animate(9999))
+        transition('* => b', animate(1234)),
+        transition('b => *', animate(5678)),
+        transition('* => *', animate(9999)),
       ]);
 
       let trans = buildTransition(result, element, 'b', 'c')!;
@@ -141,41 +148,58 @@ describe('AnimationTrigger', () => {
 
     describe('params', () => {
       it('should support transition-level animation variable params', () => {
-        const result = makeTrigger(
-            'name',
-            [transition(
-                'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
-                buildParams({a: '100px', b: '200px'}))]);
+        const result = makeTrigger('name', [
+          transition(
+            'a => b',
+            [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
+            buildParams({a: '100px', b: '200px'}),
+          ),
+        ]);
 
         const trans = buildTransition(result, element, 'a', 'b')!;
         const keyframes = trans.timelines[0].keyframes;
         expect(keyframes).toEqual([
-          new Map<string, string|number>([['height', '100px'], ['offset', 0]]),
-          new Map<string, string|number>([['height', '200px'], ['offset', 1]])
+          new Map<string, string | number>([
+            ['height', '100px'],
+            ['offset', 0],
+          ]),
+          new Map<string, string | number>([
+            ['height', '200px'],
+            ['offset', 1],
+          ]),
         ]);
       });
 
       it('should substitute variable params provided directly within the transition match', () => {
-        const result = makeTrigger(
-            'name',
-            [transition(
-                'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
-                buildParams({a: '100px', b: '200px'}))]);
+        const result = makeTrigger('name', [
+          transition(
+            'a => b',
+            [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
+            buildParams({a: '100px', b: '200px'}),
+          ),
+        ]);
 
         const trans = buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'}))!;
 
         const keyframes = trans.timelines[0].keyframes;
         expect(keyframes).toEqual([
-          new Map<string, string|number>([['height', '300px'], ['offset', 0]]),
-          new Map<string, string|number>([['height', '200px'], ['offset', 1]])
+          new Map<string, string | number>([
+            ['height', '300px'],
+            ['offset', 0],
+          ]),
+          new Map<string, string | number>([
+            ['height', '200px'],
+            ['offset', 1],
+          ]),
         ]);
       });
     });
 
     it('should match `true` and `false` given boolean values', () => {
       const result = makeTrigger('name', [
-        state('false', style({color: 'red'})), state('true', style({color: 'green'})),
-        transition('true <=> false', animate(1234))
+        state('false', style({color: 'red'})),
+        state('true', style({color: 'green'})),
+        transition('true <=> false', animate(1234)),
       ]);
 
       const trans = buildTransition(result, element, false, true)!;
@@ -184,46 +208,60 @@ describe('AnimationTrigger', () => {
 
     it('should match `1` and `0` given boolean values', () => {
       const result = makeTrigger('name', [
-        state('0', style({color: 'red'})), state('1', style({color: 'green'})),
-        transition('1 <=> 0', animate(4567))
+        state('0', style({color: 'red'})),
+        state('1', style({color: 'green'})),
+        transition('1 <=> 0', animate(4567)),
       ]);
 
       const trans = buildTransition(result, element, false, true)!;
       expect(trans.timelines[0].duration).toEqual(4567);
     });
 
-    it('should match `true` and `false` state styles on a `1 <=> 0` boolean transition given boolean values',
-       () => {
-         const result = makeTrigger('name', [
-           state('false', style({color: 'red'})), state('true', style({color: 'green'})),
-           transition('1 <=> 0', animate(4567))
-         ]);
+    it('should match `true` and `false` state styles on a `1 <=> 0` boolean transition given boolean values', () => {
+      const result = makeTrigger('name', [
+        state('false', style({color: 'red'})),
+        state('true', style({color: 'green'})),
+        transition('1 <=> 0', animate(4567)),
+      ]);
 
-         const trans = buildTransition(result, element, false, true)!;
-         expect(trans.timelines[0].keyframes).toEqual([
-           new Map<string, string|number>([['offset', 0], ['color', 'red']]),
-           new Map<string, string|number>([['offset', 1], ['color', 'green']])
-         ]);
-       });
+      const trans = buildTransition(result, element, false, true)!;
+      expect(trans.timelines[0].keyframes).toEqual([
+        new Map<string, string | number>([
+          ['offset', 0],
+          ['color', 'red'],
+        ]),
+        new Map<string, string | number>([
+          ['offset', 1],
+          ['color', 'green'],
+        ]),
+      ]);
+    });
 
-    it('should match `1` and `0` state styles on a `true <=> false` boolean transition given boolean values',
-       () => {
-         const result = makeTrigger('name', [
-           state('0', style({color: 'orange'})), state('1', style({color: 'blue'})),
-           transition('true <=> false', animate(4567))
-         ]);
+    it('should match `1` and `0` state styles on a `true <=> false` boolean transition given boolean values', () => {
+      const result = makeTrigger('name', [
+        state('0', style({color: 'orange'})),
+        state('1', style({color: 'blue'})),
+        transition('true <=> false', animate(4567)),
+      ]);
 
-         const trans = buildTransition(result, element, false, true)!;
-         expect(trans.timelines[0].keyframes).toEqual([
-           new Map<string, string|number>([['offset', 0], ['color', 'orange']]),
-           new Map<string, string|number>([['offset', 1], ['color', 'blue']])
-         ]);
-       });
+      const trans = buildTransition(result, element, false, true)!;
+      expect(trans.timelines[0].keyframes).toEqual([
+        new Map<string, string | number>([
+          ['offset', 0],
+          ['color', 'orange'],
+        ]),
+        new Map<string, string | number>([
+          ['offset', 1],
+          ['color', 'blue'],
+        ]),
+      ]);
+    });
 
     it('should treat numeric values (disguised as strings) as proper state values', () => {
       const result = makeTrigger('name', [
         state(1 as any as string, style({opacity: 0})),
-        state(0 as any as string, style({opacity: 0})), transition('* => *', animate(1000))
+        state(0 as any as string, style({opacity: 0})),
+        transition('* => *', animate(1000)),
       ]);
 
       expect(() => {
@@ -249,18 +287,28 @@ describe('AnimationTrigger', () => {
   });
 });
 
-
 function buildTransition(
-    trigger: AnimationTrigger, element: any, fromState: any, toState: any,
-    fromOptions?: AnimationOptions, toOptions?: AnimationOptions): AnimationTransitionInstruction|
-    null {
-  const params = toOptions && toOptions.params || {};
+  trigger: AnimationTrigger,
+  element: any,
+  fromState: any,
+  toState: any,
+  fromOptions?: AnimationOptions,
+  toOptions?: AnimationOptions,
+): AnimationTransitionInstruction | null {
+  const params = (toOptions && toOptions.params) || {};
   const trans = trigger.matchTransition(fromState, toState, element, params)!;
   if (trans) {
     const driver = new MockAnimationDriver();
     return trans.build(
-        driver, element, fromState, toState, ENTER_CLASSNAME, LEAVE_CLASSNAME, fromOptions,
-        toOptions)!;
+      driver,
+      element,
+      fromState,
+      toState,
+      ENTER_CLASSNAME,
+      LEAVE_CLASSNAME,
+      fromOptions,
+      toOptions,
+    )!;
   }
   return null;
 }

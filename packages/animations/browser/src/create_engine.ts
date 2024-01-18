@@ -15,14 +15,24 @@ import {AnimationEngine} from './render/animation_engine_next';
 import {WebAnimationsDriver} from './render/web_animations/web_animations_driver';
 
 export function createEngine(
-    type: 'animations'|'noop', doc: Document,
-    scheduler: ChangeDetectionScheduler|null): AnimationEngine {
+  type: 'animations' | 'noop',
+  doc: Document,
+  scheduler: ChangeDetectionScheduler | null,
+): AnimationEngine {
   // TODO: find a way to make this tree shakable.
   if (type === 'noop') {
     return new AnimationEngine(
-        doc, new NoopAnimationDriver(), new NoopAnimationStyleNormalizer(), scheduler);
+      doc,
+      new NoopAnimationDriver(),
+      new NoopAnimationStyleNormalizer(),
+      scheduler,
+    );
   }
 
   return new AnimationEngine(
-      doc, new WebAnimationsDriver(), new WebAnimationsStyleNormalizer(), scheduler);
+    doc,
+    new WebAnimationsDriver(),
+    new WebAnimationsStyleNormalizer(),
+    scheduler,
+  );
 }
