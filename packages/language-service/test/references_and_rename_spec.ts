@@ -1507,6 +1507,42 @@ describe('find references and rename locations', () => {
     });
   });
 
+  describe('control flow', () => {
+    it('can find references and rename alias variable from @if block', () => {
+      const app = `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }', 
+          standalone: true
+        })
+        export class AppCmp {
+          x?: string;
+        }
+      `;
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', {'app.ts': app});
+      const file = project.openFile('app.ts');
+      file.moveCursorToText('{{alia¦sX}}');
+
+      const refs = getReferencesAtPosition(file)!;
+      expect(refs.length).toBe(3);
+      assertTextSpans(refs, ['aliasX']);
+      assertFileNames(refs, ['app.ts']);
+
+      const renameLocations = getRenameLocationsAtPosition(file)!;
+      // TODO(atscott): Aliases cannot be renamed because the type check block creates a local
+      // variable and uses it in the `if` statement without a source map. When the rename operation
+      // cannot map a type check block location back to a template location, it bails on the rename
+      // because it does not want to provide incomplete rename results:
+      // var _t1 /*104,110*/ = (((this).x /*98,99*/) /*98,99*/) /*104,110*/;
+      // if (_t1) { // <------------- this causes renaming to bail
+      //   "" + (_t1 /*116,122*/) + ((_t1 /*127,133*/) + ("second" /*136,144*/) /*127,144*/);
+      // }
+      expect(renameLocations).toBeUndefined();
+    });
+  });
+
   describe('get rename info', () => {
     it('indicates inability to rename when cursor is outside template and in a string literal',
        () => {
