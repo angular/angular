@@ -548,10 +548,9 @@ Several options can be used to fine-tune the output structure of an application.
 | Options   | Details                                                                            | Value type | Default value |
 |:---       |:---                                                                                |:---        |:---           |
 | `base`    | Specify the output path relative to workspace root.                                | `string`   |               |
-| `browser` | The output directory name of your browser build within the output path base.       | `string`   | `browser`     |
+| `browser` | The output directory name for your browser build is within the base output path. This can be safely served to users.       | `string`   | `browser`     |
 | `server`  | The output directory name of your server build within the output path base.        | `string`   | `server`      |
-| `media`   | The output directory name of your media files within the output browser directory. | `string`   | `media`       |
-
+| `media`   | The output directory name for your media files located within the output browser directory. These media files are commonly referred to as resources in CSS files. | `string`   | `media`       |
 
 <!-- links -->
 

@@ -125,6 +125,16 @@ ng update @angular/cli --name use-application-builder
 
 </docs-code>
 
+The migration does the following:
+
+* Converts existing `browser` or `browser-esbuild` target to `application`
+* Removes any previous SSR builders (because `application` does that now).
+* Updates configuration accordingly.
+* Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
+* Updates application server code to use new bootstrapping and output directory structure.
+
+HELPFUL: Remember to remove any CommonJS assumptions in the application server code such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
+
 ## Executing a build
 
 Once you have updated the application configuration, builds can be performed using `ng build` as was previously done.
@@ -162,8 +172,6 @@ Angular focused HMR capabilities are currently planned and will be introduced in
 Several build options are not yet implemented but will be added in the future as the build system moves towards a stable status. If your application uses these options, you can still try out the build system without removing them. Warnings will be issued for any unimplemented options but they will otherwise be ignored. However, if your application relies on any of these options to function, you may want to wait to try.
 
 - [WASM imports](https://github.com/angular/angular-cli/issues/25102) -- WASM can still be loaded manually via [standard web APIs](https://developer.mozilla.org/en-US/docs/WebAssembly/Loading_and_running).
-
-Building libraries with the new build system via `ng-packagr` is also not yet possible but library build support will be available in a future release.
 
 ## ESM default imports vs. namespace imports
 

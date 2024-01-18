@@ -131,6 +131,21 @@ To convert from the separate SSR builders to the integrated capabilities of the 
 ng update @angular/cli --name use-application-builder
 
 </code-example>
+
+The migration does the following:
+
+* Converts existing `browser` or `browser-esbuild` target to `application`
+* Removes any previous SSR builders (because `application` does that now).
+* Updates configuration accordingly.
+* Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
+* Updates application server code to use new bootstrapping and output directory structure.
+
+<div class="alert is-important">
+
+Remember to remove any CommonJS assumptions in the application server code such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
+
+</div>
+
 ## Executing a build
 
 Once you have updated the application configuration, builds can be performed using the `ng build` as was previously done.
