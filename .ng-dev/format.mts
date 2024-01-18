@@ -11,6 +11,7 @@ export const format: FormatConfig = {
       'tools/**/*.{js,ts}',
       'modules/**/*.{js,ts}',
       'scripts/**/*.{js,ts}',
+      'packages/animations/**/*.{js,ts}',
     ],
   },
   'clang-format': {
@@ -43,6 +44,7 @@ export const format: FormatConfig = {
       '!tools/**/*.{js,ts}',
       '!modules/**/*.{js,ts}',
       '!scripts/**/*.{js,ts}',
+      '!packages/animations/**/*.{js,ts}',
     ],
   },
   'buildifier': true,

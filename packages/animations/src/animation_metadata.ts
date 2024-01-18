@@ -10,13 +10,13 @@
  * Represents a set of CSS styles for use in an animation style as a generic.
  */
 export interface ɵStyleData {
-  [key: string]: string|number;
+  [key: string]: string | number;
 }
 
 /**
  * Represents a set of CSS styles for use in an animation style as a Map.
  */
-export type ɵStyleDataMap = Map<string, string|number>;
+export type ɵStyleDataMap = Map<string, string | number>;
 
 /**
  * Represents animation-step timing parameters for an animation step.
@@ -30,12 +30,12 @@ export declare type AnimateTimings = {
    * such as "1s" or "10ms" for one second and 10 milliseconds, respectively.
    * The default unit is milliseconds.
    */
-  duration: number,
+  duration: number;
   /**
    * The delay in applying an animation step. A number and optional time unit.
    * The default unit is milliseconds.
    */
-  delay: number,
+  delay: number;
   /**
    * An easing style that controls how an animations step accelerates
    * and decelerates during its run time. An easing function such as `cubic-bezier()`,
@@ -44,7 +44,7 @@ export declare type AnimateTimings = {
    * - `ease-out`
    * - `ease-in-and-out`
    */
-  easing: string | null
+  easing: string | null;
 };
 
 /**
@@ -72,7 +72,7 @@ export declare interface AnimationOptions {
    * and 10 milliseconds, respectively.The default unit is milliseconds.
    * Default value is 0, meaning no delay.
    */
-  delay?: number|string;
+  delay?: number | string;
   /**
    * A set of developer-defined parameters that modify styling and timing
    * when an animation action starts. An array of key-value pairs, where the provided value
@@ -89,7 +89,7 @@ export declare interface AnimationOptions {
  * @publicApi
  */
 export declare interface AnimateChildOptions extends AnimationOptions {
-  duration?: number|string;
+  duration?: number | string;
 }
 
 /**
@@ -165,7 +165,7 @@ export enum AnimationMetadataType {
    * Contains data for staggering an animation sequence.
    * See `stagger()`
    */
-  Stagger = 12
+  Stagger = 12,
 }
 
 /**
@@ -204,7 +204,7 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
    * developer-defined parameters that provide styling defaults and
    * can be overridden on invocation. Default delay is 0.
    */
-  options: {params?: {[name: string]: any}}|null;
+  options: {params?: {[name: string]: any}} | null;
 }
 
 /**
@@ -240,19 +240,24 @@ export interface AnimationTransitionMetadata extends AnimationMetadata {
   /**
    * An expression that describes a state change.
    */
-  expr: string|
-      ((fromState: string, toState: string, element?: any,
-        params?: {[key: string]: any}) => boolean);
+  expr:
+    | string
+    | ((
+        fromState: string,
+        toState: string,
+        element?: any,
+        params?: {[key: string]: any},
+      ) => boolean);
   /**
    * One or more animation objects to which this transition applies.
    */
-  animation: AnimationMetadata|AnimationMetadata[];
+  animation: AnimationMetadata | AnimationMetadata[];
   /**
    * An options object containing a delay and
    * developer-defined parameters that provide styling defaults and
    * can be overridden on invocation. Default delay is 0.
    */
-  options: AnimationOptions|null;
+  options: AnimationOptions | null;
 }
 
 /**
@@ -266,13 +271,13 @@ export interface AnimationReferenceMetadata extends AnimationMetadata {
   /**
    *  One or more animation step objects.
    */
-  animation: AnimationMetadata|AnimationMetadata[];
+  animation: AnimationMetadata | AnimationMetadata[];
   /**
    * An options object containing a delay and
    * developer-defined parameters that provide styling defaults and
    * can be overridden on invocation. Default delay is 0.
    */
-  options: AnimationOptions|null;
+  options: AnimationOptions | null;
 }
 
 /**
@@ -289,11 +294,11 @@ export interface AnimationQueryMetadata extends AnimationMetadata {
   /**
    * One or more animation step objects.
    */
-  animation: AnimationMetadata|AnimationMetadata[];
+  animation: AnimationMetadata | AnimationMetadata[];
   /**
    * A query options object.
    */
-  options: AnimationQueryOptions|null;
+  options: AnimationQueryOptions | null;
 }
 
 /**
@@ -319,11 +324,11 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
   /**
    * A set of CSS style properties.
    */
-  styles: '*'|{[key: string]: string | number}|Array<{[key: string]: string | number}|'*'>;
+  styles: '*' | {[key: string]: string | number} | Array<{[key: string]: string | number} | '*'>;
   /**
    * A percentage of the total animate time at which the style is to be applied.
    */
-  offset: number|null;
+  offset: number | null;
 }
 
 /**
@@ -336,11 +341,11 @@ export interface AnimationAnimateMetadata extends AnimationMetadata {
   /**
    * The timing data for the step.
    */
-  timings: string|number|AnimateTimings;
+  timings: string | number | AnimateTimings;
   /**
    * A set of styles used in the step.
    */
-  styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata|null;
+  styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata | null;
 }
 
 /**
@@ -355,7 +360,7 @@ export interface AnimationAnimateChildMetadata extends AnimationMetadata {
    * developer-defined parameters that provide styling defaults and
    * can be overridden on invocation. Default delay is 0.
    */
-  options: AnimationOptions|null;
+  options: AnimationOptions | null;
 }
 
 /**
@@ -374,7 +379,7 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
    * developer-defined parameters that provide styling defaults and
    * can be overridden on invocation. Default delay is 0.
    */
-  options: AnimationOptions|null;
+  options: AnimationOptions | null;
 }
 
 /**
@@ -393,7 +398,7 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
    * developer-defined parameters that provide styling defaults and
    * can be overridden on invocation. Default delay is 0.
    */
-  options: AnimationOptions|null;
+  options: AnimationOptions | null;
 }
 
 /**
@@ -412,7 +417,7 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
    * developer-defined parameters that provide styling defaults and
    * can be overridden on invocation. Default delay is 0.
    */
-  options: AnimationOptions|null;
+  options: AnimationOptions | null;
 }
 
 /**
@@ -447,11 +452,11 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
   /**
    * The timing data for the steps.
    */
-  timings: string|number;
+  timings: string | number;
   /**
    * One or more animation steps.
    */
-  animation: AnimationMetadata|AnimationMetadata[];
+  animation: AnimationMetadata | AnimationMetadata[];
 }
 
 /**
@@ -665,9 +670,9 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * @publicApi
  */
 export function animate(
-    timings: string|number,
-    styles: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata|null =
-        null): AnimationAnimateMetadata {
+  timings: string | number,
+  styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata | null = null,
+): AnimationAnimateMetadata {
   return {type: AnimationMetadataType.Animate, styles, timings};
 }
 
@@ -705,7 +710,9 @@ export function animate(
  * @publicApi
  */
 export function group(
-    steps: AnimationMetadata[], options: AnimationOptions|null = null): AnimationGroupMetadata {
+  steps: AnimationMetadata[],
+  options: AnimationOptions | null = null,
+): AnimationGroupMetadata {
   return {type: AnimationMetadataType.Group, steps, options};
 }
 
@@ -743,7 +750,9 @@ export function group(
  * @publicApi
  **/
 export function sequence(
-    steps: AnimationMetadata[], options: AnimationOptions|null = null): AnimationSequenceMetadata {
+  steps: AnimationMetadata[],
+  options: AnimationOptions | null = null,
+): AnimationSequenceMetadata {
   return {type: AnimationMetadataType.Sequence, steps, options};
 }
 
@@ -786,8 +795,9 @@ export function sequence(
  *
  * @publicApi
  **/
-export function style(tokens: '*'|{[key: string]: string | number}|
-                      Array<'*'|{[key: string]: string | number}>): AnimationStyleMetadata {
+export function style(
+  tokens: '*' | {[key: string]: string | number} | Array<'*' | {[key: string]: string | number}>,
+): AnimationStyleMetadata {
   return {type: AnimationMetadataType.Style, styles: tokens, offset: null};
 }
 
@@ -821,8 +831,10 @@ export function style(tokens: '*'|{[key: string]: string | number}|
  * @publicApi
  **/
 export function state(
-    name: string, styles: AnimationStyleMetadata,
-    options?: {params: {[name: string]: any}}): AnimationStateMetadata {
+  name: string,
+  styles: AnimationStyleMetadata,
+  options?: {params: {[name: string]: any}},
+): AnimationStateMetadata {
   return {type: AnimationMetadataType.State, name, styles, options};
 }
 
@@ -1022,10 +1034,17 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * @publicApi
  **/
 export function transition(
-    stateChangeExpr: string|
-    ((fromState: string, toState: string, element?: any, params?: {[key: string]: any}) => boolean),
-    steps: AnimationMetadata|AnimationMetadata[],
-    options: AnimationOptions|null = null): AnimationTransitionMetadata {
+  stateChangeExpr:
+    | string
+    | ((
+        fromState: string,
+        toState: string,
+        element?: any,
+        params?: {[key: string]: any},
+      ) => boolean),
+  steps: AnimationMetadata | AnimationMetadata[],
+  options: AnimationOptions | null = null,
+): AnimationTransitionMetadata {
   return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps, options};
 }
 
@@ -1075,8 +1094,9 @@ export function transition(
  * @publicApi
  */
 export function animation(
-    steps: AnimationMetadata|AnimationMetadata[],
-    options: AnimationOptions|null = null): AnimationReferenceMetadata {
+  steps: AnimationMetadata | AnimationMetadata[],
+  options: AnimationOptions | null = null,
+): AnimationReferenceMetadata {
   return {type: AnimationMetadataType.Reference, animation: steps, options};
 }
 
@@ -1099,8 +1119,9 @@ export function animation(
  *
  * @publicApi
  */
-export function animateChild(options: AnimateChildOptions|null = null):
-    AnimationAnimateChildMetadata {
+export function animateChild(
+  options: AnimateChildOptions | null = null,
+): AnimationAnimateChildMetadata {
   return {type: AnimationMetadataType.AnimateChild, options};
 }
 
@@ -1115,8 +1136,9 @@ export function animateChild(options: AnimateChildOptions|null = null):
  * @publicApi
  */
 export function useAnimation(
-    animation: AnimationReferenceMetadata,
-    options: AnimationOptions|null = null): AnimationAnimateRefMetadata {
+  animation: AnimationReferenceMetadata,
+  options: AnimationOptions | null = null,
+): AnimationAnimateRefMetadata {
   return {type: AnimationMetadataType.AnimateRef, animation, options};
 }
 
@@ -1241,8 +1263,10 @@ export function useAnimation(
  * @publicApi
  */
 export function query(
-    selector: string, animation: AnimationMetadata|AnimationMetadata[],
-    options: AnimationQueryOptions|null = null): AnimationQueryMetadata {
+  selector: string,
+  animation: AnimationMetadata | AnimationMetadata[],
+  options: AnimationQueryOptions | null = null,
+): AnimationQueryMetadata {
   return {type: AnimationMetadataType.Query, selector, animation, options};
 }
 
@@ -1326,7 +1350,9 @@ export function query(
  *
  * @publicApi
  */
-export function stagger(timings: string|number, animation: AnimationMetadata|AnimationMetadata[]):
-    AnimationStaggerMetadata {
+export function stagger(
+  timings: string | number,
+  animation: AnimationMetadata | AnimationMetadata[],
+): AnimationStaggerMetadata {
   return {type: AnimationMetadataType.Stagger, timings, animation};
 }

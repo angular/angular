@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 describe('util', () => {
   it('should schedule a microtask and not call an async timeout', (done) => {
     let count = 0;
