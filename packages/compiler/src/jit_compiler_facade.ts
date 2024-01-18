@@ -303,8 +303,6 @@ function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadat
 function convertQueryDeclarationToMetadata(declaration: R3DeclareQueryMetadataFacade):
     R3QueryMetadata {
   return {
-    // TODO: Partial output.
-    isSignal: false,
     propertyName: declaration.propertyName,
     first: declaration.first ?? false,
     predicate: convertQueryPredicate(declaration.predicate),
@@ -312,6 +310,7 @@ function convertQueryDeclarationToMetadata(declaration: R3DeclareQueryMetadataFa
     read: declaration.read ? new WrappedNodeExpr(declaration.read) : null,
     static: declaration.static ?? false,
     emitDistinctChangesOnly: declaration.emitDistinctChangesOnly ?? true,
+    isSignal: !!declaration.isSignal,
   };
 }
 

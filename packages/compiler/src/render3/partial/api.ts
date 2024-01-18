@@ -327,6 +327,9 @@ export interface R3DeclareQueryMetadata {
    * content hooks and ngAfterViewInit for view hooks).
    */
   static?: boolean;
+
+  /** Whether the query is signal-based. */
+  isSignal: boolean;
 }
 
 /**

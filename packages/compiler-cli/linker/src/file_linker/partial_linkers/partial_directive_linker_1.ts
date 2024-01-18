@@ -193,6 +193,7 @@ function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TEx
         obj.has('emitDistinctChangesOnly') ? obj.getBoolean('emitDistinctChangesOnly') : true,
     read: obj.has('read') ? obj.getOpaque('read') : null,
     static: obj.has('static') ? obj.getBoolean('static') : false,
+    isSignal: obj.has('isSignal') ? obj.getBoolean('isSignal') : false,
   };
 }
 

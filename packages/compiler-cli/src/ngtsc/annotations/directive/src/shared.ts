@@ -13,9 +13,9 @@ import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
 import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputMapping, isHostDirectiveMetaForGlobalMode} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
-import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, FunctionDefinition, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
-import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, isExpressionForwardReference, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
+import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 import {tryParseSignalInputMapping} from './input_function';
 import {tryParseSignalQueryFromInitializer} from './query_functions';
