@@ -12,5 +12,5 @@ import 'zone.js/lib/zone-spec/proxy';
 import 'zone.js/lib/zone-spec/sync-test';
 import 'zone.js/lib/testing/async-testing';
 import 'zone.js/lib/testing/fake-async';
-import 'reflect-metadata/Reflect';
+import 'reflect-metadata';
 import 'zone.js/lib/jasmine/jasmine';
