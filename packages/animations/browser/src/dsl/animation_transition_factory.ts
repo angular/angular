@@ -15,7 +15,10 @@ import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
 import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 import {TransitionMatcherFn} from './animation_transition_expr';
-import {AnimationTransitionInstruction, createTransitionInstruction} from './animation_transition_instruction';
+import {
+  AnimationTransitionInstruction,
+  createTransitionInstruction,
+} from './animation_transition_instruction';
 import {ElementInstructionMap} from './element_instruction_map';
 import {AnimationStyleNormalizer} from './style_normalization/animation_style_normalizer';
 
@@ -23,15 +26,20 @@ const EMPTY_OBJECT = {};
 
 export class AnimationTransitionFactory {
   constructor(
-      private _triggerName: string, public ast: TransitionAst,
-      private _stateStyles: Map<string, AnimationStateStyles>) {}
+    private _triggerName: string,
+    public ast: TransitionAst,
+    private _stateStyles: Map<string, AnimationStateStyles>,
+  ) {}
 
   match(currentState: any, nextState: any, element: any, params: {[key: string]: any}): boolean {
     return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState, element, params);
   }
 
-  buildStyles(stateName: string|boolean|undefined, params: {[key: string]: any}, errors: Error[]):
-      ɵStyleDataMap {
+  buildStyles(
+    stateName: string | boolean | undefined,
+    params: {[key: string]: any},
+    errors: Error[],
+  ): ɵStyleDataMap {
     let styler = this._stateStyles.get('*');
     if (stateName !== undefined) {
       styler = this._stateStyles.get(stateName?.toString()) || styler;
@@ -40,16 +48,23 @@ export class AnimationTransitionFactory {
   }
 
   build(
-      driver: AnimationDriver, element: any, currentState: any, nextState: any,
-      enterClassName: string, leaveClassName: string, currentOptions?: AnimationOptions,
-      nextOptions?: AnimationOptions, subInstructions?: ElementInstructionMap,
-      skipAstBuild?: boolean): AnimationTransitionInstruction {
+    driver: AnimationDriver,
+    element: any,
+    currentState: any,
+    nextState: any,
+    enterClassName: string,
+    leaveClassName: string,
+    currentOptions?: AnimationOptions,
+    nextOptions?: AnimationOptions,
+    subInstructions?: ElementInstructionMap,
+    skipAstBuild?: boolean,
+  ): AnimationTransitionInstruction {
     const errors: Error[] = [];
 
-    const transitionAnimationParams = this.ast.options && this.ast.options.params || EMPTY_OBJECT;
-    const currentAnimationParams = currentOptions && currentOptions.params || EMPTY_OBJECT;
+    const transitionAnimationParams = (this.ast.options && this.ast.options.params) || EMPTY_OBJECT;
+    const currentAnimationParams = (currentOptions && currentOptions.params) || EMPTY_OBJECT;
     const currentStateStyles = this.buildStyles(currentState, currentAnimationParams, errors);
-    const nextAnimationParams = nextOptions && nextOptions.params || EMPTY_OBJECT;
+    const nextAnimationParams = (nextOptions && nextOptions.params) || EMPTY_OBJECT;
     const nextStateStyles = this.buildStyles(nextState, nextAnimationParams, errors);
 
     const queriedElements = new Set<any>();
@@ -62,30 +77,51 @@ export class AnimationTransitionFactory {
       delay: this.ast.options?.delay,
     };
 
-    const timelines = skipAstBuild ?
-        [] :
-        buildAnimationTimelines(
-            driver, element, this.ast.animation, enterClassName, leaveClassName, currentStateStyles,
-            nextStateStyles, animationOptions, subInstructions, errors);
+    const timelines = skipAstBuild
+      ? []
+      : buildAnimationTimelines(
+          driver,
+          element,
+          this.ast.animation,
+          enterClassName,
+          leaveClassName,
+          currentStateStyles,
+          nextStateStyles,
+          animationOptions,
+          subInstructions,
+          errors,
+        );
 
     let totalTime = 0;
-    timelines.forEach(tl => {
+    timelines.forEach((tl) => {
       totalTime = Math.max(tl.duration + tl.delay, totalTime);
     });
 
     if (errors.length) {
       return createTransitionInstruction(
-          element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-          nextStateStyles, [], [], preStyleMap, postStyleMap, totalTime, errors);
+        element,
+        this._triggerName,
+        currentState,
+        nextState,
+        isRemoval,
+        currentStateStyles,
+        nextStateStyles,
+        [],
+        [],
+        preStyleMap,
+        postStyleMap,
+        totalTime,
+        errors,
+      );
     }
 
-    timelines.forEach(tl => {
+    timelines.forEach((tl) => {
       const elm = tl.element;
       const preProps = getOrSetDefaultValue(preStyleMap, elm, new Set<string>());
-      tl.preStyleProps.forEach(prop => preProps.add(prop));
+      tl.preStyleProps.forEach((prop) => preProps.add(prop));
 
       const postProps = getOrSetDefaultValue(postStyleMap, elm, new Set<string>());
-      tl.postStyleProps.forEach(prop => postProps.add(prop));
+      tl.postStyleProps.forEach((prop) => postProps.add(prop));
 
       if (elm !== element) {
         queriedElements.add(elm);
@@ -97,9 +133,19 @@ export class AnimationTransitionFactory {
     }
 
     return createTransitionInstruction(
-        element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-        nextStateStyles, timelines, [...queriedElements.values()], preStyleMap, postStyleMap,
-        totalTime);
+      element,
+      this._triggerName,
+      currentState,
+      nextState,
+      isRemoval,
+      currentStateStyles,
+      nextStateStyles,
+      timelines,
+      [...queriedElements.values()],
+      preStyleMap,
+      postStyleMap,
+      totalTime,
+    );
   }
 }
 
@@ -118,7 +164,10 @@ export class AnimationTransitionFactory {
  *
  */
 function checkNonAnimatableInTimelines(
-    timelines: AnimationTimelineInstruction[], triggerName: string, driver: AnimationDriver): void {
+  timelines: AnimationTimelineInstruction[],
+  triggerName: string,
+  driver: AnimationDriver,
+): void {
   if (!driver.validateAnimatableStyleProperty) {
     return;
   }
@@ -128,16 +177,17 @@ function checkNonAnimatableInTimelines(
     // easing functions, it represents a property of the animation
     // which is not animatable but different values can be used
     // in different steps
-    'easing'
+    'easing',
   ]);
 
   const invalidNonAnimatableProps = new Set<string>();
 
   timelines.forEach(({keyframes}) => {
-    const nonAnimatablePropsInitialValues = new Map<string, string|number>();
-    keyframes.forEach(keyframe => {
-      const entriesToCheck =
-          Array.from(keyframe.entries()).filter(([prop]) => !allowedNonAnimatableProps.has(prop));
+    const nonAnimatablePropsInitialValues = new Map<string, string | number>();
+    keyframes.forEach((keyframe) => {
+      const entriesToCheck = Array.from(keyframe.entries()).filter(
+        ([prop]) => !allowedNonAnimatableProps.has(prop),
+      );
       for (const [prop, value] of entriesToCheck) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
           if (nonAnimatablePropsInitialValues.has(prop) && !invalidNonAnimatableProps.has(prop)) {
@@ -155,16 +205,23 @@ function checkNonAnimatableInTimelines(
 
   if (invalidNonAnimatableProps.size > 0) {
     console.warn(
-        `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
-        ' not animatable properties: ' + Array.from(invalidNonAnimatableProps).join(', ') + '\n' +
-        '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)');
+      `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
+        ' not animatable properties: ' +
+        Array.from(invalidNonAnimatableProps).join(', ') +
+        '\n' +
+        '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)',
+    );
   }
 }
 
 function oneOrMoreTransitionsMatch(
-    matchFns: TransitionMatcherFn[], currentState: any, nextState: any, element: any,
-    params: {[key: string]: any}): boolean {
-  return matchFns.some(fn => fn(currentState, nextState, element, params));
+  matchFns: TransitionMatcherFn[],
+  currentState: any,
+  nextState: any,
+  element: any,
+  params: {[key: string]: any},
+): boolean {
+  return matchFns.some((fn) => fn(currentState, nextState, element, params));
 }
 
 function applyParamDefaults(userParams: Record<string, any>, defaults: Record<string, any>) {
@@ -179,13 +236,15 @@ function applyParamDefaults(userParams: Record<string, any>, defaults: Record<st
 
 export class AnimationStateStyles {
   constructor(
-      private styles: StyleAst, private defaultParams: {[key: string]: any},
-      private normalizer: AnimationStyleNormalizer) {}
+    private styles: StyleAst,
+    private defaultParams: {[key: string]: any},
+    private normalizer: AnimationStyleNormalizer,
+  ) {}
 
   buildStyles(params: {[key: string]: any}, errors: Error[]): ɵStyleDataMap {
     const finalStyles: ɵStyleDataMap = new Map();
     const combinedParams = applyParamDefaults(params, this.defaultParams);
-    this.styles.styles.forEach(value => {
+    this.styles.styles.forEach((value) => {
       if (typeof value !== 'string') {
         value.forEach((val, prop) => {
           if (val) {

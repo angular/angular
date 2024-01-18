@@ -5,7 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationEvent, AnimationPlayer, AUTO_STYLE, NoopAnimationPlayer, ɵAnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleDataMap} from '@angular/animations';
+import {
+  AnimationEvent,
+  AnimationPlayer,
+  AUTO_STYLE,
+  NoopAnimationPlayer,
+  ɵAnimationGroupPlayer,
+  ɵPRE_STYLE as PRE_STYLE,
+  ɵStyleDataMap,
+} from '@angular/animations';
 
 import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {animationFailed} from '../error_helpers';
@@ -24,14 +32,16 @@ export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer
 }
 
 export function normalizeKeyframes(
-    normalizer: AnimationStyleNormalizer, keyframes: Array<ɵStyleDataMap>,
-    preStyles: ɵStyleDataMap = new Map(),
-    postStyles: ɵStyleDataMap = new Map()): Array<ɵStyleDataMap> {
+  normalizer: AnimationStyleNormalizer,
+  keyframes: Array<ɵStyleDataMap>,
+  preStyles: ɵStyleDataMap = new Map(),
+  postStyles: ɵStyleDataMap = new Map(),
+): Array<ɵStyleDataMap> {
   const errors: Error[] = [];
   const normalizedKeyframes: Array<ɵStyleDataMap> = [];
   let previousOffset = -1;
-  let previousKeyframe: ɵStyleDataMap|null = null;
-  keyframes.forEach(kf => {
+  let previousKeyframe: ɵStyleDataMap | null = null;
+  keyframes.forEach((kf) => {
     const offset = kf.get('offset') as number;
     const isSameOffset = offset == previousOffset;
     const normalizedKeyframe: ɵStyleDataMap = (isSameOffset && previousKeyframe) || new Map();
@@ -50,8 +60,12 @@ export function normalizeKeyframes(
             break;
 
           default:
-            normalizedValue =
-                normalizer.normalizeStyleValue(prop, normalizedProp, normalizedValue, errors);
+            normalizedValue = normalizer.normalizeStyleValue(
+              prop,
+              normalizedProp,
+              normalizedValue,
+              errors,
+            );
             break;
         }
       }
@@ -71,8 +85,11 @@ export function normalizeKeyframes(
 }
 
 export function listenOnPlayer(
-    player: AnimationPlayer, eventName: string, event: AnimationEvent|undefined,
-    callback: (event: any) => any) {
+  player: AnimationPlayer,
+  eventName: string,
+  event: AnimationEvent | undefined,
+  callback: (event: any) => any,
+) {
   switch (eventName) {
     case 'start':
       player.onStart(() => callback(event && copyAnimationEvent(event, 'start', player)));
@@ -87,12 +104,21 @@ export function listenOnPlayer(
 }
 
 export function copyAnimationEvent(
-    e: AnimationEvent, phaseName: string, player: AnimationPlayer): AnimationEvent {
+  e: AnimationEvent,
+  phaseName: string,
+  player: AnimationPlayer,
+): AnimationEvent {
   const totalTime = player.totalTime;
   const disabled = (player as any).disabled ? true : false;
   const event = makeAnimationEvent(
-      e.element, e.triggerName, e.fromState, e.toState, phaseName || e.phaseName,
-      totalTime == undefined ? e.totalTime : totalTime, disabled);
+    e.element,
+    e.triggerName,
+    e.fromState,
+    e.toState,
+    phaseName || e.phaseName,
+    totalTime == undefined ? e.totalTime : totalTime,
+    disabled,
+  );
   const data = (e as any)['_data'];
   if (data != null) {
     (event as any)['_data'] = data;
@@ -101,15 +127,21 @@ export function copyAnimationEvent(
 }
 
 export function makeAnimationEvent(
-    element: any, triggerName: string, fromState: string, toState: string, phaseName: string = '',
-    totalTime: number = 0, disabled?: boolean): AnimationEvent {
+  element: any,
+  triggerName: string,
+  fromState: string,
+  toState: string,
+  phaseName: string = '',
+  totalTime: number = 0,
+  disabled?: boolean,
+): AnimationEvent {
   return {element, triggerName, fromState, toState, phaseName, totalTime, disabled: !!disabled};
 }
 
 export function getOrSetDefaultValue<T, V>(map: Map<T, V>, key: T, defaultValue: V) {
   let value = map.get(key);
   if (!value) {
-    map.set(key, value = defaultValue);
+    map.set(key, (value = defaultValue));
   }
   return value;
 }
@@ -121,11 +153,11 @@ export function parseTimelineCommand(command: string): [string, string] {
   return [id, action];
 }
 
-const documentElement: HTMLElement|null =
-    /* @__PURE__ */ (() => typeof document === 'undefined' ? null : document.documentElement)();
+const documentElement: HTMLElement | null = /* @__PURE__ */ (() =>
+  typeof document === 'undefined' ? null : document.documentElement)();
 
-export function getParentElement(element: any): unknown|null {
-  const parent = element.parentNode || element.host || null;  // consider host to support shadow DOM
+export function getParentElement(element: any): unknown | null {
+  const parent = element.parentNode || element.host || null; // consider host to support shadow DOM
   if (parent === documentElement) {
     return null;
   }
@@ -135,15 +167,15 @@ export function getParentElement(element: any): unknown|null {
 function containsVendorPrefix(prop: string): boolean {
   // Webkit is the only real popular vendor prefix nowadays
   // cc: http://shouldiprefix.com/
-  return prop.substring(1, 6) == 'ebkit';  // webkit or Webkit
+  return prop.substring(1, 6) == 'ebkit'; // webkit or Webkit
 }
 
-let _CACHED_BODY: {style: any}|null = null;
+let _CACHED_BODY: {style: any} | null = null;
 let _IS_WEBKIT = false;
 export function validateStyleProperty(prop: string): boolean {
   if (!_CACHED_BODY) {
     _CACHED_BODY = getBodyNode() || {};
-    _IS_WEBKIT = _CACHED_BODY!.style ? ('WebkitAppearance' in _CACHED_BODY!.style) : false;
+    _IS_WEBKIT = _CACHED_BODY!.style ? 'WebkitAppearance' in _CACHED_BODY!.style : false;
   }
 
   let result = true;
@@ -162,7 +194,7 @@ export function validateWebAnimatableStyleProperty(prop: string): boolean {
   return ANIMATABLE_PROP_SET.has(prop);
 }
 
-export function getBodyNode(): any|null {
+export function getBodyNode(): any | null {
   if (typeof document != 'undefined') {
     return document.body;
   }
