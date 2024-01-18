@@ -86,7 +86,7 @@ export interface AnimationPlayer {
   /**
    * The parent of this player, if any.
    */
-  parentPlayer: AnimationPlayer|null;
+  parentPlayer: AnimationPlayer | null;
   /**
    * The total run time of the animation, in milliseconds.
    */
@@ -128,7 +128,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _destroyed = false;
   private _finished = false;
   private _position = 0;
-  public parentPlayer: AnimationPlayer|null = null;
+  public parentPlayer: AnimationPlayer | null = null;
   public readonly totalTime: number;
   constructor(duration: number = 0, delay: number = 0) {
     this.totalTime = duration + delay;
@@ -136,7 +136,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
-      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns.forEach((fn) => fn());
       this._onDoneFns = [];
     }
   }
@@ -169,7 +169,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   }
 
   private _onStart() {
-    this._onStartFns.forEach(fn => fn());
+    this._onStartFns.forEach((fn) => fn());
     this._onStartFns = [];
   }
 
@@ -185,7 +185,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
         this._onStart();
       }
       this.finish();
-      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns.forEach((fn) => fn());
       this._onDestroyFns = [];
     }
   }
@@ -205,7 +205,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
-    methods.forEach(fn => fn());
+    methods.forEach((fn) => fn());
     methods.length = 0;
   }
 }

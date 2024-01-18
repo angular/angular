@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {DOCUMENT} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, Inject, inject, Injectable, Renderer2, RendererFactory2, RendererType2, ViewEncapsulation, ɵAnimationRendererType as AnimationRendererType, ɵRuntimeError as RuntimeError,} from '@angular/core';
+import {
+  ANIMATION_MODULE_TYPE,
+  Inject,
+  inject,
+  Injectable,
+  Renderer2,
+  RendererFactory2,
+  RendererType2,
+  ViewEncapsulation,
+  ɵAnimationRendererType as AnimationRendererType,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 
 import {AnimationMetadata, AnimationOptions, sequence} from './animation_metadata';
 import {RuntimeErrorCode} from './errors';
@@ -66,7 +77,7 @@ export abstract class AnimationBuilder {
    * @returns A factory object that can create a player for the defined animation.
    * @see {@link animate}
    */
-  abstract build(animation: AnimationMetadata|AnimationMetadata[]): AnimationFactory;
+  abstract build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory;
 }
 
 /**
@@ -109,14 +120,15 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
       // We only support AnimationRenderer & DynamicDelegationRenderer for this AnimationBuilder
 
       throw new RuntimeError(
-          RuntimeErrorCode.BROWSER_ANIMATION_BUILDER_INJECTED_WITHOUT_ANIMATIONS,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
-              'Angular detected that the `AnimationBuilder` was injected, but animation support was not enabled. ' +
-                  'Please make sure that you enable animations in your application by calling `provideAnimations()` or `provideAnimationsAsync()` function.');
+        RuntimeErrorCode.BROWSER_ANIMATION_BUILDER_INJECTED_WITHOUT_ANIMATIONS,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'Angular detected that the `AnimationBuilder` was injected, but animation support was not enabled. ' +
+            'Please make sure that you enable animations in your application by calling `provideAnimations()` or `provideAnimationsAsync()` function.',
+      );
     }
   }
 
-  override build(animation: AnimationMetadata|AnimationMetadata[]): AnimationFactory {
+  override build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory {
     const id = this._nextAnimationId;
     this._nextAnimationId++;
     const entry = Array.isArray(animation) ? sequence(animation) : animation;
@@ -127,8 +139,8 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
 
 class BrowserAnimationFactory extends AnimationFactory {
   constructor(
-      private _id: number,
-      private _renderer: Renderer2,
+    private _id: number,
+    private _renderer: Renderer2,
   ) {
     super();
   }
@@ -139,14 +151,14 @@ class BrowserAnimationFactory extends AnimationFactory {
 }
 
 class RendererAnimationPlayer implements AnimationPlayer {
-  public parentPlayer: AnimationPlayer|null = null;
+  public parentPlayer: AnimationPlayer | null = null;
   private _started = false;
 
   constructor(
-      public id: number,
-      public element: any,
-      options: AnimationOptions,
-      private _renderer: Renderer2,
+    public id: number,
+    public element: any,
+    options: AnimationOptions,
+    private _renderer: Renderer2,
   ) {
     this._command('create', options);
   }
@@ -217,12 +229,12 @@ class RendererAnimationPlayer implements AnimationPlayer {
 }
 
 function issueAnimationCommand(
-    renderer: Renderer2,
-    element: any,
-    id: number,
-    command: string,
-    args: any[],
-    ): void {
+  renderer: Renderer2,
+  element: any,
+  id: number,
+  command: string,
+  args: any[],
+): void {
   renderer.setProperty(element, `@@${id}:${command}`, args);
 }
 
@@ -232,8 +244,8 @@ function issueAnimationCommand(
  */
 
 function unwrapAnimationRenderer(
-    renderer: Renderer2,
-    ): {engine: {players: AnimationPlayer[]}}|null {
+  renderer: Renderer2,
+): {engine: {players: AnimationPlayer[]}} | null {
   const type = (renderer as unknown as {ɵtype: AnimationRendererType}).ɵtype;
   if (type === AnimationRendererType.Regular) {
     return renderer as any;

@@ -5,7 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPlayer, AUTO_STYLE, ɵStyleDataMap} from '@angular/animations';
+import {
+  AnimationMetadata,
+  AnimationMetadataType,
+  AnimationOptions,
+  AnimationPlayer,
+  AUTO_STYLE,
+  ɵStyleDataMap,
+} from '@angular/animations';
 
 import {Ast} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
@@ -13,12 +20,23 @@ import {buildAnimationTimelines} from '../dsl/animation_timeline_builder';
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {createAnimationFailed, missingOrDestroyedAnimation, missingPlayer, registerFailed} from '../error_helpers';
+import {
+  createAnimationFailed,
+  missingOrDestroyedAnimation,
+  missingPlayer,
+  registerFailed,
+} from '../error_helpers';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util';
 import {warnRegister} from '../warning_helpers';
 
 import {AnimationDriver} from './animation_driver';
-import {getOrSetDefaultValue, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
+import {
+  getOrSetDefaultValue,
+  listenOnPlayer,
+  makeAnimationEvent,
+  normalizeKeyframes,
+  optimizeGroupPlayer,
+} from './shared';
 
 const EMPTY_INSTRUCTION_MAP = new ElementInstructionMap();
 
@@ -28,10 +46,12 @@ export class TimelineAnimationEngine {
   public players: AnimationPlayer[] = [];
 
   constructor(
-      public bodyNode: any, private _driver: AnimationDriver,
-      private _normalizer: AnimationStyleNormalizer) {}
+    public bodyNode: any,
+    private _driver: AnimationDriver,
+    private _normalizer: AnimationStyleNormalizer,
+  ) {}
 
-  register(id: string, metadata: AnimationMetadata|AnimationMetadata[]) {
+  register(id: string, metadata: AnimationMetadata | AnimationMetadata[]) {
     const errors: Error[] = [];
     const warnings: string[] = [];
     const ast = buildAnimationAst(this._driver, metadata, errors, warnings);
@@ -46,8 +66,10 @@ export class TimelineAnimationEngine {
   }
 
   private _buildPlayer(
-      i: AnimationTimelineInstruction, preStyles: ɵStyleDataMap,
-      postStyles?: ɵStyleDataMap): AnimationPlayer {
+    i: AnimationTimelineInstruction,
+    preStyles: ɵStyleDataMap,
+    postStyles?: ɵStyleDataMap,
+  ): AnimationPlayer {
     const element = i.element;
     const keyframes = normalizeKeyframes(this._normalizer, i.keyframes, preStyles, postStyles);
     return this._driver.animate(element, keyframes, i.duration, i.delay, i.easing, [], true);
@@ -62,12 +84,24 @@ export class TimelineAnimationEngine {
 
     if (ast) {
       instructions = buildAnimationTimelines(
-          this._driver, element, ast, ENTER_CLASSNAME, LEAVE_CLASSNAME, new Map(), new Map(),
-          options, EMPTY_INSTRUCTION_MAP, errors);
-      instructions.forEach(inst => {
+        this._driver,
+        element,
+        ast,
+        ENTER_CLASSNAME,
+        LEAVE_CLASSNAME,
+        new Map(),
+        new Map(),
+        options,
+        EMPTY_INSTRUCTION_MAP,
+        errors,
+      );
+      instructions.forEach((inst) => {
         const styles = getOrSetDefaultValue(
-            autoStylesMap, inst.element, new Map<string, string|number|null>());
-        inst.postStyleProps.forEach(prop => styles.set(prop, null));
+          autoStylesMap,
+          inst.element,
+          new Map<string, string | number | null>(),
+        );
+        inst.postStyleProps.forEach((prop) => styles.set(prop, null));
       });
     } else {
       errors.push(missingOrDestroyedAnimation());
@@ -84,7 +118,7 @@ export class TimelineAnimationEngine {
       });
     });
 
-    const players = instructions.map(i => {
+    const players = instructions.map((i) => {
       const styles = autoStylesMap.get(i.element);
       return this._buildPlayer(i, new Map(), styles);
     });
@@ -114,8 +148,12 @@ export class TimelineAnimationEngine {
     return player;
   }
 
-  listen(id: string, element: string, eventName: string, callback: (event: any) => any):
-      () => void {
+  listen(
+    id: string,
+    element: string,
+    eventName: string,
+    callback: (event: any) => any,
+  ): () => void {
     // triggerName, fromState, toState are all ignored for timeline animations
     const baseEvent = makeAnimationEvent(element, '', '', '');
     listenOnPlayer(this._getPlayer(id), eventName, baseEvent, callback);

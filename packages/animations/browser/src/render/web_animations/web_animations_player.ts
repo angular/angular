@@ -32,13 +32,15 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   public readonly domPlayer!: Animation;
   public time = 0;
 
-  public parentPlayer: AnimationPlayer|null = null;
+  public parentPlayer: AnimationPlayer | null = null;
   public currentSnapshot: ɵStyleDataMap = new Map();
 
   constructor(
-      public element: any, public keyframes: Array<ɵStyleDataMap>,
-      public options: {[key: string]: string|number},
-      private _specialStyles?: SpecialCasedStyles|null) {
+    public element: any,
+    public keyframes: Array<ɵStyleDataMap>,
+    public options: {[key: string]: string | number},
+    private _specialStyles?: SpecialCasedStyles | null,
+  ) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
@@ -47,7 +49,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
-      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns.forEach((fn) => fn());
       this._onDoneFns = [];
     }
   }
@@ -86,15 +88,18 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   private _convertKeyframesToObject(keyframes: Array<ɵStyleDataMap>): any[] {
     const kfs: any[] = [];
-    keyframes.forEach(frame => {
+    keyframes.forEach((frame) => {
       kfs.push(Object.fromEntries(frame));
     });
     return kfs;
   }
 
   /** @internal */
-  _triggerWebAnimation(element: HTMLElement, keyframes: Array<ɵStyleDataMap>, options: any):
-      Animation {
+  _triggerWebAnimation(
+    element: HTMLElement,
+    keyframes: Array<ɵStyleDataMap>,
+    options: any,
+  ): Animation {
     return element.animate(this._convertKeyframesToObject(keyframes), options);
   }
 
@@ -115,7 +120,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   play(): void {
     this._buildPlayer();
     if (!this.hasStarted()) {
-      this._onStartFns.forEach(fn => fn());
+      this._onStartFns.forEach((fn) => fn());
       this._onStartFns = [];
       this._started = true;
       if (this._specialStyles) {
@@ -171,7 +176,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       if (this._specialStyles) {
         this._specialStyles.destroy();
       }
-      this._onDestroyFns.forEach(fn => fn());
+      this._onDestroyFns.forEach((fn) => fn());
       this._onDestroyFns = [];
     }
   }
@@ -212,7 +217,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName === 'start' ? this._onStartFns : this._onDoneFns;
-    methods.forEach(fn => fn());
+    methods.forEach((fn) => fn());
     methods.length = 0;
   }
 }

@@ -24,7 +24,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _destroyed = false;
   private _onDestroyFns: Function[] = [];
 
-  public parentPlayer: AnimationPlayer|null = null;
+  public parentPlayer: AnimationPlayer | null = null;
   public totalTime: number = 0;
   public readonly players: AnimationPlayer[];
 
@@ -38,7 +38,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     if (total == 0) {
       queueMicrotask(() => this._onFinish());
     } else {
-      this.players.forEach(player => {
+      this.players.forEach((player) => {
         player.onDone(() => {
           if (++doneCount == total) {
             this._onFinish();
@@ -63,13 +63,13 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _onFinish() {
     if (!this._finished) {
       this._finished = true;
-      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns.forEach((fn) => fn());
       this._onDoneFns = [];
     }
   }
 
   init(): void {
-    this.players.forEach(player => player.init());
+    this.players.forEach((player) => player.init());
   }
 
   onStart(fn: () => void): void {
@@ -79,7 +79,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   private _onStart() {
     if (!this.hasStarted()) {
       this._started = true;
-      this._onStartFns.forEach(fn => fn());
+      this._onStartFns.forEach((fn) => fn());
       this._onStartFns = [];
     }
   }
@@ -101,20 +101,20 @@ export class AnimationGroupPlayer implements AnimationPlayer {
       this.init();
     }
     this._onStart();
-    this.players.forEach(player => player.play());
+    this.players.forEach((player) => player.play());
   }
 
   pause(): void {
-    this.players.forEach(player => player.pause());
+    this.players.forEach((player) => player.pause());
   }
 
   restart(): void {
-    this.players.forEach(player => player.restart());
+    this.players.forEach((player) => player.restart());
   }
 
   finish(): void {
     this._onFinish();
-    this.players.forEach(player => player.finish());
+    this.players.forEach((player) => player.finish());
   }
 
   destroy(): void {
@@ -125,14 +125,14 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     if (!this._destroyed) {
       this._destroyed = true;
       this._onFinish();
-      this.players.forEach(player => player.destroy());
-      this._onDestroyFns.forEach(fn => fn());
+      this.players.forEach((player) => player.destroy());
+      this._onDestroyFns.forEach((fn) => fn());
       this._onDestroyFns = [];
     }
   }
 
   reset(): void {
-    this.players.forEach(player => player.reset());
+    this.players.forEach((player) => player.reset());
     this._destroyed = false;
     this._finished = false;
     this._started = false;
@@ -140,24 +140,26 @@ export class AnimationGroupPlayer implements AnimationPlayer {
 
   setPosition(p: number): void {
     const timeAtPosition = p * this.totalTime;
-    this.players.forEach(player => {
+    this.players.forEach((player) => {
       const position = player.totalTime ? Math.min(1, timeAtPosition / player.totalTime) : 1;
       player.setPosition(position);
     });
   }
 
   getPosition(): number {
-    const longestPlayer =
-        this.players.reduce((longestSoFar: AnimationPlayer|null, player: AnimationPlayer) => {
-          const newPlayerIsLongest =
-              longestSoFar === null || player.totalTime > longestSoFar.totalTime;
-          return newPlayerIsLongest ? player : longestSoFar;
-        }, null);
+    const longestPlayer = this.players.reduce(
+      (longestSoFar: AnimationPlayer | null, player: AnimationPlayer) => {
+        const newPlayerIsLongest =
+          longestSoFar === null || player.totalTime > longestSoFar.totalTime;
+        return newPlayerIsLongest ? player : longestSoFar;
+      },
+      null,
+    );
     return longestPlayer != null ? longestPlayer.getPosition() : 0;
   }
 
   beforeDestroy(): void {
-    this.players.forEach(player => {
+    this.players.forEach((player) => {
       if (player.beforeDestroy) {
         player.beforeDestroy();
       }
@@ -167,7 +169,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
-    methods.forEach(fn => fn());
+    methods.forEach((fn) => fn());
     methods.length = 0;
   }
 }
