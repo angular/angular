@@ -676,12 +676,10 @@ export type AmbientZone = Zone;
 
 const global = globalThis as any;
 
-// Initialize before it's accessed below.
 // __Zone_symbol_prefix global can be used to override the default zone
 // symbol prefix with a custom one if needed.
-const symbolPrefix = global['__Zone_symbol_prefix'] || '__zone_symbol__';
-
 export function __symbol__(name: string) {
+  const symbolPrefix = global['__Zone_symbol_prefix'] || '__zone_symbol__';
   return symbolPrefix + name;
 }
 
