@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵDeferBlockDetails as DeferBlockDetails, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵDeferBlockDetails as DeferBlockDetails, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
+import {firstValueFrom, Subscription} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
+import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
 
 
 /**
@@ -18,7 +19,7 @@ import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_c
  *
  * @publicApi
  */
-export class ComponentFixture<T> {
+export abstract class ComponentFixture<T> {
   /**
    * The DebugElement associated with the root element of this component.
    */
@@ -45,25 +46,24 @@ export class ComponentFixture<T> {
   changeDetectorRef: ChangeDetectorRef;
 
   private _renderer: RendererFactory2|null|undefined;
-  private _isStable: boolean = true;
   private _isDestroyed: boolean = false;
-  private _resolve: ((result: boolean) => void)|null = null;
-  private _promise: Promise<boolean>|null = null;
-  private readonly noZoneOptionIsSet = inject(ComponentFixtureNoNgZone, {optional: true});
-  private _ngZone: NgZone = this.noZoneOptionIsSet ? new NoopNgZone() : inject(NgZone);
-  private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
-  private effectRunner = inject(EffectScheduler);
-  private _subscriptions = new Subscription();
+  /** @internal */
+  protected readonly _noZoneOptionIsSet = inject(ComponentFixtureNoNgZone, {optional: true});
+  /** @internal */
+  protected _ngZone: NgZone = this._noZoneOptionIsSet ? new NoopNgZone() : inject(NgZone);
+  /** @internal */
+  protected _effectRunner = inject(EffectScheduler);
   // Inject ApplicationRef to ensure NgZone stableness causes after render hooks to run
   // This will likely happen as a result of fixture.detectChanges because it calls ngZone.run
   // This is a crazy way of doing things but hey, it's the world we live in.
   // The zoneless scheduler should instead do this more imperatively by attaching
   // the `ComponentRef` to `ApplicationRef` and calling `appRef.tick` as the `detectChanges`
   // behavior.
-  private appRef = inject(ApplicationRef);
+  /** @internal */
+  protected readonly _appRef = inject(ApplicationRef);
 
   // TODO(atscott): Remove this from public API
-  public ngZone = this.noZoneOptionIsSet ? null : this._ngZone;
+  ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
 
   /** @nodoc */
   constructor(public componentRef: ComponentRef<T>) {
@@ -73,10 +73,146 @@ export class ComponentFixture<T> {
     this.componentInstance = componentRef.instance;
     this.nativeElement = this.elementRef.nativeElement;
     this.componentRef = componentRef;
-    this.setupNgZone();
   }
 
-  private setupNgZone() {
+  /**
+   * Trigger a change detection cycle for the component.
+   */
+  abstract detectChanges(checkNoChanges?: boolean): void;
+
+  /**
+   * Do a change detection run to make sure there were no changes.
+   */
+  checkNoChanges(): void {
+    this.changeDetectorRef.checkNoChanges();
+  }
+
+  /**
+   * Set whether the fixture should autodetect changes.
+   *
+   * Also runs detectChanges once so that any existing change is detected.
+   */
+  abstract autoDetectChanges(autoDetect?: boolean): void;
+
+  /**
+   * Return whether the fixture is currently stable or has async tasks that have not been completed
+   * yet.
+   */
+  abstract isStable(): boolean;
+
+  /**
+   * Get a promise that resolves when the fixture is stable.
+   *
+   * This can be used to resume testing after events have triggered asynchronous activity or
+   * asynchronous change detection.
+   */
+  abstract whenStable(): Promise<any>;
+
+  /**
+   * Retrieves all defer block fixtures in the component fixture.
+   *
+   * @developerPreview
+   */
+  getDeferBlocks(): Promise<DeferBlockFixture[]> {
+    const deferBlocks: DeferBlockDetails[] = [];
+    const lView = (this.componentRef.hostView as any)['_lView'];
+    getDeferBlocks(lView, deferBlocks);
+
+    const deferBlockFixtures = [];
+    for (const block of deferBlocks) {
+      deferBlockFixtures.push(new DeferBlockFixture(block, this));
+    }
+
+    return Promise.resolve(deferBlockFixtures);
+  }
+
+
+  private _getRenderer() {
+    if (this._renderer === undefined) {
+      this._renderer = this.componentRef.injector.get(RendererFactory2, null);
+    }
+    return this._renderer as RendererFactory2 | null;
+  }
+
+  /**
+   * Get a promise that resolves when the ui state is stable following animations.
+   */
+  whenRenderingDone(): Promise<any> {
+    const renderer = this._getRenderer();
+    if (renderer && renderer.whenRenderingDone) {
+      return renderer.whenRenderingDone();
+    }
+    return this.whenStable();
+  }
+
+  /**
+   * Trigger component destruction.
+   */
+  destroy(): void {
+    if (!this._isDestroyed) {
+      this.componentRef.destroy();
+      this._isDestroyed = true;
+    }
+  }
+}
+
+/**
+ * ComponentFixture behavior that actually attaches the component to the application to ensure
+ * behaviors between fixture and application do not diverge. `detectChanges` is disabled by default
+ * (instead, tests should wait for the scheduler to detect changes), `whenStable` is directly the
+ * `ApplicationRef.isStable`, and `autoDetectChanges` cannot be disabled.
+ */
+export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
+  private readonly disableDetectChangesError =
+      inject(AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, {optional: true}) ?? false;
+  private readonly pendingTasks = inject(PendingTasks);
+
+  initialize(): void {
+    this._appRef.attachView(this.componentRef.hostView);
+  }
+
+  override detectChanges(checkNoChanges: boolean = true): void {
+    if (!this.disableDetectChangesError) {
+      throw new Error(
+          'Do not use `detectChanges` directly when using zoneless change detection.' +
+          ' Instead, wait for the next render or `fixture.whenStable`.');
+    } else if (!checkNoChanges) {
+      throw new Error(
+          'Cannot disable `checkNoChanges` in this configuration. ' +
+          'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.');
+    }
+    this._effectRunner.flush();
+    this._appRef.tick();
+    this._effectRunner.flush();
+  }
+
+  override isStable(): boolean {
+    return !this.pendingTasks.hasPendingTasks.value;
+  }
+
+  override whenStable(): Promise<boolean> {
+    if (this.isStable()) {
+      return Promise.resolve(false);
+    }
+    return firstValueFrom(this._appRef.isStable.pipe(filter(stable => stable)));
+  }
+
+  override autoDetectChanges(autoDetect?: boolean|undefined): void {
+    throw new Error('Cannot call autoDetectChanges when using change detection scheduling.');
+  }
+}
+
+/**
+ * ComponentFixture behavior that attempts to act as a "mini application".
+ */
+export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
+  private _subscriptions = new Subscription();
+  private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
+  private _isStable: boolean = true;
+  private _promise: Promise<boolean>|null = null;
+  private _resolve: ((result: boolean) => void)|null = null;
+
+  initialize(): void {
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
@@ -123,63 +259,26 @@ export class ComponentFixture<T> {
     });
   }
 
-  private _tick(checkNoChanges: boolean) {
-    this.changeDetectorRef.detectChanges();
-    if (checkNoChanges) {
-      this.checkNoChanges();
-    }
-  }
-
-  /**
-   * Trigger a change detection cycle for the component.
-   */
-  detectChanges(checkNoChanges: boolean = true): void {
-    this.effectRunner.flush();
+  override detectChanges(checkNoChanges = true): void {
+    this._effectRunner.flush();
     // Run the change detection inside the NgZone so that any async tasks as part of the change
     // detection are captured by the zone and can be waited for in isStable.
     this._ngZone.run(() => {
-      this._tick(checkNoChanges);
+      this.changeDetectorRef.detectChanges();
+      if (checkNoChanges) {
+        this.checkNoChanges();
+      }
     });
     // Run any effects that were created/dirtied during change detection. Such effects might become
     // dirty in response to input signals changing.
-    this.effectRunner.flush();
+    this._effectRunner.flush();
   }
 
-  /**
-   * Do a change detection run to make sure there were no changes.
-   */
-  checkNoChanges(): void {
-    this.changeDetectorRef.checkNoChanges();
-  }
-
-  /**
-   * Set whether the fixture should autodetect changes.
-   *
-   * Also runs detectChanges once so that any existing change is detected.
-   */
-  autoDetectChanges(autoDetect: boolean = true) {
-    if (this.noZoneOptionIsSet) {
-      throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set');
-    }
-    this._autoDetect = autoDetect;
-    this.detectChanges();
-  }
-
-  /**
-   * Return whether the fixture is currently stable or has async tasks that have not been completed
-   * yet.
-   */
-  isStable(): boolean {
+  override isStable(): boolean {
     return this._isStable && !this._ngZone.hasPendingMacrotasks;
   }
 
-  /**
-   * Get a promise that resolves when the fixture is stable.
-   *
-   * This can be used to resume testing after events have triggered asynchronous activity or
-   * asynchronous change detection.
-   */
-  whenStable(): Promise<any> {
+  override whenStable(): Promise<boolean> {
     if (this.isStable()) {
       return Promise.resolve(false);
     } else if (this._promise !== null) {
@@ -192,51 +291,16 @@ export class ComponentFixture<T> {
     }
   }
 
-  /**
-   * Retrieves all defer block fixtures in the component fixture.
-   *
-   * @developerPreview
-   */
-  getDeferBlocks(): Promise<DeferBlockFixture[]> {
-    const deferBlocks: DeferBlockDetails[] = [];
-    const lView = (this.componentRef.hostView as any)['_lView'];
-    getDeferBlocks(lView, deferBlocks);
-
-    const deferBlockFixtures = [];
-    for (const block of deferBlocks) {
-      deferBlockFixtures.push(new DeferBlockFixture(block, this));
+  override autoDetectChanges(autoDetect = true): void {
+    if (this._noZoneOptionIsSet) {
+      throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
     }
-
-    return Promise.resolve(deferBlockFixtures);
+    this._autoDetect = autoDetect;
+    this.detectChanges();
   }
 
-
-  private _getRenderer() {
-    if (this._renderer === undefined) {
-      this._renderer = this.componentRef.injector.get(RendererFactory2, null);
-    }
-    return this._renderer as RendererFactory2 | null;
-  }
-
-  /**
-   * Get a promise that resolves when the ui state is stable following animations.
-   */
-  whenRenderingDone(): Promise<any> {
-    const renderer = this._getRenderer();
-    if (renderer && renderer.whenRenderingDone) {
-      return renderer.whenRenderingDone();
-    }
-    return this.whenStable();
-  }
-
-  /**
-   * Trigger component destruction.
-   */
-  destroy(): void {
-    if (!this._isDestroyed) {
-      this.componentRef.destroy();
-      this._subscriptions.unsubscribe();
-      this._isDestroyed = true;
-    }
+  override destroy(): void {
+    this._subscriptions.unsubscribe();
+    super.destroy();
   }
 }
