@@ -127,6 +127,12 @@ function getMinimumVersionForPartialOutput(meta: R3DirectiveMetadata): string {
     minVersion = '17.1.0';
   }
 
+  // If there are signal-based queries, partial output generates an extra field
+  // that should be parsed by linkers. Ensure a proper minimum linker version.
+  if (meta.queries.some(q => q.isSignal) || meta.viewQueries.some(q => q.isSignal)) {
+    minVersion = '17.2.0';
+  }
+
   return minVersion;
 }
 
@@ -165,6 +171,9 @@ function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
   meta.set('read', query.read);
   if (query.static) {
     meta.set('static', o.literal(true));
+  }
+  if (query.isSignal) {
+    meta.set('isSignal', o.literal(true));
   }
   return meta.toLiteralMap();
 }
