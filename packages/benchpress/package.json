@@ -4,7 +4,7 @@
   "description": "Benchpress - a framework for e2e performance tests",
   "dependencies": {
     "@angular/core": "^17.0.0",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.2.0"
   },
   "repository": {
     "type": "git",

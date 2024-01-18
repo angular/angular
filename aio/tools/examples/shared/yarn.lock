@@ -2194,10 +2194,10 @@
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-5.1.0.tgz#581b2f7393942a56acd3542fe168c803d7d588d6"
   integrity sha512-XOV0KsqXNX2gUSqk05RWeolIMgaAQ7+l/ozOBoQ8NGwLg+E7J9vgagODtNgfim4jCzEUP0oJ3gnXeC+Zv+Xi1A==
 
-"@types/jquery@3.5.23":
-  version "3.5.23"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.23.tgz#f99f08533ad5a5c4cb1d0dc131ecf5e2a73eb182"
-  integrity sha512-LwtD05mlY8iPF/1aB8dOZaYhRDothbHA7csnAxhyqMnQxj90Fo3J4nPhmHiA0OMTwHhjwZdE1Lpd6UK+b+C6Bw==
+"@types/jquery@3.5.29":
+  version "3.5.29"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.29.tgz#3c06a1f519cd5fc3a7a108971436c00685b5dcea"
+  integrity sha512-oXQQC9X9MOPRrMhPHHOsXqeQDnWeCDT3PelUIg/Oy8FAbzSZtFHRjc7IpbfFVmpLtJ+UOoywpRsuO5Jxjybyeg==
   dependencies:
     "@types/sizzle" "*"
 
@@ -2558,10 +2558,10 @@ ajv@^6.12.3, ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-angular-in-memory-web-api@~0.16.0:
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/angular-in-memory-web-api/-/angular-in-memory-web-api-0.16.0.tgz#04e380798a4c96682e7fa9de6f9a1d5254e6ad19"
-  integrity sha512-+1HAyB35V0VrCSbQHBdDi5V9M/9x3SXfOyh3pyL2Hg+ZmVBqosETElxRagRY3QsXCAb3YvxYiJaBSSmFlkxOMQ==
+angular-in-memory-web-api@~0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/angular-in-memory-web-api/-/angular-in-memory-web-api-0.17.0.tgz#e0d8935f5fc67e8521ff380eae0aee7f4520a752"
+  integrity sha512-q1VPfyg8B0dBKjjURitxFnUBqEiR4JyATxgHuAVTLfgcMJwJIBqfEYrejCPRE2GslzqMjf2PdLklxoYs/HDd7Q==
   dependencies:
     tslib "^2.3.0"
 
