@@ -173,7 +173,7 @@ describe('type check blocks diagnostics', () => {
         pipeName: 'test',
       }];
       const block = tcbWithSpans(TEMPLATE, PIPES);
-      expect(block).toContain('var _pipe1: i0.TestPipe = null!');
+      expect(block).toContain('var _pipe1 = null! as i0.TestPipe');
       expect(block).toContain(
           '(_pipe1.transform /*7,11*/(((this).a /*3,4*/) /*3,4*/, ((this).b /*12,13*/) /*12,13*/) /*3,13*/);');
     });
@@ -213,6 +213,37 @@ describe('type check blocks diagnostics', () => {
         const TEMPLATE = `<my-cmp [inputA]="''"></my-cmp>`;
         expect(tcbWithSpans(TEMPLATE, DIRECTIVES))
             .toContain('_t1.inputA /*9,15*/ = ("" /*18,20*/) /*8,21*/;');
+      });
+    });
+
+    describe('control flow', () => {
+      it('@for', () => {
+        const template = `@for (user of users; track user; let i = $index) { {{i}} }`;
+        // user variable
+        expect(tcbWithSpans(template, [])).toContain('const _t1 /*6,10*/');
+        expect(tcbWithSpans(template, [])).toContain('(this).users /*14,19*/');
+        // index variable
+        expect(tcbWithSpans(template, []))
+            .toContain('var _t2 /*37,38*/ = null! as number /*T:VAE*/ /*37,47*/');
+        // track expression
+        expect(tcbWithSpans(template, [])).toContain('_t1 /*27,31*/;');
+      });
+
+      it('@for with comma separated variables', () => {
+        const template =
+            `@for (x of y; track x; let i = $index, odd   =    $odd,e_v_e_n=$even) { {{i + odd + e_v_e_n}} }`;
+        expect(tcbWithSpans(template, []))
+            .toContain('var _t2 /*27,28*/ = null! as number /*T:VAE*/ /*27,37*/');
+        expect(tcbWithSpans(template, []))
+            .toContain('var _t3 /*39,42*/ = null! as boolean /*T:VAE*/ /*39,54*/');
+        expect(tcbWithSpans(template, []))
+            .toContain('var _t4 /*55,62*/ = null! as boolean /*T:VAE*/ /*55,68*/');
+      });
+
+      it('@if', () => {
+        const template = `@if (x; as alias) { {{alias}} }`;
+        expect(tcbWithSpans(template, [])).toContain('var _t1 /*11,16*/');
+        expect(tcbWithSpans(template, [])).toContain('(this).x /*5,6*/');
       });
     });
   });

@@ -465,8 +465,8 @@ abstract class TcbDirectiveTypeOpBase extends TcbOp {
     }
 
     const id = this.tcb.allocateId();
-    addExpressionIdentifier(type, ExpressionIdentifier.DIRECTIVE);
-    addParseSpanInfo(type, this.node.startSourceSpan || this.node.sourceSpan);
+    addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
+    addParseSpanInfo(id, this.node.startSourceSpan || this.node.sourceSpan);
     this.scope.addStatement(tsDeclareVariable(id, type));
     return id;
   }
@@ -1332,7 +1332,9 @@ class TcbBlockVariableOp extends TcbOp {
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     addParseSpanInfo(id, this.variable.keySpan);
-    this.scope.addStatement(tsCreateVariable(id, this.initializer));
+    const variable = tsCreateVariable(id, wrapForTypeChecker(this.initializer));
+    addParseSpanInfo(variable.declarationList.declarations[0], this.variable.sourceSpan);
+    this.scope.addStatement(variable);
     return id;
   }
 }
@@ -1355,7 +1357,9 @@ class TcbBlockImplicitVariableOp extends TcbOp {
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     addParseSpanInfo(id, this.variable.keySpan);
-    this.scope.addStatement(tsDeclareVariable(id, this.type));
+    const variable = tsDeclareVariable(id, this.type);
+    addParseSpanInfo(variable.declarationList.declarations[0], this.variable.sourceSpan);
+    this.scope.addStatement(variable);
     return id;
   }
 }
@@ -1610,6 +1614,7 @@ class TcbForOfOp extends TcbOp {
     }
     const initializer = ts.factory.createVariableDeclarationList(
         [ts.factory.createVariableDeclaration(initializerId)], ts.NodeFlags.Const);
+    addParseSpanInfo(initializer, this.block.item.keySpan);
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
     const expression = ts.factory.createNonNullExpression(
