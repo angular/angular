@@ -1724,15 +1724,13 @@ runInEachFileSystem(
                    // can not be removed.
                    expect(diags.length).toBe(2);
 
-                   const components = ['AppCmpA', 'AppCmpB'];
-                   for (let i = 0; i < components.length; i++) {
-                     const component = components[i];
+                   for (let i = 0; i < 2; i++) {
                      const {code, messageText} = diags[i];
                      expect(code).toBe(ngErrorCode(ErrorCode.DEFERRED_DEPENDENCY_IMPORTED_EAGERLY));
                      expect(messageText)
                          .toContain(
-                             'This import contains symbols used in the `@Component.deferredImports` ' +
-                             `array of the \`${component}\` component`);
+                             'This import contains symbols that are used both inside and outside ' +
+                             'of the `@Component.deferredImports` fields in the file.');
                    }
                  });
             });
