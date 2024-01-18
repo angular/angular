@@ -8,30 +8,19 @@
 
 import {AsyncPipe} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {ApplicationRef, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, Input, NgZone, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {filter, take, tap} from 'rxjs/operators';
 
 describe('Angular with NoopNgZone', () => {
-  function whenStable(applicationRef = TestBed.inject(ApplicationRef)): Promise<boolean> {
-    return firstValueFrom(applicationRef.isStable.pipe(filter(stable => stable)));
-  }
-
-  function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
-    return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
-  }
-
-  async function createAndAttachComponent<T>(type: Type<T>): Promise<ComponentRef<T>> {
-    const environmentInjector = TestBed.inject(EnvironmentInjector);
-    const component = createComponent(type, {environmentInjector});
-    environmentInjector.get(ApplicationRef).attachView(component.hostView);
-    expect(isStable()).toBeFalse();
-    await whenStable();
-    return component;
+  async function createFixture<T>(type: Type<T>): Promise<ComponentFixture<T>> {
+    const fixture = TestBed.createComponent(type);
+    await fixture.whenStable();
+    return fixture;
   }
 
   describe('notifies scheduler', () => {
@@ -45,21 +34,16 @@ describe('Angular with NoopNgZone', () => {
       class TestComponent {
         val = val;
       }
-      const environmentInjector = TestBed.inject(EnvironmentInjector);
-      const component = createComponent(TestComponent, {environmentInjector});
-      const appRef = environmentInjector.get(ApplicationRef);
-
-      appRef.attachView(component.hostView);
-      expect(isStable()).toBeFalse();
+      const fixture = await createFixture(TestComponent);
 
       // Cause another pending CD immediately after render and verify app has not stabilized
-      await whenStable().then(() => {
+      await fixture.whenStable().then(() => {
         val.set('new');
       });
-      expect(isStable()).toBeFalse();
+      expect(fixture.isStable()).toBeFalse();
 
-      await whenStable();
-      expect(isStable()).toBeTrue();
+      await fixture.whenStable();
+      expect(fixture.isStable()).toBeTrue();
     });
 
     it('when signal updates', async () => {
@@ -69,13 +53,13 @@ describe('Angular with NoopNgZone', () => {
         val = val;
       }
 
-      const component = await createAndAttachComponent(TestComponent);
-      expect(component.location.nativeElement.innerText).toEqual('initial');
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
 
       val.set('new');
-      expect(isStable()).toBeFalse();
-      await whenStable();
-      expect(component.location.nativeElement.innerText).toEqual('new');
+      expect(fixture.isStable()).toBeFalse();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
     });
 
     it('when using markForCheck()', async () => {
@@ -89,13 +73,13 @@ describe('Angular with NoopNgZone', () => {
         }
       }
 
-      const component = await createAndAttachComponent(TestComponent);
-      expect(component.location.nativeElement.innerText).toEqual('initial');
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
 
-      component.instance.setVal('new');
-      expect(isStable()).toBe(false);
-      await whenStable();
-      expect(component.location.nativeElement.innerText).toEqual('new');
+      fixture.componentInstance.setVal('new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
     });
 
     it('on input binding', async () => {
@@ -104,13 +88,13 @@ describe('Angular with NoopNgZone', () => {
         @Input() val = 'initial';
       }
 
-      const component = await createAndAttachComponent(TestComponent);
-      expect(component.location.nativeElement.innerText).toEqual('initial');
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
 
-      component.setInput('val', 'new');
-      expect(isStable()).toBe(false);
-      await whenStable();
-      expect(component.location.nativeElement.innerText).toEqual('new');
+      fixture.componentRef.setInput('val', 'new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
     });
 
     it('on event listener bound in template', async () => {
@@ -123,15 +107,14 @@ describe('Angular with NoopNgZone', () => {
         }
       }
 
-      const component = await createAndAttachComponent(TestComponent);
-      expect(component.location.nativeElement.innerText).toEqual('initial');
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
 
-      getDebugElement(component)
-          .query(p => p.nativeElement.tagName === 'DIV')
+      fixture.debugElement.query(p => p.nativeElement.tagName === 'DIV')
           .triggerEventHandler('click');
-      expect(isStable()).toBe(false);
-      await whenStable();
-      expect(component.location.nativeElement.innerText).toEqual('new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
     });
 
     it('on event listener bound in host', async () => {
@@ -144,13 +127,13 @@ describe('Angular with NoopNgZone', () => {
         }
       }
 
-      const component = await createAndAttachComponent(TestComponent);
-      expect(component.location.nativeElement.innerText).toEqual('initial');
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
 
-      getDebugElement(component).triggerEventHandler('click');
-      expect(isStable()).toBe(false);
-      await whenStable();
-      expect(component.location.nativeElement.innerText).toEqual('new');
+      fixture.debugElement.triggerEventHandler('click');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
     });
 
     it('with async pipe', async () => {
@@ -159,13 +142,13 @@ describe('Angular with NoopNgZone', () => {
         val = new BehaviorSubject('initial');
       }
 
-      const component = await createAndAttachComponent(TestComponent);
-      expect(component.location.nativeElement.innerText).toEqual('initial');
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
 
-      component.instance.val.next('new');
-      expect(isStable()).toBe(false);
-      await whenStable();
-      expect(component.location.nativeElement.innerText).toEqual('new');
+      fixture.componentInstance.val.next('new');
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('new');
     });
 
     it('when creating a view', async () => {
@@ -182,12 +165,12 @@ describe('Angular with NoopNgZone', () => {
         }
       }
 
-      const component = await createAndAttachComponent(TestComponent);
+      const fixture = await createFixture(TestComponent);
 
-      component.instance.createView();
-      expect(isStable()).toBe(false);
-      await whenStable();
-      expect(component.location.nativeElement.innerText).toEqual('binding');
+      fixture.componentInstance.createView();
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('binding');
     });
 
     it('when inserting a view', async () => {
@@ -206,14 +189,14 @@ describe('Angular with NoopNgZone', () => {
         @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
       }
 
-      const componentRef = await createAndAttachComponent(TestComponent);
+      const fixture = await createFixture(TestComponent);
 
       const otherComponent =
           createComponent(DynamicCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
-      componentRef.instance.viewContainer.insert(otherComponent.hostView);
-      expect(isStable()).toBe(false);
-      await whenStable();
-      expect(componentRef.location.nativeElement.innerText).toEqual('binding');
+      fixture.componentInstance.viewContainer.insert(otherComponent.hostView);
+      expect(fixture.isStable()).toBe(false);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('binding');
     });
 
     it('when destroying a view (with animations)', async () => {
@@ -232,27 +215,34 @@ describe('Angular with NoopNgZone', () => {
         @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
       }
 
-      const fixture = await createAndAttachComponent(TestComponent);
+      const fixture = await createFixture(TestComponent);
       const component =
           createComponent(DynamicCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
 
-      fixture.instance.viewContainer.insert(component.hostView);
-      await whenStable();
-      expect(fixture.location.nativeElement.innerText).toEqual('binding');
-      fixture.instance.viewContainer.remove();
-      await whenStable();
-      expect(fixture.location.nativeElement.innerText).toEqual('');
+      fixture.componentInstance.viewContainer.insert(component.hostView);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('binding');
+      fixture.componentInstance.viewContainer.remove();
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('');
 
       const component2 =
           createComponent(DynamicCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
-      fixture.instance.viewContainer.insert(component2.hostView);
-      await whenStable();
-      expect(fixture.location.nativeElement.innerText).toEqual('binding');
+      fixture.componentInstance.viewContainer.insert(component2.hostView);
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('binding');
       component2.destroy();
-      expect(isStable()).toBe(false);
-      await whenStable();
-      expect(fixture.location.nativeElement.innerText).toEqual('');
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('');
     });
+
+    function whenStable(applicationRef = TestBed.inject(ApplicationRef)): Promise<boolean> {
+      return firstValueFrom(applicationRef.isStable.pipe(filter(stable => stable)));
+    }
+
+    function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
+      return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
+    }
 
     it('when destroying a view (*no* animations)', withBody('<app></app>', async () => {
          destroyPlatform();
@@ -335,8 +325,8 @@ describe('Angular with NoopNgZone', () => {
         val = val;
       }
 
-      const component = await createAndAttachComponent(TestComponent);
-      expect(component.location.nativeElement.innerText).toEqual('initial');
+      const fixture = await createFixture(TestComponent);
+      expect(fixture.nativeElement.innerText).toEqual('initial');
 
       val.set('new');
       await TestBed.inject(ApplicationRef)
@@ -347,8 +337,8 @@ describe('Angular with NoopNgZone', () => {
               tap(() => val.set('newer')),
               )
           .toPromise();
-      await whenStable();
-      expect(component.location.nativeElement.innerText).toEqual('newer');
+      await fixture.whenStable();
+      expect(fixture.nativeElement.innerText).toEqual('newer');
     });
   });
 
@@ -379,23 +369,18 @@ describe('Angular with NoopNgZone', () => {
       ]
     });
 
-    const component = await createAndAttachComponent(TestComponent);
-    expect(component.location.nativeElement.innerText).toEqual('initial');
+    const fixture = await createFixture(TestComponent);
+    expect(fixture.nativeElement.innerText).toEqual('initial');
 
     val.set('new');
     throwError = true;
     // error is thrown in a timeout and can't really be "caught".
     // Still need to wrap in expect so it happens in the expect context and doesn't fail the test.
-    expect(async () => await whenStable()).not.toThrow();
-    expect(component.location.nativeElement.innerText).toEqual('initial');
+    expect(async () => await fixture.whenStable()).not.toThrow();
+    expect(fixture.nativeElement.innerText).toEqual('initial');
 
     throwError = false;
-    await whenStable();
-    expect(component.location.nativeElement.innerText).toEqual('new');
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toEqual('new');
   });
 });
-
-
-function getDebugElement(component: ComponentRef<unknown>) {
-  return getDebugNode(component.location.nativeElement) as DebugElement;
-}

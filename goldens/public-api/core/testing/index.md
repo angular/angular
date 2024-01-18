@@ -31,9 +31,9 @@ export const __core_private_testing_placeholder__ = "";
 export function async(fn: Function): (done: any) => any;
 
 // @public
-export class ComponentFixture<T> {
+export abstract class ComponentFixture<T> {
     constructor(componentRef: ComponentRef<T>);
-    autoDetectChanges(autoDetect?: boolean): void;
+    abstract autoDetectChanges(autoDetect?: boolean): void;
     changeDetectorRef: ChangeDetectorRef;
     checkNoChanges(): void;
     componentInstance: T;
@@ -41,15 +41,15 @@ export class ComponentFixture<T> {
     componentRef: ComponentRef<T>;
     debugElement: DebugElement;
     destroy(): void;
-    detectChanges(checkNoChanges?: boolean): void;
+    abstract detectChanges(checkNoChanges?: boolean): void;
     elementRef: ElementRef;
     getDeferBlocks(): Promise<DeferBlockFixture[]>;
-    isStable(): boolean;
+    abstract isStable(): boolean;
     nativeElement: any;
     // (undocumented)
     ngZone: NgZone | null;
     whenRenderingDone(): Promise<any>;
-    whenStable(): Promise<any>;
+    abstract whenStable(): Promise<any>;
 }
 
 // @public (undocumented)
