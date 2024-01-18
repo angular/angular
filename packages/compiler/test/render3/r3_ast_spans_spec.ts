@@ -132,6 +132,8 @@ class R3AstSourceSpans implements t.Visitor<void> {
       'ForLoopBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
       humanizeSpan(block.endSourceSpan)
     ]);
+    this.visitVariable(block.item);
+    this.visitAll([Object.values(block.contextVariables)]);
     this.visitAll([block.children]);
     block.empty?.visit(this);
   }
@@ -153,6 +155,9 @@ class R3AstSourceSpans implements t.Visitor<void> {
   visitIfBlockBranch(block: t.IfBlockBranch): void {
     this.result.push(
         ['IfBlockBranch', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    if (block.expressionAlias) {
+      this.visitVariable(block.expressionAlias);
+    }
     this.visitAll([block.children]);
   }
 
@@ -686,15 +691,23 @@ describe('R3 AST source spans', () => {
 
   describe('for loop blocks', () => {
     it('is correct for loop blocks', () => {
-      const html = `@for (item of items.foo.bar; track item.id) {<h1>{{ item }}</h1>}` +
+      const html =
+          `@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {<h1>{{ item }}</h1>}` +
           `@empty {There were no items in the list.}`;
 
       expectFromHtml(html).toEqual([
         [
           'ForLoopBlock',
-          '@for (item of items.foo.bar; track item.id) {<h1>{{ item }}</h1>}@empty {There were no items in the list.}',
-          '@for (item of items.foo.bar; track item.id) {', '}'
+          '@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {<h1>{{ item }}</h1>}@empty {There were no items in the list.}',
+          '@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {', '}'
         ],
+        ['Variable', 'item', 'item', '<empty>'],
+        ['Variable', 'i = $index', 'i', '$index'],
+        ['Variable', '_o_d_d_ = $odd', '_o_d_d_', '$odd'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
         ['Element', '<h1>{{ item }}</h1>', '<h1>', '</h1>'],
         ['BoundText', '{{ item }}'],
         ['ForLoopBlockEmpty', '@empty {There were no items in the list.}', '@empty {'],
@@ -719,6 +732,7 @@ describe('R3 AST source spans', () => {
           'IfBlockBranch', '@if (cond.expr; as foo) {Main case was true!}',
           '@if (cond.expr; as foo) {'
         ],
+        ['Variable', 'foo', 'foo', '<empty>'],
         ['Text', 'Main case was true!'],
         [
           'IfBlockBranch', '@else if (other.expr) {Extra case was true!}', '@else if (other.expr) {'
