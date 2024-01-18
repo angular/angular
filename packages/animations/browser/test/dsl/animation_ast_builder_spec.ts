@@ -10,28 +10,32 @@ import {AnimationMetadata, AnimationMetadataType} from '@angular/animations';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {MockAnimationDriver} from '../../testing';
 
-
 describe('buildAnimationAst', () => {
   it('should build the AST without any errors and warnings', () => {
     const driver = new MockAnimationDriver();
     const errors: Error[] = [];
     const warnings: string[] = [];
     const animationAst = buildAnimationAst(
-        driver, <AnimationMetadata>{
-          animation: [{
+      driver,
+      <AnimationMetadata>{
+        animation: [
+          {
             styles: {
               offset: null,
               styles: {backgroundColor: '#000'},
-              type: AnimationMetadataType.Style
+              type: AnimationMetadataType.Style,
             },
             timings: {delay: 0, duration: 1000, easing: 'ease-in-out'},
-            type: AnimationMetadataType.Animate
-          }],
-          options: null,
-          selector: 'body',
-          type: AnimationMetadataType.Query
-        },
-        errors, warnings);
+            type: AnimationMetadataType.Animate,
+          },
+        ],
+        options: null,
+        selector: 'body',
+        type: AnimationMetadataType.Query,
+      },
+      errors,
+      warnings,
+    );
 
     expect(errors).toEqual([]);
     expect(warnings).toEqual([]);
@@ -51,12 +55,12 @@ describe('buildAnimationAst', () => {
           offset: null,
           containsDynamicStyles: false,
           options: null,
-          isEmptyStep: false
+          isEmptyStep: false,
         },
-        options: null
+        options: null,
       },
       originalSelector: 'body',
-      options: {}
+      options: {},
     });
   });
 });
