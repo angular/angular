@@ -685,12 +685,12 @@ export class ComponentDecoratorHandler implements
       for (const importDecl of nonRemovableImports) {
         const diagnostic = makeDiagnostic(
             ErrorCode.DEFERRED_DEPENDENCY_IMPORTED_EAGERLY, importDecl,
-            `This import contains symbols used in the \`@Component.deferredImports\` array ` +
-                `of the \`${node.name.getText()}\` component, but also some other symbols that ` +
-                `are not in any \`@Component.deferredImports\` array. This renders all these ` +
+            `This import contains symbols that are used both inside and outside of the ` +
+                `\`@Component.deferredImports\` fields in the file. This renders all these ` +
                 `defer imports useless as this import remains and its module is eagerly loaded. ` +
-                `To fix this, make sure that this import contains *only* symbols ` +
-                `that are used within \`@Component.deferredImports\` arrays.`);
+                `To fix this, make sure that all symbols from the import are *only* used within ` +
+                `\`@Component.deferredImports\` arrays and there are no other references to those ` +
+                `symbols present in this file.`);
         diagnostics.push(diagnostic);
       }
       return {diagnostics};
