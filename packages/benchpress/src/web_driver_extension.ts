@@ -11,21 +11,21 @@ import {InjectionToken, Injector} from '@angular/core';
 import {Options} from './common_options';
 
 export type PerfLogEvent = {
-  [key: string]: any
-}&{
-  ph?: 'X' | 'B' | 'E' | 'I',
-  ts?: number,
-  dur?: number,
-  name?: string,
-  pid?: string,
+  [key: string]: any;
+} & {
+  ph?: 'X' | 'B' | 'E' | 'I';
+  ts?: number;
+  dur?: number;
+  name?: string;
+  pid?: string;
   args?: {
-    encodedDataLength?: number,
-    usedHeapSize?: number,
-    gcAmount?: number,
-    majorGc?: boolean,
-    url?: string,
-    method?: string
-  }
+    encodedDataLength?: number;
+    usedHeapSize?: number;
+    gcAmount?: number;
+    majorGc?: boolean;
+    url?: string;
+    method?: string;
+  };
 };
 
 /**
@@ -38,14 +38,14 @@ export abstract class WebDriverExtension {
     const res = [
       {
         provide: _CHILDREN,
-        useFactory: (injector: Injector) => childTokens.map(token => injector.get(token)),
-        deps: [Injector]
+        useFactory: (injector: Injector) => childTokens.map((token) => injector.get(token)),
+        deps: [Injector],
       },
       {
         provide: WebDriverExtension,
         useFactory: (children: WebDriverExtension[], capabilities: {[key: string]: any}) => {
           let delegate: WebDriverExtension = undefined!;
-          children.forEach(extension => {
+          children.forEach((extension) => {
             if (extension.supports(capabilities)) {
               delegate = extension;
             }
@@ -55,8 +55,8 @@ export abstract class WebDriverExtension {
           }
           return delegate;
         },
-        deps: [_CHILDREN, Options.CAPABILITIES]
-      }
+        deps: [_CHILDREN, Options.CAPABILITIES],
+      },
     ];
     return res;
   }
@@ -69,7 +69,7 @@ export abstract class WebDriverExtension {
     throw new Error('NYI');
   }
 
-  timeEnd(name: string, restartName: string|null): Promise<any> {
+  timeEnd(name: string, restartName: string | null): Promise<any> {
     throw new Error('NYI');
   }
 
@@ -104,9 +104,12 @@ export class PerfLogFeatures {
   frameCapture: boolean;
   userTiming: boolean;
 
-  constructor(
-      {render = false, gc = false, frameCapture = false, userTiming = false}:
-          {render?: boolean, gc?: boolean, frameCapture?: boolean, userTiming?: boolean} = {}) {
+  constructor({
+    render = false,
+    gc = false,
+    frameCapture = false,
+    userTiming = false,
+  }: {render?: boolean; gc?: boolean; frameCapture?: boolean; userTiming?: boolean} = {}) {
     this.render = render;
     this.gc = gc;
     this.frameCapture = frameCapture;
