@@ -27,7 +27,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
 
 import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
-import {createQueryCreateCall} from './query_generation';
+import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
@@ -418,52 +418,6 @@ function convertAttributesToExpressions(attributes: {[name: string]: o.Expressio
   return values;
 }
 
-// Define and update any content queries
-function createContentQueriesFunction(
-    queries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
-  const createStatements: o.Statement[] = [];
-  const updateStatements: o.Statement[] = [];
-  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
-
-  for (const query of queries) {
-    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null) or
-    //                r3.contentQuerySignal(dirIndex, propName, somePredicate, <flags>, <read>).
-    createStatements.push(createQueryCreateCall(
-                              query, constantPool,
-                              {nonSignal: R3.contentQuery, signalBased: R3.contentQuerySignal},
-                              /* prependParams */[o.variable('dirIndex')])
-                              .toStmt());
-
-    // Signal queries update lazily and we just advance the index.
-    // TODO: Chaining?
-    if (query.isSignal) {
-      updateStatements.push(o.importExpr(R3.queryAdvance).callFn([]).toStmt());
-      continue;
-    }
-
-    // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
-    const temporary = tempAllocator();
-    const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
-    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-    const updateDirective = o.variable(CONTEXT_NAME)
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary.prop('first') : temporary);
-    updateStatements.push(refresh.and(updateDirective).toStmt());
-  }
-
-  const contentQueriesFnName = name ? `${name}_ContentQueries` : null;
-  return o.fn(
-      [
-        new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
-        new o.FnParam('dirIndex', null)
-      ],
-      [
-        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
-      ],
-      o.INFERRED_TYPE, null, contentQueriesFnName);
-}
-
 function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
@@ -537,49 +491,6 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
     typeParams.push(o.expressionType(o.literal(meta.isSignal)));
   }
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
-}
-
-// Define and update any view queries
-function createViewQueriesFunction(
-    viewQueries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
-  const createStatements: o.Statement[] = [];
-  const updateStatements: o.Statement[] = [];
-  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
-
-  viewQueries.forEach((query: R3QueryMetadata) => {
-    // creation call, e.g. r3.viewQuery(somePredicate, true) or
-    //                r3.viewQuerySignal(ctx.prop, somePredicate, true);
-    const queryDefinitionCall = createQueryCreateCall(query, constantPool, {
-      signalBased: R3.viewQuerySignal,
-      nonSignal: R3.viewQuery,
-    });
-    createStatements.push(queryDefinitionCall.toStmt());
-
-    // Signal queries update lazily and we just advance the index.
-    // TODO: Chaining?
-    if (query.isSignal) {
-      updateStatements.push(o.importExpr(R3.queryAdvance).callFn([]).toStmt());
-      return;
-    }
-
-    // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
-    const temporary = tempAllocator();
-    const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
-    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-    const updateDirective = o.variable(CONTEXT_NAME)
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary.prop('first') : temporary);
-    updateStatements.push(refresh.and(updateDirective).toStmt());
-  });
-
-  const viewQueryFnName = name ? `${name}_Query` : null;
-  return o.fn(
-      [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
-      [
-        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
-      ],
-      o.INFERRED_TYPE, null, viewQueryFnName);
 }
 
 // Return a host binding function or null if one is not necessary.
