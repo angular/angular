@@ -10,7 +10,13 @@
 /// <reference lib="es2020"/>
 
 import {runAsWorker, runWorkerLoop} from '@bazel/worker';
-import {Extractor, ExtractorConfig, ExtractorMessage, IConfigFile, IExtractorConfigPrepareOptions} from '@microsoft/api-extractor';
+import {
+  Extractor,
+  ExtractorConfig,
+  ExtractorMessage,
+  IConfigFile,
+  IExtractorConfigPrepareOptions,
+} from '@microsoft/api-extractor';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -18,20 +24,24 @@ import * as path from 'path';
  * Bundles the specified entry-point and writes the output `d.ts` bundle to the specified
  * output path. An optional license banner can be provided to be added to the bundle output.
  */
-export async function runMain(
-    {entryPointExecpath, outputExecpath, packageJsonExecpath, licenseBannerExecpath}: {
-      entryPointExecpath: string,
-      outputExecpath: string,
-      packageJsonExecpath: string,
-      licenseBannerExecpath: string|undefined
-    }): Promise<void> {
+export async function runMain({
+  entryPointExecpath,
+  outputExecpath,
+  packageJsonExecpath,
+  licenseBannerExecpath,
+}: {
+  entryPointExecpath: string;
+  outputExecpath: string;
+  packageJsonExecpath: string;
+  licenseBannerExecpath: string | undefined;
+}): Promise<void> {
   const configObject: IConfigFile = {
     compiler: {
       overrideTsconfig:
-          // We disable automatic `@types` resolution as this throws-off API reports
-          // when the API test is run outside sandbox. Instead we expect a list of
-          // hard-coded types that should be included. This works in non-sandbox too.
-          {files: [entryPointExecpath], compilerOptions: {types: [], lib: ['es2020', 'dom']}},
+        // We disable automatic `@types` resolution as this throws-off API reports
+        // when the API test is run outside sandbox. Instead we expect a list of
+        // hard-coded types that should be included. This works in non-sandbox too.
+        {files: [entryPointExecpath], compilerOptions: {types: [], lib: ['es2020', 'dom']}},
     },
     // The execroot is the working directory and it will contain all input files.
     projectFolder: process.cwd(),
@@ -56,8 +66,9 @@ export async function runMain(
   };
 
   const extractorConfig = ExtractorConfig.prepare(options);
-  const {succeeded} =
-      Extractor.invoke(extractorConfig, {messageCallback: handleApiExtractorMessage});
+  const {succeeded} = Extractor.invoke(extractorConfig, {
+    messageCallback: handleApiExtractorMessage,
+  });
 
   if (!succeeded) {
     throw new Error('Type bundling failed. See error above.');
@@ -133,7 +144,7 @@ if (runAsWorker(processArgs)) {
   const flagFile = processArgs[0].substring(1);
   const args = fs.readFileSync(flagFile, 'utf8').split('\n');
 
-  runOneBuild(args).then(success => {
+  runOneBuild(args).then((success) => {
     if (!success) {
       process.exitCode = 1;
     }

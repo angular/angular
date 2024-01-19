@@ -9,5 +9,4 @@
 import {Injectable} from '@angular/core';
 
 @Injectable({providedIn: 'root'})
-export class MySecondService {
-}
+export class MySecondService {}
