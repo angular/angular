@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {ClassMember, ReflectionHost} from '../../../reflection';
+import {CORE_MODULE} from '../../common';
 
 /**
  * @fileoverview
@@ -130,14 +131,14 @@ function extractPropertyTarget(node: ts.Expression): ts.Identifier|null {
 function isReferenceToInitializerApiFunction(
     functionName: InitializerApiFunction, target: ts.Identifier, isCore: boolean,
     reflector: ReflectionHost): boolean {
-  let targetImport: {name: string}|null = reflector.getImportOfIdentifier(target);
+  let targetImport: {name: string, from: string}|null = reflector.getImportOfIdentifier(target);
   if (targetImport === null) {
     if (!isCore) {
       return false;
     }
     // We are compiling the core module, where no import can be present.
-    targetImport = {name: target.text};
+    targetImport = {name: target.text, from: CORE_MODULE};
   }
 
-  return targetImport.name === functionName;
+  return targetImport.name === functionName && targetImport.from === CORE_MODULE;
 }
