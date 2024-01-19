@@ -25,6 +25,7 @@ import {
   appIsAngularIvy,
   appIsSupportedAngularVersion,
   getAngularVersion,
+  isHydrationEnabled,
 } from 'shared-utils';
 
 import {ComponentInspector} from './component-inspector/component-inspector';
@@ -50,9 +51,15 @@ import {ComponentTreeNode} from './interfaces';
 import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
-import {hasDiDebugAPIs, runOutsideAngular} from './utils';
+import {runOutsideAngular} from './utils';
+import {DirectiveForestHooks} from './hooks/hooks';
 
-export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
+export const subscribeToClientEvents = (
+  messageBus: MessageBus<Events>,
+  depsForTestOnly?: {
+    directiveForestHooks?: typeof DirectiveForestHooks;
+  },
+): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
   messageBus.on(
@@ -86,7 +93,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      initializeOrGetDirectiveForestHooks()
+      initializeOrGetDirectiveForestHooks(depsForTestOnly)
         .profiler.changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
@@ -219,7 +226,12 @@ const checkForAngular = (messageBus: MessageBus<Events>): void => {
   }
 
   messageBus.emit('ngAvailability', [
-    {version: ngVersion.toString(), devMode: appIsAngularInDevMode(), ivy: appIsIvy},
+    {
+      version: ngVersion.toString(),
+      devMode: appIsAngularInDevMode(),
+      ivy: appIsIvy,
+      hydration: isHydrationEnabled(),
+    },
   ]);
 };
 
@@ -243,6 +255,9 @@ const setupInspector = (messageBus: MessageBus<Events>) => {
     inspector.highlightByPosition(position);
   });
   messageBus.on('removeHighlightOverlay', unHighlight);
+
+  messageBus.on('createHydrationOverlay', inspector.highlightHydrationNodes);
+  messageBus.on('removeHydrationOverlay', inspector.removeHydrationHighlights);
 };
 
 export interface SerializableDirectiveInstanceType extends DirectiveType {
@@ -281,6 +296,7 @@ const prepareForestForSerialization = (
         id: initializeOrGetDirectiveForestHooks().getDirectiveId(d.instance)!,
       })),
       children: prepareForestForSerialization(node.children, includeResolutionPath),
+      hydration: node.hydration,
     };
     serializedNodes.push(serializedNode);
 

@@ -34,6 +34,7 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean | null = null;
   angularVersion: string | boolean | undefined = undefined;
   angularIsInDevMode = true;
+  hydration: boolean = false;
   ivy!: boolean;
 
   private readonly _firefoxStyleName = 'firefox_styles.css';
@@ -56,12 +57,13 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._themeService.initializeThemeWatcher();
 
-    this._messageBus.once('ngAvailability', ({version, devMode, ivy}) => {
+    this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration}) => {
       this.angularExists = !!version;
       this.angularVersion = version;
       this.angularIsInDevMode = devMode;
       this.ivy = ivy;
       this._interval$.unsubscribe();
+      this.hydration = hydration;
     });
 
     const browserStyleName = this._platform.FIREFOX

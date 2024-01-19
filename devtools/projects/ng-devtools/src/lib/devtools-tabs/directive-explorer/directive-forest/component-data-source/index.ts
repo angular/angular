@@ -10,7 +10,7 @@ import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {DefaultIterableDiffer, TrackByFunction} from '@angular/core';
 import {MatTreeFlattener} from '@angular/material/tree';
-import {DevToolsNode} from 'protocol';
+import {DevToolsNode, HydrationStatus} from 'protocol';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -27,6 +27,7 @@ export interface FlatNode {
   level: number;
   original: IndexedNode;
   newItem?: boolean;
+  hydration: HydrationStatus;
 }
 
 const expandable = (node: IndexedNode) => !!node.children && node.children.length > 0;
@@ -92,6 +93,7 @@ export class ComponentDataSource extends DataSource<FlatNode> {
         directives: node.directives.map((d) => d.name).join(', '),
         original: node,
         level,
+        hydration: node.hydration,
       };
       this._nodeToFlat.set(node, flatNode);
       return flatNode;
