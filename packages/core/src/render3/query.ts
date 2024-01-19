@@ -14,7 +14,7 @@ import {createElementRef, ElementRef as ViewEngine_ElementRef} from '../linker/e
 import {QueryList} from '../linker/query_list';
 import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {createContainerRef, ViewContainerRef} from '../linker/view_container_ref';
-import {assertDefined, assertIndexInRange, throwError} from '../util/assert';
+import {assertDefined, assertIndexInRange, assertNumber, throwError} from '../util/assert';
 import {stringify} from '../util/stringify';
 
 import {assertFirstCreatePass, assertLContainer} from './assert';
@@ -25,6 +25,7 @@ import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} f
 import {LQueries, LQuery, QueryFlags, TQueries, TQuery, TQueryMetadata} from './interfaces/query';
 import {DECLARATION_LCONTAINER, LView, PARENT, QUERIES, TVIEW, TView} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
+import {getCurrentTNode, getLView, getTView} from './state';
 
 class LQuery_<T> implements LQuery<T> {
   matches: (T|null)[]|null = null;
@@ -81,9 +82,17 @@ class LQueries_ implements LQueries {
 }
 
 export class TQueryMetadata_ implements TQueryMetadata {
+  public predicate: ProviderToken<unknown>|string[];
   constructor(
-      public predicate: ProviderToken<unknown>|string[], public flags: QueryFlags,
-      public read: any = null) {}
+      predicate: ProviderToken<unknown>|string[]|string, public flags: QueryFlags,
+      public read: any = null) {
+    // Compiler might not be able to pre-optimize and split multiple selectors.
+    if (typeof predicate === 'string') {
+      this.predicate = splitQueryMultiSelectors(predicate);
+    } else {
+      this.predicate = predicate;
+    }
+  }
 }
 
 class TQueries_ implements TQueries {
@@ -415,13 +424,50 @@ export function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryLis
   return lView[QUERIES]!.queries[queryIndex].queryList;
 }
 
-export function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags) {
+function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags): number {
   const queryList = new QueryList<T>(
       (flags & QueryFlags.emitDistinctChangesOnly) === QueryFlags.emitDistinctChangesOnly);
+
   storeCleanupWithContext(tView, lView, queryList, queryList.destroy);
 
-  if (lView[QUERIES] === null) lView[QUERIES] = new LQueries_();
-  lView[QUERIES]!.queries.push(new LQuery_(queryList));
+  const lQueries = (lView[QUERIES] ??= new LQueries_()).queries;
+  return lQueries.push(new LQuery_(queryList)) - 1;
+}
+
+export function createViewQuery<T>(
+    predicate: ProviderToken<unknown>|string[]|string, flags: QueryFlags, read?: any): number {
+  ngDevMode && assertNumber(flags, 'Expecting flags');
+  const tView = getTView();
+  if (tView.firstCreatePass) {
+    createTQuery(tView, new TQueryMetadata_(predicate, flags, read), -1);
+    if ((flags & QueryFlags.isStatic) === QueryFlags.isStatic) {
+      tView.staticViewQueries = true;
+    }
+  }
+
+  return createLQuery<T>(tView, getLView(), flags);
+}
+
+export function createContentQuery<T>(
+    directiveIndex: number, predicate: ProviderToken<unknown>|string[]|string, flags: QueryFlags,
+    read?: ProviderToken<T>): number {
+  ngDevMode && assertNumber(flags, 'Expecting flags');
+  const tView = getTView();
+  if (tView.firstCreatePass) {
+    const tNode = getCurrentTNode()!;
+    createTQuery(tView, new TQueryMetadata_(predicate, flags, read), tNode.index);
+    saveContentQueryAndDirectiveIndex(tView, directiveIndex);
+    if ((flags & QueryFlags.isStatic) === QueryFlags.isStatic) {
+      tView.staticContentQueries = true;
+    }
+  }
+
+  return createLQuery<T>(tView, getLView(), flags);
+}
+
+/** Splits multiple selectors in the locator. */
+function splitQueryMultiSelectors(locator: string): string[] {
+  return locator.split(',').map(s => s.trim());
 }
 
 export function createTQuery(tView: TView, metadata: TQueryMetadata, nodeIndex: number): void {
