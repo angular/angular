@@ -11,5 +11,4 @@ import {Component} from '@angular/core';
 @Component({
   template: 'Hello',
 })
-export class TestComponent {
-}
+export class TestComponent {}

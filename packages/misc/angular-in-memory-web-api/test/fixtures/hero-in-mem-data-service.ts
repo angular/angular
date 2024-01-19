@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * This is an example of a Hero-oriented InMemoryDbService.
  *
@@ -23,7 +22,7 @@ import {Observable, of} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 interface Person {
-  id: string|number;
+  id: string | number;
   name: string;
 }
 
@@ -35,17 +34,23 @@ interface PersonResponse {
 
 @Injectable()
 export class HeroInMemDataService implements InMemoryDbService {
-  createDb(reqInfo?: RequestInfo):
-      Observable<PersonResponse>|Promise<PersonResponse>|PersonResponse {
+  createDb(
+    reqInfo?: RequestInfo,
+  ): Observable<PersonResponse> | Promise<PersonResponse> | PersonResponse {
     const heroes = [
-      {id: 1, name: 'Windstorm'}, {id: 2, name: 'Bombasto'}, {id: 3, name: 'Magneta'},
-      {id: 4, name: 'Tornado'}
+      {id: 1, name: 'Windstorm'},
+      {id: 2, name: 'Bombasto'},
+      {id: 3, name: 'Magneta'},
+      {id: 4, name: 'Tornado'},
     ];
 
     const nobodies: any[] = [];
 
     // entities with string ids that look like numbers
-    const stringers = [{id: '10', name: 'Bob String'}, {id: '20', name: 'Jill String'}];
+    const stringers = [
+      {id: '10', name: 'Bob String'},
+      {id: '20', name: 'Jill String'},
+    ];
 
     // default returnType
     let returnType = 'object';
@@ -71,7 +76,7 @@ export class HeroInMemDataService implements InMemoryDbService {
       case 'observable':
         return of(db).pipe(delay(10));
       case 'promise':
-        return new Promise(resolve => setTimeout(() => resolve(db), 10));
+        return new Promise((resolve) => setTimeout(() => resolve(db), 10));
       default:
         return db;
     }
