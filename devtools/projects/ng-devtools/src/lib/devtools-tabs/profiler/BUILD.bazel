@@ -35,7 +35,6 @@ ng_module(
     ] + _STYLE_LABELS,
     deps = [
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/timeline",
-        "//devtools/projects/ng-devtools/src/lib/vendor/chromium",
         "//devtools/projects/protocol",
         "//packages/common",
         "//packages/core",
