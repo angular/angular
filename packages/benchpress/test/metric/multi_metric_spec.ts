@@ -8,43 +8,48 @@
 
 import {Injector, Metric, MultiMetric} from '../../index';
 
-(function() {
-function createMetric(ids: any[]) {
-  const m = Injector
-                .create({
-                  providers: [
-                    ids.map(id => ({provide: id, useValue: new MockMetric(id)})),
-                    MultiMetric.provideWith(ids)
-                  ]
-                })
-                .get<MultiMetric>(MultiMetric);
-  return Promise.resolve(m);
-}
+(function () {
+  function createMetric(ids: any[]) {
+    const m = Injector.create({
+      providers: [
+        ids.map((id) => ({provide: id, useValue: new MockMetric(id)})),
+        MultiMetric.provideWith(ids),
+      ],
+    }).get<MultiMetric>(MultiMetric);
+    return Promise.resolve(m);
+  }
 
-describe('multi metric', () => {
-  it('should merge descriptions', done => {
-    createMetric(['m1', 'm2']).then((m) => {
-      expect(m.describe()).toEqual({'m1': 'describe', 'm2': 'describe'});
-      done();
-    });
-  });
-
-  it('should merge all beginMeasure calls', done => {
-    createMetric(['m1', 'm2']).then((m) => m.beginMeasure()).then((values) => {
-      expect(values).toEqual(['m1_beginMeasure', 'm2_beginMeasure']);
-      done();
-    });
-  });
-
-  [false, true].forEach((restartFlag) => {
-    it(`should merge all endMeasure calls for restart=${restartFlag}`, done => {
-      createMetric(['m1', 'm2']).then((m) => m.endMeasure(restartFlag)).then((values) => {
-        expect(values).toEqual({'m1': {'restart': restartFlag}, 'm2': {'restart': restartFlag}});
+  describe('multi metric', () => {
+    it('should merge descriptions', (done) => {
+      createMetric(['m1', 'm2']).then((m) => {
+        expect(m.describe()).toEqual({'m1': 'describe', 'm2': 'describe'});
         done();
       });
     });
+
+    it('should merge all beginMeasure calls', (done) => {
+      createMetric(['m1', 'm2'])
+        .then((m) => m.beginMeasure())
+        .then((values) => {
+          expect(values).toEqual(['m1_beginMeasure', 'm2_beginMeasure']);
+          done();
+        });
+    });
+
+    [false, true].forEach((restartFlag) => {
+      it(`should merge all endMeasure calls for restart=${restartFlag}`, (done) => {
+        createMetric(['m1', 'm2'])
+          .then((m) => m.endMeasure(restartFlag))
+          .then((values) => {
+            expect(values).toEqual({
+              'm1': {'restart': restartFlag},
+              'm2': {'restart': restartFlag},
+            });
+            done();
+          });
+      });
+    });
   });
-});
 })();
 
 class MockMetric extends Metric {

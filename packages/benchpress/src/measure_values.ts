@@ -8,7 +8,10 @@
 
 export class MeasureValues {
   constructor(
-      public runIndex: number, public timeStamp: Date, public values: {[key: string]: any}) {}
+    public runIndex: number,
+    public timeStamp: Date,
+    public values: {[key: string]: any},
+  ) {}
 
   toJson() {
     return {
