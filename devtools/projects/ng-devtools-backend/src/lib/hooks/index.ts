@@ -50,11 +50,23 @@ export const disableTimingAPI = () => (timingAPIFlag = false);
 const timingAPIEnabled = () => timingAPIFlag;
 
 let directiveForestHooks: DirectiveForestHooks;
-export const initializeOrGetDirectiveForestHooks = () => {
+
+export const initializeOrGetDirectiveForestHooks = (
+  depsForTestOnly: {
+    directiveForestHooks?: typeof DirectiveForestHooks;
+  } = {},
+) => {
+  // Allow for overriding the DirectiveForestHooks implementation for testing purposes.
+  if (depsForTestOnly.directiveForestHooks) {
+    directiveForestHooks = new depsForTestOnly.directiveForestHooks();
+  }
+
   if (directiveForestHooks) {
     return directiveForestHooks;
+  } else {
+    directiveForestHooks = new DirectiveForestHooks();
   }
-  directiveForestHooks = new DirectiveForestHooks();
+
   directiveForestHooks.profiler.subscribe({
     onChangeDetectionStart(component: any): void {
       if (!timingAPIEnabled()) {

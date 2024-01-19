@@ -40,6 +40,10 @@ ts_test_library(
 ts_library(
     name = "highlighter",
     srcs = ["highlighter.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+        "//packages/core",
+    ],
 )
 
 ts_library(
@@ -98,6 +102,27 @@ ts_library(
 ts_library(
     name = "version",
     srcs = ["version.ts"],
+)
+
+karma_web_test_suite(
+    name = "client_event_subscribers_test",
+    deps = [
+        ":client_event_subscribers_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "client_event_subscribers_test_lib",
+    srcs = [
+        "client-event-subscribers.spec.ts",
+    ],
+    deps = [
+        ":client_event_subscribers",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+        "@npm//rxjs",
+    ],
 )
 
 ts_library(

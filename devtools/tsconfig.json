@@ -24,7 +24,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "target": "es2020",
-    "lib": ["es2020", "dom"],
+    "lib": ["es2020", "dom", "dom.iterable"],
     "typeRoots": [
       "./devtools/node_modules/@types",
     ],

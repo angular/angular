@@ -44,6 +44,8 @@ import {
 } from './property-resolver/element-property-resolver';
 import {PropertyTabComponent} from './property-tab/property-tab.component';
 import {SplitAreaDirective} from '../../vendor/angular-split/lib/component/splitArea.directive';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {FormsModule} from '@angular/forms';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -78,10 +80,13 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     DirectiveForestComponent,
     BreadcrumbsComponent,
     PropertyTabComponent,
+    MatSlideToggle,
+    FormsModule,
   ],
 })
 export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   @Input() showCommentNodes = false;
+  @Input() isHydrationEnabled = false;
   @Output() toggleInspector = new EventEmitter<void>();
 
   @ViewChild(DirectiveForestComponent) directiveForest!: DirectiveForestComponent;
@@ -94,11 +99,13 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   forest!: DevToolsNode[];
   splitDirection: 'horizontal' | 'vertical' = 'horizontal';
   parents: FlatNode[] | null = null;
+  showHydrationNodeHighlights: boolean = false;
 
   private _resizeObserver = new ResizeObserver((entries) =>
     this._ngZone.run(() => {
-      const resizedEntry = entries[0];
+      this.refreshHydrationNodeHighlightsIfNeeded();
 
+      const resizedEntry = entries[0];
       if (resizedEntry.target === this.splitElementRef.nativeElement) {
         this.splitDirection = resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal';
       }
@@ -177,6 +184,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     if (!this._refreshRetryTimeout) {
       this._refreshRetryTimeout = setTimeout(() => this.refresh(), 500);
     }
+    this.refreshHydrationNodeHighlightsIfNeeded();
   }
 
   viewSource(directiveName: string): void {
@@ -271,5 +279,20 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   }): void {
     const objectPath = constructPathOfKeysToPropertyValue(node.prop);
     this._appOperations.inspect(directivePosition, objectPath);
+  }
+
+  hightlightHydrationNodes() {
+    this._messageBus.emit('createHydrationOverlay');
+  }
+
+  removeHydrationNodesHightlights() {
+    this._messageBus.emit('removeHydrationOverlay');
+  }
+
+  refreshHydrationNodeHighlightsIfNeeded() {
+    if (this.showHydrationNodeHighlights) {
+      this.removeHydrationNodesHightlights();
+      this.hightlightHydrationNodes();
+    }
   }
 }

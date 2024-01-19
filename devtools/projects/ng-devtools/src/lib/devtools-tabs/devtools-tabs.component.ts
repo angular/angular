@@ -50,6 +50,8 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
 })
 export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   @Input() angularVersion: string | undefined = undefined;
+  @Input() isHydrationEnabled = false;
+
   @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
   @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
 

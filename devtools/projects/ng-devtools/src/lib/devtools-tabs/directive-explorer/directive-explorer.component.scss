@@ -12,8 +12,17 @@
   }
 }
 
+.prop-split {
+  display: flex; 
+  flex-direction: column;
+}
+
 .property-tab-wrapper {
+  flex: 1;
   overflow: auto;
-  height: 100%;
   width: 100%;
+}
+
+.hydration {
+  padding: 4px 8px;
 }
