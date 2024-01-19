@@ -1734,5 +1734,36 @@ runInEachFileSystem(
                    }
                  });
             });
+
+            describe('custom decorator', () => {
+              it('should produce diagnostic for each custom decorator', () => {
+                env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {customDecorator1, customDecorator2} from './some-where';
+
+          @customDecorator1('hello')
+          @Component({
+            template: ExternalString,
+          })
+          @customDecorator2
+          export class Main {
+          }
+          `);
+
+                const errors = env.driveDiagnostics();
+
+                expect(errors.length).toBe(2);
+
+                const text1 = ts.flattenDiagnosticMessageText(errors[0].messageText, '\n');
+                const text2 = ts.flattenDiagnosticMessageText(errors[1].messageText, '\n');
+
+                expect(errors[0].code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
+                expect(errors[1].code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
+                expect(text1).toContain(
+                    'In local compilation mode, Angular does not support custom decorators');
+                expect(text2).toContain(
+                    'In local compilation mode, Angular does not support custom decorators');
+              });
+            });
           });
     });
