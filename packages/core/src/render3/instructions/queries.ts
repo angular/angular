@@ -9,10 +9,9 @@
 import {ProviderToken} from '../../di';
 import {unwrapElementRef} from '../../linker/element_ref';
 import {QueryList} from '../../linker/query_list';
-import {assertNumber} from '../../util/assert';
 import {QueryFlags} from '../interfaces/query';
-import {collectQueryResults, createLQuery, createTQuery, getTQuery, loadQueryInternal, materializeViewResults, saveContentQueryAndDirectiveIndex, TQueryMetadata_} from '../query';
-import {getCurrentQueryIndex, getCurrentTNode, getLView, getTView, setCurrentQueryIndex} from '../state';
+import {collectQueryResults, createContentQuery, createViewQuery, getTQuery, loadQueryInternal, materializeViewResults} from '../query';
+import {getCurrentQueryIndex, getLView, getTView, setCurrentQueryIndex} from '../state';
 import {isCreationMode} from '../util/view_utils';
 
 /**
@@ -30,27 +29,11 @@ import {isCreationMode} from '../util/view_utils';
 export function ɵɵcontentQuery<T>(
     directiveIndex: number, predicate: ProviderToken<unknown>|string|string[], flags: QueryFlags,
     read?: any): void {
-  ngDevMode && assertNumber(flags, 'Expecting flags');
-  const tView = getTView();
-  if (tView.firstCreatePass) {
-    // Compiler might not be able to pre-optimize and split multiple selectors.
-    if (typeof predicate === 'string') {
-      predicate = splitQueryMultiSelectors(predicate);
-    }
-
-    const tNode = getCurrentTNode()!;
-    createTQuery(tView, new TQueryMetadata_(predicate, flags, read), tNode.index);
-    saveContentQueryAndDirectiveIndex(tView, directiveIndex);
-    if ((flags & QueryFlags.isStatic) === QueryFlags.isStatic) {
-      tView.staticContentQueries = true;
-    }
-  }
-
-  createLQuery<T>(tView, getLView(), flags);
+  createContentQuery<T>(directiveIndex, predicate, flags, read);
 }
 
 /**
- * Creates new QueryList, stores the reference in LView and returns QueryList.
+ * Creates a new view query by initializing internal data structures.
  *
  * @param predicate The type for which the query will search
  * @param flags Flags associated with the query
@@ -60,20 +43,7 @@ export function ɵɵcontentQuery<T>(
  */
 export function ɵɵviewQuery<T>(
     predicate: ProviderToken<unknown>|string|string[], flags: QueryFlags, read?: any): void {
-  ngDevMode && assertNumber(flags, 'Expecting flags');
-  const tView = getTView();
-  if (tView.firstCreatePass) {
-    // Compiler might not be able to pre-optimize and split multiple selectors.
-    if (typeof predicate === 'string') {
-      predicate = splitQueryMultiSelectors(predicate);
-    }
-
-    createTQuery(tView, new TQueryMetadata_(predicate, flags, read), -1);
-    if ((flags & QueryFlags.isStatic) === QueryFlags.isStatic) {
-      tView.staticViewQueries = true;
-    }
-  }
-  createLQuery<T>(tView, getLView(), flags);
+  createViewQuery(predicate, flags, read);
 }
 
 /**
@@ -109,11 +79,6 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   }
 
   return false;
-}
-
-/** Splits multiple selectors in the locator. */
-function splitQueryMultiSelectors(locator: string): string[] {
-  return locator.split(',').map(s => s.trim());
 }
 
 /**
