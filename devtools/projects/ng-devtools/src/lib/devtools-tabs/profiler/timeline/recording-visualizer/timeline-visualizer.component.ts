@@ -12,6 +12,15 @@ import {ProfilerFrame} from 'protocol';
 import {BargraphNode} from '../record-formatter/bargraph-formatter';
 import {FlamegraphNode} from '../record-formatter/flamegraph-formatter';
 import {VisualizationMode} from '../visualization-mode';
+import {ExecutionDetailsComponent} from './execution-details.component';
+import {MatToolbar} from '@angular/material/toolbar';
+import {MatCard} from '@angular/material/card';
+import {BargraphVisualizerComponent} from './bargraph-visualizer.component';
+import {TreeMapVisualizerComponent} from './tree-map-visualizer.component';
+import {FlamegraphVisualizerComponent} from './flamegraph-visualizer.component';
+import {SplitAreaDirective} from '../../../../vendor/angular-split/lib/component/splitArea.directive';
+import {SplitComponent} from '../../../../vendor/angular-split/lib/component/split.component';
+import {DecimalPipe} from '@angular/common';
 
 export interface SelectedEntry {
   entry: BargraphNode | FlamegraphNode;
@@ -29,6 +38,18 @@ export interface SelectedDirective {
   selector: 'ng-timeline-visualizer',
   templateUrl: './timeline-visualizer.component.html',
   styleUrls: ['./timeline-visualizer.component.scss'],
+  standalone: true,
+  imports: [
+    SplitComponent,
+    SplitAreaDirective,
+    FlamegraphVisualizerComponent,
+    TreeMapVisualizerComponent,
+    BargraphVisualizerComponent,
+    MatCard,
+    MatToolbar,
+    ExecutionDetailsComponent,
+    DecimalPipe,
+  ],
 })
 export class TimelineVisualizerComponent {
   @Input()

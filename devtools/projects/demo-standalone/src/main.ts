@@ -23,7 +23,7 @@ bootstrapApplication(AppComponent, {
       {
         path: '',
         loadComponent: () =>
-          import('./app/devtools-app/devtools-app.component').then((m) => m.DevToolsComponent),
+          import('./app/devtools-app/devtools-app.component').then((m) => m.DemoDevToolsComponent),
         pathMatch: 'full',
       },
       {

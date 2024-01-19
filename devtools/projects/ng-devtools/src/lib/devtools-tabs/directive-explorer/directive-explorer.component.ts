@@ -42,6 +42,8 @@ import {
   ElementPropertyResolver,
   FlatNode as PropertyFlatNode,
 } from './property-resolver/element-property-resolver';
+import {PropertyTabComponent} from './property-tab/property-tab.component';
+import {SplitAreaDirective} from '../../vendor/angular-split/lib/component/splitArea.directive';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -68,6 +70,14 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
       provide: ElementPropertyResolver,
       useClass: ElementPropertyResolver,
     },
+  ],
+  standalone: true,
+  imports: [
+    SplitComponent,
+    SplitAreaDirective,
+    DirectiveForestComponent,
+    BreadcrumbsComponent,
+    PropertyTabComponent,
   ],
 })
 export class DirectiveExplorerComponent implements OnInit, OnDestroy {

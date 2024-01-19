@@ -7,12 +7,13 @@
  */
 
 import {Component, computed, inject, Input, signal} from '@angular/core';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
+import {MatOption} from '@angular/material/core';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatIcon} from '@angular/material/icon';
+import {MatInput} from '@angular/material/input';
+import {MatSelect} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatTooltip} from '@angular/material/tooltip';
 import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from 'protocol';
 
 @Component({
@@ -144,11 +145,13 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
   standalone: true,
   imports: [
     MatTableModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatInputModule,
-    MatSelectModule,
-    MatFormFieldModule,
+    MatIcon,
+    MatTooltip,
+    MatInput,
+    MatSelect,
+    MatFormField,
+    MatLabel,
+    MatOption,
   ],
 })
 export class InjectorProvidersComponent {
