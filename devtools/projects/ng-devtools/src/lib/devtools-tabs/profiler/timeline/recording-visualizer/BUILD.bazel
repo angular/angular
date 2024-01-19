@@ -33,7 +33,6 @@ ng_module(
         "execution-details.component.ts",
         "flamegraph-visualizer.component.ts",
         "profile-formatter.ts",
-        "recording-visualizer.module.ts",
         "timeline-visualizer.component.ts",
         "tree-map-visualizer.component.ts",
     ],

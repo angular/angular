@@ -14,7 +14,6 @@ ng_module(
     name = "directive-explorer",
     srcs = [
         "directive-explorer.component.ts",
-        "directive-explorer.module.ts",
     ],
     angular_assets = [
         "directive-explorer.component.html",

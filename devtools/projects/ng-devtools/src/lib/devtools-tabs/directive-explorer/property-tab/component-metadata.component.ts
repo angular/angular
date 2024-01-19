@@ -11,12 +11,15 @@ import {ComponentType} from 'protocol';
 
 import {DirectivePropertyResolver} from '../property-resolver/directive-property-resolver';
 import {ElementPropertyResolver} from '../property-resolver/element-property-resolver';
+import {MatButton} from '@angular/material/button';
 
 @Component({
   selector: 'ng-component-metadata',
   templateUrl: './component-metadata.component.html',
   styleUrls: ['./component-metadata.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [MatButton],
 })
 export class ComponentMetadataComponent {
   @Input({required: true}) currentSelectedComponent!: ComponentType;

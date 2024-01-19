@@ -33,7 +33,6 @@ ng_module(
         "property-preview.component.ts",
         "property-tab-body.component.ts",
         "property-view.component.ts",
-        "property-view.module.ts",
         "property-view-body.component.ts",
         "property-view-header.component.ts",
         "property-view-tree.component.ts",

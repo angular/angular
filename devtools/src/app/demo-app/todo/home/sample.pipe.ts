@@ -11,6 +11,7 @@ import {OnDestroy, Pipe, PipeTransform} from '@angular/core';
 @Pipe({
   name: 'sample',
   pure: false,
+  standalone: true,
 })
 export class SamplePipe implements PipeTransform, OnDestroy {
   transform(val: unknown) {

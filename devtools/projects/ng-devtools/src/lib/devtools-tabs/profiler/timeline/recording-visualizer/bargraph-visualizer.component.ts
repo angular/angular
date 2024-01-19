@@ -15,11 +15,14 @@ import {BarGraphFormatter, BargraphNode} from '../record-formatter/bargraph-form
 
 import {formatDirectiveProfile} from './profile-formatter';
 import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component';
+import {BarChartComponent} from './bar-chart.component';
 
 @Component({
   selector: 'ng-bargraph-visualizer',
   templateUrl: './bargraph-visualizer.component.html',
   styleUrls: ['./bargraph-visualizer.component.scss'],
+  standalone: true,
+  imports: [BarChartComponent],
 })
 export class BargraphVisualizerComponent {
   barColor!: string;

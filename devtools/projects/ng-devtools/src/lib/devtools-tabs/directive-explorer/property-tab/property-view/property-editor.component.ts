@@ -16,6 +16,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {ContainerType} from 'protocol';
 
 type EditorType = string | number | boolean;
@@ -38,6 +39,8 @@ const parseValue = (value: EditorResult): EditorResult => {
   templateUrl: './property-editor.component.html',
   selector: 'ng-property-editor',
   styleUrls: ['./property-editor.component.scss'],
+  standalone: true,
+  imports: [FormsModule],
 })
 export class PropertyEditorComponent implements AfterViewChecked, OnInit {
   @Input({required: true}) key!: string;

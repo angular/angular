@@ -12,7 +12,6 @@ ng_module(
     name = "breadcrumbs",
     srcs = [
         "breadcrumbs.component.ts",
-        "breadcrumbs.module.ts",
     ],
     angular_assets = [
         "breadcrumbs.component.html",
