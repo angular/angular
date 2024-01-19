@@ -6,11 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, Injector, NgModuleRef, NgZone, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  ComponentFactory,
+  ComponentFactoryResolver,
+  ComponentRef,
+  Injector,
+  NgModuleRef,
+  NgZone,
+  SimpleChange,
+  SimpleChanges,
+  Type,
+} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 
-import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from '../src/component-factory-strategy';
+import {
+  ComponentNgElementStrategy,
+  ComponentNgElementStrategyFactory,
+} from '../src/component-factory-strategy';
 import {NgElementStrategyEvent} from '../src/element-strategy';
 
 describe('ComponentFactoryNgElementStrategy', () => {
@@ -62,7 +77,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
   describe('before connected', () => {
     it('should allow subscribing to output events', () => {
       const events: NgElementStrategyEvent[] = [];
-      strategy.events.subscribe(e => events.push(e));
+      strategy.events.subscribe((e) => events.push(e));
 
       // No events before connecting (since `componentRef` is not even on the strategy yet).
       componentRef.instance.output1.next('output-1a');
@@ -108,7 +123,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
 
     it('should listen to output events', () => {
       const events: NgElementStrategyEvent[] = [];
-      strategy.events.subscribe(e => events.push(e));
+      strategy.events.subscribe((e) => events.push(e));
 
       componentRef.instance.output1.next('output-1a');
       componentRef.instance.output1.next('output-1b');
@@ -150,17 +165,17 @@ describe('ComponentFactoryNgElementStrategy', () => {
     });
 
     it('should call ngOnChanges with proper firstChange value', fakeAsync(() => {
-         strategy.setInputValue('fooFoo', 'fooFoo-2');
-         strategy.setInputValue('barBar', 'barBar-1');
-         strategy.setInputValue('falsyUndefined', 'notanymore');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         (strategy as any).detectChanges();
-         expectSimpleChanges(componentRef.instance.simpleChanges[1], {
-           fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
-           barBar: new SimpleChange(undefined, 'barBar-1', true),
-           falsyUndefined: new SimpleChange(undefined, 'notanymore', false),
-         });
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-2');
+      strategy.setInputValue('barBar', 'barBar-1');
+      strategy.setInputValue('falsyUndefined', 'notanymore');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      (strategy as any).detectChanges();
+      expectSimpleChanges(componentRef.instance.simpleChanges[1], {
+        fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
+        barBar: new SimpleChange(undefined, 'barBar-1', true),
+        falsyUndefined: new SimpleChange(undefined, 'notanymore', false),
+      });
+    }));
   });
 
   describe('when inputs change and not connected', () => {
@@ -173,10 +188,10 @@ describe('ComponentFactoryNgElementStrategy', () => {
     });
 
     it('should not detect changes', fakeAsync(() => {
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(componentRef.changeDetectorRef.detectChanges).not.toHaveBeenCalled();
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(componentRef.changeDetectorRef.detectChanges).not.toHaveBeenCalled();
+    }));
   });
 
   describe('when inputs change and is connected', () => {
@@ -194,226 +209,222 @@ describe('ComponentFactoryNgElementStrategy', () => {
     });
 
     it('should detect changes', fakeAsync(() => {
-         // Connect detected changes automatically
-         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
+      // Connect detected changes automatically
+      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
+    }));
 
     it('should detect changes once for multiple input changes', fakeAsync(() => {
-         // Connect detected changes automatically
-         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
+      // Connect detected changes automatically
+      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
+    }));
 
     it('should not detect changes if the input is set to the same value', fakeAsync(() => {
-         (componentRef.changeDetectorRef.detectChanges as jasmine.Spy).calls.reset();
+      (componentRef.changeDetectorRef.detectChanges as jasmine.Spy).calls.reset();
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
 
-         (componentRef.changeDetectorRef.detectChanges as jasmine.Spy).calls.reset();
+      (componentRef.changeDetectorRef.detectChanges as jasmine.Spy).calls.reset();
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(componentRef.changeDetectorRef.detectChanges).not.toHaveBeenCalled();
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(componentRef.changeDetectorRef.detectChanges).not.toHaveBeenCalled();
+    }));
 
     it('should call ngOnChanges', fakeAsync(() => {
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expectSimpleChanges(
-             componentRef.instance.simpleChanges[0],
-             {fooFoo: new SimpleChange(undefined, 'fooFoo-1', true)});
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
+        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
+      });
+    }));
 
     it('should call ngOnChanges once for multiple input changes', fakeAsync(() => {
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expectSimpleChanges(componentRef.instance.simpleChanges[0], {
-           fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
-           barBar: new SimpleChange(undefined, 'barBar-1', true)
-         });
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
+        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
+        barBar: new SimpleChange(undefined, 'barBar-1', true),
+      });
+    }));
 
-    it('should call ngOnChanges twice for changes in different rounds with previous values',
-       fakeAsync(() => {
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expectSimpleChanges(componentRef.instance.simpleChanges[0], {
-           fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
-           barBar: new SimpleChange(undefined, 'barBar-1', true)
-         });
+    it('should call ngOnChanges twice for changes in different rounds with previous values', fakeAsync(() => {
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
+        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
+        barBar: new SimpleChange(undefined, 'barBar-1', true),
+      });
 
-         strategy.setInputValue('fooFoo', 'fooFoo-2');
-         strategy.setInputValue('barBar', 'barBar-2');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expectSimpleChanges(componentRef.instance.simpleChanges[1], {
-           fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
-           barBar: new SimpleChange('barBar-1', 'barBar-2', false)
-         });
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-2');
+      strategy.setInputValue('barBar', 'barBar-2');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expectSimpleChanges(componentRef.instance.simpleChanges[1], {
+        fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
+        barBar: new SimpleChange('barBar-1', 'barBar-2', false),
+      });
+    }));
 
     it('should not call ngOnChanges if the inout is set to the same value', fakeAsync(() => {
-         const ngOnChangesSpy = spyOn(componentRef.instance, 'ngOnChanges');
+      const ngOnChangesSpy = spyOn(componentRef.instance, 'ngOnChanges');
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(ngOnChangesSpy).toHaveBeenCalledTimes(1);
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(ngOnChangesSpy).toHaveBeenCalledTimes(1);
 
-         ngOnChangesSpy.calls.reset();
+      ngOnChangesSpy.calls.reset();
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(ngOnChangesSpy).not.toHaveBeenCalled();
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(ngOnChangesSpy).not.toHaveBeenCalled();
+    }));
 
     it('should not try to call ngOnChanges if not present on the component', fakeAsync(() => {
-         const factory2 = new FakeComponentFactory(FakeComponentWithoutNgOnChanges);
-         const strategy2 = new ComponentNgElementStrategy(factory2, injector);
-         const changeDetectorRef2 = factory2.componentRef.changeDetectorRef;
+      const factory2 = new FakeComponentFactory(FakeComponentWithoutNgOnChanges);
+      const strategy2 = new ComponentNgElementStrategy(factory2, injector);
+      const changeDetectorRef2 = factory2.componentRef.changeDetectorRef;
 
-         strategy2.connect(document.createElement('div'));
-         changeDetectorRef2.detectChanges.calls.reset();
+      strategy2.connect(document.createElement('div'));
+      changeDetectorRef2.detectChanges.calls.reset();
 
-         strategy2.setInputValue('fooFoo', 'fooFoo-1');
-         expect(() => tick(16)).not.toThrow();  // scheduler waits 16ms if RAF is unavailable
+      strategy2.setInputValue('fooFoo', 'fooFoo-1');
+      expect(() => tick(16)).not.toThrow(); // scheduler waits 16ms if RAF is unavailable
 
-         // If the strategy would have tried to call `component.ngOnChanges()`, an error would have
-         // been thrown and `changeDetectorRef2.detectChanges()` would not have been called.
-         expect(changeDetectorRef2.detectChanges).toHaveBeenCalledTimes(1);
-       }));
+      // If the strategy would have tried to call `component.ngOnChanges()`, an error would have
+      // been thrown and `changeDetectorRef2.detectChanges()` would not have been called.
+      expect(changeDetectorRef2.detectChanges).toHaveBeenCalledTimes(1);
+    }));
 
     it('should mark the view for check', fakeAsync(() => {
-         expect(viewChangeDetectorRef.markForCheck).not.toHaveBeenCalled();
+      expect(viewChangeDetectorRef.markForCheck).not.toHaveBeenCalled();
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
 
-         expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
-       }));
+      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
+    }));
 
     it('should mark the view for check once for multiple input changes', fakeAsync(() => {
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
 
-         expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
-       }));
+      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
+    }));
 
-    it('should mark the view for check twice for changes in different rounds with previous values',
-       fakeAsync(() => {
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
+    it('should mark the view for check twice for changes in different rounds with previous values', fakeAsync(() => {
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
 
-         expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
+      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
 
-         strategy.setInputValue('fooFoo', 'fooFoo-2');
-         strategy.setInputValue('barBar', 'barBar-2');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
+      strategy.setInputValue('fooFoo', 'fooFoo-2');
+      strategy.setInputValue('barBar', 'barBar-2');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
 
-         expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(2);
-       }));
+      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(2);
+    }));
 
-    it('should mark the view for check even if ngOnChanges is not present on the component',
-       fakeAsync(() => {
-         const factory2 = new FakeComponentFactory(FakeComponentWithoutNgOnChanges);
-         const strategy2 = new ComponentNgElementStrategy(factory2, injector);
-         const viewChangeDetectorRef2 = factory2.componentRef.injector.get(ChangeDetectorRef);
+    it('should mark the view for check even if ngOnChanges is not present on the component', fakeAsync(() => {
+      const factory2 = new FakeComponentFactory(FakeComponentWithoutNgOnChanges);
+      const strategy2 = new ComponentNgElementStrategy(factory2, injector);
+      const viewChangeDetectorRef2 = factory2.componentRef.injector.get(ChangeDetectorRef);
 
-         strategy2.connect(document.createElement('div'));
-         (viewChangeDetectorRef2.markForCheck as jasmine.Spy).calls.reset();
+      strategy2.connect(document.createElement('div'));
+      (viewChangeDetectorRef2.markForCheck as jasmine.Spy).calls.reset();
 
-         strategy2.setInputValue('fooFoo', 'fooFoo-1');
-         expect(() => tick(16)).not.toThrow();  // scheduler waits 16ms if RAF is unavailable
+      strategy2.setInputValue('fooFoo', 'fooFoo-1');
+      expect(() => tick(16)).not.toThrow(); // scheduler waits 16ms if RAF is unavailable
 
-         // If the strategy would have tried to call `component.ngOnChanges()`, an error would have
-         // been thrown and `viewChangeDetectorRef2.markForCheck()` would not have been called.
-         expect(viewChangeDetectorRef2.markForCheck).toHaveBeenCalledTimes(1);
-       }));
+      // If the strategy would have tried to call `component.ngOnChanges()`, an error would have
+      // been thrown and `viewChangeDetectorRef2.markForCheck()` would not have been called.
+      expect(viewChangeDetectorRef2.markForCheck).toHaveBeenCalledTimes(1);
+    }));
 
     it('should not mark the view for check if the input is set to the same value', fakeAsync(() => {
-         (viewChangeDetectorRef.markForCheck as jasmine.Spy).calls.reset();
+      (viewChangeDetectorRef.markForCheck as jasmine.Spy).calls.reset();
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
 
-         (viewChangeDetectorRef.markForCheck as jasmine.Spy).calls.reset();
+      (viewChangeDetectorRef.markForCheck as jasmine.Spy).calls.reset();
 
-         strategy.setInputValue('fooFoo', 'fooFoo-1');
-         strategy.setInputValue('barBar', 'barBar-1');
-         tick(16);  // scheduler waits 16ms if RAF is unavailable
-         expect(viewChangeDetectorRef.markForCheck).not.toHaveBeenCalled();
-       }));
+      strategy.setInputValue('fooFoo', 'fooFoo-1');
+      strategy.setInputValue('barBar', 'barBar-1');
+      tick(16); // scheduler waits 16ms if RAF is unavailable
+      expect(viewChangeDetectorRef.markForCheck).not.toHaveBeenCalled();
+    }));
   });
 
   describe('disconnect', () => {
     it('should be able to call if not connected', fakeAsync(() => {
-         strategy.disconnect();
+      strategy.disconnect();
 
-         // Sanity check: the strategy doesn't have an instance of the componentRef anyways
-         expect(componentRef.destroy).not.toHaveBeenCalled();
-       }));
+      // Sanity check: the strategy doesn't have an instance of the componentRef anyways
+      expect(componentRef.destroy).not.toHaveBeenCalled();
+    }));
 
     it('should destroy the component after the destroy delay', fakeAsync(() => {
-         strategy.connect(document.createElement('div'));
-         strategy.disconnect();
-         expect(componentRef.destroy).not.toHaveBeenCalled();
+      strategy.connect(document.createElement('div'));
+      strategy.disconnect();
+      expect(componentRef.destroy).not.toHaveBeenCalled();
 
-         tick(10);
-         expect(componentRef.destroy).toHaveBeenCalledTimes(1);
-       }));
+      tick(10);
+      expect(componentRef.destroy).toHaveBeenCalledTimes(1);
+    }));
 
     it('should be able to call it multiple times but only destroy once', fakeAsync(() => {
-         strategy.connect(document.createElement('div'));
-         strategy.disconnect();
-         strategy.disconnect();
-         expect(componentRef.destroy).not.toHaveBeenCalled();
+      strategy.connect(document.createElement('div'));
+      strategy.disconnect();
+      strategy.disconnect();
+      expect(componentRef.destroy).not.toHaveBeenCalled();
 
-         tick(10);
-         expect(componentRef.destroy).toHaveBeenCalledTimes(1);
+      tick(10);
+      expect(componentRef.destroy).toHaveBeenCalledTimes(1);
 
-         strategy.disconnect();
-         expect(componentRef.destroy).toHaveBeenCalledTimes(1);
-       }));
+      strategy.disconnect();
+      expect(componentRef.destroy).toHaveBeenCalledTimes(1);
+    }));
   });
 
   describe('runInZone', () => {
     const param = 'foofoo';
     const fn = () => param;
 
-    it('should run the callback directly when invoked in element\'s zone', () => {
+    it("should run the callback directly when invoked in element's zone", () => {
       expect(strategy['runInZone'](fn)).toEqual('foofoo');
       expect(ngZone.run).not.toHaveBeenCalled();
     });
 
-    it('should run the callback inside the element\'s zone when invoked in a different zone',
-       () => {
-         expect(Zone.root.run(() => (strategy['runInZone'](fn)))).toEqual('foofoo');
-         expect(ngZone.run).toHaveBeenCalledWith(fn);
-       });
+    it("should run the callback inside the element's zone when invoked in a different zone", () => {
+      expect(Zone.root.run(() => strategy['runInZone'](fn))).toEqual('foofoo');
+      expect(ngZone.run).toHaveBeenCalledWith(fn);
+    });
 
     it('should run the callback directly when called without zone.js loaded', () => {
       // simulate no zone.js loaded
       (strategy as any)['elementZone'] = null;
 
-      expect(Zone.root.run(() => (strategy['runInZone'](fn)))).toEqual('foofoo');
+      expect(Zone.root.run(() => strategy['runInZone'](fn))).toEqual('foofoo');
       expect(ngZone.run).not.toHaveBeenCalled();
     });
   });
@@ -438,18 +449,19 @@ export class FakeComponent {
 
 export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<T> {
   componentRef: any = jasmine.createSpyObj(
-      'componentRef',
-      // Method spies.
-      ['destroy'],
-      // Property spies.
-      {
-        changeDetectorRef: jasmine.createSpyObj('changeDetectorRef', ['detectChanges']),
-        hostView: {},
-        injector: jasmine.createSpyObj('injector', {
-          get: jasmine.createSpyObj('viewChangeDetectorRef', ['markForCheck']),
-        }),
-        instance: new this.ComponentClass(),
-      });
+    'componentRef',
+    // Method spies.
+    ['destroy'],
+    // Property spies.
+    {
+      changeDetectorRef: jasmine.createSpyObj('changeDetectorRef', ['detectChanges']),
+      hostView: {},
+      injector: jasmine.createSpyObj('injector', {
+        get: jasmine.createSpyObj('viewChangeDetectorRef', ['markForCheck']),
+      }),
+      instance: new this.ComponentClass(),
+    },
+  );
 
   override get selector(): string {
     return 'fake-component';
@@ -483,18 +495,21 @@ export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<
   }
 
   override create(
-      injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
-      ngModule?: NgModuleRef<any>): ComponentRef<any> {
+    injector: Injector,
+    projectableNodes?: any[][],
+    rootSelectorOrNode?: string | any,
+    ngModule?: NgModuleRef<any>,
+  ): ComponentRef<any> {
     return this.componentRef;
   }
 }
 
 function expectSimpleChanges(actual: SimpleChanges, expected: SimpleChanges) {
-  Object.keys(actual).forEach(key => {
+  Object.keys(actual).forEach((key) => {
     expect(expected[key]).toBeTruthy(`Change included additional key ${key}`);
   });
 
-  Object.keys(expected).forEach(key => {
+  Object.keys(expected).forEach((key) => {
     expect(actual[key]).toBeTruthy(`Change should have included key ${key}`);
     if (actual[key]) {
       expect(actual[key].previousValue).toBe(expected[key].previousValue, `${key}.previousValue`);

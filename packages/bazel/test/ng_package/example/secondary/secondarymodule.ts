@@ -9,7 +9,6 @@
 import {NgModule} from '@angular/core';
 
 @NgModule({})
-export class SecondaryModule {
-}
+export class SecondaryModule {}
 
 export const a = 1;

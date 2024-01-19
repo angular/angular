@@ -11,16 +11,14 @@ import {Injector, MeasureValues, RegressionSlopeValidator} from '../../index';
 describe('regression slope validator', () => {
   let validator: RegressionSlopeValidator;
 
-  function createValidator({size, metric}: {size: number, metric: string}) {
-    validator = Injector
-                    .create({
-                      providers: [
-                        RegressionSlopeValidator.PROVIDERS,
-                        {provide: RegressionSlopeValidator.METRIC, useValue: metric},
-                        {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: size}
-                      ]
-                    })
-                    .get(RegressionSlopeValidator);
+  function createValidator({size, metric}: {size: number; metric: string}) {
+    validator = Injector.create({
+      providers: [
+        RegressionSlopeValidator.PROVIDERS,
+        {provide: RegressionSlopeValidator.METRIC, useValue: metric},
+        {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: size},
+      ],
+    }).get(RegressionSlopeValidator);
   }
 
   it('should return sampleSize and metric as description', () => {
@@ -53,7 +51,6 @@ describe('regression slope validator', () => {
     expect(validator.validate(sample)).toEqual(sample.slice(1, 3));
   });
 });
-
 
 function mv(runIndex: number, time: number, values: {[key: string]: number}) {
   return new MeasureValues(runIndex, new Date(time), values);
