@@ -27,7 +27,6 @@ ng_module(
     srcs = [
         "component-metadata.component.ts",
         "property-tab.component.ts",
-        "property-tab.module.ts",
         "property-tab-header.component.ts",
     ],
     angular_assets = [

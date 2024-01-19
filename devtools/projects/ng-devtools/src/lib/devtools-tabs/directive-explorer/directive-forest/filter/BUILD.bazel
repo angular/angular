@@ -12,7 +12,6 @@ ng_module(
     name = "filter",
     srcs = [
         "filter.component.ts",
-        "filter.module.ts",
     ],
     angular_assets = [
         "filter.component.html",

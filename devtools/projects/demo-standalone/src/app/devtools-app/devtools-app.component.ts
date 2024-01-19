@@ -7,14 +7,14 @@
  */
 
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import {DevToolsModule as NgDevToolsModule} from 'ng-devtools';
 import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
 
 import {IFrameMessageBus} from '../../../../../src/iframe-message-bus';
+import {DevToolsComponent} from 'ng-devtools';
 
 @Component({
   standalone: true,
-  imports: [NgDevToolsModule],
+  imports: [DevToolsComponent],
   providers: [
     {
       provide: MessageBus,
@@ -51,7 +51,7 @@ import {IFrameMessageBus} from '../../../../../src/iframe-message-bus';
     </div>
   `,
 })
-export class DevToolsComponent {
+export class DemoDevToolsComponent {
   messageBus: IFrameMessageBus | null = null;
   @ViewChild('ref') iframe!: ElementRef;
 }

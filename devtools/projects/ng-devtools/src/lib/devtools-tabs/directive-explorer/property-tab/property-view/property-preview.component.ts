@@ -15,6 +15,7 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
   selector: 'ng-property-preview',
   templateUrl: './property-preview.component.html',
   styleUrls: ['./property-preview.component.scss'],
+  standalone: true,
 })
 export class PropertyPreviewComponent {
   @Input({required: true}) node!: FlatNode;

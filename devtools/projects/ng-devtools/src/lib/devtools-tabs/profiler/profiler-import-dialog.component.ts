@@ -7,7 +7,15 @@
  */
 
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+} from '@angular/material/dialog';
+import {MatButton} from '@angular/material/button';
 
 interface DialogData {
   profilerVersion?: number;
@@ -20,6 +28,8 @@ interface DialogData {
   selector: 'ng-profiler-import-dialog',
   templateUrl: './profiler-import-dialog.component.html',
   styleUrls: ['./profiler-import-dialog.component.scss'],
+  standalone: true,
+  imports: [MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, MatButton],
 })
 export class ProfilerImportDialogComponent {
   constructor(

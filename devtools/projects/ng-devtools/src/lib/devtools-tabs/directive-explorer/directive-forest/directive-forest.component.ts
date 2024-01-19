@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {
+  CdkVirtualScrollViewport,
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+} from '@angular/cdk/scrolling';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {
   ChangeDetectionStrategy,
@@ -15,8 +19,6 @@ import {
   EventEmitter,
   HostListener,
   Input,
-  OnDestroy,
-  OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -28,12 +30,22 @@ import {TabUpdate} from '../../tab-update/index';
 import {ComponentDataSource, FlatNode} from './component-data-source';
 import {isChildOf, parentCollapsed} from './directive-forest-utils';
 import {IndexedNode} from './index-forest';
+import {MatIcon} from '@angular/material/icon';
+import {FilterComponent} from './filter/filter.component';
 
 @Component({
   selector: 'ng-directive-forest',
   templateUrl: './directive-forest.component.html',
   styleUrls: ['./directive-forest.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    FilterComponent,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualForOf,
+    MatIcon,
+  ],
 })
 export class DirectiveForestComponent {
   @Input()
