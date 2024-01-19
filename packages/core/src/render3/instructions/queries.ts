@@ -127,4 +127,4 @@ export function ɵɵloadQuery<T>(): QueryList<T> {
 
 export function ɵɵviewQuerySignal(): void {}
 export function ɵɵcontentQuerySignal(): void {}
-export function ɵɵqueryAdvance(): void {}
+export function ɵɵqueryAdvance(_count = 1): void {}
