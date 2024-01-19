@@ -31,8 +31,6 @@
     "packages/http/**",
     "**/.gitignore",
     "**/.gitkeep",
-    "**/yarn.lock",
-    "**/package.json",
     "**/third_party/**",
     "**/tsconfig-build.json",
     "**/tsconfig-tsec.json",
