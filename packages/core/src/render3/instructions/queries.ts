@@ -89,7 +89,3 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
 export function ɵɵloadQuery<T>(): QueryList<T> {
   return loadQueryInternal<T>(getLView(), getCurrentQueryIndex());
 }
-
-export function ɵɵviewQuerySignal(): void {}
-export function ɵɵcontentQuerySignal(): void {}
-export function ɵɵqueryAdvance(_count = 1): void {}
