@@ -15,8 +15,9 @@ describe('flat_module ng_module', () => {
   let flatModuleOutFile: string;
 
   beforeAll(() => {
-    packageOutput =
-        dirname(runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.mjs'));
+    packageOutput = dirname(
+      runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.mjs'),
+    );
     flatModuleOutFile = join(packageOutput, 'flat_module.mjs');
   });
 
@@ -27,8 +28,9 @@ describe('flat_module ng_module', () => {
   describe('flat module out file', () => {
     it('should have a proper flat module re-export', () => {
       expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(`export * from './index';`);
-      expect(readFileSync(flatModuleOutFile, 'utf8'))
-          .toContain(`Generated bundle index. Do not edit.`);
+      expect(readFileSync(flatModuleOutFile, 'utf8')).toContain(
+        `Generated bundle index. Do not edit.`,
+      );
     });
   });
 });
