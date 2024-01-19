@@ -7,12 +7,14 @@
  */
 
 import {ConstantPool} from '../../constant_pool';
+import * as core from '../../core';
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {ForwardRefHandling} from '../util';
 
 import {R3QueryMetadata} from './api';
-import {CONTEXT_NAME} from './util';
+import {renderFlagCheckIfStmt} from './template';
+import {CONTEXT_NAME, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
 
 /**
  * A set of flags to be used with Queries.
@@ -103,4 +105,94 @@ export function createQueryCreateCall(
 
   const queryCreateFn = query.isSignal ? queryTypeFns.signalBased : queryTypeFns.nonSignal;
   return o.importExpr(queryCreateFn).callFn(parameters);
+}
+
+
+// Define and update any view queries
+export function createViewQueriesFunction(
+    viewQueries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
+  const createStatements: o.Statement[] = [];
+  const updateStatements: o.Statement[] = [];
+  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
+
+  viewQueries.forEach((query: R3QueryMetadata) => {
+    // creation call, e.g. r3.viewQuery(somePredicate, true) or
+    //                r3.viewQuerySignal(ctx.prop, somePredicate, true);
+    const queryDefinitionCall = createQueryCreateCall(query, constantPool, {
+      signalBased: R3.viewQuerySignal,
+      nonSignal: R3.viewQuery,
+    });
+    createStatements.push(queryDefinitionCall.toStmt());
+
+    // Signal queries update lazily and we just advance the index.
+    // TODO: Chaining?
+    if (query.isSignal) {
+      updateStatements.push(o.importExpr(R3.queryAdvance).callFn([]).toStmt());
+      return;
+    }
+
+    // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
+    const temporary = tempAllocator();
+    const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
+    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
+    const updateDirective = o.variable(CONTEXT_NAME)
+                                .prop(query.propertyName)
+                                .set(query.first ? temporary.prop('first') : temporary);
+    updateStatements.push(refresh.and(updateDirective).toStmt());
+  });
+
+  const viewQueryFnName = name ? `${name}_Query` : null;
+  return o.fn(
+      [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
+      [
+        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
+        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
+      ],
+      o.INFERRED_TYPE, null, viewQueryFnName);
+}
+
+// Define and update any content queries
+export function createContentQueriesFunction(
+    queries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
+  const createStatements: o.Statement[] = [];
+  const updateStatements: o.Statement[] = [];
+  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
+
+  for (const query of queries) {
+    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null) or
+    //                r3.contentQuerySignal(dirIndex, propName, somePredicate, <flags>, <read>).
+    createStatements.push(createQueryCreateCall(
+                              query, constantPool,
+                              {nonSignal: R3.contentQuery, signalBased: R3.contentQuerySignal},
+                              /* prependParams */[o.variable('dirIndex')])
+                              .toStmt());
+
+    // Signal queries update lazily and we just advance the index.
+    // TODO: Chaining?
+    if (query.isSignal) {
+      updateStatements.push(o.importExpr(R3.queryAdvance).callFn([]).toStmt());
+      continue;
+    }
+
+    // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
+    const temporary = tempAllocator();
+    const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
+    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
+    const updateDirective = o.variable(CONTEXT_NAME)
+                                .prop(query.propertyName)
+                                .set(query.first ? temporary.prop('first') : temporary);
+    updateStatements.push(refresh.and(updateDirective).toStmt());
+  }
+
+  const contentQueriesFnName = name ? `${name}_ContentQueries` : null;
+  return o.fn(
+      [
+        new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
+        new o.FnParam('dirIndex', null)
+      ],
+      [
+        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
+        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
+      ],
+      o.INFERRED_TYPE, null, contentQueriesFnName);
 }
