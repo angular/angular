@@ -1,7 +1,7 @@
 # Create a new project
 
 Use the `ng new` command to start creating your **Tour of Heroes** application. <br>
-<b>Please note:</b> Starting in Angular version 17 new projects will be [standalone by default](https://angular.io/guide/standalone-components). To create a project with the using `NgModule` use the option `ng new --no-standalone`
+<b>Please note:</b> Starting in Angular version 17 new projects will be [standalone by default](https://angular.io/guide/standalone-components). To create a project with `NgModule` use the option `ng new --no-standalone`
 
 This tutorial:
 
