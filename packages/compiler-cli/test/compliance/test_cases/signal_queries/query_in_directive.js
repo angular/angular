@@ -16,10 +16,7 @@ TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
             i0.ɵɵcontentQuerySignal(dirIndex, ctx.query8, _c2, 5);
             i0.ɵɵcontentQuerySignal(dirIndex, ctx.query9, nonAnalyzableRefersToString, 5);
         } if (rf & 2) {
-            i0.ɵɵqueryAdvance();
-            i0.ɵɵqueryAdvance();
-            i0.ɵɵqueryAdvance();
-            i0.ɵɵqueryAdvance();
+            i0.ɵɵqueryAdvance(4);
         }
     },
     viewQuery: function TestDir_Query(rf, ctx) {
@@ -30,11 +27,7 @@ TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
             i0.ɵɵviewQuerySignal(ctx.query6, SomeToken, 5);
             i0.ɵɵviewQuerySignal(ctx.query7, _c5, 5, SomeToken);
         } if (rf & 2) {
-            i0.ɵɵqueryAdvance();
-            i0.ɵɵqueryAdvance();
-            i0.ɵɵqueryAdvance();
-            i0.ɵɵqueryAdvance();
-            i0.ɵɵqueryAdvance();
+            i0.ɵɵqueryAdvance(5);
         }
     },
     …
