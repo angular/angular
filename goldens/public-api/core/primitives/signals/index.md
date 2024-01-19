@@ -13,6 +13,9 @@ export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNo
 // @public
 export function consumerDestroy(node: ReactiveNode): void;
 
+// @public (undocumented)
+export function consumerMarkDirty(node: ReactiveNode): void;
+
 // @public
 export function consumerPollProducersForChange(node: ReactiveNode): boolean;
 

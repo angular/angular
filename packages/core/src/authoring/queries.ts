@@ -7,17 +7,18 @@
  */
 
 import {ProviderToken} from '../di';
+import {createMultiResultQuerySignalFn, createSingleResultOptionalQuerySignalFn, createSingleResultRequiredQuerySignalFn} from '../render3/query_reactive';
 import {Signal} from '../render3/reactivity/api';
 
 function viewChildFn<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {read?: ProviderToken<ReadT>}): Signal<ReadT|undefined> {
-  return null! as Signal<ReadT|undefined>;
+  return createSingleResultOptionalQuerySignalFn<ReadT>();
 }
 
 function viewChildRequiredFn<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string, opts?: {read?: ProviderToken<ReadT>}): Signal<ReadT> {
-  return null! as Signal<ReadT>;
+  return createSingleResultRequiredQuerySignalFn<ReadT>();
 }
 
 /**
@@ -131,19 +132,19 @@ export function viewChildren<LocatorT, ReadT>(
 export function viewChildren<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {read?: ProviderToken<ReadT>}): Signal<ReadonlyArray<ReadT>> {
-  return null!;
+  return createMultiResultQuerySignalFn<ReadT>();
 }
 
 export function contentChildFn<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {descendants?: boolean, read?: ProviderToken<ReadT>}): Signal<ReadT|undefined> {
-  return null!;
+  return createSingleResultOptionalQuerySignalFn<ReadT>();
 }
 
 function contentChildRequiredFn<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {descendants?: boolean, read?: ProviderToken<ReadT>}): Signal<ReadT> {
-  return null!;
+  return createSingleResultRequiredQuerySignalFn<ReadT>();
 }
 
 /**
@@ -258,5 +259,5 @@ export function contentChildren<LocatorT, ReadT>(
 export function contentChildren<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {descendants?: boolean, read?: ProviderToken<ReadT>}): Signal<ReadonlyArray<ReadT>> {
-  return null!;
+  return createMultiResultQuerySignalFn<ReadT>();
 }

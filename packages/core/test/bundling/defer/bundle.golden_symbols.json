@@ -1701,10 +1701,16 @@
     "name": "init_queries"
   },
   {
+    "name": "init_queries_signals"
+  },
+  {
     "name": "init_query"
   },
   {
     "name": "init_query_list"
+  },
+  {
+    "name": "init_query_reactive"
   },
   {
     "name": "init_r3_injector"
