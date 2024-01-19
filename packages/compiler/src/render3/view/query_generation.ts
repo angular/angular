@@ -107,13 +107,65 @@ export function createQueryCreateCall(
   return o.importExpr(queryCreateFn).callFn(parameters);
 }
 
+const queryAdvancePlaceholder = Symbol('queryAdvancePlaceholder');
+
+/**
+ * Collapses query advance placeholders in a list of statements.
+ *
+ * This allows for less generated code because multiple sibling query advance
+ * statements can be collapsed into a single call with the count as argument.
+ *
+ * e.g.
+ *
+ * ```ts
+ *   bla();
+ *   queryAdvance();
+ *   queryAdvance();
+ *   bla();
+ * ```
+ *
+ *   --> will turn into
+ *
+ * ```
+ *   bla();
+ *   queryAdvance(2);
+ *   bla();
+ * ```
+ */
+function collapseAdvanceStatements(statements: (o.Statement|typeof queryAdvancePlaceholder)[]):
+    o.Statement[] {
+  const result: o.Statement[] = [];
+  let advanceCollapseCount = 0;
+  const flushAdvanceCount = () => {
+    if (advanceCollapseCount > 0) {
+      result.unshift(
+          o.importExpr(R3.queryAdvance)
+              .callFn(advanceCollapseCount === 1 ? [] : [o.literal(advanceCollapseCount)])
+              .toStmt());
+      advanceCollapseCount = 0;
+    }
+  };
+
+  // Iterate through statements in reverse and collapse advance placeholders.
+  for (let i = statements.length - 1; i >= 0; i--) {
+    const st = statements[i];
+    if (st === queryAdvancePlaceholder) {
+      advanceCollapseCount++;
+    } else {
+      flushAdvanceCount();
+      result.unshift(st);
+    }
+  }
+  flushAdvanceCount();
+  return result;
+}
 
 // Define and update any view queries
 export function createViewQueriesFunction(
     viewQueries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
   const createStatements: o.Statement[] = [];
-  const updateStatements: o.Statement[] = [];
-  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
+  const updateStatements: (o.Statement|typeof queryAdvancePlaceholder)[] = [];
+  const tempAllocator = temporaryAllocator(st => updateStatements.push(st), TEMPORARY_NAME);
 
   viewQueries.forEach((query: R3QueryMetadata) => {
     // creation call, e.g. r3.viewQuery(somePredicate, true) or
@@ -125,9 +177,8 @@ export function createViewQueriesFunction(
     createStatements.push(queryDefinitionCall.toStmt());
 
     // Signal queries update lazily and we just advance the index.
-    // TODO: Chaining?
     if (query.isSignal) {
-      updateStatements.push(o.importExpr(R3.queryAdvance).callFn([]).toStmt());
+      updateStatements.push(queryAdvancePlaceholder);
       return;
     }
 
@@ -146,7 +197,7 @@ export function createViewQueriesFunction(
       [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
       [
         renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
+        renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements))
       ],
       o.INFERRED_TYPE, null, viewQueryFnName);
 }
@@ -155,8 +206,8 @@ export function createViewQueriesFunction(
 export function createContentQueriesFunction(
     queries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
   const createStatements: o.Statement[] = [];
-  const updateStatements: o.Statement[] = [];
-  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
+  const updateStatements: (o.Statement|typeof queryAdvancePlaceholder)[] = [];
+  const tempAllocator = temporaryAllocator(st => updateStatements.push(st), TEMPORARY_NAME);
 
   for (const query of queries) {
     // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null) or
@@ -168,9 +219,8 @@ export function createContentQueriesFunction(
                               .toStmt());
 
     // Signal queries update lazily and we just advance the index.
-    // TODO: Chaining?
     if (query.isSignal) {
-      updateStatements.push(o.importExpr(R3.queryAdvance).callFn([]).toStmt());
+      updateStatements.push(queryAdvancePlaceholder);
       continue;
     }
 
@@ -192,7 +242,7 @@ export function createContentQueriesFunction(
       ],
       [
         renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
+        renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
       ],
       o.INFERRED_TYPE, null, contentQueriesFnName);
 }
