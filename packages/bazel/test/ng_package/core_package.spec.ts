@@ -24,7 +24,7 @@ shx.cd(path.dirname(runfiles.resolve('angular/packages/core/npm_package/package.
 function p(templateStringArray: TemplateStringsArray) {
   const segments = [];
   for (const entry of templateStringArray) {
-    segments.push(...entry.split('/').filter(s => s !== ''));
+    segments.push(...entry.split('/').filter((s) => s !== ''));
   }
   return path.join(...segments);
 }
@@ -53,48 +53,51 @@ describe('@angular/core ng_package', () => {
 
       it('should contain module resolution mappings', () => {
         const data = JSON.parse(shx.cat(packageJson)) as any;
-        expect(data).toEqual(jasmine.objectContaining({
-          module: `./fesm2022/core.mjs`,
-          typings: `./index.d.ts`,
-          exports: matchesObjectWithOrder({
-            './schematics/*': {default: './schematics/*.js'},
-            './package.json': {default: './package.json'},
-            '.': {
-              types: './index.d.ts',
-              esm2022: './esm2022/core.mjs',
-              esm: './esm2022/core.mjs',
-              default: './fesm2022/core.mjs'
-            },
-            './primitives/signals': {
-              types: './primitives/signals/index.d.ts',
-              esm2022: './esm2022/primitives/signals/index.mjs',
-              esm: './esm2022/primitives/signals/index.mjs',
-              default: './fesm2022/primitives/signals.mjs',
-            },
-            './rxjs-interop': {
-              types: './rxjs-interop/index.d.ts',
-              esm2022: './esm2022/rxjs-interop/rxjs-interop.mjs',
-              esm: './esm2022/rxjs-interop/rxjs-interop.mjs',
-              default: './fesm2022/rxjs-interop.mjs'
-            },
-            './testing': {
-              types: './testing/index.d.ts',
-              esm2022: './esm2022/testing/testing.mjs',
-              esm: './esm2022/testing/testing.mjs',
-              default: './fesm2022/testing.mjs'
-            }
+        expect(data).toEqual(
+          jasmine.objectContaining({
+            module: `./fesm2022/core.mjs`,
+            typings: `./index.d.ts`,
+            exports: matchesObjectWithOrder({
+              './schematics/*': {default: './schematics/*.js'},
+              './package.json': {default: './package.json'},
+              '.': {
+                types: './index.d.ts',
+                esm2022: './esm2022/core.mjs',
+                esm: './esm2022/core.mjs',
+                default: './fesm2022/core.mjs',
+              },
+              './primitives/signals': {
+                types: './primitives/signals/index.d.ts',
+                esm2022: './esm2022/primitives/signals/index.mjs',
+                esm: './esm2022/primitives/signals/index.mjs',
+                default: './fesm2022/primitives/signals.mjs',
+              },
+              './rxjs-interop': {
+                types: './rxjs-interop/index.d.ts',
+                esm2022: './esm2022/rxjs-interop/rxjs-interop.mjs',
+                esm: './esm2022/rxjs-interop/rxjs-interop.mjs',
+                default: './fesm2022/rxjs-interop.mjs',
+              },
+              './testing': {
+                types: './testing/index.d.ts',
+                esm2022: './esm2022/testing/testing.mjs',
+                esm: './esm2022/testing/testing.mjs',
+                default: './fesm2022/testing.mjs',
+              },
+            }),
           }),
-        }));
+        );
       });
 
       it('should contain metadata for ng update', () => {
         interface PackageJson {
-          'ng-update': {packageGroup: string[];};
+          'ng-update': {packageGroup: string[]};
         }
 
         expect(shx.cat(packageJson)).not.toContain('NG_UPDATE_PACKAGE_GROUP');
-        expect((JSON.parse(shx.cat(packageJson)) as PackageJson)['ng-update'].packageGroup)
-            .toContain('@angular/core');
+        expect(
+          (JSON.parse(shx.cat(packageJson)) as PackageJson)['ng-update'].packageGroup,
+        ).toContain('@angular/core');
       });
     });
 
@@ -119,23 +122,25 @@ describe('@angular/core ng_package', () => {
       });
 
       it('should have a source map', () => {
-        expect(shx.cat('fesm2022/core.mjs.map'))
-            .toContain(`{"version":3,"file":"core.mjs","sources":`);
+        expect(shx.cat('fesm2022/core.mjs.map')).toContain(
+          `{"version":3,"file":"core.mjs","sources":`,
+        );
       });
 
       it('should have the version info in the header', () => {
-        expect(shx.cat('fesm2022/core.mjs'))
-            .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
+        expect(shx.cat('fesm2022/core.mjs')).toMatch(
+          /@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/,
+        );
       });
     });
 
     describe('esm2022', () => {
       it('should not contain any *.ngfactory.js files', () => {
-        expect(shx.find('esm2022').filter(f => f.includes('.ngfactory'))).toEqual([]);
+        expect(shx.find('esm2022').filter((f) => f.includes('.ngfactory'))).toEqual([]);
       });
 
       it('should not contain any *.ngsummary.js files', () => {
-        expect(shx.find('esm2022').filter(f => f.includes('.ngsummary'))).toEqual([]);
+        expect(shx.find('esm2022').filter((f) => f.includes('.ngsummary'))).toEqual([]);
       });
     });
   });
@@ -154,13 +159,15 @@ describe('@angular/core ng_package', () => {
       });
 
       it('should have a source map', () => {
-        expect(shx.cat('fesm2022/testing.mjs.map'))
-            .toContain(`{"version":3,"file":"testing.mjs","sources":`);
+        expect(shx.cat('fesm2022/testing.mjs.map')).toContain(
+          `{"version":3,"file":"testing.mjs","sources":`,
+        );
       });
 
       it('should have the version info in the header', () => {
-        expect(shx.cat('fesm2022/testing.mjs'))
-            .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
+        expect(shx.cat('fesm2022/testing.mjs')).toMatch(
+          /@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/,
+        );
       });
     });
   });

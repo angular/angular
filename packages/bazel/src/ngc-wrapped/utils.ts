@@ -37,9 +37,13 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
  * correctly.
  */
 export function patchNgHostWithFileNameToModuleName(
-    ngHost: NgCompilerHost, compilerOpts: ts.CompilerOptions, rootDirs: string[],
-    workspaceName: string, compilationTargetSrc: string[],
-    useManifestPathsAsModuleName: boolean): void {
+  ngHost: NgCompilerHost,
+  compilerOpts: ts.CompilerOptions,
+  rootDirs: string[],
+  workspaceName: string,
+  compilationTargetSrc: string[],
+  useManifestPathsAsModuleName: boolean,
+): void {
   const fileNameToModuleNameCache = new Map<string, string>();
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath?: string) => {
     const cacheKey = `${importedFilePath}:${containingFilePath}`;
@@ -92,17 +96,21 @@ export function patchNgHostWithFileNameToModuleName(
     if (importedFilePath.indexOf('node_modules') >= 0) {
       const maybeMetadataFile = importedFilePath.replace(EXT, '') + '.metadata.json';
       if (fs.existsSync(maybeMetadataFile)) {
-        const moduleName = (JSON.parse(fs.readFileSync(maybeMetadataFile, {encoding: 'utf-8'})) as {
-                             importAs: string
-                           }).importAs;
+        const moduleName = (
+          JSON.parse(fs.readFileSync(maybeMetadataFile, {encoding: 'utf-8'})) as {
+            importAs: string;
+          }
+        ).importAs;
         if (moduleName) {
           return moduleName;
         }
       }
     }
 
-    if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
-        ngHost.amdModuleName) {
+    if (
+      (compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
+      ngHost.amdModuleName
+    ) {
       const amdName = ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile);
       if (amdName !== undefined) {
         return amdName;

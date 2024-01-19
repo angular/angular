@@ -10,9 +10,9 @@ pkg_npm(
     ) + [
         "//packages/bazel/src:package_assets",
         "//packages/bazel/src/ng_module:package_assets",
-        "//packages/bazel/src/types_bundle:package_assets",
         "//packages/bazel/src/ng_package:package_assets",
         "//packages/bazel/src/ngc-wrapped:package_assets",
+        "//packages/bazel/src/types_bundle:package_assets",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:package_assets",
     ],
     substitutions = {

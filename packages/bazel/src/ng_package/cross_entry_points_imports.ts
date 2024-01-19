@@ -34,7 +34,9 @@ const skipComment = '// @ng_package: ignore-cross-repo-import';
  * forbidden (unless explicitly opted out via comment - {@link skipComment}).
  */
 export function analyzeFileAndEnsureNoCrossImports(
-    file: BazelFileInfo, pkg: PackageMetadata): string[] {
+  file: BazelFileInfo,
+  pkg: PackageMetadata,
+): string[] {
   const content = fs.readFileSync(file.path, 'utf8');
   const sf = ts.createSourceFile(file.path, content, ts.ScriptTarget.Latest, true);
   const fileDirPath = path.posix.dirname(file.path);
@@ -57,8 +59,10 @@ export function analyzeFileAndEnsureNoCrossImports(
     }
     // Skip this import if there is an explicit skip comment.
     const leadingComments = ts.getLeadingCommentRanges(sf.text, st.getFullStart());
-    if (leadingComments !== undefined &&
-        leadingComments.some(c => sf.text.substring(c.pos, c.end) === skipComment)) {
+    if (
+      leadingComments !== undefined &&
+      leadingComments.some((c) => sf.text.substring(c.pos, c.end) === skipComment)
+    ) {
       continue;
     }
 
@@ -66,17 +70,17 @@ export function analyzeFileAndEnsureNoCrossImports(
     const targetPackage = determineOwningEntryPoint({path: destinationPath}, pkg);
     if (targetPackage === null) {
       failures.push(
-          `Could not determine owning entry-point package of: ${destinationPath}. Imported from: ${
-              fileDebugName}. Is this a relative import to another full package?.\n` +
-          `You can skip this import by adding a comment: ${skipComment}`);
+        `Could not determine owning entry-point package of: ${destinationPath}. Imported from: ${fileDebugName}. Is this a relative import to another full package?.\n` +
+          `You can skip this import by adding a comment: ${skipComment}`,
+      );
       continue;
     }
 
     if (targetPackage.path !== owningPkg.path) {
       failures.push(
-          `Found relative cross entry-point import in: ${fileDebugName}. Import to: ${
-              st.moduleSpecifier.text}\n` +
-          `You can skip this import by adding a comment: ${skipComment}`);
+        `Found relative cross entry-point import in: ${fileDebugName}. Import to: ${st.moduleSpecifier.text}\n` +
+          `You can skip this import by adding a comment: ${skipComment}`,
+      );
     }
   }
 
@@ -85,8 +89,10 @@ export function analyzeFileAndEnsureNoCrossImports(
 
 /** Determines the owning entry-point for the given JavaScript file. */
 function determineOwningEntryPoint(
-    file: Pick<BazelFileInfo, 'path'>, pkg: PackageMetadata): EntryPointPackage|null {
-  let owningEntryPoint: EntryPointPackage|null = null;
+  file: Pick<BazelFileInfo, 'path'>,
+  pkg: PackageMetadata,
+): EntryPointPackage | null {
+  let owningEntryPoint: EntryPointPackage | null = null;
 
   for (const [name, info] of Object.entries(pkg.entryPoints)) {
     // Entry point directory is assumed because technically the entry-point
@@ -96,8 +102,10 @@ function determineOwningEntryPoint(
     // the entry-point.
     const assumedEntryPointDir = path.posix.dirname(info.index.path);
 
-    if (file.path.startsWith(assumedEntryPointDir) &&
-        (owningEntryPoint === null || owningEntryPoint.path.length < assumedEntryPointDir.length)) {
+    if (
+      file.path.startsWith(assumedEntryPointDir) &&
+      (owningEntryPoint === null || owningEntryPoint.path.length < assumedEntryPointDir.length)
+    ) {
       owningEntryPoint = {name, info, path: assumedEntryPointDir};
     }
   }
