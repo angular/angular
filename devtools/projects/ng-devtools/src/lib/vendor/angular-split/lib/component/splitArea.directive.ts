@@ -9,6 +9,7 @@ import {getInputBoolean, getInputPositiveNumber} from './utils';
 @Directive({
   selector: 'as-split-area, [as-split-area]',
   exportAs: 'asSplitArea',
+  standalone: true,
 })
 export class SplitAreaDirective implements OnInit, OnDestroy {
   private _order: number | null = null;

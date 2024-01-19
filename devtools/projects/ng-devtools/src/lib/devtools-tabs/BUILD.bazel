@@ -14,7 +14,6 @@ ng_module(
     name = "devtools-tabs",
     srcs = [
         "devtools-tabs.component.ts",
-        "devtools-tabs.module.ts",
     ],
     angular_assets = [
         "devtools-tabs.component.html",

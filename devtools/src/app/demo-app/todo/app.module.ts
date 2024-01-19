@@ -18,7 +18,7 @@ import {AppTodoComponent} from './app-todo.component';
 import {DialogComponent} from './dialog.component';
 
 @NgModule({
-  declarations: [AppTodoComponent, DialogComponent],
+  declarations: [AppTodoComponent],
   imports: [
     MatDialogModule,
     MatFormFieldModule,
@@ -49,6 +49,7 @@ import {DialogComponent} from './dialog.component';
         redirectTo: 'todos',
       },
     ]),
+    DialogComponent,
   ],
   exports: [AppTodoComponent],
   bootstrap: [AppTodoComponent],

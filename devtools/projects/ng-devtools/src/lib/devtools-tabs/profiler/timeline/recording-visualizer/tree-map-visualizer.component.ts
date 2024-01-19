@@ -18,6 +18,7 @@ import {TreeMapFormatter, TreeMapNode} from '../record-formatter/tree-map-format
   selector: 'ng-tree-map-visualizer',
   templateUrl: './tree-map-visualizer.component.html',
   styleUrls: ['./tree-map-visualizer.component.scss'],
+  standalone: true,
 })
 export class TreeMapVisualizerComponent implements OnInit, OnDestroy {
   private _formatter = new TreeMapFormatter();

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
+import {Component, EventEmitter, Input, Output, forwardRef} from '@angular/core';
 import {DirectivePosition, SerializedInjectedService} from 'protocol';
 
 import {
@@ -15,11 +15,27 @@ import {
   DirectiveTreeData,
 } from '../../property-resolver/directive-property-resolver';
 import {FlatNode} from '../../property-resolver/element-property-resolver';
+import {ResolutionPathComponent} from '../../../dependency-injection/resolution-path.component';
+import {MatChipsModule} from '@angular/material/chips';
+import {PropertyViewTreeComponent} from './property-view-tree.component';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @Component({
   selector: 'ng-property-view-body',
   templateUrl: './property-view-body.component.html',
   styleUrls: ['./property-view-body.component.scss'],
+  standalone: true,
+  imports: [
+    MatExpansionModule,
+    CdkDropList,
+    MatTooltip,
+    MatIcon,
+    forwardRef(() => InjectedServicesComponent),
+    CdkDrag,
+    PropertyViewTreeComponent,
+  ],
 })
 export class PropertyViewBodyComponent {
   @Input({required: true}) controller!: DirectivePropertyResolver;
@@ -148,6 +164,8 @@ export class PropertyViewBodyComponent {
       }
     `,
   ],
+  standalone: true,
+  imports: [MatExpansionModule, MatChipsModule, MatTooltip, ResolutionPathComponent],
 })
 export class DependencyViewerComponent {
   @Input({required: true}) dependency!: SerializedInjectedService;
@@ -166,6 +184,8 @@ export class DependencyViewerComponent {
       }
     `,
   ],
+  standalone: true,
+  imports: [DependencyViewerComponent],
 })
 export class InjectedServicesComponent {
   @Input({required: true}) controller!: DirectivePropertyResolver;

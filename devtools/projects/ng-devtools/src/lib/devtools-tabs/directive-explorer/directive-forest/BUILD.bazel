@@ -12,7 +12,6 @@ ng_module(
     name = "directive-forest",
     srcs = [
         "directive-forest.component.ts",
-        "directive-forest.module.ts",
         "directive-forest-utils.ts",
     ],
     angular_assets = [

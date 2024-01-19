@@ -15,6 +15,10 @@ import {createFilter, Filter, noopFilter} from './filter';
 import {mergeFrames} from './record-formatter/frame-merger';
 import {GraphNode} from './record-formatter/record-formatter';
 import {VisualizationMode} from './visualization-mode';
+import {TimelineVisualizerComponent} from './recording-visualizer/timeline-visualizer.component';
+import {FrameSelectorComponent} from './frame-selector.component';
+import {TimelineControlsComponent} from './timeline-controls.component';
+import {RecordingModalComponent} from './recording-modal.component';
 
 const MAX_HEIGHT = 50;
 
@@ -22,6 +26,13 @@ const MAX_HEIGHT = 50;
   selector: 'ng-recording-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
+  standalone: true,
+  imports: [
+    RecordingModalComponent,
+    TimelineControlsComponent,
+    FrameSelectorComponent,
+    TimelineVisualizerComponent,
+  ],
 })
 export class TimelineComponent implements OnDestroy {
   @Input()

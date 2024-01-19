@@ -39,7 +39,6 @@ ng_module(
         "recording-dialog.component.ts",
         "recording-modal.component.ts",
         "timeline.component.ts",
-        "timeline.module.ts",
         "timeline-controls.component.ts",
     ],
     angular_assets = [
