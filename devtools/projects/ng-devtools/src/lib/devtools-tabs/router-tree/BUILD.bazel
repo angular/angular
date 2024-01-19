@@ -12,7 +12,6 @@ ng_module(
     name = "router-tree",
     srcs = [
         "router-tree.component.ts",
-        "router-tree.module.ts",
     ],
     angular_assets = [
         ":router-tree.component.html",

@@ -14,11 +14,15 @@ import {
   DirectiveTreeData,
 } from '../../property-resolver/directive-property-resolver';
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
+import {PropertyViewBodyComponent} from './property-view-body.component';
+import {PropertyViewHeaderComponent} from './property-view-header.component';
 
 @Component({
   selector: 'ng-property-view',
   templateUrl: './property-view.component.html',
   styleUrls: ['./property-view.component.scss'],
+  standalone: true,
+  imports: [PropertyViewHeaderComponent, PropertyViewBodyComponent],
 })
 export class PropertyViewComponent {
   @Input({required: true}) directive!: string;

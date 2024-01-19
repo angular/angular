@@ -20,11 +20,14 @@ import {
 
 import {formatDirectiveProfile} from './profile-formatter';
 import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component';
+import {NgxFlamegraphModule} from 'ngx-flamegraph';
 
 @Component({
   selector: 'ng-flamegraph-visualizer',
   templateUrl: './flamegraph-visualizer.component.html',
   styleUrls: ['./flamegraph-visualizer.component.scss'],
+  standalone: true,
+  imports: [NgxFlamegraphModule],
 })
 export class FlamegraphVisualizerComponent implements OnInit, OnDestroy {
   profilerBars: FlamegraphNode[] = [];

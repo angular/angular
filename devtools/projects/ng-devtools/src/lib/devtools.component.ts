@@ -14,6 +14,8 @@ import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
 
 import {ThemeService} from './theme-service';
+import {MatTooltip} from '@angular/material/tooltip';
+import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 
 @Component({
   selector: 'ng-devtools',
@@ -25,6 +27,8 @@ import {ThemeService} from './theme-service';
       transition(':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))]),
     ]),
   ],
+  standalone: true,
+  imports: [DevToolsTabsComponent, MatTooltip],
 })
 export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean | null = null;

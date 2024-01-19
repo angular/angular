@@ -9,20 +9,22 @@
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatTooltip} from '@angular/material/tooltip';
 import {Events, MessageBus} from 'protocol';
 import {Subject} from 'rxjs';
 
-import {ApplicationEnvironment} from '../application-environment/index';
+import {ApplicationEnvironment} from '../application-environment';
 import {Theme, ThemeService} from '../theme-service';
 
 import {DevToolsTabsComponent} from './devtools-tabs.component';
-import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {TabUpdate} from './tab-update/index';
+import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 
 @Component({
   selector: 'ng-directive-explorer',
   template: '',
+  standalone: true,
+  imports: [MatTooltip, MatMenuModule],
 })
 export class MockDirectiveExplorerComponent {}
 
@@ -35,14 +37,16 @@ describe('DevtoolsTabsComponent', () => {
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     applicationEnvironmentMock = jasmine.createSpyObj('applicationEnvironment', ['environment']);
     TestBed.configureTestingModule({
-      declarations: [DevToolsTabsComponent, MockDirectiveExplorerComponent],
-      imports: [MatTooltipModule, MatMenuModule],
+      imports: [MatTooltip, MatMenuModule, DevToolsTabsComponent],
       providers: [
         TabUpdate,
         {provide: ThemeService, useFactory: () => ({currentTheme: new Subject<Theme>()})},
         {provide: MessageBus, useValue: messageBusMock},
         {provide: ApplicationEnvironment, useValue: applicationEnvironmentMock},
       ],
+    }).overrideComponent(DevToolsTabsComponent, {
+      remove: {imports: [DirectiveExplorerComponent]},
+      add: {imports: [MockDirectiveExplorerComponent]},
     });
 
     const fixture = TestBed.createComponent(DevToolsTabsComponent);
