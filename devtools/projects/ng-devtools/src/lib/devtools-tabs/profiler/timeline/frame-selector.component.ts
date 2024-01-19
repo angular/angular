@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {
+  CdkVirtualScrollViewport,
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+} from '@angular/cdk/scrolling';
 import {
   Component,
   DestroyRef,
@@ -22,6 +26,11 @@ import {Observable, Subscription} from 'rxjs';
 import {TabUpdate} from '../../tab-update/index';
 
 import {GraphNode} from './record-formatter/record-formatter';
+import {MatIcon} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatCard} from '@angular/material/card';
+import {AsyncPipe, NgStyle} from '@angular/common';
 
 const ITEM_WIDTH = 30;
 
@@ -29,6 +38,18 @@ const ITEM_WIDTH = 30;
   selector: 'ng-frame-selector',
   templateUrl: './frame-selector.component.html',
   styleUrls: ['./frame-selector.component.scss'],
+  standalone: true,
+  imports: [
+    MatCard,
+    MatTooltip,
+    MatButton,
+    MatIcon,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualForOf,
+    NgStyle,
+    AsyncPipe,
+  ],
 })
 export class FrameSelectorComponent {
   @ViewChild('barContainer') barContainer!: ElementRef;

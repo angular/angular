@@ -6,15 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {MatTabNav} from '@angular/material/tabs';
+import {MatIcon} from '@angular/material/icon';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {MatTabLink, MatTabNav, MatTabNavPanel} from '@angular/material/tabs';
+import {MatTooltip} from '@angular/material/tooltip';
 import {Events, MessageBus, Route} from 'protocol';
 
 import {ApplicationEnvironment} from '../application-environment/index';
 import {Theme, ThemeService} from '../theme-service';
 
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
+import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
+import {ProfilerComponent} from './profiler/profiler.component';
+import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TabUpdate} from './tab-update/index';
 
 type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
@@ -23,6 +30,23 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
   selector: 'ng-devtools-tabs',
   templateUrl: './devtools-tabs.component.html',
   styleUrls: ['./devtools-tabs.component.scss'],
+  standalone: true,
+  imports: [
+    MatTabNav,
+    MatTabNavPanel,
+    MatTooltip,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
+    MatTabLink,
+    DirectiveExplorerComponent,
+    ProfilerComponent,
+    RouterTreeComponent,
+    InjectorTreeComponent,
+    MatSlideToggle,
+  ],
+  providers: [TabUpdate],
 })
 export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   @Input() angularVersion: string | undefined = undefined;

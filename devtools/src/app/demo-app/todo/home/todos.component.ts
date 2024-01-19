@@ -9,7 +9,11 @@
 import {ChangeDetectorRef, Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 
 import {Todo} from './todo';
-import {TodoFilter} from './todos.pipe';
+import {TodoFilter, TodosFilter} from './todos.pipe';
+import {SamplePipe} from './sample.pipe';
+import {TooltipDirective} from './tooltip.directive';
+import {TodoComponent} from './todo.component';
+import {RouterLink} from '@angular/router';
 
 const fib = (n: number): number => {
   if (n === 1 || n === 2) {
@@ -21,6 +25,8 @@ const fib = (n: number): number => {
 @Component({
   templateUrl: 'todos.component.html',
   selector: 'app-todos',
+  standalone: true,
+  imports: [RouterLink, TodoComponent, TooltipDirective, SamplePipe, TodosFilter],
 })
 export class TodosComponent implements OnInit, OnDestroy {
   todos: Todo[] = [

@@ -20,8 +20,8 @@ import {AboutComponent} from './about.component';
         component: AboutComponent,
       },
     ]),
+    AboutComponent,
   ],
-  declarations: [AboutComponent],
   exports: [AboutComponent],
 })
 export class AboutModule {}

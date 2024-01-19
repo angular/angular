@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
@@ -19,14 +18,7 @@ import {DialogComponent} from './dialog.component';
 @Component({
   selector: 'app-todo-demo',
   standalone: true,
-  imports: [
-    RouterLink,
-    RouterOutlet,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    FormsModule,
-  ],
+  imports: [RouterLink, RouterOutlet, MatDialogModule, FormsModule],
   styles: [
     `
       nav {

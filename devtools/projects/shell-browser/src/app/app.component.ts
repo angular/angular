@@ -11,6 +11,7 @@ import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
 
 import {injectScripts} from './inject';
 import {ZoneAwareChromeMessageBus} from './zone-aware-chrome-message-bus';
+import {DevToolsComponent} from 'ng-devtools';
 
 @Component({
   selector: 'app-root',

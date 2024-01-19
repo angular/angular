@@ -14,6 +14,7 @@ import {SelectedDirective} from './timeline-visualizer.component';
   selector: 'ng-execution-details',
   templateUrl: './execution-details.component.html',
   styleUrls: ['./execution-details.component.scss'],
+  standalone: true,
 })
 export class ExecutionDetailsComponent {
   @Input({required: true}) data!: SelectedDirective[];

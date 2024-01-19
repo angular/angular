@@ -18,6 +18,7 @@ import {
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 import {BargraphNode} from '../record-formatter/bargraph-formatter/bargraph-formatter';
+import {MatTooltip} from '@angular/material/tooltip';
 
 interface BarData {
   label: string;
@@ -38,6 +39,8 @@ interface BarData {
     ]),
     trigger('stagger', [transition(':enter', [query(':enter', stagger('.1s', [animateChild()]))])]),
   ],
+  standalone: true,
+  imports: [MatTooltip],
 })
 export class BarChartComponent {
   @Input()

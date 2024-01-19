@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {Component, ElementRef, inject, NgZone, ViewChild} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {MatIconModule} from '@angular/material/icon';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatButton} from '@angular/material/button';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatExpansionPanel} from '@angular/material/expansion';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
 import {
   ComponentExplorerView,
   DevToolsNode,
@@ -23,7 +21,7 @@ import {
   SerializedProviderRecord,
 } from 'protocol';
 
-import {AngularSplitModule} from '../../vendor/angular-split/public_api';
+import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {
   InjectorTreeD3Node,
   InjectorTreeVisualizer,
@@ -45,15 +43,15 @@ import {
   standalone: true,
   selector: 'ng-injector-tree',
   imports: [
-    MatButtonModule,
-    AngularSplitModule,
+    MatButton,
+    SplitComponent,
+    SplitAreaDirective,
     ResolutionPathComponent,
-    MatTabsModule,
-    MatExpansionModule,
+    MatExpansionPanel,
     InjectorProvidersComponent,
-    MatIconModule,
-    MatTooltipModule,
-    MatCheckboxModule,
+    MatIcon,
+    MatTooltip,
+    MatCheckbox,
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
