@@ -26,11 +26,11 @@ import {BoundEvent} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
 
-import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3TemplateDependency} from './api';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
-import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
+import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, Instruction, RENDER_FLAGS} from './util';
 
 
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
