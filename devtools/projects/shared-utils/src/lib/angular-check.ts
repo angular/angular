@@ -56,3 +56,7 @@ export const getAngularVersion = (): string | null => {
   }
   return el.getAttribute('ng-version');
 };
+
+export function isHydrationEnabled(): boolean {
+  return document.getElementById('ng-state') !== null;
+}

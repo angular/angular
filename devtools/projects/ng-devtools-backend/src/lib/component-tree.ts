@@ -63,7 +63,7 @@ export function getInjectorId() {
   return `${injectorId++}`;
 }
 
-function getInjectorMetadata(injector: Injector) {
+export function getInjectorMetadata(injector: Injector) {
   return ngDebugClient().ɵgetInjectorMetadata(injector);
 }
 

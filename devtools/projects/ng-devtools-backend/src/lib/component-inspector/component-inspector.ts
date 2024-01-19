@@ -6,10 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementPosition} from 'protocol';
+import {ElementPosition, HydrationStatus} from 'protocol';
 
 import {findNodeInForest} from '../component-tree';
-import {findComponentAndHost, highlight, unHighlight} from '../highlighter';
+import {
+  findComponentAndHost,
+  highlightHydrationElement,
+  highlightSelectedElement,
+  removeHydrationHighlights,
+  unHighlight,
+} from '../highlighter';
 import {initializeOrGetDirectiveForestHooks} from '../hooks';
 import {ComponentTreeNode} from '../interfaces';
 
@@ -74,7 +80,7 @@ export class ComponentInspector {
 
     unHighlight();
     if (this._selectedComponent.component && this._selectedComponent.host) {
-      highlight(this._selectedComponent.host);
+      highlightSelectedElement(this._selectedComponent.host);
       this._onComponentEnter(
         initializeOrGetDirectiveForestHooks().getDirectiveId(this._selectedComponent.component)!,
       );
@@ -99,7 +105,84 @@ export class ComponentInspector {
     const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
     const elementToHighlight: HTMLElement | null = findNodeInForest(position, forest);
     if (elementToHighlight) {
-      highlight(elementToHighlight);
+      highlightSelectedElement(elementToHighlight);
     }
   }
+
+  highlightHydrationNodes() {
+    const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
+
+    // drop the root node, we don't want to highlight it
+    const forestWithoutRoots = forest.flatMap((rootNode) => rootNode.children);
+
+    const errorNodes = findErrorNodesForHydrationOverlay(forestWithoutRoots);
+
+    // We get the first level of hydrated nodes
+    // nested mismatched nodes nested in hydrated nodes aren't includes
+    const nodes = findNodesForHydrationOverlay(forestWithoutRoots);
+
+    // This ensures top level mismatched nodes are removed as we have a dedicated array
+    const otherNodes = nodes.filter(({status}) => status?.status !== 'mismatched');
+
+    // We make sure to display mismatched node nested in hydrated nodes
+    [...otherNodes, ...errorNodes].forEach(({node, status}) =>
+      highlightHydrationElement(node, status),
+    );
+  }
+
+  removeHydrationHighlights() {
+    removeHydrationHighlights();
+  }
+}
+
+/**
+ * Returns the first level of hydrated nodes
+ * Note: Mismatched nodes nested in hydrated nodes aren't included
+ */
+function findNodesForHydrationOverlay(
+  forest: ComponentTreeNode[],
+): {node: Node; status: HydrationStatus}[] {
+  return forest
+    .flatMap((node) => {
+      if (node?.hydration?.status) {
+        // We highlight first level
+        return {node: node.nativeElement!, status: node.hydration};
+      }
+      if (node.children.length) {
+        return findNodesForHydrationOverlay(node.children);
+      }
+      return [];
+    })
+    .filter(
+      (
+        node,
+      ): node is {
+        node: Node;
+        status: HydrationStatus;
+      } => !!node,
+    );
+}
+
+function findErrorNodesForHydrationOverlay(
+  forest: ComponentTreeNode[],
+): {node: Node; status: HydrationStatus}[] {
+  return forest
+    .flatMap((node) => {
+      if (node?.hydration?.status === 'mismatched') {
+        // We highlight first level
+        return {node: node.nativeElement!, status: node.hydration};
+      }
+      if (node.children.length) {
+        return findNodesForHydrationOverlay(node.children);
+      }
+      return [];
+    })
+    .filter(
+      (
+        node,
+      ): node is {
+        node: Node;
+        status: HydrationStatus;
+      } => !!node,
+    );
 }

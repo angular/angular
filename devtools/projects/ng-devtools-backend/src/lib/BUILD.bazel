@@ -40,6 +40,10 @@ ts_test_library(
 ts_library(
     name = "highlighter",
     srcs = ["highlighter.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+        "//packages/core",
+    ],
 )
 
 ts_library(

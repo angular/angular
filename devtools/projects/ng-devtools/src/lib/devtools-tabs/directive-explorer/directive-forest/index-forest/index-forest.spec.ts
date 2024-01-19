@@ -19,6 +19,7 @@ describe('indexForest', () => {
         {
           element: 'Parent1',
           directives: [],
+          hydration: null,
           component: {
             isElement: false,
             name: 'Cmp1',
@@ -27,6 +28,7 @@ describe('indexForest', () => {
           children: [
             {
               element: 'Child1_1',
+              hydration: null,
               directives: [
                 {
                   name: 'Dir1',
@@ -43,6 +45,7 @@ describe('indexForest', () => {
             {
               element: 'Child1_2',
               directives: [],
+              hydration: null,
               component: {
                 isElement: false,
                 name: 'Cmp2',
@@ -56,6 +59,7 @@ describe('indexForest', () => {
           element: 'Parent2',
           directives: [],
           component: null,
+          hydration: null,
           children: [
             {
               element: 'Child2_1',
@@ -65,6 +69,7 @@ describe('indexForest', () => {
                   id: 1,
                 },
               ],
+              hydration: null,
               component: null,
               children: [],
             },
@@ -81,6 +86,7 @@ describe('indexForest', () => {
                 },
               ],
               component: null,
+              hydration: null,
               children: [],
             },
           ],
@@ -91,6 +97,7 @@ describe('indexForest', () => {
         element: 'Parent1',
         directives: [],
         position: [0],
+        hydration: null,
         component: {
           isElement: false,
           name: 'Cmp1',
@@ -111,6 +118,7 @@ describe('indexForest', () => {
               },
             ],
             component: null,
+            hydration: null,
             children: [],
           },
           {
@@ -122,6 +130,7 @@ describe('indexForest', () => {
               name: 'Cmp2',
               id: 1,
             },
+            hydration: null,
             children: [],
           },
         ],
@@ -131,6 +140,7 @@ describe('indexForest', () => {
         directives: [],
         component: null,
         position: [1],
+        hydration: null,
         children: [
           {
             element: 'Child2_1',
@@ -142,6 +152,7 @@ describe('indexForest', () => {
               },
             ],
             component: null,
+            hydration: null,
             children: [],
           },
           {
@@ -159,6 +170,7 @@ describe('indexForest', () => {
             ],
             component: null,
             children: [],
+            hydration: null,
           },
         ],
       },

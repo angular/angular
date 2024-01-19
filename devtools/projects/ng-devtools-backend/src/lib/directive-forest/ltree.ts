@@ -90,6 +90,7 @@ export class LTreeStrategy {
         element,
         directives: [],
         component: null,
+        hydration: null, // We know there is no hydration if we use the LTreeStrategy
       };
     }
     for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
@@ -114,6 +115,7 @@ export class LTreeStrategy {
       element,
       directives,
       component,
+      hydration: null, // We know there is no hydration if we use the LTreeStrategy
     };
   }
 
