@@ -424,6 +424,11 @@ export function loadQueryInternal<T>(lView: LView, queryIndex: number): QueryLis
   return lView[QUERIES]!.queries[queryIndex].queryList;
 }
 
+/**
+ * Creates a new instance of LQuery and returns its index in the collection of LQuery objects.
+ *
+ * @returns index in the collection of LQuery objects
+ */
 function createLQuery<T>(tView: TView, lView: LView, flags: QueryFlags): number {
   const queryList = new QueryList<T>(
       (flags & QueryFlags.emitDistinctChangesOnly) === QueryFlags.emitDistinctChangesOnly);
