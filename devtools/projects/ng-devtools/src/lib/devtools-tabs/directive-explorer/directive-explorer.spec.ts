@@ -6,36 +6,54 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PropertyQueryTypes} from 'protocol';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {Events, MessageBus, PropertyQueryTypes} from 'protocol';
+
+import {ApplicationOperations} from '../../application-operations';
 
 import {DirectiveExplorerComponent} from './directive-explorer.component';
+import {DirectiveForestComponent} from './directive-forest/directive-forest.component';
 import {IndexedNode} from './directive-forest/index-forest';
 import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 
 import SpyObj = jasmine.SpyObj;
+import {By} from '@angular/platform-browser';
 
 describe('DirectiveExplorerComponent', () => {
-  let messageBusMock: any;
+  let messageBusMock: SpyObj<MessageBus<Events>>;
+  let fixture: ComponentFixture<DirectiveExplorerComponent>;
   let comp: DirectiveExplorerComponent;
-  let applicationOperationsSpy: any;
-  let cdr: any;
-  let ngZone: any;
+  let applicationOperationsSpy: SpyObj<ApplicationOperations>;
 
   beforeEach(() => {
-    applicationOperationsSpy = jasmine.createSpyObj('_appOperations', [
+    applicationOperationsSpy = jasmine.createSpyObj<ApplicationOperations>('_appOperations', [
       'viewSource',
       'selectDomElement',
     ]);
-    messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
-    cdr = jasmine.createSpyObj('_cdr', ['detectChanges']);
-    ngZone = jasmine.createSpyObj('_ngZone', ['run']);
-    comp = new DirectiveExplorerComponent(
-      applicationOperationsSpy,
-      messageBusMock,
-      new ElementPropertyResolver(messageBusMock),
-      cdr,
-      ngZone,
-    );
+    messageBusMock = jasmine.createSpyObj<MessageBus<Events>>('messageBus', [
+      'on',
+      'once',
+      'emit',
+      'destroy',
+    ]);
+
+    TestBed.configureTestingModule({
+      providers: [
+        {provide: ApplicationOperations, useValue: applicationOperationsSpy},
+        {provide: MessageBus, useValue: messageBusMock},
+        {
+          provide: ElementPropertyResolver,
+          useValue: new ElementPropertyResolver(messageBusMock),
+        },
+      ],
+    }).overrideComponent(DirectiveExplorerComponent, {
+      add: {schemas: [CUSTOM_ELEMENTS_SCHEMA]},
+      remove: {imports: [DirectiveForestComponent]},
+    });
+
+    fixture = TestBed.createComponent(DirectiveExplorerComponent);
+    comp = fixture.componentInstance;
   });
 
   it('should create instance from class', () => {
@@ -102,6 +120,30 @@ describe('DirectiveExplorerComponent', () => {
           },
         },
       ]);
+    });
+  });
+
+  describe('hydration', () => {
+    it('should highlight hydration nodes', () => {
+      comp.hightlightHydrationNodes();
+      expect(messageBusMock.emit).toHaveBeenCalledTimes(1);
+      expect(messageBusMock.emit).toHaveBeenCalledWith('createHydrationOverlay');
+
+      comp.removeHydrationNodesHightlights();
+      expect(messageBusMock.emit).toHaveBeenCalledTimes(2);
+      expect(messageBusMock.emit).toHaveBeenCalledWith('removeHydrationOverlay');
+    });
+
+    it('should show hydration slide toggle', () => {
+      comp.isHydrationEnabled = true;
+      fixture.detectChanges();
+      const toggle = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      expect(toggle).toBeTruthy();
+
+      comp.isHydrationEnabled = false;
+      fixture.detectChanges();
+      const toggle2 = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      expect(toggle2).toBeFalsy();
     });
   });
 });

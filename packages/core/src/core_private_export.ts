@@ -27,7 +27,7 @@ export {formatRuntimeError as ɵformatRuntimeError, RuntimeError as ɵRuntimeErr
 export {annotateForHydration as ɵannotateForHydration} from './hydration/annotate';
 export {withDomHydration as ɵwithDomHydration} from './hydration/api';
 export {IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED} from './hydration/tokens';
-export {SSR_CONTENT_INTEGRITY_MARKER as ɵSSR_CONTENT_INTEGRITY_MARKER} from './hydration/utils';
+export {HydratedNode as ɵHydratedNode, HydrationInfo as ɵHydrationInfo, readHydrationInfo as ɵreadHydrationInfo, SSR_CONTENT_INTEGRITY_MARKER as ɵSSR_CONTENT_INTEGRITY_MARKER} from './hydration/utils';
 export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, LocaleDataIndex as ɵLocaleDataIndex, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {Writable as ɵWritable} from './interface/type';

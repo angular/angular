@@ -9,7 +9,7 @@
 import {invalidSkipHydrationHost, validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {hasSkipHydrationAttrOnRElement, hasSkipHydrationAttrOnTNode} from '../../hydration/skip_hydration';
-import {getSerializedContainerViews, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
+import {getSerializedContainerViews, isDisconnectedNode, markRNodeAsClaimedByHydration, markRNodeAsSkippedByHydration, setSegmentHead} from '../../hydration/utils';
 import {assertDefined, assertEqual, assertIndexInRange} from '../../util/assert';
 import {assertFirstCreatePass, assertHasParent} from '../assert';
 import {attachPatchData} from '../context_discovery';
@@ -17,7 +17,7 @@ import {registerPostOrderHooks} from '../hooks';
 import {hasClassInput, hasStyleInput, TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-import {hasI18n, isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
+import {isComponentHost, isContentQueryHost, isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
 import {appendChild, clearElementContents, createElementNode, setupStaticAttributes} from '../node_manipulation';
@@ -242,7 +242,8 @@ function locateOrCreateElementNodeImpl(
       // so there's no duplicate content after render
       clearElementContents(native);
 
-      ngDevMode && ngDevMode.componentsSkippedHydration++;
+      ngDevMode && markRNodeAsSkippedByHydration(native);
+
     } else if (ngDevMode) {
       // If this is not a component host, throw an error.
       // Hydration can be skipped on per-component basis only.
