@@ -465,9 +465,6 @@
     "name": "REQUIRED_VALIDATOR"
   },
   {
-    "name": "RadioControlRegistryModule"
-  },
-  {
     "name": "ReactiveLViewConsumer"
   },
   {
