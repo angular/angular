@@ -22,8 +22,9 @@ import {tryParseSignalQueryFromInitializer} from './query_functions';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
-const queryDecoratorNames =
-    ['ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren'] as const;
+type QueryDecoratorName = 'ViewChild'|'ViewChildren'|'ContentChild'|'ContentChildren';
+const queryDecoratorNames: QueryDecoratorName[] =
+    ['ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren'];
 const QUERY_TYPES = new Set<string>(queryDecoratorNames);
 
 /**
@@ -95,10 +96,25 @@ export function extractDirectiveMetadata(
       parseQueriesOfClassFields(members, reflector, evaluator, isCore);
 
   if (directive.has('queries')) {
+    const signalQueryFields = new Set(
+        [...viewQueries, ...contentQueries].filter(q => q.isSignal).map(q => q.propertyName));
     const queriesFromDecorator =
         extractQueriesFromDecorator(directive.get('queries')!, reflector, evaluator, isCore);
-    contentQueries.push(...queriesFromDecorator.content);
-    viewQueries.push(...queriesFromDecorator.view);
+
+    // Checks if the query is already declared/reserved via class members declaration.
+    // If so, we throw a fatal diagnostic error to prevent this unintentional pattern.
+    const checkAndUnwrapQuery = (q: {expr: ts.Expression, metadata: R3QueryMetadata}) => {
+      if (signalQueryFields.has(q.metadata.propertyName)) {
+        throw new FatalDiagnosticError(
+            ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION, q.expr,
+            `Query is declared multiple times. "@${
+                decorator.name}" declares a query for the same property.`);
+      }
+      return q.metadata;
+    };
+
+    contentQueries.push(...queriesFromDecorator.content.map(q => checkAndUnwrapQuery(q)));
+    viewQueries.push(...queriesFromDecorator.view.map(q => checkAndUnwrapQuery(q)));
   }
 
   // Parse the selector.
@@ -415,10 +431,12 @@ export function extractHostBindings(
 function extractQueriesFromDecorator(
     queryData: ts.Expression, reflector: ReflectionHost, evaluator: PartialEvaluator,
     isCore: boolean): {
-  content: R3QueryMetadata[],
-  view: R3QueryMetadata[],
+  content: {expr: ts.Expression, metadata: R3QueryMetadata}[],
+  view: {expr: ts.Expression, metadata: R3QueryMetadata}[],
 } {
-  const content: R3QueryMetadata[] = [], view: R3QueryMetadata[] = [];
+  const content: {expr: ts.Expression, metadata: R3QueryMetadata}[] = [];
+  const view: {expr: ts.Expression, metadata: R3QueryMetadata}[] = [];
+
   if (!ts.isObjectLiteralExpression(queryData)) {
     throw new FatalDiagnosticError(
         ErrorCode.VALUE_HAS_WRONG_TYPE, queryData,
@@ -450,9 +468,9 @@ function extractQueriesFromDecorator(
     const query = extractDecoratorQueryMetadata(
         queryExpr, type.name, queryExpr.arguments || [], propertyName, reflector, evaluator);
     if (type.name.startsWith('Content')) {
-      content.push(query);
+      content.push({expr: queryExpr, metadata: query});
     } else {
-      view.push(query);
+      view.push({expr: queryExpr, metadata: query});
     }
   });
   return {content, view};
@@ -533,8 +551,8 @@ function isStringArrayOrDie(value: any, name: string, node: ts.Expression): valu
 }
 
 function tryGetQueryFromFieldDecorator(
-    member: ClassMember, reflector: ReflectionHost, evaluator: PartialEvaluator,
-    isCore: boolean): {name: typeof queryDecoratorNames[number], metadata: R3QueryMetadata}|null {
+    member: ClassMember, reflector: ReflectionHost, evaluator: PartialEvaluator, isCore: boolean):
+    {name: QueryDecoratorName, decorator: Decorator, metadata: R3QueryMetadata}|null {
   const decorators = member.decorators;
   if (decorators === null) {
     return null;
@@ -566,10 +584,11 @@ function tryGetQueryFromFieldDecorator(
 
   // Either the decorator was aliased, or is referenced directly with
   // the proper query name.
-  const name = (decorator.import?.name ?? decorator.name) as typeof queryDecoratorNames[number];
+  const name = (decorator.import?.name ?? decorator.name) as QueryDecoratorName;
 
   return {
     name,
+    decorator,
     metadata: extractDecoratorQueryMetadata(
         node, name, decorator.args || [], member.name, reflector, evaluator),
   };
@@ -728,7 +747,7 @@ function tryParseInputFieldMapping(
 
   if (decorator !== null && signalInputMapping !== null) {
     throw new FatalDiagnosticError(
-        ErrorCode.SIGNAL_INPUT_AND_DISALLOWED_DECORATOR, decorator.node,
+        ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decorator.node,
         `Using @Input with a signal input is not allowed.`);
   }
 
@@ -818,7 +837,7 @@ function parseInputFields(
 
     if (member.isStatic) {
       throw new FatalDiagnosticError(
-          ErrorCode.INPUT_DECLARED_ON_STATIC_MEMBER, member.node ?? clazz,
+          ErrorCode.INCORRECTLY_DECLARED_ON_STATIC_MEMBER, member.node ?? clazz,
           `Input "${member.name}" is incorrectly declared as static member of "${
               clazz.name.text}".`);
     }
@@ -826,7 +845,7 @@ function parseInputFields(
     // Validate that signal inputs are not accidentally declared in the `inputs` metadata.
     if (inputMapping.isSignal && inputsFromClassDecorator.hasOwnProperty(classPropertyName)) {
       throw new FatalDiagnosticError(
-          ErrorCode.SIGNAL_INPUT_AND_INPUTS_ARRAY_COLLISION, member.node ?? clazz,
+          ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION, member.node ?? clazz,
           `Input "${member.name}" is also declared as non-signal in @${classDecorator.name}.`);
     }
 
@@ -1003,12 +1022,21 @@ function parseQueriesOfClassFields(
   const decoratorContentChildren: R3QueryMetadata[] = [];
 
   for (const member of members) {
-    if (member.isStatic) {
-      continue;
-    }
-
     const decoratorQuery = tryGetQueryFromFieldDecorator(member, reflector, evaluator, isCore);
     const signalQuery = tryParseSignalQueryFromInitializer(member, reflector, isCore);
+
+    if (decoratorQuery !== null && signalQuery !== null) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decoratorQuery.decorator.node,
+          `Using @${decoratorQuery.name} with a signal-based query is not allowed.`);
+    }
+
+    const queryNode = decoratorQuery?.decorator.node ?? signalQuery?.call;
+    if (queryNode !== undefined && member.isStatic) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INCORRECTLY_DECLARED_ON_STATIC_MEMBER, queryNode,
+          `Query is incorrectly declared on a static class member.`);
+    }
 
     if (decoratorQuery !== null) {
       switch (decoratorQuery.name) {
