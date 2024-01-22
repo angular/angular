@@ -291,8 +291,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
 function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadata {
   return {
     ...facade,
-    // Decorator queries are never signal-based.
-    isSignal: false,
+    isSignal: facade.isSignal,
     predicate: convertQueryPredicate(facade.predicate),
     read: facade.read ? new WrappedNodeExpr(facade.read) : null,
     static: facade.static,

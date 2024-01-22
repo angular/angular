@@ -311,8 +311,8 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
   };
 }
 
-function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
-    {ngSelectorScope: Type<any>} {
+function hasSelectorScope<T>(component: Type<T>):
+    component is(Type<T>& {ngSelectorScope: Type<any>}) {
   return (component as {ngSelectorScope?: any}).ngSelectorScope !== undefined;
 }
 
@@ -451,6 +451,7 @@ export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3Qu
     read: ann.read ? ann.read : null,
     static: !!ann.static,
     emitDistinctChangesOnly: !!ann.emitDistinctChangesOnly,
+    isSignal: !!ann.isSignal,
   };
 }
 function extractQueriesMetadata(
