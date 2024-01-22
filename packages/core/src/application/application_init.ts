@@ -143,11 +143,7 @@ export const APP_INITIALIZER =
  * {
  *   provide: APP_INITIALIZER,
  *   multi: true,
- *   useFactory: () => {
- *      return () => {
- *         myInitializer();
- *      }
- *   }
+ *   useValue: initializerFn
  * }
  * ```
  *
@@ -158,12 +154,7 @@ export function provideAppInitializer(
   return {
     provide: APP_INITIALIZER,
     multi: true,
-    useFactory: () => {
-      const injector = inject(Injector);
-      return () => {
-        return runInInjectionContext(injector, initializerFn);
-      };
-    }
+    useValue: initializerFn,
   };
 }
 
@@ -187,6 +178,7 @@ export class ApplicationInitStatus {
   });
 
   private readonly appInits = inject(APP_INITIALIZER, {optional: true}) ?? [];
+  private readonly injector = inject(Injector);
 
   constructor() {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !Array.isArray(this.appInits)) {
@@ -207,7 +199,7 @@ export class ApplicationInitStatus {
 
     const asyncInitPromises = [];
     for (const appInits of this.appInits) {
-      const initResult = appInits();
+      const initResult = runInInjectionContext(this.injector, appInits);
       if (isPromise(initResult)) {
         asyncInitPromises.push(initResult);
       } else if (isSubscribable(initResult)) {

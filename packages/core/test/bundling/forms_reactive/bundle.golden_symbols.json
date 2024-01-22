@@ -1587,6 +1587,9 @@
     "name": "retrieveHydrationInfo"
   },
   {
+    "name": "runInInjectionContext"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
