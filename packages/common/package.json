@@ -9,6 +9,7 @@
   },
   "locales": "locales",
   "dependencies": {
+    "@types/dom-navigation": "^1.0.2",
     "tslib": "^2.3.0"
   },
   "exports": {

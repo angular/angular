@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="dom-navigation" />;
+
 import {Injectable} from '@angular/core';
 
 /**
