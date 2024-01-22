@@ -85,5 +85,105 @@ runInEachFileSystem(() => {
       expect(js).toContain(`i0.ɵɵcontentQuerySignal(dirIndex, ctx.el, _c0, 4);`);
       expect(js).toContain(`i0.ɵɵqueryAdvance();`);
     });
+
+    describe('diagnostics', () => {
+      it('should report an error when used with query decorator', () => {
+        env.write('test.ts', `
+        import {Component, viewChild, ViewChild} from '@angular/core';
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          @ViewChild('myLocator') el = viewChild('myLocator');
+        }
+      `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining({
+          messageText: `Using @ViewChild with a signal-based query is not allowed.`,
+        })]);
+      });
+
+      it('should report an error when used on a static field', () => {
+        env.write('test.ts', `
+        import {Component, viewChild} from '@angular/core';
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          static el = viewChild('myLocator');
+        }
+      `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining({
+          messageText: `Query is incorrectly declared on a static class member.`,
+        })]);
+      });
+
+      it('should report an error when declared in @Directive metadata', () => {
+        env.write('test.ts', `
+        import {Directive, ViewChild, viewChild} from '@angular/core';
+
+        @Directive({
+          selector: 'test',
+          queries: {
+            el: new ViewChild('myLocator'),
+          },
+        })
+        export class TestDir {
+          el = viewChild('myLocator');
+        }
+      `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining({
+          messageText:
+              `Query is declared multiple times. "@Directive" declares a query for the same property.`,
+        })]);
+      });
+
+      it('should report an error when declared in @Component metadata', () => {
+        env.write('test.ts', `
+        import {Component, ViewChild, viewChild} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '',
+          queries: {
+            el: new ViewChild('myLocator'),
+          },
+        })
+        export class TestComp {
+          el = viewChild('myLocator');
+        }
+      `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining({
+          messageText:
+              `Query is declared multiple times. "@Component" declares a query for the same property.`,
+        })]);
+      });
+
+      it('should report an error when a signal-based query function is used in metadata', () => {
+        env.write('test.ts', `
+          import {Component, viewChild} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '',
+            queries: {
+              el: new viewChild('myLocator'),
+            },
+          })
+          export class TestComp {}
+        `);
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining({
+          messageText: `Decorator query metadata must be an instance of a query type`,
+        })]);
+      });
+    });
   });
 });
