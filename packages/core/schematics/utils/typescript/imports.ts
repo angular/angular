@@ -89,6 +89,21 @@ export function getImportSpecifiers(
   return matches;
 }
 
+export function getNamedImports(
+    sourceFile: ts.SourceFile, moduleName: string|RegExp): ts.NamedImports|null {
+  for (const node of sourceFile.statements) {
+    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+      const isMatch = typeof moduleName === 'string' ? node.moduleSpecifier.text === moduleName :
+                                                       moduleName.test(node.moduleSpecifier.text);
+      const namedBindings = node.importClause?.namedBindings;
+      if (isMatch && namedBindings && ts.isNamedImports(namedBindings)) {
+        return namedBindings;
+      }
+    }
+  }
+  return null;
+}
+
 
 /**
  * Replaces an import inside a named imports node with a different one.
