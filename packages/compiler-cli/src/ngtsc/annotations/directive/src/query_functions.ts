@@ -35,8 +35,8 @@ const defaultDescendantsValue = (type: QueryFunctionName) => type !== 'contentCh
  * @returns Resolved query metadata, or null if no query is declared.
  */
 export function tryParseSignalQueryFromInitializer(
-    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
-    isCore: boolean): {name: QueryFunctionName, metadata: R3QueryMetadata}|null {
+    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost, isCore: boolean):
+    {name: QueryFunctionName, metadata: R3QueryMetadata, call: ts.CallExpression}|null {
   const query = tryParseInitializerApiMember(queryFunctionNames, member, reflector, isCore);
   if (query === null) {
     return null;
@@ -62,6 +62,7 @@ export function tryParseSignalQueryFromInitializer(
 
   return {
     name: query.apiName,
+    call: query.call,
     metadata: {
       isSignal: true,
       propertyName: member.name,
