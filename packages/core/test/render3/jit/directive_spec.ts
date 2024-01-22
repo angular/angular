@@ -60,6 +60,7 @@ describe('jit directive helper functions', () => {
         read: null,
         static: false,
         emitDistinctChangesOnly: false,
+        isSignal: false,
       });
     });
 
@@ -80,6 +81,7 @@ describe('jit directive helper functions', () => {
         read: null,
         static: false,
         emitDistinctChangesOnly: false,
+        isSignal: false,
       });
     });
 
