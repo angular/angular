@@ -314,6 +314,7 @@ export interface R3QueryMetadataFacade {
   emitDistinctChangesOnly: boolean;
   read: OpaqueValue|null;
   static: boolean;
+  isSignal: boolean;
 }
 
 export interface R3DeclareQueryMetadataFacade {
