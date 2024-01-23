@@ -44,6 +44,8 @@ import {
 } from './property-resolver/element-property-resolver';
 import {PropertyTabComponent} from './property-tab/property-tab.component';
 import {SplitAreaDirective} from '../../vendor/angular-split/lib/component/splitArea.directive';
+import {MatSlideToggle} from '@angular/material/slide-toggle';
+import {FormsModule} from '@angular/forms';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -78,6 +80,8 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     DirectiveForestComponent,
     BreadcrumbsComponent,
     PropertyTabComponent,
+    MatSlideToggle,
+    FormsModule,
   ],
 })
 export class DirectiveExplorerComponent implements OnInit, OnDestroy {

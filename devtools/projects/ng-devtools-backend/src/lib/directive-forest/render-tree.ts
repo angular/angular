@@ -75,13 +75,13 @@ function hydrationStatus(node: HydrationNode): HydrationStatus {
         expectedNodeDetails: node.__ngDebugHydrationInfo__.expectedNodeDetails,
         actualNodeDetails: node.__ngDebugHydrationInfo__.actualNodeDetails,
       };
+    default:
+      return null;
   }
-
-  return null;
 }
 
 export class RTreeStrategy {
-  supports(_: any): boolean {
+  supports(): boolean {
     return (['getDirectiveMetadata', 'getComponent', 'getDirectives'] as const).every(
       (method) => typeof ngDebugClient()[method] === 'function',
     );

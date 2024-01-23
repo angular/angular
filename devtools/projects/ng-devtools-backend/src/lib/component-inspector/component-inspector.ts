@@ -109,10 +109,10 @@ export class ComponentInspector {
     }
   }
 
-  highlightHydrationNodes() {
+  highlightHydrationNodes(): void {
     const forest: ComponentTreeNode[] = initializeOrGetDirectiveForestHooks().getDirectiveForest();
 
-    // drop the root node, we don't want to highlight it
+    // drop the root nodes, we don't want to highlight it
     const forestWithoutRoots = forest.flatMap((rootNode) => rootNode.children);
 
     const errorNodes = findErrorNodesForHydrationOverlay(forestWithoutRoots);
@@ -124,10 +124,9 @@ export class ComponentInspector {
     // This ensures top level mismatched nodes are removed as we have a dedicated array
     const otherNodes = nodes.filter(({status}) => status?.status !== 'mismatched');
 
-    // We make sure to display mismatched node nested in hydrated nodes
-    [...otherNodes, ...errorNodes].forEach(({node, status}) =>
-      highlightHydrationElement(node, status),
-    );
+    for (const {node, status} of [...otherNodes, ...errorNodes]) {
+      highlightHydrationElement(node, status);
+    }
   }
 
   removeHydrationHighlights() {
@@ -142,47 +141,29 @@ export class ComponentInspector {
 function findNodesForHydrationOverlay(
   forest: ComponentTreeNode[],
 ): {node: Node; status: HydrationStatus}[] {
-  return forest
-    .flatMap((node) => {
-      if (node?.hydration?.status) {
-        // We highlight first level
-        return {node: node.nativeElement!, status: node.hydration};
-      }
-      if (node.children.length) {
-        return findNodesForHydrationOverlay(node.children);
-      }
-      return [];
-    })
-    .filter(
-      (
-        node,
-      ): node is {
-        node: Node;
-        status: HydrationStatus;
-      } => !!node,
-    );
+  return forest.flatMap((node) => {
+    if (node?.hydration?.status) {
+      // We highlight first level
+      return {node: node.nativeElement!, status: node.hydration};
+    }
+    if (node.children.length) {
+      return findNodesForHydrationOverlay(node.children);
+    }
+    return [];
+  });
 }
 
 function findErrorNodesForHydrationOverlay(
   forest: ComponentTreeNode[],
 ): {node: Node; status: HydrationStatus}[] {
-  return forest
-    .flatMap((node) => {
-      if (node?.hydration?.status === 'mismatched') {
-        // We highlight first level
-        return {node: node.nativeElement!, status: node.hydration};
-      }
-      if (node.children.length) {
-        return findNodesForHydrationOverlay(node.children);
-      }
-      return [];
-    })
-    .filter(
-      (
-        node,
-      ): node is {
-        node: Node;
-        status: HydrationStatus;
-      } => !!node,
-    );
+  return forest.flatMap((node) => {
+    if (node?.hydration?.status === 'mismatched') {
+      // We highlight first level
+      return {node: node.nativeElement!, status: node.hydration};
+    }
+    if (node.children.length) {
+      return findNodesForHydrationOverlay(node.children);
+    }
+    return [];
+  });
 }
