@@ -97,7 +97,7 @@ export function createI18nContexts(job: CompilationJob) {
             // This ICU is a sub-message inside its parent i18n block message. We need to give it
             // its own context.
             const contextOp = ir.createI18nContextOp(
-                ir.I18nContextKind.Icu, job.allocateXrefId(), currentI18nOp.xref, op.message, null!
+                ir.I18nContextKind.Icu, job.allocateXrefId(), currentI18nOp.root, op.message, null!
             );
             unit.create.push(contextOp);
             op.context = contextOp.xref;
