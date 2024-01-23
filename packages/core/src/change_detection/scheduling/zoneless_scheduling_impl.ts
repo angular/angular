@@ -9,6 +9,7 @@
 import {ApplicationRef} from '../../application/application_ref';
 import {EnvironmentProviders, inject, Injectable, makeEnvironmentProviders} from '../../di';
 import {PendingTasks} from '../../pending_tasks';
+import {global} from '../../util/global';
 import {NgZone, NoopNgZone} from '../../zone/ng_zone';
 
 import {ChangeDetectionScheduler} from './zoneless_scheduling';
