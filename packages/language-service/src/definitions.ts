@@ -48,7 +48,9 @@ export class DefinitionBuilder {
       }
       return getDefinitionForExpressionAtPosition(fileName, position, this.compiler);
     }
+
     const definitionMetas = this.getDefinitionMetaAtPosition(templateInfo, position);
+
     if (definitionMetas === undefined) {
       return undefined;
     }
@@ -65,6 +67,7 @@ export class DefinitionBuilder {
       definitions.push(
           ...(this.getDefinitionsForSymbol({...definitionMeta, ...templateInfo}) ?? []));
     }
+
 
     if (definitions.length === 0) {
       return undefined;
