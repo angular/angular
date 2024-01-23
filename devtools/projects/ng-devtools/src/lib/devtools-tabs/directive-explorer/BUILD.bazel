@@ -43,10 +43,14 @@ ts_test_library(
     srcs = ["directive-explorer.spec.ts"],
     deps = [
         ":directive-explorer",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/protocol",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
     ],
 )
 
