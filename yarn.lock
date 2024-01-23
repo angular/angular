@@ -298,10 +298,9 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#8a32f9fd9af99832f337db9fe29842797121e96d":
-  version "0.0.0-ae9155d1083fd8390e98bfe09a5ccf89f0375b52"
-  uid "8a32f9fd9af99832f337db9fe29842797121e96d"
-  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#8a32f9fd9af99832f337db9fe29842797121e96d"
+"@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#e97da496dc89481ef8e91433f2a1b674a2360340":
+  version "0.0.0-f0fa701114b57b7d633a2ab3813034ab1735e3c0"
+  resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#e97da496dc89481ef8e91433f2a1b674a2360340"
   dependencies:
     "@angular-devkit/build-angular" "17.1.0-rc.1"
     "@angular/benchpress" "0.3.0"
@@ -332,7 +331,7 @@
     marked-mangle "^1.1.4"
     preact "^10.17.1"
     preact-render-to-string "^6.2.1"
-    prettier "3.2.2"
+    prettier "3.2.4"
     protractor "^7.0.0"
     selenium-webdriver "4.16.0"
     send "^0.18.0"
@@ -400,7 +399,6 @@
 
 "@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#1ff2479610f1f145433b95bbe85f6606e6e975c1":
   version "0.0.0-ae9155d1083fd8390e98bfe09a5ccf89f0375b52"
-  uid "1ff2479610f1f145433b95bbe85f6606e6e975c1"
   resolved "https://github.com/angular/dev-infra-private-docs-builds.git#1ff2479610f1f145433b95bbe85f6606e6e975c1"
   dependencies:
     "@angular/cdk" "17.1.0-rc.0"
@@ -488,7 +486,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#cdbbb64c01e02d4edda03d66fa0919504d8c5dfc":
   version "0.0.0-ae9155d1083fd8390e98bfe09a5ccf89f0375b52"
-  uid cdbbb64c01e02d4edda03d66fa0919504d8c5dfc
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#cdbbb64c01e02d4edda03d66fa0919504d8c5dfc"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -13448,10 +13445,10 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
 
-prettier@3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.2.tgz#96e580f7ca9c96090ad054616c0c4597e2844b65"
-  integrity sha512-HTByuKZzw7utPiDO523Tt2pLtEyK7OibUD9suEJQrPUCYQqrHr74GGX6VidMrovbf/I50mPqr8j/II6oBAuc5A==
+prettier@3.2.4:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.4.tgz#4723cadeac2ce7c9227de758e5ff9b14e075f283"
+  integrity sha512-FWu1oLHKCrtpO1ypU6J0SbK2d9Ckwysq6bHj/uaCP26DxrPpppCLQRGVuqAxSTvhF00AcvDRyYrLNW7ocBhFFQ==
 
 prettier@^3.0.0:
   version "3.0.3"
@@ -14589,6 +14586,7 @@ select-hose@^2.0.0:
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
 "selenium-webdriver4@npm:selenium-webdriver@4.16.0", selenium-webdriver@4.16.0:
+  name selenium-webdriver4
   version "4.16.0"
   resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.16.0.tgz#2f1a2426d876aa389d1c937b00f034c2c7808360"
   integrity sha512-IbqpRpfGE7JDGgXHJeWuCqT/tUqnLvZ14csSwt+S8o4nJo3RtQoE9VR4jB47tP/A8ArkYsh/THuMY6kyRP6kuA==

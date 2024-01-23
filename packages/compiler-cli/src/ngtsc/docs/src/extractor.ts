@@ -66,7 +66,8 @@ export class DocsExtractor {
     }
 
     if (ts.isFunctionDeclaration(node)) {
-      const functionExtractor = new FunctionExtractor(node, this.typeChecker);
+      // Name is guaranteed to be set, because it's exported directly.
+      const functionExtractor = new FunctionExtractor(node.name!.getText(), node, this.typeChecker);
       return functionExtractor.extract();
     }
 
@@ -107,7 +108,7 @@ export class DocsExtractor {
     for (let i = 0; i < declarationCount; i++) {
       const [exportName, declaration] = exportedDeclarations[i];
       if (ts.isFunctionDeclaration(declaration)) {
-        const extractor = new FunctionExtractor(declaration, this.typeChecker);
+        const extractor = new FunctionExtractor(exportName, declaration, this.typeChecker);
         const overloads = extractor.getOverloads().map(overload => [exportName, overload] as const);
 
         exportedDeclarations.push(...overloads);

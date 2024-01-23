@@ -120,6 +120,7 @@ export interface FunctionEntry extends DocEntry {
   params: ParameterEntry[];
   returnType: string;
   generics: GenericEntry[];
+  isNewType: boolean;
 }
 
 /** Sub-entry for a single class or enum member. */
