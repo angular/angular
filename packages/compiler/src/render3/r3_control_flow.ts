@@ -28,6 +28,12 @@ const ELSE_IF_PATTERN = /^else[^\S\r\n]+if/;
 /** Pattern used to identify a `let` parameter. */
 const FOR_LOOP_LET_PATTERN = /^let\s+([\S\s]*)/;
 
+/**
+ * Pattern to group a string into leading whitespace, non whitespace, and trailing whitespace.
+ * Useful for getting the variable name span when a span can contain leading and trailing space.
+ */
+const CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN = /(\s*)(\S+)(\s*)/;
+
 /** Names of variables that are allowed to be used in the `let` expression of a `for` loop. */
 const ALLOWED_FOR_LOOP_LET_VARIABLES =
     new Set<keyof t.ForLoopBlockContext>(['$index', '$first', '$last', '$even', '$odd', '$count']);
@@ -301,7 +307,8 @@ function parseLetParameter(
       errors.push(
           new ParseError(sourceSpan, `Duplicate "let" parameter variable "${variableName}"`));
     } else {
-      const [, keyLeadingWhitespace, keyName] = expressionParts[0].match(/(\s*)(\S+)(\s*)/) ?? [];
+      const [, keyLeadingWhitespace, keyName] =
+          expressionParts[0].match(CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN) ?? [];
       const keySpan = keyLeadingWhitespace !== undefined && expressionParts.length === 2 ?
           new ParseSourceSpan(
               /* strip leading spaces */
@@ -313,7 +320,7 @@ function parseLetParameter(
       let valueSpan: ParseSourceSpan|undefined = undefined;
       if (expressionParts.length === 2) {
         const [, valueLeadingWhitespace, implicit] =
-            expressionParts[1].match(/(\s*)(\S+)(\s*)/) ?? [];
+            expressionParts[1].match(CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN) ?? [];
         valueSpan = valueLeadingWhitespace !== undefined ?
             new ParseSourceSpan(
                 startSpan.moveBy(expressionParts[0].length + 1 + valueLeadingWhitespace.length),
