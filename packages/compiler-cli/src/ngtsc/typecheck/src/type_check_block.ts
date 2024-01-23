@@ -465,8 +465,8 @@ abstract class TcbDirectiveTypeOpBase extends TcbOp {
     }
 
     const id = this.tcb.allocateId();
-    addExpressionIdentifier(type, ExpressionIdentifier.DIRECTIVE);
-    addParseSpanInfo(type, this.node.startSourceSpan || this.node.sourceSpan);
+    addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
+    addParseSpanInfo(id, this.node.startSourceSpan || this.node.sourceSpan);
     this.scope.addStatement(tsDeclareVariable(id, type));
     return id;
   }

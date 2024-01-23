@@ -218,6 +218,20 @@ export function convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
     // want to return references to the parameter in the template itself.
     return null;
   }
+  // Variables in the typecheck block are generated with the type on the right hand
+  // side: `var _t1 = null! as i1.DirA`. Finding references of DirA will return the type
+  // assertion and we need to map it back to the variable identifier _t1.
+  if (hasExpressionIdentifier(sf, tcbNode, ExpressionIdentifier.VARIABLE_AS_EXPRESSION)) {
+    let newNode = tcbNode;
+    while (!ts.isVariableDeclaration(newNode)) {
+      newNode = newNode.parent;
+    }
+    newNode = newNode.name;
+    shimDocumentSpan.textSpan = {
+      start: newNode.getStart(),
+      length: newNode.getEnd() - newNode.getStart(),
+    };
+  }
   // TODO(atscott): Determine how to consistently resolve paths. i.e. with the project
   // serverHost or LSParseConfigHost in the adapter. We should have a better defined way to
   // normalize paths.

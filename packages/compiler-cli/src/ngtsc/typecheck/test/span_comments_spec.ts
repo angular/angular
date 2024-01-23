@@ -173,7 +173,7 @@ describe('type check blocks diagnostics', () => {
         pipeName: 'test',
       }];
       const block = tcbWithSpans(TEMPLATE, PIPES);
-      expect(block).toContain('var _pipe1: i0.TestPipe = null! as i0.TestPipe');
+      expect(block).toContain('var _pipe1 = null! as i0.TestPipe');
       expect(block).toContain(
           '(_pipe1.transform /*7,11*/(((this).a /*3,4*/) /*3,4*/, ((this).b /*12,13*/) /*12,13*/) /*3,13*/);');
     });
@@ -224,7 +224,7 @@ describe('type check blocks diagnostics', () => {
         expect(tcbWithSpans(template, [])).toContain('(this).users /*14,19*/');
         // index variable
         expect(tcbWithSpans(template, []))
-            .toContain('var _t2 /*37,38*/: number = null! as number /*37,47*/');
+            .toContain('var _t2 /*37,38*/ = null! as number /*T:VAE*/ /*37,47*/');
         // track expression
         expect(tcbWithSpans(template, [])).toContain('_t1 /*27,31*/;');
       });
@@ -233,11 +233,11 @@ describe('type check blocks diagnostics', () => {
         const template =
             `@for (x of y; track x; let i = $index, odd   =    $odd,e_v_e_n=$even) { {{i + odd + e_v_e_n}} }`;
         expect(tcbWithSpans(template, []))
-            .toContain('var _t2 /*27,28*/: number = null! as number /*27,37*/');
+            .toContain('var _t2 /*27,28*/ = null! as number /*T:VAE*/ /*27,37*/');
         expect(tcbWithSpans(template, []))
-            .toContain('var _t3 /*39,42*/: boolean = null! as boolean /*39,54*/');
+            .toContain('var _t3 /*39,42*/ = null! as boolean /*T:VAE*/ /*39,54*/');
         expect(tcbWithSpans(template, []))
-            .toContain('var _t4 /*55,62*/: boolean = null! as boolean /*55,68*/');
+            .toContain('var _t4 /*55,62*/ = null! as boolean /*T:VAE*/ /*55,68*/');
       });
 
       it('@if', () => {

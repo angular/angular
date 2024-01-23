@@ -8,6 +8,10 @@
 
 import ts from 'typescript';
 
+import {addExpressionIdentifier, ExpressionIdentifier} from './comments';
+import {wrapForTypeChecker} from './diagnostics';
+
+
 
 /**
  * A `Set` of `ts.SyntaxKind`s of `ts.Expression` which are safe to wrap in a `ts.AsExpression`
@@ -79,19 +83,15 @@ export function tsCreateElement(tagName: string): ts.Expression {
 export function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.VariableStatement {
   // When we create a variable like `var _t1: boolean = null!`, TypeScript actually infers `_t1`
   // to be `never`, instead of a `boolean`. To work around it, we cast the value
-  // in the initializer, e.g. `var _t1: boolean = null! as boolean;`.
-  // The type is kept on both sides, at least for now, to keep the "find references"
-  // operation functional in its current form. If the variable is type "Foo" and we're
-  // finding references for "Foo", it's more convenient to get the LHS where the identifier
-  // is with its source map than the RHS type reference and needing to then map it back
-  // to the LHS identifier and its source map.
+  // in the initializer, e.g. `var _t1 = null! as boolean;`.
+  addExpressionIdentifier(type, ExpressionIdentifier.VARIABLE_AS_EXPRESSION);
   const initializer: ts.Expression = ts.factory.createAsExpression(
       ts.factory.createNonNullExpression(ts.factory.createNull()), type);
 
   const decl = ts.factory.createVariableDeclaration(
       /* name */ id,
       /* exclamationToken */ undefined,
-      /* type */ type,
+      /* type */ undefined,
       /* initializer */ initializer);
   return ts.factory.createVariableStatement(
       /* modifiers */ undefined,
