@@ -13,10 +13,13 @@ import {extractGenerics} from './generics_extractor';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
 
-export type FunctionLike = ts.FunctionDeclaration|ts.MethodDeclaration|ts.MethodSignature;
+export type FunctionLike = ts.FunctionDeclaration|ts.MethodDeclaration|ts.MethodSignature|
+                           ts.CallSignatureDeclaration|ts.ConstructSignatureDeclaration;
 
 export class FunctionExtractor {
-  constructor(private declaration: FunctionLike, private typeChecker: ts.TypeChecker) {}
+  constructor(
+      private name: string, private declaration: FunctionLike,
+      private typeChecker: ts.TypeChecker) {}
 
   extract(): FunctionEntry {
     // TODO: is there any real situation in which the signature would not be available here?
@@ -28,9 +31,8 @@ export class FunctionExtractor {
 
     return {
       params: this.extractAllParams(this.declaration.parameters),
-      // We know that the function has a name here because we would have skipped it
-      // already before getting to this point if it was anonymous.
-      name: this.declaration.name!.getText(),
+      name: this.name,
+      isNewType: ts.isConstructSignatureDeclaration(this.declaration),
       returnType,
       entryType: EntryType.Function,
       generics: extractGenerics(this.declaration),

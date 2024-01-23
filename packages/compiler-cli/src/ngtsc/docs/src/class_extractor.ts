@@ -30,13 +30,20 @@ type PropertyDeclarationLike = ts.PropertyDeclaration|ts.AccessorDeclaration;
 /** Type representing either a class declaration ro an interface declaration. */
 type ClassDeclarationLike = ts.ClassDeclaration|ts.InterfaceDeclaration;
 
-/** Type representing either a class member node or an interface member node. */
+/** Type representing either a class or interface member. */
 type MemberElement = ts.ClassElement|ts.TypeElement;
 
-/** Type representing either a class method declaration or an interface method signature. */
+/** Type representing a signature element of an interface. */
+type SignatureElement = ts.CallSignatureDeclaration|ts.ConstructSignatureDeclaration;
+
+/**
+ * Type representing either:
+ */
 type MethodLike = ts.MethodDeclaration|ts.MethodSignature;
 
-/** Type representing either a class property declaration or an interface property signature. */
+/**
+ * Type representing either a class property declaration or an interface property signature.
+ */
 type PropertyLike = PropertyDeclarationLike|ts.PropertySignature;
 
 /** Extractor to pull info for API reference documentation for a TypeScript class or interface. */
@@ -53,7 +60,7 @@ class ClassExtractor {
       isAbstract: this.isAbstract(),
       entryType: ts.isInterfaceDeclaration(this.declaration) ? EntryType.Interface :
                                                                EntryType.UndecoratedClass,
-      members: this.extractAllClassMembers(),
+      members: this.extractSignatures().concat(this.extractAllClassMembers()),
       generics: extractGenerics(this.declaration),
       description: extractJsDocDescription(this.declaration),
       jsdocTags: extractJsDocTags(this.declaration),
@@ -92,13 +99,33 @@ class ClassExtractor {
     return undefined;
   }
 
+  /** Extract docs for all call signatures in the current class/interface. */
+  protected extractSignatures(): MemberEntry[] {
+    return this.computeAllSignatureDeclarations().map(s => this.extractSignature(s));
+  }
+
   /** Extracts docs for a class method. */
   protected extractMethod(methodDeclaration: MethodLike): MethodEntry {
-    const functionExtractor = new FunctionExtractor(methodDeclaration, this.typeChecker);
+    const functionExtractor = new FunctionExtractor(
+        methodDeclaration.name.getText(), methodDeclaration, this.typeChecker);
     return {
       ...functionExtractor.extract(),
       memberType: MemberType.Method,
       memberTags: this.getMemberTags(methodDeclaration),
+    };
+  }
+
+  /** Extracts docs for a signature element (usually inside an interface). */
+  protected extractSignature(signature: SignatureElement): MethodEntry {
+    // No name for the function if we are dealing with call signatures.
+    // For construct signatures we are using `new` as the name of the function for now.
+    // TODO: Consider exposing a new entry type for signature types.
+    const functionExtractor = new FunctionExtractor(
+        ts.isConstructSignatureDeclaration(signature) ? 'new' : '', signature, this.typeChecker);
+    return {
+      ...functionExtractor.extract(),
+      memberType: MemberType.Method,
+      memberTags: [],
     };
   }
 
@@ -137,16 +164,35 @@ class ClassExtractor {
     return tags;
   }
 
+  /** Computes all signature declarations of the class/interface. */
+  private computeAllSignatureDeclarations(): SignatureElement[] {
+    const type = this.typeChecker.getTypeAtLocation(this.declaration);
+    const signatures = [
+      ...type.getCallSignatures(),
+      ...type.getConstructSignatures(),
+    ];
+
+    const result: SignatureElement[] = [];
+    for (const signature of signatures) {
+      const decl = signature.getDeclaration();
+      if (this.isDocumentableSignature(decl) && this.isDocumentableMember(decl)) {
+        result.push(decl);
+      }
+    }
+
+    return result;
+  }
+
   /** Gets all member declarations, including inherited members. */
   private getMemberDeclarations(): MemberElement[] {
     // We rely on TypeScript to resolve all the inherited members to their
-    // ultimate form via `getPropertiesOfType`. This is important because child
+    // ultimate form via `getProperties`. This is important because child
     // classes may narrow types or add method overloads.
     const type = this.typeChecker.getTypeAtLocation(this.declaration);
     const members = type.getProperties();
 
     // While the properties of the declaration type represent the properties that exist
-    // on a clas *instance*, static members are properties on the class symbol itself.
+    // on a class *instance*, static members are properties on the class symbol itself.
     const typeOfConstructor = this.typeChecker.getTypeOfSymbol(type.symbol);
     const staticMembers = typeOfConstructor.getProperties();
 
@@ -219,6 +265,13 @@ class ClassExtractor {
   private isMethod(member: ts.Node): member is MethodLike {
     // Classes have declarations, interface have signatures
     return ts.isMethodDeclaration(member) || ts.isMethodSignature(member);
+  }
+
+  /** Gets whether the given signature declaration is documentable. */
+  private isDocumentableSignature(signature: ts.SignatureDeclaration):
+      signature is SignatureElement {
+    return ts.isConstructSignatureDeclaration(signature) ||
+        ts.isCallSignatureDeclaration(signature);
   }
 
   /** Gets whether the declaration for this extractor is abstract. */
