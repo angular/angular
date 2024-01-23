@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Interpolation, PropertyRead, TmplAstNode} from '@angular/compiler';
+import {AST, BindingType, Interpolation, PropertyRead, TmplAstNode, TmplAstBoundAttribute, ASTWithSource} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
@@ -24,6 +24,7 @@ class InterpolatedSignalCheck extends
       ctx: TemplateContext<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>,
       component: ts.ClassDeclaration,
       node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>[] {
+    // interpolations
     if (node instanceof Interpolation) {
       return node.expressions.filter((item): item is PropertyRead => item instanceof PropertyRead)
           .flatMap((item) => {
@@ -32,6 +33,10 @@ class InterpolatedSignalCheck extends
             }
             return [];
           });
+    }
+    // bound properties
+    if (node instanceof TmplAstBoundAttribute && node.type === BindingType.Property && node.value instanceof ASTWithSource && node.value.ast instanceof PropertyRead) {
+      return buildDiagnosticForSignal(ctx, node.value.ast, component);
     }
     return [];
   }
