@@ -1135,6 +1135,69 @@ runInEachFileSystem(() => {
             .toEqual('inputB');
       });
 
+      it('can retrieve a symbol for a signal-input binding', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const templateString = `<div dir [inputA]="'my input A'" [aliased]="'my inputB'"></div>`;
+        const {program, templateTypeChecker} = setup([
+          {
+            fileName,
+            templates: {'Cmp': templateString},
+            declarations: [{
+              name: 'TestDir',
+              selector: '[dir]',
+              file: dirFile,
+              type: 'directive',
+              inputs: {
+                inputA: {
+                  bindingPropertyName: 'inputA',
+                  isSignal: true,
+                  classPropertyName: 'inputA',
+                  required: false,
+                  transform: null,
+                },
+                inputB: {
+                  bindingPropertyName: 'aliased',
+                  isSignal: true,
+                  classPropertyName: 'inputB',
+                  required: true,
+                  transform: null,
+                }
+              },
+            }]
+          },
+          {
+            fileName: dirFile,
+            source: `
+              import {InputSignal} from '@angular/core';
+
+              export class TestDir {
+                inputA: InputSignal<string> = null!;
+                inputB: InputSignal<string> = null!;
+              }`,
+            templates: {},
+          }
+        ]);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+
+        const inputAbinding = (nodes[0] as TmplAstElement).inputs[0];
+        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp)!;
+        assertInputBindingSymbol(aSymbol);
+        expect((aSymbol.bindings[0].tsSymbol!.declarations![0] as ts.PropertyDeclaration)
+                   .name.getText())
+            .toEqual('inputA');
+
+        const inputBbinding = (nodes[0] as TmplAstElement).inputs[1];
+        const bSymbol = templateTypeChecker.getSymbolOfNode(inputBbinding, cmp)!;
+        assertInputBindingSymbol(bSymbol);
+        expect((bSymbol.bindings[0].tsSymbol!.declarations![0] as ts.PropertyDeclaration)
+                   .name.getText())
+            .toEqual('inputB');
+      });
+
       it('does not retrieve a symbol for an input when undeclared', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
