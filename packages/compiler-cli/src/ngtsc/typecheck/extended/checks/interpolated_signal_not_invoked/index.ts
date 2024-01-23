@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Interpolation, PropertyRead, TmplAstNode} from '@angular/compiler';
+import {
+  AST,
+  ASTWithSource,
+  BindingType,
+  Interpolation,
+  PropertyRead,
+  TmplAstBoundAttribute,
+  TmplAstNode,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
@@ -34,10 +42,27 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
     component: ts.ClassDeclaration,
     node: TmplAstNode | AST,
   ): NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>[] {
+    // interpolations like `{{ mySignal }}`
     if (node instanceof Interpolation) {
       return node.expressions
         .filter((item): item is PropertyRead => item instanceof PropertyRead)
         .flatMap((item) => buildDiagnosticForSignal(ctx, item, component));
+    }
+    // bound properties like `[prop]="mySignal"`
+    else if (node instanceof TmplAstBoundAttribute) {
+      const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
+      // we skip the check if the node is an input binding
+      if (symbol !== null && symbol.kind === SymbolKind.Input) {
+        return [];
+      }
+      // otherwise, we check if the node is a bound property like `[prop]="mySignal"`
+      if (
+        node.type === BindingType.Property &&
+        node.value instanceof ASTWithSource &&
+        node.value.ast instanceof PropertyRead
+      ) {
+        return buildDiagnosticForSignal(ctx, node.value.ast, component);
+      }
     }
     return [];
   }
