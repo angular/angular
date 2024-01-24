@@ -887,36 +887,6 @@ describe('OnPush components with signals', () => {
     expect(fixture.nativeElement.innerText).toEqual('2');
   });
 
-  // Note: We probably don't want this to throw but need to decide how to handle reruns
-  // This asserts current behavior and should be updated when this is handled
-  it('throws error when writing to a signal in afterRender', () => {
-    const counter = signal(0);
-
-    @Component({
-      selector: 'test-component',
-      standalone: true,
-      template: ` {{counter()}} `,
-    })
-    class TestCmp {
-      counter = counter;
-      injector = inject(EnvironmentInjector);
-      ngOnInit() {
-        afterNextRender(() => {
-          this.counter.set(1);
-        }, {injector: this.injector});
-      }
-    }
-    TestBed.configureTestingModule(
-        {providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]});
-
-    const fixture = TestBed.createComponent(TestCmp);
-    const appRef = TestBed.inject(ApplicationRef);
-    appRef.attachView(fixture.componentRef.hostView);
-    const spy = spyOn(console, 'error');
-    appRef.tick();
-    expect(spy.calls.first().args[1]).toMatch(/ExpressionChanged/);
-  });
-
   it('destroys all signal consumers when destroying the view tree', () => {
     const val = signal(1);
     const double = computed(() => val() * 2);
