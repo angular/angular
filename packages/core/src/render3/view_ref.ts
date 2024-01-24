@@ -57,7 +57,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
        *
        * This may be different from `_lView` if the `_cdRefInjectingView` is an embedded view.
        */
-      private _cdRefInjectingView?: LView, private readonly notifyErrorHandler = true) {}
+      private _cdRefInjectingView?: LView, readonly notifyErrorHandler = true) {}
 
   get context(): T {
     return this._lView[CONTEXT] as unknown as T;

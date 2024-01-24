@@ -197,8 +197,9 @@ export function walkUpViews(nestingLevel: number, currentView: LView): LView {
 }
 
 export function requiresRefreshOrTraversal(lView: LView) {
-  return lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
-      lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty;
+  return !!(
+      lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+      lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty);
 }
 
 

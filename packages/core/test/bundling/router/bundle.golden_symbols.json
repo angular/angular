@@ -1092,6 +1092,9 @@
     "name": "detectChangesInViewIfAttached"
   },
   {
+    "name": "detectChangesInternal"
+  },
+  {
     "name": "diPublicInInjector"
   },
   {
@@ -1924,6 +1927,9 @@
   },
   {
     "name": "shouldAddViewToDom"
+  },
+  {
+    "name": "shouldRecheckView"
   },
   {
     "name": "shouldSearchParent"
