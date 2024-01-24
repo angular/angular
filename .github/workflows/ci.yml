@@ -235,9 +235,11 @@ jobs:
           //packages/zone.js/test/closure:closure_js \
 
       - run: |
+          rm -Rf packages/zone.js/build
+          rm -Rf packages/zone.js/test/extra/*.umd.js
+
           mkdir -p packages/zone.js/build/
           mkdir -p packages/zone.js/build/test/
-          mkdir -p packages/zone.js/test/
 
           cp dist/bin/packages/zone.js/bundles/zone.umd.js packages/zone.js/build/zone.umd.js
           cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/
