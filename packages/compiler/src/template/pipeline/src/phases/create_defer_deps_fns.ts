@@ -44,8 +44,9 @@ export function createDeferDepsFns(job: ComponentCompilationJob): void {
           throw new Error(
               'AssertionError: slot must be assigned bfore extracting defer deps functions');
         }
+        const fullPathName = unit.fnName?.replace(`_Template`, ``);
         op.resolverFn = job.pool.getSharedFunctionReference(
-            depsFnExpr, `${job.componentName}_Defer_${op.handle.slot}_DepsFn`,
+            depsFnExpr, `${fullPathName}_Defer_${op.handle.slot}_DepsFn`,
             /* Don't use unique names for TDB compatibility */ false);
       }
     }
