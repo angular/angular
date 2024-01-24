@@ -37,6 +37,8 @@ import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../ut
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
+const SHOULD_USE_TEMPLATE_PIPELINE = false;
+
 /**
  * State information about a compilation which is only generated once some data is requested from
  * the `NgCompiler` (for example, by calling `getDiagnostics`).
@@ -1131,7 +1133,8 @@ export class NgCompiler {
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
           supportTestBed, compilationMode, deferredSymbolsTracker,
-          !!this.options.forbidOrphanComponents, this.enableBlockSyntax),
+          !!this.options.forbidOrphanComponents, this.enableBlockSyntax,
+          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1142,6 +1145,7 @@ export class NgCompiler {
           this.closureCompilerEnabled,
           this.delegatingPerfRecorder,
           supportTestBed, compilationMode,
+          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed

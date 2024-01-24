@@ -86,8 +86,8 @@ export class ComponentDecoratorHandler implements
       private hostDirectivesResolver: HostDirectivesResolver, private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
       private readonly deferredSymbolTracker: DeferredSymbolTracker,
-      private readonly forbidOrphanRendering: boolean,
-      private readonly enableBlockSyntax: boolean) {
+      private readonly forbidOrphanRendering: boolean, private readonly enableBlockSyntax: boolean,
+      private readonly useTemplatePipeline: boolean) {
     this.extractTemplateOptions = {
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs: this.i18nNormalizeLineEndingsInICUs,
@@ -225,7 +225,7 @@ export class ComponentDecoratorHandler implements
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
         this.isCore, this.annotateForClosureCompiler, this.compilationMode,
-        this.elementSchemaRegistry.getDefaultComponentElementName());
+        this.elementSchemaRegistry.getDefaultComponentElementName(), this.useTemplatePipeline);
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
@@ -514,6 +514,7 @@ export class ComponentDecoratorHandler implements
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
           rawImports: rawImports !== null ? new WrappedNodeExpr(rawImports) : undefined,
+          useTemplatePipeline: this.useTemplatePipeline,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: this.includeClassMetadata ?

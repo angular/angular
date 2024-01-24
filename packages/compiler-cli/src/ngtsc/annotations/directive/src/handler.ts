@@ -64,6 +64,7 @@ export class DirectiveDecoratorHandler implements
       private perf: PerfRecorder,
       private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
+      private readonly useTemplatePipeline: boolean,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -103,7 +104,8 @@ export class DirectiveDecoratorHandler implements
 
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
-        this.isCore, this.annotateForClosureCompiler, this.compilationMode);
+        this.isCore, this.annotateForClosureCompiler, this.compilationMode,
+        /* defaultSelector */ null, this.useTemplatePipeline);
     if (directiveResult === undefined) {
       return {};
     }
