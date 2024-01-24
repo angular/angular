@@ -39,10 +39,11 @@ const NG_TEMPLATE_TAG_NAME = 'ng-template';
 export function ingestComponent(
     componentName: string, template: t.Node[], constantPool: ConstantPool,
     relativeContextFilePath: string, i18nUseExternalIds: boolean,
-    deferBlocksMeta: Map<t.DeferredBlock, R3DeferBlockMetadata>): ComponentCompilationJob {
+    deferBlocksMeta: Map<t.DeferredBlock, R3DeferBlockMetadata>,
+    allDeferrableDepsFn: o.ReadVarExpr|null): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
       componentName, constantPool, compatibilityMode, relativeContextFilePath, i18nUseExternalIds,
-      deferBlocksMeta);
+      deferBlocksMeta, allDeferrableDepsFn);
   ingestNodes(job.root, template);
   return job;
 }
@@ -462,8 +463,9 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 
   // Create the main defer op, and ops for all secondary views.
   const deferXref = unit.job.allocateXrefId();
-  const deferOp =
-      ir.createDeferOp(deferXref, main.xref, main.handle, blockMeta, deferBlock.sourceSpan);
+  const deferOp = ir.createDeferOp(
+      deferXref, main.xref, main.handle, blockMeta, unit.job.allDeferrableDepsFn,
+      deferBlock.sourceSpan);
   deferOp.placeholderView = placeholder?.xref ?? null;
   deferOp.placeholderSlot = placeholder?.handle ?? null;
   deferOp.loadingSlot = loading?.handle ?? null;
