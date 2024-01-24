@@ -798,7 +798,7 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
 export function createDeferOp(
     xref: XrefId, main: XrefId, mainSlot: SlotHandle, metadata: R3DeferBlockMetadata,
-    sourceSpan: ParseSourceSpan): DeferOp {
+    resolverFn: o.Expression|null, sourceSpan: ParseSourceSpan): DeferOp {
   return {
     kind: OpKind.Defer,
     xref,
@@ -817,7 +817,7 @@ export function createDeferOp(
     errorView: null,
     errorSlot: null,
     metadata,
-    resolverFn: null,
+    resolverFn,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
