@@ -166,8 +166,9 @@ groups:
         - AndrewKushnir
         - atscott
         - crisbeto
-        - JoostK
+        - devversion
         - dylhunn
+        - JoostK
 
   # =========================================================
   #  Framework: Migrations
@@ -352,6 +353,7 @@ groups:
         - AndrewKushnir
         - atscott
         - crisbeto
+        - devversion
         - dylhunn
         - jessicajaniuk
         - pkozlowski-opensource
