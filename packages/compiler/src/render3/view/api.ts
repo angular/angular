@@ -347,6 +347,8 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
    * not be set. If component has empty array imports then this field is not set.
    */
   rawImports?: o.Expression;
+
+  useTemplatePipeline: boolean;
 }
 
 /**
@@ -519,6 +521,8 @@ export interface R3HostMetadata {
   properties: {[key: string]: string};
 
   specialAttributes: {styleAttr?: string; classAttr?: string;};
+
+  useTemplatePipeline: boolean;
 }
 
 /**

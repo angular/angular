@@ -36,7 +36,7 @@ export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Readonly<Decorator>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, refEmitter: ReferenceEmitter,
     referencesRegistry: ReferencesRegistry, isCore: boolean, annotateForClosureCompiler: boolean,
-    compilationMode: CompilationMode, defaultSelector: string|null = null): {
+    compilationMode: CompilationMode, defaultSelector: string|null, useTemplatePipeline: boolean): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   inputs: ClassPropertyMapping<InputMapping>,
@@ -204,7 +204,10 @@ export function extractDirectiveMetadata(
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
     deps: ctorDeps,
-    host,
+    host: {
+      ...host,
+      useTemplatePipeline,
+    },
     lifecycle: {
       usesOnChanges,
     },
