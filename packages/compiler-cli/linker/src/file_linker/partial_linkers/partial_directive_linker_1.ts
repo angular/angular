@@ -13,7 +13,7 @@ import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, wrapReference} from './util';
+import {extractForwardRef, SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER, wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
@@ -145,6 +145,7 @@ function toHostMetadata<TExpression>(metaObj: AstObject<R3DeclareDirectiveMetada
       listeners: {},
       properties: {},
       specialAttributes: {},
+      useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER,
     };
   }
 
@@ -169,6 +170,7 @@ function toHostMetadata<TExpression>(metaObj: AstObject<R3DeclareDirectiveMetada
         host.getObject('properties').toLiteral(value => value.getString()) :
         {},
     specialAttributes,
+    useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER,
   };
 }
 

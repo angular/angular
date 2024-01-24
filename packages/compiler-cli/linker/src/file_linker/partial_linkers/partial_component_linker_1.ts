@@ -16,7 +16,7 @@ import {GetSourceFileFn} from '../get_source_file';
 
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
 import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, PLACEHOLDER_VERSION} from './util';
+import {extractForwardRef, PLACEHOLDER_VERSION, SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER} from './util';
 
 function makeDirectiveMetadata<TExpression>(
     directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,
@@ -196,6 +196,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       relativeContextFilePath: this.sourceUrl,
       i18nUseExternalIds: false,
       declarations,
+      useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER,
     };
   }
 
