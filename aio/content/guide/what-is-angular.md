@@ -233,7 +233,7 @@ Similar to defining a component, directives are comprised of the following:
   - A selector that defines the tag name is when the component is called
 - A TypeScript class that defines the extended behavior the directive will add to the respective HTML element.
 
-For example, here’s what a custom directive for highlighting an element:
+For example, here’s a custom directive for highlighting an element:
 
 ```ts
 @Directive({
