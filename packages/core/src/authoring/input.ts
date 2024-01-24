@@ -67,8 +67,10 @@ export interface InputFunction {
    * @developerPreview
    */
   required: {
-    <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;<ReadT, WriteT>(
-        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
+    <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+
+    <ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>):
+        InputSignalWithTransform<ReadT, WriteT>;
   };
 }
 
