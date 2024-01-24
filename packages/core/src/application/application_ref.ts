@@ -553,22 +553,16 @@ export class ApplicationRef {
           view.checkNoChanges();
         }
       }
+      const callbacksExecuted = this.afterRenderEffectManager.execute();
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && callbacksExecuted) {
+        for (let view of this._views) {
+          view.checkNoChanges();
+        }
+      }
     } catch (e) {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
       this.internalErrorHandler(e);
     } finally {
-      // Catch any `ExpressionChanged...` errors and report them to error handler like above
-      try {
-        const callbacksExecuted = this.afterRenderEffectManager.execute();
-        if ((typeof ngDevMode === 'undefined' || ngDevMode) && callbacksExecuted) {
-          for (let view of this._views) {
-            view.checkNoChanges();
-          }
-        }
-      } catch (e) {
-        this.internalErrorHandler(e);
-      }
-
       this._runningTick = false;
     }
   }
