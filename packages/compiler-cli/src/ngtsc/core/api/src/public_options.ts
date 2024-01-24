@@ -431,4 +431,9 @@ export interface MiscOptions {
    * another library without option set will not issue error if rendered in orphan way.
    */
   forbidOrphanComponents?: boolean;
+
+  /**
+   * Whether to use TemplateDefinitionBuilder as the code generator, or Template Pipeline.
+   */
+  useTemplatePipeline?: boolean;
 }

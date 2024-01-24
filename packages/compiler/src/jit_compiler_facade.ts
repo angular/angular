@@ -30,6 +30,8 @@ import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {SelectorMatcher} from './selector';
 
+export const SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT = false;
+
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
   ResourceLoader = ResourceLoader;
@@ -206,6 +208,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
                                                     null,
       relativeContextFilePath: '',
       i18nUseExternalIds: true,
+      useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT,
     };
     const jitExpressionSourceMap = `ng:///${facade.name}.js`;
     return this.compileComponentFromMeta(angularCoreEnv, jitExpressionSourceMap, meta);
@@ -355,7 +358,10 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     typeSourceSpan: facade.typeSourceSpan,
     type: wrapReference(facade.type),
     deps: null,
-    host: extractHostBindings(facade.propMetadata, facade.typeSourceSpan, facade.host),
+    host: {
+      ...extractHostBindings(facade.propMetadata, facade.typeSourceSpan, facade.host),
+      useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT,
+    },
     inputs: {...inputsFromMetadata, ...inputsFromType},
     outputs: {...outputsFromMetadata, ...outputsFromType},
     queries: facade.queries.map(convertToR3QueryMetadata),
@@ -402,6 +408,7 @@ function convertHostDeclarationToMetadata(host: R3DeclareDirectiveFacade['host']
       classAttr: host.classAttribute,
       styleAttr: host.styleAttribute,
     },
+    useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT,
   };
 }
 
@@ -488,6 +495,7 @@ function convertDeclareComponentFacadeToMetadata(
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',
     i18nUseExternalIds: true,
+    useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT,
   };
 }
 

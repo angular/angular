@@ -224,7 +224,7 @@ export function compileComponentFromMetadata(
   }
 
   // Template compilation is currently conditional as we're in the process of rewriting it.
-  if (!USE_TEMPLATE_PIPELINE) {
+  if (!USE_TEMPLATE_PIPELINE && !meta.useTemplatePipeline) {
     // This is the main path currently used in compilation, which compiles the template with the
     // legacy `TemplateDefinitionBuilder`.
 
@@ -506,7 +506,7 @@ function createHostBindingsFunction(
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(hostBindingsMetadata.listeners, typeSourceSpan);
 
-  if (USE_TEMPLATE_PIPELINE) {
+  if (USE_TEMPLATE_PIPELINE || hostBindingsMetadata.useTemplatePipeline) {
     // The parser for host bindings treats class and style attributes specially -- they are
     // extracted into these separate fields. This is not the case for templates, so the compiler can
     // actually already handle these special attributes internally. Therefore, we just drop them
