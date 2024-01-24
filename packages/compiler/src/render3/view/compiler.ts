@@ -215,17 +215,18 @@ export function compileComponentFromMetadata(
   const templateTypeName = meta.name;
   const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
 
+
+  let allDeferrableDepsFn: o.ReadVarExpr|null = null;
+  if (meta.deferBlocks.size > 0 && meta.deferrableTypes.size > 0 &&
+      meta.deferBlockDepsEmitMode === DeferBlockDepsEmitMode.PerComponent) {
+    const fnName = `${templateTypeName}_DeferFn`;
+    allDeferrableDepsFn = createDeferredDepsFunction(constantPool, fnName, meta.deferrableTypes);
+  }
+
   // Template compilation is currently conditional as we're in the process of rewriting it.
   if (!USE_TEMPLATE_PIPELINE) {
     // This is the main path currently used in compilation, which compiles the template with the
     // legacy `TemplateDefinitionBuilder`.
-
-    let allDeferrableDepsFn: o.ReadVarExpr|null = null;
-    if (meta.deferBlocks.size > 0 && meta.deferrableTypes.size > 0 &&
-        meta.deferBlockDepsEmitMode === DeferBlockDepsEmitMode.PerComponent) {
-      const fnName = `${templateTypeName}_DeferFn`;
-      allDeferrableDepsFn = createDeferredDepsFunction(constantPool, fnName, meta.deferrableTypes);
-    }
 
     const template = meta.template;
     const templateBuilder = new TemplateDefinitionBuilder(
@@ -273,7 +274,7 @@ export function compileComponentFromMetadata(
     // ingested into IR:
     const tpl = ingestComponent(
         meta.name, meta.template.nodes, constantPool, meta.relativeContextFilePath,
-        meta.i18nUseExternalIds, meta.deferBlocks);
+        meta.i18nUseExternalIds, meta.deferBlocks, allDeferrableDepsFn);
 
     // Then the IR is transformed to prepare it for cod egeneration.
     transform(tpl, CompilationJobKind.Tmpl);

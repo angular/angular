@@ -20,6 +20,9 @@ export function createDeferDepsFns(job: ComponentCompilationJob): void {
         if (op.metadata.deps.length === 0) {
           continue;
         }
+        if (op.resolverFn !== null) {
+          continue;
+        }
         const dependencies: o.Expression[] = [];
         for (const dep of op.metadata.deps) {
           if (dep.isDeferrable) {
