@@ -708,6 +708,9 @@
     "name": "detectChangesInViewIfAttached"
   },
   {
+    "name": "detectChangesInternal"
+  },
+  {
     "name": "diPublicInInjector"
   },
   {
@@ -1249,6 +1252,9 @@
   },
   {
     "name": "shimStylesContent"
+  },
+  {
+    "name": "shouldRecheckView"
   },
   {
     "name": "shouldSearchParent"
