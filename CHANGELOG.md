@@ -1,3 +1,12 @@
+<a name="17.1.1"></a>
+# 17.1.1 (2024-01-24)
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f222bee8fa](https://github.com/angular/angular/commit/f222bee8fa037f437761e5f7f127f22f280e9154) | fix | revert commit that replaced `last` helper with native `Array.at(-1)` ([#54021](https://github.com/angular/angular/pull/54021)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.1.0"></a>
 # 17.1.0 (2024-01-17)
 ### compiler
