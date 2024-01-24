@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵHydratedNode as HydrationNode} from '@angular/core';
+
 declare const ng: any;
 
 export const appIsAngularInDevMode = (): boolean => {
@@ -58,5 +60,7 @@ export const getAngularVersion = (): string | null => {
 };
 
 export function isHydrationEnabled(): boolean {
-  return document.getElementById('ng-state') !== null;
+  return [...document.querySelectorAll('[ng-version]')].some(
+    (rootNode) => (rootNode as HydrationNode)?.__ngDebugHydrationInfo__,
+  );
 }

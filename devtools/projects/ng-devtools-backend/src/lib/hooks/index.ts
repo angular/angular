@@ -50,11 +50,18 @@ export const disableTimingAPI = () => (timingAPIFlag = false);
 const timingAPIEnabled = () => timingAPIFlag;
 
 let directiveForestHooks: DirectiveForestHooks;
+let directiveHooksImpl: typeof DirectiveForestHooks = DirectiveForestHooks;
+
+// To allow mocking
+export function setDirectiveForestHooksImpl(hooks: typeof DirectiveForestHooks) {
+  directiveHooksImpl = hooks;
+}
+
 export const initializeOrGetDirectiveForestHooks = () => {
   if (directiveForestHooks) {
     return directiveForestHooks;
   }
-  directiveForestHooks = new DirectiveForestHooks();
+  directiveForestHooks = new directiveHooksImpl();
   directiveForestHooks.profiler.subscribe({
     onChangeDetectionStart(component: any): void {
       if (!timingAPIEnabled()) {

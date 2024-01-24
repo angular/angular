@@ -37,6 +37,7 @@ const HYDRATION_ERROR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" height="24"
 
 function createOverlay(color: RgbColor): {overlay: HTMLElement; overlayContent: HTMLElement} {
   const overlay = document.createElement('div');
+  overlay.className = 'ng-devtools-overlay';
   overlay.style.backgroundColor = toCSSColor(...color, 0.35);
   overlay.style.position = 'fixed';
   overlay.style.zIndex = '2147483647';

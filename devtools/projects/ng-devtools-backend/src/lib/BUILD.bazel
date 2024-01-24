@@ -104,6 +104,27 @@ ts_library(
     srcs = ["version.ts"],
 )
 
+karma_web_test_suite(
+    name = "client_event_subscribers_test",
+    deps = [
+        ":client_event_subscribers_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "client_event_subscribers_test_lib",
+    srcs = [
+        "client-event-subscriber.spec.ts",
+    ],
+    deps = [
+        ":client_event_subscribers",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+        "@npm//rxjs",
+    ],
+)
+
 ts_library(
     name = "client_event_subscribers",
     srcs = ["client-event-subscribers.ts"],
