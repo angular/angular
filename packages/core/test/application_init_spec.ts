@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {APP_INITIALIZER, ApplicationInitStatus, inject, InjectionToken, provideAppInitializer} from '@angular/core';
+import {APP_INITIALIZER, ApplicationInitStatus, Component, inject, InjectionToken, provideAppInitializer} from '@angular/core';
 import {EMPTY, Observable, Subscriber} from 'rxjs';
 
 import {TestBed} from '../testing';
@@ -237,4 +237,17 @@ describe('ApplicationInitStatus', () => {
 
 async function initApp() {
   return await TestBed.inject(ApplicationInitStatus).donePromise;
+}
+
+/**
+ * Typing tests.
+ */
+
+@Component({
+  template: '',
+  // @ts-expect-error: `provideAppInitializer()` should not work with Component.providers, as it
+  // wouldn't be executed anyway.
+  providers: [provideAppInitializer(() => {})],
+})
+class Test {
 }

@@ -8,7 +8,7 @@
 
 import {Observable} from 'rxjs';
 
-import {inject, Injectable, InjectionToken, Injector, Provider, runInInjectionContext} from '../di';
+import {EnvironmentProviders, inject, Injectable, InjectionToken, Injector, makeEnvironmentProviders, Provider, runInInjectionContext} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {isPromise, isSubscribable} from '../util/lang';
 
@@ -158,12 +158,13 @@ export const APP_INITIALIZER =
  * @see {@link APP_INITIALIZER}
  */
 export function provideAppInitializer(
-    initializerFn: () => Observable<unknown>| Promise<unknown>| void): Provider {
-  return {
+    initializerFn: () => Observable<unknown>| Promise<unknown>| void,
+    ): EnvironmentProviders {
+  return makeEnvironmentProviders([{
     provide: APP_INITIALIZER,
     multi: true,
     useValue: initializerFn,
-  };
+  }]);
 }
 
 /**
