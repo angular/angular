@@ -1,3 +1,12 @@
+<a name="17.2.0-next.0"></a>
+# 17.2.0-next.0 (2024-01-24)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [66e940aebf](https://github.com/angular/angular/commit/66e940aebfd5a93944860a4e0dbd14e1072f80f2) | feat | scope selectors in @starting-style ([#53943](https://github.com/angular/angular/pull/53943)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.1.1"></a>
 # 17.1.1 (2024-01-24)
 ### router
