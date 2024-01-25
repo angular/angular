@@ -43,6 +43,7 @@
     "devtools:build:chrome": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- devtools/projects/shell-browser/src:prodapp",
     "devtools:build:firefox": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=firefox -- devtools/projects/shell-browser/src:prodapp",
     "devtools:test": "bazelisk test --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
+    "docs": "yarn bazel run --config=aio_local_deps  //adev:serve",
     "benchmarks": "ts-node --esm scripts/benchmarks/index.mts"
   },
   "// 1": "dependencies are used locally and by bazel",

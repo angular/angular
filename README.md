@@ -61,6 +61,25 @@ Get started with Angular, learn the fundamentals and explore advanced topics on 
 - [Lazy Loading][lazyloading]
 - [Animations][animations]
 
+### Local Development
+
+To contribute to Angular docs, you can setup a local environment with the following commands:
+
+```bash
+# Clone Angular repo
+git clone https://github.com/angular/angular.git
+
+# Navigate to project directory
+cd angular
+
+# Install dependencies
+yarn
+
+# Build and run local dev server
+# Note: Initial build will take some time
+yarn docs
+```
+
 ## Development Setup
 
 ### Prerequisites
