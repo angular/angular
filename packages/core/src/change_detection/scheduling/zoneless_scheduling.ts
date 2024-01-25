@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export const enum NotificationSource {
+  Other,
+  AfterRenderHook,
+}
+
 /**
  * Injectable that is notified when an `LView` is made aware of changes to application state.
  */
 export abstract class ChangeDetectionScheduler {
-  abstract notify(): void;
+  abstract notify(source?: NotificationSource): void;
 }

@@ -7,8 +7,8 @@
  */
 
 import {inject} from '../di/injector_compatibility';
-import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {assertInInjectionContext, Injector, runInInjectionContext, ɵɵdefineInjectable} from '../di';
+import {ChangeDetectionScheduler, NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {ErrorHandler} from '../error_handler';
 import {DestroyRef} from '../linker/destroy_ref';
 import {assertNotInReactiveContext} from '../render3/reactivity/asserts';
@@ -336,7 +336,7 @@ class AfterRenderCallback {
 
   constructor(readonly phase: AfterRenderPhase, private callbackFn: VoidFunction) {
     // Registering a callback will notify the scheduler.
-    inject(ChangeDetectionScheduler, {optional: true})?.notify();
+    inject(ChangeDetectionScheduler, {optional: true})?.notify(NotificationSource.AfterRenderHook);
   }
 
   invoke() {

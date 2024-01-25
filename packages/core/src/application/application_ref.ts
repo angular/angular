@@ -492,6 +492,11 @@ export class ApplicationRef {
    * detection pass during which all change detection must complete.
    */
   tick(): void {
+    this._tick(true);
+  }
+
+  /** @internal */
+  _tick(refreshViews: boolean): void {
     (typeof ngDevMode === 'undefined' || ngDevMode) && this.warnIfDestroyed();
     if (this._runningTick) {
       throw new RuntimeError(
@@ -503,7 +508,7 @@ export class ApplicationRef {
     try {
       this._runningTick = true;
 
-      this.detectChangesInAttachedViews();
+      this.detectChangesInAttachedViews(refreshViews);
 
       if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
         for (let view of this._views) {
@@ -520,7 +525,7 @@ export class ApplicationRef {
     }
   }
 
-  private detectChangesInAttachedViews() {
+  private detectChangesInAttachedViews(refreshViews: boolean) {
     let runs = 0;
     const afterRenderEffectManager = this.afterRenderEffectManager;
     while (true) {
@@ -532,10 +537,12 @@ export class ApplicationRef {
                     'Ensure afterRender or queueStateUpdate hooks are not continuously causing updates.');
       }
 
-      const isFirstPass = runs === 0;
-      this.beforeRender.next(isFirstPass);
-      for (let {_lView, notifyErrorHandler} of this._views) {
-        detectChangesInViewIfRequired(_lView, isFirstPass, notifyErrorHandler);
+      if (refreshViews) {
+        const isFirstPass = runs === 0;
+        this.beforeRender.next(isFirstPass);
+        for (let {_lView, notifyErrorHandler} of this._views) {
+          detectChangesInViewIfRequired(_lView, isFirstPass, notifyErrorHandler);
+        }
       }
       runs++;
 
