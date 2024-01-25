@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
+import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
+import {assertInInjectionContext, Injector, runInInjectionContext, ɵɵdefineInjectable} from '../di';
 import {ErrorHandler} from '../error_handler';
 import {DestroyRef} from '../linker/destroy_ref';
 import {assertNotInReactiveContext} from '../render3/reactivity/asserts';
@@ -241,7 +242,7 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
     unregisterFn();
   };
   const unregisterFn = injector.get(DestroyRef).onDestroy(destroy);
-  const instance = new AfterRenderCallback(injector, phase, callback);
+  const instance = runInInjectionContext(injector, () => new AfterRenderCallback(phase, callback));
 
   callbackHandler.register(instance);
   return {destroy};
@@ -317,10 +318,10 @@ export function afterNextRender(
     unregisterFn();
   };
   const unregisterFn = injector.get(DestroyRef).onDestroy(destroy);
-  const instance = new AfterRenderCallback(injector, phase, () => {
-    destroy();
-    callback();
-  });
+  const instance = runInInjectionContext(injector, () => new AfterRenderCallback(phase, () => {
+                                                     destroy();
+                                                     callback();
+                                                   }));
 
   callbackHandler.register(instance);
   return {destroy};
@@ -330,14 +331,12 @@ export function afterNextRender(
  * A wrapper around a function to be used as an after render callback.
  */
 class AfterRenderCallback {
-  private zone: NgZone;
-  private errorHandler: ErrorHandler|null;
+  private zone = inject(NgZone);
+  private errorHandler = inject(ErrorHandler, {optional: true});
 
-  constructor(
-      injector: Injector, public readonly phase: AfterRenderPhase,
-      private callbackFn: VoidFunction) {
-    this.zone = injector.get(NgZone);
-    this.errorHandler = injector.get(ErrorHandler, null, {optional: true});
+  constructor(readonly phase: AfterRenderPhase, private callbackFn: VoidFunction) {
+    // Registering a callback will notify the scheduler.
+    inject(ChangeDetectionScheduler, {optional: true})?.notify();
   }
 
   invoke() {
