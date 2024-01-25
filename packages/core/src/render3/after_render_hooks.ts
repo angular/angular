@@ -362,7 +362,7 @@ interface AfterRenderCallbackHandler {
   /**
    * Execute callbacks. Returns `true` if any callbacks were executed.
    */
-  execute(): boolean;
+  execute(): void;
 
   /**
    * Perform any necessary cleanup.
@@ -397,12 +397,10 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
     this.deferredCallbacks.delete(callback);
   }
 
-  execute(): boolean {
-    let callbacksExecuted = false;
+  execute(): void {
     this.executingCallbacks = true;
     for (const bucket of Object.values(this.buckets)) {
       for (const callback of bucket) {
-        callbacksExecuted = true;
         callback.invoke();
       }
     }
@@ -412,7 +410,6 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
       this.buckets[callback.phase].add(callback);
     }
     this.deferredCallbacks.clear();
-    return callbacksExecuted;
   }
 
   destroy(): void {
@@ -437,7 +434,7 @@ export class AfterRenderEventManager {
   /**
    * Executes callbacks. Returns `true` if any callbacks executed.
    */
-  execute(): boolean {
+  execute(): void {
     // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
     // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
     // can still be tree-shaken unless used by the application.
@@ -446,8 +443,7 @@ export class AfterRenderEventManager {
     for (const callback of callbacks) {
       callback();
     }
-    const handlerCallbacksExecuted = this.handler?.execute();
-    return !!handlerCallbacksExecuted || callbacks.length > 0;
+    this.handler?.execute();
   }
 
   ngOnDestroy() {

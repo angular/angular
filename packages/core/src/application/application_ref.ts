@@ -548,13 +548,8 @@ export class ApplicationRef {
       for (let view of this._views) {
         view.detectChanges();
       }
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        for (let view of this._views) {
-          view.checkNoChanges();
-        }
-      }
-      const callbacksExecuted = this.afterRenderEffectManager.execute();
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && callbacksExecuted) {
+      this.afterRenderEffectManager.execute();
+      if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
         for (let view of this._views) {
           view.checkNoChanges();
         }
