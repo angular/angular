@@ -68,9 +68,6 @@ export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
   [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
 }
 
-/** Function used as the `toString` implementation of input signals. */
-const signalInputToString = () => '[INPUT_SIGNAL]';
-
 /**
  * Creates an input signal.
  *
@@ -102,6 +99,10 @@ export function createInputSignal<ReadT, WriteT>(
   }
 
   (inputValueFn as any)[SIGNAL] = node;
-  inputValueFn.toString = signalInputToString;
+
+  if (ngDevMode) {
+    inputValueFn.toString = () => `[Input Signal: ${inputValueFn()}]`;
+  }
+
   return inputValueFn as InputSignal<ReadT, WriteT>;
 }

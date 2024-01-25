@@ -188,8 +188,8 @@ describe('computed', () => {
   });
 
   it('should have a toString implementation', () => {
-    const counter = signal(0);
+    const counter = signal(1);
     const double = computed(() => counter() * 2);
-    expect(double + '').toBe('[COMPUTED]');
+    expect(double + '').toBe('[Computed: 2]');
   });
 });

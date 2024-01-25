@@ -40,9 +40,6 @@ export type ComputedGetter<T> = (() => T)&{
   [SIGNAL]: ComputedNode<T>;
 };
 
-/** Function used as the `toString` implementation of computed. */
-const computedToString = () => '[COMPUTED]';
-
 /**
  * Create a computed signal which derives a reactive value from an expression.
  */
@@ -64,7 +61,6 @@ export function createComputed<T>(computation: () => T): ComputedGetter<T> {
     return node.value;
   };
   (computed as ComputedGetter<T>)[SIGNAL] = node;
-  computed.toString = computedToString;
   return computed as unknown as ComputedGetter<T>;
 }
 
