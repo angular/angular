@@ -56,7 +56,9 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
   signalFn.set = (newValue: T) => signalSetFn(node, newValue);
   signalFn.update = (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn);
   signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
-
+  if (ngDevMode) {
+    signalFn.toString = () => `[Signal: ${signalFn()}]`;
+  }
   return signalFn as WritableSignal<T>;
 }
 
