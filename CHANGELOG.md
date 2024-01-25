@@ -347,7 +347,6 @@ Live long and prosper 🖖🏻
   
   Node.js v16 is planned to be End-of-Life on 2023-09-11. Angular will stop supporting Node.js v16 in Angular v17. For Node.js release schedule details, please see: https://github.com/nodejs/release#release-schedule
 ### common
-- 
 - the NgSwitch directive now defaults to the === equality operator,
   migrating from the previously used ==. NgSwitch expressions and / or
   individual condition values need adjusting to this stricter equality
