@@ -895,6 +895,8 @@ function ingestElementBindings(
     unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element): void {
   let bindings = new Array<ir.BindingOp|ir.ExtractedAttributeOp|null>();
 
+  let i18nAttributeBindingNames = new Set<string>();
+
   for (const attr of element.attributes) {
     // Attribute literal bindings, such as `attr.foo="bar"`.
     const securityContext = domSchema.securityContext(element.name, attr.name, true);
@@ -902,9 +904,17 @@ function ingestElementBindings(
         op.xref, ir.BindingKind.Attribute, attr.name,
         convertAstWithInterpolation(unit.job, attr.value, attr.i18n), null, securityContext, true,
         false, null, asMessage(attr.i18n), attr.sourceSpan));
+    if (attr.i18n) {
+      i18nAttributeBindingNames.add(attr.name);
+    }
   }
 
   for (const input of element.inputs) {
+    if (i18nAttributeBindingNames.has(input.name)) {
+      console.error(`On component ${unit.job.componentName}, the binding ${
+          input
+              .name} is both an i18n attribute and a property. You may want to remove the property binding. This will become a compilation error in future versions of Angular.`);
+    }
     // All dynamic bindings (both attribute and property bindings).
     bindings.push(ir.createBindingOp(
         op.xref, BINDING_KINDS.get(input.type)!, input.name,
