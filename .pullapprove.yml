@@ -1069,10 +1069,10 @@ groups:
           ])
     reviewers:
       users:
-        - twerske
         - josephperrott
         - jelbourn
         - bencodezen
+        - jessicajaniuk
 
   # =========================================================
   #  Docs-infra
