@@ -370,21 +370,6 @@ Live long and prosper 🖖🏻
   ```typescript
   items.update(itemsArray => [itemsArray, …newItem]);
   ```
-- The  `mutate` method was removed from the `WritableSignal` interface and completely
-  dropped from the public API surface. As an alternative please use the update method and
-  make immutable changes to the object.
-  
-  Example before:
-  
-  ```typescript
-  items.mutate(itemsArray => itemsArray.push(newItem));
-  ```
-  
-  Example after:
-  
-  ```typescript
-  items.update(itemsArray => [itemsArray, …newItem]);
-  ```
 - `OnPush` components that are created dynamically now
   only have their host bindings refreshed and `ngDoCheck run` during change
   detection if they are dirty.
