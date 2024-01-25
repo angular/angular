@@ -12,16 +12,24 @@ import {PendingTasks} from '../../pending_tasks';
 import {global} from '../../util/global';
 import {NgZone, NoopNgZone} from '../../zone/ng_zone';
 
-import {ChangeDetectionScheduler} from './zoneless_scheduling';
+import {ChangeDetectionScheduler, NotificationSource} from './zoneless_scheduling';
 
 @Injectable({providedIn: 'root'})
 class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private appRef = inject(ApplicationRef);
   private taskService = inject(PendingTasks);
   private pendingRenderTaskId: number|null = null;
+  private shouldRefreshViews = true;
 
-  notify(): void {
-    if (this.pendingRenderTaskId !== null) return;
+  notify(source = NotificationSource.Other): void {
+    // When the only source of notification is an afterRender hook will skip straight to the hooks
+    // rather than refreshing views in ApplicationRef.tick
+    const shouldRefreshViewsDueToNotification = source !== NotificationSource.AfterRenderHook;
+    this.shouldRefreshViews ||= shouldRefreshViewsDueToNotification;
+
+    if (this.pendingRenderTaskId !== null) {
+      return;
+    }
 
     this.pendingRenderTaskId = this.taskService.add();
     this.raceTimeoutAndRequestAnimationFrame();
@@ -63,9 +71,10 @@ class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private tick() {
     try {
       if (!this.appRef.destroyed) {
-        this.appRef.tick();
+        this.appRef._tick(this.shouldRefreshViews);
       }
     } finally {
+      this.shouldRefreshViews = true;
       // If this is the last task, the service will synchronously emit a stable notification. If
       // there is a subscriber that then acts in a way that tries to notify the scheduler again,
       // we need to be able to respond to schedule a new change detection. Therefore, we should
