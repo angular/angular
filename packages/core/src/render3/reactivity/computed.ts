@@ -28,5 +28,8 @@ export function computed<T>(computation: () => T, options?: CreateComputedOption
   if (options?.equal) {
     getter[SIGNAL].equal = options.equal;
   }
+  if (ngDevMode) {
+    getter.toString = () => `[Computed: ${getter()}]`;
+  }
   return getter;
 }
