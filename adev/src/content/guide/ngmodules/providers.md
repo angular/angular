@@ -39,38 +39,6 @@ Additionally, these providers are also available to all the classes in the appli
 
 You should always provide your service in the root injector unless there is a case where you want the service to be available only if the consumer imports a particular `@NgModule`.
 
-## `providedIn` and NgModules
-
-It's also possible to specify that a service should be provided in a particular `@NgModule`.
-For example, if you don't want `UserService` to be available to applications unless they import a `UserModule` you've created, you can specify that the service should be provided in the module:
-
-<docs-code header="src/app/user.service.ts" highlight="[5]">
-import { Injectable } from '@angular/core';
-import { UserModule } from './user.module';
-
-@Injectable({
-  providedIn: UserModule,
-})
-export class UserService {
-}
-</docs-code>
-
-The example above shows the **preferred** way to provide a service in a module.
-This method is preferred because it enables tree-shaking of the service if nothing injects it.
-
-If it's not possible to specify in the service which module should provide it, you can also declare a provider for the service within the module:
-
-<docs-code header="src/app/user.module.ts" highlight="[5]">
-import { NgModule } from '@angular/core';
-import { UserService } from './user.service';
-
-@NgModule({
-  providers: [UserService],
-})
-export class UserModule {
-}
-</docs-code>
-
 ## Limiting provider scope by lazy loading modules
 
 In the basic CLI-generated app, modules are eagerly loaded which means that they are all loaded when the application launches.
