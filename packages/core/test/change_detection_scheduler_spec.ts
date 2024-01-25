@@ -8,7 +8,7 @@
 
 import {AsyncPipe} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
+import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -25,7 +25,12 @@ describe('Angular with NoopNgZone', () => {
 
   describe('notifies scheduler', () => {
     beforeEach(() => {
-      TestBed.configureTestingModule({providers: [provideZonelessChangeDetection()]});
+      TestBed.configureTestingModule({
+        providers: [
+          provideZonelessChangeDetection(),
+          {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+        ]
+      });
     });
 
     it('contributes to application stableness', async () => {
@@ -246,6 +251,8 @@ describe('Angular with NoopNgZone', () => {
 
     it('when destroying a view (*no* animations)', withBody('<app></app>', async () => {
          destroyPlatform();
+         let doCheckCount = 0;
+         let renderHookCalls = 0;
          @Component({
            template: '{{"binding"}}',
            standalone: true,
@@ -260,6 +267,13 @@ describe('Angular with NoopNgZone', () => {
          })
          class App {
            @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+           unused = afterRender(() => {
+             renderHookCalls++;
+           });
+
+           ngDoCheck() {
+             doCheckCount++;
+           }
          }
          const applicationRef = await bootstrapApplication(App, {
            providers: [
@@ -276,8 +290,20 @@ describe('Angular with NoopNgZone', () => {
          expect(isStable(applicationRef.injector)).toBe(false);
          await whenStable(applicationRef);
          component2.destroy();
-         expect(isStable(applicationRef.injector)).toBe(true);
+
+         // destroying the view synchronously removes element from DOM when not using animations
          expect(appViewRef.rootNodes[0].innerText).toEqual('');
+         // Destroying the view notifies scheduler because render hooks need to run
+         expect(isStable(applicationRef.injector)).toBe(false);
+
+         let checkCountBeforeStable = doCheckCount;
+         let renderCountBeforeStable = renderHookCalls;
+         await whenStable(applicationRef);
+         // The view should not have refreshed
+         expect(doCheckCount).toEqual(checkCountBeforeStable);
+         // but render hooks should have run
+         expect(renderHookCalls).toEqual(renderCountBeforeStable + 1);
+
          destroyPlatform();
        }));
 
@@ -313,9 +339,9 @@ describe('Angular with NoopNgZone', () => {
       await whenStable();
       expect(host.innerHTML).toEqual('');
       host.appendChild(component.instance.elementRef.nativeElement);
-      // reattaching non-dirty view does not notify scheduler
+      // reattaching non-dirty view notifies scheduler because afterRender hooks must run
       appRef.attachView(component.hostView);
-      expect(isStable()).toBe(true);
+      expect(isStable()).toBe(false);
     });
 
     it('when a stable subscription synchronously causes another notification', async () => {
@@ -339,6 +365,49 @@ describe('Angular with NoopNgZone', () => {
           .toPromise();
       await fixture.whenStable();
       expect(fixture.nativeElement.innerText).toEqual('newer');
+    });
+
+    it('executes render hooks when a new one is registered', async () => {
+      let resolveFn: Function;
+      let calledPromise = new Promise(resolve => {
+        resolveFn = resolve;
+      });
+      TestBed.runInInjectionContext(() => {
+        afterNextRender(() => {
+          resolveFn();
+        });
+      });
+      await expectAsync(calledPromise).toBeResolved();
+    });
+
+    it('executes render hooks without refreshing CheckAlways views', async () => {
+      let checks = 0;
+      @Component({
+        template: '',
+        standalone: true,
+      })
+      class Dummy {
+        ngDoCheck() {
+          checks++;
+        }
+      }
+
+      const fixture = TestBed.createComponent(Dummy);
+      await fixture.whenStable();
+      expect(checks).toBe(1);
+
+      let resolveFn: Function;
+      let calledPromise = new Promise(resolve => {
+        resolveFn = resolve;
+      });
+      TestBed.runInInjectionContext(() => {
+        afterNextRender(() => {
+          resolveFn();
+        });
+      });
+      await expectAsync(calledPromise).toBeResolved();
+      // render hooks was called but component was not refreshed
+      expect(checks).toBe(1);
     });
   });
 
