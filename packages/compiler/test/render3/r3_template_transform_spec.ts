@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BindingType} from '../../src/expression_parser/ast';
+import {BindingType, ParsedEventType} from '../../src/expression_parser/ast';
 import * as t from '../../src/render3/r3_ast';
 import {unparse} from '../expression_parser/utils/unparser';
 
@@ -70,6 +70,7 @@ class R3AstHumanizer implements t.Visitor<void> {
   visitBoundEvent(event: t.BoundEvent) {
     this.result.push([
       'BoundEvent',
+      event.type,
       event.name,
       event.target,
       unparse(event.handler),
@@ -465,25 +466,25 @@ describe('R3 template transform', () => {
     it('should parse bound events with a target', () => {
       expectFromHtml('<div (window:event)="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundEvent', 'event', 'window', 'v'],
+        ['BoundEvent', ParsedEventType.Regular, 'event', 'window', 'v'],
       ]);
     });
 
     it('should parse event names case sensitive', () => {
       expectFromHtml('<div (some-event)="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundEvent', 'some-event', null, 'v'],
+        ['BoundEvent', ParsedEventType.Regular, 'some-event', null, 'v'],
       ]);
       expectFromHtml('<div (someEvent)="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundEvent', 'someEvent', null, 'v'],
+        ['BoundEvent', ParsedEventType.Regular, 'someEvent', null, 'v'],
       ]);
     });
 
     it('should parse bound events via on-', () => {
       expectFromHtml('<div on-event="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundEvent', 'event', null, 'v'],
+        ['BoundEvent', ParsedEventType.Regular, 'event', null, 'v'],
       ]);
     });
 
@@ -494,24 +495,24 @@ describe('R3 template transform', () => {
     it('should parse bound events and properties via [(...)]', () => {
       expectFromHtml('<div [(prop)]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
-        ['BoundEvent', 'propChange', null, 'v = $event'],
+        ['BoundAttribute', BindingType.TwoWay, 'prop', 'v'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v = $event'],
       ]);
     });
 
     it('should parse bound events and properties via bindon-', () => {
       expectFromHtml('<div bindon-prop="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'prop', 'v'],
-        ['BoundEvent', 'propChange', null, 'v = $event'],
+        ['BoundAttribute', BindingType.TwoWay, 'prop', 'v'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v = $event'],
       ]);
     });
 
     it('should parse bound events and properties via [(...)] with non-null operator', () => {
       expectFromHtml('<div [(prop)]="v!"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'prop', 'v!'],
-        ['BoundEvent', 'propChange', null, 'v = $event'],
+        ['BoundAttribute', BindingType.TwoWay, 'prop', 'v!'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v = $event'],
       ]);
     });
 
@@ -536,7 +537,7 @@ describe('R3 template transform', () => {
     it('should parse bound animation events when event name is empty', () => {
       expectFromHtml('<div (@)="onAnimationEvent($event)"></div>', true).toEqual([
         ['Element', 'div'],
-        ['BoundEvent', '', null, 'onAnimationEvent($event)'],
+        ['BoundEvent', ParsedEventType.Animation, '', null, 'onAnimationEvent($event)'],
       ]);
       expect(() => parse('<div (@)></div>'))
           .toThrowError(/Animation event name is missing in binding/);
