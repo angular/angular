@@ -913,19 +913,20 @@ class TcbDomSchemaCheckerOp extends TcbOp {
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.element.inputs) {
-      if (binding.type === BindingType.Property && this.claimedInputs.has(binding.name)) {
+      const isPropertyBinding =
+          binding.type === BindingType.Property || binding.type === BindingType.TwoWay;
+
+      if (isPropertyBinding && this.claimedInputs.has(binding.name)) {
         // Skip this binding as it was claimed by a directive.
         continue;
       }
 
-      if (binding.type === BindingType.Property) {
-        if (binding.name !== 'style' && binding.name !== 'class') {
-          // A direct binding to a property.
-          const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
-          this.tcb.domSchemaChecker.checkProperty(
-              this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas,
-              this.tcb.hostIsStandalone);
-        }
+      if (isPropertyBinding && binding.name !== 'style' && binding.name !== 'class') {
+        // A direct binding to a property.
+        const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
+        this.tcb.domSchemaChecker.checkProperty(
+            this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas,
+            this.tcb.hostIsStandalone);
       }
     }
     return null;
@@ -1107,14 +1108,17 @@ class TcbUnclaimedInputsOp extends TcbOp {
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.element.inputs) {
-      if (binding.type === BindingType.Property && this.claimedInputs.has(binding.name)) {
+      const isPropertyBinding =
+          binding.type === BindingType.Property || binding.type === BindingType.TwoWay;
+
+      if (isPropertyBinding && this.claimedInputs.has(binding.name)) {
         // Skip this binding as it was claimed by a directive.
         continue;
       }
 
       const expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
 
-      if (this.tcb.env.config.checkTypeOfDomBindings && binding.type === BindingType.Property) {
+      if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
             elId = this.scope.resolve(this.element);
@@ -1164,7 +1168,8 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     const outputs = this.dir.outputs;
 
     for (const output of this.node.outputs) {
-      if (output.type !== ParsedEventType.Regular || !outputs.hasBindingPropertyName(output.name)) {
+      if (output.type === ParsedEventType.Animation ||
+          !outputs.hasBindingPropertyName(output.name)) {
         continue;
       }
 
@@ -2511,7 +2516,8 @@ function getBoundAttributes(
 
   const processAttribute = (attr: TmplAstBoundAttribute|TmplAstTextAttribute) => {
     // Skip non-property bindings.
-    if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property) {
+    if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property &&
+        attr.type !== BindingType.TwoWay) {
       return;
     }
 

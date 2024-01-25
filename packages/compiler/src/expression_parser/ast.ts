@@ -842,7 +842,8 @@ export class ParsedProperty {
 export enum ParsedPropertyType {
   DEFAULT,
   LITERAL_ATTR,
-  ANIMATION
+  ANIMATION,
+  TWO_WAY,
 }
 
 export const enum ParsedEventType {
@@ -850,6 +851,8 @@ export const enum ParsedEventType {
   Regular,
   // Animation specific event
   Animation,
+  // Event side of a two-way binding (e.g. `[(property)]="expression"`).
+  TwoWay,
 }
 
 export class ParsedEvent {
@@ -882,6 +885,8 @@ export const enum BindingType {
   Style,
   // A binding to an animation reference (e.g. `[animate.key]="expression"`).
   Animation,
+  // Property side of a two-way binding (e.g. `[(property)]="expression"`).
+  TwoWay,
 }
 
 export class BoundElementProperty {
