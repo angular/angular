@@ -107,7 +107,8 @@
         "npm",
         "yarn",
         "pnpm",
-        "cnpm"
+        "cnpm",
+        "bun"
       ],
       "description": "The package manager used to install dependencies."
     },
