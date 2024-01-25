@@ -35,6 +35,9 @@ export interface SignalGetter<T> extends SignalBaseGetter<T> {
   readonly[SIGNAL]: SignalNode<T>;
 }
 
+/** Function used as the `toString` implementation of signals. */
+const signalToString = () => '[SIGNAL]';
+
 /**
  * Create a `Signal` that can be set or updated directly.
  */
@@ -46,6 +49,7 @@ export function createSignal<T>(initialValue: T): SignalGetter<T> {
                    return node.value;
                  }) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
+  getter.toString = signalToString;
   return getter;
 }
 
