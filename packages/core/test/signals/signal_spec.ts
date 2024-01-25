@@ -125,7 +125,7 @@ describe('signals', () => {
 
   it('should have a toString implementation', () => {
     const state = signal(false);
-    expect(state + '').toBe('[SIGNAL]');
+    expect(state + '').toBe('[Signal: false]');
   });
 
   describe('optimizations', () => {

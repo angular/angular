@@ -82,6 +82,6 @@ describe('input signal', () => {
 
   it('should have a toString implementation', () => {
     const signal = input(0);
-    expect(signal + '').toBe('[INPUT_SIGNAL]');
+    expect(signal + '').toBe('[Input Signal: 0]');
   });
 });

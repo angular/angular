@@ -18,9 +18,6 @@ import {collectQueryResults, getTQuery, loadQueryInternal, materializeViewResult
 import {Signal} from './reactivity/api';
 import {getLView} from './state';
 
-/** Function used as the `toString` implementation of query signals. */
-const querySignalToString = () => '[QUERY_SIGNAL]';
-
 function createQuerySignalFn<V>(firstOnly: true, required: true): Signal<V>;
 function createQuerySignalFn<V>(firstOnly: true, required: false): Signal<V|undefined>;
 function createQuerySignalFn<V>(firstOnly: false, required: false): Signal<ReadonlyArray<V>>;
@@ -48,7 +45,10 @@ function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
     }
   }
   (signalFn as any)[SIGNAL] = node;
-  signalFn.toString = querySignalToString;
+
+  if (ngDevMode) {
+    signalFn.toString = () => `[Query Signal]`;
+  }
 
   return signalFn;
 }
