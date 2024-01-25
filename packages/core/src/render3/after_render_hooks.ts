@@ -10,9 +10,7 @@ import {assertNotInReactiveContext} from '../core_reactivity_export_internal';
 import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {ErrorHandler} from '../error_handler';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
-import {assertGreaterThan} from '../util/assert';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone/ng_zone';
 

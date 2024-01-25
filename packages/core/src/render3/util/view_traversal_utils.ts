@@ -11,7 +11,7 @@ import {assertLView} from '../assert';
 import {readPatchedLView} from '../context_discovery';
 import {LContainer} from '../interfaces/container';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT} from '../interfaces/view';
+import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT} from '../interfaces/view';
 
 import {getLViewParent} from './view_utils';
 
