@@ -341,7 +341,7 @@ function getAttrsForDirectiveMatching(elOrTpl: t.Element|t.Template): {[name: st
     });
 
     elOrTpl.inputs.forEach(i => {
-      if (i.type === BindingType.Property) {
+      if (i.type === BindingType.Property || i.type === BindingType.TwoWay) {
         attributesMap[i.name] = '';
       }
     });
