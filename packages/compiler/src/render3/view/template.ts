@@ -713,7 +713,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     element.inputs.forEach(input => {
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
       if (!stylingInputWasSet) {
-        if (input.type === BindingType.Property && input.i18n) {
+        if ((input.type === BindingType.Property || input.type === BindingType.TwoWay) &&
+            input.i18n) {
           boundI18nAttrs.push(input);
         } else {
           allOtherInputs.push(input);
@@ -865,7 +866,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
           this.allocateBindingSlots(value);
 
-          if (inputType === BindingType.Property) {
+          if (inputType === BindingType.Property || inputType === BindingType.TwoWay) {
             if (value instanceof Interpolation) {
               // prop="{{value}}" and friends
               this.interpolatedUpdateInstruction(
