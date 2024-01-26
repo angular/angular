@@ -442,15 +442,24 @@ export function findTestObjectsToMigrate(sourceFile: ts.SourceFile, typeChecker:
 
   if (testBedImport || catalystImport) {
     sourceFile.forEachChild(function walk(node) {
-      if (ts.isCallExpression(node) && node.arguments.length > 0 &&
+      const isObjectLiteralCall = ts.isCallExpression(node) && node.arguments.length > 0 &&
           // `arguments[0]` is the testing module config.
-          ts.isObjectLiteralExpression(node.arguments[0])) {
-        if ((testBedImport && ts.isPropertyAccessExpression(node.expression) &&
-             node.expression.name.text === 'configureTestingModule' &&
-             isReferenceToImport(typeChecker, node.expression.expression, testBedImport)) ||
-            (catalystImport && ts.isIdentifier(node.expression) &&
-             isReferenceToImport(typeChecker, node.expression, catalystImport))) {
-          testObjects.push(node.arguments[0]);
+          ts.isObjectLiteralExpression(node.arguments[0]);
+      const config = isObjectLiteralCall ? node.arguments[0] as ts.ObjectLiteralExpression : null;
+      const isTestBedCall = isObjectLiteralCall &&
+          (testBedImport && ts.isPropertyAccessExpression(node.expression) &&
+           node.expression.name.text === 'configureTestingModule' &&
+           isReferenceToImport(typeChecker, node.expression.expression, testBedImport));
+      const isCatalystCall = isObjectLiteralCall &&
+          (catalystImport && ts.isIdentifier(node.expression) &&
+           isReferenceToImport(typeChecker, node.expression, catalystImport));
+
+      if ((isTestBedCall || isCatalystCall) && config) {
+        const declarations = findLiteralProperty(config, 'declarations');
+        if (declarations && ts.isPropertyAssignment(declarations) &&
+            ts.isArrayLiteralExpression(declarations.initializer) &&
+            declarations.initializer.elements.length > 0) {
+          testObjects.push(config);
         }
       }
 
