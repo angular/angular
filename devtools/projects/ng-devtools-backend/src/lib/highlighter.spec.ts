@@ -103,7 +103,7 @@ describe('highlighter', () => {
   describe('highlightHydrationElement', () => {
     afterEach(() => {
       document.body.innerHTML = '';
-      (window as any).ng = undefined;
+      delete (window as any).ng;
     });
 
     it('should show hydration overlay with svg', () => {

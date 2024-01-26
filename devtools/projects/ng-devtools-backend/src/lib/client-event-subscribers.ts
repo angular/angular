@@ -52,8 +52,14 @@ import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
 import {runOutsideAngular} from './utils';
+import {DirectiveForestHooks} from './hooks/hooks';
 
-export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void => {
+export const subscribeToClientEvents = (
+  messageBus: MessageBus<Events>,
+  depsForTestOnly?: {
+    directiveForestHooks?: typeof DirectiveForestHooks;
+  },
+): void => {
   messageBus.on('shutdown', shutdownCallback(messageBus));
 
   messageBus.on(
@@ -87,7 +93,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // update requests, instead we want to request an update at most
     // once every 250ms
     runOutsideAngular(() => {
-      initializeOrGetDirectiveForestHooks()
+      initializeOrGetDirectiveForestHooks(depsForTestOnly)
         .profiler.changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });

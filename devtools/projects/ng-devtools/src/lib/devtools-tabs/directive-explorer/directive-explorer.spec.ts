@@ -137,13 +137,13 @@ describe('DirectiveExplorerComponent', () => {
     it('should show hydration slide toggle', () => {
       comp.isHydrationEnabled = true;
       fixture.detectChanges();
-      let toggle = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      const toggle = fixture.debugElement.query(By.css('mat-slide-toggle'));
       expect(toggle).toBeTruthy();
 
       comp.isHydrationEnabled = false;
       fixture.detectChanges();
-      toggle = fixture.debugElement.query(By.css('mat-slide-toggle'));
-      expect(toggle).toBeFalsy();
+      const toggle2 = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      expect(toggle2).toBeFalsy();
     });
   });
 });

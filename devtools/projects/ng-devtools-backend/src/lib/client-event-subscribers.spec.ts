@@ -11,14 +11,14 @@ import {subscribeToClientEvents} from './client-event-subscribers';
 import {appIsAngular, appIsAngularIvy, appIsSupportedAngularVersion} from 'shared-utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 import {of} from 'rxjs';
-import {setDirectiveForestHooksImpl} from './hooks';
 
 describe('ClientEventSubscriber', () => {
   let messageBusMock: MessageBus<Events>;
+  let appNode: HTMLElement | null = null;
 
   beforeEach(() => {
     // mock isAngular et al
-    mockAngular();
+    appNode = mockAngular();
 
     messageBusMock = jasmine.createSpyObj<MessageBus<Events>>('messageBus', [
       'on',
@@ -26,15 +26,14 @@ describe('ClientEventSubscriber', () => {
       'emit',
       'destroy',
     ]);
-    setDirectiveForestHooksImpl(MockDirectiveForestHooks);
   });
 
   afterEach(() => {
     // clearing the dom after each test
-    document.body.innerHTML = '';
-
-    // Resetting the ForestHooks implementation to default
-    setDirectiveForestHooksImpl(DirectiveForestHooks);
+    if (appNode) {
+      document.body.removeChild(appNode);
+      appNode = null;
+    }
   });
 
   it('is it Angular ready (testing purposed)', () => {
@@ -44,7 +43,7 @@ describe('ClientEventSubscriber', () => {
   });
 
   it('should setup inspector', () => {
-    subscribeToClientEvents(messageBusMock);
+    subscribeToClientEvents(messageBusMock, {directiveForestHooks: MockDirectiveForestHooks});
 
     expect(messageBusMock.on).toHaveBeenCalledWith('inspectorStart', jasmine.any(Function));
     expect(messageBusMock.on).toHaveBeenCalledWith('inspectorEnd', jasmine.any(Function));
@@ -66,6 +65,7 @@ function mockAngular() {
       getComponent: () => {},
     },
   };
+  return appNode;
 }
 
 class MockDirectiveForestHooks extends DirectiveForestHooks {

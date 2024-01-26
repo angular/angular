@@ -6,16 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {initializeOrGetDirectiveForestHooks, setDirectiveForestHooksImpl} from '../hooks';
-import {DirectiveForestHooks} from '../hooks/hooks';
+import {initializeOrGetDirectiveForestHooks} from '../hooks';
 import {ComponentInspector} from './component-inspector';
 
 describe('ComponentInspector', () => {
-  afterEach(() => {
-    // Resetting the mock
-    setDirectiveForestHooksImpl(DirectiveForestHooks);
-  });
-
   it('should create instance from class', () => {
     const inspector = new ComponentInspector();
     expect(inspector).toBeTruthy();

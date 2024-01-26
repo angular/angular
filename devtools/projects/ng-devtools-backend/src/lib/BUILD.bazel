@@ -114,7 +114,7 @@ karma_web_test_suite(
 ts_test_library(
     name = "client_event_subscribers_test_lib",
     srcs = [
-        "client-event-subscriber.spec.ts",
+        "client-event-subscribers.spec.ts",
     ],
     deps = [
         ":client_event_subscribers",

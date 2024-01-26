@@ -60,7 +60,7 @@ export const getAngularVersion = (): string | null => {
 };
 
 export function isHydrationEnabled(): boolean {
-  return [...document.querySelectorAll('[ng-version]')].some(
+  return Array.from(document.querySelectorAll('[ng-version]')).some(
     (rootNode) => (rootNode as HydrationNode)?.__ngDebugHydrationInfo__,
   );
 }
