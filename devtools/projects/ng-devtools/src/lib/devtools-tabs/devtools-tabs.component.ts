@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatIcon} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
@@ -15,7 +24,8 @@ import {MatTabLink, MatTabNav, MatTabNavPanel} from '@angular/material/tabs';
 import {MatTooltip} from '@angular/material/tooltip';
 import {Events, MessageBus, Route} from 'protocol';
 
-import {ApplicationEnvironment} from '../application-environment/index';
+import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
+import {FrameManager} from '../frame_manager';
 import {Theme, ThemeService} from '../theme-service';
 
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
@@ -52,25 +62,28 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   @Input() angularVersion: string | undefined = undefined;
   @Input() isHydrationEnabled = false;
 
+  @Output() frameSelected = new EventEmitter<Frame>();
   @ViewChild(DirectiveExplorerComponent) directiveExplorer!: DirectiveExplorerComponent;
   @ViewChild('navBar', {static: true}) navbar!: MatTabNav;
 
+  applicationEnvironment = inject(ApplicationEnvironment);
   activeTab: Tabs = 'Components';
-
   inspectorRunning = false;
   routerTreeEnabled = false;
   showCommentNodes = false;
   timingAPIEnabled = false;
 
   currentTheme!: Theme;
-
   routes: Route[] = [];
+
+  frameManager = inject(FrameManager);
+
+  TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
 
   constructor(
     public tabUpdate: TabUpdate,
     public themeService: ThemeService,
     private _messageBus: MessageBus<Events>,
-    private _applicationEnvironment: ApplicationEnvironment,
   ) {
     this.themeService.currentTheme
       .pipe(takeUntilDestroyed())
@@ -79,6 +92,11 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
     this._messageBus.on('updateRouterTree', (routes) => {
       this.routes = routes || [];
     });
+  }
+
+  emitSelectedFrame(frameId: string): void {
+    const frame = this.frameManager.frames.find((frame) => frame.id === parseInt(frameId, 10));
+    this.frameSelected.emit(frame);
   }
 
   ngOnInit(): void {
@@ -95,7 +113,7 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   }
 
   get latestSHA(): string {
-    return this._applicationEnvironment.environment.LATEST_SHA.slice(0, 8);
+    return this.applicationEnvironment.environment.LATEST_SHA.slice(0, 8);
   }
 
   changeTab(tab: Tabs): void {

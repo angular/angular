@@ -43,10 +43,14 @@ ts_test_library(
     srcs = ["directive-explorer.spec.ts"],
     deps = [
         ":directive-explorer",
+        "//devtools/projects/ng-devtools/src/lib:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
         "//devtools/projects/protocol",
         "//packages/core",
         "//packages/core/testing",
@@ -59,8 +63,5 @@ karma_web_test_suite(
     name = "test",
     deps = [
         ":directive_explorer_test",
-        "//packages/common/http",
-        "//packages/platform-browser",
-        "//packages/platform-browser/animations",
     ],
 )

@@ -7,6 +7,7 @@ ng_module(
     srcs = ["devtools-app.component.ts"],
     deps = [
         "//devtools/projects/ng-devtools",
+        "//devtools/projects/ng-devtools/src/lib:frame_manager",
         "//devtools/projects/protocol",
         "//devtools/src:iframe_message_bus",
         "//packages/common",
