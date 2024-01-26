@@ -119,3 +119,22 @@ mat-icon {
     }
   }
 }
+
+.frame-selector {
+  background-color: #e2e2e2;
+  border-radius: 2px;
+  color: #474747;
+  border: none;
+  margin: 4px 4px 2px 4px;
+  padding: 2px;
+  outline-offset: -2px;
+  width: 100px;
+  font-size: 12px;
+}
+
+:host-context(.dark-theme) {
+  .frame-selector {
+    background-color: #464646;
+    color: #fff;
+  }
+}
