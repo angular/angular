@@ -5,6 +5,15 @@
 ```ts
 
 // @public
+export interface ComputedNode<T> extends ReactiveNode {
+    computation: () => T;
+    // (undocumented)
+    equal: ValueEqualityFn<T>;
+    error: unknown;
+    value: T;
+}
+
+// @public
 export function consumerAfterComputation(node: ReactiveNode | null, prevConsumer: ReactiveNode | null): void;
 
 // @public

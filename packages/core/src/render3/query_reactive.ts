@@ -6,45 +6,57 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {consumerMarkDirty, producerAccessed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode, SIGNAL} from '@angular/core/primitives/signals';
+import {ComputedNode, createComputed, SIGNAL} from '@angular/core/primitives/signals';
 
 import {RuntimeError} from '../errors';
 import {unwrapElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {EMPTY_ARRAY} from '../util/empty';
 
-import {LView, TVIEW} from './interfaces/view';
+import {FLAGS, LView, LViewFlags, TVIEW} from './interfaces/view';
 import {collectQueryResults, getTQuery, loadQueryInternal, materializeViewResults} from './query';
 import {Signal} from './reactivity/api';
+import {signal, WritableSignal} from './reactivity/signal';
 import {getLView} from './state';
 
-function createQuerySignalFn<V>(firstOnly: true, required: true): Signal<V>;
-function createQuerySignalFn<V>(firstOnly: true, required: false): Signal<V|undefined>;
-function createQuerySignalFn<V>(firstOnly: false, required: false): Signal<ReadonlyArray<V>>;
+interface QuerySignalNode<T> extends ComputedNode<T|ReadonlyArray<T>> {
+  _lView?: LView;
+  _queryIndex?: number;
+  _queryList?: QueryList<T>;
+  _dirtyCounter: WritableSignal<number>;
+}
+
+/**
+ * Query-as signal factory function in charge of creating a new computed signal capturing query
+ * results. This centralized creation function is used by all types of queries (child / children,
+ * required / optional).
+ *
+ * @param firstOnly indicates if all or only the first result should be returned
+ * @param required indicates if at least one result is required
+ * @returns a read-only signal with query results
+ */
 function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
-  const node: QuerySignalNode<V> = Object.create(QUERY_SIGNAL_NODE);
-  function signalFn() {
-    // Check if the value needs updating before returning it.
-    producerUpdateValueVersion(node);
+  let node: QuerySignalNode<V>;
+  const signalFn = createComputed(() => {
+    // A dedicated signal that increments its value every time a query changes its dirty status. By
+    // using this signal we can implement a query as computed and avoid creation of a specialized
+    // reactive node type. Please note that a query gets marked dirty under the following
+    // circumstances:
+    // - a view (where a query is active) finished its first creation pass;
+    // - a new view is inserted / deleted and it impacts query results.
+    node._dirtyCounter();
 
-    // Mark this producer as accessed.
-    producerAccessed(node);
+    const value = refreshSignalQuery<V>(node, firstOnly);
 
-    if (firstOnly) {
-      const firstValue = node._queryList?.first;
-      if (firstValue === undefined && required) {
-        // TODO: add error code
-        // TODO: add proper message
-        throw new RuntimeError(0, 'no query results yet!');
-      }
-      return firstValue;
-    } else {
-      // TODO(perf): make sure that I'm not creating new arrays when returning results. The other
-      // consideration here is the referential stability of results.
-      return node._queryList?.toArray() ?? EMPTY_ARRAY;
+    if (value === undefined && required) {
+      // TODO: add error code add proper message
+      throw new RuntimeError(0, 'no query results yet!');
     }
-  }
-  (signalFn as any)[SIGNAL] = node;
+
+    return value;
+  });
+  node = signalFn[SIGNAL] as QuerySignalNode<V>;
+  node._dirtyCounter = signal(0);
 
   if (ngDevMode) {
     signalFn.toString = () => `[Query Signal]`;
@@ -54,85 +66,55 @@ function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
 }
 
 export function createSingleResultOptionalQuerySignalFn<ReadT>(): Signal<ReadT|undefined> {
-  return createQuerySignalFn(/* firstOnly */ true, /* required */ false);
+  return createQuerySignalFn(/* firstOnly */ true, /* required */ false) as Signal<ReadT|undefined>;
 }
 
 export function createSingleResultRequiredQuerySignalFn<ReadT>(): Signal<ReadT> {
-  return createQuerySignalFn(/* firstOnly */ true, /* required */ true);
+  return createQuerySignalFn(/* firstOnly */ true, /* required */ true) as Signal<ReadT>;
 }
 
 export function createMultiResultQuerySignalFn<ReadT>(): Signal<ReadonlyArray<ReadT>> {
-  return createQuerySignalFn(/* firstOnly */ false, /* required */ false);
+  return createQuerySignalFn(/* firstOnly */ false, /* required */ false) as
+      Signal<ReadonlyArray<ReadT>>;
 }
-
-export interface QuerySignalNode<T> extends ReactiveNode {
-  _lView?: LView;
-  _queryIndex?: number;
-  _queryList?: QueryList<T>;
-}
-
-// Note: Using an IIFE here to ensure that the spread assignment is not considered
-// a side-effect, ending up preserving `COMPUTED_NODE` and `REACTIVE_NODE`.
-// TODO: remove when https://github.com/evanw/esbuild/issues/3392 is resolved.
-export const QUERY_SIGNAL_NODE: QuerySignalNode<unknown> = /* @__PURE__ */ (() => {
-  return {
-    ...REACTIVE_NODE,
-
-    // Base reactive node.overrides
-    producerMustRecompute: (node: QuerySignalNode<unknown>) => {
-      return !!node._queryList?.dirty;
-    },
-
-    producerRecomputeValue: (node: QuerySignalNode<unknown>) => {
-      // The current value is stale. Check whether we need to produce a new one.
-      // TODO: assert: I've got both the lView and queryIndex stored
-      // TODO(perf): I'm assuming that the signal value changes when the list of matches changes.
-      // But this is not correct for the single-element queries since we should also compare (===)
-      // the value of the first element.
-      // TODO: error handling - should we guard against exceptions thrown from refreshSignalQuery -
-      // normally it should never
-      if (refreshSignalQuery(node._lView!, node._queryIndex!)) {
-        node.version++;
-      }
-    }
-  };
-})();
 
 export function bindQueryToSignal(target: Signal<unknown>, queryIndex: number): void {
   const node = target[SIGNAL] as QuerySignalNode<unknown>;
   node._lView = getLView();
   node._queryIndex = queryIndex;
   node._queryList = loadQueryInternal(node._lView, queryIndex);
-  node._queryList.onDirty(() => {
-    // Mark this producer as dirty and notify live consumer about the potential change. Note
-    // that the onDirty callback will fire only on the initial dirty marking (that is,
-    // subsequent dirty notifications are not fired- until the QueryList becomes clean again).
-    consumerMarkDirty(node);
-  });
+  node._queryList.onDirty(() => node._dirtyCounter.update(v => v + 1));
 }
 
-// TODO(refactor): some code duplication with queryRefresh
-export function refreshSignalQuery(lView: LView<unknown>, queryIndex: number): boolean {
-  const queryList = loadQueryInternal<unknown>(lView, queryIndex);
+function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V|ReadonlyArray<V> {
+  const lView = node._lView;
+  const queryIndex = node._queryIndex;
+
+  // There are 2 conditions under which we want to return "empty" results instead of the ones
+  // collected by a query:
+  //
+  // 1) a given query wasn't created yet (this is a period of time between the directive creation
+  // and execution of the query creation function) - in this case a query doesn't exist yet and we
+  // don't have any results to return.
+  //
+  // 2) we are in the process of constructing a view (the first
+  // creation pass didn't finish) and a query might have partial results, but we don't want to
+  // return those - instead we do delay results collection until all nodes had a chance of matching
+  // and we can present consistent, "atomic" (on a view level) results.
+  if (lView === undefined || queryIndex === undefined || (lView[FLAGS] & LViewFlags.CreationMode)) {
+    return (firstOnly ? undefined : EMPTY_ARRAY) as V;
+  }
+
+  const queryList = loadQueryInternal<V>(lView, queryIndex);
   const tView = lView[TVIEW];
   const tQuery = getTQuery(tView, queryIndex);
 
-  // TODO(test): operation of refreshing a signal query could be invoked during the first
-  // creation pass, while results are still being collected; we should NOT mark such query as
-  // "clean" as we might not have any view add / remove operations that would make it dirty again.
-  // Leaning towards exiting early for calls to refreshSignalQuery before the first creation pass
-  // finished
-  if (queryList.dirty && tQuery.matches !== null) {
-    const result = tQuery.crossesNgTemplate ?
-        collectQueryResults(tView, lView, queryIndex, []) :
-        materializeViewResults(tView, lView, tQuery, queryIndex);
+  // TODO(refactor): add an utility method for the following logic
+  const result = tQuery.crossesNgTemplate ?
+      collectQueryResults<V>(tView, lView, queryIndex, []) :
+      materializeViewResults<V>(tView, lView, tQuery, queryIndex);
 
-    queryList.reset(result, unwrapElementRef);
+  queryList.reset(result, unwrapElementRef);
 
-    // TODO(test): don't mark signal as dirty when a query was marked as dirty but there
-    // was no actual change
-    // TODO: change the reset logic so it returns the value
-    return true;
-  }
-  return false;
+  return firstOnly ? queryList.first : queryList.toArray();
 }
