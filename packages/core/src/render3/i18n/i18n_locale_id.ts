@@ -25,7 +25,7 @@ let LOCALE_ID = DEFAULT_LOCALE_ID;
  * @param localeId
  */
 export function setLocaleId(localeId: string) {
-  assertDefined(localeId, `Expected localeId to be defined`);
+  ngDevMode && assertDefined(localeId, `Expected localeId to be defined`);
   if (typeof localeId === 'string') {
     LOCALE_ID = localeId.toLowerCase().replace(/_/g, '-');
   }
