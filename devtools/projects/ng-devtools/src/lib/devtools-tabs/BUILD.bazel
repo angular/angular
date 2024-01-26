@@ -20,6 +20,7 @@ ng_module(
         ":devtools_tabs_component_styles",
     ],
     deps = [
+        "//devtools/projects/ng-devtools/src/lib:frame_manager",
         "//devtools/projects/ng-devtools/src/lib:theme",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
@@ -42,6 +43,7 @@ ts_test_library(
     srcs = ["devtools-tabs.spec.ts"],
     deps = [
         ":devtools-tabs",
+        "//devtools/projects/ng-devtools/src/lib:frame_manager",
         "//devtools/projects/ng-devtools/src/lib:theme",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
@@ -56,7 +58,6 @@ ts_test_library(
     ],
 )
 
-# todo(aleksanderbodurri): fix this test suite
 karma_web_test_suite(
     name = "test",
     deps = [
@@ -65,16 +66,3 @@ karma_web_test_suite(
         "//packages/platform-browser/animations",
     ],
 )
-
-# spec_bundle(
-#     name = "test_bundle",
-#     deps = [
-#         ":devtools_tabs_test",
-#         "//packages/platform-browser/animations",
-#         "//packages/animations",
-#         "//packages/common/http",
-#         "//packages/core",
-#         "//packages/core/src/util",
-#     ],
-#     platform = "browser",
-# )

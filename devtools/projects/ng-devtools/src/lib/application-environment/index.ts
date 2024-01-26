@@ -15,6 +15,15 @@ export interface Environment {
   LATEST_SHA: string;
 }
 
+export const TOP_LEVEL_FRAME_ID = 0;
+
+export interface Frame {
+  id: number;
+  name: string;
+  url: URL;
+}
+
 export abstract class ApplicationEnvironment {
   abstract get environment(): Environment;
+  abstract frameSelectorEnabled: boolean;
 }
