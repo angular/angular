@@ -213,6 +213,19 @@ export interface Route {
   isAux: boolean;
 }
 
+export interface AngularDetection {
+  // This is necessary because the runtime
+  // message listener handles messages globally
+  // including from other extensions. We don't
+  // want to set icon and/or popup based on
+  // a message coming from an unrelated extension.
+  isAngularDevTools: true;
+  isIvy: boolean;
+  isAngular: boolean;
+  isDebugMode: boolean;
+  isSupportedAngularVersion: boolean;
+}
+
 export type Topic = keyof Events;
 
 export interface InjectorGraphViewQuery {
@@ -273,4 +286,13 @@ export interface Events {
   ) => void;
 
   logProvider: (injector: SerializedInjector, providers: SerializedProviderRecord) => void;
+
+  contentScriptConnected: (frameId: number, name: string, url: string) => void;
+  contentScriptDisconnected: (frameId: number, name: string, url: string) => void;
+  enableFrameConnection: (frameId: number, tabId: number) => void;
+  frameConnected: (frameId: number) => void;
+  detectAngular: (detectionResult: AngularDetection) => void;
+  backendReady: () => void;
+
+  log: (logEvent: {message: string; level: 'log' | 'warn' | 'debug' | 'error'}) => void;
 }

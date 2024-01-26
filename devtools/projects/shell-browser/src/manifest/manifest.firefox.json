@@ -29,13 +29,26 @@
     "https://*/*",
     "file:///*"
   ],
-  "content_scripts": [{
+  "content_scripts": [
+    {
     "matches": [
       "<all_urls>"
     ],
     "js": [
       "app/ng_validate_bundle.js"
     ],
-    "run_at": "document_idle"
-  }]
+    "run_at": "document_idle",
+    "all_frames": true
+  },
+  {
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": [
+      "app/content_script_bundle.js"
+    ],
+    "run_at": "document_idle",
+    "all_frames": true
+  }
+ ]
 }
