@@ -768,7 +768,7 @@ TypeScript preserves the type information of methods with decorators, and when o
 The `@HostListener` and `@HostBinding` decorators exist exclusively for backwards compatibility.
 
 
-<docs-code header="app/shared/validator.directive.ts" path="styleguide/src/06-03/app/shared/validator.directive.ts"/>
+<docs-code header="app/shared/validator.directive.ts" path="adev/src/content/examples/styleguide/src/06-03/app/shared/validator.directive.ts"/>
 
 ## Services
 
