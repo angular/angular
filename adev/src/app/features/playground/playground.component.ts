@@ -17,16 +17,15 @@ import {
   Type,
   inject,
 } from '@angular/core';
-import {DocViewer, IconComponent} from '@angular/docs-shared';
+import {DocViewer, IconComponent} from '@angular/docs';
 import {RouterLink} from '@angular/router';
 
-import {PlaygroundTemplate} from '../../../../../../scripts/tutorials/tutorials-types';
-import {NavigationList} from '../../../../../shared/src/lib/components/navigation-list/navigation-list.component';
-import {ClickOutside} from '../../../../../shared/src/lib/directives';
+import {PlaygroundTemplate} from '@angular/docs';
+import {ClickOutside, NavigationList} from '@angular/docs';
 import {injectAsync} from '../../core/services/inject-async';
-import {EmbeddedTutorialManager} from '../../embedded-editor/embedded-tutorial-manager.service';
+import {EmbeddedTutorialManager} from  '../../editor/index';
 
-import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/routes/playground.json';
+import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 
 @Component({
@@ -68,9 +67,9 @@ export default class PlaygroundComponent implements AfterViewInit {
   async ngAfterViewInit(): Promise<void> {
     if (isPlatformBrowser(this.platformId)) {
       const [embeddedEditorComponent, nodeRuntimeSandbox] = await Promise.all([
-        import('../../embedded-editor/embedded-editor.component').then((c) => c.EmbeddedEditor),
+        import('../../editor/index').then((c) => c.EmbeddedEditor),
         injectAsync(this.environmentInjector, () =>
-          import('../../embedded-editor/node-runtime-sandbox.service').then(
+          import('../../editor/index').then(
             (c) => c.NodeRuntimeSandbox,
           ),
         ),

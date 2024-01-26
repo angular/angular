@@ -12,18 +12,17 @@ import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent} from './dialog.component';
 
 @Injectable()
-export class MyServiceA {
-}
+export class MyServiceA {}
 
 @Component({
   selector: 'app-todo-demo',
   templateUrl: './app-todo.component.html',
   styleUrls: ['./app-todo.component.scss'],
-  viewProviders: [MyServiceA]
+  viewProviders: [MyServiceA],
 })
 export class AppTodoComponent {
-  name: string;
-  animal: string;
+  name!: string;
+  animal!: string;
 
   constructor(public dialog: MatDialog) {}
 

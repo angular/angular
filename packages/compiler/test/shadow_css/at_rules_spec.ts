@@ -216,4 +216,20 @@ describe('ShadowCss, at-rules', () => {
       expect(shim(css, 'contenta')).toEqualCss(expected);
     });
   });
+
+  describe('@starting-style', () => {
+    it('should scope normal selectors inside a starting-style rule', () => {
+      const css = `
+          @starting-style {
+              img { border-radius: 50%; }
+              .content { padding: 1em; }
+          }`;
+      const result = shim(css, 'host-a');
+      expect(result).toEqualCss(`
+        @starting-style {
+          img[host-a] { border-radius: 50%; }
+          .content[host-a] { padding: 1em; }
+        }`);
+    });
+  });
 });

@@ -1,4 +1,4 @@
-<docs-decorative-header title="Handling User Interaction" imgSrc="assets/images/overview.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Handling User Interaction" imgSrc="adev/src/assets/images/overview.svg"> <!-- markdownlint-disable-line -->
 Handle user interaction in your application.
 </docs-decorative-header>
 
@@ -43,7 +43,7 @@ Other common examples of event listeners include:
 
 ### $event
 
-If you need to access the [event]([Event - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Event)) object, Angular provides an implicit `$event` variable that you can be pass to a function:
+If you need to access the [event](https://developer.mozilla.org/en-US/docs/Web/API/Event) object, Angular provides an implicit `$event` variable that you can pass to a function:
 
 ```html
 <button (click)="createUser($event)">Submit</button>

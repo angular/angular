@@ -8,7 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ApplicationEnvironment, ApplicationOperations, DevToolsModule} from 'ng-devtools';
+import {ApplicationEnvironment, ApplicationOperations, DevToolsComponent} from 'ng-devtools';
 
 import {AppComponent} from './app.component';
 import {ChromeApplicationEnvironment} from './chrome-application-environment';
@@ -16,7 +16,7 @@ import {ChromeApplicationOperations} from './chrome-application-operations';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserAnimationsModule, DevToolsModule],
+  imports: [BrowserAnimationsModule, DevToolsComponent],
   bootstrap: [AppComponent],
   providers: [
     {
@@ -29,5 +29,4 @@ import {ChromeApplicationOperations} from './chrome-application-operations';
     },
   ],
 })
-export class AppModule {
-}
+export class AppModule {}

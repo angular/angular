@@ -45,6 +45,28 @@ filegroup(
     srcs = ["//packages/%s:files_for_docgen" % entrypoint for entrypoint in DOCS_ENTRYPOINTS],
 )
 
+# This target captures common dependencies needed for all `generate_api_docs` targets
+# throughout Angular's public API surface.
+filegroup(
+    name = "common_files_and_deps_for_docs",
+    srcs = [
+        "//packages:types",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+        "//packages/core:files_for_docgen",
+        "//packages/core/primitives/signals:files_for_docgen",
+        "//packages/core/src/compiler:files_for_docgen",
+        "//packages/core/src/di/interface:files_for_docgen",
+        "//packages/core/src/interface:files_for_docgen",
+        "//packages/core/src/reflection:files_for_docgen",
+        "//packages/core/src/util:files_for_docgen",
+        "//packages/platform-browser:files_for_docgen",
+        "//packages/platform-browser-dynamic:files_for_docgen",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//rxjs",
+    ],
+)
+
 generate_api_manifest(
     name = "docs_api_manifest",
     srcs = [

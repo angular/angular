@@ -10,7 +10,7 @@ function MyComponent_div_3_span_2_Template(rf, ctx) {
     $r3$.ɵɵnextContext();
     const $foo$ = $r3$.ɵɵreference(1);
     const $baz$ = $r3$.ɵɵreference(5);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate3("", $foo$, "-", $bar$, "-", $baz$, "");
   }
 }
@@ -26,7 +26,7 @@ function MyComponent_div_3_Template(rf, ctx) {
     const $bar$ = $r3$.ɵɵreference(4);
     $r3$.ɵɵnextContext();
     const $foo$ = $r3$.ɵɵreference(1);
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate2(" ", $foo$, "-", $bar$, " ");
   }
 }

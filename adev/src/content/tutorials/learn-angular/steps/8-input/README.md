@@ -23,7 +23,7 @@ When you are ready to pass in a value through an `Input`, values can be set in t
   ...
   template: `<app-user occupation="Angular Developer"><app-user/>`
 })
-class UserComponent {}
+class AppComponent {}
 </docs-code>
 
 <docs-workflow>

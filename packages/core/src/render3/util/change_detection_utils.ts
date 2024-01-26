@@ -8,8 +8,9 @@
 
 import {assertDefined} from '../../util/assert';
 import {getComponentViewByInstance} from '../context_discovery';
-import {detectChanges} from '../instructions/change_detection';
+import {detectChangesInternal} from '../instructions/change_detection';
 import {markViewDirty} from '../instructions/mark_view_dirty';
+import {FLAGS, LViewFlags} from '../interfaces/view';
 
 import {getRootComponents} from './discovery_utils';
 
@@ -26,4 +27,17 @@ export function applyChanges(component: {}): void {
   ngDevMode && assertDefined(component, 'component');
   markViewDirty(getComponentViewByInstance(component));
   getRootComponents(component).forEach(rootComponent => detectChanges(rootComponent));
+}
+
+/**
+ * Synchronously perform change detection on a component (and possibly its sub-components).
+ *
+ * This function triggers change detection in a synchronous way on a component.
+ *
+ * @param component The component which the change detection should be performed on.
+ */
+function detectChanges(component: {}): void {
+  const view = getComponentViewByInstance(component);
+  view[FLAGS] |= LViewFlags.RefreshView;
+  detectChangesInternal(view);
 }

@@ -35,8 +35,8 @@ To give the application access reactive forms directives, import `ReactiveFormsM
 The following code from the example shows the setup in the root module.
 
 <docs-code-multifile>
-    <docs-code header="dynamic-form.component.ts" path="dynamic-form/src/app/dynamic-form.component.ts"/>
-    <docs-code header="dynamic-form-question.component.ts" path="dynamic-form/src/app/dynamic-form-question.component.ts"/>
+    <docs-code header="dynamic-form.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form.component.ts"/>
+    <docs-code header="dynamic-form-question.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form-question.component.ts"/>
 </docs-code-multifile>
 
 ## Create a form object model
@@ -49,7 +49,7 @@ The example includes the `DynamicFormQuestionComponent`, which defines a questio
 
 The following `QuestionBase` is a base class for a set of controls that can represent the question and its answer in the form.
 
-<docs-code header="src/app/question-base.ts" path="dynamic-form/src/app/question-base.ts"/>
+<docs-code header="src/app/question-base.ts" path="adev/src/content/examples/dynamic-form/src/app/question-base.ts"/>
 
 ### Define control classes
 
@@ -58,11 +58,11 @@ When you create the form template in the next step, you instantiate these specif
 
 The `TextboxQuestion` control type is represented in a form template using an `<input>` element. It presents a question and lets users enter input. The `type` attribute of the element is defined based on the `type` field specified in the `options` argument (for example `text`, `email`, `url`).
 
-<docs-code header="question-textbox.ts" path="dynamic-form/src/app/question-textbox.ts"/>
+<docs-code header="question-textbox.ts" path="adev/src/content/examples/dynamic-form/src/app/question-textbox.ts"/>
 
 The `DropdownQuestion` control type presents a list of choices in a select box.
 
- <docs-code header="question-dropdown.ts" path="dynamic-form/src/app/question-dropdown.ts"/>
+ <docs-code header="question-dropdown.ts" path="adev/src/content/examples/dynamic-form/src/app/question-dropdown.ts"/>
 
 ### Compose form groups
 
@@ -70,7 +70,7 @@ A dynamic form uses a service to create grouped sets of input controls, based on
 The following `QuestionControlService` collects a set of `FormGroup` instances that consume the metadata from the question model.
 You can specify default values and validation rules.
 
-<docs-code header="src/app/question-control.service.ts" path="dynamic-form/src/app/question-control.service.ts"/>
+<docs-code header="src/app/question-control.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question-control.service.ts"/>
 
 ## Compose dynamic form contents
 
@@ -82,8 +82,8 @@ The form relies on a [`[formGroup]` directive](api/forms/FormGroupDirective "API
 The `DynamicFormQuestionComponent` creates form groups and populates them with controls defined in the question model, specifying display and validation rules.
 
 <docs-code-multifile>
-  <docs-code header="dynamic-form-question.component.html" path="dynamic-form/src/app/dynamic-form-question.component.html"/>
-  <docs-code header="dynamic-form-question.component.ts" path="dynamic-form/src/app/dynamic-form-question.component.ts"/>
+  <docs-code header="dynamic-form-question.component.html" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form-question.component.html"/>
+  <docs-code header="dynamic-form-question.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form-question.component.ts"/>
 </docs-code-multifile>
 
 The goal of the `DynamicFormQuestionComponent` is to present question types defined in your model.
@@ -102,7 +102,7 @@ To maintain the questionnaire as requirements change, you only need to add, upda
 
 The `QuestionService` supplies a set of questions in the form of an array bound to `@Input()` questions.
 
-<docs-code header="src/app/question.service.ts" path="dynamic-form/src/app/question.service.ts"/>
+<docs-code header="src/app/question.service.ts" path="adev/src/content/examples/dynamic-form/src/app/question.service.ts"/>
 
 ## Create a dynamic form template
 
@@ -111,15 +111,15 @@ The `DynamicFormComponent` component is the entry point and the main container f
 The `DynamicFormComponent` component presents a list of questions by binding each one to an `<app-question>` element that matches the `DynamicFormQuestionComponent`.
 
 <docs-code-multifile>
-    <docs-code header="dynamic-form.component.html" path="dynamic-form/src/app/dynamic-form.component.html"/>
-    <docs-code header="dynamic-form.component.ts" path="dynamic-form/src/app/dynamic-form.component.ts"/>
+    <docs-code header="dynamic-form.component.html" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form.component.html"/>
+    <docs-code header="dynamic-form.component.ts" path="adev/src/content/examples/dynamic-form/src/app/dynamic-form.component.ts"/>
 </docs-code-multifile>
 
 ### Display the form
 
 To display an instance of the dynamic form, the `AppComponent` shell template passes the `questions` array returned by the `QuestionService` to the form container component, `<app-dynamic-form>`.
 
-<docs-code header="app.component.ts" path="dynamic-form/src/app/app.component.ts"/>
+<docs-code header="app.component.ts" path="adev/src/content/examples/dynamic-form/src/app/app.component.ts"/>
 
 This separation of model and data lets you repurpose the components for any type of survey, as long as it's compatible with the _question_ object model.
 

@@ -27,8 +27,8 @@ import {
   getNavigationItemsTree,
   markExternalLinks,
   shouldReduceMotion,
-} from '@angular/docs-shared';
-import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs';
+} from '@angular/docs';
+import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators';
 import {SUB_NAVIGATION_DATA} from '../../../sub-navigation-data';
 import {PagePrefix} from '../../enums/pages';
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';

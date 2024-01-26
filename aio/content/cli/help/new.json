@@ -43,6 +43,9 @@
     {
       "name": "dry-run",
       "type": "boolean",
+      "aliases": [
+        "d"
+      ],
       "default": false,
       "description": "Run through and reports activity without writing out results."
     },
@@ -104,7 +107,8 @@
         "npm",
         "yarn",
         "pnpm",
-        "cnpm"
+        "cnpm",
+        "bun"
       ],
       "description": "The package manager used to install dependencies."
     },

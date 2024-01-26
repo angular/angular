@@ -305,10 +305,8 @@ function getOutlets(commands: unknown[]): {[k: string]: unknown[]|string} {
 }
 
 function updateSegmentGroup(
-    segmentGroup: UrlSegmentGroup, startIndex: number, commands: any[]): UrlSegmentGroup {
-  if (!segmentGroup) {
-    segmentGroup = new UrlSegmentGroup([], {});
-  }
+    segmentGroup: UrlSegmentGroup|undefined, startIndex: number, commands: any[]): UrlSegmentGroup {
+  segmentGroup ??= new UrlSegmentGroup([], {});
   if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
     return updateSegmentGroupChildren(segmentGroup, startIndex, commands);
   }

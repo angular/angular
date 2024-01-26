@@ -13,11 +13,11 @@ application-wide. Activities that trigger this checking include user interaction
 timers, and more.
 
 **`ChangeDetectionStrategy.OnPush`** is an optional mode that reduces the amount of checking Angular
-needs to perform. In this mode, the framework only checks if a component's DOM needs an update when
+needs to perform. In this mode, the framework only checks if a component's DOM needs an update when:
 
 - A component input has changes as a result of a binding in a template, or
-- When an event listener in this component runs
-- When the component is explicitly marked for check, via `ChangeDetectorRef.markForCheck` or something which wraps it, like `AsyncPipe`.
+- An event listener in this component runs
+- The component is explicitly marked for check, via `ChangeDetectorRef.markForCheck` or something which wraps it, like `AsyncPipe`.
 
 Additionally, when an OnPush component is checked, Angular _also_ checks all of its ancestor
 components, traversing upwards through the application tree.

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {APP_INITIALIZER, ApplicationInitStatus} from '@angular/core/src/application_init';
+import {APP_INITIALIZER, ApplicationInitStatus} from '@angular/core/src/application/application_init';
 import {EMPTY, Observable, Subscriber} from 'rxjs';
 
 import {TestBed} from '../testing';
@@ -157,6 +157,7 @@ describe('ApplicationInitStatus', () => {
       });
 
       expect(status.done).toBe(false);
+
       try {
         await status.donePromise;
         fail('donePromise should have been rejected when observable emits an error');
@@ -174,15 +175,13 @@ describe('ApplicationInitStatus', () => {
     });
 
     it('should throw', () => {
-      try {
-        TestBed.inject(ApplicationInitStatus);
-      } catch (e: any) {
-        expect(e.message).toBe(
-            'NG0209: Unexpected type of the `APP_INITIALIZER` token value ' +
-            `(expected an array, but got string). ` +
-            'Please check that the `APP_INITIALIZER` token is configured as a ' +
-            '`multi: true` provider. Find more at https://angular.io/errors/NG0209');
-      }
+      expect(() => TestBed.inject(ApplicationInitStatus))
+          .toThrowError(
+              'NG0209: Unexpected type of the `APP_INITIALIZER` token value ' +
+                  `(expected an array, but got string). ` +
+                  'Please check that the `APP_INITIALIZER` token is configured as a ' +
+                  '`multi: true` provider. Find more at https://angular.io/errors/NG0209',
+          );
     });
   });
 });

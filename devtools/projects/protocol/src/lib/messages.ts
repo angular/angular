@@ -7,7 +7,6 @@
  */
 
 import {InjectionToken, InjectOptions, Injector, Type, ViewEncapsulation} from '@angular/core';
-import {SingleProvider} from '@angular/core/src/di/provider_collection';
 
 export interface DirectiveType {
   name: string;
@@ -23,7 +22,7 @@ export interface ComponentType {
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
   directives: DirType[];
-  component: CmpType|null;
+  component: CmpType | null;
   children: DevToolsNode<DirType, CmpType>[];
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
@@ -37,35 +36,26 @@ export interface SerializedInjector {
   providers?: number;
 }
 
-/**
- * Duplicate of the ProviderRecord interface from Angular framework to prevent
- * needing to publically expose the interface from the framework.
- */
-export interface ProviderRecord {
-  token: Type<unknown>;
-  isViewProvider: boolean;
-  provider: SingleProvider;
-  importPath?: (Injector|Type<unknown>)[];
-}
-
 export interface SerializedProviderRecord {
   token: string;
-  type: 'type'|'existing'|'class'|'value'|'factory'|'multi';
+  type: 'type' | 'existing' | 'class' | 'value' | 'factory' | 'multi';
   multi: boolean;
   isViewProvider: boolean;
-  index?: number|number[];
+  index?: number | number[];
 }
 
 /**
  * Duplicate of the InjectedService interface from Angular framework to prevent
- * needing to publically expose the interface from the framework.
+ * needing to publicly expose the interface from the framework.
  */
 export interface InjectedService {
-  token?: Type<unknown>|InjectionToken<unknown>;
+  token?: Type<unknown> | InjectionToken<unknown>;
   value: unknown;
   flags?: InjectOptions;
   providedIn: Injector;
 }
+
+export type ContainerType = 'WritableSignal' | 'ReadonlySignal' | null;
 
 export enum PropType {
   Number,
@@ -81,6 +71,7 @@ export enum PropType {
   Date,
   Array,
   Set,
+  Map,
   Unknown,
 }
 
@@ -90,6 +81,7 @@ export interface Descriptor {
   editable: boolean;
   type: PropType;
   preview: string;
+  containerType: ContainerType;
 }
 
 export interface DirectivesProperties {
@@ -125,7 +117,7 @@ export interface DirectivePosition {
 }
 
 export interface NestedProp {
-  name: string|number;
+  name: string | number;
   children: NestedProp[];
 }
 
@@ -147,7 +139,7 @@ export interface SelectedPropertiesQuery {
   properties: ComponentExplorerViewProperties;
 }
 
-export type PropertyQuery = AllPropertiesQuery|SelectedPropertiesQuery;
+export type PropertyQuery = AllPropertiesQuery | SelectedPropertiesQuery;
 
 export interface ComponentExplorerViewQuery {
   selectedElement: ElementPosition;
@@ -202,9 +194,9 @@ export interface UpdatedStateData {
 
 export interface Route {
   name: string;
-  hash: string|null;
+  hash: string | null;
   path: string;
-  specificity: string|null;
+  specificity: string | null;
   handler: string;
   data: any;
   children?: Array<Route>;
@@ -222,8 +214,11 @@ export interface Events {
   handshake: () => void;
   shutdown: () => void;
   queryNgAvailability: () => void;
-  ngAvailability:
-      (config: {version: string|undefined|boolean; devMode: boolean; ivy: boolean}) => void;
+  ngAvailability: (config: {
+    version: string | undefined | boolean;
+    devMode: boolean;
+    ivy: boolean;
+  }) => void;
 
   inspectorStart: () => void;
   inspectorEnd: () => void;
@@ -258,8 +253,10 @@ export interface Events {
 
   // todo: type properly
   getInjectorProviders: (injector: SerializedInjector) => void;
-  latestInjectorProviders:
-      (injector: SerializedInjector, providers: SerializedProviderRecord[]) => void;
+  latestInjectorProviders: (
+    injector: SerializedInjector,
+    providers: SerializedProviderRecord[],
+  ) => void;
 
   logProvider: (injector: SerializedInjector, providers: SerializedProviderRecord) => void;
 }

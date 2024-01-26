@@ -129,7 +129,7 @@ When you select a bar, DevTools displays useful information about it including:
 
 ### Understand component execution
 
-The bar chat displayed after clicking on a change detection cycle displays a detailed view about how much time your application spent running change detection in that particular component or directive.
+The bar chart displayed after clicking on a change detection cycle displays a detailed view about how much time your application spent running change detection in that particular component or directive.
 
 This example shows the total time spent by the `NgForOf` directive and which method was called on it.
 

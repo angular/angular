@@ -26,31 +26,22 @@ Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const ZoneAwarePromise = global.Promise;
   const symbolThenPatched = api.symbol('thenPatched');
   const fetchTaskScheduling = api.symbol('fetchTaskScheduling');
-  const fetchTaskAborting = api.symbol('fetchTaskAborting');
-  const OriginalAbortController = global['AbortController'];
-  const supportAbort = typeof OriginalAbortController === 'function';
-  let abortNative: Function|null = null;
-  if (supportAbort) {
-    global['AbortController'] = function() {
-      const abortController = new OriginalAbortController();
-      const signal = abortController.signal;
-      signal.abortController = abortController;
-      return abortController;
-    };
-    abortNative = api.patchMethod(
-        OriginalAbortController.prototype, 'abort',
-        (delegate: Function) => (self: any, args: any) => {
-          if (self.task) {
-            return self.task.zone.cancelTask(self.task);
-          }
-          return delegate.apply(self, args);
-        });
-  }
   const placeholder = function() {};
   global['fetch'] = function() {
     const args = Array.prototype.slice.call(arguments);
-    const options = args.length > 1 ? args[1] : null;
+    const options = args.length > 1 ? args[1] : {};
     const signal = options && options.signal;
+    const ac = new AbortController();
+    const fetchSignal = ac.signal;
+    options.signal = fetchSignal;
+    args[1] = options;
+    if (signal) {
+      const nativeAddEventListener =
+          signal[Zone.__symbol__('addEventListener')] || signal.addEventListener;
+      nativeAddEventListener.call(signal, 'abort', function() {
+        ac!.abort();
+      }, {once: true});
+    }
     return new Promise((res, rej) => {
       const task = Zone.current.scheduleMacroTask(
           'fetch', placeholder, {fetchArgs: args} as FetchTaskData,
@@ -88,25 +79,8 @@ Zone.__load_patch('fetch', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
                 });
           },
           () => {
-            if (!supportAbort) {
-              rej('No AbortController supported, can not cancel fetch');
-              return;
-            }
-            if (signal && signal.abortController && !signal.aborted &&
-                typeof signal.abortController.abort === 'function' && abortNative) {
-              try {
-                (Zone.current as any)[fetchTaskAborting] = true;
-                abortNative.call(signal.abortController);
-              } finally {
-                (Zone.current as any)[fetchTaskAborting] = false;
-              }
-            } else {
-              rej('cancel fetch need a AbortController.signal');
-            }
+            ac.abort();
           });
-      if (signal && signal.abortController) {
-        signal.abortController.task = task;
-      }
     });
   };
 });

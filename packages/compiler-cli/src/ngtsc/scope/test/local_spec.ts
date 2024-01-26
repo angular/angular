@@ -330,6 +330,10 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     decorator: null,
     hostDirectives: null,
     assumedToExportProviders: false,
+    ngContentSelectors: null,
+    preserveWhitespaces: false,
+    isExplicitlyDeferred: false,
+    deferredImports: null,
   };
 }
 
@@ -342,6 +346,7 @@ function fakePipe(ref: Reference<ClassDeclaration>): PipeMeta {
     nameExpr: null,
     isStandalone: false,
     decorator: null,
+    isExplicitlyDeferred: false,
   };
 }
 

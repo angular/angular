@@ -15,7 +15,7 @@ export function makeEs5ExtractPlugin(
     fs: PathManipulation, messages: ɵParsedMessage[], localizeName = '$localize'): PluginObj {
   return {
     visitor: {
-      CallExpression(callPath: NodePath<t.CallExpression>) {
+      CallExpression(callPath: NodePath<t.CallExpression>, state) {
         try {
           const calleePath = callPath.get('callee');
           if (isNamedIdentifier(calleePath, localizeName) && isGlobalIdentifier(calleePath)) {
@@ -34,7 +34,7 @@ export function makeEs5ExtractPlugin(
             // If we get a BabelParseError here then something went wrong with Babel itself
             // since there must be something wrong with the structure of the AST generated
             // by Babel parsing a TaggedTemplateExpression.
-            throw buildCodeFrameError(fs, callPath, e);
+            throw buildCodeFrameError(fs, callPath, state.file, e);
           } else {
             throw e;
           }

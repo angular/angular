@@ -1,4 +1,4 @@
-<docs-decorative-header title="Angular Signals" imgSrc="assets/images/signals.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Angular Signals" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
 Angular Signals is a system that granularly tracks how and where your state is used throughout an application, allowing the framework to optimize rendering updates.
 </docs-decorative-header>
 
@@ -6,7 +6,7 @@ Tip: Check out Angular's [Essentials](essentials/managing-dynamic-data) before d
 
 ## What are signals?
 
-A **signal** is a wrapper around a value that notifies interested consumers when that value changes. Signals can contain any value, from simple primitives to complex data structures.
+A **signal** is a wrapper around a value that notifies interested consumers when that value changes. Signals can contain any value, from primitives to complex data structures.
 
 You read a signal's value by calling its getter function, which allows Angular to track where the signal is used.
 
@@ -135,7 +135,7 @@ export class EffectiveCounterComponent {
   constructor() {
     // Register a new effect.
     effect(() => {
-      console.log(`The count is: ${this.count()})`);
+      console.log(`The count is: ${this.count()}`);
     });
   }
 }
@@ -149,7 +149,7 @@ export class EffectiveCounterComponent {
   readonly count = signal(0);
 
   private loggingEffect = effect(() => {
-    console.log(`The count is: ${this.count()})`);
+    console.log(`The count is: ${this.count()}`);
   });
 }
 ```
@@ -164,7 +164,7 @@ export class EffectiveCounterComponent {
 
   initializeLogging(): void {
     effect(() => {
-      console.log(`The count is: ${this.count()})`);
+      console.log(`The count is: ${this.count()}`);
     }, {injector: this.injector});
   }
 }
@@ -205,7 +205,7 @@ For example, suppose that when `currentUser` changes, the value of a `counter` s
 
 ```ts
 effect(() => {
-  console.log(`User set to `${currentUser()}` and the counter is ${counter()}`);
+  console.log(`User set to ${currentUser()} and the counter is ${counter()}`);
 });
 ```
 
@@ -215,7 +215,7 @@ You can prevent a signal read from being tracked by calling its getter with `unt
 
 ```ts
 effect(() => {
-  console.log(`User set to `${currentUser()}` and the counter is ${untracked(counter)}`);
+  console.log(`User set to ${currentUser()} and the counter is ${untracked(counter)}`);
 });
 ```
 

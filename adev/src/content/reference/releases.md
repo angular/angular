@@ -74,9 +74,10 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 | Version | Date               |
 |:--------|:-------------------|
-| v16.1   | Week of 2023-06-12 |
-| v16.2   | Week of 2023-08-07 |
-| v17.0   | Week of 2023-11-06 |
+| v17.1   | Week of 2024-01-15 |
+| v17.2   | Week of 2024-02-12 |
+| v17.3   | Week of 2024-03-11 |
+| v18.0   | Week of 2024-05-20 |
 
 ### Support window
 
@@ -108,7 +109,7 @@ As a general rule, a fix is considered for an LTS version if it resolves one of:
 
 ## Deprecation policy
 
-When the Angular team intends to remove an API or feature, it will be marked as *deprecated*. This occurs when when an API is obsolete, superseded by another API, or otherwise discontinued. Deprecated API remain available through their deprecated phase, which lasts a minimum two major versions (approximately one year).
+When the Angular team intends to remove an API or feature, it will be marked as *deprecated*. This occurs when an API is obsolete, superseded by another API, or otherwise discontinued. Deprecated API remain available through their deprecated phase, which lasts a minimum two major versions (approximately one year).
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 

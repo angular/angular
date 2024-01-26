@@ -25,7 +25,7 @@ const BANG_IMPORTANT = '!important';
  */
 export function parseHostStyleProperties(job: CompilationJob): void {
   for (const op of job.root.update) {
-    if (op.kind !== ir.OpKind.Binding) {
+    if (!(op.kind === ir.OpKind.Binding && op.bindingKind === ir.BindingKind.Property)) {
       continue;
     }
 
@@ -38,7 +38,7 @@ export function parseHostStyleProperties(job: CompilationJob): void {
       op.bindingKind = ir.BindingKind.StyleProperty;
       op.name = op.name.substring(STYLE_DOT.length);
 
-      if (isCssCustomProperty(op.name)) {
+      if (!isCssCustomProperty(op.name)) {
         op.name = hyphenate(op.name);
       }
 

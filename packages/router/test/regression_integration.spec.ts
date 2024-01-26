@@ -397,9 +397,7 @@ describe('Integration', () => {
     class CustomSerializer extends DefaultUrlSerializer {
       override serialize(tree: UrlTree): string {
         const mutableCopy = new UrlTree(tree.root, {...tree.queryParams}, tree.fragment);
-        if (mutableCopy.queryParams['q']) {
-          mutableCopy.queryParams['q'] = SPECIAL_SERIALIZATION;
-        }
+        mutableCopy.queryParams['q'] &&= SPECIAL_SERIALIZATION;
         return new DefaultUrlSerializer().serialize(mutableCopy);
       }
     }

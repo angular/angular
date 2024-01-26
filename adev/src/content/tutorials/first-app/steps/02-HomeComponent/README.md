@@ -66,15 +66,15 @@ In the **Edit** pane of your IDE:
 1. Open `app.component.ts` in the editor.
 1. In `app.component.ts`, import `HomeComponent` by adding this line to the file level imports.
 
-    <docs-code header="Import HomeComponent in src/app/app.component.ts" path="first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[2]"/>
+    <docs-code header="Import HomeComponent in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[2]"/>
 
 1. In `app.component.ts`, in `@Component`, update the `imports` array property and add `HomeComponent`.
 
-    <docs-code header="Replace in src/app/app.component.ts" path="first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[7,9]"/>
+    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[7,9]"/>
 
 1. In `app.component.ts`, in `@Component`, update the `template` property to include the following HTML code.
 
-    <docs-code header="Replace in src/app/app.component.ts" path="first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[10,19]"/>
+    <docs-code header="Replace in src/app/app.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.component.ts" visibleLines="[10,19]"/>
 
 1. Save your changes to  `app.component.ts`.
 1. If `ng serve` is running, the app should update.
@@ -99,13 +99,13 @@ In the **Edit** pane of your IDE:
 1. In the `first-app` directory, open `home.component.ts` in the editor.
 1. In `home.component.ts`, in `@Component`, update the `template` property with this code.
 
-    <docs-code header="Replace in src/app/home/home.component.ts" path="first-app/steps/03-HousingLocation/src/app/home/home.component.ts" visibleLines="[10,17]"/>
+    <docs-code header="Replace in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.component.ts" visibleLines="[10,17]"/>
 
 1. Next, open `home.component.css` in the editor and update the content with these styles.
 
     Note: In the browser, these can go in `src/app/home/home.component.ts` in the `styles` array.
 
-    <docs-code header="Replace in src/app/home/home.component.css" path="first-app/steps/03-HousingLocation/src/app/home/home.component.css"/>
+    <docs-code header="Replace in src/app/home/home.component.css" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.component.css"/>
 
 1. Confirm that the app builds without error.
     You should find the filter query box and button in your app and they should be styled.

@@ -23,7 +23,6 @@ import { ProviderToken } from '@angular/core';
 import { SchemaMetadata } from '@angular/core';
 import { Type } from '@angular/core';
 import { ɵDeferBlockDetails } from '@angular/core';
-import { ɵFlushableEffectRunner } from '@angular/core';
 
 // @public
 export const __core_private_testing_placeholder__ = "";
@@ -33,7 +32,7 @@ export function async(fn: Function): (done: any) => any;
 
 // @public
 export class ComponentFixture<T> {
-    constructor(componentRef: ComponentRef<T>, ngZone: NgZone | null, effectRunner: ɵFlushableEffectRunner | null, _autoDetect: boolean);
+    constructor(componentRef: ComponentRef<T>);
     autoDetectChanges(autoDetect?: boolean): void;
     changeDetectorRef: ChangeDetectorRef;
     checkNoChanges(): void;

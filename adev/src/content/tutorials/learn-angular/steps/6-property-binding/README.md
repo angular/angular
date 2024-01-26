@@ -29,7 +29,7 @@ export class AppComponent {
 </docs-step>
 
 <docs-step title="Bind to `contentEditable`" header="app.component.ts" language="ts">
-Next, bind the `contentEditable` attribute of the `div` to the `isEditable` property by using the `[]` syntax.
+Next, bind the `contentEditable` attribute of the `div` to the `isEditable` property by using the <code aria-label="square brackets">[]</code> syntax.
 
 <docs-code highlight="[3]">
 @Component({
@@ -43,4 +43,4 @@ Next, bind the `contentEditable` attribute of the `div` to the `isEditable` prop
 
 The div is now editable. Nice work 👍
 
-Property binding is one of Angular's many powerful features. If you'd like to learn more checkout [the Angular documention](/guide/templates/property-binding).
+Property binding is one of Angular's many powerful features. If you'd like to learn more checkout [the Angular documentation](/guide/templates/property-binding).

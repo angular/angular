@@ -20,13 +20,13 @@ In this step, you'll update the `HomeComponent` class to store data in a new arr
 
 1. In `src/app/home/home.component.ts`, add new property to the class called `filteredLocationList`.
 
-    <docs-code header="Add the filtered results property" path="first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[34]"/>
+    <docs-code header="Add the filtered results property" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[30,33]"/>
 
     The `filteredLocationList` hold the values that match the search criteria entered by the user.
 
 1. The `filteredLocationList` should contain the total set of housing locations values by default when the page loads. Update the `constructor` for the `HomeComponent` to set the value.
 
-    <docs-code header="Set the value of filteredLocationList" path="first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[35,38]"/>
+    <docs-code header="Set the value of filteredLocationList" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[35,39]"/>
 
 </docs-step>
 
@@ -39,7 +39,7 @@ The `HomeComponent` already contains an input field that you will use to capture
         &lt;input type="text" placeholder="Filter by city" #filter&gt;
     </docs-code>
 
-    This example uses a [template reference variable](/guide/templatess) to get access to the `input` element as its value.
+    This example uses a [template reference variable](/guide/templates) to get access to the `input` element as its value.
 
 1. Next, update the component template to attach an event handler to the "Search" button.
 
@@ -62,7 +62,7 @@ The template has been updated to bind the `filterResults` function to the `click
 
 1. Update the `HomeComponent` class to include the implementation of the `filterResults` function.
 
-    <docs-code header="Add the filterResults function implementation" path="first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[39,47]"/>
+    <docs-code header="Add the filterResults function implementation" path="adev/src/content/tutorials/first-app/steps/14-http/src/app/home/home.component.ts" visibleLines="[41,45]"/>
 
     This function uses the `String` `filter` function to compare the value of the `text` parameter against the `housingLocation.city` property. You can update this function to match against any property or multiple properties for a fun exercise.
 

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
@@ -25,10 +26,11 @@ import {BoundEvent} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
 
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3TemplateDependency} from './api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3TemplateDependency} from './api';
+import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
-import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, getQueryPredicate, Instruction, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
+import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, Instruction, RENDER_FLAGS} from './util';
 
 
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
@@ -118,6 +120,12 @@ function addFeatures(
       break;
     }
   }
+  // Note: host directives feature needs to be inserted before the
+  // inheritance feature to ensure the correct execution order.
+  if (meta.hostDirectives?.length) {
+    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
+        meta.hostDirectives)]));
+  }
   if (meta.usesInheritance) {
     features.push(o.importExpr(R3.InheritDefinitionFeature));
   }
@@ -130,10 +138,6 @@ function addFeatures(
   // TODO: better way of differentiating component vs directive metadata.
   if (meta.hasOwnProperty('template') && meta.isStandalone) {
     features.push(o.importExpr(R3.StandaloneFeature));
-  }
-  if (meta.hostDirectives?.length) {
-    features.push(o.importExpr(R3.HostDirectivesFeature).callFn([createHostDirectivesFeatureArg(
-        meta.hostDirectives)]));
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
@@ -153,6 +157,32 @@ export function compileDirectiveFromMetadata(
   const type = createDirectiveType(meta);
 
   return {expression, type, statements: []};
+}
+
+/**
+ * Creates an AST for a function that contains dynamic imports representing
+ * deferrable dependencies.
+ */
+function createDeferredDepsFunction(
+    constantPool: ConstantPool, name: string, deps: Map<string, string>) {
+  // This defer block has deps for which we need to generate dynamic imports.
+  const dependencyExp: o.Expression[] = [];
+
+  for (const [symbolName, importPath] of deps) {
+    // Callback function, e.g. `m () => m.MyCmp;`.
+    const innerFn =
+        o.arrowFn([new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(symbolName));
+
+    // Dynamic import, e.g. `import('./a').then(...)`.
+    const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);
+    dependencyExp.push(importExpr);
+  }
+
+  const depsFnExpr = o.arrowFn([], o.literalArr(dependencyExp));
+
+  constantPool.statements.push(depsFnExpr.toDeclStmt(name, o.StmtModifier.Final));
+
+  return o.variable(name);
 }
 
 /**
@@ -185,8 +215,16 @@ export function compileComponentFromMetadata(
   const templateTypeName = meta.name;
   const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
 
+
+  let allDeferrableDepsFn: o.ReadVarExpr|null = null;
+  if (meta.deferBlocks.size > 0 && meta.deferrableTypes.size > 0 &&
+      meta.deferBlockDepsEmitMode === DeferBlockDepsEmitMode.PerComponent) {
+    const fnName = `${templateTypeName}_DeferFn`;
+    allDeferrableDepsFn = createDeferredDepsFunction(constantPool, fnName, meta.deferrableTypes);
+  }
+
   // Template compilation is currently conditional as we're in the process of rewriting it.
-  if (!USE_TEMPLATE_PIPELINE) {
+  if (!USE_TEMPLATE_PIPELINE && !meta.useTemplatePipeline) {
     // This is the main path currently used in compilation, which compiles the template with the
     // legacy `TemplateDefinitionBuilder`.
 
@@ -194,7 +232,7 @@ export function compileComponentFromMetadata(
     const templateBuilder = new TemplateDefinitionBuilder(
         constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
         R3.namespaceHTML, meta.relativeContextFilePath, meta.i18nUseExternalIds, meta.deferBlocks,
-        new Map());
+        new Map(), allDeferrableDepsFn);
 
     const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
 
@@ -236,7 +274,7 @@ export function compileComponentFromMetadata(
     // ingested into IR:
     const tpl = ingestComponent(
         meta.name, meta.template.nodes, constantPool, meta.relativeContextFilePath,
-        meta.i18nUseExternalIds, meta.deferBlocks);
+        meta.i18nUseExternalIds, meta.deferBlocks, allDeferrableDepsFn);
 
     // Then the IR is transformed to prepare it for cod egeneration.
     transform(tpl, CompilationJobKind.Tmpl);
@@ -371,55 +409,6 @@ function compileDeclarationList(
   }
 }
 
-function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression[] {
-  const parameters = [getQueryPredicate(query, constantPool), o.literal(toQueryFlags(query))];
-  if (query.read) {
-    parameters.push(query.read);
-  }
-  return parameters;
-}
-
-/**
- * A set of flags to be used with Queries.
- *
- * NOTE: Ensure changes here are in sync with `packages/core/src/render3/interfaces/query.ts`
- */
-export const enum QueryFlags {
-  /**
-   * No flags
-   */
-  none = 0b0000,
-
-  /**
-   * Whether or not the query should descend into children.
-   */
-  descendants = 0b0001,
-
-  /**
-   * The query can be computed statically and hence can be assigned eagerly.
-   *
-   * NOTE: Backwards compatibility with ViewEngine.
-   */
-  isStatic = 0b0010,
-
-  /**
-   * If the `QueryList` should fire change event only if actual change to query was computed (vs old
-   * behavior where the change was fired whenever the query was recomputed, even if the recomputed
-   * query resulted in the same list.)
-   */
-  emitDistinctChangesOnly = 0b0100,
-}
-
-/**
- * Translates query flags into `TQueryFlags` type in packages/core/src/render3/interfaces/query.ts
- * @param query
- */
-function toQueryFlags(query: R3QueryMetadata): number {
-  return (query.descendants ? QueryFlags.descendants : QueryFlags.none) |
-      (query.static ? QueryFlags.isStatic : QueryFlags.none) |
-      (query.emitDistinctChangesOnly ? QueryFlags.emitDistinctChangesOnly : QueryFlags.none);
-}
-
 function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):
     o.Expression[] {
   const values: o.Expression[] = [];
@@ -428,43 +417,6 @@ function convertAttributesToExpressions(attributes: {[name: string]: o.Expressio
     values.push(o.literal(key), value);
   }
   return values;
-}
-
-// Define and update any content queries
-function createContentQueriesFunction(
-    queries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
-  const createStatements: o.Statement[] = [];
-  const updateStatements: o.Statement[] = [];
-  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
-
-  for (const query of queries) {
-    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
-    createStatements.push(
-        o.importExpr(R3.contentQuery)
-            .callFn([o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any])
-            .toStmt());
-
-    // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
-    const temporary = tempAllocator();
-    const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
-    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-    const updateDirective = o.variable(CONTEXT_NAME)
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary.prop('first') : temporary);
-    updateStatements.push(refresh.and(updateDirective).toStmt());
-  }
-
-  const contentQueriesFnName = name ? `${name}_ContentQueries` : null;
-  return o.fn(
-      [
-        new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
-        new o.FnParam('dirIndex', null)
-      ],
-      [
-        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
-      ],
-      o.INFERRED_TYPE, null, contentQueriesFnName);
 }
 
 function stringAsType(str: string): o.Type {
@@ -507,14 +459,18 @@ function createBaseDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
 function getInputsTypeExpression(meta: R3DirectiveMetadata): o.Expression {
   return o.literalMap(Object.keys(meta.inputs).map(key => {
     const value = meta.inputs[key];
-    return {
-      key,
-      value: o.literalMap([
-        {key: 'alias', value: o.literal(value.bindingPropertyName), quoted: true},
-        {key: 'required', value: o.literal(value.required), quoted: true}
-      ]),
-      quoted: true
-    };
+    const values = [
+      {key: 'alias', value: o.literal(value.bindingPropertyName), quoted: true},
+      {key: 'required', value: o.literal(value.required), quoted: true},
+    ];
+
+    // TODO(legacy-partial-output-inputs): Consider always emitting this information,
+    // or leaving it as is.
+    if (value.isSignal) {
+      values.push({key: 'isSignal', value: o.literal(value.isSignal), quoted: true});
+    }
+
+    return {key, value: o.literalMap(values), quoted: true};
   }));
 }
 
@@ -538,39 +494,6 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 
-// Define and update any view queries
-function createViewQueriesFunction(
-    viewQueries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
-  const createStatements: o.Statement[] = [];
-  const updateStatements: o.Statement[] = [];
-  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
-
-  viewQueries.forEach((query: R3QueryMetadata) => {
-    // creation, e.g. r3.viewQuery(somePredicate, true);
-    const queryDefinition =
-        o.importExpr(R3.viewQuery).callFn(prepareQueryParams(query, constantPool));
-    createStatements.push(queryDefinition.toStmt());
-
-    // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));
-    const temporary = tempAllocator();
-    const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
-    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-    const updateDirective = o.variable(CONTEXT_NAME)
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary.prop('first') : temporary);
-    updateStatements.push(refresh.and(updateDirective).toStmt());
-  });
-
-  const viewQueryFnName = name ? `${name}_Query` : null;
-  return o.fn(
-      [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
-      [
-        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
-      ],
-      o.INFERRED_TYPE, null, viewQueryFnName);
-}
-
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
     hostBindingsMetadata: R3HostMetadata, typeSourceSpan: ParseSourceSpan,
@@ -583,7 +506,7 @@ function createHostBindingsFunction(
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(hostBindingsMetadata.listeners, typeSourceSpan);
 
-  if (USE_TEMPLATE_PIPELINE) {
+  if (USE_TEMPLATE_PIPELINE || hostBindingsMetadata.useTemplatePipeline) {
     // The parser for host bindings treats class and style attributes specially -- they are
     // extracted into these separate fields. This is not the case for templates, so the compiler can
     // actually already handle these special attributes internally. Therefore, we just drop them
@@ -600,6 +523,7 @@ function createHostBindingsFunction(
     const hostJob = ingestHostBinding(
         {
           componentName: name,
+          componentSelector: selector,
           properties: bindings,
           events: eventBindings,
           attributes: hostBindingsMetadata.attributes,
@@ -616,6 +540,10 @@ function createHostBindingsFunction(
 
     return emitHostBindingFunction(hostJob);
   }
+
+  let bindingId = 0;
+  const getNextBindingId = () => `${bindingId++}`;
+
   const bindingContext = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(bindingContext);
 
@@ -679,7 +607,7 @@ function createHostBindingsFunction(
   for (const binding of allOtherBindings) {
     // resolve literal arrays and literal objects
     const value = binding.expression.visit(getValueConverter());
-    const bindingExpr = bindingFn(bindingContext, value);
+    const bindingExpr = bindingFn(bindingContext, value, getNextBindingId);
 
     const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
 
@@ -766,10 +694,13 @@ function createHostBindingsFunction(
         totalHostVarsCount +=
             Math.max(call.allocateBindingSlots - MIN_STYLING_BINDING_SLOTS_REQUIRED, 0);
 
+        const {params, stmts} =
+            convertStylingCall(call, bindingContext, bindingFn, getNextBindingId);
+        updateVariables.push(...stmts);
         updateInstructions.push({
           reference: instruction.reference,
-          paramsOrFn: convertStylingCall(call, bindingContext, bindingFn),
-          span: null
+          paramsOrFn: params,
+          span: null,
         });
       }
     });
@@ -799,13 +730,22 @@ function createHostBindingsFunction(
   return null;
 }
 
-function bindingFn(implicit: any, value: AST) {
-  return convertPropertyBinding(null, implicit, value, 'b');
+function bindingFn(implicit: any, value: AST, getNextBindingIdFn: () => string) {
+  return convertPropertyBinding(null, implicit, value, getNextBindingIdFn());
 }
 
 function convertStylingCall(
-    call: StylingInstructionCall, bindingContext: any, bindingFn: Function) {
-  return call.params(value => bindingFn(bindingContext, value).currValExpr);
+    call: StylingInstructionCall, bindingContext: any, bindingFn: Function,
+    getNextBindingIdFn: () => string) {
+  const stmts: o.Statement[] = [];
+  const params = call.params(value => {
+    const result = bindingFn(bindingContext, value, getNextBindingIdFn);
+    if (Array.isArray(result.stmts) && result.stmts.length > 0) {
+      stmts.push(...result.stmts);
+    }
+    return result.currValExpr;
+  });
+  return {params, stmts};
 }
 
 function getBindingNameAndInstruction(binding: ParsedProperty):
@@ -961,6 +901,19 @@ function compileStyles(styles: string[], selector: string, hostSelector: string)
   return styles.map(style => {
     return shadowCss!.shimCssText(style, selector, hostSelector);
   });
+}
+
+/**
+ * Encapsulates a CSS stylesheet with emulated view encapsulation.
+ * This allows a stylesheet to be used with an Angular component that
+ * is using the `ViewEncapsulation.Emulated` mode.
+ *
+ * @param style The content of a CSS stylesheet.
+ * @returns The encapsulated content for the style.
+ */
+export function encapsulateStyle(style: string): string {
+  const shadowCss = new ShadowCss();
+  return shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR);
 }
 
 function createHostDirectivesType(meta: R3DirectiveMetadata): o.Type {

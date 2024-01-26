@@ -6,24 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3HostDirectiveMetadata, R3InputMetadata, R3QueryMetadata, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Expression, ExternalExpr, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3HostDirectiveMetadata, R3InputMetadata, R3QueryMetadata, R3Reference, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
-import {ClassPropertyMapping, HostDirectiveMeta, InputMapping, InputTransform} from '../../../metadata';
+import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputMapping, isHostDirectiveMetaForGlobalMode} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
-import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getConstructorDependencies, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference,} from '../../common';
+import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+
+import {tryParseSignalInputMapping} from './input_function';
+import {tryParseSignalQueryFromInitializer} from './query_functions';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
-const QUERY_TYPES = new Set([
-  'ContentChild',
-  'ContentChildren',
-  'ViewChild',
-  'ViewChildren',
-]);
+
+type QueryDecoratorName = 'ViewChild'|'ViewChildren'|'ContentChild'|'ContentChildren';
+const queryDecoratorNames: QueryDecoratorName[] =
+    ['ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren'];
+const QUERY_TYPES = new Set<string>(queryDecoratorNames);
 
 /**
  * Helper function to extract metadata from a `Directive` or `Component`. `Directive`s without a
@@ -32,10 +34,10 @@ const QUERY_TYPES = new Set([
  * the module.
  */
 export function extractDirectiveMetadata(
-    clazz: ClassDeclaration, decorator: Readonly<Decorator|null>, reflector: ReflectionHost,
+    clazz: ClassDeclaration, decorator: Readonly<Decorator>, reflector: ReflectionHost,
     evaluator: PartialEvaluator, refEmitter: ReferenceEmitter,
     referencesRegistry: ReferencesRegistry, isCore: boolean, annotateForClosureCompiler: boolean,
-    compilationMode: CompilationMode, defaultSelector: string|null = null): {
+    compilationMode: CompilationMode, defaultSelector: string|null, useTemplatePipeline: boolean): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   inputs: ClassPropertyMapping<InputMapping>,
@@ -44,7 +46,7 @@ export function extractDirectiveMetadata(
   hostDirectives: HostDirectiveMeta[] | null, rawHostDirectives: ts.Expression | null,
 }|undefined {
   let directive: Map<string, ts.Expression>;
-  if (decorator === null || decorator.args === null || decorator.args.length === 0) {
+  if (decorator.args === null || decorator.args.length === 0) {
     directive = new Map<string, ts.Expression>();
   } else if (decorator.args.length !== 1) {
     throw new FatalDiagnosticError(
@@ -76,10 +78,11 @@ export function extractDirectiveMetadata(
 
   // Construct the map of inputs both from the @Directive/@Component
   // decorator, and the decorated fields.
-  const inputsFromMeta = parseInputsArray(clazz, directive, evaluator, reflector, refEmitter);
+  const inputsFromMeta =
+      parseInputsArray(clazz, directive, evaluator, reflector, refEmitter, compilationMode);
   const inputsFromFields = parseInputFields(
-      clazz, filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), evaluator,
-      reflector, refEmitter);
+      clazz, members, evaluator, reflector, refEmitter, isCore, compilationMode, inputsFromMeta,
+      decorator);
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
 
   // And outputs.
@@ -88,30 +91,30 @@ export function extractDirectiveMetadata(
       filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator);
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
 
-  // Construct the list of queries.
-  const contentChildFromFields = queriesFromFields(
-      filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), reflector,
-      evaluator);
-  const contentChildrenFromFields = queriesFromFields(
-      filterToMembersWithDecorator(decoratedElements, 'ContentChildren', coreModule), reflector,
-      evaluator);
-
-  const queries = [...contentChildFromFields, ...contentChildrenFromFields];
-
-  // Construct the list of view queries.
-  const viewChildFromFields = queriesFromFields(
-      filterToMembersWithDecorator(decoratedElements, 'ViewChild', coreModule), reflector,
-      evaluator);
-  const viewChildrenFromFields = queriesFromFields(
-      filterToMembersWithDecorator(decoratedElements, 'ViewChildren', coreModule), reflector,
-      evaluator);
-  const viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
+  // Parse queries of fields.
+  const {viewQueries, contentQueries} =
+      parseQueriesOfClassFields(members, reflector, evaluator, isCore);
 
   if (directive.has('queries')) {
+    const signalQueryFields = new Set(
+        [...viewQueries, ...contentQueries].filter(q => q.isSignal).map(q => q.propertyName));
     const queriesFromDecorator =
         extractQueriesFromDecorator(directive.get('queries')!, reflector, evaluator, isCore);
-    queries.push(...queriesFromDecorator.content);
-    viewQueries.push(...queriesFromDecorator.view);
+
+    // Checks if the query is already declared/reserved via class members declaration.
+    // If so, we throw a fatal diagnostic error to prevent this unintentional pattern.
+    const checkAndUnwrapQuery = (q: {expr: ts.Expression, metadata: R3QueryMetadata}) => {
+      if (signalQueryFields.has(q.metadata.propertyName)) {
+        throw new FatalDiagnosticError(
+            ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION, q.expr,
+            `Query is declared multiple times. "@${
+                decorator.name}" declares a query for the same property.`);
+      }
+      return q.metadata;
+    };
+
+    contentQueries.push(...queriesFromDecorator.content.map(q => checkAndUnwrapQuery(q)));
+    viewQueries.push(...queriesFromDecorator.view.map(q => checkAndUnwrapQuery(q)));
   }
 
   // Parse the selector.
@@ -194,27 +197,39 @@ export function extractDirectiveMetadata(
   const usesInheritance = reflector.hasBaseClass(clazz);
   const sourceFile = clazz.getSourceFile();
   const type = wrapTypeReference(reflector, clazz);
-  const rawHostDirectives = directive.get('hostDirectives') || null;
-  const hostDirectives =
-      rawHostDirectives === null ? null : extractHostDirectives(rawHostDirectives, evaluator);
 
-  if (hostDirectives !== null) {
-    // The template type-checker will need to import host directive types, so add them
-    // as referenced by `clazz`. This will ensure that libraries are required to export
-    // host directives which are visible from publicly exported components.
-    referencesRegistry.add(clazz, ...hostDirectives.map(hostDir => hostDir.directive));
+  const rawHostDirectives = directive.get('hostDirectives') || null;
+  const hostDirectives = rawHostDirectives === null ?
+      null :
+      extractHostDirectives(rawHostDirectives, evaluator, compilationMode);
+
+  if (compilationMode !== CompilationMode.LOCAL && hostDirectives !== null) {
+    // In global compilation mode where we do type checking, the template type-checker will need to
+    // import host directive types, so add them as referenced by `clazz`. This will ensure that
+    // libraries are required to export host directives which are visible from publicly exported
+    // components.
+    referencesRegistry.add(clazz, ...hostDirectives.map(hostDir => {
+      if (!isHostDirectiveMetaForGlobalMode(hostDir)) {
+        throw new Error('Impossible state');
+      }
+
+      return hostDir.directive;
+    }));
   }
 
   const metadata: R3DirectiveMetadata = {
     name: clazz.name.text,
     deps: ctorDeps,
-    host,
+    host: {
+      ...host,
+      useTemplatePipeline,
+    },
     lifecycle: {
       usesOnChanges,
     },
     inputs: inputs.toJointMappedObject(toR3InputMetadata),
     outputs: outputs.toDirectMappedObject(),
-    queries,
+    queries: contentQueries,
     viewQueries,
     selector,
     fullInheritance: false,
@@ -241,7 +256,7 @@ export function extractDirectiveMetadata(
   };
 }
 
-export function extractQueryMetadata(
+export function extractDecoratorQueryMetadata(
     exprNode: ts.Node, name: string, args: ReadonlyArray<ts.Expression>, propertyName: string,
     reflector: ReflectionHost, evaluator: PartialEvaluator): R3QueryMetadata {
   if (args.length === 0) {
@@ -326,6 +341,7 @@ export function extractQueryMetadata(
   }
 
   return {
+    isSignal: false,
     propertyName,
     predicate,
     first,
@@ -418,10 +434,12 @@ export function extractHostBindings(
 function extractQueriesFromDecorator(
     queryData: ts.Expression, reflector: ReflectionHost, evaluator: PartialEvaluator,
     isCore: boolean): {
-  content: R3QueryMetadata[],
-  view: R3QueryMetadata[],
+  content: {expr: ts.Expression, metadata: R3QueryMetadata}[],
+  view: {expr: ts.Expression, metadata: R3QueryMetadata}[],
 } {
-  const content: R3QueryMetadata[] = [], view: R3QueryMetadata[] = [];
+  const content: {expr: ts.Expression, metadata: R3QueryMetadata}[] = [];
+  const view: {expr: ts.Expression, metadata: R3QueryMetadata}[] = [];
+
   if (!ts.isObjectLiteralExpression(queryData)) {
     throw new FatalDiagnosticError(
         ErrorCode.VALUE_HAS_WRONG_TYPE, queryData,
@@ -450,12 +468,12 @@ function extractQueriesFromDecorator(
           'Decorator query metadata must be an instance of a query type');
     }
 
-    const query = extractQueryMetadata(
+    const query = extractDecoratorQueryMetadata(
         queryExpr, type.name, queryExpr.arguments || [], propertyName, reflector, evaluator);
     if (type.name.startsWith('Content')) {
-      content.push(query);
+      content.push({expr: queryExpr, metadata: query});
     } else {
-      view.push(query);
+      view.push({expr: queryExpr, metadata: query});
     }
   });
   return {content, view};
@@ -535,31 +553,48 @@ function isStringArrayOrDie(value: any, name: string, node: ts.Expression): valu
   return true;
 }
 
-function queriesFromFields(
-    fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
-    evaluator: PartialEvaluator): R3QueryMetadata[] {
-  return fields.map(({member, decorators}) => {
-    const decorator = decorators[0];
-    const node = member.node || decorator.node;
+function tryGetQueryFromFieldDecorator(
+    member: ClassMember, reflector: ReflectionHost, evaluator: PartialEvaluator, isCore: boolean):
+    {name: QueryDecoratorName, decorator: Decorator, metadata: R3QueryMetadata}|null {
+  const decorators = member.decorators;
+  if (decorators === null) {
+    return null;
+  }
 
-    // Throw in case of `@Input() @ContentChild('foo') foo: any`, which is not supported in Ivy
-    if (member.decorators!.some(v => v.name === 'Input')) {
-      throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_COLLISION, node,
-          'Cannot combine @Input decorators with query decorators');
-    }
-    if (decorators.length !== 1) {
-      throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_COLLISION, node,
-          'Cannot have multiple query decorators on the same class member');
-    } else if (!isPropertyTypeMember(member)) {
-      throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_UNEXPECTED, node,
-          'Query decorator must go on a property-type member');
-    }
-    return extractQueryMetadata(
-        node, decorator.name, decorator.args || [], member.name, reflector, evaluator);
-  });
+  const queryDecorators = getAngularDecorators(decorators, queryDecoratorNames, isCore);
+  if (queryDecorators.length === 0) {
+    return null;
+  }
+  if (queryDecorators.length !== 1) {
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_COLLISION, member.node ?? queryDecorators[0].node,
+        'Cannot combine multiple query decorators.');
+  }
+
+  const decorator = queryDecorators[0];
+  const node = member.node || decorator.node;
+
+  // Throw in case of `@Input() @ContentChild('foo') foo: any`, which is not supported in Ivy
+  if (decorators.some(v => v.name === 'Input')) {
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_COLLISION, node,
+        'Cannot combine @Input decorators with query decorators');
+  }
+  if (!isPropertyTypeMember(member)) {
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_UNEXPECTED, node, 'Query decorator must go on a property-type member');
+  }
+
+  // Either the decorator was aliased, or is referenced directly with
+  // the proper query name.
+  const name = (decorator.import?.name ?? decorator.name) as QueryDecoratorName;
+
+  return {
+    name,
+    decorator,
+    metadata: extractDecoratorQueryMetadata(
+        node, name, decorator.args || [], member.name, reflector, evaluator),
+  };
 }
 
 function isPropertyTypeMember(member: ClassMember): boolean {
@@ -615,8 +650,8 @@ function parseDecoratedFields(
 /** Parses the `inputs` array of a directive/component decorator. */
 function parseInputsArray(
     clazz: ClassDeclaration, decoratorMetadata: Map<string, ts.Expression>,
-    evaluator: PartialEvaluator, reflector: ReflectionHost,
-    refEmitter: ReferenceEmitter): Record<string, InputMapping> {
+    evaluator: PartialEvaluator, reflector: ReflectionHost, refEmitter: ReferenceEmitter,
+    compilationMode: CompilationMode): Record<string, InputMapping> {
   const inputsField = decoratorMetadata.get('inputs');
 
   if (inputsField === undefined) {
@@ -642,13 +677,15 @@ function parseInputsArray(
         classPropertyName,
         required: false,
         transform: null,
+        // Note: Signal inputs are not allowed with the array form.
+        isSignal: false,
       };
     } else if (value instanceof Map) {
       // If it's a map, we treat it as a config object.
       const name = value.get('name');
       const alias = value.get('alias');
       const required = value.get('required');
-      let transform: InputTransform|null = null;
+      let transform: DecoratorInputTransform|null = null;
 
       if (typeof name !== 'string') {
         throw createValueHasWrongTypeError(
@@ -665,13 +702,16 @@ function parseInputsArray(
               `Transform of value at position ${i} of @Directive.inputs array must be a function`);
         }
 
-        transform = parseInputTransformFunction(clazz, name, transformValue, reflector, refEmitter);
+        transform = parseDecoratorInputTransformFunction(
+            clazz, name, transformValue, reflector, refEmitter, compilationMode);
       }
 
       inputs[name] = {
         classPropertyName: name,
         bindingPropertyName: typeof alias === 'string' ? alias : name,
         required: required === true,
+        // Note: Signal inputs are not allowed with the array form.
+        isSignal: false,
         transform,
       };
     } else {
@@ -684,54 +724,175 @@ function parseInputsArray(
   return inputs;
 }
 
-/** Parses the class members that are decorated as inputs. */
-function parseInputFields(
-    clazz: ClassDeclaration, inputMembers: {member: ClassMember, decorators: Decorator[]}[],
-    evaluator: PartialEvaluator, reflector: ReflectionHost,
-    refEmitter: ReferenceEmitter): Record<string, InputMapping> {
-  const inputs = {} as Record<string, InputMapping>;
+/** Attempts to find a given Angular decorator on the class member. */
+function tryGetDecoratorOnMember(
+    member: ClassMember, decoratorName: string, isCore: boolean): Decorator|null {
+  if (member.decorators === null) {
+    return null;
+  }
 
-  parseDecoratedFields(inputMembers, evaluator, (classPropertyName, options, decorator) => {
-    let bindingPropertyName: string;
-    let required = false;
-    let transform: InputTransform|null = null;
+  for (const decorator of member.decorators) {
+    if (isAngularDecorator(decorator, decoratorName, isCore)) {
+      return decorator;
+    }
+  }
+  return null;
+}
 
-    if (options === null) {
-      bindingPropertyName = classPropertyName;
-    } else if (typeof options === 'string') {
-      bindingPropertyName = options;
-    } else if (options instanceof Map) {
-      const aliasInConfig = options.get('alias');
-      bindingPropertyName = typeof aliasInConfig === 'string' ? aliasInConfig : classPropertyName;
-      required = options.get('required') === true;
+function tryParseInputFieldMapping(
+    clazz: ClassDeclaration, member: ClassMember, evaluator: PartialEvaluator,
+    reflector: ReflectionHost, isCore: boolean, refEmitter: ReferenceEmitter,
+    compilationMode: CompilationMode): InputMapping|null {
+  const classPropertyName = member.name;
 
-      if (options.has('transform')) {
-        const transformValue = options.get('transform');
+  const decorator = tryGetDecoratorOnMember(member, 'Input', isCore);
+  const signalInputMapping = tryParseSignalInputMapping(member, reflector, isCore);
 
-        if (!(transformValue instanceof DynamicValue) && !(transformValue instanceof Reference)) {
-          throw createValueHasWrongTypeError(
-              decorator.node, transformValue, `Input transform must be a function`);
-        }
+  if (decorator !== null && signalInputMapping !== null) {
+    throw new FatalDiagnosticError(
+        ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decorator.node,
+        `Using @Input with a signal input is not allowed.`);
+  }
 
-        transform = parseInputTransformFunction(
-            clazz, classPropertyName, transformValue, reflector, refEmitter);
-      }
-    } else {
+  // Check `@Input` case.
+  if (decorator !== null) {
+    if (decorator.args !== null && decorator.args.length > 1) {
+      throw new FatalDiagnosticError(
+          ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
+          `@${decorator.name} can have at most one argument, got ${
+              decorator.args.length} argument(s)`);
+    }
+
+    const optionsNode =
+        decorator.args !== null && decorator.args.length === 1 ? decorator.args[0] : undefined;
+    const options = optionsNode !== undefined ? evaluator.evaluate(optionsNode) : null;
+    const required = options instanceof Map ? options.get('required') === true : false;
+
+    // To preserve old behavior: Even though TypeScript types ensure proper options are
+    // passed, we sanity check for unsupported values here again.
+    if (options !== null && typeof options !== 'string' && !(options instanceof Map)) {
       throw createValueHasWrongTypeError(
           decorator.node, options,
           `@${decorator.name} decorator argument must resolve to a string or an object literal`);
     }
 
-    inputs[classPropertyName] = {bindingPropertyName, classPropertyName, required, transform};
-  });
+    let alias: string|null = null;
+    if (typeof options === 'string') {
+      alias = options;
+    } else if (options instanceof Map && typeof options.get('alias') === 'string') {
+      alias = options.get('alias') as string;
+    }
+
+    const publicInputName = alias ?? classPropertyName;
+
+    let transform: DecoratorInputTransform|null = null;
+    if (options instanceof Map && options.has('transform')) {
+      const transformValue = options.get('transform');
+
+      if (!(transformValue instanceof DynamicValue) && !(transformValue instanceof Reference)) {
+        throw createValueHasWrongTypeError(
+            optionsNode!, transformValue, `Input transform must be a function`);
+      }
+
+      transform = parseDecoratorInputTransformFunction(
+          clazz, classPropertyName, transformValue, reflector, refEmitter, compilationMode);
+    }
+
+    return {
+      isSignal: false,
+      classPropertyName,
+      bindingPropertyName: publicInputName,
+      transform,
+      required,
+    };
+  }
+
+  // Look for signal inputs. e.g. `memberName = input()`
+  if (signalInputMapping !== null) {
+    return signalInputMapping;
+  }
+
+  return null;
+}
+
+/** Parses the class members that declare inputs (via decorator or initializer). */
+function parseInputFields(
+    clazz: ClassDeclaration, members: ClassMember[], evaluator: PartialEvaluator,
+    reflector: ReflectionHost, refEmitter: ReferenceEmitter, isCore: boolean,
+    compilationMode: CompilationMode, inputsFromClassDecorator: Record<string, InputMapping>,
+    classDecorator: Decorator): Record<string, InputMapping> {
+  const inputs = {} as Record<string, InputMapping>;
+
+  for (const member of members) {
+    const classPropertyName = member.name;
+    const inputMapping = tryParseInputFieldMapping(
+        clazz,
+        member,
+        evaluator,
+        reflector,
+        isCore,
+        refEmitter,
+        compilationMode,
+    );
+    if (inputMapping === null) {
+      continue;
+    }
+
+    if (member.isStatic) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INCORRECTLY_DECLARED_ON_STATIC_MEMBER, member.node ?? clazz,
+          `Input "${member.name}" is incorrectly declared as static member of "${
+              clazz.name.text}".`);
+    }
+
+    // Validate that signal inputs are not accidentally declared in the `inputs` metadata.
+    if (inputMapping.isSignal && inputsFromClassDecorator.hasOwnProperty(classPropertyName)) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION, member.node ?? clazz,
+          `Input "${member.name}" is also declared as non-signal in @${classDecorator.name}.`);
+    }
+
+    inputs[classPropertyName] = inputMapping;
+  }
 
   return inputs;
 }
 
-/** Parses the `transform` function and its type of a specific input. */
-function parseInputTransformFunction(
+/**
+ * Parses the `transform` function and its type for a decorator `@Input`.
+ *
+ * This logic verifies feasibility of extracting the transform write type
+ * into a different place, so that the input write type can be captured at
+ * a later point in a static acceptance member.
+ *
+ * Note: This is not needed for signal inputs where the transform type is
+ * automatically captured in the type of the `InputSignal`.
+ *
+ */
+export function parseDecoratorInputTransformFunction(
     clazz: ClassDeclaration, classPropertyName: string, value: DynamicValue|Reference,
-    reflector: ReflectionHost, refEmitter: ReferenceEmitter): InputTransform {
+    reflector: ReflectionHost, refEmitter: ReferenceEmitter,
+    compilationMode: CompilationMode): DecoratorInputTransform {
+  // In local compilation mode we can skip type checking the function args. This is because usually
+  // the type check is done in a separate build which runs in full compilation mode. So here we skip
+  // all the diagnostics.
+  if (compilationMode === CompilationMode.LOCAL) {
+    const node =
+        value instanceof Reference ? value.getIdentityIn(clazz.getSourceFile()) : value.node;
+
+    // This should never be null since we know the reference originates
+    // from the same file, but we null check it just in case.
+    if (node === null) {
+      throw createValueHasWrongTypeError(
+          value.node, value, 'Input transform function could not be referenced');
+    }
+
+    return {
+      node,
+      type: new Reference(ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword))
+    };
+  }
+
   const definition = reflector.getDefinitionOfFunction(value.node);
 
   if (definition === null) {
@@ -819,9 +980,11 @@ function assertEmittableInputType(
         // exported, otherwise TS won't emit it to the .d.ts.
         if (declaration.node.getSourceFile() !== contextFile) {
           const emittedType = refEmitter.emit(
-              new Reference(declaration.node), contextFile,
+              new Reference(
+                  declaration.node, declaration.viaModule === AmbientImport ? AmbientImport : null),
+              contextFile,
               ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
-                  ImportFlags.AllowRelativeDtsImports);
+                  ImportFlags.AllowRelativeDtsImports | ImportFlags.AllowAmbientReferences);
 
           assertSuccessfulReferenceEmit(emittedType, node, 'type');
         } else if (!reflector.isStaticallyExported(declaration.node)) {
@@ -835,6 +998,82 @@ function assertEmittableInputType(
 
     node.forEachChild(walk);
   })(type);
+}
+
+/**
+ * Iterates through all specified class members and attempts to detect
+ * view and content queries defined.
+ *
+ * Queries may be either defined via decorators, or through class member
+ * initializers for signal-based queries.
+ */
+function parseQueriesOfClassFields(
+    members: ClassMember[], reflector: ReflectionHost, evaluator: PartialEvaluator,
+    isCore: boolean): {
+  viewQueries: R3QueryMetadata[],
+  contentQueries: R3QueryMetadata[],
+} {
+  const viewQueries: R3QueryMetadata[] = [];
+  const contentQueries: R3QueryMetadata[] = [];
+
+  // For backwards compatibility, decorator-based queries are grouped and
+  // ordered in a specific way. The order needs to match with what we had in:
+  // https://github.com/angular/angular/blob/8737544d6963bf664f752de273e919575cca08ac/packages/compiler-cli/src/ngtsc/annotations/directive/src/shared.ts#L94-L111.
+  const decoratorViewChild: R3QueryMetadata[] = [];
+  const decoratorViewChildren: R3QueryMetadata[] = [];
+  const decoratorContentChild: R3QueryMetadata[] = [];
+  const decoratorContentChildren: R3QueryMetadata[] = [];
+
+  for (const member of members) {
+    const decoratorQuery = tryGetQueryFromFieldDecorator(member, reflector, evaluator, isCore);
+    const signalQuery = tryParseSignalQueryFromInitializer(member, reflector, isCore);
+
+    if (decoratorQuery !== null && signalQuery !== null) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decoratorQuery.decorator.node,
+          `Using @${decoratorQuery.name} with a signal-based query is not allowed.`);
+    }
+
+    const queryNode = decoratorQuery?.decorator.node ?? signalQuery?.call;
+    if (queryNode !== undefined && member.isStatic) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INCORRECTLY_DECLARED_ON_STATIC_MEMBER, queryNode,
+          `Query is incorrectly declared on a static class member.`);
+    }
+
+    if (decoratorQuery !== null) {
+      switch (decoratorQuery.name) {
+        case 'ViewChild':
+          decoratorViewChild.push(decoratorQuery.metadata);
+          break;
+        case 'ViewChildren':
+          decoratorViewChildren.push(decoratorQuery.metadata);
+          break;
+        case 'ContentChild':
+          decoratorContentChild.push(decoratorQuery.metadata);
+          break;
+        case 'ContentChildren':
+          decoratorContentChildren.push(decoratorQuery.metadata);
+          break;
+      }
+    } else if (signalQuery !== null) {
+      switch (signalQuery.name) {
+        case 'viewChild':
+        case 'viewChildren':
+          viewQueries.push(signalQuery.metadata);
+          break;
+        case 'contentChild':
+        case 'contentChildren':
+          contentQueries.push(signalQuery.metadata);
+          break;
+      }
+    }
+  }
+
+  return {
+    viewQueries: [...viewQueries, ...decoratorViewChild, ...decoratorViewChildren],
+    contentQueries: [...contentQueries, ...decoratorContentChild, ...decoratorContentChildren],
+  };
 }
 
 /** Parses the `outputs` array of a directive/component. */
@@ -913,7 +1152,8 @@ function evaluateHostExpressionBindings(
  * @param rawHostDirectives Expression that defined the `hostDirectives`.
  */
 function extractHostDirectives(
-    rawHostDirectives: ts.Expression, evaluator: PartialEvaluator): HostDirectiveMeta[] {
+    rawHostDirectives: ts.Expression, evaluator: PartialEvaluator,
+    compilationMode: CompilationMode): HostDirectiveMeta[] {
   const resolved = evaluator.evaluate(rawHostDirectives, forwardRefResolver);
   if (!Array.isArray(resolved)) {
     throw createValueHasWrongTypeError(
@@ -923,21 +1163,50 @@ function extractHostDirectives(
   return resolved.map(value => {
     const hostReference = value instanceof Map ? value.get('directive') : value;
 
-    if (!(hostReference instanceof Reference)) {
-      throw createValueHasWrongTypeError(
-          rawHostDirectives, hostReference, 'Host directive must be a reference');
+    // Diagnostics
+    if (compilationMode !== CompilationMode.LOCAL) {
+      if (!(hostReference instanceof Reference)) {
+        throw createValueHasWrongTypeError(
+            rawHostDirectives, hostReference, 'Host directive must be a reference');
+      }
+
+      if (!isNamedClassDeclaration(hostReference.node)) {
+        throw createValueHasWrongTypeError(
+            rawHostDirectives, hostReference, 'Host directive reference must be a class');
+      }
     }
 
-    if (!isNamedClassDeclaration(hostReference.node)) {
-      throw createValueHasWrongTypeError(
-          rawHostDirectives, hostReference, 'Host directive reference must be a class');
+    let directive: Reference<ClassDeclaration>|Expression;
+    let nameForErrors = (fieldName: string) => '@Directive.hostDirectives';
+    if (compilationMode === CompilationMode.LOCAL && hostReference instanceof DynamicValue) {
+      // At the moment in local compilation we only support simple array for host directives, i.e.,
+      // an array consisting of the directive identifiers. We don't support forward refs or other
+      // expressions applied on externally imported directives. The main reason is simplicity, and
+      // that almost nobody wants to use host directives this way (e.g., what would be the point of
+      // forward ref for imported symbols?!)
+      if (!ts.isIdentifier(hostReference.node) &&
+          !ts.isPropertyAccessExpression(hostReference.node)) {
+        throw new FatalDiagnosticError(
+            ErrorCode.LOCAL_COMPILATION_HOST_DIRECTIVE_INVALID, hostReference.node,
+            `In local compilation mode, host directive cannot be an expression`);
+      }
+
+      directive = new WrappedNodeExpr(hostReference.node);
+    } else if (hostReference instanceof Reference) {
+      directive = hostReference as Reference<ClassDeclaration>;
+      nameForErrors = (fieldName: string) => `@Directive.hostDirectives.${
+          (directive as Reference<ClassDeclaration>).node.name.text}.${fieldName}`;
+    } else {
+      throw new Error('Impossible state');
     }
 
     const meta: HostDirectiveMeta = {
-      directive: hostReference as Reference<ClassDeclaration>,
-      isForwardReference: hostReference.synthetic,
-      inputs: parseHostDirectivesMapping('inputs', value, hostReference.node, rawHostDirectives),
-      outputs: parseHostDirectivesMapping('outputs', value, hostReference.node, rawHostDirectives),
+      directive,
+      isForwardReference: hostReference instanceof Reference && hostReference.synthetic,
+      inputs:
+          parseHostDirectivesMapping('inputs', value, nameForErrors('input'), rawHostDirectives),
+      outputs:
+          parseHostDirectivesMapping('outputs', value, nameForErrors('output'), rawHostDirectives),
     };
 
     return meta;
@@ -952,10 +1221,9 @@ function extractHostDirectives(
  * @param sourceExpression Expression that the host directive is referenced in.
  */
 function parseHostDirectivesMapping(
-    field: 'inputs'|'outputs', resolvedValue: ResolvedValue, classReference: ClassDeclaration,
+    field: 'inputs'|'outputs', resolvedValue: ResolvedValue, nameForErrors: string,
     sourceExpression: ts.Expression): {[bindingPropertyName: string]: string}|null {
   if (resolvedValue instanceof Map && resolvedValue.has(field)) {
-    const nameForErrors = `@Directive.hostDirectives.${classReference.name.text}.${field}`;
     const rawInputs = resolvedValue.get(field);
 
     if (isStringArrayOrDie(rawInputs, nameForErrors, sourceExpression)) {
@@ -970,9 +1238,19 @@ function parseHostDirectivesMapping(
 function toHostDirectiveMetadata(
     hostDirective: HostDirectiveMeta, context: ts.SourceFile,
     refEmitter: ReferenceEmitter): R3HostDirectiveMetadata {
+  let directive: R3Reference;
+  if (hostDirective.directive instanceof Reference) {
+    directive =
+        toR3Reference(hostDirective.directive.node, hostDirective.directive, context, refEmitter);
+  } else {
+    directive = {
+      value: hostDirective.directive,
+      type: hostDirective.directive,
+    };
+  }
+
   return {
-    directive:
-        toR3Reference(hostDirective.directive.node, hostDirective.directive, context, refEmitter),
+    directive,
     isForwardReference: hostDirective.isForwardReference,
     inputs: hostDirective.inputs || null,
     outputs: hostDirective.outputs || null
@@ -986,6 +1264,7 @@ function toR3InputMetadata(mapping: InputMapping): R3InputMetadata {
     bindingPropertyName: mapping.bindingPropertyName,
     required: mapping.required,
     transformFunction: mapping.transform !== null ? new WrappedNodeExpr(mapping.transform.node) :
-                                                    null
+                                                    null,
+    isSignal: mapping.isSignal,
   };
 }

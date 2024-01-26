@@ -17,17 +17,21 @@ import {createOpXrefMap} from '../util/elements';
 export function removeContentSelectors(job: CompilationJob): void {
   for (const unit of job.units) {
     const elements = createOpXrefMap(unit);
-    for (const op of unit.update) {
+    for (const op of unit.ops()) {
       switch (op.kind) {
         case ir.OpKind.Binding:
           const target = lookupInXrefMap(elements, op.target);
-          if (op.name.toLowerCase() === 'select' && target.kind === ir.OpKind.Projection) {
+          if (isSelectAttribute(op.name) && target.kind === ir.OpKind.Projection) {
             ir.OpList.remove<ir.UpdateOp>(op);
           }
           break;
       }
     }
   }
+}
+
+function isSelectAttribute(name: string) {
+  return name.toLowerCase() === 'select';
 }
 
 /**

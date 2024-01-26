@@ -10,7 +10,7 @@ import {Route} from '@angular/router';
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {ApiManifest, ApiManifestItem} from '../interfaces/api-manifest';
 import {PagePrefix} from '../../../core/enums/pages';
-import {NavigationItem, contentResolver} from '@angular/docs-shared';
+import {NavigationItem, contentResolver} from '@angular/docs';
 
 export const ANGULAR_PACKAGE_PREFIX = '@angular/';
 

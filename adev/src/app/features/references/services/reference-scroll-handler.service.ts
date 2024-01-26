@@ -18,14 +18,15 @@ import {
   signal,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {auditTime, fromEvent} from 'rxjs';
+import {fromEvent} from 'rxjs';
+import {auditTime} from 'rxjs/operators';
 import {
   API_REFERENCE_DETAILS_PAGE_MEMBERS_CLASS_NAME,
   API_REFERENCE_MEMBER_CARD_CLASS_NAME,
   API_TAB_ACTIVE_CODE_LINE,
   MEMBER_ID_ATTRIBUTE,
 } from '../constants/api-reference-prerender.constants';
-import {WINDOW} from '@angular/docs-shared';
+import {WINDOW} from '@angular/docs';
 
 export const SCROLL_EVENT_DELAY = 20;
 export const SCROLL_THRESHOLD = 20;

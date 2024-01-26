@@ -6,81 +6,105 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {
+  CdkVirtualScrollViewport,
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+} from '@angular/cdk/scrolling';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild,} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {DevToolsNode, ElementPosition, Events, MessageBus} from 'protocol';
-import {Subscription} from 'rxjs';
 
 import {TabUpdate} from '../../tab-update/index';
 
 import {ComponentDataSource, FlatNode} from './component-data-source';
 import {isChildOf, parentCollapsed} from './directive-forest-utils';
 import {IndexedNode} from './index-forest';
+import {MatIcon} from '@angular/material/icon';
+import {FilterComponent} from './filter/filter.component';
 
 @Component({
   selector: 'ng-directive-forest',
   templateUrl: './directive-forest.component.html',
   styleUrls: ['./directive-forest.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    FilterComponent,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualForOf,
+    MatIcon,
+  ],
 })
-export class DirectiveForestComponent implements OnInit, OnDestroy {
+export class DirectiveForestComponent {
   @Input()
   set forest(forest: DevToolsNode[]) {
     this._latestForest = forest;
     const result = this._updateForest(forest);
     const changed =
-        result.movedItems.length || result.newItems.length || result.removedItems.length;
+      result.movedItems.length || result.newItems.length || result.removedItems.length;
     if (this.currentSelectedElement && changed) {
       this._reselectNodeOnUpdate();
     }
   }
-  @Input() currentSelectedElement: IndexedNode;
+  @Input({required: true}) currentSelectedElement!: IndexedNode;
   @Input()
   set showCommentNodes(show: boolean) {
     this._showCommentNodes = show;
     this.forest = this._latestForest;
   }
 
-  @Output() selectNode = new EventEmitter<IndexedNode|null>();
+  @Output() selectNode = new EventEmitter<IndexedNode | null>();
   @Output() selectDomElement = new EventEmitter<IndexedNode>();
-  @Output() setParents = new EventEmitter<FlatNode[]|null>();
+  @Output() setParents = new EventEmitter<FlatNode[] | null>();
   @Output() highlightComponent = new EventEmitter<ElementPosition>();
   @Output() removeComponentHighlight = new EventEmitter<void>();
   @Output() toggleInspector = new EventEmitter<void>();
 
-  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualScrollViewport) viewport!: CdkVirtualScrollViewport;
 
   filterRegex = new RegExp('.^');
   currentlyMatchedIndex = -1;
 
-  selectedNode: FlatNode|null = null;
-  parents: FlatNode[];
+  selectedNode: FlatNode | null = null;
+  parents!: FlatNode[];
 
-  private _highlightIDinTreeFromElement: number|null = null;
-  private _tabUpdateSubscription: Subscription;
+  private _highlightIDinTreeFromElement: number | null = null;
   private _showCommentNodes = false;
-  private _latestForest: DevToolsNode[];
+  private _latestForest!: DevToolsNode[];
 
-  set highlightIDinTreeFromElement(id: number|null) {
+  set highlightIDinTreeFromElement(id: number | null) {
     this._highlightIDinTreeFromElement = id;
     this._cdr.markForCheck();
   }
 
-  readonly treeControl =
-      new FlatTreeControl<FlatNode>((node) => node.level, (node) => node.expandable);
+  readonly treeControl = new FlatTreeControl<FlatNode>(
+    (node) => node!.level,
+    (node) => node.expandable,
+  );
   readonly dataSource = new ComponentDataSource(this.treeControl);
   readonly itemHeight = 18;
 
   private _initialized = false;
 
   constructor(
-      private _tabUpdate: TabUpdate, private _messageBus: MessageBus<Events>,
-      private _cdr: ChangeDetectorRef) {}
-
-  ngOnInit(): void {
+    private _tabUpdate: TabUpdate,
+    private _messageBus: MessageBus<Events>,
+    private _cdr: ChangeDetectorRef,
+  ) {
     this.subscribeToInspectorEvents();
-    this._tabUpdateSubscription = this._tabUpdate.tabUpdate$.subscribe(() => {
+    this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
       if (this.viewport) {
         setTimeout(() => {
           this.viewport.scrollToIndex(0);
@@ -88,12 +112,6 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
         });
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    if (this._tabUpdateSubscription) {
-      this._tabUpdateSubscription.unsubscribe();
-    }
   }
 
   subscribeToInspectorEvents(): void {
@@ -120,8 +138,9 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   }
 
   handleSelect(node: FlatNode): void {
-    this.currentlyMatchedIndex =
-        this.dataSource.data.findIndex((matchedNode) => matchedNode.id === node.id);
+    this.currentlyMatchedIndex = this.dataSource.data.findIndex(
+      (matchedNode) => matchedNode.id === node.id,
+    );
     this.selectAndEnsureVisible(node);
   }
 
@@ -165,8 +184,9 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   }
 
   private _reselectNodeOnUpdate(): void {
-    const nodeThatStillExists =
-        this.dataSource.getFlatNodeFromIndexedNode(this.currentSelectedElement);
+    const nodeThatStillExists = this.dataSource.getFlatNodeFromIndexedNode(
+      this.currentSelectedElement,
+    );
     if (nodeThatStillExists) {
       this.select(nodeThatStillExists);
     } else {
@@ -174,8 +194,11 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _updateForest(forest: DevToolsNode[]):
-      {newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[];} {
+  private _updateForest(forest: DevToolsNode[]): {
+    newItems: FlatNode[];
+    movedItems: FlatNode[];
+    removedItems: FlatNode[];
+  } {
     const result = this.dataSource.update(forest, this._showCommentNodes);
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
@@ -189,12 +212,13 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  populateParents(position: ElementPosition): void {
+  private populateParents(position: ElementPosition): void {
     this.parents = [];
     for (let i = 1; i <= position.length; i++) {
       const current = position.slice(0, i);
-      const selectedNode =
-          this.dataSource.data.find((item) => item.position.toString() === current.toString());
+      const selectedNode = this.dataSource.data.find(
+        (item) => item.position.toString() === current.toString(),
+      );
 
       // We might not be able to find the parent if the user has hidden the comment nodes.
       if (selectedNode) {
@@ -288,8 +312,10 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   }
 
   isMatched(node: FlatNode): boolean {
-    return this.filterRegex.test(node.name.toLowerCase()) ||
-        this.filterRegex.test(node.directives.toLowerCase());
+    return (
+      this.filterRegex.test(node.name.toLowerCase()) ||
+      this.filterRegex.test(node.directives.toLowerCase())
+    );
   }
 
   handleFilter(filterText: string): void {
@@ -333,8 +359,9 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
 
   prevMatched(): void {
     const indexesOfMatchedNodes = this._findMatchedNodes();
-    this.currentlyMatchedIndex = (this.currentlyMatchedIndex - 1 + indexesOfMatchedNodes.length) %
-        indexesOfMatchedNodes.length;
+    this.currentlyMatchedIndex =
+      (this.currentlyMatchedIndex - 1 + indexesOfMatchedNodes.length) %
+      indexesOfMatchedNodes.length;
     const indexToSelect = indexesOfMatchedNodes[this.currentlyMatchedIndex];
     const nodeToSelect = this.dataSource.data[indexToSelect];
     if (indexToSelect !== undefined) {
@@ -361,11 +388,13 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   }
 
   isHighlighted(node: FlatNode): boolean {
-    return !!this._highlightIDinTreeFromElement &&
-        this._highlightIDinTreeFromElement === node.original.component?.id;
+    return (
+      !!this._highlightIDinTreeFromElement &&
+      this._highlightIDinTreeFromElement === node.original.component?.id
+    );
   }
 
-  isElement(node: FlatNode): boolean|null {
+  isElement(node: FlatNode): boolean | null {
     return node.original.component && node.original.component.isElement;
   }
 }

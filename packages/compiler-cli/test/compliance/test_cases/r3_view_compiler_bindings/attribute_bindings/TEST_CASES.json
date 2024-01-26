@@ -64,14 +64,7 @@
       ],
       "expectations": [
         {
-          "failureMessage": "Incorrect template",
-          "files": [
-            {
-              "expected": "chain_multiple_bindings_for_multiple_elements_template.js",
-              "templatePipelineExpected": "chain_multiple_bindings_for_multiple_elements_template.pipeline.js",
-              "generated": "chain_multiple_bindings_for_multiple_elements.js"
-            }
-          ]
+          "failureMessage": "Incorrect template"
         }
       ]
     },
@@ -82,14 +75,7 @@
       ],
       "expectations": [
         {
-          "failureMessage": "Incorrect template",
-          "files": [
-            {
-              "expected": "chain_multiple_bindings_with_child_elements_template.js",
-              "templatePipelineExpected": "chain_multiple_bindings_with_child_elements_template.pipeline.js",
-              "generated": "chain_multiple_bindings_with_child_elements.js"
-            }
-          ]
+          "failureMessage": "Incorrect template"
         }
       ]
     },
@@ -122,6 +108,17 @@
           "files": [
             "interpolated_attributes.js"
           ]
+        }
+      ]
+    },
+    {
+      "description": "should handle duplicate bindings",
+      "inputFiles": [
+        "duplicate_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of duplicate bindings"
         }
       ]
     }

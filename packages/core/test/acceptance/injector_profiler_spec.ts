@@ -731,6 +731,66 @@ describe('getInjectorProviders', () => {
        expect(myServiceProviderRecord!.importPath![1]).toBe(ModuleA);
      }));
 
+  it('should be able to determine providers in a lazy route that has providers', fakeAsync(() => {
+       class MyService {}
+
+       @Component({selector: 'my-comp-b', template: 'hello world', standalone: true})
+       class MyStandaloneComponentB {
+         injector = inject(Injector);
+       }
+
+       @Component({
+         selector: 'my-comp',
+         template: `<router-outlet/>`,
+         imports: [MyStandaloneComponentB, RouterOutlet],
+         standalone: true
+       })
+       class MyStandaloneComponent {
+         injector = inject(Injector);
+         @ViewChild(RouterOutlet) routerOutlet: RouterOutlet|undefined;
+       }
+
+       TestBed.configureTestingModule({
+         imports: [RouterModule.forRoot([
+           {
+             path: 'lazy',
+             loadComponent: () => MyStandaloneComponentB,
+             providers: [MyService],
+           },
+         ])]
+       });
+       const root = TestBed.createComponent(MyStandaloneComponent);
+       TestBed.inject(Router).navigateByUrl('/lazy');
+       tick();
+       root.detectChanges();
+
+       const myStandalonecomponentB =
+           root.componentRef.instance!.routerOutlet!.component as MyStandaloneComponentB;
+       const routeEnvironmentInjector =
+           (myStandalonecomponentB.injector.get(EnvironmentInjector) as R3Injector);
+       expect(routeEnvironmentInjector).toBeTruthy();
+       expect(routeEnvironmentInjector.source).toBeTruthy();
+       expect(routeEnvironmentInjector.source!.startsWith('Route:')).toBeTrue();
+
+       const myComponentBEnvironmentInjectorProviders =
+           getInjectorProviders(routeEnvironmentInjector);
+       const myServiceProviderRecord =
+           myComponentBEnvironmentInjectorProviders.find(provider => provider.token === MyService);
+       expect(myServiceProviderRecord).toBeTruthy();
+       expect(myServiceProviderRecord!.provider).toBe(MyService);
+       expect(myServiceProviderRecord!.token).toBe(MyService);
+     }));
+
+  it('should be able to determine providers in an injector that was created manually',
+     fakeAsync(() => {
+       class MyService {}
+       const injector = Injector.create({providers: [MyService]}) as EnvironmentInjector;
+       const providers = getInjectorProviders(injector);
+       expect(providers.length).toBe(1);
+       expect(providers[0].token).toBe(MyService);
+       expect(providers[0].provider).toBe(MyService);
+     }));
+
   it('should be able to get injector providers for element injectors created by components rendering in an ngFor',
      () => {
        class MyService {}

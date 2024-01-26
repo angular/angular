@@ -12,7 +12,7 @@ let overlayContent: HTMLElement;
 declare const ng: any;
 
 interface Type<T> extends Function {
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }
 
 const DEV_TOOLS_HIGHLIGHT_NODE_ID = '____ngDevToolsHighlight';
@@ -40,26 +40,27 @@ function init(): void {
   overlay.appendChild(overlayContent);
 }
 
-export const findComponentAndHost =
-    (el: Node|undefined): {component: any; host: HTMLElement | null} => {
-      if (!el) {
-        return {component: null, host: null};
-      }
-      while (el) {
-        const component = el instanceof HTMLElement && ng.getComponent(el);
-        if (component) {
-          return {component, host: el as HTMLElement};
-        }
-        if (!el.parentElement) {
-          break;
-        }
-        el = el.parentElement;
-      }
-      return {component: null, host: null};
-    };
+export const findComponentAndHost = (
+  el: Node | undefined,
+): {component: any; host: HTMLElement | null} => {
+  if (!el) {
+    return {component: null, host: null};
+  }
+  while (el) {
+    const component = el instanceof HTMLElement && ng.getComponent(el);
+    if (component) {
+      return {component, host: el as HTMLElement};
+    }
+    if (!el.parentElement) {
+      break;
+    }
+    el = el.parentElement;
+  }
+  return {component: null, host: null};
+};
 
 // Todo(aleksanderbodurri): this should not be part of the highlighter, move this somewhere else
-export function getDirectiveName(dir: Type<unknown>|undefined|null): string {
+export function getDirectiveName(dir: Type<unknown> | undefined | null): string {
   return dir ? dir.constructor.name : 'unknown';
 }
 
@@ -97,11 +98,12 @@ export function inDoc(node: any): boolean {
   }
   const doc = node.ownerDocument.documentElement;
   const parent = node.parentNode;
-  return doc === node || doc === parent ||
-      !!(parent && parent.nodeType === 1 && doc.contains(parent));
+  return (
+    doc === node || doc === parent || !!(parent && parent.nodeType === 1 && doc.contains(parent))
+  );
 }
 
-function getComponentRect(el: Node): DOMRect|undefined {
+function getComponentRect(el: Node): DOMRect | undefined {
   if (!(el instanceof HTMLElement)) {
     return;
   }
@@ -137,7 +139,7 @@ function positionOverlayContent(dimensions: DOMRect) {
 
   // Attempt to position the content element so that it's always in the
   // viewport along the Y axis. Prefer to position on the bottom.
-  if ((dimensions.bottom + yOffset) <= viewportHeight) {
+  if (dimensions.bottom + yOffset <= viewportHeight) {
     style.bottom = yOffsetValue;
     // If it doesn't fit on the bottom, try to position on top.
   } else if (dimensions.top - yOffset >= 0) {

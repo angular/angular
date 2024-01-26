@@ -93,7 +93,20 @@ export interface DirectiveMeta {
    */
   exportAs: string[]|null;
 
+  /**
+   * Whether the directive is a structural directive (e.g. `<div *ngIf></div>`).
+   */
   isStructural: boolean;
+
+  /**
+   * If the directive is a component, includes the selectors of its `ng-content` elements.
+   */
+  ngContentSelectors: string[]|null;
+
+  /**
+   * Whether the template of the component preserves whitespaces.
+   */
+  preserveWhitespaces: boolean;
 
   /**
    * The name of animations that the user defines in the component.
@@ -214,4 +227,9 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * @param trigger Trigger whose target is being looked up.
    */
   getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null;
+
+  /**
+   * Whether a given node is located in a `@defer` block.
+   */
+  isDeferred(node: Element): boolean;
 }

@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {types as t} from '@babel/core';
-import {NodePath, Scope} from '@babel/traverse';
+import {NodePath, types as t} from '@babel/core';
 
 import {DeclarationScope} from '../../../linker';
 
@@ -25,7 +24,7 @@ export class BabelDeclarationScope implements DeclarationScope<ConstantScopePath
    *
    * @param declarationScope the Babel scope containing the declaration call expression.
    */
-  constructor(private declarationScope: Scope) {}
+  constructor(private declarationScope: NodePath['scope']) {}
 
   /**
    * Compute the Babel `NodePath` that can be used to reference the lexical scope where any

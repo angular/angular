@@ -104,7 +104,7 @@ class DtsTransformer {
     sf = ts.visitNode(sf, visitor, ts.isSourceFile) || sf;
 
     // Add new imports for this file.
-    return addImports(imports, sf);
+    return addImports(this.ctx.factory, imports, sf);
   }
 
   private transformClassDeclaration(

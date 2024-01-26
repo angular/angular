@@ -51,6 +51,11 @@ export interface AstHost<TExpression> {
   parseBooleanLiteral(bool: TExpression): boolean;
 
   /**
+   * Returns `true` if the value corresponds to `null`.
+   */
+  isNull(node: TExpression): boolean;
+
+  /**
    * Return `true` if the given expression is an array literal, or false otherwise.
    */
   isArrayLiteral(node: TExpression): boolean;

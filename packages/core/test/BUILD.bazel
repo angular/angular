@@ -42,7 +42,6 @@ ts_library(
     srcs = UTILS,
     deps = [
         "//packages/compiler",
-        "@npm//base64-js",
         "@npm//source-map",
     ],
 )
@@ -68,6 +67,7 @@ ts_library(
         "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
+        "//packages/core/rxjs-interop",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
         "//packages/core/src/reflection",
@@ -120,7 +120,6 @@ jasmine_node_test(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//packages/zone.js/lib:zone_d_ts",
-        "@npm//base64-js",
         "@npm//source-map",
     ],
 )

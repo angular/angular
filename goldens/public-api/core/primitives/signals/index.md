@@ -13,6 +13,9 @@ export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNo
 // @public
 export function consumerDestroy(node: ReactiveNode): void;
 
+// @public (undocumented)
+export function consumerMarkDirty(node: ReactiveNode): void;
+
 // @public
 export function consumerPollProducersForChange(node: ReactiveNode): boolean;
 
@@ -96,18 +99,16 @@ export function setThrowInvalidWriteToSignalError(fn: () => never): void;
 export const SIGNAL: unique symbol;
 
 // @public (undocumented)
+export const SIGNAL_NODE: SignalNode<unknown>;
+
+// @public (undocumented)
 export interface SignalGetter<T> extends SignalBaseGetter<T> {
     // (undocumented)
     readonly [SIGNAL]: SignalNode<T>;
 }
 
 // @public (undocumented)
-export function signalMutateFn<T>(node: SignalNode<T>, mutator: (value: T) => void): void;
-
-// @public (undocumented)
 export interface SignalNode<T> extends ReactiveNode {
-    // (undocumented)
-    readonly [SIGNAL]: SignalNode<T>;
     // (undocumented)
     equal: ValueEqualityFn<T>;
     // (undocumented)

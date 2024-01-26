@@ -304,6 +304,95 @@ describe('host directives', () => {
     expect(fixture.nativeElement.textContent).toContain('FirstHost | SecondHost');
   });
 
+  it('should execute inherited host directives in the correct order', () => {
+    const logs: string[] = [];
+
+    @Directive({standalone: true})
+    class HostGrandparent_1 {
+      constructor() {
+        logs.push('HostGrandparent_1');
+      }
+    }
+
+    @Directive({standalone: true})
+    class HostGrandparent_2 {
+      constructor() {
+        logs.push('HostGrandparent_2');
+      }
+    }
+
+    @Directive({standalone: true, hostDirectives: [HostGrandparent_1, HostGrandparent_2]})
+    class Grandparent {
+      constructor() {
+        logs.push('Grandparent');
+      }
+    }
+
+    @Directive({standalone: true})
+    class HostParent_1 {
+      constructor() {
+        logs.push('HostParent_1');
+      }
+    }
+
+    @Directive({standalone: true})
+    class HostParent_2 {
+      constructor() {
+        logs.push('HostParent_2');
+      }
+    }
+
+    @Directive({standalone: true, hostDirectives: [HostParent_1, HostParent_2]})
+    class Parent extends Grandparent {
+      constructor() {
+        super();
+        logs.push('Parent');
+      }
+    }
+
+    @Directive({standalone: true})
+    class HostDir_1 {
+      constructor() {
+        logs.push('HostDir_1');
+      }
+    }
+
+    @Directive({standalone: true})
+    class HostDir_2 {
+      constructor() {
+        logs.push('HostDir_2');
+      }
+    }
+
+    @Directive({selector: '[dir]', hostDirectives: [HostDir_1, HostDir_2]})
+    class Dir extends Parent {
+      constructor() {
+        super();
+        logs.push('Dir');
+      }
+    }
+
+    @Component({template: '<div dir></div>'})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, Dir]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(logs).toEqual([
+      'HostGrandparent_1',
+      'HostGrandparent_2',
+      'HostParent_1',
+      'HostParent_2',
+      'HostDir_1',
+      'HostDir_2',
+      'Grandparent',
+      'Parent',
+      'Dir',
+    ]);
+  });
+
   describe('lifecycle hooks', () => {
     it('should invoke lifecycle hooks from the host directives', () => {
       const logs: string[] = [];
@@ -1329,6 +1418,40 @@ describe('host directives', () => {
          expect(fixture.componentInstance.spy).toHaveBeenCalledWith('FirstHostDir');
          expect(fixture.componentInstance.spy).toHaveBeenCalledWith('SecondHostDir');
        });
+
+    it('should emit to an output of an inherited host directive that has been exposed', () => {
+      @Directive({standalone: true, host: {'(click)': 'hasBeenClicked.emit("hello")'}})
+      class HostDir {
+        @Output() hasBeenClicked = new EventEmitter<string>();
+      }
+
+      @Directive({
+        hostDirectives: [{
+          directive: HostDir,
+          outputs: ['hasBeenClicked'],
+        }]
+      })
+      class Parent {
+      }
+
+      @Directive({selector: '[dir]'})
+      class Dir extends Parent {
+      }
+
+      @Component({template: '<button dir (hasBeenClicked)="spy($event)"></button>'})
+      class App {
+        spy = jasmine.createSpy('click spy');
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.spy).toHaveBeenCalledOnceWith('hello');
+    });
   });
 
   describe('inputs', () => {
@@ -1874,6 +1997,36 @@ describe('host directives', () => {
          // The input on the button instance should not have been written to.
          expect(logs).toEqual(['spanValue']);
        });
+
+    it('should set the input of an inherited host directive that has been exposed', () => {
+      @Directive({standalone: true})
+      class HostDir {
+        @Input() color?: string;
+      }
+
+      @Directive({hostDirectives: [{directive: HostDir, inputs: ['color']}]})
+      class Parent {
+      }
+
+      @Directive({selector: '[dir]'})
+      class Dir extends Parent {
+      }
+
+      @Component({template: '<button dir [color]="color"></button>'})
+      class App {
+        @ViewChild(HostDir) hostDir!: HostDir;
+        color = 'red';
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('red');
+
+      fixture.componentInstance.color = 'green';
+      fixture.detectChanges();
+      expect(fixture.componentInstance.hostDir.color).toBe('green');
+    });
   });
 
   describe('ngOnChanges', () => {
@@ -3317,6 +3470,34 @@ describe('host directives', () => {
         const fixture = TestBed.createComponent(App);
         fixture.detectChanges();
       }).not.toThrow();
+    });
+
+    it('should throw an error if a duplicate directive is inherited', () => {
+      @Directive({standalone: true})
+      class HostDir {
+      }
+
+      @Directive({standalone: true, hostDirectives: [HostDir]})
+      class Grandparent {
+      }
+
+      @Directive({standalone: true})
+      class Parent extends Grandparent {
+      }
+
+      @Directive({selector: '[dir]', hostDirectives: [HostDir]})
+      class Dir extends Parent {
+      }
+
+      @Component({template: '<div dir></div>'})
+      class App {
+      }
+
+      TestBed.configureTestingModule({declarations: [App, Dir]});
+
+      expect(() => TestBed.createComponent(App))
+          .toThrowError(
+              'NG0309: Directive HostDir matches multiple times on the same element. Directives can only match an element once.');
     });
   });
 });

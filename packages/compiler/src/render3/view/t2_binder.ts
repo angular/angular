@@ -11,8 +11,7 @@ import {SelectorMatcher} from '../../selector';
 import {BoundAttribute, BoundEvent, BoundText, Comment, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, HoverDeferredTrigger, Icu, IfBlock, IfBlockBranch, InteractionDeferredTrigger, Node, Reference, SwitchBlock, SwitchBlockCase, Template, Text, TextAttribute, UnknownBlock, Variable, ViewportDeferredTrigger, Visitor} from '../r3_ast';
 
 import {BoundTarget, DirectiveMeta, ReferenceTarget, ScopedNode, Target, TargetBinder} from './t2_api';
-import {createCssSelector} from './template';
-import {getAttrsForDirectiveMatching} from './util';
+import {createCssSelectorFromNode} from './util';
 
 /**
  * Processes `Target`s with a given set of directives and performs a binding operation, which
@@ -52,7 +51,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         TemplateBinder.applyWithScope(target.template, scope);
     return new R3BoundTarget(
         target, directives, eagerDirectives, bindings, references, expressions, symbols,
-        nestingLevel, scopedNodeEntities, usedPipes, eagerPipes, deferBlocks);
+        nestingLevel, scopedNodeEntities, usedPipes, eagerPipes, deferBlocks, scope);
   }
 }
 
@@ -68,6 +67,11 @@ class Scope implements Visitor {
    * Named members of the `Scope`, such as `Reference`s or `Variable`s.
    */
   readonly namedEntities = new Map<string, Reference|Variable>();
+
+  /**
+   * Set of elements that belong to this scope.
+   */
+  readonly elementsInScope = new Set<Element>();
 
   /**
    * Child `Scope`s for immediately nested `ScopedNode`s.
@@ -133,6 +137,8 @@ class Scope implements Visitor {
 
     // Recurse into the `Element`'s children.
     element.children.forEach(node => node.visit(this));
+
+    this.elementsInScope.add(element);
   }
 
   visitTemplate(template: Template) {
@@ -307,17 +313,17 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
   }
 
   visitElement(element: Element): void {
-    this.visitElementOrTemplate(element.name, element);
+    this.visitElementOrTemplate(element);
   }
 
   visitTemplate(template: Template): void {
-    this.visitElementOrTemplate('ng-template', template);
+    this.visitElementOrTemplate(template);
   }
 
-  visitElementOrTemplate(elementName: string, node: Element|Template): void {
+  visitElementOrTemplate(node: Element|Template): void {
     // First, determine the HTML shape of the node for the purpose of directive matching.
     // Do this by building up a `CssSelector` for the node.
-    const cssSelector = createCssSelector(elementName, getAttrsForDirectiveMatching(node));
+    const cssSelector = createCssSelectorFromNode(node);
 
     // Next, use the `SelectorMatcher` to get the list of directives on the node.
     const directives: DirectiveT[] = [];
@@ -732,7 +738,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
       private nestingLevel: Map<ScopedNode, number>,
       private scopedNodeEntities: Map<ScopedNode|null, ReadonlySet<Reference|Variable>>,
       private usedPipes: Set<string>, private eagerPipes: Set<string>,
-      private deferredBlocks: Set<DeferredBlock>) {}
+      private deferredBlocks: Set<DeferredBlock>, private rootScope: Scope) {}
 
   getEntitiesInScope(node: ScopedNode|null): ReadonlySet<Reference|Variable> {
     return this.scopedNodeEntities.get(node) ?? new Set();
@@ -785,7 +791,6 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   getDeferBlocks(): DeferredBlock[] {
     return Array.from(this.deferredBlocks);
   }
-
 
   getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null {
     // Only triggers that refer to DOM nodes can be resolved.
@@ -848,6 +853,16 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
     }
 
     return null;
+  }
+
+  isDeferred(element: Element): boolean {
+    for (const deferBlock of this.deferredBlocks) {
+      const scope = this.rootScope.childScopes.get(deferBlock);
+      if (scope && scope.elementsInScope.has(element)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

@@ -180,6 +180,34 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should handle structural directives with same placeholder",
+      "inputFiles": [
+        "structural_directives_same_placeholder.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should handle templates in sibling i18n blocks",
+      "inputFiles": [
+        "sibling_i18n_blocks.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
     }
   ]
 }

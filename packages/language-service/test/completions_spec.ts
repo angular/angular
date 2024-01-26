@@ -281,6 +281,67 @@ describe('completions', () => {
        });
   });
 
+  describe('signal inputs', () => {
+    const signalInputDirectiveWithUnionType = {
+      'Dir': `
+         @Directive({
+           selector: '[dir]',
+         })
+         export class Dir {
+           myInput = input<'foo'|42|null>();
+         }
+    `
+    };
+
+    it('should return property access completions', () => {
+      const {templateFile} =
+          setup(`<input dir [myInput]="'foo'.">`, '', signalInputDirectiveWithUnionType);
+      templateFile.moveCursorToText(`dir [myInput]="'foo'.¦">`);
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, ts.ScriptElementKind.memberFunctionElement,
+          [`charAt`, 'toLowerCase', /* etc. */]);
+    });
+
+    it('should return completions of string literals, number literals, `true`, ' +
+           '`false`, `null` and `undefined`',
+       () => {
+         const {templateFile} =
+             setup(`<input dir [myInput]="">`, '', signalInputDirectiveWithUnionType);
+         templateFile.moveCursorToText('dir [myInput]="¦">');
+
+         const completions = templateFile.getCompletionsAtPosition();
+         expectContain(completions, ts.ScriptElementKind.string, [`'foo'`, '42']);
+         expectContain(completions, ts.ScriptElementKind.keyword, ['null']);
+         expectContain(completions, ts.ScriptElementKind.variableElement, ['undefined']);
+         expectDoesNotContain(completions, ts.ScriptElementKind.parameterElement, ['ctx']);
+       });
+
+    it('should return completions of string literals, number literals, `true`, `false`, ' +
+           '`null` and `undefined` when the user tries to modify the symbol',
+       () => {
+         const {templateFile} =
+             setup(`<input dir [myInput]="a">`, '', signalInputDirectiveWithUnionType);
+         templateFile.moveCursorToText('dir [myInput]="a¦">');
+
+         const completions = templateFile.getCompletionsAtPosition();
+         expectContain(completions, ts.ScriptElementKind.string, [`'foo'`, '42']);
+         expectContain(completions, ts.ScriptElementKind.keyword, ['null']);
+         expectContain(completions, ts.ScriptElementKind.variableElement, ['undefined']);
+         expectDoesNotContain(completions, ts.ScriptElementKind.parameterElement, ['ctx']);
+       });
+
+    it('should complete a string union types in binding without brackets', () => {
+      const {templateFile} =
+          setup(`<input dir myInput="foo">`, '', signalInputDirectiveWithUnionType);
+      templateFile.moveCursorToText('myInput="foo¦"');
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, ts.ScriptElementKind.string, ['foo']);
+      expectReplacementText(completions, templateFile.contents, 'foo');
+    });
+  });
+
   describe('for blocks', () => {
     const completionPrefixes = ['@', '@i'];
 
@@ -1573,7 +1634,7 @@ function setup(
   const env = LanguageServiceTestEnv.setup();
   const project = env.addProject('test', {
     'test.ts': `
-         import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
+         import {Component, input, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
 
          ${functionDeclarations}
 

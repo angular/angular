@@ -9,7 +9,7 @@
 import {TestBed} from '@angular/core/testing';
 
 import {ExampleContentLoader} from './example-content-loader.service';
-import {PREVIEWS_COMPONENTS} from '@angular/docs-shared';
+import {PREVIEWS_COMPONENTS} from '@angular/docs';
 
 describe('ExampleContentLoader', () => {
   let service: ExampleContentLoader;

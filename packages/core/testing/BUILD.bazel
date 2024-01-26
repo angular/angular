@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ng_module")
-load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//tools:defaults.bzl", "generate_api_docs", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -26,11 +25,15 @@ filegroup(
         "*.ts",
         "src/**/*.ts",
     ]) + ["PACKAGE.md"],
+    visibility = ["//visibility:public"],
 )
 
 generate_api_docs(
     name = "core_testing_docs",
-    srcs = [":files_for_docgen"],
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
     entry_point = ":index.ts",
     module_name = "@angular/core/testing",
 )

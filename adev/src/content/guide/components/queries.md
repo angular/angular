@@ -147,7 +147,7 @@ export class CustomMenu {
     <custom-menu>
       <custom-menu-item>Cheese</custom-menu-item>
       <custom-menu-item>Tomato</custom-menu-item>
-    </custom-expando>
+    </custom-menu>
   `
 })
 </docs-code>
@@ -261,7 +261,7 @@ export class CustomExpando {
 
 In the example above, `CustomExpando` cannot find `<custom-toggle>` because it is not a direct child of `<custom-expando>`. By setting `descendants: true`, you configure the query to traverse all descendants in the same template. Queries, however, _never_ pierce into components to traverse elements in other templates.
 
-View queries do not have this option because they _always_ traverse into descendents.
+View queries do not have this option because they _always_ traverse into descendants.
 
 ### Reading specific values from an element's injector
 

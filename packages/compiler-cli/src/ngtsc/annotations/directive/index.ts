@@ -9,3 +9,4 @@
 export {DirectiveDecoratorHandler} from './src/handler';
 export {DirectiveSymbol} from './src/symbol';
 export * from './src/shared';
+export * from './src/input_function';

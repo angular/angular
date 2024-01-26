@@ -18,7 +18,7 @@ export function sortedProps(obj: {[key: string]: any}) {
 }
 
 export function formatStats(validSamples: MeasureValues[], metricName: string): string {
-  const samples = validSamples.map(measureValues => measureValues.values[metricName]);
+  const samples = validSamples.map((measureValues) => measureValues.values[metricName]);
   const mean = Statistic.calculateMean(samples);
   const cv = Statistic.calculateCoefficientOfVariation(samples, mean);
   const formattedMean = formatNum(mean);

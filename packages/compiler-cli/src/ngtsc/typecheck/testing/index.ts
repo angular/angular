@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, ParseTemplateOptions, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement} from '@angular/compiler';
+import {BindingPipe, CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, ParseTemplateOptions, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement} from '@angular/compiler';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader, DirectiveMeta, HostDirectivesResolver, InputMapping, InputTransform, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, DecoratorInputTransform, DirectiveMeta, HostDirectivesResolver, InputMapping, MatchSource, MetadataReaderWithIndex, MetaKind, NgModuleIndex, PipeMeta} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api';
+import {OptimizeFor, ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api';
 import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/api';
 import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
@@ -104,6 +104,81 @@ export function angularCoreDts(): TestFile {
     }
 
     export declare type NgIterable<T> = Array<T> | Iterable<T>;
+
+    /**
+     * -------
+     * Signals
+     * ------
+     */
+
+    export declare const SIGNAL: unique symbol;
+    export declare type Signal<T> = (() => T) & {
+      [SIGNAL]: unknown;
+    };
+    export declare function signal<T>(initialValue: T): WritableSignal<T>;
+    export declare function computed<T>(computation: () => T): Signal<T>;
+
+    export interface WritableSignal<T> extends Signal<T> {
+      asReadonly(): Signal<T>;
+    }
+
+    /**
+     * -------
+     * Signal inputs
+     * ------
+     */
+
+    export interface InputOptions<ReadT, WriteT> {
+      alias?: string;
+      transform?: (v: WriteT) => ReadT;
+    }
+
+    export type InputOptionsWithoutTransform<ReadT> =
+        InputOptions<ReadT, ReadT>&{transform?: undefined};
+    export type InputOptionsWithTransform<ReadT, WriteT> =
+        Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>>&InputOptions<ReadT, WriteT>;
+
+    const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol;
+    export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol;
+
+    export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
+      [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+      [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+    }
+
+    export function inputFunction<ReadT>(): InputSignal<ReadT|undefined>;
+    export function inputFunction<ReadT>(
+        initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+    export function inputFunction<ReadT, WriteT>(
+        initialValue: ReadT,
+        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+    export function inputFunction<ReadT, WriteT>(
+        _initialValue?: ReadT,
+        _opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
+      return null!;
+    }
+
+    export function inputRequiredFunction<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>):
+        InputSignal<ReadT>;
+    export function inputRequiredFunction<ReadT, WriteT>(
+        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+    export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputOptions<ReadT, WriteT>):
+        InputSignal<ReadT, WriteT> {
+      return null!;
+    }
+
+    export type InputFunction = typeof inputFunction&{required: typeof inputRequiredFunction};
+
+    export const input: InputFunction = (() => {
+      (inputFunction as any).required = inputRequiredFunction;
+      return inputFunction as InputFunction;
+    })();
+
+    export type ɵUnwrapInputSignalWriteType<Field> =
+        Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+    export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
+      [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
+    };
    `
   };
 }
@@ -220,6 +295,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   enableTemplateTypeChecker: false,
   useInlineTypeConstructors: true,
   suggestionsForSuboptimalTypeInference: false,
+  controlFlowPreventingContentProjection: 'warning',
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -239,7 +315,8 @@ export interface TestDirective extends Partial<Pick<
           classPropertyName: string;
           bindingPropertyName: string;
           required: boolean;
-          transform: InputTransform|null;
+          isSignal: boolean;
+          transform: DecoratorInputTransform|null;
         }
   };
   outputs?: {[fieldName: string]: string};
@@ -249,6 +326,8 @@ export interface TestDirective extends Partial<Pick<
   undeclaredInputFields?: string[];
   isGeneric?: boolean;
   code?: string;
+  ngContentSelectors?: string[]|null;
+  preserveWhitespaces?: boolean;
   hostDirectives?: {
     directive: TestDirective&{isStandalone: true},
     inputs?: string[],
@@ -302,7 +381,8 @@ export function tcb(
   const boundTarget = binder.bind({template: nodes});
 
   const id = 'tcb' as TemplateId;
-  const meta: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas: [], isStandalone: false};
+  const meta: TypeCheckBlockMetadata =
+      {id, boundTarget, pipes, schemas: [], isStandalone: false, preserveWhitespaces: false};
 
   const fullConfig: TypeCheckingConfig = {
     applyTemplateContextGuards: true,
@@ -320,6 +400,7 @@ export function tcb(
     checkTypeOfPipes: true,
     checkTemplateBodies: true,
     alwaysCheckSchemaInTemplateBodies: true,
+    controlFlowPreventingContentProjection: 'warning',
     strictSafeNavigationTypes: true,
     useContextGenericType: true,
     strictLiteralTypes: true,
@@ -506,7 +587,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
         };
 
         ctx.addTemplate(
-            classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors, false);
+            classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors, false, false);
       }
     }
   });
@@ -578,6 +659,44 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
   };
 }
 
+/**
+ * Diagnoses the given template with the specified declarations.
+ *
+ * @returns a list of error diagnostics.
+ */
+export function diagnose(
+    template: string, source: string, declarations?: TestDeclaration[],
+    additionalSources: TestFile[] = [], config?: Partial<TypeCheckingConfig>,
+    options?: ts.CompilerOptions): string[] {
+  const sfPath = absoluteFrom('/main.ts');
+  const {program, templateTypeChecker} = setup(
+      [
+        {
+          fileName: sfPath,
+          templates: {
+            'TestComponent': template,
+          },
+          source,
+          declarations,
+        },
+        ...additionalSources.map(testFile => ({
+                                   fileName: testFile.name,
+                                   source: testFile.contents,
+                                   templates: {},
+                                 })),
+      ],
+      {config, options});
+  const sf = getSourceFileOrError(program, sfPath);
+  const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+
+  return diagnostics.map(diag => {
+    const text = ts.flattenDiagnosticMessageText(diag.messageText, '\n');
+    const fileName = diag.file!.fileName;
+    const {line, character} = ts.getLineAndCharacterOfPosition(diag.file!, diag.start!);
+    return `${fileName}(${line + 1}, ${character + 1}): ${text}`;
+  });
+}
+
 function createTypeCheckAdapter(fn: (sf: ts.SourceFile, ctx: TypeCheckContext) => void):
     ProgramTypeCheckAdapter {
   return {typeCheck: fn};
@@ -614,7 +733,7 @@ function prepareDeclarations(
     declarations: TestDeclaration[], resolveDeclaration: DeclarationResolver,
     metadataRegistry: Map<string, TypeCheckableDirectiveMeta>) {
   const matcher = new SelectorMatcher<DirectiveMeta[]>();
-  const pipes = new Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>();
+  const pipes = new Map<string, PipeMeta>();
   const hostDirectiveResolder = new HostDirectivesResolver(
       getFakeMetadataReader(metadataRegistry as Map<string, DirectiveMeta>));
   const directives: DirectiveMeta[] = [];
@@ -629,7 +748,15 @@ function prepareDeclarations(
     if (decl.type === 'directive') {
       registerDirective(decl);
     } else if (decl.type === 'pipe') {
-      pipes.set(decl.pipeName, new Reference(resolveDeclaration(decl)));
+      pipes.set(decl.pipeName, {
+        kind: MetaKind.Pipe,
+        ref: new Reference(resolveDeclaration(decl)),
+        name: decl.pipeName,
+        nameExpr: null,
+        isStandalone: false,
+        decorator: null,
+        isExplicitlyDeferred: false
+      });
     }
   }
 
@@ -677,6 +804,9 @@ function getDirectiveMetaFromDeclaration(
     baseClass: null,
     animationTriggerNames: null,
     decorator: null,
+    ngContentSelectors: decl.ngContentSelectors || null,
+    preserveWhitespaces: decl.preserveWhitespaces ?? false,
+    isExplicitlyDeferred: false,
     hostDirectives: decl.hostDirectives === undefined ? null : decl.hostDirectives.map(hostDecl => {
       return {
         directive: new Reference(resolveDeclaration(hostDecl.directive)),
@@ -729,9 +859,13 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         isStandalone: false,
         isSignal: false,
         imports: null,
+        deferredImports: null,
         schemas: null,
         decorator: null,
         assumedToExportProviders: false,
+        ngContentSelectors: decl.ngContentSelectors || null,
+        preserveWhitespaces: decl.preserveWhitespaces ?? false,
+        isExplicitlyDeferred: false,
         hostDirectives:
             decl.hostDirectives === undefined ? null : decl.hostDirectives.map(hostDecl => {
               return {
@@ -755,6 +889,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         nameExpr: null,
         isStandalone: false,
         decorator: null,
+        isExplicitlyDeferred: false,
       });
     }
   }
@@ -791,6 +926,8 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   }
   missingReferenceTarget(): void {}
   missingPipe(): void {}
+  deferredPipeUsedEagerly(templateId: TemplateId, ast: BindingPipe): void {}
+  deferredComponentUsedEagerly(templateId: TemplateId, element: TmplAstElement): void {}
   illegalAssignmentToTemplateVar(): void {}
   duplicateTemplateVar(): void {}
   requiresInlineTcb(): void {}
@@ -800,4 +937,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   missingRequiredInputs(): void {}
   illegalForLoopTrackAccess(): void {}
   inaccessibleDeferredTriggerElement(): void {}
+  controlFlowPreventingContentProjection(): void {}
 }

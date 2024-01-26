@@ -291,6 +291,47 @@ export declare class MyApp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: empty_switch.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      {{message}}
+      @switch (message) {}
+      {{message}}
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div>
+      {{message}}
+      @switch (message) {}
+      {{message}}
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: empty_switch.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: basic_if.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
@@ -1740,6 +1781,8 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     @for (item of items; track item) {
       <div foo="1" bar="2">{{item}}</div>
+    } @empty {
+      <span empty-foo="1" empty-bar="2">Empty!</span>
     }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -1748,6 +1791,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     @for (item of items; track item) {
       <div foo="1" bar="2">{{item}}</div>
+    } @empty {
+      <span empty-foo="1" empty-bar="2">Empty!</span>
     }
   `,
                 }]
@@ -1777,6 +1822,8 @@ MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PL
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
     @for (item of items; track item) {
       <ng-template foo="1" bar="2">{{item}}</ng-template>
+    } @empty {
+      <ng-template empty-foo="1" empty-bar="2">Empty!</ng-template>
     }
   `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
@@ -1785,6 +1832,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     template: `
     @for (item of items; track item) {
       <ng-template foo="1" bar="2">{{item}}</ng-template>
+    } @empty {
+      <ng-template empty-foo="1" empty-bar="2">Empty!</ng-template>
     }
   `,
                 }]
@@ -1796,6 +1845,183 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class MyApp {
     items: number[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_for_computed_template_variables.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.items = [];
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @for (outer of items; track outer; let outerOdd = $odd, outerEven = $even, outerFirst = $first, outerLast = $last) {
+      Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+      @for (inner of items; track inner; let innerOdd = $odd, innerEven = $even, innerFirst = $first, innerLast = $last) {
+        Inner vars: {{innerOdd}} {{innerEven}} {{innerFirst}} {{innerLast}}
+        <br>
+        Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+        @for (innermost of items; track innermost; let innermostOdd = $odd, innermostEven = $even, innermostFirst = $first, innermostLast = $last) {
+          Innermost vars: {{innermostOdd}} {{innermostEven}} {{innermostFirst}} {{innermostLast}}
+          <br>
+          Inner vars: {{innerOdd}} {{innerEven}} {{innerFirst}} {{innerLast}}
+          <br>
+          Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+        }
+      }
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @for (outer of items; track outer; let outerOdd = $odd, outerEven = $even, outerFirst = $first, outerLast = $last) {
+      Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+      @for (inner of items; track inner; let innerOdd = $odd, innerEven = $even, innerFirst = $first, innerLast = $last) {
+        Inner vars: {{innerOdd}} {{innerEven}} {{innerFirst}} {{innerLast}}
+        <br>
+        Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+        @for (innermost of items; track innermost; let innermostOdd = $odd, innermostEven = $even, innermostFirst = $first, innermostLast = $last) {
+          Innermost vars: {{innermostOdd}} {{innermostEven}} {{innermostFirst}} {{innermostLast}}
+          <br>
+          Inner vars: {{innerOdd}} {{innerEven}} {{innerFirst}} {{innerLast}}
+          <br>
+          Outer vars: {{outerOdd}} {{outerEven}} {{outerFirst}} {{outerLast}}
+        }
+      }
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_for_computed_template_variables.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    items: never[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_for_listener_computed_template_variables.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.items = [];
+    }
+    outerCb(...args) { }
+    innerCb(...args) { }
+    innermostCb(...args) { }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @for (outer of items; track outer; let outerOdd = $odd, outerEven = $even, outerFirst = $first, outerLast = $last) {
+      <button (click)="outerCb(outerOdd, outerEven, outerFirst, outerLast)"></button>
+
+      @for (inner of items; track inner; let innerOdd = $odd, innerEven = $even, innerFirst = $first, innerLast = $last) {
+        <button (click)="innerCb(innerOdd, innerEven, innerFirst, innerLast)"></button>
+        <button (click)="outerCb(outerOdd, outerEven, outerFirst, outerLast)"></button>
+
+        @for (innermost of items; track innermost; let innermostOdd = $odd, innermostEven = $even, innermostFirst = $first, innermostLast = $last) {
+          <button (click)="innermostCb(innermostOdd, innermostEven, innermostFirst, innermostLast)"></button>
+          <button (click)="innerCb(innerOdd, innerEven, innerFirst, innerLast)"></button>
+          <button (click)="outerCb(outerOdd, outerEven, outerFirst, outerLast)"></button>
+        }
+      }
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @for (outer of items; track outer; let outerOdd = $odd, outerEven = $even, outerFirst = $first, outerLast = $last) {
+      <button (click)="outerCb(outerOdd, outerEven, outerFirst, outerLast)"></button>
+
+      @for (inner of items; track inner; let innerOdd = $odd, innerEven = $even, innerFirst = $first, innerLast = $last) {
+        <button (click)="innerCb(innerOdd, innerEven, innerFirst, innerLast)"></button>
+        <button (click)="outerCb(outerOdd, outerEven, outerFirst, outerLast)"></button>
+
+        @for (innermost of items; track innermost; let innermostOdd = $odd, innermostEven = $even, innermostFirst = $first, innermostLast = $last) {
+          <button (click)="innermostCb(innermostOdd, innermostEven, innermostFirst, innermostLast)"></button>
+          <button (click)="innerCb(innerOdd, innerEven, innerFirst, innerLast)"></button>
+          <button (click)="outerCb(outerOdd, outerEven, outerFirst, outerLast)"></button>
+        }
+      }
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_for_listener_computed_template_variables.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    items: never[];
+    outerCb(...args: unknown[]): void;
+    innerCb(...args: unknown[]): void;
+    innermostCb(...args: unknown[]): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_for_tracking_function.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.items = [];
+        this.trackByGrandparent = (item, index) => index;
+        this.trackByParent = (item, index) => index;
+        this.trackByChild = (item, index) => index;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    @for (grandparent of items; track trackByGrandparent(grandparent, $index)) {
+      @for (parent of grandparent.items; track trackByParent(parent, $index)) {
+        @for (child of parent.items; track trackByChild(child, $index)) {
+
+        }
+      }
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @for (grandparent of items; track trackByGrandparent(grandparent, $index)) {
+      @for (parent of grandparent.items; track trackByParent(parent, $index)) {
+        @for (child of parent.items; track trackByChild(child, $index)) {
+
+        }
+      }
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: nested_for_tracking_function.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    items: any[];
+    trackByGrandparent: (item: any, index: number) => number;
+    trackByParent: (item: any, index: number) => number;
+    trackByChild: (item: any, index: number) => number;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
 }

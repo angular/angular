@@ -8,7 +8,7 @@ function MyComponent_div_0_span_1_Template(rf, ctx) {
     const $div$ = $i0$.ɵɵnextContext();
     const $i$ = $div$.index;
     const $item$ = $div$.$implicit;
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $i0$.ɵɵtextInterpolate2(" ", $i$, " - ", $item$, " ");
   }
 }
@@ -21,7 +21,7 @@ function MyComponent_div_0_Template(rf, ctx) {
   }
   if (rf & 2) {
     const $app$ = $i0$.ɵɵnextContext();
-    $r3$.ɵɵadvance(1);
+    $r3$.ɵɵadvance();
     $i0$.ɵɵproperty("ngIf", $app$.showing);
   }
 }

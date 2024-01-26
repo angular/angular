@@ -104,7 +104,9 @@ Many of the warnings will provide suggestions on how to remedy that problem.
 If it appears that a warning is incorrect or the solution is not apparent, please open an issue on [GitHub](https://github.com/angular/angular-cli/issues).
 Also, the later sections of this guide provide additional information on several specific cases as well as current known issues.
 
-For applications that are already using SSR, additional manual adjustments to code will be needed to update the SSR server code to support the new integrated SSR capabilities.
+For applications new to SSR, the [Angular SSR Guide](guide/ssr) provides additional information regarding the setup process for adding SSR to an application.
+
+For applications that are already using SSR, additional adjustments will be needed to update the application server to support the new integrated SSR capabilities.
 The `application` builder now provides the integrated functionality for all of the following preexisting builders:
 
 - `app-shell`
@@ -112,7 +114,26 @@ The `application` builder now provides the integrated functionality for all of t
 - `server`
 - `ssr-dev-server`
 
-The [Angular SSR Guide](/guide/ssr) provides additional information regarding the new setup process for SSR. In the future, a schematic will make this migration process easier for existing applications.
+The `ng update` process will automatically remove usages of the `@nguniversal` scope packages where some of these builders were previously located.
+The new `@angular/ssr` package will also be automatically added and used with configuration and code being adjusted during the update.
+The `@angular/ssr` package supports the `browser` builder as well as the `application` builder.
+To convert from the separate SSR builders to the integrated capabilities of the `application` builder, run the experimental `use-application-builder` migration.
+
+<docs-code language="shell">
+
+ng update @angular/cli --name use-application-builder
+
+</docs-code>
+
+The migration does the following:
+
+* Converts existing `browser` or `browser-esbuild` target to `application`
+* Removes any previous SSR builders (because `application` does that now).
+* Updates configuration accordingly.
+* Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
+* Updates application server code to use new bootstrapping and output directory structure.
+
+HELPFUL: Remember to remove any CommonJS assumptions in the application server code such as `require`, `__filename`, `__dirname`, or other constructs from the [CommonJS module scope](https://nodejs.org/api/modules.html#the-module-scope). All application code should be ESM compatible. This does not apply to third-party dependencies.
 
 ## Executing a build
 
@@ -151,8 +172,6 @@ Angular focused HMR capabilities are currently planned and will be introduced in
 Several build options are not yet implemented but will be added in the future as the build system moves towards a stable status. If your application uses these options, you can still try out the build system without removing them. Warnings will be issued for any unimplemented options but they will otherwise be ignored. However, if your application relies on any of these options to function, you may want to wait to try.
 
 - [WASM imports](https://github.com/angular/angular-cli/issues/25102) -- WASM can still be loaded manually via [standard web APIs](https://developer.mozilla.org/en-US/docs/WebAssembly/Loading_and_running).
-
-Building libraries with the new build system via `ng-packagr` is also not yet possible but library build support will be available in a future release.
 
 ## ESM default imports vs. namespace imports
 

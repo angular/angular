@@ -105,6 +105,17 @@ After you select a particular component, click the icon at the top-right of the 
 
 </div>
 
+### View injected services of components
+Starting in Angular 17, services that are injected in a component or directive context are viewable in the property viewer. After you select a particular component, if that component has dependencies, you'll be able to see them listed under the *"Injected Services"* bar.
+
+By clicking on a service, an expansion panel will appear that visualizes the resolution path that Angular used to resolve that service.
+
+<div class="lightbox">
+
+<img alt="A screenshot of Angular DevTools components tab showing injected services for a selected component." src="generated/images/guide/devtools/di-component-deps.png">
+
+</div>
+
 ### Update property value
 
 Like browsers' DevTools, the properties view lets you edit the value of an input, output, or another property.
@@ -242,10 +253,43 @@ Then, import the file in the initial view of the profiler by clicking the **Choo
 
 </div>
 
+## Inspect your injectors
+
+*Note: The Injector Tree is available for Angular Applications built with version 17 or higher.*
+
+### View the injector hierarchy of your application
+
+The **Injector Tree** tab lets you explore the structure of the Injectors configured in your application. Here you will see two trees representing the [injector hiearchy](guide/hierarchical-dependency-injection) of your application. One tree is your environment hierarchy, the other is your element hierachy.
+
+<div class="lightbox">
+
+<img alt="A screenshot showing the injector tree tab in Angular Devtools visualizing the injector graph for an example application." src="generated/images/guide/devtools/di-injector-tree.png">
+
+</div>
+
+### Visualize resolution paths
+
+When a specific injector is selected, the path that Angular's depenedency injection algorithm traverses from that injector to the root is highlighted. For element injectors, this includes highlighting the environment injectors that the dependency injection algorithm jumps to when a dependency cannot be resolved in the element hierarchy. See [resolution rules](guide/hierarchical-dependency-injection#resolution-rules) for more details about how Angular resolves resolution paths.
+
+<div class="lightbox">
+
+<img alt="A screenshot showing how the injector tree visualize highlights resolution paths when an injector is selected." src="generated/images/guide/devtools/di-injector-tree-selected.png">
+
+</div>
+
+### View injector providers
+
+Clicking an injector that has configured providers will display those providers in a list on the right of the injector tree view. Here you can view the provided token and it's type.
+
+<div class="lightbox">
+
+<img alt="A screenshot showing how providers are made visible when an injector is selected." src="generated/images/guide/devtools/di-injector-tree-providers.png">
+
+</div>
 <!-- links -->
 
 <!-- external links -->
 
 <!-- end links -->
 
-@reviewed 2022-02-28
+@reviewed 2023-11-08

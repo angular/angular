@@ -655,10 +655,11 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
   }
 
   // The `dependenciesFn` might be `null` when all dependencies within
-  // a given defer block were eagerly references elsewhere in a file,
+  // a given defer block were eagerly referenced elsewhere in a file,
   // thus no dynamic `import()`s were produced.
   if (!dependenciesFn) {
     tDetails.loadingPromise = Promise.resolve().then(() => {
+      tDetails.loadingPromise = null;
       tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
     });
     return;

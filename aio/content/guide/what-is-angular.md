@@ -67,9 +67,9 @@ Now that we have the basic structure for the component, let’s learn more about
 
 #### State
 
-When defining data that you want the component to manage, this can be accomplished by declaring it by defining [class fields](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields).
+When defining data that you want the component to manage, this can be accomplished by declaring it by defining [class fields](https://www.typescriptlang.org/docs/handbook/2/classes.html#fields).
 
-In the example of a `todo-list-item.component.ts`, there are two properties we want to track: `taskTitle` and `isComplete`. Using the [class field syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields), they can be defined as follows:
+In the example of a `todo-list-item.component.ts`, there are two properties we want to track: `taskTitle` and `isComplete`. Using the [class field syntax](https://www.typescriptlang.org/docs/handbook/2/classes.html#fields), they can be defined as follows:
 
 ```ts
 // 📄 todo-list-item.component.ts
@@ -233,7 +233,7 @@ Similar to defining a component, directives are comprised of the following:
   - A selector that defines the tag name is when the component is called
 - A TypeScript class that defines the extended behavior the directive will add to the respective HTML element.
 
-For example, here’s what a custom directive for highlighting an element:
+For example, here’s a custom directive for highlighting an element:
 
 ```ts
 @Directive({
@@ -291,8 +291,8 @@ import { Component } from '@angular/core';
 import { CalculatorService } from './calculator.service';
 
 @Component({
-  selector: 'app-receipt’,
-  template: `<p>The total is {{ totalCost }}</h1>`,
+  selector: 'app-receipt',
+  template: `<h1>The total is {{ totalCost }}</h1>`,
 })
 export class Receipt {
   private calculatorService = inject(CalculatorService);
@@ -311,6 +311,7 @@ Standalone components are a new organizational pattern that were introduced in A
 For example, in the traditional NgModule pattern, you would need to create a TodoModule and manage all of its dependencies through this module.
 
 ```ts (Todo.module.ts)
+import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TodoList} from '../todo/todo-list.component';
 
@@ -325,7 +326,6 @@ export class TodoModule {}
 However, you can now achieve something similar with a standalone component without the need for a module file:
 
 ```ts (Todo.component.ts)
-import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TodoList} from '../todo/todo-list.component';
 

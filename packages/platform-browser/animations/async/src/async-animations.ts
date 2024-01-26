@@ -12,3 +12,4 @@
  * Entry point for all animation APIs of the animation browser package.
  */
 export {provideAnimationsAsync} from './providers';
+export * from './private_export';

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, Call, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
-import {HostDirectiveMeta} from '../../metadata';
+import {HostDirectiveMeta, isHostDirectiveMetaForGlobalMode} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader} from '../../scope';
 import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
@@ -111,7 +111,7 @@ export class SymbolBuilder {
     const elementSourceSpan = element.startSourceSpan ?? element.sourceSpan;
     const tcbSourceFile = this.typeCheckBlock.getSourceFile();
     // directives could be either:
-    // - var _t1: TestDir /*T:D*/ = (null!);
+    // - var _t1: TestDir /*T:D*/ = null! as TestDir;
     // - var _t1 /*T:D*/ = _ctor1({});
     const isDirectiveDeclaration = (node: ts.Node): node is ts.TypeNode|ts.Identifier =>
         (ts.isTypeNode(node) || ts.isIdentifier(node)) && ts.isVariableDeclaration(node.parent) &&
@@ -161,6 +161,10 @@ export class SymbolBuilder {
       host: TmplAstTemplate|TmplAstElement, hostDirectives: HostDirectiveMeta[],
       symbols: DirectiveSymbol[]): void {
     for (const current of hostDirectives) {
+      if (!isHostDirectiveMetaForGlobalMode(current)) {
+        throw new Error('Impossible state: typecheck code path in local compilation mode.');
+      }
+
       if (!ts.isClassDeclaration(current.directive.node)) {
         continue;
       }
@@ -425,19 +429,25 @@ export class SymbolBuilder {
   private getSymbolOfVariable(variable: TmplAstVariable): VariableSymbol|null {
     const node = findFirstMatchingNode(
         this.typeCheckBlock, {withSpan: variable.sourceSpan, filter: ts.isVariableDeclaration});
-    if (node === null || node.initializer === undefined) {
+    if (node === null) {
       return null;
     }
 
-    const expressionSymbol = this.getSymbolOfTsNode(node.initializer);
-    if (expressionSymbol === null) {
+    let nodeValueSymbol: TsNodeSymbolInfo|null = null;
+    if (ts.isForOfStatement(node.parent.parent)) {
+      nodeValueSymbol = this.getSymbolOfTsNode(node);
+    } else if (node.initializer !== undefined) {
+      nodeValueSymbol = this.getSymbolOfTsNode(node.initializer);
+    }
+
+    if (nodeValueSymbol === null) {
       return null;
     }
 
     return {
-      tsType: expressionSymbol.tsType,
-      tsSymbol: expressionSymbol.tsSymbol,
-      initializerLocation: expressionSymbol.tcbLocation,
+      tsType: nodeValueSymbol.tsType,
+      tsSymbol: nodeValueSymbol.tsSymbol,
+      initializerLocation: nodeValueSymbol.tcbLocation,
       kind: SymbolKind.Variable,
       declaration: variable,
       localVarLocation: {

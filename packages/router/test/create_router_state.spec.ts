@@ -17,7 +17,7 @@ import {DefaultRouteReuseStrategy} from '../src/route_reuse_strategy';
 import {RouterConfigLoader} from '../src/router_config_loader';
 import {ActivatedRoute, advanceActivatedRoute, createEmptyState, RouterState, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
 describe('create router state', async () => {
@@ -26,8 +26,7 @@ describe('create router state', async () => {
     reuseStrategy = new DefaultRouteReuseStrategy();
   });
 
-  const emptyState = () =>
-      createEmptyState(new (UrlTree as any)(new UrlSegmentGroup([], {}), {}, null!), RootComponent);
+  const emptyState = () => createEmptyState(RootComponent);
 
   it('should create new state', async () => {
     const state = createRouterState(
@@ -154,8 +153,8 @@ async function createState(config: Routes, url: string): Promise<RouterStateSnap
   return recognize(
              TestBed.inject(EnvironmentInjector), TestBed.inject(RouterConfigLoader), RootComponent,
              config, tree(url), new DefaultUrlSerializer())
-      .pipe(map(result => result.state))
-      .toPromise();
+             .pipe(map(result => result.state))
+             .toPromise() as Promise<RouterStateSnapshot>;
 }
 
 function checkActivatedRoute(

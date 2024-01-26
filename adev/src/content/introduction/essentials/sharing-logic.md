@@ -1,4 +1,4 @@
-<docs-decorative-header title="Sharing Code" imgSrc="assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Sharing Code" imgSrc="adev/src/assets/images/dependency_injection.svg"> <!-- markdownlint-disable-line -->
 Dependency injection allows you to share code.
 </docs-decorative-header>
 
@@ -42,8 +42,8 @@ import { Component } from '@angular/core';
 import { CalculatorService } from './calculator.service';
 
 @Component({
-  selector: 'app-receipt’,
-  template: `<p>The total is {{ totalCost }}</h1>`,
+  selector: 'app-receipt',
+  template: `<h1>The total is {{ totalCost }}</h1>`,
 })
 
 export class Receipt {

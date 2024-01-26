@@ -662,6 +662,31 @@ describe('quick info', () => {
           expectedDisplayString: '(keyword) track'
         });
       });
+
+      it('implicit variable assignment', () => {
+        expectQuickInfo({
+          templateOverride: `@for (name of constNames; track $index; let od¦d = $odd) {}`,
+          expectedSpanText: 'odd',
+          expectedDisplayString: '(variable) odd: boolean'
+        });
+      });
+
+      it('implicit variable assignment in comma separated list', () => {
+        expectQuickInfo({
+          templateOverride:
+              `@for (name of constNames; track index; let odd = $odd,  ind¦ex  =   $index) {}`,
+          expectedSpanText: 'index',
+          expectedDisplayString: '(variable) index: number'
+        });
+      });
+
+      it('if block alias variable', () => {
+        expectQuickInfo({
+          templateOverride: `@if (constNames; as al¦iasName) {}`,
+          expectedSpanText: 'aliasName',
+          expectedDisplayString: '(variable) aliasName: [{ readonly name: "name"; }]'
+        });
+      });
     });
 
     it('should work for object literal with shorthand property declarations', () => {

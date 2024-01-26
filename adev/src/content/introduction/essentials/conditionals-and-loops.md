@@ -1,4 +1,4 @@
-<docs-decorative-header title="Conditionals and Loops" imgSrc="assets/images/directives.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Conditionals and Loops" imgSrc="adev/src/assets/images/directives.svg"> <!-- markdownlint-disable-line -->
 Conditionally show and/or repeat content based on dynamic data.
 </docs-decorative-header>
 
@@ -32,7 +32,7 @@ export class UserControls {
 }
 ```
 
-In this example, Angular only renders the `<button>` element if the `isAdmin` property is true. Otherwise, it does not appear page.
+In this example, Angular only renders the `<button>` element if the `isAdmin` property is true. Otherwise, it does not appear on the page.
 
 ### `@else` block
 

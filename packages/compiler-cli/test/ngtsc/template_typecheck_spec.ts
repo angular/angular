@@ -2317,6 +2317,44 @@ export declare class AnimationEvent {
           `    Type 'string' is not assignable to type 'number'.`
         ]);
       });
+
+      it('should type check inputs with transforms referring to an ambient type', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          export class ElementRef<T> {
+            nativeElement: T;
+          }
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+          })
+          export class Dir {
+            @Input({transform: (val: HTMLInputElement | ElementRef<HTMLInputElement>) => {
+              return val instanceof ElementRef ? val.nativeElement.value : val.value;
+            }})
+            expectsInput: string | null = null;
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: '<div dir [expectsInput]="someDiv"></div>',
+          })
+          export class App {
+            someDiv!: HTMLDivElement;
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(getDiagnosticLines(diags[0]).join('\n'))
+            .toContain(
+                `Type 'HTMLDivElement' is not assignable to type ` +
+                `'HTMLInputElement | ElementRef<HTMLInputElement>'`);
+      });
     });
 
     describe('restricted inputs', () => {
@@ -3620,7 +3658,104 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
-            .toContain('HostBindDirective');
+            .toContain('Unable to import symbol HostBindDirective');
+      });
+
+      it('should check bindings to inherited host directive inputs', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Input} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+          })
+          class HostDir {
+            @Input() input: number;
+            @Input() otherInput: string;
+          }
+
+          @Directive({
+            hostDirectives: [{directive: HostDir, inputs: ['input', 'otherInput: alias']}]
+          })
+          class Parent {}
+
+          @Directive({selector: '[dir]'})
+          class Dir extends Parent {}
+
+          @Component({
+            selector: 'test',
+            template: '<div dir [input]="person.name" [alias]="person.age"></div>',
+          })
+          class TestCmp {
+            person: {
+              name: string;
+              age: number;
+            };
+          }
+
+          @NgModule({
+            declarations: [TestCmp, Dir],
+          })
+          class Module {}
+        `);
+
+
+        const messages = env.driveDiagnostics().map(d => d.messageText);
+
+        expect(messages).toEqual([
+          `Type 'string' is not assignable to type 'number'.`,
+          `Type 'number' is not assignable to type 'string'.`
+        ]);
+      });
+
+      it('should check bindings to inherited host directive outputs', () => {
+        env.write('test.ts', `
+          import {Component, Directive, NgModule, Output, EventEmitter} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+          })
+          class HostDir {
+            @Output() stringEvent = new EventEmitter<string>();
+            @Output() numberEvent = new EventEmitter<number>();
+          }
+
+          @Directive({
+            hostDirectives: [
+              {directive: HostDir, outputs: ['stringEvent', 'numberEvent: numberAlias']}
+            ]
+          })
+          class Parent {}
+
+          @Directive({selector: '[dir]'})
+          class Dir extends Parent {}
+
+          @Component({
+            selector: 'test',
+            template: \`
+              <div
+                dir
+                (numberAlias)="handleStringEvent($event)"
+                (stringEvent)="handleNumberEvent($event)"></div>
+            \`,
+          })
+          class TestCmp {
+            handleStringEvent(event: string): void {}
+            handleNumberEvent(event: number): void {}
+          }
+
+          @NgModule({
+            declarations: [TestCmp, Dir],
+          })
+          class Module {}
+        `);
+
+
+        const messages = env.driveDiagnostics().map(d => d.messageText);
+
+        expect(messages).toEqual([
+          `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+          `Argument of type 'string' is not assignable to parameter of type 'number'.`
+        ]);
       });
     });
 
@@ -4922,6 +5057,448 @@ suppress
           `Type 'number' must have a '[Symbol.iterator]()' method that returns an iterator.`
         ]);
       });
+
+      it('should check for loop variables with the same name as built-in globals', () => {
+        // strictTemplates are necessary so the event listener is checked.
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input} from '@angular/core';
+
+          @Directive({
+            standalone: true,
+            selector: '[dir]'
+          })
+          export class Dir {
+            @Input('dir') value!: string;
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`
+              @for (document of documents; track document) {
+                <button [dir]="document" (click)="$event.stopPropagation()"></button>
+              }
+            \`,
+          })
+          export class Main {
+            documents = [1, 2, 3];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Type 'number' is not assignable to type 'string'.`,
+        ]);
+      });
+    });
+
+    describe('control flow content projection diagnostics', () => {
+      it('should report when an @if block prevents an element from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @if has more than one node at its root.`);
+      });
+
+      it('should report when an @if block prevents a template from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <ng-template foo></ng-template>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @if has more than one node at its root.`);
+      });
+
+      it('should report when an @for block prevents content from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @for (i of [1, 2, 3]; track i) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @for has more than one node at its root.`);
+      });
+
+      it('should report when an @empty block prevents content from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @for (i of [1, 2, 3]; track i) {
+
+                } @empty {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @empty has more than one node at its root.`);
+      });
+
+      it('should report nodes that are targeting different slots but cannot be projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/> <ng-content select="[bar]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  <div bar></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(2);
+        expect(diags[0]).toContain(
+            `Node matches the "[foo]" slot of the "Comp" component, but will not be projected`);
+        expect(diags[1]).toContain(
+            `Node matches the "[bar]" slot of the "Comp" component, but will not be projected`);
+      });
+
+      it('should report nodes that are targeting the same slot but cannot be projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  <span foo></span>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(2);
+        expect(diags[0]).toContain(
+            `Node matches the "[foo]" slot of the "Comp" component, but will not be projected`);
+        expect(diags[1]).toContain(
+            `Node matches the "[foo]" slot of the "Comp" component, but will not be projected`);
+      });
+
+      it('should report when preserveWhitespaces may affect content projection', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            preserveWhitespaces: true,
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(`Node matches the "[foo]" slot of the "Comp" component`);
+        expect(diags[0]).toContain(
+            `Note: the host component has \`preserveWhitespaces: true\` which may cause ` +
+            `whitespace to affect content projection.`);
+      });
+
+      it('should not report when there is only one root node', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report when there are comments at the root of the control flow node', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <!-- before -->
+                  <div foo></div>
+                  <!-- after -->
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should not report when the component only has a catch-all slot', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should allow the content projection diagnostic to be disabled individually', () => {
+        env.tsconfig({
+          extendedDiagnostics: {
+            checks: {
+              controlFlowPreventingContentProjection: DiagnosticCategoryLabel.Suppress,
+            }
+          }
+        });
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @if (true) {
+                  <div foo></div>
+                  breaks projection
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {}
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
+      it('should allow the content projection diagnostic to be disabled via `defaultCategory`',
+         () => {
+           env.tsconfig({
+             extendedDiagnostics: {
+               defaultCategory: DiagnosticCategoryLabel.Suppress,
+             }
+           });
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                selector: 'comp',
+                template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+                standalone: true,
+              })
+              class Comp {}
+
+              @Component({
+                standalone: true,
+                imports: [Comp],
+                template: \`
+                  <comp>
+                    @if (true) {
+                      <div foo></div>
+                      breaks projection
+                    }
+                  </comp>
+                \`,
+              })
+              class TestCmp {}
+            `);
+
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(0);
+         });
     });
   });
 });

@@ -116,6 +116,7 @@ ts_library(
     deps = [
         ":common_spec_env",
         "//packages/zone.js/lib",
+        "//packages/zone.js/lib:zone_d_ts",
         "@npm//bluebird",
     ],
 )
@@ -139,6 +140,7 @@ ts_library(
     deps = [
         ":common_spec_env",
         "//packages/zone.js/lib",
+        "//packages/zone.js/lib:zone_d_ts",
     ],
 )
 

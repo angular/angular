@@ -1,6 +1,6 @@
 # Reactive Forms
 
-When you want to manage your forms programmatically instead relying purely on the template, reactive forms are the answer.
+When you want to manage your forms programmatically instead of relying purely on the template, reactive forms are the answer.
 
 In this activity, you'll learn how to setup reactive forms.
 
@@ -18,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 @Component({
   selector: 'app-root',
   standalone: true,
-  templateUrl: `
+  template: `
     <form>
       <label>Name
         <input type="text" />

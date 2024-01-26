@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
+import {DirectiveMeta as T2DirectiveMeta, Expression, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -134,12 +134,35 @@ export enum MatchSource {
 /** Metadata for a single input mapping. */
 export type InputMapping = InputOrOutput&{
   required: boolean;
-  transform: InputTransform|null
+
+  /**
+   * Transform for the input. Null if no transform is configured.
+   *
+   * For signal-based inputs, this is always `null` even if a transform
+   * is configured. Signal inputs capture their transform write type
+   * automatically in the `InputSignal`, nor is there a need to emit a
+   * reference to the transform.
+   *
+   * For zone-based decorator `@Input`s this is different because the transform
+   * write type needs to be captured in a coercion member as the decorator information
+   * is lost in the `.d.ts` for type-checking.
+   */
+  transform: DecoratorInputTransform|null
 };
 
-/** Metadata for an input's transform function. */
-export interface InputTransform {
+/** Metadata for an `@Input()` transform function. */
+export interface DecoratorInputTransform {
+  /**
+   * Reference to the transform function so that it can be
+   * referenced when the input metadata is emitted in the declaration.
+   */
   node: ts.Node;
+  /**
+   * Emittable type for the input transform. Null for signal inputs
+   *
+   * This type will be used for inputs to capture the transform type
+   * for type-checking in corresponding `ngAcceptInputType_` members.
+   */
   type: Reference<ts.TypeNode>;
 }
 
@@ -204,6 +227,12 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   imports: Reference<ClassDeclaration>[]|null;
 
   /**
+   * For standalone components, the list of imported types that can be used
+   * in `@defer` blocks (when only explicit dependencies are allowed).
+   */
+  deferredImports: Reference<ClassDeclaration>[]|null;
+
+  /**
    * For standalone components, the list of schemas declared.
    */
   schemas: SchemaMetadata[]|null;
@@ -222,12 +251,24 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * Whether the directive should be assumed to export providers if imported as a standalone type.
    */
   assumedToExportProviders: boolean;
+
+  /**
+   * Whether this class was imported into a standalone component's
+   * scope via `@Component.deferredImports` field.
+   */
+  isExplicitlyDeferred: boolean;
 }
 
 /** Metadata collected about an additional directive that is being applied to a directive host. */
 export interface HostDirectiveMeta {
-  /** Reference to the host directive class. */
-  directive: Reference<ClassDeclaration>;
+  /**
+   * Reference to the host directive class.
+   *
+   * Only in local compilation mode this can be Expression
+   * which indicates the expression could not be resolved due to being imported from some external
+   * file. In this case, the expression is the raw expression as appears in the decorator.
+   */
+  directive: Reference<ClassDeclaration>|Expression;
 
   /** Whether the reference to the host directive is a forward reference. */
   isForwardReference: boolean;
@@ -237,6 +278,22 @@ export interface HostDirectiveMeta {
 
   /** Outputs from the host directive that have been exposed. */
   outputs: {[publicName: string]: string}|null;
+}
+
+/**
+ * Metadata collected about an additional directive that is being applied to a directive host in
+ * global compilation mode.
+ */
+export interface HostDirectiveMetaForGlobalMode extends HostDirectiveMeta {
+  directive: Reference<ClassDeclaration>;
+}
+
+/**
+ * Metadata collected about an additional directive that is being applied to a directive host in
+ * local compilation mode.
+ */
+export interface HostDirectiveMetaForLocalMode extends HostDirectiveMeta {
+  directive: Expression;
 }
 
 /**
@@ -268,6 +325,7 @@ export interface PipeMeta {
   nameExpr: ts.Expression|null;
   isStandalone: boolean;
   decorator: ts.Decorator|null;
+  isExplicitlyDeferred: boolean;
 }
 
 /**

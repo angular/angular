@@ -11,11 +11,16 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/ngmodule/browser",
+            "namedChunks": true,
+            "outputPath": "dist/ngmodule",
             "index": "projects/ngmodule/src/index.html",
-            "main": "projects/ngmodule/src/main.ts",
+            "browser": "projects/ngmodule/src/main.ts",
+            "server": "projects/ngmodule/src/main.server.ts",
+            "ssr": {
+              "entry": "projects/ngmodule/server.ts"
+            },
             "progress": false,
             "polyfills": [
               "zone.js"
@@ -47,12 +52,9 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -78,12 +80,6 @@
             "baseUrl": "http://localhost:4206"
           }
         },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "ngmodule:build"
-          }
-        },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
@@ -102,28 +98,6 @@
             ],
             "scripts": []
           }
-        },
-        "server": {
-          "builder": "@angular-devkit/build-angular:server",
-          "options": {
-            "progress": false,
-            "outputPath": "dist/ngmodule/server",
-            "main": "projects/ngmodule/server.ts",
-            "tsConfig": "projects/ngmodule/tsconfig.server.json"
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "media"
-            },
-            "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "sourceMap": true,
-              "extractLicenses": false,
-              "vendorChunk": true
-            }
-          },
-          "defaultConfiguration": "production"
         }
       }
     },
@@ -135,14 +109,19 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/standalone/browser",
+            "namedChunks": true,
+            "outputPath": "dist/standalone",
             "index": "projects/standalone/src/index.html",
-            "main": "projects/standalone/src/main.ts",
+            "browser": "projects/standalone/src/main.ts",
+            "server": "projects/standalone/src/main.server.ts",
             "polyfills": [
               "zone.js"
             ],
+            "ssr": {
+              "entry": "projects/standalone/server.ts"
+            },
             "tsConfig": "projects/standalone/tsconfig.app.json",
             "assets": [
               "projects/standalone/src/favicon.ico",
@@ -171,12 +150,9 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -226,28 +202,6 @@
             ],
             "scripts": []
           }
-        },
-        "server": {
-          "builder": "@angular-devkit/build-angular:server",
-          "options": {
-            "progress": false,
-            "outputPath": "dist/standalone/server",
-            "main": "projects/standalone/server.ts",
-            "tsConfig": "projects/standalone/tsconfig.server.json"
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "media"
-            },
-            "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "sourceMap": true,
-              "extractLicenses": false,
-              "vendorChunk": true
-            }
-          },
-          "defaultConfiguration": "production"
         }
       }
     }

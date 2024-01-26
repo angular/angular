@@ -89,9 +89,9 @@ One button adds the popup using the dynamic-loading method, and the other uses t
 The result is the same, but the preparation is different.
 
 <docs-code-multifile>
-    <docs-code header="popup.component.ts" path="elements/src/app/popup.component.ts"/>
-    <docs-code header="popup.service.ts" path="elements/src/app/popup.service.ts"/>
-    <docs-code header="app.component.ts" path="elements/src/app/app.component.ts"/>
+    <docs-code header="popup.component.ts" path="adev/src/content/examples/elements/src/app/popup.component.ts"/>
+    <docs-code header="popup.service.ts" path="adev/src/content/examples/elements/src/app/popup.service.ts"/>
+    <docs-code header="app.component.ts" path="adev/src/content/examples/elements/src/app/app.component.ts"/>
 </docs-code-multifile>
 
 ## Typings for custom elements

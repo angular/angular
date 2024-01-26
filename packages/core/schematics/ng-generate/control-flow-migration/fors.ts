@@ -8,10 +8,16 @@
 
 import {visitAll} from '@angular/compiler';
 
-import {ElementCollector, ElementToMigrate, MigrateError, Result} from './types';
+import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
 import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
 
 export const ngfor = '*ngFor';
+export const nakedngfor = 'ngFor';
+const fors = [
+  ngfor,
+  nakedngfor,
+];
+
 export const commaSeparatedSyntax = new Map([
   ['(', ')'],
   ['{', '}'],
@@ -26,16 +32,17 @@ export const stringPairs = new Map([
  * Replaces structural directive ngFor instances with new for.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function migrateFor(template: string): {migrated: string, errors: MigrateError[]} {
+export function migrateFor(template: string):
+    {migrated: string, errors: MigrateError[], changed: boolean} {
   let errors: MigrateError[] = [];
   let parsed = parseTemplate(template);
-  if (parsed === null) {
-    return {migrated: template, errors};
+  if (parsed.tree === undefined) {
+    return {migrated: template, errors, changed: false};
   }
 
   let result = template;
-  const visitor = new ElementCollector([ngfor]);
-  visitAll(visitor, parsed.rootNodes);
+  const visitor = new ElementCollector(fors);
+  visitAll(visitor, parsed.tree.rootNodes);
   calculateNesting(visitor, hasLineBreaks(template));
 
   // this tracks the character shift from different lengths of blocks from
@@ -62,25 +69,39 @@ export function migrateFor(template: string): {migrated: string, errors: Migrate
     nestLevel = el.nestCount;
   }
 
-  return {migrated: result, errors};
+  const changed = visitor.elements.length > 0;
+
+  return {migrated: result, errors, changed};
 }
 
-
 function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  if (etm.forAttrs !== undefined) {
+    return migrateBoundNgFor(etm, tmpl, offset);
+  }
+  return migrateStandardNgFor(etm, tmpl, offset);
+}
+
+function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
   const aliasWithEqualRegexp = /=\s*(count|index|first|last|even|odd)/gm;
   const aliasWithAsRegexp = /(count|index|first|last|even|odd)\s+as/gm;
   const aliases = [];
   const lbString = etm.hasLineBreaks ? '\n' : '';
-  const lbSpaces = etm.hasLineBreaks ? `\n  ` : '';
   const parts = getNgForParts(etm.attr.value);
 
   const originals = getOriginals(etm, tmpl, offset);
 
   // first portion should always be the loop definition prefixed with `let`
   const condition = parts[0].replace('let ', '');
+  if (condition.indexOf(' as ') > -1) {
+    let errorMessage = `Found an aliased collection on an ngFor: "${condition}".` +
+        ' Collection aliasing is not supported with @for.' +
+        ' Refactor the code to remove the `as` alias and re-run the migration.';
+    throw new Error(errorMessage);
+  }
   const loopVar = condition.split(' of ')[0];
   let trackBy = loopVar;
   let aliasedIndex: string|null = null;
+  let tmplPlaceholder = '';
   for (let i = 1; i < parts.length; i++) {
     const part = parts[i].trim();
 
@@ -88,6 +109,12 @@ function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Resu
       // build trackby value
       const trackByFn = part.replace('trackBy:', '').trim();
       trackBy = `${trackByFn}($index, ${loopVar})`;
+    }
+    // template
+    if (part.startsWith('template:')) {
+      // this generates a special template placeholder just for this use case
+      // which has a φ at the end instead of the standard δ in other placeholders
+      tmplPlaceholder = `θ${part.split(':')[1].trim()}φ`;
     }
     // aliases
     // declared with `let myIndex = index`
@@ -122,10 +149,56 @@ function migrateNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Resu
 
   const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
 
-  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock = `@for (${condition}; track ${trackBy}${aliasStr}) {${lbSpaces}${start}`;
+  let startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {${lbString}`;
+  let endBlock = `${lbString}}${endMarker}`;
+  let forBlock = '';
 
-  const endBlock = `${end}${lbString}}`;
+  if (tmplPlaceholder !== '') {
+    startBlock = startBlock + tmplPlaceholder;
+    forBlock = startBlock + endBlock;
+  } else {
+    const {start, middle, end} = getMainBlock(etm, tmpl, offset);
+    startBlock += start;
+    endBlock = end + endBlock;
+    forBlock = startBlock + middle + endBlock;
+  }
+
+  const updatedTmpl = tmpl.slice(0, etm.start(offset)) + forBlock + tmpl.slice(etm.end(offset));
+
+  const pre = originals.start.length - startBlock.length;
+  const post = originals.end.length - endBlock.length;
+
+  return {tmpl: updatedTmpl, offsets: {pre, post}};
+}
+
+function migrateBoundNgFor(etm: ElementToMigrate, tmpl: string, offset: number): Result {
+  const forAttrs = etm.forAttrs!;
+  const aliasAttrs = etm.aliasAttrs!;
+  const aliasMap = aliasAttrs.aliases;
+
+  const originals = getOriginals(etm, tmpl, offset);
+  const condition = `${aliasAttrs.item} of ${forAttrs.forOf}`;
+
+  const aliases = [];
+  let aliasedIndex = '$index';
+  for (const [key, val] of aliasMap) {
+    aliases.push(` let ${key.trim()} = $${val}`);
+    if (val.trim() === 'index') {
+      aliasedIndex = key;
+    }
+  }
+  const aliasStr = (aliases.length > 0) ? `;${aliases.join(';')}` : '';
+
+  let trackBy = aliasAttrs.item;
+  if (forAttrs.trackBy !== '') {
+    // build trackby value
+    trackBy = `${forAttrs.trackBy.trim()}(${aliasedIndex}, ${aliasAttrs.item})`;
+  }
+
+  const {start, middle, end} = getMainBlock(etm, tmpl, offset);
+  const startBlock = `${startMarker}@for (${condition}; track ${trackBy}${aliasStr}) {\n${start}`;
+
+  const endBlock = `${end}\n}${endMarker}`;
   const forBlock = startBlock + middle + endBlock;
 
   const updatedTmpl = tmpl.slice(0, etm.start(offset)) + forBlock + tmpl.slice(etm.end(offset));
@@ -146,7 +219,6 @@ function getNgForParts(expression: string): string[] {
     const char = expression[i];
     const isInString = stringStack.length === 0;
     const isInCommaSeparated = commaSeparatedStack.length === 0;
-
     // Any semicolon is a delimiter, as well as any comma outside
     // of comma-separated syntax, as long as they're outside of a string.
     if (isInString && current.length > 0 &&
@@ -156,10 +228,10 @@ function getNgForParts(expression: string): string[] {
       continue;
     }
 
-    if (stringPairs.has(char)) {
-      stringStack.push(stringPairs.get(char)!);
-    } else if (stringStack.length > 0 && stringStack[stringStack.length - 1] === char) {
+    if (stringStack.length > 0 && stringStack[stringStack.length - 1] === char) {
       stringStack.pop();
+    } else if (stringPairs.has(char)) {
+      stringStack.push(stringPairs.get(char)!);
     }
 
     if (commaSeparatedSyntax.has(char)) {

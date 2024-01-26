@@ -100,7 +100,7 @@ Note: Multiple `on` triggers are always OR conditions. Similarly, `on` mixed wit
 ```
 
 <a id="when"></a>
-`when` specifies an imperative condition as an expression that returns a boolean. When this expression becomes truthy, the placeholder is swapped with the lazily loaded content (which may be an asynchronous operation if the dependencies need to be fetched).
+`when` specifies a condition as an expression that returns a boolean. When this expression becomes truthy, the placeholder is swapped with the lazily loaded content (which may be an asynchronous operation if the dependencies need to be fetched).
 
 Note: if the `when` condition switches back to `false`, the defer block is not reverted back to the placeholder. The swap is a one-time operation. If the content within the block should be conditionally rendered, an `if` condition can be used within the block itself.
 
@@ -240,15 +240,20 @@ In the example below, the prefetching starts when a browser becomes idle and the
 
 ## Testing
 
-Angular provides TestBed APIs to simplify the process of testing `@defer` blocks and triggering different states during testing. By default, `@defer` blocks in tests are "paused", so that you can manually transition between states.
+Angular provides TestBed APIs to simplify the process of testing `@defer` blocks and triggering different states during testing. By default, `@defer` blocks in tests will play through like a defer block would behave in a real application. If you want to manually step through states, you can switch the defer block behavior to `Manual` in the TestBed configuration.
 
 ```typescript
 it('should render a defer block in different states', async () => {
+  // configures the defer block behavior to start in "paused" state for manual control.
+  TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Manual});
+
   @Component({
     // ...
     template: `
       @defer {
         <large-component />
+      } @placeholder {
+        Placeholder
       } @loading {
         Loading...
       }
@@ -260,15 +265,18 @@ it('should render a defer block in different states', async () => {
   const componentFixture = TestBed.createComponent(ComponentA);
 
   // Retrieve the list of all defer block fixtures and get the first block.
-  const deferBlockFixture = componentFixture.getDeferBlocks()[0];
+  const deferBlockFixture = (await componentFixture.getDeferBlocks())[0];
+
+  // Renders placeholder state by default.
+  expect(componentFixture.nativeElement.innerHTML).toContain('Placeholder');
 
   // Render loading state and verify rendered output.
   await deferBlockFixture.render(DeferBlockState.Loading);
   expect(componentFixture.nativeElement.innerHTML).toContain('Loading');
 
   // Render final state and verify the output.
-  await deferBlockFixture.render(DeferBlockState.Completed);
-  expect(componentFixture.nativeElement.innerHTML).toContain('<large-component>');
+  await deferBlockFixture.render(DeferBlockState.Complete);
+  expect(componentFixture.nativeElement.innerHTML).toContain('large works!');
 });
 ```
 

@@ -7,11 +7,13 @@
  */
 
 import {Component} from '@angular/core';
+import {MatProgressBar} from '@angular/material/progress-bar';
 
 @Component({
   selector: 'ng-recording-dialog',
   templateUrl: './recording-dialog.component.html',
   styleUrls: ['./recording-dialog.component.scss'],
+  standalone: true,
+  imports: [MatProgressBar],
 })
-export class RecordingDialogComponent {
-}
+export class RecordingDialogComponent {}

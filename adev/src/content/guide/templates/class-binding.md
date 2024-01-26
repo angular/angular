@@ -68,7 +68,7 @@ Updating the property without changing object identity has no effect.
 
 ### Single and multiple-style binding example
 
-<docs-code path="attribute-binding/src/app/single-and-multiple-style-binding.component.ts" header="nav-bar.component.ts"/>
+<docs-code path="adev/src/content/examples/attribute-binding/src/app/single-and-multiple-style-binding.component.ts" header="nav-bar.component.ts"/>
 
 If there are multiple bindings to the same style attribute, Angular uses styling precedence to determine which binding to use.
 

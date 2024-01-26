@@ -1,7 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
-load("//packages/common/locales:index.bzl", "generate_base_locale_file")
 load("@npm//@angular/build-tooling/bazel/api-gen:generate_api_docs.bzl", "generate_api_docs")
+load("//packages/common/locales:index.bzl", "generate_base_locale_file")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_module", "ng_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -62,6 +62,7 @@ ng_package(
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
+        "//adev:__pkg__",
         "//aio:__pkg__",
         "//aio/content/examples:__subpackages__",
         "//aio/tools/examples:__pkg__",
@@ -90,6 +91,7 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/core",
     npm_package = "angular/packages/core/npm_package",
+    strip_export_pattern = "^ɵ(?!.*ApiGuard)",
 )
 
 api_golden_test(
@@ -134,7 +136,9 @@ filegroup(
 
 generate_api_docs(
     name = "core_docs",
-    srcs = [":files_for_docgen"],
+    srcs = [
+        "//packages:common_files_and_deps_for_docs",
+    ],
     entry_point = ":index.ts",
     module_name = "@angular/core",
 )

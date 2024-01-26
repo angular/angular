@@ -10,6 +10,7 @@ ts_library(
         ],
     ),
     deps = [
+        "//packages/core",
         "@npm//@types",
         "@npm//rxjs",
     ],

@@ -1,0 +1,12 @@
+load("@npm//@angular/docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "libraries",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples/angular-linker-plugin:webpack.config.mjs",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

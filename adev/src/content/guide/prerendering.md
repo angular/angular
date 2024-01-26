@@ -33,7 +33,7 @@ ng build
 ### Build options for prerender
 
 The application builder `prerender` option can be either a Boolean or an Object for more fine-tuned configuration.
-When the option is `false`, no prerendering is done. When it's is `true`, all options use the default value. When it's is an Object, each option can be individually configured.
+When the option is `false`, no prerendering is done. When it is `true`, all options use the default value. When it is an Object, each option can be individually configured.
 
 | Options          | Details                                                                                                                                                                   | Default Value |
 | :--------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------ |

@@ -31,11 +31,13 @@ import {StandaloneComponentScopeReader} from '../../scope/src/standalone';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
-import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl} from '../../typecheck/extended';
+import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl, SUPPORTED_DIAGNOSTIC_NAMES} from '../../typecheck/extended';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
+
+const SHOULD_USE_TEMPLATE_PIPELINE = false;
 
 /**
  * State information about a compilation which is only generated once some data is requested from
@@ -434,13 +436,26 @@ export class NgCompiler {
    * If a `ts.SourceFile` is passed, only diagnostics related to that file are returned.
    */
   getDiagnosticsForFile(file: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[] {
-    const diagnostics: ts.Diagnostic[] = [];
-    diagnostics.push(
-        ...this.getNonTemplateDiagnostics().filter(diag => diag.file === file),
-        ...this.getTemplateDiagnosticsForFile(file, optimizeFor));
-    if (this.options.strictTemplates) {
-      diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
+    const diagnostics: ts.Diagnostic[] =
+        [...this.getNonTemplateDiagnostics().filter(diag => diag.file === file)];
+
+    try {
+      diagnostics.push(...this.getTemplateDiagnosticsForFile(file, optimizeFor));
+      if (this.options.strictTemplates) {
+        diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
+      }
+    } catch (e) {
+      // Type check code may throw fatal diagnostic errors if e.g. the type check
+      // block cannot be generated. Gracefully return the associated diagnostic.
+      // Note: If a fatal diagnostic is raised, do not repeat the same diagnostics
+      // by running the extended template checking code, which will attempt to
+      // generate the same TCB.
+      if (e instanceof FatalDiagnosticError) {
+        diagnostics.push(e.toDiagnostic());
+      }
+      throw e;
     }
+
     return this.addMessageTextDetails(diagnostics);
   }
 
@@ -782,6 +797,8 @@ export class NgCompiler {
         // (providing the full TemplateTypeChecker API) and if strict mode is not enabled. In strict
         // mode, the user is in full control of type inference.
         suggestionsForSuboptimalTypeInference: this.enableTemplateTypeChecker && !strictTemplates,
+        controlFlowPreventingContentProjection:
+            this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
       };
     } else {
       typeCheckingConfig = {
@@ -810,6 +827,8 @@ export class NgCompiler {
         // In "basic" template type-checking mode, no warnings are produced since most things are
         // not checked anyways.
         suggestionsForSuboptimalTypeInference: false,
+        controlFlowPreventingContentProjection:
+            this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
       };
     }
 
@@ -847,6 +866,11 @@ export class NgCompiler {
     }
     if (this.options.strictLiteralTypes !== undefined) {
       typeCheckingConfig.strictLiteralTypes = this.options.strictLiteralTypes;
+    }
+    if (this.options.extendedDiagnostics?.checks?.controlFlowPreventingContentProjection !==
+        undefined) {
+      typeCheckingConfig.controlFlowPreventingContentProjection =
+          this.options.extendedDiagnostics.checks.controlFlowPreventingContentProjection;
     }
 
     return typeCheckingConfig;
@@ -887,14 +911,7 @@ export class NgCompiler {
     // Get the diagnostics.
     const diagnostics: ts.Diagnostic[] = [];
     if (!sf.isDeclarationFile && !this.adapter.isShim(sf)) {
-      try {
-        diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf, optimizeFor));
-      } catch (err) {
-        if (!(err instanceof FatalDiagnosticError)) {
-          throw err;
-        }
-        diagnostics.push(err.toDiagnostic());
-      }
+      diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf, optimizeFor));
     }
 
     const program = this.programDriver.getProgram();
@@ -970,7 +987,9 @@ export class NgCompiler {
     // Construct the ReferenceEmitter.
     let refEmitter: ReferenceEmitter;
     let aliasingHost: AliasingHost|null = null;
-    if (this.adapter.unifiedModulesHost === null || !this.options['_useHostForImportGeneration']) {
+    if (this.adapter.unifiedModulesHost === null ||
+        (!this.options['_useHostForImportGeneration'] &&
+         !this.options['_useHostForImportAndAliasGeneration'])) {
       let localImportStrategy: ReferenceEmitStrategy;
 
       // The strategy used for local, in-project imports depends on whether TS has been configured
@@ -1016,11 +1035,14 @@ export class NgCompiler {
         // First, try to use local identifiers if available.
         new LocalIdentifierStrategy(),
         // Then use aliased references (this is a workaround to StrictDeps checks).
-        new AliasStrategy(),
+        ...(this.options['_useHostForImportAndAliasGeneration'] ? [new AliasStrategy()] : []),
         // Then use fileNameToModuleName to emit imports.
         new UnifiedModulesStrategy(reflector, this.adapter.unifiedModulesHost),
       ]);
-      aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
+
+      if (this.options['_useHostForImportAndAliasGeneration']) {
+        aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
+      }
     }
 
     const evaluator =
@@ -1063,7 +1085,9 @@ export class NgCompiler {
 
     const resourceRegistry = new ResourceRegistry();
 
-    const deferredSymbolsTracker = new DeferredSymbolTracker(this.inputProgram.getTypeChecker());
+    const deferredSymbolsTracker = new DeferredSymbolTracker(
+        this.inputProgram.getTypeChecker(),
+        this.options.onlyExplicitDeferDependencyImports ?? false);
 
     // Cycles are handled in full compilation mode by "remote scoping".
     // "Remote scoping" does not work well with tree shaking for libraries.
@@ -1109,7 +1133,8 @@ export class NgCompiler {
           this.incrementalCompilation.depGraph, injectableRegistry, semanticDepGraphUpdater,
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
           supportTestBed, compilationMode, deferredSymbolsTracker,
-          !!this.options.forbidOrphanComponents, this.enableBlockSyntax),
+          !!this.options.forbidOrphanComponents, this.enableBlockSyntax,
+          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1120,6 +1145,7 @@ export class NgCompiler {
           this.closureCompilerEnabled,
           this.delegatingPerfRecorder,
           supportTestBed, compilationMode,
+          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
@@ -1285,10 +1311,8 @@ ${allowedCategoryLabels.join('\n')}
     });
   }
 
-  const allExtendedDiagnosticNames =
-      ALL_DIAGNOSTIC_FACTORIES.map((factory) => factory.name) as string[];
   for (const [checkName, category] of Object.entries(options.extendedDiagnostics?.checks ?? {})) {
-    if (!allExtendedDiagnosticNames.includes(checkName)) {
+    if (!SUPPORTED_DIAGNOSTIC_NAMES.has(checkName)) {
       yield makeConfigDiagnostic({
         category: ts.DiagnosticCategory.Error,
         code: ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CHECK,
@@ -1296,7 +1320,7 @@ ${allowedCategoryLabels.join('\n')}
 Angular compiler option "extendedDiagnostics.checks" has an unknown check: "${checkName}".
 
 Allowed check names are:
-${allExtendedDiagnosticNames.join('\n')}
+${Array.from(SUPPORTED_DIAGNOSTIC_NAMES).join('\n')}
         `.trim(),
       });
     }

@@ -6,11 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, NgZone, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  ComponentFactory,
+  ComponentFactoryResolver,
+  ComponentRef,
+  EventEmitter,
+  Injector,
+  NgZone,
+  OnChanges,
+  SimpleChange,
+  SimpleChanges,
+  Type,
+} from '@angular/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
-import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './element-strategy';
+import {
+  NgElementStrategy,
+  NgElementStrategyEvent,
+  NgElementStrategyFactory,
+} from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
 import {isFunction, scheduler, strictEquals} from './utils';
 
@@ -25,8 +42,9 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
   componentFactory: ComponentFactory<any>;
 
   constructor(component: Type<any>, injector: Injector) {
-    this.componentFactory =
-        injector.get(ComponentFactoryResolver).resolveComponentFactory(component);
+    this.componentFactory = injector
+      .get(ComponentFactoryResolver)
+      .resolveComponentFactory(component);
   }
 
   create(injector: Injector) {
@@ -43,19 +61,19 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   private eventEmitters = new ReplaySubject<Observable<NgElementStrategyEvent>[]>(1);
 
   /** Merged stream of the component's output events. */
-  readonly events = this.eventEmitters.pipe(switchMap(emitters => merge(...emitters)));
+  readonly events = this.eventEmitters.pipe(switchMap((emitters) => merge(...emitters)));
 
   /** Reference to the component that was created on connect. */
-  private componentRef: ComponentRef<any>|null = null;
+  private componentRef: ComponentRef<any> | null = null;
 
   /** Reference to the component view's `ChangeDetectorRef`. */
-  private viewChangeDetectorRef: ChangeDetectorRef|null = null;
+  private viewChangeDetectorRef: ChangeDetectorRef | null = null;
 
   /**
    * Changes that have been made to component inputs since the last change detection run.
    * (NOTE: These are only recorded if the component implements the `OnChanges` interface.)
    */
-  private inputChanges: SimpleChanges|null = null;
+  private inputChanges: SimpleChanges | null = null;
 
   /** Whether changes have been made to component inputs since the last change detection run. */
   private hasInputChanges = false;
@@ -64,10 +82,10 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   private implementsOnChanges = false;
 
   /** Whether a change detection has been scheduled to run on the component. */
-  private scheduledChangeDetectionFn: (() => void)|null = null;
+  private scheduledChangeDetectionFn: (() => void) | null = null;
 
   /** Callback function that when called will cancel a scheduled destruction on the component. */
-  private scheduledDestroyFn: (() => void)|null = null;
+  private scheduledDestroyFn: (() => void) | null = null;
 
   /** Initial input values that were set before the component was created. */
   private readonly initialInputValues = new Map<string, any>();
@@ -83,14 +101,17 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   private readonly ngZone: NgZone;
 
   /** The zone the element was created in or `null` if Zone.js is not loaded. */
-  private readonly elementZone: Zone|null;
+  private readonly elementZone: Zone | null;
 
-
-  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {
-    this.unchangedInputs =
-        new Set<string>(this.componentFactory.inputs.map(({propName}) => propName));
+  constructor(
+    private componentFactory: ComponentFactory<any>,
+    private injector: Injector,
+  ) {
+    this.unchangedInputs = new Set<string>(
+      this.componentFactory.inputs.map(({propName}) => propName),
+    );
     this.ngZone = this.injector.get<NgZone>(NgZone);
-    this.elementZone = (typeof Zone === 'undefined') ? null : this.ngZone.run(() => Zone.current);
+    this.elementZone = typeof Zone === 'undefined' ? null : this.ngZone.run(() => Zone.current);
   }
 
   /**
@@ -168,8 +189,10 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       // Ignore the value if it is strictly equal to the current value, except if it is `undefined`
       // and this is the first change to the value (because an explicit `undefined` _is_ strictly
       // equal to not having a value set at all, but we still need to record this as a change).
-      if (strictEquals(value, this.getInputValue(property)) &&
-          !((value === undefined) && this.unchangedInputs.has(property))) {
+      if (
+        strictEquals(value, this.getInputValue(property)) &&
+        !(value === undefined && this.unchangedInputs.has(property))
+      ) {
         return;
       }
 
@@ -191,8 +214,10 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    */
   protected initializeComponent(element: HTMLElement) {
     const childInjector = Injector.create({providers: [], parent: this.injector});
-    const projectableNodes =
-        extractProjectableNodes(element, this.componentFactory.ngContentSelectors);
+    const projectableNodes = extractProjectableNodes(
+      element,
+      this.componentFactory.ngContentSelectors,
+    );
     this.componentRef = this.componentFactory.create(childInjector, projectableNodes, element);
     this.viewChangeDetectorRef = this.componentRef.injector.get(ChangeDetectorRef);
 
@@ -222,11 +247,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
   protected initializeOutputs(componentRef: ComponentRef<any>): void {
-    const eventEmitters: Observable<NgElementStrategyEvent>[] =
-        this.componentFactory.outputs.map(({propName, templateName}) => {
-          const emitter: EventEmitter<any> = componentRef.instance[propName];
-          return emitter.pipe(map(value => ({name: templateName, value})));
-        });
+    const eventEmitters: Observable<NgElementStrategyEvent>[] = this.componentFactory.outputs.map(
+      ({propName, templateName}) => {
+        const emitter: EventEmitter<any> = componentRef.instance[propName];
+        return emitter.pipe(map((value) => ({name: templateName, value})));
+      },
+    );
 
     this.eventEmitters.next(eventEmitters);
   }
@@ -309,6 +335,6 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Runs in the angular zone, if present. */
   private runInZone(fn: () => unknown) {
-    return (this.elementZone && Zone.current !== this.elementZone) ? this.ngZone.run(fn) : fn();
+    return this.elementZone && Zone.current !== this.elementZone ? this.ngZone.run(fn) : fn();
   }
 }

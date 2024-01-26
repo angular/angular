@@ -142,6 +142,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "support projectAs on ng-content",
+      "inputFiles": [
+        "project_as_ng_content.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect projection",
+          "files": [
+            "project_as_ng_content.js"
+          ]
+        }
+      ]
     }
   ]
 }

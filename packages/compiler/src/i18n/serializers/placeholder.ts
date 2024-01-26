@@ -97,6 +97,29 @@ export class PlaceholderRegistry {
     return this._generateUniqueName(name.toUpperCase());
   }
 
+  getStartBlockPlaceholderName(name: string, parameters: string[]): string {
+    const signature = this._hashBlock(name, parameters);
+    if (this._signatureToName[signature]) {
+      return this._signatureToName[signature];
+    }
+
+    const placeholder = this._generateUniqueName(`START_BLOCK_${this._toSnakeCase(name)}`);
+    this._signatureToName[signature] = placeholder;
+    return placeholder;
+  }
+
+  getCloseBlockPlaceholderName(name: string): string {
+    const signature = this._hashClosingBlock(name);
+    if (this._signatureToName[signature]) {
+      return this._signatureToName[signature];
+    }
+
+    const placeholder = this._generateUniqueName(`CLOSE_BLOCK_${this._toSnakeCase(name)}`);
+    this._signatureToName[signature] = placeholder;
+    return placeholder;
+  }
+
+
   // Generate a hash for a tag - does not take attribute order into account
   private _hashTag(tag: string, attrs: {[k: string]: string}, isVoid: boolean): string {
     const start = `<${tag}`;
@@ -108,6 +131,19 @@ export class PlaceholderRegistry {
 
   private _hashClosingTag(tag: string): string {
     return this._hashTag(`/${tag}`, {}, false);
+  }
+
+  private _hashBlock(name: string, parameters: string[]): string {
+    const params = parameters.length === 0 ? '' : ` (${parameters.sort().join('; ')})`;
+    return `@${name}${params} {}`;
+  }
+
+  private _hashClosingBlock(name: string): string {
+    return this._hashBlock(`close_${name}`, []);
+  }
+
+  private _toSnakeCase(name: string) {
+    return name.toUpperCase().replace(/[^A-Z0-9]/g, '_');
   }
 
   private _generateUniqueName(base: string): string {

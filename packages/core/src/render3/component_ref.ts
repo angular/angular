@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {Injector} from '../di/injector';
 import {convertToBitFlags} from '../di/injector_compatibility';
 import {InjectFlags, InjectOptions} from '../di/interface/injector';
@@ -23,7 +24,6 @@ import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertGreaterThan, assertIndexInRange} from '../util/assert';
-import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider_flags';
 
 import {AfterRenderEventManager} from './after_render_hooks';
@@ -37,8 +37,8 @@ import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {renderView} from './instructions/render';
 import {addToViewTree, createLView, createTView, executeContentQueries, getOrCreateComponentTView, getOrCreateTNode, initializeDirectives, invokeDirectivesHostBindings, locateHostElement, markAsComponentHost, setInputsForProperty} from './instructions/shared';
-import {ComponentDef, DirectiveDef, HostDirectiveDefs} from './interfaces/definition';
-import {PropertyAliasValue, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
+import {ComponentDef, DirectiveDef, HostDirectiveDefs, InputFlags} from './interfaces/definition';
+import {NodeInputBindings, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {Renderer} from './interfaces/renderer';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, INJECTOR, LView, LViewEnvironment, LViewFlags, TVIEW, TViewType} from './interfaces/view';
@@ -68,13 +68,23 @@ export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   }
 }
 
-function toRefArray(map: {[key: string]: string}): {propName: string; templateName: string;}[] {
+function toRefArray<T>(map: {[P in keyof T]?: string|[minifiedName: string, flags: InputFlags]}):
+    {propName: string; templateName: string}[] {
   const array: {propName: string; templateName: string;}[] = [];
-  for (let nonMinified in map) {
-    if (map.hasOwnProperty(nonMinified)) {
-      const minified = map[nonMinified];
-      array.push({propName: minified, templateName: nonMinified});
+  for (const publicName in map) {
+    if (!map.hasOwnProperty(publicName)) {
+      continue;
     }
+
+    const value = map[publicName];
+    if (value === undefined) {
+      continue;
+    }
+
+    array.push({
+      propName: Array.isArray(value) ? value[0] : value,
+      templateName: publicName,
+    });
   }
   return array;
 }
@@ -202,6 +212,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     const sanitizer = rootViewInjector.get(Sanitizer, null);
 
     const afterRenderEventManager = rootViewInjector.get(AfterRenderEventManager, null);
+    const changeDetectionScheduler = rootViewInjector.get(ChangeDetectionScheduler, null);
 
     const environment: LViewEnvironment = {
       rendererFactory,
@@ -209,6 +220,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       // We don't use inline effects (yet).
       inlineEffectRunner: null,
       afterRenderEventManager,
+      changeDetectionScheduler,
     };
 
     const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
@@ -220,12 +232,12 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
             hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation, rootViewInjector) :
         createElementNode(hostRenderer, elementName, getNamespace(elementName));
 
-    // Signal components use the granular "RefreshView"  for change detection
-    const signalFlags = (LViewFlags.SignalView | LViewFlags.IsRoot);
-    // Non-signal components use the traditional "CheckAlways or OnPush/Dirty" change detection
-    const nonSignalFlags = this.componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
-                                                      LViewFlags.CheckAlways | LViewFlags.IsRoot;
-    const rootFlags = this.componentDef.signals ? signalFlags : nonSignalFlags;
+    let rootFlags = LViewFlags.IsRoot;
+    if (this.componentDef.signals) {
+      rootFlags |= LViewFlags.SignalView;
+    } else if (!this.componentDef.onPush) {
+      rootFlags |= LViewFlags.CheckAlways;
+    }
 
     let hydrationInfo: DehydratedView|null = null;
     if (hostRNode !== null) {
@@ -329,7 +341,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
 
   override setInput(name: string, value: unknown): void {
     const inputData = this._tNode.inputs;
-    let dataValue: PropertyAliasValue|undefined;
+    let dataValue: NodeInputBindings[typeof name]|undefined;
     if (inputData !== null && (dataValue = inputData[name])) {
       this.previousInputValues ??= new Map();
       // Do not set the input if it is the same as the last value
@@ -501,7 +513,8 @@ function setRootNodeAttributes(
     hostRenderer: Renderer2, componentDef: ComponentDef<unknown>, hostRNode: RElement,
     rootSelectorOrNode: any) {
   if (rootSelectorOrNode) {
-    setUpAttributes(hostRenderer, hostRNode, ['ng-version', VERSION.full]);
+    // The placeholder will be replaced with the actual version at build time.
+    setUpAttributes(hostRenderer, hostRNode, ['ng-version', '0.0.0-PLACEHOLDER']);
   } else {
     // If host element is created as a part of this function call (i.e. `rootSelectorOrNode`
     // is not defined), also apply attributes and classes extracted from component selector.

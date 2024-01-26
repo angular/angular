@@ -5,7 +5,18 @@ import {FormatConfig} from '@angular/ng-dev';
  */
 export const format: FormatConfig = {
   'prettier': {
-    'matchers': ['**/*.{yaml,yml}'],
+    'matchers': [
+      '**/*.{yaml,yml}',
+      'devtools/**/*.{js,ts}',
+      'tools/**/*.{js,ts}',
+      'modules/**/*.{js,ts}',
+      'scripts/**/*.{js,ts}',
+      'packages/animations/**/*.{js,ts}',
+      'packages/bazel/**/*.{js,ts}',
+      'packages/benchpress/**/*.{js,ts}',
+      'packages/elements/**/*.{js,ts}',
+      'packages/misc/**/*.{js,ts}',
+    ],
   },
   'clang-format': {
     'matchers': [
@@ -31,6 +42,17 @@ export const format: FormatConfig = {
       '!packages/common/src/i18n/currencies.ts',
       // Temporarily disable formatting for adev
       '!adev/**',
+
+      // Migrated to prettier
+      '!devtools/**/*.{js,ts}',
+      '!tools/**/*.{js,ts}',
+      '!modules/**/*.{js,ts}',
+      '!scripts/**/*.{js,ts}',
+      '!packages/animations/**/*.{js,ts}',
+      '!packages/bazel/**/*.{js,ts}',
+      '!packages/benchpress/**/*.{js,ts}',
+      '!packages/elements/**/*.{js,ts}',
+      '!packages/misc/**/*.{js,ts}',
     ],
   },
   'buildifier': true,

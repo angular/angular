@@ -10,7 +10,7 @@ import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {afterRender, ApplicationRef, Component, ComponentRef, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument, ɵwhenStable as whenStable} from '@angular/core';
+import {afterRender, ApplicationRef, Component, ComponentRef, ContentChildren, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument, ɵwhenStable as whenStable} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {getComponentDef} from '@angular/core/src/render3/definition';
@@ -457,6 +457,65 @@ describe('platform-server hydration integration', () => {
           expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
 
           resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should hydrate root components with empty templates', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: '',
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should hydrate child components with empty templates', async () => {
+          @Component({
+            standalone: true,
+            selector: 'child',
+            template: '',
+          })
+          class ChildComponent {
+          }
+
+          @Component({
+            standalone: true,
+            imports: [ChildComponent],
+            selector: 'app',
+            template: '<child />',
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+          resetTViewsFor(SimpleComponent, ChildComponent);
 
           const appRef = await hydrate(html, SimpleComponent);
           const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -4168,6 +4227,95 @@ describe('platform-server hydration integration', () => {
         verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
       });
 
+      it('should allow re-projection of child content', async () => {
+        @Component({
+          standalone: true,
+          selector: 'mat-step',
+          template: `<ng-template><ng-content /></ng-template>`,
+        })
+        class MatStep {
+          @ViewChild(TemplateRef, {static: true}) content!: TemplateRef<any>;
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'mat-stepper',
+          imports: [NgTemplateOutlet],
+          template: `
+            @for (step of steps; track step) {
+              <ng-container [ngTemplateOutlet]="step.content" />
+            }
+          `,
+        })
+        class MatStepper {
+          @ContentChildren(MatStep) steps!: QueryList<MatStep>;
+        }
+
+        @Component({
+          standalone: true,
+          selector: 'nested-cmp',
+          template: 'Nested cmp content',
+        })
+        class NestedCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [MatStepper, MatStep, NgIf, NestedCmp],
+          selector: 'app',
+          template: `
+            <mat-stepper>
+              <mat-step>Text-only content</mat-step>
+
+              <mat-step>
+                <ng-container>Using ng-containers</ng-container>
+              </mat-step>
+
+              <mat-step>
+                <ng-container *ngIf="true">
+                  Using ng-containers with *ngIf
+                </ng-container>
+              </mat-step>
+
+              <mat-step>
+                @if (true) {
+                  Using built-in control flow (if)
+                }
+              </mat-step>
+
+              <mat-step>
+                <nested-cmp />
+              </mat-step>
+
+            </mat-stepper>
+          `,
+        })
+        class App {
+        }
+
+        const html = await ssr(App);
+        const ssrContents = getAppContents(html);
+        expect(ssrContents).toContain('<app ngh');
+
+        // Verify that elements projected without their parent nodes
+        // use an element within the same template (at position `0`
+        // in the test, i.e. `<mat-stepper>`) as an anchor.
+        const hydrationInfo = getHydrationInfoFromTransferState(ssrContents);
+        expect(hydrationInfo)
+            .toContain('"n":{"2":"0f","4":"0fn2","7":"0fn5","9":"0fn9","11":"0fn12"}');
+
+        resetTViewsFor(App, MatStepper, NestedCmp);
+
+        const appRef = await hydrate(html, App);
+        const compRef = getComponentRef<App>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+
       it('should project plain text and HTML elements', async () => {
         @Component({
           standalone: true,
@@ -4258,6 +4406,108 @@ describe('platform-server hydration integration', () => {
         expect(ssrContents).toContain('<app ngh');
 
         resetTViewsFor(SimpleComponent, ProjectorCmp, ReprojectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should handle multiple nodes projected in a single slot', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <ng-content select="foo" />
+            <ng-content select="bar" />
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({selector: 'foo', standalone: true, template: ''})
+        class FooCmp {
+        }
+
+        @Component({selector: 'bar', standalone: true, template: ''})
+        class BarCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp, FooCmp, BarCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <foo />
+              <bar />
+              <foo />
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+      });
+
+      it('should handle multiple nodes projected in a single slot (different order)', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <ng-content select="foo" />
+            <ng-content select="bar" />
+          `,
+        })
+        class ProjectorCmp {
+        }
+
+        @Component({selector: 'foo', standalone: true, template: ''})
+        class FooCmp {
+        }
+
+        @Component({selector: 'bar', standalone: true, template: ''})
+        class BarCmp {
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp, FooCmp, BarCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <bar />
+              <foo />
+              <bar />
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
 
         const appRef = await hydrate(html, SimpleComponent);
         const compRef = getComponentRef<SimpleComponent>(appRef);
@@ -6284,6 +6534,54 @@ describe('platform-server hydration integration', () => {
                [4, 5].map(id => compRef.location.nativeElement.querySelector(`[id=${id}]`));
            verifyAllNodesClaimedForHydration(clientRootNode, Array.from(clientRenderedItems));
          });
+
+      it('should handle a reconciliation with swaps', async () => {
+        @Component({
+          selector: 'app',
+          standalone: true,
+          template: `
+                @for(item of items; track item) {
+                  <div>{{ item }}</div>
+                }
+              `,
+        })
+        class SimpleComponent {
+          items = ['a', 'b', 'c'];
+
+          swap() {
+            // Reshuffling of the array will result in
+            // "swap" operations in repeater.
+            this.items = ['b', 'c', 'a'];
+          }
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain(`<app ${NGH_ATTR_NAME}`);
+
+        resetTViewsFor(SimpleComponent);
+
+        expect(ssrContents).toContain('a');
+        expect(ssrContents).toContain('b');
+        expect(ssrContents).toContain('c');
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        await whenStable(appRef);
+
+        const root: HTMLElement = compRef.location.nativeElement;
+        const divs = root.querySelectorAll('div');
+        expect(divs.length).toBe(3);
+
+        compRef.instance.swap();
+        compRef.changeDetectorRef.detectChanges();
+
+        const divsAfterSwap = root.querySelectorAll('div');
+        expect(divsAfterSwap.length).toBe(3);
+      });
     });
 
     describe('Router', () => {

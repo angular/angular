@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EnvironmentInjector, ProviderToken} from '@angular/core';
+import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
 import {EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, map, mapTo, mergeMap, takeLast, tap} from 'rxjs/operators';
 
@@ -28,21 +28,25 @@ export function resolveData(
     if (!canActivateChecks.length) {
       return of(t);
     }
-    const routesWithResolversToRun = canActivateChecks.map(check => check.route);
-    const routesWithResolversSet = new Set(routesWithResolversToRun);
-    const routesNeedingDataUpdates =
-        // List all ActivatedRoutes in an array, starting from the parent of the first route to run
-        // resolvers. We go from the parent because the first route might have siblings that also
-        // run resolvers.
-        flattenRouteTree(routesWithResolversToRun[0].parent!)
-            // Remove the parent from the list -- we do not need to recompute its inherited data
-            // because no resolvers at or above it run.
-            .slice(1);
+    // Iterating a Set in javascript  happens in insertion order so it is safe to use a `Set` to
+    // preserve the correct order that the resolvers should run in.
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set#description
+    const routesWithResolversToRun = new Set(canActivateChecks.map(check => check.route));
+    const routesNeedingDataUpdates = new Set<ActivatedRouteSnapshot>();
+    for (const route of routesWithResolversToRun) {
+      if (routesNeedingDataUpdates.has(route)) {
+        continue;
+      }
+      // All children under the route with a resolver to run need to recompute inherited data.
+      for (const newRoute of flattenRouteTree(route)) {
+        routesNeedingDataUpdates.add(newRoute);
+      }
+    }
     let routesProcessed = 0;
     return from(routesNeedingDataUpdates)
         .pipe(
             concatMap(route => {
-              if (routesWithResolversSet.has(route)) {
+              if (routesWithResolversToRun.has(route)) {
                 return runResolve(route, targetSnapshot!, paramsInheritanceStrategy, injector);
               } else {
                 route.data = getInherited(route, route.parent, paramsInheritanceStrategy).resolve;
@@ -51,7 +55,7 @@ export function resolveData(
             }),
             tap(() => routesProcessed++),
             takeLast(1),
-            mergeMap(_ => routesProcessed === routesNeedingDataUpdates.length ? of(t) : EMPTY),
+            mergeMap(_ => routesProcessed === routesNeedingDataUpdates.size ? of(t) : EMPTY),
         );
   });
 }
@@ -106,6 +110,6 @@ function getResolver(
   const resolver = getTokenOrFunctionIdentity(injectionToken, closestInjector);
   const resolverValue = resolver.resolve ?
       resolver.resolve(futureARS, futureRSS) :
-      closestInjector.runInContext(() => resolver(futureARS, futureRSS));
+      runInInjectionContext(closestInjector, () => resolver(futureARS, futureRSS));
   return wrapIntoObservable(resolverValue);
 }

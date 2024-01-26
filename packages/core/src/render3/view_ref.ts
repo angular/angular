@@ -17,9 +17,9 @@ import {checkNoChangesInternal, detectChangesInternal} from './instructions/chan
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
-import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
+import {CONTEXT, ENVIRONMENT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
 import {destroyLView, detachView, detachViewFromDOM} from './node_manipulation';
-import {storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
+import {markAncestorsForTraversal, storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
 
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
@@ -284,8 +284,13 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * See {@link ChangeDetectorRef#detach} for more information.
    */
   detectChanges(): void {
-    detectChangesInternal(
-        this._lView[TVIEW], this._lView, this.context as unknown as {}, this.notifyErrorHandler);
+    // Add `RefreshView` flag to ensure this view is refreshed if not already dirty.
+    // `RefreshView` flag is used intentionally over `Dirty` because it gets cleared before
+    // executing any of the actual refresh code while the `Dirty` flag doesn't get cleared
+    // until the end of the refresh. Using `RefreshView` prevents creating a potential difference
+    // in the state of the LViewFlags during template execution.
+    this._lView[FLAGS] |= LViewFlags.RefreshView;
+    detectChangesInternal(this._lView, this.notifyErrorHandler);
   }
 
   /**
@@ -296,8 +301,7 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    */
   checkNoChanges(): void {
     if (ngDevMode) {
-      checkNoChangesInternal(
-          this._lView[TVIEW], this._lView, this.context as unknown as {}, this.notifyErrorHandler);
+      checkNoChangesInternal(this._lView, this.notifyErrorHandler);
     }
   }
 
@@ -322,5 +326,6 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
           ngDevMode && 'This view is already attached to a ViewContainer!');
     }
     this._appRef = appRef;
+    updateAncestorTraversalFlagsOnAttach(this._lView);
   }
 }

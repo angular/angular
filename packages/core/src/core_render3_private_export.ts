@@ -14,7 +14,7 @@
 export {
   compileNgModuleFactory as ɵcompileNgModuleFactory,
   isBoundToModule as ɵisBoundToModule
-} from './application_ref';
+} from './application/application_ref';
 export {
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
 } from './change_detection/change_detector_ref';
@@ -48,11 +48,11 @@ export {
 export {
   AttributeMarker as ɵAttributeMarker,
   ComponentDef as ɵComponentDef,
+  ComponentDebugMetadata as ɵComponentDebugMetadata,
   ComponentFactory as ɵRender3ComponentFactory,
   ComponentRef as ɵRender3ComponentRef,
   ComponentType as ɵComponentType,
   CssSelectorList as ɵCssSelectorList,
-  detectChanges as ɵdetectChanges,
   DirectiveDef as ɵDirectiveDef,
   DirectiveType as ɵDirectiveType,
   getDirectives as ɵgetDirectives,
@@ -97,6 +97,7 @@ export {
   ɵɵComponentDeclaration,
   ɵɵconditional,
   ɵɵcontentQuery,
+  ɵɵcontentQuerySignal,
   ɵɵcomponentInstance,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
@@ -169,6 +170,7 @@ export {
   ɵɵpureFunction7,
   ɵɵpureFunction8,
   ɵɵpureFunctionV,
+  ɵɵqueryAdvance,
   ɵɵqueryRefresh,
   ɵɵreference,
   ɵɵresetView,
@@ -238,6 +240,7 @@ export {
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
   ɵɵviewQuery,
+  ɵɵviewQuerySignal,
   ɵgetUnknownElementStrictMode,
   ɵsetUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode,
@@ -285,10 +288,7 @@ export {
   isNgModule as ɵisNgModule
 } from './render3/jit/util';
 export { Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent } from './render3/profiler';
-export {
-  publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
-,
-  publishGlobalUtil as ɵpublishGlobalUtil} from './render3/util/global_utils';
+export { GlobalDevModeUtils as ɵGlobalDevModeUtils } from './render3/util/global_utils';
 export {ViewRef as ɵViewRef} from './render3/view_ref';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
@@ -317,5 +317,6 @@ export { AfterRenderEventManager as ɵAfterRenderEventManager, internalAfterNext
 export {depsTracker as ɵdepsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT as ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT} from './render3/deps_tracker/deps_tracker';
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
+export {InputFlags as ɵɵInputFlags} from './render3/interfaces/definition';
 
 // clang-format on

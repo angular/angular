@@ -9,7 +9,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
-import {SlideToggle, TextField} from '@angular/docs-shared';
+import {SlideToggle, TextField} from '@angular/docs';
 import {NgFor, NgIf} from '@angular/common';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiReferenceManager} from './api-reference-manager.service';

@@ -9,15 +9,18 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 import {Todo} from './todo';
+import {TooltipDirective} from './tooltip.directive';
 
 @Component({
   templateUrl: 'todo.component.html',
   selector: 'app-todo',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./todo.component.scss'],
+  standalone: true,
+  imports: [TooltipDirective],
 })
 export class TodoComponent {
-  @Input() todo: Todo;
+  @Input() todo!: Todo;
   @Output() update = new EventEmitter();
   @Output() delete = new EventEmitter();
 

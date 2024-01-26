@@ -394,6 +394,14 @@ export function patchEventTarget(
         const passive =
             passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
         const options = buildEventListenerOptions(arguments[2], passive);
+        const signal = options && typeof options === 'object' && options.signal &&
+                typeof options.signal === 'object' ?
+            options.signal :
+            undefined;
+        if (signal?.aborted) {
+          // the signal is an aborted one, just return without attaching the event listener.
+          return;
+        }
 
         if (unpatchedEvents) {
           // check unpatched list
@@ -465,8 +473,22 @@ export function patchEventTarget(
           (data as any).taskData = taskData;
         }
 
+        if (signal) {
+          // if addEventListener with signal options, we don't pass it to
+          // native addEventListener, instead we keep the signal setting
+          // and handle ourselves.
+          taskData.options.signal = undefined;
+        }
         const task: any =
             zone.scheduleEventTask(source, delegate, data, customScheduleFn, customCancelFn);
+
+        if (signal) {
+          // after task is scheduled, we need to store the signal back to task.options
+          taskData.options.signal = signal;
+          nativeListener.call(signal, 'abort', () => {
+            task.zone.cancelTask(task);
+          }, {once: true});
+        }
 
         // should clear taskData.target to avoid memory leak
         // issue, https://github.com/angular/angular/issues/20442

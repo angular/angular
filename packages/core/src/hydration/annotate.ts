@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef} from '../application_ref';
+import {ApplicationRef} from '../application/application_ref';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
@@ -21,7 +21,7 @@ import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
 import {CONTAINERS, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
-import {calcPathForNode} from './node_lookup_utils';
+import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {getLNodeForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
 
@@ -372,6 +372,9 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         }
       }
     }
+
+    conditionallyAnnotateNodePath(ngh, tNode, lView);
+
     if (isLContainer(lView[i])) {
       // Serialize information about a template.
       const embeddedTView = tNode.tView;
@@ -461,18 +464,39 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
             context.corruptedTextNodes.set(rNode, TextNodeMarker.Separator);
           }
         }
-
-        if (tNode.projectionNext && tNode.projectionNext !== tNode.next &&
-            !isInSkipHydrationBlock(tNode.projectionNext)) {
-          // Check if projection next is not the same as next, in which case
-          // the node would not be found at creation time at runtime and we
-          // need to provide a location for that node.
-          appendSerializedNodePath(ngh, tNode.projectionNext, lView);
-        }
       }
     }
   }
   return ngh;
+}
+
+/**
+ * Serializes node location in cases when it's needed, specifically:
+ *
+ *  1. If `tNode.projectionNext` is different from `tNode.next` - it means that
+ *     the next `tNode` after projection is different from the one in the original
+ *     template. Since hydration relies on `tNode.next`, this serialized info
+ *     if required to help runtime code find the node at the correct location.
+ *  2. In certain content projection-based use-cases, it's possible that only
+ *     a content of a projected element is rendered. In this case, content nodes
+ *     require an extra annotation, since runtime logic can't rely on parent-child
+ *     connection to identify the location of a node.
+ */
+function conditionallyAnnotateNodePath(ngh: SerializedView, tNode: TNode, lView: LView<unknown>) {
+  // Handle case #1 described above.
+  if (tNode.projectionNext && tNode.projectionNext !== tNode.next &&
+      !isInSkipHydrationBlock(tNode.projectionNext)) {
+    appendSerializedNodePath(ngh, tNode.projectionNext, lView);
+  }
+
+  // Handle case #2 described above.
+  // Note: we only do that for the first node (i.e. when `tNode.prev === null`),
+  // the rest of the nodes would rely on the current node location, so no extra
+  // annotation is needed.
+  if (tNode.prev === null && tNode.parent !== null && isDisconnectedNode(tNode.parent, lView) &&
+      !isDisconnectedNode(tNode, lView)) {
+    appendSerializedNodePath(ngh, tNode, lView);
+  }
 }
 
 /**
@@ -549,16 +573,4 @@ function isContentProjectedNode(tNode: TNode): boolean {
     currentTNode = currentTNode.parent as TNode;
   }
   return false;
-}
-
-/**
- * Check whether a given node exists, but is disconnected from the DOM.
- *
- * Note: we leverage the fact that we have this information available in the DOM emulation
- * layer (in Domino) for now. Longer-term solution should not rely on the DOM emulation and
- * only use internal data structures and state to compute this information.
- */
-function isDisconnectedNode(tNode: TNode, lView: LView) {
-  return !(tNode.type & TNodeType.Projection) && !!lView[tNode.index] &&
-      !(unwrapRNode(lView[tNode.index]) as Node).isConnected;
 }

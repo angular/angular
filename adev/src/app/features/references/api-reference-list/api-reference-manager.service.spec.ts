@@ -9,7 +9,7 @@
 import {TestBed} from '@angular/core/testing';
 
 import {ApiReferenceManager} from './api-reference-manager.service';
-import {LOCAL_STORAGE} from '@angular/docs-shared';
+import {LOCAL_STORAGE} from '@angular/docs';
 
 describe('ApiReferenceManager', () => {
   let service: ApiReferenceManager;

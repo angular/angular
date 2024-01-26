@@ -10,7 +10,6 @@ import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit
 import {join, relative} from 'path';
 
 import {normalizePath} from '../../utils/change_tracker';
-import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {migrateTemplate} from './migration';
@@ -19,14 +18,17 @@ import {analyze} from './util';
 
 interface Options {
   path: string;
+  format: boolean;
 }
 
 export default function(options: Options): Rule {
   return async (tree: Tree, context: SchematicContext) => {
-    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
     const pathToMigrate = normalizePath(join(basePath, options.path));
-    const allPaths = options.path !== './' ? [...buildPaths, ...testPaths] : [pathToMigrate];
+    let allPaths = [];
+    if (pathToMigrate.trim() !== '') {
+      allPaths.push(pathToMigrate);
+    }
 
     if (!allPaths.length) {
       throw new SchematicsException(
@@ -43,7 +45,7 @@ export default function(options: Options): Rule {
     }
 
     if (errors.length > 0) {
-      context.logger.warn(`WARNING: ${errors.length} errors occured during your migration:\n`);
+      context.logger.warn(`WARNING: ${errors.length} errors occurred during your migration:\n`);
       errors.forEach((err: string) => {
         context.logger.warn(err);
       });
@@ -76,17 +78,23 @@ function runControlFlowMigration(
     analyze(sourceFile, analysis);
   }
 
-  for (const [path, file] of analysis) {
+  // sort files with .html files first
+  // this ensures class files know if it's safe to remove CommonModule
+  const paths = sortFilePaths([...analysis.keys()]);
+
+  for (const path of paths) {
+    const file = analysis.get(path)!;
     const ranges = file.getSortedRanges();
     const relativePath = relative(basePath, path);
     const content = tree.readText(relativePath);
     const update = tree.beginUpdate(relativePath);
 
-    for (const [start, end] of ranges) {
+    for (const {start, end, node, type} of ranges) {
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
 
-      const {migrated, errors} = migrateTemplate(template);
+      const {migrated, errors} =
+          migrateTemplate(template, type, node, file, schematicOptions.format, analysis);
 
       if (migrated !== null) {
         update.remove(start, length);
@@ -108,6 +116,11 @@ function runControlFlowMigration(
   }
 
   return errorList;
+}
+
+function sortFilePaths(names: string[]): string[] {
+  names.sort((a, _) => a.endsWith('.html') ? -1 : 0);
+  return names;
 }
 
 function generateErrorMessage(path: string, errors: MigrateError[]): string {

@@ -23,6 +23,27 @@ export enum ErrorCode {
   VALUE_HAS_WRONG_TYPE = 1010,
   VALUE_NOT_LITERAL = 1011,
 
+  /**
+   * Raised when an initializer API is annotated with an unexpected decorator.
+   *
+   * e.g. `@Input` is also applied on the class member using `input`.
+   */
+  INITIALIZER_API_WITH_DISALLOWED_DECORATOR = 1050,
+
+  /**
+   * Raised when an initializer API feature (like signal inputs) are also
+   * declared in the class decorator metadata.
+   *
+   * e.g. a signal input is also declared in the `@Directive` `inputs` array.
+   */
+  INITIALIZER_API_DECORATOR_METADATA_COLLISION = 1051,
+
+  /**
+   * An Angular feature, like inputs, outputs or queries is incorrectly
+   * declared on a static member.
+   */
+  INCORRECTLY_DECLARED_ON_STATIC_MEMBER = 1100,
+
   COMPONENT_MISSING_TEMPLATE = 2001,
   PIPE_MISSING_NAME = 2002,
   PARAM_MISSING_TOKEN = 2003,
@@ -115,6 +136,12 @@ export enum ErrorCode {
 
   /** Raised when a component has both `styleUrls` and `styleUrl`. */
   COMPONENT_INVALID_STYLE_URLS = 2021,
+
+  /**
+   * Raised when a type in the `deferredImports` of a component is not a component, directive or
+   * pipe.
+   */
+  COMPONENT_UNKNOWN_DEFERRED_IMPORT = 2022,
 
   SYMBOL_NOT_EXPORTED = 3001,
   /**
@@ -287,6 +314,39 @@ export enum ErrorCode {
   INACCESSIBLE_DEFERRED_TRIGGER_ELEMENT = 8010,
 
   /**
+   * A control flow node is projected at the root of a component and is preventing its direct
+   * descendants from being projected, because it has more than one root node.
+   *
+   * ```
+   * <comp>
+   *  @if (expr) {
+   *    <div projectsIntoSlot></div>
+   *    Text preventing the div from being projected
+   *  }
+   * </comp>
+   * ```
+   */
+  CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = 8011,
+
+  /**
+   * A pipe imported via `@Component.deferredImports` is
+   * used outside of a `@defer` block in a template.
+   */
+  DEFERRED_PIPE_USED_EAGERLY = 8012,
+
+  /**
+   * A directive/component imported via `@Component.deferredImports` is
+   * used outside of a `@defer` block in a template.
+   */
+  DEFERRED_DIRECTIVE_USED_EAGERLY = 8013,
+
+  /**
+   * A directive/component/pipe imported via `@Component.deferredImports` is
+   * also included into the `@Component.imports` list.
+   */
+  DEFERRED_DEPENDENCY_IMPORTED_EAGERLY = 8014,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
@@ -432,4 +492,10 @@ export enum ErrorCode {
    * compilation mode.
    */
   LOCAL_COMPILATION_IMPORTED_STYLES_STRING = 11002,
+
+  /**
+   * Raised when the compiler wasn't able to resolve the metadata of a host directive in local
+   * compilation mode.
+   */
+  LOCAL_COMPILATION_HOST_DIRECTIVE_INVALID = 11003,
 }

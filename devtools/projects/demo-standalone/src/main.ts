@@ -16,7 +16,6 @@ import {DemoApplicationOperations} from '../../../src/demo-application-operation
 
 import {AppComponent} from './app/app.component';
 
-
 bootstrapApplication(AppComponent, {
   providers: [
     provideAnimations(),
@@ -24,7 +23,7 @@ bootstrapApplication(AppComponent, {
       {
         path: '',
         loadComponent: () =>
-            import('./app/devtools-app/devtools-app.component').then((m) => m.DevToolsComponent),
+          import('./app/devtools-app/devtools-app.component').then((m) => m.DemoDevToolsComponent),
         pathMatch: 'full',
       },
       {
@@ -40,5 +39,5 @@ bootstrapApplication(AppComponent, {
       provide: ApplicationEnvironment,
       useClass: DemoApplicationEnvironment,
     },
-  ]
+  ],
 });

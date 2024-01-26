@@ -28,15 +28,13 @@ export class BrowserGetTestability implements GetTestability {
 
     global['getAllAngularRootElements'] = () => registry.getAllRootElements();
 
-    const whenAllStable = (callback: (didWork: boolean) => void) => {
+    const whenAllStable = (callback: () => void) => {
       const testabilities = global['getAllAngularTestabilities']() as Testability[];
       let count = testabilities.length;
-      let didWork = false;
-      const decrement = function(didWork_: boolean) {
-        didWork = didWork || didWork_;
+      const decrement = function() {
         count--;
         if (count == 0) {
-          callback(didWork);
+          callback();
         }
       };
       testabilities.forEach((testability) => {

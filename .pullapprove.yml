@@ -1069,9 +1069,10 @@ groups:
           ])
     reviewers:
       users:
-        - twerske
         - josephperrott
         - jelbourn
+        - bencodezen
+        - jessicajaniuk
 
   # =========================================================
   #  Docs-infra
@@ -1150,6 +1151,7 @@ groups:
         - josephperrott
         - mgechev
         - twerske
+        - ~jeanmeche
 
   # =========================================================
   #  Dev-infra
@@ -1394,6 +1396,7 @@ groups:
         - devversion # Paul Gschwendtner
         - dgp1130 # Doug Parker
         - dylhunn # Dylan Hunn
+        - jeanmeche # Matthieu Riegler
         - jelbourn # Jeremy Elbourn
         - jessicajaniuk # Jessica Janiuk
         - JiaLiPassion # Jia Li

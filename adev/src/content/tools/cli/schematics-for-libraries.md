@@ -16,7 +16,7 @@ The following steps show you how to add initial support without modifying any pr
 1. At the root level of the `schematics` folder, create a `collection.json` file.
 1. Edit the `collection.json` file to define the initial schema for your collection.
 
-    <docs-code header="projects/my-lib/schematics/collection.json (Schematics Collection)" path="schematics-for-libraries/projects/my-lib/schematics/collection.1.json"/>
+    <docs-code header="projects/my-lib/schematics/collection.json (Schematics Collection)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/collection.1.json"/>
 
     * The `$schema` path is relative to the Angular Devkit collection schema.
     * The `schematics` object describes the named schematics that are part of this collection.
@@ -26,7 +26,7 @@ The following steps show you how to add initial support without modifying any pr
 1. In your library project's `package.json` file, add a "schematics" entry with the path to your schema file.
     The Angular CLI uses this entry to find named schematics in your collection when it runs commands.
 
-    <docs-code header="projects/my-lib/package.json (Schematics Collection Reference)" path="schematics-for-libraries/projects/my-lib/package.json" visibleRegion="collection"/>
+    <docs-code header="projects/my-lib/package.json (Schematics Collection Reference)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/package.json" visibleRegion="collection"/>
 
 The initial schema that you have created tells the CLI where to find the schematic that supports the `ng add` command.
 Now you are ready to create that schematic.
@@ -40,7 +40,7 @@ The following steps define this type of schematic.
 1. Create the main file, `index.ts`.
 1. Open `index.ts` and add the source code for your schematic factory function.
 
-    <docs-code header="projects/my-lib/schematics/ng-add/index.ts (ng-add Rule Factory)" path="schematics-for-libraries/projects/my-lib/schematics/ng-add/index.ts"/>
+    <docs-code header="projects/my-lib/schematics/ng-add/index.ts (ng-add Rule Factory)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/ng-add/index.ts"/>
 
 The Angular CLI will install the latest version of the library automatically, and this example is taking it a step further by adding the `MyLibModule` to the root of the application. The `addRootImport` function accepts a callback that needs to return a code block. You can write any code inside of the string tagged with the `code` function and any external symbol have to be wrapped with the `external` function to ensure that the appropriate import statements are generated.
 
@@ -48,7 +48,7 @@ The Angular CLI will install the latest version of the library automatically, an
 
 Use the `save` option of `ng-add` to configure if the library should be added to the `dependencies`, the `devDependencies`, or not saved at all in the project's `package.json` configuration file.
 
-<docs-code header="projects/my-lib/package.json (ng-add Reference)" path="schematics-for-libraries/projects/my-lib/package.json" visibleRegion="ng-add"/>
+<docs-code header="projects/my-lib/package.json (ng-add Reference)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/package.json" visibleRegion="ng-add"/>
 
 Possible values are:
 
@@ -72,7 +72,7 @@ To tell the library how to build the schematics, add a `tsconfig.schematics.json
 
 1. Edit the `tsconfig.schematics.json` file to add the following content.
 
-    <docs-code header="projects/my-lib/tsconfig.schematics.json (TypeScript Config)" path="schematics-for-libraries/projects/my-lib/tsconfig.schematics.json"/>
+    <docs-code header="projects/my-lib/tsconfig.schematics.json (TypeScript Config)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/tsconfig.schematics.json"/>
 
     | Options | Details |
     |:---     |:---     |
@@ -81,7 +81,7 @@ To tell the library how to build the schematics, add a `tsconfig.schematics.json
 
 1. To make sure your schematics source files get compiled into the library bundle, add the following scripts to the `package.json` file in your library project's root folder \(`projects/my-lib`\).
 
-    <docs-code header="projects/my-lib/package.json (Build Scripts)" path="schematics-for-libraries/projects/my-lib/package.json"/>
+    <docs-code header="projects/my-lib/package.json (Build Scripts)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/package.json"/>
 
     * The `build` script compiles your schematic using the custom `tsconfig.schematics.json` file
     * The `postbuild` script copies the schematic files after the `build` script completes
@@ -109,12 +109,12 @@ When you add a schematic to the collection, you have to point to it in the colle
 
 1. Edit the `schematics/collection.json` file to point to the new schematic subfolder, and include a pointer to a schema file that specifies inputs for the new schematic.
 
-    <docs-code header="projects/my-lib/schematics/collection.json (Schematics Collection)" path="schematics-for-libraries/projects/my-lib/schematics/collection.json"/>
+    <docs-code header="projects/my-lib/schematics/collection.json (Schematics Collection)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/collection.json"/>
 
 1. Go to the `<lib-root>/schematics/my-service` folder.
 1. Create a `schema.json` file and define the available options for the schematic.
 
-    <docs-code header="projects/my-lib/schematics/my-service/schema.json (Schematic JSON Schema)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.json"/>
+    <docs-code header="projects/my-lib/schematics/my-service/schema.json (Schematic JSON Schema)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/schema.json"/>
 
     * *id*: A unique ID for the schema in the collection.
     * *title*: A human-readable description of the schema.
@@ -128,7 +128,7 @@ When you add a schematic to the collection, you have to point to it in the colle
 
 1. Create a `schema.ts` file and define an interface that stores the values of the options defined in the `schema.json` file.
 
-    <docs-code header="projects/my-lib/schematics/my-service/schema.ts (Schematic Interface)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/schema.ts"/>
+    <docs-code header="projects/my-lib/schematics/my-service/schema.ts (Schematic Interface)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/schema.ts"/>
 
     | Options | Details |
     |:---     |:---     |
@@ -178,15 +178,15 @@ For details of these data structures and syntax, see the [Schematics README](htt
 1. First, import the schematics definitions you will need.
     The Schematics framework offers many utility functions to create and use rules when running a schematic.
 
-    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Imports)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="schematics-imports"/>
+    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Imports)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="schematics-imports"/>
 
 1. Import the defined schema interface that provides the type information for your schematic's options.
 
-    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Schema Import)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="schema-imports"/>
+    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Schema Import)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="schema-imports"/>
 
 1. To build up the generation schematic, start with an empty rule factory.
 
-    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Initial Rule)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.1.ts" visibleRegion="factory"/>
+    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Initial Rule)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.1.ts" visibleRegion="factory"/>
 
 This rule factory returns the tree without modification.
 The options are the option values passed through from the `ng generate` command.
@@ -208,13 +208,13 @@ The `Tree` methods give you access to the complete file tree in your workspace, 
     To use `workspaces.readWorkspace` you need to create a `workspaces.WorkspaceHost` from the `Tree`.
     Add the following code to your factory function.
 
-    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Schema Import)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="workspace"/>
+    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Schema Import)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="workspace"/>
 
     Be sure to check that the context exists and throw the appropriate error.
 
 1. Now that you have the project name, use it to retrieve the project-specific configuration information.
 
-    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Project)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="project-info"/>
+    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Project)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="project-info"/>
 
     The `workspace.projects` object contains all the project-specific configuration information.
 
@@ -223,7 +223,7 @@ The `Tree` methods give you access to the complete file tree in your workspace, 
     The `path` option in the schematic's schema is substituted by default with the current working directory.
     If the `path` is not defined, use the `sourceRoot` from the project configuration along with the `projectType`.
 
-    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Project Info)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="path"/>
+    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Project Info)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="path"/>
 
 ### Define the rule
 
@@ -232,7 +232,7 @@ Use the templating to generate any custom files required for your schematic.
 
 1. Add the following code to your factory function.
 
-    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Template transform)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="template"/>
+    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Template transform)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="template"/>
 
     | Methods            | Details |
     |:---                |:---     |
@@ -245,14 +245,14 @@ Use the templating to generate any custom files required for your schematic.
 
 1. Finally, the rule factory must return a rule.
 
-    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Chain Rule)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="chain"/>
+    <docs-code header="projects/my-lib/schematics/my-service/index.ts (Chain Rule)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="chain"/>
 
     The `chain()` method lets you combine multiple rules into a single rule, so that you can perform multiple operations in a single schematic.
     Here you are only merging the template rules with any code executed by the schematic.
 
 See a complete example of the following schematic rule function.
 
-<docs-code header="projects/my-lib/schematics/my-service/index.ts" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts"/>
+<docs-code header="projects/my-lib/schematics/my-service/index.ts" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts"/>
 
 For more information about rules and utility methods, see [Provided Rules](https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/schematics#provided-rules).
 

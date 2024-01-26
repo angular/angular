@@ -10,7 +10,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import DocsComponent from './docs.component';
 import {RouterTestingModule} from '@angular/router/testing';
-import {DOCS_CONTENT_LOADER, WINDOW} from '@angular/docs-shared';
+import {DOCS_CONTENT_LOADER, WINDOW} from '@angular/docs';
 
 describe('DocsComponent', () => {
   let component: DocsComponent;

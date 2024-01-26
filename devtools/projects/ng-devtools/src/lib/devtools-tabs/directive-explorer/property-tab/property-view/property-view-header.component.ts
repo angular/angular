@@ -7,14 +7,19 @@
  */
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatToolbar} from '@angular/material/toolbar';
 
 @Component({
   selector: 'ng-property-view-header',
   templateUrl: './property-view-header.component.html',
   styleUrls: ['./property-view-header.component.scss'],
+  standalone: true,
+  imports: [MatToolbar, MatTooltip, MatIcon],
 })
 export class PropertyViewHeaderComponent {
-  @Input() directive: string;
+  @Input({required: true}) directive!: string;
   @Output() viewSource = new EventEmitter<void>();
 
   // output that emits directive

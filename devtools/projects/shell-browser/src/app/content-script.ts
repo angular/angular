@@ -29,8 +29,10 @@ export const main = () => {
 
   port.onDisconnect.addListener(handleDisconnect);
 
-  const localMessageBus =
-      new SamePageMessageBus('angular-devtools-content-script', 'angular-devtools-backend');
+  const localMessageBus = new SamePageMessageBus(
+    'angular-devtools-content-script',
+    'angular-devtools-backend',
+  );
   const chromeMessageBus = new ChromeMessageBus(port);
 
   const handshakeWithBackend = (): void => {
@@ -62,4 +64,4 @@ export const main = () => {
 };
 
 // expose to use as callback for chrome.tabs.executeScript in background.ts
-globalThis.main = main;
+(globalThis as any).main = main;

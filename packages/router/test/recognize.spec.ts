@@ -31,6 +31,16 @@ describe('recognize', async () => {
     expect(Object.isFrozen(child.params)).toBeTruthy();
   });
 
+  it('should freeze data object (but not original route data)', async () => {
+    const someData = {a: 1};
+    const s: RouterStateSnapshot =
+        await recognize([{path: '**', component: ComponentA, data: someData}], 'a');
+    checkActivatedRoute(s.root, '', {}, RootComponent);
+    const child = s.root.firstChild!;
+    expect(Object.isFrozen(child.data)).toBeTruthy();
+    expect(Object.isFrozen(someData)).toBeFalsy();
+  });
+
   it('should support secondary routes', async () => {
     const s: RouterStateSnapshot = await recognize(
         [
@@ -653,6 +663,17 @@ describe('recognize', async () => {
       expect(s.root.fragment).toEqual('f1');
     });
   });
+
+  describe('guards', () => {
+    it('should run canMatch guards on wildcard routes', async () => {
+      const config = [
+        {path: '**', component: ComponentA, data: {id: 'a'}, canMatch: [() => false]},
+        {path: '**', component: ComponentB, data: {id: 'b'}}
+      ];
+      const s = await recognize(config, 'a');
+      expect(s.root.firstChild!.data['id']).toEqual('b');
+    });
+  });
 });
 
 async function recognize(
@@ -664,7 +685,7 @@ async function recognize(
                      RootComponent, config, tree(url), paramsInheritanceStrategy, serializer)
                      .recognize()
                      .toPromise();
-  return result.state;
+  return result!.state;
 }
 
 function checkActivatedRoute(

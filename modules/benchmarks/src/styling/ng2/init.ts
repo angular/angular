@@ -63,15 +63,29 @@ export function init(moduleRef: NgModuleRef<StylingModule>) {
   bindAction('#update', update);
   bindAction('#detect_changes', detectChanges);
   bindAction('#destroy', destroy);
-  bindAction('#profile_update', profile(() => {
-               for (let i = 0; i < 10; i++) {
-                 update();
-               }
-             }, () => {}, 'update and detect changes'));
-  bindAction('#profile_detect_changes', profile(() => {
-               for (let i = 0; i < 10; i++) {
-                 detectChanges();
-               }
-             }, () => {}, 'noop detect changes'));
+  bindAction(
+    '#profile_update',
+    profile(
+      () => {
+        for (let i = 0; i < 10; i++) {
+          update();
+        }
+      },
+      () => {},
+      'update and detect changes',
+    ),
+  );
+  bindAction(
+    '#profile_detect_changes',
+    profile(
+      () => {
+        for (let i = 0; i < 10; i++) {
+          detectChanges();
+        }
+      },
+      () => {},
+      'noop detect changes',
+    ),
+  );
   bindAction('#modify', modifyExternally);
 }

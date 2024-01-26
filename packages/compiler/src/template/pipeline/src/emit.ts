@@ -22,9 +22,10 @@ import {chain} from './phases/chaining';
 import {collapseSingletonInterpolations} from './phases/collapse_singleton_interpolations';
 import {generateConditionalExpressions} from './phases/conditionals';
 import {collectElementConsts} from './phases/const_collection';
+import {convertI18nBindings} from './phases/convert_i18n_bindings';
 import {createDeferDepsFns} from './phases/create_defer_deps_fns';
 import {createI18nContexts} from './phases/create_i18n_contexts';
-import {createI18nIcuExpressions} from './phases/create_i18n_icu_expressions';
+import {deduplicateTextBindings} from './phases/deduplicate_text_bindings';
 import {configureDeferInstructions} from './phases/defer_configs';
 import {resolveDeferTargetNames} from './phases/defer_resolve_targets';
 import {collapseEmptyInstructions} from './phases/empty_elements';
@@ -36,9 +37,8 @@ import {generateVariables} from './phases/generate_variables';
 import {collectConstExpressions} from './phases/has_const_expression_collection';
 import {parseHostStyleProperties} from './phases/host_style_property_parsing';
 import {collectI18nConsts} from './phases/i18n_const_collection';
-import {extractI18nText} from './phases/i18n_text_extraction';
+import {convertI18nText} from './phases/i18n_text_extraction';
 import {liftLocalRefs} from './phases/local_refs';
-import {mergeI18nContexts} from './phases/merge_i18n_contexts';
 import {emitNamespaceChanges} from './phases/namespace';
 import {nameFunctionsAndVariables} from './phases/naming';
 import {mergeNextContextExpressions} from './phases/next_context_merging';
@@ -56,7 +56,7 @@ import {generatePureLiteralStructures} from './phases/pure_literal_structures';
 import {reify} from './phases/reify';
 import {removeEmptyBindings} from './phases/remove_empty_bindings';
 import {removeI18nContexts} from './phases/remove_i18n_contexts';
-import {generateRepeaterDerivedVars} from './phases/repeater_derived_vars';
+import {removeUnusedI18nAttributesOps} from './phases/remove_unused_i18n_attrs';
 import {resolveContexts} from './phases/resolve_contexts';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
 import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
@@ -89,12 +89,13 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: removeContentSelectors},
   {kind: Kind.Host, fn: parseHostStyleProperties},
   {kind: Kind.Tmpl, fn: emitNamespaceChanges},
-  {kind: Kind.Both, fn: specializeStyleBindings},
-  {kind: Kind.Both, fn: specializeBindings},
   {kind: Kind.Tmpl, fn: propagateI18nBlocks},
   {kind: Kind.Tmpl, fn: wrapI18nIcus},
-  {kind: Kind.Tmpl, fn: createI18nContexts},
+  {kind: Kind.Both, fn: deduplicateTextBindings},
+  {kind: Kind.Both, fn: specializeStyleBindings},
+  {kind: Kind.Both, fn: specializeBindings},
   {kind: Kind.Both, fn: extractAttributes},
+  {kind: Kind.Tmpl, fn: createI18nContexts},
   {kind: Kind.Both, fn: parseExtractedStyles},
   {kind: Kind.Tmpl, fn: removeEmptyBindings},
   {kind: Kind.Both, fn: collapseSingletonInterpolations},
@@ -102,43 +103,42 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateConditionalExpressions},
   {kind: Kind.Tmpl, fn: createPipes},
   {kind: Kind.Tmpl, fn: configureDeferInstructions},
-  {kind: Kind.Tmpl, fn: extractI18nText},
-  {kind: Kind.Tmpl, fn: createI18nIcuExpressions},
+  {kind: Kind.Tmpl, fn: convertI18nText},
+  {kind: Kind.Tmpl, fn: convertI18nBindings},
+  {kind: Kind.Tmpl, fn: removeUnusedI18nAttributesOps},
+  {kind: Kind.Tmpl, fn: assignI18nSlotDependencies},
   {kind: Kind.Tmpl, fn: applyI18nExpressions},
   {kind: Kind.Tmpl, fn: createVariadicPipes},
   {kind: Kind.Both, fn: generatePureLiteralStructures},
   {kind: Kind.Tmpl, fn: generateProjectionDefs},
   {kind: Kind.Tmpl, fn: generateVariables},
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
-  {kind: Kind.Tmpl, fn: deleteAnyCasts},
+  {kind: Kind.Both, fn: deleteAnyCasts},
   {kind: Kind.Both, fn: resolveDollarEvent},
-  {kind: Kind.Tmpl, fn: generateRepeaterDerivedVars},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Both, fn: resolveNames},
   {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
   {kind: Kind.Tmpl, fn: optimizeTrackFns},
   {kind: Kind.Both, fn: resolveContexts},
-  {kind: Kind.Tmpl, fn: resolveSanitizers},  // TODO: run in both
+  {kind: Kind.Both, fn: resolveSanitizers},
   {kind: Kind.Tmpl, fn: liftLocalRefs},
   {kind: Kind.Both, fn: generateNullishCoalesceExpressions},
   {kind: Kind.Both, fn: expandSafeReads},
   {kind: Kind.Both, fn: generateTemporaryVariables},
   {kind: Kind.Tmpl, fn: allocateSlots},
-  {kind: Kind.Tmpl, fn: createDeferDepsFns},
   {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
-  {kind: Kind.Tmpl, fn: mergeI18nContexts},
   {kind: Kind.Tmpl, fn: extractI18nMessages},
   {kind: Kind.Tmpl, fn: generateTrackFns},
   {kind: Kind.Tmpl, fn: collectI18nConsts},
   {kind: Kind.Tmpl, fn: collectConstExpressions},
   {kind: Kind.Both, fn: collectElementConsts},
-  {kind: Kind.Tmpl, fn: assignI18nSlotDependencies},
   {kind: Kind.Tmpl, fn: removeI18nContexts},
   {kind: Kind.Both, fn: countVariables},
   {kind: Kind.Tmpl, fn: generateAdvance},
   {kind: Kind.Both, fn: optimizeVariables},
   {kind: Kind.Both, fn: nameFunctionsAndVariables},
+  {kind: Kind.Tmpl, fn: createDeferDepsFns},
   {kind: Kind.Tmpl, fn: mergeNextContextExpressions},
   {kind: Kind.Tmpl, fn: generateNgContainerOps},
   {kind: Kind.Tmpl, fn: collapseEmptyInstructions},

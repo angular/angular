@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {inject, InjectionToken} from './di';
 import {getOriginalError} from './util/errors';
 
 /**
@@ -58,3 +59,18 @@ export class ErrorHandler {
     return e || null;
   }
 }
+
+/**
+ * `InjectionToken` used to configure how to call the `ErrorHandler`.
+ *
+ * `NgZone` is provided by default today so the default (and only) implementation for this
+ * is calling `ErrorHandler.handleError` outside of the Angular zone.
+ */
+export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) => void>(
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'internal error handler' : '', {
+      providedIn: 'root',
+      factory: () => {
+        const userErrorHandler = inject(ErrorHandler);
+        return userErrorHandler.handleError.bind(this);
+      }
+    });

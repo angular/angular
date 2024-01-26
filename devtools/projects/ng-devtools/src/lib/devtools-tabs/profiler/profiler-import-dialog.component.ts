@@ -7,22 +7,33 @@
  */
 
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+} from '@angular/material/dialog';
+import {MatButton} from '@angular/material/button';
 
 interface DialogData {
   profilerVersion?: number;
   importedVersion?: number;
   errorMessage?: string;
-  status: 'ERROR'|'INVALID_VERSION';
+  status: 'ERROR' | 'INVALID_VERSION';
 }
 
 @Component({
   selector: 'ng-profiler-import-dialog',
   templateUrl: './profiler-import-dialog.component.html',
   styleUrls: ['./profiler-import-dialog.component.scss'],
+  standalone: true,
+  imports: [MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle, MatButton],
 })
 export class ProfilerImportDialogComponent {
   constructor(
-      public dialogRef: MatDialogRef<ProfilerImportDialogComponent>,
-      @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+    public dialogRef: MatDialogRef<ProfilerImportDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+  ) {}
 }

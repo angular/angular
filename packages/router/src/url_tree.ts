@@ -208,9 +208,7 @@ export class UrlTree {
   }
 
   get queryParamMap(): ParamMap {
-    if (!this._queryParamMap) {
-      this._queryParamMap = convertToParamMap(this.queryParams);
-    }
+    this._queryParamMap ??= convertToParamMap(this.queryParams);
     return this._queryParamMap;
   }
 
@@ -296,9 +294,7 @@ export class UrlSegment {
       public parameters: {[name: string]: string}) {}
 
   get parameterMap(): ParamMap {
-    if (!this._parameterMap) {
-      this._parameterMap = convertToParamMap(this.parameters);
-    }
+    this._parameterMap ??= convertToParamMap(this.parameters);
     return this._parameterMap;
   }
 
@@ -494,21 +490,20 @@ export function serializePath(path: UrlSegment): string {
 }
 
 function serializeMatrixParams(params: {[key: string]: string}): string {
-  return Object.keys(params)
-      .map(key => `;${encodeUriSegment(key)}=${encodeUriSegment(params[key])}`)
+  return Object.entries(params)
+      .map(([key, value]) => `;${encodeUriSegment(key)}=${encodeUriSegment(value)}`)
       .join('');
 }
 
 function serializeQueryParams(params: {[key: string]: any}): string {
   const strParams: string[] =
-      Object.keys(params)
-          .map((name) => {
-            const value = params[name];
+      Object.entries(params)
+          .map(([name, value]) => {
             return Array.isArray(value) ?
                 value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
                 `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
           })
-          .filter(s => !!s);
+          .filter(s => s);
 
   return strParams.length ? `?${strParams.join('&')}` : '';
 }
@@ -756,8 +751,7 @@ export function createRoot(rootCandidate: UrlSegmentGroup) {
  */
 export function squashSegmentGroup(segmentGroup: UrlSegmentGroup): UrlSegmentGroup {
   const newChildren: Record<string, UrlSegmentGroup> = {};
-  for (const childOutlet of Object.keys(segmentGroup.children)) {
-    const child = segmentGroup.children[childOutlet];
+  for (const [childOutlet, child] of Object.entries(segmentGroup.children)) {
     const childCandidate = squashSegmentGroup(child);
     // moves named children in an empty path primary child into this group
     if (childOutlet === PRIMARY_OUTLET && childCandidate.segments.length === 0 &&

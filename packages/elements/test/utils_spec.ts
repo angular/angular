@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {camelToDashCase, isElement, isFunction, kebabToCamelCase, matchesSelector, scheduler, strictEquals} from '../src/utils';
+import {
+  camelToDashCase,
+  isElement,
+  isFunction,
+  kebabToCamelCase,
+  matchesSelector,
+  scheduler,
+  strictEquals,
+} from '../src/utils';
 
 describe('utils', () => {
   describe('scheduler', () => {
@@ -45,7 +53,9 @@ describe('utils', () => {
         const mockCancelFn = () => undefined;
         let scheduleSpy: jasmine.Spy;
 
-        beforeEach(() => scheduleSpy = spyOn(scheduler, 'schedule').and.returnValue(mockCancelFn));
+        beforeEach(
+          () => (scheduleSpy = spyOn(scheduler, 'schedule').and.returnValue(mockCancelFn)),
+        );
 
         it('should delegate to `scheduler.schedule()`', () => {
           const cb = () => null;
@@ -98,7 +108,7 @@ describe('utils', () => {
         document.documentElement,
       ];
 
-      elems.forEach(n => expect(isElement(n)).toBe(true));
+      elems.forEach((n) => expect(isElement(n)).toBe(true));
     });
 
     it('should return false for non-Element nodes', () => {
@@ -110,36 +120,22 @@ describe('utils', () => {
         document.createTextNode('baz'),
       ];
 
-      nonElems.forEach(n => expect(isElement(n)).toBe(false));
+      nonElems.forEach((n) => expect(isElement(n)).toBe(false));
     });
   });
 
   describe('isFunction()', () => {
     it('should return true for functions', () => {
-      const obj = {foo: function() {}, bar: () => null, baz() {}};
-      const fns = [
-        function() {},
-        () => null,
-        obj.foo,
-        obj.bar,
-        obj.baz,
-        Function,
-        Date,
-      ];
+      const obj = {foo: function () {}, bar: () => null, baz() {}};
+      const fns = [function () {}, () => null, obj.foo, obj.bar, obj.baz, Function, Date];
 
-      fns.forEach(v => expect(isFunction(v)).toBe(true));
+      fns.forEach((v) => expect(isFunction(v)).toBe(true));
     });
 
     it('should return false for non-functions', () => {
-      const nonFns = [
-        undefined,
-        null,
-        true,
-        42,
-        {},
-      ];
+      const nonFns = [undefined, null, true, 42, {}];
 
-      nonFns.forEach(v => expect(isFunction(v)).toBe(false));
+      nonFns.forEach((v) => expect(isFunction(v)).toBe(false));
     });
   });
 

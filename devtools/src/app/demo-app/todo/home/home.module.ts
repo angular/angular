@@ -26,9 +26,12 @@ import {TodosFilter} from './todos.pipe';
         pathMatch: 'full',
       },
     ]),
+    SamplePipe,
+    TodosComponent,
+    TodoComponent,
+    TodosFilter,
+    TooltipDirective,
   ],
-  declarations: [SamplePipe, TodosComponent, TodoComponent, TodosFilter, TooltipDirective],
   exports: [TodosComponent],
 })
-export class HomeModule {
-}
+export class HomeModule {}

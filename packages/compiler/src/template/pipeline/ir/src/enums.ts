@@ -223,17 +223,27 @@ export enum OpKind {
   /**
    * An instruction to create an ICU expression.
    */
-  Icu,
+  IcuStart,
 
   /**
    * An instruction to update an ICU expression.
    */
-  IcuUpdate,
+  IcuEnd,
+
+  /**
+   * An instruction representing a placeholder in an ICU expression.
+   */
+  IcuPlaceholder,
 
   /**
    * An i18n context containing information needed to generate an i18n message.
    */
   I18nContext,
+
+  /**
+   * A creation op that corresponds to i18n attributes on an element.
+   */
+  I18nAttributes,
 }
 
 /**
@@ -346,6 +356,11 @@ export enum ExpressionKind {
   SanitizerExpr,
 
   /**
+   * An expression representing a function to create trusted values.
+   */
+  TrustedValueFnExpr,
+
+  /**
    * An expression that will cause a literal slot index to be emitted.
    */
   SlotLiteralExpr,
@@ -410,18 +425,6 @@ export enum SemanticVariableKind {
 export enum CompatibilityMode {
   Normal,
   TemplateDefinitionBuilder,
-}
-
-/**
- * Represents functions used to sanitize different pieces of a template.
- */
-export enum SanitizerFn {
-  Html,
-  Script,
-  Style,
-  Url,
-  ResourceUrl,
-  IframeAttribute,
 }
 
 /**
@@ -491,6 +494,21 @@ export enum I18nParamResolutionTime {
 }
 
 /**
+ * The contexts in which an i18n expression can be used.
+ */
+export enum I18nExpressionFor {
+  /**
+   * This expression is used as a value (i.e. inside an i18n block).
+   */
+  I18nText,
+
+  /**
+   * This expression is used in a binding.
+   */
+  I18nAttribute,
+}
+
+/**
  * Flags that describe what an i18n param value. These determine how the value is serialized into
  * the final map.
  */
@@ -500,12 +518,12 @@ export enum I18nParamValueFlags {
   /**
    *  This value represtents an element tag.
    */
-  ElementTag = 0b001,
+  ElementTag = 0b1,
 
   /**
    * This value represents a template tag.
    */
-  TemplateTag = 0b0010,
+  TemplateTag = 0b10,
 
   /**
    * This value represents the opening of a tag.
@@ -516,6 +534,11 @@ export enum I18nParamValueFlags {
    * This value represents the closing of a tag.
    */
   CloseTag = 0b1000,
+
+  /**
+   * This value represents an i18n expression index.
+   */
+  ExpressionIndex = 0b10000
 }
 
 /**
@@ -540,11 +563,16 @@ export enum DeferTriggerKind {
 }
 
 /**
- * Repeaters implicitly define these derived variables, and child nodes may read them.
+ * Kinds of i18n contexts. They can be created because of root i18n blocks, or ICUs.
  */
-export enum DerivedRepeaterVarIdentity {
-  First,
-  Last,
-  Even,
-  Odd,
+export enum I18nContextKind {
+  RootI18n,
+  Icu,
+  Attr
+}
+
+export enum TemplateKind {
+  NgTemplate,
+  Structural,
+  Block
 }

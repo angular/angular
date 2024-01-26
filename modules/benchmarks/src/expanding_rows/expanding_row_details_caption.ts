@@ -6,8 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Host, Input, OnDestroy} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Host,
+  Input,
+  OnDestroy,
+} from '@angular/core';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -21,13 +27,14 @@ import {expanding_row_css} from './expanding_row_css';
 @Component({
   selector: 'cfc-expanding-row-details-caption',
   styles: [expanding_row_css],
-  template: `
-    <div *ngIf="expandingRow.isExpanded"
-        (click)="expandingRow.handleCaptionClick($event)"
-        [style.backgroundColor]="color"
-        class="cfc-expanding-row-details-caption">
-      <ng-content></ng-content>
-    </div>`,
+  template: ` <div
+    *ngIf="expandingRow.isExpanded"
+    (click)="expandingRow.handleCaptionClick($event)"
+    [style.backgroundColor]="color"
+    class="cfc-expanding-row-details-caption"
+  >
+    <ng-content></ng-content>
+  </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpandingRowDetailsCaption implements OnDestroy {
@@ -35,14 +42,17 @@ export class ExpandingRowDetailsCaption implements OnDestroy {
   @Input() color: string = 'blue';
 
   /** This is triggered when this component is destroyed. */
-  private readonly onDestroy = new Subject();
+  private readonly onDestroy = new Subject<void>();
 
   /**
    * We need a reference to parent cfc-expanding-row component here to hide
    * this component when the row is collapsed. We also need to relay clicks
    * to the parent component.
    */
-  constructor(@Host() public expandingRow: ExpandingRow, changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    @Host() public expandingRow: ExpandingRow,
+    changeDetectorRef: ChangeDetectorRef,
+  ) {
     this.expandingRow.isExpandedChange.pipe(takeUntil(this.onDestroy)).subscribe(() => {
       changeDetectorRef.markForCheck();
     });

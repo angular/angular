@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-!function() {
+!(function () {
   'use strict';
-  var constant$1 = 1, method$2 = function() {}, clazz$3 = class {};
-}();
+  var constant$1 = 1,
+    method$2 = function () {},
+    clazz$3 = class {};
+})();

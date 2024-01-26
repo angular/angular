@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InputFlags} from '@angular/compiler/src/core';
 import {ChangeDetectionStrategy, Component, Directive, ElementRef, forwardRef, Pipe, Type, ViewEncapsulation, ɵɵngDeclareComponent} from '@angular/core';
 
 import {AttributeMarker, ComponentDef, ɵɵInheritDefinitionFeature, ɵɵInputTransformsFeature, ɵɵNgOnChangesFeature} from '../../../src/render3';
@@ -74,7 +75,7 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       inputs: {
-        'bindingName': 'minifiedClassProperty',
+        'bindingName': ['minifiedClassProperty', InputFlags.HasDecoratorInputTransform],
       },
       inputTransforms: {
         'minifiedClassProperty': transformFn,

@@ -12,7 +12,7 @@ import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './models';
 import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET, RouteTitleKey} from './shared';
-import {equalSegments, UrlSegment, UrlTree} from './url_tree';
+import {equalSegments, UrlSegment} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
@@ -62,8 +62,8 @@ export class RouterState extends Tree<ActivatedRoute> {
   }
 }
 
-export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>|null): RouterState {
-  const snapshot = createEmptyStateSnapshot(urlTree, rootComponent);
+export function createEmptyState(rootComponent: Type<any>|null): RouterState {
+  const snapshot = createEmptyStateSnapshot(rootComponent);
   const emptyUrl = new BehaviorSubject([new UrlSegment('', {})]);
   const emptyParams = new BehaviorSubject({});
   const emptyData = new BehaviorSubject({});
@@ -76,8 +76,7 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>|null
   return new RouterState(new TreeNode<ActivatedRoute>(activated, []), snapshot);
 }
 
-export function createEmptyStateSnapshot(
-    urlTree: UrlTree, rootComponent: Type<any>|null): RouterStateSnapshot {
+export function createEmptyStateSnapshot(rootComponent: Type<any>|null): RouterStateSnapshot {
   const emptyParams = {};
   const emptyData = {};
   const emptyQueryParams = {};
@@ -195,9 +194,7 @@ export class ActivatedRoute {
    * The map supports retrieving single and multiple values from the same parameter.
    */
   get paramMap(): Observable<ParamMap> {
-    if (!this._paramMap) {
-      this._paramMap = this.params.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
-    }
+    this._paramMap ??= this.params.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
     return this._paramMap;
   }
 
@@ -206,10 +203,8 @@ export class ActivatedRoute {
    * The map supports retrieving single and multiple values from the query parameter.
    */
   get queryParamMap(): Observable<ParamMap> {
-    if (!this._queryParamMap) {
-      this._queryParamMap =
-          this.queryParams.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
-    }
+    this._queryParamMap ??=
+        this.queryParams.pipe(map((p: Params): ParamMap => convertToParamMap(p)));
     return this._queryParamMap;
   }
 
@@ -265,8 +260,8 @@ export function getInherited(
     };
   } else {
     inherited = {
-      params: route.params,
-      data: route.data,
+      params: {...route.params},
+      data: {...route.data},
       resolve: {...route.data, ...(route._resolvedData ?? {})}
     };
   }
@@ -385,16 +380,12 @@ export class ActivatedRouteSnapshot {
   }
 
   get paramMap(): ParamMap {
-    if (!this._paramMap) {
-      this._paramMap = convertToParamMap(this.params);
-    }
+    this._paramMap ??= convertToParamMap(this.params);
     return this._paramMap;
   }
 
   get queryParamMap(): ParamMap {
-    if (!this._queryParamMap) {
-      this._queryParamMap = convertToParamMap(this.queryParams);
-    }
+    this._queryParamMap ??= convertToParamMap(this.queryParams);
     return this._queryParamMap;
   }
 

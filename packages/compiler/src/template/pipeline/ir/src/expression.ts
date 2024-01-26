@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
-import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind, SanitizerFn} from './enums';
+import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -20,11 +20,11 @@ import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
-    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
-    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr|
-    SanitizerExpr|SlotLiteralExpr|ConditionalCaseExpr|DerivedRepeaterVarExpr|ConstCollectedExpr;
+export type Expression =
+    LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|GetCurrentViewExpr|RestoreViewExpr|
+    ResetViewExpr|ReadVariableExpr|PureFunctionExpr|PureFunctionParameterExpr|PipeBindingExpr|
+    PipeBindingVariadicExpr|SafePropertyReadExpr|SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|
+    AssignTemporaryExpr|ReadTemporaryExpr|SlotLiteralExpr|ConditionalCaseExpr|ConstCollectedExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -732,30 +732,6 @@ export class ReadTemporaryExpr extends ExpressionBase {
   }
 }
 
-export class SanitizerExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.SanitizerExpr;
-
-  constructor(public fn: SanitizerFn) {
-    super();
-  }
-
-  override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
-
-  override isEquivalent(e: Expression): boolean {
-    return e instanceof SanitizerExpr && e.fn === this.fn;
-  }
-
-  override isConstant() {
-    return true;
-  }
-
-  override clone(): SanitizerExpr {
-    return new SanitizerExpr(this.fn);
-  }
-
-  override transformInternalExpressions(): void {}
-}
-
 export class SlotLiteralExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SlotLiteralExpr;
 
@@ -820,31 +796,6 @@ export class ConditionalCaseExpr extends ExpressionBase {
   }
 }
 
-export class DerivedRepeaterVarExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.DerivedRepeaterVar;
-
-  constructor(readonly xref: XrefId, readonly identity: DerivedRepeaterVarIdentity) {
-    super();
-  }
-
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {}
-
-  override visitExpression(visitor: o.ExpressionVisitor, context: any) {}
-
-  override isEquivalent(e: o.Expression): boolean {
-    return e instanceof DerivedRepeaterVarExpr && e.identity === this.identity &&
-        e.xref === this.xref;
-  }
-
-  override isConstant(): boolean {
-    return false;
-  }
-
-  override clone(): o.Expression {
-    return new DerivedRepeaterVarExpr(this.xref, this.identity);
-  }
-}
 
 export class ConstCollectedExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.ConstCollected;
@@ -916,7 +867,6 @@ export function transformExpressionsInOp(
     case OpKind.ClassProp:
     case OpKind.ClassMap:
     case OpKind.Binding:
-    case OpKind.HostProperty:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
       } else {
@@ -924,6 +874,7 @@ export function transformExpressionsInOp(
       }
       break;
     case OpKind.Property:
+    case OpKind.HostProperty:
     case OpKind.Attribute:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
@@ -968,6 +919,8 @@ export function transformExpressionsInOp(
     case OpKind.ExtractedAttribute:
       op.expression =
           op.expression && transformExpressionsInExpression(op.expression, transform, flags);
+      op.trustedValueFn = op.trustedValueFn &&
+          transformExpressionsInExpression(op.trustedValueFn, transform, flags);
       break;
     case OpKind.RepeaterCreate:
       op.track = transformExpressionsInExpression(op.track, transform, flags);
@@ -985,6 +938,9 @@ export function transformExpressionsInOp(
       if (op.placeholderConfig !== null) {
         op.placeholderConfig =
             transformExpressionsInExpression(op.placeholderConfig, transform, flags);
+      }
+      if (op.resolverFn !== null) {
+        op.resolverFn = transformExpressionsInExpression(op.resolverFn, transform, flags);
       }
       break;
     case OpKind.I18nMessage:
@@ -1014,14 +970,16 @@ export function transformExpressionsInOp(
     case OpKind.I18nContext:
     case OpKind.I18nEnd:
     case OpKind.I18nStart:
-    case OpKind.Icu:
-    case OpKind.IcuUpdate:
+    case OpKind.IcuEnd:
+    case OpKind.IcuStart:
     case OpKind.Namespace:
     case OpKind.Pipe:
     case OpKind.Projection:
     case OpKind.ProjectionDef:
     case OpKind.Template:
     case OpKind.Text:
+    case OpKind.I18nAttributes:
+    case OpKind.IcuPlaceholder:
       // These operations contain no expressions.
       break;
     default:
@@ -1042,6 +1000,8 @@ export function transformExpressionsInExpression(
   } else if (expr instanceof o.BinaryOperatorExpr) {
     expr.lhs = transformExpressionsInExpression(expr.lhs, transform, flags);
     expr.rhs = transformExpressionsInExpression(expr.rhs, transform, flags);
+  } else if (expr instanceof o.UnaryOperatorExpr) {
+    expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (expr instanceof o.ReadPropExpr) {
     expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
   } else if (expr instanceof o.ReadKeyExpr) {
@@ -1082,6 +1042,22 @@ export function transformExpressionsInExpression(
     for (let i = 0; i < expr.expressions.length; i++) {
       expr.expressions[i] = transformExpressionsInExpression(expr.expressions[i], transform, flags);
     }
+  } else if (expr instanceof o.NotExpr) {
+    expr.condition = transformExpressionsInExpression(expr.condition, transform, flags);
+  } else if (expr instanceof o.TaggedTemplateExpr) {
+    expr.tag = transformExpressionsInExpression(expr.tag, transform, flags);
+    expr.template.expressions =
+        expr.template.expressions.map(e => transformExpressionsInExpression(e, transform, flags));
+  } else if (expr instanceof o.ArrowFunctionExpr) {
+    if (Array.isArray(expr.body)) {
+      for (let i = 0; i < expr.body.length; i++) {
+        transformExpressionsInStatement(expr.body[i], transform, flags);
+      }
+    } else {
+      expr.body = transformExpressionsInExpression(expr.body, transform, flags);
+    }
+  } else if (expr instanceof o.WrappedNodeExpr) {
+    // TODO: Do we need to transform any TS nodes nested inside of this expression?
   } else if (
       expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
       expr instanceof o.LiteralExpr) {

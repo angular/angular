@@ -71,6 +71,23 @@
       ]
     },
     {
+      "description": "should not generate code for empty switch blocks",
+      "inputFiles": [
+        "empty_switch.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "empty_switch_template.js",
+              "generated": "empty_switch.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a basic if block",
       "inputFiles": [
         "basic_if.ts"
@@ -303,6 +320,7 @@
           "files": [
             {
               "expected": "for_template_variables_template.js",
+              "templatePipelineExpected": "for_template_variables_template.pipeline.js",
               "generated": "for_template_variables.js"
             }
           ],
@@ -320,6 +338,7 @@
           "files": [
             {
               "expected": "for_aliased_template_variables_template.js",
+              "templatePipelineExpected": "for_aliased_template_variables_template.pipeline.js",
               "generated": "for_aliased_template_variables.js"
             }
           ],
@@ -354,6 +373,7 @@
           "files": [
             {
               "expected": "for_template_variables_listener_template.js",
+              "templatePipelineExpected": "for_template_variables_listener_template.pipeline.js",
               "generated": "for_template_variables_listener.js"
             }
           ],
@@ -405,6 +425,7 @@
           "files": [
             {
               "expected": "for_template_variables_scope_template.js",
+              "templatePipelineExpected": "for_template_variables_scope_template.pipeline.js",
               "generated": "for_template_variables_scope.js"
             }
           ],
@@ -576,6 +597,57 @@
             {
               "expected": "for_template_root_node_template.js",
               "generated": "for_template_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate computed for loop variables that depend on shadowed $index and $count",
+      "inputFiles": [
+        "nested_for_computed_template_variables.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_computed_template_variables_template.js",
+              "generated": "nested_for_computed_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate computed for loop variables that depend on shadowed $index and $count inside of listeners",
+      "inputFiles": [
+        "nested_for_listener_computed_template_variables.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_listener_computed_template_variables_template.js",
+              "generated": "nested_for_listener_computed_template_variables.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate tracking function in a nested for loop",
+      "inputFiles": [
+        "nested_for_tracking_function.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nested_for_tracking_function_template.js",
+              "generated": "nested_for_tracking_function.js"
             }
           ],
           "failureMessage": "Incorrect template"

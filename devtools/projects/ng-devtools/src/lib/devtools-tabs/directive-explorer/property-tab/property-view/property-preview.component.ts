@@ -15,13 +15,16 @@ import {FlatNode} from '../../property-resolver/element-property-resolver';
   selector: 'ng-property-preview',
   templateUrl: './property-preview.component.html',
   styleUrls: ['./property-preview.component.scss'],
+  standalone: true,
 })
 export class PropertyPreviewComponent {
-  @Input() node: FlatNode;
+  @Input({required: true}) node!: FlatNode;
   @Output() inspect = new EventEmitter<void>();
 
   get isClickableProp(): boolean {
-    return this.node.prop.descriptor.type === PropType.Function ||
-        this.node.prop.descriptor.type === PropType.HTMLNode;
+    return (
+      this.node.prop.descriptor.type === PropType.Function ||
+      this.node.prop.descriptor.type === PropType.HTMLNode
+    );
   }
 }

@@ -31,7 +31,7 @@ process.
       <td>Creation</td>
       <td><code>constructor</code></td>
       <td>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor">
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor" target="_blank">
           Standard JavaScript class constructor
         </a>. Runs when Angular instantiates the component.
       </td>
@@ -69,11 +69,11 @@ process.
     <tr>
       <td rowspan="2">Rendering</td>
       <td><code>afterNextRender</code></td>
-      <td>Runs once the next time that **all* components have been rendered to the DOM.</td>
+      <td>Runs once the next time that <strong>all</strong> components have been rendered to the DOM.</td>
     </tr>
     <tr>
       <td><code>afterRender</code></td>
-      <td>Runs every time **all** components have been rendered to the DOM.</td>
+      <td>Runs every time <strong>all</strong> components have been rendered to the DOM.</td>
     </tr>
     <tr>
       <td>Destruction</td>
@@ -226,7 +226,7 @@ invoked after Angular has finished rendering _all components_ on the page into t
 
 These functions are different from the other lifecycle hooks described in this guide. Rather than a
 class method, they are standalone functions that accept a callback. The execution of render
-callbacks is not tied to any specific component instance, but instead an application-wide hook.
+callbacks are not tied to any specific component instance, but instead an application-wide hook.
 
 `afterRender` and `afterNextRender` must be called in
 an [injection context](guide/di/dependency-injection-context), typically a
@@ -257,12 +257,12 @@ export class UserProfile {
     // Use the `Write` phase to write to a geometric property.
     afterNextRender(() => {
       nativeElement.style.padding = computePadding();
-    }, AfterRenderPhase.Write);
+    }, {phase: AfterRenderPhase.Write});
 
-    // Use the `Read` phase to read geometric properties after all writes have occured.
+    // Use the `Read` phase to read geometric properties after all writes have occurred.
     afterNextRender(() => {
       this.elementHeight = nativeElement.getBoundingClientRect().height;
-    }, AfterRenderPhase.Read);
+    }, {phase: AfterRenderPhase.Read});
   }
 }
 ```
@@ -302,7 +302,8 @@ The following diagrams show the execution order of Angular's lifecycle hooks.
 
 ### During initialization
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 graph TD;
 id[constructor]-->CHANGE;
 subgraph CHANGE [Change detection]
@@ -319,7 +320,8 @@ CHANGE--Rendering-->afterRender
 
 ### Subsequent updates
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 graph TD;
 subgraph CHANGE [Change detection]
 direction TB

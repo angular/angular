@@ -12,7 +12,7 @@ import {DehydratedView} from '../../hydration/interfaces';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import type {ReactiveLViewConsumer} from '../reactive_lview_consumer';
-import type {FlushableEffectRunner} from '../reactivity/effect';
+import type {EffectScheduler} from '../reactivity/effect';
 import type {AfterRenderEventManager} from '../after_render_hooks';
 
 import {LContainer} from './container';
@@ -24,6 +24,7 @@ import {Renderer, RendererFactory} from './renderer';
 import {RElement} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 import {TDeferBlockDetails} from '../../defer/interfaces';
+import type {ChangeDetectionScheduler} from '../../change_detection/scheduling/zoneless_scheduling';
 
 
 
@@ -32,9 +33,9 @@ import {TDeferBlockDetails} from '../../defer/interfaces';
 // Uglify will inline these when minifying so there shouldn't be a cost.
 export const HOST = 0;
 export const TVIEW = 1;
-export const FLAGS = 2;
 
 // Shared with LContainer
+export const FLAGS = 2;
 export const PARENT = 3;
 export const NEXT = 4;
 export const T_HOST = 5;
@@ -368,10 +369,13 @@ export interface LViewEnvironment {
   sanitizer: Sanitizer|null;
 
   /** Container for reactivity system `effect`s. */
-  inlineEffectRunner: FlushableEffectRunner|null;
+  inlineEffectRunner: EffectScheduler|null;
 
   /** Container for after render hooks */
   afterRenderEventManager: AfterRenderEventManager|null;
+
+  /** Scheduler for change detection to notify when application state changes. */
+  changeDetectionScheduler: ChangeDetectionScheduler|null;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

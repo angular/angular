@@ -11,9 +11,12 @@ import ts from 'typescript';
 
 import {assertSuccessfulReferenceEmit, ImportedFile, ImportFlags, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {attachDefaultImportDeclaration} from '../../../imports/src/default';
-import {DynamicValue, ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator';
+import {ForeignFunctionResolver, PartialEvaluator} from '../../../partial_evaluator';
 import {ClassDeclaration, Decorator, Import, ImportedTypeValueReference, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind} from '../../../reflection';
 import {CompileResult} from '../../../transform';
+
+/** Module name of the framework core. */
+export const CORE_MODULE = '@angular/core';
 
 /**
  * Convert a `TypeValueReference` to an `Expression` which refers to the type as a value.
@@ -62,12 +65,12 @@ export function toR3Reference(
   };
 }
 
-export function isAngularCore(decorator: Decorator): decorator is Decorator&{import: Import} {
-  return decorator.import !== null && decorator.import.from === '@angular/core';
+export function isAngularCore(decorator: Decorator): decorator is(Decorator & {import: Import}) {
+  return decorator.import !== null && decorator.import.from === CORE_MODULE;
 }
 
 export function isAngularCoreReference(reference: Reference, symbolName: string): boolean {
-  return reference.ownedByModuleGuess === '@angular/core' && reference.debugName === symbolName;
+  return reference.ownedByModuleGuess === CORE_MODULE && reference.debugName === symbolName;
 }
 
 export function findAngularDecorator(
@@ -82,6 +85,17 @@ export function isAngularDecorator(decorator: Decorator, name: string, isCore: b
     return decorator.import.name === name;
   }
   return false;
+}
+
+export function getAngularDecorators(
+    decorators: Decorator[], names: readonly string[], isCore: boolean) {
+  return decorators.filter(decorator => {
+    const name = isCore ? decorator.name : decorator.import?.name;
+    if (name === undefined || !names.includes(name)) {
+      return false;
+    }
+    return isCore || isAngularCore(decorator);
+  });
 }
 
 /**

@@ -4,12 +4,14 @@ Before you can use `HttpClient` in your app, you must configure it using [depend
 
 ## Providing `HttpClient` through dependency injection
 
-`HttpClient` is provided using the `provideHttpClient` helper function, which most apps include in the application `providers` in `main.ts`.
+`HttpClient` is provided using the `provideHttpClient` helper function, which most apps include in the application `providers` in `app.config.ts`.
 
 <docs-code language="ts">
-boostrapApplication(App, {providers: [
-  provideHttpClient(),
-]});
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+  ]
+};
 </docs-code>
 
 If your app is using NgModule-based bootstrap instead, you can include `provideHttpClient` in the providers of your app's NgModule:
@@ -42,11 +44,13 @@ export class ConfigService {
 ### `withFetch`
 
 <docs-code language="ts">
-boostrapApplication(App, {providers: [
-  provideHttpClient(
-    withFetch(),
-  ),
-]});
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(
+      withFetch(),
+    ),
+  ]
+};
 </docs-code>
 
 By default, `HttpClient` uses the [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) API to make requests. The `withFetch` feature switches the client to use the [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) API instead.
@@ -87,7 +91,7 @@ Including this option disables `HttpClient`'s built-in XSRF security functionali
 
 ## `HttpClientModule`-based configuration
 
-Some applications may configure `HttpClient` using the older API based on NgModules. This table lists the various NgModules from `@angular/common/http` and their provider-based equivalents.
+Some applications may configure `HttpClient` using the older API based on NgModules.
 
 This table lists the NgModules available from `@angular/common/http` and how they relate to the provider configuration functions above.
 

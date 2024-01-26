@@ -12,13 +12,9 @@ describe('size validator', () => {
   let validator: SizeValidator;
 
   function createValidator(size: number) {
-    validator =
-        Injector
-            .create({
-              providers:
-                  [SizeValidator.PROVIDERS, {provide: SizeValidator.SAMPLE_SIZE, useValue: size}]
-            })
-            .get(SizeValidator);
+    validator = Injector.create({
+      providers: [SizeValidator.PROVIDERS, {provide: SizeValidator.SAMPLE_SIZE, useValue: size}],
+    }).get(SizeValidator);
   }
 
   it('should return sampleSize as description', () => {

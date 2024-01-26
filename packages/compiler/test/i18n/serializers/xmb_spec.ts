@@ -8,8 +8,8 @@
 
 import {MessageBundle} from '@angular/compiler/src/i18n/message_bundle';
 import {Xmb} from '@angular/compiler/src/i18n/serializers/xmb';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/defaults';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
 describe('XMB serializer', () => {
   const HTML = `
@@ -22,7 +22,8 @@ describe('XMB serializer', () => {
 <p i18n="@@baz">{ count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} }}</p>
 <p i18n>Test: { count, plural, =0 { { sex, select, other {<p>deeply nested</p>}} } =other {a lot}}</p>
 <p i18n>multi
-lines</p>`;
+lines</p>
+<p i18n>translatable element @if (foo) {with} @else if (bar) {blocks}</p>`;
 
   const XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE messagebundle [
@@ -57,6 +58,7 @@ lines</p>`;
   <msg id="5229984852258993423"><source>file.ts:9</source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex>&lt;p&gt;</ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex>&lt;/p&gt;</ph>} } } =other {a lot} }</msg>
   <msg id="2340165783990709777"><source>file.ts:10,11</source>multi
 lines</msg>
+  <msg id="6618832065070552029"><source>file.ts:12</source>translatable element <ph name="START_BLOCK_IF"><ex>@if</ex>@if</ph>with<ph name="CLOSE_BLOCK_IF"><ex>}</ex>}</ph> <ph name="START_BLOCK_ELSE_IF"><ex>@else if</ex>@else if</ph>blocks<ph name="CLOSE_BLOCK_ELSE_IF"><ex>}</ex>}</ph></msg>
 </messagebundle>
 `;
 

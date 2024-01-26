@@ -12,7 +12,7 @@ import {OwningModule, Reference} from '../../imports';
 import {ClassDeclaration, ClassMember, ClassMemberKind, isNamedClassDeclaration, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
-import {DirectiveMeta, DirectiveTypeCheckMeta, InputMapping, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
+import {DirectiveMeta, DirectiveTypeCheckMeta, HostDirectiveMeta, HostDirectiveMetaForGlobalMode, InputMapping, MetadataReader, NgModuleMeta, PipeMeta, TemplateGuardMeta} from './api';
 import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 export function extractReferencesFromType(
@@ -120,9 +120,15 @@ export function extractDirectiveTypeCheckMeta(
   const hasNgTemplateContextGuard = staticMembers.some(
       member => member.kind === ClassMemberKind.Method && member.name === 'ngTemplateContextGuard');
 
-  const coercedInputFields =
-      new Set(staticMembers.map(extractCoercedInput)
-                  .filter((inputName): inputName is ClassPropertyName => inputName !== null));
+  const coercedInputFields = new Set<ClassPropertyName>(
+      staticMembers.map(extractCoercedInput).filter((inputName): inputName is ClassPropertyName => {
+        // If the input refers to a signal input, we will not respect coercion members.
+        // A transform function should be used instead.
+        if (inputName === null || inputs.getByClassPropertyName(inputName)?.isSignal) {
+          return false;
+        }
+        return true;
+      }));
 
   const restrictedInputFields = new Set<ClassPropertyName>();
   const stringLiteralInputFields = new Set<ClassPropertyName>();
@@ -250,4 +256,9 @@ function afterUnderscore(str: string): string {
 export function hasInjectableFields(clazz: ClassDeclaration, host: ReflectionHost): boolean {
   const members = host.getMembersOfClass(clazz);
   return members.some(({isStatic, name}) => isStatic && (name === 'ɵprov' || name === 'ɵfac'));
+}
+
+export function isHostDirectiveMetaForGlobalMode(hostDirectiveMeta: HostDirectiveMeta):
+    hostDirectiveMeta is HostDirectiveMetaForGlobalMode {
+  return hostDirectiveMeta.directive instanceof Reference;
 }

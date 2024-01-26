@@ -45,9 +45,9 @@ To verify that the application is server-side rendered, run it locally with `ng 
 
 ## Configure server-side rendering
 
-The `server.ts` file configures a Node.js Express server and Angular server-side rendering. `CommonEngine` is used render an Angular application.
+The `server.ts` file configures a Node.js Express server and Angular server-side rendering. `CommonEngine` is used to render an Angular application.
 
-<docs-code path="ssr/server.ts" visibleLines="[31,45]"></docs-code>
+<docs-code path="adev/src/content/examples/ssr/server.ts" visibleLines="[31,45]"></docs-code>
 
 The `render` method of `CommonEngine` accepts an object with the following properties:
 

@@ -6,32 +6,40 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, destroyPlatform, EventEmitter, Input, NgModule, Output, ViewEncapsulation} from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  destroyPlatform,
+  EventEmitter,
+  Input,
+  NgModule,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {createCustomElement, NgElement} from '../src/create-custom-element';
 
-
 describe('slots', () => {
   let testContainer: HTMLDivElement;
 
-  beforeAll(done => {
+  beforeAll((done) => {
     testContainer = document.createElement('div');
     document.body.appendChild(testContainer);
     destroyPlatform();
     platformBrowserDynamic()
-        .bootstrapModule(TestModule)
-        .then(ref => {
-          const injector = ref.injector;
-          const cfr: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
+      .bootstrapModule(TestModule)
+      .then((ref) => {
+        const injector = ref.injector;
+        const cfr: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
 
-          testElements.forEach(comp => {
-            const compFactory = cfr.resolveComponentFactory(comp);
-            customElements.define(compFactory.selector, createCustomElement(comp, {injector}));
-          });
-        })
-        .then(done, done.fail);
+        testElements.forEach((comp) => {
+          const compFactory = cfr.resolveComponentFactory(comp);
+          customElements.define(compFactory.selector, createCustomElement(comp, {injector}));
+        });
+      })
+      .then(done, done.fail);
   });
 
   afterAll(() => {
@@ -86,7 +94,7 @@ describe('slots', () => {
     templateEl.innerHTML = tpl;
     const template = templateEl.content.cloneNode(true) as DocumentFragment;
     const testEl = template.querySelector('slot-events-el')! as NgElement & SlotEventsComponent;
-    testEl.addEventListener('slotEventsChange', e => {
+    testEl.addEventListener('slotEventsChange', (e) => {
       expect(testEl.slotEvents.length).toEqual(1);
       done();
     });
@@ -99,7 +107,7 @@ describe('slots', () => {
 @Component({
   selector: 'default-slot-el',
   template: '<div class="slotparent"><slot></slot></div>',
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 class DefaultSlotComponent {
   constructor() {}
@@ -108,7 +116,7 @@ class DefaultSlotComponent {
 @Component({
   selector: 'named-slot-el',
   template: '<div class="slotparent"><slot name="header"></slot></div>',
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 class NamedSlotComponent {
   constructor() {}
@@ -117,7 +125,7 @@ class NamedSlotComponent {
 @Component({
   selector: 'named-slots-el',
   template: '<div class="slotparent"><slot name="header"></slot><slot name="body"></slot></div>',
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 class NamedSlotsComponent {
   constructor() {}
@@ -126,7 +134,7 @@ class NamedSlotsComponent {
 @Component({
   selector: 'slot-events-el',
   template: '<slot (slotchange)="onSlotChange($event)"></slot>',
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
 class SlotEventsComponent {
   @Input() slotEvents: Event[] = [];
@@ -138,8 +146,12 @@ class SlotEventsComponent {
   }
 }
 
-const testElements =
-    [DefaultSlotComponent, NamedSlotComponent, NamedSlotsComponent, SlotEventsComponent];
+const testElements = [
+  DefaultSlotComponent,
+  NamedSlotComponent,
+  NamedSlotsComponent,
+  SlotEventsComponent,
+];
 
 @NgModule({imports: [BrowserModule], declarations: testElements})
 class TestModule {

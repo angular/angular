@@ -6,26 +6,51 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Component} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatTooltip} from '@angular/material/tooltip';
 import {Events, MessageBus} from 'protocol';
+import {Subject} from 'rxjs';
 
-import {ApplicationEnvironment} from '../application-environment/index';
+import {ApplicationEnvironment} from '../application-environment';
+import {Theme, ThemeService} from '../theme-service';
 
 import {DevToolsTabsComponent} from './devtools-tabs.component';
 import {TabUpdate} from './tab-update/index';
+import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
+
+@Component({
+  selector: 'ng-directive-explorer',
+  template: '',
+  standalone: true,
+  imports: [MatTooltip, MatMenuModule],
+})
+export class MockDirectiveExplorerComponent {}
 
 describe('DevtoolsTabsComponent', () => {
   let messageBusMock: MessageBus<Events>;
   let applicationEnvironmentMock: ApplicationEnvironment;
   let comp: DevToolsTabsComponent;
-  let mockThemeService: any;
 
   beforeEach(() => {
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     applicationEnvironmentMock = jasmine.createSpyObj('applicationEnvironment', ['environment']);
-    mockThemeService = {};
+    TestBed.configureTestingModule({
+      imports: [MatTooltip, MatMenuModule, DevToolsTabsComponent],
+      providers: [
+        TabUpdate,
+        {provide: ThemeService, useFactory: () => ({currentTheme: new Subject<Theme>()})},
+        {provide: MessageBus, useValue: messageBusMock},
+        {provide: ApplicationEnvironment, useValue: applicationEnvironmentMock},
+      ],
+    }).overrideComponent(DevToolsTabsComponent, {
+      remove: {imports: [DirectiveExplorerComponent]},
+      add: {imports: [MockDirectiveExplorerComponent]},
+    });
 
-    comp = new DevToolsTabsComponent(
-        new TabUpdate(), mockThemeService as any, messageBusMock, applicationEnvironmentMock);
+    const fixture = TestBed.createComponent(DevToolsTabsComponent);
+    comp = fixture.componentInstance;
   });
 
   it('should create instance from class', () => {

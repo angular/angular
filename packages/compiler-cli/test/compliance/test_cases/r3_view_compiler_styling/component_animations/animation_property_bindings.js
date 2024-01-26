@@ -9,9 +9,9 @@ MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     }
     if (rf & 2) {
       $r3$.ɵɵproperty("@foo", ctx.exp);
-      $r3$.ɵɵadvance(1);
+      $r3$.ɵɵadvance();
       $r3$.ɵɵproperty("@bar", undefined);
-      $r3$.ɵɵadvance(1);
+      $r3$.ɵɵadvance();
       $r3$.ɵɵproperty("@baz", undefined);
     }
   },

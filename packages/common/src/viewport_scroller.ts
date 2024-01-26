@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵdefineInjectable, ɵɵinject} from '@angular/core';
+import {inject, PLATFORM_ID, ɵɵdefineInjectable} from '@angular/core';
 
 import {DOCUMENT} from './dom_tokens';
+import {isPlatformBrowser} from './platform_id';
 
 
 
@@ -24,7 +25,9 @@ export abstract class ViewportScroller {
   static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: ViewportScroller,
     providedIn: 'root',
-    factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window)
+    factory: () => isPlatformBrowser(inject(PLATFORM_ID)) ?
+        new BrowserViewportScroller(inject(DOCUMENT), window) :
+        new NullViewportScroller()
   });
 
   /**
@@ -88,11 +91,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @returns The position in screen coordinates.
    */
   getScrollPosition(): [number, number] {
-    if (this.supportsScrolling()) {
-      return [this.window.pageXOffset, this.window.pageYOffset];
-    } else {
-      return [0, 0];
-    }
+    return [this.window.scrollX, this.window.scrollY];
   }
 
   /**
@@ -100,9 +99,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param position The new position in screen coordinates.
    */
   scrollToPosition(position: [number, number]): void {
-    if (this.supportsScrolling()) {
-      this.window.scrollTo(position[0], position[1]);
-    }
+    this.window.scrollTo(position[0], position[1]);
   }
 
   /**
@@ -117,10 +114,6 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @see https://html.spec.whatwg.org/#scroll-to-fragid
    */
   scrollToAnchor(target: string): void {
-    if (!this.supportsScrolling()) {
-      return;
-    }
-
     const elSelected = findAnchorFromDocument(this.document, target);
 
     if (elSelected) {
@@ -139,9 +132,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * Disables automatic scroll restoration provided by the browser.
    */
   setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void {
-    if (this.supportsScrolling()) {
-      this.window.history.scrollRestoration = scrollRestoration;
-    }
+    this.window.history.scrollRestoration = scrollRestoration;
   }
 
   /**
@@ -156,14 +147,6 @@ export class BrowserViewportScroller implements ViewportScroller {
     const top = rect.top + this.window.pageYOffset;
     const offset = this.offset();
     this.window.scrollTo(left - offset[0], top - offset[1]);
-  }
-
-  private supportsScrolling(): boolean {
-    try {
-      return !!this.window && !!this.window.scrollTo && 'pageXOffset' in this.window;
-    } catch {
-      return false;
-    }
   }
 }
 

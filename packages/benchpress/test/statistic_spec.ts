@@ -8,7 +8,6 @@
 
 import {Statistic} from '../src/statistic';
 
-
 describe('statistic', () => {
   it('should calculate the mean', () => {
     expect(Statistic.calculateMean([])).toBeNaN();

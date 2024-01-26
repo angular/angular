@@ -52,23 +52,23 @@ export class PriorityAwareMessageBus extends MessageBus<Events> {
   private _inProgress: TopicsInProgress = {};
 
   constructor(
-      private _bus: MessageBus<Events>, private _setTimeout: typeof setTimeout = setTimeout) {
+    private _bus: MessageBus<Events>,
+    private _setTimeout: typeof setTimeout = setTimeout,
+  ) {
     super();
   }
 
   override on<E extends Topic>(topic: E, cb: Events[E]): void {
-    const self = this;
-    return this._bus.on(topic, function(): void {
-      cb.apply(this, arguments);
-      self._afterMessage(topic);
+    return this._bus.on(topic, (...args: any) => {
+      (cb as any)(...args);
+      this._afterMessage(topic);
     });
   }
 
   override once<E extends Topic>(topic: E, cb: Events[E]): void {
-    const self = this;
-    return this._bus.once(topic, function(): void {
-      cb.apply(this, arguments);
-      self._afterMessage(topic);
+    return this._bus.once(topic, (...args: any) => {
+      (cb as any)(...args);
+      this._afterMessage(topic);
     });
   }
 

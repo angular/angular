@@ -13,22 +13,29 @@ import {FlatNode} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';
 import {PropertyDataSource} from './property-data-source';
 
-const flatTreeControl =
-    new FlatTreeControl<FlatNode>((node) => node.level, (node) => node.expandable);
+const flatTreeControl = new FlatTreeControl<FlatNode>(
+  (node) => node.level,
+  (node) => node.expandable,
+);
 
 describe('PropertyDataSource', () => {
   it('should detect changes in the collection', () => {
     const source = new PropertyDataSource(
-        {
-          foo: {
-            editable: true,
-            expandable: false,
-            preview: '42',
-            type: PropType.Number,
-            value: 42,
-          },
+      {
+        foo: {
+          editable: true,
+          expandable: false,
+          preview: '42',
+          type: PropType.Number,
+          value: 42,
+          containerType: null,
         },
-        getTreeFlattener(), flatTreeControl, {element: [1, 2, 3]}, null as any);
+      },
+      getTreeFlattener(),
+      flatTreeControl,
+      {element: [1, 2, 3]},
+      null as any,
+    );
 
     source.update({
       foo: {
@@ -37,6 +44,7 @@ describe('PropertyDataSource', () => {
         preview: '43',
         type: PropType.Number,
         value: 43,
+        containerType: null,
       },
     });
 
@@ -51,6 +59,7 @@ describe('PropertyDataSource', () => {
             preview: '43',
             type: PropType.Number,
             value: 43,
+            containerType: null,
           },
           name: 'foo',
           parent: null,

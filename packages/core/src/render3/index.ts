@@ -25,7 +25,6 @@ export {ɵɵgetInheritedFactory} from './di';
 export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 // clang-format off
 export {
-  detectChanges,
   store,
   ɵɵadvance,
 
@@ -91,6 +90,15 @@ export {
   ɵɵpropertyInterpolate7,
   ɵɵpropertyInterpolate8,
   ɵɵpropertyInterpolateV,
+
+  ɵɵcontentQuery,
+  ɵɵcontentQuerySignal,
+
+  ɵɵloadQuery,
+  ɵɵqueryRefresh,
+  ɵɵqueryAdvance,
+  ɵɵviewQuery,
+  ɵɵviewQuerySignal,
 
   ɵɵreference,
 
@@ -199,11 +207,6 @@ export {
   ɵɵpureFunction8,
   ɵɵpureFunctionV,
 } from './pure_function';
-export {
-  ɵɵcontentQuery,
-  ɵɵloadQuery,
-  ɵɵqueryRefresh,
-  ɵɵviewQuery} from './query';
 export {
   ɵɵdisableBindings,
 

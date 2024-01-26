@@ -6,13 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript';
 
-import {absoluteFrom, getSourceFileOrError} from '../../file_system';
-import {runInEachFileSystem, TestFile} from '../../file_system/testing';
-import {OptimizeFor, TypeCheckingConfig} from '../api';
+import {runInEachFileSystem} from '../../file_system/testing';
 import {resetParseTemplateAsSourceFileForTest, setParseTemplateAsSourceFileForTest} from '../diagnostics';
-import {ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts, setup, TestDeclaration} from '../testing';
+import {diagnose, ngForDeclaration, ngForDts, ngIfDeclaration, ngIfDts} from '../testing';
 
 runInEachFileSystem(() => {
   describe('template diagnostics', () => {
@@ -875,6 +872,7 @@ class TestComponent {
                 bindingPropertyName: 'input',
                 required: true,
                 transform: null,
+                isSignal: false,
               },
             },
           }]);
@@ -907,12 +905,14 @@ class TestComponent {
                   bindingPropertyName: 'input',
                   required: true,
                   transform: null,
+                  isSignal: false,
                 },
                 otherInput: {
                   classPropertyName: 'otherInput',
                   bindingPropertyName: 'otherInput',
                   required: true,
                   transform: null,
+                  isSignal: false,
                 }
               }
             },
@@ -926,6 +926,7 @@ class TestComponent {
                   bindingPropertyName: 'otherDirInput',
                   required: true,
                   transform: null,
+                  isSignal: false,
                 }
               },
             }
@@ -955,6 +956,7 @@ class TestComponent {
                 bindingPropertyName: 'inputAlias',
                 required: true,
                 transform: null,
+                isSignal: false,
               }
             }
           }]);
@@ -984,6 +986,7 @@ class TestComponent {
                 bindingPropertyName: 'input',
                 required: true,
                 transform: null,
+                isSignal: false,
               },
             }
           }]);
@@ -1012,6 +1015,7 @@ class TestComponent {
                    bindingPropertyName: 'inputAlias',
                    required: true,
                    transform: null,
+                   isSignal: false,
                  },
                },
              }]);
@@ -1037,6 +1041,7 @@ class TestComponent {
                 bindingPropertyName: 'input',
                 required: true,
                 transform: null,
+                isSignal: false,
               },
             }
           }]);
@@ -1065,6 +1070,7 @@ class TestComponent {
                 bindingPropertyName: 'input',
                 required: true,
                 transform: null,
+                isSignal: false,
               },
             },
             outputs: {inputChange: 'inputChange'},
@@ -1092,6 +1098,7 @@ class TestComponent {
                    bindingPropertyName: 'dir',
                    required: true,
                    transform: null,
+                   isSignal: false,
                  }
                }
              }]);
@@ -1122,6 +1129,7 @@ class TestComponent {
                     bindingPropertyName: 'hostAlias',
                     required: true,
                     transform: null,
+                    isSignal: false,
                   },
                 },
                 isStandalone: true,
@@ -1154,6 +1162,7 @@ class TestComponent {
                    bindingPropertyName: 'maxlength',
                    required: true,
                    transform: null,
+                   isSignal: false,
                  },
                },
              }]);
@@ -1220,35 +1229,3 @@ class TestComponent {
     });
   });
 });
-
-function diagnose(
-    template: string, source: string, declarations?: TestDeclaration[],
-    additionalSources: TestFile[] = [], config?: Partial<TypeCheckingConfig>,
-    options?: ts.CompilerOptions): string[] {
-  const sfPath = absoluteFrom('/main.ts');
-  const {program, templateTypeChecker} = setup(
-      [
-        {
-          fileName: sfPath,
-          templates: {
-            'TestComponent': template,
-          },
-          source,
-          declarations,
-        },
-        ...additionalSources.map(testFile => ({
-                                   fileName: testFile.name,
-                                   source: testFile.contents,
-                                   templates: {},
-                                 })),
-      ],
-      {config, options});
-  const sf = getSourceFileOrError(program, sfPath);
-  const diagnostics = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
-  return diagnostics.map(diag => {
-    const text = ts.flattenDiagnosticMessageText(diag.messageText, '\n');
-    const fileName = diag.file!.fileName;
-    const {line, character} = ts.getLineAndCharacterOfPosition(diag.file!, diag.start!);
-    return `${fileName}(${line + 1}, ${character + 1}): ${text}`;
-  });
-}

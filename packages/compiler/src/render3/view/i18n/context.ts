@@ -65,6 +65,12 @@ export class I18nContext {
     updatePlaceholderMap(this.placeholders, ph, content);
   }
 
+  private appendBlockPart(node: i18n.BlockPlaceholder, index: number, closed?: boolean) {
+    const ph = closed ? node.closeName : node.startName;
+    const content = {type: TagType.TEMPLATE, index, ctx: this.id, closed};
+    updatePlaceholderMap(this.placeholders, ph, content);
+  }
+
   get icus() {
     return this._registry.icus;
   }
@@ -98,6 +104,13 @@ export class I18nContext {
     // since we process nested templates separately
     this.appendTag(TagType.TEMPLATE, node as i18n.TagPlaceholder, index, false);
     this.appendTag(TagType.TEMPLATE, node as i18n.TagPlaceholder, index, true);
+    this._unresolvedCtxCount++;
+  }
+  appendBlock(node: i18n.BlockPlaceholder, index: number) {
+    // add open and close tags at the same time,
+    // since we process nested templates separately
+    this.appendBlockPart(node, index, false);
+    this.appendBlockPart(node, index, true);
     this._unresolvedCtxCount++;
   }
   appendElement(node: i18n.I18nMeta, index: number, closed?: boolean) {

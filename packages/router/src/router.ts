@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵInitialRenderPendingTasks as InitialRenderPendingTasks, ɵRuntimeError as RuntimeError, ɵWritable as Writable} from '@angular/core';
+import {inject, Injectable, NgZone, Type, ɵConsole as Console, ɵPendingTasks as PendingTasks, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
 import {createSegmentGroupFromRoute, createUrlTreeFromSegmentGroup} from './create_url_tree';
@@ -81,7 +81,7 @@ export class Router {
   private readonly console = inject(Console);
   private readonly stateManager = inject(StateManager);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
-  private readonly pendingTasks = inject(InitialRenderPendingTasks);
+  private readonly pendingTasks = inject(PendingTasks);
   private readonly urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
   private readonly navigationTransitions = inject(NavigationTransitions);
   private readonly urlSerializer = inject(UrlSerializer);
@@ -190,6 +190,8 @@ export class Router {
             const mergedTree =
                 this.urlHandlingStrategy.merge(e.url, currentTransition.currentRawUrl);
             const extras = {
+              // Persist transient navigation info from the original navigation request.
+              info: currentTransition.extras.info,
               skipLocationChange: currentTransition.extras.skipLocationChange,
               // The URL is already updated at this point if we have 'eager' URL
               // updates or if the navigation was triggered by the browser (back
@@ -247,16 +249,14 @@ export class Router {
     // Don't need to use Zone.wrap any more, because zone.js
     // already patch onPopState, so location change callback will
     // run into ngZone
-    if (!this.nonRouterCurrentEntryChangeSubscription) {
-      this.nonRouterCurrentEntryChangeSubscription =
-          this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state) => {
-            // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
-            // hybrid apps.
-            setTimeout(() => {
-              this.navigateToSyncWithBrowser(url, 'popstate', state);
-            }, 0);
-          });
-    }
+    this.nonRouterCurrentEntryChangeSubscription ??=
+        this.stateManager.registerNonRouterCurrentEntryChangeListener((url, state) => {
+          // The `setTimeout` was added in #12160 and is likely to support Angular/AngularJS
+          // hybrid apps.
+          setTimeout(() => {
+            this.navigateToSyncWithBrowser(url, 'popstate', state);
+          }, 0);
+        });
   }
 
   /**
@@ -498,9 +498,9 @@ export class Router {
    * @param extras An options object that determines how the URL should be constructed or
    *     interpreted.
    *
-   * @returns A Promise that resolves to `true` when navigation succeeds, to `false` when navigation
-   *     fails,
-   * or is rejected on error.
+   * @returns A Promise that resolves to `true` when navigation succeeds, or `false` when navigation
+   *     fails. The Promise is rejected when an error occurs if `resolveNavigationPromiseOnError` is
+   * not `true`.
    *
    * @usageNotes
    *
@@ -572,8 +572,7 @@ export class Router {
   }
 
   private removeEmptyProps(params: Params): Params {
-    return Object.keys(params).reduce((result: Params, key: string) => {
-      const value: any = params[key];
+    return Object.entries(params).reduce((result: Params, [key, value]: [string, any]) => {
       if (value !== null && value !== undefined) {
         result[key] = value;
       }

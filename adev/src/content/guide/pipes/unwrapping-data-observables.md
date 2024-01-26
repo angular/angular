@@ -12,4 +12,4 @@ The following code example binds an observable of message strings (`message$`) t
 
 <!-- TODO: Enable preview if this example does not depend on Zone/ or if we run the example with Zone. -->
 <docs-code header="src/app/hero-async-message.component.ts"
-           path="pipes/src/app/hero-async-message.component.ts" />
+           path="adev/src/content/examples/pipes/src/app/hero-async-message.component.ts" />

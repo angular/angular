@@ -11,7 +11,7 @@ The injection context is available in these situations:
 * In the `factory` function specified for an `InjectionToken`.
 * Within a stack frame that is run in a injection context.
 
-Knowing when your are in an injection context, will allow you to use the [`inject`](api/core/inject) function to inject instances.
+Knowing when you are in an injection context, will allow you to use the [`inject`](api/core/inject) function to inject instances.
 
 ## Class constructors
 
@@ -33,6 +33,7 @@ class MyComponent  {
 Some APIs are designed to be run in an injection context. This is the case, for example, of the router guards. It allows the use of [`inject`](api/core/inject) to access a service within the guard function.
 
 Here is an example for `CanActivateFn`
+
 <docs-code language="typescript" highlight="[3]">
 const canActivateTeam: CanActivateFn =
     (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {

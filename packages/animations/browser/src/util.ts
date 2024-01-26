@@ -5,13 +5,28 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData, ɵStyleDataMap} from '@angular/animations';
+import {
+  AnimateTimings,
+  AnimationMetadata,
+  AnimationMetadataType,
+  AnimationOptions,
+  sequence,
+  ɵStyleData,
+  ɵStyleDataMap,
+} from '@angular/animations';
 
 import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
-import {invalidNodeType, invalidParamValue, invalidStyleParams, invalidTimingValue, negativeDelayValue, negativeStepValue} from './error_helpers';
+import {
+  invalidNodeType,
+  invalidParamValue,
+  invalidStyleParams,
+  invalidTimingValue,
+  negativeDelayValue,
+  negativeStepValue,
+} from './error_helpers';
 
-export const ONE_SECOND = 1000;
+const ONE_SECOND = 1000;
 
 export const SUBSTITUTION_EXPR_START = '{{';
 export const SUBSTITUTION_EXPR_END = '}}';
@@ -22,7 +37,7 @@ export const NG_TRIGGER_SELECTOR = '.ng-trigger';
 export const NG_ANIMATING_CLASSNAME = 'ng-animating';
 export const NG_ANIMATING_SELECTOR = '.ng-animating';
 
-export function resolveTimingValue(value: string|number) {
+export function resolveTimingValue(value: string | number) {
   if (typeof value == 'number') return value;
 
   const matches = value.match(/^(-?[\.\d]+)(m?s)/);
@@ -35,20 +50,26 @@ function _convertTimeValueToMS(value: number, unit: string): number {
   switch (unit) {
     case 's':
       return value * ONE_SECOND;
-    default:  // ms or something else
+    default: // ms or something else
       return value;
   }
 }
 
 export function resolveTiming(
-    timings: string|number|AnimateTimings, errors: Error[], allowNegativeValues?: boolean) {
-  return timings.hasOwnProperty('duration') ?
-      <AnimateTimings>timings :
-      parseTimeExpression(<string|number>timings, errors, allowNegativeValues);
+  timings: string | number | AnimateTimings,
+  errors: Error[],
+  allowNegativeValues?: boolean,
+) {
+  return timings.hasOwnProperty('duration')
+    ? <AnimateTimings>timings
+    : parseTimeExpression(<string | number>timings, errors, allowNegativeValues);
 }
 
 function parseTimeExpression(
-    exp: string|number, errors: Error[], allowNegativeValues?: boolean): AnimateTimings {
+  exp: string | number,
+  errors: Error[],
+  allowNegativeValues?: boolean,
+): AnimateTimings {
   const regex = /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
   let duration: number;
   let delay: number = 0;
@@ -94,56 +115,20 @@ function parseTimeExpression(
   return {duration, delay, easing};
 }
 
-export function copyObj(
-    obj: {[key: string]: any}, destination: {[key: string]: any} = {}): {[key: string]: any} {
-  Object.keys(obj).forEach(prop => {
-    destination[prop] = obj[prop];
-  });
-  return destination;
-}
-
-export function convertToMap(obj: ɵStyleData): ɵStyleDataMap {
-  const styleMap: ɵStyleDataMap = new Map();
-  Object.keys(obj).forEach(prop => {
-    const val = obj[prop];
-    styleMap.set(prop, val);
-  });
-  return styleMap;
-}
-
-export function normalizeKeyframes(keyframes: Array<ɵStyleData>|
-                                   Array<ɵStyleDataMap>): Array<ɵStyleDataMap> {
+export function normalizeKeyframes(
+  keyframes: Array<ɵStyleData> | Array<ɵStyleDataMap>,
+): Array<ɵStyleDataMap> {
   if (!keyframes.length) {
     return [];
   }
   if (keyframes[0] instanceof Map) {
     return keyframes as Array<ɵStyleDataMap>;
   }
-  return keyframes.map(kf => convertToMap(kf as ɵStyleData));
+  return keyframes.map((kf) => new Map(Object.entries(kf)));
 }
 
-export function normalizeStyles(styles: ɵStyleDataMap|Array<ɵStyleDataMap>): ɵStyleDataMap {
-  const normalizedStyles: ɵStyleDataMap = new Map();
-  if (Array.isArray(styles)) {
-    styles.forEach(data => copyStyles(data, normalizedStyles));
-  } else {
-    copyStyles(styles, normalizedStyles);
-  }
-  return normalizedStyles;
-}
-
-export function copyStyles(
-    styles: ɵStyleDataMap, destination: ɵStyleDataMap = new Map(),
-    backfill?: ɵStyleDataMap): ɵStyleDataMap {
-  if (backfill) {
-    for (let [prop, val] of backfill) {
-      destination.set(prop, val);
-    }
-  }
-  for (let [prop, val] of styles) {
-    destination.set(prop, val);
-  }
-  return destination;
+export function normalizeStyles(styles: ɵStyleDataMap | Array<ɵStyleDataMap>): ɵStyleDataMap {
+  return Array.isArray(styles) ? new Map(...styles) : new Map(styles);
 }
 
 export function setStyles(element: any, styles: ɵStyleDataMap, formerStyles?: ɵStyleDataMap) {
@@ -163,8 +148,9 @@ export function eraseStyles(element: any, styles: ɵStyleDataMap) {
   });
 }
 
-export function normalizeAnimationEntry(steps: AnimationMetadata|
-                                        AnimationMetadata[]): AnimationMetadata {
+export function normalizeAnimationEntry(
+  steps: AnimationMetadata | AnimationMetadata[],
+): AnimationMetadata {
   if (Array.isArray(steps)) {
     if (steps.length == 1) return steps[0];
     return sequence(steps);
@@ -173,11 +159,14 @@ export function normalizeAnimationEntry(steps: AnimationMetadata|
 }
 
 export function validateStyleParams(
-    value: string|number|null|undefined, options: AnimationOptions, errors: Error[]) {
+  value: string | number | null | undefined,
+  options: AnimationOptions,
+  errors: Error[],
+) {
   const params = options.params || {};
   const matches = extractStyleParams(value);
   if (matches.length) {
-    matches.forEach(varName => {
+    matches.forEach((varName) => {
       if (!params.hasOwnProperty(varName)) {
         errors.push(invalidStyleParams(varName));
       }
@@ -185,13 +174,15 @@ export function validateStyleParams(
   }
 }
 
-const PARAM_REGEX =
-    new RegExp(`${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`, 'g');
-export function extractStyleParams(value: string|number|null|undefined): string[] {
+const PARAM_REGEX = new RegExp(
+  `${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`,
+  'g',
+);
+export function extractStyleParams(value: string | number | null | undefined): string[] {
   let params: string[] = [];
   if (typeof value === 'string') {
     let match: any;
-    while (match = PARAM_REGEX.exec(value)) {
+    while ((match = PARAM_REGEX.exec(value))) {
       params.push(match[1] as string);
     }
     PARAM_REGEX.lastIndex = 0;
@@ -200,8 +191,11 @@ export function extractStyleParams(value: string|number|null|undefined): string[
 }
 
 export function interpolateParams(
-    value: string|number, params: {[name: string]: any}, errors: Error[]): string|number {
-  const original = value.toString();
+  value: string | number,
+  params: {[name: string]: any},
+  errors: Error[],
+): string | number {
+  const original = `${value}`;
   const str = original.replace(PARAM_REGEX, (_, varName) => {
     let localVal = params[varName];
     // this means that the value was never overridden by the data passed in by the user
@@ -214,16 +208,6 @@ export function interpolateParams(
 
   // we do this to assert that numeric values stay as they are
   return str == original ? value : str;
-}
-
-export function iteratorToArray(iterator: any): any[] {
-  const arr: any[] = [];
-  let item = iterator.next();
-  while (!item.done) {
-    arr.push(item.value);
-    item = iterator.next();
-  }
-  return arr;
 }
 
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
@@ -240,7 +224,10 @@ export function allowPreviousPlayerStylesMerge(duration: number, delay: number) 
 }
 
 export function balancePreviousStylesIntoKeyframes(
-    element: any, keyframes: Array<ɵStyleDataMap>, previousStyles: ɵStyleDataMap) {
+  element: any,
+  keyframes: Array<ɵStyleDataMap>,
+  previousStyles: ɵStyleDataMap,
+) {
   if (previousStyles.size && keyframes.length) {
     let startingKeyframe = keyframes[0];
     let missingStyleProps: string[] = [];
@@ -254,7 +241,7 @@ export function balancePreviousStylesIntoKeyframes(
     if (missingStyleProps.length) {
       for (let i = 1; i < keyframes.length; i++) {
         let kf = keyframes[i];
-        missingStyleProps.forEach(prop => kf.set(prop, computeStyle(element, prop)));
+        missingStyleProps.forEach((prop) => kf.set(prop, computeStyle(element, prop)));
       }
     }
   }
@@ -262,9 +249,15 @@ export function balancePreviousStylesIntoKeyframes(
 }
 
 export function visitDslNode(
-    visitor: AnimationDslVisitor, node: AnimationMetadata, context: any): any;
+  visitor: AnimationDslVisitor,
+  node: AnimationMetadata,
+  context: any,
+): any;
 export function visitDslNode(
-    visitor: AnimationAstVisitor, node: AnimationAst<AnimationMetadataType>, context: any): any;
+  visitor: AnimationAstVisitor,
+  node: AnimationAst<AnimationMetadataType>,
+  context: any,
+): any;
 export function visitDslNode(visitor: any, node: any, context: any): any {
   switch (node.type) {
     case AnimationMetadataType.Trigger:

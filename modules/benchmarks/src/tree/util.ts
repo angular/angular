@@ -13,9 +13,13 @@ export class TreeNode {
   children: TreeNode[];
 
   constructor(
-      public value: string, public depth: number, public maxDepth: number,
-      public left: TreeNode|null, public right: TreeNode|null) {
-    this.transitiveChildCount = Math.pow(2, (this.maxDepth - this.depth + 1)) - 1;
+    public value: string,
+    public depth: number,
+    public maxDepth: number,
+    public left: TreeNode | null,
+    public right: TreeNode | null,
+  ) {
+    this.transitiveChildCount = Math.pow(2, this.maxDepth - this.depth + 1) - 1;
     this.children = this.left ? [this.left, this.right!] : [];
   }
 

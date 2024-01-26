@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {BoundTarget, ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3PartialDeclaration, R3TargetBinder, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation} from '@angular/compiler';
+import {BoundTarget, ChangeDetectionStrategy, compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DeferBlockDepsEmitMode, ForwardRefHandling, InterpolationConfig, makeBindingParser, outputAst as o, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclarePipeDependencyMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3PartialDeclaration, R3TargetBinder, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation} from '@angular/compiler';
 import semver from 'semver';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
@@ -16,7 +16,7 @@ import {GetSourceFileFn} from '../get_source_file';
 
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
 import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, PLACEHOLDER_VERSION} from './util';
+import {extractForwardRef, PLACEHOLDER_VERSION, SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER} from './util';
 
 function makeDirectiveMetadata<TExpression>(
     directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,
@@ -182,6 +182,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
 
       // Defer blocks are not yet fully supported in partial compilation.
       deferrableDeclToImportDecl: new Map(),
+      deferrableTypes: new Map(),
+      deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
 
       encapsulation: metaObj.has('encapsulation') ?
           parseEncapsulation(metaObj.getValue('encapsulation')) :
@@ -194,6 +196,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       relativeContextFilePath: this.sourceUrl,
       i18nUseExternalIds: false,
       declarations,
+      useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER,
     };
   }
 
@@ -319,8 +322,8 @@ function parseInterpolationConfig<TExpression>(
 /**
  * Determines the `ViewEncapsulation` mode from the AST value's symbol name.
  */
-function parseEncapsulation<TExpression>(encapsulation: AstValue<ViewEncapsulation, TExpression>):
-    ViewEncapsulation {
+function parseEncapsulation<TExpression>(
+    encapsulation: AstValue<ViewEncapsulation|undefined, TExpression>): ViewEncapsulation {
   const symbolName = encapsulation.getSymbolName();
   if (symbolName === null) {
     throw new FatalLinkerError(
@@ -337,7 +340,7 @@ function parseEncapsulation<TExpression>(encapsulation: AstValue<ViewEncapsulati
  * Determines the `ChangeDetectionStrategy` from the AST value's symbol name.
  */
 function parseChangeDetectionStrategy<TExpression>(
-    changeDetectionStrategy: AstValue<ChangeDetectionStrategy, TExpression>):
+    changeDetectionStrategy: AstValue<ChangeDetectionStrategy|undefined, TExpression>):
     ChangeDetectionStrategy {
   const symbolName = changeDetectionStrategy.getSymbolName();
   if (symbolName === null) {

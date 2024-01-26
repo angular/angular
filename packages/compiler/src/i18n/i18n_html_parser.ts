@@ -7,8 +7,8 @@
  */
 
 import {MissingTranslationStrategy} from '../core';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/defaults';
 import {HtmlParser} from '../ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../ml_parser/interpolation_config';
 import {TokenizeOptions} from '../ml_parser/lexer';
 import {ParseTreeResult} from '../ml_parser/parser';
 import {Console} from '../util';

@@ -1,0 +1,13 @@
+load("@npm//@angular/docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "configs",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples/angular-compiler-options:tsconfig.app.json",
+        "//adev/src/content/examples/angular-compiler-options:tsconfig.json",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

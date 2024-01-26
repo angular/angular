@@ -10,8 +10,8 @@ import {serializeNodes} from '../../src/i18n/digest';
 import * as i18n from '../../src/i18n/i18n_ast';
 import {MessageBundle} from '../../src/i18n/message_bundle';
 import {Serializer} from '../../src/i18n/serializers/serializer';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/defaults';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 
 describe('MessageBundle', () => {
   describe('Messages', () => {

@@ -7,8 +7,9 @@
  */
 
 
+import {SecurityContext} from '../../../../core';
 import * as ir from '../../ir';
-import {type CompilationJob, type CompilationUnit, CompilationJobKind} from '../compilation';
+import {CompilationJobKind, type CompilationJob, type CompilationUnit} from '../compilation';
 import {createOpXrefMap} from '../util/elements';
 
 /**
@@ -25,30 +26,55 @@ export function extractAttributes(job: CompilationJob): void {
           break;
         case ir.OpKind.Property:
           if (!op.isAnimationTrigger) {
+            let bindingKind: ir.BindingKind;
+            if (op.i18nMessage !== null && op.templateKind === null) {
+              // If the binding has an i18n context, it is an i18n attribute, and should have that
+              // kind in the consts array.
+              bindingKind = ir.BindingKind.I18n;
+            } else if (op.isStructuralTemplateAttribute) {
+              bindingKind = ir.BindingKind.Template;
+            } else {
+              bindingKind = ir.BindingKind.Property;
+            }
+
             ir.OpList.insertBefore<ir.CreateOp>(
+                // Deliberaly null i18nMessage value
                 ir.createExtractedAttributeOp(
-                    op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Property,
-                    op.name, null),
+                    op.target, bindingKind, null, op.name, /* expression */ null,
+                    /* i18nContext */ null,
+                    /* i18nMessage */ null, op.securityContext),
                 lookupElement(elements, op.target));
           }
           break;
         case ir.OpKind.StyleProp:
         case ir.OpKind.ClassProp:
+          // TODO: Can style or class bindings be i18n attributes?
+
           // The old compiler treated empty style bindings as regular bindings for the purpose of
           // directive matching. That behavior is incorrect, but we emulate it in compatibility
           // mode.
           if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
               op.expression instanceof ir.EmptyExpr) {
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null),
+                ir.createExtractedAttributeOp(
+                    op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
+                    /* i18nContext */ null,
+                    /* i18nMessage */ null, SecurityContext.STYLE),
                 lookupElement(elements, op.target));
           }
           break;
         case ir.OpKind.Listener:
           if (!op.isAnimationListener) {
-            const extractedAttributeOp =
-                ir.createExtractedAttributeOp(op.target, ir.BindingKind.Property, op.name, null);
+            const extractedAttributeOp = ir.createExtractedAttributeOp(
+                op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
+                /* i18nContext */ null,
+                /* i18nMessage */ null, SecurityContext.NONE);
             if (job.kind === CompilationJobKind.Host) {
+              if (job.compatibility) {
+                // TemplateDefinitionBuilder does not extract listener bindings to the const array
+                // (which is honestly pretty inconsistent).
+                break;
+              }
               // This attribute will apply to the enclosing host binding compilation unit, so order
               // doesn't matter.
               unit.create.push(extractedAttributeOp);
@@ -86,27 +112,18 @@ function extractAttributeOp(
     return;
   }
 
-  let extractable = op.expression.isConstant();
+  let extractable = op.isTextAttribute || op.expression.isConstant();
   if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-    // TemplateDefinitionBuilder only extracted attributes that were string literals.
-    extractable = ir.isStringLiteral(op.expression);
-    if (op.name === 'style' || op.name === 'class') {
-      // For style and class attributes, TemplateDefinitionBuilder only extracted them if they were
-      // text attributes. For example, `[attr.class]="'my-class'"` was not extracted despite being a
-      // string literal, because it is not a text attribute.
-      extractable &&= op.isTextAttribute;
-    }
-    if (unit.job.kind === CompilationJobKind.Host) {
-      // TemplateDefinitionBuilder also does not seem to extract string literals if they are part of
-      // a host attribute.
-      extractable &&= op.isTextAttribute;
-    }
+    // TemplateDefinitionBuilder only extracts text attributes. It does not extract attriibute
+    // bindings, even if they are constants.
+    extractable &&= op.isTextAttribute;
   }
 
   if (extractable) {
     const extractedAttributeOp = ir.createExtractedAttributeOp(
-        op.target, op.isTemplate ? ir.BindingKind.Template : ir.BindingKind.Attribute, op.name,
-        op.expression);
+        op.target,
+        op.isStructuralTemplateAttribute ? ir.BindingKind.Template : ir.BindingKind.Attribute,
+        op.namespace, op.name, op.expression, op.i18nContext, op.i18nMessage, op.securityContext);
     if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
       // matter.

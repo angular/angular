@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '../../src/ngtsc/testing';
+import {expectCompleteReuse, loadStandardTestFiles} from '../../src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from './env';
 
@@ -78,6 +78,161 @@ runInEachFileSystem(() => {
           }
         `);
         env.driveMain();
+      });
+
+      it('should type-check correctly when a backing signal input field is renamed', () => {
+        // This test verifies that renaming the class field of an input is correctly reflected into
+        // the TCB.
+        env.write('dir.ts', `
+          import {Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            dir = input.required<string>();
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = 'foo';
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        // Now rename the backing field of the input; the TCB should be updated such that the `dir`
+        // input binding is still valid.
+        env.write('dir.ts', `
+          import {Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            dirRenamed = input.required<string>({alias: 'dir'});
+          }
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check correctly when an decorator-input is changed to a signal input', () => {
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input() dir!: string;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = 'foo';
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        // Now, the input is changed to a signal input. The template should still be valid.
+        // If this `isSignal` change would not be detected, `string` would never be assignable
+        // to `InputSignal` because the TCB would not unwrap it.
+        env.write('dir.ts', `
+          import {Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            dir = input<string>();
+          }
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check correctly when signal input transform is added', () => {
+        env.write('dir.ts', `
+          import {Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            dir = input.required<string>();
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = 'foo';
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        // Transform is added and the input no longer accepts `string`, but only a boolean.
+        // This should result in diagnostics now, assuming the TCB is checked again.
+        env.write('dir.ts', `
+          import {Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            dir = input.required<string, boolean>({
+              transform: v => v.toString(),
+            });
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText)
+            .toBe(`Type 'string' is not assignable to type 'boolean'.`);
       });
 
       it('should type-check correctly when a backing output field is renamed', () => {
@@ -1391,6 +1546,118 @@ runInEachFileSystem(() => {
                .toContain(
                    `Can't bind to 'grandgrandparentA' since it isn't a known property of 'div'.`);
          });
+    });
+
+    describe('program re-use', () => {
+      it('should completely re-use structure when the first signal input is introduced', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input() dir: string = '';
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = 'foo';
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        // introduce the signal input.
+        env.write('dir.ts', `
+          import {Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            dir = input.required<string>();
+          }
+        `);
+        env.driveMain();
+
+        expectCompleteReuse(env.getTsProgram());
+        expectCompleteReuse(env.getReuseTsProgram());
+      });
+
+      // TODO(devversion): look into fixing this for inline TCB and inline type ctors.
+      xit('should completely re-use structure when an inline constructor generic directive starts using input signals',
+          () => {
+            env.tsconfig({strictTemplates: true});
+            env.write('dir.ts', `
+            import {Directive, Input} from '@angular/core';
+
+            class SomeNonExportedClass {}
+
+            @Directive({
+              selector: '[dir]',
+            })
+            export class Dir<T extends SomeNonExportedClass> {
+              @Input() dir: T|undefined;
+            }
+          `);
+            env.write('cmp.ts', `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<div [dir]="foo"></div>',
+            })
+            export class Cmp {
+              foo = 'foo';
+            }
+          `);
+            env.write('mod.ts', `
+            import {NgModule} from '@angular/core';
+            import {Cmp} from './cmp';
+            import {Dir} from './dir';
+
+            @NgModule({
+              declarations: [Cmp, Dir],
+            })
+            export class Mod {}
+          `);
+            env.driveMain();
+
+            // turn the input into a signal input- causing a new import.
+            env.write('dir.ts', `
+            import {Directive, input} from '@angular/core';
+
+            class SomeNonExportedClass {}
+
+            @Directive({
+              selector: '[dir]',
+            })
+            export class Dir<T extends SomeNonExportedClass> {
+              dir = input.required<T>();
+            }
+          `);
+            env.driveMain();
+
+            expectCompleteReuse(env.getTsProgram());
+            expectCompleteReuse(env.getReuseTsProgram());
+          });
     });
   });
 });

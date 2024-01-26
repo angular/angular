@@ -112,9 +112,10 @@ Approximate dates are offered as general guidance and are subject to change.
 
 | Version | Date               |
 |:--------|:-------------------|
-| v16.1   | Week of 2023-06-12 |
-| v16.2   | Week of 2023-08-07 |
-| v17.0   | Week of 2023-11-06 |
+| v17.1   | Week of 2024-01-15 |
+| v17.2   | Week of 2024-02-12 |
+| v17.3   | Week of 2024-03-11 |
+| v18.0   | Week of 2024-05-20 |
 
 ### Support window
 
@@ -195,4 +196,4 @@ The policies and practices that are described in this document do not apply to A
 
 <!-- end links -->
 
-@reviewed 2023-05-03
+@reviewed 2023-12-13
