@@ -106,7 +106,6 @@ describe('DeferFixture', () => {
         SecondDeferredComp,
       ],
       providers: COMMON_PROVIDERS,
-      deferBlockBehavior: DeferBlockBehavior.Playthrough,
     });
 
     const componentFixture = TestBed.createComponent(DeferComp);
@@ -144,6 +143,7 @@ describe('DeferFixture', () => {
         SecondDeferredComp,
       ],
       providers: COMMON_PROVIDERS,
+      deferBlockBehavior: DeferBlockBehavior.Manual,
     });
 
     const componentFixture = TestBed.createComponent(DeferComp);
