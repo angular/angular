@@ -13,6 +13,7 @@ export {FetchBackend} from './src/fetch';
 export {HttpHeaders} from './src/headers';
 export {HTTP_INTERCEPTORS, HttpHandlerFn, HttpInterceptor, HttpInterceptorFn, HttpInterceptorHandler as ɵHttpInterceptorHandler, HttpInterceptorHandler as ɵHttpInterceptingHandler} from './src/interceptor';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
+export {HttpMethod} from './src/method';
 export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
 export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params';
 export {HttpFeature, HttpFeatureKind, provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from './src/provider';

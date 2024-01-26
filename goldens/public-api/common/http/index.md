@@ -1553,7 +1553,7 @@ export class HttpClient {
         withCredentials?: boolean;
     }): Observable<T>;
     request<R>(req: HttpRequest<any>): Observable<HttpEvent<R>>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1570,7 +1570,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<ArrayBuffer>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1587,7 +1587,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<Blob>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1604,7 +1604,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<string>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1621,7 +1621,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpEvent<ArrayBuffer>>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1638,7 +1638,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpEvent<Blob>>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1655,7 +1655,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpEvent<string>>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1672,7 +1672,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpEvent<any>>;
-    request<R>(method: string, url: string, options: {
+    request<R>(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1689,7 +1689,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpEvent<R>>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1706,7 +1706,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpResponse<ArrayBuffer>>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1723,7 +1723,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpResponse<Blob>>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1740,7 +1740,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpResponse<string>>;
-    request(method: string, url: string, options: {
+    request(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1754,7 +1754,7 @@ export class HttpClient {
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Object>>;
-    request<R>(method: string, url: string, options: {
+    request<R>(method: HttpMethod | string, url: string, options: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1771,7 +1771,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<HttpResponse<R>>;
-    request(method: string, url: string, options?: {
+    request(method: HttpMethod | string, url: string, options?: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1788,7 +1788,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<Object>;
-    request<R>(method: string, url: string, options?: {
+    request<R>(method: HttpMethod | string, url: string, options?: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1805,7 +1805,7 @@ export class HttpClient {
             includeHeaders?: string[];
         } | boolean;
     }): Observable<R>;
-    request(method: string, url: string, options?: {
+    request(method: HttpMethod | string, url: string, options?: {
         body?: any;
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1994,6 +1994,9 @@ export interface HttpInterceptor {
 export type HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => Observable<HttpEvent<unknown>>;
 
 // @public
+export type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'PATCH' | 'JSONP' | 'get' | 'head' | 'post' | 'put' | 'delete' | 'connect' | 'options' | 'trace' | 'patch' | 'jsonp';
+
+// @public
 export interface HttpParameterCodec {
     // (undocumented)
     decodeKey(key: string): string;
@@ -2077,7 +2080,7 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     });
-    constructor(method: string, url: string, body: T | null, init?: {
+    constructor(method: HttpMethod | string, url: string, body: T | null, init?: {
         headers?: HttpHeaders;
         context?: HttpContext;
         reportProgress?: boolean;
@@ -2100,7 +2103,7 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         body?: T | null;
-        method?: string;
+        method?: HttpMethod;
         url?: string;
         setHeaders?: {
             [name: string]: string | string[];
@@ -2118,7 +2121,7 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         body?: V | null;
-        method?: string;
+        method?: HttpMethod;
         url?: string;
         setHeaders?: {
             [name: string]: string | string[];
@@ -2130,7 +2133,7 @@ export class HttpRequest<T> {
     readonly context: HttpContext;
     detectContentTypeHeader(): string | null;
     readonly headers: HttpHeaders;
-    readonly method: string;
+    readonly method: HttpMethod;
     readonly params: HttpParams;
     readonly reportProgress: boolean;
     readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text';
