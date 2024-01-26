@@ -3381,8 +3381,8 @@ suppress
         // These messages are expected to refer to the native
         // typings since the inputs/outputs haven't been exposed.
         expect(messages).toEqual([
-          `Argument of type 'Event' is not assignable to parameter of type 'string'.`,
-          `Can't bind to 'input' since it isn't a known property of 'div'.`
+          `Property 'input' does not exist on type 'HTMLDivElement'. Did you mean 'oninput'?`,
+          `Argument of type 'Event' is not assignable to parameter of type 'string'.`
         ]);
       });
 

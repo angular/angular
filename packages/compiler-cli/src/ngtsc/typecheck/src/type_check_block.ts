@@ -896,7 +896,8 @@ class TcbDirectiveCtorCircularFallbackOp extends TcbOp {
  */
 class TcbDomSchemaCheckerOp extends TcbOp {
   constructor(
-      private tcb: Context, private element: TmplAstElement, private checkElement: boolean,
+      private tcb: Context, private element: TmplAstElement,
+      private options: {checkElementInSchemaRegistry: boolean},
       private claimedInputs: Set<string>) {
     super();
   }
@@ -906,22 +907,33 @@ class TcbDomSchemaCheckerOp extends TcbOp {
   }
 
   override execute(): ts.Expression|null {
-    if (this.checkElement) {
+    if (this.options.checkElementInSchemaRegistry) {
       this.tcb.domSchemaChecker.checkElement(
           this.tcb.id, this.element, this.tcb.schemas, this.tcb.hostIsStandalone);
     }
 
+    // Only check unclaimed inputs in the schema if we are not checking them via
+    // the TCB. I.e. we either check in `TcbUnclaimedInputsOp` or here.
+    if (this.tcb.env.config.checkTypeOfDomBindings === false) {
+      this._checkUnclaimedInputs();
+    }
+
+    return null;
+  }
+
+  private _checkUnclaimedInputs() {
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.element.inputs) {
       const isPropertyBinding =
           binding.type === BindingType.Property || binding.type === BindingType.TwoWay;
 
-      if (isPropertyBinding && this.claimedInputs.has(binding.name)) {
-        // Skip this binding as it was claimed by a directive.
+      if (!isPropertyBinding || this.claimedInputs.has(binding.name)) {
+        // Skip this binding as it was claimed by a directive, or does not refer to a
+        // property (e.g. animation trigger).
         continue;
       }
 
-      if (isPropertyBinding && binding.name !== 'style' && binding.name !== 'class') {
+      if (binding.name !== 'style' && binding.name !== 'class') {
         // A direct binding to a property.
         const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
         this.tcb.domSchemaChecker.checkProperty(
@@ -929,7 +941,6 @@ class TcbDomSchemaCheckerOp extends TcbOp {
             this.tcb.hostIsStandalone);
       }
     }
-    return null;
   }
 }
 
@@ -2087,8 +2098,11 @@ class Scope {
       // to add them if needed.
       if (node instanceof TmplAstElement) {
         this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
-        this.opQueue.push(
-            new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs));
+        this.opQueue.push(new TcbDomSchemaCheckerOp(
+            this.tcb, node, {
+              checkElementInSchemaRegistry: true,
+            },
+            claimedInputs));
       }
       return;
     } else {
@@ -2144,12 +2158,15 @@ class Scope {
       }
 
       this.opQueue.push(new TcbUnclaimedInputsOp(this.tcb, this, node, claimedInputs));
-      // If there are no directives which match this element, then it's a "plain" DOM element (or a
-      // web component), and should be checked against the DOM schema. If any directives match,
-      // we must assume that the element could be custom (either a component, or a directive like
-      // <router-outlet>) and shouldn't validate the element name itself.
-      const checkElement = directives.length === 0;
-      this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, checkElement, claimedInputs));
+      this.opQueue.push(new TcbDomSchemaCheckerOp(
+          this.tcb, node, {
+            // If there are no directives which match this element, then it's a "plain" DOM element
+            // (or a web component), and should be checked against the DOM schema. If any directives
+            // match, we must assume that the element could be custom (either a component, or a
+            // directive like <router-outlet>) and shouldn't validate the element name itself.
+            checkElementInSchemaRegistry: directives.length === 0,
+          },
+          claimedInputs));
     }
   }
 
@@ -2205,7 +2222,8 @@ class Scope {
             }
           }
         }
-        this.opQueue.push(new TcbDomSchemaCheckerOp(this.tcb, node, !hasDirectives, claimedInputs));
+        this.opQueue.push(new TcbDomSchemaCheckerOp(
+            this.tcb, node, {checkElementInSchemaRegistry: !hasDirectives}, claimedInputs));
       }
 
       this.appendDeepSchemaChecks(node.children);

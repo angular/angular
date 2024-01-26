@@ -774,8 +774,7 @@ export class NgCompiler {
         honorAccessModifiersForInputBindings: false,
         strictNullInputBindings: strictTemplates,
         checkTypeOfAttributes: strictTemplates,
-        // Even in full template type-checking mode, DOM binding checks are not quite ready yet.
-        checkTypeOfDomBindings: false,
+        checkTypeOfDomBindings: strictTemplates,
         checkTypeOfOutputEvents: strictTemplates,
         checkTypeOfAnimationEvents: strictTemplates,
         // Checking of DOM events currently has an adverse effect on developer experience,

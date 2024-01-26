@@ -7,6 +7,8 @@
  */
 
 import {BindingPipe, CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, ParseTemplateOptions, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement} from '@angular/compiler';
+import fs from 'fs';
+import path from 'path';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
@@ -30,61 +32,15 @@ import {TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
 
 export function typescriptLibDts(): TestFile {
+  const tsDefaultLibPath = path.dirname(ts.getDefaultLibFilePath({}));
+  const domLibTs = fs.readFileSync(path.join(tsDefaultLibPath, 'lib.dom.d.ts'), 'utf8');
+  const es5LibTs = fs.readFileSync(path.join(tsDefaultLibPath, 'lib.es5.d.ts'), 'utf8');
+
   return {
     name: absoluteFrom('/lib.d.ts'),
     contents: `
-      type Partial<T> = { [P in keyof T]?: T[P]; };
-      type Pick<T, K extends keyof T> = { [P in K]: T[P]; };
-      type NonNullable<T> = T extends null | undefined ? never : T;
-
-      // The following native type declarations are required for proper type inference
-      declare interface Function {
-        call(...args: any[]): any;
-      }
-      declare interface Array<T> {
-        [index: number]: T;
-        length: number;
-      }
-      declare interface Iterable<T> {}
-      declare interface String {
-        length: number;
-      }
-
-      declare interface Event {
-        preventDefault(): void;
-      }
-      declare interface MouseEvent extends Event {
-        readonly x: number;
-        readonly y: number;
-      }
-
-      declare interface HTMLElementEventMap {
-        "click": MouseEvent;
-      }
-      declare interface HTMLElement {
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any): void;
-        addEventListener(type: string, listener: (evt: Event) => void): void;
-      }
-      declare interface HTMLDivElement extends HTMLElement {}
-      declare interface HTMLImageElement extends HTMLElement {
-        src: string;
-        alt: string;
-        width: number;
-        height: number;
-      }
-      declare interface HTMLQuoteElement extends HTMLElement {
-        cite: string;
-      }
-      declare interface HTMLElementTagNameMap {
-        "blockquote": HTMLQuoteElement;
-        "div": HTMLDivElement;
-        "img": HTMLImageElement;
-      }
-      declare interface Document {
-        createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
-        createElement(tagName: string): HTMLElement;
-      }
-      declare const document: Document;
+      ${es5LibTs}
+      ${domLibTs}
    `
   };
 }
@@ -283,9 +239,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   honorAccessModifiersForInputBindings: true,
   strictNullInputBindings: true,
   checkTypeOfAttributes: true,
-  // Feature is still in development.
-  // TODO(alxhub): enable when DOM checking via lib.dom.d.ts is further along.
-  checkTypeOfDomBindings: false,
+  checkTypeOfDomBindings: true,
   checkTypeOfOutputEvents: true,
   checkTypeOfAnimationEvents: true,
   checkTypeOfDomEvents: true,

@@ -1192,7 +1192,8 @@ runInEachFileSystem(() => {
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(1);
            expect(diags[0].messageText)
-               .toContain(`Can't bind to 'parent' since it isn't a known property of 'div'.`);
+               .toContain(
+                   `Property 'parent' does not exist on type 'HTMLDivElement'. Did you mean 'part'?`);
          });
 
       it('should type-check derived directives when the public API of the grandparent class is affected',
@@ -1267,7 +1268,7 @@ runInEachFileSystem(() => {
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(1);
            expect(diags[0].messageText)
-               .toContain(`Can't bind to 'grandparent' since it isn't a known property of 'div'.`);
+               .toContain(`Property 'grandparent' does not exist on type 'HTMLDivElement'.`);
          });
 
       it('should type-check derived directives when a base class is added to a grandparent', () => {
@@ -1342,8 +1343,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText)
-            .toContain(
-                `Can't bind to 'grandgrandparent' since it isn't a known property of 'div'.`);
+            .toContain(`Property 'grandgrandparent' does not exist on type 'HTMLDivElement'.`);
 
         // Now fix the issue by adding the base class to `Grandparent`; this should allow
         // type-checking to succeed.
@@ -1445,8 +1445,7 @@ runInEachFileSystem(() => {
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(1);
            expect(diags[0].messageText)
-               .toContain(
-                   `Can't bind to 'grandgrandparent' since it isn't a known property of 'div'.`);
+               .toContain(`Property 'grandgrandparent' does not exist on type 'HTMLDivElement'.`);
          });
 
       it('should type-check derived directives when the base class of a grandparent changes',
@@ -1543,8 +1542,7 @@ runInEachFileSystem(() => {
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(1);
            expect(diags[0].messageText)
-               .toContain(
-                   `Can't bind to 'grandgrandparentA' since it isn't a known property of 'div'.`);
+               .toContain(`Property 'grandgrandparentA' does not exist on type 'HTMLDivElement'.`);
          });
     });
 

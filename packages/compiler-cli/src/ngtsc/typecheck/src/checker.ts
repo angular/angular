@@ -25,7 +25,7 @@ import {makeTemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
 import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
-import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
+import {shouldReportDiagnostic, transformDiagnostic, translateDiagnostic} from './diagnostics';
 import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
@@ -869,7 +869,7 @@ function convertDiagnostic(
   if (!shouldReportDiagnostic(diag)) {
     return null;
   }
-  return translateDiagnostic(diag, sourceResolver);
+  return translateDiagnostic(transformDiagnostic(diag), sourceResolver);
 }
 
 /**

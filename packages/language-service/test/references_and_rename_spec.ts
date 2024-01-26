@@ -447,7 +447,7 @@ describe('find references and rename locations', () => {
           const files = {
             'app.ts': appFileContents,
             'dir.ts': dirFileContents,
-            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef }}'
+            'app.html': '<div dir #dirRef="myDir"></div> {{ dirRef }}'
           };
           env = LanguageServiceTestEnv.setup();
           const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -476,7 +476,7 @@ describe('find references and rename locations', () => {
           const files = {
             'app.ts': appFileContents,
             'dir.ts': dirFileContents,
-            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef.dirValue }}'
+            'app.html': '<div dir #dirRef="myDir"></div> {{ dirRef.dirValue }}'
           };
           env = LanguageServiceTestEnv.setup();
           const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -505,7 +505,7 @@ describe('find references and rename locations', () => {
           const files = {
             'app.ts': appFileContents,
             'dir.ts': dirFileContents,
-            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef?.dirValue }}'
+            'app.html': '<div dir #dirRef="myDir"></div> {{ dirRef?.dirValue }}'
           };
           env = LanguageServiceTestEnv.setup();
           const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -535,7 +535,7 @@ describe('find references and rename locations', () => {
           const files = {
             'app.ts': appFileContents,
             'dir.ts': dirFileContents,
-            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef?.doSomething() }}'
+            'app.html': '<div dir #dirRef="myDir"></div> {{ dirRef?.doSomething() }}'
           };
           env = LanguageServiceTestEnv.setup();
           const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -1513,7 +1513,7 @@ describe('find references and rename locations', () => {
         import {Component} from '@angular/core';
 
         @Component({
-          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }', 
+          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }',
           standalone: true
         })
         export class AppCmp {

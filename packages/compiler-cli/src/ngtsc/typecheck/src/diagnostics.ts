@@ -82,6 +82,39 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
 }
 
 /**
+ * Occasionally, TypeScript reports diagnostics in the type check block which might
+ * seem confusing in the context of HTML templates. This function can be used to
+ * transform diagnostics to e.g. remove information that might not be relevant.
+ */
+export function transformDiagnostic(diagnostic: ts.Diagnostic): ts.Diagnostic {
+  // The no implicit any index type access diagnostic is commonly chained with
+  // more concrete information on what is missing. For example:
+  //
+  // ```
+  //   Element implicitly has an 'any' type because expression of type
+  //   '"grand-parent"' can't be used to index type 'HTMLDivElement'
+  //   Property 'grand-parent' does not exist on type 'HTMLDivElement'.
+  // ```
+  //
+  // We are simplifying the diagnostic, as the `noImplicitAny` message is not
+  // helpful in those cases, and the chain information is more obvious.
+  const DIAGNOSTIC_NO_IMPLICIT_ANY_INDEX_TYPE_ACCESS = 7053;
+  const DIAGNOSTIC_PROPERTY_DOES_NOT_EXIST = 2339;
+
+  if (diagnostic.code === DIAGNOSTIC_NO_IMPLICIT_ANY_INDEX_TYPE_ACCESS &&
+      typeof diagnostic.messageText !== 'string' &&
+      diagnostic.messageText.next?.[0].code === DIAGNOSTIC_PROPERTY_DOES_NOT_EXIST) {
+    return {
+      ...diagnostic,
+      messageText: diagnostic.messageText.next[0].messageText,
+      code: DIAGNOSTIC_PROPERTY_DOES_NOT_EXIST,
+    };
+  }
+
+  return diagnostic;
+}
+
+/**
  * Attempts to translate a TypeScript diagnostic produced during template type-checking to their
  * location of origin, based on the comments that are emitted in the TCB code.
  *
