@@ -11,6 +11,7 @@ import {Component, computed, ContentChild, ContentChildren, Directive, ElementRe
 // TODO: update imports to the exported authoring functions when those are public
 import {contentChild, contentChildren, viewChild, viewChildren} from '@angular/core/src/authoring/queries';
 import {TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
 describe('queries as signals', () => {
   describe('view', () => {
@@ -73,9 +74,14 @@ describe('queries as signals', () => {
         standalone: true,
         template: `
           <div #el></div>
+          @if (show) {
+            <div #el></div>
+          }
         `,
       })
       class AppComponent {
+        show = false;
+
         // TODO: remove decorator when we've got a transform in place
         @ViewChildren('el', {isSignal: true} as any)
         divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
@@ -88,13 +94,111 @@ describe('queries as signals', () => {
       // queries behave as "static" (?)
       expect(fixture.componentInstance.foundEl()).toBe(1);
 
-      fixture.detectChanges(false);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foundEl()).toBe(1);
+
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foundEl()).toBe(2);
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBe(1);
 
       // non-required query results are undefined before we run creation mode on the view queries
       const appCmpt = new AppComponent();
       expect(appCmpt.divEls().length).toBe(0);
     });
+
+    it('should return the same array instance when there were no changes in results', () => {
+      @Component({
+        standalone: true,
+        template: `
+            <div #el></div>
+          `,
+      })
+      class AppComponent {
+        // TODO: remove decorator when we've got a transform in place
+        @ViewChildren('el', {isSignal: true} as any)
+        divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      const result1 = fixture.componentInstance.divEls();
+      expect(result1.length).toBe(1);
+
+      // subsequent reads should return the same result instance
+      const result2 = fixture.componentInstance.divEls();
+      expect(result2.length).toBe(1);
+      expect(result2).toBe(result1);
+    });
+
+    it('should not mark signal as dirty when a child query result does not change', () => {
+      let computeCount = 0;
+
+      @Component({
+        standalone: true,
+        template: `
+            <div #el></div>
+            @if (show) {
+              <div #el></div>
+            }
+          `,
+      })
+      class AppComponent {
+        // TODO: remove decorator when we've got a transform in place
+        @ViewChildren('el', {isSignal: true} as any)
+        divEl = viewChild.required<ElementRef<HTMLDivElement>>('el');
+        isThere = computed(() => ++computeCount);
+        show = false;
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.isThere()).toBe(1);
+      const divEl = fixture.componentInstance.divEl();
+
+      // subsequent reads should return the same result instance and _not_ trigger downstream
+      // computed re-evaluation
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.divEl()).toBe(divEl);
+      expect(fixture.componentInstance.isThere()).toBe(1);
+    });
+
+    it('should return the same array instance when there were no changes in results after view manipulation',
+       () => {
+         @Component({
+           standalone: true,
+           template: `
+            <div #el></div>
+            @if (show) {
+              <div></div>
+            }
+          `,
+         })
+         class AppComponent {
+           // TODO: remove decorator when we've got a transform in place
+           @ViewChildren('el', {isSignal: true} as any)
+           divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
+
+           show = false;
+         }
+
+         const fixture = TestBed.createComponent(AppComponent);
+         fixture.detectChanges();
+         const result1 = fixture.componentInstance.divEls();
+         expect(result1.length).toBe(1);
+
+         fixture.componentInstance.show = true;
+         fixture.detectChanges();
+         // subsequent reads should return the same result instance since the query results didn't
+         // change
+         const result2 = fixture.componentInstance.divEls();
+         expect(result2.length).toBe(1);
+         expect(result2).toBe(result1);
+       });
   });
 
   describe('content queries', () => {
@@ -186,6 +290,52 @@ describe('queries as signals', () => {
       fixture.componentInstance.show = false;
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('3');
+    });
+
+    it('should not return partial results during the first-time view rendering', () => {
+      @Directive({selector: '[marker]', standalone: true})
+      class MarkerForResults {
+      }
+
+      @Directive({
+        selector: '[declare]',
+        standalone: true,
+      })
+      class DeclareQuery {
+        // TODO: remove decorator when we've got a transform in place
+        @ContentChildren(MarkerForResults, {isSignal: true} as any)
+        results = contentChildren(MarkerForResults);
+      }
+
+
+      @Directive({selector: '[inspect]', standalone: true})
+      class InspectsQueryResults {
+        constructor(declaration: DeclareQuery) {
+          // we should _not_ get partial query results while the view is still creating
+          expect(declaration.results().length).toBe(0);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [MarkerForResults, InspectsQueryResults, DeclareQuery],
+        template: `
+          <div declare>
+            <div marker></div>
+            <div inspect></div>
+            <div marker></div>
+          </div>
+       `,
+      })
+      class AppComponent {
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      const queryDir =
+          fixture.debugElement.query(By.directive(DeclareQuery)).injector.get(DeclareQuery);
+
+      expect(queryDir.results().length).toBe(2);
     });
   });
 });

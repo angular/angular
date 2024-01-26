@@ -241,4 +241,13 @@ export interface LQueries {
    * @param tView
    */
   detachView(tView: TView): void;
+
+  /**
+   * A method called when a view finishes its creation pass. As a result all impacted
+   * `LQuery` objects (and associated `QueryList`) are marked as dirty. This additional dirty
+   * marking gives us a precise point in time where we can collect results for a given view in an
+   * atomic way.
+   * @param tView
+   */
+  finishViewCreation(tView: TView): void;
 }

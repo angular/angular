@@ -72,6 +72,10 @@ class LQueries_ implements LQueries {
     this.dirtyQueriesWithMatches(tView);
   }
 
+  finishViewCreation(tView: TView): void {
+    this.dirtyQueriesWithMatches(tView);
+  }
+
   private dirtyQueriesWithMatches(tView: TView) {
     for (let i = 0; i < this.queries.length; i++) {
       if (getTQuery(tView, i).matches !== null) {
@@ -346,7 +350,7 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
  * doesn't change).
  */
 export function materializeViewResults<T>(
-    tView: TView, lView: LView, tQuery: TQuery, queryIndex: number): (T|null)[] {
+    tView: TView, lView: LView, tQuery: TQuery, queryIndex: number): T[] {
   const lQuery = lView[QUERIES]!.queries![queryIndex];
   if (lQuery.matches === null) {
     const tViewData = tView.data;
