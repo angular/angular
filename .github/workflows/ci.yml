@@ -184,7 +184,7 @@ jobs:
         run: yarn --cwd aio deploy-production
       - name: Notify about failed deployment
         if: ${{ failure() }}
-        uses: slackapi/slack-github-action@e28cf165c92ffef168d23c5c9000cffc8a25e117 # v=v1.24.0
+        uses: slackapi/slack-github-action@2a8087d4af6f83146a87539a70defe909fe6dbe6 # v=v1.24.0
         with:
           channel-id: 'C07DT5M6V,CKV1F72BG'
           slack-message: 'Deploy to aio job failed for ${{ github.base_ref }} branch failed on build ${{ github.event.after }}: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
