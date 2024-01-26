@@ -18,6 +18,9 @@ export const THROW_ON_UNKNOWN_ELEMENTS_DEFAULT = false;
 /** Whether unknown properties in templates should throw by default. */
 export const THROW_ON_UNKNOWN_PROPERTIES_DEFAULT = false;
 
+/** Whether defer blocks should use manual triggering or play through normally. */
+export const DEFER_BLOCK_DEFAULT_BEHAVIOR = DeferBlockBehavior.Playthrough;
+
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
  *
