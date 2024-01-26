@@ -13,7 +13,7 @@ import {ComponentDef, ComponentType} from '../../src/render3';
 
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
-import {TestModuleMetadata} from './test_bed_common';
+import {DEFER_BLOCK_DEFAULT_BEHAVIOR, TestModuleMetadata} from './test_bed_common';
 
 enum TestingModuleOverride {
   DECLARATION,
@@ -112,7 +112,7 @@ export class TestBedCompiler {
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
 
-  private deferBlockBehavior = DeferBlockBehavior.Manual;
+  private deferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
 
   constructor(private platform: PlatformRef, private additionalModuleTypes: Type<any>|Type<any>[]) {
     class DynamicTestModule {}
@@ -149,7 +149,7 @@ export class TestBedCompiler {
       this.schemas.push(...moduleDef.schemas);
     }
 
-    this.deferBlockBehavior = moduleDef.deferBlockBehavior ?? DeferBlockBehavior.Manual;
+    this.deferBlockBehavior = moduleDef.deferBlockBehavior ?? DEFER_BLOCK_DEFAULT_BEHAVIOR;
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {

@@ -131,7 +131,6 @@ function createFixture(template: string) {
       ...COMMON_PROVIDERS,
       {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
     ],
-    deferBlockBehavior: DeferBlockBehavior.Playthrough,
   });
 
   clearDirectiveDefs(MyCmp);
@@ -160,8 +159,7 @@ const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]
 
 describe('@defer', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule(
-        {providers: COMMON_PROVIDERS, deferBlockBehavior: DeferBlockBehavior.Playthrough});
+    TestBed.configureTestingModule({providers: COMMON_PROVIDERS});
   });
 
   it('should transition between placeholder, loading and loaded states', async () => {
@@ -558,7 +556,6 @@ describe('@defer', () => {
           ...COMMON_PROVIDERS,
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -837,7 +834,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -912,7 +908,6 @@ describe('@defer', () => {
             },
           },
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -988,7 +983,6 @@ describe('@defer', () => {
             },
           },
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -1308,7 +1302,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(RootCmp);
@@ -1429,7 +1422,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1515,7 +1507,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1597,7 +1588,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1666,7 +1656,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1749,7 +1738,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1832,7 +1820,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1904,7 +1891,6 @@ describe('@defer', () => {
           ...COMMON_PROVIDERS,
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -2005,7 +1991,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -2088,7 +2073,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -2181,7 +2165,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -2236,7 +2219,7 @@ describe('@defer', () => {
         isVisible = false;
       }
 
-      TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
+      TestBed.configureTestingModule({});
 
       clearDirectiveDefs(RootCmp);
 
@@ -2735,7 +2718,7 @@ describe('@defer', () => {
          })
          class MyCmp {
          }
-         TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
+         TestBed.configureTestingModule({});
 
          const appRef = TestBed.inject(ApplicationRef);
          const zone = TestBed.inject(NgZone);
@@ -2782,7 +2765,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -2831,7 +2813,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -3090,7 +3071,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -3145,7 +3125,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -3207,7 +3186,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -3266,9 +3244,7 @@ describe('@defer', () => {
       class RootCmp {
       }
 
-      TestBed.configureTestingModule({
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
-      });
+      TestBed.configureTestingModule({});
 
       clearDirectiveDefs(RootCmp);
 
@@ -3337,7 +3313,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -3406,7 +3381,7 @@ describe('@defer', () => {
            isVisible = false;
          }
 
-         TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
+         TestBed.configureTestingModule({});
 
          clearDirectiveDefs(RootCmp);
 
@@ -3807,7 +3782,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -3857,7 +3831,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
