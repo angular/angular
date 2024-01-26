@@ -1336,6 +1336,11 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'reference/migrations/typed-forms',
         contentPath: 'reference/migrations/typed-forms',
       },
+      {
+        label: 'Control Flow Syntax',
+        path: 'reference/migrations/control-flow',
+        contentPath: 'reference/migrations/control-flow',
+      },
     ],
   },
 ];
