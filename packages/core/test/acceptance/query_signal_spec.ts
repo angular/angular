@@ -6,44 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// TODO: update imports
-import {computed, ElementRef, ɵɵdefineComponent, ɵɵelement, ɵɵStandaloneFeature} from '@angular/core';
+
+import {Component, computed, ElementRef, ViewChild, ViewChildren} from '@angular/core';
+// TODO: update imports to the exported authoring functions when those are public
 import {viewChild, viewChildren} from '@angular/core/src/authoring/queries';
-import {ɵɵviewQuerySignal} from '@angular/core/src/render3/instructions/queries_signals';
 import {TestBed} from '@angular/core/testing';
 
 describe('queries as signals', () => {
   describe('view', () => {
-    it('view child - HAND GENERATED CODE - delete after compiler is done', () => {
-      const _c0 = ['el'];
+    it('should query for an optional element in a template', () => {
+      @Component({
+        standalone: true,
+        template: `<div #el></div>`,
+      })
       class AppComponent {
+        // TODO: remove decorator when we've got a transform in place
+        @ViewChild('el', {isSignal: true} as any)
         divEl = viewChild<ElementRef<HTMLDivElement>>('el');
         foundEl = computed(() => this.divEl() != null);
-
-        static ɵfac = () => new AppComponent();
-        static ɵcmp = ɵɵdefineComponent({
-          type: AppComponent,
-          selectors: [['test-cmp']],
-          viewQuery:
-              function App_Query(rf, ctx) {
-                if (rf & 1) {
-                  ɵɵviewQuerySignal(ctx.divEl, _c0, 1);
-                }
-              },
-          standalone: true,
-          signals: true,
-          features: [ɵɵStandaloneFeature],
-          decls: 3,
-          vars: 0,
-          consts: [['el', '']],
-          template:
-              function App_Template(rf) {
-                if ((rf & 1)) {
-                  ɵɵelement(0, 'div', null, 0);
-                }
-              },
-          encapsulation: 2
-        });
       }
 
       const fixture = TestBed.createComponent(AppComponent);
@@ -60,36 +40,16 @@ describe('queries as signals', () => {
       expect(appCmpt.divEl()).toBeUndefined();
     });
 
-    it('required view child - HAND GENERATED CODE - delete after compiler is done', () => {
-      const _c0 = ['el'];
+    it('should query for a required element in a template', () => {
+      @Component({
+        standalone: true,
+        template: `<div #el></div>`,
+      })
       class AppComponent {
+        // TODO: remove decorator when we've got a transform in place
+        @ViewChild('el', {isSignal: true} as any)
         divEl = viewChild.required<ElementRef<HTMLDivElement>>('el');
         foundEl = computed(() => this.divEl() != null);
-
-        static ɵfac = () => new AppComponent();
-        static ɵcmp = ɵɵdefineComponent({
-          type: AppComponent,
-          selectors: [['test-cmp']],
-          viewQuery:
-              function App_Query(rf, ctx) {
-                if (rf & 1) {
-                  ɵɵviewQuerySignal(ctx.divEl, _c0, 1);
-                }
-              },
-          standalone: true,
-          signals: true,
-          features: [ɵɵStandaloneFeature],
-          decls: 3,
-          vars: 0,
-          consts: [['el', '']],
-          template:
-              function App_Template(rf) {
-                if ((rf & 1)) {
-                  ɵɵelement(0, 'div', null, 0);
-                }
-              },
-          encapsulation: 2
-        });
       }
 
       const fixture = TestBed.createComponent(AppComponent);
@@ -108,36 +68,18 @@ describe('queries as signals', () => {
       }).toThrowError('NG00: no query results yet!');
     });
 
-    it('view children - HAND GENERATED CODE - delete after compiler is done', () => {
-      const _c0 = ['el'];
+    it('should query for multiple elements in a template', () => {
+      @Component({
+        standalone: true,
+        template: `
+          <div #el></div>
+        `,
+      })
       class AppComponent {
+        // TODO: remove decorator when we've got a transform in place
+        @ViewChildren('el', {isSignal: true} as any)
         divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
         foundEl = computed(() => this.divEls().length);
-
-        static ɵfac = () => new AppComponent();
-        static ɵcmp = ɵɵdefineComponent({
-          type: AppComponent,
-          selectors: [['test-cmp']],
-          viewQuery:
-              function App_Query(rf, ctx) {
-                if (rf & 1) {
-                  ɵɵviewQuerySignal(ctx.divEls, _c0, 1);
-                }
-              },
-          standalone: true,
-          signals: true,
-          features: [ɵɵStandaloneFeature],
-          decls: 3,
-          vars: 0,
-          consts: [['el', '']],
-          template:
-              function App_Template(rf) {
-                if ((rf & 1)) {
-                  ɵɵelement(0, 'div', null, 0);
-                }
-              },
-          encapsulation: 2
-        });
       }
 
       const fixture = TestBed.createComponent(AppComponent);
@@ -146,7 +88,7 @@ describe('queries as signals', () => {
       // queries behave as "static" (?)
       expect(fixture.componentInstance.foundEl()).toBe(1);
 
-      fixture.detectChanges();
+      fixture.detectChanges(false);
       expect(fixture.componentInstance.foundEl()).toBe(1);
 
       // non-required query results are undefined before we run creation mode on the view queries
