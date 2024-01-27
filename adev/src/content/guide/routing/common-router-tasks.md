@@ -443,7 +443,7 @@ gotoItems(hero: Hero) {
 You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the application launches.
 Additionally, preload parts of your application in the background to improve the user experience.
 
-For more information on lazy loading and preloading see the dedicated guide lazy loading.
+For more information on lazy loading and preloading see the dedicated guide [Lazy loading](guide/ngmodules/lazy-loading).
 
 ## Preventing unauthorized access
 
