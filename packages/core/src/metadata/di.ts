@@ -435,6 +435,8 @@ export interface ViewChildDecorator {
    *
    * @usageNotes
    *
+   * ### Example 1
+   *
    * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
    * ### Example 2
