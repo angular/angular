@@ -56,10 +56,12 @@ export function getApiNavigationItems(): NavigationItem[] {
 
     const packageNavigationItem: NavigationItem = {
       label: packageNameWithoutPrefix,
-      children: packageApis.map((api) => ({
-        path: getApiUrl(packageNameWithoutPrefix, api.name),
-        label: api.name,
-      })),
+      children: packageApis
+        .map((api) => ({
+          path: getApiUrl(packageNameWithoutPrefix, api.name),
+          label: api.name,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
     };
 
     apiNavigationItems.push(packageNavigationItem);
