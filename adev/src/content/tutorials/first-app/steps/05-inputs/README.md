@@ -47,5 +47,6 @@ In the code editor:
 Summary: In this lesson, you created a new property decorated with the `@Input()` decorator. You also used the non-null assertion operator to notify the compiler that the value of the new property won't be `null` or `undefined`.
 
 <docs-pill-row>
-  <docs-pill href="guide/components/inputs-outputs" title="Sharing data between child and parent directives and components"/>
+  <docs-pill href="guide/components/inputs" title="Accepting data with input properties"/>
+  <docs-pill href="guide/components/outputs" title="Custom events with outputs"/>
 </docs-pill-row>
