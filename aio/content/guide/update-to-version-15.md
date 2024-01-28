@@ -76,7 +76,9 @@ In v15, Angular no longer supports node.js versions 14.\[15-19\].x or 16.\[10-12
 
 #### Angular v15 supports TypeScript version 4.8 or later
 
-In v15, Angular no longer supports TypeScript versions older than 4.8. [PR #47690](https://github.com/angular/angular/pull/47690)
+In Angular v15, TypeScript versions 4.8.2 up to, but not including 5.0.0, are supported, with no support for versions older than 4.8.2. [PR #47690](https://github.com/angular/angular/pull/47690)
+
+See [Version compatibility](/guide/versions) for full version compatibility details.
 
 <a id="v15-bc-03"></a>
 
