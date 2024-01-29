@@ -552,6 +552,78 @@ function allTests(os: string) {
       })]);
     });
 
+    it('should error for custom decorators when forbidOrphanComponents is true', () => {
+      env.tsconfig({
+        forbidOrphanComponents: true,
+      });
+      env.write('test.ts', `
+      import {Component} from '@angular/core';
+      
+      function customDecorator<T extends new (...args: any[]) => {}>(original: T) {
+        return class extends original {
+          someProp = 'default';
+        };
+      }
+
+      @Component({template: ''})
+      @customDecorator
+      class MyComp {}
+      `);
+
+      const diagnostics = env.driveDiagnostics();
+
+      expect(diagnostics).toEqual([jasmine.objectContaining({
+        messageText: jasmine.stringMatching(
+            /When the Angular compiler option "forbidOrphanComponents" is set, Angular does not support custom decorators or duplicate Angular decorators/),
+      })]);
+    });
+
+    it('should error for duplicate Component decorator when forbidOrphanComponents is true', () => {
+      env.tsconfig({
+        forbidOrphanComponents: true,
+      });
+      env.write('test.ts', `
+      import {Component} from '@angular/core';
+      
+      @Component({template: '1'})
+      @Component({template: '2'})
+      class MyComp {}
+      `);
+
+      const diagnostics = env.driveDiagnostics();
+
+      expect(diagnostics).toEqual([jasmine.objectContaining({
+        messageText: jasmine.stringMatching(
+            /When the Angular compiler option "forbidOrphanComponents" is set, Angular does not support custom decorators or duplicate Angular decorators/),
+      })]);
+    });
+
+    it('should not error for duplicate @Injectable decorators when forbidOrphanComponents is true',
+       () => {
+         env.tsconfig({
+           forbidOrphanComponents: true,
+         });
+         env.write('test.ts', `
+      import {Injectable} from '@angular/core';     
+
+      class SomeServiceImpl {
+        getMessage() {
+          return 'Hi!';
+        }
+      }
+      
+      @Injectable({providedIn: 'root', useExisting: SomeServiceImpl})
+      @Injectable({providedIn: 'root'})
+      export abstract class SomeService {
+        abstract getMessage(): string;
+      }
+      `);
+
+         const diagnostics = env.driveDiagnostics();
+
+         expect(diagnostics).toEqual([]);
+       });
+
     // This test triggers the Tsickle compiler which asserts that the file-paths
     // are valid for the real OS. When on non-Windows systems it doesn't like paths
     // that start with `C:`.
