@@ -204,5 +204,7 @@ export const angularCoreEnv: {[name: string]: unknown} =
        'forwardRef': forwardRef,
        'resolveForwardRef': resolveForwardRef,
 
+       'ɵɵtwoWayProperty': r3.ɵɵtwoWayProperty,
+
        'ɵɵInputFlags': InputFlags,
      }))();

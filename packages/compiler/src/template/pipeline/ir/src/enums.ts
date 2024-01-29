@@ -196,6 +196,11 @@ export enum OpKind {
   Repeater,
 
   /**
+   * An operation to bind an expression to the property side of a two-way binding.
+   */
+  TwoWayProperty,
+
+  /**
    * The start of an i18n block.
    */
   I18nStart,
@@ -474,6 +479,11 @@ export enum BindingKind {
    * Animation property bindings.
    */
   Animation,
+
+  /**
+   * Property side of a two-way binding.
+   */
+  TwoWayProperty,
 }
 
 /**

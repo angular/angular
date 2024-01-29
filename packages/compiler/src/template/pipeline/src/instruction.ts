@@ -325,6 +325,16 @@ export function property(
   return call(Identifiers.property, args, sourceSpan);
 }
 
+export function twoWayProperty(
+    name: string, expression: o.Expression, sanitizer: o.Expression|null,
+    sourceSpan: ParseSourceSpan): ir.UpdateOp {
+  const args = [o.literal(name), expression];
+  if (sanitizer !== null) {
+    args.push(sanitizer);
+  }
+  return call(Identifiers.twoWayProperty, args, sourceSpan);
+}
+
 export function attribute(
     name: string, expression: o.Expression, sanitizer: o.Expression|null,
     namespace: string|null): ir.UpdateOp {

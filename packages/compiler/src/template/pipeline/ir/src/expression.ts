@@ -884,6 +884,11 @@ export function transformExpressionsInOp(
       op.sanitizer =
           op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
       break;
+    case OpKind.TwoWayProperty:
+      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
+      op.sanitizer =
+          op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
+      break;
     case OpKind.I18nExpression:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;

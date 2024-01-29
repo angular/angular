@@ -56,3 +56,4 @@ export * from './styling';
 export * from './template';
 export * from './text';
 export * from './text_interpolation';
+export * from './two_way';

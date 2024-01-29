@@ -114,6 +114,7 @@ const CHAINABLE_INSTRUCTIONS = new Set([
   R3.textInterpolate8,
   R3.textInterpolateV,
   R3.templateCreate,
+  R3.twoWayProperty,
 ]);
 
 /**

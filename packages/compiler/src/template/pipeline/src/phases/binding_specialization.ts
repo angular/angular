@@ -7,6 +7,7 @@
  */
 
 import {splitNsName} from '../../../../ml_parser/tags';
+import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
 import {CompilationJob, CompilationJobKind} from '../compilation';
 
@@ -71,6 +72,22 @@ export function specializeBindings(job: CompilationJob): void {
                     op.i18nContext, op.i18nMessage, op.sourceSpan));
           }
 
+          break;
+        case ir.BindingKind.TwoWayProperty:
+          if (!(op.expression instanceof o.Expression)) {
+            // We shouldn't be able to hit this code path since interpolations in two-way bindings
+            // result in a parser error. We assert here so that downstream we can assume that
+            // the value is always an expression.
+            throw new Error(
+                `Expected value of two-way property binding "${op.name}" to be an expression`);
+          }
+
+          ir.OpList.replace<ir.UpdateOp>(
+              op,
+              ir.createTwoWayPropertyOp(
+                  op.target, op.name, op.expression, op.securityContext,
+                  op.isStructuralTemplateAttribute, op.templateKind, op.i18nContext, op.i18nMessage,
+                  op.sourceSpan));
           break;
         case ir.BindingKind.I18n:
         case ir.BindingKind.ClassName:

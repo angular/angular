@@ -300,6 +300,10 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
         }
         break;
+      case ir.OpKind.TwoWayProperty:
+        ir.OpList.replace(
+            op, ng.twoWayProperty(op.name, op.expression, op.sanitizer, op.sourceSpan));
+        break;
       case ir.OpKind.StyleProp:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
