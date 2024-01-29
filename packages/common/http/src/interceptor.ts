@@ -7,7 +7,17 @@
  */
 
 import {isPlatformServer} from '@angular/common';
-import {EnvironmentInjector, inject, Injectable, InjectionToken, PLATFORM_ID, runInInjectionContext, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵPendingTasks as PendingTasks} from '@angular/core';
+import {
+  EnvironmentInjector,
+  inject,
+  Injectable,
+  InjectionToken,
+  PLATFORM_ID,
+  runInInjectionContext,
+  ɵConsole as Console,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵPendingTasks as PendingTasks,
+} from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 
@@ -119,8 +129,10 @@ export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<
  * };
  * ```
  */
-export type HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) =>
-    Observable<HttpEvent<unknown>>;
+export type HttpInterceptorFn = (
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+) => Observable<HttpEvent<unknown>>;
 
 /**
  * Function which invokes an HTTP interceptor chain.
@@ -134,11 +146,15 @@ export type HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn)
  * `HttpInterceptorFn`, which is a useful abstraction for including different kinds of interceptors
  * (e.g. legacy class-based interceptors) in the same chain.
  */
-type ChainedInterceptorFn<RequestT> = (req: HttpRequest<RequestT>, finalHandlerFn: HttpHandlerFn) =>
-    Observable<HttpEvent<RequestT>>;
+type ChainedInterceptorFn<RequestT> = (
+  req: HttpRequest<RequestT>,
+  finalHandlerFn: HttpHandlerFn,
+) => Observable<HttpEvent<RequestT>>;
 
 function interceptorChainEndFn(
-    req: HttpRequest<any>, finalHandlerFn: HttpHandlerFn): Observable<HttpEvent<any>> {
+  req: HttpRequest<any>,
+  finalHandlerFn: HttpHandlerFn,
+): Observable<HttpEvent<any>> {
   return finalHandlerFn(req);
 }
 
@@ -147,11 +163,13 @@ function interceptorChainEndFn(
  * `ChainedInterceptorFn` interface.
  */
 function adaptLegacyInterceptorToChain(
-    chainTailFn: ChainedInterceptorFn<any>,
-    interceptor: HttpInterceptor): ChainedInterceptorFn<any> {
-  return (initialRequest, finalHandlerFn) => interceptor.intercept(initialRequest, {
-    handle: (downstreamRequest) => chainTailFn(downstreamRequest, finalHandlerFn),
-  });
+  chainTailFn: ChainedInterceptorFn<any>,
+  interceptor: HttpInterceptor,
+): ChainedInterceptorFn<any> {
+  return (initialRequest, finalHandlerFn) =>
+    interceptor.intercept(initialRequest, {
+      handle: (downstreamRequest) => chainTailFn(downstreamRequest, finalHandlerFn),
+    });
 }
 
 /**
@@ -159,15 +177,17 @@ function adaptLegacyInterceptorToChain(
  * injector.
  */
 function chainedInterceptorFn(
-    chainTailFn: ChainedInterceptorFn<unknown>, interceptorFn: HttpInterceptorFn,
-    injector: EnvironmentInjector): ChainedInterceptorFn<unknown> {
+  chainTailFn: ChainedInterceptorFn<unknown>,
+  interceptorFn: HttpInterceptorFn,
+  injector: EnvironmentInjector,
+): ChainedInterceptorFn<unknown> {
   // clang-format off
-  return (initialRequest, finalHandlerFn) => runInInjectionContext(injector, () =>
-    interceptorFn(
-      initialRequest,
-      downstreamRequest => chainTailFn(downstreamRequest, finalHandlerFn)
-    )
-  );
+  return (initialRequest, finalHandlerFn) =>
+    runInInjectionContext(injector, () =>
+      interceptorFn(initialRequest, (downstreamRequest) =>
+        chainTailFn(downstreamRequest, finalHandlerFn),
+      ),
+    );
   // clang-format on
 }
 
@@ -177,34 +197,37 @@ function chainedInterceptorFn(
  *
  * @publicApi
  */
-export const HTTP_INTERCEPTORS =
-    new InjectionToken<readonly HttpInterceptor[]>(ngDevMode ? 'HTTP_INTERCEPTORS' : '');
+export const HTTP_INTERCEPTORS = new InjectionToken<readonly HttpInterceptor[]>(
+  ngDevMode ? 'HTTP_INTERCEPTORS' : '',
+);
 
 /**
  * A multi-provided token of `HttpInterceptorFn`s.
  */
-export const HTTP_INTERCEPTOR_FNS =
-    new InjectionToken<readonly HttpInterceptorFn[]>(ngDevMode ? 'HTTP_INTERCEPTOR_FNS' : '');
+export const HTTP_INTERCEPTOR_FNS = new InjectionToken<readonly HttpInterceptorFn[]>(
+  ngDevMode ? 'HTTP_INTERCEPTOR_FNS' : '',
+);
 
 /**
  * A multi-provided token of `HttpInterceptorFn`s that are only set in root.
  */
-export const HTTP_ROOT_INTERCEPTOR_FNS =
-    new InjectionToken<readonly HttpInterceptorFn[]>(ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '');
+export const HTTP_ROOT_INTERCEPTOR_FNS = new InjectionToken<readonly HttpInterceptorFn[]>(
+  ngDevMode ? 'HTTP_ROOT_INTERCEPTOR_FNS' : '',
+);
 
 /**
  * A provider to set a global primary http backend. If set, it will override the default one
  */
-export const PRIMARY_HTTP_BACKEND =
-    new InjectionToken<HttpBackend>(ngDevMode ? 'PRIMARY_HTTP_BACKEND' : '');
-
+export const PRIMARY_HTTP_BACKEND = new InjectionToken<HttpBackend>(
+  ngDevMode ? 'PRIMARY_HTTP_BACKEND' : '',
+);
 
 /**
  * Creates an `HttpInterceptorFn` which lazily initializes an interceptor chain from the legacy
  * class-based interceptors and runs the request through it.
  */
 export function legacyInterceptorFnFactory(): HttpInterceptorFn {
-  let chain: ChainedInterceptorFn<any>|null = null;
+  let chain: ChainedInterceptorFn<any> | null = null;
 
   return (req, handler) => {
     if (chain === null) {
@@ -214,7 +237,9 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
       // produce a chain that is conceptually `c(b(a(end)))`, which we build from the inside
       // out.
       chain = interceptors.reduceRight(
-          adaptLegacyInterceptorToChain, interceptorChainEndFn as ChainedInterceptorFn<any>);
+        adaptLegacyInterceptorToChain,
+        interceptorChainEndFn as ChainedInterceptorFn<any>,
+      );
     }
 
     const pendingTasks = inject(PendingTasks);
@@ -232,10 +257,13 @@ export function resetFetchBackendWarningFlag() {
 
 @Injectable()
 export class HttpInterceptorHandler extends HttpHandler {
-  private chain: ChainedInterceptorFn<unknown>|null = null;
+  private chain: ChainedInterceptorFn<unknown> | null = null;
   private readonly pendingTasks = inject(PendingTasks);
 
-  constructor(private backend: HttpBackend, private injector: EnvironmentInjector) {
+  constructor(
+    private backend: HttpBackend,
+    private injector: EnvironmentInjector,
+  ) {
     super();
 
     // Check if there is a preferred HTTP backend configured and use it if that's the case.
@@ -251,37 +279,46 @@ export class HttpInterceptorHandler extends HttpHandler {
       const isServer = isPlatformServer(injector.get(PLATFORM_ID));
       if (isServer && !(this.backend instanceof FetchBackend)) {
         fetchBackendWarningDisplayed = true;
-        injector.get(Console).warn(formatRuntimeError(
-            RuntimeErrorCode.NOT_USING_FETCH_BACKEND_IN_SSR,
-            'Angular detected that `HttpClient` is not configured ' +
-                'to use `fetch` APIs. It\'s strongly recommended to ' +
+        injector
+          .get(Console)
+          .warn(
+            formatRuntimeError(
+              RuntimeErrorCode.NOT_USING_FETCH_BACKEND_IN_SSR,
+              'Angular detected that `HttpClient` is not configured ' +
+                "to use `fetch` APIs. It's strongly recommended to " +
                 'enable `fetch` for applications that use Server-Side Rendering ' +
                 'for better performance and compatibility. ' +
                 'To enable `fetch`, add the `withFetch()` to the `provideHttpClient()` ' +
-                'call at the root of the application.'));
+                'call at the root of the application.',
+            ),
+          );
       }
     }
   }
 
   override handle(initialRequest: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
-      const dedupedInterceptorFns = Array.from(new Set([
-        ...this.injector.get(HTTP_INTERCEPTOR_FNS),
-        ...this.injector.get(HTTP_ROOT_INTERCEPTOR_FNS, []),
-      ]));
+      const dedupedInterceptorFns = Array.from(
+        new Set([
+          ...this.injector.get(HTTP_INTERCEPTOR_FNS),
+          ...this.injector.get(HTTP_ROOT_INTERCEPTOR_FNS, []),
+        ]),
+      );
 
       // Note: interceptors are wrapped right-to-left so that final execution order is
       // left-to-right. That is, if `dedupedInterceptorFns` is the array `[a, b, c]`, we want to
       // produce a chain that is conceptually `c(b(a(end)))`, which we build from the inside
       // out.
       this.chain = dedupedInterceptorFns.reduceRight(
-          (nextSequencedFn, interceptorFn) =>
-              chainedInterceptorFn(nextSequencedFn, interceptorFn, this.injector),
-          interceptorChainEndFn as ChainedInterceptorFn<unknown>);
+        (nextSequencedFn, interceptorFn) =>
+          chainedInterceptorFn(nextSequencedFn, interceptorFn, this.injector),
+        interceptorChainEndFn as ChainedInterceptorFn<unknown>,
+      );
     }
 
     const taskId = this.pendingTasks.add();
-    return this.chain(initialRequest, downstreamRequest => this.backend.handle(downstreamRequest))
-        .pipe(finalize(() => this.pendingTasks.remove(taskId)));
+    return this.chain(initialRequest, (downstreamRequest) =>
+      this.backend.handle(downstreamRequest),
+    ).pipe(finalize(() => this.pendingTasks.remove(taskId)));
   }
 }

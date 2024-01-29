@@ -6,7 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentRef, createNgModule, Directive, DoCheck, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, Type, ViewContainerRef} from '@angular/core';
+import {
+  ComponentRef,
+  createNgModule,
+  Directive,
+  DoCheck,
+  Injector,
+  Input,
+  NgModuleFactory,
+  NgModuleRef,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
+  Type,
+  ViewContainerRef,
+} from '@angular/core';
 
 /**
  * Instantiates a {@link Component} type and inserts its Host View into the current View.
@@ -82,7 +96,7 @@ import {ComponentRef, createNgModule, Directive, DoCheck, Injector, Input, NgMod
   standalone: true,
 })
 export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
-  @Input() ngComponentOutlet: Type<any>|null = null;
+  @Input() ngComponentOutlet: Type<any> | null = null;
 
   @Input() ngComponentOutletInputs?: Record<string, unknown>;
   @Input() ngComponentOutletInjector?: Injector;
@@ -94,8 +108,8 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
    */
   @Input() ngComponentOutletNgModuleFactory?: NgModuleFactory<any>;
 
-  private _componentRef: ComponentRef<any>|undefined;
-  private _moduleRef: NgModuleRef<any>|undefined;
+  private _componentRef: ComponentRef<any> | undefined;
+  private _moduleRef: NgModuleRef<any> | undefined;
 
   /**
    * A helper data structure that allows us to track inputs that were part of the
@@ -110,18 +124,22 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
     // Note: square brackets property accessor is safe for Closure compiler optimizations (the
     // `changes` argument of the `ngOnChanges` lifecycle hook retains the names of the fields that
     // were changed).
-    return changes['ngComponentOutletNgModule'] !== undefined ||
-        changes['ngComponentOutletNgModuleFactory'] !== undefined;
+    return (
+      changes['ngComponentOutletNgModule'] !== undefined ||
+      changes['ngComponentOutletNgModuleFactory'] !== undefined
+    );
   }
 
   private _needToReCreateComponentInstance(changes: SimpleChanges): boolean {
     // Note: square brackets property accessor is safe for Closure compiler optimizations (the
     // `changes` argument of the `ngOnChanges` lifecycle hook retains the names of the fields that
     // were changed).
-    return changes['ngComponentOutlet'] !== undefined ||
-        changes['ngComponentOutletContent'] !== undefined ||
-        changes['ngComponentOutletInjector'] !== undefined ||
-        this._needToReCreateNgModuleInstance(changes);
+    return (
+      changes['ngComponentOutlet'] !== undefined ||
+      changes['ngComponentOutletContent'] !== undefined ||
+      changes['ngComponentOutletInjector'] !== undefined ||
+      this._needToReCreateNgModuleInstance(changes)
+    );
   }
 
   /** @nodoc */
@@ -138,11 +156,14 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
           this._moduleRef?.destroy();
 
           if (this.ngComponentOutletNgModule) {
-            this._moduleRef =
-                createNgModule(this.ngComponentOutletNgModule, getParentInjector(injector));
+            this._moduleRef = createNgModule(
+              this.ngComponentOutletNgModule,
+              getParentInjector(injector),
+            );
           } else if (this.ngComponentOutletNgModuleFactory) {
-            this._moduleRef =
-                this.ngComponentOutletNgModuleFactory.create(getParentInjector(injector));
+            this._moduleRef = this.ngComponentOutletNgModuleFactory.create(
+              getParentInjector(injector),
+            );
           } else {
             this._moduleRef = undefined;
           }

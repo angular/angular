@@ -20,8 +20,9 @@ import {createImageLoader, ImageLoaderConfig} from './image_loader';
  * @publicApi
  */
 export const provideCloudflareLoader = createImageLoader(
-    createCloudflareUrl,
-    ngDevMode ? ['https://<ZONE>/cdn-cgi/image/<OPTIONS>/<SOURCE-IMAGE>'] : undefined);
+  createCloudflareUrl,
+  ngDevMode ? ['https://<ZONE>/cdn-cgi/image/<OPTIONS>/<SOURCE-IMAGE>'] : undefined,
+);
 
 function createCloudflareUrl(path: string, config: ImageLoaderConfig) {
   let params = `format=auto`;

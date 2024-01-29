@@ -11,14 +11,53 @@ export {HttpClient} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
 export {FetchBackend} from './src/fetch';
 export {HttpHeaders} from './src/headers';
-export {HTTP_INTERCEPTORS, HttpHandlerFn, HttpInterceptor, HttpInterceptorFn, HttpInterceptorHandler as ɵHttpInterceptorHandler, HttpInterceptorHandler as ɵHttpInterceptingHandler} from './src/interceptor';
+export {
+  HTTP_INTERCEPTORS,
+  HttpHandlerFn,
+  HttpInterceptor,
+  HttpInterceptorFn,
+  HttpInterceptorHandler as ɵHttpInterceptorHandler,
+  HttpInterceptorHandler as ɵHttpInterceptingHandler,
+} from './src/interceptor';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';
 export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule} from './src/module';
-export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params';
-export {HttpFeature, HttpFeatureKind, provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi, withJsonpSupport, withNoXsrfProtection, withRequestsMadeViaParent, withXsrfConfiguration} from './src/provider';
+export {
+  HttpParameterCodec,
+  HttpParams,
+  HttpParamsOptions,
+  HttpUrlEncodingCodec,
+} from './src/params';
+export {
+  HttpFeature,
+  HttpFeatureKind,
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+  withInterceptorsFromDi,
+  withJsonpSupport,
+  withNoXsrfProtection,
+  withRequestsMadeViaParent,
+  withXsrfConfiguration,
+} from './src/provider';
 export {HttpRequest} from './src/request';
-export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpStatusCode, HttpUploadProgressEvent, HttpUserEvent} from './src/response';
-export {HttpTransferCacheOptions, withHttpTransferCache as ɵwithHttpTransferCache} from './src/transfer_cache';
+export {
+  HttpDownloadProgressEvent,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpHeaderResponse,
+  HttpProgressEvent,
+  HttpResponse,
+  HttpResponseBase,
+  HttpSentEvent,
+  HttpStatusCode,
+  HttpUploadProgressEvent,
+  HttpUserEvent,
+} from './src/response';
+export {
+  HttpTransferCacheOptions,
+  withHttpTransferCache as ɵwithHttpTransferCache,
+} from './src/transfer_cache';
 export {HttpXhrBackend} from './src/xhr';
 export {HttpXsrfTokenExtractor} from './src/xsrf';
 

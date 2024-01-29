@@ -20,7 +20,7 @@ describe('HttpRequest', () => {
       const req = new HttpRequest('', TEST_URL, null);
       expect(req.url).toBe(TEST_URL);
     });
-    it('doesn\'t require a body for body-less methods', () => {
+    it("doesn't require a body for body-less methods", () => {
       let req = new HttpRequest('GET', TEST_URL);
       expect(req.method).toBe('GET');
       expect(req.body).toBeNull();
@@ -107,7 +107,7 @@ describe('HttpRequest', () => {
     it('handles a null body', () => {
       expect(baseReq.detectContentTypeHeader()).toBeNull();
     });
-    it('doesn\'t associate a content type with ArrayBuffers', () => {
+    it("doesn't associate a content type with ArrayBuffers", () => {
       const req = baseReq.clone({body: new ArrayBuffer(4)});
       expect(req.detectContentTypeHeader()).toBeNull();
     });
@@ -163,8 +163,9 @@ describe('HttpRequest', () => {
       const params = new HttpParams().append('first', 'value').append('second', 'other');
       const withParams = baseReq.clone({body: params});
       expect(withParams.serializeBody()).toEqual('first=value&second=other');
-      expect(withParams.detectContentTypeHeader())
-          .toEqual('application/x-www-form-urlencoded;charset=UTF-8');
+      expect(withParams.detectContentTypeHeader()).toEqual(
+        'application/x-www-form-urlencoded;charset=UTF-8',
+      );
     });
   });
   describe('parameter handling', () => {

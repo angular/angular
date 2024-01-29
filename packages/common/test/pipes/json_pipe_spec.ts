@@ -23,14 +23,14 @@ describe('JsonPipe', () => {
 
   beforeEach(() => {
     inceptionObj = {dream: {dream: {dream: 'Limbo'}}};
-    inceptionObjString = '{\n' +
-        '  "dream": {\n' +
-        '    "dream": {\n' +
-        '      "dream": "Limbo"\n' +
-        '    }\n' +
-        '  }\n' +
-        '}';
-
+    inceptionObjString =
+      '{\n' +
+      '  "dream": {\n' +
+      '    "dream": {\n' +
+      '      "dream": "Limbo"\n' +
+      '    }\n' +
+      '  }\n' +
+      '}';
 
     pipe = new JsonPipe();
   });
@@ -64,16 +64,16 @@ describe('JsonPipe', () => {
     });
 
     it('should work with mutable objects', waitForAsync(() => {
-         const fixture = TestBed.createComponent(TestComp);
-         const mutable: number[] = [1];
-         fixture.componentInstance.data = mutable;
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('[\n  1\n]');
+      const fixture = TestBed.createComponent(TestComp);
+      const mutable: number[] = [1];
+      fixture.componentInstance.data = mutable;
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('[\n  1\n]');
 
-         mutable.push(2);
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
-       }));
+      mutable.push(2);
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
+    }));
   });
 
   it('should be available as a standalone pipe', () => {

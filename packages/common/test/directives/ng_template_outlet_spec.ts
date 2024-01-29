@@ -7,7 +7,20 @@
  */
 
 import {CommonModule, NgTemplateOutlet} from '@angular/common';
-import {Component, ContentChildren, Directive, Inject, Injectable, InjectionToken, Injector, NO_ERRORS_SCHEMA, OnDestroy, Provider, QueryList, TemplateRef} from '@angular/core';
+import {
+  Component,
+  ContentChildren,
+  Directive,
+  Inject,
+  Injectable,
+  InjectionToken,
+  Injector,
+  NO_ERRORS_SCHEMA,
+  OnDestroy,
+  Provider,
+  QueryList,
+  TemplateRef,
+} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -37,105 +50,112 @@ describe('NgTemplateOutlet', () => {
         InjectValueComponent,
       ],
       imports: [CommonModule],
-      providers: [DestroyedSpyService]
+      providers: [DestroyedSpyService],
     });
   });
 
   // https://github.com/angular/angular/issues/14778
   it('should accept the component as the context', waitForAsync(() => {
-       const template = `<ng-container *ngTemplateOutlet="tpl; context: this"></ng-container>` +
-           `<ng-template #tpl>{{context.foo}}</ng-template>`;
+    const template =
+      `<ng-container *ngTemplateOutlet="tpl; context: this"></ng-container>` +
+      `<ng-template #tpl>{{context.foo}}</ng-template>`;
 
-       fixture = createTestComponent(template);
-       detectChangesAndExpectText('bar');
-     }));
+    fixture = createTestComponent(template);
+    detectChangesAndExpectText('bar');
+  }));
 
   it('should do nothing if templateRef is `null`', waitForAsync(() => {
-       const template = `<ng-container [ngTemplateOutlet]="null"></ng-container>`;
-       fixture = createTestComponent(template);
-       detectChangesAndExpectText('');
-     }));
+    const template = `<ng-container [ngTemplateOutlet]="null"></ng-container>`;
+    fixture = createTestComponent(template);
+    detectChangesAndExpectText('');
+  }));
 
   it('should insert content specified by TemplateRef', waitForAsync(() => {
-       const template = `<ng-template #tpl>foo</ng-template>` +
-           `<ng-container [ngTemplateOutlet]="tpl"></ng-container>`;
-       fixture = createTestComponent(template);
-       detectChangesAndExpectText('foo');
-     }));
+    const template =
+      `<ng-template #tpl>foo</ng-template>` +
+      `<ng-container [ngTemplateOutlet]="tpl"></ng-container>`;
+    fixture = createTestComponent(template);
+    detectChangesAndExpectText('foo');
+  }));
 
   it('should clear content if TemplateRef becomes `null`', waitForAsync(() => {
-       const template = `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
-           `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
-       fixture = createTestComponent(template);
-       fixture.detectChanges();
-       const refs = fixture.debugElement.children[0].references!['refs'];
+    const template =
+      `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
+      `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
+    fixture = createTestComponent(template);
+    fixture.detectChanges();
+    const refs = fixture.debugElement.children[0].references!['refs'];
 
-       setTplRef(refs.tplRefs.first);
-       detectChangesAndExpectText('foo');
+    setTplRef(refs.tplRefs.first);
+    detectChangesAndExpectText('foo');
 
-       setTplRef(null);
-       detectChangesAndExpectText('');
-     }));
+    setTplRef(null);
+    detectChangesAndExpectText('');
+  }));
 
   it('should swap content if TemplateRef changes', waitForAsync(() => {
-       const template =
-           `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template><ng-template>bar</ng-template></tpl-refs>` +
-           `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
-       fixture = createTestComponent(template);
+    const template =
+      `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template><ng-template>bar</ng-template></tpl-refs>` +
+      `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
+    fixture = createTestComponent(template);
 
-       fixture.detectChanges();
-       const refs = fixture.debugElement.children[0].references!['refs'];
+    fixture.detectChanges();
+    const refs = fixture.debugElement.children[0].references!['refs'];
 
-       setTplRef(refs.tplRefs.first);
-       detectChangesAndExpectText('foo');
+    setTplRef(refs.tplRefs.first);
+    detectChangesAndExpectText('foo');
 
-       setTplRef(refs.tplRefs.last);
-       detectChangesAndExpectText('bar');
-     }));
+    setTplRef(refs.tplRefs.last);
+    detectChangesAndExpectText('bar');
+  }));
 
   it('should display template if context is `null`', waitForAsync(() => {
-       const template = `<ng-template #tpl>foo</ng-template>` +
-           `<ng-container *ngTemplateOutlet="tpl; context: null"></ng-container>`;
-       fixture = createTestComponent(template);
-       detectChangesAndExpectText('foo');
-     }));
+    const template =
+      `<ng-template #tpl>foo</ng-template>` +
+      `<ng-container *ngTemplateOutlet="tpl; context: null"></ng-container>`;
+    fixture = createTestComponent(template);
+    detectChangesAndExpectText('foo');
+  }));
 
   it('should reflect initial context and changes', waitForAsync(() => {
-       const template = `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
-           `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
-       fixture = createTestComponent(template);
+    const template =
+      `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
+      `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
+    fixture = createTestComponent(template);
 
-       fixture.detectChanges();
-       detectChangesAndExpectText('bar');
+    fixture.detectChanges();
+    detectChangesAndExpectText('bar');
 
-       fixture.componentInstance.context.foo = 'alter-bar';
-       detectChangesAndExpectText('alter-bar');
-     }));
+    fixture.componentInstance.context.foo = 'alter-bar';
+    detectChangesAndExpectText('alter-bar');
+  }));
 
   it('should reflect user defined `$implicit` property in the context', waitForAsync(() => {
-       const template = `<ng-template let-ctx #tpl>{{ctx.foo}}</ng-template>` +
-           `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
-       fixture = createTestComponent(template);
-       fixture.componentInstance.context = {$implicit: {foo: 'bra'}};
-       detectChangesAndExpectText('bra');
-     }));
+    const template =
+      `<ng-template let-ctx #tpl>{{ctx.foo}}</ng-template>` +
+      `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
+    fixture = createTestComponent(template);
+    fixture.componentInstance.context = {$implicit: {foo: 'bra'}};
+    detectChangesAndExpectText('bra');
+  }));
 
   it('should reflect context re-binding', waitForAsync(() => {
-       const template = `<ng-template let-shawshank="shawshank" #tpl>{{shawshank}}</ng-template>` +
-           `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
-       fixture = createTestComponent(template);
+    const template =
+      `<ng-template let-shawshank="shawshank" #tpl>{{shawshank}}</ng-template>` +
+      `<ng-container *ngTemplateOutlet="tpl; context: context"></ng-container>`;
+    fixture = createTestComponent(template);
 
-       fixture.componentInstance.context = {shawshank: 'brooks'};
-       detectChangesAndExpectText('brooks');
+    fixture.componentInstance.context = {shawshank: 'brooks'};
+    detectChangesAndExpectText('brooks');
 
-       fixture.componentInstance.context = {shawshank: 'was here'};
-       detectChangesAndExpectText('was here');
-     }));
+    fixture.componentInstance.context = {shawshank: 'was here'};
+    detectChangesAndExpectText('was here');
+  }));
 
   it('should update but not destroy embedded view when context values change', () => {
     const template =
-        `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
-        `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
+      `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
+      `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
 
     fixture = createTestComponent(template);
     const spyService = fixture.debugElement.injector.get(DestroyedSpyService);
@@ -150,8 +170,8 @@ describe('NgTemplateOutlet', () => {
 
   it('should update but not destroy embedded view when context shape changes', () => {
     const template =
-        `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
-        `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="context"></ng-template>`;
+      `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
+      `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="context"></ng-template>`;
 
     fixture = createTestComponent(template);
     const spyService = fixture.debugElement.injector.get(DestroyedSpyService);
@@ -166,8 +186,8 @@ describe('NgTemplateOutlet', () => {
 
   it('should destroy embedded view when context value changes and templateRef becomes undefined', () => {
     const template =
-        `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
-        `<ng-template [ngTemplateOutlet]="value === 'bar' ? tpl : undefined" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
+      `<ng-template let-foo="foo" #tpl><destroyable-cmpt></destroyable-cmpt>:{{foo}}</ng-template>` +
+      `<ng-template [ngTemplateOutlet]="value === 'bar' ? tpl : undefined" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
 
     fixture = createTestComponent(template);
     const spyService = fixture.debugElement.injector.get(DestroyedSpyService);
@@ -180,22 +200,23 @@ describe('NgTemplateOutlet', () => {
     expect(spyService.destroyed).toBeTruthy();
   });
 
-  it('should not try to update null / undefined context when context changes but template stays the same',
-     () => {
-       const template = `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
-           `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="value === 'bar' ? null : undefined"></ng-template>`;
+  it('should not try to update null / undefined context when context changes but template stays the same', () => {
+    const template =
+      `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
+      `<ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="value === 'bar' ? null : undefined"></ng-template>`;
 
-       fixture = createTestComponent(template);
-       detectChangesAndExpectText('');
+    fixture = createTestComponent(template);
+    detectChangesAndExpectText('');
 
-       fixture.componentInstance.value = 'baz';
-       detectChangesAndExpectText('');
-     });
+    fixture.componentInstance.value = 'baz';
+    detectChangesAndExpectText('');
+  });
 
   it('should not try to update null / undefined context when template changes', () => {
-    const template = `<ng-template let-foo="foo" #tpl1>{{foo}}</ng-template>` +
-        `<ng-template let-foo="foo" #tpl2>{{foo}}</ng-template>` +
-        `<ng-template [ngTemplateOutlet]="value === 'bar' ? tpl1 : tpl2" [ngTemplateOutletContext]="value === 'bar' ? null : undefined"></ng-template>`;
+    const template =
+      `<ng-template let-foo="foo" #tpl1>{{foo}}</ng-template>` +
+      `<ng-template let-foo="foo" #tpl2>{{foo}}</ng-template>` +
+      `<ng-template [ngTemplateOutlet]="value === 'bar' ? tpl1 : tpl2" [ngTemplateOutletContext]="value === 'bar' ? null : undefined"></ng-template>`;
 
     fixture = createTestComponent(template);
     detectChangesAndExpectText('');
@@ -205,8 +226,9 @@ describe('NgTemplateOutlet', () => {
   });
 
   it('should not try to update context on undefined view', () => {
-    const template = `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
-        `<ng-template [ngTemplateOutlet]="value === 'bar' ? null : undefined" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
+    const template =
+      `<ng-template let-foo="foo" #tpl>{{foo}}</ng-template>` +
+      `<ng-template [ngTemplateOutlet]="value === 'bar' ? null : undefined" [ngTemplateOutletContext]="{foo: value}"></ng-template>`;
 
     fixture = createTestComponent(template);
     detectChangesAndExpectText('');
@@ -228,25 +250,25 @@ describe('NgTemplateOutlet', () => {
     }).not.toThrow();
   });
 
-  it('should not throw when switching from template to null and back to template',
-     waitForAsync(() => {
-       const template = `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
-           `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
-       fixture = createTestComponent(template);
-       fixture.detectChanges();
-       const refs = fixture.debugElement.children[0].references!['refs'];
+  it('should not throw when switching from template to null and back to template', waitForAsync(() => {
+    const template =
+      `<tpl-refs #refs="tplRefs"><ng-template>foo</ng-template></tpl-refs>` +
+      `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
+    fixture = createTestComponent(template);
+    fixture.detectChanges();
+    const refs = fixture.debugElement.children[0].references!['refs'];
 
-       setTplRef(refs.tplRefs.first);
-       detectChangesAndExpectText('foo');
+    setTplRef(refs.tplRefs.first);
+    detectChangesAndExpectText('foo');
 
-       setTplRef(null);
-       detectChangesAndExpectText('');
+    setTplRef(null);
+    detectChangesAndExpectText('');
 
-       expect(() => {
-         setTplRef(refs.tplRefs.first);
-         detectChangesAndExpectText('foo');
-       }).not.toThrow();
-     }));
+    expect(() => {
+      setTplRef(refs.tplRefs.first);
+      detectChangesAndExpectText('foo');
+    }).not.toThrow();
+  }));
 
   it('should not mutate context object if two contexts with an identical shape are swapped', () => {
     fixture = TestBed.createComponent(MultiContextComponent);
@@ -270,35 +292,42 @@ describe('NgTemplateOutlet', () => {
   });
 
   it('should be able to specify an injector', waitForAsync(() => {
-       const template = `<ng-template #tpl><inject-value></inject-value></ng-template>` +
-           `<ng-container *ngTemplateOutlet="tpl; injector: injector"></ng-container>`;
-       fixture = createTestComponent(template);
-       fixture.componentInstance.injector =
-           Injector.create({providers: [{provide: templateToken, useValue: 'world'}]});
-       detectChangesAndExpectText('Hello world');
-     }));
+    const template =
+      `<ng-template #tpl><inject-value></inject-value></ng-template>` +
+      `<ng-container *ngTemplateOutlet="tpl; injector: injector"></ng-container>`;
+    fixture = createTestComponent(template);
+    fixture.componentInstance.injector = Injector.create({
+      providers: [{provide: templateToken, useValue: 'world'}],
+    });
+    detectChangesAndExpectText('Hello world');
+  }));
 
   it('should re-render if the injector changes', waitForAsync(() => {
-       const template = `<ng-template #tpl><inject-value></inject-value></ng-template>` +
-           `<ng-container *ngTemplateOutlet="tpl; injector: injector"></ng-container>`;
-       fixture = createTestComponent(template);
-       fixture.componentInstance.injector =
-           Injector.create({providers: [{provide: templateToken, useValue: 'world'}]});
-       detectChangesAndExpectText('Hello world');
+    const template =
+      `<ng-template #tpl><inject-value></inject-value></ng-template>` +
+      `<ng-container *ngTemplateOutlet="tpl; injector: injector"></ng-container>`;
+    fixture = createTestComponent(template);
+    fixture.componentInstance.injector = Injector.create({
+      providers: [{provide: templateToken, useValue: 'world'}],
+    });
+    detectChangesAndExpectText('Hello world');
 
-       fixture.componentInstance.injector =
-           Injector.create({providers: [{provide: templateToken, useValue: 'there'}]});
-       detectChangesAndExpectText('Hello there');
-     }));
+    fixture.componentInstance.injector = Injector.create({
+      providers: [{provide: templateToken, useValue: 'there'}],
+    });
+    detectChangesAndExpectText('Hello there');
+  }));
 
   it('should override providers from parent component using custom injector', waitForAsync(() => {
-       const template = `<ng-template #tpl><inject-value></inject-value></ng-template>` +
-           `<ng-container *ngTemplateOutlet="tpl; injector: injector"></ng-container>`;
-       fixture = createTestComponent(template, [{provide: templateToken, useValue: 'parent'}]);
-       fixture.componentInstance.injector =
-           Injector.create({providers: [{provide: templateToken, useValue: 'world'}]});
-       detectChangesAndExpectText('Hello world');
-     }));
+    const template =
+      `<ng-template #tpl><inject-value></inject-value></ng-template>` +
+      `<ng-container *ngTemplateOutlet="tpl; injector: injector"></ng-container>`;
+    fixture = createTestComponent(template, [{provide: templateToken, useValue: 'parent'}]);
+    fixture.componentInstance.injector = Injector.create({
+      providers: [{provide: templateToken, useValue: 'world'}],
+    });
+    detectChangesAndExpectText('Hello world');
+  }));
 
   it('should be available as a standalone directive', () => {
     @Component({
@@ -310,8 +339,7 @@ describe('NgTemplateOutlet', () => {
       `,
       standalone: true,
     })
-    class TestComponent {
-    }
+    class TestComponent {}
 
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
@@ -323,13 +351,13 @@ describe('NgTemplateOutlet', () => {
     @Component({
       imports: [NgTemplateOutlet],
       template: `
-        <ng-template #tpl let-name>Name:{{name}}</ng-template>
+        <ng-template #tpl let-name>Name:{{ name }}</ng-template>
         <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="ctx"></ng-template>
       `,
       standalone: true,
     })
     class TestComponent {
-      ctx: {$implicit: string}|undefined = undefined;
+      ctx: {$implicit: string} | undefined = undefined;
     }
 
     const fixture = TestBed.createComponent(TestComponent);
@@ -370,7 +398,7 @@ class TestComponent {
   currentTplRef?: TemplateRef<any>;
   context: any = {foo: 'bar'};
   value = 'bar';
-  injector: Injector|null = null;
+  injector: Injector | null = null;
 }
 
 @Component({
@@ -383,20 +411,22 @@ class InjectValueComponent {
 
 @Component({
   template: `
-  <ng-template #template let-name="name">{{name}}</ng-template>
-  <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context1"></ng-template>
-  |
-  <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context2"></ng-template>
-  `
+    <ng-template #template let-name="name">{{ name }}</ng-template>
+    <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context1"></ng-template>
+    |
+    <ng-template [ngTemplateOutlet]="template" [ngTemplateOutletContext]="context2"></ng-template>
+  `,
 })
 class MultiContextComponent {
-  context1: {name: string}|undefined;
-  context2: {name: string}|undefined;
+  context1: {name: string} | undefined;
+  context2: {name: string} | undefined;
 }
 
 function createTestComponent(
-    template: string, providers: Provider[] = []): ComponentFixture<TestComponent> {
+  template: string,
+  providers: Provider[] = [],
+): ComponentFixture<TestComponent> {
   return TestBed.overrideComponent(TestComponent, {set: {template: template, providers}})
-      .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
-      .createComponent(TestComponent);
+    .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]})
+    .createComponent(TestComponent);
 }

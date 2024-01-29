@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Injector, Input, OnChanges, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {
+  Directive,
+  EmbeddedViewRef,
+  Injector,
+  Input,
+  OnChanges,
+  SimpleChange,
+  SimpleChanges,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -37,7 +47,7 @@ import {Directive, EmbeddedViewRef, Injector, Input, OnChanges, SimpleChange, Si
   standalone: true,
 })
 export class NgTemplateOutlet<C = unknown> implements OnChanges {
-  private _viewRef: EmbeddedViewRef<C>|null = null;
+  private _viewRef: EmbeddedViewRef<C> | null = null;
 
   /**
    * A context object to attach to the {@link EmbeddedViewRef}. This should be an
@@ -45,15 +55,15 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
    * declarations.
    * Using the key `$implicit` in the context object will set its value as default.
    */
-  @Input() public ngTemplateOutletContext: C|null = null;
+  @Input() public ngTemplateOutletContext: C | null = null;
 
   /**
    * A string defining the template reference and optionally the context object for the template.
    */
-  @Input() public ngTemplateOutlet: TemplateRef<C>|null = null;
+  @Input() public ngTemplateOutlet: TemplateRef<C> | null = null;
 
   /** Injector to be used within the embedded view. */
-  @Input() public ngTemplateOutletInjector: Injector|null = null;
+  @Input() public ngTemplateOutletInjector: Injector | null = null;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
@@ -95,19 +105,22 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
    * the context object completely without having to destroy/re-create the view.
    */
   private _createContextForwardProxy(): C {
-    return <C>new Proxy({}, {
-      set: (_target, prop, newValue) => {
-        if (!this.ngTemplateOutletContext) {
-          return false;
-        }
-        return Reflect.set(this.ngTemplateOutletContext, prop, newValue);
+    return <C>new Proxy(
+      {},
+      {
+        set: (_target, prop, newValue) => {
+          if (!this.ngTemplateOutletContext) {
+            return false;
+          }
+          return Reflect.set(this.ngTemplateOutletContext, prop, newValue);
+        },
+        get: (_target, prop, receiver) => {
+          if (!this.ngTemplateOutletContext) {
+            return undefined;
+          }
+          return Reflect.get(this.ngTemplateOutletContext, prop, receiver);
+        },
       },
-      get: (_target, prop, receiver) => {
-        if (!this.ngTemplateOutletContext) {
-          return undefined;
-        }
-        return Reflect.get(this.ngTemplateOutletContext, prop, receiver);
-      },
-    });
+    );
   }
 }
