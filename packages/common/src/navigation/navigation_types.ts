@@ -20,9 +20,9 @@ export interface NavigationResult {
 
 export declare class Navigation extends EventTarget {
   entries(): NavigationHistoryEntry[];
-  readonly currentEntry: NavigationHistoryEntry|null;
+  readonly currentEntry: NavigationHistoryEntry | null;
   updateCurrentEntry(options: NavigationUpdateCurrentEntryOptions): void;
-  readonly transition: NavigationTransition|null;
+  readonly transition: NavigationTransition | null;
 
   readonly canGoBack: boolean;
   readonly canGoForward: boolean;
@@ -34,31 +34,31 @@ export declare class Navigation extends EventTarget {
   back(options?: NavigationOptions): NavigationResult;
   forward(options?: NavigationOptions): NavigationResult;
 
-  onnavigate: ((this: Navigation, ev: NavigateEvent) => any)|null;
-  onnavigatesuccess: ((this: Navigation, ev: Event) => any)|null;
-  onnavigateerror: ((this: Navigation, ev: ErrorEvent) => any)|null;
-  oncurrententrychange: ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)|null;
+  onnavigate: ((this: Navigation, ev: NavigateEvent) => any) | null;
+  onnavigatesuccess: ((this: Navigation, ev: Event) => any) | null;
+  onnavigateerror: ((this: Navigation, ev: ErrorEvent) => any) | null;
+  oncurrententrychange: ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null;
 
   addEventListener<K extends keyof NavigationEventMap>(
-      type: K,
-      listener: (this: Navigation, ev: NavigationEventMap[K]) => any,
-      options?: boolean|AddEventListenerOptions,
-      ): void;
+    type: K,
+    listener: (this: Navigation, ev: NavigationEventMap[K]) => any,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
   addEventListener(
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: boolean|AddEventListenerOptions,
-      ): void;
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
   removeEventListener<K extends keyof NavigationEventMap>(
-      type: K,
-      listener: (this: Navigation, ev: NavigationEventMap[K]) => any,
-      options?: boolean|EventListenerOptions,
-      ): void;
+    type: K,
+    listener: (this: Navigation, ev: NavigationEventMap[K]) => any,
+    options?: boolean | EventListenerOptions,
+  ): void;
   removeEventListener(
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: boolean|EventListenerOptions,
-      ): void;
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }
 
 export declare class NavigationTransition {
@@ -74,37 +74,37 @@ export interface NavigationHistoryEntryEventMap {
 export declare class NavigationHistoryEntry extends EventTarget {
   readonly key: string;
   readonly id: string;
-  readonly url: string|null;
+  readonly url: string | null;
   readonly index: number;
   readonly sameDocument: boolean;
 
   getState(): unknown;
 
-  ondispose: ((this: NavigationHistoryEntry, ev: Event) => any)|null;
+  ondispose: ((this: NavigationHistoryEntry, ev: Event) => any) | null;
 
   addEventListener<K extends keyof NavigationHistoryEntryEventMap>(
-      type: K,
-      listener: (this: NavigationHistoryEntry, ev: NavigationHistoryEntryEventMap[K]) => any,
-      options?: boolean|AddEventListenerOptions,
-      ): void;
+    type: K,
+    listener: (this: NavigationHistoryEntry, ev: NavigationHistoryEntryEventMap[K]) => any,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
   addEventListener(
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: boolean|AddEventListenerOptions,
-      ): void;
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
   removeEventListener<K extends keyof NavigationHistoryEntryEventMap>(
-      type: K,
-      listener: (this: NavigationHistoryEntry, ev: NavigationHistoryEntryEventMap[K]) => any,
-      options?: boolean|EventListenerOptions,
-      ): void;
+    type: K,
+    listener: (this: NavigationHistoryEntry, ev: NavigationHistoryEntryEventMap[K]) => any,
+    options?: boolean | EventListenerOptions,
+  ): void;
   removeEventListener(
-      type: string,
-      listener: EventListenerOrEventListenerObject,
-      options?: boolean|EventListenerOptions,
-      ): void;
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }
 
-type NavigationTypeString = 'reload'|'push'|'replace'|'traverse';
+type NavigationTypeString = 'reload' | 'push' | 'replace' | 'traverse';
 
 export interface NavigationUpdateCurrentEntryOptions {
   state: unknown;
@@ -116,7 +116,7 @@ export interface NavigationOptions {
 
 export interface NavigationNavigateOptions extends NavigationOptions {
   state?: unknown;
-  history?: 'auto'|'push'|'replace';
+  history?: 'auto' | 'push' | 'replace';
 }
 
 export interface NavigationReloadOptions extends NavigationOptions {
@@ -126,12 +126,12 @@ export interface NavigationReloadOptions extends NavigationOptions {
 export declare class NavigationCurrentEntryChangeEvent extends Event {
   constructor(type: string, eventInit?: NavigationCurrentEntryChangeEventInit);
 
-  readonly navigationType: NavigationTypeString|null;
+  readonly navigationType: NavigationTypeString | null;
   readonly from: NavigationHistoryEntry;
 }
 
 export interface NavigationCurrentEntryChangeEventInit extends EventInit {
-  navigationType?: NavigationTypeString|null;
+  navigationType?: NavigationTypeString | null;
   from: NavigationHistoryEntry;
 }
 
@@ -144,8 +144,8 @@ export declare class NavigateEvent extends Event {
   readonly hashChange: boolean;
   readonly destination: NavigationDestination;
   readonly signal: AbortSignal;
-  readonly formData: FormData|null;
-  readonly downloadRequest: string|null;
+  readonly formData: FormData | null;
+  readonly downloadRequest: string | null;
   readonly info?: unknown;
 
   intercept(options?: NavigationInterceptOptions): void;
@@ -159,21 +159,21 @@ export interface NavigateEventInit extends EventInit {
   hashChange?: boolean;
   destination: NavigationDestination;
   signal: AbortSignal;
-  formData?: FormData|null;
-  downloadRequest?: string|null;
+  formData?: FormData | null;
+  downloadRequest?: string | null;
   info?: unknown;
 }
 
 export interface NavigationInterceptOptions {
   handler?: () => Promise<void>;
-  focusReset?: 'after-transition'|'manual';
-  scroll?: 'after-transition'|'manual';
+  focusReset?: 'after-transition' | 'manual';
+  scroll?: 'after-transition' | 'manual';
 }
 
 export declare class NavigationDestination {
   readonly url: string;
-  readonly key: string|null;
-  readonly id: string|null;
+  readonly key: string | null;
+  readonly id: string | null;
   readonly index: number;
   readonly sameDocument: boolean;
 

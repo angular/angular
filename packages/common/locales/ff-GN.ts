@@ -22,25 +22,45 @@ function plural(n: number): number {
 }
 
 export default [
-  'ff-GN', [['subaka', 'kikiiɗe'], u, u], u,
+  'ff-GN',
+  [['subaka', 'kikiiɗe'], u, u],
+  u,
   [
-    ['d', 'a', 'm', 'n', 'n', 'm', 'h'], ['dew', 'aaɓ', 'maw', 'nje', 'naa', 'mwd', 'hbi'],
+    ['d', 'a', 'm', 'n', 'n', 'm', 'h'],
+    ['dew', 'aaɓ', 'maw', 'nje', 'naa', 'mwd', 'hbi'],
     ['dewo', 'aaɓnde', 'mawbaare', 'njeslaare', 'naasaande', 'mawnde', 'hoore-biir'],
-    ['dew', 'aaɓ', 'maw', 'nje', 'naa', 'mwd', 'hbi']
+    ['dew', 'aaɓ', 'maw', 'nje', 'naa', 'mwd', 'hbi'],
   ],
   u,
   [
     ['s', 'c', 'm', 's', 'd', 'k', 'm', 'j', 's', 'y', 'j', 'b'],
     ['sii', 'col', 'mbo', 'see', 'duu', 'kor', 'mor', 'juk', 'slt', 'yar', 'jol', 'bow'],
     [
-      'siilo', 'colte', 'mbooy', 'seeɗto', 'duujal', 'korse', 'morso', 'juko', 'siilto', 'yarkomaa',
-      'jolal', 'bowte'
-    ]
+      'siilo',
+      'colte',
+      'mbooy',
+      'seeɗto',
+      'duujal',
+      'korse',
+      'morso',
+      'juko',
+      'siilto',
+      'yarkomaa',
+      'jolal',
+      'bowte',
+    ],
   ],
-  u, [['H-I', 'C-I'], u, ['Hade Iisa', 'Caggal Iisa']], 1, [6, 0],
+  u,
+  [['H-I', 'C-I'], u, ['Hade Iisa', 'Caggal Iisa']],
+  1,
+  [6, 0],
   ['d/M/y', 'd MMM, y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['{1} {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FG', 'GNF',
-  {'GNF': ['FG'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']}, plural
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'],
+  'FG',
+  'GNF',
+  {'GNF': ['FG'], 'JPY': ['JP¥', '¥'], 'USD': ['US$', '$']},
+  plural,
 ];

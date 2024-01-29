@@ -11,7 +11,10 @@ import {inject, Provider} from '@angular/core';
 
 // @ng_package: ignore-cross-repo-import
 import {PlatformNavigation} from '../../../src/navigation/platform_navigation';
-import {FakeNavigationPlatformLocation, MOCK_PLATFORM_LOCATION_CONFIG} from '../mock_platform_location';
+import {
+  FakeNavigationPlatformLocation,
+  MOCK_PLATFORM_LOCATION_CONFIG,
+} from '../mock_platform_location';
 
 import {FakeNavigation} from './fake_navigation';
 
@@ -25,9 +28,10 @@ export function provideFakePlatformNavigation(): Provider[] {
       useFactory: () => {
         const config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
         return new FakeNavigation(
-            inject(DOCUMENT).defaultView!,
-            config?.startUrl as `http${string}` ?? 'http://_empty_/');
-      }
+          inject(DOCUMENT).defaultView!,
+          (config?.startUrl as `http${string}`) ?? 'http://_empty_/',
+        );
+      },
     },
     {provide: PlatformLocation, useClass: FakeNavigationPlatformLocation},
   ];

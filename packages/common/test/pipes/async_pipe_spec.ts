@@ -13,7 +13,7 @@ import {Observable, of, Subscribable, Unsubscribable} from 'rxjs';
 
 describe('AsyncPipe', () => {
   let pipe: AsyncPipe;
-  let ref: ChangeDetectorRef&jasmine.SpyObj<ChangeDetectorRef>;
+  let ref: ChangeDetectorRef & jasmine.SpyObj<ChangeDetectorRef>;
 
   function getChangeDetectorRefSpy() {
     return jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck', 'detectChanges']);
@@ -25,7 +25,7 @@ describe('AsyncPipe', () => {
   });
 
   afterEach(() => {
-    pipe.ngOnDestroy();  // Close all subscriptions.
+    pipe.ngOnDestroy(); // Close all subscriptions.
   });
 
   describe('Observable', () => {
@@ -37,9 +37,9 @@ describe('AsyncPipe', () => {
         return {
           unsubscribe() {
             subscription.unsubscribe();
-          }
+          },
         };
-      }
+      },
     });
 
     let emitter: EventEmitter<any>;
@@ -56,7 +56,7 @@ describe('AsyncPipe', () => {
         expect(pipe.transform(subscribable)).toBe(null);
       });
 
-      it('should return the latest available value', done => {
+      it('should return the latest available value', (done) => {
         pipe.transform(subscribable);
         emitter.emit(message);
 
@@ -66,8 +66,7 @@ describe('AsyncPipe', () => {
         }, 0);
       });
 
-
-      it('should return same value when nothing has changed since the last call', done => {
+      it('should return same value when nothing has changed since the last call', (done) => {
         pipe.transform(subscribable);
         emitter.emit(message);
 
@@ -78,23 +77,22 @@ describe('AsyncPipe', () => {
         }, 0);
       });
 
-      it('should dispose of the existing subscription when subscribing to a new observable',
-         done => {
-           pipe.transform(subscribable);
+      it('should dispose of the existing subscription when subscribing to a new observable', (done) => {
+        pipe.transform(subscribable);
 
-           const newEmitter = new EventEmitter();
-           const newSubscribable = wrapSubscribable(newEmitter);
-           expect(pipe.transform(newSubscribable)).toBe(null);
-           emitter.emit(message);
+        const newEmitter = new EventEmitter();
+        const newSubscribable = wrapSubscribable(newEmitter);
+        expect(pipe.transform(newSubscribable)).toBe(null);
+        emitter.emit(message);
 
-           // this should not affect the pipe
-           setTimeout(() => {
-             expect(pipe.transform(newSubscribable)).toBe(null);
-             done();
-           }, 0);
-         });
+        // this should not affect the pipe
+        setTimeout(() => {
+          expect(pipe.transform(newSubscribable)).toBe(null);
+          done();
+        }, 0);
+      });
 
-      it('should request a change detection check upon receiving a new value', done => {
+      it('should request a change detection check upon receiving a new value', (done) => {
         pipe.transform(subscribable);
         emitter.emit(message);
 
@@ -143,7 +141,7 @@ describe('AsyncPipe', () => {
         expect(() => pipe.ngOnDestroy()).not.toThrow();
       });
 
-      it('should dispose of the existing subscription', done => {
+      it('should dispose of the existing subscription', (done) => {
         pipe.transform(subscribable);
         pipe.ngOnDestroy();
         emitter.emit(message);
@@ -184,7 +182,7 @@ describe('AsyncPipe', () => {
         expect(pipe.transform(promise)).toBe(null);
       });
 
-      it('should return the latest available value', done => {
+      it('should return the latest available value', (done) => {
         pipe.transform(promise);
 
         resolve(message);
@@ -195,7 +193,7 @@ describe('AsyncPipe', () => {
         }, timer);
       });
 
-      it('should return value when nothing has changed since the last call', done => {
+      it('should return value when nothing has changed since the last call', (done) => {
         pipe.transform(promise);
         resolve(message);
 
@@ -206,7 +204,7 @@ describe('AsyncPipe', () => {
         }, timer);
       });
 
-      it('should dispose of the existing subscription when subscribing to a new promise', done => {
+      it('should dispose of the existing subscription when subscribing to a new promise', (done) => {
         pipe.transform(promise);
 
         promise = new Promise<any>(() => {});
@@ -220,7 +218,7 @@ describe('AsyncPipe', () => {
         }, timer);
       });
 
-      it('should request a change detection check upon receiving a new value', done => {
+      it('should request a change detection check upon receiving a new value', (done) => {
         pipe.transform(promise);
         resolve(message);
 
@@ -235,11 +233,10 @@ describe('AsyncPipe', () => {
           expect(() => pipe.ngOnDestroy()).not.toThrow();
         });
 
-        it('should dispose of the existing source', done => {
+        it('should dispose of the existing source', (done) => {
           pipe.transform(promise);
           expect(pipe.transform(promise)).toBe(null);
           resolve(message);
-
 
           setTimeout(() => {
             expect(pipe.transform(promise)).toEqual(message);
@@ -249,7 +246,7 @@ describe('AsyncPipe', () => {
           }, timer);
         });
 
-        it('should ignore signals after the pipe has been destroyed', done => {
+        it('should ignore signals after the pipe has been destroyed', (done) => {
           pipe.transform(promise);
           expect(pipe.transform(promise)).toBe(null);
           pipe.ngOnDestroy();

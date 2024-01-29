@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -24,8 +22,9 @@ describe('cookies', () => {
     expect(parseCookieValue(cookie, 'xsrf-token')).toBe('token-value');
   });
   it('handles encoded keys', () => {
-    expect(parseCookieValue('whitespace%20token=token-value', 'whitespace token'))
-        .toBe('token-value');
+    expect(parseCookieValue('whitespace%20token=token-value', 'whitespace token')).toBe(
+      'token-value',
+    );
   });
   it('handles encoded values', () => {
     expect(parseCookieValue('token=whitespace%20', 'token')).toBe('whitespace ');

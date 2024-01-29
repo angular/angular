@@ -21,8 +21,9 @@ const UNDEFINED_PLACEHOLDER_REGEX = new RegExp(`["']${UNDEFINED_PLACEHOLDER}["']
  * https://closure-compiler.appspot.com/home#code%3D%252F%252F%2520%253D%253DClosureCompiler%253D%253D%250A%252F%252F%2520%2540output_file_name%2520default.js%250A%252F%252F%2520%2540compilation_level%2520ADVANCED_OPTIMIZATIONS%250A%252F%252F%2520%253D%253D%252FClosureCompiler%253D%253D%250A%250Aconst%2520base_currencies%2520%253D%2520%257B%250A%2520%2520ABC%253A%2520'd'%252C%250A%2509USD%253A%2520'x'%252C%250A%257D%253B%250A%250Aconst%2520current_locale_currencies%2520%253D%2520%257B%257D%250A%250Afunction%2520getCurrencySymbol(l)%2520%257B%250A%2520%2520return%2520current_locale_currencies%255Bl%255D%2520%257C%257C%2520base_currencies%255Bl%255D%2520%257C%257C%2520l%250A%257D%250A%250Aconsole.log(getCurrencySymbol('de'))%253B
  */
 export function stringify(value: any) {
-  const result =
-      JSON.stringify(value, ((_, value) => value === undefined ? UNDEFINED_PLACEHOLDER : value));
+  const result = JSON.stringify(value, (_, value) =>
+    value === undefined ? UNDEFINED_PLACEHOLDER : value,
+  );
 
   UNDEFINED_PLACEHOLDER_REGEX.lastIndex = 0;
 

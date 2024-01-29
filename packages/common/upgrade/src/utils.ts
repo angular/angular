@@ -17,7 +17,7 @@ export function deepEqual(a: any, b: any): boolean {
     return false;
   } else {
     try {
-      if ((a.prototype !== b.prototype) || (Array.isArray(a) && Array.isArray(b))) {
+      if (a.prototype !== b.prototype || (Array.isArray(a) && Array.isArray(b))) {
         return false;
       }
       return JSON.stringify(a) === JSON.stringify(b);
@@ -27,6 +27,6 @@ export function deepEqual(a: any, b: any): boolean {
   }
 }
 
-export function isAnchor(el: (Node&ParentNode)|Element|null): el is HTMLAnchorElement {
+export function isAnchor(el: (Node & ParentNode) | Element | null): el is HTMLAnchorElement {
   return (<HTMLAnchorElement>el).href !== undefined;
 }

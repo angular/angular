@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 /**
  * A constant indicating a type of comparison that NgSwitch uses to match cases. Extracted to a
  * separate file to facilitate G3 patches.
