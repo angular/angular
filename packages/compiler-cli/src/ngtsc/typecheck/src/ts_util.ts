@@ -120,11 +120,11 @@ export function tsCreateTypeQueryForCoercedInput(
  * expression.
  */
 export function tsCreateVariable(
-    id: ts.Identifier, initializer: ts.Expression): ts.VariableStatement {
+    id: ts.Identifier, initializer: ts.Expression, type?: ts.TypeNode): ts.VariableStatement {
   const decl = ts.factory.createVariableDeclaration(
       /* name */ id,
       /* exclamationToken */ undefined,
-      /* type */ undefined,
+      /* type */ type,
       /* initializer */ initializer);
   return ts.factory.createVariableStatement(
       /* modifiers */ undefined,

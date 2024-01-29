@@ -17,6 +17,7 @@ import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '..
 import {addExpressionIdentifier, ExpressionIdentifier, markIgnoreDiagnostics} from './comments';
 import {addParseSpanInfo, addTemplateId, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
 import {DomSchemaChecker} from './dom';
+import {domBindingCompatMappings} from './dom_binding_compat';
 import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
@@ -1115,7 +1116,9 @@ class TcbUnclaimedInputsOp extends TcbOp {
   override execute(): null {
     // `this.inputs` contains only those bindings not matched by any directive. These bindings go to
     // the element itself.
-    let elId: ts.Expression|null = null;
+    let elId: ts.Identifier|null = null;
+
+    const elementMappings = domBindingCompatMappings.get(this.element.name);
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.element.inputs) {
@@ -1132,7 +1135,12 @@ class TcbUnclaimedInputsOp extends TcbOp {
       if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
-            elId = this.scope.resolve(this.element);
+            const elementExpr = this.scope.resolve(this.element);
+            if (!ts.isIdentifier(elementExpr)) {
+              throw new Error(
+                  'Unexpected expression for resolved `TmplAstElement`. Expected an identifier.');
+            }
+            elId = elementExpr;
           }
 
           // In compatibility mode when checking DOM bindings, ensure non-null user
@@ -1145,13 +1153,30 @@ class TcbUnclaimedInputsOp extends TcbOp {
 
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
-          let prop = ts.factory.createElementAccessExpression(
+          let prop: ts.Expression = ts.factory.createElementAccessExpression(
               elId, ts.factory.createStringLiteral(propertyName));
 
           if (binding.securityContext !== core.SecurityContext.NONE) {
             // SKIP security context bindings for now (to determine other failure modes).
             this.scope.addStatement(ts.factory.createExpressionStatement(expr));
             continue;
+          }
+
+          const bindingMapping = elementMappings?.[binding.name];
+          if (bindingMapping !== undefined && bindingMapping.additionalType !== undefined) {
+            const tmpProp = this.tcb.allocateId();
+            const tmpVariable = tsCreateVariable(
+                tmpProp, ts.factory.createNonNullExpression(ts.factory.createNull()),
+                ts.factory.createUnionTypeNode([
+                  ts.factory.createIndexedAccessTypeNode(
+                      ts.factory.createTypeQueryNode(elId, undefined),
+                      ts.factory.createLiteralTypeNode(
+                          ts.factory.createStringLiteral(binding.name))),
+                  // Union with the additional type.
+                  bindingMapping.additionalType(),
+                ]));
+            this.scope.addStatement(tmpVariable);
+            prop = tmpProp;
           }
 
           const stmt: ts.Expression =

@@ -623,6 +623,16 @@ class TestComponent {
         [`TestComponent.html(1, 6): Type 'number' is not assignable to type 'string'.`]);
   });
 
+  describe('dom binding special mappings', () => {
+    it('supports number values for width/height of `iframe`', () => {
+      const messages = diagnose(
+          `<iframe [height]="1" [width]="2"></iframe>`, `class TestComponent {}`, [], undefined,
+          {});
+
+      expect(messages).toEqual([]);
+    });
+  });
+
   describe('method call spans', () => {
     it('reports invalid method name on method name span', () => {
       const messages = diagnose(`{{ person.getNName() }}`, `
