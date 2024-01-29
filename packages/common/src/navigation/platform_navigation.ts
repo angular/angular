@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="dom-navigation" />;
-
 import {Injectable} from '@angular/core';
+
+import {NavigateEvent, Navigation, NavigationCurrentEntryChangeEvent, NavigationHistoryEntry, NavigationNavigateOptions, NavigationOptions, NavigationReloadOptions, NavigationResult, NavigationTransition, NavigationUpdateCurrentEntryOptions} from './navigation_types';
 
 /**
  * This class wraps the platform Navigation API which allows server-specific and test
  * implementations.
  */
-@Injectable({providedIn: 'platform', useFactory: () => window.navigation})
+@Injectable({providedIn: 'platform', useFactory: () => (window as any).navigation})
 export abstract class PlatformNavigation implements Navigation {
   abstract entries(): NavigationHistoryEntry[];
   abstract currentEntry: NavigationHistoryEntry|null;
