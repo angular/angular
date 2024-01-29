@@ -1139,7 +1139,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
           // In compatibility mode when checking DOM bindings, ensure non-null user
           // expressions as this is a common practice and otherwise DOM type checking
           // would be extremely breaking. We should incrementally migrate existing applications.
-          if (this.tcb.env.config.checkTypeOfDomBindingsCompatibilityMode) {
+          if (this.tcb.env.config.checkTypeOfDomBindingIgnoreNullable) {
             expr =
                 ts.factory.createNonNullExpression(ts.factory.createParenthesizedExpression(expr));
           }
