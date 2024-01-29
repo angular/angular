@@ -41,7 +41,7 @@ runInEachFileSystem(() => {
       const compiler = new TraitCompiler(
           handlers, reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true,
           compilationMode, new DtsTransformRegistry(), null, fakeSfTypeIdentifier,
-          /** isCore */ false);
+          /** isCore */ false, /** forbidOrphanComponents */ false);
       const sourceFile = program.getSourceFile(filename)!;
 
       return {compiler, sourceFile, program, filename: _('/' + filename)};
