@@ -8,6 +8,7 @@
 
 import {SanitizerFn} from '../interfaces/sanitization';
 
+import {ɵɵlistener} from './listener';
 import {ɵɵproperty} from './property';
 
 
@@ -29,4 +30,31 @@ export function ɵɵtwoWayProperty<T>(
   // TODO(crisbeto): implement two-way specific logic.
   ɵɵproperty(propName, value, sanitizer);
   return ɵɵtwoWayProperty;
+}
+
+/**
+ * Function used inside two-way listeners to conditionally set the value of the bound expression.
+ *
+ * @param target Field on which to set the value.
+ * @param value Value to be set to the field.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtwoWayBindingSet<T>(target: unknown, value: T): boolean {
+  // TODO(crisbeto): implement this fully.
+  return false;
+}
+
+/**
+ * Adds an event listener that updates a two-way binding to the current node.
+ *
+ * @param eventName Name of the event.
+ * @param listenerFn The function to be called when event emits.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtwoWayListener(
+    eventName: string, listenerFn: (e?: any) => any): typeof ɵɵtwoWayListener {
+  ɵɵlistener(eventName, listenerFn);
+  return ɵɵtwoWayListener;
 }

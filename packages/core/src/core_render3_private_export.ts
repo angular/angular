@@ -242,6 +242,8 @@ export {
   ɵɵviewQuery,
   ɵɵviewQuerySignal,
   ɵɵtwoWayProperty,
+  ɵɵtwoWayBindingSet,
+  ɵɵtwoWayListener,
   ɵgetUnknownElementStrictMode,
   ɵsetUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode,

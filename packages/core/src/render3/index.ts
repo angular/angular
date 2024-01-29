@@ -166,6 +166,8 @@ export {
   ɵɵtextInterpolateV,
 
   ɵɵtwoWayProperty,
+  ɵɵtwoWayBindingSet,
+  ɵɵtwoWayListener,
 
   ɵgetUnknownElementStrictMode,
   ɵsetUnknownElementStrictMode,
