@@ -13,7 +13,7 @@ import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loa
  */
 export const imgixLoaderInfo: ImageLoaderInfo = {
   name: 'Imgix',
-  testUrl: isImgixUrl
+  testUrl: isImgixUrl,
 };
 
 const IMGIX_LOADER_REGEX = /https?\:\/\/[^\/]+\.imgix\.net\/.+/;
@@ -33,8 +33,10 @@ function isImgixUrl(url: string): boolean {
  *
  * @publicApi
  */
-export const provideImgixLoader =
-    createImageLoader(createImgixUrl, ngDevMode ? ['https://somepath.imgix.net/'] : undefined);
+export const provideImgixLoader = createImageLoader(
+  createImgixUrl,
+  ngDevMode ? ['https://somepath.imgix.net/'] : undefined,
+);
 
 function createImgixUrl(path: string, config: ImageLoaderConfig) {
   const url = new URL(`${path}/${config.src}`);

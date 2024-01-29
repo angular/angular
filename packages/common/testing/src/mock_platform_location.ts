@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation, ɵPlatformNavigation as PlatformNavigation} from '@angular/common';
+import {
+  DOCUMENT,
+  LocationChangeEvent,
+  LocationChangeListener,
+  PlatformLocation,
+  ɵPlatformNavigation as PlatformNavigation,
+} from '@angular/common';
 import {Inject, inject, Injectable, InjectionToken, Optional} from '@angular/core';
 import {Subject} from 'rxjs';
 
@@ -35,7 +41,7 @@ const urlParse = /^(([^:\/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/
 
 function parseUrl(urlStr: string, baseHref: string) {
   const verifyProtocol = /^((http[s]?|ftp):\/\/)/;
-  let serverBase: string|undefined;
+  let serverBase: string | undefined;
 
   // URL class requires full URL. If the URL string doesn't start with protocol, we need to add
   // an arbitrary base URL which can be removed afterward.
@@ -43,12 +49,12 @@ function parseUrl(urlStr: string, baseHref: string) {
     serverBase = 'http://empty.com/';
   }
   let parsedUrl: {
-    protocol: string,
-    hostname: string,
-    port: string,
-    pathname: string,
-    search: string,
-    hash: string
+    protocol: string;
+    hostname: string;
+    port: string;
+    pathname: string;
+    search: string;
+    hash: string;
   };
   try {
     parsedUrl = new URL(urlStr, serverBase);
@@ -71,9 +77,9 @@ function parseUrl(urlStr: string, baseHref: string) {
     parsedUrl.pathname = parsedUrl.pathname.substring(baseHref.length);
   }
   return {
-    hostname: !serverBase && parsedUrl.hostname || '',
-    protocol: !serverBase && parsedUrl.protocol || '',
-    port: !serverBase && parsedUrl.port || '',
+    hostname: (!serverBase && parsedUrl.hostname) || '',
+    protocol: (!serverBase && parsedUrl.protocol) || '',
+    port: (!serverBase && parsedUrl.port) || '',
     pathname: parsedUrl.pathname || '/',
     search: parsedUrl.search || '',
     hash: parsedUrl.hash || '',
@@ -95,8 +101,9 @@ export interface MockPlatformLocationConfig {
  *
  * @publicApi
  */
-export const MOCK_PLATFORM_LOCATION_CONFIG =
-    new InjectionToken<MockPlatformLocationConfig>('MOCK_PLATFORM_LOCATION_CONFIG');
+export const MOCK_PLATFORM_LOCATION_CONFIG = new InjectionToken<MockPlatformLocationConfig>(
+  'MOCK_PLATFORM_LOCATION_CONFIG',
+);
 
 /**
  * Mock implementation of URL state.
@@ -110,22 +117,26 @@ export class MockPlatformLocation implements PlatformLocation {
   private popStateSubject = new Subject<LocationChangeEvent>();
   private urlChangeIndex: number = 0;
   private urlChanges: {
-    hostname: string,
-    protocol: string,
-    port: string,
-    pathname: string,
-    search: string,
-    hash: string,
-    state: unknown
+    hostname: string;
+    protocol: string;
+    port: string;
+    pathname: string;
+    search: string;
+    hash: string;
+    state: unknown;
   }[] = [{hostname: '', protocol: '', port: '', pathname: '/', search: '', hash: '', state: null}];
 
-  constructor(@Inject(MOCK_PLATFORM_LOCATION_CONFIG) @Optional() config?:
-                  MockPlatformLocationConfig) {
+  constructor(
+    @Inject(MOCK_PLATFORM_LOCATION_CONFIG) @Optional() config?: MockPlatformLocationConfig,
+  ) {
     if (config) {
       this.baseHref = config.appBaseHref || '';
 
-      const parsedChanges =
-          this.parseChanges(null, config.startUrl || 'http://_empty_/', this.baseHref);
+      const parsedChanges = this.parseChanges(
+        null,
+        config.startUrl || 'http://_empty_/',
+        this.baseHref,
+      );
       this.urlChanges[0] = {...parsedChanges};
     }
   }
@@ -151,7 +162,6 @@ export class MockPlatformLocation implements PlatformLocation {
   get state() {
     return this.urlChanges[this.urlChangeIndex].state;
   }
-
 
   getBaseHrefFromDOM(): string {
     return this.baseHref;
@@ -186,8 +196,13 @@ export class MockPlatformLocation implements PlatformLocation {
   replaceState(state: any, title: string, newUrl: string): void {
     const {pathname, search, state: parsedState, hash} = this.parseChanges(state, newUrl);
 
-    this.urlChanges[this.urlChangeIndex] =
-        {...this.urlChanges[this.urlChangeIndex], pathname, search, hash, state: parsedState};
+    this.urlChanges[this.urlChangeIndex] = {
+      ...this.urlChanges[this.urlChangeIndex],
+      pathname,
+      search,
+      hash,
+      state: parsedState,
+    };
   }
 
   pushState(state: any, title: string, newUrl: string): void {
@@ -195,8 +210,13 @@ export class MockPlatformLocation implements PlatformLocation {
     if (this.urlChangeIndex > 0) {
       this.urlChanges.splice(this.urlChangeIndex + 1);
     }
-    this.urlChanges.push(
-        {...this.urlChanges[this.urlChangeIndex], pathname, search, hash, state: parsedState});
+    this.urlChanges.push({
+      ...this.urlChanges[this.urlChangeIndex],
+      pathname,
+      search,
+      hash,
+      state: parsedState,
+    });
     this.urlChangeIndex = this.urlChanges.length - 1;
   }
 
@@ -243,12 +263,19 @@ export class MockPlatformLocation implements PlatformLocation {
    * https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event#when_popstate_is_sent
    */
   private emitEvents(oldHash: string, oldUrl: string) {
-    this.popStateSubject.next(
-        {type: 'popstate', state: this.getState(), oldUrl, newUrl: this.url} as
-        LocationChangeEvent);
+    this.popStateSubject.next({
+      type: 'popstate',
+      state: this.getState(),
+      oldUrl,
+      newUrl: this.url,
+    } as LocationChangeEvent);
     if (oldHash !== this.hash) {
-      this.hashUpdate.next(
-          {type: 'hashchange', state: null, oldUrl, newUrl: this.url} as LocationChangeEvent);
+      this.hashUpdate.next({
+        type: 'hashchange',
+        state: null,
+        oldUrl,
+        newUrl: this.url,
+      } as LocationChangeEvent);
     }
   }
 }
@@ -264,8 +291,8 @@ export class FakeNavigationPlatformLocation implements PlatformLocation {
   constructor() {
     if (!(this._platformNavigation instanceof FakeNavigation)) {
       throw new Error(
-          'FakePlatformNavigation cannot be used without FakeNavigation. Use ' +
-              '`provideFakeNavigation` to have all these services provided together.',
+        'FakePlatformNavigation cannot be used without FakeNavigation. Use ' +
+          '`provideFakeNavigation` to have all these services provided together.',
       );
     }
   }

@@ -48,8 +48,9 @@ export function generateLocaleExtraDataArrayCode(locale: string, localeData: Cld
   //
   // TODO(gkalpak): If this turns out to be a bug and is fixed in CLDR, restore the previous logic
   //                of expecting the exact same keys in `dayPeriods` and `dayPeriodRules`.
-  const dayPeriodKeys =
-      Object.keys(dayPeriods.format.narrow).filter(key => dayPeriodRules.hasOwnProperty(key));
+  const dayPeriodKeys = Object.keys(dayPeriods.format.narrow).filter((key) =>
+    dayPeriodRules.hasOwnProperty(key),
+  );
 
   let dayPeriodsSupplemental: any[] = [];
 
@@ -78,5 +79,5 @@ export function generateLocaleExtraDataArrayCode(locale: string, localeData: Cld
 }
 
 function getValuesForKeys<T>(keys: string[], obj: Record<string, T>): T[] {
-  return keys.map(key => obj[key]);
+  return keys.map((key) => obj[key]);
 }

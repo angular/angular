@@ -15,7 +15,7 @@ describe('HttpClient TestRequest', () => {
     const client = new HttpClient(mock);
 
     let resp: any;
-    client.post('/some-url', {test: 'test'}).subscribe(body => {
+    client.post('/some-url', {test: 'test'}).subscribe((body) => {
       resp = body;
     });
 
@@ -30,7 +30,7 @@ describe('HttpClient TestRequest', () => {
     const client = new HttpClient(mock);
 
     let resp: any;
-    client.get('/some-other-url').subscribe(body => {
+    client.get('/some-other-url').subscribe((body) => {
       resp = body;
     });
 
@@ -39,10 +39,10 @@ describe('HttpClient TestRequest', () => {
       mock.expectOne('/some-url').flush(null);
       fail();
     } catch (error) {
-      expect((error as Error).message)
-          .toBe(
-              'Expected one matching request for criteria "Match URL: /some-url", found none.' +
-              ' Requests received are: GET /some-other-url.');
+      expect((error as Error).message).toBe(
+        'Expected one matching request for criteria "Match URL: /some-url", found none.' +
+          ' Requests received are: GET /some-other-url.',
+      );
     }
   });
 
@@ -52,7 +52,7 @@ describe('HttpClient TestRequest', () => {
 
     let resp: any;
     const params = {query: 'hello'};
-    client.get('/some-url', {params}).subscribe(body => {
+    client.get('/some-url', {params}).subscribe((body) => {
       resp = body;
     });
 
@@ -61,10 +61,10 @@ describe('HttpClient TestRequest', () => {
       mock.expectOne('/some-url?query=world').flush(null);
       fail();
     } catch (error) {
-      expect((error as Error).message)
-          .toBe(
-              'Expected one matching request for criteria "Match URL: /some-url?query=world", found none.' +
-              ' Requests received are: GET /some-url?query=hello.');
+      expect((error as Error).message).toBe(
+        'Expected one matching request for criteria "Match URL: /some-url?query=world", found none.' +
+          ' Requests received are: GET /some-url?query=hello.',
+      );
     }
   });
 
@@ -73,10 +73,10 @@ describe('HttpClient TestRequest', () => {
     const client = new HttpClient(mock);
 
     let resp: any;
-    client.get('/some-other-url?query=world').subscribe(body => {
+    client.get('/some-other-url?query=world').subscribe((body) => {
       resp = body;
     });
-    client.post('/and-another-url', {}).subscribe(body => {
+    client.post('/and-another-url', {}).subscribe((body) => {
       resp = body;
     });
 
@@ -85,10 +85,10 @@ describe('HttpClient TestRequest', () => {
       mock.expectOne('/some-url').flush(null);
       fail();
     } catch (error) {
-      expect((error as Error).message)
-          .toBe(
-              'Expected one matching request for criteria "Match URL: /some-url", found none.' +
-              ' Requests received are: GET /some-other-url?query=world, POST /and-another-url.');
+      expect((error as Error).message).toBe(
+        'Expected one matching request for criteria "Match URL: /some-url", found none.' +
+          ' Requests received are: GET /some-other-url?query=world, POST /and-another-url.',
+      );
     }
   });
 
@@ -103,10 +103,10 @@ describe('HttpClient TestRequest', () => {
       mock.verify();
       fail();
     } catch (error) {
-      expect((error as any).message)
-          .toBe(
-              'Expected no open requests, found 2:' +
-              ' GET /some-other-url?query=world, POST /and-another-url');
+      expect((error as any).message).toBe(
+        'Expected no open requests, found 2:' +
+          ' GET /some-other-url?query=world, POST /and-another-url',
+      );
     }
   });
 });

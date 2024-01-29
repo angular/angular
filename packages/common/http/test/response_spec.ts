@@ -54,10 +54,12 @@ describe('HttpResponse', () => {
   });
   describe('.clone()', () => {
     it('copies the original when given no arguments', () => {
-      const clone =
-          new HttpResponse(
-              {body: 'test', status: HttpStatusCode.Created, statusText: 'created', url: '/test'})
-              .clone();
+      const clone = new HttpResponse({
+        body: 'test',
+        status: HttpStatusCode.Created,
+        statusText: 'created',
+        url: '/test',
+      }).clone();
       expect(clone.body).toBe('test');
       expect(clone.status).toBe(HttpStatusCode.Created);
       expect(clone.statusText).toBe('created');
@@ -65,10 +67,18 @@ describe('HttpResponse', () => {
       expect(clone.headers).not.toBeNull();
     });
     it('overrides the original', () => {
-      const orig = new HttpResponse(
-          {body: 'test', status: HttpStatusCode.Created, statusText: 'created', url: '/test'});
-      const clone = orig.clone(
-          {body: {data: 'test'}, status: HttpStatusCode.Ok, statusText: 'Okay', url: '/bar'});
+      const orig = new HttpResponse({
+        body: 'test',
+        status: HttpStatusCode.Created,
+        statusText: 'created',
+        url: '/test',
+      });
+      const clone = orig.clone({
+        body: {data: 'test'},
+        status: HttpStatusCode.Ok,
+        statusText: 'Okay',
+        url: '/bar',
+      });
       expect(clone.body).toEqual({data: 'test'});
       expect(clone.status).toBe(HttpStatusCode.Ok);
       expect(clone.statusText).toBe('Okay');

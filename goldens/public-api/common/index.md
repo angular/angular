@@ -246,7 +246,7 @@ export function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): 
 export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): string;
 
 // @public
-export const getLocalePluralCase: (locale: string) => ((value: number) => Plural);
+export const getLocalePluralCase: (locale: string) => (value: number) => Plural;
 
 // @public
 export function getLocaleTimeFormat(locale: string, width: FormatWidth): string;
@@ -526,7 +526,7 @@ export class NgComponentOutlet implements OnChanges, DoCheck, OnDestroy {
 class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
     ngDoCheck(): void;
-    set ngForOf(ngForOf: U & NgIterable<T> | undefined | null);
+    set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);
     set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>);
     set ngForTrackBy(fn: TrackByFunction<T>);
     // (undocumented)

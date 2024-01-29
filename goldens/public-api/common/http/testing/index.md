@@ -26,11 +26,11 @@ export class HttpClientTestingModule {
 export abstract class HttpTestingController {
     abstract expectNone(url: string, description?: string): void;
     abstract expectNone(params: RequestMatch, description?: string): void;
-    abstract expectNone(matchFn: ((req: HttpRequest<any>) => boolean), description?: string): void;
+    abstract expectNone(matchFn: (req: HttpRequest<any>) => boolean, description?: string): void;
     abstract expectNone(match: string | RequestMatch | ((req: HttpRequest<any>) => boolean), description?: string): void;
     abstract expectOne(url: string, description?: string): TestRequest;
     abstract expectOne(params: RequestMatch, description?: string): TestRequest;
-    abstract expectOne(matchFn: ((req: HttpRequest<any>) => boolean), description?: string): TestRequest;
+    abstract expectOne(matchFn: (req: HttpRequest<any>) => boolean, description?: string): TestRequest;
     abstract expectOne(match: string | RequestMatch | ((req: HttpRequest<any>) => boolean), description?: string): TestRequest;
     abstract match(match: string | RequestMatch | ((req: HttpRequest<any>) => boolean)): TestRequest[];
     abstract verify(opts?: {
