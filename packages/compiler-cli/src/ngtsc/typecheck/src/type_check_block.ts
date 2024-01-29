@@ -7,6 +7,7 @@
  */
 
 import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
+import {SecurityContext} from '@angular/compiler/src/core';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -1127,19 +1128,36 @@ class TcbUnclaimedInputsOp extends TcbOp {
         continue;
       }
 
-      const expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
+      let expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
 
       if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
             elId = this.scope.resolve(this.element);
           }
+
+          // In compatibility mode when checking DOM bindings, ensure non-null user
+          // expressions as this is a common practice and otherwise DOM type checking
+          // would be extremely breaking. We should incrementally migrate existing applications.
+          if (this.tcb.env.config.checkTypeOfDomBindingsCompatibilityMode) {
+            expr =
+                ts.factory.createNonNullExpression(ts.factory.createParenthesizedExpression(expr));
+          }
+
           // A direct binding to a property.
           const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
-          const prop = ts.factory.createElementAccessExpression(
+          let prop = ts.factory.createElementAccessExpression(
               elId, ts.factory.createStringLiteral(propertyName));
-          const stmt = ts.factory.createBinaryExpression(
-              prop, ts.SyntaxKind.EqualsToken, wrapForDiagnostics(expr));
+
+          if (binding.securityContext !== SecurityContext.NONE) {
+            // SKIP security context bindings for now (to determine other failure modes).
+            this.scope.addStatement(ts.factory.createExpressionStatement(expr));
+            continue;
+          }
+
+          const stmt: ts.Expression =
+              ts.factory.createBinaryExpression(prop, ts.SyntaxKind.EqualsToken, expr);
+
           addParseSpanInfo(stmt, binding.sourceSpan);
           this.scope.addStatement(ts.factory.createExpressionStatement(stmt));
         } else {

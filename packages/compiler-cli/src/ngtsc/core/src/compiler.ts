@@ -775,6 +775,9 @@ export class NgCompiler {
         strictNullInputBindings: strictTemplates,
         checkTypeOfAttributes: strictTemplates,
         checkTypeOfDomBindings: strictTemplates,
+        // For migration purposes, enabled by default with strict templates,
+        // when DOM type checking is enabled.
+        checkTypeOfDomBindingIgnoreNullable: strictTemplates,
         checkTypeOfOutputEvents: strictTemplates,
         checkTypeOfAnimationEvents: strictTemplates,
         // Checking of DOM events currently has an adverse effect on developer experience,
@@ -812,6 +815,7 @@ export class NgCompiler {
         honorAccessModifiersForInputBindings: false,
         checkTypeOfAttributes: false,
         checkTypeOfDomBindings: false,
+        checkTypeOfDomBindingIgnoreNullable: false,
         checkTypeOfOutputEvents: false,
         checkTypeOfAnimationEvents: false,
         checkTypeOfDomEvents: false,

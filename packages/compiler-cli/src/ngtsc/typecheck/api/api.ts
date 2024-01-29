@@ -175,6 +175,9 @@ export interface TypeCheckingConfig {
    */
   checkTypeOfDomBindings: boolean;
 
+  // TODO
+  checkTypeOfDomBindingIgnoreNullable: boolean;
+
   /**
    * Whether to infer the type of the `$event` variable in event bindings for directive outputs or
    * animation events.
