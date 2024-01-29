@@ -73,8 +73,9 @@ export abstract class PlatformLocation {
  *
  * @publicApi
  */
-export const LOCATION_INITIALIZED =
-    new InjectionToken<Promise<any>>(ngDevMode ? 'Location Initialized' : '');
+export const LOCATION_INITIALIZED = new InjectionToken<Promise<any>>(
+  ngDevMode ? 'Location Initialized' : '',
+);
 
 /**
  * @description
@@ -93,8 +94,6 @@ export interface LocationChangeEvent {
 export interface LocationChangeListener {
   (event: LocationChangeEvent): any;
 }
-
-
 
 /**
  * `PlatformLocation` encapsulates all of the direct calls to platform APIs.

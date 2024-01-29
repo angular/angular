@@ -29,7 +29,7 @@ export class FakeNavigation implements Navigation {
   /**
    * The current navigate event.
    */
-  private navigateEvent: InternalFakeNavigateEvent|undefined = undefined;
+  private navigateEvent: InternalFakeNavigateEvent | undefined = undefined;
 
   /**
    * A Map of pending traversals, so that traversals to the same entry can be
@@ -83,7 +83,10 @@ export class FakeNavigation implements Navigation {
     return this.currentEntryIndex < this.entriesArr.length - 1;
   }
 
-  constructor(private readonly window: Window, startURL: `http${string}`) {
+  constructor(
+    private readonly window: Window,
+    startURL: `http${string}`,
+  ) {
     // First entry.
     this.setInitialEntryForTesting(startURL);
   }
@@ -92,27 +95,23 @@ export class FakeNavigation implements Navigation {
    * Sets the initial entry.
    */
   private setInitialEntryForTesting(
-      url: `http${string}`,
-      options: {historyState: unknown; state?: unknown;} = {historyState: null},
+    url: `http${string}`,
+    options: {historyState: unknown; state?: unknown} = {historyState: null},
   ) {
     if (!this.canSetInitialEntry) {
       throw new Error(
-          'setInitialEntryForTesting can only be called before any ' +
-              'navigation has occurred',
+        'setInitialEntryForTesting can only be called before any ' + 'navigation has occurred',
       );
     }
     const currentInitialEntry = this.entriesArr[0];
-    this.entriesArr[0] = new FakeNavigationHistoryEntry(
-        new URL(url).toString(),
-        {
-          index: 0,
-          key: currentInitialEntry?.key ?? String(this.nextKey++),
-          id: currentInitialEntry?.id ?? String(this.nextId++),
-          sameDocument: true,
-          historyState: options?.historyState,
-          state: options.state,
-        },
-    );
+    this.entriesArr[0] = new FakeNavigationHistoryEntry(new URL(url).toString(), {
+      index: 0,
+      key: currentInitialEntry?.key ?? String(this.nextKey++),
+      id: currentInitialEntry?.id ?? String(this.nextId++),
+      sameDocument: true,
+      historyState: options?.historyState,
+      state: options.state,
+    });
   }
 
   /** Returns whether the initial entry is still eligible to be set. */
@@ -134,10 +133,7 @@ export class FakeNavigation implements Navigation {
   }
 
   /** Equivalent to `navigation.navigate()`. */
-  navigate(
-      url: string,
-      options?: NavigationNavigateOptions,
-      ): FakeNavigationResult {
+  navigate(url: string, options?: NavigationNavigateOptions): FakeNavigationResult {
     const fromUrl = new URL(this.currentEntry.url!);
     const toUrl = new URL(url, this.currentEntry.url!);
 
@@ -190,11 +186,11 @@ export class FakeNavigation implements Navigation {
   }
 
   private pushOrReplaceState(
-      navigationType: NavigationTypeString,
-      data: unknown,
-      _title: string,
-      url?: string,
-      ): void {
+    navigationType: NavigationTypeString,
+    data: unknown,
+    _title: string,
+    url?: string,
+  ): void {
     const fromUrl = new URL(this.currentEntry.url!);
     const toUrl = url ? new URL(url, this.currentEntry.url!) : fromUrl;
 
@@ -223,10 +219,7 @@ export class FakeNavigation implements Navigation {
     const fromUrl = new URL(this.currentEntry.url!);
     const entry = this.findEntry(key);
     if (!entry) {
-      const domException = new DOMException(
-          'Invalid key',
-          'InvalidStateError',
-      );
+      const domException = new DOMException('Invalid key', 'InvalidStateError');
       const committed = Promise.reject(domException);
       const finished = Promise.reject(domException);
       committed.catch(() => {});
@@ -284,10 +277,7 @@ export class FakeNavigation implements Navigation {
   /** Equivalent to `navigation.back()`. */
   back(options?: NavigationOptions): FakeNavigationResult {
     if (this.currentEntryIndex === 0) {
-      const domException = new DOMException(
-          'Cannot go back',
-          'InvalidStateError',
-      );
+      const domException = new DOMException('Cannot go back', 'InvalidStateError');
       const committed = Promise.reject(domException);
       const finished = Promise.reject(domException);
       committed.catch(() => {});
@@ -304,10 +294,7 @@ export class FakeNavigation implements Navigation {
   /** Equivalent to `navigation.forward()`. */
   forward(options?: NavigationOptions): FakeNavigationResult {
     if (this.currentEntryIndex === this.entriesArr.length - 1) {
-      const domException = new DOMException(
-          'Cannot go forward',
-          'InvalidStateError',
-      );
+      const domException = new DOMException('Cannot go forward', 'InvalidStateError');
       const committed = Promise.reject(domException);
       const finished = Promise.reject(domException);
       committed.catch(() => {});
@@ -385,18 +372,18 @@ export class FakeNavigation implements Navigation {
 
   /** Equivalent to `navigation.addEventListener()`. */
   addEventListener(
-      type: string,
-      callback: EventListenerOrEventListenerObject,
-      options?: AddEventListenerOptions|boolean,
+    type: string,
+    callback: EventListenerOrEventListenerObject,
+    options?: AddEventListenerOptions | boolean,
   ) {
     this.eventTarget.addEventListener(type, callback, options);
   }
 
   /** Equivalent to `navigation.removeEventListener()`. */
   removeEventListener(
-      type: string,
-      callback: EventListenerOrEventListenerObject,
-      options?: EventListenerOptions|boolean,
+    type: string,
+    callback: EventListenerOrEventListenerObject,
+    options?: EventListenerOptions | boolean,
   ) {
     this.eventTarget.removeEventListener(type, callback, options);
   }
@@ -421,17 +408,15 @@ export class FakeNavigation implements Navigation {
 
   /** Implementation for all navigations and traversals. */
   private userAgentNavigate(
-      destination: FakeNavigationDestination,
-      result: InternalNavigationResult,
-      options: InternalNavigateOptions,
+    destination: FakeNavigationDestination,
+    result: InternalNavigationResult,
+    options: InternalNavigateOptions,
   ) {
     // The first navigation should disallow any future calls to set the initial
     // entry.
     this.canSetInitialEntry = false;
     if (this.navigateEvent) {
-      this.navigateEvent.cancel(
-          new DOMException('Navigation was aborted', 'AbortError'),
-      );
+      this.navigateEvent.cancel(new DOMException('Navigation was aborted', 'AbortError'));
       this.navigateEvent = undefined;
     }
 
@@ -471,8 +456,10 @@ export class FakeNavigation implements Navigation {
       this.navigateEvent.cancel(error);
       throw error;
     }
-    if (this.navigateEvent.navigationType === 'push' ||
-        this.navigateEvent.navigationType === 'replace') {
+    if (
+      this.navigateEvent.navigationType === 'push' ||
+      this.navigateEvent.navigationType === 'replace'
+    ) {
       this.userAgentPushOrReplace(this.navigateEvent.destination, {
         navigationType: this.navigateEvent.navigationType,
       });
@@ -480,9 +467,10 @@ export class FakeNavigation implements Navigation {
       this.userAgentTraverse(this.navigateEvent.destination);
     }
     this.navigateEvent.userAgentNavigated(this.currentEntry);
-    const currentEntryChangeEvent = createFakeNavigationCurrentEntryChangeEvent(
-        {from, navigationType: this.navigateEvent.navigationType},
-    );
+    const currentEntryChangeEvent = createFakeNavigationCurrentEntryChangeEvent({
+      from,
+      navigationType: this.navigateEvent.navigationType,
+    });
     this.eventTarget.dispatchEvent(currentEntryChangeEvent);
     if (!this.navigateEvent.skipPopState) {
       const popStateEvent = createPopStateEvent({
@@ -494,8 +482,8 @@ export class FakeNavigation implements Navigation {
 
   /** Implementation for a push or replace navigation. */
   private userAgentPushOrReplace(
-      destination: FakeNavigationDestination,
-      {navigationType}: {navigationType: NavigationTypeString},
+    destination: FakeNavigationDestination,
+    {navigationType}: {navigationType: NavigationTypeString},
   ) {
     if (navigationType === 'push') {
       this.currentEntryIndex++;
@@ -531,42 +519,43 @@ export class FakeNavigation implements Navigation {
     return undefined;
   }
 
-  set onnavigate(_handler: ((this: Navigation, ev: NavigateEvent) => any)|null) {
+  set onnavigate(_handler: ((this: Navigation, ev: NavigateEvent) => any) | null) {
     throw new Error('unimplemented');
   }
 
-  get onnavigate(): ((this: Navigation, ev: NavigateEvent) => any)|null {
+  get onnavigate(): ((this: Navigation, ev: NavigateEvent) => any) | null {
     throw new Error('unimplemented');
   }
 
-  set oncurrententrychange(_handler:
-                               ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)|
-                           null) {
+  set oncurrententrychange(
+    _handler: ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any) | null,
+  ) {
     throw new Error('unimplemented');
   }
 
   get oncurrententrychange():
-      ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)|null {
+    | ((this: Navigation, ev: NavigationCurrentEntryChangeEvent) => any)
+    | null {
     throw new Error('unimplemented');
   }
 
-  set onnavigatesuccess(_handler: ((this: Navigation, ev: Event) => any)|null) {
+  set onnavigatesuccess(_handler: ((this: Navigation, ev: Event) => any) | null) {
     throw new Error('unimplemented');
   }
 
-  get onnavigatesuccess(): ((this: Navigation, ev: Event) => any)|null {
+  get onnavigatesuccess(): ((this: Navigation, ev: Event) => any) | null {
     throw new Error('unimplemented');
   }
 
-  set onnavigateerror(_handler: ((this: Navigation, ev: ErrorEvent) => any)|null) {
+  set onnavigateerror(_handler: ((this: Navigation, ev: ErrorEvent) => any) | null) {
     throw new Error('unimplemented');
   }
 
-  get onnavigateerror(): ((this: Navigation, ev: ErrorEvent) => any)|null {
+  get onnavigateerror(): ((this: Navigation, ev: ErrorEvent) => any) | null {
     throw new Error('unimplemented');
   }
 
-  get transition(): NavigationTransition|null {
+  get transition(): NavigationTransition | null {
     throw new Error('unimplemented');
   }
 
@@ -601,21 +590,25 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
   private readonly historyState: unknown;
 
   // tslint:disable-next-line:no-any
-  ondispose: ((this: NavigationHistoryEntry, ev: Event) => any)|null = null;
+  ondispose: ((this: NavigationHistoryEntry, ev: Event) => any) | null = null;
 
   constructor(
-      readonly url: string|null,
-      {
-        id,
-        key,
-        index,
-        sameDocument,
-        state,
-        historyState,
-      }: {
-        id: string; key: string; index: number; sameDocument: boolean; historyState: unknown;
-        state?: unknown;
-      },
+    readonly url: string | null,
+    {
+      id,
+      key,
+      index,
+      sameDocument,
+      state,
+      historyState,
+    }: {
+      id: string;
+      key: string;
+      index: number;
+      sameDocument: boolean;
+      historyState: unknown;
+      state?: unknown;
+    },
   ) {
     this.id = id;
     this.key = key;
@@ -636,17 +629,17 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
   }
 
   addEventListener(
-      type: string,
-      callback: EventListenerOrEventListenerObject,
-      options?: AddEventListenerOptions|boolean,
+    type: string,
+    callback: EventListenerOrEventListenerObject,
+    options?: AddEventListenerOptions | boolean,
   ) {
     throw new Error('unimplemented');
   }
 
   removeEventListener(
-      type: string,
-      callback: EventListenerOrEventListenerObject,
-      options?: EventListenerOptions|boolean,
+    type: string,
+    callback: EventListenerOrEventListenerObject,
+    options?: EventListenerOptions | boolean,
   ) {
     throw new Error('unimplemented');
   }
@@ -658,7 +651,7 @@ export class FakeNavigationHistoryEntry implements NavigationHistoryEntry {
 
 /** `NavigationInterceptOptions` with experimental commit option. */
 export interface ExperimentalNavigationInterceptOptions extends NavigationInterceptOptions {
-  commit?: 'immediate'|'after-transition';
+  commit?: 'immediate' | 'after-transition';
 }
 
 /** `NavigateEvent` with experimental commit function. */
@@ -678,7 +671,7 @@ export interface FakeNavigateEvent extends ExperimentalNavigateEvent {
 interface InternalFakeNavigateEvent extends FakeNavigateEvent {
   readonly sameDocument: boolean;
   readonly skipPopState?: boolean;
-  readonly commitOption: 'after-transition'|'immediate';
+  readonly commitOption: 'after-transition' | 'immediate';
   readonly result: InternalNavigationResult;
 
   commit(internal?: boolean): void;
@@ -705,16 +698,21 @@ function createFakeNavigateEvent({
   result,
   userAgentCommit,
 }: {
-  cancelable: boolean; canIntercept: boolean; userInitiated: boolean; hashChange: boolean;
+  cancelable: boolean;
+  canIntercept: boolean;
+  userInitiated: boolean;
+  hashChange: boolean;
   navigationType: NavigationTypeString;
   signal: AbortSignal;
   destination: FakeNavigationDestination;
   info: unknown;
   sameDocument: boolean;
-  skipPopState?: boolean; result: InternalNavigationResult; userAgentCommit: () => void;
+  skipPopState?: boolean;
+  result: InternalNavigationResult;
+  userAgentCommit: () => void;
 }) {
   const event = new Event('navigate', {bubbles: false, cancelable}) as {
-    -readonly[P in keyof InternalFakeNavigateEvent]: InternalFakeNavigateEvent[P];
+    -readonly [P in keyof InternalFakeNavigateEvent]: InternalFakeNavigateEvent[P];
   };
   event.canIntercept = canIntercept;
   event.userInitiated = userInitiated;
@@ -730,15 +728,15 @@ function createFakeNavigateEvent({
   event.skipPopState = skipPopState;
   event.commitOption = 'immediate';
 
-  let handlerFinished: Promise<void>|undefined = undefined;
+  let handlerFinished: Promise<void> | undefined = undefined;
   let interceptCalled = false;
   let dispatchedNavigateEvent = false;
   let commitCalled = false;
 
-  event.intercept = function(
-      this: InternalFakeNavigateEvent,
-      options?: ExperimentalNavigationInterceptOptions,
-      ): void {
+  event.intercept = function (
+    this: InternalFakeNavigateEvent,
+    options?: ExperimentalNavigationInterceptOptions,
+  ): void {
     interceptCalled = true;
     event.sameDocument = true;
     const handler = options?.handler;
@@ -753,30 +751,29 @@ function createFakeNavigateEvent({
     }
   };
 
-  event.scroll = function(this: InternalFakeNavigateEvent): void {
+  event.scroll = function (this: InternalFakeNavigateEvent): void {
     throw new Error('unimplemented');
   };
 
-  event.commit = function(this: InternalFakeNavigateEvent, internal = false) {
+  event.commit = function (this: InternalFakeNavigateEvent, internal = false) {
     if (!internal && !interceptCalled) {
       throw new DOMException(
-          `Failed to execute 'commit' on 'NavigateEvent': intercept() must be ` +
-              `called before commit().`,
-          'InvalidStateError',
+        `Failed to execute 'commit' on 'NavigateEvent': intercept() must be ` +
+          `called before commit().`,
+        'InvalidStateError',
       );
     }
     if (!dispatchedNavigateEvent) {
       throw new DOMException(
-          `Failed to execute 'commit' on 'NavigateEvent': commit() may not be ` +
-              `called during event dispatch.`,
-          'InvalidStateError',
+        `Failed to execute 'commit' on 'NavigateEvent': commit() may not be ` +
+          `called during event dispatch.`,
+        'InvalidStateError',
       );
     }
     if (commitCalled) {
       throw new DOMException(
-          `Failed to execute 'commit' on 'NavigateEvent': commit() already ` +
-              `called.`,
-          'InvalidStateError',
+        `Failed to execute 'commit' on 'NavigateEvent': commit() already ` + `called.`,
+        'InvalidStateError',
       );
     }
     commitCalled = true;
@@ -785,40 +782,39 @@ function createFakeNavigateEvent({
   };
 
   // Internal only.
-  event.cancel = function(this: InternalFakeNavigateEvent, reason: Error) {
+  event.cancel = function (this: InternalFakeNavigateEvent, reason: Error) {
     result.committedReject(reason);
     result.finishedReject(reason);
   };
 
   // Internal only.
-  event.dispatchedNavigateEvent = function(this: InternalFakeNavigateEvent) {
+  event.dispatchedNavigateEvent = function (this: InternalFakeNavigateEvent) {
     dispatchedNavigateEvent = true;
     if (event.commitOption === 'after-transition') {
       // If handler finishes before commit, call commit.
       handlerFinished?.then(
-          () => {
-            if (!commitCalled) {
-              event.commit(/* internal */ true);
-            }
-          },
-          () => {},
+        () => {
+          if (!commitCalled) {
+            event.commit(/* internal */ true);
+          }
+        },
+        () => {},
       );
     }
-    Promise.all([result.committed, handlerFinished])
-        .then(
-            ([entry]) => {
-              result.finishedResolve(entry);
-            },
-            (reason) => {
-              result.finishedReject(reason);
-            },
-        );
+    Promise.all([result.committed, handlerFinished]).then(
+      ([entry]) => {
+        result.finishedResolve(entry);
+      },
+      (reason) => {
+        result.finishedReject(reason);
+      },
+    );
   };
 
   // Internal only.
-  event.userAgentNavigated = function(
-      this: InternalFakeNavigateEvent,
-      entry: FakeNavigationHistoryEntry,
+  event.userAgentNavigated = function (
+    this: InternalFakeNavigateEvent,
+    entry: FakeNavigationHistoryEntry,
   ) {
     result.committedResolve(entry);
   };
@@ -838,12 +834,15 @@ export interface FakeNavigationCurrentEntryChangeEvent extends NavigationCurrent
 function createFakeNavigationCurrentEntryChangeEvent({
   from,
   navigationType,
-}: {from: FakeNavigationHistoryEntry; navigationType: NavigationTypeString;}) {
+}: {
+  from: FakeNavigationHistoryEntry;
+  navigationType: NavigationTypeString;
+}) {
   const event = new Event('currententrychange', {
-                  bubbles: false,
-                  cancelable: false,
-                }) as {
-    -readonly[P in keyof NavigationCurrentEntryChangeEvent]: NavigationCurrentEntryChangeEvent[P];
+    bubbles: false,
+    cancelable: false,
+  }) as {
+    -readonly [P in keyof NavigationCurrentEntryChangeEvent]: NavigationCurrentEntryChangeEvent[P];
   };
   event.from = from;
   event.navigationType = navigationType;
@@ -856,9 +855,9 @@ function createFakeNavigationCurrentEntryChangeEvent({
  */
 function createPopStateEvent({state}: {state: unknown}) {
   const event = new Event('popstate', {
-                  bubbles: false,
-                  cancelable: false,
-                }) as {-readonly[P in keyof PopStateEvent]: PopStateEvent[P]};
+    bubbles: false,
+    cancelable: false,
+  }) as {-readonly [P in keyof PopStateEvent]: PopStateEvent[P]};
   event.state = state;
   return event as PopStateEvent;
 }
@@ -869,8 +868,8 @@ function createPopStateEvent({state}: {state: unknown}) {
 export class FakeNavigationDestination implements NavigationDestination {
   readonly url: string;
   readonly sameDocument: boolean;
-  readonly key: string|null;
-  readonly id: string|null;
+  readonly key: string | null;
+  readonly id: string | null;
   readonly index: number;
 
   private readonly state?: unknown;
@@ -885,7 +884,9 @@ export class FakeNavigationDestination implements NavigationDestination {
     id = null,
     index = -1,
   }: {
-    url: string; sameDocument: boolean; historyState: unknown;
+    url: string;
+    sameDocument: boolean;
+    historyState: unknown;
     state?: unknown;
     key?: string | null;
     id?: string | null;
@@ -912,8 +913,11 @@ export class FakeNavigationDestination implements NavigationDestination {
 /** Utility function to determine whether two UrlLike have the same hash. */
 function isHashChange(from: URL, to: URL): boolean {
   return (
-      to.hash !== from.hash && to.hostname === from.hostname && to.pathname === from.pathname &&
-      to.search === from.search);
+    to.hash !== from.hash &&
+    to.hostname === from.hostname &&
+    to.pathname === from.pathname &&
+    to.search === from.search
+  );
 }
 
 /** Internal utility class for representing the result of a navigation.  */
@@ -930,22 +934,18 @@ class InternalNavigationResult {
   private readonly abortController = new AbortController();
 
   constructor() {
-    this.committed = new Promise<FakeNavigationHistoryEntry>(
-        (resolve, reject) => {
-          this.committedResolve = resolve;
-          this.committedReject = reject;
-        },
-    );
+    this.committed = new Promise<FakeNavigationHistoryEntry>((resolve, reject) => {
+      this.committedResolve = resolve;
+      this.committedReject = reject;
+    });
 
-    this.finished = new Promise<FakeNavigationHistoryEntry>(
-        async (resolve, reject) => {
-          this.finishedResolve = resolve;
-          this.finishedReject = (reason: Error) => {
-            reject(reason);
-            this.abortController.abort(reason);
-          };
-        },
-    );
+    this.finished = new Promise<FakeNavigationHistoryEntry>(async (resolve, reject) => {
+      this.finishedResolve = resolve;
+      this.finishedReject = (reason: Error) => {
+        reject(reason);
+        this.abortController.abort(reason);
+      };
+    });
     // All rejections are handled.
     this.committed.catch(() => {});
     this.finished.catch(() => {});

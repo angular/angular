@@ -33,12 +33,10 @@ describe('SlicePipe', () => {
       expect(() => pipe.transform(list as ReadonlyArray<number>, 0)).not.toThrow();
     });
 
-    it('should not support other objects',
-       // this would not compile
-       // so we cast as `any` to check that it throws for unsupported objects
-       () => {
-         expect(() => pipe.transform({} as any, 0)).toThrow();
-       });
+    it('should not support other objects', () => {
+      // so we cast as `any` to check that it throws for unsupported objects // this would not compile
+      expect(() => pipe.transform({} as any, 0)).toThrow();
+    });
   });
 
   describe('transform', () => {
@@ -50,28 +48,25 @@ describe('SlicePipe', () => {
       expect(pipe.transform(undefined, 1)).toBe(null);
     });
 
-    it('should return all items after START index when START is positive and END is omitted',
-       () => {
-         expect(pipe.transform(list, 3)).toEqual([4, 5]);
-         expect(pipe.transform(str, 3)).toEqual('wxyz');
-       });
+    it('should return all items after START index when START is positive and END is omitted', () => {
+      expect(pipe.transform(list, 3)).toEqual([4, 5]);
+      expect(pipe.transform(str, 3)).toEqual('wxyz');
+    });
 
     it('should return last START items when START is negative and END is omitted', () => {
       expect(pipe.transform(list, -3)).toEqual([3, 4, 5]);
       expect(pipe.transform(str, -3)).toEqual('xyz');
     });
 
-    it('should return all items between START and END index when START and END are positive',
-       () => {
-         expect(pipe.transform(list, 1, 3)).toEqual([2, 3]);
-         expect(pipe.transform(str, 1, 3)).toEqual('uv');
-       });
+    it('should return all items between START and END index when START and END are positive', () => {
+      expect(pipe.transform(list, 1, 3)).toEqual([2, 3]);
+      expect(pipe.transform(str, 1, 3)).toEqual('uv');
+    });
 
-    it('should return all items between START and END from the end when START and END are negative',
-       () => {
-         expect(pipe.transform(list, -4, -2)).toEqual([2, 3]);
-         expect(pipe.transform(str, -4, -2)).toEqual('wx');
-       });
+    it('should return all items between START and END from the end when START and END are negative', () => {
+      expect(pipe.transform(list, -4, -2)).toEqual([2, 3]);
+      expect(pipe.transform(str, -4, -2)).toEqual('wx');
+    });
 
     it('should return an empty value if START is greater than END', () => {
       expect(pipe.transform(list, 4, 2)).toEqual([]);
@@ -105,16 +100,16 @@ describe('SlicePipe', () => {
     });
 
     it('should work with mutable arrays', waitForAsync(() => {
-         const fixture = TestBed.createComponent(TestComp);
-         const mutable: number[] = [1, 2];
-         fixture.componentInstance.data = mutable;
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('2');
+      const fixture = TestBed.createComponent(TestComp);
+      const mutable: number[] = [1, 2];
+      fixture.componentInstance.data = mutable;
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('2');
 
-         mutable.push(3);
-         fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('2,3');
-       }));
+      mutable.push(3);
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('2,3');
+    }));
   });
 
   it('should be available as a standalone pipe', () => {

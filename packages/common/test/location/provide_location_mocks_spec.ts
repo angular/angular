@@ -10,7 +10,6 @@ import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, provideLocationMocks, SpyLocation} from '@angular/common/testing';
 import {TestBed} from '@angular/core/testing';
 
-
 describe('provideLocationMocks() function', () => {
   it('should mock Location and LocationStrategy classes', () => {
     TestBed.configureTestingModule({providers: [provideLocationMocks()]});
