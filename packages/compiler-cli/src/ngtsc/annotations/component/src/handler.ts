@@ -1105,10 +1105,12 @@ export class ComponentDecoratorHandler implements
 
     const deferrableTypes = this.collectDeferredSymbols(resolution);
 
+    const useTemplatePipeline = this.useTemplatePipeline;
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
       deferrableTypes,
+      useTemplatePipeline,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
@@ -1141,8 +1143,13 @@ export class ComponentDecoratorHandler implements
           new WrappedNodeExpr(analysis.template.sourceMapping.node) :
           null,
     };
-    const meta:
-        R3ComponentMetadata<R3TemplateDependencyMetadata> = {...analysis.meta, ...resolution};
+
+    const useTemplatePipeline = this.useTemplatePipeline;
+    const meta: R3ComponentMetadata<R3TemplateDependencyMetadata> = {
+      ...analysis.meta,
+      ...resolution,
+      useTemplatePipeline
+    };
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const def = compileDeclareComponentFromMetadata(meta, analysis.template, templateInfo);
@@ -1166,10 +1173,12 @@ export class ComponentDecoratorHandler implements
     // doesn't have information on which dependencies belong to which defer blocks.
     const deferrableTypes = analysis.explicitlyDeferredTypes;
 
+    const useTemplatePipeline = this.useTemplatePipeline;
     const meta = {
       ...analysis.meta,
       ...resolution,
       deferrableTypes: deferrableTypes ?? new Map(),
+      useTemplatePipeline,
     } as R3ComponentMetadata<R3TemplateDependency>;
 
     if (analysis.explicitlyDeferredTypes !== null) {
