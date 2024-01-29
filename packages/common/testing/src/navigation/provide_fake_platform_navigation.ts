@@ -24,7 +24,7 @@ export function provideFakePlatformNavigation(): Provider[] {
       provide: PlatformNavigation,
       useFactory: () => {
         return new FakeNavigation(window, 'https://test.com');
-      }
+      },
     },
   ];
 }

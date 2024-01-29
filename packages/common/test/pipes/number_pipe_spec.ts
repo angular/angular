@@ -62,12 +62,12 @@ describe('Number pipes', () => {
       });
 
       it('should not support other objects', () => {
-        expect(() => pipe.transform({} as any))
-            .toThrowError(
-                `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'DecimalPipe'`);
-        expect(() => pipe.transform('123abc'))
-            .toThrowError(
-                `NG02100: InvalidPipeArgument: '123abc is not a number' for pipe 'DecimalPipe'`);
+        expect(() => pipe.transform({} as any)).toThrowError(
+          `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'DecimalPipe'`,
+        );
+        expect(() => pipe.transform('123abc')).toThrowError(
+          `NG02100: InvalidPipeArgument: '123abc is not a number' for pipe 'DecimalPipe'`,
+        );
       });
     });
 
@@ -125,9 +125,9 @@ describe('Number pipes', () => {
       });
 
       it('should not support other objects', () => {
-        expect(() => pipe.transform({} as any))
-            .toThrowError(
-                `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'PercentPipe'`);
+        expect(() => pipe.transform({} as any)).toThrowError(
+          `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'PercentPipe'`,
+        );
       });
     });
 
@@ -168,8 +168,9 @@ describe('Number pipes', () => {
         expect(pipe.transform(5.1234, 'CAD', 'symbol')).toEqual('CA$5.12');
         expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow')).toEqual('$5.12');
         expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2')).toEqual('$00,005.12');
-        expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2', 'fr'))
-            .toEqual('00\u202f005,12 $');
+        expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2', 'fr')).toEqual(
+          '00\u202f005,12 $',
+        );
         expect(pipe.transform(5, 'USD', 'symbol', '', 'fr')).toEqual('5,00 $US');
         expect(pipe.transform(123456789, 'EUR', 'symbol', '', 'de-at')).toEqual('€ 123.456.789,00');
         expect(pipe.transform(5.1234, 'EUR', '', '', 'de-at')).toEqual('5,12');
@@ -183,8 +184,9 @@ describe('Number pipes', () => {
 
       it('should support any currency code name', () => {
         // currency code is unknown, default formatting options will be used
-        expect(pipe.transform(5.1234, 'unexisting_ISO_code', 'symbol'))
-            .toEqual('unexisting_ISO_code5.12');
+        expect(pipe.transform(5.1234, 'unexisting_ISO_code', 'symbol')).toEqual(
+          'unexisting_ISO_code5.12',
+        );
         // currency code is USD, the pipe will format based on USD but will display "Custom name"
         expect(pipe.transform(5.1234, 'USD', 'Custom name')).toEqual('Custom name5.12');
       });
@@ -202,16 +204,17 @@ describe('Number pipes', () => {
       });
 
       it('should not support other objects', () => {
-        expect(() => pipe.transform({} as any))
-            .toThrowError(
-                `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'CurrencyPipe'`);
+        expect(() => pipe.transform({} as any)).toThrowError(
+          `NG02100: InvalidPipeArgument: '[object Object] is not a number' for pipe 'CurrencyPipe'`,
+        );
       });
 
       it('should warn if you are using the v4 signature', () => {
         const warnSpy = spyOn(console, 'warn');
         pipe.transform(123, 'USD', true);
         expect(warnSpy).toHaveBeenCalledWith(
-            `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
+          `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`,
+        );
       });
     });
 

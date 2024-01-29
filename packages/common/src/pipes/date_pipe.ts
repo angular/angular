@@ -19,8 +19,9 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * @deprecated use DATE_PIPE_DEFAULT_OPTIONS token to configure DatePipe
  */
-export const DATE_PIPE_DEFAULT_TIMEZONE =
-    new InjectionToken<string>(ngDevMode ? 'DATE_PIPE_DEFAULT_TIMEZONE' : '');
+export const DATE_PIPE_DEFAULT_TIMEZONE = new InjectionToken<string>(
+  ngDevMode ? 'DATE_PIPE_DEFAULT_TIMEZONE' : '',
+);
 
 /**
  * DI token that allows to provide default configuration for the `DatePipe` instances in an
@@ -53,8 +54,9 @@ export const DATE_PIPE_DEFAULT_TIMEZONE =
  * ]
  * ```
  */
-export const DATE_PIPE_DEFAULT_OPTIONS =
-    new InjectionToken<DatePipeConfig>(ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '');
+export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
+  ngDevMode ? 'DATE_PIPE_DEFAULT_OPTIONS' : '',
+);
 
 // clang-format off
 /**
@@ -223,9 +225,9 @@ export const DATE_PIPE_DEFAULT_OPTIONS =
 })
 export class DatePipe implements PipeTransform {
   constructor(
-      @Inject(LOCALE_ID) private locale: string,
-      @Inject(DATE_PIPE_DEFAULT_TIMEZONE) @Optional() private defaultTimezone?: string|null,
-      @Inject(DATE_PIPE_DEFAULT_OPTIONS) @Optional() private defaultOptions?: DatePipeConfig|null,
+    @Inject(LOCALE_ID) private locale: string,
+    @Inject(DATE_PIPE_DEFAULT_TIMEZONE) @Optional() private defaultTimezone?: string | null,
+    @Inject(DATE_PIPE_DEFAULT_OPTIONS) @Optional() private defaultOptions?: DatePipeConfig | null,
   ) {}
 
   /**
@@ -247,21 +249,31 @@ export class DatePipe implements PipeTransform {
    *
    * @returns A date string in the desired format.
    */
-  transform(value: Date|string|number, format?: string, timezone?: string, locale?: string): string
-      |null;
-  transform(value: null|undefined, format?: string, timezone?: string, locale?: string): null;
   transform(
-      value: Date|string|number|null|undefined, format?: string, timezone?: string,
-      locale?: string): string|null;
+    value: Date | string | number,
+    format?: string,
+    timezone?: string,
+    locale?: string,
+  ): string | null;
+  transform(value: null | undefined, format?: string, timezone?: string, locale?: string): null;
   transform(
-      value: Date|string|number|null|undefined, format?: string, timezone?: string,
-      locale?: string): string|null {
+    value: Date | string | number | null | undefined,
+    format?: string,
+    timezone?: string,
+    locale?: string,
+  ): string | null;
+  transform(
+    value: Date | string | number | null | undefined,
+    format?: string,
+    timezone?: string,
+    locale?: string,
+  ): string | null {
     if (value == null || value === '' || value !== value) return null;
 
     try {
       const _format = format ?? this.defaultOptions?.dateFormat ?? DEFAULT_DATE_FORMAT;
       const _timezone =
-          timezone ?? this.defaultOptions?.timezone ?? this.defaultTimezone ?? undefined;
+        timezone ?? this.defaultOptions?.timezone ?? this.defaultTimezone ?? undefined;
       return formatDate(value, _format, locale || this.locale, _timezone);
     } catch (error) {
       throw invalidPipeArgumentError(DatePipe, (error as Error).message);

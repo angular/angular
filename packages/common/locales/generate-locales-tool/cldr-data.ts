@@ -33,14 +33,14 @@ const CLDR_LOCALE_ALIASES_PATH = 'cldr-core/supplemental/aliases.json';
  * Instance providing access to a locale's CLDR data. This type extends the `cldrjs`
  * instance type with the missing `bundle` attribute property.
  */
-export type CldrLocaleData = CldrStatic&{
+export type CldrLocaleData = CldrStatic & {
   attributes: {
     /**
      * Resolved bundle name for the locale.
      * More details: http://www.unicode.org/reports/tr35/#Bundle_vs_Item_Lookup
      */
     bundle: string;
-  }
+  };
 };
 
 /**
@@ -48,7 +48,11 @@ export type CldrLocaleData = CldrStatic&{
  * https://unicode.org/reports/tr35/tr35-info.html#Appendix_Supplemental_Metadata.
  */
 export type CldrLocaleAliasReason =
-    'deprecated'|'overlong'|'macrolanguage'|'legacy'|'bibliographic';
+  | 'deprecated'
+  | 'overlong'
+  | 'macrolanguage'
+  | 'legacy'
+  | 'bibliographic';
 
 /**
  * Class that provides access to the CLDR JSON data downloaded as part of
@@ -67,7 +71,7 @@ export class CldrData {
   }
 
   /** Gets the CLDR data for the specified locale. */
-  getLocaleData(localeName: string): CldrLocaleData|null {
+  getLocaleData(localeName: string): CldrLocaleData | null {
     // Cast to `CldrLocaleData` because the default `cldrjs` types from `DefinitelyTyped`
     // are outdated and do not capture the `bundle` attribute. See:
     // https://github.com/rxaviers/cldrjs#instantiate-a-locale-and-get-it-normalized.
@@ -86,16 +90,17 @@ export class CldrData {
    * Gets the CLDR language aliases.
    * http://cldr.unicode.org/index/cldr-spec/language-tag-equivalences.
    */
-  getLanguageAliases():
-      {[localeName: string]: {_reason: CldrLocaleAliasReason, _replacement: string}} {
-    return this._loadJsonOrThrow(`${this.cldrDataDir}/${CLDR_LOCALE_ALIASES_PATH}`)
-        .supplemental.metadata.alias.languageAlias;
+  getLanguageAliases(): {
+    [localeName: string]: {_reason: CldrLocaleAliasReason; _replacement: string};
+  } {
+    return this._loadJsonOrThrow(`${this.cldrDataDir}/${CLDR_LOCALE_ALIASES_PATH}`).supplemental
+      .metadata.alias.languageAlias;
   }
 
   /** Gets a list of all locales CLDR provides data for. */
   private _getAvailableLocales(): CldrLocaleData[] {
     const allLocales = this._loadJsonOrThrow(`${this.cldrDataDir}/${CLDR_AVAILABLE_LOCALES_PATH}`)
-                           .availableLocales.full;
+      .availableLocales.full;
     const localesWithData: CldrLocaleData[] = [];
 
     for (const localeName of allLocales) {
@@ -121,7 +126,7 @@ export class CldrData {
 
     // Populate the `cldrjs` library with the locale data. Note that we need this type cast
     // to satisfy the first `cldrjs.load` parameter which cannot be undefined.
-    cldrjs.load(...localeData as [object, ...object[]]);
+    cldrjs.load(...(localeData as [object, ...object[]]));
   }
 
   /**
@@ -129,12 +134,12 @@ export class CldrData {
    * @returns a list of read JSON objects representing the CLDR data.
    */
   private _readCldrDataFromRepository(): object[] {
-    const jsonFiles =
-        CLDR_DATA_GLOBS.map(pattern => glob.sync(pattern, {cwd: this.cldrDataDir, absolute: true}))
-            .reduce((acc, dataFiles) => [...acc, ...dataFiles], []);
+    const jsonFiles = CLDR_DATA_GLOBS.map((pattern) =>
+      glob.sync(pattern, {cwd: this.cldrDataDir, absolute: true}),
+    ).reduce((acc, dataFiles) => [...acc, ...dataFiles], []);
 
     // Read the JSON for all determined CLDR json files.
-    return jsonFiles.map(filePath => {
+    return jsonFiles.map((filePath) => {
       const parsed = this._loadJsonOrThrow(filePath);
 
       // Guards against cases where non-CLDR data files are accidentally picked up

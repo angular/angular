@@ -16,21 +16,23 @@ import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 const absoluteUrlError = (src: string, path: string) =>
-    `NG02959: Image loader has detected a \`<img>\` tag with an invalid ` +
-    `\`ngSrc\` attribute: ${src}. This image loader expects \`ngSrc\` ` +
-    `to be a relative URL - however the provided value is an absolute URL. ` +
-    `To fix this, provide \`ngSrc\` as a path relative to the base URL ` +
-    `configured for this loader (\`${path}\`).`;
+  `NG02959: Image loader has detected a \`<img>\` tag with an invalid ` +
+  `\`ngSrc\` attribute: ${src}. This image loader expects \`ngSrc\` ` +
+  `to be a relative URL - however the provided value is an absolute URL. ` +
+  `To fix this, provide \`ngSrc\` as a path relative to the base URL ` +
+  `configured for this loader (\`${path}\`).`;
 
 const invalidPathError = (path: string, formats: string) =>
-    `NG02959: Image loader has detected an invalid path (\`${path}\`). ` +
-    `To fix this, supply a path using one of the following formats: ${formats}`;
+  `NG02959: Image loader has detected an invalid path (\`${path}\`). ` +
+  `To fix this, supply a path using one of the following formats: ${formats}`;
 
 describe('Built-in image directive loaders', () => {
   describe('Imgix loader', () => {
     function createImgixLoader(path: string): ImageLoader {
       const injector = createEnvironmentInjector(
-          [provideImgixLoader(path)], TestBed.inject(EnvironmentInjector));
+        [provideImgixLoader(path)],
+        TestBed.inject(EnvironmentInjector),
+      );
       return injector.get(IMAGE_LOADER);
     }
 
@@ -73,7 +75,9 @@ describe('Built-in image directive loaders', () => {
   describe('Cloudinary loader', () => {
     function createCloudinaryLoader(path: string): ImageLoader {
       const injector = createEnvironmentInjector(
-          [provideCloudinaryLoader(path)], TestBed.inject(EnvironmentInjector));
+        [provideCloudinaryLoader(path)],
+        TestBed.inject(EnvironmentInjector),
+      );
       return injector.get(IMAGE_LOADER);
     }
 
@@ -81,9 +85,11 @@ describe('Built-in image directive loaders', () => {
       const path = 'https://res.cloudinary.com/mysite';
       const loader = createCloudinaryLoader(path);
       expect(loader({src: 'img.png'})).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
-      expect(loader({
-        src: 'marketing/img-2.png',
-      })).toBe(`${path}/image/upload/f_auto,q_auto/marketing/img-2.png`);
+      expect(
+        loader({
+          src: 'marketing/img-2.png',
+        }),
+      ).toBe(`${path}/image/upload/f_auto,q_auto/marketing/img-2.png`);
     });
 
     describe('input validation', () => {
@@ -95,11 +101,13 @@ describe('Built-in image directive loaders', () => {
       });
 
       it('should throw if the path is invalid', () => {
-        expect(() => provideCloudinaryLoader('my-cloudinary-account'))
-            .toThrowError(invalidPathError(
-                'my-cloudinary-account',
-                'https://res.cloudinary.com/mysite or https://mysite.cloudinary.com ' +
-                    'or https://subdomain.mysite.com'));
+        expect(() => provideCloudinaryLoader('my-cloudinary-account')).toThrowError(
+          invalidPathError(
+            'my-cloudinary-account',
+            'https://res.cloudinary.com/mysite or https://mysite.cloudinary.com ' +
+              'or https://subdomain.mysite.com',
+          ),
+        );
       });
 
       it('should handle a trailing forward slash on the path', () => {
@@ -119,7 +127,9 @@ describe('Built-in image directive loaders', () => {
   describe('ImageKit loader', () => {
     function createImageKitLoader(path: string): ImageLoader {
       const injector = createEnvironmentInjector(
-          [provideImageKitLoader(path)], TestBed.inject(EnvironmentInjector));
+        [provideImageKitLoader(path)],
+        TestBed.inject(EnvironmentInjector),
+      );
       return injector.get(IMAGE_LOADER);
     }
 
@@ -134,8 +144,9 @@ describe('Built-in image directive loaders', () => {
       const path = 'https://ik.imageengine.io/imagetest';
       const loader = createImageKitLoader(path);
       expect(loader({src: 'img.png', width: 100})).toBe(`${path}/tr:w-100/img.png`);
-      expect(loader({src: 'marketing/img-2.png', width: 200}))
-          .toBe(`${path}/tr:w-200/marketing/img-2.png`);
+      expect(loader({src: 'marketing/img-2.png', width: 200})).toBe(
+        `${path}/tr:w-200/marketing/img-2.png`,
+      );
     });
 
     describe('input validation', () => {
@@ -147,10 +158,12 @@ describe('Built-in image directive loaders', () => {
       });
 
       it('should throw if the path is invalid', () => {
-        expect(() => provideImageKitLoader('my-imagekit-account'))
-            .toThrowError(invalidPathError(
-                'my-imagekit-account',
-                'https://ik.imagekit.io/mysite or https://subdomain.mysite.com'));
+        expect(() => provideImageKitLoader('my-imagekit-account')).toThrowError(
+          invalidPathError(
+            'my-imagekit-account',
+            'https://ik.imagekit.io/mysite or https://subdomain.mysite.com',
+          ),
+        );
       });
 
       it('should handle a trailing forward slash on the path', () => {
@@ -170,7 +183,9 @@ describe('Built-in image directive loaders', () => {
   describe('Cloudflare loader', () => {
     function createCloudflareLoader(path: string): ImageLoader {
       const injector = createEnvironmentInjector(
-          [provideCloudflareLoader(path)], TestBed.inject(EnvironmentInjector));
+        [provideCloudflareLoader(path)],
+        TestBed.inject(EnvironmentInjector),
+      );
       return injector.get(IMAGE_LOADER);
     }
     it('should construct an image loader with the given path', () => {

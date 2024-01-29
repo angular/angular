@@ -28,7 +28,11 @@ export abstract class NgLocalization {
  * - the plural category otherwise
  */
 export function getPluralCategory(
-    value: number, cases: string[], ngLocalization: NgLocalization, locale?: string): string {
+  value: number,
+  cases: string[],
+  ngLocalization: NgLocalization,
+  locale?: string,
+): string {
   let key = `=${value}`;
 
   if (cases.indexOf(key) > -1) {

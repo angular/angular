@@ -13,7 +13,17 @@ import localeHe from '@angular/common/locales/he';
 import localeZh from '@angular/common/locales/zh';
 import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
-import {FormatWidth, FormStyle, getCurrencySymbol, getLocaleDateFormat, getLocaleDayNames, getLocaleDirection, getLocaleMonthNames, getNumberOfCurrencyDigits, TranslationWidth} from '../../src/i18n/locale_data_api';
+import {
+  FormatWidth,
+  FormStyle,
+  getCurrencySymbol,
+  getLocaleDateFormat,
+  getLocaleDayNames,
+  getLocaleDirection,
+  getLocaleMonthNames,
+  getNumberOfCurrencyDigits,
+  TranslationWidth,
+} from '../../src/i18n/locale_data_api';
 
 describe('locale data api', () => {
   beforeAll(() => {
@@ -73,31 +83,51 @@ describe('locale data api', () => {
 
   describe('getLocaleDayNames', () => {
     it('should return english short list of days', () => {
-      expect(
-          getLocaleDayNames('en-US', FormStyle.Format, TranslationWidth.Short),
-          )
-          .toEqual(['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']);
+      expect(getLocaleDayNames('en-US', FormStyle.Format, TranslationWidth.Short)).toEqual([
+        'Su',
+        'Mo',
+        'Tu',
+        'We',
+        'Th',
+        'Fr',
+        'Sa',
+      ]);
     });
 
     it('should return french short list of days', () => {
-      expect(
-          getLocaleDayNames('fr-CA', FormStyle.Format, TranslationWidth.Short),
-          )
-          .toEqual(['di', 'lu', 'ma', 'me', 'je', 've', 'sa']);
+      expect(getLocaleDayNames('fr-CA', FormStyle.Format, TranslationWidth.Short)).toEqual([
+        'di',
+        'lu',
+        'ma',
+        'me',
+        'je',
+        've',
+        'sa',
+      ]);
     });
 
     it('should return english wide list of days', () => {
-      expect(
-          getLocaleDayNames('en-US', FormStyle.Format, TranslationWidth.Wide),
-          )
-          .toEqual(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+      expect(getLocaleDayNames('en-US', FormStyle.Format, TranslationWidth.Wide)).toEqual([
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ]);
     });
 
     it('should return french wide list of days', () => {
-      expect(
-          getLocaleDayNames('fr-CA', FormStyle.Format, TranslationWidth.Wide),
-          )
-          .toEqual(['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']);
+      expect(getLocaleDayNames('fr-CA', FormStyle.Format, TranslationWidth.Wide)).toEqual([
+        'dimanche',
+        'lundi',
+        'mardi',
+        'mercredi',
+        'jeudi',
+        'vendredi',
+        'samedi',
+      ]);
     });
 
     it('should return the full short list of days after manipulations', () => {
@@ -117,34 +147,76 @@ describe('locale data api', () => {
   describe('getLocaleMonthNames', () => {
     it('should return english abbreviated list of month', () => {
       expect(getLocaleMonthNames('en-US', FormStyle.Format, TranslationWidth.Abbreviated)).toEqual([
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ]);
     });
 
     it('should return french abbreviated list of month', () => {
       expect(getLocaleMonthNames('fr-CA', FormStyle.Format, TranslationWidth.Abbreviated)).toEqual([
-        'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.',
-        'déc.'
+        'janv.',
+        'févr.',
+        'mars',
+        'avr.',
+        'mai',
+        'juin',
+        'juil.',
+        'août',
+        'sept.',
+        'oct.',
+        'nov.',
+        'déc.',
       ]);
     });
 
     it('should return english wide list of month', () => {
       expect(getLocaleMonthNames('en-US', FormStyle.Format, TranslationWidth.Wide)).toEqual([
-        'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-        'October', 'November', 'December'
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
       ]);
     });
 
     it('should return french wide list of month', () => {
       expect(getLocaleMonthNames('fr-CA', FormStyle.Format, TranslationWidth.Wide)).toEqual([
-        'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
-        'octobre', 'novembre', 'décembre'
+        'janvier',
+        'février',
+        'mars',
+        'avril',
+        'mai',
+        'juin',
+        'juillet',
+        'août',
+        'septembre',
+        'octobre',
+        'novembre',
+        'décembre',
       ]);
     });
 
     it('should return the full abbreviated list of month after manipulations', () => {
-      const month =
-          Array.from(getLocaleMonthNames('en-US', FormStyle.Format, TranslationWidth.Abbreviated));
+      const month = Array.from(
+        getLocaleMonthNames('en-US', FormStyle.Format, TranslationWidth.Abbreviated),
+      );
       month.splice(2);
       month.push('unexisting_month');
 
@@ -152,8 +224,20 @@ describe('locale data api', () => {
 
       expect(newMonth.length).toBe(12);
 
-      expect(newMonth).toEqual(
-          ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
+      expect(newMonth).toEqual([
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ]);
     });
   });
 });

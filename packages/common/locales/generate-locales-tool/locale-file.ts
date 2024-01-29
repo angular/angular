@@ -19,7 +19,10 @@ const WEEK_DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 /** Generate contents for the basic locale data file */
 export function generateLocale(
-    locale: string, localeData: CldrLocaleData, baseCurrencies: BaseCurrencies) {
+  locale: string,
+  localeData: CldrLocaleData,
+  baseCurrencies: BaseCurrencies,
+) {
   return `${fileHeader}
 const u = undefined;
 
@@ -29,24 +32,26 @@ export default ${generateBasicLocaleString(locale, localeData, baseCurrencies)};
 `;
 }
 
-
 /**
  * Collect up the basic locale data [ localeId, dateTime, number, currency, directionality,
  * pluralCase ].
  */
 export function generateBasicLocaleString(
-    locale: string, localeData: CldrLocaleData, baseCurrencies: BaseCurrencies) {
+  locale: string,
+  localeData: CldrLocaleData,
+  baseCurrencies: BaseCurrencies,
+) {
   let data = stringify([
-               locale,
-               ...getDateTimeTranslations(localeData),
-               ...getDateTimeSettings(localeData),
-               ...getNumberSettings(localeData),
-               ...getCurrencySettings(locale, localeData),
-               generateLocaleCurrencies(localeData, baseCurrencies),
-               getDirectionality(localeData),
-             ])
-                 // We remove "undefined" added by spreading arrays when there is no value
-                 .replace(/undefined/g, 'u');
+    locale,
+    ...getDateTimeTranslations(localeData),
+    ...getDateTimeSettings(localeData),
+    ...getNumberSettings(localeData),
+    ...getCurrencySettings(locale, localeData),
+    generateLocaleCurrencies(localeData, baseCurrencies),
+    getDirectionality(localeData),
+  ])
+    // We remove "undefined" added by spreading arrays when there is no value
+    .replace(/undefined/g, 'u');
 
   // adding plural function after, because we don't want it as a string. The function named `plural`
   // is expected to be available in the file. See `generateLocale` above.
@@ -58,11 +63,10 @@ export function generateBasicLocaleString(
  * Returns the writing direction for a locale
  * @returns 'rtl' | 'ltr'
  */
-function getDirectionality(localeData: CldrLocaleData): 'rtl'|'ltr' {
+function getDirectionality(localeData: CldrLocaleData): 'rtl' | 'ltr' {
   const rtl = localeData.get('scriptMetadata/{script}/rtl');
   return rtl === 'YES' ? 'rtl' : 'ltr';
 }
-
 
 /**
  * Returns dateTime data for a locale
@@ -70,11 +74,11 @@ function getDirectionality(localeData: CldrLocaleData): 'rtl'|'ltr' {
  */
 function getDateTimeSettings(localeData: CldrLocaleData) {
   return [
-    getFirstDayOfWeek(localeData), getWeekendRange(localeData), ...getDateTimeFormats(localeData)
+    getFirstDayOfWeek(localeData),
+    getWeekendRange(localeData),
+    ...getDateTimeFormats(localeData),
   ];
 }
-
-
 
 /**
  * Returns the number symbols and formats for a locale
@@ -122,15 +126,13 @@ function getNumberSettings(localeData: CldrLocaleData) {
  */
 function getWeekendRange(localeData: CldrLocaleData) {
   const startDay =
-      localeData.get(`supplemental/weekData/weekendStart/${localeData.attributes.territory}`) ||
-      localeData.get('supplemental/weekData/weekendStart/001');
+    localeData.get(`supplemental/weekData/weekendStart/${localeData.attributes.territory}`) ||
+    localeData.get('supplemental/weekData/weekendStart/001');
   const endDay =
-      localeData.get(`supplemental/weekData/weekendEnd/${localeData.attributes.territory}`) ||
-      localeData.get('supplemental/weekData/weekendEnd/001');
+    localeData.get(`supplemental/weekData/weekendEnd/${localeData.attributes.territory}`) ||
+    localeData.get('supplemental/weekData/weekendEnd/001');
   return [WEEK_DAYS.indexOf(startDay), WEEK_DAYS.indexOf(endDay)];
 }
-
-
 
 /**
  * Returns date-related translations for a locale
@@ -145,53 +147,58 @@ function getDateTimeTranslations(localeData: CldrLocaleData) {
   const dayPeriods = getDayPeriodsAmPm(localeData);
 
   const dayPeriodsFormat = removeDuplicates([
-    Object.values(dayPeriods.format.narrow), Object.values(dayPeriods.format.abbreviated),
-    Object.values(dayPeriods.format.wide)
+    Object.values(dayPeriods.format.narrow),
+    Object.values(dayPeriods.format.abbreviated),
+    Object.values(dayPeriods.format.wide),
   ]);
 
   const dayPeriodsStandalone = removeDuplicates([
     Object.values(dayPeriods['stand-alone'].narrow),
     Object.values(dayPeriods['stand-alone'].abbreviated),
-    Object.values(dayPeriods['stand-alone'].wide)
+    Object.values(dayPeriods['stand-alone'].wide),
   ]);
 
   const daysFormat = removeDuplicates([
-    Object.values(dayNames.format.narrow), Object.values(dayNames.format.abbreviated),
-    Object.values(dayNames.format.wide), Object.values(dayNames.format.short)
+    Object.values(dayNames.format.narrow),
+    Object.values(dayNames.format.abbreviated),
+    Object.values(dayNames.format.wide),
+    Object.values(dayNames.format.short),
   ]);
 
   const daysStandalone = removeDuplicates([
     Object.values(dayNames['stand-alone'].narrow),
-    Object.values(dayNames['stand-alone'].abbreviated), Object.values(dayNames['stand-alone'].wide),
-    Object.values(dayNames['stand-alone'].short)
+    Object.values(dayNames['stand-alone'].abbreviated),
+    Object.values(dayNames['stand-alone'].wide),
+    Object.values(dayNames['stand-alone'].short),
   ]);
 
   const monthsFormat = removeDuplicates([
-    Object.values(monthNames.format.narrow), Object.values(monthNames.format.abbreviated),
-    Object.values(monthNames.format.wide)
+    Object.values(monthNames.format.narrow),
+    Object.values(monthNames.format.abbreviated),
+    Object.values(monthNames.format.wide),
   ]);
 
   const monthsStandalone = removeDuplicates([
     Object.values(monthNames['stand-alone'].narrow),
     Object.values(monthNames['stand-alone'].abbreviated),
-    Object.values(monthNames['stand-alone'].wide)
+    Object.values(monthNames['stand-alone'].wide),
   ]);
 
   const eras = removeDuplicates([
     [erasNames.eraNarrow['0'], erasNames.eraNarrow['1']],
     [erasNames.eraAbbr['0'], erasNames.eraAbbr['1']],
-    [erasNames.eraNames['0'], erasNames.eraNames['1']]
+    [erasNames.eraNames['0'], erasNames.eraNames['1']],
   ]);
 
   const dateTimeTranslations = [
     ...removeDuplicates([dayPeriodsFormat, dayPeriodsStandalone]),
     ...removeDuplicates([daysFormat, daysStandalone]),
-    ...removeDuplicates([monthsFormat, monthsStandalone]), eras
+    ...removeDuplicates([monthsFormat, monthsStandalone]),
+    eras,
   ];
 
   return dateTimeTranslations;
 }
-
 
 /**
  * Returns date, time and dateTime formats for a locale
@@ -201,8 +208,10 @@ function getDateTimeTranslations(localeData: CldrLocaleData) {
 function getDateTimeFormats(localeData: CldrLocaleData) {
   function getFormats(data: any) {
     return removeDuplicates([
-      data.short._value || data.short, data.medium._value || data.medium,
-      data.long._value || data.long, data.full._value || data.full
+      data.short._value || data.short,
+      data.medium._value || data.medium,
+      data.long._value || data.long,
+      data.full._value || data.full,
     ]);
   }
 
@@ -212,7 +221,6 @@ function getDateTimeFormats(localeData: CldrLocaleData) {
 
   return [getFormats(dateFormats), getFormats(timeFormats), getFormats(dateTimeFormats)];
 }
-
 
 /**
  * Returns the first day of the week, based on US week days

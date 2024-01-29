@@ -6,16 +6,34 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  Directive,
+  DoCheck,
+  EmbeddedViewRef,
+  Input,
+  IterableChangeRecord,
+  IterableChanges,
+  IterableDiffer,
+  IterableDiffers,
+  NgIterable,
+  TemplateRef,
+  TrackByFunction,
+  ViewContainerRef,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
-
 
 /**
  * @publicApi
  */
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
-  constructor(public $implicit: T, public ngForOf: U, public index: number, public count: number) {}
+  constructor(
+    public $implicit: T,
+    public ngForOf: U,
+    public index: number,
+    public count: number,
+  ) {}
 
   get first(): boolean {
     return this.index === 0;
@@ -142,7 +160,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * [template input variable](guide/structural-directives#shorthand).
    */
   @Input()
-  set ngForOf(ngForOf: U&NgIterable<T>|undefined|null) {
+  set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null) {
     this._ngForOf = ngForOf;
     this._ngForOfDirty = true;
   }
@@ -168,8 +186,9 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   set ngForTrackBy(fn: TrackByFunction<T>) {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && fn != null && typeof fn !== 'function') {
       console.warn(
-          `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
-          `See https://angular.io/api/common/NgForOf#change-propagation for more information.`);
+        `trackBy must be a function, but received ${JSON.stringify(fn)}. ` +
+          `See https://angular.io/api/common/NgForOf#change-propagation for more information.`,
+      );
     }
     this._trackByFn = fn;
   }
@@ -178,17 +197,19 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     return this._trackByFn;
   }
 
-  private _ngForOf: U|undefined|null = null;
+  private _ngForOf: U | undefined | null = null;
   private _ngForOfDirty: boolean = true;
-  private _differ: IterableDiffer<T>|null = null;
+  private _differ: IterableDiffer<T> | null = null;
   // TODO(issue/24571): remove '!'
   // waiting for microsoft/typescript#43662 to allow the return type `TrackByFunction|undefined` for
   // the getter
   private _trackByFn!: TrackByFunction<T>;
 
   constructor(
-      private _viewContainer: ViewContainerRef,
-      private _template: TemplateRef<NgForOfContext<T, U>>, private _differs: IterableDiffers) {}
+    private _viewContainer: ViewContainerRef,
+    private _template: TemplateRef<NgForOfContext<T, U>>,
+    private _differs: IterableDiffers,
+  ) {}
 
   /**
    * A reference to the template that is stamped out for each item in the iterable.
@@ -220,8 +241,9 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
             // is only present in development builds.
             this._differ = this._differs.find(value).create(this.ngForTrackBy);
           } catch {
-            let errorMessage = `Cannot find a differ supporting object '${value}' of type '` +
-                `${getTypeName(value)}'. NgFor only supports binding to Iterables, such as Arrays.`;
+            let errorMessage =
+              `Cannot find a differ supporting object '${value}' of type '` +
+              `${getTypeName(value)}'. NgFor only supports binding to Iterables, such as Arrays.`;
             if (typeof value === 'object') {
               errorMessage += ' Did you mean to use the keyvalue pipe?';
             }
@@ -243,24 +265,29 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   private _applyChanges(changes: IterableChanges<T>) {
     const viewContainer = this._viewContainer;
     changes.forEachOperation(
-        (item: IterableChangeRecord<T>, adjustedPreviousIndex: number|null,
-         currentIndex: number|null) => {
-          if (item.previousIndex == null) {
-            // NgForOf is never "null" or "undefined" here because the differ detected
-            // that a new item needs to be inserted from the iterable. This implies that
-            // there is an iterable value for "_ngForOf".
-            viewContainer.createEmbeddedView(
-                this._template, new NgForOfContext<T, U>(item.item, this._ngForOf!, -1, -1),
-                currentIndex === null ? undefined : currentIndex);
-          } else if (currentIndex == null) {
-            viewContainer.remove(
-                adjustedPreviousIndex === null ? undefined : adjustedPreviousIndex);
-          } else if (adjustedPreviousIndex !== null) {
-            const view = viewContainer.get(adjustedPreviousIndex)!;
-            viewContainer.move(view, currentIndex);
-            applyViewChange(view as EmbeddedViewRef<NgForOfContext<T, U>>, item);
-          }
-        });
+      (
+        item: IterableChangeRecord<T>,
+        adjustedPreviousIndex: number | null,
+        currentIndex: number | null,
+      ) => {
+        if (item.previousIndex == null) {
+          // NgForOf is never "null" or "undefined" here because the differ detected
+          // that a new item needs to be inserted from the iterable. This implies that
+          // there is an iterable value for "_ngForOf".
+          viewContainer.createEmbeddedView(
+            this._template,
+            new NgForOfContext<T, U>(item.item, this._ngForOf!, -1, -1),
+            currentIndex === null ? undefined : currentIndex,
+          );
+        } else if (currentIndex == null) {
+          viewContainer.remove(adjustedPreviousIndex === null ? undefined : adjustedPreviousIndex);
+        } else if (adjustedPreviousIndex !== null) {
+          const view = viewContainer.get(adjustedPreviousIndex)!;
+          viewContainer.move(view, currentIndex);
+          applyViewChange(view as EmbeddedViewRef<NgForOfContext<T, U>>, item);
+        }
+      },
+    );
 
     for (let i = 0, ilen = viewContainer.length; i < ilen; i++) {
       const viewRef = <EmbeddedViewRef<NgForOfContext<T, U>>>viewContainer.get(i);
@@ -282,8 +309,10 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * The presence of this method is a signal to the Ivy template type-check compiler that the
    * `NgForOf` structural directive renders its template with a specific context type.
    */
-  static ngTemplateContextGuard<T, U extends NgIterable<T>>(dir: NgForOf<T, U>, ctx: any):
-      ctx is NgForOfContext<T, U> {
+  static ngTemplateContextGuard<T, U extends NgIterable<T>>(
+    dir: NgForOf<T, U>,
+    ctx: any,
+  ): ctx is NgForOfContext<T, U> {
     return true;
   }
 }
@@ -294,7 +323,9 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 export {NgForOf as NgFor};
 
 function applyViewChange<T>(
-    view: EmbeddedViewRef<NgForOfContext<T>>, record: IterableChangeRecord<T>) {
+  view: EmbeddedViewRef<NgForOfContext<T>>,
+  record: IterableChangeRecord<T>,
+) {
   view.context.$implicit = record.item;
 }
 
