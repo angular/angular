@@ -156,6 +156,12 @@ export abstract class ComponentFixture<T> {
   }
 }
 
+/**
+ * ComponentFixture behavior that actually attaches the component to the application to ensure
+ * behaviors between fixture and application do not diverge. `detectChanges` is disabled by default
+ * (instead, tests should wait for the scheduler to detect changes), `whenStable` is directly the
+ * `ApplicationRef.isStable`, and `autoDetectChanges` cannot be disabled.
+ */
 export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   private readonly disableDetectChangesError =
       inject(AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, {optional: true}) ?? false;
@@ -171,7 +177,9 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
           'Do not use `detectChanges` directly when using zoneless change detection.' +
           ' Instead, wait for the next render or `fixture.whenStable`.');
     } else if (!checkNoChanges) {
-      throw new Error(`I can't do that, Dave.`);
+      throw new Error(
+          'Cannot disable `checkNoChanges` in this configuration. ' +
+          'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.');
     }
     this._effectRunner.flush();
     this._appRef.tick();
@@ -194,6 +202,9 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   }
 }
 
+/**
+ * ComponentFixture behavior that attempts to act as a "mini application".
+ */
 export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private _subscriptions = new Subscription();
   private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
