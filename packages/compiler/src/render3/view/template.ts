@@ -805,6 +805,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // TODO (matsko): revisit this once FW-959 is approached
     const emptyValueBindInstruction = o.literal(undefined);
     const propertyBindings: Omit<Instruction, 'reference'>[] = [];
+    const twoWayBindings: Omit<Instruction, 'reference'>[] = [];
     const attributeBindings: Omit<Instruction, 'reference'>[] = [];
 
     // Generate element input bindings
@@ -866,7 +867,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
           this.allocateBindingSlots(value);
 
-          if (inputType === BindingType.Property || inputType === BindingType.TwoWay) {
+          if (inputType === BindingType.Property) {
             if (value instanceof Interpolation) {
               // prop="{{value}}" and friends
               this.interpolatedUpdateInstruction(
@@ -881,6 +882,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
                     () => this.convertPropertyBinding(value), attrName, params)
               });
             }
+          } else if (inputType === BindingType.TwoWay) {
+            // Property side of a two-way binding expression (e.g. `[(prop)]="value"`).
+            twoWayBindings.push({
+              span: input.sourceSpan,
+              paramsOrFn: getBindingFunctionParams(
+                  () => this.convertPropertyBinding(value), attrName, params)
+            });
           } else if (inputType === BindingType.Attribute) {
             if (value instanceof Interpolation && getInterpolationArgsLength(value) > 1) {
               // attr.name="text{{value}}" and friends
@@ -913,6 +921,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     for (const propertyBinding of propertyBindings) {
       this.updateInstructionWithAdvance(
           elementIndex, propertyBinding.span, R3.property, propertyBinding.paramsOrFn);
+    }
+
+    for (const twoWayBinding of twoWayBindings) {
+      this.updateInstructionWithAdvance(
+          elementIndex, twoWayBinding.span, R3.twoWayProperty, twoWayBinding.paramsOrFn);
     }
 
     for (const attributeBinding of attributeBindings) {

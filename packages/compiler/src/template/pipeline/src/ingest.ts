@@ -846,8 +846,7 @@ function convertAstWithInterpolation(
 // TODO: Can we populate Template binding kinds in ingest?
 const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
   [e.BindingType.Property, ir.BindingKind.Property],
-  // TODO(crisbeto): we'll need a different BindingKind for two-way bindings.
-  [e.BindingType.TwoWay, ir.BindingKind.Property],
+  [e.BindingType.TwoWay, ir.BindingKind.TwoWayProperty],
   [e.BindingType.Attribute, ir.BindingKind.Attribute],
   [e.BindingType.Class, ir.BindingKind.ClassName],
   [e.BindingType.Style, ir.BindingKind.StyleProperty],
@@ -1043,15 +1042,22 @@ function createTemplateBinding(
   // If this is a structural template, then several kinds of bindings should not result in an
   // update instruction.
   if (templateKind === ir.TemplateKind.Structural) {
-    if (!isStructuralTemplateAttribute &&
-        (type === e.BindingType.Property || type === e.BindingType.TwoWay ||
-         type === e.BindingType.Class || type === e.BindingType.Style)) {
-      // Because this binding doesn't really target the ng-template, it must be a binding on an
-      // inner node of a structural template. We can't skip it entirely, because we still need it on
-      // the ng-template's consts (e.g. for the purposes of directive matching). However, we should
-      // not generate an update instruction for it.
-      return ir.createExtractedAttributeOp(
-          xref, ir.BindingKind.Property, null, name, null, null, i18nMessage, securityContext);
+    if (!isStructuralTemplateAttribute) {
+      switch (type) {
+        case e.BindingType.Property:
+        case e.BindingType.Class:
+        case e.BindingType.Style:
+          // Because this binding doesn't really target the ng-template, it must be a binding on an
+          // inner node of a structural template. We can't skip it entirely, because we still need
+          // it on the ng-template's consts (e.g. for the purposes of directive matching). However,
+          // we should not generate an update instruction for it.
+          return ir.createExtractedAttributeOp(
+              xref, ir.BindingKind.Property, null, name, null, null, i18nMessage, securityContext);
+        case e.BindingType.TwoWay:
+          return ir.createExtractedAttributeOp(
+              xref, ir.BindingKind.TwoWayProperty, null, name, null, null, i18nMessage,
+              securityContext);
+      }
     }
 
     if (!isTextBinding && (type === e.BindingType.Attribute || type === e.BindingType.Animation)) {

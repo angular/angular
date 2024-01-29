@@ -98,7 +98,12 @@ const FLYWEIGHT_ARRAY: ReadonlyArray<o.Expression> = Object.freeze<o.Expression[
  */
 class ElementAttributes {
   private known = new Map<ir.BindingKind, Set<string>>();
-  private byKind = new Map<ir.BindingKind, o.Expression[]>;
+  private byKind = new Map<
+      // Property bindings are excluded here, because they need to be tracked in the same
+      // array to maintain their order. They're tracked in the `propertyBindings` array.
+      Exclude<ir.BindingKind, ir.BindingKind.Property|ir.BindingKind.TwoWayProperty>,
+      o.Expression[]>;
+  private propertyBindings: o.Expression[]|null = null;
 
   projectAs: string|null = null;
 
@@ -115,7 +120,7 @@ class ElementAttributes {
   }
 
   get bindings(): ReadonlyArray<o.Expression> {
-    return this.byKind.get(ir.BindingKind.Property) ?? FLYWEIGHT_ARRAY;
+    return this.propertyBindings ?? FLYWEIGHT_ARRAY;
   }
 
   get template(): ReadonlyArray<o.Expression> {
@@ -128,7 +133,7 @@ class ElementAttributes {
 
   constructor(private compatibility: ir.CompatibilityMode) {}
 
-  isKnown(kind: ir.BindingKind, name: string, value: o.Expression|null) {
+  private isKnown(kind: ir.BindingKind, name: string, value: o.Expression|null) {
     const nameToValue = this.known.get(kind) ?? new Set<string>();
     this.known.set(kind, nameToValue);
     if (nameToValue.has(name)) {
@@ -182,10 +187,15 @@ class ElementAttributes {
   }
 
   private arrayFor(kind: ir.BindingKind): o.Expression[] {
-    if (!this.byKind.has(kind)) {
-      this.byKind.set(kind, []);
+    if (kind === ir.BindingKind.Property || kind === ir.BindingKind.TwoWayProperty) {
+      this.propertyBindings ??= [];
+      return this.propertyBindings;
+    } else {
+      if (!this.byKind.has(kind)) {
+        this.byKind.set(kind, []);
+      }
+      return this.byKind.get(kind)!;
     }
-    return this.byKind.get(kind)!;
   }
 }
 

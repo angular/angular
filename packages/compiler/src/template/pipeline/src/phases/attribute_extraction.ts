@@ -46,6 +46,14 @@ export function extractAttributes(job: CompilationJob): void {
                 lookupElement(elements, op.target));
           }
           break;
+        case ir.OpKind.TwoWayProperty:
+          ir.OpList.insertBefore<ir.CreateOp>(
+              ir.createExtractedAttributeOp(
+                  op.target, ir.BindingKind.TwoWayProperty, null, op.name, /* expression */ null,
+                  /* i18nContext */ null,
+                  /* i18nMessage */ null, op.securityContext),
+              lookupElement(elements, op.target));
+          break;
         case ir.OpKind.StyleProp:
         case ir.OpKind.ClassProp:
           // TODO: Can style or class bindings be i18n attributes?

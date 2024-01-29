@@ -241,6 +241,7 @@ export {
   ɵɵtextInterpolateV,
   ɵɵviewQuery,
   ɵɵviewQuerySignal,
+  ɵɵtwoWayProperty,
   ɵgetUnknownElementStrictMode,
   ɵsetUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode,
