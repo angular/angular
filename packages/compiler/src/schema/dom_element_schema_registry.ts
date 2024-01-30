@@ -298,22 +298,6 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
-    if (schemaMetas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)) {
-      return true;
-    }
-
-    if (tagName.indexOf('-') > -1) {
-      if (isNgContainer(tagName) || isNgContent(tagName)) {
-        return false;
-      }
-
-      if (schemaMetas.some((schema) => schema.name === CUSTOM_ELEMENTS_SCHEMA.name)) {
-        // Can't tell now as we don't know which properties a custom element will get
-        // once it is instantiated
-        return true;
-      }
-    }
-
     const elementProperties =
         this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
     return elementProperties.has(propName);
@@ -472,4 +456,25 @@ function _isPixelDimensionStyle(prop: string): boolean {
     default:
       return false;
   }
+}
+
+// TODO
+export function shouldSkipPropertyChecking(tagName: string, schemas: SchemaMetadata[]): boolean {
+  if (schemas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)) {
+    return true;
+  }
+
+  if (tagName.indexOf('-') > -1) {
+    if (isNgContainer(tagName) || isNgContent(tagName)) {
+      return false;
+    }
+
+    if (schemas.some((schema) => schema.name === CUSTOM_ELEMENTS_SCHEMA.name)) {
+      // Can't tell now as we don't know which properties a custom element will get
+      // once it is instantiated
+      return true;
+    }
+  }
+
+  return false;
 }
