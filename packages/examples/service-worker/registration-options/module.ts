@@ -26,17 +26,10 @@ export class AppComponent {
 
 @NgModule({
   // #enddocregion registration-options
-  bootstrap: [
-    AppComponent,
-  ],
-  declarations: [
-    AppComponent,
-  ],
+  bootstrap: [AppComponent],
+  declarations: [AppComponent],
   // #docregion registration-options
-  imports: [
-    BrowserModule,
-    ServiceWorkerModule.register('ngsw-worker.js'),
-  ],
+  imports: [BrowserModule, ServiceWorkerModule.register('ngsw-worker.js')],
   providers: [
     {
       provide: SwRegistrationOptions,
@@ -44,6 +37,5 @@ export class AppComponent {
     },
   ],
 })
-export class AppModule {
-}
+export class AppModule {}
 // #enddocregion registration-options

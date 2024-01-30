@@ -22,7 +22,7 @@ export class Pane {
 
     <button (click)="toggle()">Toggle</button>
 
-    <div>Selected: {{selectedPane}}</div>
+    <div>Selected: {{ selectedPane }}</div>
   `,
 })
 export class ViewChildComp {

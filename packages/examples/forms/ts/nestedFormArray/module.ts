@@ -14,9 +14,8 @@ import {NestedFormArray} from './nested_form_array_example';
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
   declarations: [NestedFormArray],
-  bootstrap: [NestedFormArray]
+  bootstrap: [NestedFormArray],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {NestedFormArray as AppComponent};

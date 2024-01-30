@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {browser, by, element, ElementFinder} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../../test-utils';

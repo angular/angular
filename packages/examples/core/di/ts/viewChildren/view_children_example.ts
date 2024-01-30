@@ -23,7 +23,7 @@ export class Pane {
 
     <button (click)="show()">Show 3</button>
 
-    <div>panes: {{serializedPanes}}</div>
+    <div>panes: {{ serializedPanes }}</div>
   `,
 })
 export class ViewChildrenComp implements AfterViewInit {
@@ -45,7 +45,7 @@ export class ViewChildrenComp implements AfterViewInit {
 
   calculateSerializedPanes() {
     setTimeout(() => {
-      this.serializedPanes = this.panes.map(p => p.id).join(', ');
+      this.serializedPanes = this.panes.map((p) => p.id).join(', ');
     }, 0);
   }
 }

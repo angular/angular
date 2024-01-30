@@ -38,8 +38,9 @@ describe('ngIf', () => {
       waitForElement(comp);
       expect(element.all(by.css(comp)).get(0).getText()).toEqual('hide show = true\nText to show');
       element(by.css(comp + ' button')).click();
-      expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('show show = false\nAlternate text while primary text is hidden');
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+        'show show = false\nAlternate text while primary text is hidden',
+      );
     });
   });
 
@@ -49,14 +50,23 @@ describe('ngIf', () => {
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('hideSwitch Primary show = true\nPrimary text to show');
-      element.all(by.css(comp + ' button')).get(1).click();
-      expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('hideSwitch Primary show = true\nSecondary text to show');
-      element.all(by.css(comp + ' button')).get(0).click();
-      expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('showSwitch Primary show = false\nAlternate text while primary text is hidden');
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+        'hideSwitch Primary show = true\nPrimary text to show',
+      );
+      element
+        .all(by.css(comp + ' button'))
+        .get(1)
+        .click();
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+        'hideSwitch Primary show = true\nSecondary text to show',
+      );
+      element
+        .all(by.css(comp + ' button'))
+        .get(0)
+        .click();
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+        'showSwitch Primary show = false\nAlternate text while primary text is hidden',
+      );
     });
   });
 
@@ -65,8 +75,9 @@ describe('ngIf', () => {
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('Next User\nWaiting... (user is null)');
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(
+        'Next User\nWaiting... (user is null)',
+      );
       element(by.css(comp + ' button')).click();
       expect(element.all(by.css(comp)).get(0).getText()).toEqual('Next User\nHello Smith, John!');
     });

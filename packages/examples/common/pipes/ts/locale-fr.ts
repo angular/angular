@@ -22,21 +22,42 @@ export default [
   [['AM', 'PM'], u, u],
   u,
   [
-    ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
+    ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+    ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
     ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'],
-    ['di', 'lu', 'ma', 'me', 'je', 've', 'sa']
+    ['di', 'lu', 'ma', 'me', 'je', 've', 'sa'],
   ],
   u,
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     [
-      'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.',
-      'déc.'
+      'janv.',
+      'févr.',
+      'mars',
+      'avr.',
+      'mai',
+      'juin',
+      'juil.',
+      'août',
+      'sept.',
+      'oct.',
+      'nov.',
+      'déc.',
     ],
     [
-      'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre',
-      'octobre', 'novembre', 'décembre'
-    ]
+      'janvier',
+      'février',
+      'mars',
+      'avril',
+      'mai',
+      'juin',
+      'juillet',
+      'août',
+      'septembre',
+      'octobre',
+      'novembre',
+      'décembre',
+    ],
   ],
   u,
   [['av. J.-C.', 'ap. J.-C.'], u, ['avant Jésus-Christ', 'après Jésus-Christ']],
@@ -44,7 +65,7 @@ export default [
   [6, 0],
   ['dd/MM/y', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  ['{1} {0}', '{1} \'à\' {0}', u, u],
+  ['{1} {0}', "{1} 'à' {0}", u, u],
   [',', '\u202f', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'],
   'EUR',
@@ -94,8 +115,8 @@ export default [
     'WST': ['$WS'],
     'XCD': [u, '$'],
     'XPF': ['FCFP'],
-    'ZMW': [u, 'Kw']
+    'ZMW': [u, 'Kw'],
   },
   'ltr',
-  plural
+  plural,
 ];

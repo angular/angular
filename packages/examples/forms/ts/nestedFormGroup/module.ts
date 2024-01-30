@@ -14,9 +14,8 @@ import {NestedFormGroupComp} from './nested_form_group_example';
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
   declarations: [NestedFormGroupComp],
-  bootstrap: [NestedFormGroupComp]
+  bootstrap: [NestedFormGroupComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {NestedFormGroupComp as AppComponent};

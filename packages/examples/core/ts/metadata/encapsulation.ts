@@ -15,21 +15,21 @@ import {Component, ViewEncapsulation} from '@angular/core';
     <h1>Hello World!</h1>
     <span class="red">Shadow DOM Rocks!</span>
   `,
-  styles: [`
-    :host {
-      display: block;
-      border: 1px solid black;
-    }
-    h1 {
-      color: blue;
-    }
-    .red {
-      background-color: red;
-    }
-
-  `],
-  encapsulation: ViewEncapsulation.ShadowDom
+  styles: [
+    `
+      :host {
+        display: block;
+        border: 1px solid black;
+      }
+      h1 {
+        color: blue;
+      }
+      .red {
+        background-color: red;
+      }
+    `,
+  ],
+  encapsulation: ViewEncapsulation.ShadowDom,
 })
-class MyApp {
-}
+class MyApp {}
 // #enddocregion

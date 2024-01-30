@@ -33,11 +33,9 @@ describe('navigate for test examples', () => {
 
   it('testing a guard', async () => {
     @Component({standalone: true, template: ''})
-    class AdminComponent {
-    }
+    class AdminComponent {}
     @Component({standalone: true, template: ''})
-    class LoginComponent {
-    }
+    class LoginComponent {}
 
     // #docregion Guard
     let isLoggedIn = false;
@@ -67,10 +65,13 @@ describe('navigate for test examples', () => {
     @Component({
       standalone: true,
       imports: [AsyncPipe],
-      template: `search: {{(route.queryParams | async)?.query}}`
+      template: `search: {{ (route.queryParams | async)?.query }}`,
     })
     class SearchCmp {
-      constructor(readonly route: ActivatedRoute, readonly router: Router) {}
+      constructor(
+        readonly route: ActivatedRoute,
+        readonly router: Router,
+      ) {}
 
       async searchFor(thing: string) {
         await this.router.navigate([], {queryParams: {query: thing}});

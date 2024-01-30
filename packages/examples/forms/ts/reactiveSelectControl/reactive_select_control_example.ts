@@ -21,8 +21,8 @@ import {FormControl, FormGroup} from '@angular/forms';
       </select>
     </form>
 
-     <p>Form value: {{ form.value | json }}</p>
-     <!-- {state: {name: 'New York', abbrev: 'NY'} } -->
+    <p>Form value: {{ form.value | json }}</p>
+    <!-- {state: {name: 'New York', abbrev: 'NY'} } -->
   `,
 })
 export class ReactiveSelectComp {

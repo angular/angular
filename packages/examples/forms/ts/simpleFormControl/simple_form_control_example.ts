@@ -13,12 +13,12 @@ import {FormControl, Validators} from '@angular/forms';
 @Component({
   selector: 'example-app',
   template: `
-     <input [formControl]="control">
+    <input [formControl]="control" />
 
-     <p>Value: {{ control.value }}</p>
-     <p>Validation status: {{ control.status }}</p>
+    <p>Value: {{ control.value }}</p>
+    <p>Validation status: {{ control.status }}</p>
 
-     <button (click)="setValue()">Set value</button>
+    <button (click)="setValue()">Set value</button>
   `,
 })
 export class SimpleFormControl {
