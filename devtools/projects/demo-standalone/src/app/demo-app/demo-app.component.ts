@@ -38,7 +38,7 @@ import {ZippyComponent} from './zippy.component';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [HeavyComponent, RouterOutlet, JsonPipe, SamplePropertiesComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DemoAppComponent {
   @ViewChild(ZippyComponent) zippy!: ZippyComponent;

@@ -355,9 +355,9 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
 
   const providers = getInjectorProviders(injector);
   const providersCount = providers.length;
-  const providersNames =
-      providers.map(p => (p.token as Function).name ) // both Type<unknown> | InjectionToken<unknown> are functions (with `name` property)
-          .filter(name =>  name);  // filtering out undefined ones (InjectionTokens)
+  const providersNames = providers
+    .map((p) => (p.token as Function).name) // both Type<unknown> | InjectionToken<unknown> are functions (with `name` property)
+    .filter((name) => name); // filtering out undefined ones (InjectionTokens)
 
   if (metadata.type === 'null') {
     return {type: 'null', name: 'Null Injector', providers: 0, providersNames};
@@ -385,7 +385,7 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
       type: 'environment',
       name: stripUnderscore(metadata.source ?? ''),
       providers: providersCount,
-      providersNames
+      providersNames,
     };
   }
 

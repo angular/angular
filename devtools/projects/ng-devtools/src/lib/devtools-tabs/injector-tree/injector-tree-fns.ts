@@ -224,7 +224,9 @@ export function filterOutAngularInjectors(injectorPaths: InjectorPath[]): Inject
 }
 
 export function filterOutInjectorsWithoutCertainToken(
-    injectorPaths: InjectorPath[], token: string): InjectorPath[] {
+  injectorPaths: InjectorPath[],
+  token: string,
+): InjectorPath[] {
   if (token.length > 0) {
     const nameFilter = token.toLocaleLowerCase();
     for (const injectorPath of injectorPaths) {
@@ -232,7 +234,7 @@ export function filterOutInjectorsWithoutCertainToken(
         if (injector.type === 'null') {
           return false;
         }
-        return injector.providersNames?.some(providerName => {
+        return injector.providersNames?.some((providerName) => {
           return providerName.toLowerCase().includes(nameFilter);
         });
       });

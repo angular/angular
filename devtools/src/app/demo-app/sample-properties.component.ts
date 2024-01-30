@@ -15,24 +15,24 @@ import {SampleService} from './sample.service';
   selector: 'app-sample-properties',
   providers: [SampleService],
   template: `
-  Sample Properties:
-  {{ exampleBoolean }}
-  {{ exampleString }}
-  {{ exampleSymbol }}
-  {{ exampleNumber }}
-  {{ exampleUndefined }}
-  {{ exampleNull }}
-  {{ exampleObject }}
-  {{ exampleArray }}
-  {{ exampleSet }}
-  {{ exampleMap }}
-  {{ exampleDate }}
-  {{ exampleFunction }}
-  {{ signalPrimitive }}
-  {{ computedPrimitive }}
-  {{ signalObject }}
-  {{ computedObject }}
-  {{ signalSymbol }}
+    Sample Properties:
+    {{ exampleBoolean }}
+    {{ exampleString }}
+    {{ exampleSymbol }}
+    {{ exampleNumber }}
+    {{ exampleUndefined }}
+    {{ exampleNull }}
+    {{ exampleObject }}
+    {{ exampleArray }}
+    {{ exampleSet }}
+    {{ exampleMap }}
+    {{ exampleDate }}
+    {{ exampleFunction }}
+    {{ signalPrimitive }}
+    {{ computedPrimitive }}
+    {{ signalObject }}
+    {{ computedObject }}
+    {{ signalSymbol }}
   `,
   styles: [''],
 })

@@ -6,14 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, EventEmitter, Injectable, Input, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Injectable,
+  Input,
+  Output,
+} from '@angular/core';
 
 import {Todo} from './todo';
 import {TooltipDirective} from './tooltip.directive';
 
 @Injectable()
-export class MyServiceTodo {
-}
+export class MyServiceTodo {}
 
 @Component({
   templateUrl: 'todo.component.html',
@@ -22,7 +28,7 @@ export class MyServiceTodo {
   styleUrls: ['./todo.component.scss'],
   standalone: true,
   imports: [TooltipDirective],
-  providers: [MyServiceTodo]
+  providers: [MyServiceTodo],
 })
 export class TodoComponent {
   @Input() todo!: Todo;
