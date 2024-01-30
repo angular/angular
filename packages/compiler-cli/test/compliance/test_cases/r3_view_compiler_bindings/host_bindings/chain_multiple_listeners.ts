@@ -5,13 +5,12 @@ import {Directive, HostListener} from '@angular/core';
   host: {
     '(mousedown)': 'mousedown()',
     '(mouseup)': 'mouseup()',
-  }
+  },
 })
 export class MyDirective {
   mousedown() {}
   mouseup() {}
 
   @HostListener('click')
-  click() {
-  }
+  click() {}
 }

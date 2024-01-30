@@ -3,7 +3,7 @@ import {Component, HostBinding, NgModule} from '@angular/core';
 @Component({
   selector: 'my-component',
   template: '',
-  host: {'[style.height.pt]': 'myHeightProp', '[class.bar]': 'myBarClass'}
+  host: {'[style.height.pt]': 'myHeightProp', '[class.bar]': 'myBarClass'},
 })
 export class MyComponent {
   myHeightProp = 20;
@@ -19,5 +19,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

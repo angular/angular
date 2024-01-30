@@ -55,36 +55,40 @@ describe('HtmlLexer', () => {
 
     it('should skip over leading trivia for source-span start', () => {
       expect(
-          tokenizeAndHumanizeFullStart('<t>\n \t a</t>', {leadingTriviaChars: ['\n', ' ', '\t']}))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '0:0', '0:0'],
-            [TokenType.TAG_OPEN_END, '0:2', '0:2'],
-            [TokenType.TEXT, '1:3', '0:3'],
-            [TokenType.TAG_CLOSE, '1:4', '1:4'],
-            [TokenType.EOF, '1:8', '1:8'],
-          ]);
+        tokenizeAndHumanizeFullStart('<t>\n \t a</t>', {leadingTriviaChars: ['\n', ' ', '\t']}),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '0:0', '0:0'],
+        [TokenType.TAG_OPEN_END, '0:2', '0:2'],
+        [TokenType.TEXT, '1:3', '0:3'],
+        [TokenType.TAG_CLOSE, '1:4', '1:4'],
+        [TokenType.EOF, '1:8', '1:8'],
+      ]);
     });
   });
 
   describe('content ranges', () => {
     it('should only process the text within the range', () => {
-      expect(tokenizeAndHumanizeSourceSpans(
-                 'pre 1\npre 2\npre 3 `line 1\nline 2\nline 3` post 1\n post 2\n post 3',
-                 {range: {startPos: 19, startLine: 2, startCol: 7, endPos: 39}}))
-          .toEqual([
-            [TokenType.TEXT, 'line 1\nline 2\nline 3'],
-            [TokenType.EOF, ''],
-          ]);
+      expect(
+        tokenizeAndHumanizeSourceSpans(
+          'pre 1\npre 2\npre 3 `line 1\nline 2\nline 3` post 1\n post 2\n post 3',
+          {range: {startPos: 19, startLine: 2, startCol: 7, endPos: 39}},
+        ),
+      ).toEqual([
+        [TokenType.TEXT, 'line 1\nline 2\nline 3'],
+        [TokenType.EOF, ''],
+      ]);
     });
 
     it('should take into account preceding (non-processed) lines and columns', () => {
-      expect(tokenizeAndHumanizeLineColumn(
-                 'pre 1\npre 2\npre 3 `line 1\nline 2\nline 3` post 1\n post 2\n post 3',
-                 {range: {startPos: 19, startLine: 2, startCol: 7, endPos: 39}}))
-          .toEqual([
-            [TokenType.TEXT, '2:7'],
-            [TokenType.EOF, '4:6'],
-          ]);
+      expect(
+        tokenizeAndHumanizeLineColumn(
+          'pre 1\npre 2\npre 3 `line 1\nline 2\nline 3` post 1\n post 2\n post 3',
+          {range: {startPos: 19, startLine: 2, startCol: 7, endPos: 39}},
+        ),
+      ).toEqual([
+        [TokenType.TEXT, '2:7'],
+        [TokenType.EOF, '4:6'],
+      ]);
     });
   });
 
@@ -109,13 +113,13 @@ describe('HtmlLexer', () => {
 
     it('should report <!- without -', () => {
       expect(tokenizeAndHumanizeErrors('<!-a')).toEqual([
-        [TokenType.COMMENT_START, 'Unexpected character "a"', '0:3']
+        [TokenType.COMMENT_START, 'Unexpected character "a"', '0:3'],
       ]);
     });
 
     it('should report missing end comment', () => {
       expect(tokenizeAndHumanizeErrors('<!--')).toEqual([
-        [TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:4']
+        [TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:4'],
       ]);
     });
 
@@ -155,7 +159,7 @@ describe('HtmlLexer', () => {
 
     it('should report missing end doctype', () => {
       expect(tokenizeAndHumanizeErrors('<!')).toEqual([
-        [TokenType.DOC_TYPE, 'Unexpected character "EOF"', '0:2']
+        [TokenType.DOC_TYPE, 'Unexpected character "EOF"', '0:2'],
       ]);
     });
   });
@@ -181,13 +185,13 @@ describe('HtmlLexer', () => {
 
     it('should report <![ without CDATA[', () => {
       expect(tokenizeAndHumanizeErrors('<![a')).toEqual([
-        [TokenType.CDATA_START, 'Unexpected character "a"', '0:3']
+        [TokenType.CDATA_START, 'Unexpected character "a"', '0:3'],
       ]);
     });
 
     it('should report missing end cdata', () => {
       expect(tokenizeAndHumanizeErrors('<![CDATA[')).toEqual([
-        [TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:9']
+        [TokenType.RAW_TEXT, 'Unexpected character "EOF"', '0:9'],
       ]);
     });
   });
@@ -361,411 +365,434 @@ describe('HtmlLexer', () => {
     describe('expansion forms', () => {
       it('should parse an expansion form', () => {
         expect(
-            tokenizeAndHumanizeParts(
-                '{one.two, three, =4 {four} =5 {five} foo {bar} }', {tokenizeExpansionForms: true}))
-            .toEqual([
-              [TokenType.EXPANSION_FORM_START],
-              [TokenType.RAW_TEXT, 'one.two'],
-              [TokenType.RAW_TEXT, 'three'],
-              [TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'four'],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_CASE_VALUE, '=5'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'five'],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_CASE_VALUE, 'foo'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'bar'],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_FORM_END],
-              [TokenType.EOF],
-            ]);
+          tokenizeAndHumanizeParts('{one.two, three, =4 {four} =5 {five} foo {bar} }', {
+            tokenizeExpansionForms: true,
+          }),
+        ).toEqual([
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'one.two'],
+          [TokenType.RAW_TEXT, 'three'],
+          [TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'four'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_CASE_VALUE, '=5'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'five'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_CASE_VALUE, 'foo'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'bar'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse an expansion form with text elements surrounding it', () => {
-        expect(tokenizeAndHumanizeParts(
-                   'before{one.two, three, =4 {four}}after', {tokenizeExpansionForms: true}))
-            .toEqual([
-              [TokenType.TEXT, 'before'],
-              [TokenType.EXPANSION_FORM_START],
-              [TokenType.RAW_TEXT, 'one.two'],
-              [TokenType.RAW_TEXT, 'three'],
-              [TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'four'],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_FORM_END],
-              [TokenType.TEXT, 'after'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('before{one.two, three, =4 {four}}after', {
+            tokenizeExpansionForms: true,
+          }),
+        ).toEqual([
+          [TokenType.TEXT, 'before'],
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'one.two'],
+          [TokenType.RAW_TEXT, 'three'],
+          [TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'four'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.TEXT, 'after'],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse an expansion form as a tag single child', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '<div><span>{a, b, =4 {c}}</span></div>', {tokenizeExpansionForms: true}))
-            .toEqual([
-              [TokenType.TAG_OPEN_START, '', 'div'],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.TAG_OPEN_START, '', 'span'],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.EXPANSION_FORM_START],
-              [TokenType.RAW_TEXT, 'a'],
-              [TokenType.RAW_TEXT, 'b'],
-              [TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'c'],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_FORM_END],
-              [TokenType.TAG_CLOSE, '', 'span'],
-              [TokenType.TAG_CLOSE, '', 'div'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('<div><span>{a, b, =4 {c}}</span></div>', {
+            tokenizeExpansionForms: true,
+          }),
+        ).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_OPEN_START, '', 'span'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'a'],
+          [TokenType.RAW_TEXT, 'b'],
+          [TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'c'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.TAG_CLOSE, '', 'span'],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse an expansion form with whitespace surrounding it', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '<div><span> {a, b, =4 {c}} </span></div>', {tokenizeExpansionForms: true}))
-            .toEqual([
-              [TokenType.TAG_OPEN_START, '', 'div'],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.TAG_OPEN_START, '', 'span'],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.TEXT, ' '],
-              [TokenType.EXPANSION_FORM_START],
-              [TokenType.RAW_TEXT, 'a'],
-              [TokenType.RAW_TEXT, 'b'],
-              [TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'c'],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_FORM_END],
-              [TokenType.TEXT, ' '],
-              [TokenType.TAG_CLOSE, '', 'span'],
-              [TokenType.TAG_CLOSE, '', 'div'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('<div><span> {a, b, =4 {c}} </span></div>', {
+            tokenizeExpansionForms: true,
+          }),
+        ).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'div'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TAG_OPEN_START, '', 'span'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, ' '],
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'a'],
+          [TokenType.RAW_TEXT, 'b'],
+          [TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'c'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.TEXT, ' '],
+          [TokenType.TAG_CLOSE, '', 'span'],
+          [TokenType.TAG_CLOSE, '', 'div'],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse an expansion forms with elements in it', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '{one.two, three, =4 {four <b>a</b>}}', {tokenizeExpansionForms: true}))
-            .toEqual([
-              [TokenType.EXPANSION_FORM_START],
-              [TokenType.RAW_TEXT, 'one.two'],
-              [TokenType.RAW_TEXT, 'three'],
-              [TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'four '],
-              [TokenType.TAG_OPEN_START, '', 'b'],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.TEXT, 'a'],
-              [TokenType.TAG_CLOSE, '', 'b'],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_FORM_END],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('{one.two, three, =4 {four <b>a</b>}}', {
+            tokenizeExpansionForms: true,
+          }),
+        ).toEqual([
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'one.two'],
+          [TokenType.RAW_TEXT, 'three'],
+          [TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'four '],
+          [TokenType.TAG_OPEN_START, '', 'b'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, 'a'],
+          [TokenType.TAG_CLOSE, '', 'b'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse an expansion forms containing an interpolation', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '{one.two, three, =4 {four {{a}}}}', {tokenizeExpansionForms: true}))
-            .toEqual([
-              [TokenType.EXPANSION_FORM_START],
-              [TokenType.RAW_TEXT, 'one.two'],
-              [TokenType.RAW_TEXT, 'three'],
-              [TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'four '],
-              [TokenType.INTERPOLATION, '{{', 'a', '}}'],
-              [TokenType.TEXT, ''],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_FORM_END],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('{one.two, three, =4 {four {{a}}}}', {
+            tokenizeExpansionForms: true,
+          }),
+        ).toEqual([
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'one.two'],
+          [TokenType.RAW_TEXT, 'three'],
+          [TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'four '],
+          [TokenType.INTERPOLATION, '{{', 'a', '}}'],
+          [TokenType.TEXT, ''],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse nested expansion forms', () => {
-        expect(tokenizeAndHumanizeParts(
-                   `{one.two, three, =4 { {xx, yy, =x {one}} }}`, {tokenizeExpansionForms: true}))
-            .toEqual([
-              [TokenType.EXPANSION_FORM_START],
-              [TokenType.RAW_TEXT, 'one.two'],
-              [TokenType.RAW_TEXT, 'three'],
-              [TokenType.EXPANSION_CASE_VALUE, '=4'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.EXPANSION_FORM_START],
-              [TokenType.RAW_TEXT, 'xx'],
-              [TokenType.RAW_TEXT, 'yy'],
-              [TokenType.EXPANSION_CASE_VALUE, '=x'],
-              [TokenType.EXPANSION_CASE_EXP_START],
-              [TokenType.TEXT, 'one'],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_FORM_END],
-              [TokenType.TEXT, ' '],
-              [TokenType.EXPANSION_CASE_EXP_END],
-              [TokenType.EXPANSION_FORM_END],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts(`{one.two, three, =4 { {xx, yy, =x {one}} }}`, {
+            tokenizeExpansionForms: true,
+          }),
+        ).toEqual([
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'one.two'],
+          [TokenType.RAW_TEXT, 'three'],
+          [TokenType.EXPANSION_CASE_VALUE, '=4'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.EXPANSION_FORM_START],
+          [TokenType.RAW_TEXT, 'xx'],
+          [TokenType.RAW_TEXT, 'yy'],
+          [TokenType.EXPANSION_CASE_VALUE, '=x'],
+          [TokenType.EXPANSION_CASE_EXP_START],
+          [TokenType.TEXT, 'one'],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.TEXT, ' '],
+          [TokenType.EXPANSION_CASE_EXP_END],
+          [TokenType.EXPANSION_FORM_END],
+          [TokenType.EOF],
+        ]);
       });
 
       describe('[line ending normalization', () => {
         describe('{escapedString: true}', () => {
-          it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true',
-             () => {
-               const result = tokenizeWithoutErrors(
-                   `{\r\n` +
-                       `    messages.length,\r\n` +
-                       `    plural,\r\n` +
-                       `    =0 {You have \r\nno\r\n messages}\r\n` +
-                       `    =1 {One {{message}}}}\r\n`,
-                   {
-                     tokenizeExpansionForms: true,
-                     escapedString: true,
-                     i18nNormalizeLineEndingsInICUs: true
-                   });
+          it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true', () => {
+            const result = tokenizeWithoutErrors(
+              `{\r\n` +
+                `    messages.length,\r\n` +
+                `    plural,\r\n` +
+                `    =0 {You have \r\nno\r\n messages}\r\n` +
+                `    =1 {One {{message}}}}\r\n`,
+              {
+                tokenizeExpansionForms: true,
+                escapedString: true,
+                i18nNormalizeLineEndingsInICUs: true,
+              },
+            );
 
-               expect(humanizeParts(result.tokens)).toEqual([
-                 [TokenType.EXPANSION_FORM_START],
-                 [TokenType.RAW_TEXT, '\n    messages.length'],
-                 [TokenType.RAW_TEXT, 'plural'],
-                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'You have \nno\n messages'],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_CASE_VALUE, '=1'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'One '],
-                 [TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [TokenType.TEXT, ''],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_FORM_END],
-                 [TokenType.TEXT, '\n'],
-                 [TokenType.EOF],
-               ]);
+            expect(humanizeParts(result.tokens)).toEqual([
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, '\n    messages.length'],
+              [TokenType.RAW_TEXT, 'plural'],
+              [TokenType.EXPANSION_CASE_VALUE, '=0'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'You have \nno\n messages'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_CASE_VALUE, '=1'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'One '],
+              [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+              [TokenType.TEXT, ''],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.TEXT, '\n'],
+              [TokenType.EOF],
+            ]);
 
-               expect(result.nonNormalizedIcuExpressions).toEqual([]);
-             });
+            expect(result.nonNormalizedIcuExpressions).toEqual([]);
+          });
 
-          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined',
-             () => {
-               const result = tokenizeWithoutErrors(
-                   `{\r\n` +
-                       `    messages.length,\r\n` +
-                       `    plural,\r\n` +
-                       `    =0 {You have \r\nno\r\n messages}\r\n` +
-                       `    =1 {One {{message}}}}\r\n`,
-                   {tokenizeExpansionForms: true, escapedString: true});
+          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+            const result = tokenizeWithoutErrors(
+              `{\r\n` +
+                `    messages.length,\r\n` +
+                `    plural,\r\n` +
+                `    =0 {You have \r\nno\r\n messages}\r\n` +
+                `    =1 {One {{message}}}}\r\n`,
+              {tokenizeExpansionForms: true, escapedString: true},
+            );
 
-               expect(humanizeParts(result.tokens)).toEqual([
-                 [TokenType.EXPANSION_FORM_START],
-                 [TokenType.RAW_TEXT, '\r\n    messages.length'],
-                 [TokenType.RAW_TEXT, 'plural'],
-                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'You have \nno\n messages'],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_CASE_VALUE, '=1'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'One '],
-                 [TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [TokenType.TEXT, ''],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_FORM_END],
-                 [TokenType.TEXT, '\n'],
-                 [TokenType.EOF],
-               ]);
+            expect(humanizeParts(result.tokens)).toEqual([
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, '\r\n    messages.length'],
+              [TokenType.RAW_TEXT, 'plural'],
+              [TokenType.EXPANSION_CASE_VALUE, '=0'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'You have \nno\n messages'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_CASE_VALUE, '=1'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'One '],
+              [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+              [TokenType.TEXT, ''],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.TEXT, '\n'],
+              [TokenType.EOF],
+            ]);
 
-               expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
-               expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
-                   .toEqual('\r\n    messages.length');
-             });
+            expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
+            expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString()).toEqual(
+              '\r\n    messages.length',
+            );
+          });
 
-          it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined',
-             () => {
-               const result = tokenizeWithoutErrors(
-                   `{\r\n` +
-                       `  messages.length, plural,\r\n` +
-                       `  =0 { zero \r\n` +
-                       `       {\r\n` +
-                       `         p.gender, select,\r\n` +
-                       `         male {m}\r\n` +
-                       `       }\r\n` +
-                       `     }\r\n` +
-                       `}`,
-                   {tokenizeExpansionForms: true, escapedString: true});
-               expect(humanizeParts(result.tokens)).toEqual([
-                 [TokenType.EXPANSION_FORM_START],
-                 [TokenType.RAW_TEXT, '\r\n  messages.length'],
-                 [TokenType.RAW_TEXT, 'plural'],
-                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'zero \n       '],
+          it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+            const result = tokenizeWithoutErrors(
+              `{\r\n` +
+                `  messages.length, plural,\r\n` +
+                `  =0 { zero \r\n` +
+                `       {\r\n` +
+                `         p.gender, select,\r\n` +
+                `         male {m}\r\n` +
+                `       }\r\n` +
+                `     }\r\n` +
+                `}`,
+              {tokenizeExpansionForms: true, escapedString: true},
+            );
+            expect(humanizeParts(result.tokens)).toEqual([
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, '\r\n  messages.length'],
+              [TokenType.RAW_TEXT, 'plural'],
+              [TokenType.EXPANSION_CASE_VALUE, '=0'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'zero \n       '],
 
-                 [TokenType.EXPANSION_FORM_START],
-                 [TokenType.RAW_TEXT, '\r\n         p.gender'],
-                 [TokenType.RAW_TEXT, 'select'],
-                 [TokenType.EXPANSION_CASE_VALUE, 'male'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'm'],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_FORM_END],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, '\r\n         p.gender'],
+              [TokenType.RAW_TEXT, 'select'],
+              [TokenType.EXPANSION_CASE_VALUE, 'male'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'm'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
 
-                 [TokenType.TEXT, '\n     '],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_FORM_END],
-                 [TokenType.EOF],
-               ]);
+              [TokenType.TEXT, '\n     '],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.EOF],
+            ]);
 
-               expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
-               expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
-                   .toEqual('\r\n  messages.length');
-               expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString())
-                   .toEqual('\r\n         p.gender');
-             });
+            expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
+            expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString()).toEqual(
+              '\r\n  messages.length',
+            );
+            expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString()).toEqual(
+              '\r\n         p.gender',
+            );
+          });
         });
 
         describe('{escapedString: false}', () => {
-          it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true',
-             () => {
-               const result = tokenizeWithoutErrors(
-                   `{\r\n` +
-                       `    messages.length,\r\n` +
-                       `    plural,\r\n` +
-                       `    =0 {You have \r\nno\r\n messages}\r\n` +
-                       `    =1 {One {{message}}}}\r\n`,
-                   {
-                     tokenizeExpansionForms: true,
-                     escapedString: false,
-                     i18nNormalizeLineEndingsInICUs: true
-                   });
+          it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true', () => {
+            const result = tokenizeWithoutErrors(
+              `{\r\n` +
+                `    messages.length,\r\n` +
+                `    plural,\r\n` +
+                `    =0 {You have \r\nno\r\n messages}\r\n` +
+                `    =1 {One {{message}}}}\r\n`,
+              {
+                tokenizeExpansionForms: true,
+                escapedString: false,
+                i18nNormalizeLineEndingsInICUs: true,
+              },
+            );
 
-               expect(humanizeParts(result.tokens)).toEqual([
-                 [TokenType.EXPANSION_FORM_START],
-                 [TokenType.RAW_TEXT, '\n    messages.length'],
-                 [TokenType.RAW_TEXT, 'plural'],
-                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'You have \nno\n messages'],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_CASE_VALUE, '=1'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'One '],
-                 [TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [TokenType.TEXT, ''],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_FORM_END],
-                 [TokenType.TEXT, '\n'],
-                 [TokenType.EOF],
-               ]);
+            expect(humanizeParts(result.tokens)).toEqual([
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, '\n    messages.length'],
+              [TokenType.RAW_TEXT, 'plural'],
+              [TokenType.EXPANSION_CASE_VALUE, '=0'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'You have \nno\n messages'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_CASE_VALUE, '=1'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'One '],
+              [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+              [TokenType.TEXT, ''],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.TEXT, '\n'],
+              [TokenType.EOF],
+            ]);
 
-               expect(result.nonNormalizedIcuExpressions).toEqual([]);
-             });
+            expect(result.nonNormalizedIcuExpressions).toEqual([]);
+          });
 
-          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined',
-             () => {
-               const result = tokenizeWithoutErrors(
-                   `{\r\n` +
-                       `    messages.length,\r\n` +
-                       `    plural,\r\n` +
-                       `    =0 {You have \r\nno\r\n messages}\r\n` +
-                       `    =1 {One {{message}}}}\r\n`,
-                   {tokenizeExpansionForms: true, escapedString: false});
+          it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+            const result = tokenizeWithoutErrors(
+              `{\r\n` +
+                `    messages.length,\r\n` +
+                `    plural,\r\n` +
+                `    =0 {You have \r\nno\r\n messages}\r\n` +
+                `    =1 {One {{message}}}}\r\n`,
+              {tokenizeExpansionForms: true, escapedString: false},
+            );
 
-               expect(humanizeParts(result.tokens)).toEqual([
-                 [TokenType.EXPANSION_FORM_START],
-                 [TokenType.RAW_TEXT, '\r\n    messages.length'],
-                 [TokenType.RAW_TEXT, 'plural'],
-                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'You have \nno\n messages'],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_CASE_VALUE, '=1'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'One '],
-                 [TokenType.INTERPOLATION, '{{', 'message', '}}'],
-                 [TokenType.TEXT, ''],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_FORM_END],
-                 [TokenType.TEXT, '\n'],
-                 [TokenType.EOF],
-               ]);
+            expect(humanizeParts(result.tokens)).toEqual([
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, '\r\n    messages.length'],
+              [TokenType.RAW_TEXT, 'plural'],
+              [TokenType.EXPANSION_CASE_VALUE, '=0'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'You have \nno\n messages'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_CASE_VALUE, '=1'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'One '],
+              [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+              [TokenType.TEXT, ''],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.TEXT, '\n'],
+              [TokenType.EOF],
+            ]);
 
-               expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
-               expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
-                   .toEqual('\r\n    messages.length');
-             });
+            expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
+            expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString()).toEqual(
+              '\r\n    messages.length',
+            );
+          });
 
-          it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined',
-             () => {
-               const result = tokenizeWithoutErrors(
-                   `{\r\n` +
-                       `  messages.length, plural,\r\n` +
-                       `  =0 { zero \r\n` +
-                       `       {\r\n` +
-                       `         p.gender, select,\r\n` +
-                       `         male {m}\r\n` +
-                       `       }\r\n` +
-                       `     }\r\n` +
-                       `}`,
-                   {tokenizeExpansionForms: true});
+          it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+            const result = tokenizeWithoutErrors(
+              `{\r\n` +
+                `  messages.length, plural,\r\n` +
+                `  =0 { zero \r\n` +
+                `       {\r\n` +
+                `         p.gender, select,\r\n` +
+                `         male {m}\r\n` +
+                `       }\r\n` +
+                `     }\r\n` +
+                `}`,
+              {tokenizeExpansionForms: true},
+            );
 
-               expect(humanizeParts(result.tokens)).toEqual([
-                 [TokenType.EXPANSION_FORM_START],
-                 [TokenType.RAW_TEXT, '\r\n  messages.length'],
-                 [TokenType.RAW_TEXT, 'plural'],
-                 [TokenType.EXPANSION_CASE_VALUE, '=0'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'zero \n       '],
+            expect(humanizeParts(result.tokens)).toEqual([
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, '\r\n  messages.length'],
+              [TokenType.RAW_TEXT, 'plural'],
+              [TokenType.EXPANSION_CASE_VALUE, '=0'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'zero \n       '],
 
-                 [TokenType.EXPANSION_FORM_START],
-                 [TokenType.RAW_TEXT, '\r\n         p.gender'],
-                 [TokenType.RAW_TEXT, 'select'],
-                 [TokenType.EXPANSION_CASE_VALUE, 'male'],
-                 [TokenType.EXPANSION_CASE_EXP_START],
-                 [TokenType.TEXT, 'm'],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_FORM_END],
+              [TokenType.EXPANSION_FORM_START],
+              [TokenType.RAW_TEXT, '\r\n         p.gender'],
+              [TokenType.RAW_TEXT, 'select'],
+              [TokenType.EXPANSION_CASE_VALUE, 'male'],
+              [TokenType.EXPANSION_CASE_EXP_START],
+              [TokenType.TEXT, 'm'],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
 
-                 [TokenType.TEXT, '\n     '],
-                 [TokenType.EXPANSION_CASE_EXP_END],
-                 [TokenType.EXPANSION_FORM_END],
-                 [TokenType.EOF],
-               ]);
+              [TokenType.TEXT, '\n     '],
+              [TokenType.EXPANSION_CASE_EXP_END],
+              [TokenType.EXPANSION_FORM_END],
+              [TokenType.EOF],
+            ]);
 
-               expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
-               expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
-                   .toEqual('\r\n  messages.length');
-               expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString())
-                   .toEqual('\r\n         p.gender');
-             });
+            expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
+            expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString()).toEqual(
+              '\r\n  messages.length',
+            );
+            expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString()).toEqual(
+              '\r\n         p.gender',
+            );
+          });
         });
       });
     });
 
-
     describe('errors', () => {
       it('should report unescaped "{" on error', () => {
-        expect(tokenizeAndHumanizeErrors(`<p>before { after</p>`, {tokenizeExpansionForms: true}))
-            .toEqual([[
-              TokenType.RAW_TEXT,
-              `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
-              '0:21',
-            ]]);
+        expect(
+          tokenizeAndHumanizeErrors(`<p>before { after</p>`, {tokenizeExpansionForms: true}),
+        ).toEqual([
+          [
+            TokenType.RAW_TEXT,
+            `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+            '0:21',
+          ],
+        ]);
       });
 
-      it('should report unescaped "{" as an error, even after a prematurely terminated interpolation',
-         () => {
-           expect(tokenizeAndHumanizeErrors(
-                      `<code>{{b}<!---->}</code><pre>import {a} from 'a';</pre>`,
-                      {tokenizeExpansionForms: true}))
-               .toEqual([[
-                 TokenType.RAW_TEXT,
-                 `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
-                 '0:56',
-               ]]);
-         });
+      it('should report unescaped "{" as an error, even after a prematurely terminated interpolation', () => {
+        expect(
+          tokenizeAndHumanizeErrors(`<code>{{b}<!---->}</code><pre>import {a} from 'a';</pre>`, {
+            tokenizeExpansionForms: true,
+          }),
+        ).toEqual([
+          [
+            TokenType.RAW_TEXT,
+            `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+            '0:56',
+          ],
+        ]);
+      });
 
       it('should include 2 lines of context in message', () => {
         const src = '111\n222\n333\nE\n444\n555\n666\n';
@@ -773,8 +800,9 @@ describe('HtmlLexer', () => {
         const location = new ParseLocation(file, 12, 123, 456);
         const span = new ParseSourceSpan(location, location);
         const error = new TokenError('**ERROR**', null!, span);
-        expect(error.toString())
-            .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
+        expect(error.toString()).toEqual(
+          `**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`,
+        );
       });
     });
 
@@ -792,16 +820,16 @@ describe('HtmlLexer', () => {
 
     describe('(processing escaped strings)', () => {
       it('should unescape standard escape sequences', () => {
-        expect(tokenizeAndHumanizeParts('\\\' \\\' \\\'', {escapedString: true})).toEqual([
-          [TokenType.TEXT, '\' \' \''],
+        expect(tokenizeAndHumanizeParts("\\' \\' \\'", {escapedString: true})).toEqual([
+          [TokenType.TEXT, "' ' '"],
           [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\" \\" \\"', {escapedString: true})).toEqual([
-          [TokenType.TEXT, '\" \" \"'],
+          [TokenType.TEXT, '" " "'],
           [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\` \\` \\`', {escapedString: true})).toEqual([
-          [TokenType.TEXT, '\` \` \`'],
+          [TokenType.TEXT, '` ` `'],
           [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeParts('\\\\ \\\\ \\\\', {escapedString: true})).toEqual([
@@ -835,34 +863,28 @@ describe('HtmlLexer', () => {
           [TokenType.TEXT, '\f \f \f'],
           [TokenType.EOF],
         ]);
-        expect(tokenizeAndHumanizeParts(
-                   '\\\' \\" \\` \\\\ \\n \\r \\v \\t \\b \\f', {escapedString: true}))
-            .toEqual([
-              [TokenType.TEXT, '\' \" \` \\ \n \n \v \t \b \f'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('\\\' \\" \\` \\\\ \\n \\r \\v \\t \\b \\f', {
+            escapedString: true,
+          }),
+        ).toEqual([[TokenType.TEXT, '\' " ` \\ \n \n \v \t \b \f'], [TokenType.EOF]]);
       });
 
       it('should unescape null sequences', () => {
-        expect(tokenizeAndHumanizeParts('\\0', {escapedString: true})).toEqual([
-          [TokenType.EOF],
-        ]);
+        expect(tokenizeAndHumanizeParts('\\0', {escapedString: true})).toEqual([[TokenType.EOF]]);
         // \09 is not an octal number so the \0 is taken as EOF
-        expect(tokenizeAndHumanizeParts('\\09', {escapedString: true})).toEqual([
-          [TokenType.EOF],
-        ]);
+        expect(tokenizeAndHumanizeParts('\\09', {escapedString: true})).toEqual([[TokenType.EOF]]);
       });
 
       it('should unescape octal sequences', () => {
         // \19 is read as an octal `\1` followed by a normal char `9`
         // \1234 is read as an octal `\123` followed by a normal char `4`
         // \999 is not an octal number so its backslash just gets removed.
-        expect(tokenizeAndHumanizeParts(
-                   '\\001 \\01 \\1 \\12 \\223 \\19 \\2234 \\999', {escapedString: true}))
-            .toEqual([
-              [TokenType.TEXT, '\x01 \x01 \x01 \x0A \x93 \x019 \x934 999'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('\\001 \\01 \\1 \\12 \\223 \\19 \\2234 \\999', {
+            escapedString: true,
+          }),
+        ).toEqual([[TokenType.TEXT, '\x01 \x01 \x01 \x0A \x93 \x019 \x934 999'], [TokenType.EOF]]);
       });
 
       it('should unescape hex sequences', () => {
@@ -874,15 +896,15 @@ describe('HtmlLexer', () => {
 
       it('should report an error on an invalid hex sequence', () => {
         expect(tokenizeAndHumanizeErrors('\\xGG', {escapedString: true})).toEqual([
-          [null, 'Invalid hexadecimal escape sequence', '0:2']
+          [null, 'Invalid hexadecimal escape sequence', '0:2'],
         ]);
 
         expect(tokenizeAndHumanizeErrors('abc \\x xyz', {escapedString: true})).toEqual([
-          [TokenType.TEXT, 'Invalid hexadecimal escape sequence', '0:6']
+          [TokenType.TEXT, 'Invalid hexadecimal escape sequence', '0:6'],
         ]);
 
         expect(tokenizeAndHumanizeErrors('abc\\x', {escapedString: true})).toEqual([
-          [TokenType.TEXT, 'Unexpected character "EOF"', '0:5']
+          [TokenType.TEXT, 'Unexpected character "EOF"', '0:5'],
         ]);
       });
 
@@ -895,22 +917,19 @@ describe('HtmlLexer', () => {
 
       it('should error on an invalid fixed length Unicode sequence', () => {
         expect(tokenizeAndHumanizeErrors('\\uGGGG', {escapedString: true})).toEqual([
-          [null, 'Invalid hexadecimal escape sequence', '0:2']
+          [null, 'Invalid hexadecimal escape sequence', '0:2'],
         ]);
       });
 
       it('should unescape variable length Unicode sequences', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '\\u{01} \\u{ABC} \\u{1234} \\u{123AB}', {escapedString: true}))
-            .toEqual([
-              [TokenType.TEXT, '\u{01} \u{ABC} \u{1234} \u{123AB}'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('\\u{01} \\u{ABC} \\u{1234} \\u{123AB}', {escapedString: true}),
+        ).toEqual([[TokenType.TEXT, '\u{01} \u{ABC} \u{1234} \u{123AB}'], [TokenType.EOF]]);
       });
 
       it('should error on an invalid variable length Unicode sequence', () => {
         expect(tokenizeAndHumanizeErrors('\\u{GG}', {escapedString: true})).toEqual([
-          [null, 'Invalid hexadecimal escape sequence', '0:3']
+          [null, 'Invalid hexadecimal escape sequence', '0:3'],
         ]);
       });
 
@@ -926,59 +945,62 @@ describe('HtmlLexer', () => {
       });
 
       it('should remove backslash from "non-escape" sequences', () => {
-        expect(tokenizeAndHumanizeParts('\a \g \~', {escapedString: true})).toEqual([
+        expect(tokenizeAndHumanizeParts('a g ~', {escapedString: true})).toEqual([
           [TokenType.TEXT, 'a g ~'],
           [TokenType.EOF],
         ]);
       });
 
       it('should unescape sequences in plain text', () => {
-        expect(tokenizeAndHumanizeParts('abc\ndef\\nghi\\tjkl\\`\\\'\\"mno', {escapedString: true}))
-            .toEqual([
-              [TokenType.TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('abc\ndef\\nghi\\tjkl\\`\\\'\\"mno', {escapedString: true}),
+        ).toEqual([[TokenType.TEXT, 'abc\ndef\nghi\tjkl`\'"mno'], [TokenType.EOF]]);
       });
 
       it('should unescape sequences in raw text', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '<script>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</script>', {escapedString: true}))
-            .toEqual([
-              [TokenType.TAG_OPEN_START, '', 'script'],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-              [TokenType.TAG_CLOSE, '', 'script'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('<script>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</script>', {
+            escapedString: true,
+          }),
+        ).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'script'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
+          [TokenType.TAG_CLOSE, '', 'script'],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should unescape sequences in escapable raw text', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '<title>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</title>', {escapedString: true}))
-            .toEqual([
-              [TokenType.TAG_OPEN_START, '', 'title'],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.ESCAPABLE_RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-              [TokenType.TAG_CLOSE, '', 'title'],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('<title>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</title>', {
+            escapedString: true,
+          }),
+        ).toEqual([
+          [TokenType.TAG_OPEN_START, '', 'title'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.ESCAPABLE_RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
+          [TokenType.TAG_CLOSE, '', 'title'],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse over escape sequences in tag definitions', () => {
-        expect(tokenizeAndHumanizeParts('<t a=\\"b\\" \\n c=\\\'d\\\'>', {escapedString: true}))
-            .toEqual([
-              [TokenType.TAG_OPEN_START, '', 't'],
-              [TokenType.ATTR_NAME, '', 'a'],
-              [TokenType.ATTR_QUOTE, '"'],
-              [TokenType.ATTR_VALUE_TEXT, 'b'],
-              [TokenType.ATTR_QUOTE, '"'],
-              [TokenType.ATTR_NAME, '', 'c'],
-              [TokenType.ATTR_QUOTE, '\''],
-              [TokenType.ATTR_VALUE_TEXT, 'd'],
-              [TokenType.ATTR_QUOTE, '\''],
-              [TokenType.TAG_OPEN_END],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts('<t a=\\"b\\" \\n c=\\\'d\\\'>', {escapedString: true}),
+        ).toEqual([
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.ATTR_NAME, '', 'a'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_VALUE_TEXT, 'b'],
+          [TokenType.ATTR_QUOTE, '"'],
+          [TokenType.ATTR_NAME, '', 'c'],
+          [TokenType.ATTR_QUOTE, "'"],
+          [TokenType.ATTR_VALUE_TEXT, 'd'],
+          [TokenType.ATTR_QUOTE, "'"],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse over escaped new line in tag definitions', () => {
@@ -1045,7 +1067,7 @@ describe('HtmlLexer', () => {
 
       it('should tokenize the correct span when there are escape sequences', () => {
         const text =
-            'selector: "app-root",\ntemplate: "line 1\\n\\"line 2\\"\\nline 3",\ninputs: []';
+          'selector: "app-root",\ntemplate: "line 1\\n\\"line 2\\"\\nline 3",\ninputs: []';
         const range = {
           startPos: 33,
           startLine: 1,
@@ -1063,54 +1085,70 @@ describe('HtmlLexer', () => {
       });
 
       it('should account for escape sequences when computing source spans ', () => {
-        const text = '<t>line 1</t>\n' +  // <- unescaped line break
-            '<t>line 2</t>\\n' +          // <- escaped line break
-            '<t>line 3\\\n' +             // <- line continuation
-            '</t>';
+        const text =
+          '<t>line 1</t>\n' + // <- unescaped line break
+          '<t>line 2</t>\\n' + // <- escaped line break
+          '<t>line 3\\\n' + // <- line continuation
+          '</t>';
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
-          [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END], [TokenType.TEXT, 'line 1'],
-          [TokenType.TAG_CLOSE, '', 't'], [TokenType.TEXT, '\n'],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, 'line 1'],
+          [TokenType.TAG_CLOSE, '', 't'],
+          [TokenType.TEXT, '\n'],
 
-          [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END], [TokenType.TEXT, 'line 2'],
-          [TokenType.TAG_CLOSE, '', 't'], [TokenType.TEXT, '\n'],
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, 'line 2'],
+          [TokenType.TAG_CLOSE, '', 't'],
+          [TokenType.TEXT, '\n'],
 
-          [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END],
-          [TokenType.TEXT, 'line 3'],  // <- line continuation does not appear in token
+          [TokenType.TAG_OPEN_START, '', 't'],
+          [TokenType.TAG_OPEN_END],
+          [TokenType.TEXT, 'line 3'], // <- line continuation does not appear in token
           [TokenType.TAG_CLOSE, '', 't'],
 
-          [TokenType.EOF]
+          [TokenType.EOF],
         ]);
         expect(tokenizeAndHumanizeLineColumn(text, {escapedString: true})).toEqual([
           [TokenType.TAG_OPEN_START, '0:0'],
           [TokenType.TAG_OPEN_END, '0:2'],
           [TokenType.TEXT, '0:3'],
           [TokenType.TAG_CLOSE, '0:9'],
-          [TokenType.TEXT, '0:13'],  // <- real newline increments the row
+          [TokenType.TEXT, '0:13'], // <- real newline increments the row
 
           [TokenType.TAG_OPEN_START, '1:0'],
           [TokenType.TAG_OPEN_END, '1:2'],
           [TokenType.TEXT, '1:3'],
           [TokenType.TAG_CLOSE, '1:9'],
-          [TokenType.TEXT, '1:13'],  // <- escaped newline does not increment the row
+          [TokenType.TEXT, '1:13'], // <- escaped newline does not increment the row
 
           [TokenType.TAG_OPEN_START, '1:15'],
           [TokenType.TAG_OPEN_END, '1:17'],
-          [TokenType.TEXT, '1:18'],  // <- the line continuation increments the row
+          [TokenType.TEXT, '1:18'], // <- the line continuation increments the row
           [TokenType.TAG_CLOSE, '2:0'],
 
           [TokenType.EOF, '2:4'],
         ]);
         expect(tokenizeAndHumanizeSourceSpans(text, {escapedString: true})).toEqual([
-          [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'],
-          [TokenType.TEXT, 'line 1'], [TokenType.TAG_CLOSE, '</t>'], [TokenType.TEXT, '\n'],
+          [TokenType.TAG_OPEN_START, '<t'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TEXT, 'line 1'],
+          [TokenType.TAG_CLOSE, '</t>'],
+          [TokenType.TEXT, '\n'],
 
-          [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'],
-          [TokenType.TEXT, 'line 2'], [TokenType.TAG_CLOSE, '</t>'], [TokenType.TEXT, '\\n'],
+          [TokenType.TAG_OPEN_START, '<t'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TEXT, 'line 2'],
+          [TokenType.TAG_CLOSE, '</t>'],
+          [TokenType.TEXT, '\\n'],
 
-          [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'],
-          [TokenType.TEXT, 'line 3\\\n'], [TokenType.TAG_CLOSE, '</t>'],
+          [TokenType.TAG_OPEN_START, '<t'],
+          [TokenType.TAG_OPEN_END, '>'],
+          [TokenType.TEXT, 'line 3\\\n'],
+          [TokenType.TAG_CLOSE, '</t>'],
 
-          [TokenType.EOF, '']
+          [TokenType.EOF, ''],
         ]);
       });
     });
@@ -1239,17 +1277,19 @@ describe('HtmlLexer', () => {
       });
 
       it('should handle object literals and function calls in block parameters', () => {
-        expect(tokenizeAndHumanizeParts(
-                   `@foo (on a({a: 1, b: 2}, false, {c: 3}); when b({d: 4})) {hello}`))
-            .toEqual([
-              [TokenType.BLOCK_OPEN_START, 'foo'],
-              [TokenType.BLOCK_PARAMETER, 'on a({a: 1, b: 2}, false, {c: 3})'],
-              [TokenType.BLOCK_PARAMETER, 'when b({d: 4})'],
-              [TokenType.BLOCK_OPEN_END],
-              [TokenType.TEXT, 'hello'],
-              [TokenType.BLOCK_CLOSE],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts(
+            `@foo (on a({a: 1, b: 2}, false, {c: 3}); when b({d: 4})) {hello}`,
+          ),
+        ).toEqual([
+          [TokenType.BLOCK_OPEN_START, 'foo'],
+          [TokenType.BLOCK_PARAMETER, 'on a({a: 1, b: 2}, false, {c: 3})'],
+          [TokenType.BLOCK_PARAMETER, 'when b({d: 4})'],
+          [TokenType.BLOCK_OPEN_END],
+          [TokenType.TEXT, 'hello'],
+          [TokenType.BLOCK_CLOSE],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse block with unclosed parameters', () => {
@@ -1319,11 +1359,11 @@ describe('HtmlLexer', () => {
 
       it('should report invalid quotes in a parameter', () => {
         expect(tokenizeAndHumanizeErrors(`@foo (a === ") {hello}`)).toEqual([
-          [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:22']
+          [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:22'],
         ]);
 
         expect(tokenizeAndHumanizeErrors(`@foo (a === "hi') {hello}`)).toEqual([
-          [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:25']
+          [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:25'],
         ]);
       });
 
@@ -1410,47 +1450,50 @@ describe('HtmlLexer', () => {
       });
 
       it('should parse nested blocks', () => {
-        expect(tokenizeAndHumanizeParts(
-                   '@if (a) {' +
-                   'hello a' +
-                   '@if {' +
-                   'hello unnamed' +
-                   '@if (b) {' +
-                   'hello b' +
-                   '@if (c) {' +
-                   'hello c' +
-                   '}' +
-                   '}' +
-                   '}' +
-                   '}'))
-            .toEqual([
-              [TokenType.BLOCK_OPEN_START, 'if'],
-              [TokenType.BLOCK_PARAMETER, 'a'],
-              [TokenType.BLOCK_OPEN_END],
-              [TokenType.TEXT, 'hello a'],
-              [TokenType.BLOCK_OPEN_START, 'if'],
-              [TokenType.BLOCK_OPEN_END],
-              [TokenType.TEXT, 'hello unnamed'],
-              [TokenType.BLOCK_OPEN_START, 'if'],
-              [TokenType.BLOCK_PARAMETER, 'b'],
-              [TokenType.BLOCK_OPEN_END],
-              [TokenType.TEXT, 'hello b'],
-              [TokenType.BLOCK_OPEN_START, 'if'],
-              [TokenType.BLOCK_PARAMETER, 'c'],
-              [TokenType.BLOCK_OPEN_END],
-              [TokenType.TEXT, 'hello c'],
-              [TokenType.BLOCK_CLOSE],
-              [TokenType.BLOCK_CLOSE],
-              [TokenType.BLOCK_CLOSE],
-              [TokenType.BLOCK_CLOSE],
-              [TokenType.EOF],
-            ]);
+        expect(
+          tokenizeAndHumanizeParts(
+            '@if (a) {' +
+              'hello a' +
+              '@if {' +
+              'hello unnamed' +
+              '@if (b) {' +
+              'hello b' +
+              '@if (c) {' +
+              'hello c' +
+              '}' +
+              '}' +
+              '}' +
+              '}',
+          ),
+        ).toEqual([
+          [TokenType.BLOCK_OPEN_START, 'if'],
+          [TokenType.BLOCK_PARAMETER, 'a'],
+          [TokenType.BLOCK_OPEN_END],
+          [TokenType.TEXT, 'hello a'],
+          [TokenType.BLOCK_OPEN_START, 'if'],
+          [TokenType.BLOCK_OPEN_END],
+          [TokenType.TEXT, 'hello unnamed'],
+          [TokenType.BLOCK_OPEN_START, 'if'],
+          [TokenType.BLOCK_PARAMETER, 'b'],
+          [TokenType.BLOCK_OPEN_END],
+          [TokenType.TEXT, 'hello b'],
+          [TokenType.BLOCK_OPEN_START, 'if'],
+          [TokenType.BLOCK_PARAMETER, 'c'],
+          [TokenType.BLOCK_OPEN_END],
+          [TokenType.TEXT, 'hello c'],
+          [TokenType.BLOCK_CLOSE],
+          [TokenType.BLOCK_CLOSE],
+          [TokenType.BLOCK_CLOSE],
+          [TokenType.BLOCK_CLOSE],
+          [TokenType.EOF],
+        ]);
       });
 
       it('should parse a block containing an expansion', () => {
         const result = tokenizeAndHumanizeParts(
-            '@foo {{one.two, three, =4 {four} =5 {five} foo {bar} }}',
-            {tokenizeExpansionForms: true});
+          '@foo {{one.two, three, =4 {four} =5 {five} foo {bar} }}',
+          {tokenizeExpansionForms: true},
+        );
 
         expect(result).toEqual([
           [TokenType.BLOCK_OPEN_START, 'foo'],
@@ -1575,14 +1618,14 @@ describe('HtmlLexer', () => {
         [TokenType.EOF],
       ]);
 
-      expect(tokenizeAndHumanizeParts('<t a=\'{{ a " \\\' b \'>')).toEqual([
+      expect(tokenizeAndHumanizeParts("<t a='{{ a \" \\' b '>")).toEqual([
         [TokenType.TAG_OPEN_START, '', 't'],
         [TokenType.ATTR_NAME, '', 'a'],
-        [TokenType.ATTR_QUOTE, '\''],
+        [TokenType.ATTR_QUOTE, "'"],
         [TokenType.ATTR_VALUE_TEXT, ''],
         [TokenType.ATTR_VALUE_INTERPOLATION, '{{', ' a " \\\' b '],
         [TokenType.ATTR_VALUE_TEXT, ''],
-        [TokenType.ATTR_QUOTE, '\''],
+        [TokenType.ATTR_QUOTE, "'"],
         [TokenType.TAG_OPEN_END],
         [TokenType.EOF],
       ]);
@@ -1607,12 +1650,12 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse attributes with single quote value', () => {
-      expect(tokenizeAndHumanizeParts('<t a=\'b\'>')).toEqual([
+      expect(tokenizeAndHumanizeParts("<t a='b'>")).toEqual([
         [TokenType.TAG_OPEN_START, '', 't'],
         [TokenType.ATTR_NAME, '', 'a'],
-        [TokenType.ATTR_QUOTE, '\''],
+        [TokenType.ATTR_QUOTE, "'"],
         [TokenType.ATTR_VALUE_TEXT, 'b'],
-        [TokenType.ATTR_QUOTE, '\''],
+        [TokenType.ATTR_QUOTE, "'"],
         [TokenType.TAG_OPEN_END],
         [TokenType.EOF],
       ]);
@@ -1653,24 +1696,25 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse bound inputs with expressions containing newlines', () => {
-      expect(tokenizeAndHumanizeParts(`<app-component
+      expect(
+        tokenizeAndHumanizeParts(`<app-component
         [attr]="[
         {text: 'some text',url:'//www.google.com'},
-        {text:'other text',url:'//www.google.com'}]">`))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 'app-component'],
-            [TokenType.ATTR_NAME, '', '[attr]'],
-            [TokenType.ATTR_QUOTE, '"'],
-            [
-              TokenType.ATTR_VALUE_TEXT,
-              '[\n' +
-                  '        {text: \'some text\',url:\'//www.google.com\'},\n' +
-                  '        {text:\'other text\',url:\'//www.google.com\'}]'
-            ],
-            [TokenType.ATTR_QUOTE, '"'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.EOF],
-          ]);
+        {text:'other text',url:'//www.google.com'}]">`),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'app-component'],
+        [TokenType.ATTR_NAME, '', '[attr]'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [
+          TokenType.ATTR_VALUE_TEXT,
+          '[\n' +
+            "        {text: 'some text',url:'//www.google.com'},\n" +
+            "        {text:'other text',url:'//www.google.com'}]",
+        ],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse attributes with empty quoted value', () => {
@@ -1686,24 +1730,25 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse bound inputs with expressions containing newlines', () => {
-      expect(tokenizeAndHumanizeParts(`<app-component
+      expect(
+        tokenizeAndHumanizeParts(`<app-component
         [attr]="[
         {text: 'some text',url:'//www.google.com'},
-        {text:'other text',url:'//www.google.com'}]">`))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 'app-component'],
-            [TokenType.ATTR_NAME, '', '[attr]'],
-            [TokenType.ATTR_QUOTE, '"'],
-            [
-              TokenType.ATTR_VALUE_TEXT,
-              '[\n' +
-                  '        {text: \'some text\',url:\'//www.google.com\'},\n' +
-                  '        {text:\'other text\',url:\'//www.google.com\'}]'
-            ],
-            [TokenType.ATTR_QUOTE, '"'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.EOF],
-          ]);
+        {text:'other text',url:'//www.google.com'}]">`),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'app-component'],
+        [TokenType.ATTR_NAME, '', '[attr]'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [
+          TokenType.ATTR_VALUE_TEXT,
+          '[\n' +
+            "        {text: 'some text',url:'//www.google.com'},\n" +
+            "        {text:'other text',url:'//www.google.com'}]",
+        ],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should allow whitespace', () => {
@@ -1761,12 +1806,12 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse values with CR and LF', () => {
-      expect(tokenizeAndHumanizeParts('<t a=\'t\ne\rs\r\nt\'>')).toEqual([
+      expect(tokenizeAndHumanizeParts("<t a='t\ne\rs\r\nt'>")).toEqual([
         [TokenType.TAG_OPEN_START, '', 't'],
         [TokenType.ATTR_NAME, '', 'a'],
-        [TokenType.ATTR_QUOTE, '\''],
+        [TokenType.ATTR_QUOTE, "'"],
         [TokenType.ATTR_VALUE_TEXT, 't\ne\ns\nt'],
-        [TokenType.ATTR_QUOTE, '\''],
+        [TokenType.ATTR_QUOTE, "'"],
         [TokenType.TAG_OPEN_END],
         [TokenType.EOF],
       ]);
@@ -1783,7 +1828,7 @@ describe('HtmlLexer', () => {
     });
 
     it('should report missing closing single quote', () => {
-      expect(tokenizeAndHumanizeErrors('<t a=\'b>')).toEqual([
+      expect(tokenizeAndHumanizeErrors("<t a='b>")).toEqual([
         [TokenType.ATTR_VALUE_TEXT, 'Unexpected character "EOF"', '0:8'],
       ]);
     });
@@ -1826,13 +1871,13 @@ describe('HtmlLexer', () => {
 
     it('should report missing name after </', () => {
       expect(tokenizeAndHumanizeErrors('</')).toEqual([
-        [TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:2']
+        [TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:2'],
       ]);
     });
 
     it('should report missing >', () => {
       expect(tokenizeAndHumanizeErrors('</test')).toEqual([
-        [TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:6']
+        [TokenType.TAG_CLOSE, 'Unexpected character "EOF"', '0:6'],
       ]);
     });
   });
@@ -1877,50 +1922,54 @@ describe('HtmlLexer', () => {
     });
 
     it('should report malformed/unknown entities', () => {
-      expect(tokenizeAndHumanizeErrors('&tbo;')).toEqual([[
-        TokenType.ENCODED_ENTITY,
-        'Unknown entity "tbo" - use the "&#<decimal>;" or  "&#x<hex>;" syntax', '0:0'
-      ]]);
-      expect(tokenizeAndHumanizeErrors('&#3sdf;')).toEqual([[
-        TokenType.ENCODED_ENTITY,
-        'Unable to parse entity "&#3s" - decimal character reference entities must end with ";"',
-        '0:4'
-      ]]);
-      expect(tokenizeAndHumanizeErrors('&#xasdf;')).toEqual([[
-        TokenType.ENCODED_ENTITY,
-        'Unable to parse entity "&#xas" - hexadecimal character reference entities must end with ";"',
-        '0:5'
-      ]]);
+      expect(tokenizeAndHumanizeErrors('&tbo;')).toEqual([
+        [
+          TokenType.ENCODED_ENTITY,
+          'Unknown entity "tbo" - use the "&#<decimal>;" or  "&#x<hex>;" syntax',
+          '0:0',
+        ],
+      ]);
+      expect(tokenizeAndHumanizeErrors('&#3sdf;')).toEqual([
+        [
+          TokenType.ENCODED_ENTITY,
+          'Unable to parse entity "&#3s" - decimal character reference entities must end with ";"',
+          '0:4',
+        ],
+      ]);
+      expect(tokenizeAndHumanizeErrors('&#xasdf;')).toEqual([
+        [
+          TokenType.ENCODED_ENTITY,
+          'Unable to parse entity "&#xas" - hexadecimal character reference entities must end with ";"',
+          '0:5',
+        ],
+      ]);
 
       expect(tokenizeAndHumanizeErrors('&#xABC')).toEqual([
-        [TokenType.ENCODED_ENTITY, 'Unexpected character "EOF"', '0:6']
+        [TokenType.ENCODED_ENTITY, 'Unexpected character "EOF"', '0:6'],
       ]);
     });
   });
 
   describe('regular text', () => {
     it('should parse text', () => {
-      expect(tokenizeAndHumanizeParts('a')).toEqual([
-        [TokenType.TEXT, 'a'],
-        [TokenType.EOF],
-      ]);
+      expect(tokenizeAndHumanizeParts('a')).toEqual([[TokenType.TEXT, 'a'], [TokenType.EOF]]);
     });
 
     it('should parse interpolation', () => {
       expect(
-          tokenizeAndHumanizeParts('{{ a }}b{{ c // comment }}d{{ e "}} \' " f }}g{{ h // " i }}'))
-          .toEqual([
-            [TokenType.TEXT, ''],
-            [TokenType.INTERPOLATION, '{{', ' a ', '}}'],
-            [TokenType.TEXT, 'b'],
-            [TokenType.INTERPOLATION, '{{', ' c // comment ', '}}'],
-            [TokenType.TEXT, 'd'],
-            [TokenType.INTERPOLATION, '{{', ' e "}} \' " f ', '}}'],
-            [TokenType.TEXT, 'g'],
-            [TokenType.INTERPOLATION, '{{', ' h // " i ', '}}'],
-            [TokenType.TEXT, ''],
-            [TokenType.EOF],
-          ]);
+        tokenizeAndHumanizeParts('{{ a }}b{{ c // comment }}d{{ e "}} \' " f }}g{{ h // " i }}'),
+      ).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', ' a ', '}}'],
+        [TokenType.TEXT, 'b'],
+        [TokenType.INTERPOLATION, '{{', ' c // comment ', '}}'],
+        [TokenType.TEXT, 'd'],
+        [TokenType.INTERPOLATION, '{{', ' e "}} \' " f ', '}}'],
+        [TokenType.TEXT, 'g'],
+        [TokenType.INTERPOLATION, '{{', ' h // " i ', '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
 
       expect(tokenizeAndHumanizeSourceSpans('{{ a }}b{{ c // comment }}')).toEqual([
         [TokenType.TEXT, ''],
@@ -1933,13 +1982,14 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse interpolation with custom markers', () => {
-      expect(tokenizeAndHumanizeParts('{% a %}', {interpolationConfig: {start: '{%', end: '%}'}}))
-          .toEqual([
-            [TokenType.TEXT, ''],
-            [TokenType.INTERPOLATION, '{%', ' a ', '%}'],
-            [TokenType.TEXT, ''],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('{% a %}', {interpolationConfig: {start: '{%', end: '%}'}}),
+      ).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{%', ' a ', '%}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should handle CR & LF in text', () => {
@@ -2017,10 +2067,7 @@ describe('HtmlLexer', () => {
         [TokenType.EOF, ''],
       ]);
 
-      expect(tokenizeAndHumanizeParts('< a>')).toEqual([
-        [TokenType.TEXT, '< a>'],
-        [TokenType.EOF],
-      ]);
+      expect(tokenizeAndHumanizeParts('< a>')).toEqual([[TokenType.TEXT, '< a>'], [TokenType.EOF]]);
     });
 
     it('should break out of interpolation in text token on valid start tag', () => {
@@ -2080,16 +2127,17 @@ describe('HtmlLexer', () => {
     it('should ignore invalid start tag in interpolation', () => {
       // Note that if the `<=` is considered an "end of text" then the following `{` would
       // incorrectly be considered part of an ICU.
-      expect(tokenizeAndHumanizeParts(`<code>{{'<={'}}</code>`, {tokenizeExpansionForms: true}))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 'code'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.TEXT, ''],
-            [TokenType.INTERPOLATION, '{{', '\'<={\'', '}}'],
-            [TokenType.TEXT, ''],
-            [TokenType.TAG_CLOSE, '', 'code'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts(`<code>{{'<={'}}</code>`, {tokenizeExpansionForms: true}),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'code'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', "'<={'", '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.TAG_CLOSE, '', 'code'],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse start tags quotes in place of an attribute name as text', () => {
@@ -2099,39 +2147,38 @@ describe('HtmlLexer', () => {
         [TokenType.EOF],
       ]);
 
-      expect(tokenizeAndHumanizeParts('<t \'>')).toEqual([
+      expect(tokenizeAndHumanizeParts("<t '>")).toEqual([
         [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
-        [TokenType.TEXT, '\'>'],
+        [TokenType.TEXT, "'>"],
         [TokenType.EOF],
       ]);
     });
 
-    it('should parse start tags quotes in place of an attribute name (after a valid attribute)',
-       () => {
-         expect(tokenizeAndHumanizeParts('<t a="b" ">')).toEqual([
-           [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
-           [TokenType.ATTR_NAME, '', 'a'],
-           [TokenType.ATTR_QUOTE, '"'],
-           [TokenType.ATTR_VALUE_TEXT, 'b'],
-           [TokenType.ATTR_QUOTE, '"'],
-           // TODO(ayazhafiz): the " symbol should be a synthetic attribute,
-           // allowing us to complete the opening tag correctly.
-           [TokenType.TEXT, '">'],
-           [TokenType.EOF],
-         ]);
+    it('should parse start tags quotes in place of an attribute name (after a valid attribute)', () => {
+      expect(tokenizeAndHumanizeParts('<t a="b" ">')).toEqual([
+        [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+        [TokenType.ATTR_NAME, '', 'a'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'b'],
+        [TokenType.ATTR_QUOTE, '"'],
+        // TODO(ayazhafiz): the " symbol should be a synthetic attribute,
+        // allowing us to complete the opening tag correctly.
+        [TokenType.TEXT, '">'],
+        [TokenType.EOF],
+      ]);
 
-         expect(tokenizeAndHumanizeParts('<t a=\'b\' \'>')).toEqual([
-           [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
-           [TokenType.ATTR_NAME, '', 'a'],
-           [TokenType.ATTR_QUOTE, '\''],
-           [TokenType.ATTR_VALUE_TEXT, 'b'],
-           [TokenType.ATTR_QUOTE, '\''],
-           // TODO(ayazhafiz): the ' symbol should be a synthetic attribute,
-           // allowing us to complete the opening tag correctly.
-           [TokenType.TEXT, '\'>'],
-           [TokenType.EOF],
-         ]);
-       });
+      expect(tokenizeAndHumanizeParts("<t a='b' '>")).toEqual([
+        [TokenType.INCOMPLETE_TAG_OPEN, '', 't'],
+        [TokenType.ATTR_NAME, '', 'a'],
+        [TokenType.ATTR_QUOTE, "'"],
+        [TokenType.ATTR_VALUE_TEXT, 'b'],
+        [TokenType.ATTR_QUOTE, "'"],
+        // TODO(ayazhafiz): the ' symbol should be a synthetic attribute,
+        // allowing us to complete the opening tag correctly.
+        [TokenType.TEXT, "'>"],
+        [TokenType.EOF],
+      ]);
+    });
 
     it('should be able to escape {', () => {
       expect(tokenizeAndHumanizeParts('{{ "{" }}')).toEqual([
@@ -2151,27 +2198,28 @@ describe('HtmlLexer', () => {
       ]);
     });
 
-    it('should capture everything up to the end of file in the interpolation expression part if there are mismatched quotes',
-       () => {
-         expect(tokenizeAndHumanizeParts('{{ "{{a}}\' }}')).toEqual([
-           [TokenType.TEXT, ''],
-           [TokenType.INTERPOLATION, '{{', ' "{{a}}\' }}'],
-           [TokenType.TEXT, ''],
-           [TokenType.EOF],
-         ]);
-       });
+    it('should capture everything up to the end of file in the interpolation expression part if there are mismatched quotes', () => {
+      expect(tokenizeAndHumanizeParts('{{ "{{a}}\' }}')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.INTERPOLATION, '{{', ' "{{a}}\' }}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
 
     it('should treat expansion form as text when they are not parsed', () => {
-      expect(tokenizeAndHumanizeParts(
-                 '<span>{a, b, =4 {c}}</span>',
-                 {tokenizeExpansionForms: false, tokenizeBlocks: false}))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 'span'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.TEXT, '{a, b, =4 {c}}'],
-            [TokenType.TAG_CLOSE, '', 'span'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('<span>{a, b, =4 {c}}</span>', {
+          tokenizeExpansionForms: false,
+          tokenizeBlocks: false,
+        }),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'span'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, '{a, b, =4 {c}}'],
+        [TokenType.TAG_CLOSE, '', 'span'],
+        [TokenType.EOF],
+      ]);
     });
   });
 
@@ -2309,411 +2357,434 @@ describe('HtmlLexer', () => {
   describe('expansion forms', () => {
     it('should parse an expansion form', () => {
       expect(
-          tokenizeAndHumanizeParts(
-              '{one.two, three, =4 {four} =5 {five} foo {bar} }', {tokenizeExpansionForms: true}))
-          .toEqual([
-            [TokenType.EXPANSION_FORM_START],
-            [TokenType.RAW_TEXT, 'one.two'],
-            [TokenType.RAW_TEXT, 'three'],
-            [TokenType.EXPANSION_CASE_VALUE, '=4'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'four'],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_CASE_VALUE, '=5'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'five'],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_CASE_VALUE, 'foo'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'bar'],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_FORM_END],
-            [TokenType.EOF],
-          ]);
+        tokenizeAndHumanizeParts('{one.two, three, =4 {four} =5 {five} foo {bar} }', {
+          tokenizeExpansionForms: true,
+        }),
+      ).toEqual([
+        [TokenType.EXPANSION_FORM_START],
+        [TokenType.RAW_TEXT, 'one.two'],
+        [TokenType.RAW_TEXT, 'three'],
+        [TokenType.EXPANSION_CASE_VALUE, '=4'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'four'],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_CASE_VALUE, '=5'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'five'],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_CASE_VALUE, 'foo'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'bar'],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_FORM_END],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse an expansion form with text elements surrounding it', () => {
-      expect(tokenizeAndHumanizeParts(
-                 'before{one.two, three, =4 {four}}after', {tokenizeExpansionForms: true}))
-          .toEqual([
-            [TokenType.TEXT, 'before'],
-            [TokenType.EXPANSION_FORM_START],
-            [TokenType.RAW_TEXT, 'one.two'],
-            [TokenType.RAW_TEXT, 'three'],
-            [TokenType.EXPANSION_CASE_VALUE, '=4'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'four'],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_FORM_END],
-            [TokenType.TEXT, 'after'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('before{one.two, three, =4 {four}}after', {
+          tokenizeExpansionForms: true,
+        }),
+      ).toEqual([
+        [TokenType.TEXT, 'before'],
+        [TokenType.EXPANSION_FORM_START],
+        [TokenType.RAW_TEXT, 'one.two'],
+        [TokenType.RAW_TEXT, 'three'],
+        [TokenType.EXPANSION_CASE_VALUE, '=4'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'four'],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_FORM_END],
+        [TokenType.TEXT, 'after'],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse an expansion form as a tag single child', () => {
-      expect(tokenizeAndHumanizeParts(
-                 '<div><span>{a, b, =4 {c}}</span></div>', {tokenizeExpansionForms: true}))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 'div'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.TAG_OPEN_START, '', 'span'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.EXPANSION_FORM_START],
-            [TokenType.RAW_TEXT, 'a'],
-            [TokenType.RAW_TEXT, 'b'],
-            [TokenType.EXPANSION_CASE_VALUE, '=4'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'c'],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_FORM_END],
-            [TokenType.TAG_CLOSE, '', 'span'],
-            [TokenType.TAG_CLOSE, '', 'div'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('<div><span>{a, b, =4 {c}}</span></div>', {
+          tokenizeExpansionForms: true,
+        }),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'div'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TAG_OPEN_START, '', 'span'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EXPANSION_FORM_START],
+        [TokenType.RAW_TEXT, 'a'],
+        [TokenType.RAW_TEXT, 'b'],
+        [TokenType.EXPANSION_CASE_VALUE, '=4'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'c'],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_FORM_END],
+        [TokenType.TAG_CLOSE, '', 'span'],
+        [TokenType.TAG_CLOSE, '', 'div'],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse an expansion form with whitespace surrounding it', () => {
-      expect(tokenizeAndHumanizeParts(
-                 '<div><span> {a, b, =4 {c}} </span></div>', {tokenizeExpansionForms: true}))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 'div'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.TAG_OPEN_START, '', 'span'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.TEXT, ' '],
-            [TokenType.EXPANSION_FORM_START],
-            [TokenType.RAW_TEXT, 'a'],
-            [TokenType.RAW_TEXT, 'b'],
-            [TokenType.EXPANSION_CASE_VALUE, '=4'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'c'],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_FORM_END],
-            [TokenType.TEXT, ' '],
-            [TokenType.TAG_CLOSE, '', 'span'],
-            [TokenType.TAG_CLOSE, '', 'div'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('<div><span> {a, b, =4 {c}} </span></div>', {
+          tokenizeExpansionForms: true,
+        }),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'div'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TAG_OPEN_START, '', 'span'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, ' '],
+        [TokenType.EXPANSION_FORM_START],
+        [TokenType.RAW_TEXT, 'a'],
+        [TokenType.RAW_TEXT, 'b'],
+        [TokenType.EXPANSION_CASE_VALUE, '=4'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'c'],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_FORM_END],
+        [TokenType.TEXT, ' '],
+        [TokenType.TAG_CLOSE, '', 'span'],
+        [TokenType.TAG_CLOSE, '', 'div'],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse an expansion forms with elements in it', () => {
-      expect(tokenizeAndHumanizeParts(
-                 '{one.two, three, =4 {four <b>a</b>}}', {tokenizeExpansionForms: true}))
-          .toEqual([
-            [TokenType.EXPANSION_FORM_START],
-            [TokenType.RAW_TEXT, 'one.two'],
-            [TokenType.RAW_TEXT, 'three'],
-            [TokenType.EXPANSION_CASE_VALUE, '=4'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'four '],
-            [TokenType.TAG_OPEN_START, '', 'b'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.TEXT, 'a'],
-            [TokenType.TAG_CLOSE, '', 'b'],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_FORM_END],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('{one.two, three, =4 {four <b>a</b>}}', {
+          tokenizeExpansionForms: true,
+        }),
+      ).toEqual([
+        [TokenType.EXPANSION_FORM_START],
+        [TokenType.RAW_TEXT, 'one.two'],
+        [TokenType.RAW_TEXT, 'three'],
+        [TokenType.EXPANSION_CASE_VALUE, '=4'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'four '],
+        [TokenType.TAG_OPEN_START, '', 'b'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, 'a'],
+        [TokenType.TAG_CLOSE, '', 'b'],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_FORM_END],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse an expansion forms containing an interpolation', () => {
-      expect(tokenizeAndHumanizeParts(
-                 '{one.two, three, =4 {four {{a}}}}', {tokenizeExpansionForms: true}))
-          .toEqual([
-            [TokenType.EXPANSION_FORM_START],
-            [TokenType.RAW_TEXT, 'one.two'],
-            [TokenType.RAW_TEXT, 'three'],
-            [TokenType.EXPANSION_CASE_VALUE, '=4'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'four '],
-            [TokenType.INTERPOLATION, '{{', 'a', '}}'],
-            [TokenType.TEXT, ''],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_FORM_END],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('{one.two, three, =4 {four {{a}}}}', {
+          tokenizeExpansionForms: true,
+        }),
+      ).toEqual([
+        [TokenType.EXPANSION_FORM_START],
+        [TokenType.RAW_TEXT, 'one.two'],
+        [TokenType.RAW_TEXT, 'three'],
+        [TokenType.EXPANSION_CASE_VALUE, '=4'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'four '],
+        [TokenType.INTERPOLATION, '{{', 'a', '}}'],
+        [TokenType.TEXT, ''],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_FORM_END],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse nested expansion forms', () => {
-      expect(tokenizeAndHumanizeParts(
-                 `{one.two, three, =4 { {xx, yy, =x {one}} }}`, {tokenizeExpansionForms: true}))
-          .toEqual([
-            [TokenType.EXPANSION_FORM_START],
-            [TokenType.RAW_TEXT, 'one.two'],
-            [TokenType.RAW_TEXT, 'three'],
-            [TokenType.EXPANSION_CASE_VALUE, '=4'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.EXPANSION_FORM_START],
-            [TokenType.RAW_TEXT, 'xx'],
-            [TokenType.RAW_TEXT, 'yy'],
-            [TokenType.EXPANSION_CASE_VALUE, '=x'],
-            [TokenType.EXPANSION_CASE_EXP_START],
-            [TokenType.TEXT, 'one'],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_FORM_END],
-            [TokenType.TEXT, ' '],
-            [TokenType.EXPANSION_CASE_EXP_END],
-            [TokenType.EXPANSION_FORM_END],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts(`{one.two, three, =4 { {xx, yy, =x {one}} }}`, {
+          tokenizeExpansionForms: true,
+        }),
+      ).toEqual([
+        [TokenType.EXPANSION_FORM_START],
+        [TokenType.RAW_TEXT, 'one.two'],
+        [TokenType.RAW_TEXT, 'three'],
+        [TokenType.EXPANSION_CASE_VALUE, '=4'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.EXPANSION_FORM_START],
+        [TokenType.RAW_TEXT, 'xx'],
+        [TokenType.RAW_TEXT, 'yy'],
+        [TokenType.EXPANSION_CASE_VALUE, '=x'],
+        [TokenType.EXPANSION_CASE_EXP_START],
+        [TokenType.TEXT, 'one'],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_FORM_END],
+        [TokenType.TEXT, ' '],
+        [TokenType.EXPANSION_CASE_EXP_END],
+        [TokenType.EXPANSION_FORM_END],
+        [TokenType.EOF],
+      ]);
     });
 
     describe('[line ending normalization', () => {
       describe('{escapedString: true}', () => {
-        it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true',
-           () => {
-             const result = tokenizeWithoutErrors(
-                 `{\r\n` +
-                     `    messages.length,\r\n` +
-                     `    plural,\r\n` +
-                     `    =0 {You have \r\nno\r\n messages}\r\n` +
-                     `    =1 {One {{message}}}}\r\n`,
-                 {
-                   tokenizeExpansionForms: true,
-                   escapedString: true,
-                   i18nNormalizeLineEndingsInICUs: true
-                 });
+        it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true', () => {
+          const result = tokenizeWithoutErrors(
+            `{\r\n` +
+              `    messages.length,\r\n` +
+              `    plural,\r\n` +
+              `    =0 {You have \r\nno\r\n messages}\r\n` +
+              `    =1 {One {{message}}}}\r\n`,
+            {
+              tokenizeExpansionForms: true,
+              escapedString: true,
+              i18nNormalizeLineEndingsInICUs: true,
+            },
+          );
 
-             expect(humanizeParts(result.tokens)).toEqual([
-               [TokenType.EXPANSION_FORM_START],
-               [TokenType.RAW_TEXT, '\n    messages.length'],
-               [TokenType.RAW_TEXT, 'plural'],
-               [TokenType.EXPANSION_CASE_VALUE, '=0'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'You have \nno\n messages'],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_CASE_VALUE, '=1'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'One '],
-               [TokenType.INTERPOLATION, '{{', 'message', '}}'],
-               [TokenType.TEXT, ''],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_FORM_END],
-               [TokenType.TEXT, '\n'],
-               [TokenType.EOF],
-             ]);
+          expect(humanizeParts(result.tokens)).toEqual([
+            [TokenType.EXPANSION_FORM_START],
+            [TokenType.RAW_TEXT, '\n    messages.length'],
+            [TokenType.RAW_TEXT, 'plural'],
+            [TokenType.EXPANSION_CASE_VALUE, '=0'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'You have \nno\n messages'],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_CASE_VALUE, '=1'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'One '],
+            [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+            [TokenType.TEXT, ''],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_FORM_END],
+            [TokenType.TEXT, '\n'],
+            [TokenType.EOF],
+          ]);
 
-             expect(result.nonNormalizedIcuExpressions).toEqual([]);
-           });
+          expect(result.nonNormalizedIcuExpressions).toEqual([]);
+        });
 
-        it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined',
-           () => {
-             const result = tokenizeWithoutErrors(
-                 `{\r\n` +
-                     `    messages.length,\r\n` +
-                     `    plural,\r\n` +
-                     `    =0 {You have \r\nno\r\n messages}\r\n` +
-                     `    =1 {One {{message}}}}\r\n`,
-                 {tokenizeExpansionForms: true, escapedString: true});
+        it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+          const result = tokenizeWithoutErrors(
+            `{\r\n` +
+              `    messages.length,\r\n` +
+              `    plural,\r\n` +
+              `    =0 {You have \r\nno\r\n messages}\r\n` +
+              `    =1 {One {{message}}}}\r\n`,
+            {tokenizeExpansionForms: true, escapedString: true},
+          );
 
-             expect(humanizeParts(result.tokens)).toEqual([
-               [TokenType.EXPANSION_FORM_START],
-               [TokenType.RAW_TEXT, '\r\n    messages.length'],
-               [TokenType.RAW_TEXT, 'plural'],
-               [TokenType.EXPANSION_CASE_VALUE, '=0'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'You have \nno\n messages'],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_CASE_VALUE, '=1'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'One '],
-               [TokenType.INTERPOLATION, '{{', 'message', '}}'],
-               [TokenType.TEXT, ''],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_FORM_END],
-               [TokenType.TEXT, '\n'],
-               [TokenType.EOF],
-             ]);
+          expect(humanizeParts(result.tokens)).toEqual([
+            [TokenType.EXPANSION_FORM_START],
+            [TokenType.RAW_TEXT, '\r\n    messages.length'],
+            [TokenType.RAW_TEXT, 'plural'],
+            [TokenType.EXPANSION_CASE_VALUE, '=0'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'You have \nno\n messages'],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_CASE_VALUE, '=1'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'One '],
+            [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+            [TokenType.TEXT, ''],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_FORM_END],
+            [TokenType.TEXT, '\n'],
+            [TokenType.EOF],
+          ]);
 
-             expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
-             expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
-                 .toEqual('\r\n    messages.length');
-           });
+          expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
+          expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString()).toEqual(
+            '\r\n    messages.length',
+          );
+        });
 
-        it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined',
-           () => {
-             const result = tokenizeWithoutErrors(
-                 `{\r\n` +
-                     `  messages.length, plural,\r\n` +
-                     `  =0 { zero \r\n` +
-                     `       {\r\n` +
-                     `         p.gender, select,\r\n` +
-                     `         male {m}\r\n` +
-                     `       }\r\n` +
-                     `     }\r\n` +
-                     `}`,
-                 {tokenizeExpansionForms: true, escapedString: true});
-             expect(humanizeParts(result.tokens)).toEqual([
-               [TokenType.EXPANSION_FORM_START],
-               [TokenType.RAW_TEXT, '\r\n  messages.length'],
-               [TokenType.RAW_TEXT, 'plural'],
-               [TokenType.EXPANSION_CASE_VALUE, '=0'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'zero \n       '],
+        it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+          const result = tokenizeWithoutErrors(
+            `{\r\n` +
+              `  messages.length, plural,\r\n` +
+              `  =0 { zero \r\n` +
+              `       {\r\n` +
+              `         p.gender, select,\r\n` +
+              `         male {m}\r\n` +
+              `       }\r\n` +
+              `     }\r\n` +
+              `}`,
+            {tokenizeExpansionForms: true, escapedString: true},
+          );
+          expect(humanizeParts(result.tokens)).toEqual([
+            [TokenType.EXPANSION_FORM_START],
+            [TokenType.RAW_TEXT, '\r\n  messages.length'],
+            [TokenType.RAW_TEXT, 'plural'],
+            [TokenType.EXPANSION_CASE_VALUE, '=0'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'zero \n       '],
 
-               [TokenType.EXPANSION_FORM_START],
-               [TokenType.RAW_TEXT, '\r\n         p.gender'],
-               [TokenType.RAW_TEXT, 'select'],
-               [TokenType.EXPANSION_CASE_VALUE, 'male'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'm'],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_FORM_END],
+            [TokenType.EXPANSION_FORM_START],
+            [TokenType.RAW_TEXT, '\r\n         p.gender'],
+            [TokenType.RAW_TEXT, 'select'],
+            [TokenType.EXPANSION_CASE_VALUE, 'male'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'm'],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_FORM_END],
 
-               [TokenType.TEXT, '\n     '],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_FORM_END],
-               [TokenType.EOF],
-             ]);
+            [TokenType.TEXT, '\n     '],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_FORM_END],
+            [TokenType.EOF],
+          ]);
 
-             expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
-             expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
-                 .toEqual('\r\n  messages.length');
-             expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString())
-                 .toEqual('\r\n         p.gender');
-           });
+          expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
+          expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString()).toEqual(
+            '\r\n  messages.length',
+          );
+          expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString()).toEqual(
+            '\r\n         p.gender',
+          );
+        });
       });
 
       describe('{escapedString: false}', () => {
-        it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true',
-           () => {
-             const result = tokenizeWithoutErrors(
-                 `{\r\n` +
-                     `    messages.length,\r\n` +
-                     `    plural,\r\n` +
-                     `    =0 {You have \r\nno\r\n messages}\r\n` +
-                     `    =1 {One {{message}}}}\r\n`,
-                 {
-                   tokenizeExpansionForms: true,
-                   escapedString: false,
-                   i18nNormalizeLineEndingsInICUs: true
-                 });
+        it('should normalize line-endings in expansion forms if `i18nNormalizeLineEndingsInICUs` is true', () => {
+          const result = tokenizeWithoutErrors(
+            `{\r\n` +
+              `    messages.length,\r\n` +
+              `    plural,\r\n` +
+              `    =0 {You have \r\nno\r\n messages}\r\n` +
+              `    =1 {One {{message}}}}\r\n`,
+            {
+              tokenizeExpansionForms: true,
+              escapedString: false,
+              i18nNormalizeLineEndingsInICUs: true,
+            },
+          );
 
-             expect(humanizeParts(result.tokens)).toEqual([
-               [TokenType.EXPANSION_FORM_START],
-               [TokenType.RAW_TEXT, '\n    messages.length'],
-               [TokenType.RAW_TEXT, 'plural'],
-               [TokenType.EXPANSION_CASE_VALUE, '=0'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'You have \nno\n messages'],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_CASE_VALUE, '=1'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'One '],
-               [TokenType.INTERPOLATION, '{{', 'message', '}}'],
-               [TokenType.TEXT, ''],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_FORM_END],
-               [TokenType.TEXT, '\n'],
-               [TokenType.EOF],
-             ]);
+          expect(humanizeParts(result.tokens)).toEqual([
+            [TokenType.EXPANSION_FORM_START],
+            [TokenType.RAW_TEXT, '\n    messages.length'],
+            [TokenType.RAW_TEXT, 'plural'],
+            [TokenType.EXPANSION_CASE_VALUE, '=0'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'You have \nno\n messages'],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_CASE_VALUE, '=1'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'One '],
+            [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+            [TokenType.TEXT, ''],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_FORM_END],
+            [TokenType.TEXT, '\n'],
+            [TokenType.EOF],
+          ]);
 
-             expect(result.nonNormalizedIcuExpressions).toEqual([]);
-           });
+          expect(result.nonNormalizedIcuExpressions).toEqual([]);
+        });
 
-        it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined',
-           () => {
-             const result = tokenizeWithoutErrors(
-                 `{\r\n` +
-                     `    messages.length,\r\n` +
-                     `    plural,\r\n` +
-                     `    =0 {You have \r\nno\r\n messages}\r\n` +
-                     `    =1 {One {{message}}}}\r\n`,
-                 {tokenizeExpansionForms: true, escapedString: false});
+        it('should not normalize line-endings in ICU expressions when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+          const result = tokenizeWithoutErrors(
+            `{\r\n` +
+              `    messages.length,\r\n` +
+              `    plural,\r\n` +
+              `    =0 {You have \r\nno\r\n messages}\r\n` +
+              `    =1 {One {{message}}}}\r\n`,
+            {tokenizeExpansionForms: true, escapedString: false},
+          );
 
-             expect(humanizeParts(result.tokens)).toEqual([
-               [TokenType.EXPANSION_FORM_START],
-               [TokenType.RAW_TEXT, '\r\n    messages.length'],
-               [TokenType.RAW_TEXT, 'plural'],
-               [TokenType.EXPANSION_CASE_VALUE, '=0'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'You have \nno\n messages'],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_CASE_VALUE, '=1'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'One '],
-               [TokenType.INTERPOLATION, '{{', 'message', '}}'],
-               [TokenType.TEXT, ''],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_FORM_END],
-               [TokenType.TEXT, '\n'],
-               [TokenType.EOF],
-             ]);
+          expect(humanizeParts(result.tokens)).toEqual([
+            [TokenType.EXPANSION_FORM_START],
+            [TokenType.RAW_TEXT, '\r\n    messages.length'],
+            [TokenType.RAW_TEXT, 'plural'],
+            [TokenType.EXPANSION_CASE_VALUE, '=0'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'You have \nno\n messages'],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_CASE_VALUE, '=1'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'One '],
+            [TokenType.INTERPOLATION, '{{', 'message', '}}'],
+            [TokenType.TEXT, ''],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_FORM_END],
+            [TokenType.TEXT, '\n'],
+            [TokenType.EOF],
+          ]);
 
-             expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
-             expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
-                 .toEqual('\r\n    messages.length');
-           });
+          expect(result.nonNormalizedIcuExpressions!.length).toBe(1);
+          expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString()).toEqual(
+            '\r\n    messages.length',
+          );
+        });
 
-        it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined',
-           () => {
-             const result = tokenizeWithoutErrors(
-                 `{\r\n` +
-                     `  messages.length, plural,\r\n` +
-                     `  =0 { zero \r\n` +
-                     `       {\r\n` +
-                     `         p.gender, select,\r\n` +
-                     `         male {m}\r\n` +
-                     `       }\r\n` +
-                     `     }\r\n` +
-                     `}`,
-                 {tokenizeExpansionForms: true});
+        it('should not normalize line endings in nested expansion forms when `i18nNormalizeLineEndingsInICUs` is not defined', () => {
+          const result = tokenizeWithoutErrors(
+            `{\r\n` +
+              `  messages.length, plural,\r\n` +
+              `  =0 { zero \r\n` +
+              `       {\r\n` +
+              `         p.gender, select,\r\n` +
+              `         male {m}\r\n` +
+              `       }\r\n` +
+              `     }\r\n` +
+              `}`,
+            {tokenizeExpansionForms: true},
+          );
 
-             expect(humanizeParts(result.tokens)).toEqual([
-               [TokenType.EXPANSION_FORM_START],
-               [TokenType.RAW_TEXT, '\r\n  messages.length'],
-               [TokenType.RAW_TEXT, 'plural'],
-               [TokenType.EXPANSION_CASE_VALUE, '=0'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'zero \n       '],
+          expect(humanizeParts(result.tokens)).toEqual([
+            [TokenType.EXPANSION_FORM_START],
+            [TokenType.RAW_TEXT, '\r\n  messages.length'],
+            [TokenType.RAW_TEXT, 'plural'],
+            [TokenType.EXPANSION_CASE_VALUE, '=0'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'zero \n       '],
 
-               [TokenType.EXPANSION_FORM_START],
-               [TokenType.RAW_TEXT, '\r\n         p.gender'],
-               [TokenType.RAW_TEXT, 'select'],
-               [TokenType.EXPANSION_CASE_VALUE, 'male'],
-               [TokenType.EXPANSION_CASE_EXP_START],
-               [TokenType.TEXT, 'm'],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_FORM_END],
+            [TokenType.EXPANSION_FORM_START],
+            [TokenType.RAW_TEXT, '\r\n         p.gender'],
+            [TokenType.RAW_TEXT, 'select'],
+            [TokenType.EXPANSION_CASE_VALUE, 'male'],
+            [TokenType.EXPANSION_CASE_EXP_START],
+            [TokenType.TEXT, 'm'],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_FORM_END],
 
-               [TokenType.TEXT, '\n     '],
-               [TokenType.EXPANSION_CASE_EXP_END],
-               [TokenType.EXPANSION_FORM_END],
-               [TokenType.EOF],
-             ]);
+            [TokenType.TEXT, '\n     '],
+            [TokenType.EXPANSION_CASE_EXP_END],
+            [TokenType.EXPANSION_FORM_END],
+            [TokenType.EOF],
+          ]);
 
-             expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
-             expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString())
-                 .toEqual('\r\n  messages.length');
-             expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString())
-                 .toEqual('\r\n         p.gender');
-           });
+          expect(result.nonNormalizedIcuExpressions!.length).toBe(2);
+          expect(result.nonNormalizedIcuExpressions![0].sourceSpan.toString()).toEqual(
+            '\r\n  messages.length',
+          );
+          expect(result.nonNormalizedIcuExpressions![1].sourceSpan.toString()).toEqual(
+            '\r\n         p.gender',
+          );
+        });
       });
     });
   });
 
-
   describe('errors', () => {
     it('should report unescaped "{" on error', () => {
-      expect(tokenizeAndHumanizeErrors(`<p>before { after</p>`, {tokenizeExpansionForms: true}))
-          .toEqual([[
-            TokenType.RAW_TEXT,
-            `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
-            '0:21',
-          ]]);
+      expect(
+        tokenizeAndHumanizeErrors(`<p>before { after</p>`, {tokenizeExpansionForms: true}),
+      ).toEqual([
+        [
+          TokenType.RAW_TEXT,
+          `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+          '0:21',
+        ],
+      ]);
     });
 
-    it('should report unescaped "{" as an error, even after a prematurely terminated interpolation',
-       () => {
-         expect(tokenizeAndHumanizeErrors(
-                    `<code>{{b}<!---->}</code><pre>import {a} from 'a';</pre>`,
-                    {tokenizeExpansionForms: true}))
-             .toEqual([[
-               TokenType.RAW_TEXT,
-               `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
-               '0:56',
-             ]]);
-       });
+    it('should report unescaped "{" as an error, even after a prematurely terminated interpolation', () => {
+      expect(
+        tokenizeAndHumanizeErrors(`<code>{{b}<!---->}</code><pre>import {a} from 'a';</pre>`, {
+          tokenizeExpansionForms: true,
+        }),
+      ).toEqual([
+        [
+          TokenType.RAW_TEXT,
+          `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+          '0:56',
+        ],
+      ]);
+    });
 
     it('should include 2 lines of context in message', () => {
       const src = '111\n222\n333\nE\n444\n555\n666\n';
@@ -2721,8 +2792,9 @@ describe('HtmlLexer', () => {
       const location = new ParseLocation(file, 12, 123, 456);
       const span = new ParseSourceSpan(location, location);
       const error = new TokenError('**ERROR**', null!, span);
-      expect(error.toString())
-          .toEqual(`**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`);
+      expect(error.toString()).toEqual(
+        `**ERROR** ("\n222\n333\n[ERROR ->]E\n444\n555\n"): file://@123:456`,
+      );
     });
   });
 
@@ -2740,16 +2812,16 @@ describe('HtmlLexer', () => {
 
   describe('(processing escaped strings)', () => {
     it('should unescape standard escape sequences', () => {
-      expect(tokenizeAndHumanizeParts('\\\' \\\' \\\'', {escapedString: true})).toEqual([
-        [TokenType.TEXT, '\' \' \''],
+      expect(tokenizeAndHumanizeParts("\\' \\' \\'", {escapedString: true})).toEqual([
+        [TokenType.TEXT, "' ' '"],
         [TokenType.EOF],
       ]);
       expect(tokenizeAndHumanizeParts('\\" \\" \\"', {escapedString: true})).toEqual([
-        [TokenType.TEXT, '\" \" \"'],
+        [TokenType.TEXT, '" " "'],
         [TokenType.EOF],
       ]);
       expect(tokenizeAndHumanizeParts('\\` \\` \\`', {escapedString: true})).toEqual([
-        [TokenType.TEXT, '\` \` \`'],
+        [TokenType.TEXT, '` ` `'],
         [TokenType.EOF],
       ]);
       expect(tokenizeAndHumanizeParts('\\\\ \\\\ \\\\', {escapedString: true})).toEqual([
@@ -2783,34 +2855,28 @@ describe('HtmlLexer', () => {
         [TokenType.TEXT, '\f \f \f'],
         [TokenType.EOF],
       ]);
-      expect(tokenizeAndHumanizeParts(
-                 '\\\' \\" \\` \\\\ \\n \\r \\v \\t \\b \\f', {escapedString: true}))
-          .toEqual([
-            [TokenType.TEXT, '\' \" \` \\ \n \n \v \t \b \f'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('\\\' \\" \\` \\\\ \\n \\r \\v \\t \\b \\f', {
+          escapedString: true,
+        }),
+      ).toEqual([[TokenType.TEXT, '\' " ` \\ \n \n \v \t \b \f'], [TokenType.EOF]]);
     });
 
     it('should unescape null sequences', () => {
-      expect(tokenizeAndHumanizeParts('\\0', {escapedString: true})).toEqual([
-        [TokenType.EOF],
-      ]);
+      expect(tokenizeAndHumanizeParts('\\0', {escapedString: true})).toEqual([[TokenType.EOF]]);
       // \09 is not an octal number so the \0 is taken as EOF
-      expect(tokenizeAndHumanizeParts('\\09', {escapedString: true})).toEqual([
-        [TokenType.EOF],
-      ]);
+      expect(tokenizeAndHumanizeParts('\\09', {escapedString: true})).toEqual([[TokenType.EOF]]);
     });
 
     it('should unescape octal sequences', () => {
       // \19 is read as an octal `\1` followed by a normal char `9`
       // \1234 is read as an octal `\123` followed by a normal char `4`
       // \999 is not an octal number so its backslash just gets removed.
-      expect(tokenizeAndHumanizeParts(
-                 '\\001 \\01 \\1 \\12 \\223 \\19 \\2234 \\999', {escapedString: true}))
-          .toEqual([
-            [TokenType.TEXT, '\x01 \x01 \x01 \x0A \x93 \x019 \x934 999'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('\\001 \\01 \\1 \\12 \\223 \\19 \\2234 \\999', {
+          escapedString: true,
+        }),
+      ).toEqual([[TokenType.TEXT, '\x01 \x01 \x01 \x0A \x93 \x019 \x934 999'], [TokenType.EOF]]);
     });
 
     it('should unescape hex sequences', () => {
@@ -2822,15 +2888,15 @@ describe('HtmlLexer', () => {
 
     it('should report an error on an invalid hex sequence', () => {
       expect(tokenizeAndHumanizeErrors('\\xGG', {escapedString: true})).toEqual([
-        [null, 'Invalid hexadecimal escape sequence', '0:2']
+        [null, 'Invalid hexadecimal escape sequence', '0:2'],
       ]);
 
       expect(tokenizeAndHumanizeErrors('abc \\x xyz', {escapedString: true})).toEqual([
-        [TokenType.TEXT, 'Invalid hexadecimal escape sequence', '0:6']
+        [TokenType.TEXT, 'Invalid hexadecimal escape sequence', '0:6'],
       ]);
 
       expect(tokenizeAndHumanizeErrors('abc\\x', {escapedString: true})).toEqual([
-        [TokenType.TEXT, 'Unexpected character "EOF"', '0:5']
+        [TokenType.TEXT, 'Unexpected character "EOF"', '0:5'],
       ]);
     });
 
@@ -2843,22 +2909,19 @@ describe('HtmlLexer', () => {
 
     it('should error on an invalid fixed length Unicode sequence', () => {
       expect(tokenizeAndHumanizeErrors('\\uGGGG', {escapedString: true})).toEqual([
-        [null, 'Invalid hexadecimal escape sequence', '0:2']
+        [null, 'Invalid hexadecimal escape sequence', '0:2'],
       ]);
     });
 
     it('should unescape variable length Unicode sequences', () => {
       expect(
-          tokenizeAndHumanizeParts('\\u{01} \\u{ABC} \\u{1234} \\u{123AB}', {escapedString: true}))
-          .toEqual([
-            [TokenType.TEXT, '\u{01} \u{ABC} \u{1234} \u{123AB}'],
-            [TokenType.EOF],
-          ]);
+        tokenizeAndHumanizeParts('\\u{01} \\u{ABC} \\u{1234} \\u{123AB}', {escapedString: true}),
+      ).toEqual([[TokenType.TEXT, '\u{01} \u{ABC} \u{1234} \u{123AB}'], [TokenType.EOF]]);
     });
 
     it('should error on an invalid variable length Unicode sequence', () => {
       expect(tokenizeAndHumanizeErrors('\\u{GG}', {escapedString: true})).toEqual([
-        [null, 'Invalid hexadecimal escape sequence', '0:3']
+        [null, 'Invalid hexadecimal escape sequence', '0:3'],
       ]);
     });
 
@@ -2874,59 +2937,62 @@ describe('HtmlLexer', () => {
     });
 
     it('should remove backslash from "non-escape" sequences', () => {
-      expect(tokenizeAndHumanizeParts('\a \g \~', {escapedString: true})).toEqual([
+      expect(tokenizeAndHumanizeParts('a g ~', {escapedString: true})).toEqual([
         [TokenType.TEXT, 'a g ~'],
         [TokenType.EOF],
       ]);
     });
 
     it('should unescape sequences in plain text', () => {
-      expect(tokenizeAndHumanizeParts('abc\ndef\\nghi\\tjkl\\`\\\'\\"mno', {escapedString: true}))
-          .toEqual([
-            [TokenType.TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('abc\ndef\\nghi\\tjkl\\`\\\'\\"mno', {escapedString: true}),
+      ).toEqual([[TokenType.TEXT, 'abc\ndef\nghi\tjkl`\'"mno'], [TokenType.EOF]]);
     });
 
     it('should unescape sequences in raw text', () => {
-      expect(tokenizeAndHumanizeParts(
-                 '<script>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</script>', {escapedString: true}))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 'script'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-            [TokenType.TAG_CLOSE, '', 'script'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('<script>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</script>', {
+          escapedString: true,
+        }),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'script'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
+        [TokenType.TAG_CLOSE, '', 'script'],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should unescape sequences in escapable raw text', () => {
-      expect(tokenizeAndHumanizeParts(
-                 '<title>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</title>', {escapedString: true}))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 'title'],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.ESCAPABLE_RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
-            [TokenType.TAG_CLOSE, '', 'title'],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('<title>abc\ndef\\nghi\\tjkl\\`\\\'\\"mno</title>', {
+          escapedString: true,
+        }),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 'title'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.ESCAPABLE_RAW_TEXT, 'abc\ndef\nghi\tjkl`\'"mno'],
+        [TokenType.TAG_CLOSE, '', 'title'],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse over escape sequences in tag definitions', () => {
-      expect(tokenizeAndHumanizeParts('<t a=\\"b\\" \\n c=\\\'d\\\'>', {escapedString: true}))
-          .toEqual([
-            [TokenType.TAG_OPEN_START, '', 't'],
-            [TokenType.ATTR_NAME, '', 'a'],
-            [TokenType.ATTR_QUOTE, '"'],
-            [TokenType.ATTR_VALUE_TEXT, 'b'],
-            [TokenType.ATTR_QUOTE, '"'],
-            [TokenType.ATTR_NAME, '', 'c'],
-            [TokenType.ATTR_QUOTE, '\''],
-            [TokenType.ATTR_VALUE_TEXT, 'd'],
-            [TokenType.ATTR_QUOTE, '\''],
-            [TokenType.TAG_OPEN_END],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts('<t a=\\"b\\" \\n c=\\\'d\\\'>', {escapedString: true}),
+      ).toEqual([
+        [TokenType.TAG_OPEN_START, '', 't'],
+        [TokenType.ATTR_NAME, '', 'a'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_VALUE_TEXT, 'b'],
+        [TokenType.ATTR_QUOTE, '"'],
+        [TokenType.ATTR_NAME, '', 'c'],
+        [TokenType.ATTR_QUOTE, "'"],
+        [TokenType.ATTR_VALUE_TEXT, 'd'],
+        [TokenType.ATTR_QUOTE, "'"],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse over escaped new line in tag definitions', () => {
@@ -3010,54 +3076,70 @@ describe('HtmlLexer', () => {
     });
 
     it('should account for escape sequences when computing source spans ', () => {
-      const text = '<t>line 1</t>\n' +  // <- unescaped line break
-          '<t>line 2</t>\\n' +          // <- escaped line break
-          '<t>line 3\\\n' +             // <- line continuation
-          '</t>';
+      const text =
+        '<t>line 1</t>\n' + // <- unescaped line break
+        '<t>line 2</t>\\n' + // <- escaped line break
+        '<t>line 3\\\n' + // <- line continuation
+        '</t>';
       expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
-        [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END], [TokenType.TEXT, 'line 1'],
-        [TokenType.TAG_CLOSE, '', 't'], [TokenType.TEXT, '\n'],
+        [TokenType.TAG_OPEN_START, '', 't'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, 'line 1'],
+        [TokenType.TAG_CLOSE, '', 't'],
+        [TokenType.TEXT, '\n'],
 
-        [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END], [TokenType.TEXT, 'line 2'],
-        [TokenType.TAG_CLOSE, '', 't'], [TokenType.TEXT, '\n'],
+        [TokenType.TAG_OPEN_START, '', 't'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, 'line 2'],
+        [TokenType.TAG_CLOSE, '', 't'],
+        [TokenType.TEXT, '\n'],
 
-        [TokenType.TAG_OPEN_START, '', 't'], [TokenType.TAG_OPEN_END],
-        [TokenType.TEXT, 'line 3'],  // <- line continuation does not appear in token
+        [TokenType.TAG_OPEN_START, '', 't'],
+        [TokenType.TAG_OPEN_END],
+        [TokenType.TEXT, 'line 3'], // <- line continuation does not appear in token
         [TokenType.TAG_CLOSE, '', 't'],
 
-        [TokenType.EOF]
+        [TokenType.EOF],
       ]);
       expect(tokenizeAndHumanizeLineColumn(text, {escapedString: true})).toEqual([
         [TokenType.TAG_OPEN_START, '0:0'],
         [TokenType.TAG_OPEN_END, '0:2'],
         [TokenType.TEXT, '0:3'],
         [TokenType.TAG_CLOSE, '0:9'],
-        [TokenType.TEXT, '0:13'],  // <- real newline increments the row
+        [TokenType.TEXT, '0:13'], // <- real newline increments the row
 
         [TokenType.TAG_OPEN_START, '1:0'],
         [TokenType.TAG_OPEN_END, '1:2'],
         [TokenType.TEXT, '1:3'],
         [TokenType.TAG_CLOSE, '1:9'],
-        [TokenType.TEXT, '1:13'],  // <- escaped newline does not increment the row
+        [TokenType.TEXT, '1:13'], // <- escaped newline does not increment the row
 
         [TokenType.TAG_OPEN_START, '1:15'],
         [TokenType.TAG_OPEN_END, '1:17'],
-        [TokenType.TEXT, '1:18'],  // <- the line continuation increments the row
+        [TokenType.TEXT, '1:18'], // <- the line continuation increments the row
         [TokenType.TAG_CLOSE, '2:0'],
 
         [TokenType.EOF, '2:4'],
       ]);
       expect(tokenizeAndHumanizeSourceSpans(text, {escapedString: true})).toEqual([
-        [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'], [TokenType.TEXT, 'line 1'],
-        [TokenType.TAG_CLOSE, '</t>'], [TokenType.TEXT, '\n'],
+        [TokenType.TAG_OPEN_START, '<t'],
+        [TokenType.TAG_OPEN_END, '>'],
+        [TokenType.TEXT, 'line 1'],
+        [TokenType.TAG_CLOSE, '</t>'],
+        [TokenType.TEXT, '\n'],
 
-        [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'], [TokenType.TEXT, 'line 2'],
-        [TokenType.TAG_CLOSE, '</t>'], [TokenType.TEXT, '\\n'],
+        [TokenType.TAG_OPEN_START, '<t'],
+        [TokenType.TAG_OPEN_END, '>'],
+        [TokenType.TEXT, 'line 2'],
+        [TokenType.TAG_CLOSE, '</t>'],
+        [TokenType.TEXT, '\\n'],
 
-        [TokenType.TAG_OPEN_START, '<t'], [TokenType.TAG_OPEN_END, '>'],
-        [TokenType.TEXT, 'line 3\\\n'], [TokenType.TAG_CLOSE, '</t>'],
+        [TokenType.TAG_OPEN_START, '<t'],
+        [TokenType.TAG_OPEN_END, '>'],
+        [TokenType.TEXT, 'line 3\\\n'],
+        [TokenType.TAG_CLOSE, '</t>'],
 
-        [TokenType.EOF, '']
+        [TokenType.EOF, ''],
       ]);
     });
   });
@@ -3186,17 +3268,19 @@ describe('HtmlLexer', () => {
     });
 
     it('should handle object literals and function calls in block parameters', () => {
-      expect(tokenizeAndHumanizeParts(
-                 `@foo (on a({a: 1, b: 2}, false, {c: 3}); when b({d: 4})) {hello}`))
-          .toEqual([
-            [TokenType.BLOCK_OPEN_START, 'foo'],
-            [TokenType.BLOCK_PARAMETER, 'on a({a: 1, b: 2}, false, {c: 3})'],
-            [TokenType.BLOCK_PARAMETER, 'when b({d: 4})'],
-            [TokenType.BLOCK_OPEN_END],
-            [TokenType.TEXT, 'hello'],
-            [TokenType.BLOCK_CLOSE],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts(
+          `@foo (on a({a: 1, b: 2}, false, {c: 3}); when b({d: 4})) {hello}`,
+        ),
+      ).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'foo'],
+        [TokenType.BLOCK_PARAMETER, 'on a({a: 1, b: 2}, false, {c: 3})'],
+        [TokenType.BLOCK_PARAMETER, 'when b({d: 4})'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TEXT, 'hello'],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse block with unclosed parameters', () => {
@@ -3218,11 +3302,11 @@ describe('HtmlLexer', () => {
 
     it('should report invalid quotes in a parameter', () => {
       expect(tokenizeAndHumanizeErrors(`@foo (a === ") {hello}`)).toEqual([
-        [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:22']
+        [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:22'],
       ]);
 
       expect(tokenizeAndHumanizeErrors(`@foo (a === "hi') {hello}`)).toEqual([
-        [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:25']
+        [TokenType.BLOCK_PARAMETER, 'Unexpected character "EOF"', '0:25'],
       ]);
     });
 
@@ -3309,47 +3393,50 @@ describe('HtmlLexer', () => {
     });
 
     it('should parse nested blocks', () => {
-      expect(tokenizeAndHumanizeParts(
-                 '@if (a) {' +
-                 'hello a' +
-                 '@if {' +
-                 'hello unnamed' +
-                 '@if (b) {' +
-                 'hello b' +
-                 '@if (c) {' +
-                 'hello c' +
-                 '}' +
-                 '}' +
-                 '}' +
-                 '}'))
-          .toEqual([
-            [TokenType.BLOCK_OPEN_START, 'if'],
-            [TokenType.BLOCK_PARAMETER, 'a'],
-            [TokenType.BLOCK_OPEN_END],
-            [TokenType.TEXT, 'hello a'],
-            [TokenType.BLOCK_OPEN_START, 'if'],
-            [TokenType.BLOCK_OPEN_END],
-            [TokenType.TEXT, 'hello unnamed'],
-            [TokenType.BLOCK_OPEN_START, 'if'],
-            [TokenType.BLOCK_PARAMETER, 'b'],
-            [TokenType.BLOCK_OPEN_END],
-            [TokenType.TEXT, 'hello b'],
-            [TokenType.BLOCK_OPEN_START, 'if'],
-            [TokenType.BLOCK_PARAMETER, 'c'],
-            [TokenType.BLOCK_OPEN_END],
-            [TokenType.TEXT, 'hello c'],
-            [TokenType.BLOCK_CLOSE],
-            [TokenType.BLOCK_CLOSE],
-            [TokenType.BLOCK_CLOSE],
-            [TokenType.BLOCK_CLOSE],
-            [TokenType.EOF],
-          ]);
+      expect(
+        tokenizeAndHumanizeParts(
+          '@if (a) {' +
+            'hello a' +
+            '@if {' +
+            'hello unnamed' +
+            '@if (b) {' +
+            'hello b' +
+            '@if (c) {' +
+            'hello c' +
+            '}' +
+            '}' +
+            '}' +
+            '}',
+        ),
+      ).toEqual([
+        [TokenType.BLOCK_OPEN_START, 'if'],
+        [TokenType.BLOCK_PARAMETER, 'a'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TEXT, 'hello a'],
+        [TokenType.BLOCK_OPEN_START, 'if'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TEXT, 'hello unnamed'],
+        [TokenType.BLOCK_OPEN_START, 'if'],
+        [TokenType.BLOCK_PARAMETER, 'b'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TEXT, 'hello b'],
+        [TokenType.BLOCK_OPEN_START, 'if'],
+        [TokenType.BLOCK_PARAMETER, 'c'],
+        [TokenType.BLOCK_OPEN_END],
+        [TokenType.TEXT, 'hello c'],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.BLOCK_CLOSE],
+        [TokenType.EOF],
+      ]);
     });
 
     it('should parse a block containing an expansion', () => {
       const result = tokenizeAndHumanizeParts(
-          '@foo {{one.two, three, =4 {four} =5 {five} foo {bar} }}',
-          {tokenizeExpansionForms: true});
+        '@foo {{one.two, three, =4 {four} =5 {five} foo {bar} }}',
+        {tokenizeExpansionForms: true},
+      );
 
       expect(result).toEqual([
         [TokenType.BLOCK_OPEN_START, 'foo'],
@@ -3437,7 +3524,7 @@ function tokenizeWithoutErrors(input: string, options?: TokenizeOptions): Tokeni
 }
 
 function humanizeParts(tokens: Token[]) {
-  return tokens.map(token => [token.type, ...token.parts]);
+  return tokens.map((token) => [token.type, ...token.parts]);
 }
 
 function tokenizeAndHumanizeParts(input: string, options?: TokenizeOptions): any[] {
@@ -3445,8 +3532,10 @@ function tokenizeAndHumanizeParts(input: string, options?: TokenizeOptions): any
 }
 
 function tokenizeAndHumanizeSourceSpans(input: string, options?: TokenizeOptions): any[] {
-  return tokenizeWithoutErrors(input, options)
-      .tokens.map(token => [<any>token.type, token.sourceSpan.toString()]);
+  return tokenizeWithoutErrors(input, options).tokens.map((token) => [
+    <any>token.type,
+    token.sourceSpan.toString(),
+  ]);
 }
 
 function humanizeLineColumn(location: ParseLocation): string {
@@ -3454,19 +3543,24 @@ function humanizeLineColumn(location: ParseLocation): string {
 }
 
 function tokenizeAndHumanizeLineColumn(input: string, options?: TokenizeOptions): any[] {
-  return tokenizeWithoutErrors(input, options)
-      .tokens.map(token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
+  return tokenizeWithoutErrors(input, options).tokens.map((token) => [
+    <any>token.type,
+    humanizeLineColumn(token.sourceSpan.start),
+  ]);
 }
 
 function tokenizeAndHumanizeFullStart(input: string, options?: TokenizeOptions): any[] {
-  return tokenizeWithoutErrors(input, options)
-      .tokens.map(
-          token =>
-              [<any>token.type, humanizeLineColumn(token.sourceSpan.start),
-               humanizeLineColumn(token.sourceSpan.fullStart)]);
+  return tokenizeWithoutErrors(input, options).tokens.map((token) => [
+    <any>token.type,
+    humanizeLineColumn(token.sourceSpan.start),
+    humanizeLineColumn(token.sourceSpan.fullStart),
+  ]);
 }
 
 function tokenizeAndHumanizeErrors(input: string, options?: TokenizeOptions): any[] {
-  return tokenize(input, 'someUrl', getHtmlTagDefinition, options)
-      .errors.map(e => [<any>e.tokenType, e.msg, humanizeLineColumn(e.span.start)]);
+  return tokenize(input, 'someUrl', getHtmlTagDefinition, options).errors.map((e) => [
+    <any>e.tokenType,
+    e.msg,
+    humanizeLineColumn(e.span.start),
+  ]);
 }

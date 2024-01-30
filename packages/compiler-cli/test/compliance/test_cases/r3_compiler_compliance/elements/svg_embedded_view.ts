@@ -8,12 +8,11 @@ import {Component, NgModule} from '@angular/core';
         <text>Hello</text>
       </ng-template>
     </svg>
-  `
+  `,
 })
 export class MyComponent {
   condition = true;
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

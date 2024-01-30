@@ -14,5 +14,5 @@
  * as injection token.
  */
 export abstract class ResourceLoader {
-  abstract get(url: string): Promise<string>|string;
+  abstract get(url: string): Promise<string> | string;
 }

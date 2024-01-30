@@ -4,11 +4,11 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-component',
   template: `
     <div *ngFor="let item of items">
-      <p (click)="$event">{{ item }}</p>
-      <p (click)="$event">{{ item }}</p>
+      <p (click)="($event)">{{ item }}</p>
+      <p (click)="($event)">{{ item }}</p>
     </div>
     <div *ngFor="let item of items">
-      <p (click)="$event">{{ item }}</p>
+      <p (click)="($event)">{{ item }}</p>
     </div>
   `,
 })
@@ -17,5 +17,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

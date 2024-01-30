@@ -6,8 +6,7 @@ import {Component} from '@angular/core';
   template: ``,
   inputs: ['attr1', 'prop1', 'attrInterp1', 'propInterp1'],
 })
-export class SomeCmp {
-}
+export class SomeCmp {}
 
 @Component({
   selector: 'my-cmp',
@@ -24,19 +23,21 @@ export class SomeCmp {
     '[style]': 'foo',
   },
   template: `
-		<some-elem
-			literal1="foo"
-			(event1)="foo()"
-			[attr.attr1]="foo"
-			[prop1]="foo",
-			[class.class1]="foo",
-			[style.style1]="foo"
-			style="foo"
-			class="foo"
-			attr.attrInterp1="interp {{foo}}"
-			propInterp1="interp {{foo}}"
-			/>
-	`
+    <some-elem
+      literal1="foo"
+      (event1)="foo()"
+      [attr.attr1]="foo"
+      [prop1]="foo"
+      ,
+      [class.class1]="foo"
+      ,
+      [style.style1]="foo"
+      style="foo"
+      class="foo"
+      attr.attrInterp1="interp {{ foo }}"
+      propInterp1="interp {{ foo }}"
+    />
+  `,
 })
 export class MyCmp {
   foo: any;

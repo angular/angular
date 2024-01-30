@@ -3,10 +3,10 @@ import {Component, Input, NgModule} from '@angular/core';
 @Component({
   selector: 'nested-comp',
   template: `
-    <p> {{ config.animation }} </p>
-    <p> {{config.actions[0].opacity }} </p>
-    <p> {{config.actions[1].duration }} </p>
-  `
+    <p>{{ config.animation }}</p>
+    <p>{{ config.actions[0].opacity }}</p>
+    <p>{{ config.actions[1].duration }}</p>
+  `,
 })
 export class NestedComp {
   @Input() config!: {[key: string]: any};
@@ -15,9 +15,17 @@ export class NestedComp {
 @Component({
   selector: 'my-app',
   template: `
-  <nested-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1, duration: duration }]}">
-  </nested-comp>
-`
+    <nested-comp
+      [config]="{
+        animation: name,
+        actions: [
+          {opacity: 0, duration: 0},
+          {opacity: 1, duration: duration}
+        ]
+      }"
+    >
+    </nested-comp>
+  `,
 })
 export class MyApp {
   name = 'slide';
@@ -25,5 +33,4 @@ export class MyApp {
 }
 
 @NgModule({declarations: [NestedComp, MyApp]})
-export class MyModule {
-}
+export class MyModule {}

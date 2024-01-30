@@ -1,8 +1,7 @@
 import {Component, Injectable, NgModule, Pipe, PipeTransform} from '@angular/core';
 
 @Injectable()
-class Service {
-}
+class Service {}
 
 @Injectable()
 @Pipe({name: 'myPipe'})
@@ -23,9 +22,7 @@ export class MyOtherPipe implements PipeTransform {
 }
 
 @Component({selector: 'my-app', template: '{{0 | myPipe | myOtherPipe}}'})
-export class MyApp {
-}
+export class MyApp {}
 
 @NgModule({declarations: [MyPipe, MyOtherPipe, MyApp], providers: [Service]})
-export class MyModule {
-}
+export class MyModule {}

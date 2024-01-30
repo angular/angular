@@ -1,10 +1,16 @@
-import {Component, ContentChild, ContentChildren, Directive, forwardRef, NgModule, QueryList} from '@angular/core';
+import {
+  Component,
+  ContentChild,
+  ContentChildren,
+  Directive,
+  forwardRef,
+  NgModule,
+  QueryList,
+} from '@angular/core';
 
 @Component({
   selector: 'content-query-component',
-  template: `
-    <div><ng-content></ng-content></div>
-  `
+  template: ` <div><ng-content></ng-content></div> `,
 })
 export class ContentQueryComponent {
   @ContentChild(forwardRef(() => SomeDirective)) someDir!: SomeDirective;
@@ -17,18 +23,14 @@ export class ContentQueryComponent {
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `
+  `,
 })
-export class MyApp {
-}
-
+export class MyApp {}
 
 @Directive({
   selector: '[someDir]',
 })
-export class SomeDirective {
-}
+export class SomeDirective {}
 
 @NgModule({declarations: [SomeDirective, ContentQueryComponent, MyApp]})
-export class MyModule {
-}
+export class MyModule {}

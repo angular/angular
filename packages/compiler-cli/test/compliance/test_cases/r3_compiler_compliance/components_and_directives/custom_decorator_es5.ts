@@ -3,7 +3,7 @@ import {Component, InjectionToken} from '@angular/core';
 const token = new InjectionToken('token');
 
 export function Custom() {
-  return function(target: any) {};
+  return function (target: any) {};
 }
 
 @Custom()
@@ -11,5 +11,4 @@ export function Custom() {
   template: '',
   providers: [{provide: token, useExisting: Comp}],
 })
-export class Comp {
-}
+export class Comp {}

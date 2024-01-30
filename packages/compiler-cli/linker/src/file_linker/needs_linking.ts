@@ -24,5 +24,5 @@ import {declarationFunctions} from './partial_linkers/partial_linker_selector';
  * @returns whether the source file may contain declarations that need to be linked.
  */
 export function needsLinking(path: string, source: string): boolean {
-  return declarationFunctions.some(fn => source.includes(fn));
+  return declarationFunctions.some((fn) => source.includes(fn));
 }

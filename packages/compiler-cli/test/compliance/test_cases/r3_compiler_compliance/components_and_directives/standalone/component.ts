@@ -5,13 +5,11 @@ import {Component} from '@angular/core';
   selector: 'other-cmp',
   template: '',
 })
-export class OtherCmp {
-}
+export class OtherCmp {}
 
 @Component({
   standalone: true,
   template: '<other-cmp></other-cmp>',
   imports: [OtherCmp],
 })
-export class StandaloneCmp {
-}
+export class StandaloneCmp {}

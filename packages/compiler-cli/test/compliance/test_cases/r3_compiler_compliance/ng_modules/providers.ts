@@ -1,17 +1,15 @@
 import {Injectable, InjectionToken, NgModule} from '@angular/core';
 
 @Injectable()
-export class Thing {
-}
+export class Thing {}
 
 @Injectable()
 export class BaseService {
-  constructor(protected thing: Thing) {};
+  constructor(protected thing: Thing) {}
 }
 
 @Injectable()
-export class ChildService extends BaseService {
-}
+export class ChildService extends BaseService {}
 
 const MY_TOKEN = new InjectionToken('MY_TOKEN');
 
@@ -21,7 +19,6 @@ const MY_TOKEN = new InjectionToken('MY_TOKEN');
     BaseService,
     ChildService,
     {provide: MY_TOKEN, useFactory: (child: ChildService) => ({child}), deps: [ChildService]},
-  ]
+  ],
 })
-export class FooModule {
-}
+export class FooModule {}

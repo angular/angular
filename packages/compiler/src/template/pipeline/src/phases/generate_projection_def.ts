@@ -37,9 +37,9 @@ export function generateProjectionDefs(job: ComponentCompilationJob): void {
   if (selectors.length > 0) {
     // Create the projectionDef array. If we only found a single wildcard selector, then we use the
     // default behavior with no arguments instead.
-    let defExpr: o.Expression|null = null;
+    let defExpr: o.Expression | null = null;
     if (selectors.length > 1 || selectors[0] !== '*') {
-      const def = selectors.map(s => s === '*' ? s : parseSelectorToR3Selector(s));
+      const def = selectors.map((s) => (s === '*' ? s : parseSelectorToR3Selector(s)));
       defExpr = job.pool.getConstLiteral(literalOrArrayLiteral(def), share);
     }
 

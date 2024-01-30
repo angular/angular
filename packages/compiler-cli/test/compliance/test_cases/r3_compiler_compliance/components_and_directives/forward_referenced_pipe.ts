@@ -2,12 +2,9 @@ import {Component, NgModule, Pipe} from '@angular/core';
 
 @Component({
   selector: 'host-binding-comp',
-  template: `
-    <div [attr.style]="{} | my_forward_pipe">...</div>
-  `
+  template: ` <div [attr.style]="{} | my_forward_pipe">...</div> `,
 })
-export class HostBindingComp {
-}
+export class HostBindingComp {}
 
 @Pipe({name: 'my_forward_pipe'})
 class MyForwardPipe {
@@ -15,5 +12,4 @@ class MyForwardPipe {
 }
 
 @NgModule({declarations: [HostBindingComp, MyForwardPipe]})
-export class MyModule {
-}
+export class MyModule {}

@@ -6,13 +6,41 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {AliasingHost, AliasStrategy, PrivateExportAliasingHost, UnifiedModulesAliasingHost} from './src/alias';
-export {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter, validateAndRewriteCoreSymbol} from './src/core';
+export {
+  AliasingHost,
+  AliasStrategy,
+  PrivateExportAliasingHost,
+  UnifiedModulesAliasingHost,
+} from './src/alias';
+export {
+  ImportRewriter,
+  NoopImportRewriter,
+  R3SymbolsImportRewriter,
+  validateAndRewriteCoreSymbol,
+} from './src/core';
 export {DefaultImportTracker} from './src/default';
 export {DeferredSymbolTracker} from './src/deferred_symbol_tracker';
-export {AbsoluteModuleStrategy, assertSuccessfulReferenceEmit, EmittedReference, FailedEmitResult, ImportedFile, ImportFlags, LocalIdentifierStrategy, LogicalProjectStrategy, ReferenceEmitKind, ReferenceEmitResult, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesStrategy} from './src/emitter';
+export {
+  AbsoluteModuleStrategy,
+  assertSuccessfulReferenceEmit,
+  EmittedReference,
+  FailedEmitResult,
+  ImportedFile,
+  ImportFlags,
+  LocalIdentifierStrategy,
+  LogicalProjectStrategy,
+  ReferenceEmitKind,
+  ReferenceEmitResult,
+  ReferenceEmitStrategy,
+  ReferenceEmitter,
+  RelativePathStrategy,
+  UnifiedModulesStrategy,
+} from './src/emitter';
 export {LocalCompilationExtraImportsTracker} from './src/local_compilation_extra_imports_tracker';
-export {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './src/patch_alias_reference_resolution';
+export {
+  isAliasImportDeclaration,
+  loadIsReferencedAliasDeclarationPatch,
+} from './src/patch_alias_reference_resolution';
 export {Reexport} from './src/reexport';
 export {OwningModule, Reference} from './src/references';
 export {ModuleResolver} from './src/resolver';

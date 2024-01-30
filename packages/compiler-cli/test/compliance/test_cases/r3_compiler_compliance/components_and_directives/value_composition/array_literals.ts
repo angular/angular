@@ -5,7 +5,7 @@ import {Component, Input, NgModule} from '@angular/core';
   template: `
     <p>{{ names[0] }}</p>
     <p>{{ names[1] }}</p>
-  `
+  `,
 })
 export class MyComp {
   @Input() names!: string[];
@@ -13,14 +13,11 @@ export class MyComp {
 
 @Component({
   selector: 'my-app',
-  template: `
-  <my-comp [names]="['Nancy', customName]"></my-comp>
-`
+  template: ` <my-comp [names]="['Nancy', customName]"></my-comp> `,
 })
 export class MyApp {
   customName = 'Bess';
 }
 
 @NgModule({declarations: [MyComp, MyApp]})
-export class MyModule {
-}
+export class MyModule {}

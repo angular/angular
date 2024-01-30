@@ -14,8 +14,9 @@ import {RawSourceMap, SourceMapInfo} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
-  return mapHelpers.removeMapFileComments(mapHelpers.removeComments(contents))
-      .replace(/\n\n$/, '\n');
+  return mapHelpers
+    .removeMapFileComments(mapHelpers.removeComments(contents))
+    .replace(/\n\n$/, '\n');
 }
 
 export class SourceFile {
@@ -30,15 +31,15 @@ export class SourceFile {
   readonly startOfLinePositions: number[];
 
   constructor(
-      /** The path to this source file. */
-      readonly sourcePath: AbsoluteFsPath,
-      /** The contents of this source file. */
-      readonly contents: string,
-      /** The raw source map (if any) referenced by this source file. */
-      readonly rawMap: SourceMapInfo|null,
-      /** Any source files referenced by the raw source map associated with this source file. */
-      readonly sources: (SourceFile|null)[],
-      private fs: PathManipulation,
+    /** The path to this source file. */
+    readonly sourcePath: AbsoluteFsPath,
+    /** The contents of this source file. */
+    readonly contents: string,
+    /** The raw source map (if any) referenced by this source file. */
+    readonly rawMap: SourceMapInfo | null,
+    /** Any source files referenced by the raw source map associated with this source file. */
+    readonly sources: (SourceFile | null)[],
+    private fs: PathManipulation,
   ) {
     this.contents = removeSourceMapComments(contents);
     this.startOfLinePositions = computeStartOfLinePositions(this.contents);
@@ -55,13 +56,15 @@ export class SourceFile {
     const sourcePathDir = this.fs.dirname(this.sourcePath);
     // Computing the relative path can be expensive, and we are likely to have the same path for
     // many (if not all!) mappings.
-    const relativeSourcePathCache =
-        new Cache<string, string>(input => this.fs.relative(sourcePathDir, input));
+    const relativeSourcePathCache = new Cache<string, string>((input) =>
+      this.fs.relative(sourcePathDir, input),
+    );
 
     for (const mapping of this.flattenedMappings) {
       const sourceIndex = sources.set(
-          relativeSourcePathCache.get(mapping.originalSource.sourcePath),
-          mapping.originalSource.contents);
+        relativeSourcePathCache.get(mapping.originalSource.sourcePath),
+        mapping.originalSource.contents,
+      );
       const mappingArray: SourceMapSegment = [
         mapping.generatedSegment.column,
         sourceIndex,
@@ -101,8 +104,10 @@ export class SourceFile {
    * segment. Finally we apply this offset to the original source segment to get the desired
    * original location.
    */
-  getOriginalLocation(line: number, column: number):
-      {file: AbsoluteFsPath, line: number, column: number}|null {
+  getOriginalLocation(
+    line: number,
+    column: number,
+  ): {file: AbsoluteFsPath; line: number; column: number} | null {
     if (this.flattenedMappings.length === 0) {
       return null;
     }
@@ -117,16 +122,23 @@ export class SourceFile {
 
     const locationSegment: SegmentMarker = {line, column, position, next: undefined};
 
-    let mappingIndex =
-        findLastMappingIndexBefore(this.flattenedMappings, locationSegment, false, 0);
+    let mappingIndex = findLastMappingIndexBefore(
+      this.flattenedMappings,
+      locationSegment,
+      false,
+      0,
+    );
     if (mappingIndex < 0) {
       mappingIndex = 0;
     }
     const {originalSegment, originalSource, generatedSegment} =
-        this.flattenedMappings[mappingIndex];
+      this.flattenedMappings[mappingIndex];
     const offset = locationSegment.position - generatedSegment.position;
-    const offsetOriginalSegment =
-        offsetSegment(originalSource.startOfLinePositions, originalSegment, offset);
+    const offsetOriginalSegment = offsetSegment(
+      originalSource.startOfLinePositions,
+      originalSegment,
+      offset,
+    );
 
     return {
       file: originalSource.sourcePath,
@@ -140,8 +152,11 @@ export class SourceFile {
    * source files with no transitive source maps.
    */
   private flattenMappings(): Mapping[] {
-    const mappings =
-        parseMappings(this.rawMap && this.rawMap.map, this.sources, this.startOfLinePositions);
+    const mappings = parseMappings(
+      this.rawMap && this.rawMap.map,
+      this.sources,
+      this.startOfLinePositions,
+    );
     ensureOriginalSegmentLinks(mappings);
     const flattenedMappings: Mapping[] = [];
     for (let mappingIndex = 0; mappingIndex < mappings.length; mappingIndex++) {
@@ -196,18 +211,30 @@ export class SourceFile {
       // The range with `incomingStart` at 2 and `incomingEnd` at 5 has outgoing start mapping of
       // [1,0] and outgoing end mapping of [4, 6], which also includes [4, 3].
       //
-      let outgoingStartIndex =
-          findLastMappingIndexBefore(bSource.flattenedMappings, incomingStart, false, 0);
+      let outgoingStartIndex = findLastMappingIndexBefore(
+        bSource.flattenedMappings,
+        incomingStart,
+        false,
+        0,
+      );
       if (outgoingStartIndex < 0) {
         outgoingStartIndex = 0;
       }
-      const outgoingEndIndex = incomingEnd !== undefined ?
-          findLastMappingIndexBefore(
-              bSource.flattenedMappings, incomingEnd, true, outgoingStartIndex) :
-          bSource.flattenedMappings.length - 1;
+      const outgoingEndIndex =
+        incomingEnd !== undefined
+          ? findLastMappingIndexBefore(
+              bSource.flattenedMappings,
+              incomingEnd,
+              true,
+              outgoingStartIndex,
+            )
+          : bSource.flattenedMappings.length - 1;
 
-      for (let bToCmappingIndex = outgoingStartIndex; bToCmappingIndex <= outgoingEndIndex;
-           bToCmappingIndex++) {
+      for (
+        let bToCmappingIndex = outgoingStartIndex;
+        bToCmappingIndex <= outgoingEndIndex;
+        bToCmappingIndex++
+      ) {
         const bToCmapping: Mapping = bSource.flattenedMappings[bToCmappingIndex];
         flattenedMappings.push(mergeMappings(this, aToBmapping, bToCmapping));
       }
@@ -228,7 +255,11 @@ export class SourceFile {
  * index that is no lower than this.
  */
 export function findLastMappingIndexBefore(
-    mappings: Mapping[], marker: SegmentMarker, exclusive: boolean, lowerIndex: number): number {
+  mappings: Mapping[],
+  marker: SegmentMarker,
+  exclusive: boolean,
+  lowerIndex: number,
+): number {
   let upperIndex = mappings.length - 1;
   const test = exclusive ? -1 : 0;
 
@@ -263,8 +294,6 @@ export interface Mapping {
   readonly originalSegment: SegmentMarker;
   readonly name?: string;
 }
-
-
 
 /**
  * Merge two mappings that go from A to B and B to C, to result in a mapping that goes from A to C.
@@ -316,8 +345,11 @@ export function mergeMappings(generatedSource: SourceFile, ab: Mapping, bc: Mapp
   if (diff > 0) {
     return {
       name,
-      generatedSegment:
-          offsetSegment(generatedSource.startOfLinePositions, ab.generatedSegment, diff),
+      generatedSegment: offsetSegment(
+        generatedSource.startOfLinePositions,
+        ab.generatedSegment,
+        diff,
+      ),
       originalSource: bc.originalSource,
       originalSegment: bc.originalSegment,
     };
@@ -326,8 +358,11 @@ export function mergeMappings(generatedSource: SourceFile, ab: Mapping, bc: Mapp
       name,
       generatedSegment: ab.generatedSegment,
       originalSource: bc.originalSource,
-      originalSegment:
-          offsetSegment(bc.originalSource.startOfLinePositions, bc.originalSegment, -diff),
+      originalSegment: offsetSegment(
+        bc.originalSource.startOfLinePositions,
+        bc.originalSegment,
+        -diff,
+      ),
     };
   }
 }
@@ -337,8 +372,10 @@ export function mergeMappings(generatedSource: SourceFile, ab: Mapping, bc: Mapp
  * in the `sources` parameter.
  */
 export function parseMappings(
-    rawMap: RawSourceMap|null, sources: (SourceFile|null)[],
-    generatedSourceStartOfLinePositions: number[]): Mapping[] {
+  rawMap: RawSourceMap | null,
+  sources: (SourceFile | null)[],
+  generatedSourceStartOfLinePositions: number[],
+): Mapping[] {
   if (rawMap === null) {
     return [];
   }
@@ -399,7 +436,7 @@ export function extractOriginalSegments(mappings: Mapping[]): Map<SourceFile, Se
     const segments = originalSegments.get(originalSource)!;
     segments.push(mapping.originalSegment);
   }
-  originalSegments.forEach(segmentMarkers => segmentMarkers.sort(compareSegments));
+  originalSegments.forEach((segmentMarkers) => segmentMarkers.sort(compareSegments));
   return originalSegments;
 }
 
@@ -411,7 +448,7 @@ export function extractOriginalSegments(mappings: Mapping[]): Map<SourceFile, Se
  */
 export function ensureOriginalSegmentLinks(mappings: Mapping[]): void {
   const segmentsBySource = extractOriginalSegments(mappings);
-  segmentsBySource.forEach(markers => {
+  segmentsBySource.forEach((markers) => {
     for (let i = 0; i < markers.length - 1; i++) {
       markers[i].next = markers[i + 1];
     }
@@ -426,7 +463,7 @@ export function computeStartOfLinePositions(str: string) {
   // so differences in length due to extra `\r` characters do not affect the algorithms.
   const NEWLINE_MARKER_OFFSET = 1;
   const lineLengths = computeLineLengths(str);
-  const startPositions = [0];  // First line starts at position 0
+  const startPositions = [0]; // First line starts at position 0
   for (let i = 0; i < lineLengths.length - 1; i++) {
     startPositions.push(startPositions[i] + lineLengths[i] + NEWLINE_MARKER_OFFSET);
   }
@@ -434,7 +471,7 @@ export function computeStartOfLinePositions(str: string) {
 }
 
 function computeLineLengths(str: string): number[] {
-  return (str.split(/\n/)).map(s => s.length);
+  return str.split(/\n/).map((s) => s.length);
 }
 
 /**

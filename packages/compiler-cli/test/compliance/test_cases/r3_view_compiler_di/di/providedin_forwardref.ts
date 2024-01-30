@@ -1,12 +1,10 @@
 import {forwardRef, Injectable, NgModule} from '@angular/core';
 
 @Injectable()
-export class Dep {
-}
+export class Dep {}
 @Injectable({providedIn: forwardRef(() => Mod)})
 export class Service {
   constructor(dep: Dep) {}
 }
 @NgModule()
-export class Mod {
-}
+export class Mod {}

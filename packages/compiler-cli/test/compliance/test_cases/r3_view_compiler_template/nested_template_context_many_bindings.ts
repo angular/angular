@@ -2,9 +2,7 @@ import {Component, NgModule} from '@angular/core';
 
 @Component({
   selector: 'my-component',
-  template: `
-    <div *ngFor="let d of _data; let i = index" (click)="_handleClick(d, i)"></div>
-  `
+  template: ` <div *ngFor="let d of _data; let i = index" (click)="_handleClick(d, i)"></div> `,
 })
 export class MyComponent {
   _data = [1, 2, 3];
@@ -12,5 +10,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

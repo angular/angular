@@ -2,7 +2,7 @@ import {Component, NgModule} from '@angular/core';
 
 @Component({
   selector: 'my-component',
-  template: '<div [class.error]="error" [style.background-color]="color"></div>'
+  template: '<div [class.error]="error" [style.background-color]="color"></div>',
 })
 export class MyComponent {
   error = true;
@@ -10,5 +10,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

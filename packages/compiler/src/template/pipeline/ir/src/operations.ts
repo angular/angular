@@ -12,7 +12,7 @@ import {OpKind} from './enums';
  * Branded type for a cross-reference ID. During ingest, `XrefId`s are generated to link together
  * different IR operations which need to reference each other.
  */
-export type XrefId = number&{__brand: 'XrefId'};
+export type XrefId = number & {__brand: 'XrefId'};
 
 /**
  * Base interface for semantic operations being performed within a template.
@@ -31,20 +31,20 @@ export interface Op<OpT extends Op<OpT>> {
    *
    * This is `null` for operation nodes not currently in a list, or for the special head/tail nodes.
    */
-  prev: OpT|null;
+  prev: OpT | null;
 
   /**
    * The next operation in the linked list, if any.
    *
    * This is `null` for operation nodes not currently in a list, or for the special head/tail nodes.
    */
-  next: OpT|null;
+  next: OpT | null;
 
   /**
    * Debug id of the list to which this node currently belongs, or `null` if this node is not part
    * of a list.
    */
-  debugListId: number|null;
+  debugListId: number | null;
 }
 
 /**
@@ -77,7 +77,6 @@ export class OpList<OpT extends Op<OpT>> {
     debugListId: this.debugListId,
   } as OpT;
 
-
   constructor() {
     // Link `head` and `tail` together at the start (list is empty).
     this.head.next = this.tail;
@@ -87,7 +86,7 @@ export class OpList<OpT extends Op<OpT>> {
   /**
    * Push a new operation to the tail of the list.
    */
-  push(op: OpT|Array<OpT>): void {
+  push(op: OpT | Array<OpT>): void {
     if (Array.isArray(op)) {
       for (const o of op) {
         this.push(o);
@@ -148,7 +147,7 @@ export class OpList<OpT extends Op<OpT>> {
    * and including the last operation returned. Mutations beyond that point _may_ be safe, but may
    * also corrupt the iteration position and should be avoided.
    */
-  * [Symbol.iterator](): Generator<OpT> {
+  *[Symbol.iterator](): Generator<OpT> {
     let current = this.head.next!;
     while (current !== this.tail) {
       // Guards against corruption of the iterator state by mutations to the tail of the list during
@@ -161,7 +160,7 @@ export class OpList<OpT extends Op<OpT>> {
     }
   }
 
-  * reversed(): Generator<OpT> {
+  *reversed(): Generator<OpT> {
     let current = this.tail.prev!;
     while (current !== this.head) {
       OpList.assertIsOwned(current, this.debugListId);
@@ -274,7 +273,7 @@ export class OpList<OpT extends Op<OpT>> {
   /**
    * Insert `op` before `target`.
    */
-  static insertBefore<OpT extends Op<OpT>>(op: OpT|OpT[], target: OpT): void {
+  static insertBefore<OpT extends Op<OpT>>(op: OpT | OpT[], target: OpT): void {
     if (Array.isArray(op)) {
       for (const o of op) {
         this.insertBefore(o, target);
@@ -342,8 +341,9 @@ export class OpList<OpT extends Op<OpT>> {
     if (op.debugListId === null) {
       throw new Error(`AssertionError: illegal operation on unowned node: ${OpKind[op.kind]}`);
     } else if (byList !== undefined && op.debugListId !== byList) {
-      throw new Error(`AssertionError: node belongs to the wrong list (expected ${byList}, actual ${
-          op.debugListId})`);
+      throw new Error(
+        `AssertionError: node belongs to the wrong list (expected ${byList}, actual ${op.debugListId})`,
+      );
     }
   }
 

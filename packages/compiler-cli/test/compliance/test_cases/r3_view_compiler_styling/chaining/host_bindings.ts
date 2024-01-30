@@ -6,8 +6,8 @@ import {Component, HostBinding} from '@angular/core';
     '[class.apple]': 'yesToApple',
     '[style.color]': 'color',
     '[class.tomato]': 'yesToTomato',
-    '[style.transition]': 'transition'
-  }
+    '[style.transition]': 'transition',
+  },
 })
 export class MyComponent {
   color = 'red';

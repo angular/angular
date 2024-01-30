@@ -16,7 +16,7 @@ export class CustomEl {
     <button [title]="myTitle" [id]="buttonId" [tabindex]="1"></button>
     <span [id]="1" [title]="'hello'" [someProp]="1 + 2"></span>
     <custom-element [prop]="'one'" [otherProp]="2"></custom-element>
-  `
+  `,
 })
 export class MyComponent {
   myTitle = 'hello';
@@ -24,5 +24,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent, CustomEl, SpanDir]})
-export class MyMod {
-}
+export class MyMod {}

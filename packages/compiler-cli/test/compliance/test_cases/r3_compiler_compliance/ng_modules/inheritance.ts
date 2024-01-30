@@ -1,8 +1,7 @@
 import {Injectable, NgModule} from '@angular/core';
 
 @Injectable()
-export class Service {
-}
+export class Service {}
 
 @NgModule({providers: [Service]})
 export class BaseModule {
@@ -10,5 +9,4 @@ export class BaseModule {
 }
 
 @NgModule({})
-export class BasicModule extends BaseModule {
-}
+export class BasicModule extends BaseModule {}

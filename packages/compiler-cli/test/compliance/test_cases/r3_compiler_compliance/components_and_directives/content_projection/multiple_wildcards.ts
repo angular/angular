@@ -7,9 +7,7 @@ import {Component, NgModule} from '@angular/core';
     <ng-content></ng-content>
   `,
 })
-class Cmp {
-}
+class Cmp {}
 
 @NgModule({declarations: [Cmp]})
-class Module {
-}
+class Module {}

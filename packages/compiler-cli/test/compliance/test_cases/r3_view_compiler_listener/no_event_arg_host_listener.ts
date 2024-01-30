@@ -4,12 +4,11 @@ import {Component, HostListener} from '@angular/core';
   template: '',
   host: {
     '(mousedown)': 'mousedown()',
-  }
+  },
 })
 export class MyComponent {
   mousedown() {}
 
   @HostListener('click')
-  click() {
-  }
+  click() {}
 }

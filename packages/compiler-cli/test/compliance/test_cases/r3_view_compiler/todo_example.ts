@@ -7,7 +7,7 @@ export class MyApp {
 
 @Component({
   selector: 'todo',
-  template: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>'
+  template: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>',
 })
 export class TodoComponent {
   @Input() data: any[] = [];
@@ -18,5 +18,4 @@ export class TodoComponent {
 @NgModule({
   declarations: [TodoComponent, MyApp],
 })
-export class TodoModule {
-}
+export class TodoModule {}

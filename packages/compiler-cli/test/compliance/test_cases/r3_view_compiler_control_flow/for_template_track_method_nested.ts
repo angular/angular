@@ -3,10 +3,8 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     <div>
-      {{message}}
-      <ng-template>
-        @for (item of items; track trackFn($index, item)) {}
-      </ng-template>
+      {{ message }}
+      <ng-template> @for (item of items; track trackFn($index, item)) {} </ng-template>
     </div>
   `,
 })

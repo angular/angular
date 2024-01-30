@@ -4,7 +4,7 @@ import {Component, NgModule} from '@angular/core';
   template: `
     <div [dir]="{foo: null}"></div>
     <div [dir]="{foo: getFoo()}"></div>
-  `
+  `,
 })
 export class MyApp {
   getFoo() {
@@ -13,5 +13,4 @@ export class MyApp {
 }
 
 @NgModule({declarations: [MyApp]})
-export class MyModule {
-}
+export class MyModule {}

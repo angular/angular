@@ -7,7 +7,8 @@ import {Component} from '@angular/core';
     [class.orange]="yesToOrange"
     [style.border]="border"
     [class.tomato]="yesToTomato"
-    [style.transition]="transition"></div>`
+    [style.transition]="transition"
+  ></div>`,
 })
 export class MyComponent {
   color = 'red';

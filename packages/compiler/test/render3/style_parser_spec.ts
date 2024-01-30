@@ -37,7 +37,7 @@ describe('style parsing', () => {
   });
 
   it('should not mess up with quoted strings that contain inner quote values', () => {
-    const quoteStr = '"one \'two\' three \"four\" five"';
+    const quoteStr = '"one \'two\' three "four" five"';
     const result = parseStyle(`content: ${quoteStr}; width: 123px`);
     expect(result).toEqual(['content', quoteStr, 'width', '123px']);
   });

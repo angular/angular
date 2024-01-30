@@ -8,7 +8,13 @@
 
 import ts from 'typescript';
 
-import {CompilationTicket, freshCompilationTicket, incrementalFromStateTicket, NgCompiler, NgCompilerHost} from './core';
+import {
+  CompilationTicket,
+  freshCompilationTicket,
+  incrementalFromStateTicket,
+  NgCompiler,
+  NgCompilerHost,
+} from './core';
 import {NgCompilerOptions, UnifiedModulesHost} from './core/api';
 import {AbsoluteFsPath, NodeJSFileSystem, resolve, setFileSystem} from './file_system';
 import {PatchedProgramIncrementalBuildStrategy} from './incremental';
@@ -41,12 +47,17 @@ interface TscPlugin {
   readonly name: string;
 
   wrapHost(
-      host: ts.CompilerHost&Partial<UnifiedModulesHost>, inputFiles: ReadonlyArray<string>,
-      options: ts.CompilerOptions): PluginCompilerHost;
+    host: ts.CompilerHost & Partial<UnifiedModulesHost>,
+    inputFiles: ReadonlyArray<string>,
+    options: ts.CompilerOptions,
+  ): PluginCompilerHost;
 
-  setupCompilation(program: ts.Program, oldProgram?: ts.Program): {
-    ignoreForDiagnostics: Set<ts.SourceFile>,
-    ignoreForEmit: Set<ts.SourceFile>,
+  setupCompilation(
+    program: ts.Program,
+    oldProgram?: ts.Program,
+  ): {
+    ignoreForDiagnostics: Set<ts.SourceFile>;
+    ignoreForEmit: Set<ts.SourceFile>;
   };
 
   getDiagnostics(file?: ts.SourceFile): ts.Diagnostic[];
@@ -64,9 +75,9 @@ interface TscPlugin {
 export class NgTscPlugin implements TscPlugin {
   name = 'ngtsc';
 
-  private options: NgCompilerOptions|null = null;
-  private host: NgCompilerHost|null = null;
-  private _compiler: NgCompiler|null = null;
+  private options: NgCompilerOptions | null = null;
+  private host: NgCompilerHost | null = null;
+  private _compiler: NgCompiler | null = null;
 
   get compiler(): NgCompiler {
     if (this._compiler === null) {
@@ -80,8 +91,10 @@ export class NgTscPlugin implements TscPlugin {
   }
 
   wrapHost(
-      host: ts.CompilerHost&Partial<UnifiedModulesHost>, inputFiles: readonly string[],
-      options: ts.CompilerOptions): PluginCompilerHost {
+    host: ts.CompilerHost & Partial<UnifiedModulesHost>,
+    inputFiles: readonly string[],
+    options: ts.CompilerOptions,
+  ): PluginCompilerHost {
     // TODO(alxhub): Eventually the `wrapHost()` API will accept the old `ts.Program` (if one is
     // available). When it does, its `ts.SourceFile`s need to be re-tagged to enable proper
     // incremental compilation.
@@ -90,9 +103,12 @@ export class NgTscPlugin implements TscPlugin {
     return this.host;
   }
 
-  setupCompilation(program: ts.Program, oldProgram?: ts.Program): {
-    ignoreForDiagnostics: Set<ts.SourceFile>,
-    ignoreForEmit: Set<ts.SourceFile>,
+  setupCompilation(
+    program: ts.Program,
+    oldProgram?: ts.Program,
+  ): {
+    ignoreForDiagnostics: Set<ts.SourceFile>;
+    ignoreForEmit: Set<ts.SourceFile>;
   } {
     // TODO(alxhub): we provide a `PerfRecorder` to the compiler, but because we're not driving the
     // compilation, the information captured within it is incomplete, and may not include timings
@@ -107,7 +123,11 @@ export class NgTscPlugin implements TscPlugin {
     this.host.postProgramCreationCleanup();
     untagAllTsFiles(program);
     const programDriver = new TsCreateProgramDriver(
-        program, this.host, this.options, this.host.shimExtensionPrefixes);
+      program,
+      this.host,
+      this.options,
+      this.host.shimExtensionPrefixes,
+    );
     const strategy = new PatchedProgramIncrementalBuildStrategy();
     const oldState = oldProgram !== undefined ? strategy.getIncrementalState(oldProgram) : null;
     let ticket: CompilationTicket;
@@ -121,13 +141,28 @@ export class NgTscPlugin implements TscPlugin {
 
     if (oldProgram === undefined || oldState === null) {
       ticket = freshCompilationTicket(
-          program, this.options, strategy, programDriver, perfRecorder,
-          /* enableTemplateTypeChecker */ false, /* usePoisonedData */ false);
+        program,
+        this.options,
+        strategy,
+        programDriver,
+        perfRecorder,
+        /* enableTemplateTypeChecker */ false,
+        /* usePoisonedData */ false,
+      );
     } else {
       strategy.toNextBuildStrategy().getIncrementalState(oldProgram);
       ticket = incrementalFromStateTicket(
-          oldProgram, oldState, program, this.options, strategy, programDriver,
-          modifiedResourceFiles, perfRecorder, false, false);
+        oldProgram,
+        oldState,
+        program,
+        this.options,
+        strategy,
+        programDriver,
+        modifiedResourceFiles,
+        perfRecorder,
+        false,
+        false,
+      );
     }
     this._compiler = NgCompiler.fromTicket(ticket, this.host);
     return {

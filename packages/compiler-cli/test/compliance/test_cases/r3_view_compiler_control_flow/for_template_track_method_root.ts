@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     <div>
-      {{message}}
+      {{ message }}
       @for (item of items; track trackFn($index, item)) {}
     </div>
   `,

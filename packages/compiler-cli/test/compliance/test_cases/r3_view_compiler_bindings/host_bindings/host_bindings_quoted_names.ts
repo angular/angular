@@ -8,5 +8,4 @@ export class HostBindingDir {
 }
 
 @NgModule({declarations: [HostBindingDir]})
-export class MyModule {
-}
+export class MyModule {}

@@ -54,14 +54,21 @@ class _Humanizer implements html.Visitor {
   visitAttribute(attribute: html.Attribute, context: any): any {
     const valueTokens = attribute.valueTokens ?? [];
     const res = this._appendContext(attribute, [
-      html.Attribute, attribute.name, attribute.value, ...valueTokens.map(token => token.parts)
+      html.Attribute,
+      attribute.name,
+      attribute.value,
+      ...valueTokens.map((token) => token.parts),
     ]);
     this.result.push(res);
   }
 
   visitText(text: html.Text, context: any): any {
-    const res = this._appendContext(
-        text, [html.Text, text.value, this.elDepth, ...text.tokens.map(token => token.parts)]);
+    const res = this._appendContext(text, [
+      html.Text,
+      text.value,
+      this.elDepth,
+      ...text.tokens.map((token) => token.parts),
+    ]);
     this.result.push(res);
   }
 
@@ -71,16 +78,23 @@ class _Humanizer implements html.Visitor {
   }
 
   visitExpansion(expansion: html.Expansion, context: any): any {
-    const res = this._appendContext(
-        expansion, [html.Expansion, expansion.switchValue, expansion.type, this.elDepth++]);
+    const res = this._appendContext(expansion, [
+      html.Expansion,
+      expansion.switchValue,
+      expansion.type,
+      this.elDepth++,
+    ]);
     this.result.push(res);
     html.visitAll(this, expansion.cases);
     this.elDepth--;
   }
 
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any {
-    const res =
-        this._appendContext(expansionCase, [html.ExpansionCase, expansionCase.value, this.elDepth]);
+    const res = this._appendContext(expansionCase, [
+      html.ExpansionCase,
+      expansionCase.value,
+      this.elDepth,
+    ]);
     this.result.push(res);
   }
 
@@ -104,8 +118,12 @@ class _Humanizer implements html.Visitor {
     if (!this.includeSourceSpan) return input;
     input.push(ast.sourceSpan.toString());
     if (ast.sourceSpan.fullStart.offset !== ast.sourceSpan.start.offset) {
-      input.push(ast.sourceSpan.fullStart.file.content.substring(
-          ast.sourceSpan.fullStart.offset, ast.sourceSpan.end.offset));
+      input.push(
+        ast.sourceSpan.fullStart.file.content.substring(
+          ast.sourceSpan.fullStart.offset,
+          ast.sourceSpan.end.offset,
+        ),
+      );
     }
     return input;
   }

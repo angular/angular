@@ -15,7 +15,6 @@ import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {EmittedReference, ImportFlags, ReferenceEmitKind, ReferenceEmitStrategy} from './emitter';
 import {Reference} from './references';
 
-
 // Escape anything that isn't alphanumeric, '/' or '_'.
 const CHARS_TO_ESCAPE = /[^a-zA-Z0-9/_]/g;
 
@@ -67,8 +66,11 @@ export interface AliasingHost {
    * NgModule (as opposed to being declared by it directly).
    */
   maybeAliasSymbolAs(
-      ref: Reference<ClassDeclaration>, context: ts.SourceFile, ngModuleName: string,
-      isReExport: boolean): string|null;
+    ref: Reference<ClassDeclaration>,
+    context: ts.SourceFile,
+    ngModuleName: string,
+    isReExport: boolean,
+  ): string | null;
 
   /**
    * Determine an `Expression` by which `decl` should be imported from `via` using an alias export
@@ -81,7 +83,7 @@ export interface AliasingHost {
    * aliased.
    * @param via the `ts.SourceFile` which might contain an alias to the
    */
-  getAliasIn(decl: ClassDeclaration, via: ts.SourceFile, isReExport: boolean): Expression|null;
+  getAliasIn(decl: ClassDeclaration, via: ts.SourceFile, isReExport: boolean): Expression | null;
 }
 
 /**
@@ -101,8 +103,11 @@ export class UnifiedModulesAliasingHost implements AliasingHost {
   readonly aliasExportsInDts = false;
 
   maybeAliasSymbolAs(
-      ref: Reference<ClassDeclaration>, context: ts.SourceFile, ngModuleName: string,
-      isReExport: boolean): string|null {
+    ref: Reference<ClassDeclaration>,
+    context: ts.SourceFile,
+    ngModuleName: string,
+    isReExport: boolean,
+  ): string | null {
     if (!isReExport) {
       // Aliasing is used with a UnifiedModulesHost to prevent transitive dependencies. Thus,
       // aliases
@@ -117,7 +122,7 @@ export class UnifiedModulesAliasingHost implements AliasingHost {
    * Generates an `Expression` to import `decl` from `via`, assuming an export was added when `via`
    * was compiled per `maybeAliasSymbolAs` above.
    */
-  getAliasIn(decl: ClassDeclaration, via: ts.SourceFile, isReExport: boolean): Expression|null {
+  getAliasIn(decl: ClassDeclaration, via: ts.SourceFile, isReExport: boolean): Expression | null {
     if (!isReExport) {
       // Directly exported directives/pipes don't require an alias, per the logic in
       // `maybeAliasSymbolAs`.
@@ -135,7 +140,9 @@ export class UnifiedModulesAliasingHost implements AliasingHost {
   private aliasName(decl: ClassDeclaration, context: ts.SourceFile): string {
     // The declared module is used to get the name of the alias.
     const declModule = this.unifiedModulesHost.fileNameToModuleName(
-        decl.getSourceFile().fileName, context.fileName);
+      decl.getSourceFile().fileName,
+      context.fileName,
+    );
 
     const replaced = declModule.replace(CHARS_TO_ESCAPE, '_').replace(/\//g, '$');
     return 'ɵng$' + replaced + '$$' + decl.name.text;
@@ -163,7 +170,10 @@ export class PrivateExportAliasingHost implements AliasingHost {
   readonly aliasExportsInDts = true;
 
   maybeAliasSymbolAs(
-      ref: Reference<ClassDeclaration>, context: ts.SourceFile, ngModuleName: string): string|null {
+    ref: Reference<ClassDeclaration>,
+    context: ts.SourceFile,
+    ngModuleName: string,
+  ): string | null {
     if (ref.hasOwningModuleGuess) {
       // Skip nodes that already have an associated absolute module specifier, since they can be
       // safely imported from that specifier.
@@ -180,7 +190,7 @@ export class PrivateExportAliasingHost implements AliasingHost {
       throw new Error(`Could not determine the exports of: ${context.fileName}`);
     }
     let found: boolean = false;
-    exports.forEach(value => {
+    exports.forEach((value) => {
       if (value.node === ref.node) {
         found = true;
       }
@@ -212,7 +222,7 @@ export class PrivateExportAliasingHost implements AliasingHost {
  * directive or pipe, if it exists.
  */
 export class AliasStrategy implements ReferenceEmitStrategy {
-  emit(ref: Reference, context: ts.SourceFile, importMode: ImportFlags): EmittedReference|null {
+  emit(ref: Reference, context: ts.SourceFile, importMode: ImportFlags): EmittedReference | null {
     if (importMode & ImportFlags.NoAliasing || ref.alias === null) {
       return null;
     }

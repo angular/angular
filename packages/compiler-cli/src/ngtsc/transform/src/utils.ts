@@ -15,43 +15,60 @@ import {ImportManager, NamespaceImport, SideEffectImport} from '../../translator
  * Can optionally add extra statements (e.g. new constants) before the body as well.
  */
 export function addImports(
-    factory = ts.factory, importManager: ImportManager, sf: ts.SourceFile,
-    extraStatements: ts.Statement[] = []): ts.SourceFile {
+  factory = ts.factory,
+  importManager: ImportManager,
+  sf: ts.SourceFile,
+  extraStatements: ts.Statement[] = [],
+): ts.SourceFile {
   // Generate the import statements to prepend.
-  const addedImports = importManager.getAllImports(sf.fileName)
-                           .map(
-                               i => i.qualifier !== null ? createNamespaceImportDecl(i, factory) :
-                                                           createSideEffectImportDecl(i, factory));
+  const addedImports = importManager
+    .getAllImports(sf.fileName)
+    .map((i) =>
+      i.qualifier !== null
+        ? createNamespaceImportDecl(i, factory)
+        : createSideEffectImportDecl(i, factory),
+    );
 
   // Filter out the existing imports and the source file body. All new statements
   // will be inserted between them.
-  const existingImports = sf.statements.filter(stmt => isImportStatement(stmt));
-  const body = sf.statements.filter(stmt => !isImportStatement(stmt));
+  const existingImports = sf.statements.filter((stmt) => isImportStatement(stmt));
+  const body = sf.statements.filter((stmt) => !isImportStatement(stmt));
   // Prepend imports if needed.
   if (addedImports.length > 0) {
     // If we prepend imports, we also prepend NotEmittedStatement to use it as an anchor
     // for @fileoverview Closure annotation. If there is no @fileoverview annotations, this
     // statement would be a noop.
     const fileoverviewAnchorStmt = factory.createNotEmittedStatement(sf);
-    return factory.updateSourceFile(sf, factory.createNodeArray([
-      fileoverviewAnchorStmt, ...existingImports, ...addedImports, ...extraStatements, ...body
-    ]));
+    return factory.updateSourceFile(
+      sf,
+      factory.createNodeArray([
+        fileoverviewAnchorStmt,
+        ...existingImports,
+        ...addedImports,
+        ...extraStatements,
+        ...body,
+      ]),
+    );
   }
 
   return sf;
 }
 
 function createNamespaceImportDecl(
-    i: NamespaceImport, factory: ts.NodeFactory): ts.ImportDeclaration {
+  i: NamespaceImport,
+  factory: ts.NodeFactory,
+): ts.ImportDeclaration {
   const qualifier = factory.createIdentifier(i.qualifier.text);
   const importClause = factory.createImportClause(
-      /* isTypeOnly */ false,
-      /* name */ undefined,
-      /* namedBindings */ factory.createNamespaceImport(qualifier));
+    /* isTypeOnly */ false,
+    /* name */ undefined,
+    /* namedBindings */ factory.createNamespaceImport(qualifier),
+  );
   const decl = factory.createImportDeclaration(
-      /* modifiers */ undefined,
-      /* importClause */ importClause,
-      /* moduleSpecifier */ factory.createStringLiteral(i.specifier));
+    /* modifiers */ undefined,
+    /* importClause */ importClause,
+    /* moduleSpecifier */ factory.createStringLiteral(i.specifier),
+  );
 
   // Set the qualifier's original TS node to the `ts.ImportDeclaration`. This allows downstream
   // transforms such as tsickle to properly process references to this import.
@@ -67,14 +84,18 @@ function createNamespaceImportDecl(
 }
 
 function createSideEffectImportDecl(
-    i: SideEffectImport, factory: ts.NodeFactory): ts.ImportDeclaration {
+  i: SideEffectImport,
+  factory: ts.NodeFactory,
+): ts.ImportDeclaration {
   return factory.createImportDeclaration(
-      /* modifiers */ undefined,
-      /* importClause */ undefined,
-      /* moduleSpecifier */ ts.factory.createStringLiteral(i.specifier));
+    /* modifiers */ undefined,
+    /* importClause */ undefined,
+    /* moduleSpecifier */ ts.factory.createStringLiteral(i.specifier),
+  );
 }
 
 function isImportStatement(stmt: ts.Statement): boolean {
-  return ts.isImportDeclaration(stmt) || ts.isImportEqualsDeclaration(stmt) ||
-      ts.isNamespaceImport(stmt);
+  return (
+    ts.isImportDeclaration(stmt) || ts.isImportEqualsDeclaration(stmt) || ts.isNamespaceImport(stmt)
+  );
 }

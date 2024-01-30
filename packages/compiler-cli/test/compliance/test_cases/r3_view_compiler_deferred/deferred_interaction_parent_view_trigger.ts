@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     <ng-template>
-      {{message}}
+      {{ message }}
       <button #button>Click me</button>
 
       <ng-template>

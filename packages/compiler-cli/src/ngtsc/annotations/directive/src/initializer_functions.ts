@@ -24,7 +24,11 @@ import {CORE_MODULE} from '../../common';
  */
 
 export type InitializerApiFunction =
-    'input'|'viewChild'|'viewChildren'|'contentChild'|'contentChildren';
+  | 'input'
+  | 'viewChild'
+  | 'viewChildren'
+  | 'contentChild'
+  | 'contentChildren';
 
 /**
  * Metadata describing an Angular class member that was recognized through
@@ -47,8 +51,11 @@ interface InitializerFunctionMetadata {
  * allowing for checking multiple types in one pass.
  */
 export function tryParseInitializerApiMember<FnNames extends InitializerApiFunction[]>(
-    fnNames: FnNames, member: Pick<ClassMember, 'value'>, reflector: ReflectionHost,
-    isCore: boolean): InitializerFunctionMetadata&{apiName: FnNames[number]}|null {
+  fnNames: FnNames,
+  member: Pick<ClassMember, 'value'>,
+  reflector: ReflectionHost,
+  isCore: boolean,
+): (InitializerFunctionMetadata & {apiName: FnNames[number]}) | null {
   if (member.value === null || !ts.isCallExpression(member.value)) {
     return null;
   }
@@ -66,7 +73,7 @@ export function tryParseInitializerApiMember<FnNames extends InitializerApiFunct
 
   // Find if the `target` matches one of the expected APIs we are looking for.
   // e.g. `input`, or `viewChild`.
-  let apiName = fnNames.find(n => n === target!.text);
+  let apiName = fnNames.find((n) => n === target!.text);
 
   // Case 1: API is directly called. e.g. `input`
   // If no API name was matched, continue looking for `input.required`.
@@ -92,11 +99,13 @@ export function tryParseInitializerApiMember<FnNames extends InitializerApiFunct
   }
 
   // Find if the `target` matches one of the expected APIs are are looking for.
-  apiName = fnNames.find(n => n === target!.text);
+  apiName = fnNames.find((n) => n === target!.text);
 
   // Ensure the call refers to the real API function from Angular core.
-  if (apiName === undefined ||
-      !isReferenceToInitializerApiFunction(apiName, target, isCore, reflector)) {
+  if (
+    apiName === undefined ||
+    !isReferenceToInitializerApiFunction(apiName, target, isCore, reflector)
+  ) {
     return null;
   }
 
@@ -115,7 +124,7 @@ export function tryParseInitializerApiMember<FnNames extends InitializerApiFunct
  * e.g. `input` will return `input`.
  *
  */
-function extractPropertyTarget(node: ts.Expression): ts.Identifier|null {
+function extractPropertyTarget(node: ts.Expression): ts.Identifier | null {
   if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.name)) {
     return node.name;
   } else if (ts.isIdentifier(node)) {
@@ -129,9 +138,12 @@ function extractPropertyTarget(node: ts.Expression): ts.Identifier|null {
  * function expression from Angular core.
  */
 function isReferenceToInitializerApiFunction(
-    functionName: InitializerApiFunction, target: ts.Identifier, isCore: boolean,
-    reflector: ReflectionHost): boolean {
-  let targetImport: {name: string, from: string}|null = reflector.getImportOfIdentifier(target);
+  functionName: InitializerApiFunction,
+  target: ts.Identifier,
+  isCore: boolean,
+  reflector: ReflectionHost,
+): boolean {
+  let targetImport: {name: string; from: string} | null = reflector.getImportOfIdentifier(target);
   if (targetImport === null) {
     if (!isCore) {
       return false;

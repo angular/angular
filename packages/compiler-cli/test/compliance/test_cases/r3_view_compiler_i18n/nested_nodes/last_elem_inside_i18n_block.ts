@@ -3,8 +3,11 @@ import {Component, NgModule} from '@angular/core';
 @Component({
   selector: 'my-component',
   template: `
-  <div i18n>{{ text }}<h1 i18n-title title="{{ attr }}"></h1></div>
-  `
+    <div i18n>
+      {{ text }}
+      <h1 i18n-title title="{{ attr }}"></h1>
+    </div>
+  `,
 })
 export class MyComponent {
   attr: any;
@@ -12,5 +15,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

@@ -8,10 +8,10 @@ export class UppercasePipe {
 @Component({
   selector: 'my-component',
   template: `
-  <div i18n>My i18n block #{{ one }}</div>
-  <div i18n>My i18n block #{{ two | uppercase }}</div>
-  <div i18n>My i18n block #{{ three + four + five }}</div>
-  `
+    <div i18n>My i18n block #{{ one }}</div>
+    <div i18n>My i18n block #{{ two | uppercase }}</div>
+    <div i18n>My i18n block #{{ three + four + five }}</div>
+  `,
 })
 export class MyComponent {
   one = 1;
@@ -22,5 +22,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent, UppercasePipe]})
-export class MyModule {
-}
+export class MyModule {}

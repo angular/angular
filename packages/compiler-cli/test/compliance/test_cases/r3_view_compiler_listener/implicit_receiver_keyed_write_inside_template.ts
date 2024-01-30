@@ -6,12 +6,11 @@ import {Component, NgModule} from '@angular/core';
     <ng-template #template>
       <button (click)="this['mes' + 'sage'] = 'hello'">Click me</button>
     </ng-template>
-  `
+  `,
 })
 export class MyComponent {
   message = '';
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

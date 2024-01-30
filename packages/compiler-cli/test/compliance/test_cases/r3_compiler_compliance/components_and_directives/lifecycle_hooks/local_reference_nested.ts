@@ -9,18 +9,16 @@ export class IfDirective {
   selector: 'my-component',
   template: `
     <div #foo></div>
-    {{foo}}
+    {{ foo }}
     <div *if>
-      {{foo}}-{{bar}}
-      <span *if>{{foo}}-{{bar}}-{{baz}}</span>
+      {{ foo }}-{{ bar }}
+      <span *if>{{ foo }}-{{ bar }}-{{ baz }}</span>
       <span #bar></span>
     </div>
     <div #baz></div>
-    `
+  `,
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [IfDirective, MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

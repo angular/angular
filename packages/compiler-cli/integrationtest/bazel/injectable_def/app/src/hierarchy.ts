@@ -11,16 +11,14 @@ import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 
 @Injectable()
-export class Service {
-}
+export class Service {}
 
 @Component({
   selector: 'hierarchy-app',
   template: '<child-cmp></child-cmp>',
   providers: [Service],
 })
-export class AppComponent {
-}
+export class AppComponent {}
 
 @Component({
   selector: 'child-cmp',
@@ -29,18 +27,14 @@ export class AppComponent {
 export class ChildComponent {
   found: boolean;
 
-  constructor(@Optional() @Self() service: Service|null) {
+  constructor(@Optional() @Self() service: Service | null) {
     this.found = !!service;
   }
 }
 
 @NgModule({
-  imports: [
-    BrowserModule,
-    ServerModule,
-  ],
+  imports: [BrowserModule, ServerModule],
   declarations: [AppComponent, ChildComponent],
   bootstrap: [AppComponent],
 })
-export class HierarchyAppModule {
-}
+export class HierarchyAppModule {}

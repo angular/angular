@@ -7,10 +7,15 @@ declare class LibDirective {
 
 export declare class LibModule {
   static ɵfac: i0.ɵɵFactoryDeclaration<LibModule, never>;
-  static ɵmod: i0.ɵɵNgModuleDeclaration<LibModule, [typeof LibDirective], never, [typeof LibDirective]>;
+  static ɵmod: i0.ɵɵNgModuleDeclaration<
+    LibModule,
+    [typeof LibDirective],
+    never,
+    [typeof LibDirective]
+  >;
   static ɵinj: i0.ɵɵInjectorDeclaration<LibModule>;
 }
 
-export {LibDirective as ɵangular_packages_forms_forms_a}
-export {LibDirective}
-export {LibDirective as ɵangular_packages_forms_forms_b}
+export {LibDirective as ɵangular_packages_forms_forms_a};
+export {LibDirective};
+export {LibDirective as ɵangular_packages_forms_forms_b};

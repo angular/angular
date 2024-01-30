@@ -12,7 +12,7 @@
  */
 export interface NamedImport<TExpression> {
   /** The import namespace containing this imported symbol. */
-  moduleImport: TExpression|null;
+  moduleImport: TExpression | null;
   /** The (possibly rewritten) name of the imported symbol. */
   symbol: string;
 }

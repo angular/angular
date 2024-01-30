@@ -22,16 +22,22 @@ export function resolveDollarEvent(job: CompilationJob): void {
 }
 
 function transformDollarEvent(
-    unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
+  unit: CompilationUnit,
+  ops: ir.OpList<ir.CreateOp> | ir.OpList<ir.UpdateOp>,
+): void {
   for (const op of ops) {
     if (op.kind === ir.OpKind.Listener) {
-      ir.transformExpressionsInOp(op, (expr) => {
-        if (expr instanceof ir.LexicalReadExpr && expr.name === '$event') {
-          op.consumesDollarEvent = true;
-          return new o.ReadVarExpr(expr.name);
-        }
-        return expr;
-      }, ir.VisitorContextFlag.InChildOperation);
+      ir.transformExpressionsInOp(
+        op,
+        (expr) => {
+          if (expr instanceof ir.LexicalReadExpr && expr.name === '$event') {
+            op.consumesDollarEvent = true;
+            return new o.ReadVarExpr(expr.name);
+          }
+          return expr;
+        },
+        ir.VisitorContextFlag.InChildOperation,
+      );
     }
   }
 }

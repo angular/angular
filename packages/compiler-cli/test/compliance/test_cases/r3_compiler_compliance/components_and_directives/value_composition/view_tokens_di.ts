@@ -2,9 +2,12 @@ import {ChangeDetectorRef, Component, ElementRef, NgModule, ViewContainerRef} fr
 
 @Component({selector: 'my-component', template: ''})
 export class MyComponent {
-  constructor(public el: ElementRef, public vcr: ViewContainerRef, public cdr: ChangeDetectorRef) {}
+  constructor(
+    public el: ElementRef,
+    public vcr: ViewContainerRef,
+    public cdr: ChangeDetectorRef,
+  ) {}
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

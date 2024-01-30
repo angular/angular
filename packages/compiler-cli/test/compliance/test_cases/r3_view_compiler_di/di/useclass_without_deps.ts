@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 
 @Injectable()
-class MyAlternateService {
-}
+class MyAlternateService {}
 
 @Injectable({providedIn: 'root', useClass: MyAlternateService})
-export class MyService {
-}
+export class MyService {}

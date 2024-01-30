@@ -4,9 +4,7 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-component',
   template: '<div i18n="meaning:A|descA@@idA">Content A</div>',
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

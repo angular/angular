@@ -12,42 +12,66 @@ import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {NOOP_PERF_RECORDER} from '../../perf';
-import {ClassDeclaration, Decorator, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {
+  ClassDeclaration,
+  Decorator,
+  isNamedClassDeclaration,
+  TypeScriptReflectionHost,
+} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {CompilationMode, DetectResult, DtsTransformRegistry, TraitCompiler} from '../../transform';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
-import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence, ResolveResult} from '../src/api';
+import {
+  AnalysisOutput,
+  CompileResult,
+  DecoratorHandler,
+  HandlerPrecedence,
+  ResolveResult,
+} from '../src/api';
 
 const fakeSfTypeIdentifier = {
   isShim: () => false,
-  isResource: () => false
+  isResource: () => false,
 };
 
 runInEachFileSystem(() => {
   describe('TraitCompiler', () => {
     let _: typeof absoluteFrom;
-    beforeEach(() => _ = absoluteFrom);
+    beforeEach(() => (_ = absoluteFrom));
 
     function setup(
-        programContents: string, handlers: DecoratorHandler<{}|null, unknown, null, unknown>[],
-        compilationMode: CompilationMode, makeDtsSourceFile = false) {
+      programContents: string,
+      handlers: DecoratorHandler<{} | null, unknown, null, unknown>[],
+      compilationMode: CompilationMode,
+      makeDtsSourceFile = false,
+    ) {
       const filename = makeDtsSourceFile ? 'test.d.ts' : 'test.ts';
-      const {program} = makeProgram([{
-        name: _('/' + filename),
-        contents: programContents,
-      }]);
+      const {program} = makeProgram([
+        {
+          name: _('/' + filename),
+          contents: programContents,
+        },
+      ]);
       const checker = program.getTypeChecker();
       const reflectionHost = new TypeScriptReflectionHost(checker);
       const compiler = new TraitCompiler(
-          handlers, reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true,
-          compilationMode, new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
+        handlers,
+        reflectionHost,
+        NOOP_PERF_RECORDER,
+        NOOP_INCREMENTAL_BUILD,
+        true,
+        compilationMode,
+        new DtsTransformRegistry(),
+        null,
+        fakeSfTypeIdentifier,
+      );
       const sourceFile = program.getSourceFile(filename)!;
 
       return {compiler, sourceFile, program, filename: _('/' + filename)};
     }
 
     it('should not run decoration handlers against declaration files', () => {
-      class FakeDecoratorHandler implements DecoratorHandler<{}|null, unknown, null, unknown> {
+      class FakeDecoratorHandler implements DecoratorHandler<{} | null, unknown, null, unknown> {
         name = 'FakeDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
@@ -68,8 +92,12 @@ runInEachFileSystem(() => {
         }
       }
       const contents = `export declare class SomeDirective {}`;
-      const {compiler, sourceFile} =
-          setup(contents, [new FakeDecoratorHandler()], CompilationMode.FULL, true);
+      const {compiler, sourceFile} = setup(
+        contents,
+        [new FakeDecoratorHandler()],
+        CompilationMode.FULL,
+        true,
+      );
 
       const analysis = compiler.analyzeSync(sourceFile);
 
@@ -82,7 +110,10 @@ runInEachFileSystem(() => {
         name = 'LocalDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
-        detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<{}>|undefined {
+        detect(
+          node: ClassDeclaration,
+          decorators: Decorator[] | null,
+        ): DetectResult<{}> | undefined {
           if (node.name.text !== 'Local') {
             return undefined;
           }
@@ -122,7 +153,10 @@ runInEachFileSystem(() => {
         name = 'PartialDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
-        detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<{}>|undefined {
+        detect(
+          node: ClassDeclaration,
+          decorators: Decorator[] | null,
+        ): DetectResult<{}> | undefined {
           if (node.name.text !== 'Partial') {
             return undefined;
           }
@@ -172,7 +206,10 @@ runInEachFileSystem(() => {
         name = 'FullDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
-        detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<{}>|undefined {
+        detect(
+          node: ClassDeclaration,
+          decorators: Decorator[] | null,
+        ): DetectResult<{}> | undefined {
           if (node.name.text !== 'Full') {
             return undefined;
           }
@@ -214,8 +251,10 @@ runInEachFileSystem(() => {
           export class Partial {}
         `;
         const {compiler, sourceFile, program, filename} = setup(
-            contents, [new PartialDecoratorHandler(), new FullDecoratorHandler()],
-            CompilationMode.PARTIAL);
+          contents,
+          [new PartialDecoratorHandler(), new FullDecoratorHandler()],
+          CompilationMode.PARTIAL,
+        );
 
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
@@ -237,8 +276,10 @@ runInEachFileSystem(() => {
           export class Local {}
         `;
         const {compiler, sourceFile, program, filename} = setup(
-            contents, [new LocalDecoratorHandler(), new FullDecoratorHandler()],
-            CompilationMode.LOCAL);
+          contents,
+          [new LocalDecoratorHandler(), new FullDecoratorHandler()],
+          CompilationMode.LOCAL,
+        );
 
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
@@ -261,11 +302,10 @@ runInEachFileSystem(() => {
           export class Local {}
         `;
         const {compiler, sourceFile, program, filename} = setup(
-            contents,
-            [
-              new LocalDecoratorHandler(), new PartialDecoratorHandler(), new FullDecoratorHandler()
-            ],
-            CompilationMode.FULL);
+          contents,
+          [new LocalDecoratorHandler(), new PartialDecoratorHandler(), new FullDecoratorHandler()],
+          CompilationMode.FULL,
+        );
 
         compiler.analyzeSync(sourceFile);
         compiler.resolve();
@@ -292,7 +332,10 @@ runInEachFileSystem(() => {
         name = 'TestDecoratorHandler';
         precedence = HandlerPrecedence.PRIMARY;
 
-        detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<{}>|undefined {
+        detect(
+          node: ClassDeclaration,
+          decorators: Decorator[] | null,
+        ): DetectResult<{}> | undefined {
           if (node.name.text !== 'Test') {
             return undefined;
           }
@@ -389,8 +432,11 @@ runInEachFileSystem(() => {
         `;
         const handler = new TestDecoratorHandler();
         spyOn(handler, 'updateResources');
-        const {compiler, sourceFile, program, filename} =
-            setup(contents, [handler], CompilationMode.LOCAL);
+        const {compiler, sourceFile, program, filename} = setup(
+          contents,
+          [handler],
+          CompilationMode.LOCAL,
+        );
         const decl = getDeclaration(program, filename, 'Test', isNamedClassDeclaration);
 
         compiler.analyzeSync(sourceFile);

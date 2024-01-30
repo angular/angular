@@ -4,5 +4,4 @@ import {Component} from '@angular/core';
   selector: 'test-cmp',
   templateUrl: './dir/test.html',
 })
-export class TestCmp {
-}
+export class TestCmp {}

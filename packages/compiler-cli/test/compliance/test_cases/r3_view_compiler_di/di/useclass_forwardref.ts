@@ -1,9 +1,7 @@
 import {forwardRef, Injectable} from '@angular/core';
 
 @Injectable({providedIn: 'root', useClass: forwardRef(() => SomeProviderImpl)})
-abstract class SomeProvider {
-}
+abstract class SomeProvider {}
 
 @Injectable()
-class SomeProviderImpl extends SomeProvider {
-}
+class SomeProviderImpl extends SomeProvider {}

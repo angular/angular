@@ -17,29 +17,32 @@ import {NEW_OP} from './shared';
 
 import type {Interpolation, UpdateOp} from './update';
 
-
 /**
  * Logical operation representing a host binding to a property.
  */
 export interface HostPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait {
   kind: OpKind.HostProperty;
   name: string;
-  expression: o.Expression|Interpolation;
+  expression: o.Expression | Interpolation;
   isAnimationTrigger: boolean;
 
-  i18nContext: XrefId|null;
+  i18nContext: XrefId | null;
 
-  securityContext: SecurityContext|SecurityContext[];
+  securityContext: SecurityContext | SecurityContext[];
 
-  sanitizer: o.Expression|null;
+  sanitizer: o.Expression | null;
 
-  sourceSpan: ParseSourceSpan|null;
+  sourceSpan: ParseSourceSpan | null;
 }
 
 export function createHostPropertyOp(
-    name: string, expression: o.Expression|Interpolation, isAnimationTrigger: boolean,
-    i18nContext: XrefId|null, securityContext: SecurityContext|SecurityContext[],
-    sourceSpan: ParseSourceSpan|null): HostPropertyOp {
+  name: string,
+  expression: o.Expression | Interpolation,
+  isAnimationTrigger: boolean,
+  i18nContext: XrefId | null,
+  securityContext: SecurityContext | SecurityContext[],
+  sourceSpan: ParseSourceSpan | null,
+): HostPropertyOp {
   return {
     kind: OpKind.HostProperty,
     name,

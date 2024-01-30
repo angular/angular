@@ -6,13 +6,11 @@ import {Component, forwardRef} from '@angular/core';
   imports: [forwardRef(() => StandaloneComponent)],
   template: '<other-standalone></other-standalone>',
 })
-export class TestComponent {
-}
+export class TestComponent {}
 
 @Component({
   selector: 'other-standalone',
   standalone: true,
   template: '',
 })
-export class StandaloneComponent {
-}
+export class StandaloneComponent {}

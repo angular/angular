@@ -11,7 +11,13 @@ import * as o from '../../../../src/output/output_ast';
 import {ConstantPool} from '../../../constant_pool';
 import * as ir from '../ir';
 
-import {CompilationJob, CompilationJobKind as Kind, type ComponentCompilationJob, type HostBindingCompilationJob, type ViewCompilationUnit} from './compilation';
+import {
+  CompilationJob,
+  CompilationJobKind as Kind,
+  type ComponentCompilationJob,
+  type HostBindingCompilationJob,
+  type ViewCompilationUnit,
+} from './compilation';
 
 import {deleteAnyCasts} from './phases/any_cast';
 import {applyI18nExpressions} from './phases/apply_i18n_expressions';
@@ -74,16 +80,19 @@ import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
 
-type Phase = {
-  fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
-}|{
-  fn: (job: ComponentCompilationJob) => void;
-  kind: Kind.Tmpl;
-}
-|{
-  fn: (job: HostBindingCompilationJob) => void;
-  kind: Kind.Host;
-};
+type Phase =
+  | {
+      fn: (job: CompilationJob) => void;
+      kind: Kind.Both | Kind.Host | Kind.Tmpl;
+    }
+  | {
+      fn: (job: ComponentCompilationJob) => void;
+      kind: Kind.Tmpl;
+    }
+  | {
+      fn: (job: HostBindingCompilationJob) => void;
+      kind: Kind.Host;
+    };
 
 const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: removeContentSelectors},
@@ -198,16 +207,22 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   const createStatements: o.Statement[] = [];
   for (const op of view.create) {
     if (op.kind !== ir.OpKind.Statement) {
-      throw new Error(`AssertionError: expected all create ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+      throw new Error(
+        `AssertionError: expected all create ops to have been compiled, but got ${
+          ir.OpKind[op.kind]
+        }`,
+      );
     }
     createStatements.push(op.statement);
   }
   const updateStatements: o.Statement[] = [];
   for (const op of view.update) {
     if (op.kind !== ir.OpKind.Statement) {
-      throw new Error(`AssertionError: expected all update ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+      throw new Error(
+        `AssertionError: expected all update ops to have been compiled, but got ${
+          ir.OpKind[op.kind]
+        }`,
+      );
     }
     updateStatements.push(op.statement);
   }
@@ -215,15 +230,12 @@ function emitView(view: ViewCompilationUnit): o.FunctionExpr {
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-      [
-        new o.FnParam('rf'),
-        new o.FnParam('ctx'),
-      ],
-      [
-        ...createCond,
-        ...updateCond,
-      ],
-      /* type */ undefined, /* sourceSpan */ undefined, view.fnName);
+    [new o.FnParam('rf'), new o.FnParam('ctx')],
+    [...createCond, ...updateCond],
+    /* type */ undefined,
+    /* sourceSpan */ undefined,
+    view.fnName,
+  );
 }
 
 function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statement[] {
@@ -233,12 +245,13 @@ function maybeGenerateRfBlock(flag: number, statements: o.Statement[]): o.Statem
 
   return [
     o.ifStmt(
-        new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, o.variable('rf'), o.literal(flag)),
-        statements),
+      new o.BinaryOperatorExpr(o.BinaryOperator.BitwiseAnd, o.variable('rf'), o.literal(flag)),
+      statements,
+    ),
   ];
 }
 
-export function emitHostBindingFunction(job: HostBindingCompilationJob): o.FunctionExpr|null {
+export function emitHostBindingFunction(job: HostBindingCompilationJob): o.FunctionExpr | null {
   if (job.root.fnName === null) {
     throw new Error(`AssertionError: host binding function is unnamed`);
   }
@@ -246,16 +259,22 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
   const createStatements: o.Statement[] = [];
   for (const op of job.root.create) {
     if (op.kind !== ir.OpKind.Statement) {
-      throw new Error(`AssertionError: expected all create ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+      throw new Error(
+        `AssertionError: expected all create ops to have been compiled, but got ${
+          ir.OpKind[op.kind]
+        }`,
+      );
     }
     createStatements.push(op.statement);
   }
   const updateStatements: o.Statement[] = [];
   for (const op of job.root.update) {
     if (op.kind !== ir.OpKind.Statement) {
-      throw new Error(`AssertionError: expected all update ops to have been compiled, but got ${
-          ir.OpKind[op.kind]}`);
+      throw new Error(
+        `AssertionError: expected all update ops to have been compiled, but got ${
+          ir.OpKind[op.kind]
+        }`,
+      );
     }
     updateStatements.push(op.statement);
   }
@@ -267,13 +286,10 @@ export function emitHostBindingFunction(job: HostBindingCompilationJob): o.Funct
   const createCond = maybeGenerateRfBlock(1, createStatements);
   const updateCond = maybeGenerateRfBlock(2, updateStatements);
   return o.fn(
-      [
-        new o.FnParam('rf'),
-        new o.FnParam('ctx'),
-      ],
-      [
-        ...createCond,
-        ...updateCond,
-      ],
-      /* type */ undefined, /* sourceSpan */ undefined, job.root.fnName);
+    [new o.FnParam('rf'), new o.FnParam('ctx')],
+    [...createCond, ...updateCond],
+    /* type */ undefined,
+    /* sourceSpan */ undefined,
+    job.root.fnName,
+  );
 }

@@ -15,19 +15,31 @@ import {ExpressionTranslatorVisitor, TranslatorOptions} from './translator';
 import {TypeScriptAstFactory} from './typescript_ast_factory';
 
 export function translateExpression(
-    expression: o.Expression, imports: ImportGenerator<ts.Expression>,
-    options: TranslatorOptions<ts.Expression> = {}): ts.Expression {
+  expression: o.Expression,
+  imports: ImportGenerator<ts.Expression>,
+  options: TranslatorOptions<ts.Expression> = {},
+): ts.Expression {
   return expression.visitExpression(
-      new ExpressionTranslatorVisitor<ts.Statement, ts.Expression>(
-          new TypeScriptAstFactory(options.annotateForClosureCompiler === true), imports, options),
-      new Context(false));
+    new ExpressionTranslatorVisitor<ts.Statement, ts.Expression>(
+      new TypeScriptAstFactory(options.annotateForClosureCompiler === true),
+      imports,
+      options,
+    ),
+    new Context(false),
+  );
 }
 
 export function translateStatement(
-    statement: o.Statement, imports: ImportGenerator<ts.Expression>,
-    options: TranslatorOptions<ts.Expression> = {}): ts.Statement {
+  statement: o.Statement,
+  imports: ImportGenerator<ts.Expression>,
+  options: TranslatorOptions<ts.Expression> = {},
+): ts.Statement {
   return statement.visitStatement(
-      new ExpressionTranslatorVisitor<ts.Statement, ts.Expression>(
-          new TypeScriptAstFactory(options.annotateForClosureCompiler === true), imports, options),
-      new Context(true));
+    new ExpressionTranslatorVisitor<ts.Statement, ts.Expression>(
+      new TypeScriptAstFactory(options.annotateForClosureCompiler === true),
+      imports,
+      options,
+    ),
+    new Context(true),
+  );
 }

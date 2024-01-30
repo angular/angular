@@ -6,11 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, EmptyExpr, ImplicitReceiver, LiteralPrimitive, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
+import {
+  AST,
+  EmptyExpr,
+  ImplicitReceiver,
+  LiteralPrimitive,
+  PropertyRead,
+  PropertyWrite,
+  SafePropertyRead,
+  TmplAstNode,
+  TmplAstReference,
+  TmplAstTemplate,
+  TmplAstTextAttribute,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
-import {CompletionKind, GlobalCompletion, ReferenceCompletion, TcbLocation, VariableCompletion} from '../api';
+import {
+  CompletionKind,
+  GlobalCompletion,
+  ReferenceCompletion,
+  TcbLocation,
+  VariableCompletion,
+} from '../api';
 
 import {ExpressionIdentifier, findFirstMatchingNode} from './comments';
 import {TemplateData} from './context';
@@ -22,26 +40,32 @@ import {TemplateData} from './context';
  * surrounding TS program have changed.
  */
 export class CompletionEngine {
-  private componentContext: TcbLocation|null;
+  private componentContext: TcbLocation | null;
 
   /**
    * Cache of completions for various levels of the template, including the root template (`null`).
    * Memoizes `getTemplateContextCompletions`.
    */
-  private templateContextCache =
-      new Map<TmplAstTemplate|null, Map<string, ReferenceCompletion|VariableCompletion>>();
+  private templateContextCache = new Map<
+    TmplAstTemplate | null,
+    Map<string, ReferenceCompletion | VariableCompletion>
+  >();
 
-  private expressionCompletionCache =
-      new Map<PropertyRead|SafePropertyRead|LiteralPrimitive|TmplAstTextAttribute, TcbLocation>();
-
+  private expressionCompletionCache = new Map<
+    PropertyRead | SafePropertyRead | LiteralPrimitive | TmplAstTextAttribute,
+    TcbLocation
+  >();
 
   constructor(
-      private tcb: ts.Node, private data: TemplateData, private tcbPath: AbsoluteFsPath,
-      private tcbIsShim: boolean) {
+    private tcb: ts.Node,
+    private data: TemplateData,
+    private tcbPath: AbsoluteFsPath,
+    private tcbIsShim: boolean,
+  ) {
     // Find the component completion expression within the TCB. This looks like: `ctx. /* ... */;`
     const globalRead = findFirstMatchingNode(this.tcb, {
       filter: ts.isPropertyAccessExpression,
-      withExpressionIdentifier: ExpressionIdentifier.COMPONENT_COMPLETION
+      withExpressionIdentifier: ExpressionIdentifier.COMPONENT_COMPLETION,
     });
 
     if (globalRead !== null) {
@@ -66,8 +90,10 @@ export class CompletionEngine {
    * template context.
    * @param node the given AST node
    */
-  getGlobalCompletions(context: TmplAstTemplate|null, node: AST|TmplAstNode): GlobalCompletion
-      |null {
+  getGlobalCompletions(
+    context: TmplAstTemplate | null,
+    node: AST | TmplAstNode,
+  ): GlobalCompletion | null {
     if (this.componentContext === null) {
       return null;
     }
@@ -77,7 +103,7 @@ export class CompletionEngine {
       return null;
     }
 
-    let nodeContext: TcbLocation|null = null;
+    let nodeContext: TcbLocation | null = null;
     if (node instanceof EmptyExpr) {
       const nodeLocation = findFirstMatchingNode(this.tcb, {
         filter: ts.isIdentifier,
@@ -113,14 +139,15 @@ export class CompletionEngine {
     };
   }
 
-  getExpressionCompletionLocation(expr: PropertyRead|PropertyWrite|SafePropertyRead): TcbLocation
-      |null {
+  getExpressionCompletionLocation(
+    expr: PropertyRead | PropertyWrite | SafePropertyRead,
+  ): TcbLocation | null {
     if (this.expressionCompletionCache.has(expr)) {
       return this.expressionCompletionCache.get(expr)!;
     }
 
     // Completion works inside property reads and method calls.
-    let tsExpr: ts.PropertyAccessExpression|null = null;
+    let tsExpr: ts.PropertyAccessExpression | null = null;
     if (expr instanceof PropertyRead || expr instanceof PropertyWrite) {
       // Non-safe navigation operations are trivial: `foo.bar` or `foo.bar()`
       tsExpr = findFirstMatchingNode(this.tcb, {
@@ -142,7 +169,9 @@ export class CompletionEngine {
       if (ts.isPropertyAccessExpression(whenTrue)) {
         tsExpr = whenTrue;
       } else if (
-          ts.isCallExpression(whenTrue) && ts.isPropertyAccessExpression(whenTrue.expression)) {
+        ts.isCallExpression(whenTrue) &&
+        ts.isPropertyAccessExpression(whenTrue.expression)
+      ) {
         tsExpr = whenTrue.expression;
       }
     }
@@ -160,12 +189,12 @@ export class CompletionEngine {
     return res;
   }
 
-  getLiteralCompletionLocation(expr: LiteralPrimitive|TmplAstTextAttribute): TcbLocation|null {
+  getLiteralCompletionLocation(expr: LiteralPrimitive | TmplAstTextAttribute): TcbLocation | null {
     if (this.expressionCompletionCache.has(expr)) {
       return this.expressionCompletionCache.get(expr)!;
     }
 
-    let tsExpr: ts.StringLiteral|ts.NumericLiteral|null = null;
+    let tsExpr: ts.StringLiteral | ts.NumericLiteral | null = null;
 
     if (expr instanceof TmplAstTextAttribute) {
       const strNode = findFirstMatchingNode(this.tcb, {
@@ -178,7 +207,7 @@ export class CompletionEngine {
     } else {
       tsExpr = findFirstMatchingNode(this.tcb, {
         filter: (n: ts.Node): n is ts.NumericLiteral | ts.StringLiteral =>
-            ts.isStringLiteral(n) || ts.isNumericLiteral(n),
+          ts.isStringLiteral(n) || ts.isNumericLiteral(n),
         withSpan: expr.sourceSpan,
       });
     }
@@ -205,13 +234,14 @@ export class CompletionEngine {
    * Get global completions within the given template context - either a `TmplAstTemplate` embedded
    * view, or `null` for the root context.
    */
-  private getTemplateContextCompletions(context: TmplAstTemplate|null):
-      Map<string, ReferenceCompletion|VariableCompletion>|null {
+  private getTemplateContextCompletions(
+    context: TmplAstTemplate | null,
+  ): Map<string, ReferenceCompletion | VariableCompletion> | null {
     if (this.templateContextCache.has(context)) {
       return this.templateContextCache.get(context)!;
     }
 
-    const templateContext = new Map<string, ReferenceCompletion|VariableCompletion>();
+    const templateContext = new Map<string, ReferenceCompletion | VariableCompletion>();
 
     // The bound template already has details about the references and variables in scope in the
     // `context` template - they just need to be converted to `Completion`s.

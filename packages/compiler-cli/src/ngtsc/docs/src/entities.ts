@@ -59,8 +59,8 @@ export interface JsDocTagEntry {
 /** Documentation entity for single generic parameter. */
 export interface GenericEntry {
   name: string;
-  constraint: string|undefined;
-  default: string|undefined;
+  constraint: string | undefined;
+  default: string | undefined;
 }
 
 /** Base type for all documentation entities. */
@@ -147,7 +147,7 @@ export interface PropertyEntry extends MemberEntry {
 }
 
 /** Sub-entry for a class method. */
-export type MethodEntry = MemberEntry&FunctionEntry;
+export type MethodEntry = MemberEntry & FunctionEntry;
 
 /** Sub-entry for a single function parameter. */
 export interface ParameterEntry {

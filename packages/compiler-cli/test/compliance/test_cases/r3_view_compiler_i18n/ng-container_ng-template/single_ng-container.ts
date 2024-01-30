@@ -7,14 +7,11 @@ export class UppercasePipe {
 
 @Component({
   selector: 'my-component',
-  template: `
-  <ng-container i18n>Some content: {{ valueA | uppercase }}</ng-container>
-`,
+  template: ` <ng-container i18n>Some content: {{ valueA | uppercase }}</ng-container> `,
 })
 export class MyComponent {
   valueA = '';
 }
 
 @NgModule({declarations: [MyComponent, UppercasePipe]})
-export class MyModule {
-}
+export class MyModule {}

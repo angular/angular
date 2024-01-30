@@ -10,7 +10,7 @@ import {shim} from './utils';
 
 describe('ShadowCss, polyfills', () => {
   it('should support polyfill-next-selector', () => {
-    let css = shim('polyfill-next-selector {content: \'x > y\'} z {}', 'contenta');
+    let css = shim("polyfill-next-selector {content: 'x > y'} z {}", 'contenta');
     expect(css).toEqualCss('x[contenta] > y[contenta]{}');
 
     css = shim('polyfill-next-selector {content: "x > y"} z {}', 'contenta');
@@ -21,7 +21,7 @@ describe('ShadowCss, polyfills', () => {
   });
 
   it('should support polyfill-unscoped-rule', () => {
-    let css = shim('polyfill-unscoped-rule {content: \'#menu > .bar\';color: blue;}', 'contenta');
+    let css = shim("polyfill-unscoped-rule {content: '#menu > .bar';color: blue;}", 'contenta');
     expect(css).toContain('#menu > .bar {;color: blue;}');
 
     css = shim('polyfill-unscoped-rule {content: "#menu > .bar";color: blue;}', 'contenta');
@@ -33,16 +33,16 @@ describe('ShadowCss, polyfills', () => {
 
   it('should support multiple instances polyfill-unscoped-rule', () => {
     const css = shim(
-        'polyfill-unscoped-rule {content: \'foo\';color: blue;}' +
-            'polyfill-unscoped-rule {content: \'bar\';color: blue;}',
-        'contenta');
+      "polyfill-unscoped-rule {content: 'foo';color: blue;}" +
+        "polyfill-unscoped-rule {content: 'bar';color: blue;}",
+      'contenta',
+    );
     expect(css).toContain('foo {;color: blue;}');
     expect(css).toContain('bar {;color: blue;}');
   });
 
   it('should support polyfill-rule', () => {
-    let css =
-        shim('polyfill-rule {content: \':host.foo .bar\';color: blue;}', 'contenta', 'a-host');
+    let css = shim("polyfill-rule {content: ':host.foo .bar';color: blue;}", 'contenta', 'a-host');
     expect(css).toEqualCss('.foo[a-host] .bar[contenta] {;color:blue;}');
 
     css = shim('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'contenta', 'a-host');

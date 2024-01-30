@@ -29,7 +29,10 @@ export class AdapterResourceLoader implements ResourceLoader {
   canPreload: boolean;
   canPreprocess: boolean;
 
-  constructor(private adapter: NgCompilerAdapter, private options: ts.CompilerOptions) {
+  constructor(
+    private adapter: NgCompilerAdapter,
+    private options: ts.CompilerOptions,
+  ) {
     this.lookupResolutionHost = createLookupResolutionHost(this.adapter);
     this.canPreload = !!this.adapter.readResource;
     this.canPreprocess = !!this.adapter.transformResource;
@@ -48,10 +51,13 @@ export class AdapterResourceLoader implements ResourceLoader {
    * @throws An error if the resource cannot be resolved.
    */
   resolve(url: string, fromFile: string): string {
-    let resolvedUrl: string|null = null;
+    let resolvedUrl: string | null = null;
     if (this.adapter.resourceNameToFileName) {
       resolvedUrl = this.adapter.resourceNameToFileName(
-          url, fromFile, (url: string, fromFile: string) => this.fallbackResolve(url, fromFile));
+        url,
+        fromFile,
+        (url: string, fromFile: string) => this.fallbackResolve(url, fromFile),
+      );
     } else {
       resolvedUrl = this.fallbackResolve(url, fromFile);
     }
@@ -73,10 +79,11 @@ export class AdapterResourceLoader implements ResourceLoader {
    * file has already been loaded.
    * @throws An Error if pre-loading is not available.
    */
-  preload(resolvedUrl: string, context: ResourceLoaderContext): Promise<void>|undefined {
+  preload(resolvedUrl: string, context: ResourceLoaderContext): Promise<void> | undefined {
     if (!this.adapter.readResource) {
       throw new Error(
-          'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.');
+        'HostResourceLoader: the CompilerHost provided does not support pre-loading resources.',
+      );
     }
     if (this.cache.has(resolvedUrl)) {
       return undefined;
@@ -102,7 +109,7 @@ export class AdapterResourceLoader implements ResourceLoader {
       this.cache.set(resolvedUrl, result);
       return undefined;
     } else {
-      const fetchCompletion = result.then(str => {
+      const fetchCompletion = result.then((str) => {
         this.fetching.delete(resolvedUrl);
         this.cache.set(resolvedUrl, str);
       });
@@ -124,8 +131,11 @@ export class AdapterResourceLoader implements ResourceLoader {
       return data;
     }
 
-    const transformResult = await this.adapter.transformResource(
-        data, {type: 'style', containingFile: context.containingFile, resourceFile: null});
+    const transformResult = await this.adapter.transformResource(data, {
+      type: 'style',
+      containingFile: context.containingFile,
+      resourceFile: null,
+    });
     if (transformResult === null) {
       return data;
     }
@@ -146,8 +156,9 @@ export class AdapterResourceLoader implements ResourceLoader {
       return this.cache.get(resolvedUrl)!;
     }
 
-    const result = this.adapter.readResource ? this.adapter.readResource(resolvedUrl) :
-                                               this.adapter.readFile(resolvedUrl);
+    const result = this.adapter.readResource
+      ? this.adapter.readResource(resolvedUrl)
+      : this.adapter.readFile(resolvedUrl);
     if (typeof result !== 'string') {
       throw new Error(`HostResourceLoader: loader(${resolvedUrl}) returned a Promise`);
     }
@@ -166,7 +177,7 @@ export class AdapterResourceLoader implements ResourceLoader {
    * Attempt to resolve `url` in the context of `fromFile`, while respecting the rootDirs
    * option from the tsconfig. First, normalize the file name.
    */
-  private fallbackResolve(url: string, fromFile: string): string|null {
+  private fallbackResolve(url: string, fromFile: string): string | null {
     let candidateLocations: string[];
     if (url.startsWith('/')) {
       // This path is not really an absolute path, but instead the leading '/' means that it's
@@ -203,7 +214,7 @@ export class AdapterResourceLoader implements ResourceLoader {
   private getRootedCandidateLocations(url: string): AbsoluteFsPath[] {
     // The path already starts with '/', so add a '.' to make it relative.
     const segment: PathSegment = ('.' + url) as PathSegment;
-    return this.adapter.rootDirs.map(rootDir => join(rootDir, segment));
+    return this.adapter.rootDirs.map((rootDir) => join(rootDir, segment));
   }
 
   /**
@@ -217,21 +228,27 @@ export class AdapterResourceLoader implements ResourceLoader {
     // `failedLookupLocations` is in the name of the type ts.ResolvedModuleWithFailedLookupLocations
     // but is marked @internal in TypeScript. See
     // https://github.com/Microsoft/TypeScript/issues/28770.
-    type ResolvedModuleWithFailedLookupLocations =
-        ts.ResolvedModuleWithFailedLookupLocations&{failedLookupLocations: ReadonlyArray<string>};
+    type ResolvedModuleWithFailedLookupLocations = ts.ResolvedModuleWithFailedLookupLocations & {
+      failedLookupLocations: ReadonlyArray<string>;
+    };
 
     // clang-format off
-    const failedLookup = ts.resolveModuleName(url + RESOURCE_MARKER, fromFile, this.options, this.lookupResolutionHost) as ResolvedModuleWithFailedLookupLocations;
+    const failedLookup = ts.resolveModuleName(
+      url + RESOURCE_MARKER,
+      fromFile,
+      this.options,
+      this.lookupResolutionHost,
+    ) as ResolvedModuleWithFailedLookupLocations;
     // clang-format on
     if (failedLookup.failedLookupLocations === undefined) {
       throw new Error(
-          `Internal error: expected to find failedLookupLocations during resolution of resource '${
-              url}' in context of ${fromFile}`);
+        `Internal error: expected to find failedLookupLocations during resolution of resource '${url}' in context of ${fromFile}`,
+      );
     }
 
     return failedLookup.failedLookupLocations
-        .filter(candidate => candidate.endsWith(RESOURCE_MARKER_TS))
-        .map(candidate => candidate.slice(0, -RESOURCE_MARKER_TS.length));
+      .filter((candidate) => candidate.endsWith(RESOURCE_MARKER_TS))
+      .map((candidate) => candidate.slice(0, -RESOURCE_MARKER_TS.length));
   }
 }
 
@@ -239,8 +256,9 @@ export class AdapterResourceLoader implements ResourceLoader {
  * Derives a `ts.ModuleResolutionHost` from a compiler adapter that recognizes the special resource
  * marker and does not go to the filesystem for these requests, as they are known not to exist.
  */
-function createLookupResolutionHost(adapter: NgCompilerAdapter):
-    RequiredDelegations<ts.ModuleResolutionHost> {
+function createLookupResolutionHost(
+  adapter: NgCompilerAdapter,
+): RequiredDelegations<ts.ModuleResolutionHost> {
   return {
     directoryExists(directoryName: string): boolean {
       if (directoryName.includes(RESOURCE_MARKER)) {
@@ -265,8 +283,9 @@ function createLookupResolutionHost(adapter: NgCompilerAdapter):
     getDirectories: adapter.getDirectories?.bind(adapter),
     realpath: adapter.realpath?.bind(adapter),
     trace: adapter.trace?.bind(adapter),
-    useCaseSensitiveFileNames: typeof adapter.useCaseSensitiveFileNames === 'function' ?
-        adapter.useCaseSensitiveFileNames.bind(adapter) :
-        adapter.useCaseSensitiveFileNames
+    useCaseSensitiveFileNames:
+      typeof adapter.useCaseSensitiveFileNames === 'function'
+        ? adapter.useCaseSensitiveFileNames.bind(adapter)
+        : adapter.useCaseSensitiveFileNames,
   };
 }

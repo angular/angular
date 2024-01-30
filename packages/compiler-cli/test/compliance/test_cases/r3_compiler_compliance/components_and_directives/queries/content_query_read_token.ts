@@ -1,4 +1,12 @@
-import {Component, ContentChild, ContentChildren, ElementRef, NgModule, QueryList, TemplateRef} from '@angular/core';
+import {
+  Component,
+  ContentChild,
+  ContentChildren,
+  ElementRef,
+  NgModule,
+  QueryList,
+  TemplateRef,
+} from '@angular/core';
 
 import {SomeDirective} from './some.directive';
 
@@ -8,7 +16,7 @@ import {SomeDirective} from './some.directive';
     <div someDir></div>
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
 })
 export class ContentQueryComponent {
   @ContentChild('myRef', {read: TemplateRef}) myRef!: TemplateRef<unknown>;
@@ -17,5 +25,4 @@ export class ContentQueryComponent {
   @ContentChildren(SomeDirective, {read: TemplateRef}) someDirs!: QueryList<TemplateRef<unknown>>;
 }
 @NgModule({declarations: [ContentQueryComponent]})
-export class MyModule {
-}
+export class MyModule {}

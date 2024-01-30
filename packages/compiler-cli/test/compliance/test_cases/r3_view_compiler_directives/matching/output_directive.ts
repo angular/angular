@@ -11,5 +11,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [SomeDirective, MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

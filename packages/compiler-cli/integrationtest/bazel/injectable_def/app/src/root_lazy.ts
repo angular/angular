@@ -25,11 +25,6 @@ export class RouteComponent {
 
 @NgModule({
   declarations: [RouteComponent],
-  imports: [
-    RouterModule.forChild([
-      {path: '', pathMatch: 'prefix', component: RouteComponent},
-    ]),
-  ],
+  imports: [RouterModule.forChild([{path: '', pathMatch: 'prefix', component: RouteComponent}])],
 })
-export class LazyModule {
-}
+export class LazyModule {}

@@ -15,11 +15,10 @@ const enum Char {
   Colon = 58,
   Semicolon = 59,
   BackSlash = 92,
-  QuoteNone = 0,  // indicating we are not inside a quote
+  QuoteNone = 0, // indicating we are not inside a quote
   QuoteDouble = 34,
   QuoteSingle = 39,
 }
-
 
 /**
  * Parses string representation of a style and converts it into object literal.
@@ -41,7 +40,7 @@ export function parse(value: string): string[] {
   let quote: Char = Char.QuoteNone;
   let valueStart = 0;
   let propStart = 0;
-  let currentProp: string|null = null;
+  let currentProp: string | null = null;
   while (i < value.length) {
     const token = value.charCodeAt(i++) as Char;
     switch (token) {
@@ -97,10 +96,8 @@ export function parse(value: string): string[] {
 
 export function hyphenate(value: string): string {
   return value
-      .replace(
-          /[a-z][A-Z]/g,
-          v => {
-            return v.charAt(0) + '-' + v.charAt(1);
-          })
-      .toLowerCase();
+    .replace(/[a-z][A-Z]/g, (v) => {
+      return v.charAt(0) + '-' + v.charAt(1);
+    })
+    .toLowerCase();
 }

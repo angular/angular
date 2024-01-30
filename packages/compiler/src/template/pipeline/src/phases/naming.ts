@@ -19,12 +19,19 @@ import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '..
  */
 export function nameFunctionsAndVariables(job: CompilationJob): void {
   addNamesToView(
-      job.root, job.componentName, {index: 0},
-      job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder);
+    job.root,
+    job.componentName,
+    {index: 0},
+    job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder,
+  );
 }
 
 function addNamesToView(
-    unit: CompilationUnit, baseName: string, state: {index: number}, compatibility: boolean): void {
+  unit: CompilationUnit,
+  baseName: string,
+  state: {index: number},
+  compatibility: boolean,
+): void {
   if (unit.fnName === null) {
     unit.fnName = sanitizeIdentifier(`${baseName}_${unit.job.fnSuffix}`);
   }
@@ -57,7 +64,8 @@ function addNamesToView(
           op.handlerFnName = `${baseName}_${animation}${op.name}_HostBindingHandler`;
         } else {
           op.handlerFnName = `${unit.fnName}_${op.tag!.replace('-', '_')}_${animation}${op.name}_${
-              op.targetSlot.slot}_listener`;
+            op.targetSlot.slot
+          }_listener`;
         }
         op.handlerFnName = sanitizeIdentifier(op.handlerFnName);
         break;
@@ -75,13 +83,19 @@ function addNamesToView(
           const emptyView = unit.job.views.get(op.emptyView)!;
           // Repeater empty view function is at slot +2 (metadata is in the first slot).
           addNamesToView(
-              emptyView, `${baseName}_${`${op.functionNameSuffix}Empty`}_${op.handle.slot + 2}`,
-              state, compatibility);
+            emptyView,
+            `${baseName}_${`${op.functionNameSuffix}Empty`}_${op.handle.slot + 2}`,
+            state,
+            compatibility,
+          );
         }
         // Repeater primary view function is at slot +1 (metadata is in the first slot).
         addNamesToView(
-            unit.job.views.get(op.xref)!,
-            `${baseName}_${op.functionNameSuffix}_${op.handle.slot + 1}`, state, compatibility);
+          unit.job.views.get(op.xref)!,
+          `${baseName}_${op.functionNameSuffix}_${op.handle.slot + 1}`,
+          state,
+          compatibility,
+        );
         break;
       case ir.OpKind.Template:
         if (!(unit instanceof ViewCompilationUnit)) {
@@ -111,7 +125,7 @@ function addNamesToView(
   // Having named all variables declared in the view, now we can push those names into the
   // `ir.ReadVariableExpr` expressions which represent reads of those variables.
   for (const op of unit.ops()) {
-    ir.visitExpressionsInOp(op, expr => {
+    ir.visitExpressionsInOp(op, (expr) => {
       if (!(expr instanceof ir.ReadVariableExpr) || expr.name !== null) {
         return;
       }
@@ -124,7 +138,10 @@ function addNamesToView(
 }
 
 function getVariableName(
-    unit: CompilationUnit, variable: ir.SemanticVariable, state: {index: number}): string {
+  unit: CompilationUnit,
+  variable: ir.SemanticVariable,
+  state: {index: number},
+): string {
   if (variable.name === null) {
     switch (variable.kind) {
       case ir.SemanticVariableKind.Context:

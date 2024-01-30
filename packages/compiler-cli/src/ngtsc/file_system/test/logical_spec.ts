@@ -24,10 +24,12 @@ runInEachFileSystem(() => {
     describe('LogicalFileSystem', () => {
       it('should determine logical paths in a single root file system', () => {
         const fs = new LogicalFileSystem([_('/test')], host);
-        expect(fs.logicalPathOfFile(_('/test/foo/foo.ts')))
-            .toEqual('/foo/foo' as LogicalProjectPath);
-        expect(fs.logicalPathOfFile(_('/test/bar/bar.ts')))
-            .toEqual('/bar/bar' as LogicalProjectPath);
+        expect(fs.logicalPathOfFile(_('/test/foo/foo.ts'))).toEqual(
+          '/foo/foo' as LogicalProjectPath,
+        );
+        expect(fs.logicalPathOfFile(_('/test/bar/bar.ts'))).toEqual(
+          '/bar/bar' as LogicalProjectPath,
+        );
         expect(fs.logicalPathOfFile(_('/not-test/bar.ts'))).toBeNull();
       });
 
@@ -45,22 +47,27 @@ runInEachFileSystem(() => {
 
       it('should always return `/` prefixed logical paths', () => {
         const rootFs = new LogicalFileSystem([_('/')], host);
-        expect(rootFs.logicalPathOfFile(_('/foo/foo.ts')))
-            .toEqual('/foo/foo' as LogicalProjectPath);
+        expect(rootFs.logicalPathOfFile(_('/foo/foo.ts'))).toEqual(
+          '/foo/foo' as LogicalProjectPath,
+        );
 
         const nonRootFs = new LogicalFileSystem([_('/test/')], host);
-        expect(nonRootFs.logicalPathOfFile(_('/test/foo/foo.ts')))
-            .toEqual('/foo/foo' as LogicalProjectPath);
+        expect(nonRootFs.logicalPathOfFile(_('/test/foo/foo.ts'))).toEqual(
+          '/foo/foo' as LogicalProjectPath,
+        );
       });
 
       it('should maintain casing of logical paths', () => {
         const fs = new LogicalFileSystem([_('/Test')], host);
-        expect(fs.logicalPathOfFile(_('/Test/foo/Foo.ts')))
-            .toEqual('/foo/Foo' as LogicalProjectPath);
-        expect(fs.logicalPathOfFile(_('/Test/foo/foo.ts')))
-            .toEqual('/foo/foo' as LogicalProjectPath);
-        expect(fs.logicalPathOfFile(_('/Test/bar/bAR.ts')))
-            .toEqual('/bar/bAR' as LogicalProjectPath);
+        expect(fs.logicalPathOfFile(_('/Test/foo/Foo.ts'))).toEqual(
+          '/foo/Foo' as LogicalProjectPath,
+        );
+        expect(fs.logicalPathOfFile(_('/Test/foo/foo.ts'))).toEqual(
+          '/foo/foo' as LogicalProjectPath,
+        );
+        expect(fs.logicalPathOfFile(_('/Test/bar/bAR.ts'))).toEqual(
+          '/bar/bAR' as LogicalProjectPath,
+        );
       });
 
       it('should use case-sensitivity when matching rootDirs', () => {
@@ -68,8 +75,9 @@ runInEachFileSystem(() => {
         if (host.useCaseSensitiveFileNames()) {
           expect(fs.logicalPathOfFile(_('/test/car/CAR.ts'))).toBe(null);
         } else {
-          expect(fs.logicalPathOfFile(_('/test/car/CAR.ts')))
-              .toEqual('/car/CAR' as LogicalProjectPath);
+          expect(fs.logicalPathOfFile(_('/test/car/CAR.ts'))).toEqual(
+            '/car/CAR' as LogicalProjectPath,
+          );
         }
       });
     });
@@ -77,19 +85,25 @@ runInEachFileSystem(() => {
     describe('utilities', () => {
       it('should give a relative path between two adjacent logical files', () => {
         const res = LogicalProjectPath.relativePathBetween(
-            '/foo' as LogicalProjectPath, '/bar' as LogicalProjectPath);
+          '/foo' as LogicalProjectPath,
+          '/bar' as LogicalProjectPath,
+        );
         expect(res).toEqual('./bar');
       });
 
       it('should give a relative path between two non-adjacent logical files', () => {
         const res = LogicalProjectPath.relativePathBetween(
-            '/foo/index' as LogicalProjectPath, '/bar/index' as LogicalProjectPath);
+          '/foo/index' as LogicalProjectPath,
+          '/bar/index' as LogicalProjectPath,
+        );
         expect(res).toEqual('../bar/index');
       });
 
       it('should maintain casing in relative path between logical files', () => {
         const res = LogicalProjectPath.relativePathBetween(
-            '/fOO' as LogicalProjectPath, '/bAR' as LogicalProjectPath);
+          '/fOO' as LogicalProjectPath,
+          '/bAR' as LogicalProjectPath,
+        );
         expect(res).toEqual('./bAR');
       });
     });

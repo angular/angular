@@ -14,7 +14,7 @@ import {Component, Input, NgModule} from '@angular/core';
     {{ names[9] }}
     {{ names[10] }}
     {{ names[11] }}
-  `
+  `,
 })
 export class MyComp {
   @Input() names!: string[];
@@ -23,9 +23,9 @@ export class MyComp {
 @Component({
   selector: 'my-app',
   template: `
-  <my-comp [names]="['start-', n0, n1, n2, n3, n4, '-middle-', n5, n6, n7, n8, '-end']">
-  </my-comp>
-`
+    <my-comp [names]="['start-', n0, n1, n2, n3, n4, '-middle-', n5, n6, n7, n8, '-end']">
+    </my-comp>
+  `,
 })
 export class MyApp {
   n0 = 'a';
@@ -40,5 +40,4 @@ export class MyApp {
 }
 
 @NgModule({declarations: [MyComp, MyApp]})
-export class MyModule {
-}
+export class MyModule {}

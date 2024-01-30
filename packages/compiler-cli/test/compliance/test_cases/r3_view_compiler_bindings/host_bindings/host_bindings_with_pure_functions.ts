@@ -6,5 +6,4 @@ export class HostBindingComp {
 }
 
 @NgModule({declarations: [HostBindingComp]})
-export class MyModule {
-}
+export class MyModule {}

@@ -12,13 +12,12 @@ export class ClassPipe {
 
 @Component({
   selector: 'my-component',
-  template: `<div [style]="myStyleExp | stylePipe" [class]="myClassExp | classPipe"></div>`
+  template: `<div [style]="myStyleExp | stylePipe" [class]="myClassExp | classPipe"></div>`,
 })
 export class MyComponent {
-  myStyleExp = [{color: 'red'}, {color: 'blue', duration: 1000}]
+  myStyleExp = [{color: 'red'}, {color: 'blue', duration: 1000}];
   myClassExp = 'foo bar apple';
 }
 
 @NgModule({declarations: [MyComponent, StylePipe, ClassPipe]})
-export class MyModule {
-}
+export class MyModule {}

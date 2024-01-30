@@ -25,7 +25,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract NgModule info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Directive, NgModule} from '@angular/core';
 
         @Directive({selector: 'some-tag'})
@@ -33,7 +35,8 @@ runInEachFileSystem(() => {
 
         @NgModule({declarations: [SomeDirective]})
         export class SomeNgModule { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

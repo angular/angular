@@ -3,22 +3,18 @@ import {Component, NgModule} from '@angular/core';
 @Component({
   selector: 'my-component',
   template: `
-  <div i18n>
-    <ng-template>
-      Template A: {{ valueA | uppercase }}
+    <div i18n>
       <ng-template>
-        Template B: {{ valueB }}
+        Template A: {{ valueA | uppercase }}
         <ng-template>
-          Template C: {{ valueC }}
+          Template B: {{ valueB }}
+          <ng-template> Template C: {{ valueC }} </ng-template>
         </ng-template>
       </ng-template>
-    </ng-template>
-  </div>
-`,
+    </div>
+  `,
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

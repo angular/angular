@@ -4,9 +4,9 @@ import {Component} from '@angular/core';
   selector: 'my-component',
   standalone: true,
   template: `
-    <svg:use [attr.xlink:href]="value"/>
-    <svg:use id="foo" xlink:href="/foo" name="foo"/>
-  `
+    <svg:use [attr.xlink:href]="value" />
+    <svg:use id="foo" xlink:href="/foo" name="foo" />
+  `,
 })
 export class MyComponent {
   value: any;

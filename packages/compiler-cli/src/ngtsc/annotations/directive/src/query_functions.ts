@@ -6,8 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {createMayBeForwardRefExpression, ForwardRefHandling, MaybeForwardRefExpression, outputAst as o, R3QueryMetadata} from '@angular/compiler';
+import {
+  createMayBeForwardRefExpression,
+  ForwardRefHandling,
+  MaybeForwardRefExpression,
+  outputAst as o,
+  R3QueryMetadata,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
@@ -17,11 +22,15 @@ import {tryUnwrapForwardRef} from '../../common';
 import {tryParseInitializerApiMember} from './initializer_functions';
 
 /** Possible query initializer API functions. */
-type QueryFunctionName = 'viewChild'|'contentChild'|'viewChildren'|'contentChildren';
+type QueryFunctionName = 'viewChild' | 'contentChild' | 'viewChildren' | 'contentChildren';
 
 /** Possible names of query initializer APIs. */
-const queryFunctionNames: QueryFunctionName[] =
-    ['viewChild', 'viewChildren', 'contentChild', 'contentChildren'];
+const queryFunctionNames: QueryFunctionName[] = [
+  'viewChild',
+  'viewChildren',
+  'contentChild',
+  'contentChildren',
+];
 
 // The `descendants` option is enabled by default, except for content children.
 const defaultDescendantsValue = (type: QueryFunctionName) => type !== 'contentChildren';
@@ -35,8 +44,10 @@ const defaultDescendantsValue = (type: QueryFunctionName) => type !== 'contentCh
  * @returns Resolved query metadata, or null if no query is declared.
  */
 export function tryParseSignalQueryFromInitializer(
-    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost, isCore: boolean):
-    {name: QueryFunctionName, metadata: R3QueryMetadata, call: ts.CallExpression}|null {
+  member: Pick<ClassMember, 'name' | 'value'>,
+  reflector: ReflectionHost,
+  isCore: boolean,
+): {name: QueryFunctionName; metadata: R3QueryMetadata; call: ts.CallExpression} | null {
   const query = tryParseInitializerApiMember(queryFunctionNames, member, reflector, isCore);
   if (query === null) {
     return null;
@@ -46,19 +57,25 @@ export function tryParseSignalQueryFromInitializer(
   const predicateNode = query.call.arguments[0] as ts.Expression | undefined;
   if (predicateNode === undefined) {
     throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, query.call, 'No locator specified.');
+      ErrorCode.VALUE_HAS_WRONG_TYPE,
+      query.call,
+      'No locator specified.',
+    );
   }
 
   const optionsNode = query.call.arguments[1] as ts.Expression | undefined;
   if (optionsNode !== undefined && !ts.isObjectLiteralExpression(optionsNode)) {
     throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, optionsNode, 'Argument needs to be an object literal.');
+      ErrorCode.VALUE_HAS_WRONG_TYPE,
+      optionsNode,
+      'Argument needs to be an object literal.',
+    );
   }
   const options = optionsNode && reflectObjectLiteral(optionsNode);
   const read = options?.has('read') ? parseReadOption(options.get('read')!) : null;
-  const descendants = options?.has('descendants') ?
-      parseDescendantsOption(options.get('descendants')!) :
-      defaultDescendantsValue(query.apiName);
+  const descendants = options?.has('descendants')
+    ? parseDescendantsOption(options.get('descendants')!)
+    : defaultDescendantsValue(query.apiName);
 
   return {
     name: query.apiName,
@@ -77,8 +94,10 @@ export function tryParseSignalQueryFromInitializer(
 }
 
 /** Parses the locator/predicate of the query. */
-function parseLocator(expression: ts.Expression, reflector: ReflectionHost): string[]|
-    MaybeForwardRefExpression<o.Expression> {
+function parseLocator(
+  expression: ts.Expression,
+  reflector: ReflectionHost,
+): string[] | MaybeForwardRefExpression<o.Expression> {
   // Attempt to unwrap `forwardRef` calls.
   const unwrappedExpression = tryUnwrapForwardRef(expression, reflector);
   if (unwrappedExpression !== null) {
@@ -90,8 +109,9 @@ function parseLocator(expression: ts.Expression, reflector: ReflectionHost): str
   }
 
   return createMayBeForwardRefExpression(
-      new o.WrappedNodeExpr(expression),
-      unwrappedExpression !== null ? ForwardRefHandling.Unwrapped : ForwardRefHandling.None);
+    new o.WrappedNodeExpr(expression),
+    unwrappedExpression !== null ? ForwardRefHandling.Unwrapped : ForwardRefHandling.None,
+  );
 }
 
 /** Parses the `read` option of a query. */
@@ -107,6 +127,8 @@ function parseDescendantsOption(value: ts.Expression): boolean {
     return false;
   }
   throw new FatalDiagnosticError(
-      ErrorCode.VALUE_HAS_WRONG_TYPE, value,
-      `Expected "descendants" option to be a boolean literal.`);
+    ErrorCode.VALUE_HAS_WRONG_TYPE,
+    value,
+    `Expected "descendants" option to be a boolean literal.`,
+  );
 }

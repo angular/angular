@@ -17,8 +17,7 @@ export class AComponent {
 }
 
 @NgModule({declarations: [AComponent]})
-export class AModule {
-}
+export class AModule {}
 
 @Component({
   selector: 'b-component',
@@ -40,12 +39,8 @@ export class AModule {
   `,
 })
 export class BComponent {
-  items = [
-    {subitems: [1, 3]},
-    {subitems: [3, 7]},
-  ];
+  items = [{subitems: [1, 3]}, {subitems: [3, 7]}];
 }
 
 @NgModule({declarations: [BComponent]})
-export class BModule {
-}
+export class BModule {}

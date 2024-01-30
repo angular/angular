@@ -8,10 +8,9 @@ import {Component} from '@angular/core';
     ['class.is-compact']: 'false',
     ['style.width']: '0',
     ['attr.tabindex']: '5',
-  }
+  },
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @Component({
   selector: 'my-comp-2',
@@ -21,7 +20,6 @@ export class MyComponent {
     '[class.is-compact]': 'false',
     '[style.width]': '0',
     '[attr.tabindex]': '5',
-  }
+  },
 })
-export class MyComponent2 {
-}
+export class MyComponent2 {}

@@ -17,10 +17,10 @@ export class PipePipe {
   selector: 'my-component',
   template: `<div
     [ternary]="cond ? [a] : [0]"
-    [pipe]="value | pipe:1:2"
+    [pipe]="value | pipe: 1 : 2"
     [and]="cond && [b]"
     [or]="cond || [c]"
-  ></div>`
+  ></div>`,
 })
 export class MyComponent {
   id = 'one';
@@ -32,5 +32,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent, DivDir, PipePipe]})
-export class MyModule {
-}
+export class MyModule {}

@@ -28,11 +28,14 @@ export function createDeferDepsFns(job: ComponentCompilationJob): void {
           if (dep.isDeferrable) {
             // Callback function, e.g. `m () => m.MyCmp;`.
             const innerFn = o.arrowFn(
-                [new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(dep.symbolName));
+              [new o.FnParam('m', o.DYNAMIC_TYPE)],
+              o.variable('m').prop(dep.symbolName),
+            );
 
             // Dynamic import, e.g. `import('./a').then(...)`.
-            const importExpr =
-                (new o.DynamicImportExpr(dep.importPath!)).prop('then').callFn([innerFn]);
+            const importExpr = new o.DynamicImportExpr(dep.importPath!)
+              .prop('then')
+              .callFn([innerFn]);
             dependencies.push(importExpr);
           } else {
             // Non-deferrable symbol, just use a reference to the type.
@@ -42,12 +45,15 @@ export function createDeferDepsFns(job: ComponentCompilationJob): void {
         const depsFnExpr = o.arrowFn([], o.literalArr(dependencies));
         if (op.handle.slot === null) {
           throw new Error(
-              'AssertionError: slot must be assigned bfore extracting defer deps functions');
+            'AssertionError: slot must be assigned bfore extracting defer deps functions',
+          );
         }
         const fullPathName = unit.fnName?.replace(`_Template`, ``);
         op.resolverFn = job.pool.getSharedFunctionReference(
-            depsFnExpr, `${fullPathName}_Defer_${op.handle.slot}_DepsFn`,
-            /* Don't use unique names for TDB compatibility */ false);
+          depsFnExpr,
+          `${fullPathName}_Defer_${op.handle.slot}_DepsFn`,
+          /* Don't use unique names for TDB compatibility */ false,
+        );
       }
     }
   }

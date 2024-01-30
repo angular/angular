@@ -1,9 +1,7 @@
 import {Component, NgModule} from '@angular/core';
 
 @Component({
-  template: `
-    <div (click)="_handleClick({a, b: 2, c})"></div>
-  `
+  template: ` <div (click)="_handleClick({a, b: 2, c})"></div> `,
 })
 export class MyComponent {
   a = 1;
@@ -12,5 +10,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

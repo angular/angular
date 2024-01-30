@@ -9,9 +9,9 @@ import {Component} from '@angular/core';
     <div [attr.style]="evil"></div>
     <img [src]="evil" />
     <iframe [sandbox]="evil"></iframe>
-    <a href="{{evil}}{{evil}}"></a>
-    <div attr.style="{{evil}}{{evil}}"></div>
-  `
+    <a href="{{ evil }}{{ evil }}"></a>
+    <div attr.style="{{ evil }}{{ evil }}"></div>
+  `,
 })
 export class MyComponent {
   evil = 'evil';

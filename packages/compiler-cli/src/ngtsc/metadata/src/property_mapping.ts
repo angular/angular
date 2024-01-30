@@ -53,8 +53,9 @@ export interface InputOrOutput {
  * Allows bidirectional querying of the mapping - looking up all inputs/outputs with a given
  * property name, or mapping from a specific class property to its binding property name.
  */
-export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> implements
-    InputOutputPropertySet {
+export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput>
+  implements InputOutputPropertySet
+{
   /**
    * Mapping from class property names to the single `InputOrOutput` for that class property.
    */
@@ -82,8 +83,9 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
    * to either binding property names or an array that contains both names, which is used in on-disk
    * metadata formats (e.g. in .d.ts files).
    */
-  static fromMappedObject<T extends InputOrOutput>(
-      obj: {[classPropertyName: string]: BindingPropertyName|T}): ClassPropertyMapping<T> {
+  static fromMappedObject<T extends InputOrOutput>(obj: {
+    [classPropertyName: string]: BindingPropertyName | T;
+  }): ClassPropertyMapping<T> {
     const forwardMap = new Map<ClassPropertyName, T>();
 
     for (const classPropertyName of Object.keys(obj)) {
@@ -112,8 +114,10 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
    * Merge two mappings into one, with class properties from `b` taking precedence over class
    * properties from `a`.
    */
-  static merge<T extends InputOrOutput>(a: ClassPropertyMapping<T>, b: ClassPropertyMapping<T>):
-      ClassPropertyMapping<T> {
+  static merge<T extends InputOrOutput>(
+    a: ClassPropertyMapping<T>,
+    b: ClassPropertyMapping<T>,
+  ): ClassPropertyMapping<T> {
     const forwardMap = new Map<ClassPropertyName, T>(a.forwardMap.entries());
     for (const [classPropertyName, inputOrOutput] of b.forwardMap) {
       forwardMap.set(classPropertyName, inputOrOutput);
@@ -146,14 +150,14 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
   /**
    * Lookup all `InputOrOutput`s that use this `propertyName`.
    */
-  getByBindingPropertyName(propertyName: string): ReadonlyArray<T>|null {
+  getByBindingPropertyName(propertyName: string): ReadonlyArray<T> | null {
     return this.reverseMap.has(propertyName) ? this.reverseMap.get(propertyName)! : null;
   }
 
   /**
    * Lookup the `InputOrOutput` associated with a `classPropertyName`.
    */
-  getByClassPropertyName(classPropertyName: string): T|null {
+  getByClassPropertyName(classPropertyName: string): T | null {
     return this.forwardMap.has(classPropertyName) ? this.forwardMap.get(classPropertyName)! : null;
   }
 
@@ -189,15 +193,16 @@ export class ClassPropertyMapping<T extends InputOrOutput = InputOrOutput> imple
    * Implement the iterator protocol and return entry objects which contain the class and binding
    * property names (and are useful for destructuring).
    */
-  * [Symbol.iterator](): IterableIterator<T> {
+  *[Symbol.iterator](): IterableIterator<T> {
     for (const inputOrOutput of this.forwardMap.values()) {
       yield inputOrOutput;
     }
   }
 }
 
-function reverseMapFromForwardMap<T extends InputOrOutput>(forwardMap: Map<ClassPropertyName, T>):
-    Map<BindingPropertyName, T[]> {
+function reverseMapFromForwardMap<T extends InputOrOutput>(
+  forwardMap: Map<ClassPropertyName, T>,
+): Map<BindingPropertyName, T[]> {
   const reverseMap = new Map<BindingPropertyName, T[]>();
   for (const [_, inputOrOutput] of forwardMap) {
     if (!reverseMap.has(inputOrOutput.bindingPropertyName)) {

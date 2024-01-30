@@ -13,7 +13,9 @@ import type {CompilationJob} from '../compilation';
  * Looks up an element in the given map by xref ID.
  */
 function lookupElement(
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>, xref: ir.XrefId): ir.ElementOrContainerOps {
+  elements: Map<ir.XrefId, ir.ElementOrContainerOps>,
+  xref: ir.XrefId,
+): ir.ElementOrContainerOps {
   const el = elements.get(xref);
   if (el === undefined) {
     throw new Error('All attributes should have an element-like target.');
@@ -39,12 +41,16 @@ export function disableBindings(job: CompilationJob): void {
 
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if ((op.kind === ir.OpKind.ElementStart || op.kind === ir.OpKind.ContainerStart) &&
-          op.nonBindable) {
+      if (
+        (op.kind === ir.OpKind.ElementStart || op.kind === ir.OpKind.ContainerStart) &&
+        op.nonBindable
+      ) {
         ir.OpList.insertAfter<ir.CreateOp>(ir.createDisableBindingsOp(op.xref), op);
       }
-      if ((op.kind === ir.OpKind.ElementEnd || op.kind === ir.OpKind.ContainerEnd) &&
-          lookupElement(elements, op.xref).nonBindable) {
+      if (
+        (op.kind === ir.OpKind.ElementEnd || op.kind === ir.OpKind.ContainerEnd) &&
+        lookupElement(elements, op.xref).nonBindable
+      ) {
         ir.OpList.insertBefore<ir.CreateOp>(ir.createEnableBindingsOp(op.xref), op);
       }
     }

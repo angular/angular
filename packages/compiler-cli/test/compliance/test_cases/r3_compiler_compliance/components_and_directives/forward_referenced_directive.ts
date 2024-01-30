@@ -2,17 +2,12 @@ import {Component, Directive, NgModule} from '@angular/core';
 
 @Component({
   selector: 'host-binding-comp',
-  template: `
-    <my-forward-directive></my-forward-directive>
-  `
+  template: ` <my-forward-directive></my-forward-directive> `,
 })
-export class HostBindingComp {
-}
+export class HostBindingComp {}
 
 @Directive({selector: 'my-forward-directive'})
-class MyForwardDirective {
-}
+class MyForwardDirective {}
 
 @NgModule({declarations: [HostBindingComp, MyForwardDirective]})
-export class MyModule {
-}
+export class MyModule {}

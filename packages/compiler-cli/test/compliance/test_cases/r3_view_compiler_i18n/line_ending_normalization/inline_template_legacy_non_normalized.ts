@@ -4,22 +4,19 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-component',
   // NOTE: This template has escaped `\r\n` line-endings markers that will be converted to real
   // `\r\n` line-ending chars when loaded from the test file-system.
-  template: `
-<div title="abc\r\n
-def" i18n-title i18n>\r\n
-Some Message\r\n
-{\r\n
-  value,\r\n
-  select,\r\n
-  =0 {\r\n
-    zero\r\n
-  }\r\n
-}</div>`
+  template: ` <div
+    title="abc
+
+def"
+    i18n-title
+    i18n
+  >
+    Some Message { value, select, =0 { zero } }
+  </div>`,
 })
 export class MyComponent {
   value!: any;
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

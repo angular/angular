@@ -6,5 +6,4 @@ export class HostAttributeDir {
 }
 
 @NgModule({declarations: [HostAttributeDir]})
-export class MyModule {
-}
+export class MyModule {}

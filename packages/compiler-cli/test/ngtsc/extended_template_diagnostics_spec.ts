@@ -26,7 +26,9 @@ runInEachFileSystem(() => {
     });
 
     it('should produce invalid banana in box warning', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
               import {Component} from '@angular/core';
               @Component({
                 selector: 'test',
@@ -35,7 +37,8 @@ runInEachFileSystem(() => {
               class TestCmp {
                 bar: string = "text";
               }
-            `);
+            `,
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
@@ -45,7 +48,9 @@ runInEachFileSystem(() => {
     });
 
     it('should produce invalid banana in box warning with external html file', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
               import {Component} from '@angular/core';
               @Component({
                 selector: 'test',
@@ -54,11 +59,15 @@ runInEachFileSystem(() => {
               class TestCmp {
                 bar: string = "text";
               }
-            `);
+            `,
+      );
 
-      env.write('test.html', `
+      env.write(
+        'test.html',
+        `
               <div ([notARealThing])="bar"></div>
-            `);
+            `,
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
@@ -68,7 +77,9 @@ runInEachFileSystem(() => {
     });
 
     it(`should produce nullish coalescing not nullable warning`, () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
               import {Component} from '@angular/core';
               @Component({
                 selector: 'test',
@@ -77,7 +88,8 @@ runInEachFileSystem(() => {
               export class TestCmp {
                 bar: string = "text";
               }
-            `);
+            `,
+      );
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
@@ -108,10 +120,12 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
-          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
-          category: ts.DiagnosticCategory.Warning,
-        }));
+        expect(diagnostics[0]).toEqual(
+          jasmine.objectContaining({
+            code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+            category: ts.DiagnosticCategory.Warning,
+          }),
+        );
       });
 
       it('by disabling extended template diagnostics when `strictTemplates` is disabled', () => {
@@ -126,17 +140,19 @@ runInEachFileSystem(() => {
       it('by emitting unconfigured diagnostics as is', () => {
         env.tsconfig({
           strictTemplates: true,
-          extendedDiagnostics: {},  // No configured diagnostics.
+          extendedDiagnostics: {}, // No configured diagnostics.
         });
 
         env.write('test.ts', warningComponent);
 
         const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
-          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
-          category: ts.DiagnosticCategory.Warning,
-        }));
+        expect(diagnostics[0]).toEqual(
+          jasmine.objectContaining({
+            code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+            category: ts.DiagnosticCategory.Warning,
+          }),
+        );
       });
 
       it('by emitting diagnostics with the default category', () => {
@@ -151,10 +167,12 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics(1 /* expectedExitCode */);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
-          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
-          category: ts.DiagnosticCategory.Error,
-        }));
+        expect(diagnostics[0]).toEqual(
+          jasmine.objectContaining({
+            code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+            category: ts.DiagnosticCategory.Error,
+          }),
+        );
       });
 
       it('by emitting diagnostics configured as `warning`', () => {
@@ -171,10 +189,12 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics(0 /* expectedExitCode */);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
-          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
-          category: ts.DiagnosticCategory.Warning,
-        }));
+        expect(diagnostics[0]).toEqual(
+          jasmine.objectContaining({
+            code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+            category: ts.DiagnosticCategory.Warning,
+          }),
+        );
       });
 
       it('by promoting diagnostics configured as `error`', () => {
@@ -191,10 +211,12 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics(1 /* expectedExitCode */);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
-          code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
-          category: ts.DiagnosticCategory.Error,
-        }));
+        expect(diagnostics[0]).toEqual(
+          jasmine.objectContaining({
+            code: ngErrorCode(ErrorCode.INVALID_BANANA_IN_BOX),
+            category: ts.DiagnosticCategory.Error,
+          }),
+        );
       });
 
       it('by suppressing diagnostics configured as `suppress`', () => {
@@ -225,10 +247,12 @@ runInEachFileSystem(() => {
 
         const diagnostics = env.driveDiagnostics(1 /* expectedExitCode */);
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics[0]).toEqual(jasmine.objectContaining({
-          code: ngErrorCode(ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL),
-          category: ts.DiagnosticCategory.Error,
-        }));
+        expect(diagnostics[0]).toEqual(
+          jasmine.objectContaining({
+            code: ngErrorCode(ErrorCode.CONFIG_EXTENDED_DIAGNOSTICS_UNKNOWN_CATEGORY_LABEL),
+            category: ts.DiagnosticCategory.Error,
+          }),
+        );
       });
     });
   });

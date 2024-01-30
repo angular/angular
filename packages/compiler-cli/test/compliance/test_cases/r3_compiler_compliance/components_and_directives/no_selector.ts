@@ -1,5 +1,4 @@
 import {Directive} from '@angular/core';
 
 @Directive()
-export class AbstractDirective {
-}
+export class AbstractDirective {}

@@ -8,7 +8,14 @@
 
 /// <reference types="node" />
 
-export {forwardRefResolver, isAngularDecorator, NoopReferencesRegistry, ReferencesRegistry, ResourceLoader, ResourceLoaderContext} from './common';
+export {
+  forwardRefResolver,
+  isAngularDecorator,
+  NoopReferencesRegistry,
+  ReferencesRegistry,
+  ResourceLoader,
+  ResourceLoaderContext,
+} from './common';
 export {ComponentDecoratorHandler} from './component';
 export {DirectiveDecoratorHandler, tryParseSignalInputMapping} from './directive';
 export {NgModuleDecoratorHandler} from './ng_module';

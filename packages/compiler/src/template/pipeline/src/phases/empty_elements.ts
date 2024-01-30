@@ -35,7 +35,7 @@ export function collapseEmptyInstructions(job: CompilationJob): void {
       const [startKind, mergedKind] = opReplacements;
 
       // Locate the previous (non-ignored) op.
-      let prevOp: ir.CreateOp|null = op.prev;
+      let prevOp: ir.CreateOp | null = op.prev;
       while (prevOp !== null && IGNORED_OP_KINDS.has(prevOp.kind)) {
         prevOp = prevOp.prev;
       }

@@ -16,7 +16,6 @@ import {I18nError} from './parse_util';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';
 import {escapeXml} from './serializers/xml_helper';
 
-
 /**
  * A container for translated messages
  */
@@ -24,25 +23,42 @@ export class TranslationBundle {
   private _i18nToHtml: I18nToHtmlVisitor;
 
   constructor(
-      private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {}, locale: string|null,
-      public digest: (m: i18n.Message) => string,
-      public mapperFactory?: (m: i18n.Message) => PlaceholderMapper,
-      missingTranslationStrategy: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
-      console?: Console) {
+    private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
+    locale: string | null,
+    public digest: (m: i18n.Message) => string,
+    public mapperFactory?: (m: i18n.Message) => PlaceholderMapper,
+    missingTranslationStrategy: MissingTranslationStrategy = MissingTranslationStrategy.Warning,
+    console?: Console,
+  ) {
     this._i18nToHtml = new I18nToHtmlVisitor(
-        _i18nNodesByMsgId, locale, digest, mapperFactory!, missingTranslationStrategy, console);
+      _i18nNodesByMsgId,
+      locale,
+      digest,
+      mapperFactory!,
+      missingTranslationStrategy,
+      console,
+    );
   }
 
   // Creates a `TranslationBundle` by parsing the given `content` with the `serializer`.
   static load(
-      content: string, url: string, serializer: Serializer,
-      missingTranslationStrategy: MissingTranslationStrategy,
-      console?: Console): TranslationBundle {
+    content: string,
+    url: string,
+    serializer: Serializer,
+    missingTranslationStrategy: MissingTranslationStrategy,
+    console?: Console,
+  ): TranslationBundle {
     const {locale, i18nNodesByMsgId} = serializer.load(content, url);
     const digestFn = (m: i18n.Message) => serializer.digest(m);
     const mapperFactory = (m: i18n.Message) => serializer.createNameMapper(m)!;
     return new TranslationBundle(
-        i18nNodesByMsgId, locale, digestFn, mapperFactory, missingTranslationStrategy, console);
+      i18nNodesByMsgId,
+      locale,
+      digestFn,
+      mapperFactory,
+      missingTranslationStrategy,
+      console,
+    );
   }
 
   // Returns the translation as HTML nodes from the given source message.
@@ -65,17 +81,19 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   // using non-null assertions because they're (re)set by convert()
   private _srcMsg!: i18n.Message;
   private _errors: I18nError[] = [];
-  private _contextStack: {msg: i18n.Message, mapper: (name: string) => string}[] = [];
+  private _contextStack: {msg: i18n.Message; mapper: (name: string) => string}[] = [];
   private _mapper!: (name: string) => string;
 
   constructor(
-      private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {}, private _locale: string|null,
-      private _digest: (m: i18n.Message) => string,
-      private _mapperFactory: (m: i18n.Message) => PlaceholderMapper,
-      private _missingTranslationStrategy: MissingTranslationStrategy, private _console?: Console) {
-  }
+    private _i18nNodesByMsgId: {[msgId: string]: i18n.Node[]} = {},
+    private _locale: string | null,
+    private _digest: (m: i18n.Message) => string,
+    private _mapperFactory: (m: i18n.Message) => PlaceholderMapper,
+    private _missingTranslationStrategy: MissingTranslationStrategy,
+    private _console?: Console,
+  ) {}
 
-  convert(srcMsg: i18n.Message): {nodes: html.Node[], errors: I18nError[]} {
+  convert(srcMsg: i18n.Message): {nodes: html.Node[]; errors: I18nError[]} {
     this._contextStack.length = 0;
     this._errors.length = 0;
 
@@ -99,17 +117,17 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   }
 
   visitContainer(container: i18n.Container, context?: any): any {
-    return container.children.map(n => n.visit(this)).join('');
+    return container.children.map((n) => n.visit(this)).join('');
   }
 
   visitIcu(icu: i18n.Icu, context?: any): any {
-    const cases = Object.keys(icu.cases).map(k => `${k} {${icu.cases[k].visit(this)}}`);
+    const cases = Object.keys(icu.cases).map((k) => `${k} {${icu.cases[k].visit(this)}}`);
 
     // TODO(vicb): Once all format switch to using expression placeholders
     // we should throw when the placeholder is not in the source message
-    const exp = this._srcMsg.placeholders.hasOwnProperty(icu.expression) ?
-        this._srcMsg.placeholders[icu.expression].text :
-        icu.expression;
+    const exp = this._srcMsg.placeholders.hasOwnProperty(icu.expression)
+      ? this._srcMsg.placeholders[icu.expression].text
+      : icu.expression;
 
     return `{${exp}, ${icu.type}, ${cases.join(' ')}}`;
   }
@@ -133,7 +151,9 @@ class I18nToHtmlVisitor implements i18n.Visitor {
   // which can contain tag placeholders
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): string {
     const tag = `${ph.tag}`;
-    const attrs = Object.keys(ph.attrs).map(name => `${name}="${ph.attrs[name]}"`).join(' ');
+    const attrs = Object.keys(ph.attrs)
+      .map((name) => `${name}="${ph.attrs[name]}"`)
+      .join(' ');
     if (ph.isVoid) {
       return `<${tag} ${attrs}/>`;
     }
@@ -173,7 +193,7 @@ class I18nToHtmlVisitor implements i18n.Visitor {
       // When there is a translation use its nodes as the source
       // And create a mapper to convert serialized placeholder names to internal names
       nodes = this._i18nNodesByMsgId[id];
-      this._mapper = (name: string) => mapper ? mapper.toInternalName(name)! : name;
+      this._mapper = (name: string) => (mapper ? mapper.toInternalName(name)! : name);
     } else {
       // When no translation has been found
       // - report an error / a warning / nothing,
@@ -183,15 +203,16 @@ class I18nToHtmlVisitor implements i18n.Visitor {
         const ctx = this._locale ? ` for locale "${this._locale}"` : '';
         this._addError(srcMsg.nodes[0], `Missing translation for message "${id}"${ctx}`);
       } else if (
-          this._console &&
-          this._missingTranslationStrategy === MissingTranslationStrategy.Warning) {
+        this._console &&
+        this._missingTranslationStrategy === MissingTranslationStrategy.Warning
+      ) {
         const ctx = this._locale ? ` for locale "${this._locale}"` : '';
         this._console.warn(`Missing translation for message "${id}"${ctx}`);
       }
       nodes = srcMsg.nodes;
       this._mapper = (name: string) => name;
     }
-    const text = nodes.map(node => node.visit(this)).join('');
+    const text = nodes.map((node) => node.visit(this)).join('');
     const context = this._contextStack.pop()!;
     this._srcMsg = context.msg;
     this._mapper = context.mapper;

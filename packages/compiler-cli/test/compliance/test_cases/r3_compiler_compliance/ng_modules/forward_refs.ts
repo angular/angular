@@ -5,9 +5,7 @@ export function provideModule(): ModuleWithProviders<ForwardModule> {
 }
 
 @NgModule({imports: [provideModule()]})
-export class TestModule {
-}
+export class TestModule {}
 
 @NgModule()
-export class ForwardModule {
-}
+export class ForwardModule {}

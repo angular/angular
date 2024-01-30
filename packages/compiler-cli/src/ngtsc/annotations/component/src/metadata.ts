@@ -6,11 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, R3ClassDebugInfo, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependencyMetadata, SchemaMetadata} from '@angular/compiler';
+import {
+  AnimationTriggerNames,
+  R3ClassDebugInfo,
+  R3ClassMetadata,
+  R3ComponentMetadata,
+  R3TemplateDependencyMetadata,
+  SchemaMetadata,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
-import {ClassPropertyMapping, ComponentResources, DirectiveTypeCheckMeta, HostDirectiveMeta, InputMapping} from '../../../metadata';
+import {
+  ClassPropertyMapping,
+  ComponentResources,
+  DirectiveTypeCheckMeta,
+  HostDirectiveMeta,
+  InputMapping,
+} from '../../../metadata';
 import {ClassDeclaration} from '../../../reflection';
 import {SubsetOfKeys} from '../../../util/src/typescript';
 
@@ -23,9 +36,14 @@ import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
  * be included here.
  */
 export type ComponentMetadataResolvedFields = SubsetOfKeys<
-    R3ComponentMetadata<R3TemplateDependencyMetadata>,
-    'declarations'|'declarationListEmitMode'|'deferBlocks'|'deferrableDeclToImportDecl'|
-    'deferrableTypes'|'deferBlockDepsEmitMode'>;
+  R3ComponentMetadata<R3TemplateDependencyMetadata>,
+  | 'declarations'
+  | 'declarationListEmitMode'
+  | 'deferBlocks'
+  | 'deferrableDeclToImportDecl'
+  | 'deferrableTypes'
+  | 'deferBlockDepsEmitMode'
+>;
 
 export interface ComponentAnalysisData {
   /**
@@ -33,11 +51,11 @@ export interface ComponentAnalysisData {
    * (not during resolve).
    */
   meta: Omit<R3ComponentMetadata<R3TemplateDependencyMetadata>, ComponentMetadataResolvedFields>;
-  baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+  baseClass: Reference<ClassDeclaration> | 'dynamic' | null;
   typeCheckMeta: DirectiveTypeCheckMeta;
   template: ParsedTemplateWithSource;
-  classMetadata: R3ClassMetadata|null;
-  classDebugInfo: R3ClassDebugInfo|null;
+  classMetadata: R3ClassMetadata | null;
+  classDebugInfo: R3ClassDebugInfo | null;
 
   inputs: ClassPropertyMapping<InputMapping>;
   outputs: ClassPropertyMapping;
@@ -46,49 +64,51 @@ export interface ComponentAnalysisData {
    * Providers extracted from the `providers` field of the component annotation which will require
    * an Angular factory definition at runtime.
    */
-  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>> | null;
 
   /**
    * Providers extracted from the `viewProviders` field of the component annotation which will
    * require an Angular factory definition at runtime.
    */
-  viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>> | null;
 
   resources: ComponentResources;
 
   /**
    * `styleUrls` extracted from the decorator, if present.
    */
-  styleUrls: StyleUrlMeta[]|null;
+  styleUrls: StyleUrlMeta[] | null;
 
   /**
    * Inline stylesheets extracted from the decorator, if present.
    */
-  inlineStyles: string[]|null;
+  inlineStyles: string[] | null;
 
   isPoisoned: boolean;
-  animationTriggerNames: AnimationTriggerNames|null;
+  animationTriggerNames: AnimationTriggerNames | null;
 
-  rawImports: ts.Expression|null;
-  resolvedImports: Reference<ClassDeclaration>[]|null;
-  rawDeferredImports: ts.Expression|null;
-  resolvedDeferredImports: Reference<ClassDeclaration>[]|null;
+  rawImports: ts.Expression | null;
+  resolvedImports: Reference<ClassDeclaration>[] | null;
+  rawDeferredImports: ts.Expression | null;
+  resolvedDeferredImports: Reference<ClassDeclaration>[] | null;
 
   /**
    * Map of symbol name -> import path for types from `@Component.deferredImports` field.
    */
-  explicitlyDeferredTypes: Map<string, string>|null;
+  explicitlyDeferredTypes: Map<string, string> | null;
 
-  schemas: SchemaMetadata[]|null;
+  schemas: SchemaMetadata[] | null;
 
-  decorator: ts.Decorator|null;
+  decorator: ts.Decorator | null;
 
   /** Additional directives applied to the component host. */
-  hostDirectives: HostDirectiveMeta[]|null;
+  hostDirectives: HostDirectiveMeta[] | null;
 
   /** Raw expression that defined the host directives array. Used for diagnostics. */
-  rawHostDirectives: ts.Expression|null;
+  rawHostDirectives: ts.Expression | null;
 }
 
-export type ComponentResolutionData =
-    Pick<R3ComponentMetadata<R3TemplateDependencyMetadata>, ComponentMetadataResolvedFields>;
+export type ComponentResolutionData = Pick<
+  R3ComponentMetadata<R3TemplateDependencyMetadata>,
+  ComponentMetadataResolvedFields
+>;

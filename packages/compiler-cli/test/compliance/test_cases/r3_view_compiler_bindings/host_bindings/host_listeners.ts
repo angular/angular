@@ -6,8 +6,7 @@ import {Component, HostListener} from '@angular/core';
   host: {
     '(document:dragover)': 'foo($event)',
   },
-  template: `
-  `
+  template: ``,
 })
 export class MyComponent {
   foo!: any;

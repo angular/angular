@@ -3,10 +3,9 @@ import {Component, Directive, NgModule} from '@angular/core';
 @Component({
   selector: 'my-host-attribute-component',
   template: '...',
-  host: {'title': 'hello there from component', 'style': 'opacity:1'}
+  host: {'title': 'hello there from component', 'style': 'opacity:1'},
 })
-export class HostAttributeComp {
-}
+export class HostAttributeComp {}
 
 @Directive({
   selector: '[hostAttributeDir]',
@@ -16,11 +15,9 @@ export class HostAttributeComp {
     'class': 'one two',
     '[class.three]': 'true',
     'title': 'hello there from directive',
-  }
+  },
 })
-export class HostAttributeDir {
-}
+export class HostAttributeDir {}
 
 @NgModule({declarations: [HostAttributeComp, HostAttributeDir]})
-export class MyModule {
-}
+export class MyModule {}

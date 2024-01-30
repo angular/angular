@@ -4,9 +4,7 @@ import {SomeDirective} from './some.directive';
 
 @Component({
   selector: 'content-query-component',
-  template: `
-    <div><ng-content></ng-content></div>
-  `
+  template: ` <div><ng-content></ng-content></div> `,
 })
 export class ContentQueryComponent {
   @ContentChild(SomeDirective, {static: true}) someDir!: SomeDirective;
@@ -19,11 +17,9 @@ export class ContentQueryComponent {
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `
+  `,
 })
-export class MyApp {
-}
+export class MyApp {}
 
 @NgModule({declarations: [SomeDirective, ContentQueryComponent, MyApp]})
-export class MyModule {
-}
+export class MyModule {}

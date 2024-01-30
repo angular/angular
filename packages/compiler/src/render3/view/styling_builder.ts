@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AttributeMarker} from '../../core';
-import {AST, ASTWithSource, BindingPipe, BindingType, EmptyExpr, Interpolation} from '../../expression_parser/ast';
+import {
+  AST,
+  ASTWithSource,
+  BindingPipe,
+  BindingType,
+  EmptyExpr,
+  Interpolation,
+} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -78,10 +85,10 @@ export interface StylingInstruction {
 }
 
 export interface StylingInstructionCall {
-  sourceSpan: ParseSourceSpan|null;
+  sourceSpan: ParseSourceSpan | null;
   supportsInterpolation: boolean;
   allocateBindingSlots: number;
-  params: ((convertFn: (value: any) => o.Expression | o.Expression[]) => o.Expression[]);
+  params: (convertFn: (value: any) => o.Expression | o.Expression[]) => o.Expression[];
 }
 
 /**
@@ -89,8 +96,8 @@ export interface StylingInstructionCall {
  */
 interface BoundStylingEntry {
   hasOverrideFlag: boolean;
-  name: string|null;
-  suffix: string|null;
+  name: string | null;
+  suffix: string | null;
   sourceSpan: ParseSourceSpan;
   value: AST;
 }
@@ -135,15 +142,15 @@ export class StylingBuilder {
   public hasBindingsWithPipes = false;
 
   /** the input for [class] (if it exists) */
-  private _classMapInput: BoundStylingEntry|null = null;
+  private _classMapInput: BoundStylingEntry | null = null;
   /** the input for [style] (if it exists) */
-  private _styleMapInput: BoundStylingEntry|null = null;
+  private _styleMapInput: BoundStylingEntry | null = null;
   /** an array of each [style.prop] input */
-  private _singleStyleInputs: BoundStylingEntry[]|null = null;
+  private _singleStyleInputs: BoundStylingEntry[] | null = null;
   /** an array of each [class.name] input */
-  private _singleClassInputs: BoundStylingEntry[]|null = null;
-  private _lastStylingInput: BoundStylingEntry|null = null;
-  private _firstStylingInput: BoundStylingEntry|null = null;
+  private _singleClassInputs: BoundStylingEntry[] | null = null;
+  private _lastStylingInput: BoundStylingEntry | null = null;
+  private _firstStylingInput: BoundStylingEntry | null = null;
 
   // maps are used instead of hash maps because a Map will
   // retain the ordering of the keys
@@ -164,7 +171,7 @@ export class StylingBuilder {
   private _initialStyleValues: string[] = [];
   private _initialClassValues: string[] = [];
 
-  constructor(private _directiveExpr: o.Expression|null) {}
+  constructor(private _directiveExpr: o.Expression | null) {}
 
   /**
    * Registers a given input to the styling builder to be later used when producing AOT code.
@@ -179,7 +186,7 @@ export class StylingBuilder {
     // will therefore skip all style/class resolution that is present
     // with style="", [style]="" and [style.prop]="", class="",
     // [class.prop]="". [class]="" assignments
-    let binding: BoundStylingEntry|null = null;
+    let binding: BoundStylingEntry | null = null;
     let name = input.name;
     switch (input.type) {
       case BindingType.Property:
@@ -196,13 +203,13 @@ export class StylingBuilder {
   }
 
   registerInputBasedOnName(name: string, expression: AST, sourceSpan: ParseSourceSpan) {
-    let binding: BoundStylingEntry|null = null;
+    let binding: BoundStylingEntry | null = null;
     const prefix = name.substring(0, 6);
     const isStyle = name === 'style' || prefix === 'style.' || prefix === 'style!';
     const isClass = !isStyle && (name === 'class' || prefix === 'class.' || prefix === 'class!');
     if (isStyle || isClass) {
-      const isMapBased = name.charAt(5) !== '.';        // style.prop or class.prop makes this a no
-      const property = name.slice(isMapBased ? 5 : 6);  // the dot explains why there's a +1
+      const isMapBased = name.charAt(5) !== '.'; // style.prop or class.prop makes this a no
+      const property = name.slice(isMapBased ? 5 : 6); // the dot explains why there's a +1
       if (isStyle) {
         binding = this.registerStyleInput(property, isMapBased, expression, sourceSpan);
       } else {
@@ -213,8 +220,12 @@ export class StylingBuilder {
   }
 
   registerStyleInput(
-      name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan,
-      suffix?: string|null): BoundStylingEntry|null {
+    name: string,
+    isMapBased: boolean,
+    value: AST,
+    sourceSpan: ParseSourceSpan,
+    suffix?: string | null,
+  ): BoundStylingEntry | null {
     if (isEmptyExpression(value)) {
       return null;
     }
@@ -225,8 +236,13 @@ export class StylingBuilder {
     }
     const {property, hasOverrideFlag, suffix: bindingSuffix} = parseProperty(name);
     suffix = typeof suffix === 'string' && suffix.length !== 0 ? suffix : bindingSuffix;
-    const entry:
-        BoundStylingEntry = {name: property, suffix: suffix, value, sourceSpan, hasOverrideFlag};
+    const entry: BoundStylingEntry = {
+      name: property,
+      suffix: suffix,
+      value,
+      sourceSpan,
+      hasOverrideFlag,
+    };
     if (isMapBased) {
       this._styleMapInput = entry;
     } else {
@@ -240,14 +256,23 @@ export class StylingBuilder {
     return entry;
   }
 
-  registerClassInput(name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan):
-      BoundStylingEntry|null {
+  registerClassInput(
+    name: string,
+    isMapBased: boolean,
+    value: AST,
+    sourceSpan: ParseSourceSpan,
+  ): BoundStylingEntry | null {
     if (isEmptyExpression(value)) {
       return null;
     }
     const {property, hasOverrideFlag} = parseProperty(name);
-    const entry:
-        BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, suffix: null};
+    const entry: BoundStylingEntry = {
+      name: property,
+      value,
+      sourceSpan,
+      hasOverrideFlag,
+      suffix: null,
+    };
     if (isMapBased) {
       this._classMapInput = entry;
     } else {
@@ -262,7 +287,7 @@ export class StylingBuilder {
   }
 
   private _checkForPipes(value: AST) {
-    if ((value instanceof ASTWithSource) && (value.ast instanceof BindingPipe)) {
+    if (value instanceof ASTWithSource && value.ast instanceof BindingPipe) {
       this.hasBindingsWithPipes = true;
     }
   }
@@ -307,7 +332,9 @@ export class StylingBuilder {
       attrs.push(o.literal(AttributeMarker.Styles));
       for (let i = 0; i < this._initialStyleValues.length; i += 2) {
         attrs.push(
-            o.literal(this._initialStyleValues[i]), o.literal(this._initialStyleValues[i + 1]));
+          o.literal(this._initialStyleValues[i]),
+          o.literal(this._initialStyleValues[i + 1]),
+        );
       }
     }
   }
@@ -332,7 +359,7 @@ export class StylingBuilder {
    * The instruction data will contain all expressions for `classMap` to function
    * which includes the `[class]` expression params.
    */
-  buildClassMapInstruction(valueConverter: ValueConverter): StylingInstruction|null {
+  buildClassMapInstruction(valueConverter: ValueConverter): StylingInstruction | null {
     if (this._classMapInput) {
       return this._buildMapBasedInstruction(valueConverter, true, this._classMapInput);
     }
@@ -345,7 +372,7 @@ export class StylingBuilder {
    * The instruction data will contain all expressions for `styleMap` to function
    * which includes the `[style]` expression params.
    */
-  buildStyleMapInstruction(valueConverter: ValueConverter): StylingInstruction|null {
+  buildStyleMapInstruction(valueConverter: ValueConverter): StylingInstruction | null {
     if (this._styleMapInput) {
       return this._buildMapBasedInstruction(valueConverter, false, this._styleMapInput);
     }
@@ -353,8 +380,10 @@ export class StylingBuilder {
   }
 
   private _buildMapBasedInstruction(
-      valueConverter: ValueConverter, isClassBased: boolean,
-      stylingInput: BoundStylingEntry): StylingInstruction {
+    valueConverter: ValueConverter,
+    isClassBased: boolean,
+    stylingInput: BoundStylingEntry,
+  ): StylingInstruction {
     // each styling binding value is stored in the LView
     // map-based bindings allocate two slots: one for the
     // previous binding value and another for the previous
@@ -368,36 +397,42 @@ export class StylingBuilder {
     let reference: o.ExternalReference;
     if (mapValue instanceof Interpolation) {
       totalBindingSlotsRequired += mapValue.expressions.length;
-      reference = isClassBased ? getClassMapInterpolationExpression(mapValue) :
-                                 getStyleMapInterpolationExpression(mapValue);
+      reference = isClassBased
+        ? getClassMapInterpolationExpression(mapValue)
+        : getStyleMapInterpolationExpression(mapValue);
     } else {
       reference = isClassBased ? R3.classMap : R3.styleMap;
     }
 
     return {
       reference,
-      calls: [{
-        supportsInterpolation: true,
-        sourceSpan: stylingInput.sourceSpan,
-        allocateBindingSlots: totalBindingSlotsRequired,
-        params: (convertFn: (value: any) => o.Expression|o.Expression[]) => {
-          const convertResult = convertFn(mapValue);
-          const params = Array.isArray(convertResult) ? convertResult : [convertResult];
-          return params;
-        }
-      }]
+      calls: [
+        {
+          supportsInterpolation: true,
+          sourceSpan: stylingInput.sourceSpan,
+          allocateBindingSlots: totalBindingSlotsRequired,
+          params: (convertFn: (value: any) => o.Expression | o.Expression[]) => {
+            const convertResult = convertFn(mapValue);
+            const params = Array.isArray(convertResult) ? convertResult : [convertResult];
+            return params;
+          },
+        },
+      ],
     };
   }
 
   private _buildSingleInputs(
-      reference: o.ExternalReference, inputs: BoundStylingEntry[], valueConverter: ValueConverter,
-      getInterpolationExpressionFn: ((value: Interpolation) => o.ExternalReference)|null,
-      isClassBased: boolean): StylingInstruction[] {
+    reference: o.ExternalReference,
+    inputs: BoundStylingEntry[],
+    valueConverter: ValueConverter,
+    getInterpolationExpressionFn: ((value: Interpolation) => o.ExternalReference) | null,
+    isClassBased: boolean,
+  ): StylingInstruction[] {
     const instructions: StylingInstruction[] = [];
 
-    inputs.forEach(input => {
-      const previousInstruction: StylingInstruction|undefined =
-          instructions[instructions.length - 1];
+    inputs.forEach((input) => {
+      const previousInstruction: StylingInstruction | undefined =
+        instructions[instructions.length - 1];
       const value = input.value.visit(valueConverter);
       let referenceForCall = reference;
 
@@ -440,7 +475,7 @@ export class StylingBuilder {
           }
 
           return params;
-        }
+        },
       };
 
       // If we ended up generating a call to the same instruction as the previous styling property
@@ -461,7 +496,12 @@ export class StylingBuilder {
   private _buildClassInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleClassInputs) {
       return this._buildSingleInputs(
-          R3.classProp, this._singleClassInputs, valueConverter, null, true);
+        R3.classProp,
+        this._singleClassInputs,
+        valueConverter,
+        null,
+        true,
+      );
     }
     return [];
   }
@@ -469,8 +509,12 @@ export class StylingBuilder {
   private _buildStyleInputs(valueConverter: ValueConverter): StylingInstruction[] {
     if (this._singleStyleInputs) {
       return this._buildSingleInputs(
-          R3.styleProp, this._singleStyleInputs, valueConverter,
-          getStylePropInterpolationExpression, false);
+        R3.styleProp,
+        this._singleStyleInputs,
+        valueConverter,
+        getStylePropInterpolationExpression,
+        false,
+      );
     }
     return [];
   }
@@ -503,8 +547,11 @@ function registerIntoMap(map: Map<string, number>, key: string) {
   }
 }
 
-export function parseProperty(name: string):
-    {property: string, suffix: string|null, hasOverrideFlag: boolean} {
+export function parseProperty(name: string): {
+  property: string;
+  suffix: string | null;
+  hasOverrideFlag: boolean;
+} {
   let hasOverrideFlag = false;
   const overrideIndex = name.indexOf(IMPORTANT_FLAG);
   if (overrideIndex !== -1) {
@@ -512,7 +559,7 @@ export function parseProperty(name: string):
     hasOverrideFlag = true;
   }
 
-  let suffix: string|null = null;
+  let suffix: string | null = null;
   let property = name;
   const unitIndex = name.lastIndexOf('.');
   if (unitIndex > 0) {

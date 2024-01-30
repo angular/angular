@@ -5,15 +5,13 @@ import {Component, Directive, forwardRef, Input} from '@angular/core';
   template: '',
   hostDirectives: [forwardRef(() => DirectiveB)],
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @Directive({
   standalone: true,
   hostDirectives: [{directive: forwardRef(() => DirectiveA), inputs: ['value']}],
 })
-export class DirectiveB {
-}
+export class DirectiveB {}
 
 @Directive({standalone: true})
 export class DirectiveA {

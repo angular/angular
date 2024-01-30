@@ -7,7 +7,11 @@
  */
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {createNgModuleType, R3NgModuleMetadata, R3NgModuleMetadataKind} from '../r3_module_compiler';
+import {
+  createNgModuleType,
+  R3NgModuleMetadata,
+  R3NgModuleMetadataKind,
+} from '../r3_module_compiler';
 import {R3CompiledExpression, refsToArray} from '../util';
 import {DefinitionMap} from '../view/util';
 
@@ -34,13 +38,15 @@ export function compileDeclareNgModuleFromMetadata(meta: R3NgModuleMetadata): R3
 /**
  * Gathers the declaration fields for an NgModule into a `DefinitionMap`.
  */
-function createNgModuleDefinitionMap(meta: R3NgModuleMetadata):
-    DefinitionMap<R3DeclareNgModuleMetadata> {
+function createNgModuleDefinitionMap(
+  meta: R3NgModuleMetadata,
+): DefinitionMap<R3DeclareNgModuleMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareNgModuleMetadata>();
 
   if (meta.kind === R3NgModuleMetadataKind.Local) {
     throw new Error(
-        'Invalid path! Local compilation mode should not get into the partial compilation path');
+      'Invalid path! Local compilation mode should not get into the partial compilation path',
+    );
   }
 
   definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));
@@ -71,7 +77,7 @@ function createNgModuleDefinitionMap(meta: R3NgModuleMetadata):
   }
 
   if (meta.schemas !== null && meta.schemas.length > 0) {
-    definitionMap.set('schemas', o.literalArr(meta.schemas.map(ref => ref.value)));
+    definitionMap.set('schemas', o.literalArr(meta.schemas.map((ref) => ref.value)));
   }
 
   if (meta.id !== null) {

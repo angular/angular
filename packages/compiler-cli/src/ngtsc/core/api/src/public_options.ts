@@ -103,7 +103,6 @@ export interface StrictTemplateOptions {
    */
   strictTemplates?: boolean;
 
-
   /**
    * Whether to check the type of a binding to a directive/component input against the type of the
    * field on the directive/component.
@@ -358,7 +357,6 @@ export interface I18nOptions {
    */
   i18nOutFile?: string;
 
-
   /**
    * Locale of the application (used when xi18n is requested).
    */
@@ -410,7 +408,7 @@ export interface TargetOptions {
    *
    * The default value is 'full'.
    */
-  compilationMode?: 'full'|'partial'|'experimental-local';
+  compilationMode?: 'full' | 'partial' | 'experimental-local';
 }
 
 /**

@@ -6,9 +6,7 @@ export class SomeDirective {
 }
 
 @Component({selector: 'my-component', template: '<div [someDirective]="true"></div>'})
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [SomeDirective, MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

@@ -7,7 +7,7 @@ import {Component, NgModule} from '@angular/core';
     <div [style.height]="h1"></div>
     <div [class.active]="a1"></div>
     <div [class.removed]="r1"></div>
-  `
+  `,
 })
 export class MyComponent {
   w1 = '100px';
@@ -17,5 +17,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

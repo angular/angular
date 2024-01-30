@@ -1,4 +1,11 @@
-import {contentChild, contentChildren, Directive, forwardRef, viewChild, viewChildren} from '@angular/core';
+import {
+  contentChild,
+  contentChildren,
+  Directive,
+  forwardRef,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
 
 export class SomeToken {}
 

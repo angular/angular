@@ -21,7 +21,7 @@ export class MyPurePipe implements PipeTransform {
 @Component({
   selector: 'my-app',
   template:
-      '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }} {{ name ? 1 : 2 | myPipe }}</p>'
+    '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }} {{ name ? 1 : 2 | myPipe }}</p>',
 })
 export class MyApp {
   name = 'World';
@@ -29,5 +29,4 @@ export class MyApp {
 }
 
 @NgModule({declarations: [MyPipe, MyPurePipe, MyApp]})
-export class MyModule {
-}
+export class MyModule {}

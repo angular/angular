@@ -27,7 +27,9 @@ let sourceFileCache = new Map<string, ts.SourceFile>();
  * is available to verify that the cached `ts.SourceFile` corresponds with the contents on disk.
  */
 export function getCachedSourceFile(
-    fileName: string, load: () => string | undefined): ts.SourceFile|null {
+  fileName: string,
+  load: () => string | undefined,
+): ts.SourceFile | null {
   if (!/^lib\..+\.d\.ts$/.test(basename(fileName))) {
     return null;
   }

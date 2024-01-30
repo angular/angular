@@ -1,18 +1,13 @@
 import {Component, Directive, NgModule} from '@angular/core';
 
 @Directive({selector: 'ng-container[directiveA]'})
-export class DirectiveA {
-}
+export class DirectiveA {}
 
 @Component({
   selector: 'my-component',
-  template: `
-    <ng-container *ngIf="showing" directiveA>Some content</ng-container>
-  `
+  template: ` <ng-container *ngIf="showing" directiveA>Some content</ng-container> `,
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [DirectiveA, MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

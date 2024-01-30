@@ -6,5 +6,4 @@ import {Component} from '@angular/core';
   // Simple recursion. Note: no `imports`.
   template: '<recursive-cmp></recursive-cmp>',
 })
-export class RecursiveComponent {
-}
+export class RecursiveComponent {}

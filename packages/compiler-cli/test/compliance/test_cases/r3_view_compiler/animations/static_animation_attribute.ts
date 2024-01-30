@@ -7,5 +7,4 @@ export class MyApp {
 }
 
 @NgModule({declarations: [MyApp]})
-export class MyModule {
-}
+export class MyModule {}

@@ -1,13 +1,10 @@
 import {Component, Directive, NgModule} from '@angular/core';
 
 @Directive({selector: 'router-outlet'})
-export class RouterOutlet {
-}
+export class RouterOutlet {}
 
 @Component({template: '<router-outlet></router-outlet>'})
-export class EmptyOutletComponent {
-}
+export class EmptyOutletComponent {}
 
 @NgModule({declarations: [EmptyOutletComponent, RouterOutlet]})
-export class MyModule {
-}
+export class MyModule {}

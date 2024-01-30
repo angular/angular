@@ -3,13 +3,12 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     <div>
-      {{message}}
+      {{ message }}
       @for (item of items; track item) {
-        {{item.name}}
-        @for (subitem of item.subItems; track $index) {
-          {{subitem}} from {{item.name}}
-        }
-      }
+      {{ item.name }}
+      @for (subitem of item.subItems; track $index) {
+      {{ subitem }} from {{ item.name }}
+      } }
     </div>
   `,
 })

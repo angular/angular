@@ -4,11 +4,11 @@ import {Component, Input, NgModule} from '@angular/core';
   selector: 'my-cmp',
   standalone: true,
   template: `
-		<span i18n>
-  			<input [disabled]="someBoolean">
-			{{ someField }}
-		</span>
-	`,
+    <span i18n>
+      <input [disabled]="someBoolean" />
+      {{ someField }}
+    </span>
+  `,
 })
 export class MyComponent {
   someBoolean: boolean;

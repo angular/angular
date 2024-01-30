@@ -41,7 +41,7 @@ export class LifecycleComp {
   template: `
     <lifecycle-comp [name]="name1"></lifecycle-comp>
     <lifecycle-comp [name]="name2"></lifecycle-comp>
-  `
+  `,
 })
 export class SimpleLayout {
   name1 = '1';
@@ -49,5 +49,4 @@ export class SimpleLayout {
 }
 
 @NgModule({declarations: [LifecycleComp, SimpleLayout]})
-export class LifecycleModule {
-}
+export class LifecycleModule {}

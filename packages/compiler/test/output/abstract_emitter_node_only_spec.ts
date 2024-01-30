@@ -107,12 +107,16 @@ describe('AbstractEmitter', () => {
   });
 });
 
-
 // All lines / columns indexes are 0-based
 // Note: source-map line indexes are 1-based, column 0-based
 async function expectMap(
-    ctx: EmitterVisitorContext, genLine: number, genCol: number, source: string|null = null,
-    srcLine: number|null = null, srcCol: number|null = null) {
+  ctx: EmitterVisitorContext,
+  genLine: number,
+  genCol: number,
+  source: string | null = null,
+  srcLine: number | null = null,
+  srcCol: number | null = null,
+) {
   const sm = ctx.toSourceMapGenerator('o.ts').toJSON()!;
   const genPosition = {line: genLine + 1, column: genCol};
   const origPosition = await originalPositionFor(sm, genPosition);
@@ -125,7 +129,7 @@ async function expectMap(
 function nbSegmentsPerLine(ctx: EmitterVisitorContext) {
   const sm = ctx.toSourceMapGenerator('o.ts').toJSON()!;
   const lines = sm.mappings.split(';');
-  return lines.map(l => {
+  return lines.map((l) => {
     const m = l.match(/,/g);
     return m === null ? 1 : m.length + 1;
   });

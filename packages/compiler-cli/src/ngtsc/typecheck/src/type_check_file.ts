@@ -20,8 +20,6 @@ import {ensureTypeCheckFilePreparationImports} from './tcb_util';
 import {getImportString} from './ts_util';
 import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 
-
-
 /**
  * An `Environment` representing the single type-checking file into which most (if not all) Type
  * Check Blocks (TCBs) will be generated.
@@ -35,21 +33,43 @@ export class TypeCheckFile extends Environment {
   private tcbStatements: ts.Statement[] = [];
 
   constructor(
-      readonly fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
-      reflector: ReflectionHost, compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>) {
+    readonly fileName: AbsoluteFsPath,
+    config: TypeCheckingConfig,
+    refEmitter: ReferenceEmitter,
+    reflector: ReflectionHost,
+    compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
+  ) {
     super(
-        config, new ImportManager(new NoopImportRewriter(), 'i'), refEmitter, reflector,
-        ts.createSourceFile(
-            compilerHost.getCanonicalFileName(fileName), '', ts.ScriptTarget.Latest, true));
+      config,
+      new ImportManager(new NoopImportRewriter(), 'i'),
+      refEmitter,
+      reflector,
+      ts.createSourceFile(
+        compilerHost.getCanonicalFileName(fileName),
+        '',
+        ts.ScriptTarget.Latest,
+        true,
+      ),
+    );
   }
 
   addTypeCheckBlock(
-      ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
-      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder,
-      genericContextBehavior: TcbGenericContextBehavior): void {
+    ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
+    meta: TypeCheckBlockMetadata,
+    domSchemaChecker: DomSchemaChecker,
+    oobRecorder: OutOfBandDiagnosticRecorder,
+    genericContextBehavior: TcbGenericContextBehavior,
+  ): void {
     const fnId = ts.factory.createIdentifier(`_tcb${this.nextTcbId++}`);
     const fn = generateTypeCheckBlock(
-        this, ref, fnId, meta, domSchemaChecker, oobRecorder, genericContextBehavior);
+      this,
+      ref,
+      fnId,
+      meta,
+      domSchemaChecker,
+      oobRecorder,
+      genericContextBehavior,
+    );
     this.tcbStatements.push(fn);
   }
 
@@ -60,10 +80,9 @@ export class TypeCheckFile extends Environment {
     // import to e.g. `@angular/core` always exists to guarantee a stable graph.
     ensureTypeCheckFilePreparationImports(this);
 
-    let source: string = this.importManager.getAllImports(this.contextFile.fileName)
-                             .map(getImportString)
-                             .join('\n') +
-        '\n\n';
+    let source: string =
+      this.importManager.getAllImports(this.contextFile.fileName).map(getImportString).join('\n') +
+      '\n\n';
     const printer = ts.createPrinter({removeComments});
     source += '\n';
     for (const stmt of this.pipeInstStatements) {

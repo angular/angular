@@ -3,11 +3,10 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     @defer {
-      <button></button>
+    <button></button>
     } @loading(minimum 2s; after 500ms) {
-      <img src="loading.gif">
+    <img src="loading.gif" />
     }
   `,
 })
-export class MyApp {
-}
+export class MyApp {}

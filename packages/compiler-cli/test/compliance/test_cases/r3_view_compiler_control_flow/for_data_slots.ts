@@ -4,13 +4,11 @@ import {Component} from '@angular/core';
 // and checking that the indexes are sequential.
 @Component({
   template: `
-    <ng-template/>
+    <ng-template />
     @for (item of items; track item) {
-      {{item}}
-    } @empty {
-      Empty
-    }
-    <ng-template/>
+    {{ item }}
+    } @empty { Empty }
+    <ng-template />
   `,
 })
 export class MyApp {

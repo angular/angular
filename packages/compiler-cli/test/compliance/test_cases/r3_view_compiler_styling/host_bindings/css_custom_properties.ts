@@ -6,7 +6,7 @@ import {Directive} from '@angular/core';
     '[style.--camelCase]': 'value',
     '[style.--kebab-case]': 'value',
     'style': '--camelCase: foo; --kebab-case: foo',
-  }
+  },
 })
 export class MyDirective {
   value: any;

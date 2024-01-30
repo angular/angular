@@ -7,13 +7,15 @@ class Service {}
 @Injectable()
 export class ParameterizedInjectable {
   constructor(
-      service: Service, @Inject(TOKEN) token: string, @CustomParamDecorator() custom: Service,
-      @Inject(TOKEN) @SkipSelf() @CustomParamDecorator() mixed: string) {}
+    service: Service,
+    @Inject(TOKEN) token: string,
+    @CustomParamDecorator() custom: Service,
+    @Inject(TOKEN) @SkipSelf() @CustomParamDecorator() mixed: string,
+  ) {}
 }
 
 @Injectable()
-export class NoCtor {
-}
+export class NoCtor {}
 
 @Injectable()
 export class EmptyCtor {
@@ -31,8 +33,7 @@ export class CustomInjectable {
 }
 
 @Injectable()
-export class DerivedInjectable extends ParameterizedInjectable {
-}
+export class DerivedInjectable extends ParameterizedInjectable {}
 
 @Injectable()
 export class DerivedInjectableWithCtor extends ParameterizedInjectable {

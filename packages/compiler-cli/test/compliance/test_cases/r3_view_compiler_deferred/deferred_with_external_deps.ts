@@ -7,16 +7,15 @@ import {LoadingDep} from './deferred_with_external_deps_loading';
 @Component({
   template: `
     <div>
-      <eager-dep/>
+      <eager-dep />
       @defer {
-        <lazy-dep/>
+      <lazy-dep />
       } @loading {
-        <loading-dep/>
+      <loading-dep />
       }
     </div>
   `,
   standalone: true,
   imports: [EagerDep, LazyDep, LoadingDep],
 })
-export class MyApp {
-}
+export class MyApp {}

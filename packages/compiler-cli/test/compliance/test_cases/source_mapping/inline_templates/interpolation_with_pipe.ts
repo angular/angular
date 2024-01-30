@@ -4,8 +4,7 @@ import {Component, NgModule, Pipe, PipeTransform} from '@angular/core';
   selector: 'test-cmp',
   template: '<div>{{200.3 | percent : 2 }}</div>',
 })
-export class TestCmp {
-}
+export class TestCmp {}
 
 @Pipe({name: 'percent'})
 export class PercentPipe implements PipeTransform {
@@ -13,5 +12,4 @@ export class PercentPipe implements PipeTransform {
 }
 
 @NgModule({declarations: [TestCmp, PercentPipe]})
-export class AppModule {
-}
+export class AppModule {}

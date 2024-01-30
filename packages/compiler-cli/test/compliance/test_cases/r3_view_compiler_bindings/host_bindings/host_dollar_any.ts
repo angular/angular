@@ -5,7 +5,6 @@ import {Component} from '@angular/core';
   host: {
     '[style.color]': '$any("red")',
   },
-  template: ``
+  template: ``,
 })
-export class HostBindingDir {
-}
+export class HostBindingDir {}

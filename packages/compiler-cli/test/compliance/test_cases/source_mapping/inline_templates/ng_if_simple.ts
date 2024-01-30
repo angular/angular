@@ -4,5 +4,4 @@ import {Component} from '@angular/core';
   selector: 'test-cmp',
   template: '<div *ngIf="showMessage()">{{ name }}</div>',
 })
-export class TestCmp {
-}
+export class TestCmp {}

@@ -3,9 +3,6 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'my-component',
   standalone: true,
-  template: `
-    <div style="width: 1px; width: 10px;" class="cls1 cls1"></div>
-  `,
+  template: ` <div style="width: 1px; width: 10px;" class="cls1 cls1"></div> `,
 })
-export class MyComponent {
-}
+export class MyComponent {}

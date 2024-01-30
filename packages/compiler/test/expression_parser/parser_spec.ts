@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, Call, EmptyExpr, Interpolation, ParserError, PropertyRead, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
+import {
+  AbsoluteSourceSpan,
+  ASTWithSource,
+  BindingPipe,
+  Call,
+  EmptyExpr,
+  Interpolation,
+  ParserError,
+  PropertyRead,
+  TemplateBinding,
+  VariableBinding,
+} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -21,7 +32,7 @@ describe('parser', () => {
     });
 
     it('should parse strings', () => {
-      checkAction('\'1\'', '"1"');
+      checkAction("'1'", '"1"');
       checkAction('"1"');
     });
 
@@ -152,8 +163,10 @@ describe('parser', () => {
 
       it('should error for private identifiers with implicit receiver', () => {
         checkActionWithError(
-            '#privateField', '',
-            'Private identifiers are not supported. Unexpected private identifier: #privateField at column 1');
+          '#privateField',
+          '',
+          'Private identifiers are not supported. Unexpected private identifier: #privateField at column 1',
+        );
       });
 
       it('should only allow identifier or keyword as member names', () => {
@@ -162,8 +175,10 @@ describe('parser', () => {
         checkActionWithError('x. 1234', 'x.', 'identifier or keyword');
         checkActionWithError('x."foo"', 'x.', 'identifier or keyword');
         checkActionWithError(
-            'x.#privateField', 'x.',
-            'Private identifiers are not supported. Unexpected private identifier: #privateField, expected identifier or keyword');
+          'x.#privateField',
+          'x.',
+          'Private identifiers are not supported. Unexpected private identifier: #privateField, expected identifier or keyword',
+        );
       });
 
       it('should parse safe field access', () => {
@@ -196,7 +211,10 @@ describe('parser', () => {
 
         it('should recover on missing properties', () => {
           checkActionWithError(
-              'a. = 1', 'a. = 1', 'Expected identifier for property access at column 2');
+            'a. = 1',
+            'a. = 1',
+            'Expected identifier for property access at column 2',
+          );
         });
 
         it('should error on writes after a property write', () => {
@@ -205,7 +223,7 @@ describe('parser', () => {
           validate(ast);
 
           expect(ast.errors.length).toBe(1);
-          expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
+          expect(ast.errors[0].message).toContain("Unexpected token '='");
         });
       });
     });
@@ -261,12 +279,18 @@ describe('parser', () => {
 
         it('should recover on unterminated keys', () => {
           checkActionWithError(
-              'a[1 + 2', 'a[1 + 2]', 'Missing expected ] at the end of the expression');
+            'a[1 + 2',
+            'a[1 + 2]',
+            'Missing expected ] at the end of the expression',
+          );
         });
 
         it('should recover on incomplete and unterminated keys', () => {
           checkActionWithError(
-              'a[1 + ', 'a[1 + ]', 'Missing expected ] at the end of the expression');
+            'a[1 + ',
+            'a[1 + ]',
+            'Missing expected ] at the end of the expression',
+          );
         });
       });
     });
@@ -308,7 +332,7 @@ describe('parser', () => {
           expect(unparse(ast)).toEqual('a[1 + ] = 1');
           validate(ast);
 
-          const errors = ast.errors.map(e => e.message);
+          const errors = ast.errors.map((e) => e.message);
           expect(errors.length).toBe(2);
           expect(errors[0]).toContain('Unexpected token =');
           expect(errors[1]).toContain('Missing expected ]');
@@ -320,7 +344,7 @@ describe('parser', () => {
           validate(ast);
 
           expect(ast.errors.length).toBe(1);
-          expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
+          expect(ast.errors[0].message).toContain("Unexpected token '='");
         });
 
         it('should recover on parenthesized empty rvalues', () => {
@@ -329,7 +353,7 @@ describe('parser', () => {
           validate(ast);
 
           expect(ast.errors.length).toBe(1);
-          expect(ast.errors[0].message).toContain('Unexpected token \'=\'');
+          expect(ast.errors[0].message).toContain("Unexpected token '='");
         });
       });
     });
@@ -470,7 +494,7 @@ describe('parser', () => {
 
   describe('general error handling', () => {
     it('should report an unexpected token', () => {
-      expectActionError('[1,2] trac', 'Unexpected token \'trac\'');
+      expectActionError('[1,2] trac', "Unexpected token 'trac'");
     });
 
     it('should report reasonable error for unconsumed tokens', () => {
@@ -543,16 +567,15 @@ describe('parser', () => {
           });
         }
 
-        it('should parse an incomplete pipe with a source span that includes trailing whitespace',
-           () => {
-             const bindingText = 'foo | ';
-             const binding = parseBinding(bindingText).ast as BindingPipe;
+        it('should parse an incomplete pipe with a source span that includes trailing whitespace', () => {
+          const bindingText = 'foo | ';
+          const binding = parseBinding(bindingText).ast as BindingPipe;
 
-             // The sourceSpan should include all characters of the input.
-             expect(rawSpan(binding.sourceSpan)).toEqual([0, bindingText.length]);
-             // The nameSpan should be positioned at the end of the input.
-             expect(rawSpan(binding.nameSpan)).toEqual([bindingText.length, bindingText.length]);
-           });
+          // The sourceSpan should include all characters of the input.
+          expect(rawSpan(binding.sourceSpan)).toEqual([0, bindingText.length]);
+          // The nameSpan should be positioned at the end of the input.
+          expect(rawSpan(binding.nameSpan)).toEqual([bindingText.length, bindingText.length]);
+        });
       });
 
       it('should only allow identifier or keyword as formatter names', () => {
@@ -609,7 +632,7 @@ describe('parser', () => {
 
   describe('parseTemplateBindings', () => {
     function humanize(bindings: TemplateBinding[]): Array<[string, string | null, boolean]> {
-      return bindings.map(binding => {
+      return bindings.map((binding) => {
         const key = binding.key.source;
         const value = binding.value ? binding.value.source : null;
         const keyIsVar = binding instanceof VariableBinding;
@@ -618,8 +641,10 @@ describe('parser', () => {
     }
 
     function humanizeSpans(
-        bindings: TemplateBinding[], attr: string): Array<[string, string, string | null]> {
-      return bindings.map(binding => {
+      bindings: TemplateBinding[],
+      attr: string,
+    ): Array<[string, string, string | null]> {
+      return bindings.map((binding) => {
         const {sourceSpan, key, value} = binding;
         const sourceStr = attr.substring(sourceSpan.start, sourceSpan.end);
         const keyStr = attr.substring(key.span.start, key.span.end);
@@ -634,21 +659,17 @@ describe('parser', () => {
 
     it('should parse key and value', () => {
       const cases: Array<[string, string, string | null, boolean, string, string, string | null]> =
-          [
-            // expression, key, value, VariableBinding, source span, key span, value span
-            ['*a=""', 'a', null, false, 'a="', 'a', null],
-            ['*a="b"', 'a', 'b', false, 'a="b', 'a', 'b'],
-            ['*a-b="c"', 'a-b', 'c', false, 'a-b="c', 'a-b', 'c'],
-            ['*a="1+1"', 'a', '1+1', false, 'a="1+1', 'a', '1+1'],
-          ];
+        [
+          // expression, key, value, VariableBinding, source span, key span, value span
+          ['*a=""', 'a', null, false, 'a="', 'a', null],
+          ['*a="b"', 'a', 'b', false, 'a="b', 'a', 'b'],
+          ['*a-b="c"', 'a-b', 'c', false, 'a-b="c', 'a-b', 'c'],
+          ['*a="1+1"', 'a', '1+1', false, 'a="1+1', 'a', '1+1'],
+        ];
       for (const [attr, key, value, keyIsVar, sourceSpan, keySpan, valueSpan] of cases) {
         const bindings = parseTemplateBindings(attr);
-        expect(humanize(bindings)).toEqual([
-          [key, value, keyIsVar],
-        ]);
-        expect(humanizeSpans(bindings, attr)).toEqual([
-          [sourceSpan, keySpan, valueSpan],
-        ]);
+        expect(humanize(bindings)).toEqual([[key, value, keyIsVar]]);
+        expect(humanizeSpans(bindings, attr)).toEqual([[sourceSpan, keySpan, valueSpan]]);
       }
     });
 
@@ -710,9 +731,9 @@ describe('parser', () => {
         ['ngForOf', 'people', false],
       ]);
 
-
       bindings = parseTemplateBindings(
-          '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"');
+        '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"',
+      );
       expect(humanize(bindings)).toEqual([
         // [ key, value, VariableBinding ]
         ['ngFor', null, false],
@@ -724,7 +745,8 @@ describe('parser', () => {
       ]);
 
       bindings = parseTemplateBindings(
-          '*ngFor="let item, of: [1,2,3] | pipe as items; let i=index, count as len"');
+        '*ngFor="let item, of: [1,2,3] | pipe as items; let i=index, count as len"',
+      );
       expect(humanize(bindings)).toEqual([
         // [ key, value, VariableBinding ]
         ['ngFor', null, false],
@@ -855,7 +877,7 @@ describe('parser', () => {
         const bindings = parseTemplateBindings(attr);
         expect(humanizeSpans(bindings, attr)).toEqual([
           // source span, key span, value span
-          ['key="', 'key', null],  // source span stretches till next binding
+          ['key="', 'key', null], // source span stretches till next binding
           ['let i', 'i', null],
         ]);
       });
@@ -888,13 +910,14 @@ describe('parser', () => {
         const attr = '*ngIf="name && {{name}}"';
 
         expectParseTemplateBindingsError(
-            attr,
-            'Parser Error: Unexpected token {, expected identifier, keyword, or string at column 10 in [name && {{name}}] in foo.html');
+          attr,
+          'Parser Error: Unexpected token {, expected identifier, keyword, or string at column 10 in [name && {{name}}] in foo.html',
+        );
       });
 
       it('should map variable declaration via "as"', () => {
         const attr =
-            '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"';
+          '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"';
         const bindings = parseTemplateBindings(attr);
         expect(humanizeSpans(bindings, attr)).toEqual([
           // source span, key span, value span
@@ -982,11 +1005,14 @@ describe('parser', () => {
 
     it('should report empty interpolation expressions', () => {
       expectError(
-          parseInterpolation('{{}}')!, 'Blank expressions are not allowed in interpolated strings');
+        parseInterpolation('{{}}')!,
+        'Blank expressions are not allowed in interpolated strings',
+      );
 
       expectError(
-          parseInterpolation('foo {{  }}')!,
-          'Parser Error: Blank expressions are not allowed in interpolated strings');
+        parseInterpolation('foo {{  }}')!,
+        'Parser Error: Blank expressions are not allowed in interpolated strings',
+      );
     });
 
     it('should produce an empty expression ast for empty interpolations', () => {
@@ -1005,8 +1031,8 @@ describe('parser', () => {
 
     it('should support custom interpolation', () => {
       const parser = new Parser(new Lexer());
-      const ast =
-          parser.parseInterpolation('{% a %}', '', 0, null, {start: '{%', end: '%}'})!.ast as any;
+      const ast = parser.parseInterpolation('{% a %}', '', 0, null, {start: '{%', end: '%}'})!
+        .ast as any;
       expect(ast.strings).toEqual(['', '']);
       expect(ast.expressions.length).toEqual(1);
       expect(ast.expressions[0].name).toEqual('a');
@@ -1031,7 +1057,9 @@ describe('parser', () => {
 
       it('should retain // in complex strings', () => {
         checkInterpolation(
-            `{{"//a\'//b\`//c\`//d\'//e" //comment}}`, `{{ "//a\'//b\`//c\`//d\'//e" }}`);
+          `{{"//a\'//b\`//c\`//d\'//e" //comment}}`,
+          `{{ "//a\'//b\`//c\`//d\'//e" }}`,
+        );
       });
 
       it('should retain // in nested, unterminated strings', () => {
@@ -1053,14 +1081,16 @@ describe('parser', () => {
 
     it('should report when encountering pipes', () => {
       expectError(
-          validate(parseSimpleBinding('a | somePipe')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('a | somePipe')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should report when encountering interpolation', () => {
       expectError(
-          validate(parseSimpleBinding('{{exp}}')),
-          'Got interpolation ({{}}) where expression was expected');
+        validate(parseSimpleBinding('{{exp}}')),
+        'Got interpolation ({{}}) where expression was expected',
+      );
     });
 
     it('should not report interpolation inside a string', () => {
@@ -1076,62 +1106,72 @@ describe('parser', () => {
 
     it('should throw if a pipe is used inside a conditional', () => {
       expectError(
-          validate(parseSimpleBinding('(hasId | myPipe) ? "my-id" : ""')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('(hasId | myPipe) ? "my-id" : ""')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a call', () => {
       expectError(
-          validate(parseSimpleBinding('getId(true, id | myPipe)')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('getId(true, id | myPipe)')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a call to a property access', () => {
       expectError(
-          validate(parseSimpleBinding('idService.getId(true, id | myPipe)')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('idService.getId(true, id | myPipe)')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a call to a safe property access', () => {
       expectError(
-          validate(parseSimpleBinding('idService?.getId(true, id | myPipe)')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('idService?.getId(true, id | myPipe)')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a property access', () => {
       expectError(
-          validate(parseSimpleBinding('a[id | myPipe]')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('a[id | myPipe]')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a keyed read expression', () => {
       expectError(
-          validate(parseSimpleBinding('a[id | myPipe].b')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('a[id | myPipe].b')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a safe property read', () => {
       expectError(
-          validate(parseSimpleBinding('(id | myPipe)?.id')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('(id | myPipe)?.id')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a non-null assertion', () => {
       expectError(
-          validate(parseSimpleBinding('[id | myPipe]!')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('[id | myPipe]!')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a prefix not expression', () => {
       expectError(
-          validate(parseSimpleBinding('!(id | myPipe)')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('!(id | myPipe)')),
+        'Host binding expression cannot contain pipes',
+      );
     });
 
     it('should throw if a pipe is used inside a binary expression', () => {
       expectError(
-          validate(parseSimpleBinding('(id | myPipe) === true')),
-          'Host binding expression cannot contain pipes');
+        validate(parseSimpleBinding('(id | myPipe) === true')),
+        'Host binding expression cannot contain pipes',
+      );
     });
   });
 
@@ -1151,8 +1191,8 @@ describe('parser', () => {
     it('should be able to recover from a missing )', () => recover('(a;b', 'a; b;'));
     it('should be able to recover from a missing ]', () => recover('[a,b', '[a, b]'));
     it('should be able to recover from a missing selector', () => recover('a.'));
-    it('should be able to recover from a missing selector in a array literal',
-       () => recover('[[a.], b, c]'));
+    it('should be able to recover from a missing selector in a array literal', () =>
+      recover('[[a.], b, c]'));
   });
 
   describe('offsets', () => {
@@ -1164,7 +1204,7 @@ describe('parser', () => {
     it('should retain the offsets into the expression AST of interpolations', () => {
       const source = parseInterpolation('{{a}}  {{b}}  {{c}}')!;
       const interpolation = source.ast as Interpolation;
-      expect(interpolation.expressions.map(e => e.span.start)).toEqual([2, 9, 16]);
+      expect(interpolation.expressions.map((e) => e.span.start)).toEqual([2, 9, 16]);
     });
   });
 });
@@ -1197,18 +1237,21 @@ function _parseTemplateBindings(attribute: string, templateUrl: string) {
   const match = attribute.match(/^\*(.+)="(.*)"$/);
   expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
   const [_, key, value] = match!;
-  const absKeyOffset = 1;  // skip the * prefix
+  const absKeyOffset = 1; // skip the * prefix
   const absValueOffset = attribute.indexOf('=') + '="'.length;
   const parser = createParser();
   return parser.parseTemplateBindings(key, value, templateUrl, absKeyOffset, absValueOffset);
 }
 
-function parseInterpolation(text: string, location: any = null, offset: number = 0): ASTWithSource|
-    null {
+function parseInterpolation(
+  text: string,
+  location: any = null,
+  offset: number = 0,
+): ASTWithSource | null {
   return createParser().parseInterpolation(text, location, offset, null);
 }
 
-function splitInterpolation(text: string, location: any = null): SplitInterpolation|null {
+function splitInterpolation(text: string, location: any = null): SplitInterpolation | null {
   return createParser().splitInterpolation(text, location, null);
 }
 
@@ -1246,9 +1289,10 @@ function expectError(ast: {errors: ParserError[]}, message: string) {
       return;
     }
   }
-  const errMsgs = ast.errors.map(err => err.message).join('\n');
+  const errMsgs = ast.errors.map((err) => err.message).join('\n');
   throw Error(
-      `Expected an error containing "${message}" to be reported, but got the errors:\n` + errMsgs);
+    `Expected an error containing "${message}" to be reported, but got the errors:\n` + errMsgs,
+  );
 }
 
 function expectActionError(text: string, message: string) {

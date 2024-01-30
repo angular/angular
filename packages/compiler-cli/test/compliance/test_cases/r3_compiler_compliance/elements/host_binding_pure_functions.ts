@@ -17,8 +17,8 @@ import {Component, Input, NgModule} from '@angular/core';
         collapsedWidth: collapsedWidth,
         expandedWidth: expandedWidth
       }
-    }`
-  }
+    }`,
+  },
 })
 export class MyComponent {
   @Input() expandedHeight!: string;
@@ -33,5 +33,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

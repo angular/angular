@@ -11,8 +11,8 @@ import {Component, Directive, NgModule} from '@angular/core';
         param1: _animParam1,
         param2: _animParam2
       }
-    }`
-  }
+    }`,
+  },
 })
 export class MyDir {
   title = '';
@@ -24,13 +24,9 @@ export class MyDir {
 
 @Component({
   selector: 'my-app',
-  template: `
-    <div my-dir></div>
-  `
+  template: ` <div my-dir></div> `,
 })
-export class MyAppComp {
-}
+export class MyAppComp {}
 
 @NgModule({declarations: [MyAppComp, MyDir]})
-export class MyModule {
-}
+export class MyModule {}

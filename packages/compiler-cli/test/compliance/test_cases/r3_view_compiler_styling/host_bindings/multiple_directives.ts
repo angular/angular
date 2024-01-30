@@ -23,9 +23,7 @@ export class HeightDirective {
   selector: 'my-component',
   template: '<div myWidthDir myHeightDir myClassDir></div>',
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent, WidthDirective, HeightDirective, ClassDirective]})
-export class MyModule {
-}
+export class MyModule {}

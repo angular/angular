@@ -6,7 +6,7 @@ import {Component} from '@angular/core';
   template: `
     <div i18n>
       <div *ngFor="let diskView of disks">
-        {{diskView.name}} has {diskView.length, plural, =1 {VM} other {VMs}}
+        {{ diskView.name }} has {diskView.length, plural, =1 {VM} other {VMs}}
       </div>
     </div>
   `,

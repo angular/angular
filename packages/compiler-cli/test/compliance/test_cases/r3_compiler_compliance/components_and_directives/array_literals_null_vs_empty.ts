@@ -4,11 +4,9 @@ import {Component, NgModule} from '@angular/core';
   template: `
     <div [dir]="{foo: null}"></div>
     <div [dir]="{foo: []}"></div>
-  `
+  `,
 })
-export class MyApp {
-}
+export class MyApp {}
 
 @NgModule({declarations: [MyApp]})
-export class MyModule {
-}
+export class MyModule {}

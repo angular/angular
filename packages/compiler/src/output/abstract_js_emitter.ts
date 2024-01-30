@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {AbstractEmitterVisitor, EmitterVisitorContext, escapeIdentifier} from './abstract_emitter';
 import * as o from './output_ast';
 
@@ -23,7 +22,7 @@ import * as o from './output_ast';
  * array.
  */
 const makeTemplateObjectPolyfill =
-    '(this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})';
+  '(this&&this.__makeTemplateObject||function(e,t){return Object.defineProperty?Object.defineProperty(e,"raw",{value:t}):e.raw=t,e})';
 
 export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   constructor() {
@@ -55,9 +54,12 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     const elements = ast.template.elements;
     ast.tag.visitExpression(this, ctx);
     ctx.print(ast, `(${makeTemplateObjectPolyfill}(`);
-    ctx.print(ast, `[${elements.map(part => escapeIdentifier(part.text, false)).join(', ')}], `);
-    ctx.print(ast, `[${elements.map(part => escapeIdentifier(part.rawText, false)).join(', ')}])`);
-    ast.template.expressions.forEach(expression => {
+    ctx.print(ast, `[${elements.map((part) => escapeIdentifier(part.text, false)).join(', ')}], `);
+    ctx.print(
+      ast,
+      `[${elements.map((part) => escapeIdentifier(part.rawText, false)).join(', ')}])`,
+    );
+    ast.template.expressions.forEach((expression) => {
       ctx.print(ast, ', ');
       expression.visitExpression(this, ctx);
     });
@@ -125,9 +127,9 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     for (let i = 1; i < ast.messageParts.length; i++) {
       parts.push(ast.serializeI18nTemplatePart(i));
     }
-    ctx.print(ast, `[${parts.map(part => escapeIdentifier(part.cooked, false)).join(', ')}], `);
-    ctx.print(ast, `[${parts.map(part => escapeIdentifier(part.raw, false)).join(', ')}])`);
-    ast.expressions.forEach(expression => {
+    ctx.print(ast, `[${parts.map((part) => escapeIdentifier(part.cooked, false)).join(', ')}], `);
+    ctx.print(ast, `[${parts.map((part) => escapeIdentifier(part.raw, false)).join(', ')}])`);
+    ast.expressions.forEach((expression) => {
       ctx.print(ast, ', ');
       expression.visitExpression(this, ctx);
     });
@@ -136,6 +138,6 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   }
 
   private _visitParams(params: o.FnParam[], ctx: EmitterVisitorContext): void {
-    this.visitAllObjects(param => ctx.print(null, param.name), params, ctx, ',');
+    this.visitAllObjects((param) => ctx.print(null, param.name), params, ctx, ',');
   }
 }

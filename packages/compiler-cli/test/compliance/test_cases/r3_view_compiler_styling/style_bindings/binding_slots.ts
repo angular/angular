@@ -2,9 +2,7 @@ import {Component, NgModule} from '@angular/core';
 
 @Component({
   selector: 'my-component-with-interpolation',
-  template: `
-    <div class="foo foo-{{ fooId }}"></div>
-  `
+  template: ` <div class="foo foo-{{ fooId }}"></div> `,
 })
 export class MyComponentWithInterpolation {
   fooId = '123';
@@ -12,9 +10,7 @@ export class MyComponentWithInterpolation {
 
 @Component({
   selector: 'my-component-with-muchos-interpolation',
-  template: `
-    <div class="foo foo-{{ fooId }}-{{ fooUsername }}"></div>
-  `
+  template: ` <div class="foo foo-{{ fooId }}-{{ fooUsername }}"></div> `,
 })
 export class MyComponentWithMuchosInterpolation {
   fooId = '123';
@@ -23,9 +19,7 @@ export class MyComponentWithMuchosInterpolation {
 
 @Component({
   selector: 'my-component-without-interpolation',
-  template: `
-    <div [class]="exp"></div>
-  `
+  template: ` <div [class]="exp"></div> `,
 })
 export class MyComponentWithoutInterpolation {
   exp = 'bar';
@@ -33,9 +27,9 @@ export class MyComponentWithoutInterpolation {
 
 @NgModule({
   declarations: [
-    MyComponentWithInterpolation, MyComponentWithMuchosInterpolation,
-    MyComponentWithoutInterpolation
-  ]
+    MyComponentWithInterpolation,
+    MyComponentWithMuchosInterpolation,
+    MyComponentWithoutInterpolation,
+  ],
 })
-export class MyModule {
-}
+export class MyModule {}

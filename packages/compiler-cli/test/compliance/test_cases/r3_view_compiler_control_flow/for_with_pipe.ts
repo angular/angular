@@ -10,9 +10,9 @@ export class TestPipe {
 @Component({
   template: `
     <div>
-      {{message}}
+      {{ message }}
       @for (item of items | test; track item) {
-        {{item}}
+      {{ item }}
       }
     </div>
   `,

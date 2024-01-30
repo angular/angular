@@ -76,8 +76,11 @@ export interface VariableOp<OpT extends Op<OpT>> extends Op<OpT> {
  * Create a `VariableOp`.
  */
 export function createVariableOp<OpT extends Op<OpT>>(
-    xref: XrefId, variable: SemanticVariable, initializer: o.Expression,
-    flags: VariableFlags): VariableOp<OpT> {
+  xref: XrefId,
+  variable: SemanticVariable,
+  initializer: o.Expression,
+  flags: VariableFlags,
+): VariableOp<OpT> {
   return {
     kind: OpKind.Variable,
     xref,
@@ -94,7 +97,7 @@ export function createVariableOp<OpT extends Op<OpT>>(
  * Used as a convenience via the spread operator (`...NEW_OP`) when creating new operations, and
  * ensures the fields are always in the same order.
  */
-export const NEW_OP: Pick<Op<any>, 'debugListId'|'prev'|'next'> = {
+export const NEW_OP: Pick<Op<any>, 'debugListId' | 'prev' | 'next'> = {
   debugListId: null,
   prev: null,
   next: null,

@@ -4,11 +4,9 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
   selector: 'my-component',
   encapsulation: ViewEncapsulation.None,
   styles: ['div.tall { height: 123px; }', ':host.small p { height:5px; }'],
-  template: '...'
+  template: '...',
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

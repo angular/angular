@@ -5,17 +5,11 @@ import {Component, NgModule} from '@angular/core';
     <div id="second" *ngIf="visible">
       <ng-content SELECT="span[title=toFirst]"></ng-content>
     </div>
-    <div id="third" *ngIf="visible">
-      No ng-content, no instructions generated.
-    </div>
-    <ng-template>
-      '*' selector: <ng-content></ng-content>
-    </ng-template>
+    <div id="third" *ngIf="visible">No ng-content, no instructions generated.</div>
+    <ng-template> '*' selector: <ng-content></ng-content> </ng-template>
   `,
 })
-class Cmp {
-}
+class Cmp {}
 
 @NgModule({declarations: [Cmp]})
-class Module {
-}
+class Module {}

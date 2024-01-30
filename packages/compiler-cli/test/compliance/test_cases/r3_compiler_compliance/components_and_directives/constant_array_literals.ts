@@ -7,9 +7,7 @@ export class SomeComp {
 }
 
 @Component({template: '<some-comp [prop]="[]" [otherProp]="[0, 1, 2]"></some-comp>'})
-export class MyApp {
-}
+export class MyApp {}
 
 @NgModule({declarations: [MyApp, SomeComp]})
-export class MyMod {
-}
+export class MyMod {}

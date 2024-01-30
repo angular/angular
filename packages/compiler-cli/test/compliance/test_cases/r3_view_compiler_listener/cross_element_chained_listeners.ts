@@ -12,9 +12,9 @@ export class SomeComp {
 @Component({
   selector: 'my-component',
   template: `
-      <div (click)="click()" (change)="change()"></div>
-      <some-comp (update)="update()" (delete)="delete()"></some-comp>
-    `
+    <div (click)="click()" (change)="change()"></div>
+    <some-comp (update)="update()" (delete)="delete()"></some-comp>
+  `,
 })
 export class MyComponent {
   click() {}
@@ -24,5 +24,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent, SomeComp]})
-export class MyModule {
-}
+export class MyModule {}

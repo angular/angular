@@ -11,7 +11,10 @@ export interface ForOfContext {
 export class ForOfDirective {
   private previous!: any[];
 
-  constructor(private view: ViewContainerRef, private template: TemplateRef<any>) {}
+  constructor(
+    private view: ViewContainerRef,
+    private template: TemplateRef<any>,
+  ) {}
 
   @Input() forOf!: any[];
 

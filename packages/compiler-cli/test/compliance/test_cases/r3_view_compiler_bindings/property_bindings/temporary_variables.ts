@@ -2,7 +2,7 @@ import {Component, NgModule, Pipe} from '@angular/core';
 
 @Pipe({name: 'async'})
 export class AsyncPipe {
-  transform(v: any): null|any {}
+  transform(v: any): null | any {}
 }
 
 // https://github.com/angular/angular/issues/37194
@@ -13,7 +13,7 @@ export class AsyncPipe {
 // binding index.
 @Component({
   template:
-      '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>'
+    '<button [title]="myTitle" [id]="(auth().identity() | async)?.id" [tabindex]="1"></button>',
 })
 export class MyComponent {
   myTitle = 'hello';
@@ -23,5 +23,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent, AsyncPipe]})
-export class MyMod {
-}
+export class MyMod {}

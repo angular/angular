@@ -21,14 +21,16 @@ import {LinkerPluginOptions} from './linker_plugin_options';
  * The plugin delegates most of its work to a generic `FileLinker` for each file (`t.Program` in
  * Babel) that is visited.
  */
-export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: LinkerPluginOptions):
-    PluginObj {
-  let fileLinker: FileLinker<ConstantScopePath, t.Statement, t.Expression>|null = null;
+export function createEs2015LinkerPlugin({
+  fileSystem,
+  logger,
+  ...options
+}: LinkerPluginOptions): PluginObj {
+  let fileLinker: FileLinker<ConstantScopePath, t.Statement, t.Expression> | null = null;
 
   return {
     visitor: {
       Program: {
-
         /**
          * Create a new `FileLinker` as we enter each file (`t.Program` in Babel).
          */
@@ -40,12 +42,18 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
           const filename = file.opts.filename ?? file.opts.filenameRelative;
           if (!filename) {
             throw new Error(
-                'No filename (nor filenameRelative) provided by Babel. This is required for the linking of partially compiled directives and components.');
+              'No filename (nor filenameRelative) provided by Babel. This is required for the linking of partially compiled directives and components.',
+            );
           }
           const sourceUrl = fileSystem.resolve(file.opts.cwd ?? '.', filename);
 
           const linkerEnvironment = LinkerEnvironment.create<t.Statement, t.Expression>(
-              fileSystem, logger, new BabelAstHost(), new BabelAstFactory(sourceUrl), options);
+            fileSystem,
+            logger,
+            new BabelAstHost(),
+            new BabelAstFactory(sourceUrl),
+            options,
+          );
           fileLinker = new FileLinker(linkerEnvironment, sourceUrl, file.code);
         },
 
@@ -59,7 +67,7 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
             insertStatements(constantScope, statements);
           }
           fileLinker = null;
-        }
+        },
       },
 
       /**
@@ -89,11 +97,11 @@ export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: Linke
 
           call.replaceWith(replacement);
         } catch (e) {
-          const node = isFatalLinkerError(e) ? e.node as t.Node : call.node;
+          const node = isFatalLinkerError(e) ? (e.node as t.Node) : call.node;
           throw buildCodeFrameError(state.file, (e as Error).message, node);
         }
-      }
-    }
+      },
+    },
   };
 }
 
@@ -114,7 +122,9 @@ function insertStatements(path: ConstantScopePath, statements: t.Statement[]): v
  * Insert the `statements` at the top of the body of the `fn` function.
  */
 function insertIntoFunction(
-    fn: NodePath<t.FunctionExpression|t.FunctionDeclaration>, statements: t.Statement[]): void {
+  fn: NodePath<t.FunctionExpression | t.FunctionDeclaration>,
+  statements: t.Statement[],
+): void {
   const body = fn.get('body');
   body.unshiftContainer('body', statements);
 }
@@ -124,7 +134,7 @@ function insertIntoFunction(
  */
 function insertIntoProgram(program: NodePath<t.Program>, statements: t.Statement[]): void {
   const body = program.get('body');
-  const importStatements = body.filter(statement => statement.isImportDeclaration());
+  const importStatements = body.filter((statement) => statement.isImportDeclaration());
   if (importStatements.length === 0) {
     program.unshiftContainer('body', statements);
   } else {
@@ -132,7 +142,7 @@ function insertIntoProgram(program: NodePath<t.Program>, statements: t.Statement
   }
 }
 
-function getCalleeName(call: NodePath<t.CallExpression>): string|null {
+function getCalleeName(call: NodePath<t.CallExpression>): string | null {
   const callee = call.node.callee;
   if (t.isIdentifier(callee)) {
     return callee.name;
@@ -149,13 +159,13 @@ function getCalleeName(call: NodePath<t.CallExpression>): string|null {
  * Return true if all the `nodes` are Babel expressions.
  */
 function isExpressionArray(nodes: t.Node[]): nodes is t.Expression[] {
-  return nodes.every(node => t.isExpression(node));
+  return nodes.every((node) => t.isExpression(node));
 }
 
 /**
  * Assert that the given `obj` is `null`.
  */
-function assertNull<T>(obj: T|null): asserts obj is null {
+function assertNull<T>(obj: T | null): asserts obj is null {
   if (obj !== null) {
     throw new Error('BUG - expected `obj` to be null');
   }
@@ -164,7 +174,7 @@ function assertNull<T>(obj: T|null): asserts obj is null {
 /**
  * Assert that the given `obj` is not `null`.
  */
-function assertNotNull<T>(obj: T|null): asserts obj is T {
+function assertNotNull<T>(obj: T | null): asserts obj is T {
   if (obj === null) {
     throw new Error('BUG - expected `obj` not to be null');
   }

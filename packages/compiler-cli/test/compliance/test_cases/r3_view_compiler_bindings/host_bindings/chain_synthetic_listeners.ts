@@ -5,10 +5,9 @@ import {Component, HostListener} from '@angular/core';
   template: '',
   host: {
     '(@animation.done)': 'done()',
-  }
+  },
 })
 export class MyComponent {
   @HostListener('@animation.start')
-  start() {
-  }
+  start() {}
 }

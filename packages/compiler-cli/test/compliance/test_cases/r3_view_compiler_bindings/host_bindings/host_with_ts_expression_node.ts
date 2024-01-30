@@ -13,7 +13,6 @@ export const BAR_CONST = getBar();
   host: {
     'foo': BAR_CONST,
   },
-  template: ``
+  template: ``,
 })
-export class MyComponent {
-}
+export class MyComponent {}

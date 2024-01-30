@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 
 @Component({
   template: `
-    {{message}}
+    {{ message }}
     @defer (on interaction(button); prefetch on interaction(button)) {}
 
     <div>

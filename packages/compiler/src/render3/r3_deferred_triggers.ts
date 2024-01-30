@@ -22,9 +22,9 @@ const SEPARATOR_PATTERN = /^\s$/;
 
 /** Pairs of characters that form syntax that is comma-delimited. */
 const COMMA_DELIMITED_SYNTAX = new Map([
-  [chars.$LBRACE, chars.$RBRACE],      // Object literals
-  [chars.$LBRACKET, chars.$RBRACKET],  // Array literals
-  [chars.$LPAREN, chars.$RPAREN],      // Function calls
+  [chars.$LBRACE, chars.$RBRACE], // Object literals
+  [chars.$LBRACKET, chars.$RBRACKET], // Array literals
+  [chars.$LPAREN, chars.$RPAREN], // Function calls
 ]);
 
 /** Possible types of `on` triggers. */
@@ -39,11 +39,16 @@ enum OnTriggerType {
 
 /** Parses a `when` deferred trigger. */
 export function parseWhenTrigger(
-    {expression, sourceSpan}: html.BlockParameter, bindingParser: BindingParser,
-    triggers: t.DeferredBlockTriggers, errors: ParseError[]): void {
+  {expression, sourceSpan}: html.BlockParameter,
+  bindingParser: BindingParser,
+  triggers: t.DeferredBlockTriggers,
+  errors: ParseError[],
+): void {
   const whenIndex = expression.indexOf('when');
   const whenSourceSpan = new ParseSourceSpan(
-      sourceSpan.start.moveBy(whenIndex), sourceSpan.start.moveBy(whenIndex + 'when'.length));
+    sourceSpan.start.moveBy(whenIndex),
+    sourceSpan.start.moveBy(whenIndex + 'when'.length),
+  );
   const prefetchSpan = getPrefetchSpan(expression, sourceSpan);
 
   // This is here just to be safe, we shouldn't enter this function
@@ -53,20 +58,32 @@ export function parseWhenTrigger(
   } else {
     const start = getTriggerParametersStart(expression, whenIndex + 1);
     const parsed = bindingParser.parseBinding(
-        expression.slice(start), false, sourceSpan, sourceSpan.start.offset + start);
+      expression.slice(start),
+      false,
+      sourceSpan,
+      sourceSpan.start.offset + start,
+    );
     trackTrigger(
-        'when', triggers, errors,
-        new t.BoundDeferredTrigger(parsed, sourceSpan, prefetchSpan, whenSourceSpan));
+      'when',
+      triggers,
+      errors,
+      new t.BoundDeferredTrigger(parsed, sourceSpan, prefetchSpan, whenSourceSpan),
+    );
   }
 }
 
 /** Parses an `on` trigger */
 export function parseOnTrigger(
-    {expression, sourceSpan}: html.BlockParameter, triggers: t.DeferredBlockTriggers,
-    errors: ParseError[], placeholder: t.DeferredBlockPlaceholder|null): void {
+  {expression, sourceSpan}: html.BlockParameter,
+  triggers: t.DeferredBlockTriggers,
+  errors: ParseError[],
+  placeholder: t.DeferredBlockPlaceholder | null,
+): void {
   const onIndex = expression.indexOf('on');
   const onSourceSpan = new ParseSourceSpan(
-      sourceSpan.start.moveBy(onIndex), sourceSpan.start.moveBy(onIndex + 'on'.length));
+    sourceSpan.start.moveBy(onIndex),
+    sourceSpan.start.moveBy(onIndex + 'on'.length),
+  );
   const prefetchSpan = getPrefetchSpan(expression, sourceSpan);
 
   // This is here just to be safe, we shouldn't enter this function
@@ -76,7 +93,15 @@ export function parseOnTrigger(
   } else {
     const start = getTriggerParametersStart(expression, onIndex + 1);
     const parser = new OnTriggerParser(
-        expression, start, sourceSpan, triggers, errors, placeholder, prefetchSpan, onSourceSpan);
+      expression,
+      start,
+      sourceSpan,
+      triggers,
+      errors,
+      placeholder,
+      prefetchSpan,
+      onSourceSpan,
+    );
     parser.parse();
   }
 }
@@ -88,16 +113,20 @@ function getPrefetchSpan(expression: string, sourceSpan: ParseSourceSpan) {
   return new ParseSourceSpan(sourceSpan.start, sourceSpan.start.moveBy('prefetch'.length));
 }
 
-
 class OnTriggerParser {
   private index = 0;
   private tokens: Token[];
 
   constructor(
-      private expression: string, private start: number, private span: ParseSourceSpan,
-      private triggers: t.DeferredBlockTriggers, private errors: ParseError[],
-      private placeholder: t.DeferredBlockPlaceholder|null,
-      private prefetchSpan: ParseSourceSpan|null, private onSourceSpan: ParseSourceSpan) {
+    private expression: string,
+    private start: number,
+    private span: ParseSourceSpan,
+    private triggers: t.DeferredBlockTriggers,
+    private errors: ParseError[],
+    private placeholder: t.DeferredBlockPlaceholder | null,
+    private prefetchSpan: ParseSourceSpan | null,
+    private onSourceSpan: ParseSourceSpan,
+  ) {
     this.tokens = new Lexer().tokenize(expression.slice(start));
   }
 
@@ -116,14 +145,14 @@ class OnTriggerParser {
         this.consumeTrigger(token, []);
         this.advance();
       } else if (this.isFollowedByOrLast(chars.$LPAREN)) {
-        this.advance();  // Advance to the opening paren.
+        this.advance(); // Advance to the opening paren.
         const prevErrors = this.errors.length;
         const parameters = this.consumeParameters();
         if (this.errors.length !== prevErrors) {
           break;
         }
         this.consumeTrigger(token, parameters);
-        this.advance();  // Advance past the closing paren.
+        this.advance(); // Advance past the closing paren.
       } else if (this.index < this.tokens.length - 1) {
         this.unexpectedToken(this.tokens[this.index + 1]);
       }
@@ -149,10 +178,13 @@ class OnTriggerParser {
   }
 
   private consumeTrigger(identifier: Token, parameters: string[]) {
-    const triggerNameStartSpan =
-        this.span.start.moveBy(this.start + identifier.index - this.tokens[0].index);
+    const triggerNameStartSpan = this.span.start.moveBy(
+      this.start + identifier.index - this.tokens[0].index,
+    );
     const nameSpan = new ParseSourceSpan(
-        triggerNameStartSpan, triggerNameStartSpan.moveBy(identifier.strValue.length));
+      triggerNameStartSpan,
+      triggerNameStartSpan.moveBy(identifier.strValue.length),
+    );
     const endSpan = triggerNameStartSpan.moveBy(this.token().end - identifier.index);
 
     // Put the prefetch and on spans with the first trigger
@@ -161,54 +193,86 @@ class OnTriggerParser {
     const isFirstTrigger = identifier.index === 0;
     const onSourceSpan = isFirstTrigger ? this.onSourceSpan : null;
     const prefetchSourceSpan = isFirstTrigger ? this.prefetchSpan : null;
-    const sourceSpan =
-        new ParseSourceSpan(isFirstTrigger ? this.span.start : triggerNameStartSpan, endSpan);
+    const sourceSpan = new ParseSourceSpan(
+      isFirstTrigger ? this.span.start : triggerNameStartSpan,
+      endSpan,
+    );
 
     try {
       switch (identifier.toString()) {
         case OnTriggerType.IDLE:
           this.trackTrigger(
-              'idle',
-              createIdleTrigger(
-                  parameters, nameSpan, sourceSpan, prefetchSourceSpan, onSourceSpan));
+            'idle',
+            createIdleTrigger(parameters, nameSpan, sourceSpan, prefetchSourceSpan, onSourceSpan),
+          );
           break;
 
         case OnTriggerType.TIMER:
           this.trackTrigger(
-              'timer',
-              createTimerTrigger(
-                  parameters, nameSpan, sourceSpan, this.prefetchSpan, this.onSourceSpan));
+            'timer',
+            createTimerTrigger(
+              parameters,
+              nameSpan,
+              sourceSpan,
+              this.prefetchSpan,
+              this.onSourceSpan,
+            ),
+          );
           break;
 
         case OnTriggerType.INTERACTION:
           this.trackTrigger(
-              'interaction',
-              createInteractionTrigger(
-                  parameters, nameSpan, sourceSpan, this.prefetchSpan, this.onSourceSpan,
-                  this.placeholder));
+            'interaction',
+            createInteractionTrigger(
+              parameters,
+              nameSpan,
+              sourceSpan,
+              this.prefetchSpan,
+              this.onSourceSpan,
+              this.placeholder,
+            ),
+          );
           break;
 
         case OnTriggerType.IMMEDIATE:
           this.trackTrigger(
-              'immediate',
-              createImmediateTrigger(
-                  parameters, nameSpan, sourceSpan, this.prefetchSpan, this.onSourceSpan));
+            'immediate',
+            createImmediateTrigger(
+              parameters,
+              nameSpan,
+              sourceSpan,
+              this.prefetchSpan,
+              this.onSourceSpan,
+            ),
+          );
           break;
 
         case OnTriggerType.HOVER:
           this.trackTrigger(
-              'hover',
-              createHoverTrigger(
-                  parameters, nameSpan, sourceSpan, this.prefetchSpan, this.onSourceSpan,
-                  this.placeholder));
+            'hover',
+            createHoverTrigger(
+              parameters,
+              nameSpan,
+              sourceSpan,
+              this.prefetchSpan,
+              this.onSourceSpan,
+              this.placeholder,
+            ),
+          );
           break;
 
         case OnTriggerType.VIEWPORT:
           this.trackTrigger(
-              'viewport',
-              createViewportTrigger(
-                  parameters, nameSpan, sourceSpan, this.prefetchSpan, this.onSourceSpan,
-                  this.placeholder));
+            'viewport',
+            createViewportTrigger(
+              parameters,
+              nameSpan,
+              sourceSpan,
+              this.prefetchSpan,
+              this.onSourceSpan,
+              this.placeholder,
+            ),
+          );
           break;
 
         default:
@@ -255,8 +319,10 @@ class OnTriggerParser {
         commaDelimStack.push(COMMA_DELIMITED_SYNTAX.get(token.numValue)!);
       }
 
-      if (commaDelimStack.length > 0 &&
-          token.isCharacter(commaDelimStack[commaDelimStack.length - 1])) {
+      if (
+        commaDelimStack.length > 0 &&
+        token.isCharacter(commaDelimStack[commaDelimStack.length - 1])
+      ) {
         commaDelimStack.pop();
       }
 
@@ -278,8 +344,10 @@ class OnTriggerParser {
       this.error(this.token(), 'Unexpected end of expression');
     }
 
-    if (this.index < this.tokens.length - 1 &&
-        !this.tokens[this.index + 1].isCharacter(chars.$COMMA)) {
+    if (
+      this.index < this.tokens.length - 1 &&
+      !this.tokens[this.index + 1].isCharacter(chars.$COMMA)
+    ) {
       this.unexpectedToken(this.tokens[this.index + 1]);
     }
 
@@ -309,8 +377,11 @@ class OnTriggerParser {
 
 /** Adds a trigger to a map of triggers. */
 function trackTrigger(
-    name: keyof t.DeferredBlockTriggers, allTriggers: t.DeferredBlockTriggers, errors: ParseError[],
-    trigger: t.DeferredTrigger) {
+  name: keyof t.DeferredBlockTriggers,
+  allTriggers: t.DeferredBlockTriggers,
+  errors: ParseError[],
+  trigger: t.DeferredTrigger,
+) {
   if (allTriggers[name]) {
     errors.push(new ParseError(trigger.sourceSpan, `Duplicate "${name}" trigger is not allowed`));
   } else {
@@ -319,12 +390,12 @@ function trackTrigger(
 }
 
 function createIdleTrigger(
-    parameters: string[],
-    nameSpan: ParseSourceSpan,
-    sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null,
-    onSourceSpan: ParseSourceSpan|null,
-    ): t.IdleDeferredTrigger {
+  parameters: string[],
+  nameSpan: ParseSourceSpan,
+  sourceSpan: ParseSourceSpan,
+  prefetchSpan: ParseSourceSpan | null,
+  onSourceSpan: ParseSourceSpan | null,
+): t.IdleDeferredTrigger {
   if (parameters.length > 0) {
     throw new Error(`"${OnTriggerType.IDLE}" trigger cannot have parameters`);
   }
@@ -333,11 +404,11 @@ function createIdleTrigger(
 }
 
 function createTimerTrigger(
-    parameters: string[],
-    nameSpan: ParseSourceSpan,
-    sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null,
-    onSourceSpan: ParseSourceSpan|null,
+  parameters: string[],
+  nameSpan: ParseSourceSpan,
+  sourceSpan: ParseSourceSpan,
+  prefetchSpan: ParseSourceSpan | null,
+  onSourceSpan: ParseSourceSpan | null,
 ) {
   if (parameters.length !== 1) {
     throw new Error(`"${OnTriggerType.TIMER}" trigger must have exactly one parameter`);
@@ -353,12 +424,12 @@ function createTimerTrigger(
 }
 
 function createImmediateTrigger(
-    parameters: string[],
-    nameSpan: ParseSourceSpan,
-    sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null,
-    onSourceSpan: ParseSourceSpan|null,
-    ): t.ImmediateDeferredTrigger {
+  parameters: string[],
+  nameSpan: ParseSourceSpan,
+  sourceSpan: ParseSourceSpan,
+  prefetchSpan: ParseSourceSpan | null,
+  onSourceSpan: ParseSourceSpan | null,
+): t.ImmediateDeferredTrigger {
   if (parameters.length > 0) {
     throw new Error(`"${OnTriggerType.IMMEDIATE}" trigger cannot have parameters`);
   }
@@ -367,48 +438,80 @@ function createImmediateTrigger(
 }
 
 function createHoverTrigger(
-    parameters: string[], nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null,
-    placeholder: t.DeferredBlockPlaceholder|null): t.HoverDeferredTrigger {
+  parameters: string[],
+  nameSpan: ParseSourceSpan,
+  sourceSpan: ParseSourceSpan,
+  prefetchSpan: ParseSourceSpan | null,
+  onSourceSpan: ParseSourceSpan | null,
+  placeholder: t.DeferredBlockPlaceholder | null,
+): t.HoverDeferredTrigger {
   validateReferenceBasedTrigger(OnTriggerType.HOVER, parameters, placeholder);
   return new t.HoverDeferredTrigger(
-      parameters[0] ?? null, nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+    parameters[0] ?? null,
+    nameSpan,
+    sourceSpan,
+    prefetchSpan,
+    onSourceSpan,
+  );
 }
 
 function createInteractionTrigger(
-    parameters: string[], nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null,
-    placeholder: t.DeferredBlockPlaceholder|null): t.InteractionDeferredTrigger {
+  parameters: string[],
+  nameSpan: ParseSourceSpan,
+  sourceSpan: ParseSourceSpan,
+  prefetchSpan: ParseSourceSpan | null,
+  onSourceSpan: ParseSourceSpan | null,
+  placeholder: t.DeferredBlockPlaceholder | null,
+): t.InteractionDeferredTrigger {
   validateReferenceBasedTrigger(OnTriggerType.INTERACTION, parameters, placeholder);
   return new t.InteractionDeferredTrigger(
-      parameters[0] ?? null, nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+    parameters[0] ?? null,
+    nameSpan,
+    sourceSpan,
+    prefetchSpan,
+    onSourceSpan,
+  );
 }
 
 function createViewportTrigger(
-    parameters: string[], nameSpan: ParseSourceSpan, sourceSpan: ParseSourceSpan,
-    prefetchSpan: ParseSourceSpan|null, onSourceSpan: ParseSourceSpan|null,
-    placeholder: t.DeferredBlockPlaceholder|null): t.ViewportDeferredTrigger {
+  parameters: string[],
+  nameSpan: ParseSourceSpan,
+  sourceSpan: ParseSourceSpan,
+  prefetchSpan: ParseSourceSpan | null,
+  onSourceSpan: ParseSourceSpan | null,
+  placeholder: t.DeferredBlockPlaceholder | null,
+): t.ViewportDeferredTrigger {
   validateReferenceBasedTrigger(OnTriggerType.VIEWPORT, parameters, placeholder);
   return new t.ViewportDeferredTrigger(
-      parameters[0] ?? null, nameSpan, sourceSpan, prefetchSpan, onSourceSpan);
+    parameters[0] ?? null,
+    nameSpan,
+    sourceSpan,
+    prefetchSpan,
+    onSourceSpan,
+  );
 }
 
 function validateReferenceBasedTrigger(
-    type: OnTriggerType, parameters: string[], placeholder: t.DeferredBlockPlaceholder|null) {
+  type: OnTriggerType,
+  parameters: string[],
+  placeholder: t.DeferredBlockPlaceholder | null,
+) {
   if (parameters.length > 1) {
     throw new Error(`"${type}" trigger can only have zero or one parameters`);
   }
 
   if (parameters.length === 0) {
     if (placeholder === null) {
-      throw new Error(`"${
-          type}" trigger with no parameters can only be placed on an @defer that has a @placeholder block`);
+      throw new Error(
+        `"${type}" trigger with no parameters can only be placed on an @defer that has a @placeholder block`,
+      );
     }
 
     if (placeholder.children.length !== 1 || !(placeholder.children[0] instanceof t.Element)) {
       throw new Error(
-          `"${type}" trigger with no parameters can only be placed on an @defer that has a ` +
-          `@placeholder block with exactly one root element node`);
+        `"${type}" trigger with no parameters can only be placed on an @defer that has a ` +
+          `@placeholder block with exactly one root element node`,
+      );
     }
   }
 }
@@ -432,7 +535,7 @@ export function getTriggerParametersStart(value: string, startPosition = 0): num
  * Parses a time expression from a deferred trigger to
  * milliseconds. Returns null if it cannot be parsed.
  */
-export function parseDeferredTime(value: string): number|null {
+export function parseDeferredTime(value: string): number | null {
   const match = value.match(TIME_PATTERN);
 
   if (!match) {

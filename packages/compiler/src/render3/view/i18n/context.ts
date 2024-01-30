@@ -10,7 +10,12 @@ import {AST} from '../../../expression_parser/ast';
 import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 
-import {assembleBoundTextPlaceholders, getSeqNumberGenerator, updatePlaceholderMap, wrapI18nPlaceholder} from './util';
+import {
+  assembleBoundTextPlaceholders,
+  getSeqNumberGenerator,
+  updatePlaceholderMap,
+  wrapI18nPlaceholder,
+} from './util';
 
 enum TagType {
   ELEMENT,
@@ -49,16 +54,20 @@ export class I18nContext {
   private _unresolvedCtxCount: number = 0;
 
   constructor(
-      readonly index: number, readonly ref: o.ReadVarExpr, readonly level: number = 0,
-      readonly templateIndex: number|null = null, readonly meta: i18n.I18nMeta,
-      private registry?: any) {
+    readonly index: number,
+    readonly ref: o.ReadVarExpr,
+    readonly level: number = 0,
+    readonly templateIndex: number | null = null,
+    readonly meta: i18n.I18nMeta,
+    private registry?: any,
+  ) {
     this._registry = registry || setupRegistry();
     this.id = this._registry.getUniqueId();
   }
 
   private appendTag(type: TagType, node: i18n.TagPlaceholder, index: number, closed?: boolean) {
     if (node.isVoid && closed) {
-      return;  // ignore "close" for void tags
+      return; // ignore "close" for void tags
     }
     const ph = node.isVoid || !closed ? node.startName : node.closeName;
     const content = {type, index, ctx: this.id, isVoid: node.isVoid, closed};
@@ -83,8 +92,9 @@ export class I18nContext {
 
   getSerializedPlaceholders() {
     const result = new Map<string, any[]>();
-    this.placeholders.forEach(
-        (values, key) => result.set(key, values.map(serializePlaceholderValue)));
+    this.placeholders.forEach((values, key) =>
+      result.set(key, values.map(serializePlaceholderValue)),
+    );
     return result;
   }
 
@@ -199,13 +209,17 @@ function wrap(symbol: string, index: number, contextId: number, closed?: boolean
 }
 
 function wrapTag(symbol: string, {index, ctx, isVoid}: any, closed?: boolean): string {
-  return isVoid ? wrap(symbol, index, ctx) + wrap(symbol, index, ctx, true) :
-                  wrap(symbol, index, ctx, closed);
+  return isVoid
+    ? wrap(symbol, index, ctx) + wrap(symbol, index, ctx, true)
+    : wrap(symbol, index, ctx, closed);
 }
 
-function findTemplateFn(ctx: number, templateIndex: number|null) {
-  return (token: any) => typeof token === 'object' && token.type === TagType.TEMPLATE &&
-      token.index === templateIndex && token.ctx === ctx;
+function findTemplateFn(ctx: number, templateIndex: number | null) {
+  return (token: any) =>
+    typeof token === 'object' &&
+    token.type === TagType.TEMPLATE &&
+    token.index === templateIndex &&
+    token.ctx === ctx;
 }
 
 function serializePlaceholderValue(value: any): string {
@@ -220,8 +234,9 @@ function serializePlaceholderValue(value: any): string {
       }
       // open element tag that also initiates a template
       if (value.tmpl) {
-        return template(value.tmpl) + element(value) +
-            (value.isVoid ? template(value.tmpl, true) : '');
+        return (
+          template(value.tmpl) + element(value) + (value.isVoid ? template(value.tmpl, true) : '')
+        );
       }
       return element(value);
 

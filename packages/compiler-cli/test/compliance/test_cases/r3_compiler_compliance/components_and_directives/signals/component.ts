@@ -6,8 +6,7 @@ import {Component} from '@angular/core';
   selector: 'other-cmp',
   template: '',
 })
-export class OtherCmp {
-}
+export class OtherCmp {}
 
 @Component({
   signals: true,
@@ -15,5 +14,4 @@ export class OtherCmp {
   template: '<other-cmp></other-cmp>',
   imports: [OtherCmp],
 })
-export class SignalCmp {
-}
+export class SignalCmp {}

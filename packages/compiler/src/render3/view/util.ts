@@ -17,7 +17,6 @@ import {Identifiers as R3} from '../r3_identifiers';
 
 import {isI18nAttribute} from './i18n/util';
 
-
 /**
  * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
  * quotes. Note: we do not wrap all keys into quotes, as it may have impact on minification and may
@@ -121,19 +120,23 @@ const CHAINABLE_INSTRUCTIONS = new Set([
  * If the parameters are a function, the function will be invoked at the time the instruction
  * is generated.
  */
-export type InstructionParams = (o.Expression|o.Expression[])|(() => (o.Expression|o.Expression[]));
+export type InstructionParams =
+  | (o.Expression | o.Expression[])
+  | (() => o.Expression | o.Expression[]);
 
 /** Necessary information to generate a call to an instruction function. */
 export interface Instruction {
-  span: ParseSourceSpan|null;
+  span: ParseSourceSpan | null;
   reference: o.ExternalReference;
   paramsOrFn?: InstructionParams;
 }
 
 /** Generates a call to a single instruction. */
 export function invokeInstruction(
-    span: ParseSourceSpan|null, reference: o.ExternalReference,
-    params: o.Expression[]): o.Expression {
+  span: ParseSourceSpan | null,
+  reference: o.ExternalReference,
+  params: o.Expression[],
+): o.Expression {
   return o.importExpr(reference, null, span).callFn(params, span);
 }
 
@@ -142,9 +145,11 @@ export function invokeInstruction(
  *
  * A variable declaration is added to the statements the first time the allocator is invoked.
  */
-export function temporaryAllocator(pushStatement: (st: o.Statement) => void, name: string): () =>
-    o.ReadVarExpr {
-  let temp: o.ReadVarExpr|null = null;
+export function temporaryAllocator(
+  pushStatement: (st: o.Statement) => void,
+  name: string,
+): () => o.ReadVarExpr {
+  let temp: o.ReadVarExpr | null = null;
   return () => {
     if (!temp) {
       pushStatement(new o.DeclareVarStmt(TEMPORARY_NAME, undefined, o.DYNAMIC_TYPE));
@@ -154,10 +159,10 @@ export function temporaryAllocator(pushStatement: (st: o.Statement) => void, nam
   };
 }
 
-
-export function invalid<T>(this: t.Visitor, arg: o.Expression|o.Statement|t.Node): never {
+export function invalid<T>(this: t.Visitor, arg: o.Expression | o.Statement | t.Node): never {
   throw new Error(
-      `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
+    `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`,
+  );
 }
 
 export function asLiteral(value: any): o.Expression {
@@ -174,75 +179,83 @@ export function asLiteral(value: any): o.Expression {
  * file size of fully compiled applications.
  */
 export function conditionallyCreateDirectiveBindingLiteral(
-    map: Record<string, string|{
-      classPropertyName: string;
-      bindingPropertyName: string;
-      transformFunction: o.Expression|null;
-      isSignal: boolean,
-    }>, forInputs?: boolean): o.Expression|null {
+  map: Record<
+    string,
+    | string
+    | {
+        classPropertyName: string;
+        bindingPropertyName: string;
+        transformFunction: o.Expression | null;
+        isSignal: boolean;
+      }
+  >,
+  forInputs?: boolean,
+): o.Expression | null {
   const keys = Object.getOwnPropertyNames(map);
 
   if (keys.length === 0) {
     return null;
   }
 
-  return o.literalMap(keys.map(key => {
-    const value = map[key];
-    let declaredName: string;
-    let publicName: string;
-    let minifiedName: string;
-    let expressionValue: o.Expression;
+  return o.literalMap(
+    keys.map((key) => {
+      const value = map[key];
+      let declaredName: string;
+      let publicName: string;
+      let minifiedName: string;
+      let expressionValue: o.Expression;
 
-    if (typeof value === 'string') {
-      // canonical syntax: `dirProp: publicProp`
-      declaredName = key;
-      minifiedName = key;
-      publicName = value;
-      expressionValue = asLiteral(publicName);
-    } else {
-      minifiedName = key;
-      declaredName = value.classPropertyName;
-      publicName = value.bindingPropertyName;
+      if (typeof value === 'string') {
+        // canonical syntax: `dirProp: publicProp`
+        declaredName = key;
+        minifiedName = key;
+        publicName = value;
+        expressionValue = asLiteral(publicName);
+      } else {
+        minifiedName = key;
+        declaredName = value.classPropertyName;
+        publicName = value.bindingPropertyName;
 
-      const differentDeclaringName = publicName !== declaredName;
-      const hasDecoratorInputTransform = value.transformFunction !== null;
+        const differentDeclaringName = publicName !== declaredName;
+        const hasDecoratorInputTransform = value.transformFunction !== null;
 
-      // Build up input flags
-      let flags: o.Expression|null = null;
-      if (value.isSignal) {
-        flags = bitwiseOrInputFlagsExpr(InputFlags.SignalBased, flags);
-      }
-      if (hasDecoratorInputTransform) {
-        flags = bitwiseOrInputFlagsExpr(InputFlags.HasDecoratorInputTransform, flags);
-      }
-
-      // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), support
-      // decorator input transform functions, or store flag information if there is any.
-      if (forInputs && (differentDeclaringName || hasDecoratorInputTransform || flags !== null)) {
-        const flagsExpr = flags ?? o.importExpr(R3.InputFlags).prop(InputFlags[InputFlags.None]);
-        const result: o.Expression[] = [flagsExpr, asLiteral(publicName)];
-
-        if (differentDeclaringName || hasDecoratorInputTransform) {
-          result.push(asLiteral(declaredName));
-
-          if (hasDecoratorInputTransform) {
-            result.push(value.transformFunction!);
-          }
+        // Build up input flags
+        let flags: o.Expression | null = null;
+        if (value.isSignal) {
+          flags = bitwiseOrInputFlagsExpr(InputFlags.SignalBased, flags);
+        }
+        if (hasDecoratorInputTransform) {
+          flags = bitwiseOrInputFlagsExpr(InputFlags.HasDecoratorInputTransform, flags);
         }
 
-        expressionValue = o.literalArr(result);
-      } else {
-        expressionValue = asLiteral(publicName);
-      }
-    }
+        // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), support
+        // decorator input transform functions, or store flag information if there is any.
+        if (forInputs && (differentDeclaringName || hasDecoratorInputTransform || flags !== null)) {
+          const flagsExpr = flags ?? o.importExpr(R3.InputFlags).prop(InputFlags[InputFlags.None]);
+          const result: o.Expression[] = [flagsExpr, asLiteral(publicName)];
 
-    return {
-      key: minifiedName,
-      // put quotes around keys that contain potentially unsafe characters
-      quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
-      value: expressionValue,
-    };
-  }));
+          if (differentDeclaringName || hasDecoratorInputTransform) {
+            result.push(asLiteral(declaredName));
+
+            if (hasDecoratorInputTransform) {
+              result.push(value.transformFunction!);
+            }
+          }
+
+          expressionValue = o.literalArr(result);
+        } else {
+          expressionValue = asLiteral(publicName);
+        }
+      }
+
+      return {
+        key: minifiedName,
+        // put quotes around keys that contain potentially unsafe characters
+        quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
+        value: expressionValue,
+      };
+    }),
+  );
 }
 
 /** Gets an output AST expression referencing the given flag. */
@@ -251,7 +264,7 @@ function getInputFlagExpr(flag: InputFlags): o.Expression {
 }
 
 /** Combines a given input flag with an existing flag expression, if present. */
-function bitwiseOrInputFlagsExpr(flag: InputFlags, expr: o.Expression|null): o.Expression {
+function bitwiseOrInputFlagsExpr(flag: InputFlags, expr: o.Expression | null): o.Expression {
   if (expr === null) {
     return getInputFlagExpr(flag);
   }
@@ -274,11 +287,11 @@ export function trimTrailingNulls(parameters: o.Expression[]): o.Expression[] {
  * property names that are set can be resolved to their documented declaration.
  */
 export class DefinitionMap<T = any> {
-  values: {key: string, quoted: boolean, value: o.Expression}[] = [];
+  values: {key: string; quoted: boolean; value: o.Expression}[] = [];
 
-  set(key: keyof T, value: o.Expression|null): void {
+  set(key: keyof T, value: o.Expression | null): void {
     if (value) {
-      const existing = this.values.find(value => value.key === key);
+      const existing = this.values.find((value) => value.key === key);
 
       if (existing) {
         existing.value = value;
@@ -296,7 +309,7 @@ export class DefinitionMap<T = any> {
 /**
  * Creates a `CssSelector` from an AST node.
  */
-export function createCssSelectorFromNode(node: t.Element|t.Template): CssSelector {
+export function createCssSelectorFromNode(node: t.Element | t.Template): CssSelector {
   const elementName = node instanceof t.Element ? node.name : 'ng-template';
   const attributes = getAttrsForDirectiveMatching(node);
   const cssSelector = new CssSelector();
@@ -311,7 +324,7 @@ export function createCssSelectorFromNode(node: t.Element|t.Template): CssSelect
     cssSelector.addAttribute(nameNoNs, value);
     if (name.toLowerCase() === 'class') {
       const classes = value.trim().split(/\s+/);
-      classes.forEach(className => cssSelector.addClassName(className));
+      classes.forEach((className) => cssSelector.addClassName(className));
     }
   });
 
@@ -327,25 +340,24 @@ export function createCssSelectorFromNode(node: t.Element|t.Template): CssSelect
  * object maps a property name to its (static) value. For any bindings, this map simply maps the
  * property name to an empty string.
  */
-function getAttrsForDirectiveMatching(elOrTpl: t.Element|t.Template): {[name: string]: string} {
+function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template): {[name: string]: string} {
   const attributesMap: {[name: string]: string} = {};
 
-
   if (elOrTpl instanceof t.Template && elOrTpl.tagName !== 'ng-template') {
-    elOrTpl.templateAttrs.forEach(a => attributesMap[a.name] = '');
+    elOrTpl.templateAttrs.forEach((a) => (attributesMap[a.name] = ''));
   } else {
-    elOrTpl.attributes.forEach(a => {
+    elOrTpl.attributes.forEach((a) => {
       if (!isI18nAttribute(a.name)) {
         attributesMap[a.name] = a.value;
       }
     });
 
-    elOrTpl.inputs.forEach(i => {
+    elOrTpl.inputs.forEach((i) => {
       if (i.type === BindingType.Property || i.type === BindingType.TwoWay) {
         attributesMap[i.name] = '';
       }
     });
-    elOrTpl.outputs.forEach(o => {
+    elOrTpl.outputs.forEach((o) => {
       attributesMap[o.name] = '';
     });
   }
@@ -376,20 +388,22 @@ export function getInterpolationArgsLength(interpolation: Interpolation) {
  */
 export function getInstructionStatements(instructions: Instruction[]): o.Statement[] {
   const statements: o.Statement[] = [];
-  let pendingExpression: o.Expression|null = null;
-  let pendingExpressionType: o.ExternalReference|null = null;
+  let pendingExpression: o.Expression | null = null;
+  let pendingExpressionType: o.ExternalReference | null = null;
   let chainLength = 0;
 
   for (const current of instructions) {
     const resolvedParams =
-        (typeof current.paramsOrFn === 'function' ? current.paramsOrFn() : current.paramsOrFn) ??
-        [];
+      (typeof current.paramsOrFn === 'function' ? current.paramsOrFn() : current.paramsOrFn) ?? [];
     const params = Array.isArray(resolvedParams) ? resolvedParams : [resolvedParams];
 
     // If the current instruction is the same as the previous one
     // and it can be chained, add another call to the chain.
-    if (chainLength < MAX_CHAIN_LENGTH && pendingExpressionType === current.reference &&
-        CHAINABLE_INSTRUCTIONS.has(pendingExpressionType)) {
+    if (
+      chainLength < MAX_CHAIN_LENGTH &&
+      pendingExpressionType === current.reference &&
+      CHAINABLE_INSTRUCTIONS.has(pendingExpressionType)
+    ) {
       // We'll always have a pending expression when there's a pending expression type.
       pendingExpression = pendingExpression!.callFn(params, pendingExpression!.sourceSpan);
       chainLength++;

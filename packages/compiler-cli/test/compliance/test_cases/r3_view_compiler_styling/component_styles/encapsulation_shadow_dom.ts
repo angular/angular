@@ -4,11 +4,9 @@ import {Component, NgModule, ViewEncapsulation} from '@angular/core';
   encapsulation: ViewEncapsulation.ShadowDom,
   selector: 'my-component',
   styles: ['div.cool { color: blue; }', ':host.nice p { color: gold; }'],
-  template: '...'
+  template: '...',
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

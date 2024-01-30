@@ -8,17 +8,16 @@ export class AsyncPipe {
 @Component({
   selector: 'my-component',
   template: `
-  <div i18n>
-    {{ valueA | async }}
-    {{ valueA?.a?.b }}
-    {{ valueA.getRawValue()?.getTitle() }}
-  </div>
-  `
+    <div i18n>
+      {{ valueA | async }}
+      {{ valueA?.a?.b }}
+      {{ valueA.getRawValue()?.getTitle() }}
+    </div>
+  `,
 })
 export class MyComponent {
   valueA!: any;
 }
 
 @NgModule({declarations: [MyComponent, AsyncPipe]})
-export class MyModule {
-}
+export class MyModule {}

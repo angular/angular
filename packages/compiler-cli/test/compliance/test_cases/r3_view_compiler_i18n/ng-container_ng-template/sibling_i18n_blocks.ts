@@ -4,13 +4,12 @@ import {Component} from '@angular/core';
   selector: 'my-component',
   standalone: true,
   template: `
-  <div i18n>
-    <ng-template>Content A</ng-template>
-  </div>
-  <div i18n>
-    <ng-template>Content B</ng-template>
-  </div>
-`,
+    <div i18n>
+      <ng-template>Content A</ng-template>
+    </div>
+    <div i18n>
+      <ng-template>Content B</ng-template>
+    </div>
+  `,
 })
-export class MyComponent {
-}
+export class MyComponent {}

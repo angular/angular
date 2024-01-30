@@ -42,6 +42,7 @@ export function isTrustedTypesSink(tagName: string, propName: string): boolean {
   tagName = tagName.toLowerCase();
   propName = propName.toLowerCase();
 
-  return TRUSTED_TYPES_SINKS.has(tagName + '|' + propName) ||
-      TRUSTED_TYPES_SINKS.has('*|' + propName);
+  return (
+    TRUSTED_TYPES_SINKS.has(tagName + '|' + propName) || TRUSTED_TYPES_SINKS.has('*|' + propName)
+  );
 }

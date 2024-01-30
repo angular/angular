@@ -24,5 +24,4 @@ export class MyApp {
 }
 
 @NgModule({declarations: [MyPipe, MyOtherPipe, MyApp]})
-export class MyModule {
-}
+export class MyModule {}

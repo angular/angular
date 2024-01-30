@@ -8,7 +8,7 @@
 
 interface FnWithArg<T> {
   (...args: any[]): T;
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }
 
 function callableClassDecorator(): FnWithArg<(clazz: any) => any> {
@@ -72,39 +72,50 @@ export interface SimpleChanges {
 
 export type ɵɵNgModuleDeclaration<ModuleT, DeclarationsT, ImportsT, ExportsT> = unknown;
 export type ɵɵDirectiveDeclaration<
-    DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT, A = never, B = never,
-    HostDirectivesT = never> = unknown;
+  DirT,
+  SelectorT,
+  ExportAsT,
+  InputsT,
+  OutputsT,
+  QueriesT,
+  A = never,
+  B = never,
+  HostDirectivesT = never,
+> = unknown;
 export type ɵɵPipeDeclaration<PipeT, NameT> = unknown;
 
 export enum ViewEncapsulation {
   Emulated = 0,
   // Historically the 1 value was for `Native` encapsulation which has been removed as of v11.
   None = 2,
-  ShadowDom = 3
+  ShadowDom = 3,
 }
 
 export enum ChangeDetectionStrategy {
   OnPush = 0,
-  Default = 1
+  Default = 1,
 }
 
 export const CUSTOM_ELEMENTS_SCHEMA: any = false;
 export const NO_ERRORS_SCHEMA: any = false;
 
 export class EventEmitter<T> {
-  subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void):
-      unknown;
+  subscribe(
+    next?: (value: T) => void,
+    error?: (error: any) => void,
+    complete?: () => void,
+  ): unknown;
   subscribe(observerOrNext?: any, error?: any, complete?: any): unknown;
   subscribe(observerOrNext?: any, error?: any, complete?: any): unknown {
     return null;
   }
 }
 
-export interface QueryList<T>/* implements Iterable<T> */ {
+export interface QueryList<T> /* implements Iterable<T> */ {
   [Symbol.iterator]: () => Iterator<T>;
 }
 
-export type NgIterable<T> = Array<T>|Iterable<T>;
+export type NgIterable<T> = Array<T> | Iterable<T>;
 
 export class NgZone {}
 
@@ -117,7 +128,7 @@ export interface OnDestroy {
 }
 
 export interface TrackByFunction<T> {
-  <U extends T>(index: number, item: T&U): any;
+  <U extends T>(index: number, item: T & U): any;
 }
 
 export type Signal<T> = () => T;
@@ -133,10 +144,13 @@ export interface InputOptions<ReadT, WriteT> {
   transform?: (v: WriteT) => ReadT;
 }
 
-export type InputOptionsWithoutTransform<ReadT> =
-    InputOptions<ReadT, ReadT>&{transform?: undefined};
-export type InputOptionsWithTransform<ReadT, WriteT> =
-    Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>>&InputOptions<ReadT, WriteT>;
+export type InputOptionsWithoutTransform<ReadT> = InputOptions<ReadT, ReadT> & {
+  transform?: undefined;
+};
+export type InputOptionsWithTransform<ReadT, WriteT> = Required<
+  Pick<InputOptions<ReadT, WriteT>, 'transform'>
+> &
+  InputOptions<ReadT, WriteT>;
 
 const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
 export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
@@ -148,23 +162,31 @@ export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
 export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {}
 
 export interface InputFunction {
-  <ReadT>(): InputSignal<ReadT|undefined>;
+  <ReadT>(): InputSignal<ReadT | undefined>;
   <ReadT>(initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-  <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>):
-      InputSignalWithTransform<ReadT, WriteT>;
+  <ReadT, WriteT>(
+    initialValue: ReadT,
+    opts: InputOptionsWithTransform<ReadT, WriteT>,
+  ): InputSignalWithTransform<ReadT, WriteT>;
 
   required: {
-    <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;<ReadT, WriteT>(
-        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
+    <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+    <ReadT, WriteT>(
+      opts: InputOptionsWithTransform<ReadT, WriteT>,
+    ): InputSignalWithTransform<ReadT, WriteT>;
   };
 }
 
 export const input: InputFunction = null!;
 
-export type ɵUnwrapInputSignalWriteType<Field> =
-    Field extends InputSignalWithTransform<unknown, infer WriteT>? WriteT : never;
+export type ɵUnwrapInputSignalWriteType<Field> = Field extends InputSignalWithTransform<
+  unknown,
+  infer WriteT
+>
+  ? WriteT
+  : never;
 export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
-  [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
+  [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>;
 };
 
 /** Signal-based queries */

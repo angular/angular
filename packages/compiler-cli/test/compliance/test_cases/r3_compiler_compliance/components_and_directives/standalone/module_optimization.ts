@@ -5,15 +5,12 @@ import {Component, Directive, NgModule} from '@angular/core';
   selector: 'standalone-cmp',
   template: '',
 })
-export class StandaloneCmp {
-}
+export class StandaloneCmp {}
 
 @Directive({standalone: true})
-export class StandaloneDir {
-}
+export class StandaloneDir {}
 
 @NgModule({
   imports: [StandaloneCmp, StandaloneDir],
 })
-export class Module {
-}
+export class Module {}

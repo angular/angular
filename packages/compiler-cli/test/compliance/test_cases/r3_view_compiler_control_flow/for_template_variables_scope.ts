@@ -2,13 +2,13 @@ import {Component} from '@angular/core';
 
 @Component({
   template: `
-    {{$index}} {{$count}} {{$first}} {{$last}}
+    {{ $index }} {{ $count }} {{ $first }} {{ $last }}
 
     @for (item of items; track item) {
-      {{$index}} {{$count}} {{$first}} {{$last}}
+    {{ $index }} {{ $count }} {{ $first }} {{ $last }}
     }
 
-    {{$index}} {{$count}} {{$first}} {{$last}}
+    {{ $index }} {{ $count }} {{ $first }} {{ $last }}
   `,
 })
 export class MyApp {

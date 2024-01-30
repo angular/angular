@@ -7,7 +7,16 @@
  */
 import ts from 'typescript';
 
-import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './api/ast_factory';
+import {
+  AstFactory,
+  BinaryOperator,
+  LeadingComment,
+  ObjectLiteralProperty,
+  SourceMapRange,
+  TemplateLiteral,
+  UnaryOperator,
+  VariableDeclarationType,
+} from './api/ast_factory';
 import {tsNumericExpression} from './ts_util';
 
 /**
@@ -75,8 +84,10 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
   }
 
   createBinaryExpression(
-      leftOperand: ts.Expression, operator: BinaryOperator,
-      rightOperand: ts.Expression): ts.Expression {
+    leftOperand: ts.Expression,
+    operator: BinaryOperator,
+    rightOperand: ts.Expression,
+  ): ts.Expression {
     return ts.factory.createBinaryExpression(leftOperand, BINARY_OPERATORS[operator], rightOperand);
   }
 
@@ -88,17 +99,27 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     const call = ts.factory.createCallExpression(callee, undefined, args);
     if (pure) {
       ts.addSyntheticLeadingComment(
-          call, ts.SyntaxKind.MultiLineCommentTrivia,
-          this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
-          /* trailing newline */ false);
+        call,
+        ts.SyntaxKind.MultiLineCommentTrivia,
+        this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
+        /* trailing newline */ false,
+      );
     }
     return call;
   }
 
-  createConditional(condition: ts.Expression, whenTrue: ts.Expression, whenFalse: ts.Expression):
-      ts.Expression {
+  createConditional(
+    condition: ts.Expression,
+    whenTrue: ts.Expression,
+    whenFalse: ts.Expression,
+  ): ts.Expression {
     return ts.factory.createConditionalExpression(
-        condition, undefined, whenTrue, undefined, whenFalse);
+      condition,
+      undefined,
+      whenTrue,
+      undefined,
+      whenFalse,
+    );
   }
 
   createElementAccess = ts.factory.createElementAccessExpression;
@@ -107,55 +128,79 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createDynamicImport(url: string) {
     return ts.factory.createCallExpression(
-        ts.factory.createToken(ts.SyntaxKind.ImportKeyword) as ts.Expression,
-        /* type */ undefined,
-        [ts.factory.createStringLiteral(url)],
+      ts.factory.createToken(ts.SyntaxKind.ImportKeyword) as ts.Expression,
+      /* type */ undefined,
+      [ts.factory.createStringLiteral(url)],
     );
   }
 
-  createFunctionDeclaration(functionName: string, parameters: string[], body: ts.Statement):
-      ts.Statement {
+  createFunctionDeclaration(
+    functionName: string,
+    parameters: string[],
+    body: ts.Statement,
+  ): ts.Statement {
     if (!ts.isBlock(body)) {
       throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
     }
     return ts.factory.createFunctionDeclaration(
-        undefined, undefined, functionName, undefined,
-        parameters.map(param => ts.factory.createParameterDeclaration(undefined, undefined, param)),
-        undefined, body);
+      undefined,
+      undefined,
+      functionName,
+      undefined,
+      parameters.map((param) => ts.factory.createParameterDeclaration(undefined, undefined, param)),
+      undefined,
+      body,
+    );
   }
 
-  createFunctionExpression(functionName: string|null, parameters: string[], body: ts.Statement):
-      ts.Expression {
+  createFunctionExpression(
+    functionName: string | null,
+    parameters: string[],
+    body: ts.Statement,
+  ): ts.Expression {
     if (!ts.isBlock(body)) {
       throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
     }
     return ts.factory.createFunctionExpression(
-        undefined, undefined, functionName ?? undefined, undefined,
-        parameters.map(param => ts.factory.createParameterDeclaration(undefined, undefined, param)),
-        undefined, body);
+      undefined,
+      undefined,
+      functionName ?? undefined,
+      undefined,
+      parameters.map((param) => ts.factory.createParameterDeclaration(undefined, undefined, param)),
+      undefined,
+      body,
+    );
   }
 
-  createArrowFunctionExpression(parameters: string[], body: ts.Statement|ts.Expression):
-      ts.Expression {
+  createArrowFunctionExpression(
+    parameters: string[],
+    body: ts.Statement | ts.Expression,
+  ): ts.Expression {
     if (ts.isStatement(body) && !ts.isBlock(body)) {
       throw new Error(`Invalid syntax, expected a block, but got ${ts.SyntaxKind[body.kind]}.`);
     }
 
     return ts.factory.createArrowFunction(
-        undefined, undefined,
-        parameters.map(param => ts.factory.createParameterDeclaration(undefined, undefined, param)),
-        undefined, undefined, body);
+      undefined,
+      undefined,
+      parameters.map((param) => ts.factory.createParameterDeclaration(undefined, undefined, param)),
+      undefined,
+      undefined,
+      body,
+    );
   }
 
   createIdentifier = ts.factory.createIdentifier;
 
   createIfStatement(
-      condition: ts.Expression, thenStatement: ts.Statement,
-      elseStatement: ts.Statement|null): ts.Statement {
+    condition: ts.Expression,
+    thenStatement: ts.Statement,
+    elseStatement: ts.Statement | null,
+  ): ts.Statement {
     return ts.factory.createIfStatement(condition, thenStatement, elseStatement ?? undefined);
   }
 
-  createLiteral(value: string|number|boolean|null|undefined): ts.Expression {
+  createLiteral(value: string | number | boolean | null | undefined): ts.Expression {
     if (value === undefined) {
       return ts.factory.createIdentifier('undefined');
     } else if (value === null) {
@@ -174,23 +219,30 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
   }
 
   createObjectLiteral(properties: ObjectLiteralProperty<ts.Expression>[]): ts.Expression {
-    return ts.factory.createObjectLiteralExpression(properties.map(
-        prop => ts.factory.createPropertyAssignment(
-            prop.quoted ? ts.factory.createStringLiteral(prop.propertyName) :
-                          ts.factory.createIdentifier(prop.propertyName),
-            prop.value)));
+    return ts.factory.createObjectLiteralExpression(
+      properties.map((prop) =>
+        ts.factory.createPropertyAssignment(
+          prop.quoted
+            ? ts.factory.createStringLiteral(prop.propertyName)
+            : ts.factory.createIdentifier(prop.propertyName),
+          prop.value,
+        ),
+      ),
+    );
   }
 
   createParenthesizedExpression = ts.factory.createParenthesizedExpression;
 
   createPropertyAccess = ts.factory.createPropertyAccessExpression;
 
-  createReturnStatement(expression: ts.Expression|null): ts.Statement {
+  createReturnStatement(expression: ts.Expression | null): ts.Statement {
     return ts.factory.createReturnStatement(expression ?? undefined);
   }
 
-  createTaggedTemplate(tag: ts.Expression, template: TemplateLiteral<ts.Expression>):
-      ts.Expression {
+  createTaggedTemplate(
+    tag: ts.Expression,
+    template: TemplateLiteral<ts.Expression>,
+  ): ts.Expression {
     let templateLiteral: ts.TemplateLiteral;
     const length = template.elements.length;
     const head = template.elements[0];
@@ -217,7 +269,9 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
       spans.push(ts.factory.createTemplateSpan(resolvedExpression, templateTail));
       // Put it all together
       templateLiteral = ts.factory.createTemplateExpression(
-          ts.factory.createTemplateHead(head.cooked, head.raw), spans);
+        ts.factory.createTemplateHead(head.cooked, head.raw),
+        spans,
+      );
     }
     if (head.range !== null) {
       this.setSourceMapRange(templateLiteral, head.range);
@@ -229,24 +283,32 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
 
   createTypeOfExpression = ts.factory.createTypeOfExpression;
 
-
   createUnaryExpression(operator: UnaryOperator, operand: ts.Expression): ts.Expression {
     return ts.factory.createPrefixUnaryExpression(UNARY_OPERATORS[operator], operand);
   }
 
   createVariableDeclaration(
-      variableName: string, initializer: ts.Expression|null,
-      type: VariableDeclarationType): ts.Statement {
+    variableName: string,
+    initializer: ts.Expression | null,
+    type: VariableDeclarationType,
+  ): ts.Statement {
     return ts.factory.createVariableStatement(
-        undefined,
-        ts.factory.createVariableDeclarationList(
-            [ts.factory.createVariableDeclaration(
-                variableName, undefined, undefined, initializer ?? undefined)],
-            VAR_TYPES[type]),
+      undefined,
+      ts.factory.createVariableDeclarationList(
+        [
+          ts.factory.createVariableDeclaration(
+            variableName,
+            undefined,
+            undefined,
+            initializer ?? undefined,
+          ),
+        ],
+        VAR_TYPES[type],
+      ),
     );
   }
 
-  setSourceMapRange<T extends ts.Node>(node: T, sourceMapRange: SourceMapRange|null): T {
+  setSourceMapRange<T extends ts.Node>(node: T, sourceMapRange: SourceMapRange | null): T {
     if (sourceMapRange === null) {
       return node;
     }
@@ -254,11 +316,16 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     const url = sourceMapRange.url;
     if (!this.externalSourceFiles.has(url)) {
       this.externalSourceFiles.set(
-          url, ts.createSourceMapSource(url, sourceMapRange.content, pos => pos));
+        url,
+        ts.createSourceMapSource(url, sourceMapRange.content, (pos) => pos),
+      );
     }
     const source = this.externalSourceFiles.get(url);
-    ts.setSourceMapRange(
-        node, {pos: sourceMapRange.start.offset, end: sourceMapRange.end.offset, source});
+    ts.setSourceMapRange(node, {
+      pos: sourceMapRange.start.offset,
+      end: sourceMapRange.end.offset,
+      source,
+    });
     return node;
   }
 }
@@ -287,11 +354,16 @@ export function createTemplateTail(cooked: string, raw: string): ts.TemplateTail
  */
 export function attachComments(statement: ts.Statement, leadingComments: LeadingComment[]): void {
   for (const comment of leadingComments) {
-    const commentKind = comment.multiline ? ts.SyntaxKind.MultiLineCommentTrivia :
-                                            ts.SyntaxKind.SingleLineCommentTrivia;
+    const commentKind = comment.multiline
+      ? ts.SyntaxKind.MultiLineCommentTrivia
+      : ts.SyntaxKind.SingleLineCommentTrivia;
     if (comment.multiline) {
       ts.addSyntheticLeadingComment(
-          statement, commentKind, comment.toString(), comment.trailingNewline);
+        statement,
+        commentKind,
+        comment.toString(),
+        comment.trailingNewline,
+      );
     } else {
       for (const line of comment.toString().split('\n')) {
         ts.addSyntheticLeadingComment(statement, commentKind, line, comment.trailingNewline);

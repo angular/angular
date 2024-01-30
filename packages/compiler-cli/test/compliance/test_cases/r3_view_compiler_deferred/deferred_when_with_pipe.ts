@@ -9,10 +9,8 @@ export class TestPipe {
 
 @Component({
   template: `
-    {{message}}
-    @defer (when isVisible() && (isReady | testPipe)) {
-      Hello
-    }
+    {{ message }}
+    @defer (when isVisible() && (isReady | testPipe)) { Hello }
   `,
   standalone: true,
   imports: [TestPipe],

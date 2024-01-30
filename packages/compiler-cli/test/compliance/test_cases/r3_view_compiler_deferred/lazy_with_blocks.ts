@@ -1,31 +1,22 @@
 import {Component} from '@angular/core';
 
-
 @Component({
   selector: 'my-lazy-cmp',
   standalone: true,
   template: 'Hi!',
 })
-class MyLazyCmp {
-}
+class MyLazyCmp {}
 
 @Component({
   standalone: true,
   selector: 'app',
   imports: [MyLazyCmp],
   template: `
-		Visible: {{ isVisible }}.
-
-		@defer (when isVisible) {
-			<my-lazy-cmp />
-		} @loading {
-			Loading...
-		} @placeholder {
-			Placeholder!
-		} @error {
-			Failed to load dependencies :(
-		}
-	`
+    Visible: {{ isVisible }}. @defer (when isVisible) {
+    <my-lazy-cmp />
+    } @loading { Loading... } @placeholder { Placeholder! } @error { Failed to load dependencies :(
+    }
+  `,
 })
 class SimpleComponent {
   isVisible = false;

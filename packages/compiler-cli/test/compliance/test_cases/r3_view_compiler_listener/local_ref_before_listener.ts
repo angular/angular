@@ -4,13 +4,12 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-component',
   template: `
     <button (click)="onClick(user.value)">Save</button>
-    <input #user>
-  `
+    <input #user />
+  `,
 })
 export class MyComponent {
   onClick(v: any) {}
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

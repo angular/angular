@@ -1,8 +1,7 @@
 import {Component, Directive, NgModule, Pipe} from '@angular/core';
 
 @Directive({selector: '[not-standalone]'})
-export class NotStandaloneDir {
-}
+export class NotStandaloneDir {}
 
 @Pipe({name: 'nspipe'})
 export class NotStandalonePipe {
@@ -13,15 +12,13 @@ export class NotStandalonePipe {
   declarations: [NotStandaloneDir, NotStandalonePipe],
   exports: [NotStandaloneDir, NotStandalonePipe],
 })
-export class NotStandaloneStuffModule {
-}
+export class NotStandaloneStuffModule {}
 
 @Directive({
   standalone: true,
   selector: '[indirect]',
 })
-export class IndirectDir {
-}
+export class IndirectDir {}
 
 @Pipe({
   standalone: true,
@@ -35,16 +32,13 @@ export class IndirectPipe {
   imports: [IndirectDir, IndirectPipe],
   exports: [NotStandaloneStuffModule, IndirectDir, IndirectPipe],
 })
-export class SomeModule {
-}
-
+export class SomeModule {}
 
 @Directive({
   standalone: true,
   selector: '[direct]',
 })
-export class DirectDir {
-}
+export class DirectDir {}
 
 @Pipe({
   standalone: true,
@@ -58,9 +52,15 @@ export class DirectPipe {
   standalone: true,
   selector: 'test-cmp',
   template: `
-    <p>Reference some non-standalone things:<span not-standalone>{{data | nspipe}}</span></p>
-    <p>Reference some indirect standalone things:<span indirect>{{data | indirectpipe}}</span></p>
-    <p>Reference some standalone things directly:<span direct>{{data | directpipe}}</span></p>
+    <p>
+      Reference some non-standalone things:<span not-standalone>{{ data | nspipe }}</span>
+    </p>
+    <p>
+      Reference some indirect standalone things:<span indirect>{{ data | indirectpipe }}</span>
+    </p>
+    <p>
+      Reference some standalone things directly:<span direct>{{ data | directpipe }}</span>
+    </p>
   `,
   imports: [SomeModule, DirectDir, DirectPipe],
 })

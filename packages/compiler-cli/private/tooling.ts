@@ -17,7 +17,10 @@ import ts from 'typescript';
 
 import {PartialEvaluator} from '../src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform, getInputSignalsMetadataTransform} from '../src/transformers/jit_transforms/index';
+import {
+  getDownlevelDecoratorsTransform,
+  getInputSignalsMetadataTransform,
+} from '../src/transformers/jit_transforms/index';
 
 /**
  * Known values for global variables in `@angular/core` that Terser should set using
@@ -52,14 +55,20 @@ export const GLOBAL_DEFS_FOR_TERSER_WITH_AOT = {
  *    metadata
  */
 export function angularJitApplicationTransform(
-    program: ts.Program, isCore = false): ts.TransformerFactory<ts.SourceFile> {
+  program: ts.Program,
+  isCore = false,
+): ts.TransformerFactory<ts.SourceFile> {
   const typeChecker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(typeChecker);
   const evaluator = new PartialEvaluator(reflectionHost, typeChecker, null);
 
   const downlevelDecoratorTransform = getDownlevelDecoratorsTransform(
-      typeChecker, reflectionHost, [], isCore,
-      /* enableClosureCompiler */ false);
+    typeChecker,
+    reflectionHost,
+    [],
+    isCore,
+    /* enableClosureCompiler */ false,
+  );
 
   const inputSignalMetadataTransform = getInputSignalsMetadataTransform(reflectionHost, isCore);
 

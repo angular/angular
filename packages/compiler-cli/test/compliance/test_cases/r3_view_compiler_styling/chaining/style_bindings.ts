@@ -4,7 +4,8 @@ import {Component} from '@angular/core';
   template: `<div
     [style.color]="color"
     [style.border]="border"
-    [style.transition]="transition"></div>`
+    [style.transition]="transition"
+  ></div>`,
 })
 export class MyComponent {
   color = 'red';

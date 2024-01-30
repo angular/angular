@@ -10,7 +10,6 @@ import ts from 'typescript';
 
 import {getContainingImportDeclaration} from '../../reflection/src/typescript';
 
-
 /**
  * A tool to track extra imports to be added to the generated files in the local compilation mode.
  *
@@ -62,7 +61,7 @@ export class LocalCompilationExtraImportsTracker {
    * to smallest possible candidate files instead of all files.
    */
   addGlobalImportFromIdentifier(node: ts.Node): void {
-    let identifier: ts.Identifier|null = null;
+    let identifier: ts.Identifier | null = null;
     if (ts.isIdentifier(node)) {
       identifier = node;
     } else if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression)) {
@@ -78,7 +77,6 @@ export class LocalCompilationExtraImportsTracker {
       return;
     }
 
-
     const importClause = sym.declarations[0];
     const decl = getContainingImportDeclaration(importClause);
 
@@ -91,10 +89,7 @@ export class LocalCompilationExtraImportsTracker {
    * Returns the list of all module names that the given file should include as its extra imports.
    */
   getImportsForFile(sf: ts.SourceFile): string[] {
-    return [
-      ...this.globalImportsSet,
-      ...(this.localImportsMap.get(sf.fileName) ?? []),
-    ];
+    return [...this.globalImportsSet, ...(this.localImportsMap.get(sf.fileName) ?? [])];
   }
 }
 

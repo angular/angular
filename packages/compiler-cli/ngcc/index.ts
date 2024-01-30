@@ -9,14 +9,21 @@
 
 // https://github.com/chalk/chalk/blob/a370f468a43999e4397094ff5c3d17aadcc4860e/source/utilities.js#L21
 function stringEncaseCRLFWithFirstIndex(
-    value: string, prefix: string, postfix: string, index: number): string {
+  value: string,
+  prefix: string,
+  postfix: string,
+  index: number,
+): string {
   let endIndex = 0;
   let returnValue = '';
 
   do {
     const gotCR = value[index - 1] === '\r';
-    returnValue += value.substring(endIndex, gotCR ? index - 1 : index) + prefix +
-        (gotCR ? '\r\n' : '\n') + postfix;
+    returnValue +=
+      value.substring(endIndex, gotCR ? index - 1 : index) +
+      prefix +
+      (gotCR ? '\r\n' : '\n') +
+      postfix;
     endIndex = index + 1;
     index = value.indexOf('\n', endIndex);
   } while (index !== -1);

@@ -1,6 +1,6 @@
 import {Directive, Input, input} from '@angular/core';
 
-function convertToBoolean(value: string|boolean) {
+function convertToBoolean(value: string | boolean) {
   return value === true || value !== '';
 }
 
@@ -10,8 +10,10 @@ function convertToBoolean(value: string|boolean) {
 export class TestDir {
   counter = input(0);
   signalWithTransform = input(false, {transform: convertToBoolean});
-  signalWithTransformAndAlias =
-      input(false, {alias: 'publicNameSignal', transform: convertToBoolean});
+  signalWithTransformAndAlias = input(false, {
+    alias: 'publicNameSignal',
+    transform: convertToBoolean,
+  });
 
   @Input() decoratorInput = true;
   @Input('publicNameDecorator') decoratorInputWithAlias = true;

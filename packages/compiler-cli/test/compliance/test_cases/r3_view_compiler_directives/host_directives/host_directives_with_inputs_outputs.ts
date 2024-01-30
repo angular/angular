@@ -11,11 +11,12 @@ export class HostDir {
 @Component({
   selector: 'my-component',
   template: '',
-  hostDirectives: [{
-    directive: HostDir,
-    inputs: ['value', 'color: colorAlias'],
-    outputs: ['opened', 'closed: closedAlias'],
-  }],
+  hostDirectives: [
+    {
+      directive: HostDir,
+      inputs: ['value', 'color: colorAlias'],
+      outputs: ['opened', 'closed: closedAlias'],
+    },
+  ],
 })
-export class MyComponent {
-}
+export class MyComponent {}

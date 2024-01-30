@@ -4,15 +4,14 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-app',
   template: `
     <b ngNonBindable #myRef id="my-id">
-    <i>Hello {{ name }}!</i>
+      <i>Hello {{ name }}!</i>
     </b>
     {{ myRef.id }}
-  `
+  `,
 })
 export class MyComponent {
   name = 'John Doe';
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

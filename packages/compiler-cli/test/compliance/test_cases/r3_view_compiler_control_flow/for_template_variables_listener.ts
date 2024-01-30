@@ -3,9 +3,9 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     <div>
-      {{message}}
+      {{ message }}
       @for (item of items; track item; let ev = $even) {
-        <div (click)="log($index, ev, $first, $count)"></div>
+      <div (click)="log($index, ev, $first, $count)"></div>
       }
     </div>
   `,

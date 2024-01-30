@@ -3,13 +3,12 @@ import {Component, NgModule} from '@angular/core';
 @Component({
   selector: 'my-component',
   styles: [
-    'div.foo { color: red; }', ':host p:nth-child(even) { --webkit-transition: 1s linear all; }'
+    'div.foo { color: red; }',
+    ':host p:nth-child(even) { --webkit-transition: 1s linear all; }',
   ],
-  template: '...'
+  template: '...',
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

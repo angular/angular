@@ -33,7 +33,9 @@ export class LinkerImportGenerator<TExpression> implements ImportGenerator<TExpr
   private assertModuleName(moduleName: string): void {
     if (moduleName !== '@angular/core') {
       throw new FatalLinkerError(
-          this.ngImport, `Unable to import from anything other than '@angular/core'`);
+        this.ngImport,
+        `Unable to import from anything other than '@angular/core'`,
+      );
     }
   }
 }

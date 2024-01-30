@@ -5,7 +5,7 @@ import {Directive, HostBinding, NgModule} from '@angular/core';
   host: {
     '[class.a]': 'true',
     '[class.b]': 'false',
-  }
+  },
 })
 export class HostBindingDir {
   @HostBinding('class.c') true: any;
@@ -14,5 +14,4 @@ export class HostBindingDir {
 }
 
 @NgModule({declarations: [HostBindingDir]})
-export class MyModule {
-}
+export class MyModule {}

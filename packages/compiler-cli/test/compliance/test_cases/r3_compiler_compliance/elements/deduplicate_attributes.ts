@@ -5,11 +5,9 @@ import {Component, NgModule} from '@angular/core';
   template: `
     <div title="hi"></div>
     <span title="hi"></span>
-  `
+  `,
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

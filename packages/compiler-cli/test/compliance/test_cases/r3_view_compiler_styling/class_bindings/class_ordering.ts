@@ -7,7 +7,8 @@ import {Component, NgModule} from '@angular/core';
     [attr.class]="'banana'"
     [class.apple]="yesToApple"
     [class]="myClassExp"
-    [class.orange]="yesToOrange"></div>`
+    [class.orange]="yesToOrange"
+  ></div>`,
 })
 export class MyComponent {
   myClassExp = {a: true, b: true};
@@ -16,5 +17,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

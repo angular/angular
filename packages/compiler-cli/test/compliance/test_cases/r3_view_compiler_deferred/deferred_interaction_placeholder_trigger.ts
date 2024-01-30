@@ -2,15 +2,13 @@ import {Component} from '@angular/core';
 
 @Component({
   template: `
-    {{message}}
-    @defer (on interaction(button); prefetch on interaction(button)) {
-      Main
-    } @placeholder {
+    {{ message }}
+    @defer (on interaction(button); prefetch on interaction(button)) { Main } @placeholder {
+    <div>
       <div>
-        <div>
-          <button #button>Click me</button>
-        </div>
+        <button #button>Click me</button>
       </div>
+    </div>
     }
   `,
 })

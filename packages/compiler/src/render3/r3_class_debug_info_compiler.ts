@@ -35,7 +35,7 @@ export interface R3ClassDebugInfo {
    * `className`. For security reasons we never show the absolute file path and prefer to just
    * return null here.
    */
-  filePath: o.Expression|null;
+  filePath: o.Expression | null;
 
   /**
    * A number literal number containing the line number in which this class is defined.
@@ -74,10 +74,9 @@ export function compileClassDebugInfo(debugInfo: R3ClassDebugInfo): o.Expression
     debugInfoObject.forbidOrphanRendering = o.literal(true);
   }
 
-  const fnCall = o.importExpr(R3.setClassDebugInfo).callFn([
-    debugInfo.type,
-    mapLiteral(debugInfoObject),
-  ]);
+  const fnCall = o
+    .importExpr(R3.setClassDebugInfo)
+    .callFn([debugInfo.type, mapLiteral(debugInfoObject)]);
   const iife = o.arrowFn([], [devOnlyGuardedExpression(fnCall).toStmt()]);
   return iife.callFn([]);
 }

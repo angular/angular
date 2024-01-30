@@ -32,24 +32,26 @@ export interface R3ClassMetadata {
    * An expression representing the Angular decorators applied to constructor parameters, or `null`
    * if there is no constructor.
    */
-  ctorParameters: o.Expression|null;
+  ctorParameters: o.Expression | null;
 
   /**
    * An expression representing the Angular decorators that were applied on the properties of the
    * class, or `null` if no properties have decorators.
    */
-  propDecorators: o.Expression|null;
+  propDecorators: o.Expression | null;
 }
 
 export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
   // Generate an ngDevMode guarded call to setClassMetadata with the class identifier and its
   // metadata.
-  const fnCall = o.importExpr(R3.setClassMetadata).callFn([
-    metadata.type,
-    metadata.decorators,
-    metadata.ctorParameters ?? o.literal(null),
-    metadata.propDecorators ?? o.literal(null),
-  ]);
+  const fnCall = o
+    .importExpr(R3.setClassMetadata)
+    .callFn([
+      metadata.type,
+      metadata.decorators,
+      metadata.ctorParameters ?? o.literal(null),
+      metadata.propDecorators ?? o.literal(null),
+    ]);
   const iife = o.arrowFn([], [devOnlyGuardedExpression(fnCall).toStmt()]);
   return iife.callFn([]);
 }
@@ -72,7 +74,9 @@ export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
  * check to tree-shake away this code in production mode.
  */
 export function compileComponentClassMetadata(
-    metadata: R3ClassMetadata, deferrableTypes: Map<string, string>|null): o.Expression {
+  metadata: R3ClassMetadata,
+  deferrableTypes: Map<string, string> | null,
+): o.Expression {
   if (deferrableTypes === null || deferrableTypes.size === 0) {
     // If there are no deferrable symbols - just generate a regular `setClassMetadata` call.
     return compileClassMetadata(metadata);
@@ -82,11 +86,13 @@ export function compileComponentClassMetadata(
   const importedSymbols: o.FnParam[] = [];
   for (const [symbolName, importPath] of deferrableTypes) {
     // e.g. `(m) => m.CmpA`
-    const innerFn =
-        o.arrowFn([new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(symbolName));
+    const innerFn = o.arrowFn(
+      [new o.FnParam('m', o.DYNAMIC_TYPE)],
+      o.variable('m').prop(symbolName),
+    );
 
     // e.g. `import('./cmp-a').then(...)`
-    const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);
+    const importExpr = new o.DynamicImportExpr(importPath).prop('then').callFn([innerFn]);
 
     dynamicImports.push(importExpr);
     importedSymbols.push(new o.FnParam(symbolName, o.DYNAMIC_TYPE));
@@ -96,20 +102,22 @@ export function compileComponentClassMetadata(
   const dependencyLoadingFn = o.arrowFn([], o.literalArr(dynamicImports));
 
   // e.g. `setClassMetadata(...)`
-  const setClassMetadataCall = o.importExpr(R3.setClassMetadata).callFn([
-    metadata.type,
-    metadata.decorators,
-    metadata.ctorParameters ?? o.literal(null),
-    metadata.propDecorators ?? o.literal(null),
-  ]);
+  const setClassMetadataCall = o
+    .importExpr(R3.setClassMetadata)
+    .callFn([
+      metadata.type,
+      metadata.decorators,
+      metadata.ctorParameters ?? o.literal(null),
+      metadata.propDecorators ?? o.literal(null),
+    ]);
 
   // e.g. `(CmpA) => setClassMetadata(...)`
   const setClassMetaWrapper = o.arrowFn(importedSymbols, [setClassMetadataCall.toStmt()]);
 
   // Final `setClassMetadataAsync()` call with all arguments
-  const setClassMetaAsync = o.importExpr(R3.setClassMetadataAsync).callFn([
-    metadata.type, dependencyLoadingFn, setClassMetaWrapper
-  ]);
+  const setClassMetaAsync = o
+    .importExpr(R3.setClassMetadataAsync)
+    .callFn([metadata.type, dependencyLoadingFn, setClassMetaWrapper]);
 
   // Generate an ngDevMode guarded call to `setClassMetadataAsync` with
   // the class identifier and its metadata, so that this call can be tree-shaken.

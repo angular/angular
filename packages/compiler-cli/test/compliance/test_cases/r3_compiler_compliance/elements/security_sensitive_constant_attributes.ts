@@ -13,11 +13,9 @@ import {Component, NgModule} from '@angular/core';
 
     <!-- Another element with a src attribute that is not security sensitive -->
     <img src="https://angular.io/" />
-  `
+  `,
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

@@ -6,8 +6,7 @@ export class FooComponent {
 }
 
 @Directive({selector: '[bar]'})
-export class BarDirective {
-}
+export class BarDirective {}
 
 @Pipe({name: 'qux'})
 export class QuxPipe implements PipeTransform {
@@ -15,5 +14,4 @@ export class QuxPipe implements PipeTransform {
 }
 
 @NgModule({declarations: [FooComponent, BarDirective, QuxPipe], bootstrap: [FooComponent]})
-export class FooModule {
-}
+export class FooModule {}

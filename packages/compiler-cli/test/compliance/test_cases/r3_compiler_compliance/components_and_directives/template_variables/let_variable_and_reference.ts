@@ -3,12 +3,13 @@ import {ForOfDirective} from './for_of';
 
 @Component({
   selector: 'my-component',
-  template: `<ul><li *for="let item of items">{{item.name}}</li></ul>`
+  template: `<ul>
+    <li *for="let item of items">{{ item.name }}</li>
+  </ul>`,
 })
 export class MyComponent {
   items = [{name: 'one'}, {name: 'two'}];
 }
 
 @NgModule({declarations: [MyComponent, ForOfDirective]})
-export class MyModule {
-}
+export class MyModule {}

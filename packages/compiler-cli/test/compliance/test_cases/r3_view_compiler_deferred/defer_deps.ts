@@ -7,19 +7,17 @@ import {CmpA} from './defer_deps_ext';
   standalone: true,
   template: 'Local dependency',
 })
-export class LocalDep {
-}
+export class LocalDep {}
 
 @Component({
   selector: 'test-cmp',
   standalone: true,
   imports: [CmpA, LocalDep],
   template: `
-	@defer {
-	<cmp-a />
-	<local-dep />
-	}
-`,
+    @defer {
+    <cmp-a />
+    <local-dep />
+    }
+  `,
 })
-export class TestCmp {
-}
+export class TestCmp {}

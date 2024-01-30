@@ -3,9 +3,9 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     @defer (on hover, interaction, viewport; prefetch on hover, interaction, viewport) {
-      {{message}}
+    {{ message }}
     } @placeholder {
-      <button>Click me</button>
+    <button>Click me</button>
     }
   `,
 })

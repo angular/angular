@@ -7,5 +7,4 @@ function alternateFactory() {
 }
 
 @Injectable({providedIn: 'root', useFactory: alternateFactory})
-export class MyService {
-}
+export class MyService {}

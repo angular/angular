@@ -5,13 +5,11 @@ import {Directive} from '@angular/core';
   selector: '[hostBindingDir]',
   host: {'src': 'trusted', 'srcdoc': 'trusted'},
 })
-export class HostBindingDir {
-}
+export class HostBindingDir {}
 
 @Directive({
   standalone: true,
   selector: 'img',
   host: {'src': 'trusted', 'srcdoc': 'trusted'},
 })
-export class HostBindingDir2 {
-}
+export class HostBindingDir2 {}

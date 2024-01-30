@@ -1,4 +1,12 @@
-import {Component, ElementRef, NgModule, QueryList, TemplateRef, ViewChild, ViewChildren} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  NgModule,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
 
 import {SomeDirective} from './some.directive';
 
@@ -8,7 +16,7 @@ import {SomeDirective} from './some.directive';
     <div someDir></div>
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
 })
 export class ViewQueryComponent {
   @ViewChild('myRef', {read: TemplateRef}) myRef!: TemplateRef<unknown>;
@@ -18,5 +26,4 @@ export class ViewQueryComponent {
 }
 
 @NgModule({declarations: [ViewQueryComponent]})
-export class MyModule {
-}
+export class MyModule {}

@@ -4,9 +4,7 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-component',
   template: '<ng-template (outDirective)="$event.doSth()"></ng-template>',
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

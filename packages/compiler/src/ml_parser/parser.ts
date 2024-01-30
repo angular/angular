@@ -12,28 +12,56 @@ import * as html from './ast';
 import {NAMED_ENTITIES} from './entities';
 import {tokenize, TokenizeOptions} from './lexer';
 import {getNsPrefix, mergeNsAndName, splitNsName, TagDefinition} from './tags';
-import {AttributeNameToken, AttributeQuoteToken, BlockCloseToken, BlockOpenStartToken, BlockParameterToken, CdataStartToken, CommentStartToken, ExpansionCaseExpressionEndToken, ExpansionCaseExpressionStartToken, ExpansionCaseValueToken, ExpansionFormStartToken, IncompleteBlockOpenToken, IncompleteTagOpenToken, InterpolatedAttributeToken, InterpolatedTextToken, TagCloseToken, TagOpenStartToken, TextToken, Token, TokenType} from './tokens';
+import {
+  AttributeNameToken,
+  AttributeQuoteToken,
+  BlockCloseToken,
+  BlockOpenStartToken,
+  BlockParameterToken,
+  CdataStartToken,
+  CommentStartToken,
+  ExpansionCaseExpressionEndToken,
+  ExpansionCaseExpressionStartToken,
+  ExpansionCaseValueToken,
+  ExpansionFormStartToken,
+  IncompleteBlockOpenToken,
+  IncompleteTagOpenToken,
+  InterpolatedAttributeToken,
+  InterpolatedTextToken,
+  TagCloseToken,
+  TagOpenStartToken,
+  TextToken,
+  Token,
+  TokenType,
+} from './tokens';
 
 /** Nodes that can contain other nodes. */
-type NodeContainer = html.Element|html.Block;
+type NodeContainer = html.Element | html.Block;
 
 /** Class that can construct a `NodeContainer`. */
 interface NodeContainerConstructor extends Function {
-  new(...args: any[]): NodeContainer;
+  new (...args: any[]): NodeContainer;
 }
 
 export class TreeError extends ParseError {
-  static create(elementName: string|null, span: ParseSourceSpan, msg: string): TreeError {
+  static create(elementName: string | null, span: ParseSourceSpan, msg: string): TreeError {
     return new TreeError(elementName, span, msg);
   }
 
-  constructor(public elementName: string|null, span: ParseSourceSpan, msg: string) {
+  constructor(
+    public elementName: string | null,
+    span: ParseSourceSpan,
+    msg: string,
+  ) {
     super(span, msg);
   }
 }
 
 export class ParseTreeResult {
-  constructor(public rootNodes: html.Node[], public errors: ParseError[]) {}
+  constructor(
+    public rootNodes: html.Node[],
+    public errors: ParseError[],
+  ) {}
 }
 
 export class Parser {
@@ -44,8 +72,8 @@ export class Parser {
     const parser = new _TreeBuilder(tokenizeResult.tokens, this.getTagDefinition);
     parser.build();
     return new ParseTreeResult(
-        parser.rootNodes,
-        (tokenizeResult.errors as ParseError[]).concat(parser.errors),
+      parser.rootNodes,
+      (tokenizeResult.errors as ParseError[]).concat(parser.errors),
     );
   }
 }
@@ -60,14 +88,18 @@ class _TreeBuilder {
   errors: TreeError[] = [];
 
   constructor(
-      private tokens: Token[], private getTagDefinition: (tagName: string) => TagDefinition) {
+    private tokens: Token[],
+    private getTagDefinition: (tagName: string) => TagDefinition,
+  ) {
     this._advance();
   }
 
   build(): void {
     while (this._peek.type !== TokenType.EOF) {
-      if (this._peek.type === TokenType.TAG_OPEN_START ||
-          this._peek.type === TokenType.INCOMPLETE_TAG_OPEN) {
+      if (
+        this._peek.type === TokenType.TAG_OPEN_START ||
+        this._peek.type === TokenType.INCOMPLETE_TAG_OPEN
+      ) {
         this._consumeStartTag(this._advance());
       } else if (this._peek.type === TokenType.TAG_CLOSE) {
         this._consumeEndTag(this._advance());
@@ -78,8 +110,10 @@ class _TreeBuilder {
         this._closeVoidElement();
         this._consumeComment(this._advance());
       } else if (
-          this._peek.type === TokenType.TEXT || this._peek.type === TokenType.RAW_TEXT ||
-          this._peek.type === TokenType.ESCAPABLE_RAW_TEXT) {
+        this._peek.type === TokenType.TEXT ||
+        this._peek.type === TokenType.RAW_TEXT ||
+        this._peek.type === TokenType.ESCAPABLE_RAW_TEXT
+      ) {
         this._closeVoidElement();
         this._consumeText(this._advance());
       } else if (this._peek.type === TokenType.EXPANSION_FORM_START) {
@@ -102,9 +136,13 @@ class _TreeBuilder {
     for (const leftoverContainer of this._containerStack) {
       // Unlike HTML elements, blocks aren't closed implicitly by the end of the file.
       if (leftoverContainer instanceof html.Block) {
-        this.errors.push(TreeError.create(
-            leftoverContainer.name, leftoverContainer.sourceSpan,
-            `Unclosed block "${leftoverContainer.name}"`));
+        this.errors.push(
+          TreeError.create(
+            leftoverContainer.name,
+            leftoverContainer.sourceSpan,
+            `Unclosed block "${leftoverContainer.name}"`,
+          ),
+        );
       }
     }
   }
@@ -119,9 +157,9 @@ class _TreeBuilder {
     return prev as T;
   }
 
-  private _advanceIf<T extends TokenType>(type: T): (Token&{type: T})|null {
+  private _advanceIf<T extends TokenType>(type: T): (Token & {type: T}) | null {
     if (this._peek.type === type) {
-      return this._advance<Token&{type: T}>();
+      return this._advance<Token & {type: T}>();
     }
     return null;
   }
@@ -135,10 +173,14 @@ class _TreeBuilder {
     const text = this._advanceIf(TokenType.RAW_TEXT);
     const endToken = this._advanceIf(TokenType.COMMENT_END);
     const value = text != null ? text.parts[0].trim() : null;
-    const sourceSpan = endToken == null ?
-        token.sourceSpan :
-        new ParseSourceSpan(
-            token.sourceSpan.start, endToken.sourceSpan.end, token.sourceSpan.fullStart);
+    const sourceSpan =
+      endToken == null
+        ? token.sourceSpan
+        : new ParseSourceSpan(
+            token.sourceSpan.start,
+            endToken.sourceSpan.end,
+            token.sourceSpan.fullStart,
+          );
     this._addToParent(new html.Comment(value, sourceSpan));
   }
 
@@ -151,31 +193,43 @@ class _TreeBuilder {
     // read =
     while (this._peek.type === TokenType.EXPANSION_CASE_VALUE) {
       const expCase = this._parseExpansionCase();
-      if (!expCase) return;  // error
+      if (!expCase) return; // error
       cases.push(expCase);
     }
 
     // read the final }
     if (this._peek.type !== TokenType.EXPANSION_FORM_END) {
       this.errors.push(
-          TreeError.create(null, this._peek.sourceSpan, `Invalid ICU message. Missing '}'.`));
+        TreeError.create(null, this._peek.sourceSpan, `Invalid ICU message. Missing '}'.`),
+      );
       return;
     }
     const sourceSpan = new ParseSourceSpan(
-        token.sourceSpan.start, this._peek.sourceSpan.end, token.sourceSpan.fullStart);
-    this._addToParent(new html.Expansion(
-        switchValue.parts[0], type.parts[0], cases, sourceSpan, switchValue.sourceSpan));
+      token.sourceSpan.start,
+      this._peek.sourceSpan.end,
+      token.sourceSpan.fullStart,
+    );
+    this._addToParent(
+      new html.Expansion(
+        switchValue.parts[0],
+        type.parts[0],
+        cases,
+        sourceSpan,
+        switchValue.sourceSpan,
+      ),
+    );
 
     this._advance();
   }
 
-  private _parseExpansionCase(): html.ExpansionCase|null {
+  private _parseExpansionCase(): html.ExpansionCase | null {
     const value = this._advance<ExpansionCaseValueToken>();
 
     // read {
     if (this._peek.type !== TokenType.EXPANSION_CASE_EXP_START) {
       this.errors.push(
-          TreeError.create(null, this._peek.sourceSpan, `Invalid ICU message. Missing '{'.`));
+        TreeError.create(null, this._peek.sourceSpan, `Invalid ICU message. Missing '{'.`),
+      );
       return null;
     }
 
@@ -196,21 +250,34 @@ class _TreeBuilder {
       return null;
     }
 
-    const sourceSpan =
-        new ParseSourceSpan(value.sourceSpan.start, end.sourceSpan.end, value.sourceSpan.fullStart);
-    const expSourceSpan =
-        new ParseSourceSpan(start.sourceSpan.start, end.sourceSpan.end, start.sourceSpan.fullStart);
+    const sourceSpan = new ParseSourceSpan(
+      value.sourceSpan.start,
+      end.sourceSpan.end,
+      value.sourceSpan.fullStart,
+    );
+    const expSourceSpan = new ParseSourceSpan(
+      start.sourceSpan.start,
+      end.sourceSpan.end,
+      start.sourceSpan.fullStart,
+    );
     return new html.ExpansionCase(
-        value.parts[0], expansionCaseParser.rootNodes, sourceSpan, value.sourceSpan, expSourceSpan);
+      value.parts[0],
+      expansionCaseParser.rootNodes,
+      sourceSpan,
+      value.sourceSpan,
+      expSourceSpan,
+    );
   }
 
-  private _collectExpansionExpTokens(start: Token): Token[]|null {
+  private _collectExpansionExpTokens(start: Token): Token[] | null {
     const exp: Token[] = [];
     const expansionFormStack = [TokenType.EXPANSION_CASE_EXP_START];
 
     while (true) {
-      if (this._peek.type === TokenType.EXPANSION_FORM_START ||
-          this._peek.type === TokenType.EXPANSION_CASE_EXP_START) {
+      if (
+        this._peek.type === TokenType.EXPANSION_FORM_START ||
+        this._peek.type === TokenType.EXPANSION_CASE_EXP_START
+      ) {
         expansionFormStack.push(this._peek.type);
       }
 
@@ -218,10 +285,10 @@ class _TreeBuilder {
         if (lastOnStack(expansionFormStack, TokenType.EXPANSION_CASE_EXP_START)) {
           expansionFormStack.pop();
           if (expansionFormStack.length === 0) return exp;
-
         } else {
           this.errors.push(
-              TreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`));
+            TreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`),
+          );
           return null;
         }
       }
@@ -231,14 +298,16 @@ class _TreeBuilder {
           expansionFormStack.pop();
         } else {
           this.errors.push(
-              TreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`));
+            TreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`),
+          );
           return null;
         }
       }
 
       if (this._peek.type === TokenType.EOF) {
         this.errors.push(
-            TreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`));
+          TreeError.create(null, start.sourceSpan, `Invalid ICU message. Missing '}'.`),
+        );
         return null;
       }
 
@@ -253,15 +322,21 @@ class _TreeBuilder {
     if (text.length > 0 && text[0] === '\n') {
       const parent = this._getContainer();
 
-      if (parent != null && parent.children.length === 0 &&
-          this.getTagDefinition(parent.name).ignoreFirstLf) {
+      if (
+        parent != null &&
+        parent.children.length === 0 &&
+        this.getTagDefinition(parent.name).ignoreFirstLf
+      ) {
         text = text.substring(1);
         tokens[0] = {type: token.type, sourceSpan: token.sourceSpan, parts: [text]} as typeof token;
       }
     }
 
-    while (this._peek.type === TokenType.INTERPOLATION || this._peek.type === TokenType.TEXT ||
-           this._peek.type === TokenType.ENCODED_ENTITY) {
+    while (
+      this._peek.type === TokenType.INTERPOLATION ||
+      this._peek.type === TokenType.TEXT ||
+      this._peek.type === TokenType.ENCODED_ENTITY
+    ) {
       token = this._advance();
       tokens.push(token);
       if (token.type === TokenType.INTERPOLATION) {
@@ -279,10 +354,13 @@ class _TreeBuilder {
 
     if (text.length > 0) {
       const endSpan = token.sourceSpan;
-      this._addToParent(new html.Text(
+      this._addToParent(
+        new html.Text(
           text,
           new ParseSourceSpan(startSpan.start, endSpan.end, startSpan.fullStart, startSpan.details),
-          tokens));
+          tokens,
+        ),
+      );
     }
   }
 
@@ -293,7 +371,7 @@ class _TreeBuilder {
     }
   }
 
-  private _consumeStartTag(startTagToken: TagOpenStartToken|IncompleteTagOpenToken) {
+  private _consumeStartTag(startTagToken: TagOpenStartToken | IncompleteTagOpenToken) {
     const [prefix, name] = startTagToken.parts;
     const attrs: html.Attribute[] = [];
     while (this._peek.type === TokenType.ATTR_NAME) {
@@ -308,10 +386,13 @@ class _TreeBuilder {
       selfClosing = true;
       const tagDef = this.getTagDefinition(fullName);
       if (!(tagDef.canSelfClose || getNsPrefix(fullName) !== null || tagDef.isVoid)) {
-        this.errors.push(TreeError.create(
-            fullName, startTagToken.sourceSpan,
-            `Only void, custom and foreign elements can be self closed "${
-                startTagToken.parts[1]}"`));
+        this.errors.push(
+          TreeError.create(
+            fullName,
+            startTagToken.sourceSpan,
+            `Only void, custom and foreign elements can be self closed "${startTagToken.parts[1]}"`,
+          ),
+        );
       }
     } else if (this._peek.type === TokenType.TAG_OPEN_END) {
       this._advance();
@@ -319,16 +400,23 @@ class _TreeBuilder {
     }
     const end = this._peek.sourceSpan.fullStart;
     const span = new ParseSourceSpan(
-        startTagToken.sourceSpan.start, end, startTagToken.sourceSpan.fullStart);
+      startTagToken.sourceSpan.start,
+      end,
+      startTagToken.sourceSpan.fullStart,
+    );
     // Create a separate `startSpan` because `span` will be modified when there is an `end` span.
     const startSpan = new ParseSourceSpan(
-        startTagToken.sourceSpan.start, end, startTagToken.sourceSpan.fullStart);
+      startTagToken.sourceSpan.start,
+      end,
+      startTagToken.sourceSpan.fullStart,
+    );
     const el = new html.Element(fullName, attrs, [], span, startSpan, undefined);
     const parentEl = this._getContainer();
     this._pushContainer(
-        el,
-        parentEl instanceof html.Element &&
-            this.getTagDefinition(parentEl.name).isClosedByChild(el.name));
+      el,
+      parentEl instanceof html.Element &&
+        this.getTagDefinition(parentEl.name).isClosedByChild(el.name),
+    );
     if (selfClosing) {
       // Elements that are self-closed have their `endSourceSpan` set to the full span, as the
       // element start tag also represents the end tag.
@@ -338,7 +426,8 @@ class _TreeBuilder {
       // close tag. Let's optimistically parse it as a full element and emit an error.
       this._popContainer(fullName, html.Element, null);
       this.errors.push(
-          TreeError.create(fullName, span, `Opening tag "${fullName}" not terminated.`));
+        TreeError.create(fullName, span, `Opening tag "${fullName}" not terminated.`),
+      );
     }
   }
 
@@ -353,15 +442,21 @@ class _TreeBuilder {
 
   private _consumeEndTag(endTagToken: TagCloseToken) {
     const fullName = this._getElementFullName(
-        endTagToken.parts[0], endTagToken.parts[1], this._getClosestParentElement());
+      endTagToken.parts[0],
+      endTagToken.parts[1],
+      this._getClosestParentElement(),
+    );
 
     if (this.getTagDefinition(fullName).isVoid) {
-      this.errors.push(TreeError.create(
-          fullName, endTagToken.sourceSpan,
-          `Void elements do not have end tags "${endTagToken.parts[1]}"`));
+      this.errors.push(
+        TreeError.create(
+          fullName,
+          endTagToken.sourceSpan,
+          `Void elements do not have end tags "${endTagToken.parts[1]}"`,
+        ),
+      );
     } else if (!this._popContainer(fullName, html.Element, endTagToken.sourceSpan)) {
-      const errMsg = `Unexpected closing tag "${
-          fullName}". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags`;
+      const errMsg = `Unexpected closing tag "${fullName}". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags`;
       this.errors.push(TreeError.create(fullName, endTagToken.sourceSpan, errMsg));
     }
   }
@@ -373,8 +468,10 @@ class _TreeBuilder {
    * opening tag is recovered).
    */
   private _popContainer(
-      expectedName: string|null, expectedType: NodeContainerConstructor,
-      endSourceSpan: ParseSourceSpan|null): boolean {
+    expectedName: string | null,
+    expectedType: NodeContainerConstructor,
+    endSourceSpan: ParseSourceSpan | null,
+  ): boolean {
     let unexpectedCloseTagDetected = false;
     for (let stackIndex = this._containerStack.length - 1; stackIndex >= 0; stackIndex--) {
       const node = this._containerStack[stackIndex];
@@ -390,8 +487,10 @@ class _TreeBuilder {
       }
 
       // Blocks and most elements are not self closing.
-      if (node instanceof html.Block ||
-          node instanceof html.Element && !this.getTagDefinition(node.name).closedByParent) {
+      if (
+        node instanceof html.Block ||
+        (node instanceof html.Element && !this.getTagDefinition(node.name).closedByParent)
+      ) {
         // Note that we encountered an unexpected close tag but continue processing the element
         // stack so we can assign an `endSourceSpan` if there is a corresponding start tag for this
         // end tag in the stack.
@@ -413,8 +512,8 @@ class _TreeBuilder {
     // Consume the attribute value
     let value = '';
     const valueTokens: InterpolatedAttributeToken[] = [];
-    let valueStartSpan: ParseSourceSpan|undefined = undefined;
-    let valueEnd: ParseLocation|undefined = undefined;
+    let valueStartSpan: ParseSourceSpan | undefined = undefined;
+    let valueEnd: ParseLocation | undefined = undefined;
     // NOTE: We need to use a new variable `nextTokenType` here to hide the actual type of
     // `_peek.type` from TS. Otherwise TS will narrow the type of `_peek.type` preventing it from
     // being able to consider `ATTR_VALUE_INTERPOLATION` as an option. This is because TS is not
@@ -423,9 +522,11 @@ class _TreeBuilder {
     if (nextTokenType === TokenType.ATTR_VALUE_TEXT) {
       valueStartSpan = this._peek.sourceSpan;
       valueEnd = this._peek.sourceSpan.end;
-      while (this._peek.type === TokenType.ATTR_VALUE_TEXT ||
-             this._peek.type === TokenType.ATTR_VALUE_INTERPOLATION ||
-             this._peek.type === TokenType.ENCODED_ENTITY) {
+      while (
+        this._peek.type === TokenType.ATTR_VALUE_TEXT ||
+        this._peek.type === TokenType.ATTR_VALUE_INTERPOLATION ||
+        this._peek.type === TokenType.ENCODED_ENTITY
+      ) {
         const valueToken = this._advance<InterpolatedAttributeToken>();
         valueTokens.push(valueToken);
         if (valueToken.type === TokenType.ATTR_VALUE_INTERPOLATION) {
@@ -449,13 +550,19 @@ class _TreeBuilder {
       attrEnd = quoteToken.sourceSpan.end;
     }
 
-    const valueSpan = valueStartSpan && valueEnd &&
-        new ParseSourceSpan(valueStartSpan.start, valueEnd, valueStartSpan.fullStart);
+    const valueSpan =
+      valueStartSpan &&
+      valueEnd &&
+      new ParseSourceSpan(valueStartSpan.start, valueEnd, valueStartSpan.fullStart);
     return new html.Attribute(
-        fullName, value,
-        new ParseSourceSpan(attrName.sourceSpan.start, attrEnd, attrName.sourceSpan.fullStart),
-        attrName.sourceSpan, valueSpan, valueTokens.length > 0 ? valueTokens : undefined,
-        undefined);
+      fullName,
+      value,
+      new ParseSourceSpan(attrName.sourceSpan.start, attrEnd, attrName.sourceSpan.fullStart),
+      attrName.sourceSpan,
+      valueSpan,
+      valueTokens.length > 0 ? valueTokens : undefined,
+      undefined,
+    );
   }
 
   private _consumeBlockOpen(token: BlockOpenStartToken) {
@@ -480,11 +587,15 @@ class _TreeBuilder {
 
   private _consumeBlockClose(token: BlockCloseToken) {
     if (!this._popContainer(null, html.Block, token.sourceSpan)) {
-      this.errors.push(TreeError.create(
-          null, token.sourceSpan,
+      this.errors.push(
+        TreeError.create(
+          null,
+          token.sourceSpan,
           `Unexpected closing block. The block may have been closed earlier. ` +
-              `If you meant to write the } character, you should use the "&#125;" ` +
-              `HTML entity instead.`));
+            `If you meant to write the } character, you should use the "&#125;" ` +
+            `HTML entity instead.`,
+        ),
+      );
     }
   }
 
@@ -506,18 +617,23 @@ class _TreeBuilder {
     // Incomplete blocks don't have children so we close them immediately and report an error.
     this._popContainer(null, html.Block, null);
 
-    this.errors.push(TreeError.create(
-        token.parts[0], span,
+    this.errors.push(
+      TreeError.create(
+        token.parts[0],
+        span,
         `Incomplete block "${token.parts[0]}". If you meant to write the @ character, ` +
-            `you should use the "&#64;" HTML entity instead.`));
+          `you should use the "&#64;" HTML entity instead.`,
+      ),
+    );
   }
 
-  private _getContainer(): NodeContainer|null {
-    return this._containerStack.length > 0 ? this._containerStack[this._containerStack.length - 1] :
-                                             null;
+  private _getContainer(): NodeContainer | null {
+    return this._containerStack.length > 0
+      ? this._containerStack[this._containerStack.length - 1]
+      : null;
   }
 
-  private _getClosestParentElement(): html.Element|null {
+  private _getClosestParentElement(): html.Element | null {
     for (let i = this._containerStack.length - 1; i > -1; i--) {
       if (this._containerStack[i] instanceof html.Element) {
         return this._containerStack[i] as html.Element;
@@ -537,8 +653,11 @@ class _TreeBuilder {
     }
   }
 
-  private _getElementFullName(prefix: string, localName: string, parentElement: html.Element|null):
-      string {
+  private _getElementFullName(
+    prefix: string,
+    localName: string,
+    parentElement: html.Element | null,
+  ): string {
     if (prefix === '') {
       prefix = this.getTagDefinition(localName).implicitNamespacePrefix || '';
       if (prefix === '' && parentElement != null) {

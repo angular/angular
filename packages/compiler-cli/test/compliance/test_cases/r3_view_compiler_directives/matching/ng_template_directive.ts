@@ -1,18 +1,13 @@
 import {Component, Directive, NgModule} from '@angular/core';
 
 @Directive({selector: 'ng-template[directiveA]'})
-export class DirectiveA {
-}
+export class DirectiveA {}
 
 @Component({
   selector: 'my-component',
-  template: `
-    <ng-template directiveA>Some content</ng-template>
-  `
+  template: ` <ng-template directiveA>Some content</ng-template> `,
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [DirectiveA, MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

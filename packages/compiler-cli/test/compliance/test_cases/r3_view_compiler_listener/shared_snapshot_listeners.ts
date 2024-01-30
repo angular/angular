@@ -7,7 +7,7 @@ import {Component, NgModule} from '@angular/core';
       <div (click)="onClick(foo)"></div>
       <button (click)="onClick2(bar)"></button>
     </div>
-  `
+  `,
 })
 export class MyComponent {
   onClick(name: any) {}
@@ -15,5 +15,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

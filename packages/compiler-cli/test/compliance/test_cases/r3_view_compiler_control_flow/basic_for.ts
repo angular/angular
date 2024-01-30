@@ -3,9 +3,9 @@ import {Component} from '@angular/core';
 @Component({
   template: `
     <div>
-      {{message}}
+      {{ message }}
       @for (item of items; track item) {
-        {{item.name}}
+      {{ item.name }}
       }
     </div>
   `,

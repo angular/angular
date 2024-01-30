@@ -24,5 +24,5 @@ declare module '@babel/core' {
   export * from '@types/babel__core';
 }
 declare module '@babel/generator' {
-  export { default } from '@types/babel__generator';
+  export {default} from '@types/babel__generator';
 }

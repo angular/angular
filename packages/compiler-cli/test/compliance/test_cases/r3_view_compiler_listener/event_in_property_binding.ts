@@ -11,5 +11,4 @@ class Comp {
 }
 
 @NgModule({declarations: [Comp, DivDir]})
-export class MyMod {
-}
+export class MyMod {}

@@ -5,7 +5,7 @@ import {Component, NgModule, QueryList, ViewChild, ViewChildren} from '@angular/
   template: `
     <div #myRef></div>
     <div #myRef1></div>
-  `
+  `,
 })
 export class ViewQueryComponent {
   @ViewChild('myRef') myRef: any;
@@ -13,5 +13,4 @@ export class ViewQueryComponent {
 }
 
 @NgModule({declarations: [ViewQueryComponent]})
-export class MyModule {
-}
+export class MyModule {}

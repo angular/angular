@@ -1,6 +1,6 @@
 import {Directive, input} from '@angular/core';
 
-function convertToBoolean(value: string|boolean) {
+function convertToBoolean(value: string | boolean) {
   return value === true || value !== '';
 }
 
@@ -8,7 +8,7 @@ function convertToBoolean(value: string|boolean) {
   standalone: true,
 })
 export class TestDir {
-  name = input.required<boolean, string|boolean>({
+  name = input.required<boolean, string | boolean>({
     transform: convertToBoolean,
   });
 }

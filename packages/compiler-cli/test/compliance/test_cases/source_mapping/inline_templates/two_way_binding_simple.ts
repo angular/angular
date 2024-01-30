@@ -15,5 +15,4 @@ export class NgModelDirective {
 }
 
 @NgModule({declarations: [TestCmp, NgModelDirective]})
-export class AppModule {
-}
+export class AppModule {}

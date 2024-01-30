@@ -14,11 +14,9 @@ class GreeterEN implements Greeter {
   selector: 'my-component',
   template: '<div></div>',
   providers: [GreeterEN, {provide: Greeter, useClass: GreeterEN}],
-  viewProviders: [GreeterEN]
+  viewProviders: [GreeterEN],
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

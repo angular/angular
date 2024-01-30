@@ -11,15 +11,13 @@ declare const transition: any;
     <div
       [@myAnimation]="exp"
       (@myAnimation.start)="onStart($event)"
-      (@myAnimation.done)="onDone($event)"></div>
+      (@myAnimation.done)="onDone($event)"
+    ></div>
   `,
   animations: [
-    trigger(
-        'myAnimation',
-        [
-          transition(
-              '* => state', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))]),
-        ]),
+    trigger('myAnimation', [
+      transition('* => state', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))]),
+    ]),
   ],
 })
 class MyComponent {
@@ -35,5 +33,4 @@ class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

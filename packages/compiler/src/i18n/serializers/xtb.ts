@@ -19,12 +19,14 @@ const _TRANSLATION_TAG = 'translation';
 const _PLACEHOLDER_TAG = 'ph';
 
 export class Xtb extends Serializer {
-  override write(messages: i18n.Message[], locale: string|null): string {
+  override write(messages: i18n.Message[], locale: string | null): string {
     throw new Error('Unsupported');
   }
 
-  override load(content: string, url: string):
-      {locale: string, i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
+  override load(
+    content: string,
+    url: string,
+  ): {locale: string; i18nNodesByMsgId: {[msgId: string]: i18n.Node[]}} {
     // xtb to xml nodes
     const xtbParser = new XtbParser();
     const {locale, msgIdToHtml, errors} = xtbParser.parse(content, url);
@@ -36,8 +38,8 @@ export class Xtb extends Serializer {
     // Because we should be able to load xtb files that rely on features not supported by angular,
     // we need to delay the conversion of html to i18n nodes so that non angular messages are not
     // converted
-    Object.keys(msgIdToHtml).forEach(msgId => {
-      const valueFn = function() {
+    Object.keys(msgIdToHtml).forEach((msgId) => {
+      const valueFn = function () {
         const {i18nNodes, errors} = converter.convert(msgIdToHtml[msgId], url);
         if (errors.length) {
           throw new Error(`xtb parse errors:\n${errors.join('\n')}`);
@@ -67,12 +69,12 @@ function createLazyProperty(messages: any, id: string, valueFn: () => any) {
   Object.defineProperty(messages, id, {
     configurable: true,
     enumerable: true,
-    get: function() {
+    get: function () {
       const value = valueFn();
       Object.defineProperty(messages, id, {enumerable: true, value});
       return value;
     },
-    set: _ => {
+    set: (_) => {
       throw new Error('Could not overwrite an XTB translation');
     },
   });
@@ -84,7 +86,7 @@ class XtbParser implements ml.Visitor {
   private _bundleDepth!: number;
   private _errors!: I18nError[];
   private _msgIdToHtml!: {[msgId: string]: string};
-  private _locale: string|null = null;
+  private _locale: string | null = null;
 
   parse(xtb: string, url: string) {
     this._bundleDepth = 0;
@@ -170,9 +172,10 @@ class XmlToI18n implements ml.Visitor {
     const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
     this._errors = xmlIcu.errors;
 
-    const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length == 0 ?
-        [] :
-        ml.visitAll(this, xmlIcu.rootNodes);
+    const i18nNodes =
+      this._errors.length > 0 || xmlIcu.rootNodes.length == 0
+        ? []
+        : ml.visitAll(this, xmlIcu.rootNodes);
 
     return {
       i18nNodes,
@@ -187,7 +190,7 @@ class XmlToI18n implements ml.Visitor {
   visitExpansion(icu: ml.Expansion, context: any) {
     const caseMap: {[value: string]: i18n.Node} = {};
 
-    ml.visitAll(this, icu.cases).forEach(c => {
+    ml.visitAll(this, icu.cases).forEach((c) => {
       caseMap[c.value] = new i18n.Container(c.nodes, icu.sourceSpan);
     });
 
@@ -201,7 +204,7 @@ class XmlToI18n implements ml.Visitor {
     };
   }
 
-  visitElement(el: ml.Element, context: any): i18n.Placeholder|null {
+  visitElement(el: ml.Element, context: any): i18n.Placeholder | null {
     if (el.name === _PLACEHOLDER_TAG) {
       const nameAttr = el.attrs.find((attr) => attr.name === 'name');
       if (nameAttr) {

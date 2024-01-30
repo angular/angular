@@ -10,7 +10,8 @@ import {Component, NgModule} from '@angular/core';
     [attr.bar]="'two'"
     [id]="2"
     aria-label="link"
-    [attr.baz]="three"></a>`
+    [attr.baz]="three"
+  ></a>`,
 })
 export class MyComponent {
   doThings() {}
@@ -18,5 +19,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

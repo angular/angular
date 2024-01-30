@@ -10,14 +10,8 @@ export class TestPipe {
 @Component({
   template: `
     <div>
-      {{message}}
-      @if ((val | test) === 1) {
-        one
-      } @else if ((val | test) === 2) {
-        two
-      } @else {
-        three
-      }
+      {{ message }}
+      @if ((val | test) === 1) { one } @else if ((val | test) === 2) { two } @else { three }
     </div>
   `,
   standalone: true,

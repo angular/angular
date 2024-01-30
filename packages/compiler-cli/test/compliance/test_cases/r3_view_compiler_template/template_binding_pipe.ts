@@ -4,9 +4,7 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-component',
   template: `<div *ngIf="val | pipe"></div>`,
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

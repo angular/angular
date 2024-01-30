@@ -2,13 +2,9 @@ import {Component, NgModule} from '@angular/core';
 
 @Component({
   selector: 'my-component',
-  template: `
-  <div id="static" i18n-title="m|d" title="introduction"></div>
-  `
+  template: ` <div id="static" i18n-title="m|d" title="introduction"></div> `,
 })
-export class MyComponent {
-}
+export class MyComponent {}
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

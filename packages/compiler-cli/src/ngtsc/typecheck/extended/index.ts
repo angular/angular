@@ -20,16 +20,21 @@ import {factory as textAttributeNotBindingFactory} from './checks/text_attribute
 
 export {ExtendedTemplateCheckerImpl} from './src/extended_template_checker';
 
-export const ALL_DIAGNOSTIC_FACTORIES:
-    readonly TemplateCheckFactory<ErrorCode, ExtendedTemplateDiagnosticName>[] = [
-      invalidBananaInBoxFactory, nullishCoalescingNotNullableFactory,
-      optionalChainNotNullableFactory, missingControlFlowDirectiveFactory,
-      textAttributeNotBindingFactory, missingNgForOfLetFactory, suffixNotSupportedFactory,
-      interpolatedSignalNotInvoked
-    ];
-
+export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
+  ErrorCode,
+  ExtendedTemplateDiagnosticName
+>[] = [
+  invalidBananaInBoxFactory,
+  nullishCoalescingNotNullableFactory,
+  optionalChainNotNullableFactory,
+  missingControlFlowDirectiveFactory,
+  textAttributeNotBindingFactory,
+  missingNgForOfLetFactory,
+  suffixNotSupportedFactory,
+  interpolatedSignalNotInvoked,
+];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([
   ExtendedTemplateDiagnosticName.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION,
-  ...ALL_DIAGNOSTIC_FACTORIES.map(factory => factory.name)
+  ...ALL_DIAGNOSTIC_FACTORIES.map((factory) => factory.name),
 ]);

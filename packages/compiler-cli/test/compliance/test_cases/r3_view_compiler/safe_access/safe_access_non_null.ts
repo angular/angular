@@ -2,11 +2,11 @@ import {Component, NgModule} from '@angular/core';
 
 @Component({
   template: `
-    {{ val?.foo!.bar }}
-    {{ val?.[0].foo!.bar }}
-    {{ foo(val)?.foo!.bar }}
-    {{ $any(val)?.foo!.bar }}
-  `
+    {{ (val?.foo)!.bar }}
+    {{ (val?.[0].foo)!.bar }}
+    {{ (foo(val)?.foo)!.bar }}
+    {{ ($any(val)?.foo)!.bar }}
+  `,
 })
 export class MyApp {
   val: any = null;
@@ -17,5 +17,4 @@ export class MyApp {
 }
 
 @NgModule({declarations: [MyApp]})
-export class MyModule {
-}
+export class MyModule {}

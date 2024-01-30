@@ -9,5 +9,5 @@ import {Directive} from '@angular/core';
   },
 })
 export class HostBindingDir {
-  value: number|null = null;
+  value: number | null = null;
 }

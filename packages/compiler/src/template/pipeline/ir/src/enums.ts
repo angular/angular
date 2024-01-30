@@ -490,7 +490,7 @@ export enum I18nParamResolutionTime {
    * Param is resolved during post-processing. This should be used for params who's value comes from
    * an ICU.
    */
-  Postproccessing
+  Postproccessing,
 }
 
 /**
@@ -538,7 +538,7 @@ export enum I18nParamValueFlags {
   /**
    * This value represents an i18n expression index.
    */
-  ExpressionIndex = 0b10000
+  ExpressionIndex = 0b10000,
 }
 
 /**
@@ -568,11 +568,11 @@ export enum DeferTriggerKind {
 export enum I18nContextKind {
   RootI18n,
   Icu,
-  Attr
+  Attr,
 }
 
 export enum TemplateKind {
   NgTemplate,
   Structural,
-  Block
+  Block,
 }

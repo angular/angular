@@ -4,9 +4,6 @@ import {Component} from '@angular/core';
   selector: 'my-component',
   standalone: true,
   host: {'(click)': '$event.preventDefault(); $event.target.blur()'},
-  template: `
-    <div (click)="$event.preventDefault(); $event.target.blur()"></div>
-  `
+  template: ` <div (click)="$event.preventDefault(); $event.target.blur()"></div> `,
 })
-export class MyComponent {
-}
+export class MyComponent {}

@@ -25,9 +25,12 @@ runInEachFileSystem(() => {
     });
 
     it('should extract functions', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export function getInjector() { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -40,11 +43,14 @@ runInEachFileSystem(() => {
     });
 
     it('should extract function with parameters', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export function go(num: string, intl = 1, area?: string): boolean {
           return false;
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -70,11 +76,14 @@ runInEachFileSystem(() => {
     });
 
     it('should extract a function with a rest parameter', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export function getNames(prefix: string, ...ids: string[]): string[] {
           return [];
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const functionEntry = docs[0] as FunctionEntry;
@@ -90,13 +99,16 @@ runInEachFileSystem(() => {
     });
 
     it('should extract overloaded functions', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export function ident(value: boolean): boolean
         export function ident(value: number): number
         export function ident(value: number|boolean): number|boolean {
           return value;
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
@@ -115,9 +127,12 @@ runInEachFileSystem(() => {
     });
 
     it('should extract function generics', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export function save<T>(data: T) { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);

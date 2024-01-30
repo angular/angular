@@ -5,16 +5,12 @@ import {Component, NgModule} from '@angular/core';
 import {LibModule} from 'external_library';
 
 @Component({
-  template: `
-    <lib-dir></lib-dir>
-  `,
+  template: ` <lib-dir></lib-dir> `,
 })
-export class TestComponent {
-}
+export class TestComponent {}
 
 @NgModule({
   declarations: [TestComponent],
   imports: [LibModule],
 })
-export class TestModule {
-}
+export class TestModule {}

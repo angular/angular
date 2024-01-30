@@ -8,31 +8,52 @@
 import {AttributeMarker, SelectorFlags} from '@angular/compiler/src/core';
 import {QueryFlags} from '@angular/compiler/src/render3/view/query_generation';
 
-import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Options, Placeholder, resetMessageIndex} from './i18n_helpers';
+import {
+  i18nIcuMsg,
+  i18nMsg,
+  i18nMsgWithPostprocess,
+  Options,
+  Placeholder,
+  resetMessageIndex,
+} from './i18n_helpers';
 
 const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
   [
     // E.g. `__i18nMsg__('message string', [ ['placeholder', 'pair']
     // ], {original_code: {'placeholder': '{{ foo }}'}}, {meta: 'properties'})`
     macroFn(/__i18nMsg__/, stringParam(), arrayParam(), objectParam(), objectParam()),
-    (_match, message, placeholders, options, meta) => i18nMsg(
-        message, parsePlaceholders(placeholders), parseOptions(options), parseMetaProperties(meta)),
+    (_match, message, placeholders, options, meta) =>
+      i18nMsg(
+        message,
+        parsePlaceholders(placeholders),
+        parseOptions(options),
+        parseMetaProperties(meta),
+      ),
   ],
   [
     // E.g. `__i18nMsgWithPostprocess__('message', [ ['placeholder', 'pair'] ], { meta: 'props'})`
     macroFn(
-        /__i18nMsgWithPostprocess__/, stringParam(), arrayParam(), objectParam(), objectParam(),
-        arrayParam()),
+      /__i18nMsgWithPostprocess__/,
+      stringParam(),
+      arrayParam(),
+      objectParam(),
+      objectParam(),
+      arrayParam(),
+    ),
     (_match, message, placeholders, options, meta, postProcessPlaceholders) =>
-        i18nMsgWithPostprocess(
-            message, parsePlaceholders(placeholders), parseOptions(options),
-            parseMetaProperties(meta), parsePlaceholders(postProcessPlaceholders)),
+      i18nMsgWithPostprocess(
+        message,
+        parsePlaceholders(placeholders),
+        parseOptions(options),
+        parseMetaProperties(meta),
+        parsePlaceholders(postProcessPlaceholders),
+      ),
   ],
   [
     // E.g. `__i18nIcuMsg__('message string', [ ['placeholder', 'pair'] ])`
     macroFn(/__i18nIcuMsg__/, stringParam(), arrayParam(), objectParam()),
     (_match, message, placeholders, options) =>
-        i18nIcuMsg(message, parsePlaceholders(placeholders), parseOptions(options)),
+      i18nIcuMsg(message, parsePlaceholders(placeholders), parseOptions(options)),
   ],
   [
     // E.g. `__AttributeMarker.Bindings__`
@@ -63,13 +84,21 @@ export function replaceMacros(expectedContent: string): string {
 
 function parsePlaceholders(str: string): Placeholder[] {
   const placeholders = eval(`(${str})`);
-  if (!Array.isArray(placeholders) ||
-      !placeholders.every(
-          p => Array.isArray(p) && p.length >= 2 && typeof p[0] === 'string' &&
-              typeof p[1] === 'string' && (p.length === 2 || typeof p[2] === 'string'))) {
+  if (
+    !Array.isArray(placeholders) ||
+    !placeholders.every(
+      (p) =>
+        Array.isArray(p) &&
+        p.length >= 2 &&
+        typeof p[0] === 'string' &&
+        typeof p[1] === 'string' &&
+        (p.length === 2 || typeof p[2] === 'string'),
+    )
+  ) {
     throw new Error(
-        'Expected an array of Placeholder arrays (`[name: string, identifier: string, associatedId?: string]`) but got ' +
-        str);
+      'Expected an array of Placeholder arrays (`[name: string, identifier: string, associatedId?: string]`) but got ' +
+        str,
+    );
   }
   return placeholders;
 }
@@ -85,21 +114,29 @@ function parseOptions(str: string): Options {
   // authored incorrectly.
   const unexpectedKeys = Object.keys(obj).filter((key) => key !== 'original_code');
   if (unexpectedKeys.length > 0) {
-    throw new Error(`Expected an i18n options object with \`original_code\`, but got ${
-        unexpectedKeys.join(', ')}`);
+    throw new Error(
+      `Expected an i18n options object with \`original_code\`, but got ${unexpectedKeys.join(
+        ', ',
+      )}`,
+    );
   }
 
   // Validate `original_code`.
   const original = obj?.['original_code'];
   if (typeof original !== 'undefined' && typeof original !== 'object') {
     throw new Error(
-        `Expected an i18n options object with \`original_code\`, as a nested object, but got ${
-            JSON.stringify(obj, null, 4)}`);
+      `Expected an i18n options object with \`original_code\`, as a nested object, but got ${JSON.stringify(
+        obj,
+        null,
+        4,
+      )}`,
+    );
   }
   for (const [key, value] of Object.entries(original ?? {})) {
     if (typeof value !== 'string') {
-      throw new Error(`Expected an object whose values are strings, but property ${key} has type ${
-          typeof value}, when parsing:\n\n${str}`);
+      throw new Error(
+        `Expected an object whose values are strings, but property ${key} has type ${typeof value}, when parsing:\n\n${str}`,
+      );
     }
   }
 
@@ -113,8 +150,11 @@ function parseMetaProperties(str: string): Record<string, string> {
   }
   for (const key in obj) {
     if (typeof obj[key] !== 'string') {
-      throw new Error(`Expected an object whose values are strings, but property ${key} has type ${
-          typeof obj[key]}, when parsing:\n\n${str}`);
+      throw new Error(
+        `Expected an object whose values are strings, but property ${key} has type ${typeof obj[
+          key
+        ]}, when parsing:\n\n${str}`,
+      );
     }
   }
   return obj;
@@ -188,8 +228,9 @@ function objectParam() {
 function macroFn(fnName: RegExp, ...args: RegExp[]): RegExp {
   const ws = /[\s\r\n]*/.source;
   return new RegExp(
-      ws + fnName.source + '\\(' + args.map(r => `${ws}${r.source}${ws}`).join(',') + '\\)' + ws,
-      'g');
+    ws + fnName.source + '\\(' + args.map((r) => `${ws}${r.source}${ws}`).join(',') + '\\)' + ws,
+    'g',
+  );
 }
 
 /**
@@ -198,17 +239,22 @@ function macroFn(fnName: RegExp, ...args: RegExp[]): RegExp {
  * @param pattern The regex to match a single occurrence of the flag.
  * @param getFlagValue A function to extract the numeric flag value from the pattern.
  */
-function flagUnion(pattern: RegExp, getFlagValue: (...match: string[]) => number):
-    typeof EXPECTED_FILE_MACROS[number] {
+function flagUnion(
+  pattern: RegExp,
+  getFlagValue: (...match: string[]) => number,
+): (typeof EXPECTED_FILE_MACROS)[number] {
   return [
     // Match at least one occurrence of the pattern, optionally followed by more occurrences
     // separated by a pipe.
-    new RegExp(pattern.source + '(?:s*\\\|s*' + pattern.source + ')*', 'g'),
+    new RegExp(pattern.source + '(?:s*\\|s*' + pattern.source + ')*', 'g'),
     (match: string) => {
       // Replace all matches with the union of the individually matched flags.
-      return String(match.split('|')
-                        .map(flag => getFlagValue(...flag.trim().match(pattern)!))
-                        .reduce((accumulator, flagValue) => accumulator | flagValue, 0));
+      return String(
+        match
+          .split('|')
+          .map((flag) => getFlagValue(...flag.trim().match(pattern)!))
+          .reduce((accumulator, flagValue) => accumulator | flagValue, 0),
+      );
     },
   ];
 }

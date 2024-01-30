@@ -97,8 +97,10 @@ export class ConstantPool {
   constructor(private readonly isClosureCompilerEnabled: boolean = false) {}
 
   getConstLiteral(literal: o.Expression, forceShared?: boolean): o.Expression {
-    if ((literal instanceof o.LiteralExpr && !isLongStringLiteral(literal)) ||
-        literal instanceof FixupExpression) {
+    if (
+      (literal instanceof o.LiteralExpr && !isLongStringLiteral(literal)) ||
+      literal instanceof FixupExpression
+    ) {
       // Do no put simple literals into the constant pool or try to produce a constant for a
       // reference to a constant.
       return literal;
@@ -131,13 +133,15 @@ export class ConstantPool {
         // const myStr = function() { return "very very very long string"; };
         // const usage1 = myStr();
         // const usage2 = myStr();
-        definition = o.variable(name).set(new o.FunctionExpr(
-            [],  // Params.
+        definition = o.variable(name).set(
+          new o.FunctionExpr(
+            [], // Params.
             [
               // Statements.
               new o.ReturnStatement(literal),
             ],
-            ));
+          ),
+        );
         usage = o.variable(name).callFn([]);
       } else {
         // Just declare and use the variable directly, without a function call
@@ -163,36 +167,46 @@ export class ConstantPool {
     return this.sharedConstants.get(key)!;
   }
 
-  getLiteralFactory(literal: o.LiteralArrayExpr|o.LiteralMapExpr):
-      {literalFactory: o.Expression, literalFactoryArguments: o.Expression[]} {
+  getLiteralFactory(literal: o.LiteralArrayExpr | o.LiteralMapExpr): {
+    literalFactory: o.Expression;
+    literalFactoryArguments: o.Expression[];
+  } {
     // Create a pure function that builds an array of a mix of constant and variable expressions
     if (literal instanceof o.LiteralArrayExpr) {
-      const argumentsForKey = literal.entries.map(e => e.isConstant() ? e : UNKNOWN_VALUE_KEY);
+      const argumentsForKey = literal.entries.map((e) => (e.isConstant() ? e : UNKNOWN_VALUE_KEY));
       const key = GenericKeyFn.INSTANCE.keyOf(o.literalArr(argumentsForKey));
-      return this._getLiteralFactory(key, literal.entries, entries => o.literalArr(entries));
+      return this._getLiteralFactory(key, literal.entries, (entries) => o.literalArr(entries));
     } else {
       const expressionForKey = o.literalMap(
-          literal.entries.map(e => ({
-                                key: e.key,
-                                value: e.value.isConstant() ? e.value : UNKNOWN_VALUE_KEY,
-                                quoted: e.quoted
-                              })));
+        literal.entries.map((e) => ({
+          key: e.key,
+          value: e.value.isConstant() ? e.value : UNKNOWN_VALUE_KEY,
+          quoted: e.quoted,
+        })),
+      );
       const key = GenericKeyFn.INSTANCE.keyOf(expressionForKey);
       return this._getLiteralFactory(
-          key, literal.entries.map(e => e.value),
-          entries => o.literalMap(entries.map((value, index) => ({
-                                                key: literal.entries[index].key,
-                                                value,
-                                                quoted: literal.entries[index].quoted
-                                              }))));
+        key,
+        literal.entries.map((e) => e.value),
+        (entries) =>
+          o.literalMap(
+            entries.map((value, index) => ({
+              key: literal.entries[index].key,
+              value,
+              quoted: literal.entries[index].quoted,
+            })),
+          ),
+      );
     }
   }
 
   // TODO: useUniqueName(false) is necessary for naming compatibility with
   // TemplateDefinitionBuilder, but should be removed once Template Pipeline is the default.
   getSharedFunctionReference(
-      fn: o.FunctionExpr|o.ArrowFunctionExpr, prefix: string,
-      useUniqueName: boolean = true): o.Expression {
+    fn: o.FunctionExpr | o.ArrowFunctionExpr,
+    prefix: string,
+    useUniqueName: boolean = true,
+  ): o.Expression {
     const isArrow = fn instanceof o.ArrowFunctionExpr;
 
     for (const current of this.statements) {
@@ -216,21 +230,31 @@ export class ConstantPool {
   }
 
   private _getLiteralFactory(
-      key: string, values: o.Expression[], resultMap: (parameters: o.Expression[]) => o.Expression):
-      {literalFactory: o.Expression, literalFactoryArguments: o.Expression[]} {
+    key: string,
+    values: o.Expression[],
+    resultMap: (parameters: o.Expression[]) => o.Expression,
+  ): {literalFactory: o.Expression; literalFactoryArguments: o.Expression[]} {
     let literalFactory = this.literalFactories.get(key);
-    const literalFactoryArguments = values.filter((e => !e.isConstant()));
+    const literalFactoryArguments = values.filter((e) => !e.isConstant());
     if (!literalFactory) {
-      const resultExpressions = values.map(
-          (e, index) => e.isConstant() ? this.getConstLiteral(e, true) : o.variable(`a${index}`));
-      const parameters =
-          resultExpressions.filter(isVariable).map(e => new o.FnParam(e.name!, o.DYNAMIC_TYPE));
-      const pureFunctionDeclaration =
-          o.arrowFn(parameters, resultMap(resultExpressions), o.INFERRED_TYPE);
+      const resultExpressions = values.map((e, index) =>
+        e.isConstant() ? this.getConstLiteral(e, true) : o.variable(`a${index}`),
+      );
+      const parameters = resultExpressions
+        .filter(isVariable)
+        .map((e) => new o.FnParam(e.name!, o.DYNAMIC_TYPE));
+      const pureFunctionDeclaration = o.arrowFn(
+        parameters,
+        resultMap(resultExpressions),
+        o.INFERRED_TYPE,
+      );
       const name = this.freshName();
-      this.statements.push(o.variable(name)
-                               .set(pureFunctionDeclaration)
-                               .toDeclStmt(o.INFERRED_TYPE, o.StmtModifier.Final));
+      this.statements.push(
+        o
+          .variable(name)
+          .set(pureFunctionDeclaration)
+          .toDeclStmt(o.INFERRED_TYPE, o.StmtModifier.Final),
+      );
       literalFactory = o.variable(name);
       this.literalFactories.set(key, literalFactory);
     }
@@ -293,7 +317,8 @@ export class GenericKeyFn implements ExpressionKeyFn {
       return `typeof(${this.keyOf(expr.expr)})`;
     } else {
       throw new Error(
-          `${this.constructor.name} does not handle expressions of type ${expr.constructor.name}`);
+        `${this.constructor.name} does not handle expressions of type ${expr.constructor.name}`,
+      );
     }
   }
 }
@@ -303,6 +328,9 @@ function isVariable(e: o.Expression): e is o.ReadVarExpr {
 }
 
 function isLongStringLiteral(expr: o.Expression): boolean {
-  return expr instanceof o.LiteralExpr && typeof expr.value === 'string' &&
-      expr.value.length >= POOL_INCLUSION_LENGTH_THRESHOLD_FOR_STRINGS;
+  return (
+    expr instanceof o.LiteralExpr &&
+    typeof expr.value === 'string' &&
+    expr.value.length >= POOL_INCLUSION_LENGTH_THRESHOLD_FOR_STRINGS
+  );
 }

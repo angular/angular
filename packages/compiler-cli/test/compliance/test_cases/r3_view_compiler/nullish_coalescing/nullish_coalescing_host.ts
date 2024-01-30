@@ -4,13 +4,13 @@ import {Component, NgModule} from '@angular/core';
   selector: 'my-app',
   host: {
     '[attr.first-name]': `'Hello, ' + (firstName ?? 'Frodo') + '!'`,
-    '(click)': `logLastName(lastName ?? lastNameFallback ?? 'unknown')`
+    '(click)': `logLastName(lastName ?? lastNameFallback ?? 'unknown')`,
   },
-  template: ``
+  template: ``,
 })
 export class MyApp {
-  firstName: string|null = null;
-  lastName: string|null = null;
+  firstName: string | null = null;
+  lastName: string | null = null;
   lastNameFallback = 'Baggins';
 
   logLastName(name: string) {
@@ -19,5 +19,4 @@ export class MyApp {
 }
 
 @NgModule({declarations: [MyApp]})
-export class MyModule {
-}
+export class MyModule {}
