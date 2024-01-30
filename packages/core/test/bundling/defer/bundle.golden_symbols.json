@@ -1860,6 +1860,9 @@
     "name": "init_trusted_types_bypass"
   },
   {
+    "name": "init_two_way"
+  },
+  {
     "name": "init_type"
   },
   {

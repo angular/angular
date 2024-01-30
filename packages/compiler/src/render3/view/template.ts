@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertPureComponentScopeFunction, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
+import {BuiltinFunctionCall, convertActionBinding, convertAssignmentActionBinding, convertPropertyBinding, convertPureComponentScopeFunction, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
@@ -82,9 +82,13 @@ export function prepareEventListenerParameters(
   const implicitReceiverExpr = (scope === null || scope.bindingLevel === 0) ?
       o.variable(CONTEXT_NAME) :
       scope.getOrCreateSharedContextVar(0);
-  const bindingStatements = convertActionBinding(
-      scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
-      EVENT_BINDING_SCOPE_GLOBALS);
+  const bindingStatements = eventAst.type === ParsedEventType.TwoWay ?
+      convertAssignmentActionBinding(
+          scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
+          EVENT_BINDING_SCOPE_GLOBALS) :
+      convertActionBinding(
+          scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
+          EVENT_BINDING_SCOPE_GLOBALS);
   const statements = [];
   const variableDeclarations = scope?.variableDeclarations();
   const restoreViewStatement = scope?.restoreViewStatement();
@@ -777,7 +781,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (element.outputs.length > 0) {
         for (const outputAst of element.outputs) {
           this.creationInstruction(
-              outputAst.sourceSpan, R3.listener,
+              outputAst.sourceSpan,
+              outputAst.type === ParsedEventType.TwoWay ? R3.twoWayListener : R3.listener,
               this.prepareListenerParameter(element.name, outputAst, elementIndex));
         }
       }
@@ -1061,7 +1066,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Generate listeners for directive output
       for (const outputAst of template.outputs) {
         this.creationInstruction(
-            outputAst.sourceSpan, R3.listener,
+            outputAst.sourceSpan,
+            outputAst.type === ParsedEventType.TwoWay ? R3.twoWayListener : R3.listener,
             this.prepareListenerParameter('ng_template', outputAst, templateIndex));
       }
     }

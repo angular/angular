@@ -1783,5 +1783,11 @@
   },
   {
     "name": "ɵɵtext"
+  },
+  {
+    "name": "ɵɵtwoWayListener"
+  },
+  {
+    "name": "ɵɵtwoWayProperty"
   }
 ]
