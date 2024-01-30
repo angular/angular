@@ -14,9 +14,8 @@ import {ReactiveRadioButtonComp} from './reactive_radio_button_example';
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
   declarations: [ReactiveRadioButtonComp],
-  bootstrap: [ReactiveRadioButtonComp]
+  bootstrap: [ReactiveRadioButtonComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {ReactiveRadioButtonComp as AppComponent};

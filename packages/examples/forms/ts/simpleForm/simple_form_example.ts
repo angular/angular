@@ -15,8 +15,8 @@ import {NgForm} from '@angular/forms';
   selector: 'example-app',
   template: `
     <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
-      <input name="first" ngModel required #first="ngModel">
-      <input name="last" ngModel>
+      <input name="first" ngModel required #first="ngModel" />
+      <input name="last" ngModel />
       <button>Submit</button>
     </form>
 
@@ -28,8 +28,8 @@ import {NgForm} from '@angular/forms';
 })
 export class SimpleFormComp {
   onSubmit(f: NgForm) {
-    console.log(f.value);  // { first: '', last: '' }
-    console.log(f.valid);  // false
+    console.log(f.value); // { first: '', last: '' }
+    console.log(f.valid); // false
   }
 }
 // #enddocregion

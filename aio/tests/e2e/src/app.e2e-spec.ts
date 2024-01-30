@@ -75,7 +75,7 @@ describe('site App', () => {
   it('should render `{@example}` dgeni tags as `<code-example>` elements with HTML escaped content', async () => {
     await page.navigateTo('api/common/NgIf');
     const codeExample = element.all(by.css('code-example[region="NgIfSimple"]')).first();
-    expect(await page.getInnerHtml(codeExample)).toContain('&lt;br&gt;');
+    expect(await page.getInnerHtml(codeExample)).toContain('&lt;br /&gt;');
   });
 
   describe('scrolling to the top', () => {

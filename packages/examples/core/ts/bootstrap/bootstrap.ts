@@ -16,8 +16,7 @@ class MyApp {
 }
 
 @NgModule({imports: [BrowserModule], bootstrap: [MyApp]})
-class AppModule {
-}
+class AppModule {}
 
 export function main() {
   platformBrowserDynamic().bootstrapModule(AppModule);

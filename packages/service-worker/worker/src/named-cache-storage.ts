@@ -17,7 +17,10 @@ export interface NamedCache extends Cache {
  * - Name-spacing cache names to avoid conflicts with other caches on the same domain.
  */
 export class NamedCacheStorage<T extends CacheStorage> implements CacheStorage {
-  constructor(readonly original: T, private cacheNamePrefix: string) {}
+  constructor(
+    readonly original: T,
+    private cacheNamePrefix: string,
+  ) {}
 
   delete(cacheName: string): Promise<boolean> {
     return this.original.delete(`${this.cacheNamePrefix}:${cacheName}`);
@@ -30,11 +33,11 @@ export class NamedCacheStorage<T extends CacheStorage> implements CacheStorage {
   async keys(): Promise<string[]> {
     const prefix = `${this.cacheNamePrefix}:`;
     const allCacheNames = await this.original.keys();
-    const ownCacheNames = allCacheNames.filter(name => name.startsWith(prefix));
-    return ownCacheNames.map(name => name.slice(prefix.length));
+    const ownCacheNames = allCacheNames.filter((name) => name.startsWith(prefix));
+    return ownCacheNames.map((name) => name.slice(prefix.length));
   }
 
-  match(request: RequestInfo, options?: MultiCacheQueryOptions): Promise<Response|undefined> {
+  match(request: RequestInfo, options?: MultiCacheQueryOptions): Promise<Response | undefined> {
     return this.original.match(request, options);
   }
 
