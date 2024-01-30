@@ -353,39 +353,37 @@ export function serializeInjector(injector: Injector): Omit<SerializedInjector, 
     return null;
   }
 
-  const providers = getInjectorProviders(injector);
-  const providersCount = providers.length;
-  const providersNames = providers
+  const injectorProviders = getInjectorProviders(injector);
+  const providersNames = injectorProviders
     .map((p) => (p.token as Function).name) // both Type<unknown> | InjectionToken<unknown> are functions (with `name` property)
     .filter((name) => name); // filtering out undefined ones (InjectionTokens)
 
   if (metadata.type === 'null') {
-    return {type: 'null', name: 'Null Injector', providers: 0, providersNames};
+    return {type: 'null', name: 'Null Injector', providers: providersNames};
   }
 
   if (metadata.type === 'element') {
     const source = metadata.source as HTMLElement;
     const name = stripUnderscore(elementToDirectiveNames(source)[0]);
 
-    return {type: 'element', name, providers: providersCount, providersNames};
+    return {type: 'element', name, providers: providersNames};
   }
 
   if (metadata.type === 'environment') {
     if ((injector as any).scopes instanceof Set) {
       if ((injector as any).scopes.has('platform')) {
-        return {type: 'environment', name: 'Platform', providers: providersCount, providersNames};
+        return {type: 'environment', name: 'Platform', providers: providersNames};
       }
 
       if ((injector as any).scopes.has('root')) {
-        return {type: 'environment', name: 'Root', providers: providersCount, providersNames};
+        return {type: 'environment', name: 'Root', providers: providersNames};
       }
     }
 
     return {
       type: 'environment',
       name: stripUnderscore(metadata.source ?? ''),
-      providers: providersCount,
-      providersNames,
+      providers: providersNames,
     };
   }
 
