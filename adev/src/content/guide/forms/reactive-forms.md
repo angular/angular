@@ -394,7 +394,7 @@ Initially, the form contains one `Alias` field. To add another field, click the 
 
 ## A more concrete usage of FormArray
 
-In a more concrete sample, we can imagine the following use case. You are application needs a basic form, with known information, but the user has the ability to add more or less sub-form.
+In a more concrete sample, we can imagine the following use case. Your application needs a basic form, with known information, but the user has the ability to add more or less sub-form.
 
 Most of the time, these sub-forms are `FormGroup` parts of your principal form.
 
@@ -411,7 +411,6 @@ Most of the time, these sub-forms are `FormGroup` parts of your principal form.
   selector: 'my-form-comp',
   standalone: true,
   imports: [ReactiveFormsModule]
-  //component declaration
 })
 export class FormArrayComp {
   formGroup : FormGroup = this.fb.group({
@@ -444,7 +443,6 @@ At the start we have two defined controls : `controlOne` and `controlTwo`. We di
   selector: 'my-form-comp',
   standalone: true,
   imports: [ReactiveFormsModule]
-  //component declaration
 })
 export class FormArrayComp {
   formGroup : FormGroup = this.fb.group({
@@ -477,13 +475,14 @@ Here we have added the **subGroups** property to the `FormGroup` that contains t
 
 And in the template we have our principal form displayed and mapped, and a `@for` loop used to iterate over the `FormArray`.
 
-Tip: If you watch the HTML template, you will notice that the access to the `FormArray` is not from the `FormGroup` directly with the **get()** method. We will define a getter method.
+Tip: If you watch the HTML template, you will notice that the access to the `FormArray` is not from the `FormGroup` but directly using the **get()** method. We will define a getter method.
 
 To define the getter, just add the following snippet code: 
 ```ts
-//adding a getter method
 @Component({
-  //boilerplate code
+  selector: 'my-form-comp',
+  standalone: true,
+  imports: [ReactiveFormsModule]
 })
 export class FormArrayComp {
   get subForms(): FormArray<FormGroup> {
@@ -520,7 +519,9 @@ Edit the component to add the method associated with the call to trigger with th
 
 ```ts
 @Component({
-  //boilerplate code
+  selector: 'my-form-comp',
+  standalone: true,
+  imports: [ReactiveFormsModule]
 })
 export class FormArrayComp {
   //boilerplate code
@@ -531,12 +532,12 @@ export class FormArrayComp {
   }
 }
 ```
-With this method, when the user click on the button, it is adding a new `FormGroup` in the `FormArray`. When adding a new entry, the template will be updated.
+With this method, when the user clicks on the button, it is adding a new `FormGroup` in the `FormArray`. When adding a new entry, the template will be updated.
 </docs-step>
 
 <docs-step title="Add possibility to remove an entry">
 
-We can add entries to the `FormArray` but we should be able to remove a specific entry. The `FormArray` has the **removeAt()** method that permits to delete a specific index of the `FormArray`. 
+We can now add entries to the `FormArray` but we should also be able to remove a specific entry. The `FormArray` has the **removeAt()** method that permits to delete a specific index of the `FormArray`. 
 
 Edit the HTML template to add the possibility to delete an entry : 
 
@@ -564,7 +565,9 @@ Then edit the component to add the method to remove the entry :
 
 ```ts
 @Component({
-  //boilerplate code
+  selector: 'my-form-comp',
+  standalone: true,
+  imports: [ReactiveFormsModule]
 })
 export class FormArrayComp {
   //boilerplate code
