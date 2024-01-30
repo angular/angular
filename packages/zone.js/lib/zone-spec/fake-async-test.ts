@@ -61,12 +61,12 @@ FakeDate.UTC = OriginalDate.UTC;
 FakeDate.parse = OriginalDate.parse;
 
 // keep a reference for zone patched timer function
-const timers = {
-  setTimeout: global.setTimeout,
-  setInterval: global.setInterval,
-  clearTimeout: global.clearTimeout,
-  clearInterval: global.clearInterval
-};
+let patchedTimers: {
+  setTimeout: typeof setTimeout,
+  setInterval: typeof setInterval,
+  clearTimeout: typeof clearTimeout,
+  clearInterval: typeof clearInterval,
+}|undefined;
 
 class Scheduler {
   // Next scheduler id.
@@ -475,13 +475,17 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
   }
 
   static checkTimerPatch() {
-    if (global.setTimeout !== timers.setTimeout) {
-      global.setTimeout = timers.setTimeout;
-      global.clearTimeout = timers.clearTimeout;
+    if (!patchedTimers) {
+      throw new Error('Expected timers to have been patched.');
     }
-    if (global.setInterval !== timers.setInterval) {
-      global.setInterval = timers.setInterval;
-      global.clearInterval = timers.clearInterval;
+
+    if (global.setTimeout !== patchedTimers.setTimeout) {
+      global.setTimeout = patchedTimers.setTimeout;
+      global.clearTimeout = patchedTimers.clearTimeout;
+    }
+    if (global.setInterval !== patchedTimers.setInterval) {
+      global.setInterval = patchedTimers.setInterval;
+      global.clearInterval = patchedTimers.clearInterval;
     }
   }
 
@@ -868,4 +872,11 @@ export function patchFakeAsyncTest(Zone: ZoneType): void {
     (Zone as any)[api.symbol('fakeAsyncTest')] =
         {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
   }, true);
+
+  patchedTimers = {
+    setTimeout: global.setTimeout,
+    setInterval: global.setInterval,
+    clearTimeout: global.clearTimeout,
+    clearInterval: global.clearInterval
+  };
 }
