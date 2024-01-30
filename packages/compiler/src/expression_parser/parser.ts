@@ -40,12 +40,6 @@ export const enum ParseFlags {
    * Whether an output binding is being parsed.
    */
   Action = 1 << 0,
-
-  /**
-   * Whether an assignment event is being parsed, i.e. an expression originating from
-   * two-way-binding aka banana-in-a-box syntax.
-   */
-  AssignmentEvent = 1 << 1,
 }
 
 export class Parser {
@@ -54,17 +48,15 @@ export class Parser {
   constructor(private _lexer: Lexer) {}
 
   parseAction(
-      input: string, isAssignmentEvent: boolean, location: string, absoluteOffset: number,
+      input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
-    let flags = ParseFlags.Action;
-    if (isAssignmentEvent) {
-      flags |= ParseFlags.AssignmentEvent;
-    }
     const ast =
-        new _ParseAST(input, location, absoluteOffset, tokens, flags, this.errors, 0).parseChain();
+        new _ParseAST(input, location, absoluteOffset, tokens, ParseFlags.Action, this.errors, 0)
+            .parseChain();
+
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
@@ -972,7 +964,7 @@ class _ParseAST {
     let receiver: AST;
 
     if (isSafe) {
-      if (this.consumeOptionalAssignment()) {
+      if (this.consumeOptionalOperator('=')) {
         this.error('The \'?.\' operator cannot be used in the assignment');
         receiver = new EmptyExpr(this.span(start), this.sourceSpan(start));
       } else {
@@ -980,7 +972,7 @@ class _ParseAST {
             this.span(start), this.sourceSpan(start), nameSpan, readReceiver, id);
       }
     } else {
-      if (this.consumeOptionalAssignment()) {
+      if (this.consumeOptionalOperator('=')) {
         if (!(this.parseFlags & ParseFlags.Action)) {
           this.error('Bindings cannot contain assignments');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
@@ -1009,24 +1001,6 @@ class _ParseAST {
     const sourceSpan = this.sourceSpan(start);
     return isSafe ? new SafeCall(span, sourceSpan, receiver, args, argumentSpan) :
                     new Call(span, sourceSpan, receiver, args, argumentSpan);
-  }
-
-  private consumeOptionalAssignment(): boolean {
-    // When parsing assignment events (originating from two-way-binding aka banana-in-a-box syntax),
-    // it is valid for the primary expression to be terminated by the non-null operator. This
-    // primary expression is substituted as LHS of the assignment operator to achieve
-    // two-way-binding, such that the LHS could be the non-null operator. The grammar doesn't
-    // naturally allow for this syntax, so assignment events are parsed specially.
-    if ((this.parseFlags & ParseFlags.AssignmentEvent) && this.next.isOperator('!') &&
-        this.peek(1).isOperator('=')) {
-      // First skip over the ! operator.
-      this.advance();
-      // Then skip over the = operator, to fully consume the optional assignment operator.
-      this.advance();
-      return true;
-    }
-
-    return this.consumeOptionalOperator('=');
   }
 
   private parseCallArguments(): BindingPipe[] {

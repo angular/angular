@@ -605,7 +605,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       boundEvents: t.BoundEvent[], keySpan: ParseSourceSpan) {
     const events: ParsedEvent[] = [];
     this.bindingParser.parseEvent(
-        `${name}Change`, `${expression} =$event`, /* isAssignmentEvent */ true, sourceSpan,
+        `${name}Change`, expression, /* isAssignmentEvent */ true, sourceSpan,
         valueSpan || sourceSpan, targetMatchableAttrs, events, keySpan);
     addEvents(events, boundEvents);
   }

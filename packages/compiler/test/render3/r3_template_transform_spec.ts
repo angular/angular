@@ -496,7 +496,7 @@ describe('R3 template transform', () => {
       expectFromHtml('<div [(prop)]="v"></div>').toEqual([
         ['Element', 'div'],
         ['BoundAttribute', BindingType.TwoWay, 'prop', 'v'],
-        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v = $event'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v'],
       ]);
     });
 
@@ -504,7 +504,7 @@ describe('R3 template transform', () => {
       expectFromHtml('<div bindon-prop="v"></div>').toEqual([
         ['Element', 'div'],
         ['BoundAttribute', BindingType.TwoWay, 'prop', 'v'],
-        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v = $event'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v'],
       ]);
     });
 
@@ -512,8 +512,57 @@ describe('R3 template transform', () => {
       expectFromHtml('<div [(prop)]="v!"></div>').toEqual([
         ['Element', 'div'],
         ['BoundAttribute', BindingType.TwoWay, 'prop', 'v!'],
-        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v = $event'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v!'],
       ]);
+    });
+
+    it('should parse property reads bound via [(...)]', () => {
+      expectFromHtml('<div [(prop)]="a.b.c"></div>').toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.TwoWay, 'prop', 'a.b.c'],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'a.b.c'],
+      ]);
+    });
+
+    it('should parse keyed reads bound via [(...)]', () => {
+      expectFromHtml(`<div [(prop)]="a['b']['c']"></div>`).toEqual([
+        ['Element', 'div'],
+        ['BoundAttribute', BindingType.TwoWay, 'prop', `a["b"]["c"]`],
+        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, `a["b"]["c"]`],
+      ]);
+    });
+
+    it('should report assignments in two-way bindings', () => {
+      expect(() => parse(`<div [(prop)]="v = 1"></div>`))
+          .toThrowError(/Bindings cannot contain assignments/);
+    });
+
+    it('should report pipes in two-way bindings', () => {
+      expect(() => parse(`<div [(prop)]="v | pipe"></div>`))
+          .toThrowError(/Cannot have a pipe in an action expression/);
+    });
+
+    it('should report unsupported expressions in two-way bindings', () => {
+      const unsupportedExpressions = [
+        'v + 1',
+        'foo.bar?.baz',
+        `foo.bar?.['baz']`,
+        'true',
+        '123',
+        'a || b',
+        'a.b()',
+        'v()',
+        '[1, 2, 3]',
+        '{a: 1, b: 2, c: 3}',
+        'v === 1',
+        'a ?? b',
+      ];
+
+      for (const expression of unsupportedExpressions) {
+        expect(() => parse(`<div [(prop)]="${expression}"></div>`))
+            .withContext(expression)
+            .toThrowError(/Unsupported expression in a two-way binding/);
+      }
     });
 
     it('should report an error for assignments into non-null asserted expressions', () => {
