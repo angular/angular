@@ -8,12 +8,20 @@
 
 import {Component, ElementRef, inject, NgZone, ViewChild} from '@angular/core';
 import {MatButton} from '@angular/material/button';
+
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatExpansionPanel} from '@angular/material/expansion';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatInputModule} from '@angular/material/input';
-import {ComponentExplorerView, DevToolsNode, Events, MessageBus, SerializedInjector, SerializedProviderRecord} from 'protocol';
+import {
+  ComponentExplorerView,
+  DevToolsNode,
+  Events,
+  MessageBus,
+  SerializedInjector,
+  SerializedProviderRecord,
+} from 'protocol';
 
 import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
 import {
@@ -49,7 +57,7 @@ import {
     MatCheckbox,
     ResolutionPathComponent,
     InjectorProvidersComponent,
-    MatInputModule
+    MatInputModule,
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
