@@ -9,7 +9,6 @@
 import {NormalizedUrl} from './api';
 import {NamedCacheStorage} from './named-cache-storage';
 
-
 /**
  * Adapts the service worker to its runtime environment.
  *
@@ -20,7 +19,10 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
   readonly caches: NamedCacheStorage<T>;
   readonly origin: string;
 
-  constructor(protected readonly scopeUrl: string, caches: T) {
+  constructor(
+    protected readonly scopeUrl: string,
+    caches: T,
+  ) {
     const parsedScopeUrl = this.parseUrl(this.scopeUrl);
 
     // Determine the origin from the registration scope. This is used to differentiate between
@@ -35,7 +37,7 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
   /**
    * Wrapper around the `Request` constructor.
    */
-  newRequest(input: string|Request, init?: RequestInit): Request {
+  newRequest(input: string | Request, init?: RequestInit): Request {
     return new Request(input, init);
   }
 
@@ -57,7 +59,7 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
    * Test if a given object is an instance of `Client`.
    */
   isClient(source: any): source is Client {
-    return (source instanceof Client);
+    return source instanceof Client;
   }
 
   /**
@@ -88,7 +90,7 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
   /**
    * Parse a URL into its different parts, such as `origin`, `path` and `search`.
    */
-  parseUrl(url: string, relativeTo?: string): {origin: string, path: string, search: string} {
+  parseUrl(url: string, relativeTo?: string): {origin: string; path: string; search: string} {
     // Workaround a Safari bug, see
     // https://github.com/angular/angular/issues/31061#issuecomment-503637978
     const parsed = !relativeTo ? new URL(url) : new URL(url, relativeTo);
@@ -99,7 +101,7 @@ export class Adapter<T extends CacheStorage = CacheStorage> {
    * Wait for a given amount of time before completing a Promise.
    */
   timeout(ms: number): Promise<void> {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       setTimeout(() => resolve(), ms);
     });
   }

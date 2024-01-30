@@ -18,12 +18,12 @@ import {NgForm} from '@angular/forms';
       <p *ngIf="nameCtrl.invalid">Name is invalid.</p>
 
       <div ngModelGroup="name" #nameCtrl="ngModelGroup">
-        <input name="first" [ngModel]="name.first" minlength="2">
-        <input name="middle" [ngModel]="name.middle" maxlength="2">
-        <input name="last" [ngModel]="name.last" required>
+        <input name="first" [ngModel]="name.first" minlength="2" />
+        <input name="middle" [ngModel]="name.middle" maxlength="2" />
+        <input name="last" [ngModel]="name.last" required />
       </div>
 
-      <input name="email" ngModel>
+      <input name="email" ngModel />
       <button>Submit</button>
     </form>
 
@@ -34,8 +34,8 @@ export class NgModelGroupComp {
   name = {first: 'Nancy', middle: 'J', last: 'Drew'};
 
   onSubmit(f: NgForm) {
-    console.log(f.value);  // {name: {first: 'Nancy', middle: 'J', last: 'Drew'}, email: ''}
-    console.log(f.valid);  // true
+    console.log(f.value); // {name: {first: 'Nancy', middle: 'J', last: 'Drew'}, email: ''}
+    console.log(f.valid); // true
   }
 
   setValue() {

@@ -10,7 +10,6 @@ import {browser, by, element} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
-
 describe('upgrade/static (lite with multiple downgraded modules and shared root module)', () => {
   const compA = element(by.css('ng2-a'));
   const compB = element(by.css('ng2-b'));

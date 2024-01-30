@@ -22,7 +22,7 @@ export enum UpdateCacheStatus {
  * NOTE: A `string` is not assignable to a `NormalizedUrl`, but a `NormalizedUrl` is assignable to a
  *       `string`.
  */
-export type NormalizedUrl = string&{_brand: 'normalizedUrl'};
+export type NormalizedUrl = string & {_brand: 'normalizedUrl'};
 
 /**
  * A source for old versions of URL contents and other resources.
@@ -39,7 +39,7 @@ export interface UpdateSource {
    * If an old version of the resource doesn't exist, or exists but does
    * not match the hash given, this returns null.
    */
-  lookupResourceWithHash(url: NormalizedUrl, hash: string): Promise<Response|null>;
+  lookupResourceWithHash(url: NormalizedUrl, hash: string): Promise<Response | null>;
 
   /**
    * Lookup an older version of a resource for which the hash is not known.
@@ -49,7 +49,7 @@ export interface UpdateSource {
    * `Response`, but the cache metadata needed to re-cache the resource in
    * a newer `AppVersion`.
    */
-  lookupResourceWithoutHash(url: NormalizedUrl): Promise<CacheState|null>;
+  lookupResourceWithoutHash(url: NormalizedUrl): Promise<CacheState | null>;
 
   /**
    * List the URLs of all of the resources which were previously cached.
@@ -95,14 +95,14 @@ export interface CacheState {
 }
 
 export interface DebugLogger {
-  log(value: string|Error, context?: string): void;
+  log(value: string | Error, context?: string): void;
 }
 
 export interface DebugState {
   state: string;
   why: string;
-  latestHash: string|null;
-  lastUpdateCheck: number|null;
+  latestHash: string | null;
+  lastUpdateCheck: number | null;
 }
 
 export interface DebugVersion {
@@ -114,8 +114,8 @@ export interface DebugVersion {
 
 export interface DebugIdleState {
   queue: string[];
-  lastTrigger: number|null;
-  lastRun: number|null;
+  lastTrigger: number | null;
+  lastRun: number | null;
 }
 
 export interface Debuggable {

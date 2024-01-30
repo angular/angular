@@ -40,10 +40,9 @@ export class AppComponent {
 
   private subscribeToNotificationClicks() {
     // #docregion subscribe-to-notification-clicks
-    this.swPush.notificationClicks.subscribe(
-        ({action, notification}) => {
-            // TODO: Do something in response to notification click.
-        });
+    this.swPush.notificationClicks.subscribe(({action, notification}) => {
+      // TODO: Do something in response to notification click.
+    });
     // #enddocregion subscribe-to-notification-clicks
   }
   // #docregion inject-sw-push
@@ -51,16 +50,8 @@ export class AppComponent {
 // #enddocregion inject-sw-push
 
 @NgModule({
-  bootstrap: [
-    AppComponent,
-  ],
-  declarations: [
-    AppComponent,
-  ],
-  imports: [
-    BrowserModule,
-    ServiceWorkerModule.register('ngsw-worker.js'),
-  ],
+  bootstrap: [AppComponent],
+  declarations: [AppComponent],
+  imports: [BrowserModule, ServiceWorkerModule.register('ngsw-worker.js')],
 })
-export class AppModule {
-}
+export class AppModule {}

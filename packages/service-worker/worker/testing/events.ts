@@ -73,14 +73,17 @@ export class MockActivateEvent extends MockExtendableEvent {
 export class MockFetchEvent extends MockExtendableEvent implements FetchEvent {
   readonly preloadResponse = Promise.resolve();
   handled = Promise.resolve(undefined);
-  response: Promise<Response|undefined> = Promise.resolve(undefined);
+  response: Promise<Response | undefined> = Promise.resolve(undefined);
 
   constructor(
-      readonly request: Request, readonly clientId: string, readonly resultingClientId: string) {
+    readonly request: Request,
+    readonly clientId: string,
+    readonly resultingClientId: string,
+  ) {
     super('fetch');
   }
 
-  respondWith(r: Response|Promise<Response>): void {
+  respondWith(r: Response | Promise<Response>): void {
     this.response = Promise.resolve(r);
   }
 }
@@ -91,13 +94,18 @@ export class MockInstallEvent extends MockExtendableEvent {
   }
 }
 
-export class MockExtendableMessageEvent extends MockExtendableEvent implements
-    ExtendableMessageEvent {
+export class MockExtendableMessageEvent
+  extends MockExtendableEvent
+  implements ExtendableMessageEvent
+{
   readonly lastEventId = '';
   readonly origin = '';
   readonly ports: ReadonlyArray<MessagePort> = [];
 
-  constructor(readonly data: any, readonly source: Client|MessagePort|ServiceWorker|null) {
+  constructor(
+    readonly data: any,
+    readonly source: Client | MessagePort | ServiceWorker | null,
+  ) {
     super('message');
   }
 }
@@ -108,7 +116,10 @@ export class MockNotificationEvent extends MockExtendableEvent implements Notifi
     close: () => undefined,
   } as Notification;
 
-  constructor(private _notification: Partial<Notification>, readonly action = '') {
+  constructor(
+    private _notification: Partial<Notification>,
+    readonly action = '',
+  ) {
     super('notification');
   }
 }

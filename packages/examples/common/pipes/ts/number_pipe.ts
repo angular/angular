@@ -17,27 +17,24 @@ registerLocaleData(localeFr, 'fr');
 @Component({
   selector: 'number-pipe',
   template: `<div>
-
     <p>
       No specified formatting:
-      {{pi | number}}
+      {{ pi | number }}
       <!--output: '3.142'-->
     </p>
 
     <p>
       With digitsInfo parameter specified:
-      {{pi | number:'4.1-5'}}
+      {{ pi | number: '4.1-5' }}
       <!--output: '0,003.14159'-->
     </p>
 
     <p>
-      With digitsInfo and
-      locale parameters specified:
-      {{pi | number:'4.1-5':'fr'}}
+      With digitsInfo and locale parameters specified:
+      {{ pi | number: '4.1-5' : 'fr' }}
       <!--output: '0 003,14159'-->
     </p>
-
-  </div>`
+  </div>`,
 })
 export class NumberPipeComponent {
   pi: number = 3.14159265359;
