@@ -9,6 +9,7 @@
 import * as cdAst from '../expression_parser/ast';
 import * as o from '../output/output_ast';
 import {ParseSourceSpan} from '../parse_util';
+import {Identifiers as R3} from '../render3/r3_identifiers';
 
 export class EventHandlerVars {
   static event = o.variable('$event');
@@ -29,37 +30,12 @@ export function convertActionBinding(
     localResolver: LocalResolver|null, implicitReceiver: o.Expression, action: cdAst.AST,
     bindingId: string, baseSourceSpan?: ParseSourceSpan, implicitReceiverAccesses?: Set<string>,
     globals?: Set<string>): o.Statement[] {
-  if (!localResolver) {
-    localResolver = new DefaultLocalResolver(globals);
-  }
-  const actionWithoutBuiltins = convertPropertyBindingBuiltins(
-      {
-        createLiteralArrayConverter: (argCount: number) => {
-          // Note: no caching for literal arrays in actions.
-          return (args: o.Expression[]) => o.literalArr(args);
-        },
-        createLiteralMapConverter: (keys: {key: string, quoted: boolean}[]) => {
-          // Note: no caching for literal maps in actions.
-          return (values: o.Expression[]) => {
-            const entries = keys.map((k, i) => ({
-                                       key: k.key,
-                                       value: values[i],
-                                       quoted: k.quoted,
-                                     }));
-            return o.literalMap(entries);
-          };
-        },
-        createPipeConverter: (name: string) => {
-          throw new Error(`Illegal State: Actions are not allowed to contain pipes. Pipe: ${name}`);
-        }
-      },
-      action);
-
+  localResolver ??= new DefaultLocalResolver(globals);
   const visitor = new _AstToIrVisitor(
       localResolver, implicitReceiver, bindingId, /* supportsInterpolation */ false, baseSourceSpan,
       implicitReceiverAccesses);
   const actionStmts: o.Statement[] = [];
-  flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
+  flattenStatements(convertActionBuiltins(action).visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
 
   if (visitor.usesImplicitReceiver) {
@@ -73,6 +49,43 @@ export function convertActionBinding(
     if (lastStatement instanceof o.ExpressionStatement) {
       actionStmts[lastIndex] = new o.ReturnStatement(lastStatement.expr);
     }
+  }
+  return actionStmts;
+}
+
+export function convertAssignmentActionBinding(
+    localResolver: LocalResolver|null, implicitReceiver: o.Expression, action: cdAst.AST,
+    bindingId: string, baseSourceSpan?: ParseSourceSpan, implicitReceiverAccesses?: Set<string>,
+    globals?: Set<string>): o.Statement[] {
+  localResolver ??= new DefaultLocalResolver(globals);
+  const visitor = new _AstToIrVisitor(
+      localResolver, implicitReceiver, bindingId, /* supportsInterpolation */ false, baseSourceSpan,
+      implicitReceiverAccesses);
+  let convertedAction = convertActionBuiltins(action).visit(visitor, _Mode.Statement);
+
+  // This should already have been asserted in the parser, but we verify it here just in case.
+  if (!(convertedAction instanceof o.ExpressionStatement) ||
+      (!(convertedAction.expr instanceof o.ReadPropExpr) &&
+       !(convertedAction.expr instanceof o.ReadKeyExpr))) {
+    throw new Error(`Illegal state: unsupported expression in two-way action binding.`);
+  }
+
+  // Converts `[(ngModel)]="name"` to `twoWayBindingSet(ctx.name, $event) || (ctx.name = $event)`.
+  convertedAction = new o.ExternalExpr(R3.twoWayBindingSet)
+                        .callFn([convertedAction.expr, EventHandlerVars.event])
+                        .or(convertedAction.expr.set(EventHandlerVars.event))
+                        .toStmt();
+
+  const actionStmts: o.Statement[] = [];
+  flattenStatements(convertedAction, actionStmts);
+  prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
+
+  // Assignment events always return `$event`.
+  actionStmts.push(new o.ReturnStatement(EventHandlerVars.event));
+  implicitReceiverAccesses?.add(EventHandlerVars.event.name);
+
+  if (visitor.usesImplicitReceiver) {
+    localResolver.notifyImplicitReceiverUse();
   }
   return actionStmts;
 }
@@ -188,6 +201,31 @@ function getStatementsFromVisitor(visitor: _AstToIrVisitor, bindingId: string) {
 function convertBuiltins(converterFactory: BuiltinConverterFactory, ast: cdAst.AST): cdAst.AST {
   const visitor = new _BuiltinAstConverter(converterFactory);
   return ast.visit(visitor);
+}
+
+function convertActionBuiltins(action: cdAst.AST) {
+  const converterFactory: BuiltinConverterFactory = {
+    createLiteralArrayConverter: () => {
+      // Note: no caching for literal arrays in actions.
+      return (args: o.Expression[]) => o.literalArr(args);
+    },
+    createLiteralMapConverter: (keys: {key: string, quoted: boolean}[]) => {
+      // Note: no caching for literal maps in actions.
+      return (values: o.Expression[]) => {
+        const entries = keys.map((k, i) => ({
+                                   key: k.key,
+                                   value: values[i],
+                                   quoted: k.quoted,
+                                 }));
+        return o.literalMap(entries);
+      };
+    },
+    createPipeConverter: (name: string) => {
+      throw new Error(`Illegal State: Actions are not allowed to contain pipes. Pipe: ${name}`);
+    }
+  };
+
+  return convertPropertyBindingBuiltins(converterFactory, action);
 }
 
 function temporaryName(bindingId: string, temporaryNumber: number): string {
