@@ -92,6 +92,17 @@ export function extractAttributes(job: CompilationJob): void {
             }
           }
           break;
+        case ir.OpKind.TwoWayListener:
+          // Two-way listeners aren't supported in host bindings.
+          if (job.kind !== CompilationJobKind.Host) {
+            const extractedAttributeOp = ir.createExtractedAttributeOp(
+                op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
+                /* i18nContext */ null,
+                /* i18nMessage */ null, SecurityContext.NONE);
+            ir.OpList.insertBefore<ir.CreateOp>(
+                extractedAttributeOp, lookupElement(elements, op.target));
+          }
+          break;
       }
     }
   }

@@ -61,6 +61,16 @@ function addNamesToView(
         }
         op.handlerFnName = sanitizeIdentifier(op.handlerFnName);
         break;
+      case ir.OpKind.TwoWayListener:
+        if (op.handlerFnName !== null) {
+          break;
+        }
+        if (op.targetSlot.slot === null) {
+          throw new Error(`Expected a slot to be assigned`);
+        }
+        op.handlerFnName = sanitizeIdentifier(`${unit.fnName}_${op.tag!.replace('-', '_')}_${
+            op.name}_${op.targetSlot.slot}_listener`);
+        break;
       case ir.OpKind.Variable:
         varNames.set(op.xref, getVariableName(unit, op.variable, state));
         break;

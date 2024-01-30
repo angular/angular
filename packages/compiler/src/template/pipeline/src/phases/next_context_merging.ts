@@ -26,7 +26,7 @@ import type {CompilationJob} from '../compilation';
 export function mergeNextContextExpressions(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Listener) {
+      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
         mergeNextContextsInOps(op.handlerOps);
       }
     }
