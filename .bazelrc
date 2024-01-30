@@ -1,5 +1,5 @@
 # Enable debugging tests with --config=debug
-test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results --spawn_strategy=local
 
 # Do not attempt to de-flake locally.
 # On CI we might set this to `3` to run with deflaking.
