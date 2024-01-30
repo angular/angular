@@ -2040,6 +2040,22 @@ runInEachFileSystem(
                 expect(text1).toContain(
                     'In local compilation mode, Angular does not support custom decorators or duplicate Angular decorators');
               });
+
+              it('should not produce diagnostic for duplicate Injectable decorator', () => {
+                env.write('test.ts', `
+          import {Injectable} from '@angular/core';
+          import {SomeServiceImpl} from './some-where';
+
+          @Injectable({providedIn: 'root', useExisting: SomeServiceImpl})
+          @Injectable({providedIn: 'root'})
+          export class SomeService {            
+          }
+          `);
+
+                const errors = env.driveDiagnostics();
+
+                expect(errors.length).toBe(0);
+              });
             });
           });
     });
