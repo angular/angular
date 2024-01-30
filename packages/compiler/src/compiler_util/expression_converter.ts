@@ -64,18 +64,12 @@ export function convertAssignmentActionBinding(
   let convertedAction = convertActionBuiltins(action).visit(visitor, _Mode.Statement);
 
   // This should already have been asserted in the parser, but we verify it here just in case.
-  if (!(convertedAction instanceof o.ExpressionStatement) ||
-      (!(convertedAction.expr instanceof o.ReadPropExpr) &&
-       !(convertedAction.expr instanceof o.ReadKeyExpr))) {
+  if (!(convertedAction instanceof o.ExpressionStatement)) {
     throw new Error(`Illegal state: unsupported expression in two-way action binding.`);
   }
 
   // Converts `[(ngModel)]="name"` to `twoWayBindingSet(ctx.name, $event) || (ctx.name = $event)`.
-  convertedAction = new o.ExternalExpr(R3.twoWayBindingSet)
-                        .callFn([convertedAction.expr, EventHandlerVars.event])
-                        .or(convertedAction.expr.set(EventHandlerVars.event))
-                        .toStmt();
-
+  convertedAction = wrapAssignmentAction(convertedAction.expr).toStmt();
   const actionStmts: o.Statement[] = [];
   flattenStatements(convertedAction, actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
@@ -88,6 +82,64 @@ export function convertAssignmentActionBinding(
     localResolver.notifyImplicitReceiverUse();
   }
   return actionStmts;
+}
+
+function wrapAssignmentReadExpression(ast: o.ReadPropExpr|o.ReadKeyExpr): o.Expression {
+  return new o.ExternalExpr(R3.twoWayBindingSet)
+      .callFn([ast, EventHandlerVars.event])
+      .or(ast.set(EventHandlerVars.event));
+}
+
+function isReadExpression(value: unknown): value is o.ReadPropExpr|o.ReadKeyExpr {
+  return value instanceof o.ReadPropExpr || value instanceof o.ReadKeyExpr;
+}
+
+function wrapAssignmentAction(ast: o.Expression): o.Expression {
+  // The only officially supported expressions inside of a two-way binding are read expressions.
+  if (isReadExpression(ast)) {
+    return wrapAssignmentReadExpression(ast);
+  }
+
+  // However, historically the expression parser was handling two-way events by appending `=$event`
+  // to the raw string before attempting to parse it. This has led to bugs over the years (see
+  // #37809) and to unintentionally supporting unassignable events in the two-way binding. The
+  // logic below aims to emulate the old behavior while still supporting the new output format
+  // which uses `twoWayBindingSet`. Note that the generated code doesn't necessarily make sense
+  // based on what the user wrote, for example the event binding for `[(value)]="a ? b : c"`
+  // would produce `ctx.a ? ctx.b : ctx.c = $event`. We aim to reproduce what the parser used
+  // to generate before #54154.
+  if (ast instanceof o.BinaryOperatorExpr && isReadExpression(ast.rhs)) {
+    // `a && b` -> `ctx.a && twoWayBindingSet(ctx.b, $event) || (ctx.b = $event)`
+    return new o.BinaryOperatorExpr(ast.operator, ast.lhs, wrapAssignmentReadExpression(ast.rhs));
+  }
+
+  // Note: this also supports nullish coalescing expressions which
+  // would've been downleveled to ternary expressions by this point.
+  if (ast instanceof o.ConditionalExpr && isReadExpression(ast.falseCase)) {
+    // `a ? b : c` -> `ctx.a ? ctx.b : twoWayBindingSet(ctx.c, $event) || (ctx.c = $event)`
+    return new o.ConditionalExpr(
+        ast.condition, ast.trueCase, wrapAssignmentReadExpression(ast.falseCase));
+  }
+
+  // `!!a` -> `twoWayBindingSet(ctx.a, $event) || (ctx.a = $event)`
+  // Note: previously we'd actually produce `!!(ctx.a = $event)`, but the wrapping
+  // node doesn't affect the result so we don't need to carry it over.
+  if (ast instanceof o.NotExpr) {
+    let expr = ast.condition;
+
+    while (true) {
+      if (expr instanceof o.NotExpr) {
+        expr = expr.condition;
+      } else {
+        if (isReadExpression(expr)) {
+          return wrapAssignmentReadExpression(expr);
+        }
+        break;
+      }
+    }
+  }
+
+  throw new Error(`Illegal state: unsupported expression in two-way action binding.`);
 }
 
 export interface BuiltinConverter {

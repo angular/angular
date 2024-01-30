@@ -10185,6 +10185,169 @@ function allTests(os: string) {
            expect(jsContents).not.toMatch('forbidOrphanRendering:');
          });
     });
+
+    describe('two-way binding backwards compatibility', () => {
+      it('should allow an && expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="a && !b && c"></div>\`
+          })
+          class App {
+            a = true;
+            b = false;
+            c = 'hello';
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a && !ctx.b && ctx.c);');
+        expect(jsContents)
+            .toContain(
+                '{ ctx.a && !ctx.b && (i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event)); return $event; }');
+      });
+
+      it('should allow an || expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="a || !b || c"></div>\`
+          })
+          class App {
+            a = true;
+            b = false;
+            c = 'hello';
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a || !ctx.b || ctx.c);');
+        expect(jsContents)
+            .toContain(
+                '{ ctx.a || !ctx.b || (i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event)); return $event; }');
+      });
+
+      it('should allow an ?? expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="a ?? !b ?? c"></div>\`
+          })
+          class App {
+            a = true;
+            b = false;
+            c = 'hello';
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('let tmp_0_0;');
+        expect(jsContents)
+            .toContain(
+                'ɵɵtwoWayProperty("value", (tmp_0_0 = (tmp_0_0 = ctx.a) !== null && ' +
+                'tmp_0_0 !== undefined ? tmp_0_0 : !ctx.b) !== null && tmp_0_0 !== undefined ? tmp_0_0 : ctx.c);');
+
+        expect(jsContents).toContain('let tmp_b_0;');
+        expect(jsContents)
+            .toContain(
+                '(tmp_b_0 = (tmp_b_0 = ctx.a) !== null && tmp_b_0 !== undefined ? ' +
+                'tmp_b_0 : !ctx.b) !== null && tmp_b_0 !== undefined ? tmp_b_0 : ' +
+                'i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event); return $event;');
+      });
+
+      it('should allow a ternary expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="a ? b : c"></div>\`
+          })
+          class App {
+            a = true;
+            b = false;
+            c = 'hello';
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a ? ctx.b : ctx.c);');
+        expect(jsContents)
+            .toContain(
+                '{ ctx.a ? ctx.b : i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event); return $event; }');
+      });
+
+      it('should allow a prefixed unary expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="!!!a"></div>\`
+          })
+          class App {
+            a = true;
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵtwoWayProperty("value", !!!ctx.a);');
+        expect(jsContents)
+            .toContain(
+                '{ i0.ɵɵtwoWayBindingSet(ctx.a, $event) || (ctx.a = $event); return $event; }');
+      });
+    });
   });
 
   function expectTokenAtPosition<T extends ts.Node>(
