@@ -34,7 +34,7 @@ export function optimizeVariables(job: CompilationJob): void {
     inlineAlwaysInlineVariables(unit.update);
 
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Listener) {
+      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
         inlineAlwaysInlineVariables(op.handlerOps);
       }
     }
@@ -43,7 +43,7 @@ export function optimizeVariables(job: CompilationJob): void {
     optimizeVariablesInOpList(unit.update, job.compatibility);
 
     for (const op of unit.create) {
-      if (op.kind === ir.OpKind.Listener) {
+      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
         optimizeVariablesInOpList(op.handlerOps, job.compatibility);
       }
     }

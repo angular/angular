@@ -63,6 +63,7 @@ import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_plac
 import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
 import {resolveNames} from './phases/resolve_names';
 import {resolveSanitizers} from './phases/resolve_sanitizers';
+import {transformTwoWayBindingSet} from './phases/transform_two_way_binding_set';
 import {saveAndRestoreView} from './phases/save_restore_view';
 import {allocateSlots} from './phases/slot_allocation';
 import {specializeStyleBindings} from './phases/style_binding_specialization';
@@ -118,6 +119,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Both, fn: resolveNames},
   {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
+  {kind: Kind.Tmpl, fn: transformTwoWayBindingSet},
   {kind: Kind.Tmpl, fn: optimizeTrackFns},
   {kind: Kind.Both, fn: resolveContexts},
   {kind: Kind.Both, fn: resolveSanitizers},

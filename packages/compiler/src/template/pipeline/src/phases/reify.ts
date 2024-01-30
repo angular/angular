@@ -164,6 +164,13 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 op.name, listenerFn, eventTargetResolver, op.hostListener && op.isAnimationListener,
                 op.sourceSpan));
         break;
+      case ir.OpKind.TwoWayListener:
+        ir.OpList.replace(
+            op,
+            ng.twoWayListener(
+                op.name, reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, true),
+                op.sourceSpan));
+        break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
           throw new Error(`AssertionError: unnamed variable ${op.xref}`);
@@ -420,6 +427,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.reference(expr.targetSlot.slot! + 1 + expr.offset);
     case ir.ExpressionKind.LexicalRead:
       throw new Error(`AssertionError: unresolved LexicalRead of ${expr.name}`);
+    case ir.ExpressionKind.TwoWayBindingSet:
+      throw new Error(`AssertionError: unresolved TwoWayBindingSet`);
     case ir.ExpressionKind.RestoreView:
       if (typeof expr.view === 'number') {
         throw new Error(`AssertionError: unresolved RestoreView`);

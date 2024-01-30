@@ -922,10 +922,17 @@ function ingestElementBindings(
       throw Error('Animation listener should have a phase');
     }
 
-    unit.create.push(ir.createListenerOp(
-        op.xref, op.handle, output.name, op.tag,
-        makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
-        output.target, false, output.sourceSpan));
+    if (output.type === e.ParsedEventType.TwoWay) {
+      unit.create.push(ir.createTwoWayListenerOp(
+          op.xref, op.handle, output.name, op.tag,
+          makeTwoWayListenerHandlerOps(unit, output.handler, output.handlerSpan),
+          output.sourceSpan));
+    } else {
+      unit.create.push(ir.createListenerOp(
+          op.xref, op.handle, output.name, op.tag,
+          makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
+          output.target, false, output.sourceSpan));
+    }
   }
 
   // If any of the bindings on this element have an i18n message, then an i18n attrs configuration
@@ -983,10 +990,17 @@ function ingestTemplateBindings(
     }
 
     if (templateKind === ir.TemplateKind.NgTemplate) {
-      unit.create.push(ir.createListenerOp(
-          op.xref, op.handle, output.name, op.tag,
-          makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
-          output.target, false, output.sourceSpan));
+      if (output.type === e.ParsedEventType.TwoWay) {
+        unit.create.push(ir.createTwoWayListenerOp(
+            op.xref, op.handle, output.name, op.tag,
+            makeTwoWayListenerHandlerOps(unit, output.handler, output.handlerSpan),
+            output.sourceSpan));
+      } else {
+        unit.create.push(ir.createListenerOp(
+            op.xref, op.handle, output.name, op.tag,
+            makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
+            output.target, false, output.sourceSpan));
+      }
     }
     if (templateKind === ir.TemplateKind.Structural &&
         output.type !== e.ParsedEventType.Animation) {
@@ -1113,6 +1127,29 @@ function makeListenerHandlerOps(
   handlerOps.push(...expressions.map(
       e => ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(e, e.sourceSpan))));
   handlerOps.push(ir.createStatementOp(new o.ReturnStatement(returnExpr, returnExpr.sourceSpan)));
+  return handlerOps;
+}
+
+function makeTwoWayListenerHandlerOps(
+    unit: CompilationUnit, handler: e.AST, handlerSpan: ParseSourceSpan): ir.UpdateOp[] {
+  handler = astOf(handler);
+  const handlerOps = new Array<ir.UpdateOp>();
+
+  if (handler instanceof e.Chain) {
+    if (handler.expressions.length === 1) {
+      handler = handler.expressions[0];
+    } else {
+      // This is validated during parsing already, but we do it here just in case.
+      throw new Error('Expected two-way listener to have a single expression.');
+    }
+  }
+
+  const handlerExpr = convertAst(handler, unit.job, handlerSpan);
+  const eventReference = new ir.LexicalReadExpr('$event');
+  const twoWaySetExpr = new ir.TwoWayBindingSetExpr(handlerExpr, eventReference);
+
+  handlerOps.push(ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(twoWaySetExpr)));
+  handlerOps.push(ir.createStatementOp(new o.ReturnStatement(eventReference)));
   return handlerOps;
 }
 

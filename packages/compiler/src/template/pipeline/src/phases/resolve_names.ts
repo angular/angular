@@ -60,6 +60,7 @@ function processLexicalScope(
         }
         break;
       case ir.OpKind.Listener:
+      case ir.OpKind.TwoWayListener:
         // Listener functions have separate variable declarations, so process them as a separate
         // lexical scope.
         processLexicalScope(unit, op.handlerOps, savedView);
@@ -71,7 +72,7 @@ function processLexicalScope(
   // scope. Also, look for `ir.RestoreViewExpr`s and match them with the snapshotted view context
   // variable.
   for (const op of ops) {
-    if (op.kind == ir.OpKind.Listener) {
+    if (op.kind == ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
       // Listeners were already processed above with their own scopes.
       continue;
     }

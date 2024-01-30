@@ -40,6 +40,7 @@ function processLexicalScope(view: CompilationUnit, ops: ir.OpList<ir.CreateOp|i
         }
         break;
       case ir.OpKind.Listener:
+      case ir.OpKind.TwoWayListener:
         processLexicalScope(view, op.handlerOps);
         break;
     }

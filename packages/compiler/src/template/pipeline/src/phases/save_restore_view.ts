@@ -28,7 +28,7 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
     ]);
 
     for (const op of unit.create) {
-      if (op.kind !== ir.OpKind.Listener) {
+      if (op.kind !== ir.OpKind.Listener && op.kind !== ir.OpKind.TwoWayListener) {
         continue;
       }
 
@@ -53,7 +53,8 @@ export function saveAndRestoreView(job: ComponentCompilationJob): void {
   }
 }
 
-function addSaveRestoreViewOperationToListener(unit: ViewCompilationUnit, op: ir.ListenerOp) {
+function addSaveRestoreViewOperationToListener(
+    unit: ViewCompilationUnit, op: ir.ListenerOp|ir.TwoWayListenerOp) {
   op.handlerOps.prepend([
     ir.createVariableOp<ir.UpdateOp>(
         unit.job.allocateXrefId(), {
