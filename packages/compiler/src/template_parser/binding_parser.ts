@@ -7,7 +7,7 @@
  */
 
 import {SecurityContext} from '../core';
-import {AbsoluteSourceSpan, AST, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, KeyedRead, NonNullAssert, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, PropertyRead, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
+import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, BindingType, BoundElementProperty, Conditional, EmptyExpr, KeyedRead, NonNullAssert, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, PrefixNot, PropertyRead, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/defaults';
 import {mergeNsAndName} from '../ml_parser/tags';
@@ -544,7 +544,16 @@ export class BindingParser {
       return this._isAllowedAssignmentEvent(ast.expression);
     }
 
-    return ast instanceof PropertyRead || ast instanceof KeyedRead;
+    if (ast instanceof PropertyRead || ast instanceof KeyedRead) {
+      return true;
+    }
+
+    if (ast instanceof Binary) {
+      return (ast.operation === '&&' || ast.operation === '||' || ast.operation === '??') &&
+          (ast.right instanceof PropertyRead || ast.right instanceof KeyedRead);
+    }
+
+    return ast instanceof Conditional || ast instanceof PrefixNot;
   }
 }
 
