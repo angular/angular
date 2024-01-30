@@ -11,5 +11,4 @@ import {TruncatePipe as SimpleTruncatePipe} from './simple_truncate';
 import {TruncatePipe} from './truncate';
 
 @NgModule({declarations: [SimpleTruncatePipe, TruncatePipe]})
-export class TruncateModule {
-}
+export class TruncateModule {}

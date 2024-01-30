@@ -12,7 +12,6 @@ import * as path from 'path';
 
 import {NodeFilesystem} from './filesystem';
 
-
 const cwd = process.cwd();
 
 const distDir = path.join(cwd, process.argv[2]);

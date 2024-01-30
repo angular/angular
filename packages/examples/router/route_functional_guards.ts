@@ -8,20 +8,29 @@
 
 import {Component, inject, Injectable} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanMatchFn, provideRouter, ResolveFn, Route, RouterStateSnapshot, UrlSegment} from '@angular/router';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  CanActivateChildFn,
+  CanActivateFn,
+  CanDeactivateFn,
+  CanMatchFn,
+  provideRouter,
+  ResolveFn,
+  Route,
+  RouterStateSnapshot,
+  UrlSegment,
+} from '@angular/router';
 
 @Component({template: ''})
-export class App {
-}
+export class App {}
 
 @Component({template: ''})
-export class TeamComponent {
-}
+export class TeamComponent {}
 
 // #docregion CanActivateFn
 @Injectable()
-class UserToken {
-}
+class UserToken {}
 
 @Injectable()
 class PermissionsService {
@@ -33,40 +42,47 @@ class PermissionsService {
   }
 }
 
-const canActivateTeam: CanActivateFn =
-    (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return inject(PermissionsService).canActivate(inject(UserToken), route.params['id']);
-    };
+const canActivateTeam: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
+  return inject(PermissionsService).canActivate(inject(UserToken), route.params['id']);
+};
 // #enddocregion
-
 
 // #docregion CanActivateFnInRoute
 bootstrapApplication(App, {
-  providers: [provideRouter([
-    {
-      path: 'team/:id',
-      component: TeamComponent,
-      canActivate: [canActivateTeam],
-    },
-  ])]
+  providers: [
+    provideRouter([
+      {
+        path: 'team/:id',
+        component: TeamComponent,
+        canActivate: [canActivateTeam],
+      },
+    ]),
+  ],
 });
 // #enddocregion
 
 // #docregion CanActivateChildFn
-const canActivateChildExample: CanActivateChildFn =
-    (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return inject(PermissionsService).canActivate(inject(UserToken), route.params['id']);
-    };
+const canActivateChildExample: CanActivateChildFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
+  return inject(PermissionsService).canActivate(inject(UserToken), route.params['id']);
+};
 
 bootstrapApplication(App, {
-  providers: [provideRouter([
-    {
-      path: 'team/:id',
-      component: TeamComponent,
-      canActivateChild: [canActivateChildExample],
-      children: [],
-    },
-  ])]
+  providers: [
+    provideRouter([
+      {
+        path: 'team/:id',
+        component: TeamComponent,
+        canActivateChild: [canActivateChildExample],
+        children: [],
+      },
+    ]),
+  ],
 });
 // #enddocregion
 
@@ -77,13 +93,15 @@ export class UserComponent {
 }
 
 bootstrapApplication(App, {
-  providers: [provideRouter([
-    {
-      path: 'user/:id',
-      component: UserComponent,
-      canDeactivate: [(component: UserComponent) => !component.hasUnsavedChanges],
-    },
-  ])]
+  providers: [
+    provideRouter([
+      {
+        path: 'user/:id',
+        component: UserComponent,
+        canDeactivate: [(component: UserComponent) => !component.hasUnsavedChanges],
+      },
+    ]),
+  ],
 });
 // #enddocregion
 
@@ -93,13 +111,15 @@ const canMatchTeam: CanMatchFn = (route: Route, segments: UrlSegment[]) => {
 };
 
 bootstrapApplication(App, {
-  providers: [provideRouter([
-    {
-      path: 'team/:id',
-      component: TeamComponent,
-      canMatch: [canMatchTeam],
-    },
-  ])]
+  providers: [
+    provideRouter([
+      {
+        path: 'team/:id',
+        component: TeamComponent,
+        canMatch: [canMatchTeam],
+      },
+    ]),
+  ],
 });
 // #enddocregion
 
@@ -109,10 +129,9 @@ export class HeroDetailComponent {
   constructor(private activatedRoute: ActivatedRoute) {}
 
   ngOnInit() {
-    this.activatedRoute.data.subscribe(
-        ({hero}) => {
-            // do something with your resolved data ...
-        });
+    this.activatedRoute.data.subscribe(({hero}) => {
+      // do something with your resolved data ...
+    });
   }
 }
 // #enddocregion
@@ -128,16 +147,22 @@ export class HeroService {
   }
 }
 
-export const heroResolver: ResolveFn<Hero> =
-    (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return inject(HeroService).getHero(route.paramMap.get('id')!);
-    };
+export const heroResolver: ResolveFn<Hero> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
+  return inject(HeroService).getHero(route.paramMap.get('id')!);
+};
 
 bootstrapApplication(App, {
-  providers: [provideRouter([{
-    path: 'detail/:id',
-    component: HeroDetailComponent,
-    resolve: {hero: heroResolver},
-  }])]
+  providers: [
+    provideRouter([
+      {
+        path: 'detail/:id',
+        component: HeroDetailComponent,
+        resolve: {hero: heroResolver},
+      },
+    ]),
+  ],
 });
 // #enddocregion

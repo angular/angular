@@ -9,7 +9,12 @@
 import {Injectable} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
 
-import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, UnrecoverableStateEvent, VersionEvent} from './low_level';
+import {
+  ERR_SW_NOT_SUPPORTED,
+  NgswCommChannel,
+  UnrecoverableStateEvent,
+  VersionEvent,
+} from './low_level';
 
 /**
  * Subscribe to update notifications from the Service Worker, trigger update

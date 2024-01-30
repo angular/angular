@@ -16,13 +16,13 @@ import {Observable, Observer} from 'rxjs';
     <code>promise|async</code>:
     <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
     <span>Wait for it... {{ greeting | async }}</span>
-  </div>`
+  </div>`,
 })
 export class AsyncPromisePipeComponent {
-  greeting: Promise<string>|null = null;
+  greeting: Promise<string> | null = null;
   arrived: boolean = false;
 
-  private resolve: Function|null = null;
+  private resolve: Function | null = null;
 
   constructor() {
     this.reset();
@@ -49,7 +49,7 @@ export class AsyncPromisePipeComponent {
 // #docregion AsyncPipeObservable
 @Component({
   selector: 'async-observable-pipe',
-  template: '<div><code>observable|async</code>: Time: {{ time | async }}</div>'
+  template: '<div><code>observable|async</code>: Time: {{ time | async }}</div>',
 })
 export class AsyncObservablePipeComponent {
   time = new Observable<string>((observer: Observer<string>) => {
@@ -68,7 +68,7 @@ function setInterval(fn: Function, delay: number) {
     rootZone = rootZone.parent;
   }
   rootZone.run(() => {
-    window.setInterval(function(this: unknown) {
+    window.setInterval(function (this: unknown) {
       zone.run(fn, this, arguments as any);
     }, delay);
   });

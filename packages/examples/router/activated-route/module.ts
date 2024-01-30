@@ -20,15 +20,15 @@ import {map} from 'rxjs/operators';
 @Component({
   // #enddocregion activated-route
   selector: 'example-app',
-  template: '...'
+  template: '...',
   // #docregion activated-route
 })
 export class ActivatedRouteComponent {
   constructor(route: ActivatedRoute) {
-    const id: Observable<string> = route.params.pipe(map(p => p['id']));
-    const url: Observable<string> = route.url.pipe(map(segments => segments.join('')));
+    const id: Observable<string> = route.params.pipe(map((p) => p['id']));
+    const url: Observable<string> = route.url.pipe(map((segments) => segments.join('')));
     // route.data includes both `data` and `resolve`
-    const user = route.data.pipe(map(d => d['user']));
+    const user = route.data.pipe(map((d) => d['user']));
   }
 }
 // #enddocregion activated-route
@@ -36,7 +36,6 @@ export class ActivatedRouteComponent {
 @NgModule({
   imports: [BrowserModule, RouterModule.forRoot([])],
   declarations: [ActivatedRouteComponent],
-  bootstrap: [ActivatedRouteComponent]
+  bootstrap: [ActivatedRouteComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

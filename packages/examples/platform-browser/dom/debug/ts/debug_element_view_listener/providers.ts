@@ -6,15 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({selector: 'my-component', template: 'text'})
-class MyAppComponent {
-}
+class MyAppComponent {}
 @NgModule({imports: [BrowserModule], bootstrap: [MyAppComponent]})
-class AppModule {
-}
+class AppModule {}
 platformBrowserDynamic().bootstrapModule(AppModule);

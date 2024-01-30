@@ -16,7 +16,7 @@ export async function verifyNoBrowserErrors() {
   const browserLog = await browser.manage().logs().get('browser');
   const collectedErrors: any[] = [];
 
-  browserLog.forEach(logEntry => {
+  browserLog.forEach((logEntry) => {
     const msg = logEntry.message;
 
     console.log('>> ' + msg, logEntry);

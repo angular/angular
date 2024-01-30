@@ -7,7 +7,19 @@
  */
 
 // #docplaster
-import {Component, Directive, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, Output, StaticProvider} from '@angular/core';
+import {
+  Component,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  Injectable,
+  Injector,
+  Input,
+  NgModule,
+  Output,
+  StaticProvider,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 // #docregion basic-how-to
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -16,10 +28,8 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 // #docregion basic-how-to
 import {downgradeComponent, downgradeModule, UpgradeComponent} from '@angular/upgrade/static';
 
-
 // #enddocregion
 /* tslint:enable: no-duplicate-imports */
-
 
 declare var angular: ng.IAngularStatic;
 
@@ -28,19 +38,18 @@ interface Hero {
   description: string;
 }
 
-
 // This Angular service will use an "upgraded" AngularJS service.
 @Injectable()
 class HeroesService {
   heroes: Hero[] = [
     {name: 'superman', description: 'The man of steel'},
     {name: 'wonder woman', description: 'Princess of the Amazons'},
-    {name: 'thor', description: 'The hammer-wielding god'}
+    {name: 'thor', description: 'The hammer-wielding god'},
   ];
 
   constructor(@Inject('titleCase') titleCase: (v: string) => string) {
     // Change all the hero names to title case, using the "upgraded" AngularJS service.
-    this.heroes.forEach((hero: Hero) => hero.name = titleCase(hero.name));
+    this.heroes.forEach((hero: Hero) => (hero.name = titleCase(hero.name)));
   }
 
   addHero() {
@@ -53,7 +62,6 @@ class HeroesService {
     this.heroes = this.heroes.filter((item: Hero) => item !== hero);
   }
 }
-
 
 // This Angular component will be "downgraded" to be used in AngularJS.
 @Component({
@@ -78,8 +86,9 @@ class Ng2HeroesComponent {
   @Output() private removeHero = new EventEmitter<Hero>();
 
   constructor(
-      @Inject('$rootScope') private $rootScope: ng.IRootScopeService,
-      public heroesService: HeroesService) {}
+    @Inject('$rootScope') private $rootScope: ng.IRootScopeService,
+    public heroesService: HeroesService,
+  ) {}
 
   onAddHero() {
     const newHero = this.heroesService.addHero();
@@ -97,7 +106,6 @@ class Ng2HeroesComponent {
   }
 }
 
-
 // This Angular directive will act as an interface to the "upgraded" AngularJS component.
 @Directive({selector: 'ng1-hero'})
 class Ng1HeroComponentWrapper extends UpgradeComponent {
@@ -112,7 +120,6 @@ class Ng1HeroComponentWrapper extends UpgradeComponent {
   }
 }
 
-
 // This Angular module represents the Angular pieces of the application.
 @NgModule({
   imports: [BrowserModule],
@@ -120,7 +127,7 @@ class Ng1HeroComponentWrapper extends UpgradeComponent {
   providers: [
     HeroesService,
     // Register an Angular provider whose value is the "upgraded" AngularJS service.
-    {provide: 'titleCase', useFactory: (i: any) => i.get('titleCase'), deps: ['$injector']}
+    {provide: 'titleCase', useFactory: (i: any) => i.get('titleCase'), deps: ['$injector']},
   ],
   // Note that there are no `bootstrap` components, since the "downgraded" component
   // will be instantiated by ngUpgrade.
@@ -130,30 +137,25 @@ class MyLazyAngularModule {
   ngDoBootstrap() {}
 }
 
-
 // #docregion basic-how-to
-
 
 // The function that will bootstrap the Angular module (when/if necessary).
 // (This would be omitted if we provided an `NgModuleFactory` directly.)
 const ng2BootstrapFn = (extraProviders: StaticProvider[]) =>
-    platformBrowserDynamic(extraProviders).bootstrapModule(MyLazyAngularModule);
+  platformBrowserDynamic(extraProviders).bootstrapModule(MyLazyAngularModule);
 // #enddocregion
 // (We are using the dynamic browser platform, as this example has not been compiled AOT.)
 
-
 // #docregion basic-how-to
-
 
 // This AngularJS module represents the AngularJS pieces of the application.
 const myMainAngularJsModule = angular.module('myMainAngularJsModule', [
   // We declare a dependency on the "downgraded" Angular module.
-  downgradeModule(ng2BootstrapFn)
+  downgradeModule(ng2BootstrapFn),
   // or
   // downgradeModule(MyLazyAngularModuleFactory)
 ]);
 // #enddocregion
-
 
 // This AngularJS component will be "upgraded" to be used in Angular.
 myMainAngularJsModule.component('ng1Hero', {
@@ -166,24 +168,25 @@ myMainAngularJsModule.component('ng1Hero', {
       <p>{{ $ctrl.hero.description }}</p>
       <button ng-click="$ctrl.onRemove()">Remove</button>
     </div>
-  `
+  `,
 });
-
 
 // This AngularJS service will be "upgraded" to be used in Angular.
 myMainAngularJsModule.factory(
-    'titleCase', () => (value: string) => value.replace(/(^|\s)[a-z]/g, m => m.toUpperCase()));
-
+  'titleCase',
+  () => (value: string) => value.replace(/(^|\s)[a-z]/g, (m) => m.toUpperCase()),
+);
 
 // This directive will act as the interface to the "downgraded" Angular component.
 myMainAngularJsModule.directive(
-    'ng2Heroes', downgradeComponent({
-      component: Ng2HeroesComponent,
-      // Optionally, disable `$digest` propagation to avoid unnecessary change detection.
-      // (Change detection is still run when the inputs of a "downgraded" component change.)
-      propagateDigest: false
-    }));
-
+  'ng2Heroes',
+  downgradeComponent({
+    component: Ng2HeroesComponent,
+    // Optionally, disable `$digest` propagation to avoid unnecessary change detection.
+    // (Change detection is still run when the inputs of a "downgraded" component change.)
+    propagateDigest: false,
+  }),
+);
 
 // This is our top level application component.
 myMainAngularJsModule.component('exampleApp', {
@@ -202,16 +205,15 @@ myMainAngularJsModule.component('exampleApp', {
       <p class="extra">Status: {{ $ctrl.statusMessage }}</p>
     </ng2-heroes>
   `,
-  controller: function() {
+  controller: function () {
     this.showHeroes = false;
     this.statusMessage = 'Ready';
 
-    this.setStatusMessage = (msg: string) => this.statusMessage = msg;
-    this.toggleHeroes = () => this.showHeroes = !this.showHeroes;
+    this.setStatusMessage = (msg: string) => (this.statusMessage = msg);
+    this.toggleHeroes = () => (this.showHeroes = !this.showHeroes);
     this.toggleBtnText = () => `${this.showHeroes ? 'Hide' : 'Show'} heroes`;
-  }
+  },
 });
-
 
 // We bootstrap the Angular module as we would do in a normal Angular app.
 angular.bootstrap(document.body, [myMainAngularJsModule.name]);

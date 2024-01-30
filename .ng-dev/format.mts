@@ -15,13 +15,25 @@ export const format: FormatConfig = {
       'packages/bazel/**/*.{js,ts}',
       'packages/benchpress/**/*.{js,ts}',
       'packages/common/**/*.{js,ts}',
+      'packages/docs/**/*.{js,ts}',
       'packages/elements/**/*.{js,ts}',
+      'packages/examples/**/*.{js,ts}',
       'packages/misc/**/*.{js,ts}',
+      'packages/private/**/*.{js,ts}',
+      'packages/service-worker/**/*.{js,ts}',
+      'packages/upgrade/**/*.{js,ts}',
+
+      // Do not format d.ts files as they are generated
+      '!**/*.d.ts',
+      // Both third_party and .yarn are directories containing copied code which should
+      // not be modified.
+      '!third_party/**',
+      '!.yarn/**',
     ],
   },
   'clang-format': {
     'matchers': [
-      '**/*.{js,ts}',
+      //'**/*.{js,ts}',
       // TODO: burn down format failures and remove aio and integration exceptions.
       '!aio/**',
       '!integration/**',
@@ -53,8 +65,13 @@ export const format: FormatConfig = {
       '!packages/bazel/**/*.{js,ts}',
       '!packages/benchpress/**/*.{js,ts}',
       '!packages/common/**/*.{js,ts}',
+      '!packages/docs/**/*.{js,ts}',
       '!packages/elements/**/*.{js,ts}',
+      '!packages/examples/**/*.{js,ts}',
       '!packages/misc/**/*.{js,ts}',
+      '!packages/private/**/*.{js,ts}',
+      '!packages/service-worker/**/*.{js,ts}',
+      '!packages/upgrade/**/*.{js,ts}',
     ],
   },
   'buildifier': true,
