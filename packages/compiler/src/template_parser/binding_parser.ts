@@ -7,7 +7,7 @@
  */
 
 import {SecurityContext} from '../core';
-import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
+import {AbsoluteSourceSpan, AST, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, KeyedRead, NonNullAssert, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, PropertyRead, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/defaults';
 import {mergeNsAndName} from '../ml_parser/tags';
@@ -418,8 +418,7 @@ export class BindingParser {
         keySpan = moveParseSourceSpan(
             keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
       }
-      this._parseAnimationEvent(
-          name, expression, isAssignmentEvent, sourceSpan, handlerSpan, targetEvents, keySpan);
+      this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents, keySpan);
     } else {
       this._parseRegularEvent(
           name, expression, isAssignmentEvent, sourceSpan, handlerSpan, targetMatchableAttrs,
@@ -434,12 +433,12 @@ export class BindingParser {
   }
 
   private _parseAnimationEvent(
-      name: string, expression: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan,
-      handlerSpan: ParseSourceSpan, targetEvents: ParsedEvent[], keySpan: ParseSourceSpan) {
+      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
+      targetEvents: ParsedEvent[], keySpan: ParseSourceSpan) {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
-    const ast = this._parseAction(expression, isAssignmentEvent, handlerSpan);
+    const ast = this._parseAction(expression, handlerSpan);
     targetEvents.push(new ParsedEvent(
         eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan, keySpan));
 
@@ -464,11 +463,20 @@ export class BindingParser {
   private _parseRegularEvent(
       name: string, expression: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan,
       handlerSpan: ParseSourceSpan, targetMatchableAttrs: string[][], targetEvents: ParsedEvent[],
-      keySpan: ParseSourceSpan) {
+      keySpan: ParseSourceSpan): void {
     // long format: 'target: eventName'
     const [target, eventName] = splitAtColon(name, [null!, name]);
-    const ast = this._parseAction(expression, isAssignmentEvent, handlerSpan);
+    const prevErrorCount = this.errors.length;
+    const ast = this._parseAction(expression, handlerSpan);
+    const isValid = this.errors.length === prevErrorCount;
     targetMatchableAttrs.push([name!, ast.source!]);
+
+    // Don't try to validate assignment events if there were other
+    // parsing errors to avoid adding more noise to the error logs.
+    if (isAssignmentEvent && isValid && !this._isAllowedAssignmentEvent(ast)) {
+      this._reportError('Unsupported expression in a two-way binding', sourceSpan);
+    }
+
     targetEvents.push(new ParsedEvent(
         eventName, target, isAssignmentEvent ? ParsedEventType.TwoWay : ParsedEventType.Regular,
         ast, sourceSpan, handlerSpan, keySpan));
@@ -476,14 +484,13 @@ export class BindingParser {
     // so don't add the event name to the matchableAttrs
   }
 
-  private _parseAction(value: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan):
-      ASTWithSource {
+  private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown').toString();
     const absoluteOffset = (sourceSpan && sourceSpan.start) ? sourceSpan.start.offset : 0;
 
     try {
       const ast = this._exprParser.parseAction(
-          value, isAssignmentEvent, sourceInfo, absoluteOffset, this._interpolationConfig);
+          value, sourceInfo, absoluteOffset, this._interpolationConfig);
       if (ast) {
         this._reportExpressionParserErrors(ast.errors, sourceSpan);
       }
@@ -522,6 +529,22 @@ export class BindingParser {
     if (report.error) {
       this._reportError(report.msg!, sourceSpan, ParseErrorLevel.ERROR);
     }
+  }
+
+  /**
+   * Returns whether a parsed AST is allowed to be used within the event side of a two-way binding.
+   * @param ast Parsed AST to be checked.
+   */
+  private _isAllowedAssignmentEvent(ast: AST): boolean {
+    if (ast instanceof ASTWithSource) {
+      return this._isAllowedAssignmentEvent(ast.ast);
+    }
+
+    if (ast instanceof NonNullAssert) {
+      return this._isAllowedAssignmentEvent(ast.expression);
+    }
+
+    return ast instanceof PropertyRead || ast instanceof KeyedRead;
   }
 }
 
