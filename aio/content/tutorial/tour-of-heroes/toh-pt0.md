@@ -35,7 +35,7 @@ To create a new workspace and an initial project:
 
     <code-example format="shell" language="shell">
 
-    ng new angular-tour-of-heroes
+    ng new angular-tour-of-heroes --no-standalone
 
     </code-example>
 
