@@ -1,5 +1,5 @@
 <!-- Code Editor Tabs -->
-<div class="adev-code-editor-tabs">
+<div class="docs-code-editor-tabs">
   <div class="adev-tabs-and-plus">
     <mat-tab-group animationDuration="0ms" mat-stretch-tabs="false">
       <!--
@@ -13,7 +13,7 @@
           {{ file.filename.replace('src/', '') }}
           @if (tab.isActive && canDeleteFile(file.filename)) {
           <button
-            class="adev-delete-file"
+            class="docs-delete-file"
             aria-label="Delete file"
             (click)="deleteFile(file.filename)"
           >

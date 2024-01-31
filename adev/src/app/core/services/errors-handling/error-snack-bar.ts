@@ -19,7 +19,7 @@ export interface ErrorSnackBarData {
   template: `
     {{ message }}
     <button
-      class="adev-primary-btn"
+      class="docs-primary-btn"
       type="button"
       matSnackBarAction
       [attr.text]="actionText"

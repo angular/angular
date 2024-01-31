@@ -12,9 +12,9 @@
     flex-direction: column;
   }
   // If navs are open, render a blurry background over content
-  &:has(.adev-nav-secondary--open),
+  &:has(.docs-nav-secondary--open),
   &:has(.adev-nav-primary--open) {
-    .adev-app-main-content {
+    .docs-app-main-content {
       &::after {
         visibility: visible;
         opacity: 1;
@@ -54,7 +54,7 @@
   }
 }
 
-.adev-app-main-content {
+.docs-app-main-content {
   display: flex;
   flex-direction: column;
   min-height: 100vh;

@@ -38,7 +38,7 @@
     @include mq.for-desktop-up {
       // this section should only be independently scrollable if
       // the API tab is active & the screen is wide enough
-      &:has(.adev-reference-api-tab),
+      &:has(.docs-reference-api-tab),
       &.adev-cli-content {
         position: sticky;
         top: 0;
@@ -48,10 +48,10 @@
         overflow-y: scroll;
         width: 50%;
       }
-      &:has(.adev-reference-api-tab) {
+      &:has(.docs-reference-api-tab) {
         width: 60%;
       }
-      &:not(.adev-reference-api-tab) {
+      &:not(.docs-reference-api-tab) {
         max-width: var(--page-width);
       }
     }
@@ -73,7 +73,7 @@
     }
   }
 
-  .adev-reference-header {
+  .docs-reference-header {
     > p {
       color: var(--secondary-contrast);
       margin-block-start: 0;
@@ -94,7 +94,7 @@
     }
   }
 
-  .adev-reference-api-tab {
+  .docs-reference-api-tab {
     display: flex;
     gap: 1.81rem;
     align-items: flex-start;
@@ -155,7 +155,7 @@
     margin-block-start: 2.5rem;
   }
 
-  .adev-reference-members-container {
+  .docs-reference-members-container {
     width: 40%;
     padding: 0 var(--layout-padding) 1rem 0;
     box-sizing: border-box;
@@ -172,7 +172,7 @@
   }
 
   // Sidebar
-  .adev-reference-members {
+  .docs-reference-members {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -182,7 +182,7 @@
     }
   }
 
-  .adev-reference-title {
+  .docs-reference-title {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -217,7 +217,7 @@
     gap: 0.5rem;
   }
 
-  .adev-reference-category {
+  .docs-reference-category {
     color: var(--gray-400);
     font-size: 0.875rem;
     font-weight: 500;
@@ -225,7 +225,7 @@
     letter-spacing: -0.00875rem;
   }
 
-  .adev-reference-member-card {
+  .docs-reference-member-card {
     border: 1px solid var(--senary-contrast);
     border-radius: 0.25rem;
     position: relative;
@@ -248,7 +248,7 @@
       }
     }
 
-    &:has(.adev-reference-card-body) {
+    &:has(.docs-reference-card-body) {
       header {
         border-radius: 0.25rem 0.25rem 0 0;
         border-bottom: 1px solid var(--senary-contrast);
@@ -266,7 +266,7 @@
       transition: background-color 0.3s ease, border 0.3s ease;
 
       // h3 + code || # of overloads
-      .adev-reference-header {
+      .docs-reference-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -299,7 +299,7 @@
     }
   }
 
-  .adev-reference-card-body {
+  .docs-reference-card-body {
     padding: 0.25rem 1.25rem;
     background: var(--septenary-contrast);
     transition: background-color 0.3s ease;
@@ -316,14 +316,14 @@
   }
 
   // when it's not the only card...
-  .adev-reference-card-item:has(~ .adev-reference-card-item) {
+  .docs-reference-card-item:has(~ .docs-reference-card-item) {
     border: 1px solid var(--senary-contrast);
     margin-block: 1rem;
     border-radius: 0.25rem;
     padding-inline: 1rem;
   }
   // & the last card
-  .adev-reference-card-item:last-child {
+  .docs-reference-card-item:last-child {
     &:not(:first-of-type) {
       border: 1px solid var(--senary-contrast);
       margin-block: 1rem;
@@ -332,7 +332,7 @@
     }
   }
 
-  .adev-reference-card-item {
+  .docs-reference-card-item {
     span {
       display: inline-block;
       font-size: 0.875rem;
@@ -342,31 +342,31 @@
     }
   }
 
-  .adev-function-definition {
+  .docs-function-definition {
     &:has(*) {
       border-block-end: 1px solid var(--senary-contrast);
     }
   }
 
-  .adev-param-group {
+  .docs-param-group {
     margin-block-start: 1rem;
   }
 
   // If it's the only param group...
-  .adev-param-group:not(:has(~ .adev-param-group)) {
+  .docs-param-group:not(:has(~ .docs-param-group)) {
     margin-block: 1rem;
   }
 
-  .adev-return-type {
+  .docs-return-type {
     padding-block: 1rem;
 
     // & does not follow a function definition
-    &:not(.adev-function-definition + .adev-return-type) {
+    &:not(.docs-function-definition + .docs-return-type) {
       border-block-start: 1px solid var(--senary-contrast);
     }
   }
 
-  .adev-param-keyword {
+  .docs-param-keyword {
     color: var(--primary-contrast);
     font-family: var(--code-font);
     margin-inline-end: 0.5rem;
@@ -381,7 +381,7 @@
     }
   }
 
-  .adev-deprecated {
+  .docs-deprecated {
     color: var(--page-background);
     background-color: var(--quaternary-contrast);
     width: max-content;
@@ -391,11 +391,11 @@
   }
 
   // deprecated markers beside header
-  .adev-reference-header ~ .adev-deprecated {
+  .docs-reference-header ~ .docs-deprecated {
     margin-block-start: 0.5rem;
   }
 
-  .adev-parameter-description {
+  .docs-parameter-description {
     p:first-child {
       margin-block-start: 0;
     }

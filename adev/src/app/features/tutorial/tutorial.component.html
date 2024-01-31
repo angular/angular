@@ -3,7 +3,7 @@
     @if (shouldRenderContent()) {
       <div
         #content
-        class="adev-tutorial-content"
+        class="docs-tutorial-content"
         [class.adev-nav-open]="showNavigationDropdown()"
       >
       <!-- Tutorial Nav: Current Tutorial Title and Nav Buttons -->
@@ -30,7 +30,7 @@
   @if (shouldRenderEmbeddedEditor()) {
     <div
       #editor
-      class="adev-tutorial-editor"
+      class="docs-tutorial-editor"
       [class.adev-split-tutorial]="shouldRenderContent()"
     >
       @if (embeddedEditorComponent) {
@@ -59,7 +59,7 @@
           #revealAnswerButton
           (click)="answerRevealed() ? handleResetAnswer() : handleRevealAnswer()"
           [disabled]="!canRevealAnswer()"
-          class="adev-reveal-answer-button adev-reveal-desktop-button adev-primary-btn"
+          class="docs-reveal-answer-button adev-reveal-desktop-button docs-primary-btn"
           [attr.text]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
           [attr.aria-label]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
           [class.adev-reset-answer-button]="answerRevealed()"
@@ -74,7 +74,7 @@
           [download]="stepName() + '.zip'"
           [href]="localTutorialZipUrl()"
         >
-          <button class="adev-download-button adev-primary-btn">
+          <button class="adev-download-button docs-primary-btn">
             <docs-icon>download</docs-icon>
           </button>
         </a>
@@ -83,26 +83,26 @@
       <div class="adev-nav-arrows">
         @if (previousStepPath) {
           <a [routerLink]="previousStepPath">
-            <button class="adev-primary-btn">
+            <button class="docs-primary-btn">
               <docs-icon>chevron_left</docs-icon>
             </button>
           </a>
         }
         @if (!previousStepPath) {
-          <button class="adev-primary-btn" disabled>
+          <button class="docs-primary-btn" disabled>
             <docs-icon>chevron_left</docs-icon>
           </button>
         }
 
         @if (nextStepPath) {
           <a [routerLink]="nextStepPath">
-            <button class="adev-primary-btn">
+            <button class="docs-primary-btn">
               <docs-icon>chevron_right</docs-icon>
             </button>
           </a>
         }
         @if (!nextStepPath) {
-          <button class="adev-primary-btn" disabled>
+          <button class="docs-primary-btn" disabled>
             <docs-icon>chevron_right</docs-icon>
           </button>
         }
@@ -115,7 +115,7 @@
             #revealAnswerButton
             (click)="answerRevealed() ? handleResetAnswer() : handleRevealAnswer()"
             [disabled]="!canRevealAnswer()"
-            class="adev-reveal-answer-button adev-reveal-mobile-button adev-primary-btn"
+            class="docs-reveal-answer-button adev-reveal-mobile-button docs-primary-btn"
             [attr.text]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
             [attr.aria-label]="answerRevealed() ? 'Reset' : 'Reveal Answer'"
             [class.adev-reset-answer-button]="answerRevealed()"
