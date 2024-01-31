@@ -22,15 +22,15 @@ jobs:
         version: ['https://next.angular.io/', 'https://angular.io/']
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@ae9155d1083fd8390e98bfe09a5ccf89f0375b52
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f89362d698858f9674463e48fde514b097a15838
         with:
           cache-node-modules: true
           node-module-directories: |
             ./aio/node_modules
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@ae9155d1083fd8390e98bfe09a5ccf89f0375b52
+        uses: angular/dev-infra/github-actions/bazel/setup@f89362d698858f9674463e48fde514b097a15838
       - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@ae9155d1083fd8390e98bfe09a5ccf89f0375b52
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f89362d698858f9674463e48fde514b097a15838
       - name: Install node modules in aio
         run: yarn install --frozen-lockfile --cwd aio
       - name: Run basic e2e and deployment config tests.
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@ae9155d1083fd8390e98bfe09a5ccf89f0375b52
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f89362d698858f9674463e48fde514b097a15838
         with:
           cache-node-modules: true
           node-module-directories: |
