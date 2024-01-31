@@ -18,8 +18,10 @@ describe('bluebird promise', () => {
   let BluebirdPromise: any;
   beforeAll(() => {
     BluebirdPromise = require('bluebird');
-    // import bluebird patch
-    require('../../lib/extra/bluebird');
+    // install bluebird patch
+    const {patchBluebird: installBluebird} = require('../../lib/extra/bluebird');
+    installBluebird(Zone);
+
     const patchBluebird = (Zone as any)[(Zone as any).__symbol__('bluebird')];
     patchBluebird(BluebirdPromise);
   });
