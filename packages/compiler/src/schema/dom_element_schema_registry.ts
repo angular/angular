@@ -298,6 +298,10 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
+    if (shouldSkipPropertyChecking(tagName, schemaMetas)) {
+      return true;
+    }
+
     const elementProperties =
         this._schema.get(tagName.toLowerCase()) || this._schema.get('unknown')!;
     return elementProperties.has(propName);
