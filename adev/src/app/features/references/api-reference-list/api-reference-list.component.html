@@ -27,7 +27,7 @@
         [class.adev-reference-list-legend-item-active]="type() === itemType"
         (click)="filterByItemType(itemType)"
       >
-        <adev-api-item-label [type]="itemType" mode="short" class="adev-api-item-label" />
+        <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />
         <span>{{ itemType | adevApiLabel : 'full' }}</span>
       </li>
       }
@@ -40,5 +40,5 @@
   <adev-api-items-section [group]="group" />
   }
 
-  <span id="deprecated-description" class="adev-deprecated-description">Deprecated</span>
+  <span id="deprecated-description" class="docs-deprecated-description">Deprecated</span>
 </div>

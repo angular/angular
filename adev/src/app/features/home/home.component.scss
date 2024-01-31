@@ -4,7 +4,7 @@
   width: 100%;
 
   // While editor is loading, display an svg of the editor
-  .adev-dark-mode & {
+  .docs-dark-mode & {
     .adev-editor-scroll-container img {
       content: url('../../../assets/images/editor-dark-horizontal.svg');
       @include mq.for-tablet-down {
@@ -12,7 +12,7 @@
       }
     }
   }
-  .adev-light-mode & {
+  .docs-light-mode & {
     .adev-editor-scroll-container img {
       content: url('../../../assets/images/editor-light-horizontal.svg');
       @include mq.for-tablet-down {

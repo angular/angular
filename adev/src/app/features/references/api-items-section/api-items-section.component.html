@@ -9,16 +9,16 @@
   @for (apiItem of group.items; track apiItem.url) {
     <li [class.adev-api-items-section-item-deprecated]="apiItem.isDeprecated">
       <a [routerLink]="'/' + apiItem.url" class="adev-api-items-section-item" [attr.aria-describedby]="apiItem.isDeprecated ? 'deprecated-description' : null">
-        <adev-api-item-label
+        <docs-api-item-label
           [type]="apiItem.itemType"
           mode="short"
-          class="adev-api-item-label"
+          class="docs-api-item-label"
           aria-hidden="true"
         />
         <span class="adev-item-title">{{ apiItem.title }}</span>
       </a>
       @if (apiItem.isDeprecated) {
-        <span class="adev-deprecated">
+        <span class="docs-deprecated">
           &lt;!&gt;
         </span>
       }

@@ -44,6 +44,7 @@
     "devtools:build:firefox": "bazelisk build --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=firefox -- devtools/projects/shell-browser/src:prodapp",
     "devtools:test": "bazelisk test --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
     "docs": "yarn bazel run --config=aio_local_deps  //adev:serve",
+    "docs:build": "yarn bazel build --config=aio_local_deps  //adev:build",
     "benchmarks": "ts-node --esm scripts/benchmarks/index.mts"
   },
   "// 1": "dependencies are used locally and by bazel",
@@ -152,7 +153,7 @@
     "@angular-devkit/architect-cli": "^0.1702.0-next",
     "@angular/animations": "^17.2.0-next",
     "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#07da06414a4ce04a8f9710f2bc9346c2c753a0d2",
-    "@angular/docs": "https://github.com/angular/dev-infra-private-docs-builds.git#0e265fda93b78fbff8b32ed958050d57d6f23298",
+    "@angular/docs": "https://github.com/angular/dev-infra-private-docs-builds.git#5f2378db2eaa3beef4cf7a97d691ad7dcb17b6b5",
     "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#eacabd9f66aad05822ccb5b0dc893ebe7eb62321",
     "@babel/helper-remap-async-to-generator": "^7.18.9",
     "@babel/plugin-proposal-async-generator-functions": "^7.20.7",

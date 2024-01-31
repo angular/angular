@@ -20,7 +20,7 @@ process.
 
 ## Summary
 
-<div class="docs-table adev-scroll-track-transparent">
+<div class="docs-table docs-scroll-track-transparent">
   <table>
     <tr>
       <td><strong>Phase</strong></td>

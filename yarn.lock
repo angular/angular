@@ -280,7 +280,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#07da06414a4ce04a8f9710f2bc9346c2c753a0d2":
   version "0.0.0-f89362d698858f9674463e48fde514b097a15838"
-  uid "07da06414a4ce04a8f9710f2bc9346c2c753a0d2"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#07da06414a4ce04a8f9710f2bc9346c2c753a0d2"
   dependencies:
     "@angular-devkit/build-angular" "17.2.0-next.0"
@@ -378,10 +377,9 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#0e265fda93b78fbff8b32ed958050d57d6f23298":
-  version "0.0.0-f89362d698858f9674463e48fde514b097a15838"
-  uid "0e265fda93b78fbff8b32ed958050d57d6f23298"
-  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#0e265fda93b78fbff8b32ed958050d57d6f23298"
+"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#5f2378db2eaa3beef4cf7a97d691ad7dcb17b6b5":
+  version "0.0.0-5254150825dd7a7bf8a86cf5aeccd31a8076dee5"
+  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#5f2378db2eaa3beef4cf7a97d691ad7dcb17b6b5"
   dependencies:
     "@angular/cdk" "17.2.0-next.0"
     "@angular/common" "17.2.0-next.0"
@@ -468,7 +466,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#eacabd9f66aad05822ccb5b0dc893ebe7eb62321":
   version "0.0.0-f89362d698858f9674463e48fde514b097a15838"
-  uid eacabd9f66aad05822ccb5b0dc893ebe7eb62321
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#eacabd9f66aad05822ccb5b0dc893ebe7eb62321"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
