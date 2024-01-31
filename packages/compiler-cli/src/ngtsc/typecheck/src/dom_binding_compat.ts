@@ -22,6 +22,10 @@ export const domAllElementMappings: Record<string, DomMapping> = {
   'ariaExpanded': {additionalType: booleanType},
   // Tabindex is coerced into a number, we see many cases where a string value is passed.
   'tabIndex': {additionalType: stringType},
+  // Id is occasionally receiving numbers that are coerced.
+  'id': {additionalType: numberType},
+  // Hidden is often a string. TODO?
+  'hidden': {additionalType: stringType},
 };
 
 export const domBindingCompatMappings = new Map<string, Record<string, DomMapping>>([
@@ -42,6 +46,8 @@ export const domBindingCompatMappings = new Map<string, Record<string, DomMappin
       'value': {additionalType: numberType},         // Number is coerced to string.
       'autocomplete': {additionalType: stringType},  // Union not preferred.
       'step': {additionalType: numberType},          // Number is coerced to string.
+      'min': {additionalType: numberType},           // Number is coerced to string.
+      'max': {additionalType: numberType},           // Number is coerced to string.
     },
   ],
   [
@@ -50,4 +56,10 @@ export const domBindingCompatMappings = new Map<string, Record<string, DomMappin
       'height': {additionalType: stringType},  // String is coerced.
     }
   ],
+  [
+    'col', {
+      'width': {additionalType: numberType},   // Number is coerced to string.
+      'height': {additionalType: numberType},  // Number is coerced to string.
+    }
+  ]
 ]);

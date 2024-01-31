@@ -1187,11 +1187,11 @@ class TcbUnclaimedInputsOp extends TcbOp {
       }
 
       const additionalUnionTypes: ts.TypeNode[] = [];
-      if (elementMappings?.[binding.name] !== undefined) {
-        additionalUnionTypes.push(elementMappings[binding.name].additionalType());
+      if (elementMappings?.[propertyName] !== undefined) {
+        additionalUnionTypes.push(elementMappings[propertyName].additionalType());
       }
-      if (domAllElementMappings[binding.name] !== undefined) {
-        additionalUnionTypes.push(domAllElementMappings[binding.name].additionalType());
+      if (domAllElementMappings[propertyName] !== undefined) {
+        additionalUnionTypes.push(domAllElementMappings[propertyName].additionalType());
       }
 
       let prop: ts.Expression = ts.factory.createElementAccessExpression(
@@ -1204,7 +1204,7 @@ class TcbUnclaimedInputsOp extends TcbOp {
             ts.factory.createUnionTypeNode([
               ts.factory.createIndexedAccessTypeNode(
                   ts.factory.createTypeQueryNode(elId, undefined),
-                  ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(binding.name))),
+                  ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(propertyName))),
               // Union with the additional types.
               ...additionalUnionTypes,
             ]));
