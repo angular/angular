@@ -350,7 +350,7 @@ export function tcb(
     strictNullInputBindings: true,
     checkTypeOfAttributes: true,
     checkTypeOfDomBindings: true,
-    checkTypeOfDomBindingIgnoreNullable: true,
+    checkTypeOfDomBindingIgnoreNullable: false,
     checkTypeOfOutputEvents: true,
     checkTypeOfAnimationEvents: true,
     checkTypeOfDomEvents: true,

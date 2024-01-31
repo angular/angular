@@ -289,6 +289,13 @@ export interface DomBindingSymbol {
 
   /** The symbol for the element or template of the text attribute. */
   host: ElementSymbol|TemplateSymbol;
+
+  /**
+   * Binding symbol for the DOM property binding.
+   *
+   * Null if not symbol exists. E.g. when DOM type checking is disabled.
+   */
+  binding: BindingSymbol|null;
 }
 
 /**

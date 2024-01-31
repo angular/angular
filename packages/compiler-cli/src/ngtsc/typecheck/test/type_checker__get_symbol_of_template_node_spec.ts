@@ -1135,6 +1135,24 @@ runInEachFileSystem(() => {
             .toEqual('inputB');
       });
 
+      it('can get a symbol for DOM property binding', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const {program, templateTypeChecker} = setup([
+          {fileName, templates: {'Cmp': `<div [id]=""></div>`}, declarations: []},
+        ]);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+
+        const idBinding = (nodes[0] as TmplAstElement).inputs[0];
+        const aSymbol = templateTypeChecker.getSymbolOfNode(idBinding, cmp)!;
+
+        assertDomBindingSymbol(aSymbol);
+        expect(aSymbol.binding?.tsSymbol.declarations?.[0].getText()).toBe('id: string;');
+        expect((program.getTypeChecker().typeToString(aSymbol.binding!.tsType))).toEqual('string');
+      });
+
       it('can retrieve a symbol for a signal-input binding', () => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, core, createCssSelectorFromNode, CssSelector, CUSTOM_ELEMENTS_SCHEMA, DYNAMIC_TYPE, ImplicitReceiver, NO_ERRORS_SCHEMA, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, shouldSkipPropertyChecking, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, core, createCssSelectorFromNode, CssSelector, CUSTOM_ELEMENTS_SCHEMA, DYNAMIC_TYPE, ImplicitReceiver, NO_ERRORS_SCHEMA, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, shouldCheckPropertyWithSchemas, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -1125,16 +1125,40 @@ class TcbUnclaimedInputsOp extends TcbOp {
       const isPropertyBinding =
           binding.type === BindingType.Property || binding.type === BindingType.TwoWay;
 
-      if (!isPropertyBinding || this.claimedInputs.has(binding.name)) {
-        // Skip this binding as it was claimed by a directive, or isn't a property binding.
+      // Skip this binding as it was claimed by a directive.
+      if (isPropertyBinding && this.claimedInputs.has(binding.name)) {
         continue;
       }
 
-      const shouldCheckDomType = this.tcb.env.config.checkTypeOfDomBindings &&
-          !shouldSkipPropertyChecking(this.element.name, this.tcb.schemas) &&
-          binding.name !== 'style' && binding.name !== 'class';
-
       let expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
+      addParseSpanInfo(expr, binding.sourceSpan);
+
+      // Skip checking non-property bindings, or bindings to `style` and `class`.
+      // TODO: consider checking class and style bindings.
+      if (!isPropertyBinding || binding.name === 'style' || binding.name === 'class') {
+        this.scope.addStatement(ts.factory.createExpressionStatement(expr));
+        continue;
+      }
+
+      const propertySchemaState =
+          shouldCheckPropertyWithSchemas(this.element.name, this.tcb.schemas);
+
+      // If the property is not allowed, we check it via the DOM schema checker to register
+      // a diagnostic as it's not allowed per schema. e.g. `ng-content` does not support
+      // any property bindings.
+      if (propertySchemaState === 'never-allowed') {
+        this.tcb.domSchemaChecker.checkProperty(
+            this.tcb.id, this.element, binding.name, binding.sourceSpan, this.tcb.schemas,
+            this.tcb.hostIsStandalone);
+        continue;
+      }
+
+      // If DOM type checking is disabled, or the property is exempted from checking due to its
+      // schema, only check the expression and continue.
+      if (!this.tcb.env.config.checkTypeOfDomBindings || propertySchemaState !== 'check') {
+        this.scope.addStatement(ts.factory.createExpressionStatement(expr));
+        continue;
+      }
 
       // In compatibility mode when checking DOM bindings, ensure non-null user
       // expressions as this is a common practice and otherwise DOM type checking
@@ -1143,62 +1167,60 @@ class TcbUnclaimedInputsOp extends TcbOp {
         expr = ts.factory.createNonNullExpression(ts.factory.createParenthesizedExpression(expr));
       }
 
-      if (shouldCheckDomType) {
-        if (elId === null) {
-          const elementExpr = this.scope.resolve(this.element);
-          if (!ts.isIdentifier(elementExpr)) {
-            throw new Error(
-                'Unexpected expression for resolved `TmplAstElement`. Expected an identifier.');
-          }
-          elId = elementExpr;
+      // Check binding DOM type by using the `document.createElement` result from `TcbElementOp`.
+      if (elId === null) {
+        const elementExpr = this.scope.resolve(this.element);
+        if (!ts.isIdentifier(elementExpr)) {
+          throw new Error(
+              'Unexpected expression for resolved `TmplAstElement`. Expected an identifier.');
         }
-
-        // A direct binding to a property.
-        const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
-
-        if (binding.securityContext !== core.SecurityContext.NONE) {
-          // SKIP security context bindings for now (to determine other failure modes).
-          this.scope.addStatement(ts.factory.createExpressionStatement(expr));
-          continue;
-        }
-
-        const additionalUnionTypes: ts.TypeNode[] = [];
-        if (elementMappings?.[binding.name] !== undefined) {
-          additionalUnionTypes.push(elementMappings[binding.name].additionalType());
-        }
-        if (domAllElementMappings[binding.name] !== undefined) {
-          additionalUnionTypes.push(domAllElementMappings[binding.name].additionalType());
-        }
-
-        let prop: ts.Expression = ts.factory.createElementAccessExpression(
-            elId, ts.factory.createStringLiteral(propertyName));
-
-        if (additionalUnionTypes.length > 0) {
-          const tmpProp = this.tcb.allocateId();
-          const tmpVariable = tsCreateVariable(
-              tmpProp, ts.factory.createNonNullExpression(ts.factory.createNull()),
-              ts.factory.createUnionTypeNode([
-                ts.factory.createIndexedAccessTypeNode(
-                    ts.factory.createTypeQueryNode(elId, undefined),
-                    ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(binding.name))),
-                // Union with the additional types.
-                ...additionalUnionTypes,
-              ]));
-          this.scope.addStatement(tmpVariable);
-          prop = tmpProp;
-        }
-
-        const stmt: ts.Expression =
-            ts.factory.createBinaryExpression(prop, ts.SyntaxKind.EqualsToken, expr);
-
-        addParseSpanInfo(stmt, binding.sourceSpan);
-        this.scope.addStatement(ts.factory.createExpressionStatement(stmt));
-      } else {
-        // A binding to an animation, attribute, class or style. For now, only validate the right-
-        // hand side of the expression.
-        // TODO: consider checking class and style bindings.
-        this.scope.addStatement(ts.factory.createExpressionStatement(expr));
+        elId = elementExpr;
       }
+
+      // A direct binding to a property.
+      const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
+
+      if (binding.securityContext !== core.SecurityContext.NONE) {
+        // SKIP security context bindings for now (to determine other failure modes).
+        this.scope.addStatement(ts.factory.createExpressionStatement(expr));
+        continue;
+      }
+
+      const additionalUnionTypes: ts.TypeNode[] = [];
+      if (elementMappings?.[binding.name] !== undefined) {
+        additionalUnionTypes.push(elementMappings[binding.name].additionalType());
+      }
+      if (domAllElementMappings[binding.name] !== undefined) {
+        additionalUnionTypes.push(domAllElementMappings[binding.name].additionalType());
+      }
+
+      let prop: ts.Expression = ts.factory.createElementAccessExpression(
+          elId, ts.factory.createStringLiteral(propertyName));
+
+      if (additionalUnionTypes.length > 0) {
+        const tmpProp = this.tcb.allocateId();
+        const tmpVariable = tsCreateVariable(
+            tmpProp, ts.factory.createNonNullExpression(ts.factory.createNull()),
+            ts.factory.createUnionTypeNode([
+              ts.factory.createIndexedAccessTypeNode(
+                  ts.factory.createTypeQueryNode(elId, undefined),
+                  ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(binding.name))),
+              // Union with the additional types.
+              ...additionalUnionTypes,
+            ]));
+        this.scope.addStatement(tmpVariable);
+        prop = tmpProp;
+      }
+
+      addParseSpanInfo(prop, binding.sourceSpan);
+
+      // Note: Expression needs to be parenthesized, as otherwise the span info comments
+      // would be attributed to the binary expression.
+      const binaryExpr: ts.Expression = ts.factory.createBinaryExpression(
+          prop, ts.SyntaxKind.EqualsToken, wrapForDiagnostics(expr));
+      addParseSpanInfo(binaryExpr, binding.sourceSpan);
+
+      this.scope.addStatement(ts.factory.createExpressionStatement(binaryExpr));
     }
 
     return null;

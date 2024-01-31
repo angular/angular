@@ -32,16 +32,22 @@ export const domBindingCompatMappings = new Map<string, Record<string, DomMappin
   ],
   [
     'iframe', {
-      'width': {additionalType: numberType},
-      'height': {additionalType: numberType},
+      'width': {additionalType: numberType},   // Number is coerced to string.
+      'height': {additionalType: numberType},  // Number is coerced to string.
     }
   ],
   [
     'input',
     {
-      'value': {additionalType: numberType},
+      'value': {additionalType: numberType},         // Number is coerced to string.
       'autocomplete': {additionalType: stringType},  // Union not preferred.
-      'step': {additionalType: numberType},
+      'step': {additionalType: numberType},          // Number is coerced to string.
     },
-  ]
+  ],
+  [
+    'img', {
+      'width': {additionalType: stringType},   // String is coerced.
+      'height': {additionalType: stringType},  // String is coerced.
+    }
+  ],
 ]);

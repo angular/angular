@@ -611,19 +611,30 @@ class TestComponent {
     });
   });
 
-  it('validates property binding expression assignability for DOM bindings', () => {
-    const messages = diagnose(
-        `<img [id]="x" />`, `
-        class TestComponent {
-          x = 1;
-        }`,
-        [], undefined, {});
+  describe('dom bindings', () => {
+    it('validates property binding expression assignability for DOM bindings', () => {
+      const messages = diagnose(
+          `<img [id]="x" />`, `
+          class TestComponent {
+            x = 1;
+          }`,
+          [], undefined, {});
 
-    expect(messages).toEqual(
-        [`TestComponent.html(1, 6): Type 'number' is not assignable to type 'string'.`]);
-  });
+      expect(messages).toEqual(
+          [`TestComponent.html(1, 6): Type 'number' is not assignable to type 'string'.`]);
+    });
 
-  describe('dom binding special mappings', () => {
+    it('allows nullable values in compatibility mode', () => {
+      const messages = diagnose(
+          `<img [id]="undefined" />`, `
+          class TestComponent {
+            x = 1;
+          }`,
+          [], undefined, {checkTypeOfDomBindingIgnoreNullable: true});
+
+      expect(messages).toEqual([]);
+    });
+
     it('supports number values for width/height of `iframe`', () => {
       const messages = diagnose(
           `<iframe [height]="1" [width]="2"></iframe>`, `class TestComponent {}`, [], undefined,

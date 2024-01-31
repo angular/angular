@@ -298,8 +298,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   }
 
   override hasProperty(tagName: string, propName: string, schemaMetas: SchemaMetadata[]): boolean {
-    if (shouldSkipPropertyChecking(tagName, schemaMetas)) {
+    const shouldCheck = shouldCheckPropertyWithSchemas(tagName, schemaMetas);
+    if (shouldCheck === 'all-allowed') {
       return true;
+    } else if (shouldCheck === 'never-allowed') {
+      return false;
     }
 
     const elementProperties =
@@ -463,22 +466,23 @@ function _isPixelDimensionStyle(prop: string): boolean {
 }
 
 // TODO
-export function shouldSkipPropertyChecking(tagName: string, schemas: SchemaMetadata[]): boolean {
+export function shouldCheckPropertyWithSchemas(
+    tagName: string, schemas: SchemaMetadata[]): 'all-allowed'|'never-allowed'|'check' {
   if (schemas.some((schema) => schema.name === NO_ERRORS_SCHEMA.name)) {
-    return true;
+    return 'all-allowed';
   }
 
   if (tagName.indexOf('-') > -1) {
     if (isNgContainer(tagName) || isNgContent(tagName)) {
-      return false;
+      return 'never-allowed';
     }
 
     if (schemas.some((schema) => schema.name === CUSTOM_ELEMENTS_SCHEMA.name)) {
       // Can't tell now as we don't know which properties a custom element will get
       // once it is instantiated
-      return true;
+      return 'all-allowed';
     }
   }
 
-  return false;
+  return 'check';
 }

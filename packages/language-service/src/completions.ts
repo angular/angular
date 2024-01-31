@@ -841,6 +841,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         // TODO(alxhub): ideally we would show the same documentation as quick info here. However,
         // since these bindings don't exist in the TCB, there is no straightforward way to
         // retrieve a `ts.Symbol` for the field in the TS DOM definition.
+        // TODO(devversion): We can now show for DOM properties. Look into this.
         displayParts = [];
         break;
       case AttributeCompletionKind.DirectiveAttribute:

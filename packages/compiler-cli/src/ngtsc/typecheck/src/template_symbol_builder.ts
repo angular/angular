@@ -338,6 +338,32 @@ export class SymbolBuilder {
     return {kind: SymbolKind.Output, bindings};
   }
 
+  private _findDomBindingSymbol(host: ElementSymbol, nodes: ts.BinaryExpression[]): BindingSymbol
+      |null {
+    for (const node of nodes) {
+      if (!ts.isElementAccessExpression(node.left)) {
+        continue;
+      }
+
+      // Element access expressions separate the "resolved type", and the
+      // declaration symbol. We resolve both symbols to represent the DOM binding.
+      const typeSymbol = this.getSymbolOfTsNode(node.left);
+      const declarationSymbol = this.getSymbolOfTsNode(node.left.argumentExpression);
+
+      if (typeSymbol !== null && declarationSymbol !== null &&
+          declarationSymbol.tsSymbol !== null) {
+        return {
+          kind: SymbolKind.Binding,
+          target: host,
+          tsSymbol: declarationSymbol.tsSymbol,
+          tcbLocation: declarationSymbol.tcbLocation,
+          tsType: typeSymbol.tsType,
+        };
+      }
+    }
+    return null;
+  }
+
   private getSymbolOfInputBinding(binding: TmplAstBoundAttribute|
                                   TmplAstTextAttribute): InputBindingSymbol|DomBindingSymbol|null {
     const consumer = this.templateData.boundTarget.getConsumerOfBinding(binding);
@@ -345,13 +371,22 @@ export class SymbolBuilder {
       return null;
     }
 
-    if (consumer instanceof TmplAstElement || consumer instanceof TmplAstTemplate) {
-      const host = this.getSymbol(consumer);
-      return host !== null ? {kind: SymbolKind.DomBinding, host} : null;
-    }
-
     const nodes = findAllMatchingNodes(
         this.typeCheckBlock, {withSpan: binding.sourceSpan, filter: isAssignment});
+
+    if (consumer instanceof TmplAstElement || consumer instanceof TmplAstTemplate) {
+      const host = this.getSymbol(consumer);
+      if (host === null) {
+        return null;
+      }
+
+      return {
+        kind: SymbolKind.DomBinding,
+        host,
+        binding: host.kind === SymbolKind.Element ? this._findDomBindingSymbol(host, nodes) : null,
+      };
+    }
+
     const bindings: BindingSymbol[] = [];
     for (const node of nodes) {
       if (!isAccessExpression(node.left)) {
