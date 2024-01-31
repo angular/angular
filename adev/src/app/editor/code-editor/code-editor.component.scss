@@ -65,7 +65,7 @@
   position: relative;
 }
 
-.adev-code-editor-tabs {
+.docs-code-editor-tabs {
   display: flex;
   background: var(--octonary-contrast);
   border-block-end: 1px solid var(--senary-contrast);
@@ -79,7 +79,7 @@
 }
 
 .adev-add-file,
-.adev-delete-file {
+.docs-delete-file {
   docs-icon {
     color: var(--gray-400);
     transition: color 0.3s ease;
@@ -92,7 +92,7 @@
   }
 }
 
-.adev-delete-file {
+.docs-delete-file {
   padding-inline-start: 0.1rem;
   padding-inline-end: 0;
   margin-block-start: 0.2rem;

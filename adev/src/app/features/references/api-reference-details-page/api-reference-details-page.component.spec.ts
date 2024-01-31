@@ -30,12 +30,12 @@ describe('ApiReferenceDetailsPage', () => {
     updateMembersMarginTop: () => {},
   };
 
-  const SAMPLE_CONTENT_WITH_TABS = `<div class="adev-reference-tabs">
+  const SAMPLE_CONTENT_WITH_TABS = `<div class="docs-reference-tabs">
   <div data-tab="API" data-tab-url="api" class="adev-reference-tab"></div>
   <div data-tab="Description" data-tab-url="description" class="adev-reference-tab"></div>
   <div data-tab="Examples" data-tab-url="examples" class="adev-reference-tab"></div>
   <div data-tab="Usage Notes" data-tab-url="usage-notes" class="adev-reference-tab"></div>
-  <div class="adev-reference-members-container"></div>
+  <div class="docs-reference-members-container"></div>
 </div>`;
 
   beforeEach(async () => {
@@ -81,18 +81,18 @@ describe('ApiReferenceDetailsPage', () => {
     const tabs = await matTabGroup.getTabs();
 
     let membersCard = harness.fixture.debugElement.query(
-      By.css('.adev-reference-members-container'),
+      By.css('.docs-reference-members-container'),
     );
     expect(membersCard).toBeTruthy();
 
     await matTabGroup.selectTab({label: await tabs[1].getLabel()});
 
-    membersCard = harness.fixture.debugElement.query(By.css('.adev-reference-members-container'));
+    membersCard = harness.fixture.debugElement.query(By.css('.docs-reference-members-container'));
     expect(membersCard).toBeFalsy();
 
     await matTabGroup.selectTab({label: await tabs[0].getLabel()});
 
-    membersCard = harness.fixture.debugElement.query(By.css('.adev-reference-members-container'));
+    membersCard = harness.fixture.debugElement.query(By.css('.docs-reference-members-container'));
     expect(membersCard).toBeTruthy();
   }));
 
