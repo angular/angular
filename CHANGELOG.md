@@ -1,3 +1,32 @@
+<a name="17.1.2"></a>
+# 17.1.2 (2024-01-31)
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ccddacf11d](https://github.com/angular/angular/commit/ccddacf11deaebeda12e1bdb6e93ec401397d352) | fix | cta clickability issue in adev homepage. ([#52905](https://github.com/angular/angular/pull/52905)) |
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [98d545fafa](https://github.com/angular/angular/commit/98d545fafa7fc3b1fb3ae049ce655e33ef9bd423) | fix | cleanup DOM elements when root view is removed with async animations ([#53033](https://github.com/angular/angular/pull/53033)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cdc5e39532](https://github.com/angular/angular/commit/cdc5e3953237a192beafd6330f9d9e36ede34f2c) | fix | The date pipe should return ISO format for week and week-year as intended in the unit test. ([#53879](https://github.com/angular/angular/pull/53879)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f12b01ec88](https://github.com/angular/angular/commit/f12b01ec88eaf18041c2e46335428627aa0d7744) | fix | Update type check block to fix control flow source mappings ([#53980](https://github.com/angular/angular/pull/53980)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c477e876e3](https://github.com/angular/angular/commit/c477e876e39495b855b096440d53cf1dd1ad33c6) | fix | change defer block fixture default behavior to playthrough ([#54088](https://github.com/angular/angular/pull/54088)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8264382a6b](https://github.com/angular/angular/commit/8264382a6bf389fb3fca75fa2d6c0a2aa5a1e42f) | fix | error in standalone migration when non-array value is used as declarations in TestBed ([#54122](https://github.com/angular/angular/pull/54122)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.2.0-next.0"></a>
 # 17.2.0-next.0 (2024-01-24)
 ### compiler
