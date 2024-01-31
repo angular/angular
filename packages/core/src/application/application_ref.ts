@@ -34,7 +34,7 @@ import {assertNgModuleType} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
 import {ChangeDetectionMode, detectChangesInternal, MAXIMUM_REFRESH_RERUNS} from '../render3/instructions/change_detection';
-import {FLAGS, LViewFlags} from '../render3/interfaces/view';
+import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
 import {setJitOptions} from '../render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
@@ -566,7 +566,7 @@ export class ApplicationRef {
 
   private detectChangesInAttachedViews() {
     let runs = 0;
-    while (true) {
+    do {
       if (runs === MAXIMUM_REFRESH_RERUNS) {
         throw new RuntimeError(
             RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
@@ -575,37 +575,31 @@ export class ApplicationRef {
       }
 
       const isFirstPass = runs === 0;
-      for (let view of this._views) {
-        this.detectChangesInView(view, isFirstPass);
+      for (let {_lView, notifyErrorHandler} of this._views) {
+        // When re-checking, only check views which actually need it.
+        if (!isFirstPass && !shouldRecheckView(_lView)) {
+          continue;
+        }
+        this.detectChangesInView(_lView, notifyErrorHandler, isFirstPass);
       }
       this.afterRenderEffectManager.execute();
 
-      // After-render hooks can make views dirty again, so we loop back and re-check the dirty
-      // views if that happens.
-      if (!this._views.some(shouldRecheckView)) {
-        return;
-      }
       runs++;
-    }
+    } while (this._views.some(({_lView}) => shouldRecheckView(_lView)));
   }
 
-  private detectChangesInView(view: InternalViewRef<unknown>, isFirstPass: boolean) {
-    // When re-checking, only check views which actually need it.
-    if (!isFirstPass && !shouldRecheckView(view)) {
-      return;
-    }
-
+  private detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
     let mode: ChangeDetectionMode;
     if (isFirstPass) {
-      // The first pass is always in Global mode.
+      // The first pass is always in Global mode, which includes `CheckAlways` views.
       mode = ChangeDetectionMode.Global;
       // Add `RefreshView` flag to ensure this view is refreshed if not already dirty.
       // `RefreshView` flag is used intentionally over `Dirty` because it gets cleared before
       // executing any of the actual refresh code while the `Dirty` flag doesn't get cleared
       // until the end of the refresh. Using `RefreshView` prevents creating a potential
       // difference in the state of the LViewFlags during template execution.
-      view._lView[FLAGS] |= LViewFlags.RefreshView;
-    } else if (view._lView[FLAGS] & LViewFlags.Dirty) {
+      lView[FLAGS] |= LViewFlags.RefreshView;
+    } else if (lView[FLAGS] & LViewFlags.Dirty) {
       // The root view has been explicitly marked for check, so check it in Global mode.
       mode = ChangeDetectionMode.Global;
     } else {
@@ -614,7 +608,7 @@ export class ApplicationRef {
       // view and check just the view(s) that need refreshed.
       mode = ChangeDetectionMode.Targeted;
     }
-    detectChangesInternal(view._lView, view.notifyErrorHandler, mode);
+    detectChangesInternal(lView, notifyErrorHandler, mode);
   }
 
   /**
@@ -771,6 +765,6 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
 }
 
 
-function shouldRecheckView(view: InternalViewRef<unknown>): boolean {
-  return requiresRefreshOrTraversal(view._lView) || !!(view._lView[FLAGS] & LViewFlags.Dirty);
+function shouldRecheckView(view: LView): boolean {
+  return requiresRefreshOrTraversal(view) || !!(view[FLAGS] & LViewFlags.Dirty);
 }
