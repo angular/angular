@@ -27,8 +27,8 @@ describe('CliReferenceDetailsPage', () => {
 
   const SAMPLE_CONTENT = `
     <div class="cli">
-      <div class="adev-reference-cli-content">First column content</div>
-      <div class="adev-reference-members-container">Members content</div>
+      <div class="docs-reference-cli-content">First column content</div>
+      <div class="docs-reference-members-container">Members content</div>
     </div>
   `;
 

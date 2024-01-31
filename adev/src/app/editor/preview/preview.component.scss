@@ -1,7 +1,7 @@
 :host {
   display: block;
 
-  .adev-dark-mode & {
+  .docs-dark-mode & {
     .adev-embedded-editor-preview-container {
       background: var(--gray-100);
     }
