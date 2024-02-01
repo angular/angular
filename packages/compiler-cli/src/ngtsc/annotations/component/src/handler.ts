@@ -483,12 +483,16 @@ export class ComponentDecoratorHandler implements
     // (if it exists) and populate the `DeferredSymbolTracker` state. These operations are safe
     // for the local compilation mode, since they don't require accessing/resolving symbols
     // outside of the current source file.
-    let explicitlyDeferredTypes: Map<string, string>|null = null;
+    let explicitlyDeferredTypes: Map<string, {importPath: string, isDefaultImport: boolean}>|null =
+        null;
     if (metadata.isStandalone && rawDeferredImports !== null) {
       const deferredTypes = this.collectExplicitlyDeferredSymbols(rawDeferredImports);
       for (const [deferredType, importDetails] of deferredTypes) {
         explicitlyDeferredTypes ??= new Map();
-        explicitlyDeferredTypes.set(importDetails.name, importDetails.from);
+        explicitlyDeferredTypes.set(importDetails.name, {
+          importPath: importDetails.from,
+          isDefaultImport: isDefaultImport(importDetails.node),
+        });
         this.deferredSymbolTracker.markAsDeferrableCandidate(
             deferredType, importDetails.node, node, true /* isExplicitlyDeferred */);
       }
@@ -1255,9 +1259,8 @@ export class ComponentDecoratorHandler implements
    * Computes a list of deferrable symbols based on dependencies from
    * the `@Component.imports` field and their usage in `@defer` blocks.
    */
-  private collectDeferredSymbols(resolution: Readonly<ComponentResolutionData>):
-      Map<string, string> {
-    const deferrableTypes = new Map<string, string>();
+  private collectDeferredSymbols(resolution: Readonly<ComponentResolutionData>) {
+    const deferrableTypes = new Map<string, {importPath: string, isDefaultImport: boolean}>();
     // Go over all dependencies of all defer blocks and update the value of
     // the `isDeferrable` flag and the `importPath` to reflect the current
     // state after visiting all components during the `resolve` phase.
@@ -1272,7 +1275,10 @@ export class ComponentDecoratorHandler implements
         if (importDecl !== null && this.deferredSymbolTracker.canDefer(importDecl)) {
           deferBlockDep.isDeferrable = true;
           deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
-          deferrableTypes.set(deferBlockDep.symbolName, deferBlockDep.importPath);
+          deferrableTypes.set(deferBlockDep.symbolName, {
+            importPath: deferBlockDep.importPath,
+            isDefaultImport: isDefaultImport(importDecl),
+          });
         }
       }
     }
@@ -1368,13 +1374,14 @@ export class ComponentDecoratorHandler implements
           continue;
         }
         // Collect initial information about this dependency.
-        // The `isDeferrable` flag and the `importPath` info would be
+        // `isDeferrable`, `importPath` and `isDefaultImport` will be
         // added later during the `compile` step.
         deps.push({
           type: decl.type as WrappedNodeExpr<ts.Identifier>,
           symbolName: decl.ref.node.name.escapedText as string,
           isDeferrable: false,
           importPath: null,
+          isDefaultImport: false,
           // Extra info to match corresponding import during the `compile` phase.
           classDeclaration: decl.ref.node as ts.ClassDeclaration,
         });
@@ -1532,7 +1539,8 @@ function extractPipes(dependencies: Array<PipeMeta|DirectiveMeta|NgModuleMeta>):
  * in the `setClassMetadataAsync` call. Otherwise, an import declaration gets retained.
  */
 function removeDeferrableTypesFromComponentDecorator(
-    analysis: Readonly<ComponentAnalysisData>, deferrableTypes: Map<string, string>) {
+    analysis: Readonly<ComponentAnalysisData>,
+    deferrableTypes: Map<string, {importPath: string, isDefaultImport: boolean}>) {
   if (analysis.classMetadata) {
     const deferrableSymbols = new Set(deferrableTypes.keys());
     const rewrittenDecoratorsNode = removeIdentifierReferences(
@@ -1607,4 +1615,9 @@ function validateStandaloneImports(
   }
 
   return diagnostics;
+}
+
+/** Returns whether an ImportDeclaration is a default import. */
+function isDefaultImport(node: ts.ImportDeclaration): boolean {
+  return node.importClause !== undefined && node.importClause.namedBindings === undefined;
 }

@@ -670,13 +670,19 @@ function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.I
 }
 
 /**
- * Return the ImportDeclaration for the given `node` if it is either an `ImportSpecifier` or a
- * `NamespaceImport`. If not return `null`.
+ * Gets the closest ancestor `ImportDeclaration` to a node.
  */
 export function getContainingImportDeclaration(node: ts.Node): ts.ImportDeclaration|null {
-  return ts.isImportSpecifier(node) ? node.parent!.parent!.parent! :
-      ts.isNamespaceImport(node)    ? node.parent.parent :
-                                      null;
+  let parent = node.parent;
+
+  while (parent && !ts.isSourceFile(parent)) {
+    if (ts.isImportDeclaration(parent)) {
+      return parent;
+    }
+    parent = parent.parent;
+  }
+
+  return null;
 }
 
 /**

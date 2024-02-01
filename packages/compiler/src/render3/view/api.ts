@@ -219,6 +219,11 @@ export interface R3DeferBlockTemplateDependency {
    * Import path where this dependency is located.
    */
   importPath: string|null;
+
+  /**
+   * Whether the symbol is the default export.
+   */
+  isDefaultImport: boolean;
 }
 
 /**
@@ -282,7 +287,7 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   /**
    * Map of deferrable symbol names -> corresponding import paths.
    */
-  deferrableTypes: Map<string, string>;
+  deferrableTypes: Map<string, {importPath: string, isDefaultImport: boolean}>;
 
   /**
    * Specifies how the 'directives' and/or `pipes` array, if generated, need to be emitted.

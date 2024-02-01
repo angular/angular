@@ -77,7 +77,7 @@ export interface ComponentAnalysisData {
   /**
    * Map of symbol name -> import path for types from `@Component.deferredImports` field.
    */
-  explicitlyDeferredTypes: Map<string, string>|null;
+  explicitlyDeferredTypes: Map<string, {importPath: string, isDefaultImport: boolean}>|null;
 
   schemas: SchemaMetadata[]|null;
 
