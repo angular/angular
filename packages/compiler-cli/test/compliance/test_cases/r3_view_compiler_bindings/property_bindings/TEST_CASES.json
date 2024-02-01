@@ -196,6 +196,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should maintain the binding order between one-way and two-way properties",
+      "inputFiles": [
+        "mixed_one_way_two_way_property_order.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "mixed_one_way_two_way_property_order.js"
+          ]
+        }
+      ]
     }
   ]
 }
