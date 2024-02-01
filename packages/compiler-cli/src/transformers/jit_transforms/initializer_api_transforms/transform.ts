@@ -8,28 +8,34 @@
 
 import ts from 'typescript';
 
-import {isAngularDecorator} from '../../ngtsc/annotations';
-import {Decorator, ReflectionHost} from '../../ngtsc/reflection';
-import {addImports} from '../../ngtsc/transform';
-import {ImportManager} from '../../ngtsc/translator';
+import {isAngularDecorator} from '../../../ngtsc/annotations';
+import {ReflectionHost} from '../../../ngtsc/reflection';
+import {addImports} from '../../../ngtsc/transform';
+import {ImportManager} from '../../../ngtsc/translator';
+
+import {signalInputsTransform} from './input_function';
+import {PropertyTransform} from './transform_api';
 
 /** Decorators for classes that should be transformed. */
 const decoratorsWithInputs = ['Directive', 'Component'];
-
-/** Function that can be used to transform a class property to add signal-specific metadata. */
-export type PropertyTransform =
-    (node: ts.PropertyDeclaration&{name: ts.Identifier | ts.StringLiteralLike},
-     host: ReflectionHost, factory: ts.NodeFactory, importManager: ImportManager,
-     decorator: Decorator, isCore: boolean) => ts.PropertyDeclaration;
+/**
+ * List of possible property transforms.
+ * The first one matched on a class member will apply.
+ */
+const propertyTransforms: PropertyTransform[] = [
+  signalInputsTransform,
+];
 
 /**
- * Factory that creates a TypeScript transformer which can be used
- * to add signal-specific metadata to class properties.
+ * Creates an AST transform that looks for Angular classes and transforms
+ * initializer-based declared members to work with JIT compilation.
+ *
+ * For example, an `input()` member may be transformed to add an `@Input`
+ * decorator for JIT.
  */
-export function signalMetadataTransformFactory(
+export function getInitializerApiJitTransform(
     host: ReflectionHost,
     isCore: boolean,
-    propertyTransform: PropertyTransform,
     ): ts.TransformerFactory<ts.SourceFile> {
   return ctx => {
     return sourceFile => {
@@ -37,7 +43,7 @@ export function signalMetadataTransformFactory(
 
       sourceFile = ts.visitNode(
           sourceFile,
-          createTransformVisitor(ctx, host, importManager, isCore, propertyTransform),
+          createTransformVisitor(ctx, host, importManager, isCore),
           ts.isSourceFile,
       );
 
@@ -51,16 +57,11 @@ export function signalMetadataTransformFactory(
   };
 }
 
-/**
- * Creates a transform AST visitor that looks for candidate Angular classes
- * that need to be checked for signal inputs that need a decorator.
- */
 function createTransformVisitor(
     ctx: ts.TransformationContext,
     host: ReflectionHost,
     importManager: ImportManager,
     isCore: boolean,
-    propertyTransform: PropertyTransform,
     ): ts.Visitor<ts.Node, ts.Node> {
   const visitor: ts.Visitor<ts.Node, ts.Node> = (node: ts.Node): ts.Node => {
     if (ts.isClassDeclaration(node) && node.name !== undefined) {
@@ -77,13 +78,20 @@ function createTransformVisitor(
           if (!ts.isIdentifier(member.name) && !ts.isStringLiteralLike(member.name)) {
             return member;
           }
-          const newNode = propertyTransform(
-              member as ts.PropertyDeclaration & {name: ts.Identifier | ts.StringLiteralLike}, host,
-              ctx.factory, importManager, angularDecorator, isCore);
-          if (newNode !== member) {
-            hasChanged = true;
+
+          // Find the first matching transform and update the class member.
+          for (const transform of propertyTransforms) {
+            const newNode = transform(
+                member as ts.PropertyDeclaration & {name: ts.Identifier | ts.StringLiteralLike},
+                host, ctx.factory, importManager, angularDecorator, isCore);
+
+            if (newNode !== member) {
+              hasChanged = true;
+              return newNode;
+            }
           }
-          return newNode;
+
+          return member;
         });
 
         if (hasChanged) {
