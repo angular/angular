@@ -22,6 +22,7 @@ export class ProfilePhoto { }
   imports: [ProfilePhoto],
   template: `<profile-photo />`
 })
+export class UserProfile { }
 </docs-code>
 
 Standalone components are directly importable into other standalone components.
