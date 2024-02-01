@@ -1400,7 +1400,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (deferredDep.isDeferrable) {
         // Callback function, e.g. `m () => m.MyCmp;`.
         const innerFn = o.arrowFn(
-            [new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(deferredDep.symbolName));
+            [new o.FnParam('m', o.DYNAMIC_TYPE)],
+            // Default imports are always accessed through the `default` property.
+            o.variable('m').prop(deferredDep.isDefaultImport ? 'default' : deferredDep.symbolName));
 
         // Dynamic import, e.g. `import('./a').then(...)`.
         const importExpr =

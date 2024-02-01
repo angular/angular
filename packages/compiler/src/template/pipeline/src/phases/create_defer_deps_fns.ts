@@ -28,7 +28,9 @@ export function createDeferDepsFns(job: ComponentCompilationJob): void {
           if (dep.isDeferrable) {
             // Callback function, e.g. `m () => m.MyCmp;`.
             const innerFn = o.arrowFn(
-                [new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(dep.symbolName));
+                // Default imports are always accessed through the `default` property.
+                [new o.FnParam('m', o.DYNAMIC_TYPE)],
+                o.variable('m').prop(dep.isDefaultImport ? 'default' : dep.symbolName));
 
             // Dynamic import, e.g. `import('./a').then(...)`.
             const importExpr =
