@@ -32,12 +32,6 @@ $width-breakpoint: 950px;
     }
   }
 
-  // If error box are displayed, modify the height of the editor
-  &:has(.adev-inline-errors-box) {
-    .adev-code-editor-wrapper {
-      height: calc(50% - 33px) ;
-    }
-  }
   // If files are displayed, share the space
   &:has(.docs-editor-tabs) {
     .adev-tutorial-code-editor {

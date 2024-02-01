@@ -127,6 +127,16 @@
   &-hidden {
     display: none;
   }
+
+  // If error box are displayed, move inline-errors-box
+  // to bottom of the editor and adjust height
+  // so that scroll bar & content do not render under tabs
+  &:has(~ .adev-inline-errors-box) ~ .adev-inline-errors-box {
+      bottom: auto;
+  }
+  &:has(~ .adev-inline-errors-box) {
+    height: min(75% - 49px);
+  }
 }
 
 .adev-inline-errors-box {
