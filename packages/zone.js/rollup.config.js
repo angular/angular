@@ -66,7 +66,7 @@ module.exports = {
       return false;
     }
 
-    return /rxjs|electron/.test(id);
+    return /rxjs|^electron/.test(id);
   },
   output: {
     globals: {
