@@ -3,9 +3,6 @@
 {% set relativePath = doc.fileInfo.relativePath %}
 {% if doc.title %}{$ ('# ' + doc.title.trim()) | marked $}{% endif %}
 {% if '/' in relativePath or 'docs.md' in relativePath %}
-<div class="github-links">
-  {$ github.githubEditLink(doc, versionInfo) $}
-</div>
 {% endif %}
 {% block content %}
 <div class="content">
