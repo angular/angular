@@ -49,11 +49,19 @@ describe('Zone.js npm_package', () => {
 
   describe('check npm_package root folder', () => {
     describe('typescript support', () => {
-      it('should have an zone.d.ts file', () => {
-        expect(shx.cat('zone.d.ts')).toContain('declare global {');
-        expect(shx.cat('zone.d.ts')).toContain('const Zone');
-        expect(shx.cat('zone.d.ts')).toContain('interface EventTarget');
-        expect(shx.cat('zone.d.ts')).toContain('ZoneGlobalConfigurations');
+      it('should include types', () => {
+        // Root `zone.d.ts` file imports globals and extensions.
+        expect(shx.cat('zone.d.ts')).toContain('lib/zone');
+        expect(shx.cat('zone.d.ts')).toContain('lib/zone.api.extensions');
+        expect(shx.cat('zone.d.ts')).toContain('lib/zone.configurations.api');
+
+        // Defines globals.
+        expect(shx.cat('lib/zone.d.ts')).toContain('declare global {');
+        expect(shx.cat('lib/zone.d.ts')).toContain('const Zone');
+
+        // Defines extensions.
+        expect(shx.cat('lib/zone.api.extensions.d.ts')).toContain('interface EventTarget');
+        expect(shx.cat('lib/zone.configurations.api.d.ts')).toContain('ZoneGlobalConfigurations');
       });
     });
 
