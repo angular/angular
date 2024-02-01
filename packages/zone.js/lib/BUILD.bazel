@@ -9,6 +9,8 @@ exports_files(glob([
 ts_library(
     name = "zone_d_ts",
     srcs = [
+        ":zone.api.extensions.ts",
+        ":zone.configurations.api.ts",
         ":zone.ts",
         ":zone-impl.ts",
     ],
@@ -25,6 +27,8 @@ ts_library(
         exclude = [
             "zone.ts",
             "zone-impl.ts",
+            "zone.api.extensions.ts",
+            "zone.configurations.api.ts",
         ],
     ),
     module_name = "zone.js/lib",

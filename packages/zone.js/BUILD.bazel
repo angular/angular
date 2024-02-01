@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults.bzl", "extract_types", "pkg_npm", "ts_library")
 load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
 load("//packages/zone.js:tools.bzl", "generate_rollup_bundle")
 
@@ -23,15 +23,17 @@ genrule(
     cmd = "(echo '/**\n @license' && cat $< && echo '*/') > $@",
 )
 
-genrule(
-    name = "zone_js_d_ts",
-    srcs = [
-        "//packages/zone.js/lib:zone_d_ts",
-        "//packages/zone.js/lib:zone.api.extensions.ts",
-        "//packages/zone.js/lib:zone.configurations.api.ts",
-    ],
-    outs = ["zone.d.ts"],
-    cmd = "cat $(SRCS) > $@",
+ts_library(
+    name = "zone_js",
+    srcs = ["zone.ts"],
+    visibility = ["//visibility:private"],
+    deps = ["//packages/zone.js/lib:zone_d_ts"],
+)
+
+extract_types(
+    name = "zone_d_ts",
+    visibility = ["//visibility:private"],
+    deps = [":zone_js"],
 )
 
 generate_rollup_bundle(
@@ -62,5 +64,5 @@ pkg_npm(
     ] + [
         "//packages/zone.js/fesm2015:" + b + "-es2015.min.dist"
         for b in BUNDLES_ENTRY_POINTS.keys()
-    ] + [":zone_js_d_ts"],
+    ] + [":zone_d_ts"],
 )
