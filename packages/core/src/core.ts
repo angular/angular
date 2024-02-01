@@ -19,6 +19,9 @@ export * from './authoring';
 export {input} from './authoring/input/input';
 export {contentChild, contentChildren, viewChild, viewChildren} from './authoring/queries';
 
+// TODO(crisbeto): export as a public API
+// export {model} from './authoring/model/model';
+
 export * from './metadata';
 export * from './version';
 export {TypeDecorator} from './util/decorators';
