@@ -26,17 +26,12 @@ https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInf
 %3A%20describe%20your%20change...{$ lineInfo $}
 {%- endmacro %}
 
-{% macro githubEditLink(doc, versionInfo) -%}
-<a href="{$ githubEditHref(doc, versionInfo) $}" aria-label="Suggest Edits" title="Suggest Edits"><i class="material-icons" aria-hidden="true" role="img">mode_edit</i></a>
-{%- endmacro %}
-
 {% macro githubViewLink(doc, versionInfo) -%}
 <a href="{$ githubViewHref(doc, versionInfo) $}" aria-label="View Source" title="View Source"><i class="material-icons" aria-hidden="true" role="img">code</i></a>
 {%- endmacro %}
 
 {% macro githubLinks(doc, versionInfo) -%}
 <div class="github-links">
-  {$ githubEditLink(doc, versionInfo) $}
   {$ githubViewLink(doc, versionInfo) $}
 </div>
 {%- endmacro -%}
