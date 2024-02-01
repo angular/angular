@@ -119,6 +119,7 @@ export const enum RuntimeErrorCode {
   // Signal integration errors
   REQUIRED_INPUT_NO_VALUE = -950,
   REQUIRED_QUERY_NO_VALUE = -951,
+  REQUIRED_MODEL_NO_VALUE = -952,
 
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,

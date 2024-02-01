@@ -177,6 +177,24 @@ export function angularCoreDts(): TestFile {
 
     export type Signal<T> = (() => T);
 
+    export interface ModelOptions {
+      alias?: string;
+    }
+
+    export interface ModelSignal<T> extends WritableSignal<T> {
+      [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
+      [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
+      subscribe(callback: (value: T) => void): {unsubscribe: () => void};
+    }
+
+    export interface ModelFunction {
+      <T>(): ModelSignal<T|undefined>;
+      <T>(initialValue: T, opts?: ModelOptions): ModelSignal<T>;
+      required<T>(opts?: ModelOptions): ModelSignal<T>;
+    }
+
+    export const model: ModelFunction = null!;
+
     export type ɵUnwrapInputSignalWriteType<Field> =
         Field extends InputSignalWithTransform<unknown, infer WriteT>? WriteT : never;
     export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {

@@ -5,6 +5,7 @@ ts_library(
     testonly = True,
     srcs = [
         "signal_input_signature_test.ts",
+        "signal_model_signature_test.ts",
         "signal_queries_signature_test.ts",
     ],
     deps = ["//packages/core"],
@@ -31,7 +32,10 @@ nodejs_test(
 ts_library(
     name = "test_lib",
     testonly = True,
-    srcs = ["input_signal_spec.ts"],
+    srcs = [
+        "input_signal_spec.ts",
+        "model_input_spec.ts",
+    ],
     deps = [
         "//packages/core",
         "//packages/core/primitives/signals",
