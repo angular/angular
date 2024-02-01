@@ -4,7 +4,7 @@ package(default_visibility = ["//visibility:public"])
 
 ts_library(
     name = "jit_transforms",
-    srcs = glob(["*.ts"]),
+    srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations",

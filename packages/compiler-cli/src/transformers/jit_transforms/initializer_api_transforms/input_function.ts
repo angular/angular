@@ -9,15 +9,14 @@
 import {core} from '@angular/compiler';
 import ts from 'typescript';
 
-import {isAngularDecorator, tryParseSignalInputMapping} from '../../ngtsc/annotations';
-import {ReflectionHost} from '../../ngtsc/reflection';
+import {isAngularDecorator, tryParseSignalInputMapping} from '../../../ngtsc/annotations';
 
-import {PropertyTransform, signalMetadataTransformFactory} from './signal_metadata_transform_factory';
+import {PropertyTransform} from './transform_api';
 
 /**
- * Creates a TypeScript transformer that will automatically add an `@Input` decorator
- * for all signal inputs in Angular classes. The decorator will capture metadata of
- * the signal input, derived from the `input()/input.required()` initializer.
+ * Transform that will automatically add an `@Input` decorator for all signal
+ * inputs in Angular classes. The decorator will capture metadata of the signal
+ * input, derived from the `input()/input.required()` initializer.
  *
  * This transform is useful for JIT environments where signal inputs would like to be
  * used. e.g. for Angular CLI unit testing. In such environments, signal inputs are not
@@ -25,12 +24,7 @@ import {PropertyTransform, signalMetadataTransformFactory} from './signal_metada
  * before instantiating directives. A decorator exposes this information to the class without
  * the class needing to be instantiated.
  */
-export function getInputSignalsMetadataTransform(
-    host: ReflectionHost, isCore: boolean): ts.TransformerFactory<ts.SourceFile> {
-  return signalMetadataTransformFactory(host, isCore, decorateInputSignals);
-}
-
-const decorateInputSignals: PropertyTransform = (
+export const signalInputsTransform: PropertyTransform = (
     member,
     host,
     factory,
