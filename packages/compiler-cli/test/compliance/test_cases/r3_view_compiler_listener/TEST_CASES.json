@@ -344,6 +344,17 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should maintain the binding order between plain listeners and listeners part of a two-way binding",
+      "inputFiles": [
+        "mixed_one_way_two_way_listener_order.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
