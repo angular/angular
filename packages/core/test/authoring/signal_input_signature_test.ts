@@ -12,9 +12,9 @@
  * the resulting types match our expectations (via comments asserting the `.d.ts`).
  */
 
-import {input} from '../../src/authoring/input';
+import {input} from '../../src/authoring/input/input';
 // import preserved to simplify `.d.ts` emit and simplify the `type_tester` logic.
-import {InputSignal, InputSignalWithTransform} from '../../src/authoring/input_signal';
+import {InputSignal, InputSignalWithTransform} from '../../src/authoring/input/input_signal';
 
 export class InputSignatureTest {
   /** string | undefined */

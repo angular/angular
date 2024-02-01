@@ -8,8 +8,8 @@
 
 import {setActiveConsumer, SIGNAL} from '@angular/core/primitives/signals';
 
-import {InputSignalWithTransform} from '../../authoring/input_signal';
-import {InputSignalNode} from '../../authoring/input_signal_node';
+import {InputSignalWithTransform} from '../../authoring/input/input_signal';
+import {InputSignalNode} from '../../authoring/input/input_signal_node';
 import {applyValueToInputField} from '../apply_value_input_field';
 import {DirectiveDef, InputFlags} from '../interfaces/definition';
 

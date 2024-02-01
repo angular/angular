@@ -7,7 +7,7 @@
  */
 
 
-import {InputSignalNode} from '../authoring/input_signal_node';
+import {InputSignalNode} from '../authoring/input/input_signal_node';
 
 export function applyValueToInputField<T>(
     instance: T, inputSignalNode: null|InputSignalNode<unknown, unknown>, privateName: string,

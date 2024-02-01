@@ -8,8 +8,8 @@
 
 import {producerAccessed, SIGNAL} from '@angular/core/primitives/signals';
 
-import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {Signal} from '../render3/reactivity/api';
+import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {Signal} from '../../render3/reactivity/api';
 
 import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from './input_signal_node';
 
