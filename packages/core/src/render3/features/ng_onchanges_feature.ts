@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InputSignalNode} from '../../authoring/input_signal_node';
+import {InputSignalNode} from '../../authoring/input/input_signal_node';
 import {OnChanges} from '../../interface/lifecycle_hooks';
 import {SimpleChange, SimpleChanges} from '../../interface/simple_change';
 import {assertString} from '../../util/assert';
