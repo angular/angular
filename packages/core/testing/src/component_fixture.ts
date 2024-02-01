@@ -7,8 +7,8 @@
  */
 
 import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵDeferBlockDetails as DeferBlockDetails, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
-import {firstValueFrom, Subscription} from 'rxjs';
-import {filter, take} from 'rxjs/operators';
+import {Subscription} from 'rxjs';
+import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
 import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
@@ -194,7 +194,7 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     if (this.isStable()) {
       return Promise.resolve(false);
     }
-    return firstValueFrom(this._appRef.isStable.pipe(filter(stable => stable)));
+    return this._appRef.isStable.pipe(first(stable => stable)).toPromise().then(() => true);
   }
 
   override autoDetectChanges(autoDetect?: boolean|undefined): void {
