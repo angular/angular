@@ -171,6 +171,29 @@ describe('CheckAlways components', () => {
     incrementAfterCheckedUntil = Number.MAX_SAFE_INTEGER;
     expect(() => fixture.detectChanges()).toThrowError(/Infinite/);
   });
+
+  it('refreshes all views attached to ApplicationRef until no longer dirty', () => {
+    const val = signal(0);
+    @Component({
+      template: '{{val()}}',
+      standalone: true,
+    })
+    class App {
+      val = val;
+      ngOnInit() {
+        this.val.update(v => v+1);
+      }
+    }
+    const fixture = TestBed.createComponent(App);
+    const fixture2 = TestBed.createComponent(App);
+    const appRef = TestBed.inject(ApplicationRef);
+    appRef.attachView(fixture.componentRef.hostView);
+    appRef.attachView(fixture2.componentRef.hostView);
+
+    appRef.tick();
+    expect(fixture.nativeElement.innerText).toEqual('2');
+    expect(fixture2.nativeElement.innerText).toEqual('2');
+  });
 });
 
 
