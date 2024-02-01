@@ -461,7 +461,7 @@ gotoItems(hero: Hero) {
 
 ## Lazy loading
 
-You can configure your routes to be lazy loaded, which means that Angular only loads routs as needed, rather than loading all routes when the application launches.
+You can configure your routes to be lazy loaded, which means that Angular only loads routes as needed, rather than loading all routes when the application launches.
 Additionally, preload parts of your application in the background to improve the user experience.
 
 For more information on lazy loading and preloading see the dedicated guide [Lazy loading](guide/lazy-loading-ngmodules).
