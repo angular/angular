@@ -122,6 +122,7 @@
   // adjust height for terminal tabs
   // so that scroll bar & content do not render under tabs
   height: calc(100% - 49px);
+  transition: height 0.3s ease;
 
   &-hidden {
     display: none;
