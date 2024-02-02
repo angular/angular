@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {getInitializerApiJitTransform} from '@angular/compiler-cli/src/transformers/jit_transforms';
 import fs from 'fs';
@@ -27,7 +26,6 @@ async function main() {
   });
 
   const host = new TypeScriptReflectionHost(program.getTypeChecker());
-  const evaluator = new PartialEvaluator(host, program.getTypeChecker(), null);
   const outputFile = ts.transform(
       program.getSourceFile(inputTsExecPath)!,
       [getInitializerApiJitTransform(host, /* isCore */ false)], program.getCompilerOptions());
