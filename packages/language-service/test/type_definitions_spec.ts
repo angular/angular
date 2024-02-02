@@ -74,6 +74,42 @@ describe('type definitions', () => {
     });
   });
 
+  describe('initializer-based output() API', () => {
+    it('return the definition for an output', () => {
+      initMockFileSystem('Native');
+      const files = {
+        'app.ts': `
+          import {Component, Directive, output} from '@angular/core';
+
+          @Directive({
+            selector: 'my-dir',
+            standalone: true
+          })
+          export class MyDir {
+            nameChanges = output<string>();
+          }
+
+          @Component({
+            templateUrl: 'app.html',
+            standalone: true,
+            imports: [MyDir],
+          })
+          export class AppCmp {
+            doSmth() {}
+          }
+        `,
+        'app.html': `Will be overridden`,
+      };
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir (name¦Changes)="doSmth()" />`});
+      expect(definitions!.length).toEqual(1);
+
+      assertTextSpans(definitions, ['EventEmitter']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+  });
 
   function getTypeDefinitionsAndAssertBoundSpan(
       project: Project, {templateOverride}: {templateOverride: string}) {

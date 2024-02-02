@@ -171,6 +171,13 @@ describe('definitions', () => {
        export class MyDir2 {
          @Output() someEvent = new EventEmitter<void>();
        }`,
+      'dir3.ts': `
+       import {Directive, output, EventEmitter} from '@angular/core';
+
+       @Directive({selector: '[dir]'})
+       export class MyDir3 {
+         someEvent = output();
+       }`,
       'app.ts': `
          import {Component, NgModule} from '@angular/core';
          import {CommonModule} from '@angular/common';
@@ -190,13 +197,15 @@ describe('definitions', () => {
     expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length))
         .toEqual('someEvent');
 
-    expect(definitions.length).toEqual(2);
-    const [def, def2] = definitions;
+    expect(definitions.length).toEqual(3);
+    const [def3, def2, def] = definitions;
     expect(def.textSpan).toContain('someEvent');
     expect(def2.textSpan).toContain('someEvent');
+    expect(def3.textSpan).toContain('someEvent');
+    expect(def3.contextSpan!).toBe('someEvent = output();');
     // TODO(atscott): investigate why the text span includes more than just 'someEvent'
     // assertTextSpans([def, def2], ['someEvent']);
-    assertFileNames([def, def2], ['dir2.ts', 'dir.ts']);
+    assertFileNames([def3, def2, def], ['dir3.ts', 'dir2.ts', 'dir.ts']);
   });
 
   it('should go to the pre-compiled style sheet', () => {
