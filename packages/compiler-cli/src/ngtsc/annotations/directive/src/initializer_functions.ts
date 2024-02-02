@@ -24,7 +24,7 @@ import {CORE_MODULE} from '../../common';
  */
 
 export type InitializerApiFunction =
-    'input'|'ɵoutput'|'output'|'viewChild'|'viewChildren'|'contentChild'|'contentChildren';
+    'input'|'model'|'ɵoutput'|'output'|'viewChild'|'viewChildren'|'contentChild'|'contentChildren';
 
 /**
  * Metadata describing an Angular class member that was recognized through

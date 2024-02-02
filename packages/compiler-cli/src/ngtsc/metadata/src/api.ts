@@ -150,6 +150,21 @@ export type InputMapping = InputOrOutput&{
   transform: DecoratorInputTransform|null
 };
 
+/** Metadata for a model mapping. */
+export interface ModelMapping {
+  /** Information about the input declared by the model. */
+  input: InputOrOutput&{
+    /** Whether the input declared by the model is required. */
+    required: boolean;
+
+    /** Model inputs can't have transforms. Keeping it here for consistency. */
+    transform: null;
+  };
+
+  /** Information about the output implicitly declared by the model. */
+  output: InputOrOutput;
+}
+
 /** Metadata for an `@Input()` transform function. */
 export interface DecoratorInputTransform {
   /**
