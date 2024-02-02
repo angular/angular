@@ -39,6 +39,42 @@ describe('type definitions', () => {
     assertFileNames(definitions, ['index.d.ts']);
   });
 
+  describe('inputs', () => {
+    it('return the definition for a signal input', () => {
+      initMockFileSystem('Native');
+      const files = {
+        'app.ts': `
+          import {Component, Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: 'my-dir',
+            standalone: true
+          })
+          export class MyDir {
+            firstName = input<string>();
+          }
+
+          @Component({
+            templateUrl: 'app.html',
+            standalone: true,
+            imports: [MyDir],
+          })
+          export class AppCmp {}
+        `,
+        'app.html': `Will be overridden`,
+      };
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir [first¦Name]="undefined" />`});
+      expect(definitions!.length).toEqual(1);
+
+      assertTextSpans(definitions, ['InputSignal']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+  });
+
+
   function getTypeDefinitionsAndAssertBoundSpan(
       project: Project, {templateOverride}: {templateOverride: string}) {
     const text = templateOverride.replace('¦', '');
