@@ -10,7 +10,7 @@
 
 export {forwardRefResolver, isAngularDecorator, NoopReferencesRegistry, ReferencesRegistry, ResourceLoader, ResourceLoaderContext} from './common';
 export {ComponentDecoratorHandler} from './component';
-export {DirectiveDecoratorHandler, tryParseSignalInputMapping} from './directive';
+export {DirectiveDecoratorHandler, tryParseInitializerBasedOutput, tryParseSignalInputMapping} from './directive';
 export {NgModuleDecoratorHandler} from './ng_module';
 export {InjectableDecoratorHandler} from './src/injectable';
 export {PipeDecoratorHandler} from './src/pipe';

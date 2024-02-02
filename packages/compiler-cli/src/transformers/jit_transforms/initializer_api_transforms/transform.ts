@@ -14,16 +14,19 @@ import {addImports} from '../../../ngtsc/transform';
 import {ImportManager} from '../../../ngtsc/translator';
 
 import {signalInputsTransform} from './input_function';
+import {initializerApiOutputTransform} from './output_function';
 import {PropertyTransform} from './transform_api';
 
 /** Decorators for classes that should be transformed. */
 const decoratorsWithInputs = ['Directive', 'Component'];
+
 /**
  * List of possible property transforms.
  * The first one matched on a class member will apply.
  */
 const propertyTransforms: PropertyTransform[] = [
   signalInputsTransform,
+  initializerApiOutputTransform,
 ];
 
 /**
