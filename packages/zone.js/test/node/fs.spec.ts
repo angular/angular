@@ -196,7 +196,7 @@ describe('util.promisify', () => {
             },
             err => {
               closeSync(fd);
-              fail(`should not be here with error: ${error}.`);
+              fail(`should not be here with error: ${err}.`);
             });
   });
 
@@ -222,7 +222,7 @@ describe('util.promisify', () => {
             err => {
               closeSync(fd);
               unlinkSync(dest);
-              fail(`should not be here with error: ${error}.`);
+              fail(`should not be here with error: ${err}.`);
             });
   });
 });
