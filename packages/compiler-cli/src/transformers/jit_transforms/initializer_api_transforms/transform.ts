@@ -14,6 +14,7 @@ import {addImports} from '../../../ngtsc/transform';
 import {ImportManager} from '../../../ngtsc/translator';
 
 import {signalInputsTransform} from './input_function';
+import {signalModelTransform} from './model_function';
 import {initializerApiOutputTransform} from './output_function';
 import {queryFunctionsTransforms} from './query_functions';
 import {PropertyTransform} from './transform_api';
@@ -29,6 +30,7 @@ const propertyTransforms: PropertyTransform[] = [
   signalInputsTransform,
   initializerApiOutputTransform,
   queryFunctionsTransforms,
+  signalModelTransform,
 ];
 
 /**
