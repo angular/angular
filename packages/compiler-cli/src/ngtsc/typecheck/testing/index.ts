@@ -182,6 +182,11 @@ export function angularCoreDts(): TestFile {
     export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
       [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
     };
+
+    export interface OutputEmitter<T> {
+      emit(value: T): void;
+      subscribe(listener: (v: T) => void): void;
+    }
    `
   };
 }

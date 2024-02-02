@@ -18,11 +18,20 @@ export interface TestInput {
   restrictionModifier?: string;
 }
 
+export interface TestOutput {
+  /** String type of the output. e.g. `EventEmitter<string>`. */
+  type: string;
+  /** Restriction modifier for the input. e.g. `private`, `protected` etc. */
+  restrictionModifier?: string;
+}
+
 export interface TestCase {
   /** Unique id for the test. */
   id: string;
   /** Record of inputs registered in the test directive. */
-  inputs: Record<string, TestInput>;
+  inputs?: Record<string, TestInput>;
+  /** Record of outputs registered in the test directive. */
+  outputs?: Record<string, TestOutput>;
   /** Template of the test component. */
   template: string;
   /** Additional class members to be added to the test directive */
@@ -46,17 +55,25 @@ export interface TestCase {
  * and running the type checker on it.
  */
 export function typeCheckDiagnose(c: TestCase) {
-  const inputFields = Object.keys(c.inputs).map(
-      inputName => `${c.inputs[inputName].restrictionModifier ?? ''} ${inputName}: ${
-          c.inputs[inputName].type}`);
+  const inputs = c.inputs ?? {};
+  const outputs = c.outputs ?? {};
+
+  const inputFields = Object.keys(inputs).map(
+      inputName =>
+          `${inputs[inputName].restrictionModifier ?? ''} ${inputName}: ${inputs[inputName].type}`);
+
+  const outputFields = Object.keys(outputs).map(
+      name => `${outputs[name].restrictionModifier ?? ''} ${name}: ${outputs[name].type}`);
 
   const testComponent = `
-      import {InputSignal, EventEmitter, InputSignalWithTransform} from '@angular/core';
+      import {InputSignal, EventEmitter, OutputEmitter, InputSignalWithTransform} from '@angular/core';
 
       ${c.extraFileContent ?? ''}
 
       class Dir${c.directiveGenerics ?? ''} {
         ${inputFields.join('\n')}
+        ${outputFields.join('\n')}
+
         ${c.extraDirectiveMembers?.join('\n') ?? ''}
       }
       class TestComponent {
@@ -64,16 +81,23 @@ export function typeCheckDiagnose(c: TestCase) {
       }
     `;
 
-  const inputDeclarations = Object.keys(c.inputs).reduce((res, inputName) => {
+  const inputDeclarations = Object.keys(inputs).reduce((res, inputName) => {
     return {
       ...res,
       [inputName]: {
         bindingPropertyName: inputName,
         classPropertyName: inputName,
-        isSignal: c.inputs[inputName].isSignal,
+        isSignal: inputs[inputName].isSignal,
         required: false,
         transform: null,
       },
+    };
+  }, {});
+
+  const outputDeclarations = Object.keys(outputs).reduce((res, outputName) => {
+    return {
+      ...res,
+      [outputName]: outputName,
     };
   }, {});
 
@@ -86,8 +110,9 @@ export function typeCheckDiagnose(c: TestCase) {
           selector: '[dir]',
           exportAs: ['dir'],
           isGeneric: c.directiveGenerics !== undefined,
+          outputs: outputDeclarations,
           inputs: inputDeclarations,
-          restrictedInputFields: Object.entries(c.inputs)
+          restrictedInputFields: Object.entries(inputs)
                                      .filter(([_, i]) => i.restrictionModifier !== undefined)
                                      .map(([name]) => name),
         },
