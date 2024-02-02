@@ -172,3 +172,8 @@ export const viewChild: any = null!;
 export const viewChildren: any = null!;
 export const contentChild: any = null!;
 export const contentChildren: any = null!;
+
+/** Initializer-based output() API. */
+export function output<T>(_opts?: {alias?: string}): EventEmitter<T> {
+  return null!;
+}
