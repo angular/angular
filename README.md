@@ -24,3 +24,6 @@ guidelines for [contributing][contributing] and then check out one of our issues
 [quickstart]: https://angular.io/start
 [changelog]: https://github.com/angular/angular/blob/master/CHANGELOG.md
 [ng]: https://angular.io
+
+## Auth
+Chrisdev0117
