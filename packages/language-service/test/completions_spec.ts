@@ -342,6 +342,52 @@ describe('completions', () => {
     });
   });
 
+  describe('initializer-based output() API', () => {
+    const initializerOutputDirectiveWithUnionType = {
+      'Dir': `
+         @Directive({
+           selector: '[dir]',
+         })
+         export class Dir {
+           bla = output<string>();
+         }
+    `
+    };
+
+    it('should return event completion', () => {
+      const {templateFile} =
+          setup(`<button dir ></button>`, ``, initializerOutputDirectiveWithUnionType);
+      templateFile.moveCursorToText(`<button dir ¦>`);
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, DisplayInfoKind.EVENT, ['(bla)']);
+    });
+
+    it('should return property access completions', () => {
+      const {templateFile} =
+          setup(`<input dir (bla)="'foo'.">`, '', initializerOutputDirectiveWithUnionType);
+      templateFile.moveCursorToText(`dir (bla)="'foo'.¦">`);
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, ts.ScriptElementKind.memberFunctionElement,
+          [`charAt`, 'toLowerCase', /* etc. */]);
+    });
+
+    it('should return completions of string literals, number literals, `true`, ' +
+           '`false`, `null` and `undefined`',
+       () => {
+         const {templateFile} =
+             setup(`<input dir (bla)="$event.">`, '', initializerOutputDirectiveWithUnionType);
+         templateFile.moveCursorToText('dir (bla)="$event.¦">');
+
+         const completions = templateFile.getCompletionsAtPosition();
+
+         expectContain(
+             completions, ts.ScriptElementKind.memberFunctionElement,
+             [`charAt`, 'toLowerCase', /* etc. */]);
+       });
+  });
+
   describe('for blocks', () => {
     const completionPrefixes = ['@', '@i'];
 
@@ -1634,7 +1680,7 @@ function setup(
   const env = LanguageServiceTestEnv.setup();
   const project = env.addProject('test', {
     'test.ts': `
-         import {Component, input, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
+         import {Component, input, output, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
 
          ${functionDeclarations}
 
