@@ -314,7 +314,7 @@ export interface ZoneType {
    * load patch for specified native module, allow user to
    * define their own patch, user can use this API after loading zone.js
    */
-  __load_patch(name: string, fn: _PatchFn, ignoreDuplicate?: boolean): void;
+  __load_patch(name: string, fn: PatchFn, ignoreDuplicate?: boolean): void;
 
   /**
    * Zone symbol API to generate a string with __zone_symbol__ prefix
@@ -325,20 +325,20 @@ export interface ZoneType {
 /**
  * Patch Function to allow user define their own monkey patch module.
  */
-export type _PatchFn = (global: Window, Zone: ZoneType, api: _ZonePrivate) => void;
+export type PatchFn = (global: Window, Zone: ZoneType, api: ZonePrivate) => void;
 
 /**
- * _ZonePrivate interface to provide helper method to help user implement
+ * ZonePrivate interface to provide helper method to help user implement
  * their own monkey patch module.
  */
-export interface _ZonePrivate {
-  currentZoneFrame: () => _ZoneFrame;
+export interface ZonePrivate {
+  currentZoneFrame: () => ZoneFrame;
   symbol: (name: string) => string;
   scheduleMicroTask: (task?: MicroTask) => void;
   onUnhandledError: (error: Error) => void;
   microtaskDrainDone: () => void;
   showUncaughtError: () => boolean;
-  patchEventTarget: (global: any, api: _ZonePrivate, apis: any[], options?: any) => boolean[];
+  patchEventTarget: (global: any, api: ZonePrivate, apis: any[], options?: any) => boolean[];
   patchOnProperties: (obj: any, properties: string[]|null, prototype?: any) => void;
   patchThen: (ctro: Function) => void;
   patchMethod:
@@ -348,7 +348,7 @@ export interface _ZonePrivate {
   bindArguments: (args: any[], source: string) => any[];
   patchMacroTask:
       (obj: any, funcName: string, metaCreator: (self: any, args: any[]) => any) => void;
-  patchEventPrototype: (_global: any, api: _ZonePrivate) => void;
+  patchEventPrototype: (_global: any, api: ZonePrivate) => void;
   isIEOrEdge: () => boolean;
   ObjectDefineProperty:
       (o: any, p: PropertyKey, attributes: PropertyDescriptor&ThisType<any>) => any;
@@ -362,7 +362,7 @@ export interface _ZonePrivate {
   _redefineProperty: (target: any, callback: string, desc: any) => void;
   nativeScheduleMicroTask: (func: Function) => void;
   patchCallbacks:
-      (api: _ZonePrivate, target: any, targetName: string, method: string,
+      (api: ZonePrivate, target: any, targetName: string, method: string,
        callbacks: string[]) => void;
   getGlobalObjects: () => {
     globalSources: any, zoneSymbolEventNames: any, eventNames: string[], isBrowser: boolean,
@@ -373,10 +373,10 @@ export interface _ZonePrivate {
 }
 
 /**
- * _ZoneFrame represents zone stack frame information
+ * ZoneFrame represents zone stack frame information
  */
-export interface _ZoneFrame {
-  parent: _ZoneFrame|null;
+export interface ZoneFrame {
+  parent: ZoneFrame|null;
   zone: Zone;
 }
 
@@ -746,7 +746,7 @@ class ZoneImpl implements AmbientZone {
   }
 
   // tslint:disable-next-line:require-internal-with-underscore
-  static __load_patch(name: string, fn: _PatchFn, ignoreDuplicate = false): void {
+  static __load_patch(name: string, fn: PatchFn, ignoreDuplicate = false): void {
     if (patches.hasOwnProperty(name)) {
       // `checkDuplicate` option is defined from global variable
       // so it works for all modules.
@@ -1413,7 +1413,7 @@ const microTask: 'microTask' = 'microTask', macroTask: 'macroTask' = 'macroTask'
                  eventTask: 'eventTask' = 'eventTask';
 
 const patches: {[key: string]: any} = {};
-const _api: _ZonePrivate = {
+const _api: ZonePrivate = {
   symbol: __symbol__,
   currentZoneFrame: () => _currentZoneFrame,
   onUnhandledError: noop,
@@ -1441,7 +1441,7 @@ const _api: _ZonePrivate = {
   patchCallbacks: () => noop,
   nativeScheduleMicroTask: nativeScheduleMicroTask
 };
-let _currentZoneFrame: _ZoneFrame = {parent: null, zone: new ZoneImpl(null, null)};
+let _currentZoneFrame: ZoneFrame = {parent: null, zone: new ZoneImpl(null, null)};
 let _currentTask: Task|null = null;
 let _numberOfNestedTaskFrames = 0;
 
