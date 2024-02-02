@@ -8,7 +8,6 @@
 
 
 import {assertIndexInRange} from '../../util/assert';
-import {isSubscribable} from '../../util/lang';
 import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
@@ -203,12 +202,12 @@ function listenerInternal(
         const directiveInstance = lView[index];
         const output = directiveInstance[minifiedName];
 
-        if (ngDevMode && !isSubscribable(output)) {
+        if (ngDevMode && !isOutputSubscribable(output)) {
           throw new Error(`@Output ${minifiedName} not initialized in '${
               directiveInstance.constructor.name}'.`);
         }
 
-        const subscription = output.subscribe(listenerFn);
+        const subscription = (output as SubscribableOutput<unknown>).subscribe(listenerFn);
         const idx = lCleanup.length;
         lCleanup.push(listenerFn, subscription);
         tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
@@ -275,4 +274,20 @@ function wrapListener(
 
     return result;
   };
+}
+
+/** Describes a subscribable output field value. */
+export interface SubscribableOutput<T> {
+  subscribe(listener: (v: T) => void): {unsubscribe: () => void;};
+}
+
+/**
+ * Whether the given value represents a subscribable output.
+ *
+ * For example, an `EventEmitter, a `Subject`, an `Observable` or an
+ * `OutputEmitter`.
+ */
+export function isOutputSubscribable(value: unknown): value is SubscribableOutput<unknown> {
+  return value != null &&
+      typeof (value as Partial<SubscribableOutput<unknown>>).subscribe === 'function';
 }
