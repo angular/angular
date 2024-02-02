@@ -163,30 +163,6 @@ export function internalAfterNextRender(
 }
 
 /**
- * Queue a state update to be performed asynchronously.
- * 
- * This is useful to safely update application state that is used in an expression that was already checked during change detection. This defers the update until later and prevents `ExpressionChangedAfterItHasBeenChecked` errors. Using signals for state is recommended instead, but it's not always immediately possible to change the state to a signal because it would be a breaking change.
- * When the callback updates state used in an expression, this needs to be accompanied by an explicit notification to the framework that something has changed (i.e. updating a signal or calling `ChangeDetectorRef.markForCheck()`) or may still cause `ExpressionChangedAfterItHasBeenChecked` in dev mode or fail to synchronize the state to the DOM in production.
- */
-export function queueStateUpdate(callback: VoidFunction, options?: {injector?: Injector}): void {
-  !options && assertInInjectionContext(queueStateUpdate);
-
-  let executed = false;
-  const runCallbackOnce = () => {
-    if (executed) return;
-
-    executed = true;
-    callback();
-  };
-
-  const injector = options?.injector ?? inject(Injector);
-  internalAfterNextRender(runCallbackOnce, {injector, runOnServer: true});
-  queueMicrotask(() => {
-    runCallbackOnce();
-  });
-}
-
-/**
  * Register a callback to be invoked each time the application
  * finishes rendering.
  *
@@ -455,7 +431,7 @@ export class AfterRenderEventManager {
   internalCallbacks: VoidFunction[] = [];
 
   /**
-   * Executes callbacks. Returns `true` if any callbacks executed.
+   * Executes internal and user-provided callbacks.
    */
   execute(): void {
     this.executeInternalCallbacks();
