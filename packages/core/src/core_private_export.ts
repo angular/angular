@@ -9,6 +9,7 @@
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
 export {whenStable as ɵwhenStable} from './application/application_ref';
 export {IMAGE_CONFIG as ɵIMAGE_CONFIG, IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS, ImageConfig as ɵImageConfig} from './application/application_tokens';
+export {queueStateUpdate as ɵqueueStateUpdate} from './render3/after_render_hooks';
 export {internalCreateApplication as ɵinternalCreateApplication} from './application/create_application';
 export {defaultIterableDiffers as ɵdefaultIterableDiffers, defaultKeyValueDiffers as ɵdefaultKeyValueDiffers} from './change_detection/change_detection';
 export {getEnsureDirtyViewsAreAlwaysReachable as ɵgetEnsureDirtyViewsAreAlwaysReachable, setEnsureDirtyViewsAreAlwaysReachable as ɵsetEnsureDirtyViewsAreAlwaysReachable} from './change_detection/flags';

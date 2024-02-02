@@ -10,9 +10,7 @@ import {assertNotInReactiveContext} from '../core_reactivity_export_internal';
 import {assertInInjectionContext, Injector, ɵɵdefineInjectable} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {ErrorHandler} from '../error_handler';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DestroyRef} from '../linker/destroy_ref';
-import {assertGreaterThan} from '../util/assert';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone/ng_zone';
 
@@ -129,6 +127,7 @@ export interface InternalAfterNextRenderOptions {
    * If this is not provided, the current injection context will be used instead (via `inject`).
    */
   injector?: Injector;
+  runOnServer?: boolean;
 }
 
 /** `AfterRenderRef` that does nothing. */
@@ -156,11 +155,35 @@ export function internalAfterNextRender(
   const injector = options?.injector ?? inject(Injector);
 
   // Similarly to the public `afterNextRender` function, an internal one
-  // is only invoked in a browser.
-  if (!isPlatformBrowser(injector)) return;
+  // is only invoked in a browser as long as the runOnServer option is not set.
+  if (!options?.runOnServer && !isPlatformBrowser(injector)) return;
 
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   afterRenderEventManager.internalCallbacks.push(callback);
+}
+
+/**
+ * Queue a state update to be performed asynchronously.
+ * 
+ * This is useful to safely update application state that is used in an expression that was already checked during change detection. This defers the update until later and prevents `ExpressionChangedAfterItHasBeenChecked` errors. Using signals for state is recommended instead, but it's not always immediately possible to change the state to a signal because it would be a breaking change.
+ * When the callback updates state used in an expression, this needs to be accompanied by an explicit notification to the framework that something has changed (i.e. updating a signal or calling `ChangeDetectorRef.markForCheck()`) or may still cause `ExpressionChangedAfterItHasBeenChecked` in dev mode or fail to synchronize the state to the DOM in production.
+ */
+export function queueStateUpdate(callback: VoidFunction, options?: {injector?: Injector}): void {
+  !options && assertInInjectionContext(queueStateUpdate);
+
+  let executed = false;
+  const runCallbackOnce = () => {
+    if (executed) return;
+
+    executed = true;
+    callback();
+  };
+
+  const injector = options?.injector ?? inject(Injector);
+  internalAfterNextRender(runCallbackOnce, {injector, runOnServer: true});
+  queueMicrotask(() => {
+    runCallbackOnce();
+  });
 }
 
 /**
@@ -435,6 +458,11 @@ export class AfterRenderEventManager {
    * Executes callbacks. Returns `true` if any callbacks executed.
    */
   execute(): void {
+    this.executeInternalCallbacks();
+    this.handler?.execute();
+  }
+
+  executeInternalCallbacks() {
     // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
     // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
     // can still be tree-shaken unless used by the application.
@@ -443,7 +471,6 @@ export class AfterRenderEventManager {
     for (const callback of callbacks) {
       callback();
     }
-    this.handler?.execute();
   }
 
   ngOnDestroy() {
