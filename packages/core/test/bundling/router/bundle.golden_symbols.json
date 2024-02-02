@@ -1980,7 +1980,7 @@
     "name": "tap"
   },
   {
-    "name": "throwError2"
+    "name": "throwError"
   },
   {
     "name": "throwIfEmpty"
