@@ -1,9 +1,12 @@
-import {ChangeDetectionStrategy, Component, Input, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, input, ɵoutput} from '@angular/core';
 
 @Component({
   selector: 'greet',
   template: `
-    <span class="greet-text">{{firstName()}} - {{lastName() ?? 'initial-unset'}}</span>`,
+    <span class="greet-text">{{firstName()}} - {{lastName() ?? 'initial-unset'}}</span>
+
+    <button (click)="dispatchOutputEvent()"><button>
+  `,
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -14,4 +17,10 @@ export class GreetComponent {
   });
 
   @Input() decoratorInput = 0;
+
+  clickFromInside = ɵoutput();
+
+  dispatchOutputEvent() {
+    this.clickFromInside.emit();
+  }
 }

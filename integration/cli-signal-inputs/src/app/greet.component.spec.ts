@@ -15,13 +15,24 @@ describe('greet component', () => {
 
     expect(fixture.nativeElement.textContent).toBe('John - initial-unset');
   });
+
+  it('should emit an event for the click output', () => {
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    fixture.nativeElement.querySelector('button').dispatchEvent(new MouseEvent('click'));
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.clickCount).toBe(1);
+  });
 });
 
 @Component({
   standalone: true,
-  template: `<greet [firstName]="firstName" />`,
+  template: `<greet [firstName]="firstName" (clickFromInside)="clickCount = clickCount + 1"/>`,
   imports: [GreetComponent],
 })
 class TestCmp {
+  clickCount = 0;
   firstName = 'Initial';
 }
