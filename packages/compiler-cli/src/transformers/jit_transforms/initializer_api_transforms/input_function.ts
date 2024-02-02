@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {isAngularDecorator, tryParseSignalInputMapping} from '../../../ngtsc/annotations';
 
-import {PropertyTransform} from './transform_api';
+import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
 
 /**
  * Transform that will automatically add an `@Input` decorator for all signal
@@ -29,7 +29,7 @@ export const signalInputsTransform: PropertyTransform = (
     host,
     factory,
     importManager,
-    decorator,
+    classDecorator,
     isCore,
     ) => {
   // If the field already is decorated, we handle this gracefully and skip it.
@@ -56,18 +56,10 @@ export const signalInputsTransform: PropertyTransform = (
     'transform': factory.createIdentifier('undefined'),
   };
 
-  const classDecoratorIdentifier = ts.isIdentifier(decorator.identifier) ?
-      decorator.identifier :
-      decorator.identifier.expression;
-
   const newDecorator = factory.createDecorator(
       factory.createCallExpression(
-          factory.createPropertyAccessExpression(
-              importManager.generateNamespaceImport('@angular/core'),
-              // The synthetic identifier may be checked later by the downlevel decorators
-              // transform to resolve to an Angular import using `getSymbolAtLocation`. We trick
-              // the transform to think it's not synthetic and comes from Angular core.
-              ts.setOriginalNode(factory.createIdentifier('Input'), classDecoratorIdentifier)),
+          createSyntheticAngularCoreDecoratorAccess(
+              factory, importManager, classDecorator, 'Input'),
           undefined,
           [factory.createAsExpression(
               factory.createObjectLiteralExpression(Object.entries(fields).map(
