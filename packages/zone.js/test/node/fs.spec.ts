@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {closeSync, exists, fstatSync, openSync, read, unlink, unlinkSync, unwatchFile, watch, watchFile, write, writeFile} from 'fs';
+import {closeSync, exists, fstatSync, openSync, read, realpath, unlink, unlinkSync, unwatchFile, watch, watchFile, write, writeFile} from 'fs';
 import url from 'url';
 import util from 'util';
 
@@ -37,6 +37,50 @@ describe('nodejs file system', () => {
       zoneA.run(() => {
         exists('testfile', (_) => {
           expect(zoneASpec.onScheduleTask).toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('has patched realpath as macroTask', (done) => {
+      const testZoneSpec = {
+        name: 'test',
+        onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+            Task => {
+              return delegate.scheduleTask(targetZone, task);
+            }
+      };
+      const testZone = Zone.current.fork(testZoneSpec);
+      spyOn(testZoneSpec, 'onScheduleTask').and.callThrough();
+      testZone.run(() => {
+        realpath('testfile', () => {
+          expect(Zone.current).toBe(testZone);
+          expect(testZoneSpec.onScheduleTask).toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    // https://github.com/angular/angular/issues/45546
+    // Note that this is intentionally marked with `xit` because `realpath.native`
+    // is patched by Bazel's `node_patches.js` and doesn't allow further patching
+    // of `realpath.native` in unit tests. Essentially, there's no original delegate
+    // for `realpath` because it's also patched. The code below functions correctly
+    // in the actual production environment.
+    xit('has patched realpath.native as macroTask', (done) => {
+      const testZoneSpec = {
+        name: 'test',
+        onScheduleTask: (delegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+            Task => {
+              return delegate.scheduleTask(targetZone, task);
+            }
+      };
+      const testZone = Zone.current.fork(testZoneSpec);
+      spyOn(testZoneSpec, 'onScheduleTask').and.callThrough();
+      testZone.run(() => {
+        realpath.native('testfile', () => {
+          expect(Zone.current).toBe(testZone);
+          expect(testZoneSpec.onScheduleTask).toHaveBeenCalled();
           done();
         });
       });
@@ -101,6 +145,32 @@ describe('util.promisify', () => {
         .then(
             r => {
               expect(r).toBe(true);
+              done();
+            },
+            err => {
+              fail(`should not be here with error: ${err}`);
+            });
+  });
+
+  it('fs.realpath should work with util.promisify', (done: DoneFn) => {
+    const promisifyRealpath = util.promisify(realpath);
+    promisifyRealpath(currentFile)
+        .then(
+            r => {
+              expect(r).toBeDefined();
+              done();
+            },
+            err => {
+              fail(`should not be here with error: ${err}`);
+            });
+  });
+
+  it('fs.realpath.native should work with util.promisify', (done: DoneFn) => {
+    const promisifyRealpathNative = util.promisify(realpath.native);
+    promisifyRealpathNative(currentFile)
+        .then(
+            r => {
+              expect(r).toBeDefined();
               done();
             },
             err => {
