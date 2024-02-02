@@ -122,7 +122,7 @@ Only the host element and its descendants will be affected, not the ancestor wit
 
 </div>
 
-### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
+### `/deep/`, `>>>`, and `::ng-deep`
 
 Component styles normally apply only to the HTML in the component's own template.
 

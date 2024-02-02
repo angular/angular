@@ -131,13 +131,6 @@ v16 - v19
 | `@angular/core` | `PACKAGE_ROOT_URL` | v17 | v19 |
 | `@angular/core` | `NgProbeToken` | v17 | v19 |
 
-### Deprecated features with no planned removal version
-
-| Area                                | API or Feature                                                                                             | Deprecated in | May be removed in |
-|:---                                 |:---                                                                                                        |:---           |:---               |
-| template syntax                     | [`/deep/`, `>>>`, and `::ng-deep`](#deep-component-style-selector)                                         |  v7           | unspecified |
-
-For information about Angular Component Development Kit (CDK) and Angular Material deprecations, see the [changelog](https://github.com/angular/components/blob/main/CHANGELOG.md).
 
 ## Deprecated APIs
 
@@ -286,16 +279,6 @@ It also includes deprecated API usage scenarios or API combinations, to augment 
 Angular previously supported an integration with the [Web Tracing Framework (WTF)](https://google.github.io/tracing-framework) for performance testing of Angular applications.
 This integration has not been maintained and is now defunct.
 As a result, the integration was deprecated in Angular version 8, and due to no evidence of any existing usage, removed in version 9.
-
-<a id="deep-component-style-selector"></a>
-
-### `/deep/`, `>>>`, and `::ng-deep` component style selectors
-
-The shadow-dom-piercing descendant combinator is deprecated and support is being [removed from major browsers and tools](https://developers.google.com/web/updates/2017/10/remove-shadow-piercing).
-As such, in v4, Angular's support for `/deep/`, `>>>`, and `::ng-deep` was deprecated.
-Until removal, `::ng-deep` is preferred for broader compatibility with the tools.
-
-For more information, see [/deep/, >>>, and ::ng-deep](guide/component-styles#deprecated-deep--and-ng-deep "Component Styles guide, Deprecated deep and ngdeep") in the Component Styles guide.
 
 <a id="bind-syntax"></a>
 
