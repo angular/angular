@@ -39,6 +39,12 @@ export enum ErrorCode {
   INITIALIZER_API_DECORATOR_METADATA_COLLISION = 1051,
 
   /**
+   * Raised whenever an initializer API does not support the `.required`
+   * function, but is still detected unexpectedly.
+   */
+  INITIALIZER_API_NO_REQUIRED_FUNCTION = 1052,
+
+  /**
    * An Angular feature, like inputs, outputs or queries is incorrectly
    * declared on a static member.
    */
