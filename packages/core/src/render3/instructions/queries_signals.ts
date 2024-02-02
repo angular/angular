@@ -15,19 +15,18 @@ import {Signal} from '../reactivity/api';
 import {getCurrentQueryIndex, setCurrentQueryIndex} from '../state';
 
 /**
- * Registers a QueryList, associated with a content query, for later refresh (part of a view
- * refresh).
+ * Creates a new content query and binds it to a signal created by an authoring function.
  *
  * @param directiveIndex Current directive index
+ * @param target The target signal to which the query should be bound
  * @param predicate The type for which the query will search
  * @param flags Flags associated with the query
  * @param read What to save in the query
- * @returns QueryList<T>
  *
  * @codeGenApi
  */
 export function ɵɵcontentQuerySignal<T>(
-    target: Signal<T>, directiveIndex: number, predicate: ProviderToken<unknown>|string[],
+  directiveIndex: number, target: Signal<T>, predicate: ProviderToken<unknown>|string[],
     flags: QueryFlags, read?: any): void {
   bindQueryToSignal(target, createContentQuery(directiveIndex, predicate, flags, read));
 }

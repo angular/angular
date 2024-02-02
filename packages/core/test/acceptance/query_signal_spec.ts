@@ -7,9 +7,9 @@
  */
 
 
-import {Component, computed, ElementRef, ViewChild, ViewChildren} from '@angular/core';
+import {Component, computed, ContentChild, ContentChildren, Directive, ElementRef, ViewChild, ViewChildren} from '@angular/core';
 // TODO: update imports to the exported authoring functions when those are public
-import {viewChild, viewChildren} from '@angular/core/src/authoring/queries';
+import {contentChild, contentChildren, viewChild, viewChildren} from '@angular/core/src/authoring/queries';
 import {TestBed} from '@angular/core/testing';
 
 describe('queries as signals', () => {
@@ -94,6 +94,98 @@ describe('queries as signals', () => {
       // non-required query results are undefined before we run creation mode on the view queries
       const appCmpt = new AppComponent();
       expect(appCmpt.divEls().length).toBe(0);
+    });
+  });
+
+  describe('content queries', () => {
+    it('should run content queries defined on components', () => {
+      @Component({
+        selector: 'query-cmp',
+        standalone: true,
+        template: `{{noOfEls()}}`,
+      })
+      class QueryComponent {
+        @ContentChildren('el', {isSignal: true} as any) elements = contentChildren('el');
+        @ContentChild('el', {isSignal: true} as any) element = contentChild('el');
+        @ContentChild('el', {isSignal: true} as any) elementReq = contentChild.required('el');
+
+        noOfEls = computed(
+            () => this.elements().length + (this.element() !== undefined ? 1 : 0) +
+                (this.elementReq() !== undefined ? 1 : 0));
+      }
+
+      @Component({
+        standalone: true,
+        imports: [QueryComponent],
+        template: `
+          <query-cmp>
+            <div #el></div>
+            @if (show) {
+              <div #el></div>
+            }
+          </query-cmp>
+       `,
+      })
+      class AppComponent {
+        show = false;
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('3');
+
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('4');
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('3');
+    });
+
+    it('should run content queries defined on directives', () => {
+      @Directive({
+        selector: '[query]',
+        standalone: true,
+        host: {'[textContent]': `noOfEls()`},
+      })
+      class QueryDir {
+        @ContentChildren('el', {isSignal: true} as any) elements = contentChildren('el');
+        @ContentChild('el', {isSignal: true} as any) element = contentChild('el');
+        @ContentChild('el', {isSignal: true} as any) elementReq = contentChild.required('el');
+
+        noOfEls = computed(
+            () => this.elements().length + (this.element() !== undefined ? 1 : 0) +
+                (this.elementReq() !== undefined ? 1 : 0));
+      }
+
+      @Component({
+        standalone: true,
+        imports: [QueryDir],
+        template: `
+          <div query>
+            <div #el></div>
+            @if (show) {
+              <div #el></div>
+            }
+          </div>
+       `,
+      })
+      class AppComponent {
+        show = false;
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('3');
+
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('4');
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('3');
     });
   });
 });
