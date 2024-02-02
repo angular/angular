@@ -512,12 +512,14 @@ export class ApplicationRef {
 
   private detectChangesInAttachedViews() {
     let runs = 0;
-    do {
+    const afterRenderEffectManager = this.afterRenderEffectManager;
+    while (true) {
       if (runs === MAXIMUM_REFRESH_RERUNS) {
         throw new RuntimeError(
             RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
             ngDevMode &&
-                'Changes in afterRender or afterNextRender hooks caused infinite change detection while refresh views.');
+                'Infinite change detection while refreshing application views. ' +
+                    'Ensure afterRender or queueStateUpdate hooks are not continuously causing updates.');
       }
 
       const isFirstPass = runs === 0;
@@ -528,10 +530,22 @@ export class ApplicationRef {
         }
         this.detectChangesInView(_lView, notifyErrorHandler, isFirstPass);
       }
-      this.afterRenderEffectManager.execute();
-
       runs++;
-    } while (this._views.some(({_lView}) => shouldRecheckView(_lView)));
+
+      afterRenderEffectManager.executeInternalCallbacks();
+      // If we have a newly dirty view after running internal callbacks, recheck the views again
+      // before running user-provided callbacks
+      if (this._views.some(({_lView}) => shouldRecheckView(_lView))) {
+        continue;
+      }
+
+      afterRenderEffectManager.execute();
+      // If after running all afterRender callbacks we have no more views that need to be refreshed,
+      // we can break out of the loop
+      if (!this._views.some(({_lView}) => shouldRecheckView(_lView))) {
+        break;
+      }
+    }
   }
 
   private detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {

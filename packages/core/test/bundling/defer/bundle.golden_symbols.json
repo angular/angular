@@ -1740,6 +1740,9 @@
     "name": "init_query_reactive"
   },
   {
+    "name": "init_queue_state_update"
+  },
+  {
     "name": "init_r3_injector"
   },
   {

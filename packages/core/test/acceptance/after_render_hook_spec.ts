@@ -7,11 +7,14 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ApplicationRef, ChangeDetectorRef, Component, computed, createComponent, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, signal, Type, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender} from '@angular/core';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {withBody} from '@angular/private/testing';
+import {afterNextRender,untracked, afterRender, ɵqueueStateUpdate as queueStateUpdate, AfterRenderPhase, AfterRenderRef, ApplicationRef, ChangeDetectorRef, Component, computed, createComponent, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, signal, Type, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 
 import {EnvironmentInjector} from '../../src/di';
+import { destroyPlatform } from '../../src/core';
 
 function createAndAttachComponent<T>(component: Type<T>) {
   const componentRef =
@@ -100,6 +103,66 @@ describe('after render hooks', () => {
           'afterRender (Read)',
         ]);
       });
+
+      it('should refresh views if state changed before user-defined render hooks', () => {
+        let stateInAfterNextRender: number|null = null;
+        let stateInAfterRender: number|null = null;
+        let afterRenderRuns = 0;
+        TestBed.configureTestingModule({
+          ...COMMON_CONFIGURATION,
+        });
+        @Component({
+          template: '{{state()}}',
+          standalone: true,
+        })
+        class App {
+          state = signal(1);
+          constructor() {
+            queueStateUpdate(() => {
+              this.state.set(2);
+            });
+            afterNextRender(() => {
+              stateInAfterNextRender = untracked(this.state);
+            });
+            afterRender(() => {
+              stateInAfterRender = untracked(this.state);
+              afterRenderRuns++;
+            });
+          }
+        }
+
+        createAndAttachComponent(App);
+        TestBed.inject(ApplicationRef).tick();
+        expect(afterRenderRuns).toEqual(1);
+        expect(stateInAfterNextRender!).toEqual(2);
+        expect(stateInAfterRender!).toEqual(2);
+      });
+      
+      it('does not execute queueStateUpdate if application is destroyed', withBody('<app></app>', async () => {
+        destroyPlatform();
+        let executedCallback = false;
+        TestBed.configureTestingModule({
+          ...COMMON_CONFIGURATION,
+        });
+        @Component({
+          template: '',
+          selector: 'app',
+          standalone: true,
+        })
+        class App {
+        }
+
+        const app = await bootstrapApplication(App);
+        queueStateUpdate(() => {
+          executedCallback = true;
+        }, {injector: app.injector});
+        app.destroy();
+
+        // wait a macrotask - at this point the Promise in queueStateUpdate will have been resolved
+        await new Promise(resolve => setTimeout(resolve));
+        expect(executedCallback).toBeFalse();
+        destroyPlatform();
+      }));
     });
 
     describe('afterRender', () => {
@@ -1037,6 +1100,29 @@ describe('after render hooks', () => {
         createAndAttachComponent(Comp);
         TestBed.inject(ApplicationRef).tick();
         expect(afterRenderCount).toBe(0);
+      });
+    });
+
+    describe('queueStateUpdate', () => {
+      it('should run', () => {
+        let executionCount = 0;
+
+        @Component({selector: 'comp'})
+        class Comp {
+          constructor() {
+            queueStateUpdate(() => {
+              executionCount++;
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Comp],
+          ...COMMON_CONFIGURATION,
+        });
+        createAndAttachComponent(Comp);
+        TestBed.inject(ApplicationRef).tick();
+        expect(executionCount).toBe(1);
       });
     });
   });
