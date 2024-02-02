@@ -12,3 +12,4 @@
 export {InputFunction} from './authoring/input/input';
 export {InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal, InputSignalWithTransform, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE} from './authoring/input/input_signal';
 export {ɵUnwrapDirectiveSignalInputs} from './authoring/input/input_type_checking';
+export {output as ɵoutput, OutputEmitter as ɵOutputEmitter, OutputOptions as ɵOutputOptions} from './authoring/output';
