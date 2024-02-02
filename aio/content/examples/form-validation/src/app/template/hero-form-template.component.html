@@ -38,7 +38,7 @@
               Name must be at least 4 characters long.
             </div>
             <div *ngIf="name.errors?.['forbiddenName']">
-              Name cannot be Bob.
+              Name cannot be {{name.errors?.['forbiddenName'].value}}.
             </div>
           </div>
           <!-- #enddocregion name-with-error-msg -->

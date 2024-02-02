@@ -98,7 +98,7 @@ This application will have two components: *crisis-list* and *heroes-list*.
 
 In this section, you'll define two routes:
 
-*   The route `/crisis-center` opens the `crisis-center` component.
+*   The route `/crisis-list` opens the `crisis-list` component.
 *   The route `/heroes-list` opens the `heroes-list` component.
 
 A route definition is a JavaScript object.

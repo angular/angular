@@ -83,7 +83,7 @@ describe('Animation Tests', () => {
   });
 
   describe('Status Slider Component', () => {
-    const activeColor = 'rgba(117, 70, 0, 1)';
+    const activeColor = 'rgba(139, 69, 19, 1)';
     const inactiveColor = 'rgba(0, 0, 255, 1)';
 
     beforeAll(async () => {
@@ -108,7 +108,7 @@ describe('Animation Tests', () => {
       expect(bgColor).toBe(inactiveColor);
     });
 
-    it('should be active with an orange background', async () => {
+    it('should be active with an saddlebrown background', async () => {
       const toggleButton = statusSlider.getToggleButton();
       const container = statusSlider.getComponentContainer();
       let text = await container.getText();

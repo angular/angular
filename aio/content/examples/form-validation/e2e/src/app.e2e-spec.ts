@@ -167,7 +167,7 @@ async function waitForAlterEgoValidation() {
 }
 
 function bobTests() {
-  const emsg = 'Name cannot be Bob.';
+  const emsg = 'Name cannot be Bobby.';
 
   it('should produce "no bob" error after setting name to "Bobby"', async () => {
     // Re-populate select element

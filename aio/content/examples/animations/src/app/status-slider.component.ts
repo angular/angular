@@ -9,19 +9,19 @@ import { trigger, transition, state, animate, style, keyframes } from '@angular/
   animations: [
     trigger('slideStatus', [
       state('inactive', style({ backgroundColor: 'blue' })),
-      state('active', style({ backgroundColor: '#754600' })),
+      state('active', style({ backgroundColor: 'saddlebrown' })),
 
 // #docregion keyframesWithOffsets
       transition('* => active', [
         animate('2s', keyframes([
           style({ backgroundColor: 'blue', offset: 0}),
           style({ backgroundColor: 'red', offset: 0.8}),
-          style({ backgroundColor: '#754600', offset: 1.0})
+          style({ backgroundColor: 'saddlebrown', offset: 1.0})
         ])),
       ]),
       transition('* => inactive', [
         animate('2s', keyframes([
-          style({ backgroundColor: '#754600', offset: 0}),
+          style({ backgroundColor: 'saddlebrown', offset: 0}),
           style({ backgroundColor: 'red', offset: 0.2}),
           style({ backgroundColor: 'blue', offset: 1.0})
         ]))
@@ -33,7 +33,7 @@ import { trigger, transition, state, animate, style, keyframes } from '@angular/
         animate('2s', keyframes([
           style({ backgroundColor: 'blue' }),
           style({ backgroundColor: 'red' }),
-          style({ backgroundColor: 'orange' })
+          style({ backgroundColor: 'saddlebrown' })
         ]))
 // #enddocregion keyframes
       ]),

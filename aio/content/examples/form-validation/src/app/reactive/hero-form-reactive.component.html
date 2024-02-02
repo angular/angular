@@ -24,14 +24,14 @@
 
           <div
             *ngIf="name.invalid && (name.dirty || name.touched)"
-            class="alert alert-danger"
+            class="alert"
           >
             <div *ngIf="name.errors?.['required']">Name is required.</div>
             <div *ngIf="name.errors?.['minlength']">
               Name must be at least 4 characters long.
             </div>
             <div *ngIf="name.errors?.['forbiddenName']">
-              Name cannot be Bob.
+              Name cannot be {{name.errors?.['forbiddenName'].value}}.
             </div>
           </div>
           <!-- #enddocregion name-with-error-msg -->
@@ -49,7 +49,7 @@
           <div *ngIf="alterEgo.pending">Validating...</div>
           <div
             *ngIf="alterEgo.invalid"
-            class="alert alert-danger alter-ego-errors"
+            class="alert alter-ego-errors"
           >
             <div *ngIf="alterEgo.errors?.['uniqueAlterEgo']">
               Alter ego is already taken.
@@ -63,7 +63,7 @@
             heroForm.errors?.['identityRevealed'] &&
             (heroForm.touched || heroForm.dirty)
           "
-          class="cross-validation-error-message alert alert-danger"
+          class="cross-validation-error-message alert"
         >
           Name cannot match alter ego.
         </div>
@@ -81,7 +81,7 @@
           <option *ngFor="let p of powers" [value]="p">{{ p }}</option>
         </select>
 
-        <div *ngIf="power.invalid && power.touched" class="alert alert-danger">
+        <div *ngIf="power.invalid && power.touched" class="alert">
           <div *ngIf="power.errors?.['required']">Power is required.</div>
         </div>
       </div>

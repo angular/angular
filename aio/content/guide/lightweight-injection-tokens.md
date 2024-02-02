@@ -98,7 +98,7 @@ Although tokens used only as type specifiers are removed when converted to JavaS
 These effectively change `constructor(@Optional() other: OtherComponent)` to `constructor(@Optional() @Inject(OtherComponent) other)`.
 The token is now in a value position, and causes the tree shaker to keep the reference.
 
-<div class="alert is helpful">
+<div class="alert is-helpful">
 
 For all services, a library should use [tree-shakable providers](guide/architecture-services#introduction-to-services-and-dependency-injection), providing dependencies at the root level rather than in component constructors.
 

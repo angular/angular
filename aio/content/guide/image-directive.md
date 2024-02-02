@@ -220,7 +220,7 @@ You may want to have images displayed at varying widths on differently-sized scr
 
 </code-example>
 
-The `sizes` attribute in the above example says "I expect this image to be 100 percent of the screen width on devices under 768px wide. Otherwise, I expect it to be 50 percent of the screen width.
+The `sizes` attribute in the above example says, "I expect this image to be 100 percent of the viewport width on devices under 768px wide. Otherwise, I expect it to be 50 percent of the viewport width."
 
 For additional information about the `sizes` attribute, see [web.dev](https://web.dev/learn/design/responsive-images/#sizes) or [MDN](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/sizes).
 
@@ -259,9 +259,9 @@ providers: [
 
 The base URL for your image assets should be passed to the provider factory as an argument. For most sites, this base URL should match one of the following patterns:
 
-*   https://yoursite.yourcdn.com
-*   https://subdomain.yoursite.com
-*   https://subdomain.yourcdn.com/yoursite
+*   `https://yoursite.yourcdn.com`
+*   `https://subdomain.yoursite.com`
+*   `https://subdomain.yourcdn.com/yoursite`
 
 You can learn more about the base URL structure in the docs of a corresponding CDN provider.
 

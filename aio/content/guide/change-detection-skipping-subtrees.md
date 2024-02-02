@@ -27,7 +27,7 @@ export class MyComponent {}
 
 This section examines several common change detection scenarios to illustrate Angular's behavior.
 
-## An event is handled by a component with default change detection
+### An event is handled by a component with default change detection
 
 If Angular handles an event within a component without `OnPush` strategy, the framework executes change detection on the entire component tree. Angular will skip descendant component subtrees with roots using `OnPush`, which have not received new inputs.
 
@@ -37,7 +37,7 @@ As an example, if we set the change detection strategy of `MainComponent` to `On
   <img alt="Change detection propagation from non-OnPush component" src="generated/images/guide/change-detection/event-trigger.svg">
 </div>
 
-## An event is handled by a component with OnPush
+### An event is handled by a component with OnPush
 
 If Angular handles an event within a component with OnPush strategy, the framework will execute change detection within the entire component tree. Angular will ignore component subtrees with roots using OnPush, which have not received new inputs and are outside the component which handled the event.
 
@@ -47,7 +47,7 @@ As an example, if Angular handles an event within `MainComponent`, the framework
   <img alt="Change detection propagation from OnPush component" src="generated/images/guide/change-detection/on-push-trigger.svg">
 </div>
 
-## An event is handled by a descendant of a component with OnPush
+### An event is handled by a descendant of a component with OnPush
 
 If Angular handles an event in a component with OnPush, the framework will execute change detection in the entire component tree, including the component’s ancestors.
 
@@ -57,7 +57,7 @@ As an example, in the diagram below, Angular handles an event in `LoginComponent
   <img alt="Change detection propagation from nested OnPush component" src="generated/images/guide/change-detection/leaf-trigger.svg">
 </div>
 
-## New inputs to component with OnPush
+### New inputs to component with OnPush
 
 Angular will run change detection within a child component with `OnPush` when setting an input property as result of a template binding.
 

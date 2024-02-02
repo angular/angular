@@ -12,10 +12,10 @@ import { NgIf } from '@angular/common';
     trigger('myInsertRemoveTrigger', [
       transition(':enter', [
         style({ opacity: 0 }),
-        animate('100ms', style({ opacity: 1 })),
+        animate('1s', style({ opacity: 1 })),
       ]),
       transition(':leave', [
-        animate('100ms', style({ opacity: 0 }))
+        animate('1s', style({ opacity: 0 }))
       ])
     ]),
 // #enddocregion enter-leave-trigger

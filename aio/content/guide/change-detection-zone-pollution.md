@@ -29,7 +29,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 class AppComponent implements OnInit {
   constructor(private ngZone: NgZone) {}
   ngOnInit() {
-    this.ngZone.runOutsideAngular(() => setInterval(pollForUpdates), 500);
+    this.ngZone.runOutsideAngular(() => setInterval(pollForUpdates, 500));
   }
 }
 ```

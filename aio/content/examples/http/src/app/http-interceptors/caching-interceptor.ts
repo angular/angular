@@ -12,8 +12,8 @@ import { searchUrl } from '../package-search/package-search.service';
 
 /**
  * If request is cacheable (e.g., package search) and
- * response is in cache return the cached response as observable.
- * If has 'x-refresh' header that is true,
+ * response is in cache, then return the cached response as observable.
+ * If response has 'x-refresh' header that is true,
  * then also re-run the package search, using response from next(),
  * returning an observable that emits the cached response first.
  *

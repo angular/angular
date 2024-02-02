@@ -695,7 +695,7 @@ Though the feature routes are currently minimal, routes have a tendency to grow 
 The hero routes are currently defined in two places: in the `HeroesRoutingModule`,
 by way of the `HeroesModule`, and in the `AppRoutingModule`.
 
-Routes provided by feature modules are combined together into their imported module's routes by the router.
+Routes provided by feature modules are combined into their importing module's routes by the router.
 This lets you continue defining the feature module routes without modifying the main route configuration.
 
 Remove the `HeroListComponent` import and the `/heroes` route from the `app-routing.module.ts`.

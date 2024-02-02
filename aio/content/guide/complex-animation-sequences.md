@@ -1,5 +1,9 @@
 # Complex animation sequences
 
+So far, we've learned simple animations of single HTML elements.
+Angular also lets you animate coordinated sequences, such as an entire grid or list of elements as they enter and leave a page.
+You can choose to run multiple animations in parallel, or run discrete animations sequentially, one following another.
+
 ## Prerequisites
 
 A basic understanding of the following concepts:
@@ -7,9 +11,7 @@ A basic understanding of the following concepts:
 *   [Introduction to Angular animations](guide/animations)
 *   [Transition and triggers](guide/transition-and-triggers)
 
-So far, we've learned simple animations of single HTML elements.
-Angular also lets you animate coordinated sequences, such as an entire grid or list of elements as they enter and leave a page.
-You can choose to run multiple animations in parallel, or run discrete animations sequentially, one following another.
+## Functions controlling animations
 
 The functions that control complex animation sequences are:
 
@@ -46,7 +48,7 @@ The first argument of `query()` is a [css selector](https://developer.mozilla.or
 
 Not all child elements are actually considered as entering/leaving; this can, at times, be counterintuitive and confusing. Please see the [query api docs](api/animations/query#entering-and-leaving-elements) for more information.
 
-You can also see an illustration of this in the animations live example \(introduced in the animations [introduction section](guide/animations#about-this-guide)\) under the Querying tab.
+You can also see an illustration of this in the animations <live-example name="animations"></live-example> \(introduced in the animations [introduction section](guide/animations#about-this-guide)\) under the Querying tab.
 
 </div>
 

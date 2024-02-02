@@ -4,7 +4,7 @@
 /*global jasmine, __karma__, window*/
 (function () {
 
-  Error.stackTraceLimit = 0; // "No stacktrace"" is usually best for app testing.
+  Error.stackTraceLimit = 0; // "No stacktrace" is usually best for app testing.
 
   // Uncomment to get full stacktrace output. Sometimes helpful, usually not.
   // Error.stackTraceLimit = Infinity; //
@@ -65,7 +65,7 @@
   }
 
   // Import all spec files defined in the html (__spec_files__)
-  // and start Jasmine testrunner
+  // and start Jasmine test runner
   function initTesting () {
     console.log('loading spec files: '+__spec_files__.join(', '));
     return Promise.all(
@@ -78,7 +78,7 @@
     .then(success, console.error.bind(console));
 
     function success () {
-      console.log('Spec files loaded; starting Jasmine testrunner');
+      console.log('Spec files loaded; starting Jasmine test runner');
       window.onload();
     }
   }

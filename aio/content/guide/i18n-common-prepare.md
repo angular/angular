@@ -79,13 +79,8 @@ The following example displays an image with a `title` attribute.
 
 <code-example header="src/app/app.component.html" path="i18n/doc-files/app.component.html" region="i18n-title"></code-example>
 
-To mark the title attribute for translation, complete the following action.
-
-1.  Add the `i18n-title` attribute
-
-    The following example displays how to mark the `title` attribute on the `img` tag by adding `i18n-title`.
-
-    <code-example header="src/app/app.component.html" path="i18n/src/app/app.component.html" region="i18n-title-translate"></code-example>
+To mark the title attribute for translation add the `i18n-title` attribute.
+<code-example header="src/app/app.component.html" path="i18n/src/app/app.component.html" region="i18n-title-translate"></code-example>
 
 ## Mark text in component code
 

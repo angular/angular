@@ -39,6 +39,5 @@ export class InjectorComponent {
 
 /**
  * R.O.U.S. - Rodents Of Unusual Size
- * // https://www.youtube.com/watch?v=BOv5ZjAOpC8
  */
 class ROUS { }
