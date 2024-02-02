@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ProxyZoneSpec} from '../../lib/zone-spec/proxy';
 import {ifEnvSupports} from '../test-util';
 
 describe('AsyncTestZoneSpec', function() {
