@@ -13,17 +13,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Must be loaded before zone loads, so that zone can detect WTF.
-import './node-env-setup';
-import './test_fake_polyfill';
-// Setup tests for Zone without microtask support
-import '../lib/node/rollup-main';
-// Zone symbol prefix is set to '__zone_symbol2__' in node-env-setup.ts.
 import './test-env-setup-jasmine';
 import './wtf_mock';
-import '../lib/testing/zone-testing';
-import '../lib/zone-spec/task-tracking';
-import '../lib/zone-spec/wtf';
-import '../lib/rxjs/rxjs';
-import '../lib/rxjs/rxjs-fake-async';
-import '../lib/jasmine/jasmine';
+
+import {patchJasmine} from '../lib/jasmine/jasmine';
+import {rollupMain} from '../lib/node/main';
+import {patchRxJs} from '../lib/rxjs/rxjs';
+import {patchRxJsFakeAsync} from '../lib/rxjs/rxjs-fake-async';
+import {rollupTesting} from '../lib/testing/zone-testing';
+import {patchTaskTracking} from '../lib/zone-spec/task-tracking';
+import {patchWtf} from '../lib/zone-spec/wtf';
+
+import {setupNodeEnv} from './node-env-setup';
+import {setupFakePolyfill} from './test_fake_polyfill';
+
+// Must be loaded before zone loads, so that zone can detect WTF.
+setupNodeEnv();
+setupFakePolyfill();
+
+// Setup tests for Zone without microtask support
+const Zone = rollupMain();
+
+// Zone symbol prefix is set to '__zone_symbol2__' in node-env-setup.ts.
+rollupTesting(Zone);
+patchTaskTracking(Zone);
+patchWtf(Zone);
+patchRxJs(Zone);
+patchRxJsFakeAsync(Zone);
+patchJasmine(Zone);
