@@ -674,8 +674,17 @@ export interface EventTask extends Task {
 
 export type AmbientZone = Zone;
 
-// Initialize global `Zone` constant.
 const global = globalThis as any;
+
+// Initialize before it's accessed below.
+// __Zone_symbol_prefix global can be used to override the default zone
+// symbol prefix with a custom one if needed.
+const symbolPrefix = global['__Zone_symbol_prefix'] || '__zone_symbol__';
+
+export function __symbol__(name: string) {
+  return symbolPrefix + name;
+}
+
 export function initZone(): ZoneType {
 const performance: {mark(name: string): void; measure(name: string, label: string): void;} =
     global['performance'];
@@ -686,33 +695,6 @@ function performanceMeasure(name: string, label: string) {
   performance && performance['measure'] && performance['measure'](name, label);
 }
 mark('Zone');
-
-// Initialize before it's accessed below.
-// __Zone_symbol_prefix global can be used to override the default zone
-// symbol prefix with a custom one if needed.
-const symbolPrefix = global['__Zone_symbol_prefix'] || '__zone_symbol__';
-
-function __symbol__(name: string) {
-  return symbolPrefix + name;
-}
-
-const checkDuplicate = global[__symbol__('forceDuplicateZoneCheck')] === true;
-if (global['Zone']) {
-  // if global['Zone'] already exists (maybe zone.js was already loaded or
-  // some other lib also registered a global object named Zone), we may need
-  // to throw an error, but sometimes user may not want this error.
-  // For example,
-  // we have two web pages, page1 includes zone.js, page2 doesn't.
-  // and the 1st time user load page1 and page2, everything work fine,
-  // but when user load page2 again, error occurs because global['Zone'] already exists.
-  // so we add a flag to let user choose whether to throw this error or not.
-  // By default, if existing Zone is from zone.js, we will not throw the error.
-  if (checkDuplicate || typeof global['Zone'].__symbol__ !== 'function') {
-    throw new Error('Zone already loaded.');
-  } else {
-    return global['Zone'];
-  }
-}
 
 class ZoneImpl implements AmbientZone {
   // tslint:disable-next-line:require-internal-with-underscore
@@ -751,6 +733,7 @@ class ZoneImpl implements AmbientZone {
       // `checkDuplicate` option is defined from global variable
       // so it works for all modules.
       // `ignoreDuplicate` can work for the specified module
+        const checkDuplicate = global[__symbol__('forceDuplicateZoneCheck')] === true;
       if (!ignoreDuplicate && checkDuplicate) {
         throw Error('Already loaded patch: ' + name);
       }
