@@ -11,13 +11,14 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
-import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputMapping, isHostDirectiveMetaForGlobalMode} from '../../../metadata';
+import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputMapping, InputOrOutput, isHostDirectiveMetaForGlobalMode} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 import {tryParseSignalInputMapping} from './input_function';
+import {tryParseInitializerBasedOutput} from './output_function';
 import {tryParseSignalQueryFromInitializer} from './query_functions';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
@@ -87,8 +88,8 @@ export function extractDirectiveMetadata(
 
   // And outputs.
   const outputsFromMeta = parseOutputsArray(directive, evaluator);
-  const outputsFromFields = parseOutputFields(
-      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), evaluator);
+  const outputsFromFields =
+      parseOutputFields(clazz, decorator, members, isCore, reflector, evaluator, outputsFromMeta);
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
 
   // Parse queries of fields.
@@ -621,32 +622,6 @@ function parseMappingString(value: string): [bindingPropertyName: string, fieldN
   return [bindingPropertyName ?? fieldName, fieldName];
 }
 
-/**
- * Parse property decorators (e.g. `Input` or `Output`) and invoke callback with the parsed data.
- */
-function parseDecoratedFields(
-    fields: {member: ClassMember, decorators: Decorator[]}[], evaluator: PartialEvaluator,
-    callback: (fieldName: string, fieldValue: ResolvedValue, decorator: Decorator) => void): void {
-  for (const field of fields) {
-    const fieldName = field.member.name;
-
-    for (const decorator of field.decorators) {
-      if (decorator.args != null && decorator.args.length > 1) {
-        throw new FatalDiagnosticError(
-            ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
-            `@${decorator.name} can have at most one argument, got ${
-                decorator.args.length} argument(s)`);
-      }
-
-      const value = decorator.args != null && decorator.args.length > 0 ?
-          evaluator.evaluate(decorator.args[0]) :
-          null;
-
-      callback(fieldName, value, decorator);
-    }
-  }
-}
-
 /** Parses the `inputs` array of a directive/component decorator. */
 function parseInputsArray(
     clazz: ClassDeclaration, decoratorMetadata: Map<string, ts.Expression>,
@@ -1083,23 +1058,82 @@ function parseOutputsArray(
   return metaValues ? parseMappingStringArray(metaValues) : EMPTY_OBJECT;
 }
 
-/** Parses the class members that are decorated as outputs. */
+/** Parses the class members that are outputs. */
 function parseOutputFields(
-    outputMembers: {member: ClassMember, decorators: Decorator[]}[],
-    evaluator: PartialEvaluator): Record<string, string> {
+    clazz: ClassDeclaration, classDecorator: Decorator, members: ClassMember[], isCore: boolean,
+    reflector: ReflectionHost, evaluator: PartialEvaluator,
+    outputsFromMeta: Record<string, string>): Record<string, string> {
   const outputs = {} as Record<string, string>;
 
-  parseDecoratedFields(outputMembers, evaluator, (fieldName, bindingPropertyName, decorator) => {
-    if (bindingPropertyName != null && typeof bindingPropertyName !== 'string') {
-      throw createValueHasWrongTypeError(
-          decorator.node, bindingPropertyName,
-          `@${decorator.name} decorator argument must resolve to a string`);
+  for (const member of members) {
+    const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
+    const initializerOutput = tryParseInitializerBasedOutput(member, reflector, isCore);
+
+    if (decoratorOutput !== null && initializerOutput !== null) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decoratorOutput.decorator.node,
+          `Using "@Output" with "output()" is not allowed.`);
     }
 
-    outputs[fieldName] = bindingPropertyName ?? fieldName;
-  });
+    const queryNode = decoratorOutput?.decorator.node ?? initializerOutput?.call;
+    if (queryNode !== undefined && member.isStatic) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INCORRECTLY_DECLARED_ON_STATIC_MEMBER, queryNode,
+          `Output is incorrectly declared on a static class member.`);
+    }
+
+    const metadata = (decoratorOutput ?? initializerOutput)?.metadata;
+    if (metadata === undefined) {
+      continue;
+    }
+
+    // Validate that initializer-based outputs are not accidentally declared
+    // in the `outputs` class metadata.
+    if (initializerOutput !== null && outputsFromMeta.hasOwnProperty(metadata.classPropertyName)) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION, member.node ?? clazz,
+          `Output "${member.name}" is unexpectedly declared in @${classDecorator.name} as well.`);
+    }
+
+    outputs[metadata?.classPropertyName] = metadata.bindingPropertyName;
+  }
 
   return outputs;
+}
+
+/** Attempts to parse a decorator-based @Output. */
+function tryParseDecoratorOutput(member: ClassMember, evaluator: PartialEvaluator, isCore: boolean):
+    {decorator: Decorator, metadata: InputOrOutput}|null {
+  const decorator = tryGetDecoratorOnMember(member, 'Output', isCore);
+  if (decorator === null) {
+    return null;
+  }
+  if (decorator.args !== null && decorator.args.length > 1) {
+    throw new FatalDiagnosticError(
+        ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
+        `@Output can have at most one argument, got ${decorator.args.length} argument(s)`);
+  }
+
+  const classPropertyName = member.name;
+
+  let alias: string|null = null;
+  if (decorator.args?.length === 1) {
+    const resolvedAlias = evaluator.evaluate(decorator.args[0]);
+    if (typeof resolvedAlias !== 'string') {
+      throw createValueHasWrongTypeError(
+          decorator.node, resolvedAlias, `@Output decorator argument must resolve to a string`);
+    }
+    alias = resolvedAlias;
+  }
+
+  return {
+    decorator,
+    metadata: {
+      isSignal: false,
+      classPropertyName,
+      bindingPropertyName: alias ?? classPropertyName,
+    }
+  };
 }
 
 function evaluateHostExpressionBindings(

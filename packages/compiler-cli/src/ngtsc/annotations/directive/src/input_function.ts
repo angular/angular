@@ -13,31 +13,7 @@ import {InputMapping} from '../../../metadata';
 import {ClassMember, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 
 import {tryParseInitializerApiMember} from './initializer_functions';
-
-/** Parses and validates the input function options expression. */
-function parseAndValidateOptions(optionsNode: ts.Expression): {alias: string|undefined} {
-  if (!ts.isObjectLiteralExpression(optionsNode)) {
-    throw new FatalDiagnosticError(
-        ErrorCode.VALUE_HAS_WRONG_TYPE, optionsNode,
-        'Argument needs to be an object literal that is statically analyzable.');
-  }
-
-  const options = reflectObjectLiteral(optionsNode);
-  let alias: string|undefined = undefined;
-
-  if (options.has('alias')) {
-    const aliasExpr = options.get('alias')!;
-    if (!ts.isStringLiteralLike(aliasExpr)) {
-      throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, aliasExpr,
-          'Alias needs to be a string that is statically analyzable.');
-    }
-
-    alias = aliasExpr.text;
-  }
-
-  return {alias};
-}
+import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
 
 /**
  * Attempts to parse a signal input class member. Returns the parsed
@@ -54,7 +30,8 @@ export function tryParseSignalInputMapping(
   const optionsNode = (signalInput.isRequired ? signalInput.call.arguments[0] :
                                                 signalInput.call.arguments[1]) as ts.Expression |
       undefined;
-  const options = optionsNode !== undefined ? parseAndValidateOptions(optionsNode) : null;
+  const options =
+      optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
   const classPropertyName = member.name;
 
   return {
