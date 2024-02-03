@@ -1443,6 +1443,35 @@ runInEachFileSystem(
                        `Unresolved identifier found for @HostBinding's argument! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the argument`
                       );                      
                  });
+
+                 it('should show correct error message when using an external symbol for @Directive.exportAs argument',
+                 () => {
+                   env.write('test.ts', `
+          import {Directive} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Directive({selector: '[test]', exportAs: ExternalString})
+          export class Main {
+          }
+          `);
+
+                   const errors = env.driveDiagnostics();
+
+                   expect(errors.length).toBe(1);
+
+                   const {code, messageText, relatedInformation, length} = errors[0];
+
+                   expect(code).toBe(
+                       ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+                   expect(length).toBe(14),
+                   expect(relatedInformation).toBeUndefined();
+
+                   const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+                   expect(text).toEqual(
+                       `Unresolved identifier found for exportAs field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the selector`
+                      );                      
+                 });
             });
 
             describe('ng module bootstrap def', () => {
