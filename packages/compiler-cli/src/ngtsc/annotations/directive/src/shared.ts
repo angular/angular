@@ -159,6 +159,14 @@ export function extractDirectiveMetadata(
   if (directive.has('exportAs')) {
     const expr = directive.get('exportAs')!;
     const resolved = evaluator.evaluate(expr);
+
+    assertLocalCompilationUnresolvedConst(compilationMode, resolved, null, 
+      'Unresolved identifier found for exportAs field! Did you import this ' + 
+      'identifier from a file outside of the compilation unit? This is not ' + 
+      'allowed when Angular compiler runs in local mode. Possible solutions: ' + 
+      '1) Move the declarations into a file within the compilation unit, ' + 
+      '2) Inline the selector');
+
     if (typeof resolved !== 'string') {
       throw createValueHasWrongTypeError(expr, resolved, `exportAs must be a string`);
     }
