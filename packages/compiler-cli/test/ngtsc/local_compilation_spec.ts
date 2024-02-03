@@ -1228,8 +1228,10 @@ runInEachFileSystem(
           import {Component} from '@angular/core';
           import {ExternalString} from './some-where';
 
+          const InternalStyle = "p{color:blue}";
+
           @Component({
-            styles: [ExternalString],
+            styles: [InternalStyle, ExternalString],
             template: '',
 
           })
@@ -1241,10 +1243,11 @@ runInEachFileSystem(
 
                    expect(errors.length).toBe(1);
 
-                   const {code, messageText, relatedInformation} = errors[0];
+                   const {code, messageText, relatedInformation, length} = errors[0];
 
                    expect(code).toBe(
                        ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+                   expect(length).toBe(14),
                    expect(relatedInformation).toBeUndefined();
 
                    const text = ts.flattenDiagnosticMessageText(messageText, '\n');
