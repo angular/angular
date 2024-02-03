@@ -497,13 +497,11 @@ export function parseDirectiveStyles(
   if (compilationMode === CompilationMode.LOCAL && Array.isArray(value)) {
     for (const entry of value) {
       if (entry instanceof DynamicValue && entry.isFromUnknownIdentifier()) {
-        const relatedInformation = traceDynamicValue(expression, entry);
 
         throw new FatalDiagnosticError(
             ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
             expression, 
-            'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls',
-            relatedInformation);
+            'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls');
       }
     }
   }
