@@ -1192,8 +1192,8 @@ runInEachFileSystem(
                  });
             });
 
-            describe('local compilation specific errors', () => {
-              it('should show extensive error message when using an imported symbol for component template',
+            describe('LOCAL_COMPILATION_UNRESOLVED_CONST errors', () => {
+              it('should show correct error message when using an external symbol for component template',
                  () => {
                    env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -1210,19 +1210,18 @@ runInEachFileSystem(
 
                    expect(errors.length).toBe(1);
 
-                   const {code, messageText} = errors[0];
+                   const {code, messageText, length} = errors[0];
 
-                   expect(code).toBe(ngErrorCode(ErrorCode.
+                   expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+                   expect(length).toBe(14);
 
-                                                 LOCAL_COMPILATION_IMPORTED_TEMPLATE_STRING));
                    const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
-                   expect(text).toContain(
-                       'Unknown identifier used as template string: ExternalString');
-                   expect(text).toContain('either inline it or move it to a separate file');
+                   expect(text).toEqual(
+                       'Unresolved identifier found for @Component.template field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the template, 3) Move the template into a separate .html file and include it using @Component.templateUrl');
                  });
 
-              it('should show extensive error message when using an imported symbol for component styles',
+              it('should show correct error message when using an external symbol for component styles',
                  () => {
                    env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -1244,12 +1243,11 @@ runInEachFileSystem(
                    const {code, messageText} = errors[0];
 
                    expect(code).toBe(
-                       ngErrorCode(ErrorCode.LOCAL_COMPILATION_IMPORTED_STYLES_STRING));
+                       ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
                    const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
-                   expect(text).toContain(
-                       'Unknown identifier used as styles string: ExternalString');
-                   expect(text).toContain('either inline it or move it to a separate file');
+                   expect(text).toEqual(
+                       'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls');                   
                  });
             });
 
@@ -1478,10 +1476,10 @@ runInEachFileSystem(
                    const messages = env.driveDiagnostics();
 
                    expect(messages[0].code)
-                       .toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_HOST_DIRECTIVE_INVALID));
+                       .toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_EXPRESSION_FOR_HOST_DIRECTIVE));
                    expect(messages[0].messageText)
                        .toEqual(
-                           'In local compilation mode, host directive cannot be an expression');
+                           'In local compilation mode, host directive cannot be an expression. Use an identifier instead');
                  });
             });
 

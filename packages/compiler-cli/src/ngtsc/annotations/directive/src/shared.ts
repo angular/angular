@@ -493,22 +493,16 @@ export function parseDirectiveStyles(
   const evaluated = evaluator.evaluate(expression);
   const value = typeof evaluated === 'string' ? [evaluated] : evaluated;
 
-  // Create specific error if any string is imported from external file in local compilation mode
+  // The identifier used for @Component.styles cannot be resolved in local compilation mode. An error specific to this situation is generated.
   if (compilationMode === CompilationMode.LOCAL && Array.isArray(value)) {
     for (const entry of value) {
       if (entry instanceof DynamicValue && entry.isFromUnknownIdentifier()) {
         const relatedInformation = traceDynamicValue(expression, entry);
 
-        const chain: ts.DiagnosticMessageChain = {
-          messageText: `Unknown identifier used as styles string: ${
-              entry.node
-                  .getText()} (did you import this string from another file? This is not allowed in local compilation mode. Please either inline it or move it to a separate file and include it using 'styleUrl')`,
-          category: ts.DiagnosticCategory.Error,
-          code: 0,
-        };
-
         throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_IMPORTED_STYLES_STRING, expression, chain,
+            ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
+            expression, 
+            'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls',
             relatedInformation);
       }
     }
@@ -1222,8 +1216,8 @@ function extractHostDirectives(
       if (!ts.isIdentifier(hostReference.node) &&
           !ts.isPropertyAccessExpression(hostReference.node)) {
         throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_HOST_DIRECTIVE_INVALID, hostReference.node,
-            `In local compilation mode, host directive cannot be an expression`);
+            ErrorCode.LOCAL_COMPILATION_EXPRESSION_FOR_HOST_DIRECTIVE, hostReference.node,
+            `In local compilation mode, host directive cannot be an expression. Use an identifier instead`);
       }
 
       directive = new WrappedNodeExpr(hostReference.node);

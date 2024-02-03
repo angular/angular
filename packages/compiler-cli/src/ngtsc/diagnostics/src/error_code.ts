@@ -488,20 +488,12 @@ export enum ErrorCode {
   SUGGEST_SUBOPTIMAL_TYPE_INFERENCE = 10002,
 
   /**
-   * A string is imported from another file to be used as template string for a component in local
-   * compilation mode.
+   * In local compilation mode a const is required to be resolved statically but cannot be so since it is imported from a file outside of the compilation unit. This usually happens with const being used as Angular decorators parameters such as `@Component.template`, `@HostListener.eventName`, etc.
    */
-  LOCAL_COMPILATION_IMPORTED_TEMPLATE_STRING = 11001,
+  LOCAL_COMPILATION_UNRESOLVED_CONST = 11001,
 
   /**
-   * A string is imported from another file to be used as styles string for a component in local
-   * compilation mode.
+   * In local compilation mode some element in the hostDirective array is an expression (e.g., a forward ref function). This is not supported in local compilation mode as it is not a very common use case.
    */
-  LOCAL_COMPILATION_IMPORTED_STYLES_STRING = 11002,
-
-  /**
-   * Raised when the compiler wasn't able to resolve the metadata of a host directive in local
-   * compilation mode.
-   */
-  LOCAL_COMPILATION_HOST_DIRECTIVE_INVALID = 11003,
+  LOCAL_COMPILATION_EXPRESSION_FOR_HOST_DIRECTIVE = 11003,
 }
