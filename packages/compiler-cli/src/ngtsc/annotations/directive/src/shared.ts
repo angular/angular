@@ -140,7 +140,7 @@ export function extractDirectiveMetadata(
     }
   }
 
-  const host = extractHostBindings(decoratedElements, evaluator, coreModule, directive);
+  const host = extractHostBindings(decoratedElements, evaluator, coreModule, compilationMode, directive);
 
   const providers: Expression|null = directive.has('providers') ?
       new WrappedNodeExpr(
@@ -360,8 +360,7 @@ export function extractDecoratorQueryMetadata(
 
 
 export function extractHostBindings(
-    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string|undefined,
-    metadata?: Map<string, ts.Expression>): ParsedHostBindings {
+    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string|undefined, compilationMode: CompilationMode, metadata?: Map<string, ts.Expression>): ParsedHostBindings {
   let bindings: ParsedHostBindings;
   if (metadata && metadata.has('host')) {
     bindings = evaluateHostExpressionBindings(metadata.get('host')!, evaluator);
@@ -411,6 +410,15 @@ export function extractHostBindings(
             }
 
             const resolved = evaluator.evaluate(decorator.args[0]);
+
+            // Specific error for local compilation mode if the event name cannot be resolved
+            assertLocalCompilationUnresolvedConst(compilationMode, resolved, null, 
+              'Unresolved identifier found for @HostListener\'s event name ' + 
+              'argument! Did you import this identifier from a file outside of ' + 
+              'the compilation unit? This is not allowed when Angular compiler ' + 
+              'runs in local mode. Possible solutions: 1) Move the declaration ' + 
+              'into a file within the compilation unit, 2) Inline the argument');
+
             if (typeof resolved !== 'string') {
               throw createValueHasWrongTypeError(
                   decorator.args[0], resolved,
