@@ -410,13 +410,16 @@ function getInheritedUndecoratedCtorDiagnostic(
  * if the compilation mode is local and the value is not resolved due to being imported
  * from external files. This is a common scenario for errors in local compilation mode,
  * and so this helper can be used to quickly generate the relevant errors.
+ * 
+ * @param nodeToHighlight Node to be highlighted in teh error message. 
+ * Will default to value.node if not provided.    
  */
-export function assertLocalCompilationUnresolvedConst(compilationMode: CompilationMode, value: ResolvedValue, nodeToHighlight: ts.Node, errorMessage: string): void {
+export function assertLocalCompilationUnresolvedConst(compilationMode: CompilationMode, value: ResolvedValue, nodeToHighlight: ts.Node|null, errorMessage: string): void {
   if (compilationMode === CompilationMode.LOCAL && value instanceof DynamicValue &&
     value.isFromUnknownIdentifier()) {
     throw new FatalDiagnosticError(
         ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
-        nodeToHighlight, 
+        nodeToHighlight ?? value.node, 
         errorMessage);
   }
 }

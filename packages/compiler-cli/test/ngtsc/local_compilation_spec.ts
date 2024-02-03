@@ -1222,7 +1222,7 @@ runInEachFileSystem(
                        'Unresolved identifier found for @Component.template field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the template, 3) Move the template into a separate .html file and include it using @Component.templateUrl');
                  });
 
-              it('should show correct error message when using an external symbol for component styles',
+              it('should show correct error message when using an external symbol for component styles array',
                  () => {
                    env.write('test.ts', `
           import {Component} from '@angular/core';
@@ -1254,6 +1254,70 @@ runInEachFileSystem(
 
                    expect(text).toEqual(
                        'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls');                   
+                 });
+
+                 it('should show correct error message when using an external symbol for component styles',
+                 () => {
+                   env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({
+            styles: ExternalString,
+            template: '',
+
+          })
+          export class Main {
+          }
+          `);
+
+                   const errors = env.driveDiagnostics();
+
+                   expect(errors.length).toBe(1);
+
+                   const {code, messageText, relatedInformation, length} = errors[0];
+
+                   expect(code).toBe(
+                       ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+                   expect(length).toBe(14),
+                   expect(relatedInformation).toBeUndefined();
+
+                   const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+                   expect(text).toEqual(
+                       'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls');                   
+                 });
+
+                 it('should show correct error message when using an external symbol for component selector',
+                 () => {
+                   env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({
+            selector: ExternalString,
+            template: '',
+
+          })
+          export class Main {
+          }
+          `);
+
+                   const errors = env.driveDiagnostics();
+
+                   expect(errors.length).toBe(1);
+
+                   const {code, messageText, relatedInformation, length} = errors[0];
+
+                   expect(code).toBe(
+                       ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+                   expect(length).toBe(14),
+                   expect(relatedInformation).toBeUndefined();
+
+                   const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+                   expect(text).toEqual(
+                       'Unresolved identifier found for @Component.selector field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the selector');                   
                  });
             });
 
