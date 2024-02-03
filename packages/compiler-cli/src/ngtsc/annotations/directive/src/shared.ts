@@ -15,7 +15,7 @@ import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputM
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
-import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, assertLocalCompilationUnresolvedConst, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 import {tryParseSignalInputMapping} from './input_function';
 import {tryParseSignalQueryFromInitializer} from './query_functions';
@@ -122,6 +122,12 @@ export function extractDirectiveMetadata(
   if (directive.has('selector')) {
     const expr = directive.get('selector')!;
     const resolved = evaluator.evaluate(expr);
+    assertLocalCompilationUnresolvedConst(compilationMode, resolved, null,
+      'Unresolved identifier found for @Component.selector field! Did you ' + 
+      'import this identifier from a file outside of the compilation unit? ' + 
+      'This is not allowed when Angular compiler runs in local mode. Possible ' + 
+      'solutions: 1) Move the declarations into a file within the compilation ' + 
+      'unit, 2) Inline the selector');
     if (typeof resolved !== 'string') {
       throw createValueHasWrongTypeError(expr, resolved, `selector must be a string`);
     }
@@ -491,16 +497,26 @@ export function parseDirectiveStyles(
   const evaluated = evaluator.evaluate(expression);
   const value = typeof evaluated === 'string' ? [evaluated] : evaluated;
 
-  // The identifier used for @Component.styles cannot be resolved in local compilation mode. An error specific to this situation is generated.
-  if (compilationMode === CompilationMode.LOCAL && Array.isArray(value)) {
-    for (const entry of value) {
-      if (entry instanceof DynamicValue && entry.isFromUnknownIdentifier()) {
-
-        throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
-            entry.node, 
-            'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls');
-      }
+  // Check if the identifier used for @Component.styles cannot be resolved in local compilation mode. if the case, an error specific to this situation is generated.
+  if (compilationMode === CompilationMode.LOCAL) {
+    let unresolvedNode: ts.Node|null = null;
+    if (Array.isArray(value)) {
+      const entry = value.find(e => e instanceof DynamicValue && e.isFromUnknownIdentifier()) as DynamicValue|undefined;
+      unresolvedNode = entry?.node ?? null;
+    } else if (value instanceof DynamicValue && value.isFromUnknownIdentifier()) {
+      unresolvedNode = value.node;
+    }
+    
+    if (unresolvedNode !== null) {
+      throw new FatalDiagnosticError(
+          ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
+          unresolvedNode, 
+          'Unresolved identifier found for @Component.styles field! Did you import ' + 
+          'this identifier from a file outside of the compilation unit? This is ' + 
+          'not allowed when Angular compiler runs in local mode. Possible ' + 
+          'solutions: 1) Move the declarations into a file within the compilation ' + 
+          'unit, 2) Inline the styles, 3) Move the styles into separate files and ' + 
+          'include it using @Component.styleUrls');
     }
   }
 
