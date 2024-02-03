@@ -1105,6 +1105,14 @@
     "bio": "GDE (Google Developer Expert) Angular and Web Technologies, GDG Salvador organizer, passionate about technology and active in communities with a focus on web development, including Angular, JavaScript, HTML5, CSS3, Workflow, web performance, security and Internet of things. Participates in events organization, speaker at conferences in Brazil and other countries and contributes to several open source projects.",
     "groups": ["GDE"]
   },
+  "xocomil": {
+    "name": "Jason Warner",
+    "picture": "jasonwarner.jpg",
+    "twitter": "xocomil_1",
+    "website": "https://github.com/xocomil",
+    "bio": "Jason is a Senior Staff Engineer, Google Developer Expert in Angular and mentor. He enjoys code and is particularly passionate about front-end and Angular. Jason enjoys streaming on Twitch and interacting with community members. He loves to help others to achieve their goals.",
+    "groups": ["GDE"]
+  },
   "yannickbaron": {
     "name": "Yannick Baron",
     "picture": "yannickbaron.jpg",
