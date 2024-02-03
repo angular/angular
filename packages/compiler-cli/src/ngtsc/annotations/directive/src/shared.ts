@@ -383,6 +383,14 @@ export function extractHostBindings(
             }
 
             const resolved = evaluator.evaluate(decorator.args[0]);
+
+            // Specific error for local compilation mode if the argument cannot be resolved
+            assertLocalCompilationUnresolvedConst(compilationMode, resolved, null, 
+              'Unresolved identifier found for @HostBinding\'s argument! Did ' + 
+              'you import this identifier from a file outside of the compilation ' + 
+              'unit? This is not allowed when Angular compiler runs in local mode. ' + 'Possible solutions: 1) Move the declaration into a file within ' + 
+              'the compilation unit, 2) Inline the argument');
+
             if (typeof resolved !== 'string') {
               throw createValueHasWrongTypeError(
                   decorator.node, resolved, `@HostBinding's argument must be a string`);

@@ -1383,6 +1383,66 @@ runInEachFileSystem(
                        `Unresolved identifier found for @HostListener's event name argument! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the argument`
                       );                      
                  });
+
+                 it('should show correct error message when using an external symbol for component @HostBinding\'s argument',
+                 () => {
+                   env.write('test.ts', `
+          import {Component, HostBinding} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({template: ''})
+          export class Main {
+            @HostBinding(ExternalString) id = 'some thing';
+          }
+          `);
+
+                   const errors = env.driveDiagnostics();
+
+                   expect(errors.length).toBe(1);
+
+                   const {code, messageText, relatedInformation, length} = errors[0];
+
+                   expect(code).toBe(
+                       ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+                   expect(length).toBe(14),
+                   expect(relatedInformation).toBeUndefined();
+
+                   const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+                   expect(text).toEqual(
+                       `Unresolved identifier found for @HostBinding's argument! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the argument`
+                      );                      
+                 });
+
+                 it('should show correct error message when using an external symbol for directive @HostBinding\'s argument',
+                 () => {
+                   env.write('test.ts', `
+          import {Directive, HostBinding} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Directive({selector: '[test]'})
+          export class Main {
+            @HostBinding(ExternalString) id = 'some thing';
+          }
+          `);
+
+                   const errors = env.driveDiagnostics();
+
+                   expect(errors.length).toBe(1);
+
+                   const {code, messageText, relatedInformation, length} = errors[0];
+
+                   expect(code).toBe(
+                       ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+                   expect(length).toBe(14),
+                   expect(relatedInformation).toBeUndefined();
+
+                   const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+                   expect(text).toEqual(
+                       `Unresolved identifier found for @HostBinding's argument! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the argument`
+                      );                      
+                 });
             });
 
             describe('ng module bootstrap def', () => {
