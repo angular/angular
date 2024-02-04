@@ -7,7 +7,7 @@
  */
 
 
-import {ProviderToken} from '../../di';
+import {ProviderToken} from '../../di/provider_token';
 import {QueryFlags} from '../interfaces/query';
 import {createContentQuery, createViewQuery} from '../query';
 import {bindQueryToSignal} from '../query_reactive';

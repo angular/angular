@@ -13,10 +13,11 @@
  */
 
 export * from './authoring';
-// Input is exported separately as this file is exempted from JSCompiler's
-// conformance requirement for inferred const exports.
-// See: https://docs.google.com/document/d/1RXb1wYwsbJotO1KBgSDsAtKpduGmIHod9ADxuXcAvV4/edit?tab=t.0
+// Input and query authoring functions are exported separately as this file is exempted from
+// JSCompiler's conformance requirement for inferred const exports. See:
+// https://docs.google.com/document/d/1RXb1wYwsbJotO1KBgSDsAtKpduGmIHod9ADxuXcAvV4/edit?tab=t.0
 export {input} from './authoring/input/input';
+export {contentChild, contentChildren, viewChild, viewChildren} from './authoring/queries';
 
 export * from './metadata';
 export * from './version';
