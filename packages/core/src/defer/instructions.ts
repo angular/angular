@@ -12,6 +12,7 @@ import {InjectionToken, Injector} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {findMatchingDehydratedView} from '../hydration/views';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
+import {PendingTasks} from '../pending_tasks';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {bindingUpdated} from '../render3/bindings';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/definition';
@@ -656,6 +657,10 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
     }
   }
 
+  // Indicate that an application is not stable and has a pending task.
+  const pendingTasks = injector.get(PendingTasks);
+  const taskId = pendingTasks.add();
+
   // The `dependenciesFn` might be `null` when all dependencies within
   // a given defer block were eagerly referenced elsewhere in a file,
   // thus no dynamic `import()`s were produced.
@@ -663,6 +668,7 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
     tDetails.loadingPromise = Promise.resolve().then(() => {
       tDetails.loadingPromise = null;
       tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
+      pendingTasks.remove(taskId);
     });
     return;
   }
@@ -691,8 +697,10 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
       }
     }
 
-    // Loading is completed, we no longer need this Promise.
+    // Loading is completed, we no longer need the loading Promise
+    // and a pending task should also be removed.
     tDetails.loadingPromise = null;
+    pendingTasks.remove(taskId);
 
     if (failed) {
       tDetails.loadingState = DeferDependenciesLoadingState.FAILED;
