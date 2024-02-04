@@ -510,17 +510,18 @@ function applyDeferBlockState(
     lDetails[DEFER_BLOCK_STATE] = newState;
     const hostTView = hostLView[TVIEW];
     const adjustedIndex = stateTmplIndex + HEADER_OFFSET;
-    const tNode = getTNode(hostTView, adjustedIndex) as TContainerNode;
+    const activeBlockTNode = getTNode(hostTView, adjustedIndex) as TContainerNode;
 
     // There is only 1 view that can be present in an LContainer that
     // represents a defer block, so always refer to the first one.
     const viewIndex = 0;
 
     removeLViewFromLContainer(lContainer, viewIndex);
-    const dehydratedView = findMatchingDehydratedView(lContainer, tNode.tView!.ssrId);
-    const embeddedLView = createAndRenderEmbeddedLView(hostLView, tNode, null, {dehydratedView});
+    const dehydratedView = findMatchingDehydratedView(lContainer, activeBlockTNode.tView!.ssrId);
+    const embeddedLView =
+        createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {dehydratedView});
     addLViewToLContainer(
-        lContainer, embeddedLView, viewIndex, shouldAddViewToDom(tNode, dehydratedView));
+        lContainer, embeddedLView, viewIndex, shouldAddViewToDom(activeBlockTNode, dehydratedView));
     markViewDirty(embeddedLView);
   }
 }
