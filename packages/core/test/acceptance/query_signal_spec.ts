@@ -7,9 +7,7 @@
  */
 
 
-import {Component, computed, ContentChild, ContentChildren, Directive, ElementRef, ViewChild, ViewChildren} from '@angular/core';
-// TODO: update imports to the exported authoring functions when those are public
-import {contentChild, contentChildren, viewChild, viewChildren} from '@angular/core/src/authoring/queries';
+import {Component, computed, ContentChild, contentChild, ContentChildren, contentChildren, Directive, ElementRef, ViewChild, viewChild, ViewChildren, viewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
