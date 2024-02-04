@@ -8,7 +8,7 @@
 
 import {ComputedNode, createComputed, SIGNAL} from '@angular/core/primitives/signals';
 
-import {RuntimeError} from '../errors';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {unwrapElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {EMPTY_ARRAY} from '../util/empty';
@@ -48,9 +48,10 @@ function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
 
     const value = refreshSignalQuery<V>(node, firstOnly);
 
-    if (value === undefined && required) {
-      // TODO: add error code add proper message
-      throw new RuntimeError(0, 'no query results yet!');
+    if (required && value === undefined) {
+      throw new RuntimeError(
+          RuntimeErrorCode.REQUIRED_QUERY_NO_VALUE,
+          ngDevMode && 'Child query result is required but no value is available.');
     }
 
     return value;

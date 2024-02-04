@@ -66,7 +66,7 @@ describe('queries as signals', () => {
       const appCmpt = new AppComponent();
       expect(() => {
         appCmpt.divEl();
-      }).toThrowError('NG00: no query results yet!');
+      }).toThrowError(/NG0951: Child query result is required but no value is available/);
     });
 
     it('should query for multiple elements in a template', () => {
