@@ -8,7 +8,7 @@
 
 import {createSignal, SIGNAL, SignalGetter, SignalNode, signalSetFn, signalUpdateFn} from '@angular/core/primitives/signals';
 
-import {Signal, ValueEqualityFn} from './api';
+import {isSignal, Signal, ValueEqualityFn} from './api';
 
 /**
  * A `Signal` with a value that can be mutated via a setter interface.
@@ -70,4 +70,11 @@ function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
     node.readonlyFn = readonlyFn as Signal<T>;
   }
   return node.readonlyFn;
+}
+
+/**
+ * Checks if the given `value` is a writeable signal.
+ */
+export function isWritableSignal(value: unknown): value is WritableSignal<unknown> {
+  return isSignal(value) && typeof (value as any).set === 'function';
 }
