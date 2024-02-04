@@ -6,17 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// TODO: update imports
-import {Component, computed} from '@angular/core';
-import {viewChild} from '@angular/core/src/authoring/queries';
-import {getComponentDef} from '@angular/core/src/render3/definition';
+import {Component, computed, viewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('queries as signals', () => {
   describe('view', () => {
-    // TODO: Enable when `viewChild` is exposed publicly. Right now, compiler will
-    // not detect `viewChild` as it does not originate from a `@angular/core` import.
-    xit('view child', () => {
+    it('view child', () => {
       @Component({
         selector: 'test-cmp',
         standalone: true,

@@ -198,7 +198,7 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
-    "name": "INJECTOR2"
+    "name": "INJECTOR"
   },
   {
     "name": "INJECTOR_DEF_TYPES"
@@ -1708,6 +1708,9 @@
   },
   {
     "name": "init_queries"
+  },
+  {
+    "name": "init_queries2"
   },
   {
     "name": "init_queries_signals"

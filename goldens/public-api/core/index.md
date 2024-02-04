@@ -323,6 +323,9 @@ export type ContentChild = Query;
 export const ContentChild: ContentChildDecorator;
 
 // @public
+export const contentChild: ContentChildFunction;
+
+// @public
 export interface ContentChildDecorator {
     (selector: ProviderToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
@@ -338,10 +341,42 @@ export interface ContentChildDecorator {
 }
 
 // @public
+export interface ContentChildFunction {
+    <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
+        descendants?: boolean;
+    }): Signal<LocatorT | undefined>;
+    // (undocumented)
+    <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+        descendants?: boolean;
+        read: ProviderToken<ReadT>;
+    }): Signal<ReadT | undefined>;
+    required: {
+        <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
+            descendants?: boolean;
+        }): Signal<LocatorT>;
+        <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+            descendants?: boolean;
+            read: ProviderToken<ReadT>;
+        }): Signal<ReadT>;
+    };
+}
+
+// @public
 export type ContentChildren = Query;
 
 // @public
 export const ContentChildren: ContentChildrenDecorator;
+
+// @public (undocumented)
+export function contentChildren<LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
+    descendants?: boolean;
+}): Signal<ReadonlyArray<LocatorT>>;
+
+// @public (undocumented)
+export function contentChildren<LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+    descendants?: boolean;
+    read: ProviderToken<ReadT>;
+}): Signal<ReadonlyArray<ReadT>>;
 
 // @public
 export interface ContentChildrenDecorator {
@@ -1599,6 +1634,9 @@ export type ViewChild = Query;
 export const ViewChild: ViewChildDecorator;
 
 // @public
+export const viewChild: ViewChildFunction;
+
+// @public
 export interface ViewChildDecorator {
     (selector: ProviderToken<unknown> | Function | string, opts?: {
         read?: any;
@@ -1612,10 +1650,33 @@ export interface ViewChildDecorator {
 }
 
 // @public
+export interface ViewChildFunction {
+    <LocatorT>(locator: ProviderToken<LocatorT> | string): Signal<LocatorT | undefined>;
+    // (undocumented)
+    <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+        read: ProviderToken<ReadT>;
+    }): Signal<ReadT | undefined>;
+    required: {
+        <LocatorT>(locator: ProviderToken<LocatorT> | string): Signal<LocatorT>;
+        <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+            read: ProviderToken<ReadT>;
+        }): Signal<ReadT>;
+    };
+}
+
+// @public
 export type ViewChildren = Query;
 
 // @public
 export const ViewChildren: ViewChildrenDecorator;
+
+// @public (undocumented)
+export function viewChildren<LocatorT>(locator: ProviderToken<LocatorT> | string): Signal<ReadonlyArray<LocatorT>>;
+
+// @public (undocumented)
+export function viewChildren<LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
+    read: ProviderToken<ReadT>;
+}): Signal<ReadonlyArray<ReadT>>;
 
 // @public
 export interface ViewChildrenDecorator {
