@@ -7,7 +7,8 @@
  */
 
 import {ApplicationInitStatus} from '../application/application_init';
-import {_callAndReportToErrorHandler, ApplicationRef, BootstrapOptions, compileNgModuleFactory, optionsReducer, remove} from '../application/application_ref';
+import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
+import {_callAndReportToErrorHandler, ApplicationRef, BootstrapOptions, optionsReducer, remove} from '../application/application_ref';
 import {getNgZoneOptions, internalProvideZoneChangeDetection, PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_scheduling';
 import {Injectable, InjectionToken, Injector} from '../di';
 import {ErrorHandler} from '../error_handler';

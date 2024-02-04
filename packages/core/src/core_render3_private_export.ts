@@ -12,9 +12,11 @@
 //
 // no code actually imports these symbols from the @angular/core entry point
 export {
-  compileNgModuleFactory as ɵcompileNgModuleFactory,
   isBoundToModule as ɵisBoundToModule
 } from './application/application_ref';
+export {
+  compileNgModuleFactory as ɵcompileNgModuleFactory,
+} from './application/application_ngmodule_factory_compiler';
 export {
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
 } from './change_detection/change_detector_ref';

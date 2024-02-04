@@ -1026,6 +1026,9 @@
     "name": "init_application_module"
   },
   {
+    "name": "init_application_ngmodule_factory_compiler"
+  },
+  {
     "name": "init_application_ref"
   },
   {
