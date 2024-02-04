@@ -18,6 +18,7 @@ import {CompilationMode} from '../../../transform';
 import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, assertLocalCompilationUnresolvedConst, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 import {tryParseSignalInputMapping} from './input_function';
+import {tryParseSignalModelMapping} from './model_function';
 import {tryParseInitializerBasedOutput} from './output_function';
 import {tryParseSignalQueryFromInitializer} from './query_functions';
 
@@ -755,11 +756,18 @@ function tryParseInputFieldMapping(
 
   const decorator = tryGetDecoratorOnMember(member, 'Input', isCore);
   const signalInputMapping = tryParseSignalInputMapping(member, reflector, isCore);
+  const modelInputMapping = tryParseSignalModelMapping(member, reflector, isCore);
 
   if (decorator !== null && signalInputMapping !== null) {
     throw new FatalDiagnosticError(
         ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decorator.node,
         `Using @Input with a signal input is not allowed.`);
+  }
+
+  if (decorator !== null && modelInputMapping !== null) {
+    throw new FatalDiagnosticError(
+        ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decorator.node,
+        `Using @Input with a model input is not allowed.`);
   }
 
   // Check `@Input` case.
@@ -818,6 +826,10 @@ function tryParseInputFieldMapping(
   // Look for signal inputs. e.g. `memberName = input()`
   if (signalInputMapping !== null) {
     return signalInputMapping;
+  }
+
+  if (modelInputMapping !== null) {
+    return modelInputMapping.input;
   }
 
   return null;
@@ -1101,11 +1113,18 @@ function parseOutputFields(
   for (const member of members) {
     const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
     const initializerOutput = tryParseInitializerBasedOutput(member, reflector, isCore);
+    const modelMapping = tryParseSignalModelMapping(member, reflector, isCore);
 
     if (decoratorOutput !== null && initializerOutput !== null) {
       throw new FatalDiagnosticError(
           ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decoratorOutput.decorator.node,
           `Using "@Output" with "output()" is not allowed.`);
+    }
+
+    if (decoratorOutput !== null && modelMapping !== null) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INITIALIZER_API_WITH_DISALLOWED_DECORATOR, decoratorOutput.decorator.node,
+          `Using @Output with a model input is not allowed.`);
     }
 
     const queryNode = decoratorOutput?.decorator.node ?? initializerOutput?.call;
@@ -1115,20 +1134,27 @@ function parseOutputFields(
           `Output is incorrectly declared on a static class member.`);
     }
 
-    const metadata = (decoratorOutput ?? initializerOutput)?.metadata;
-    if (metadata === undefined) {
+    let bindingPropertyName: string;
+
+    if (decoratorOutput !== null) {
+      bindingPropertyName = decoratorOutput.metadata.bindingPropertyName;
+    } else if (initializerOutput !== null) {
+      bindingPropertyName = initializerOutput.metadata.bindingPropertyName;
+    } else if (modelMapping !== null) {
+      bindingPropertyName = modelMapping.output.bindingPropertyName;
+    } else {
       continue;
     }
 
     // Validate that initializer-based outputs are not accidentally declared
     // in the `outputs` class metadata.
-    if (initializerOutput !== null && outputsFromMeta.hasOwnProperty(metadata.classPropertyName)) {
+    if (initializerOutput !== null && outputsFromMeta.hasOwnProperty(member.name)) {
       throw new FatalDiagnosticError(
           ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION, member.node ?? clazz,
           `Output "${member.name}" is unexpectedly declared in @${classDecorator.name} as well.`);
     }
 
-    outputs[metadata?.classPropertyName] = metadata.bindingPropertyName;
+    outputs[member.name] = bindingPropertyName;
   }
 
   return outputs;
