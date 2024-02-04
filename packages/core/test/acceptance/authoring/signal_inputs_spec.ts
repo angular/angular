@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, Directive, effect, input} from '@angular/core';
+import {Component, computed, Directive, effect, EventEmitter, input, Output, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('signal inputs', () => {
@@ -230,5 +230,44 @@ describe('signal inputs', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('input:2');
+  });
+
+  // TODO(crisbeto): we may not want to support this combination. Will discuss with the team.
+  it('should support two-way binding to signal input and @Output decorated member', () => {
+    @Directive({selector: '[dir]', standalone: true})
+    class Dir {
+      value = input(0);
+      @Output() valueChange = new EventEmitter<number>();
+    }
+
+    @Component({
+      template: '<div [(value)]="value" dir></div>',
+      standalone: true,
+      imports: [Dir],
+    })
+    class App {
+      @ViewChild(Dir) dir!: Dir;
+      value = 1;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const host = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Initial value.
+    expect(host.value).toBe(1);
+    expect(host.dir.value()).toBe(1);
+
+    // Changing the value from within the directive.
+    host.dir.valueChange.emit(2);
+    fixture.detectChanges();
+    expect(host.value).toBe(2);
+    expect(host.dir.value()).toBe(2);
+
+    // Changing the value from the outside.
+    host.value = 3;
+    fixture.detectChanges();
+    expect(host.value).toBe(3);
+    expect(host.dir.value()).toBe(3);
   });
 });
