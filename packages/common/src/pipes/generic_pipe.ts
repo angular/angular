@@ -38,11 +38,13 @@ type TailArguments<F> = [..._: Parameters<OmitFirstArg<F>>, ...args: any];
  *   template: `
  *  <input type="search" [(ngModel)]="searchTerm" placeholder="Enter name" >
  *   <hr />
- *   <h4>With ngGenericPipe</h4>
+ *   <h4>With generic</h4>
  *   <ul>
- *     <li *ngFor="let user of users | ngGenericPipe: search:searchTerm">{{user.name}}</li>
+ *     <li *ngFor="let user of users | generic: search:searchTerm">{{user.name}}</li>
  *   </ul>
- *   `,
+ *   `
+ *   standalone: true,
+ *   imports: [GenericPipe],
  * })
  * export class GenericPipeComponent {
  *   users = [
