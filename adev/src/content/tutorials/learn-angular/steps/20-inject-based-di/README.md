@@ -46,7 +46,7 @@ constructor() {
 Update the component template in `app.component.ts` with the following code:
 
 ```ts
-template: `<p>Car Listing: {{ display }}</p>`;
+template: `<p>Car Listing: {{ display }}</p>`,
 ```
 
 </docs-step>
