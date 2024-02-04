@@ -65,6 +65,7 @@ export {
   NgSwitchDefault,
   NgTemplateOutlet,
   NgComponentOutlet,
+  NgLet,
 } from './directives/index';
 export {DOCUMENT} from './dom_tokens';
 export {
