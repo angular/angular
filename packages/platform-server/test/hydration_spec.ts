@@ -12,7 +12,7 @@ import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf
 import {MockPlatformLocation} from '@angular/common/testing';
 import {afterRender, ApplicationRef, Component, ComponentRef, ContentChildren, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument, ɵwhenStable as whenStable} from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
+import {HydrationStatus, readHydrationInfo, SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
@@ -129,7 +129,7 @@ function verifyAllNodesClaimedForHydration(el: HTMLElement, exceptions: HTMLElem
     return;
   }
 
-  if (!(el as any).__claimed) {
+  if (readHydrationInfo(el)?.status !== HydrationStatus.Hydrated) {
     fail('Hydration error: the node is *not* hydrated: ' + el.outerHTML);
   }
   verifyAllChildNodesClaimedForHydration(el, exceptions);
@@ -150,7 +150,7 @@ function verifyAllChildNodesClaimedForHydration(el: HTMLElement, exceptions: HTM
  * hydration feature can be turned off.
  */
 function verifyNoNodesWereClaimedForHydration(el: HTMLElement) {
-  if ((el as any).__claimed) {
+  if (readHydrationInfo(el)?.status === HydrationStatus.Hydrated) {
     fail(
         'Unexpected state: the following node was hydrated, when the test ' +
         'expects the node to be re-created instead: ' + el.outerHTML);

@@ -39,7 +39,7 @@ import {getDocument} from '../render3/interfaces/document';
  *
  * @publicApi
  */
-export const APP_ID = new InjectionToken<string>('AppId', {
+export const APP_ID = new InjectionToken<string>(ngDevMode ? 'AppId' : '', {
   providedIn: 'root',
   factory: () => DEFAULT_APP_ID,
 });
@@ -52,13 +52,13 @@ const DEFAULT_APP_ID = 'ng';
  * @publicApi
  */
 export const PLATFORM_INITIALIZER =
-    new InjectionToken<ReadonlyArray<() => void>>('Platform Initializer');
+    new InjectionToken<ReadonlyArray<() => void>>(ngDevMode ? 'Platform Initializer' : '');
 
 /**
  * A token that indicates an opaque platform ID.
  * @publicApi
  */
-export const PLATFORM_ID = new InjectionToken<Object>('Platform ID', {
+export const PLATFORM_ID = new InjectionToken<Object>(ngDevMode ? 'Platform ID' : '', {
   providedIn: 'platform',
   factory: () => 'unknown',  // set a default platform name, when none set explicitly
 });
@@ -69,19 +69,20 @@ export const PLATFORM_ID = new InjectionToken<Object>('Platform ID', {
  * @publicApi
  * @deprecated
  */
-export const PACKAGE_ROOT_URL = new InjectionToken<string>('Application Packages Root URL');
+export const PACKAGE_ROOT_URL =
+    new InjectionToken<string>(ngDevMode ? 'Application Packages Root URL' : '');
 
 // We keep this token here, rather than the animations package, so that modules that only care
 // about which animations module is loaded (e.g. the CDK) can retrieve it without having to
 // include extra dependencies. See #44970 for more context.
 
 /**
- * A [DI token](guide/glossary#di-token "DI token definition") that indicates which animations
+ * A [DI token](api/core/InjectionToken) that indicates which animations
  * module has been loaded.
  * @publicApi
  */
-export const ANIMATION_MODULE_TYPE =
-    new InjectionToken<'NoopAnimations'|'BrowserAnimations'>('AnimationModuleType');
+export const ANIMATION_MODULE_TYPE = new InjectionToken<'NoopAnimations'|'BrowserAnimations'>(
+    ngDevMode ? 'AnimationModuleType' : '');
 
 // TODO(crisbeto): link to CSP guide here.
 /**
@@ -91,7 +92,7 @@ export const ANIMATION_MODULE_TYPE =
  *
  * @publicApi
  */
-export const CSP_NONCE = new InjectionToken<string|null>('CSP nonce', {
+export const CSP_NONCE = new InjectionToken<string|null>(ngDevMode ? 'CSP nonce' : '', {
   providedIn: 'root',
   factory: () => {
     // Ideally we wouldn't have to use `querySelector` here since we know that the nonce will be on
@@ -130,12 +131,14 @@ export const CSP_NONCE = new InjectionToken<string|null>('CSP nonce', {
  */
 export type ImageConfig = {
   breakpoints?: number[],
+  placeholderResolution?: number,
   disableImageSizeWarning?: boolean,
   disableImageLazyLoadWarning?: boolean,
 };
 
 export const IMAGE_CONFIG_DEFAULTS: ImageConfig = {
   breakpoints: [16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+  placeholderResolution: 30,
   disableImageSizeWarning: false,
   disableImageLazyLoadWarning: false,
 };
@@ -150,4 +153,4 @@ export const IMAGE_CONFIG_DEFAULTS: ImageConfig = {
  * @publicApi
  */
 export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
-    'ImageConfig', {providedIn: 'root', factory: () => IMAGE_CONFIG_DEFAULTS});
+    ngDevMode ? 'ImageConfig' : '', {providedIn: 'root', factory: () => IMAGE_CONFIG_DEFAULTS});

@@ -21,6 +21,16 @@ function kindWithInterpolationTest(
   };
 }
 
+function basicListenerKindTest(op: ir.CreateOp): boolean {
+  return (op.kind === ir.OpKind.Listener && !(op.hostListener && op.isAnimationListener)) ||
+      op.kind === ir.OpKind.TwoWayListener;
+}
+
+function nonInterpolationPropertyKindTest(op: ir.UpdateOp): boolean {
+  return (op.kind === ir.OpKind.Property || op.kind === ir.OpKind.TwoWayProperty) &&
+      !(op.expression instanceof ir.Interpolation);
+}
+
 interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
   test: (op: T) => boolean;
   transform?: (ops: Array<T>) => Array<T>;
@@ -33,7 +43,7 @@ interface Rule<T extends ir.CreateOp|ir.UpdateOp> {
  */
 const CREATE_ORDERING: Array<Rule<ir.CreateOp>> = [
   {test: op => op.kind === ir.OpKind.Listener && op.hostListener && op.isAnimationListener},
-  {test: op => op.kind === ir.OpKind.Listener && !(op.hostListener && op.isAnimationListener)},
+  {test: basicListenerKindTest},
 ];
 
 /**
@@ -47,7 +57,7 @@ const UPDATE_ORDERING: Array<Rule<ir.UpdateOp>> = [
   {test: kindTest(ir.OpKind.ClassProp)},
   {test: kindWithInterpolationTest(ir.OpKind.Attribute, true)},
   {test: kindWithInterpolationTest(ir.OpKind.Property, true)},
-  {test: kindWithInterpolationTest(ir.OpKind.Property, false)},
+  {test: nonInterpolationPropertyKindTest},
   {test: kindWithInterpolationTest(ir.OpKind.Attribute, false)},
 ];
 
@@ -68,8 +78,9 @@ const UPDATE_HOST_ORDERING: Array<Rule<ir.UpdateOp>> = [
  * The set of all op kinds we handle in the reordering phase.
  */
 const handledOpKinds = new Set([
-  ir.OpKind.Listener, ir.OpKind.StyleMap, ir.OpKind.ClassMap, ir.OpKind.StyleProp,
-  ir.OpKind.ClassProp, ir.OpKind.Property, ir.OpKind.HostProperty, ir.OpKind.Attribute
+  ir.OpKind.Listener, ir.OpKind.TwoWayListener, ir.OpKind.StyleMap, ir.OpKind.ClassMap,
+  ir.OpKind.StyleProp, ir.OpKind.ClassProp, ir.OpKind.Property, ir.OpKind.TwoWayProperty,
+  ir.OpKind.HostProperty, ir.OpKind.Attribute
 ]);
 
 /**

@@ -25,7 +25,8 @@ const indexTree = (
     component: node.component,
     directives: node.directives.map((d, i) => ({name: d.name, id: d.id})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
-  } as IndexedNode;
+    hydration: node.hydration,
+  };
 };
 
 export const indexForest = (forest: DevToolsNode[]) => forest.map((n, i) => indexTree(n, i));

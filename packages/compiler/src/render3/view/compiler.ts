@@ -164,14 +164,16 @@ export function compileDirectiveFromMetadata(
  * deferrable dependencies.
  */
 function createDeferredDepsFunction(
-    constantPool: ConstantPool, name: string, deps: Map<string, string>) {
+    constantPool: ConstantPool, name: string,
+    deps: Map<string, {importPath: string, isDefaultImport: boolean}>) {
   // This defer block has deps for which we need to generate dynamic imports.
   const dependencyExp: o.Expression[] = [];
 
-  for (const [symbolName, importPath] of deps) {
+  for (const [symbolName, {importPath, isDefaultImport}] of deps) {
     // Callback function, e.g. `m () => m.MyCmp;`.
-    const innerFn =
-        o.arrowFn([new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(symbolName));
+    const innerFn = o.arrowFn(
+        [new o.FnParam('m', o.DYNAMIC_TYPE)],
+        o.variable('m').prop(isDefaultImport ? 'default' : symbolName));
 
     // Dynamic import, e.g. `import('./a').then(...)`.
     const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);

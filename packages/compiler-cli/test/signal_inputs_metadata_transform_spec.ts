@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform, getInputSignalsMetadataTransform} from '../src/transformers/jit_transforms';
+import {getDownlevelDecoratorsTransform, getInitializerApiJitTransform} from '../src/transformers/jit_transforms';
 
 import {MockAotContext, MockCompilerHost} from './mocks';
 
@@ -52,7 +52,7 @@ describe('signal inputs metadata transform', () => {
     const reflectionHost = new TypeScriptReflectionHost(typeChecker);
     const transformers: ts.CustomTransformers = {
       before: [
-        getInputSignalsMetadataTransform(reflectionHost, /* isCore */ false),
+        getInitializerApiJitTransform(reflectionHost, /* isCore */ false),
       ]
     };
 

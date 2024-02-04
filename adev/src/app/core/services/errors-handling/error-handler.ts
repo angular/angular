@@ -45,7 +45,7 @@ export class CustomErrorHandler implements ErrorHandler {
   openErrorSnackBar(): void {
     this.snackBar
       .openFromComponent(ErrorSnackBar, {
-        panelClass: 'adev-invert-mode',
+        panelClass: 'docs-invert-mode',
         data: {
           message: `Our docs have been updated, reload the page to see the latest.`,
           actionText: `Reload`,

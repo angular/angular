@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- We set all theme clases to allow critters to inline the theme styles and prevent flickering -->
-<html lang="en" class="adev-dark-mode adev-light-mode">
+<!-- We set all theme classes to allow critters to inline the theme styles and prevent flickering -->
+<html lang="en" class="docs-dark-mode docs-light-mode">
   <head>
     <script>
       // This logic must execute early, so that we set the necessary
       // CSS classes to the document node and avoid unstyled content
       // from appearing on the page.
       const THEME_PREFERENCE_LOCAL_STORAGE_KEY = 'themePreference';
-      const DARK_MODE_CLASS_NAME = 'adev-dark-mode';
-      const LIGHT_MODE_CLASS_NAME = 'adev-light-mode';
+      const DARK_MODE_CLASS_NAME = 'docs-dark-mode';
+      const LIGHT_MODE_CLASS_NAME = 'docs-light-mode';
 
       const theme = localStorage.getItem(THEME_PREFERENCE_LOCAL_STORAGE_KEY) ?? 'auto';
       const prefersDark =
@@ -77,7 +77,7 @@
     />
     <link rel="preload" href="/assets/textures/gradient.jpg" as="image" />
   </head>
-  <body class="mat-typography adev-scroll-track-transparent-large">
+  <body class="mat-typography docs-scroll-track-transparent-large">
     <adev-root></adev-root>
   </body>
 </html>

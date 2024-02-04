@@ -8,11 +8,24 @@
 
 import {ElementRef, Injector, SimpleChanges} from '@angular/core';
 
-import {DirectiveRequireProperty, element as angularElement, IAugmentedJQuery, ICloneAttachFunction, ICompileService, IController, IControllerService, IDirective, IHttpBackendService, IInjectorService, ILinkFn, IScope, ITemplateCacheService, SingleOrListOrMap} from './angular1';
+import {
+  DirectiveRequireProperty,
+  element as angularElement,
+  IAugmentedJQuery,
+  ICloneAttachFunction,
+  ICompileService,
+  IController,
+  IControllerService,
+  IDirective,
+  IHttpBackendService,
+  IInjectorService,
+  ILinkFn,
+  IScope,
+  ITemplateCacheService,
+  SingleOrListOrMap,
+} from './angular1';
 import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $TEMPLATE_CACHE} from './constants';
 import {cleanData, controllerKey, directiveNormalize, isFunction} from './util';
-
-
 
 // Constants
 const REQUIRE_PREFIX_RE = /^(\^\^?)?(\?)?(\^\^?)?/;
@@ -41,7 +54,11 @@ export class UpgradeHelper {
   private readonly $controller: IControllerService;
 
   constructor(
-      injector: Injector, private name: string, elementRef: ElementRef, directive?: IDirective) {
+    injector: Injector,
+    private name: string,
+    elementRef: ElementRef,
+    directive?: IDirective,
+  ) {
     this.$injector = injector.get($INJECTOR);
     this.$compile = this.$injector.get($COMPILE);
     this.$controller = this.$injector.get($CONTROLLER);
@@ -70,8 +87,11 @@ export class UpgradeHelper {
   }
 
   static getTemplate(
-      $injector: IInjectorService, directive: IDirective, fetchRemoteTemplate = false,
-      $element?: IAugmentedJQuery): string|Promise<string> {
+    $injector: IInjectorService,
+    directive: IDirective,
+    fetchRemoteTemplate = false,
+    $element?: IAugmentedJQuery,
+  ): string | Promise<string> {
     if (directive.template !== undefined) {
       return getOrCall<string>(directive.template, $element);
     } else if (directive.templateUrl) {
@@ -113,8 +133,12 @@ export class UpgradeHelper {
 
   compileTemplate(template?: string): ILinkFn {
     if (template === undefined) {
-      template =
-          UpgradeHelper.getTemplate(this.$injector, this.directive, false, this.$element) as string;
+      template = UpgradeHelper.getTemplate(
+        this.$injector,
+        this.directive,
+        false,
+        this.$element,
+      ) as string;
     }
 
     return this.compileHtml(template);
@@ -128,7 +152,7 @@ export class UpgradeHelper {
     cleanData(this.element);
   }
 
-  prepareTransclusion(): ILinkFn|undefined {
+  prepareTransclusion(): ILinkFn | undefined {
     const transclude = this.directive.transclude;
     const contentChildNodes = this.extractChildNodes();
     const attachChildrenFn: ILinkFn = (scope, cloneAttachFn) => {
@@ -151,18 +175,18 @@ export class UpgradeHelper {
         const filledSlots = Object.create(null);
 
         // Parse the element selectors.
-        Object.keys(transclude).forEach(slotName => {
+        Object.keys(transclude).forEach((slotName) => {
           let selector = transclude[slotName];
           const optional = selector.charAt(0) === '?';
           selector = optional ? selector.substring(1) : selector;
 
           slotMap[selector] = slotName;
-          slots[slotName] = null;            // `null`: Defined but not yet filled.
-          filledSlots[slotName] = optional;  // Consider optional slots as filled.
+          slots[slotName] = null; // `null`: Defined but not yet filled.
+          filledSlots[slotName] = optional; // Consider optional slots as filled.
         });
 
         // Add the matching elements into their slot.
-        contentChildNodes.forEach(node => {
+        contentChildNodes.forEach((node) => {
           const slotName = slotMap[directiveNormalize(node.nodeName.toLowerCase())];
           if (slotName) {
             filledSlots[slotName] = true;
@@ -174,18 +198,20 @@ export class UpgradeHelper {
         });
 
         // Check for required slots that were not filled.
-        Object.keys(filledSlots).forEach(slotName => {
+        Object.keys(filledSlots).forEach((slotName) => {
           if (!filledSlots[slotName]) {
             throw new Error(`Required transclusion slot '${slotName}' on directive: ${this.name}`);
           }
         });
 
-        Object.keys(slots).filter(slotName => slots[slotName]).forEach(slotName => {
-          const nodes = slots[slotName];
-          slots[slotName] = (scope: IScope, cloneAttach: ICloneAttachFunction) => {
-            return cloneAttach!(nodes, scope);
-          };
-        });
+        Object.keys(slots)
+          .filter((slotName) => slots[slotName])
+          .forEach((slotName) => {
+            const nodes = slots[slotName];
+            slots[slotName] = (scope: IScope, cloneAttach: ICloneAttachFunction) => {
+              return cloneAttach!(nodes, scope);
+            };
+          });
       }
 
       // Attach `$$slots` to default slot transclude fn.
@@ -201,7 +227,7 @@ export class UpgradeHelper {
       // to empty text nodes (which can only be a result of Angular removing their initial content).
       // NOTE: Transcluded text content that starts with whitespace followed by an interpolation
       //       will still fail to be detected by AngularJS v1.6+
-      $template.forEach(node => {
+      $template.forEach((node) => {
         if (node.nodeType === Node.TEXT_NODE && !node.nodeValue) {
           node.nodeValue = '\u200C';
         }
@@ -211,13 +237,13 @@ export class UpgradeHelper {
     return attachChildrenFn;
   }
 
-  resolveAndBindRequiredControllers(controllerInstance: IControllerInstance|null) {
+  resolveAndBindRequiredControllers(controllerInstance: IControllerInstance | null) {
     const directiveRequire = this.getDirectiveRequire();
     const requiredControllers = this.resolveRequire(directiveRequire);
 
     if (controllerInstance && this.directive.bindToController && isMap(directiveRequire)) {
       const requiredControllersMap = requiredControllers as {[key: string]: IControllerInstance};
-      Object.keys(requiredControllersMap).forEach(key => {
+      Object.keys(requiredControllersMap).forEach((key) => {
         controllerInstance[key] = requiredControllersMap[key];
       });
     }
@@ -232,9 +258,9 @@ export class UpgradeHelper {
 
   private extractChildNodes(): Node[] {
     const childNodes: Node[] = [];
-    let childNode: Node|null;
+    let childNode: Node | null;
 
-    while (childNode = this.element.firstChild) {
+    while ((childNode = this.element.firstChild)) {
       this.element.removeChild(childNode);
       childNodes.push(childNode);
     }
@@ -259,15 +285,16 @@ export class UpgradeHelper {
     return require;
   }
 
-  private resolveRequire(require: DirectiveRequireProperty):
-      SingleOrListOrMap<IControllerInstance>|null {
+  private resolveRequire(
+    require: DirectiveRequireProperty,
+  ): SingleOrListOrMap<IControllerInstance> | null {
     if (!require) {
       return null;
     } else if (Array.isArray(require)) {
-      return require.map(req => this.resolveRequire(req));
+      return require.map((req) => this.resolveRequire(req));
     } else if (typeof require === 'object') {
       const value: {[key: string]: IControllerInstance} = {};
-      Object.keys(require).forEach(key => value[key] = this.resolveRequire(require[key])!);
+      Object.keys(require).forEach((key) => (value[key] = this.resolveRequire(require[key])!));
       return value;
     } else if (typeof require === 'string') {
       const match = require.match(REQUIRE_PREFIX_RE)!;
@@ -284,18 +311,20 @@ export class UpgradeHelper {
 
       if (!value && !isOptional) {
         throw new Error(
-            `Unable to find required '${require}' in upgraded directive '${this.name}'.`);
+          `Unable to find required '${require}' in upgraded directive '${this.name}'.`,
+        );
       }
 
       return value;
     } else {
       throw new Error(
-          `Unrecognized 'require' syntax on upgraded directive '${this.name}': ${require}`);
+        `Unrecognized 'require' syntax on upgraded directive '${this.name}': ${require}`,
+      );
     }
   }
 }
 
-function getOrCall<T>(property: T|Function, ...args: any[]): T {
+function getOrCall<T>(property: T | Function, ...args: any[]): T {
   return isFunction(property) ? property(...args) : property;
 }
 

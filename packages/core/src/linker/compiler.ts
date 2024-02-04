@@ -127,7 +127,8 @@ export type CompilerOptions = {
  *
  * @publicApi
  */
-export const COMPILER_OPTIONS = new InjectionToken<CompilerOptions[]>('compilerOptions');
+export const COMPILER_OPTIONS =
+    new InjectionToken<CompilerOptions[]>(ngDevMode ? 'compilerOptions' : '');
 
 /**
  * A factory for creating a Compiler

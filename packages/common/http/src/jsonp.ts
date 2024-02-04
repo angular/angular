@@ -7,14 +7,25 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {EnvironmentInjector, Inject, inject, Injectable, runInInjectionContext} from '@angular/core';
+import {
+  EnvironmentInjector,
+  Inject,
+  inject,
+  Injectable,
+  runInInjectionContext,
+} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
-import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
-
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpEventType,
+  HttpResponse,
+  HttpStatusCode,
+} from './response';
 
 // Every request made through JSONP needs a callback name that's unique across the
 // whole page. Each request is assigned an id and the callback name is constructed
@@ -26,7 +37,7 @@ let nextRequestId: number = 0;
  * When a pending <script> is unsubscribed we'll move it to this document, so it won't be
  * executed.
  */
-let foreignDocument: Document|undefined;
+let foreignDocument: Document | undefined;
 
 // Error text given when a JSONP script is injected, but doesn't invoke the callback
 // passed in its URL.
@@ -82,7 +93,10 @@ export class JsonpClientBackend implements HttpBackend {
    */
   private readonly resolvedPromise = Promise.resolve();
 
-  constructor(private callbackMap: JsonpCallbackContext, @Inject(DOCUMENT) private document: any) {}
+  constructor(
+    private callbackMap: JsonpCallbackContext,
+    @Inject(DOCUMENT) private document: any,
+  ) {}
 
   /**
    * Get the name of the next callback method, by incrementing the global `nextRequestId`.
@@ -128,7 +142,7 @@ export class JsonpClientBackend implements HttpBackend {
       // are closed over and track state across those callbacks.
 
       // The response object, if one has been received, or null otherwise.
-      let body: any|null = null;
+      let body: any | null = null;
 
       // Whether the response callback has been called.
       let finished: boolean = false;
@@ -175,23 +189,27 @@ export class JsonpClientBackend implements HttpBackend {
           if (!finished) {
             // It hasn't, something went wrong with the request. Return an error via
             // the Observable error path. All JSONP errors have status 0.
-            observer.error(new HttpErrorResponse({
-              url,
-              status: 0,
-              statusText: 'JSONP Error',
-              error: new Error(JSONP_ERR_NO_CALLBACK),
-            }));
+            observer.error(
+              new HttpErrorResponse({
+                url,
+                status: 0,
+                statusText: 'JSONP Error',
+                error: new Error(JSONP_ERR_NO_CALLBACK),
+              }),
+            );
             return;
           }
 
           // Success. body either contains the response body or null if none was
           // returned.
-          observer.next(new HttpResponse({
-            body,
-            status: HttpStatusCode.Ok,
-            statusText: 'OK',
-            url,
-          }));
+          observer.next(
+            new HttpResponse({
+              body,
+              status: HttpStatusCode.Ok,
+              statusText: 'OK',
+              url,
+            }),
+          );
 
           // Complete the stream, the response is over.
           observer.complete();
@@ -205,12 +223,14 @@ export class JsonpClientBackend implements HttpBackend {
         cleanup();
 
         // Wrap the error in a HttpErrorResponse.
-        observer.error(new HttpErrorResponse({
-          error,
-          status: 0,
-          statusText: 'JSONP Error',
-          url,
-        }));
+        observer.error(
+          new HttpErrorResponse({
+            error,
+            status: 0,
+            statusText: 'JSONP Error',
+            url,
+          }),
+        );
       };
 
       // Subscribe to both the success (load) and error events on the <script> tag,
@@ -238,9 +258,8 @@ export class JsonpClientBackend implements HttpBackend {
     // Issue #34818
     // Changing <script>'s ownerDocument will prevent it from execution.
     // https://html.spec.whatwg.org/multipage/scripting.html#execute-the-script-block
-    if (!foreignDocument) {
-      foreignDocument = (this.document.implementation as DOMImplementation).createHTMLDocument();
-    }
+    foreignDocument ??= (this.document.implementation as DOMImplementation).createHTMLDocument();
+
     foreignDocument.adoptNode(script);
   }
 }
@@ -249,7 +268,9 @@ export class JsonpClientBackend implements HttpBackend {
  * Identifies requests with the method JSONP and shifts them to the `JsonpClientBackend`.
  */
 export function jsonpInterceptorFn(
-    req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
   if (req.method === 'JSONP') {
     return inject(JsonpClientBackend).handle(req as HttpRequest<never>);
   }
@@ -278,9 +299,8 @@ export class JsonpInterceptor {
    * @returns An observable of the event stream.
    */
   intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return runInInjectionContext(
-        this.injector,
-        () => jsonpInterceptorFn(
-            initialRequest, downstreamRequest => next.handle(downstreamRequest)));
+    return runInInjectionContext(this.injector, () =>
+      jsonpInterceptorFn(initialRequest, (downstreamRequest) => next.handle(downstreamRequest)),
+    );
   }
 }

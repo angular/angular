@@ -465,9 +465,6 @@
     "name": "REQUIRED_VALIDATOR"
   },
   {
-    "name": "RadioControlRegistryModule"
-  },
-  {
     "name": "Renderer2"
   },
   {
@@ -877,6 +874,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -1641,6 +1641,9 @@
     "name": "shouldAddViewToDom"
   },
   {
+    "name": "shouldRecheckView"
+  },
+  {
     "name": "shouldSearchParent"
   },
   {
@@ -1780,5 +1783,11 @@
   },
   {
     "name": "ɵɵtext"
+  },
+  {
+    "name": "ɵɵtwoWayListener"
+  },
+  {
+    "name": "ɵɵtwoWayProperty"
   }
 ]

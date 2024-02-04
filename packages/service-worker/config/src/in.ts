@@ -27,7 +27,7 @@ export interface Config {
   assetGroups?: AssetGroup[];
   dataGroups?: DataGroup[];
   navigationUrls?: string[];
-  navigationRequestStrategy?: 'freshness'|'performance';
+  navigationRequestStrategy?: 'freshness' | 'performance';
 }
 
 /**
@@ -37,9 +37,9 @@ export interface Config {
  */
 export interface AssetGroup {
   name: string;
-  installMode?: 'prefetch'|'lazy';
-  updateMode?: 'prefetch'|'lazy';
-  resources: {files?: Glob[]; urls?: Glob[];};
+  installMode?: 'prefetch' | 'lazy';
+  updateMode?: 'prefetch' | 'lazy';
+  resources: {files?: Glob[]; urls?: Glob[]};
   cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }
 
@@ -53,7 +53,8 @@ export interface DataGroup {
   urls: Glob[];
   version?: number;
   cacheConfig: {
-    maxSize: number; maxAge: Duration;
+    maxSize: number;
+    maxAge: Duration;
     timeout?: Duration;
     strategy?: 'freshness' | 'performance';
     cacheOpaqueResponses?: boolean;

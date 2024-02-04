@@ -1,3 +1,73 @@
+<a name="17.2.0-next.1"></a>
+# 17.2.0-next.1 (2024-01-31)
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dfc6c8d0c7](https://github.com/angular/angular/commit/dfc6c8d0c76380ee7beb6d904261e40857b375ed) | fix | cta clickability issue in adev homepage. ([#52905](https://github.com/angular/angular/pull/52905)) |
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [75aeae42b7](https://github.com/angular/angular/commit/75aeae42b7f512553262d515966f43d11e34d228) | fix | cleanup DOM elements when root view is removed with async animations ([#53033](https://github.com/angular/angular/pull/53033)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f5c520b836](https://github.com/angular/angular/commit/f5c520b836c4545c7043649f28b3a0369c168747) | feat | add placeholder to NgOptimizedImage ([#53783](https://github.com/angular/angular/pull/53783)) |
+| [122213d37d](https://github.com/angular/angular/commit/122213d37d3e73fc0dcfd5a10a2c388dc573b6cf) | fix | The date pipe should return ISO format for week and week-year as intended in the unit test. ([#53879](https://github.com/angular/angular/pull/53879)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [47e6e84101](https://github.com/angular/angular/commit/47e6e841016abfca0c1aa84051d82a04b3027617) | feat | Add a TSConfig option `useTemplatePipeline` ([#54057](https://github.com/angular/angular/pull/54057)) |
+| [7b4d275f49](https://github.com/angular/angular/commit/7b4d275f494a64c38b61cea7045ba8b6e8447b78) | fix | Fix the template pipeline option ([#54148](https://github.com/angular/angular/pull/54148)) |
+| [eddf5dae5e](https://github.com/angular/angular/commit/eddf5dae5eb9e1aa3ca4c276c2cb2b897b73a9e0) | fix | Update type check block to fix control flow source mappings ([#53980](https://github.com/angular/angular/pull/53980)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7e861c640e](https://github.com/angular/angular/commit/7e861c640edf90c5f8d4f7e091861d3d98cd49c0) | feat | generate extra imports for component local dependencies in local mode ([#53543](https://github.com/angular/angular/pull/53543)) |
+| [3263df23f2](https://github.com/angular/angular/commit/3263df23f2f4da722ef2c1a1dacfb0866498dd60) | feat | generate global imports in local compilation mode ([#53543](https://github.com/angular/angular/pull/53543)) |
+| [64fa5715c6](https://github.com/angular/angular/commit/64fa5715c696101fba0b4f8623eaec0eadc5b159) | fix | generating extra imports in local compilation mode when cycle is introduced ([#53543](https://github.com/angular/angular/pull/53543)) |
+| [0970129e20](https://github.com/angular/angular/commit/0970129e20f77dc309f2b4f76f961b310124778c) | fix | show proper error for custom decorators in local compilation mode ([#53983](https://github.com/angular/angular/pull/53983)) |
+| [58b8a232d6](https://github.com/angular/angular/commit/58b8a232d64f5fe3207c90c8145cab36e7e192c2) | fix | support jumping to definitions of signal-based inputs ([#54053](https://github.com/angular/angular/pull/54053)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [656bc282e3](https://github.com/angular/angular/commit/656bc282e345c5e37a9189a0a4daa631e02c31bf) | fix | add toString implementation to signals ([#54002](https://github.com/angular/angular/pull/54002)) |
+| [037b79b72e](https://github.com/angular/angular/commit/037b79b72ea18f08b3a74f9ad541bbdca183b1aa) | fix | change defer block fixture default behavior to playthrough ([#54088](https://github.com/angular/angular/pull/54088)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [28ad6fc4ad](https://github.com/angular/angular/commit/28ad6fc4ad518884bb5777fd20e9075d8969b27a) | fix | error in standalone migration when non-array value is used as declarations in TestBed ([#54122](https://github.com/angular/angular/pull/54122)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.1.2"></a>
+# 17.1.2 (2024-01-31)
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ccddacf11d](https://github.com/angular/angular/commit/ccddacf11deaebeda12e1bdb6e93ec401397d352) | fix | cta clickability issue in adev homepage. ([#52905](https://github.com/angular/angular/pull/52905)) |
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [98d545fafa](https://github.com/angular/angular/commit/98d545fafa7fc3b1fb3ae049ce655e33ef9bd423) | fix | cleanup DOM elements when root view is removed with async animations ([#53033](https://github.com/angular/angular/pull/53033)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cdc5e39532](https://github.com/angular/angular/commit/cdc5e3953237a192beafd6330f9d9e36ede34f2c) | fix | The date pipe should return ISO format for week and week-year as intended in the unit test. ([#53879](https://github.com/angular/angular/pull/53879)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f12b01ec88](https://github.com/angular/angular/commit/f12b01ec88eaf18041c2e46335428627aa0d7744) | fix | Update type check block to fix control flow source mappings ([#53980](https://github.com/angular/angular/pull/53980)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c477e876e3](https://github.com/angular/angular/commit/c477e876e39495b855b096440d53cf1dd1ad33c6) | fix | change defer block fixture default behavior to playthrough ([#54088](https://github.com/angular/angular/pull/54088)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8264382a6b](https://github.com/angular/angular/commit/8264382a6bf389fb3fca75fa2d6c0a2aa5a1e42f) | fix | error in standalone migration when non-array value is used as declarations in TestBed ([#54122](https://github.com/angular/angular/pull/54122)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.2.0-next.0"></a>
 # 17.2.0-next.0 (2024-01-24)
 ### compiler
@@ -347,17 +417,16 @@ Live long and prosper 🖖🏻
   
   Node.js v16 is planned to be End-of-Life on 2023-09-11. Angular will stop supporting Node.js v16 in Angular v17. For Node.js release schedule details, please see: https://github.com/nodejs/release#release-schedule
 ### common
-- 
 - the NgSwitch directive now defaults to the === equality operator,
-  migrating from the previously used ==. NgSwitch expressions and / or
+  migrating from the previously used == operator. NgSwitch expressions and / or
   individual condition values need adjusting to this stricter equality
-  check. The added warning message should help pinpointing NgSwitch
-  usages where adjustements are needed.
+  check. The added warning message should help pin-pointing NgSwitch
+  usages where adjustments are needed.
 ### core
-- Angular now required `zone.js` version `~0.14.0`
+- Angular now requires `zone.js` version `~0.14.0`
 - Versions of TypeScript older than 5.2 are no longer supported.
 - The  `mutate` method was removed from the `WritableSignal` interface and completely
-  dropped from the public API surface. As an alternative please use the update method and
+  dropped from the public API surface. As an alternative, please use the `update` method and
   make immutable changes to the object.
   
   Example before:
@@ -455,7 +524,7 @@ Live long and prosper 🖖🏻
 - Swapping out the context object for `EmbeddedViewRef`
   is no longer supported. Support for this was introduced with v12.0.0, but
   this pattern is rarely used. There is no replacement, but you can use
-  simple assignments in most cases, or `Object.assign , or alternatively
+  simple assignments in most cases, or `Object.assign` , or alternatively
   still replace the full object by using a `Proxy` (see `NgTemplateOutlet`
   as an example).
   

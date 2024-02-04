@@ -3,7 +3,7 @@
     @if (angularIsInDevMode) {
       @if (supportedVersion) {
         <div class="devtools-wrapper noselect" [@enterAnimation]>
-          <ng-devtools-tabs [angularVersion]="angularVersion"></ng-devtools-tabs>
+          <ng-devtools-tabs [angularVersion]="angularVersion" [isHydrationEnabled]="hydration"/>
         </div>
       } @else {
         <p class="text-message">

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertPureComponentScopeFunction, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
+import {BuiltinFunctionCall, convertActionBinding, convertAssignmentActionBinding, convertPropertyBinding, convertPureComponentScopeFunction, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
@@ -82,9 +82,13 @@ export function prepareEventListenerParameters(
   const implicitReceiverExpr = (scope === null || scope.bindingLevel === 0) ?
       o.variable(CONTEXT_NAME) :
       scope.getOrCreateSharedContextVar(0);
-  const bindingStatements = convertActionBinding(
-      scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
-      EVENT_BINDING_SCOPE_GLOBALS);
+  const bindingStatements = eventAst.type === ParsedEventType.TwoWay ?
+      convertAssignmentActionBinding(
+          scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
+          EVENT_BINDING_SCOPE_GLOBALS) :
+      convertActionBinding(
+          scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
+          EVENT_BINDING_SCOPE_GLOBALS);
   const statements = [];
   const variableDeclarations = scope?.variableDeclarations();
   const restoreViewStatement = scope?.restoreViewStatement();
@@ -713,7 +717,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     element.inputs.forEach(input => {
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
       if (!stylingInputWasSet) {
-        if (input.type === BindingType.Property && input.i18n) {
+        if ((input.type === BindingType.Property || input.type === BindingType.TwoWay) &&
+            input.i18n) {
           boundI18nAttrs.push(input);
         } else {
           allOtherInputs.push(input);
@@ -776,7 +781,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (element.outputs.length > 0) {
         for (const outputAst of element.outputs) {
           this.creationInstruction(
-              outputAst.sourceSpan, R3.listener,
+              outputAst.sourceSpan,
+              outputAst.type === ParsedEventType.TwoWay ? R3.twoWayListener : R3.listener,
               this.prepareListenerParameter(element.name, outputAst, elementIndex));
         }
       }
@@ -803,7 +809,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // special value to symbolize that there is no RHS to this binding
     // TODO (matsko): revisit this once FW-959 is approached
     const emptyValueBindInstruction = o.literal(undefined);
-    const propertyBindings: Omit<Instruction, 'reference'>[] = [];
+    const propertyBindings: Instruction[] = [];
     const attributeBindings: Omit<Instruction, 'reference'>[] = [];
 
     // Generate element input bindings
@@ -825,6 +831,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
         propertyBindings.push({
           span: input.sourceSpan,
+          reference: R3.property,
           paramsOrFn: getBindingFunctionParams(
               () => hasValue ? this.convertPropertyBinding(value) : emptyValueBindInstruction,
               prepareSyntheticPropertyName(input.name))
@@ -865,7 +872,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
           this.allocateBindingSlots(value);
 
-          if (inputType === BindingType.Property) {
+          // Note: we don't separate two-way property bindings and regular ones,
+          // because their assignment order needs to be maintained.
+          if (inputType === BindingType.Property || inputType === BindingType.TwoWay) {
             if (value instanceof Interpolation) {
               // prop="{{value}}" and friends
               this.interpolatedUpdateInstruction(
@@ -876,6 +885,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               // Collect all the properties so that we can chain into a single function at the end.
               propertyBindings.push({
                 span: input.sourceSpan,
+                reference: inputType === BindingType.TwoWay ? R3.twoWayProperty : R3.property,
                 paramsOrFn: getBindingFunctionParams(
                     () => this.convertPropertyBinding(value), attrName, params)
               });
@@ -911,7 +921,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     for (const propertyBinding of propertyBindings) {
       this.updateInstructionWithAdvance(
-          elementIndex, propertyBinding.span, R3.property, propertyBinding.paramsOrFn);
+          elementIndex, propertyBinding.span, propertyBinding.reference,
+          propertyBinding.paramsOrFn);
     }
 
     for (const attributeBinding of attributeBindings) {
@@ -1047,7 +1058,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Generate listeners for directive output
       for (const outputAst of template.outputs) {
         this.creationInstruction(
-            outputAst.sourceSpan, R3.listener,
+            outputAst.sourceSpan,
+            outputAst.type === ParsedEventType.TwoWay ? R3.twoWayListener : R3.listener,
             this.prepareListenerParameter('ng_template', outputAst, templateIndex));
       }
     }
@@ -1388,7 +1400,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (deferredDep.isDeferrable) {
         // Callback function, e.g. `m () => m.MyCmp;`.
         const innerFn = o.arrowFn(
-            [new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(deferredDep.symbolName));
+            [new o.FnParam('m', o.DYNAMIC_TYPE)],
+            // Default imports are always accessed through the `default` property.
+            o.variable('m').prop(deferredDep.isDefaultImport ? 'default' : deferredDep.symbolName));
 
         // Dynamic import, e.g. `import('./a').then(...)`.
         const importExpr =

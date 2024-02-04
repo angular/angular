@@ -30,9 +30,11 @@ Look at the `bootstrapApplication()` method in `main.ts` to see how it is config
 
 Before you can use `HttpClient`, you need to provide the Angular `HttpClientModule` so that it is available for [dependency injection](guide/dependency-injection) into the classes that need it.
 
-Most developers provide the `HttpClientModule` when initializing the app with `bootstrapApplication` in `main.ts` as shown in this example:
+Most developers provide the `HttpClientModule` when initializing the app with `bootstrapApplication` in `main.ts` using `ApplicationConfig` exported by `app.config.ts` as shown in this example:
 
 <code-example header="main.ts (excerpt)" path="http/src/main.ts" region="sketch"></code-example>
+
+<code-example header="app.config.ts (excerpt)" path="http/src/app/app.config.ts" region="sketch"></code-example>
 
 You can then inject the `HttpClient` service as a dependency of an application class, as shown in the following `ConfigService` example.
 

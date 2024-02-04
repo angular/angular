@@ -355,6 +355,11 @@ export class Identifiers {
   static contentQuerySignal: o.ExternalReference = {name: 'ɵɵcontentQuerySignal', moduleName: CORE};
   static queryAdvance: o.ExternalReference = {name: 'ɵɵqueryAdvance', moduleName: CORE};
 
+  // Two-way bindings
+  static twoWayProperty: o.ExternalReference = {name: 'ɵɵtwoWayProperty', moduleName: CORE};
+  static twoWayBindingSet: o.ExternalReference = {name: 'ɵɵtwoWayBindingSet', moduleName: CORE};
+  static twoWayListener: o.ExternalReference = {name: 'ɵɵtwoWayListener', moduleName: CORE};
+
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵɵNgOnChangesFeature', moduleName: CORE};
 
   static InheritDefinitionFeature:

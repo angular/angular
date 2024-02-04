@@ -11,7 +11,6 @@ import {NgModule} from '@angular/core';
 
 import {provideHttpClientTesting} from './provider';
 
-
 /**
  * Configures `HttpClientTestingBackend` as the `HttpBackend` used by `HttpClient`.
  *
@@ -20,12 +19,7 @@ import {provideHttpClientTesting} from './provider';
  * @publicApi
  */
 @NgModule({
-  imports: [
-    HttpClientModule,
-  ],
-  providers: [
-    provideHttpClientTesting(),
-  ],
+  imports: [HttpClientModule],
+  providers: [provideHttpClientTesting()],
 })
-export class HttpClientTestingModule {
-}
+export class HttpClientTestingModule {}

@@ -13,9 +13,8 @@ import {ContentChildComp, Pane, Tab} from './content_child_example';
 @NgModule({
   imports: [BrowserModule],
   declarations: [ContentChildComp, Pane, Tab],
-  bootstrap: [ContentChildComp]
+  bootstrap: [ContentChildComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {ContentChildComp as AppComponent};

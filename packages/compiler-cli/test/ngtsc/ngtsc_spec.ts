@@ -9559,6 +9559,55 @@ function allTests(os: string) {
           expect(jsContents).not.toContain('import { CmpA }');
           expect(jsContents).not.toContain('import { CmpB }');
         });
+
+        it('should handle deferred dependencies imported through a default import', () => {
+          env.write('cmp-a.ts', `
+            import { Component } from '@angular/core';
+
+            @Component({
+              standalone: true,
+              selector: 'cmp-a',
+              template: 'CmpA!'
+            })
+            export default class CmpA {}
+          `);
+
+          env.write('/test.ts', `
+            import { Component } from '@angular/core';
+            import CmpA from './cmp-a';
+
+            @Component({
+              selector: 'local-dep',
+              standalone: true,
+              template: 'Local dependency',
+            })
+            export class LocalDep {}
+
+            @Component({
+              selector: 'test-cmp',
+              standalone: true,
+              imports: [CmpA, LocalDep],
+              template: \`
+                @defer {
+                  <cmp-a />
+                  <local-dep />
+                }
+              \`,
+            })
+            export class TestCmp {}
+          `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+
+          expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+          expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.default)]');
+
+          // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
+          // via dynamic imports and an original import can be removed.
+          expect(jsContents).not.toContain('import CmpA');
+        });
       });
 
       it('should detect pipe used in the `when` trigger as an eager dependency', () => {
@@ -10118,6 +10167,60 @@ function allTests(os: string) {
              expect(jsContents).toContain('setClassMetadata');
            });
       });
+
+      it('should generate setClassMetadataAsync for default imports', () => {
+        env.write('cmp-a.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            standalone: true,
+            selector: 'cmp-a',
+            template: 'CmpA!'
+          })
+          export default class CmpA {}
+        `);
+
+        env.write('/test.ts', `
+          import {Component} from '@angular/core';
+          import CmpA from './cmp-a';
+
+          @Component({
+            selector: 'local-dep',
+            standalone: true,
+            template: 'Local dependency',
+          })
+          export class LocalDep {}
+
+          @Component({
+            selector: 'test-cmp',
+            standalone: true,
+            imports: [CmpA, LocalDep],
+            template: \`
+              @defer {
+                <cmp-a />
+                <local-dep />
+              }
+            \`,
+          })
+          export class TestCmp {}
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
+        expect(jsContents)
+            .toContain(
+                // ngDevMode check is present
+                '(() => { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
+                // Main `setClassMetadataAsync` call
+                'i0.ɵsetClassMetadataAsync(TestCmp, ' +
+                // Dependency loading function (note: no local `LocalDep` here)
+                '() => [import("./cmp-a").then(m => m.default)], ' +
+                // Callback that invokes `setClassMetadata` at the end
+                'CmpA => { i0.ɵsetClassMetadata(TestCmp');
+      });
     });
 
     describe('debug info', () => {
@@ -10184,6 +10287,169 @@ function allTests(os: string) {
 
            expect(jsContents).not.toMatch('forbidOrphanRendering:');
          });
+    });
+
+    describe('two-way binding backwards compatibility', () => {
+      it('should allow an && expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="a && !b && c"></div>\`
+          })
+          class App {
+            a = true;
+            b = false;
+            c = 'hello';
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a && !ctx.b && ctx.c);');
+        expect(jsContents)
+            .toContain(
+                '{ ctx.a && !ctx.b && (i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event)); return $event; }');
+      });
+
+      it('should allow an || expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="a || !b || c"></div>\`
+          })
+          class App {
+            a = true;
+            b = false;
+            c = 'hello';
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a || !ctx.b || ctx.c);');
+        expect(jsContents)
+            .toContain(
+                '{ ctx.a || !ctx.b || (i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event)); return $event; }');
+      });
+
+      it('should allow an ?? expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="a ?? !b ?? c"></div>\`
+          })
+          class App {
+            a = true;
+            b = false;
+            c = 'hello';
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('let tmp_0_0;');
+        expect(jsContents)
+            .toContain(
+                'ɵɵtwoWayProperty("value", (tmp_0_0 = (tmp_0_0 = ctx.a) !== null && ' +
+                'tmp_0_0 !== undefined ? tmp_0_0 : !ctx.b) !== null && tmp_0_0 !== undefined ? tmp_0_0 : ctx.c);');
+
+        expect(jsContents).toContain('let tmp_b_0;');
+        expect(jsContents)
+            .toContain(
+                '(tmp_b_0 = (tmp_b_0 = ctx.a) !== null && tmp_b_0 !== undefined ? ' +
+                'tmp_b_0 : !ctx.b) !== null && tmp_b_0 !== undefined ? tmp_b_0 : ' +
+                'i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event); return $event;');
+      });
+
+      it('should allow a ternary expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="a ? b : c"></div>\`
+          })
+          class App {
+            a = true;
+            b = false;
+            c = 'hello';
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a ? ctx.b : ctx.c);');
+        expect(jsContents)
+            .toContain(
+                '{ ctx.a ? ctx.b : i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event); return $event; }');
+      });
+
+      it('should allow a prefixed unary expression in a two-way binding', () => {
+        env.write(`test.ts`, `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({standalone: true, selector: '[dir]'})
+          class Dir {
+            @Input() value: any;
+            @Output() valueChange = new EventEmitter<any>();
+          }
+
+          @Component({
+            standalone: true,
+            imports: [Dir],
+            template: \`<div dir [(value)]="!!!a"></div>\`
+          })
+          class App {
+            a = true;
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents).toContain('ɵɵtwoWayProperty("value", !!!ctx.a);');
+        expect(jsContents)
+            .toContain(
+                '{ i0.ɵɵtwoWayBindingSet(ctx.a, $event) || (ctx.a = $event); return $event; }');
+      });
     });
   });
 

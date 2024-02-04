@@ -320,9 +320,9 @@ export class AbsoluteSourceSpan {
   constructor(public readonly start: number, public readonly end: number) {}
 }
 
-export class ASTWithSource extends AST {
+export class ASTWithSource<T extends AST = AST> extends AST {
   constructor(
-      public ast: AST, public source: string|null, public location: string, absoluteOffset: number,
+      public ast: T, public source: string|null, public location: string, absoluteOffset: number,
       public errors: ParserError[]) {
     super(
         new ParseSpan(0, source === null ? 0 : source.length),
@@ -842,7 +842,8 @@ export class ParsedProperty {
 export enum ParsedPropertyType {
   DEFAULT,
   LITERAL_ATTR,
-  ANIMATION
+  ANIMATION,
+  TWO_WAY,
 }
 
 export const enum ParsedEventType {
@@ -850,11 +851,22 @@ export const enum ParsedEventType {
   Regular,
   // Animation specific event
   Animation,
+  // Event side of a two-way binding (e.g. `[(property)]="expression"`).
+  TwoWay,
 }
 
 export class ParsedEvent {
   // Regular events have a target
   // Animation events have a phase
+  constructor(
+      name: string, targetOrPhase: string, type: ParsedEventType.TwoWay,
+      handler: ASTWithSource<NonNullAssert|PropertyRead|KeyedRead>, sourceSpan: ParseSourceSpan,
+      handlerSpan: ParseSourceSpan, keySpan: ParseSourceSpan);
+
+  constructor(
+      name: string, targetOrPhase: string, type: ParsedEventType, handler: ASTWithSource,
+      sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan, keySpan: ParseSourceSpan);
+
   constructor(
       public name: string, public targetOrPhase: string, public type: ParsedEventType,
       public handler: ASTWithSource, public sourceSpan: ParseSourceSpan,
@@ -882,6 +894,8 @@ export const enum BindingType {
   Style,
   // A binding to an animation reference (e.g. `[animate.key]="expression"`).
   Animation,
+  // Property side of a two-way binding (e.g. `[(property)]="expression"`).
+  TwoWay,
 }
 
 export class BoundElementProperty {

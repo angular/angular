@@ -271,5 +271,5 @@ For more information about routing, see the following topics:
 
 <docs-pill-row>
   <docs-pill href="guide/routing/common-router-tasks" title="In-app Routing and Navigation"/>
-  <docs-pill href="api/router" title="Router API"/>
+  <docs-pill href="api/router/Router" title="Router API"/>
 </docs-pill-row>

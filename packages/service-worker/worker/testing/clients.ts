@@ -8,15 +8,17 @@
 
 import {Subject} from 'rxjs';
 
-
 export class MockClient implements Client {
   readonly messages: any[] = [];
   readonly queue = new Subject<any>();
   lastFocusedAt = 0;
 
   constructor(
-      readonly id: string, readonly url: string, readonly type: ClientTypes = 'all',
-      readonly frameType: FrameType = 'top-level') {}
+    readonly id: string,
+    readonly url: string,
+    readonly type: ClientTypes = 'all',
+    readonly frameType: FrameType = 'top-level',
+  ) {}
 
   postMessage(message: any): void {
     this.messages.push(message);
@@ -40,7 +42,7 @@ export class MockWindowClient extends MockClient implements WindowClient {
     return this;
   }
 
-  async navigate(url: string): Promise<WindowClient|null> {
+  async navigate(url: string): Promise<WindowClient | null> {
     (this.url as string) = url;
     return this;
   }
@@ -56,12 +58,13 @@ export class MockClients implements Clients {
         return;
       }
       throw new Error(
-          `Trying to add mock client with same ID (${existingClient.id}) and different URL ` +
-          `(${existingClient.url} --> ${url})`);
+        `Trying to add mock client with same ID (${existingClient.id}) and different URL ` +
+          `(${existingClient.url} --> ${url})`,
+      );
     }
 
-    const client = (type === 'window') ? new MockWindowClient(clientId, url) :
-                                         new MockClient(clientId, url, type);
+    const client =
+      type === 'window' ? new MockWindowClient(clientId, url) : new MockClient(clientId, url, type);
     this.clients.set(clientId, client);
   }
 
@@ -73,34 +76,37 @@ export class MockClients implements Clients {
     return this.clients.get(id)!;
   }
 
-  getMock(id: string): MockClient|undefined {
+  getMock(id: string): MockClient | undefined {
     return this.clients.get(id);
   }
 
-  async matchAll<T extends ClientQueryOptions>(options?: T):
-      Promise<ReadonlyArray<T['type'] extends 'window'? WindowClient : Client>> {
+  async matchAll<T extends ClientQueryOptions>(
+    options?: T,
+  ): Promise<ReadonlyArray<T['type'] extends 'window' ? WindowClient : Client>> {
     const type = options?.type ?? 'window';
     const allClients = Array.from(this.clients.values());
     const matchedClients =
-        (type === 'all') ? allClients : allClients.filter(client => client.type === type);
+      type === 'all' ? allClients : allClients.filter((client) => client.type === type);
 
     // Order clients according to the [spec](https://w3c.github.io/ServiceWorker/#clients-matchall):
     // In most recently focused then most recently created order, with windows clients before other
     // clients.
-    return matchedClients
-               // Sort in most recently created order.
-               .reverse()
-               // Sort in most recently focused order.
-               .sort((a, b) => b.lastFocusedAt - a.lastFocusedAt)
-               // Sort windows clients before other clients (otherwise leave existing order).
-               .sort((a, b) => {
-                 const aScore = (a.type === 'window') ? 1 : 0;
-                 const bScore = (b.type === 'window') ? 1 : 0;
-                 return bScore - aScore;
-               }) as any;
+    return (
+      matchedClients
+        // Sort in most recently created order.
+        .reverse()
+        // Sort in most recently focused order.
+        .sort((a, b) => b.lastFocusedAt - a.lastFocusedAt)
+        // Sort windows clients before other clients (otherwise leave existing order).
+        .sort((a, b) => {
+          const aScore = a.type === 'window' ? 1 : 0;
+          const bScore = b.type === 'window' ? 1 : 0;
+          return bScore - aScore;
+        }) as any
+    );
   }
 
-  async openWindow(url: string): Promise<WindowClient|null> {
+  async openWindow(url: string): Promise<WindowClient | null> {
     return null;
   }
 

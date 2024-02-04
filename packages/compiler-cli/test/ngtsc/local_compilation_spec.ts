@@ -53,6 +53,260 @@ runInEachFileSystem(
               expect(diags).toEqual([]);
             });
 
+            describe('extra imports generation', () => {
+              beforeEach(() => {
+                const tsconfig: {[key: string]: any} = {
+                  extends: '../tsconfig-base.json',
+                  compilerOptions: {
+                    baseUrl: '.',
+                    rootDirs: ['/app'],
+                  },
+                  angularCompilerOptions: {
+                    compilationMode: 'experimental-local',
+                    generateExtraImportsInLocalMode: true,
+                  },
+                };
+                env.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
+              });
+
+              it('should only include NgModule external import as global import', () => {
+                env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+        import {SomeExternalStuff2} from '/some_external_file2';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [SomeExternalStuff, BModule]})
+        export class AModule {
+        }
+        `);
+                env.write('b.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class BModule {
+        }
+        `);
+                env.write('c.ts', `
+        // Some code
+        `);
+
+                env.driveMain();
+                const aContents = env.getContents('a.js');
+                const bContents = env.getContents('b.js');
+                const cContents = env.getContents('c.js');
+
+                // NgModule external import as global import
+                expect(aContents).toContain('import "/some_external_file"');
+                expect(bContents).toContain('import "/some_external_file"');
+                expect(cContents).toContain('import "/some_external_file"');
+
+                // External import which is not an NgModule import should not be global import
+                expect(aContents).not.toContain('import "/some_external_file2"');
+                expect(bContents).not.toContain('import "/some_external_file2"');
+                expect(cContents).not.toContain('import "/some_external_file2"');
+
+                // NgModule internal import should not be global import
+                expect(aContents).not.toContain('import "b"');
+                expect(bContents).not.toContain('import "b"');
+                expect(cContents).not.toContain('import "b"');
+              });
+
+              it('should include NgModule namespace external import as global import', () => {
+                env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import * as n from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [n.SomeExternalStuff]})
+        export class AModule {
+        }
+        `);
+                env.write('test.ts', `
+        // Some code
+        `);
+
+                env.driveMain();
+
+                expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+                expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+              });
+
+              it('should include nested NgModule external import as global import - case of named import',
+                 () => {
+                   env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[[SomeExternalStuff]]]})
+        export class AModule {
+        }
+        `);
+                   env.write('test.ts', `
+        // Some code
+        `);
+
+                   env.driveMain();
+
+                   expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+                   expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+                 });
+
+              it('should include nested NgModule external import as global import - case of namespace import',
+                 () => {
+                   env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import * as n from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[[n.SomeExternalStuff]]]})
+        export class AModule {
+        }
+        `);
+                   env.write('test.ts', `
+        // Some code
+        `);
+
+                   env.driveMain();
+
+                   expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+                   expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+                 });
+
+              it('should include NgModule external imports as global imports - case of multiple nested imports including named and namespace imports',
+                 () => {
+                   env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+        import * as n from '/some_external_file2';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[SomeExternalStuff], [n.SomeExternalStuff]]})
+        export class AModule {
+        }
+        `);
+                   env.write('test.ts', `
+        // Some code
+        `);
+
+                   env.driveMain();
+
+                   expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+                   expect(env.getContents('test.js')).toContain('import "/some_external_file2"');
+                 });
+
+              it('should include extra import for the local component dependencies (component, directive and pipe)',
+                 () => {
+                   env.write('internal_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '...', selector: 'internal-comp'})
+        export class InternalComp {
+        }
+        `);
+                   env.write('internal_dir.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[internal-dir]'})
+        export class InternalDir {
+        }
+        `);
+                   env.write('internal_pipe.ts', `
+        import {Pipe, PipeTransform} from '@angular/core';
+
+        @Pipe({name: 'internalPipe'})
+        export class InternalPipe implements PipeTransform {
+          transform(value: number): number {
+            return value*2;
+          }
+        }
+        `);
+                   env.write('internal_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {InternalComp} from 'internal_comp';
+        import {InternalDir} from 'internal_dir';
+        import {InternalPipe} from 'internal_pipe';
+
+        @NgModule({declarations: [InternalComp, InternalDir, InternalPipe], exports: [InternalComp, InternalDir, InternalPipe]})
+        export class InternalModule {
+        }
+        `);
+                   env.write('main_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<internal-comp></internal-comp> <span internal-dir></span> <span>{{2 | internalPipe}}</span>'})
+        export class MainComp {
+        }
+        `);
+                   env.write('main_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {MainComp} from 'main_comp';
+        import {InternalModule} from 'internal_module';
+
+        @NgModule({declarations: [MainComp], imports: [InternalModule]})
+        export class MainModule {
+        }
+        `);
+
+                   env.driveMain();
+
+                   expect(env.getContents('main_comp.js')).toContain('import "internal_comp"');
+                   expect(env.getContents('main_comp.js')).toContain('import "internal_dir"');
+                   expect(env.getContents('main_comp.js')).toContain('import "internal_pipe"');
+                 });
+
+              it('should not include extra import and remote scope runtime for the local component dependencies when cycle is produced',
+                 () => {
+                   env.write('internal_comp.ts', `
+        import {Component} from '@angular/core';
+        import {cycleCreatingDep} from './main_comp';
+
+        @Component({template: '...', selector: 'internal-comp'})
+        export class InternalComp {
+        }
+        `);
+                   env.write('internal_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {InternalComp} from 'internal_comp';
+
+        @NgModule({declarations: [InternalComp], exports: [InternalComp]})
+        export class InternalModule {
+        }
+        `);
+                   env.write('main_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<internal-comp></internal-comp>'})
+        export class MainComp {
+        }
+        `);
+                   env.write('main_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {MainComp} from 'main_comp';
+        import {InternalModule} from 'internal_module';
+
+        @NgModule({declarations: [MainComp], imports: [InternalModule]})
+        export class MainModule {
+        }
+        `);
+
+                   env.driveMain();
+
+                   expect(env.getContents('main_comp.js')).not.toContain('import "internal_comp"');
+                   expect(env.getContents('main_module.js')).not.toContain('ɵɵsetComponentScope');
+                 });
+            });
+
             describe('ng module injector def', () => {
               it('should produce empty injector def imports when module has no imports/exports',
                  () => {
@@ -1733,6 +1987,37 @@ runInEachFileSystem(
                              'of the `@Component.deferredImports` fields in the file.');
                    }
                  });
+            });
+
+            describe('custom decorator', () => {
+              it('should produce diagnostic for each custom decorator', () => {
+                env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {customDecorator1, customDecorator2} from './some-where';
+
+          @customDecorator1('hello')
+          @Component({
+            template: ExternalString,
+          })
+          @customDecorator2
+          export class Main {
+          }
+          `);
+
+                const errors = env.driveDiagnostics();
+
+                expect(errors.length).toBe(2);
+
+                const text1 = ts.flattenDiagnosticMessageText(errors[0].messageText, '\n');
+                const text2 = ts.flattenDiagnosticMessageText(errors[1].messageText, '\n');
+
+                expect(errors[0].code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
+                expect(errors[1].code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
+                expect(text1).toContain(
+                    'In local compilation mode, Angular does not support custom decorators');
+                expect(text2).toContain(
+                    'In local compilation mode, Angular does not support custom decorators');
+              });
             });
           });
     });

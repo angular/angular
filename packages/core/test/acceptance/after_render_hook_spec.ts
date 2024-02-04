@@ -7,7 +7,7 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ApplicationRef, ChangeDetectorRef, Component, computed, createComponent, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, Type, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ApplicationRef, ChangeDetectorRef, Component, computed, createComponent, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, signal, Type, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 
@@ -893,6 +893,98 @@ describe('after render hooks', () => {
           'mixed-read-write-2', 'read-1', 'read-2'
         ]);
       });
+    });
+
+    it('allows writing to a signal in afterRender', () => {
+      const counter = signal(0);
+
+      @Component({
+        selector: 'test-component',
+        standalone: true,
+        template: ` {{counter()}} `,
+      })
+      class TestCmp {
+        counter = counter;
+        injector = inject(EnvironmentInjector);
+        ngOnInit() {
+          afterNextRender(() => {
+            this.counter.set(1);
+          }, {injector: this.injector});
+        }
+      }
+      TestBed.configureTestingModule(
+          {providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]});
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.attachView(fixture.componentRef.hostView);
+      appRef.tick();
+      expect(fixture.nativeElement.innerText).toBe('1');
+    });
+
+    it('allows updating state and calling markForCheck in afterRender', () => {
+      @Component({
+        selector: 'test-component',
+        standalone: true,
+        template: ` {{counter}} `,
+      })
+      class TestCmp {
+        counter = 0;
+        injector = inject(EnvironmentInjector);
+        cdr = inject(ChangeDetectorRef);
+        ngOnInit() {
+          afterNextRender(() => {
+            this.counter = 1;
+            this.cdr.markForCheck();
+          }, {injector: this.injector});
+        }
+      }
+      TestBed.configureTestingModule(
+          {providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]});
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.attachView(fixture.componentRef.hostView);
+      appRef.tick();
+      expect(fixture.nativeElement.innerText).toBe('1');
+    });
+
+    it('throws error when causing infinite updates', () => {
+      const counter = signal(0);
+
+      @Component({
+        selector: 'test-component',
+        standalone: true,
+        template: ` {{counter()}} `,
+      })
+      class TestCmp {
+        counter = counter;
+        injector = inject(EnvironmentInjector);
+        ngOnInit() {
+          afterRender(() => {
+            this.counter.update(v => v + 1);
+          }, {injector: this.injector});
+        }
+      }
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+          {
+            provide: ErrorHandler, useClass: class extends ErrorHandler {
+              override handleError(error: any) {
+                throw error;
+              }
+            }
+          },
+        ]
+      });
+
+      const fixture = TestBed.createComponent(TestCmp);
+      const appRef = TestBed.inject(ApplicationRef);
+      appRef.attachView(fixture.componentRef.hostView);
+      expect(() => {
+        appRef.tick();
+      }).toThrowError(/NG0103.*(afterRender|afterNextRender)/);
     });
   });
 

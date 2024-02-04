@@ -72,7 +72,9 @@ export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
  * check to tree-shake away this code in production mode.
  */
 export function compileComponentClassMetadata(
-    metadata: R3ClassMetadata, deferrableTypes: Map<string, string>|null): o.Expression {
+    metadata: R3ClassMetadata,
+    deferrableTypes: Map<string, {importPath: string, isDefaultImport: boolean}>|
+    null): o.Expression {
   if (deferrableTypes === null || deferrableTypes.size === 0) {
     // If there are no deferrable symbols - just generate a regular `setClassMetadata` call.
     return compileClassMetadata(metadata);
@@ -80,10 +82,13 @@ export function compileComponentClassMetadata(
 
   const dynamicImports: o.Expression[] = [];
   const importedSymbols: o.FnParam[] = [];
-  for (const [symbolName, importPath] of deferrableTypes) {
+  for (const [symbolName, {importPath, isDefaultImport}] of deferrableTypes) {
     // e.g. `(m) => m.CmpA`
     const innerFn =
-        o.arrowFn([new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(symbolName));
+        // Default imports are always accessed through the `default` property.
+        o.arrowFn(
+            [new o.FnParam('m', o.DYNAMIC_TYPE)],
+            o.variable('m').prop(isDefaultImport ? 'default' : symbolName));
 
     // e.g. `import('./cmp-a').then(...)`
     const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);

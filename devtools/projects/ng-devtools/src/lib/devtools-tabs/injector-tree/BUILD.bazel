@@ -65,6 +65,7 @@ ts_test_library(
     deps = [
         ":injector_tree_fns",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
+        "//devtools/projects/protocol",
     ],
 )
 

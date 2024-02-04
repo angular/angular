@@ -8,16 +8,22 @@
 
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpRequest} from '@angular/common/http/src/request';
-import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_ENABLED, XSRF_HEADER_NAME} from '@angular/common/http/src/xsrf';
+import {
+  HttpXsrfCookieExtractor,
+  HttpXsrfInterceptor,
+  HttpXsrfTokenExtractor,
+  XSRF_ENABLED,
+  XSRF_HEADER_NAME,
+} from '@angular/common/http/src/xsrf';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
 import {TestBed} from '@angular/core/testing';
 
 class SampleTokenExtractor extends HttpXsrfTokenExtractor {
-  constructor(private token: string|null) {
+  constructor(private token: string | null) {
     super();
   }
 
-  override getToken(): string|null {
+  override getToken(): string | null {
     return this.token;
   }
 }
@@ -66,11 +72,16 @@ describe('HttpXsrfInterceptor', () => {
   });
   it('does not overwrite existing header', () => {
     interceptor
-        .intercept(
-            new HttpRequest(
-                'POST', '/test', {}, {headers: new HttpHeaders().set('X-XSRF-TOKEN', 'blah')}),
-            backend)
-        .subscribe();
+      .intercept(
+        new HttpRequest(
+          'POST',
+          '/test',
+          {},
+          {headers: new HttpHeaders().set('X-XSRF-TOKEN', 'blah')},
+        ),
+        backend,
+      )
+      .subscribe();
     const req = backend.expectOne('/test');
     expect(req.request.headers.get('X-XSRF-TOKEN')).toEqual('blah');
     req.flush({});

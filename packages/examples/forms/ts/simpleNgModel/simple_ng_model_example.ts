@@ -12,7 +12,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'example-app',
   template: `
-    <input [(ngModel)]="name" #ctrl="ngModel" required>
+    <input [(ngModel)]="name" #ctrl="ngModel" required />
 
     <p>Value: {{ name }}</p>
     <p>Valid: {{ ctrl.valid }}</p>

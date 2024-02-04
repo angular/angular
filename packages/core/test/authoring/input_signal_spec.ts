@@ -79,4 +79,9 @@ describe('input signal', () => {
     node.applyValueToInputSignal(node, 1);
     expect(expr()).toBe(1001);
   });
+
+  it('should have a toString implementation', () => {
+    const signal = input(0);
+    expect(signal + '').toBe('[Input Signal: 0]');
+  });
 });

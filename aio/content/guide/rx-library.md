@@ -175,7 +175,7 @@ Here is `interval` again, this time with `shareReplay`:
 
   The `refCount=false` option means that if *everyone unsubscribes* and then someone new subscribes, that new subscriber gets the last emitted value.
 
-  If `refCount` is `true` (the default), when everyone unsubscribes and then someone new subscribes, that new subscriber initiates a fresh execution of the source observable. The `interval` example will restart from zero.
+  If `refCount` is `true`, when everyone unsubscribes and then someone new subscribes, that new subscriber initiates a fresh execution of the source observable. The `interval` example will restart from zero.
   
 </div>
 

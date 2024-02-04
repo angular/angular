@@ -17,7 +17,7 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div formArrayName="cities">
         <div *ngFor="let city of cities.controls; index as i">
-          <input [formControlName]="i" placeholder="City">
+          <input [formControlName]="i" placeholder="City" />
         </div>
       </div>
       <button>Submit</button>
@@ -29,10 +29,7 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
 })
 export class NestedFormArray {
   form = new FormGroup({
-    cities: new FormArray([
-      new FormControl('SF'),
-      new FormControl('NY'),
-    ]),
+    cities: new FormArray([new FormControl('SF'), new FormControl('NY')]),
   });
 
   get cities(): FormArray {
@@ -44,8 +41,8 @@ export class NestedFormArray {
   }
 
   onSubmit() {
-    console.log(this.cities.value);  // ['SF', 'NY']
-    console.log(this.form.value);    // { cities: ['SF', 'NY'] }
+    console.log(this.cities.value); // ['SF', 'NY']
+    console.log(this.form.value); // { cities: ['SF', 'NY'] }
   }
 
   setPreset() {

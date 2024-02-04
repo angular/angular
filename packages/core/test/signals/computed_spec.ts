@@ -186,4 +186,10 @@ describe('computed', () => {
 
     expect(illegal).toThrow();
   });
+
+  it('should have a toString implementation', () => {
+    const counter = signal(1);
+    const double = computed(() => counter() * 2);
+    expect(double + '').toBe('[Computed: 2]');
+  });
 });

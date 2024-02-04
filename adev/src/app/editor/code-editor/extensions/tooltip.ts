@@ -66,7 +66,7 @@ export const getTooltipExtension = (
             dom: tooltip,
 
             // Note: force the tooltip to scroll to the top on mount and on position change
-            // because depending on the position of the mouse and the siez of the tooltip content,
+            // because depending on the position of the mouse and the size of the tooltip content,
             // the tooltip might render with its initial scroll position on the bottom
             mount: (_) => forceTooltipScrollTop(),
             positioned: (_) => forceTooltipScrollTop(),

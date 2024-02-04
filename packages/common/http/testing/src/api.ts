@@ -30,7 +30,9 @@ export abstract class HttpTestingController {
   /**
    * Search for requests that match the given parameter, without any expectations.
    */
-  abstract match(match: string|RequestMatch|((req: HttpRequest<any>) => boolean)): TestRequest[];
+  abstract match(
+    match: string | RequestMatch | ((req: HttpRequest<any>) => boolean),
+  ): TestRequest[];
 
   /**
    * Expect that a single request has been made which matches the given URL, and return its
@@ -57,8 +59,10 @@ export abstract class HttpTestingController {
    * If no such request has been made, or more than one such request has been made, fail with an
    * error message including the given request description, if any.
    */
-  abstract expectOne(matchFn: ((req: HttpRequest<any>) => boolean), description?: string):
-      TestRequest;
+  abstract expectOne(
+    matchFn: (req: HttpRequest<any>) => boolean,
+    description?: string,
+  ): TestRequest;
 
   /**
    * Expect that a single request has been made which matches the given condition, and return
@@ -68,8 +72,9 @@ export abstract class HttpTestingController {
    * error message including the given request description, if any.
    */
   abstract expectOne(
-      match: string|RequestMatch|((req: HttpRequest<any>) => boolean),
-      description?: string): TestRequest;
+    match: string | RequestMatch | ((req: HttpRequest<any>) => boolean),
+    description?: string,
+  ): TestRequest;
 
   /**
    * Expect that no requests have been made which match the given URL.
@@ -93,7 +98,7 @@ export abstract class HttpTestingController {
    * If a matching request has been made, fail with an error message including the given request
    * description, if any.
    */
-  abstract expectNone(matchFn: ((req: HttpRequest<any>) => boolean), description?: string): void;
+  abstract expectNone(matchFn: (req: HttpRequest<any>) => boolean, description?: string): void;
 
   /**
    * Expect that no requests have been made which match the given condition.
@@ -102,7 +107,9 @@ export abstract class HttpTestingController {
    * description, if any.
    */
   abstract expectNone(
-      match: string|RequestMatch|((req: HttpRequest<any>) => boolean), description?: string): void;
+    match: string | RequestMatch | ((req: HttpRequest<any>) => boolean),
+    description?: string,
+  ): void;
 
   /**
    * Verify that no unmatched requests are outstanding.

@@ -55,7 +55,8 @@ export class PipeDecoratorHandler implements
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
       private perf: PerfRecorder, private includeClassMetadata: boolean,
-      private readonly compilationMode: CompilationMode) {}
+      private readonly compilationMode: CompilationMode,
+      private readonly generateExtraImportsInLocalMode: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'PipeDecoratorHandler';
@@ -153,10 +154,6 @@ export class PipeDecoratorHandler implements
   }
 
   register(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): void {
-    if (this.compilationMode === CompilationMode.LOCAL) {
-      return;
-    }
-
     const ref = new Reference(node);
     this.metaRegistry.registerPipeMetadata({
       kind: MetaKind.Pipe,

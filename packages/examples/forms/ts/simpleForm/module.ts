@@ -14,9 +14,8 @@ import {SimpleFormComp} from './simple_form_example';
 @NgModule({
   imports: [BrowserModule, FormsModule],
   declarations: [SimpleFormComp],
-  bootstrap: [SimpleFormComp]
+  bootstrap: [SimpleFormComp],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export {SimpleFormComp as AppComponent};

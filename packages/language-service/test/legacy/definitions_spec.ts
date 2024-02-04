@@ -171,7 +171,7 @@ describe('definitions', () => {
 
         expect(inputDef.textSpan).toEqual('ngForOf');
         expect(inputDef.contextSpan)
-            .toEqual('set ngForOf(ngForOf: U & NgIterable<T> | undefined | null);');
+            .toEqual('set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);');
         expect(directiveDef.textSpan).toEqual('NgForOf');
         expect(directiveDef.contextSpan).toContain('export declare class NgForOf');
       });

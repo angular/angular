@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {getInputSignalsMetadataTransform} from '@angular/compiler-cli/src/transformers/jit_transforms';
+import {getInitializerApiJitTransform} from '@angular/compiler-cli/src/transformers/jit_transforms';
 import fs from 'fs';
 import ts from 'typescript';
 
@@ -27,10 +26,9 @@ async function main() {
   });
 
   const host = new TypeScriptReflectionHost(program.getTypeChecker());
-  const evaluator = new PartialEvaluator(host, program.getTypeChecker(), null);
   const outputFile = ts.transform(
       program.getSourceFile(inputTsExecPath)!,
-      [getInputSignalsMetadataTransform(host, /* isCore */ false)], program.getCompilerOptions());
+      [getInitializerApiJitTransform(host, /* isCore */ false)], program.getCompilerOptions());
 
   await fs.promises.writeFile(
       outputExecPath, ts.createPrinter().printFile(outputFile.transformed[0]));

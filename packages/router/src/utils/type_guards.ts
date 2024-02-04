@@ -52,16 +52,6 @@ export function isCanMatch(guard: any): guard is {canMatch: CanMatchFn} {
   return guard && isFunction<CanMatchFn>(guard.canMatch);
 }
 
-export function isRedirectingNavigationCancelingError(
-    error: unknown|
-    RedirectingNavigationCancelingError): error is RedirectingNavigationCancelingError {
-  return isNavigationCancelingError(error) && isUrlTree((error as any).url);
-}
-
-export function isNavigationCancelingError(error: unknown): error is NavigationCancelingError {
-  return error && (error as any)[NAVIGATION_CANCELING_ERROR];
-}
-
 export function isEmptyError(e: Error): e is EmptyError {
   return e instanceof EmptyError || e?.name === 'EmptyError';
 }

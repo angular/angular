@@ -65,6 +65,7 @@ export class DirectiveDecoratorHandler implements
       private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
       private readonly useTemplatePipeline: boolean,
+      private readonly generateExtraImportsInLocalMode: boolean,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -147,10 +148,6 @@ export class DirectiveDecoratorHandler implements
   }
 
   register(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): void {
-    if (this.compilationMode === CompilationMode.LOCAL) {
-      return;
-    }
-
     // Register this directive's information with the `MetadataRegistry`. This ensures that
     // the information about the directive is available during the compile() phase.
     const ref = new Reference(node);

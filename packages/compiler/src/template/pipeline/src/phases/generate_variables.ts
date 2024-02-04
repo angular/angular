@@ -54,6 +54,7 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope|nu
         }
         break;
       case ir.OpKind.Listener:
+      case ir.OpKind.TwoWayListener:
         // Prepend variables to listener handler functions.
         op.handlerOps.prepend(generateVariablesInScopeForView(view, scope));
         break;

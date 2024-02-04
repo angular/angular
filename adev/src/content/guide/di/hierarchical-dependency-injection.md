@@ -1143,7 +1143,7 @@ graph BT;
 subgraph A[" "]
 direction LR
 RootInjector["(A) RootInjector"]
-ServicesA["CarService, EngineService, TitleService"]
+ServicesA["CarService, EngineService, TiresService"]
 end
 
 subgraph B[" "]

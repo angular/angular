@@ -125,8 +125,8 @@ export function ingestHostAttribute(
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
-  const [phase, target] = event.type === e.ParsedEventType.Regular ? [null, event.targetOrPhase] :
-                                                                     [event.targetOrPhase, null];
+  const [phase, target] = event.type !== e.ParsedEventType.Animation ? [null, event.targetOrPhase] :
+                                                                       [event.targetOrPhase, null];
   const eventBinding = ir.createListenerOp(
       job.root.xref, new ir.SlotHandle(), event.name, null,
       makeListenerHandlerOps(job.root, event.handler, event.handlerSpan), phase, target, true,
@@ -846,6 +846,7 @@ function convertAstWithInterpolation(
 // TODO: Can we populate Template binding kinds in ingest?
 const BINDING_KINDS = new Map<e.BindingType, ir.BindingKind>([
   [e.BindingType.Property, ir.BindingKind.Property],
+  [e.BindingType.TwoWay, ir.BindingKind.TwoWayProperty],
   [e.BindingType.Attribute, ir.BindingKind.Attribute],
   [e.BindingType.Class, ir.BindingKind.ClassName],
   [e.BindingType.Style, ir.BindingKind.StyleProperty],
@@ -894,6 +895,8 @@ function ingestElementBindings(
     unit: ViewCompilationUnit, op: ir.ElementOpBase, element: t.Element): void {
   let bindings = new Array<ir.BindingOp|ir.ExtractedAttributeOp|null>();
 
+  let i18nAttributeBindingNames = new Set<string>();
+
   for (const attr of element.attributes) {
     // Attribute literal bindings, such as `attr.foo="bar"`.
     const securityContext = domSchema.securityContext(element.name, attr.name, true);
@@ -901,9 +904,17 @@ function ingestElementBindings(
         op.xref, ir.BindingKind.Attribute, attr.name,
         convertAstWithInterpolation(unit.job, attr.value, attr.i18n), null, securityContext, true,
         false, null, asMessage(attr.i18n), attr.sourceSpan));
+    if (attr.i18n) {
+      i18nAttributeBindingNames.add(attr.name);
+    }
   }
 
   for (const input of element.inputs) {
+    if (i18nAttributeBindingNames.has(input.name)) {
+      console.error(`On component ${unit.job.componentName}, the binding ${
+          input
+              .name} is both an i18n attribute and a property. You may want to remove the property binding. This will become a compilation error in future versions of Angular.`);
+    }
     // All dynamic bindings (both attribute and property bindings).
     bindings.push(ir.createBindingOp(
         op.xref, BINDING_KINDS.get(input.type)!, input.name,
@@ -921,10 +932,17 @@ function ingestElementBindings(
       throw Error('Animation listener should have a phase');
     }
 
-    unit.create.push(ir.createListenerOp(
-        op.xref, op.handle, output.name, op.tag,
-        makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
-        output.target, false, output.sourceSpan));
+    if (output.type === e.ParsedEventType.TwoWay) {
+      unit.create.push(ir.createTwoWayListenerOp(
+          op.xref, op.handle, output.name, op.tag,
+          makeTwoWayListenerHandlerOps(unit, output.handler, output.handlerSpan),
+          output.sourceSpan));
+    } else {
+      unit.create.push(ir.createListenerOp(
+          op.xref, op.handle, output.name, op.tag,
+          makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
+          output.target, false, output.sourceSpan));
+    }
   }
 
   // If any of the bindings on this element have an i18n message, then an i18n attrs configuration
@@ -982,10 +1000,17 @@ function ingestTemplateBindings(
     }
 
     if (templateKind === ir.TemplateKind.NgTemplate) {
-      unit.create.push(ir.createListenerOp(
-          op.xref, op.handle, output.name, op.tag,
-          makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
-          output.target, false, output.sourceSpan));
+      if (output.type === e.ParsedEventType.TwoWay) {
+        unit.create.push(ir.createTwoWayListenerOp(
+            op.xref, op.handle, output.name, op.tag,
+            makeTwoWayListenerHandlerOps(unit, output.handler, output.handlerSpan),
+            output.sourceSpan));
+      } else {
+        unit.create.push(ir.createListenerOp(
+            op.xref, op.handle, output.name, op.tag,
+            makeListenerHandlerOps(unit, output.handler, output.handlerSpan), output.phase,
+            output.target, false, output.sourceSpan));
+      }
     }
     if (templateKind === ir.TemplateKind.Structural &&
         output.type !== e.ParsedEventType.Animation) {
@@ -1041,15 +1066,22 @@ function createTemplateBinding(
   // If this is a structural template, then several kinds of bindings should not result in an
   // update instruction.
   if (templateKind === ir.TemplateKind.Structural) {
-    if (!isStructuralTemplateAttribute &&
-        (type === e.BindingType.Property || type === e.BindingType.Class ||
-         type === e.BindingType.Style)) {
-      // Because this binding doesn't really target the ng-template, it must be a binding on an
-      // inner node of a structural template. We can't skip it entirely, because we still need it on
-      // the ng-template's consts (e.g. for the purposes of directive matching). However, we should
-      // not generate an update instruction for it.
-      return ir.createExtractedAttributeOp(
-          xref, ir.BindingKind.Property, null, name, null, null, i18nMessage, securityContext);
+    if (!isStructuralTemplateAttribute) {
+      switch (type) {
+        case e.BindingType.Property:
+        case e.BindingType.Class:
+        case e.BindingType.Style:
+          // Because this binding doesn't really target the ng-template, it must be a binding on an
+          // inner node of a structural template. We can't skip it entirely, because we still need
+          // it on the ng-template's consts (e.g. for the purposes of directive matching). However,
+          // we should not generate an update instruction for it.
+          return ir.createExtractedAttributeOp(
+              xref, ir.BindingKind.Property, null, name, null, null, i18nMessage, securityContext);
+        case e.BindingType.TwoWay:
+          return ir.createExtractedAttributeOp(
+              xref, ir.BindingKind.TwoWayProperty, null, name, null, null, i18nMessage,
+              securityContext);
+      }
     }
 
     if (!isTextBinding && (type === e.BindingType.Attribute || type === e.BindingType.Animation)) {
@@ -1105,6 +1137,29 @@ function makeListenerHandlerOps(
   handlerOps.push(...expressions.map(
       e => ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(e, e.sourceSpan))));
   handlerOps.push(ir.createStatementOp(new o.ReturnStatement(returnExpr, returnExpr.sourceSpan)));
+  return handlerOps;
+}
+
+function makeTwoWayListenerHandlerOps(
+    unit: CompilationUnit, handler: e.AST, handlerSpan: ParseSourceSpan): ir.UpdateOp[] {
+  handler = astOf(handler);
+  const handlerOps = new Array<ir.UpdateOp>();
+
+  if (handler instanceof e.Chain) {
+    if (handler.expressions.length === 1) {
+      handler = handler.expressions[0];
+    } else {
+      // This is validated during parsing already, but we do it here just in case.
+      throw new Error('Expected two-way listener to have a single expression.');
+    }
+  }
+
+  const handlerExpr = convertAst(handler, unit.job, handlerSpan);
+  const eventReference = new ir.LexicalReadExpr('$event');
+  const twoWaySetExpr = new ir.TwoWayBindingSetExpr(handlerExpr, eventReference);
+
+  handlerOps.push(ir.createStatementOp<ir.UpdateOp>(new o.ExpressionStatement(twoWaySetExpr)));
+  handlerOps.push(ir.createStatementOp(new o.ReturnStatement(eventReference)));
   return handlerOps;
 }
 

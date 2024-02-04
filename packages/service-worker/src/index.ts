@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {NoNewVersionDetectedEvent, UnrecoverableStateEvent, VersionDetectedEvent, VersionEvent, VersionInstallationFailedEvent, VersionReadyEvent} from './low_level';
+export {
+  NoNewVersionDetectedEvent,
+  UnrecoverableStateEvent,
+  VersionDetectedEvent,
+  VersionEvent,
+  VersionInstallationFailedEvent,
+  VersionReadyEvent,
+} from './low_level';
 export {ServiceWorkerModule} from './module';
 export {provideServiceWorker, SwRegistrationOptions} from './provider';
 export {SwPush} from './push';

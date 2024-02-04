@@ -471,9 +471,6 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
-    "name": "RadioControlRegistryModule"
-  },
-  {
     "name": "ReactiveFormsComponent"
   },
   {
@@ -907,6 +904,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -1663,6 +1663,9 @@
   },
   {
     "name": "shouldAddViewToDom"
+  },
+  {
+    "name": "shouldRecheckView"
   },
   {
     "name": "shouldSearchParent"

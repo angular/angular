@@ -19,6 +19,15 @@ export interface ComponentType {
   id: number;
 }
 
+export type HydrationStatus =
+  | null
+  | {status: 'hydrated' | 'skipped'}
+  | {
+      status: 'mismatched';
+      expectedNodeDetails: string | null;
+      actualNodeDetails: string | null;
+    };
+
 export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> {
   element: string;
   directives: DirType[];
@@ -26,6 +35,7 @@ export interface DevToolsNode<DirType = DirectiveType, CmpType = ComponentType> 
   children: DevToolsNode<DirType, CmpType>[];
   nativeElement?: Node;
   resolutionPath?: SerializedInjector[];
+  hydration: HydrationStatus;
 }
 
 export interface SerializedInjector {
@@ -218,6 +228,7 @@ export interface Events {
     version: string | undefined | boolean;
     devMode: boolean;
     ivy: boolean;
+    hydration: boolean;
   }) => void;
 
   inspectorStart: () => void;
@@ -243,6 +254,9 @@ export interface Events {
 
   createHighlightOverlay: (position: ElementPosition) => void;
   removeHighlightOverlay: () => void;
+
+  createHydrationOverlay: () => void;
+  removeHydrationOverlay: () => void;
 
   highlightComponent: (id: number) => void;
   selectComponent: (id: number) => void;

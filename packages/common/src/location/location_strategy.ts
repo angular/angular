@@ -40,7 +40,7 @@ export abstract class LocationStrategy {
   abstract forward(): void;
   abstract back(): void;
   historyGo?(relativePosition: number): void {
-    throw new Error('Not implemented');
+    throw new Error(ngDevMode ? 'Not implemented' : '');
   }
   abstract onPopState(fn: LocationChangeListener): void;
   abstract getBaseHref(): string;
@@ -69,7 +69,7 @@ export abstract class LocationStrategy {
  *
  * @publicApi
  */
-export const APP_BASE_HREF = new InjectionToken<string>('appBaseHref');
+export const APP_BASE_HREF = new InjectionToken<string>(ngDevMode ? 'appBaseHref' : '');
 
 /**
  * @description
@@ -108,12 +108,16 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
   private _removeListenerFns: (() => void)[] = [];
 
   constructor(
-      private _platformLocation: PlatformLocation,
-      @Optional() @Inject(APP_BASE_HREF) href?: string) {
+    private _platformLocation: PlatformLocation,
+    @Optional() @Inject(APP_BASE_HREF) href?: string,
+  ) {
     super();
 
-    this._baseHref = href ?? this._platformLocation.getBaseHrefFromDOM() ??
-        inject(DOCUMENT).location?.origin ?? '';
+    this._baseHref =
+      href ??
+      this._platformLocation.getBaseHrefFromDOM() ??
+      inject(DOCUMENT).location?.origin ??
+      '';
   }
 
   /** @nodoc */
@@ -125,7 +129,9 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
 
   override onPopState(fn: LocationChangeListener): void {
     this._removeListenerFns.push(
-        this._platformLocation.onPopState(fn), this._platformLocation.onHashChange(fn));
+      this._platformLocation.onPopState(fn),
+      this._platformLocation.onHashChange(fn),
+    );
   }
 
   override getBaseHref(): string {
@@ -138,7 +144,7 @@ export class PathLocationStrategy extends LocationStrategy implements OnDestroy 
 
   override path(includeHash: boolean = false): string {
     const pathname =
-        this._platformLocation.pathname + normalizeQueryParams(this._platformLocation.search);
+      this._platformLocation.pathname + normalizeQueryParams(this._platformLocation.search);
     const hash = this._platformLocation.hash;
     return hash && includeHash ? `${pathname}${hash}` : pathname;
   }

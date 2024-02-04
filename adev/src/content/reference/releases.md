@@ -109,7 +109,7 @@ As a general rule, a fix is considered for an LTS version if it resolves one of:
 
 ## Deprecation policy
 
-When the Angular team intends to remove an API or feature, it will be marked as *deprecated*. This occurs when when an API is obsolete, superseded by another API, or otherwise discontinued. Deprecated API remain available through their deprecated phase, which lasts a minimum two major versions (approximately one year).
+When the Angular team intends to remove an API or feature, it will be marked as *deprecated*. This occurs when an API is obsolete, superseded by another API, or otherwise discontinued. Deprecated API remain available through their deprecated phase, which lasts a minimum two major versions (approximately one year).
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 

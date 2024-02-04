@@ -133,7 +133,7 @@ import {isPromise, isSubscribable} from '../util/lang';
  */
 export const APP_INITIALIZER =
     new InjectionToken<ReadonlyArray<() => Observable<unknown>| Promise<unknown>| void>>(
-        'Application Initializer');
+        ngDevMode ? 'Application Initializer' : '');
 
 /**
  * A class that reflects the state of running {@link APP_INITIALIZER} functions.

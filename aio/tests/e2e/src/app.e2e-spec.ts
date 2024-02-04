@@ -75,7 +75,7 @@ describe('site App', () => {
   it('should render `{@example}` dgeni tags as `<code-example>` elements with HTML escaped content', async () => {
     await page.navigateTo('api/common/NgIf');
     const codeExample = element.all(by.css('code-example[region="NgIfSimple"]')).first();
-    expect(await page.getInnerHtml(codeExample)).toContain('&lt;br&gt;');
+    expect(await page.getInnerHtml(codeExample)).toContain('&lt;br /&gt;');
   });
 
   describe('scrolling to the top', () => {
@@ -203,27 +203,6 @@ describe('site App', () => {
       const results = await page.getSearchResults();
 
       expect(results).toContain('common/http package');
-    });
-  });
-
-  describe('suggest edit link', () => {
-    it('should be present on all docs pages', async () => {
-      await page.navigateTo('tutorial/tour-of-heroes/toh-pt1');
-      expect(await page.ghLinks.count()).toEqual(1);
-      /* eslint-disable max-len */
-      expect(await page.ghLinks.get(0).getAttribute('href'))
-        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/main\/aio\/content\/tutorial\/tour-of-heroes\/toh-pt1\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
-
-      await page.navigateTo('guide/router');
-      expect(await page.ghLinks.count()).toEqual(1);
-      expect(await page.ghLinks.get(0).getAttribute('href'))
-        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/main\/aio\/content\/guide\/router\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
-      /* eslint-enable max-len */
-    });
-
-    it('should not be present on top level pages', async () => {
-      await page.navigateTo('features');
-      expect(await page.ghLinks.count()).toEqual(0);
     });
   });
 });

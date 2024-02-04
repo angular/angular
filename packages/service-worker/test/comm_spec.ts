@@ -8,11 +8,23 @@
 
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {NgswCommChannel, NoNewVersionDetectedEvent, VersionDetectedEvent, VersionEvent, VersionReadyEvent} from '@angular/service-worker/src/low_level';
+import {
+  NgswCommChannel,
+  NoNewVersionDetectedEvent,
+  VersionDetectedEvent,
+  VersionEvent,
+  VersionReadyEvent,
+} from '@angular/service-worker/src/low_level';
 import {ngswCommChannelFactory, SwRegistrationOptions} from '@angular/service-worker/src/provider';
 import {SwPush} from '@angular/service-worker/src/push';
 import {SwUpdate} from '@angular/service-worker/src/update';
-import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '@angular/service-worker/testing/mock';
+import {
+  MockPushManager,
+  MockPushSubscription,
+  MockServiceWorkerContainer,
+  MockServiceWorkerRegistration,
+  patchDecodeBase64,
+} from '@angular/service-worker/testing/mock';
 import {filter} from 'rxjs/operators';
 
 describe('ServiceWorker library', () => {
@@ -25,7 +37,7 @@ describe('ServiceWorker library', () => {
   });
 
   describe('NgswCommsChannel', () => {
-    it('can access the registration when it comes before subscription', done => {
+    it('can access the registration when it comes before subscription', (done) => {
       const mock = new MockServiceWorkerContainer();
       const comm = new NgswCommChannel(mock as any);
       const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
@@ -36,7 +48,7 @@ describe('ServiceWorker library', () => {
         done();
       });
     });
-    it('can access the registration when it comes after subscription', done => {
+    it('can access the registration when it comes after subscription', (done) => {
       const mock = new MockServiceWorkerContainer();
       const comm = new NgswCommChannel(mock as any);
       const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
@@ -54,26 +66,28 @@ describe('ServiceWorker library', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: PLATFORM_ID, useValue: 'server'},
-          {provide: SwRegistrationOptions, useValue: {enabled: true}}, {
+          {provide: SwRegistrationOptions, useValue: {enabled: true}},
+          {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID]
-          }
-        ]
+            deps: [SwRegistrationOptions, PLATFORM_ID],
+          },
+        ],
       });
 
       expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
     });
-    it('gives disabled NgswCommChannel when \'enabled\' option is false', () => {
+    it("gives disabled NgswCommChannel when 'enabled' option is false", () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: PLATFORM_ID, useValue: 'browser'},
-          {provide: SwRegistrationOptions, useValue: {enabled: false}}, {
+          {provide: SwRegistrationOptions, useValue: {enabled: false}},
+          {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID]
-          }
-        ]
+            deps: [SwRegistrationOptions, PLATFORM_ID],
+          },
+        ],
       });
 
       expect(TestBed.inject(NgswCommChannel).isEnabled).toEqual(false);
@@ -111,12 +125,13 @@ describe('ServiceWorker library', () => {
       TestBed.configureTestingModule({
         providers: [
           {provide: PLATFORM_ID, useValue: 'browser'},
-          {provide: SwRegistrationOptions, useValue: {enabled: true}}, {
+          {provide: SwRegistrationOptions, useValue: {enabled: true}},
+          {
             provide: NgswCommChannel,
             useFactory: ngswCommChannelFactory,
-            deps: [SwRegistrationOptions, PLATFORM_ID]
-          }
-        ]
+            deps: [SwRegistrationOptions, PLATFORM_ID],
+          },
+        ],
       });
 
       const context: any = globalThis;
@@ -142,7 +157,7 @@ describe('ServiceWorker library', () => {
     let push: SwPush;
 
     // Patch `SwPush.decodeBase64()` in Node.js (where `atob` is not available).
-    beforeAll(() => unpatchDecodeBase64 = patchDecodeBase64(SwPush.prototype as any));
+    beforeAll(() => (unpatchDecodeBase64 = patchDecodeBase64(SwPush.prototype as any)));
     afterAll(() => unpatchDecodeBase64());
 
     beforeEach(() => {
@@ -152,10 +167,7 @@ describe('ServiceWorker library', () => {
 
     it('is injectable', () => {
       TestBed.configureTestingModule({
-        providers: [
-          SwPush,
-          {provide: NgswCommChannel, useValue: comm},
-        ]
+        providers: [SwPush, {provide: NgswCommChannel, useValue: comm}],
       });
       expect(() => TestBed.inject(SwPush)).not.toThrow();
     });
@@ -171,7 +183,9 @@ describe('ServiceWorker library', () => {
 
       it('calls `PushManager.subscribe()` (with appropriate options)', async () => {
         const decode = (charCodeArr: Uint8Array) =>
-            Array.from(charCodeArr).map(c => String.fromCharCode(c)).join('');
+          Array.from(charCodeArr)
+            .map((c) => String.fromCharCode(c))
+            .join('');
 
         // atob('c3ViamVjdHM/') === 'subjects?'
         const serverPublicKey = 'c3ViamVjdHM_';
@@ -261,7 +275,7 @@ describe('ServiceWorker library', () => {
 
       it('does not emit on `SwPush.subscription` on failure', async () => {
         const subscriptionSpy = jasmine.createSpy('subscriptionSpy');
-        const initialSubEmit = new Promise(resolve => subscriptionSpy.and.callFake(resolve));
+        const initialSubEmit = new Promise((resolve) => subscriptionSpy.and.callFake(resolve));
 
         push.subscription.subscribe(subscriptionSpy);
         await initialSubEmit;
@@ -292,7 +306,7 @@ describe('ServiceWorker library', () => {
     describe('messages', () => {
       it('receives push messages', () => {
         const sendMessage = (type: string, message: string) =>
-            mock.sendMessage({type, data: {message}});
+          mock.sendMessage({type, data: {message}});
 
         const receivedMessages: string[] = [];
         push.messages.subscribe((msg: any) => receivedMessages.push(msg.message));
@@ -312,21 +326,19 @@ describe('ServiceWorker library', () => {
     describe('notificationClicks', () => {
       it('receives notification clicked messages', () => {
         const sendMessage = (type: string, action: string) =>
-            mock.sendMessage({type, data: {action}});
+          mock.sendMessage({type, data: {action}});
 
         const receivedMessages: string[] = [];
-        push.notificationClicks.subscribe(
-            (msg: {action: string}) => receivedMessages.push(msg.action));
+        push.notificationClicks.subscribe((msg: {action: string}) =>
+          receivedMessages.push(msg.action),
+        );
 
         sendMessage('NOTIFICATION_CLICK', 'this was a click');
         sendMessage('NOT_IFICATION_CLICK', 'this was not a click');
         sendMessage('NOTIFICATION_CLICK', 'this was a click too');
         sendMessage('KCILC_NOITACIFITON', 'this was a KCILC_NOITACIFITON message');
 
-        expect(receivedMessages).toEqual([
-          'this was a click',
-          'this was a click too',
-        ]);
+        expect(receivedMessages).toEqual(['this was a click', 'this was a click too']);
       });
     });
 
@@ -336,10 +348,10 @@ describe('ServiceWorker library', () => {
       let subscriptionSpy: jasmine.Spy;
 
       beforeEach(() => {
-        nextSubEmitPromise = new Promise(resolve => nextSubEmitResolve = resolve);
+        nextSubEmitPromise = new Promise((resolve) => (nextSubEmitResolve = resolve));
         subscriptionSpy = jasmine.createSpy('subscriptionSpy').and.callFake(() => {
           nextSubEmitResolve();
-          nextSubEmitPromise = new Promise(resolve => nextSubEmitResolve = resolve);
+          nextSubEmitPromise = new Promise((resolve) => (nextSubEmitResolve = resolve));
         });
 
         push.subscription.subscribe(subscriptionSpy);
@@ -392,19 +404,19 @@ describe('ServiceWorker library', () => {
       });
 
       it('does not crash on subscription to observables', () => {
-        push.messages.toPromise().catch(err => fail(err));
-        push.notificationClicks.toPromise().catch(err => fail(err));
-        push.subscription.toPromise().catch(err => fail(err));
+        push.messages.toPromise().catch((err) => fail(err));
+        push.notificationClicks.toPromise().catch((err) => fail(err));
+        push.subscription.toPromise().catch((err) => fail(err));
       });
 
-      it('gives an error when registering', done => {
-        push.requestSubscription({serverPublicKey: 'test'}).catch(err => {
+      it('gives an error when registering', (done) => {
+        push.requestSubscription({serverPublicKey: 'test'}).catch((err) => {
           done();
         });
       });
 
-      it('gives an error when unsubscribing', done => {
-        push.unsubscribe().catch(err => {
+      it('gives an error when unsubscribing', (done) => {
+        push.unsubscribe().catch((err) => {
           done();
         });
       });
@@ -417,15 +429,14 @@ describe('ServiceWorker library', () => {
       update = new SwUpdate(comm);
       mock.setupSw();
     });
-    it('processes update availability notifications when sent', done => {
+    it('processes update availability notifications when sent', (done) => {
       update.versionUpdates
-          .pipe(
-              filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
-          .subscribe(event => {
-            expect(event.currentVersion).toEqual({hash: 'A'});
-            expect(event.latestVersion).toEqual({hash: 'B'});
-            done();
-          });
+        .pipe(filter((evt: VersionEvent): evt is VersionReadyEvent => evt.type === 'VERSION_READY'))
+        .subscribe((event) => {
+          expect(event.currentVersion).toEqual({hash: 'A'});
+          expect(event.latestVersion).toEqual({hash: 'B'});
+          done();
+        });
       mock.sendMessage({
         type: 'VERSION_READY',
         currentVersion: {
@@ -436,8 +447,8 @@ describe('ServiceWorker library', () => {
         },
       });
     });
-    it('processes unrecoverable notifications when sent', done => {
-      update.unrecoverable.subscribe(event => {
+    it('processes unrecoverable notifications when sent', (done) => {
+      update.unrecoverable.subscribe((event) => {
         expect(event.reason).toEqual('Invalid Resource');
         expect(event.type).toEqual('UNRECOVERABLE_STATE');
         done();
@@ -445,8 +456,8 @@ describe('ServiceWorker library', () => {
       mock.sendMessage({type: 'UNRECOVERABLE_STATE', reason: 'Invalid Resource'});
     });
 
-    it('processes a no new version event when sent', done => {
-      update.versionUpdates.subscribe(event => {
+    it('processes a no new version event when sent', (done) => {
+      update.versionUpdates.subscribe((event) => {
         expect(event.type).toEqual('NO_NEW_VERSION_DETECTED');
         expect((event as NoNewVersionDetectedEvent).version).toEqual({hash: 'A'});
         done();
@@ -458,8 +469,8 @@ describe('ServiceWorker library', () => {
         },
       });
     });
-    it('process any version update event when sent', done => {
-      update.versionUpdates.subscribe(event => {
+    it('process any version update event when sent', (done) => {
+      update.versionUpdates.subscribe((event) => {
         expect(event.type).toEqual('VERSION_DETECTED');
         expect((event as VersionDetectedEvent).version).toEqual({hash: 'A'});
         done();
@@ -472,7 +483,7 @@ describe('ServiceWorker library', () => {
       });
     });
     it('activates updates when requested', async () => {
-      mock.messages.subscribe((msg: {action: string, nonce: number}) => {
+      mock.messages.subscribe((msg: {action: string; nonce: number}) => {
         expect(msg.action).toEqual('ACTIVATE_UPDATE');
         mock.sendMessage({
           type: 'OPERATION_COMPLETED',
@@ -483,7 +494,7 @@ describe('ServiceWorker library', () => {
       expect(await update.activateUpdate()).toBeTruthy();
     });
     it('reports activation failure when requested', async () => {
-      mock.messages.subscribe((msg: {action: string, nonce: number}) => {
+      mock.messages.subscribe((msg: {action: string; nonce: number}) => {
         expect(msg.action).toEqual('ACTIVATE_UPDATE');
         mock.sendMessage({
           type: 'OPERATION_COMPLETED',
@@ -495,10 +506,7 @@ describe('ServiceWorker library', () => {
     });
     it('is injectable', () => {
       TestBed.configureTestingModule({
-        providers: [
-          SwUpdate,
-          {provide: NgswCommChannel, useValue: comm},
-        ]
+        providers: [SwUpdate, {provide: NgswCommChannel, useValue: comm}],
       });
       expect(() => TestBed.inject(SwUpdate)).not.toThrow();
     });
@@ -511,18 +519,18 @@ describe('ServiceWorker library', () => {
       });
       it('does not crash on subscription to observables', () => {
         update = new SwUpdate(comm);
-        update.unrecoverable.toPromise().catch(err => fail(err));
-        update.versionUpdates.toPromise().catch(err => fail(err));
+        update.unrecoverable.toPromise().catch((err) => fail(err));
+        update.versionUpdates.toPromise().catch((err) => fail(err));
       });
-      it('gives an error when checking for updates', done => {
+      it('gives an error when checking for updates', (done) => {
         update = new SwUpdate(comm);
-        update.checkForUpdate().catch(err => {
+        update.checkForUpdate().catch((err) => {
           done();
         });
       });
-      it('gives an error when activating updates', done => {
+      it('gives an error when activating updates', (done) => {
         update = new SwUpdate(comm);
-        update.activateUpdate().catch(err => {
+        update.activateUpdate().catch((err) => {
           done();
         });
       });

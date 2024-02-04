@@ -20,7 +20,7 @@ export function throwCyclicDependencyError(token: string, path?: string[]): neve
   const depPath = path ? `. Dependency path: ${path.join(' > ')} > ${token}` : '';
   throw new RuntimeError(
       RuntimeErrorCode.CYCLIC_DI_DEPENDENCY,
-      `Circular dependency in DI detected for ${token}${depPath}`);
+      ngDevMode ? `Circular dependency in DI detected for ${token}${depPath}` : token);
 }
 
 export function throwMixedMultiProviderError() {

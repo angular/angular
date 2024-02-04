@@ -54,7 +54,7 @@ export const appConfig: ApplicationConfig = {
 
 <a id="example-config"></a>
 
-The `routes` array of routes describes how to navigate.
+The `appRoutes` array of routes describes how to navigate.
 Pass it to the `provideRouter` method in the `ApplicationConfig` `providers` to configure the router.
 
 Each `Route` maps a URL `path` to a component.

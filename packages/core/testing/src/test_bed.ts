@@ -13,6 +13,7 @@
 /* clang-format off */
 import {
   Component,
+  ComponentRef,
   Directive,
   EnvironmentInjector,
   InjectFlags,
@@ -25,6 +26,7 @@ import {
   ProviderToken,
   runInInjectionContext,
   Type,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵconvertToBitFlags as convertToBitFlags,
   ɵDeferBlockBehavior as DeferBlockBehavior,
   ɵEffectScheduler as EffectScheduler,
@@ -45,12 +47,10 @@ import {
 
 
 
-import {ComponentFixture} from './component_fixture';
+import {ComponentFixture, PseudoApplicationComponentFixture, ScheduledComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
+import {ComponentFixtureNoNgZone, DEFER_BLOCK_DEFAULT_BEHAVIOR, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
 import {TestBedCompiler} from './test_bed_compiler';
-
-const DEFER_BLOCK_DEFAULT_BEHAVIOR = DeferBlockBehavior.Playthrough;
 
 /**
  * Static methods implemented by the `TestBed`.
@@ -634,8 +634,15 @@ export class TestBedImpl implements TestBed {
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
       const componentRef =
-          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef);
-      return this.runInInjectionContext(() => new ComponentFixture<any>(componentRef));
+          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef) as
+          ComponentRef<T>;
+      return this.runInInjectionContext(() => {
+        const hasScheduler = this.inject(ChangeDetectionScheduler, null) !== null;
+        const fixture = hasScheduler ? new ScheduledComponentFixture(componentRef) :
+                                       new PseudoApplicationComponentFixture(componentRef);
+        fixture.initialize();
+        return fixture;
+      });
     };
     const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
     const ngZone = noNgZone ? null : this.inject(NgZone, null);

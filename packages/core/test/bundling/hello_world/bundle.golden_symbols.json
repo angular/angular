@@ -507,6 +507,9 @@
     "name": "detectChangesInViewIfAttached"
   },
   {
+    "name": "detectChangesInternal"
+  },
+  {
     "name": "diPublicInInjector"
   },
   {
@@ -880,6 +883,9 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "shouldRecheckView"
   },
   {
     "name": "shouldSearchParent"

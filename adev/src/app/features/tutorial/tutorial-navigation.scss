@@ -1,6 +1,6 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
-// horizozntal tutorial nav bar
+// horizontal tutorial nav bar
 .adev-tutorial-nav-container {
   position: sticky;
   top: 0;
@@ -21,7 +21,7 @@
   transition: background-color 0.3s ease;
   container: nav-container / inline-size;
 
-  &:has(.adev-reveal-answer-button) {
+  &:has(.docs-reveal-answer-button) {
     @container tutorial-content (max-width: 430px) {
       padding-block-end: calc(1.5rem + 85px);
     }
@@ -115,7 +115,7 @@
   }
 }
 
-.adev-reveal-answer-button {
+.docs-reveal-answer-button {
   height: 2.875rem;
   width: 120px;
 }

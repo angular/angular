@@ -7,7 +7,15 @@
  */
 
 import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '@angular/common';
-import {EnvironmentInjector, Inject, inject, Injectable, InjectionToken, PLATFORM_ID, runInInjectionContext} from '@angular/core';
+import {
+  EnvironmentInjector,
+  Inject,
+  inject,
+  Injectable,
+  InjectionToken,
+  PLATFORM_ID,
+  runInInjectionContext,
+} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {HttpHandler} from './backend';
@@ -15,16 +23,16 @@ import {HttpHandlerFn, HttpInterceptor} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
-export const XSRF_ENABLED = new InjectionToken<boolean>('XSRF_ENABLED');
+export const XSRF_ENABLED = new InjectionToken<boolean>(ngDevMode ? 'XSRF_ENABLED' : '');
 
 export const XSRF_DEFAULT_COOKIE_NAME = 'XSRF-TOKEN';
-export const XSRF_COOKIE_NAME = new InjectionToken<string>('XSRF_COOKIE_NAME', {
+export const XSRF_COOKIE_NAME = new InjectionToken<string>(ngDevMode ? 'XSRF_COOKIE_NAME' : '', {
   providedIn: 'root',
   factory: () => XSRF_DEFAULT_COOKIE_NAME,
 });
 
 export const XSRF_DEFAULT_HEADER_NAME = 'X-XSRF-TOKEN';
-export const XSRF_HEADER_NAME = new InjectionToken<string>('XSRF_HEADER_NAME', {
+export const XSRF_HEADER_NAME = new InjectionToken<string>(ngDevMode ? 'XSRF_HEADER_NAME' : '', {
   providedIn: 'root',
   factory: () => XSRF_DEFAULT_HEADER_NAME,
 });
@@ -40,7 +48,7 @@ export abstract class HttpXsrfTokenExtractor {
    *
    * Will be called for every request, so the token may change between requests.
    */
-  abstract getToken(): string|null;
+  abstract getToken(): string | null;
 }
 
 /**
@@ -49,7 +57,7 @@ export abstract class HttpXsrfTokenExtractor {
 @Injectable()
 export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
   private lastCookieString: string = '';
-  private lastToken: string|null = null;
+  private lastToken: string | null = null;
 
   /**
    * @internal for testing
@@ -57,10 +65,12 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
   parseCount: number = 0;
 
   constructor(
-      @Inject(DOCUMENT) private doc: any, @Inject(PLATFORM_ID) private platform: string,
-      @Inject(XSRF_COOKIE_NAME) private cookieName: string) {}
+    @Inject(DOCUMENT) private doc: any,
+    @Inject(PLATFORM_ID) private platform: string,
+    @Inject(XSRF_COOKIE_NAME) private cookieName: string,
+  ) {}
 
-  getToken(): string|null {
+  getToken(): string | null {
     if (this.platform === 'server') {
       return null;
     }
@@ -75,14 +85,21 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
 }
 
 export function xsrfInterceptorFn(
-    req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
   const lcUrl = req.url.toLowerCase();
   // Skip both non-mutating requests and absolute URLs.
   // Non-mutating requests don't require a token, and absolute URLs require special handling
   // anyway as the cookie set
   // on our origin is not the same as the token expected by another origin.
-  if (!inject(XSRF_ENABLED) || req.method === 'GET' || req.method === 'HEAD' ||
-      lcUrl.startsWith('http://') || lcUrl.startsWith('https://')) {
+  if (
+    !inject(XSRF_ENABLED) ||
+    req.method === 'GET' ||
+    req.method === 'HEAD' ||
+    lcUrl.startsWith('http://') ||
+    lcUrl.startsWith('https://')
+  ) {
     return next(req);
   }
 
@@ -104,9 +121,8 @@ export class HttpXsrfInterceptor implements HttpInterceptor {
   constructor(private injector: EnvironmentInjector) {}
 
   intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return runInInjectionContext(
-        this.injector,
-        () =>
-            xsrfInterceptorFn(initialRequest, downstreamRequest => next.handle(downstreamRequest)));
+    return runInInjectionContext(this.injector, () =>
+      xsrfInterceptorFn(initialRequest, (downstreamRequest) => next.handle(downstreamRequest)),
+    );
   }
 }

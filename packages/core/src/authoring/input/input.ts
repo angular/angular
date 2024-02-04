@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createInputSignal, InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal} from './input_signal';
+import {createInputSignal, InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal, InputSignalWithTransform} from './input_signal';
 import {REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 export function inputFunction<ReadT, WriteT>(
     initialValue?: ReadT,
-    opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
+    opts?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT|undefined, WriteT> {
   return createInputSignal(initialValue, opts);
 }
 
 export function inputRequiredFunction<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>):
-    InputSignal<ReadT, WriteT> {
+    InputSignalWithTransform<ReadT, WriteT> {
   return createInputSignal(REQUIRED_UNSET_VALUE as never, opts);
 }
 
@@ -56,7 +56,7 @@ export interface InputFunction {
   <ReadT>(): InputSignal<ReadT|undefined>;
   <ReadT>(initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
   <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>):
-      InputSignal<ReadT, WriteT>;
+      InputSignalWithTransform<ReadT, WriteT>;
 
   /**
    * Initializes a required input.
@@ -68,7 +68,9 @@ export interface InputFunction {
    */
   required: {
     <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-    <ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
+
+    <ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>):
+        InputSignalWithTransform<ReadT, WriteT>;
   };
 }
 

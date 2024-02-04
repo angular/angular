@@ -741,6 +741,9 @@
     "name": "detectChangesInViewIfAttached"
   },
   {
+    "name": "detectChangesInternal"
+  },
+  {
     "name": "diPublicInInjector"
   },
   {
@@ -1857,6 +1860,9 @@
     "name": "init_trusted_types_bypass"
   },
   {
+    "name": "init_two_way"
+  },
+  {
     "name": "init_type"
   },
   {
@@ -2254,6 +2260,9 @@
   },
   {
     "name": "shimStylesContent"
+  },
+  {
+    "name": "shouldRecheckView"
   },
   {
     "name": "shouldSearchParent"

@@ -6,5 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const win = typeof window !== 'undefined' && window || <any>{};
-export {win as window};
+export {provideFakePlatformNavigation as ɵprovideFakePlatformNavigation} from './navigation/provide_fake_platform_navigation';

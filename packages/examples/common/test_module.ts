@@ -16,13 +16,15 @@ import * as ngTemplateOutletExample from './ngTemplateOutlet/ts/module';
 import * as pipesExample from './pipes/ts/module';
 
 @Component({selector: 'example-app:not(y)', template: '<router-outlet></router-outlet>'})
-export class TestsAppComponent {
-}
+export class TestsAppComponent {}
 
 @NgModule({
   imports: [
-    locationExample.AppModule, ngComponentOutletExample.AppModule, ngIfExample.AppModule,
-    ngTemplateOutletExample.AppModule, pipesExample.AppModule,
+    locationExample.AppModule,
+    ngComponentOutletExample.AppModule,
+    ngIfExample.AppModule,
+    ngTemplateOutletExample.AppModule,
+    pipesExample.AppModule,
 
     // Router configuration so that the individual e2e tests can load their
     // app components.
@@ -32,10 +34,9 @@ export class TestsAppComponent {
       {path: 'ngIf', component: ngIfExample.AppComponent},
       {path: 'ngTemplateOutlet', component: ngTemplateOutletExample.AppComponent},
       {path: 'pipes', component: pipesExample.AppComponent},
-    ])
+    ]),
   ],
   declarations: [TestsAppComponent],
-  bootstrap: [TestsAppComponent]
+  bootstrap: [TestsAppComponent],
 })
-export class TestsAppModule {
-}
+export class TestsAppModule {}

@@ -7,11 +7,11 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Directive, ElementRef, forwardRef, Inject, InjectionToken, Optional, Renderer2} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Inject, InjectionToken, Optional, Provider, Renderer2} from '@angular/core';
 
 import {BaseControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const DEFAULT_VALUE_ACCESSOR: any = {
+export const DEFAULT_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => DefaultValueAccessor),
   multi: true
@@ -32,7 +32,8 @@ function _isAndroid(): boolean {
  * the "compositionend" event occurs.
  * @publicApi
  */
-export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionEventMode');
+export const COMPOSITION_BUFFER_MODE =
+    new InjectionToken<boolean>(ngDevMode ? 'CompositionEventMode' : '');
 
 /**
  * The default `ControlValueAccessor` for writing a value and listening to changes on input

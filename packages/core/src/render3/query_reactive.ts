@@ -46,6 +46,10 @@ function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
   }
   (signalFn as any)[SIGNAL] = node;
 
+  if (ngDevMode) {
+    signalFn.toString = () => `[Query Signal]`;
+  }
+
   return signalFn;
 }
 

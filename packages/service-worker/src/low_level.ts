@@ -21,7 +21,7 @@ export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not support
  */
 export interface NoNewVersionDetectedEvent {
   type: 'NO_NEW_VERSION_DETECTED';
-  version: {hash: string; appData?: Object;};
+  version: {hash: string; appData?: Object};
 }
 
 /**
@@ -34,7 +34,7 @@ export interface NoNewVersionDetectedEvent {
  */
 export interface VersionDetectedEvent {
   type: 'VERSION_DETECTED';
-  version: {hash: string; appData?: object;};
+  version: {hash: string; appData?: object};
 }
 
 /**
@@ -47,7 +47,7 @@ export interface VersionDetectedEvent {
  */
 export interface VersionInstallationFailedEvent {
   type: 'VERSION_INSTALLATION_FAILED';
-  version: {hash: string; appData?: object;};
+  version: {hash: string; appData?: object};
   error: string;
 }
 
@@ -60,10 +60,9 @@ export interface VersionInstallationFailedEvent {
  */
 export interface VersionReadyEvent {
   type: 'VERSION_READY';
-  currentVersion: {hash: string; appData?: object;};
-  latestVersion: {hash: string; appData?: object;};
+  currentVersion: {hash: string; appData?: object};
+  latestVersion: {hash: string; appData?: object};
 }
-
 
 /**
  * A union of all event types that can be emitted by
@@ -72,7 +71,10 @@ export interface VersionReadyEvent {
  * @publicApi
  */
 export type VersionEvent =
-    VersionDetectedEvent|VersionInstallationFailedEvent|VersionReadyEvent|NoNewVersionDetectedEvent;
+  | VersionDetectedEvent
+  | VersionInstallationFailedEvent
+  | VersionReadyEvent
+  | NoNewVersionDetectedEvent;
 
 /**
  * An event emitted when the version of the app used by the service worker to serve this client is
@@ -100,21 +102,24 @@ export interface PushEvent {
   data: any;
 }
 
-export type IncomingEvent = UnrecoverableStateEvent|VersionEvent;
+export type IncomingEvent = UnrecoverableStateEvent | VersionEvent;
 
 export interface TypedEvent {
   type: string;
 }
 
-type OperationCompletedEvent = {
-  type: 'OPERATION_COMPLETED'; nonce: number; result: boolean;
-}|{
-  type: 'OPERATION_COMPLETED';
-  nonce: number;
-  result?: undefined;
-  error: string;
-};
-
+type OperationCompletedEvent =
+  | {
+      type: 'OPERATION_COMPLETED';
+      nonce: number;
+      result: boolean;
+    }
+  | {
+      type: 'OPERATION_COMPLETED';
+      nonce: number;
+      result?: undefined;
+      error: string;
+    };
 
 function errorObservable(message: string): Observable<any> {
   return defer(() => throwError(new Error(message)));
@@ -130,7 +135,7 @@ export class NgswCommChannel {
 
   readonly events: Observable<TypedEvent>;
 
-  constructor(private serviceWorker: ServiceWorkerContainer|undefined) {
+  constructor(private serviceWorker: ServiceWorkerContainer | undefined) {
     if (!serviceWorker) {
       this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
     } else {
@@ -142,11 +147,12 @@ export class NgswCommChannel {
       this.worker = controllerWithChanges.pipe(filter((c): c is ServiceWorker => !!c));
 
       this.registration = <Observable<ServiceWorkerRegistration>>(
-          this.worker.pipe(switchMap(() => serviceWorker.getRegistration())));
+        this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))
+      );
 
       const rawEvents = fromEvent<MessageEvent>(serviceWorker, 'message');
-      const rawEventPayload = rawEvents.pipe(map(event => event.data));
-      const eventsUnconnected = rawEventPayload.pipe(filter(event => event && event.type));
+      const rawEventPayload = rawEvents.pipe(map((event) => event.data));
+      const eventsUnconnected = rawEventPayload.pipe(filter((event) => event && event.type));
       const events = eventsUnconnected.pipe(publish()) as ConnectableObservable<IncomingEvent>;
       events.connect();
 
@@ -156,18 +162,24 @@ export class NgswCommChannel {
 
   postMessage(action: string, payload: Object): Promise<void> {
     return this.worker
-        .pipe(take(1), tap((sw: ServiceWorker) => {
-                sw.postMessage({
-                  action,
-                  ...payload,
-                });
-              }))
-        .toPromise()
-        .then(() => undefined);
+      .pipe(
+        take(1),
+        tap((sw: ServiceWorker) => {
+          sw.postMessage({
+            action,
+            ...payload,
+          });
+        }),
+      )
+      .toPromise()
+      .then(() => undefined);
   }
 
-  postMessageWithOperation(type: string, payload: Object, operationNonce: number):
-      Promise<boolean> {
+  postMessageWithOperation(
+    type: string,
+    payload: Object,
+    operationNonce: number,
+  ): Promise<boolean> {
     const waitForOperationCompleted = this.waitForOperationCompleted(operationNonce);
     const postMessage = this.postMessage(type, payload);
     return Promise.all([postMessage, waitForOperationCompleted]).then(([, result]) => result);
@@ -177,7 +189,7 @@ export class NgswCommChannel {
     return Math.round(Math.random() * 10000000);
   }
 
-  eventsOfType<T extends TypedEvent>(type: T['type']|T['type'][]): Observable<T> {
+  eventsOfType<T extends TypedEvent>(type: T['type'] | T['type'][]): Observable<T> {
     let filterFn: (event: TypedEvent) => event is T;
     if (typeof type === 'string') {
       filterFn = (event: TypedEvent): event is T => event.type === type;
@@ -193,13 +205,17 @@ export class NgswCommChannel {
 
   waitForOperationCompleted(nonce: number): Promise<boolean> {
     return this.eventsOfType<OperationCompletedEvent>('OPERATION_COMPLETED')
-               .pipe(filter(event => event.nonce === nonce), take(1), map(event => {
-                       if (event.result !== undefined) {
-                         return event.result;
-                       }
-                       throw new Error(event.error!);
-                     }))
-               .toPromise() as Promise<boolean>;
+      .pipe(
+        filter((event) => event.nonce === nonce),
+        take(1),
+        map((event) => {
+          if (event.result !== undefined) {
+            return event.result;
+          }
+          throw new Error(event.error!);
+        }),
+      )
+      .toPromise() as Promise<boolean>;
   }
 
   get isEnabled(): boolean {

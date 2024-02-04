@@ -171,10 +171,6 @@ To add a staging environment, create a copy of `src/environments/environment.ts`
       "fileReplacements": [
         {
           "replace": "src/environments/environment.ts",
-          "with": "src/environments/environment.development.ts"
-        },
-        {
-          "replace": "src/environments/environment.ts",
           "with": "src/environments/environment.staging.ts"
         }
       ]

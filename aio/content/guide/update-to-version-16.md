@@ -79,7 +79,7 @@ You can now mark component and directive inputs as _required_:
 
 ```typescript
 export class ColorPicker {
-  @Input({ required: true }) defaultColor: string;
+  @Input({ required: true }) defaultColor!: string;
 }
 ```
 
@@ -104,7 +104,7 @@ See [Version compatibility](/guide/versions) for full version compatibility deta
 
 ### Angular v16 requires TypeScript version 4.9 or later
 
-Angular v16 no longer supports TypeScript versions older than 4.9. [PR #49155](https://github.com/angular/angular/pull/49155)
+In Angular v16, TypeScript versions 4.9.3 up to, but not including 5.2.0, are supported, with no support for versions older than 4.9.3. [PR #49155](https://github.com/angular/angular/pull/49155)
 
 See [Version compatibility](/guide/versions) for full version compatibility details.
 

@@ -112,6 +112,9 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
         slots += op.expression.expressions.length;
       }
       return slots;
+    case ir.OpKind.TwoWayProperty:
+      // Two-way properties can only have expressions so they only need one variable slot.
+      return 1;
     case ir.OpKind.StyleProp:
     case ir.OpKind.ClassProp:
     case ir.OpKind.StyleMap:

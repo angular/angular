@@ -33,9 +33,12 @@ import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {assertNgModuleType} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
+import {ChangeDetectionMode, detectChangesInternal, MAXIMUM_REFRESH_RERUNS} from '../render3/instructions/change_detection';
+import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
 import {setJitOptions} from '../render3/jit/jit_options';
 import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
+import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {isPromise} from '../util/lang';
@@ -54,7 +57,8 @@ import {ApplicationInitStatus} from './application_init';
  * @publicApi
  */
 export const APP_BOOTSTRAP_LISTENER =
-    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
+    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>(
+        ngDevMode ? 'appBootstrapListener' : '');
 
 export function compileNgModuleFactory<M>(
     injector: Injector, options: CompilerOptions,
@@ -545,10 +549,10 @@ export class ApplicationRef {
 
     try {
       this._runningTick = true;
-      for (let view of this._views) {
-        view.detectChanges();
-      }
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+
+      this.detectChangesInAttachedViews();
+
+      if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
         for (let view of this._views) {
           view.checkNoChanges();
         }
@@ -557,20 +561,55 @@ export class ApplicationRef {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
       this.internalErrorHandler(e);
     } finally {
-      // Catch any `ExpressionChanged...` errors and report them to error handler like above
-      try {
-        const callbacksExecuted = this.afterRenderEffectManager.execute();
-        if ((typeof ngDevMode === 'undefined' || ngDevMode) && callbacksExecuted) {
-          for (let view of this._views) {
-            view.checkNoChanges();
-          }
-        }
-      } catch (e) {
-        this.internalErrorHandler(e);
-      }
-
       this._runningTick = false;
     }
+  }
+
+  private detectChangesInAttachedViews() {
+    let runs = 0;
+    do {
+      if (runs === MAXIMUM_REFRESH_RERUNS) {
+        throw new RuntimeError(
+            RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+            ngDevMode &&
+                'Changes in afterRender or afterNextRender hooks caused infinite change detection while refresh views.');
+      }
+
+      const isFirstPass = runs === 0;
+      for (let {_lView, notifyErrorHandler} of this._views) {
+        // When re-checking, only check views which actually need it.
+        if (!isFirstPass && !shouldRecheckView(_lView)) {
+          continue;
+        }
+        this.detectChangesInView(_lView, notifyErrorHandler, isFirstPass);
+      }
+      this.afterRenderEffectManager.execute();
+
+      runs++;
+    } while (this._views.some(({_lView}) => shouldRecheckView(_lView)));
+  }
+
+  private detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
+    let mode: ChangeDetectionMode;
+    if (isFirstPass) {
+      // The first pass is always in Global mode, which includes `CheckAlways` views.
+      mode = ChangeDetectionMode.Global;
+      // Add `RefreshView` flag to ensure this view is refreshed if not already dirty.
+      // `RefreshView` flag is used intentionally over `Dirty` because it gets cleared before
+      // executing any of the actual refresh code while the `Dirty` flag doesn't get cleared
+      // until the end of the refresh. Using `RefreshView` prevents creating a potential
+      // difference in the state of the LViewFlags during template execution.
+      lView[FLAGS] |= LViewFlags.RefreshView;
+    } else if (lView[FLAGS] & LViewFlags.Dirty) {
+      // The root view has been explicitly marked for check, so check it in Global mode.
+      mode = ChangeDetectionMode.Global;
+    } else {
+      // The view has not been marked for check, but contains a view marked for refresh
+      // (likely via a signal). Start this change detection in Targeted mode to skip the root
+      // view and check just the view(s) that need refreshed.
+      mode = ChangeDetectionMode.Targeted;
+    }
+    detectChangesInternal(lView, notifyErrorHandler, mode);
   }
 
   /**
@@ -724,4 +763,9 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
   applicationRef.onDestroy(() => whenStableStore?.delete(applicationRef));
 
   return whenStablePromise;
+}
+
+
+function shouldRecheckView(view: LView): boolean {
+  return requiresRefreshOrTraversal(view) || !!(view[FLAGS] & LViewFlags.Dirty);
 }

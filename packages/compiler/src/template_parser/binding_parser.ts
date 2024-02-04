@@ -7,7 +7,7 @@
  */
 
 import {SecurityContext} from '../core';
-import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
+import {AbsoluteSourceSpan, AST, ASTWithSource, Binary, BindingPipe, BindingType, BoundElementProperty, Conditional, EmptyExpr, KeyedRead, NonNullAssert, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, PrefixNot, PropertyRead, RecursiveAstVisitor, TemplateBinding, VariableBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/defaults';
 import {mergeNsAndName} from '../ml_parser/tags';
@@ -51,7 +51,7 @@ export class BindingParser {
       const expression = properties[propName];
       if (typeof expression === 'string') {
         this.parsePropertyBinding(
-            propName, expression, true, sourceSpan, sourceSpan.start.offset, undefined, [],
+            propName, expression, true, false, sourceSpan, sourceSpan.start.offset, undefined, [],
             // Use the `sourceSpan` for  `keySpan`. This isn't really accurate, but neither is the
             // sourceSpan, as it represents the sourceSpan of the host itself rather than the
             // source of the host binding (which doesn't exist in the template). Regardless,
@@ -169,7 +169,8 @@ export class BindingParser {
         const srcSpan = isIvyAst ? bindingSpan : sourceSpan;
         const valueSpan = moveParseSourceSpan(sourceSpan, binding.value.ast.sourceSpan);
         this._parsePropertyAst(
-            key, binding.value, srcSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
+            key, binding.value, false, srcSpan, keySpan, valueSpan, targetMatchableAttrs,
+            targetProps);
       } else {
         targetMatchableAttrs.push([key, '' /* value */]);
         // Since this is a literal attribute with no RHS, source span should be
@@ -239,8 +240,8 @@ export class BindingParser {
   }
 
   parsePropertyBinding(
-      name: string, expression: string, isHost: boolean, sourceSpan: ParseSourceSpan,
-      absoluteOffset: number, valueSpan: ParseSourceSpan|undefined,
+      name: string, expression: string, isHost: boolean, isPartOfAssignmentBinding: boolean,
+      sourceSpan: ParseSourceSpan, absoluteOffset: number, valueSpan: ParseSourceSpan|undefined,
       targetMatchableAttrs: string[][], targetProps: ParsedProperty[], keySpan: ParseSourceSpan) {
     if (name.length === 0) {
       this._reportError(`Property name is missing in binding`, sourceSpan);
@@ -272,7 +273,8 @@ export class BindingParser {
     } else {
       this._parsePropertyAst(
           name, this.parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
-          sourceSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
+          isPartOfAssignmentBinding, sourceSpan, keySpan, valueSpan, targetMatchableAttrs,
+          targetProps);
     }
   }
 
@@ -284,19 +286,21 @@ export class BindingParser {
     const expr = this.parseInterpolation(value, valueSpan || sourceSpan, interpolatedTokens);
     if (expr) {
       this._parsePropertyAst(
-          name, expr, sourceSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
+          name, expr, false, sourceSpan, keySpan, valueSpan, targetMatchableAttrs, targetProps);
       return true;
     }
     return false;
   }
 
   private _parsePropertyAst(
-      name: string, ast: ASTWithSource, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
-      valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      targetProps: ParsedProperty[]) {
+      name: string, ast: ASTWithSource, isPartOfAssignmentBinding: boolean,
+      sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan, valueSpan: ParseSourceSpan|undefined,
+      targetMatchableAttrs: string[][], targetProps: ParsedProperty[]) {
     targetMatchableAttrs.push([name, ast.source!]);
-    targetProps.push(
-        new ParsedProperty(name, ast, ParsedPropertyType.DEFAULT, sourceSpan, keySpan, valueSpan));
+    targetProps.push(new ParsedProperty(
+        name, ast,
+        isPartOfAssignmentBinding ? ParsedPropertyType.TWO_WAY : ParsedPropertyType.DEFAULT,
+        sourceSpan, keySpan, valueSpan));
   }
 
   private _parseAnimation(
@@ -387,7 +391,8 @@ export class BindingParser {
       boundPropertyName = mapPropertyName ? mappedPropName : boundProp.name;
       securityContexts = calcPossibleSecurityContexts(
           this._schemaRegistry, elementSelector, mappedPropName, false);
-      bindingType = BindingType.Property;
+      bindingType =
+          boundProp.type === ParsedPropertyType.TWO_WAY ? BindingType.TwoWay : BindingType.Property;
       if (!skipValidation) {
         this._validatePropertyOrAttributeName(mappedPropName, boundProp.sourceSpan, false);
       }
@@ -413,8 +418,7 @@ export class BindingParser {
         keySpan = moveParseSourceSpan(
             keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
       }
-      this._parseAnimationEvent(
-          name, expression, isAssignmentEvent, sourceSpan, handlerSpan, targetEvents, keySpan);
+      this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents, keySpan);
     } else {
       this._parseRegularEvent(
           name, expression, isAssignmentEvent, sourceSpan, handlerSpan, targetMatchableAttrs,
@@ -429,12 +433,12 @@ export class BindingParser {
   }
 
   private _parseAnimationEvent(
-      name: string, expression: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan,
-      handlerSpan: ParseSourceSpan, targetEvents: ParsedEvent[], keySpan: ParseSourceSpan) {
+      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
+      targetEvents: ParsedEvent[], keySpan: ParseSourceSpan) {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
-    const ast = this._parseAction(expression, isAssignmentEvent, handlerSpan);
+    const ast = this._parseAction(expression, handlerSpan);
     targetEvents.push(new ParsedEvent(
         eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan, keySpan));
 
@@ -459,25 +463,34 @@ export class BindingParser {
   private _parseRegularEvent(
       name: string, expression: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan,
       handlerSpan: ParseSourceSpan, targetMatchableAttrs: string[][], targetEvents: ParsedEvent[],
-      keySpan: ParseSourceSpan) {
+      keySpan: ParseSourceSpan): void {
     // long format: 'target: eventName'
     const [target, eventName] = splitAtColon(name, [null!, name]);
-    const ast = this._parseAction(expression, isAssignmentEvent, handlerSpan);
+    const prevErrorCount = this.errors.length;
+    const ast = this._parseAction(expression, handlerSpan);
+    const isValid = this.errors.length === prevErrorCount;
     targetMatchableAttrs.push([name!, ast.source!]);
+
+    // Don't try to validate assignment events if there were other
+    // parsing errors to avoid adding more noise to the error logs.
+    if (isAssignmentEvent && isValid && !this._isAllowedAssignmentEvent(ast)) {
+      this._reportError('Unsupported expression in a two-way binding', sourceSpan);
+    }
+
     targetEvents.push(new ParsedEvent(
-        eventName, target, ParsedEventType.Regular, ast, sourceSpan, handlerSpan, keySpan));
+        eventName, target, isAssignmentEvent ? ParsedEventType.TwoWay : ParsedEventType.Regular,
+        ast, sourceSpan, handlerSpan, keySpan));
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs
   }
 
-  private _parseAction(value: string, isAssignmentEvent: boolean, sourceSpan: ParseSourceSpan):
-      ASTWithSource {
+  private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown').toString();
     const absoluteOffset = (sourceSpan && sourceSpan.start) ? sourceSpan.start.offset : 0;
 
     try {
       const ast = this._exprParser.parseAction(
-          value, isAssignmentEvent, sourceInfo, absoluteOffset, this._interpolationConfig);
+          value, sourceInfo, absoluteOffset, this._interpolationConfig);
       if (ast) {
         this._reportExpressionParserErrors(ast.errors, sourceSpan);
       }
@@ -516,6 +529,31 @@ export class BindingParser {
     if (report.error) {
       this._reportError(report.msg!, sourceSpan, ParseErrorLevel.ERROR);
     }
+  }
+
+  /**
+   * Returns whether a parsed AST is allowed to be used within the event side of a two-way binding.
+   * @param ast Parsed AST to be checked.
+   */
+  private _isAllowedAssignmentEvent(ast: AST): boolean {
+    if (ast instanceof ASTWithSource) {
+      return this._isAllowedAssignmentEvent(ast.ast);
+    }
+
+    if (ast instanceof NonNullAssert) {
+      return this._isAllowedAssignmentEvent(ast.expression);
+    }
+
+    if (ast instanceof PropertyRead || ast instanceof KeyedRead) {
+      return true;
+    }
+
+    if (ast instanceof Binary) {
+      return (ast.operation === '&&' || ast.operation === '||' || ast.operation === '??') &&
+          (ast.right instanceof PropertyRead || ast.right instanceof KeyedRead);
+    }
+
+    return ast instanceof Conditional || ast instanceof PrefixNot;
   }
 }
 

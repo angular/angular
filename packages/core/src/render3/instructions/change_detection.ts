@@ -25,9 +25,10 @@ import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCo
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
  */
-const MAXIMUM_REFRESH_RERUNS = 100;
+export const MAXIMUM_REFRESH_RERUNS = 100;
 
-export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
+export function detectChangesInternal(
+    lView: LView, notifyErrorHandler = true, mode = ChangeDetectionMode.Global) {
   const environment = lView[ENVIRONMENT];
   const rendererFactory = environment.rendererFactory;
 
@@ -41,7 +42,7 @@ export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
   }
 
   try {
-    detectChangesInViewWhileDirty(lView);
+    detectChangesInViewWhileDirty(lView, mode);
   } catch (error) {
     if (notifyErrorHandler) {
       handleError(lView, error);
@@ -58,8 +59,8 @@ export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
   }
 }
 
-function detectChangesInViewWhileDirty(lView: LView) {
-  detectChangesInView(lView, ChangeDetectionMode.Global);
+function detectChangesInViewWhileDirty(lView: LView, mode: ChangeDetectionMode) {
+  detectChangesInView(lView, mode);
 
   let retries = 0;
   // If after running change detection, this view still needs to be refreshed or there are
@@ -99,7 +100,7 @@ export function checkNoChangesInternal(lView: LView, notifyErrorHandler = true) 
  * The change detection traversal algorithm switches between these modes based on various
  * conditions.
  */
-const enum ChangeDetectionMode {
+export const enum ChangeDetectionMode {
   /**
    * In `Global` mode, `Dirty` and `CheckAlways` views are refreshed as well as views with the
    * `RefreshView` flag.

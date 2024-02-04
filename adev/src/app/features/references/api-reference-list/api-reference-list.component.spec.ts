@@ -8,7 +8,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import ApiReferenceList from './api-reference-list.component';
+import ApiReferenceList, {ALL_STATUSES_KEY} from './api-reference-list.component';
 import {RouterTestingModule} from '@angular/router/testing';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import {signal} from '@angular/core';
@@ -94,5 +94,21 @@ describe('ApiReferenceList', () => {
     fixture.detectChanges();
 
     expect(component.filteredGroups()![0].items).toEqual([fakeItem2]);
+  });
+
+  it('should set selected type when provided type is different than selected', () => {
+    component.filterByItemType(ApiItemType.BLOCK);
+
+    expect(component.type()).toBe(ApiItemType.BLOCK);
+  });
+
+  it('should reset selected type when provided type is equal to selected', () => {
+    component.filterByItemType(ApiItemType.BLOCK);
+
+    expect(component.type()).toBe(ApiItemType.BLOCK);
+
+    component.filterByItemType(ApiItemType.BLOCK);
+
+    expect(component.type()).toBe(ALL_STATUSES_KEY);
   });
 });

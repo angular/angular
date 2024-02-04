@@ -15,7 +15,7 @@ import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, Fat
 import {DocEntry, DocsExtractor} from '../../docs';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
-import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, DeferredSymbolTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
+import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, DeferredSymbolTracker, ImportRewriter, LocalCompilationExtraImportsTracker, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
@@ -57,6 +57,11 @@ interface LazyCompilationState {
   templateTypeChecker: TemplateTypeChecker;
   resourceRegistry: ResourceRegistry;
   extendedTemplateChecker: ExtendedTemplateChecker|null;
+
+  /**
+   * Only available in local compilation mode when option `generateExtraImportsInLocalMode` is set.
+   */
+  localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|null;
 }
 
 
@@ -636,7 +641,8 @@ export class NgCompiler {
     const before = [
       ivyTransformFactory(
           compilation.traitCompiler, compilation.reflector, importRewriter, defaultImportTracker,
-          this.delegatingPerfRecorder, compilation.isCore, this.closureCompilerEnabled),
+          compilation.localCompilationExtraImportsTracker, this.delegatingPerfRecorder,
+          compilation.isCore, this.closureCompilerEnabled),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       defaultImportTracker.importPreservingTransformer(),
     ];
@@ -1089,12 +1095,17 @@ export class NgCompiler {
         this.inputProgram.getTypeChecker(),
         this.options.onlyExplicitDeferDependencyImports ?? false);
 
-    // Cycles are handled in full compilation mode by "remote scoping".
+    let localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|null = null;
+    if (compilationMode === CompilationMode.LOCAL && this.options.generateExtraImportsInLocalMode) {
+      localCompilationExtraImportsTracker = new LocalCompilationExtraImportsTracker(checker);
+    }
+
+    // Cycles are handled in full and local compilation modes by "remote scoping".
     // "Remote scoping" does not work well with tree shaking for libraries.
     // So in partial compilation mode, when building a library, a cycle will cause an error.
-    const cycleHandlingStrategy = compilationMode === CompilationMode.FULL ?
-        CycleHandlingStrategy.UseRemoteScoping :
-        CycleHandlingStrategy.Error;
+    const cycleHandlingStrategy = compilationMode === CompilationMode.PARTIAL ?
+        CycleHandlingStrategy.Error :
+        CycleHandlingStrategy.UseRemoteScoping;
 
     const strictCtorDeps = this.options.strictInjectionParameters || false;
     const supportJitMode = this.options['supportJitMode'] ?? true;
@@ -1134,7 +1145,8 @@ export class NgCompiler {
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
           supportTestBed, compilationMode, deferredSymbolsTracker,
           !!this.options.forbidOrphanComponents, this.enableBlockSyntax,
-          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE),
+          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE,
+          localCompilationExtraImportsTracker),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1146,13 +1158,15 @@ export class NgCompiler {
           this.delegatingPerfRecorder,
           supportTestBed, compilationMode,
           this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE,
+          !!this.options.generateExtraImportsInLocalMode,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
           reflector, evaluator, metaRegistry, ngModuleScopeRegistry, injectableRegistry, isCore,
-          this.delegatingPerfRecorder, supportTestBed, compilationMode),
+          this.delegatingPerfRecorder, supportTestBed, compilationMode,
+          !!this.options.generateExtraImportsInLocalMode),
       new InjectableDecoratorHandler(
           reflector, evaluator, isCore, strictCtorDeps, injectableRegistry,
           this.delegatingPerfRecorder, supportTestBed, compilationMode),
@@ -1161,7 +1175,7 @@ export class NgCompiler {
           exportedProviderStatusResolver, semanticDepGraphUpdater, isCore, refEmitter,
           this.closureCompilerEnabled, this.options.onlyPublishPublicTypingsForNgModules ?? false,
           injectableRegistry, this.delegatingPerfRecorder, supportTestBed, supportJitMode,
-          compilationMode),
+          compilationMode, localCompilationExtraImportsTracker),
     ];
 
     const traitCompiler = new TraitCompiler(
@@ -1201,7 +1215,8 @@ export class NgCompiler {
       refEmitter,
       templateTypeChecker,
       resourceRegistry,
-      extendedTemplateChecker
+      extendedTemplateChecker,
+      localCompilationExtraImportsTracker,
     };
   }
 }

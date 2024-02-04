@@ -112,6 +112,15 @@ export function listener(
       syntheticHost ? Identifiers.syntheticHostListener : Identifiers.listener, args, sourceSpan);
 }
 
+export function twoWayBindingSet(target: o.Expression, value: o.Expression): o.Expression {
+  return o.importExpr(Identifiers.twoWayBindingSet).callFn([target, value]);
+}
+
+export function twoWayListener(
+    name: string, handlerFn: o.Expression, sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return call(Identifiers.twoWayListener, [o.literal(name), handlerFn], sourceSpan);
+}
+
 export function pipe(slot: number, name: string): ir.CreateOp {
   return call(
       Identifiers.pipe,
@@ -323,6 +332,16 @@ export function property(
     args.push(sanitizer);
   }
   return call(Identifiers.property, args, sourceSpan);
+}
+
+export function twoWayProperty(
+    name: string, expression: o.Expression, sanitizer: o.Expression|null,
+    sourceSpan: ParseSourceSpan): ir.UpdateOp {
+  const args = [o.literal(name), expression];
+  if (sanitizer !== null) {
+    args.push(sanitizer);
+  }
+  return call(Identifiers.twoWayProperty, args, sourceSpan);
 }
 
 export function attribute(

@@ -196,6 +196,16 @@ export enum OpKind {
   Repeater,
 
   /**
+   * An operation to bind an expression to the property side of a two-way binding.
+   */
+  TwoWayProperty,
+
+  /**
+   * An operation declaring the event side of a two-way binding.
+   */
+  TwoWayListener,
+
+  /**
    * The start of an i18n block.
    */
   I18nStart,
@@ -380,6 +390,11 @@ export enum ExpressionKind {
    * An expression that will be automatically extracted to the component const array.
    */
   ConstCollected,
+
+  /**
+   * Operation that sets the value of a two-way binding.
+   */
+  TwoWayBindingSet,
 }
 
 export enum VariableFlags {
@@ -474,6 +489,11 @@ export enum BindingKind {
    * Animation property bindings.
    */
   Animation,
+
+  /**
+   * Property side of a two-way binding.
+   */
+  TwoWayProperty,
 }
 
 /**

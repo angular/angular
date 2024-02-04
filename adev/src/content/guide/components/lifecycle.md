@@ -20,7 +20,7 @@ process.
 
 ## Summary
 
-<div class="docs-table adev-scroll-track-transparent">
+<div class="docs-table docs-scroll-track-transparent">
   <table>
     <tr>
       <td><strong>Phase</strong></td>
@@ -31,7 +31,7 @@ process.
       <td>Creation</td>
       <td><code>constructor</code></td>
       <td>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor">
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor" target="_blank">
           Standard JavaScript class constructor
         </a>. Runs when Angular instantiates the component.
       </td>
@@ -226,7 +226,7 @@ invoked after Angular has finished rendering _all components_ on the page into t
 
 These functions are different from the other lifecycle hooks described in this guide. Rather than a
 class method, they are standalone functions that accept a callback. The execution of render
-callbacks is not tied to any specific component instance, but instead an application-wide hook.
+callbacks are not tied to any specific component instance, but instead an application-wide hook.
 
 `afterRender` and `afterNextRender` must be called in
 an [injection context](guide/di/dependency-injection-context), typically a
@@ -259,7 +259,7 @@ export class UserProfile {
       nativeElement.style.padding = computePadding();
     }, {phase: AfterRenderPhase.Write});
 
-    // Use the `Read` phase to read geometric properties after all writes have occured.
+    // Use the `Read` phase to read geometric properties after all writes have occurred.
     afterNextRender(() => {
       this.elementHeight = nativeElement.getBoundingClientRect().height;
     }, {phase: AfterRenderPhase.Read});
