@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
+import {RENDERER} from '../interfaces/view';
+import {isSignal} from '../reactivity/api';
+import {isWritableSignal} from '../reactivity/signal';
+import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 
-import {ɵɵlistener} from './listener';
-import {ɵɵproperty} from './property';
+import {listenerInternal} from './listener';
+import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
 
 
 /**
@@ -27,8 +32,21 @@ import {ɵɵproperty} from './property';
  */
 export function ɵɵtwoWayProperty<T>(
     propName: string, value: T, sanitizer?: SanitizerFn|null): typeof ɵɵtwoWayProperty {
-  // TODO(crisbeto): implement two-way specific logic.
-  ɵɵproperty(propName, value, sanitizer);
+  // TODO(crisbeto): perf impact of re-evaluating this on each change detection?
+  if (isSignal(value)) {
+    value = value() as T;
+  }
+
+  const lView = getLView();
+  const bindingIndex = nextBindingIndex();
+  if (bindingUpdated(lView, bindingIndex, value)) {
+    const tView = getTView();
+    const tNode = getSelectedTNode();
+    elementPropertyInternal(
+        tView, tNode, lView, propName, value, lView[RENDERER], sanitizer, false);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, propName, bindingIndex);
+  }
+
   return ɵɵtwoWayProperty;
 }
 
@@ -41,8 +59,9 @@ export function ɵɵtwoWayProperty<T>(
  * @codeGenApi
  */
 export function ɵɵtwoWayBindingSet<T>(target: unknown, value: T): boolean {
-  // TODO(crisbeto): implement this fully.
-  return false;
+  const canWrite = isWritableSignal(target);
+  canWrite && target.set(value);
+  return canWrite;
 }
 
 /**
@@ -55,6 +74,9 @@ export function ɵɵtwoWayBindingSet<T>(target: unknown, value: T): boolean {
  */
 export function ɵɵtwoWayListener(
     eventName: string, listenerFn: (e?: any) => any): typeof ɵɵtwoWayListener {
-  ɵɵlistener(eventName, listenerFn);
+  const lView = getLView<{}|null>();
+  const tView = getTView();
+  const tNode = getCurrentTNode()!;
+  listenerInternal(tView, lView, lView[RENDERER], tNode, eventName, listenerFn);
   return ɵɵtwoWayListener;
 }

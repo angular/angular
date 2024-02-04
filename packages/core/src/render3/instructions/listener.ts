@@ -113,7 +113,7 @@ function findExistingListener(
   return null;
 }
 
-function listenerInternal(
+export function listenerInternal(
     tView: TView, lView: LView<{}|null>, renderer: Renderer, tNode: TNode, eventName: string,
     listenerFn: (e?: any) => any, eventTargetResolver?: GlobalTargetResolver): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
