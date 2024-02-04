@@ -21,6 +21,7 @@ import {JsonPipe} from './json_pipe';
 import {KeyValue, KeyValuePipe} from './keyvalue_pipe';
 import {CurrencyPipe, DecimalPipe, PercentPipe} from './number_pipe';
 import {SlicePipe} from './slice_pipe';
+import {GenericPipe} from './generic_pipe';
 
 export {
   AsyncPipe,
@@ -40,6 +41,7 @@ export {
   SlicePipe,
   TitleCasePipe,
   UpperCasePipe,
+  GenericPipe,
 };
 
 /**
@@ -59,4 +61,5 @@ export const COMMON_PIPES = [
   I18nPluralPipe,
   I18nSelectPipe,
   KeyValuePipe,
+  GenericPipe,
 ];

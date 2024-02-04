@@ -85,6 +85,7 @@ export {
   TitleCasePipe,
   KeyValuePipe,
   KeyValue,
+  GenericPipe,
 } from './pipes/index';
 export {
   PLATFORM_BROWSER_ID as ɵPLATFORM_BROWSER_ID,
