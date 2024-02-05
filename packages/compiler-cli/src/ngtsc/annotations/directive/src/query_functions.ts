@@ -94,9 +94,26 @@ function parseLocator(expression: ts.Expression, reflector: ReflectionHost): str
       unwrappedExpression !== null ? ForwardRefHandling.Unwrapped : ForwardRefHandling.None);
 }
 
-/** Parses the `read` option of a query. */
+/**
+ * Parses the `read` option of a query.
+ *
+ * We only support the following patterns for the `read` option:
+ *     - `read: someImport.BLA`,
+ *     - `read: BLA`
+ *
+ * That is because we cannot trivially support complex expressions,
+ * especially those referencing `this`. The read provider token will
+ * live outside of the class in the static class definition.
+ */
 function parseReadOption(value: ts.Expression): o.Expression {
-  return new o.WrappedNodeExpr(value);
+  if (ts.isPropertyAccessExpression(value) && ts.isIdentifier(value.expression) ||
+      ts.isIdentifier(value)) {
+    return new o.WrappedNodeExpr(value);
+  }
+
+  throw new FatalDiagnosticError(
+      ErrorCode.VALUE_NOT_LITERAL, value,
+      `Query "read" option expected a literal class reference.`);
 }
 
 /** Parses the `descendants` option of a query. */
