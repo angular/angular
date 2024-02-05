@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {isAngularDecorator, tryParseSignalInputMapping} from '../../../ngtsc/annotations';
 
-import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
+import {castAsAny, createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
 
 /**
  * Transform that will automatically add an `@Input` decorator for all signal
@@ -61,13 +61,15 @@ export const signalInputsTransform: PropertyTransform = (
           createSyntheticAngularCoreDecoratorAccess(
               factory, importManager, classDecorator, 'Input'),
           undefined,
-          [factory.createAsExpression(
-              factory.createObjectLiteralExpression(Object.entries(fields).map(
-                  ([name, value]) => factory.createPropertyAssignment(name, value))),
-              // Cast to `any` because `isSignal` will be private, and in case this
-              // transform is used directly as a pre-compilation step, the decorator should
-              // not fail. It is already validated now due to us parsing the input metadata.
-              factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword))]),
+          [
+            // Cast to `any` because `isSignal` will be private, and in case this
+            // transform is used directly as a pre-compilation step, the decorator should
+            // not fail. It is already validated now due to us parsing the input metadata.
+            castAsAny(
+                factory,
+                factory.createObjectLiteralExpression(Object.entries(fields).map(
+                    ([name, value]) => factory.createPropertyAssignment(name, value)))),
+          ]),
   );
 
   return factory.updatePropertyDeclaration(
