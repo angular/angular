@@ -13,14 +13,12 @@
  */
 
 export * from './authoring';
-// Input and query authoring functions are exported separately as this file is exempted from
+// Authoring functions are exported separately as this file is exempted from
 // JSCompiler's conformance requirement for inferred const exports. See:
 // https://docs.google.com/document/d/1RXb1wYwsbJotO1KBgSDsAtKpduGmIHod9ADxuXcAvV4/edit?tab=t.0
 export {input} from './authoring/input/input';
 export {contentChild, contentChildren, viewChild, viewChildren} from './authoring/queries';
-
-// TODO(crisbeto): export as a public API
-// export {model} from './authoring/model/model';
+export {model} from './authoring/model/model';
 
 export * from './metadata';
 export * from './version';

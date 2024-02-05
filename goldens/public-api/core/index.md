@@ -1075,6 +1075,32 @@ export enum MissingTranslationStrategy {
     Warning = 1
 }
 
+// @public
+export const model: ModelFunction;
+
+// @public
+export interface ModelFunction {
+    <T>(): ModelSignal<T | undefined>;
+    // (undocumented)
+    <T>(initialValue: T, opts?: ModelOptions): ModelSignal<T>;
+    required<T>(opts?: ModelOptions): ModelSignal<T>;
+}
+
+// @public
+export interface ModelOptions {
+    alias?: string;
+}
+
+// @public
+export interface ModelSignal<T> extends WritableSignal<T> {
+    // (undocumented)
+    [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
+    // (undocumented)
+    [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
+    // (undocumented)
+    [SIGNAL]: ModelSignalNode<T>;
+}
+
 // @public @deprecated
 export class ModuleWithComponentFactories<T> {
     constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);

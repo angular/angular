@@ -882,6 +882,9 @@
     "name": "diPublicInInjector"
   },
   {
+    "name": "elementPropertyInternal"
+  },
+  {
     "name": "enterDI"
   },
   {
@@ -1290,6 +1293,9 @@
     "name": "isReadableStreamLike"
   },
   {
+    "name": "isSignal"
+  },
+  {
     "name": "isStylingMatch"
   },
   {
@@ -1330,6 +1336,9 @@
   },
   {
     "name": "leaveViewLight"
+  },
+  {
+    "name": "listenerInternal"
   },
   {
     "name": "lookupTokenUsingModuleInjector"
