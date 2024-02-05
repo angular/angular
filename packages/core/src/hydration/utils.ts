@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {ViewRef} from '../linker/view_ref';
+import type {ViewRef} from '../linker/view_ref';
 import {LContainer} from '../render3/interfaces/container';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';

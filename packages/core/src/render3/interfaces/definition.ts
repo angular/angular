@@ -16,7 +16,8 @@ import {FactoryFn} from '../definition_factory';
 
 import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
-import {TView} from './view';
+import type {TView} from './view';
+import {InputFlags} from './input_flags';
 
 
 /**
@@ -86,13 +87,6 @@ export interface DirectiveType<T> extends Type<T> {
  */
 export interface PipeType<T> extends Type<T> {
   ɵpipe: unknown;
-}
-
-/** Flags describing an input for a directive. */
-export enum InputFlags {
-  None = 0,
-  SignalBased = 1 << 0,
-  HasDecoratorInputTransform = 1 << 1,
 }
 
 /**

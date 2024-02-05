@@ -11,7 +11,8 @@ import {setActiveConsumer, SIGNAL} from '@angular/core/primitives/signals';
 import {InputSignalWithTransform} from '../../authoring/input/input_signal';
 import {InputSignalNode} from '../../authoring/input/input_signal_node';
 import {applyValueToInputField} from '../apply_value_input_field';
-import {DirectiveDef, InputFlags} from '../interfaces/definition';
+import {DirectiveDef} from '../interfaces/definition';
+import { InputFlags } from '../interfaces/input_flags';
 
 export function writeToDirectiveInput<T>(
     def: DirectiveDef<T>, instance: T, publicName: string, privateName: string, flags: InputFlags,
