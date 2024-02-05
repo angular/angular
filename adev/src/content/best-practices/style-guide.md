@@ -811,22 +811,7 @@ In this scenario it would be better to provide the service at the component leve
 
 <docs-code header="src/app/treeshaking/service.ts" path="adev/src/content/examples/dependency-injection/src/app/tree-shaking/service.ts"/>
 
-### Use the &commat;Injectable() class decorator
 
-#### Style 07-04
-
-**Do** use the `@Injectable()` class decorator instead of the `@Inject` parameter decorator when using types as tokens for the dependencies of a service.
-
-**Why**? <br />
-The Angular Dependency Injection \(DI\) mechanism resolves a service's own
-dependencies based on the declared types of that service's constructor parameters.
-
-**Why**? <br />
-When a service accepts only dependencies associated with type tokens, the `@Injectable()` syntax is much less verbose compared to using `@Inject()` on each individual constructor parameter.
-
-<docs-code header="app/heroes/shared/hero-arena.service.ts" path="adev/src/content/examples/styleguide/src/07-04/app/heroes/shared/hero-arena.service.avoid.ts" visibleRegion="example"/>
-
-<docs-code header="app/heroes/shared/hero-arena.service.ts" path="adev/src/content/examples/styleguide/src/07-04/app/heroes/shared/hero-arena.service.ts" visibleRegion="example"/>
 ## Data Services
 
 ### Talk to the server through a service
