@@ -259,10 +259,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     let record: ClassRecord|null = this.recordFor(clazz);
     let foundTraits: PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[] = [];
 
-    // A set to track the undetected decorators (= either non-Angular decorators or Angular
-    // duplicate decorators) in local compilation mode. An error will be issued if such decorators
-    // are found.
-    const undetectedDecorators =
+    // A set to track the non-Angular decorators in local compilation mode. An error will be issued
+    // if non-Angular decorators is found in local compilation mode.
+    const nonNgDecoratorsInLocalMode =
         this.compilationMode === CompilationMode.LOCAL ? new Set(decorators) : null;
 
     for (const handler of this.handlers) {
@@ -271,8 +270,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
         continue;
       }
 
-      if (undetectedDecorators !== null && result.decorator !== null) {
-        undetectedDecorators.delete(result.decorator);
+      if (nonNgDecoratorsInLocalMode !== null && result.decorator !== null) {
+        nonNgDecoratorsInLocalMode.delete(result.decorator);
       }
 
       const isPrimaryHandler = handler.precedence === HandlerPrecedence.PRIMARY;
@@ -342,11 +341,11 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       }
     }
 
-    if (undetectedDecorators !== null && undetectedDecorators.size > 0 && record !== null &&
-        record.metaDiagnostics === null) {
+    if (nonNgDecoratorsInLocalMode !== null && nonNgDecoratorsInLocalMode.size > 0 &&
+        record !== null && record.metaDiagnostics === null) {
       // Custom decorators found in local compilation mode! In this mode we don't support custom
       // decorators yet. But will eventually do (b/320536434). For now a temporary error is thrown.
-      record.metaDiagnostics = [...undetectedDecorators].map(
+      record.metaDiagnostics = [...nonNgDecoratorsInLocalMode].map(
           decorator => ({
             category: ts.DiagnosticCategory.Error,
             code: Number('-99' + ErrorCode.DECORATOR_UNEXPECTED),
@@ -354,7 +353,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
             start: decorator.node.getStart(),
             length: decorator.node.getWidth(),
             messageText:
-                'In local compilation mode, Angular does not support custom decorators or duplicate Angular decorators. Ensure all class decorators are from Angular and each decorator is used at most once for each class.',
+                'In local compilation mode, Angular does not support custom decorators. Ensure all class decorators are from Angular.',
           }));
       record.traits = foundTraits = [];
     }
