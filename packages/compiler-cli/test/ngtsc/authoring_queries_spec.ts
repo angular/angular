@@ -38,6 +38,28 @@ runInEachFileSystem(() => {
       expect(js).toContain(`i0.ɵɵqueryAdvance();`);
     });
 
+    it('should support viewChild with `read` options', () => {
+      env.write('other-file.ts', `export class X {}`);
+      env.write('test.ts', `
+        import {Component, viewChild} from '@angular/core';
+        import * as fromOtherFile from './other-file';
+
+        class X {}
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          el = viewChild('myLocator', {read: X});
+          el2 = viewChild('myLocator', {read: fromOtherFile.X});
+        }
+      `);
+      env.driveMain();
+
+      const js = env.getContents('test.js');
+      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 5, X);`);
+      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el2, _c0, 5, fromOtherFile.X);`);
+      expect(js).toContain(`i0.ɵɵqueryAdvance(2);`);
+    });
+
     it('should handle a basic viewChildren', () => {
       env.write('test.ts', `
         import {Component, viewChildren} from '@angular/core';
@@ -182,6 +204,25 @@ runInEachFileSystem(() => {
         expect(diagnostics.length).toBe(1);
         expect(diagnostics).toEqual([jasmine.objectContaining({
           messageText: `Decorator query metadata must be an instance of a query type`,
+        })]);
+      });
+
+      it('should report an error when `read` option is complex', () => {
+        env.write('test.ts', `
+        import {Directive, ViewChild, viewChild} from '@angular/core';
+
+        @Directive({
+          selector: 'test',
+        })
+        export class TestDir {
+          something = null!;
+          el = viewChild('myLocator', {read: this.something});
+        }
+      `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining({
+          messageText: `Query "read" option expected a literal class reference.`,
         })]);
       });
     });
