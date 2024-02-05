@@ -16,6 +16,7 @@ import {
   Events,
   MessageBus,
   ProfilerFrame,
+  Route,
   SerializedInjector,
   SerializedProviderRecord,
 } from 'protocol';
@@ -48,6 +49,7 @@ import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
+import {parseRoutes} from './router-tree';
 import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
@@ -214,7 +216,17 @@ const getNestedPropertiesCallback =
 // todo: parse router tree with framework APIs after they are developed
 const getRoutes = (messageBus: MessageBus<Events>) => {
   // Return empty router tree to disable tab.
-  messageBus.emit('updateRouterTree', [[]]);
+  // messageBus.emit('updateRouterTree', [[]]);
+  const node = queryDirectiveForest(
+    [0],
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+  );
+  let routes: Route[] = [];
+  if (node?.component?.instance?.router) {
+    console.log(node?.component?.instance?.router);
+    routes = [parseRoutes(node?.component?.instance?.router)];
+  }
+  messageBus.emit('updateRouterTree', [routes]);
 };
 
 const checkForAngular = (messageBus: MessageBus<Events>): void => {

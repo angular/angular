@@ -12,6 +12,7 @@ ng_module(
     name = "router-tree",
     srcs = [
         "router-tree.component.ts",
+        "router-tree-visualizer.ts",
     ],
     angular_assets = [
         ":router-tree.component.html",
@@ -25,5 +26,6 @@ ng_module(
         "@npm//@types",
         "@npm//d3",
         "@npm//rxjs",
+        # "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree/router-tree-visualizer:router_tree_visualizer"
     ],
 )
