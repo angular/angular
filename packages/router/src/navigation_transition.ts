@@ -786,8 +786,9 @@ export class NavigationTransitions {
             }
             // Only clear current navigation if it is still set to the one that
             // finalized.
-            if (this.currentNavigation?.id === overallTransitionState.id) {
+            if (this.currentTransition?.id === overallTransitionState.id) {
               this.currentNavigation = null;
+              this.currentTransition = null;
             }
           }),
           catchError((e) => {
