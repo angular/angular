@@ -58,6 +58,7 @@ ts_library(
     srcs = [
         "downlevel_decorators_transform_spec.ts",
         "signal_inputs_metadata_transform_spec.ts",
+        "signal_queries_metadata_transform_spec.ts",
     ],
     deps = [
         ":test_utils",
