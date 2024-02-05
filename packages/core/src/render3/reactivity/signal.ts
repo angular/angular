@@ -44,6 +44,15 @@ export interface CreateSignalOptions<T> {
 }
 
 /**
+ * Type used during template type checking to either unwrap a signal or preserve a value if it's
+ * not a signal. E.g. `ɵConditionallyUnwrapSignal<Signal<number>>` yields `number` while
+ * `ɵConditionallyUnwrapSignal<number>` preserves the `number` type.
+ *
+ * @codeGenApi
+ */
+export type ɵConditionallyUnwrapSignal<T> = T extends Signal<unknown>? ReturnType<T>: T;
+
+/**
  * Create a `Signal` that can be set or updated directly.
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
