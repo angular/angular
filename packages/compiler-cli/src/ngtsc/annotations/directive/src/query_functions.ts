@@ -17,7 +17,7 @@ import {tryUnwrapForwardRef} from '../../common';
 import {tryParseInitializerApiMember} from './initializer_functions';
 
 /** Possible query initializer API functions. */
-type QueryFunctionName = 'viewChild'|'contentChild'|'viewChildren'|'contentChildren';
+export type QueryFunctionName = 'viewChild'|'contentChild'|'viewChildren'|'contentChildren';
 
 /** Possible names of query initializer APIs. */
 const queryFunctionNames: QueryFunctionName[] =
