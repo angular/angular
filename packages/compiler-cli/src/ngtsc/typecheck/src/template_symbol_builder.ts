@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, BindingType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -350,15 +350,32 @@ export class SymbolBuilder {
       return host !== null ? {kind: SymbolKind.DomBinding, host} : null;
     }
 
+    const isTwoWayBinding =
+        binding instanceof TmplAstBoundAttribute && binding.type === BindingType.TwoWay;
     const nodes = findAllMatchingNodes(
         this.typeCheckBlock, {withSpan: binding.sourceSpan, filter: isAssignment});
     const bindings: BindingSymbol[] = [];
     for (const node of nodes) {
-      if (!isAccessExpression(node.left)) {
+      let assignment: ts.PropertyAccessExpression|ts.ElementAccessExpression|null = null;
+
+      // One-way bindings usually are in the form of `dir.input = expression`.
+      if (isAccessExpression(node.left)) {
+        assignment = node.left;
+      } else if (
+          // The property side of two-way bindings is in the
+          // form of `(dir.input as unknown as someType) = expression`.
+          isTwoWayBinding && ts.isParenthesizedExpression(node.left) &&
+          ts.isAsExpression(node.left.expression) &&
+          ts.isAsExpression(node.left.expression.expression) &&
+          isAccessExpression(node.left.expression.expression.expression)) {
+        assignment = node.left.expression.expression.expression;
+      }
+
+      if (assignment === null) {
         continue;
       }
 
-      const signalInputAssignment = unwrapSignalInputWriteTAccessor(node.left);
+      const signalInputAssignment = unwrapSignalInputWriteTAccessor(assignment);
       let symbolInfo: TsNodeSymbolInfo|null = null;
 
       // Signal inputs need special treatment because they are generated with an extra keyed
@@ -376,7 +393,7 @@ export class SymbolBuilder {
           tsType: typeSymbol.tsType,
         };
       } else {
-        symbolInfo = this.getSymbolOfTsNode(node.left);
+        symbolInfo = this.getSymbolOfTsNode(assignment);
       }
 
       if (symbolInfo === null || symbolInfo.tsSymbol === null) {
@@ -384,7 +401,7 @@ export class SymbolBuilder {
       }
 
       const target = this.getDirectiveSymbolForAccessExpression(
-          signalInputAssignment?.fieldExpr ?? node.left, consumer);
+          signalInputAssignment?.fieldExpr ?? assignment, consumer);
       if (target === null) {
         continue;
       }
