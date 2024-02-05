@@ -2,9 +2,10 @@ load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ng_mo
 
 package(default_visibility = ["//visibility:private"])
 
-TEST_FILES = [
-    "signal_inputs_spec",
-]
+TEST_FILES = glob(
+    ["*.ts"],
+    exclude = ["authoring_test_compiler.ts"],
+)
 
 TEST_DEPS = [
     "//packages/core",
@@ -34,23 +35,23 @@ nodejs_binary(
 npm_package_bin(
     name = "processed_test_sources",
     testonly = True,
-    outs = ["transformed_%s.ts" % file for file in TEST_FILES],
-    args = ["$(execpath %s.ts)" % file for file in TEST_FILES] + ["$@"],
-    data = ["%s.ts" % file for file in TEST_FILES],
+    outs = ["transformed_%s" % file for file in TEST_FILES],
+    args = ["$(@D)"] + ["$(execpath %s)" % file for file in TEST_FILES],
+    data = TEST_FILES,
     tool = ":test_compiler",
 )
 
 ts_library(
     name = "test_jit_lib",
     testonly = True,
-    srcs = ["transformed_%s.ts" % file for file in TEST_FILES],
+    srcs = ["transformed_%s" % file for file in TEST_FILES],
     deps = TEST_DEPS,
 )
 
 ng_module(
     name = "test_lib",
     testonly = True,
-    srcs = ["%s.ts" % file for file in TEST_FILES],
+    srcs = TEST_FILES,
     deps = TEST_DEPS,
 )
 

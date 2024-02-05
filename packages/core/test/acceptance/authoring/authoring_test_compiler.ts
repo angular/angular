@@ -9,6 +9,7 @@
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {getInitializerApiJitTransform} from '@angular/compiler-cli/src/transformers/jit_transforms';
 import fs from 'fs';
+import path from 'path';
 import ts from 'typescript';
 
 main().catch(e => {
@@ -17,8 +18,9 @@ main().catch(e => {
 });
 
 async function main() {
-  const [inputTsExecPath, outputExecPath] = process.argv.slice(2);
-  const program = ts.createProgram([inputTsExecPath], {
+  const [outputDirExecPath, ...inputFileExecpaths] = process.argv.slice(2);
+
+  const program = ts.createProgram(inputFileExecpaths, {
     skipLibCheck: true,
     module: ts.ModuleKind.ESNext,
     target: ts.ScriptTarget.ESNext,
@@ -26,10 +28,14 @@ async function main() {
   });
 
   const host = new TypeScriptReflectionHost(program.getTypeChecker());
-  const outputFile = ts.transform(
-      program.getSourceFile(inputTsExecPath)!,
-      [getInitializerApiJitTransform(host, /* isCore */ false)], program.getCompilerOptions());
 
-  await fs.promises.writeFile(
-      outputExecPath, ts.createPrinter().printFile(outputFile.transformed[0]));
+  for (const inputFileExecpath of inputFileExecpaths) {
+    const outputFile = ts.transform(
+        program.getSourceFile(inputFileExecpath)!,
+        [getInitializerApiJitTransform(host, /* isCore */ false)], program.getCompilerOptions());
+
+    await fs.promises.writeFile(
+        path.join(outputDirExecPath, `transformed_${path.basename(inputFileExecpath)}`),
+        ts.createPrinter().printFile(outputFile.transformed[0]));
+  }
 }
