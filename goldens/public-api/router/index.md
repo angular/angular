@@ -183,6 +183,7 @@ export class ChildActivationStart {
 
 // @public
 export class ChildrenOutletContexts {
+    constructor(parentInjector: EnvironmentInjector);
     // (undocumented)
     getContext(childName: string): OutletContext | null;
     // (undocumented)
@@ -539,12 +540,13 @@ export type OnSameUrlNavigation = 'reload' | 'ignore';
 
 // @public
 export class OutletContext {
+    constructor(injector: EnvironmentInjector);
     // (undocumented)
     attachRef: ComponentRef<any> | null;
     // (undocumented)
     children: ChildrenOutletContexts;
     // (undocumented)
-    injector: EnvironmentInjector | null;
+    injector: EnvironmentInjector;
     // (undocumented)
     outlet: RouterOutletContract | null;
     // (undocumented)
@@ -882,7 +884,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     // (undocumented)
     activateEvents: EventEmitter<any>;
     // (undocumented)
-    activateWith(activatedRoute: ActivatedRoute, environmentInjector?: EnvironmentInjector | null): void;
+    activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
     attachEvents: EventEmitter<unknown>;
     // (undocumented)
@@ -915,7 +917,7 @@ export interface RouterOutletContract {
     activatedRoute: ActivatedRoute | null;
     activatedRouteData: Data;
     activateEvents?: EventEmitter<unknown>;
-    activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector | null): void;
+    activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector): void;
     attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
     attachEvents?: EventEmitter<unknown>;
     component: Object | null;
