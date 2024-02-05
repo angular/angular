@@ -24,8 +24,9 @@ import {tryParseSignalQueryFromInitializer} from './query_functions';
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
 type QueryDecoratorName = 'ViewChild'|'ViewChildren'|'ContentChild'|'ContentChildren';
-const queryDecoratorNames: QueryDecoratorName[] =
+export const queryDecoratorNames: QueryDecoratorName[] =
     ['ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren'];
+
 const QUERY_TYPES = new Set<string>(queryDecoratorNames);
 
 /**

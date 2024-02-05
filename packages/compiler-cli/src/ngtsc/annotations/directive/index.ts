@@ -11,3 +11,4 @@ export {DirectiveSymbol} from './src/symbol';
 export * from './src/shared';
 export * from './src/input_function';
 export * from './src/output_function';
+export * from './src/query_functions';
