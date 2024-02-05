@@ -40,8 +40,7 @@ runInEachFileSystem(() => {
       const reflectionHost = new TypeScriptReflectionHost(checker);
       const compiler = new TraitCompiler(
           handlers, reflectionHost, NOOP_PERF_RECORDER, NOOP_INCREMENTAL_BUILD, true,
-          compilationMode, new DtsTransformRegistry(), null, fakeSfTypeIdentifier,
-          /** isCore */ false);
+          compilationMode, new DtsTransformRegistry(), null, fakeSfTypeIdentifier);
       const sourceFile = program.getSourceFile(filename)!;
 
       return {compiler, sourceFile, program, filename: _('/' + filename)};
