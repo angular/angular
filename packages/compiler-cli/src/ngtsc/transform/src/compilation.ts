@@ -105,7 +105,6 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       private dtsTransforms: DtsTransformRegistry,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private sourceFileTypeIdentifier: SourceFileTypeIdentifier,
-      private readonly isCore: boolean,
   ) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
@@ -260,11 +259,11 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     let record: ClassRecord|null = this.recordFor(clazz);
     let foundTraits: PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[] = [];
 
-    // A set to track the detected decorators in local compilation mode. An error will be issued if
-    // undetected decorators (= either non-Angular decorators or Angular duplicate decorators) are
-    // found.
-    const detectedDecorators =
-        this.compilationMode === CompilationMode.LOCAL ? new Set<Decorator>() : null;
+    // A set to track the undetected decorators (= either non-Angular decorators or Angular
+    // duplicate decorators) in local compilation mode. An error will be issued if such decorators
+    // are found.
+    const undetectedDecorators =
+        this.compilationMode === CompilationMode.LOCAL ? new Set(decorators) : null;
 
     for (const handler of this.handlers) {
       const result = handler.detect(clazz, decorators);
@@ -272,8 +271,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
         continue;
       }
 
-      if (detectedDecorators !== null && result.decorator !== null) {
-        detectedDecorators.add(result.decorator);
+      if (undetectedDecorators !== null && result.decorator !== null) {
+        undetectedDecorators.delete(result.decorator);
       }
 
       const isPrimaryHandler = handler.precedence === HandlerPrecedence.PRIMARY;
@@ -343,30 +342,20 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       }
     }
 
-    // Local compilation uses the `DepsTracker` utility, which at the moment cannot track classes
-    // mutated by custom/duplicate decorators. So we forbid custom/duplicate decorators on classes
-    // used by deps tracker, i.e., Component, Directive, etc (basically everything except
-    // Injectable)
-    // TODO(b/320536434) Support custom/duplicate decorators for the DepsTracker utility.
-    if (decorators !== null && detectedDecorators !== null &&
-        detectedDecorators.size < decorators.length && record !== null &&
-        record.metaDiagnostics === null &&
-        hasDepsTrackerAffectingScopeDecorator(detectedDecorators, this.isCore)) {
-      // Custom or duplicate decorators found in local compilation mode for a class which has
-      // Angular decorators other than `@Injectable`! This is not supported yet. But will eventually
-      // do (b/320536434). For now a temporary error is thrown.
-      record.metaDiagnostics =
-          decorators.filter(decorator => !detectedDecorators.has(decorator))
-              .map(
-                  decorator => ({
-                    category: ts.DiagnosticCategory.Error,
-                    code: Number('-99' + ErrorCode.DECORATOR_UNEXPECTED),
-                    file: getSourceFile(clazz),
-                    start: decorator.node.getStart(),
-                    length: decorator.node.getWidth(),
-                    messageText:
-                        'In local compilation mode, Angular does not support custom decorators or duplicate Angular decorators (except for `@Injectable` classes). Ensure all class decorators are from Angular and each decorator is used at most once for each class.',
-                  }));
+    if (undetectedDecorators !== null && undetectedDecorators.size > 0 && record !== null &&
+        record.metaDiagnostics === null) {
+      // Custom decorators found in local compilation mode! In this mode we don't support custom
+      // decorators yet. But will eventually do (b/320536434). For now a temporary error is thrown.
+      record.metaDiagnostics = [...undetectedDecorators].map(
+          decorator => ({
+            category: ts.DiagnosticCategory.Error,
+            code: Number('-99' + ErrorCode.DECORATOR_UNEXPECTED),
+            file: getSourceFile(clazz),
+            start: decorator.node.getStart(),
+            length: decorator.node.getWidth(),
+            messageText:
+                'In local compilation mode, Angular does not support custom decorators or duplicate Angular decorators. Ensure all class decorators are from Angular and each decorator is used at most once for each class.',
+          }));
       record.traits = foundTraits = [];
     }
 
@@ -725,32 +714,4 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
 function containsErrors(diagnostics: ts.Diagnostic[]|null): boolean {
   return diagnostics !== null &&
       diagnostics.some(diag => diag.category === ts.DiagnosticCategory.Error);
-}
-
-/**
- * Duplicating the logic of `isAngularDecorator` in the package `ngtsc/annotations` which cannot be
- * imported here due to circular deps. This helper is needed temporary though until custom
- * decorators are supported by the runtime `DepsTracker`.
- */
-function isInjectableDecorator(decorator: Decorator, isCore: boolean): boolean {
-  if (isCore) {
-    return decorator.name === 'Injectable';
-  } else if (decorator.import !== null && decorator.import.from === '@angular/core') {
-    return decorator.import.name === 'Injectable';
-  }
-  return false;
-}
-
-/**
- * Scope decorators are those who participate in determining the scope of an NgModule or a
- * standalone component. They are: `@Component`, `@Directive`, `@Pipe` and `@NgModule`.
- */
-function hasDepsTrackerAffectingScopeDecorator(decoratorSet: Set<Decorator>, isCore: boolean) {
-  for (const decorator of decoratorSet) {
-    if (!isInjectableDecorator(decorator, isCore)) {
-      return true;
-    }
-  }
-
-  return false;
 }
