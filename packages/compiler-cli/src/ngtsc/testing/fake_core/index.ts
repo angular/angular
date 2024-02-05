@@ -136,6 +136,8 @@ export function signal<T>(initialValue: T): WritableSignal<T> {
   return null!;
 }
 
+export type ɵConditionallyUnwrapSignal<T> = T extends Signal<unknown>? ReturnType<T>: T;
+
 /**
  * -------
  * Signal inputs

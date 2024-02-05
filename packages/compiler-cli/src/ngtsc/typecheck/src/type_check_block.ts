@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ExpressionType, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType, TypeofExpr, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -711,7 +711,7 @@ class TcbDirectiveInputsOp extends TcbOp {
 
       let assignment: ts.Expression = wrapForDiagnostics(expr);
 
-      for (const {fieldName, required, transformType, isSignal} of attr.inputs) {
+      for (const {fieldName, required, transformType, isSignal, isTwoWayBinding} of attr.inputs) {
         let target: ts.LeftHandSideExpression;
 
         if (required) {
@@ -791,12 +791,14 @@ class TcbDirectiveInputsOp extends TcbOp {
                   dirId, ts.factory.createIdentifier(fieldName));
         }
 
-        // For signal inputs, we unwrap the target `InputSignal`. Note that
-        // we intentionally do the following things:
-        //   1. keep the direct access to `dir.[field]` so that modifiers are honored.
-        //   2. follow the existing pattern where multiple targets assign a single expression.
-        //      This is a significant requirement for language service auto-completion.
-        if (isSignal) {
+        if (isTwoWayBinding) {
+          target = this.getTwoWayBindingExpression(target);
+        } else if (isSignal) {
+          // For signal inputs, we unwrap the target `InputSignal`. Note that
+          // we intentionally do the following things:
+          //   1. keep the direct access to `dir.[field]` so that modifiers are honored.
+          //   2. follow the existing pattern where multiple targets assign a single expression.
+          //      This is a significant requirement for language service auto-completion.
           const inputSignalBrandWriteSymbol = this.tcb.env.referenceExternalSymbol(
               R3Identifiers.InputSignalBrandWriteType.moduleName,
               R3Identifiers.InputSignalBrandWriteType.name);
@@ -845,6 +847,52 @@ class TcbDirectiveInputsOp extends TcbOp {
       this.tcb.oobRecorder.missingRequiredInputs(
           this.tcb.id, this.node, this.dir.name, this.dir.isComponent, missing);
     }
+  }
+
+  private getTwoWayBindingExpression(target: ts.LeftHandSideExpression): ts.LeftHandSideExpression {
+    // TODO(crisbeto): we should be able to avoid the extra variable that captures the type.
+    // Skipping it for since we don't have a good way to convert the `PropertyAccessExpression`
+    // into an `QualifiedName`.
+    // Two-way bindings to inputs allow both the input's defined type and a `WritableSignal`
+    // of that type. For example `[(value)]="val"` where `@Input() value: number | string`
+    // allows `val` to be `number | string | WritableSignal<number | string>`. We generate the
+    // following expressions to expand the type:
+    // ```
+    // var captureType = dir.value;
+    // (id as unknown as ɵConditionallyUnwrapSignal<typeof captureType> |
+    // WritableSignal<ɵConditionallyUnwrapSignal<typeof captureType>>) = expression;
+    // ```
+    // Note that the TCB can be simplified a bit by making the union type part of the utility type
+    // (e.g. `type ɵTwoWayAssign<T> = T extends Signal ? ReturnType<T> |
+    // WritableSignal<ReturnType<T>> : ReturnType<T> | WritableSignal<ReturnType<T>>`), however at
+    // the time of writing, this generates a suboptimal diagnostic message where TS splits up the
+    // signature, e.g. "Type 'number' is not assignable to type 'string | boolean |
+    // WritableSignal<string> | WritableSignal<false> | WritableSignal<true>'" instead of Type
+    // 'number' is not assignable to type 'string | boolean | WritableSignal<string | boolean>'.
+    const captureType = this.tcb.allocateId();
+
+    // ɵConditionallyUnwrapSignal<typeof captureType>
+    const unwrappedRef = this.tcb.env.referenceExternalType(
+        R3Identifiers.ConditionallyUnwrapSignal.moduleName,
+        R3Identifiers.ConditionallyUnwrapSignal.name,
+        [new ExpressionType(new TypeofExpr(new WrappedNodeExpr(captureType)))]);
+
+    // WritableSignal<ɵConditionallyUnwrapSignal<typeof captureType>>
+    const writableSignalRef = this.tcb.env.referenceExternalType(
+        R3Identifiers.WritableSignal.moduleName, R3Identifiers.WritableSignal.name,
+        [new ExpressionType(new WrappedNodeExpr(unwrappedRef))]);
+
+    // ɵConditionallyUnwrapSignal<typeof captureType> |
+    // WritableSignal<ɵConditionallyUnwrapSignal<typeof captureType>>
+    const type = ts.factory.createUnionTypeNode([unwrappedRef, writableSignalRef]);
+    this.scope.addStatement(tsCreateVariable(captureType, target));
+
+    // (target as unknown as ɵConditionallyUnwrapSignal<typeof captureType> |
+    // WritableSignal<ɵConditionallyUnwrapSignal<typeof captureType>>)
+    return ts.factory.createParenthesizedExpression(ts.factory.createAsExpression(
+        ts.factory.createAsExpression(
+            target, ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword)),
+        type));
   }
 }
 
@@ -2292,7 +2340,8 @@ interface TcbBoundAttribute {
     fieldName: ClassPropertyName,
     required: boolean,
     isSignal: boolean,
-    transformType: Reference<ts.TypeNode>|null
+    transformType: Reference<ts.TypeNode>|null,
+    isTwoWayBinding: boolean,
   }[];
 }
 
@@ -2527,12 +2576,16 @@ function getBoundAttributes(
     if (inputs !== null) {
       boundInputs.push({
         attribute: attr,
-        inputs: inputs.map(input => ({
-                             fieldName: input.classPropertyName,
-                             required: input.required,
-                             transformType: input.transform?.type || null,
-                             isSignal: input.isSignal,
-                           }))
+        inputs: inputs.map(input => {
+          return ({
+            fieldName: input.classPropertyName,
+            required: input.required,
+            transformType: input.transform?.type || null,
+            isSignal: input.isSignal,
+            isTwoWayBinding:
+                attr instanceof TmplAstBoundAttribute && attr.type === BindingType.TwoWay,
+          });
+        })
       });
     }
   };

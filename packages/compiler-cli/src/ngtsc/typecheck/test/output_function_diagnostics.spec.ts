@@ -31,24 +31,6 @@ runInEachFileSystem(() => {
         ],
       },
       {
-        id: 'two way data binding, invalid',
-        inputs: {'value': {type: 'InputSignal<string>', isSignal: true}},
-        outputs: {'valueChange': {type: 'OutputEmitter<string>'}},
-        template: `<div dir [(value)]="bla">`,
-        component: `bla = true;`,
-        expected: [
-          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
-        ],
-      },
-      {
-        id: 'two way data binding, valid',
-        inputs: {'value': {type: 'InputSignal<string>', isSignal: true}},
-        outputs: {'valueChange': {type: 'OutputEmitter<string>'}},
-        template: `<div dir [(value)]="bla">`,
-        component: `bla: string = ''`,
-        expected: [],
-      },
-      {
         id: 'complex output object',
         outputs: {'evt': {type: 'OutputEmitter<{works: boolean}>'}},
         template: `<div dir (evt)="x = $event.works">`,

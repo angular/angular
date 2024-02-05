@@ -122,6 +122,8 @@ export function angularCoreDts(): TestFile {
       asReadonly(): Signal<T>;
     }
 
+    export type ɵConditionallyUnwrapSignal<T> = T extends Signal<unknown>? ReturnType<T>: T;
+
     /**
      * -------
      * Signal inputs

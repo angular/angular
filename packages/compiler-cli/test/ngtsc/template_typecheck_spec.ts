@@ -2355,6 +2355,35 @@ export declare class AnimationEvent {
                 `Type 'HTMLDivElement' is not assignable to type ` +
                 `'HTMLInputElement | ElementRef<HTMLInputElement>'`);
       });
+
+      it('should type check a two-way binding to an input with a transform', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          export function toNumber(val: boolean | string) { return 1; }
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: toNumber}) val!: number;
+            @Output() valChange = new EventEmitter<number>();
+          }
+
+          @Component({
+            template: '<input dir [(val)]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = 1;
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(
+                `Type 'number' is not assignable to type 'string | boolean | WritableSignal<string | boolean>'.`);
+      });
     });
 
     describe('restricted inputs', () => {
