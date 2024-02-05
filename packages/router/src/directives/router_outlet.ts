@@ -71,10 +71,7 @@ export interface RouterOutletContract {
   /**
    * Called by the `Router` when the outlet should activate (create a component).
    */
-  activateWith(
-    activatedRoute: ActivatedRoute,
-    environmentInjector: EnvironmentInjector | null,
-  ): void;
+  activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector): void;
 
   /**
    * A request to destroy the currently activated component.
@@ -216,7 +213,6 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private parentContexts = inject(ChildrenOutletContexts);
   private location = inject(ViewContainerRef);
   private changeDetector = inject(ChangeDetectorRef);
-  private environmentInjector = inject(EnvironmentInjector);
   private inputBinder = inject(INPUT_BINDER, {optional: true});
   /** @nodoc */
   readonly supportsBindingToComponentInputs = true;
@@ -350,7 +346,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     }
   }
 
-  activateWith(activatedRoute: ActivatedRoute, environmentInjector?: EnvironmentInjector | null) {
+  activateWith(activatedRoute: ActivatedRoute, environmentInjector: EnvironmentInjector) {
     if (this.isActivated) {
       throw new RuntimeError(
         RuntimeErrorCode.OUTLET_ALREADY_ACTIVATED,
@@ -368,7 +364,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.activated = location.createComponent(component, {
       index: location.length,
       injector,
-      environmentInjector: environmentInjector ?? this.environmentInjector,
+      environmentInjector: environmentInjector,
     });
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
