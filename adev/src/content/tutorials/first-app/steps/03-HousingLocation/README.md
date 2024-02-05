@@ -49,7 +49,7 @@ In the **Edit** pane of your IDE:
 
     <docs-code header="Import HousingLocationComponent in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.component.ts" visibleLines="[3]"/>
 
-1. Next update the `imports` property of the `@Component` metadata by adding `HousingLocationComponent` to the array.
+1. Next update the `imports` property of the `@Component` metadata by adding `HousingLocationComponent` to the array. Notice the `CommonModule` also being imported. This will be explained later.
 
     <docs-code header="Add HousingLocationComponent to imports array in src/app/home/home.component.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.component.ts" visibleLines="[7,10]"/>
 
