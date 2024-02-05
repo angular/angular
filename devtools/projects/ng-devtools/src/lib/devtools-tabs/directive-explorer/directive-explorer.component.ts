@@ -171,6 +171,7 @@ export class DirectiveExplorerComponent implements OnDestroy {
     const success = this._messageBus.emit('getLatestComponentExplorerView', [
       this._constructViewQuery(),
     ]);
+    this._messageBus.emit('getRoutes');
     // If the event was not throttled, we no longer need to retry.
     if (success) {
       this._refreshRetryTimeout && clearTimeout(this._refreshRetryTimeout);
@@ -189,7 +190,12 @@ export class DirectiveExplorerComponent implements OnDestroy {
     const selectedEl = this.currentSelectedElement();
     if (!selectedEl) return;
 
-    const directiveIndex = selectedEl.directives.findIndex(
+    if (!this.currentSelectedElement) {
+      return;
+    }
+    console.log(this.currentSelectedElement.position);
+
+    const directiveIndex = this.currentSelectedElement.directives.findIndex(
       (directive) => directive.name === directiveName,
     );
 

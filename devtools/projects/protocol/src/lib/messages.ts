@@ -203,14 +203,21 @@ export interface UpdatedStateData {
 }
 
 export interface Route {
-  name: string;
-  hash: string | null;
-  path: string;
-  specificity: string | null;
-  handler: string;
-  data: any;
+  name?: string;
+  hash?: string | null;
+  specificity?: string | null;
+  handler?: string;
+  pathMatch?: 'prefix' | 'full';
+  canActivateGuards?: string;
+  providers?: string;
+  title?: string;
   children?: Array<Route>;
+  data?: any;
+  path: string;
+  component: string;
+  isActive: boolean;
   isAux: boolean;
+  isLazy: boolean;
 }
 
 export interface AngularDetection {

@@ -93,7 +93,8 @@
 
 :host {
   ::ng-deep {
-    .node-hidden, .link-hidden {
+    .node-hidden,
+    .link-hidden {
       display: none;
     }
 
@@ -110,21 +111,23 @@
     .injector-graph svg {
       cursor: move;
     }
-    
+
     .node {
       cursor: pointer;
-  
+
       &.highlighted {
-        .node-container, .node-container:hover {
+        .node-container,
+        .node-container:hover {
           background: oklch(0.65 0.25 266 / 1);
           border-color: white;
           color: white;
           font-weight: 400;
         }
-        
+
         &.selected {
-          .node-container, .node-container:hover {
-            color: oklch(0.65 0.25 266 / 1);;
+          .node-container,
+          .node-container:hover {
+            color: oklch(0.65 0.25 266 / 1);
             background: white;
             border-width: 3px;
             border-color: oklch(0.65 0.25 266 / 1);
@@ -148,6 +151,11 @@
         font-weight: 300;
       }
 
+      .node-search {
+        border-width: 4px !important;
+        border-style: groove !important;
+      }
+
       .node-environment {
         border: 1px solid #ff7a7e;
         background: #f9c2c5;
@@ -156,7 +164,7 @@
           background: #ff7a7e;
         }
       }
-  
+
       .node-imported-module {
         border-color: #8838f7;
         background: #c79eff;
@@ -165,23 +173,30 @@
           background: #8838f7;
         }
       }
-      
+
+      .node-lazy {
+        border-color: oklch(0.65 0.25 266/1);
+        background: #8bc1ff;
+
+        &:hover {
+          background: #8bc1ff;
+        }
+      }
+
       .node-element {
         border-color: #28ab2c;
         background: #a7d5a9;
-  
+
         &:hover {
           background: #28ab2c;
         }
       }
-  
-  
+
       .node-null {
         border: 1px solid #8b8b8b;
         background: white;
       }
 
-  
       .node-label {
         color: black;
         font-weight: 300;
@@ -189,7 +204,6 @@
         text-align: center;
       }
     }
-
   }
 }
 

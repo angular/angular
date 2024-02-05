@@ -6,6 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {
+  publishExternalGlobalUtil,
+  publishGlobalUtil,
+} from '@angular/core/src/render3/util/global_utils';
+import {Route} from './models';
+
 export {createUrlTreeFromSnapshot} from './create_url_tree';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
@@ -145,3 +151,15 @@ export {
 export {VERSION} from './version';
 
 export * from './private_export';
+
+declare global {
+  interface IPublishUtils {
+    getLoadedRoutes(route: Route): Route[] | undefined;
+  }
+}
+
+function getLoadedRoutes(route: Route): Route[] | undefined {
+  return route._loadedRoutes;
+}
+
+publishExternalGlobalUtil('getLoadedRoutes', getLoadedRoutes);

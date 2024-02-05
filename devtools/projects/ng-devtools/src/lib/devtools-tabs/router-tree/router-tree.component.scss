@@ -3,12 +3,33 @@
   width: 100%;
   height: 100%;
   overflow-x: auto;
+  padding: 10px;
+}
+
+.filter-input {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+  padding-left: 5px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  margin-left: 10px;
+  width: 300px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: inherit;
+  height: 28px;
+  outline: none;
+  color: rgba(0, 0, 0, 0.87);
 }
 
 .no-routes {
   padding-top: 1rem;
   text-align: center;
   color: #b0b0b0;
+}
+
+.router-tree-container {
+  height: 100%;
 }
 
 .svg-container {
@@ -19,7 +40,7 @@
   .tooltip {
     position: absolute;
     background: #ebf1fb;
-    border: 0px;
+    border: 1px;
     border-radius: 2px;
     pointer-events: none;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
@@ -28,38 +49,111 @@
   }
 }
 
+.selected-route {
+  background-color: #ebf1fb !important;
+}
+
+.active-route {
+  background-color: #cfe8fc !important;
+}
+
 :host {
   ::ng-deep {
-    .link {
-      stroke: #9b9b9b;
-      stroke-width: 1px;
-      fill: none;
+    .mat-button-toggle-button {
+      height: 30px;
+      width: 30px;
+    }
+
+    .mat-button-toggle-label-content {
+      height: 30px;
+      width: 30px;
+      line-height: 30px !important;
+      padding: 0px !important;
+    }
+
+    .routesTable {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    .routesTable td,
+    .routesTable th {
+      border: 1px solid #ddd;
+      padding: 2px 8px;
+    }
+
+    .routesTable tr:nth-child(even) {
+      // background-color: #f2f2f2;
+    }
+
+    .routesTable tr:hover {
+      background-color: #ddd;
+    }
+
+    .routesTable th {
+      padding-top: 6px;
+      padding-bottom: 6px;
+      text-align: left;
+      background-color: #cfe8fc;
+    }
+
+    // .link {
+    //   stroke: #9b9b9b;
+    //   // stroke: #000000;
+    //   stroke-width: 1px;
+    //   fill: none;
+    // }
+
+    .text-link {
+      text-decoration: underline;
+      color: #4da1ff;
     }
 
     .node {
       cursor: pointer;
     }
 
+    .node-search {
+      font-weight: 600;
+    }
+
+    .node-active {
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
     .node-route {
-      stroke: #f05057;
-      fill: #fff0f0;
+      stroke: #ff7a7e;
+      fill: #f9c2c5;
       stroke-width: 1px;
     }
 
     & .node-route:hover,
     & .node-route.selected {
-      fill: #f05057;
+      fill: #ff7a7e;
     }
 
     & .node-aux-route {
-      stroke: #2828ab;
-      fill: #ebf2fc;
+      stroke: #4da1ff;
+      fill: oklch(0.65 0.25 266/1);
       stroke-width: 1px;
     }
 
     & .node-aux-route:hover,
     & .node-aux-route.selected {
-      fill: #2828ab;
+      fill: oklch(0.65 0.25 266/1);
+    }
+
+    & .node-lazy-route {
+      stroke: #28ab2c;
+      fill: #a7d5a9;
+      stroke-width: 1px;
+    }
+
+    & .node-lazy-route:hover,
+    & .node-lazy-route.selected {
+      fill: #28ab2c;
     }
 
     & text {
@@ -71,11 +165,11 @@
 
 :host-context(.dark-theme) {
   ::ng-deep {
-    .link {
-      stroke: #bcc5ce;
-      stroke-width: 1px;
-      fill: none;
-    }
+    // .link {
+    //   stroke: #bcc5ce;
+    //   stroke-width: 1px;
+    //   fill: none;
+    // }
 
     .node-route {
       stroke: #54c9bd;

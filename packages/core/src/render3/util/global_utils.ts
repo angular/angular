@@ -12,23 +12,8 @@ import {setProfiler} from '../profiler';
 import {isSignal} from '../reactivity/api';
 
 import {applyChanges} from './change_detection_utils';
-import {
-  getComponent,
-  getContext,
-  getDirectiveMetadata,
-  getDirectives,
-  getHostElement,
-  getInjector,
-  getListeners,
-  getOwningComponent,
-  getRootComponents,
-} from './discovery_utils';
-import {
-  getDependenciesFromInjectable,
-  getInjectorMetadata,
-  getInjectorProviders,
-  getInjectorResolutionPath,
-} from './injector_discovery_utils';
+import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents,} from './discovery_utils';
+import {getDependenciesFromInjectable, getInjectorMetadata, getInjectorProviders, getInjectorResolutionPath,} from './injector_discovery_utils';
 
 /**
  * This file introduces series of globally accessible debug tools
@@ -46,6 +31,10 @@ import {
  * tools are patched (window.ng).
  * */
 export const GLOBAL_PUBLISH_EXPANDO_KEY = 'ng';
+
+declare global {
+  interface IPublishUtils {}
+}
 
 const globalUtilsFunctions = {
   /**
@@ -71,7 +60,10 @@ const globalUtilsFunctions = {
   'applyChanges': applyChanges,
   'isSignal': isSignal,
 };
-type GlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
+
+type InternalUtilsFunctions = keyof typeof globalUtilsFunctions;
+type ExternalUtilsFunctions = keyof IPublishUtils;
+// type GlobalUtilsFunctions = InternalUtilsFunctions | ExternalUtilsFunctions;
 
 let _published = false;
 /**
@@ -90,7 +82,7 @@ export function publishDefaultGlobalUtils() {
     }
 
     for (const [methodName, method] of Object.entries(globalUtilsFunctions)) {
-      publishGlobalUtil(methodName as GlobalUtilsFunctions, method);
+      publishGlobalUtil(methodName as InternalUtilsFunctions, method);
     }
   }
 }
@@ -103,22 +95,44 @@ export type GlobalDevModeUtils = {
 };
 
 /**
- * Publishes the given function to `window.ng` so that it can be
+ * Publishes the given function from core to `window.ng` so that it can be
  * used from the browser console when an application is not in production.
  */
+<<<<<<< HEAD
 export function publishGlobalUtil<K extends GlobalUtilsFunctions>(
   name: K,
   fn: (typeof globalUtilsFunctions)[K],
 ): void {
+=======
+export function publishGlobalUtil<K extends InternalUtilsFunctions>(
+    name: K,
+    fn: (typeof globalUtilsFunctions)[K],
+    ): void {
+  publishUtil(name, fn);
+}
+
+/**
+ * Publishes the given function from an external package to `window.ng` so that it can be
+ * used from the browser console when an application is not in production.
+ */
+export function publishExternalGlobalUtil<K extends ExternalUtilsFunctions>(
+    name: K,
+    fn: IPublishUtils[K],
+    ): void {
+  publishUtil(name, fn);
+}
+
+function publishUtil(name: string, fn: Function) {
+>>>>>>> a9aae36285 (feat: router devtools tree)
   if (typeof COMPILED === 'undefined' || !COMPILED) {
     // Note: we can't export `ng` when using closure enhanced optimization as:
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
     // - we can't declare a closure extern as the namespace `ng` is already used within Google
     //   for typings for AngularJS (via `goog.provide('ng....')`).
-    const w = global as GlobalDevModeUtils;
+    const w = global;
     ngDevMode && assertDefined(fn, 'function not defined');
 
-    w[GLOBAL_PUBLISH_EXPANDO_KEY] ??= {} as any;
+    w[GLOBAL_PUBLISH_EXPANDO_KEY] ??= {};
     w[GLOBAL_PUBLISH_EXPANDO_KEY][name] = fn;
   }
 }
