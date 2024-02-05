@@ -7,7 +7,16 @@
  */
 
 import {CommonModule, NgForOf} from '@angular/common';
-import {Component, Input, Type} from '@angular/core';
+import {
+  Component,
+  EnvironmentInjector,
+  Input,
+  NgModule,
+  Type,
+  createEnvironmentInjector,
+  importProvidersFrom,
+  inject,
+} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
   provideRouter,
@@ -15,8 +24,9 @@ import {
   RouterModule,
   RouterOutlet,
   withComponentInputBinding,
-} from '@angular/router/src';
+} from '@angular/router';
 import {RouterTestingHarness} from '@angular/router/testing';
+import {InjectionToken} from '../../../core/src/di';
 
 describe('router outlet name', () => {
   it('should support name binding', fakeAsync(() => {
@@ -378,6 +388,44 @@ describe('component input binding', () => {
     expect(harness.routeNativeElement!.innerText).toBe('1');
     await harness.navigateByUrl('/root/child?myInput=2');
     expect(harness.routeNativeElement!.innerText).toBe('2');
+  });
+});
+
+describe('injectors', () => {
+  it('should always use environment injector from route hierarchy and not inherit from outlet', async () => {
+    let childTokenValue: any = null;
+    const TOKEN = new InjectionToken<any>('');
+
+    @Component({
+      template: '',
+      standalone: true,
+    })
+    class Child {
+      constructor() {
+        childTokenValue = inject(TOKEN as any, {optional: true});
+      }
+    }
+
+    @NgModule({
+      providers: [{provide: TOKEN, useValue: 'some value'}],
+    })
+    class ModWithProviders {}
+
+    @Component({
+      template: '<router-outlet/>',
+      imports: [RouterOutlet, ModWithProviders],
+      standalone: true,
+    })
+    class App {}
+
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: 'a', component: Child}])],
+    });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    await TestBed.inject(Router).navigateByUrl('/a');
+    fixture.detectChanges();
+    expect(childTokenValue).toEqual(null);
   });
 });
 

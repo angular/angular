@@ -224,7 +224,7 @@ export class ActivateRoutes {
           const injector = getClosestRouteInjector(future.snapshot);
           context.attachRef = null;
           context.route = future;
-          context.injector = injector;
+          context.injector = injector ?? context.injector;
           if (context.outlet) {
             // Activate the outlet when it has already been instantiated
             // Otherwise it will get activated from its `ngOnInit` when instantiated

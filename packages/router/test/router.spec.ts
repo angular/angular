@@ -186,7 +186,11 @@ describe('Router', () => {
         // Since we only test the guards, we don't need to provide a full navigation
         // transition object with all properties set.
         const testTransition = {
-          guards: getAllRouteGuards(futureState, empty, new ChildrenOutletContexts()),
+          guards: getAllRouteGuards(
+            futureState,
+            empty,
+            new ChildrenOutletContexts(TestBed.inject(EnvironmentInjector)),
+          ),
         } as NavigationTransition;
 
         of(testTransition)
@@ -242,7 +246,11 @@ describe('Router', () => {
         // Since we only test the guards, we don't need to provide a full navigation
         // transition object with all properties set.
         const testTransition = {
-          guards: getAllRouteGuards(futureState, empty, new ChildrenOutletContexts()),
+          guards: getAllRouteGuards(
+            futureState,
+            empty,
+            new ChildrenOutletContexts(TestBed.inject(EnvironmentInjector)),
+          ),
         } as NavigationTransition;
 
         of(testTransition)
@@ -296,7 +304,11 @@ describe('Router', () => {
         // Since we only test the guards, we don't need to provide a full navigation
         // transition object with all properties set.
         const testTransition = {
-          guards: getAllRouteGuards(futureState, currentState, new ChildrenOutletContexts()),
+          guards: getAllRouteGuards(
+            futureState,
+            currentState,
+            new ChildrenOutletContexts(TestBed.inject(EnvironmentInjector)),
+          ),
         } as NavigationTransition;
 
         of(testTransition)
@@ -368,7 +380,11 @@ describe('Router', () => {
         // Since we only test the guards, we don't need to provide a full navigation
         // transition object with all properties set.
         const testTransition = {
-          guards: getAllRouteGuards(futureState, currentState, new ChildrenOutletContexts()),
+          guards: getAllRouteGuards(
+            futureState,
+            currentState,
+            new ChildrenOutletContexts(TestBed.inject(EnvironmentInjector)),
+          ),
         } as NavigationTransition;
 
         of(testTransition)
@@ -841,7 +857,7 @@ function checkResolveData(
   // Since we only test the guards and their resolve data function, we don't need to provide
   // a full navigation transition object with all properties set.
   of({
-    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts()),
+    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts(injector)),
   } as NavigationTransition)
     .pipe(resolveDataOperator('emptyOnly', injector))
     .subscribe(check, (e) => {
@@ -858,7 +874,7 @@ function checkGuards(
   // Since we only test the guards, we don't need to provide a full navigation
   // transition object with all properties set.
   of({
-    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts()),
+    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts(injector)),
   } as NavigationTransition)
     .pipe(checkGuardsOperator(injector))
     .subscribe({
