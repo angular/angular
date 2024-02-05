@@ -37,3 +37,8 @@ export function createSyntheticAngularCoreDecoratorAccess(
       // the transform to think it's not synthetic and comes from Angular core.
       ts.setOriginalNode(factory.createIdentifier(decoratorName), classDecoratorIdentifier));
 }
+
+/** Casts the given expression as `any`. */
+export function castAsAny(factory: ts.NodeFactory, expr: ts.Expression): ts.Expression {
+  return factory.createAsExpression(expr, factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+}
