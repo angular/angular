@@ -788,6 +788,7 @@ export class NavigationTransitions {
             // finalized.
             if (this.currentNavigation?.id === overallTransitionState.id) {
               this.currentNavigation = null;
+              this.currentTransition = null;
             }
           }),
           catchError((e) => {
