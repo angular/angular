@@ -558,7 +558,7 @@ function allTests(os: string) {
       });
       env.write('test.ts', `
       import {Component} from '@angular/core';
-      
+
       function customDecorator<T extends new (...args: any[]) => {}>(original: T) {
         return class extends original {
           someProp = 'default';
@@ -584,7 +584,7 @@ function allTests(os: string) {
       });
       env.write('test.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({template: '1'})
       @Component({template: '2'})
       class MyComp {}
@@ -604,14 +604,14 @@ function allTests(os: string) {
            forbidOrphanComponents: true,
          });
          env.write('test.ts', `
-      import {Injectable} from '@angular/core';     
+      import {Injectable} from '@angular/core';
 
       class SomeServiceImpl {
         getMessage() {
           return 'Hi!';
         }
       }
-      
+
       @Injectable({providedIn: 'root', useExisting: SomeServiceImpl})
       @Injectable({providedIn: 'root'})
       export abstract class SomeService {
@@ -4593,7 +4593,7 @@ function allTests(os: string) {
     `);
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('MSG_EXTERNAL_8321000940098097247$$TEST_TS_1');
+      expect(jsContents).toContain('MSG_EXTERNAL_8321000940098097247$$TEST_TS_0');
     });
 
     it('should take i18nUseExternalIds config option into account', () => {
