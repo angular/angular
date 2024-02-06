@@ -8,7 +8,6 @@
 
 import {RNode} from '../render3/interfaces/renderer_dom';
 
-
 /** Encodes that the node lookup should start from the host node of this component. */
 export const REFERENCE_NODE_HOST = 'h';
 
@@ -33,7 +32,7 @@ export const TEMPLATES = 't';
 export const CONTAINERS = 'c';
 export const MULTIPLIER = 'x';
 export const NUM_ROOT_NODES = 'r';
-export const TEMPLATE_ID = 'i';  // as it's also an "id"
+export const TEMPLATE_ID = 'i'; // as it's also an "id"
 export const NODES = 'n';
 export const DISCONNECTED_NODES = 'd';
 
@@ -145,13 +144,13 @@ export interface DehydratedView {
    * in invoking corresponding DOM actions (attaching DOM nodes action is
    * skipped when we hydrate, since nodes are already in the DOM).
    */
-  firstChild: RNode|null;
+  firstChild: RNode | null;
 
   /**
    * Stores references to first nodes in DOM segments that
    * represent either an <ng-container> or a view container.
    */
-  segmentHeads?: {[index: number]: RNode|null};
+  segmentHeads?: {[index: number]: RNode | null};
 
   /**
    * An instance of a Set that represents nodes disconnected from
@@ -164,7 +163,7 @@ export interface DehydratedView {
    * If the value is `null`, it means that there were no disconnected
    * nodes detected in this view at serialization time.
    */
-  disconnectedNodes?: Set<number>|null;
+  disconnectedNodes?: Set<number> | null;
 }
 
 /**

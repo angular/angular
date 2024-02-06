@@ -32,9 +32,9 @@ export function onIdle(callback: VoidFunction, lView: LView) {
  * overridden/mocked in test environment and picked up by the runtime code.
  */
 const _requestIdleCallback = () =>
-    typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
+  typeof requestIdleCallback !== 'undefined' ? requestIdleCallback : setTimeout;
 const _cancelIdleCallback = () =>
-    typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
+  typeof requestIdleCallback !== 'undefined' ? cancelIdleCallback : clearTimeout;
 
 /**
  * Helper service to schedule `requestIdleCallback`s for batches of defer blocks,
@@ -46,7 +46,7 @@ export class IdleScheduler {
   executingCallbacks = false;
 
   // Currently scheduled idle callback id.
-  idleId: number|null = null;
+  idleId: number | null = null;
 
   // Set of callbacks to be invoked next.
   current = new Set<VoidFunction>();

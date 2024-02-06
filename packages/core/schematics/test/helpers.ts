@@ -23,7 +23,7 @@ export function dedent(strings: TemplateStringsArray, ...values: any[]) {
     return joinedString;
   }
 
-  const minLineIndent = Math.min(...matches.map(el => el.length));
+  const minLineIndent = Math.min(...matches.map((el) => el.length));
   const omitMinIndentRegex = new RegExp(`^[ \\t]{${minLineIndent}}`, 'gm');
   const omitEmptyLineWhitespaceRegex = /^[ \t]+$/gm;
   const result = minLineIndent > 0 ? joinedString.replace(omitMinIndentRegex, '') : joinedString;

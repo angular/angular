@@ -9,20 +9,23 @@
 // below. This would normally be done inside the application `polyfills.ts` file.
 import '@angular/localize/init';
 
-import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, Input, QueryList, ViewChildren} from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ContentChildren,
+  Directive,
+  Input,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-describe('<ng-container>', function() {
+describe('<ng-container>', function () {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        MyComp,
-        NeedsContentChildren,
-        NeedsViewChildren,
-        TextDirective,
-        Simple,
-      ],
+      declarations: [MyComp, NeedsContentChildren, NeedsViewChildren, TextDirective, Simple],
     });
   });
 
@@ -76,13 +79,13 @@ describe('<ng-container>', function() {
 
 @Directive({selector: '[text]'})
 class TextDirective {
-  @Input() public text: string|null = null;
+  @Input() public text: string | null = null;
 }
 
 @Component({selector: 'needs-content-children', template: ''})
 class NeedsContentChildren implements AfterContentInit {
   @ContentChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
-  numberOfChildrenAfterContentInit: number|undefined;
+  numberOfChildrenAfterContentInit: number | undefined;
 
   ngAfterContentInit() {
     this.numberOfChildrenAfterContentInit = this.textDirChildren.length;
@@ -92,7 +95,7 @@ class NeedsContentChildren implements AfterContentInit {
 @Component({selector: 'needs-view-children', template: '<div text></div>'})
 class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren!: QueryList<TextDirective>;
-  numberOfChildrenAfterViewInit: number|undefined;
+  numberOfChildrenAfterViewInit: number | undefined;
 
   ngAfterViewInit() {
     this.numberOfChildrenAfterViewInit = this.textDirChildren.length;
@@ -100,8 +103,7 @@ class NeedsViewChildren implements AfterViewInit {
 }
 
 @Component({selector: 'simple', template: 'SIMPLE(<ng-content></ng-content>)'})
-class Simple {
-}
+class Simple {}
 
 @Component({selector: 'my-comp', template: ''})
 class MyComp {

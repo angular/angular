@@ -64,11 +64,10 @@ export const enum ProfilerEvent {
  * Profiler function which the runtime will invoke before and after user code.
  */
 export interface Profiler {
-  (event: ProfilerEvent, instance: {}|null, hookOrListener?: (e?: any) => any): void;
+  (event: ProfilerEvent, instance: {} | null, hookOrListener?: (e?: any) => any): void;
 }
 
-
-let profilerCallback: Profiler|null = null;
+let profilerCallback: Profiler | null = null;
 
 /**
  * Sets the callback function which will be invoked before and after performing certain actions at
@@ -80,7 +79,7 @@ let profilerCallback: Profiler|null = null;
  *
  * @param profiler function provided by the caller or null value to disable profiling.
  */
-export const setProfiler = (profiler: Profiler|null) => {
+export const setProfiler = (profiler: Profiler | null) => {
   profilerCallback = profiler;
 };
 
@@ -93,8 +92,11 @@ export const setProfiler = (profiler: Profiler|null) => {
  *  execution context
  * @returns
  */
-export const profiler: Profiler = function(
-    event: ProfilerEvent, instance: {}|null, hookOrListener?: (e?: any) => any) {
+export const profiler: Profiler = function (
+  event: ProfilerEvent,
+  instance: {} | null,
+  hookOrListener?: (e?: any) => any,
+) {
   if (profilerCallback != null /* both `null` and `undefined` */) {
     profilerCallback(event, instance, hookOrListener);
   }

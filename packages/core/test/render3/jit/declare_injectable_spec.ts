@@ -6,10 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {forwardRef, InjectionToken, Injector, ɵcreateInjector, ɵInjectorProfilerContext, ɵsetCurrentInjector, ɵsetInjectorProfilerContext, ɵɵdefineInjector, ɵɵInjectableDeclaration, ɵɵngDeclareInjectable, ɵɵngDeclareInjector, ɵɵngDeclareNgModule} from '@angular/core';
+import {
+  forwardRef,
+  InjectionToken,
+  Injector,
+  ɵcreateInjector,
+  ɵInjectorProfilerContext,
+  ɵsetCurrentInjector,
+  ɵsetInjectorProfilerContext,
+  ɵɵdefineInjector,
+  ɵɵInjectableDeclaration,
+  ɵɵngDeclareInjectable,
+  ɵɵngDeclareInjector,
+  ɵɵngDeclareNgModule,
+} from '@angular/core';
 
 describe('Injectable declaration jit compilation', () => {
-  let previousInjector: Injector|null|undefined;
+  let previousInjector: Injector | null | undefined;
   let previousInjectorProfilerContext: ɵInjectorProfilerContext;
   beforeEach(() => {
     const injector = ɵcreateInjector(TestInjector);
@@ -78,9 +91,9 @@ describe('Injectable declaration jit compilation', () => {
     class TestClass {
       static ɵprov = ɵɵngDeclareInjectable({
         type: TestClass,
-        useClass: forwardRef(function() {
+        useClass: forwardRef(function () {
           return FutureClass;
-        })
+        }),
       });
     }
     class FutureClass {
@@ -121,8 +134,10 @@ class UseClass {
 
 class UseFactory {
   constructor(readonly msg: string) {}
-  static ɵprov =
-      ɵɵngDeclareInjectable({type: UseFactory, useFactory: () => new UseFactory('from factory')});
+  static ɵprov = ɵɵngDeclareInjectable({
+    type: UseFactory,
+    useFactory: () => new UseFactory('from factory'),
+  });
 }
 
 class UseValue {
@@ -138,8 +153,11 @@ class UseExisting {
 
 class DependingClass {
   constructor(readonly testClass: UseClass) {}
-  static ɵprov = ɵɵngDeclareInjectable(
-      {type: DependingClass, useClass: DependingClass, deps: [{token: UseClass}]});
+  static ɵprov = ɵɵngDeclareInjectable({
+    type: DependingClass,
+    useClass: DependingClass,
+    deps: [{token: UseClass}],
+  });
 }
 
 class DependingFactory {
@@ -147,7 +165,7 @@ class DependingFactory {
   static ɵprov = ɵɵngDeclareInjectable({
     type: DependingFactory,
     useFactory: (dep: UseClass) => new DependingFactory(dep),
-    deps: [{token: UseClass}]
+    deps: [{token: UseClass}],
   });
 }
 

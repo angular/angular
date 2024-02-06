@@ -31,7 +31,8 @@ describe('isShapeOf', () => {
 
   it('should not match if missing property', () => {
     expect(isShapeOf({required: 1}, {required: true, missing: true})).toBeFalse();
-    expect(isShapeOf({required: true, extra: 'is ok'}, {required: true, missing: true}))
-        .toBeFalse();
+    expect(
+      isShapeOf({required: true, extra: 'is ok'}, {required: true, missing: true}),
+    ).toBeFalse();
   });
 });

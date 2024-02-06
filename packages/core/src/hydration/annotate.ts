@@ -14,13 +14,40 @@ import {getComponentDef} from '../render3/definition';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../render3/interfaces/container';
 import {isTNodeShape, TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
-import {hasI18n, isComponentHost, isLContainer, isProjectionTNode, isRootView} from '../render3/interfaces/type_checks';
-import {CONTEXT, HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TView, TVIEW, TViewType} from '../render3/interfaces/view';
+import {
+  hasI18n,
+  isComponentHost,
+  isLContainer,
+  isProjectionTNode,
+  isRootView,
+} from '../render3/interfaces/type_checks';
+import {
+  CONTEXT,
+  HEADER_OFFSET,
+  HOST,
+  LView,
+  PARENT,
+  RENDERER,
+  TView,
+  TVIEW,
+  TViewType,
+} from '../render3/interfaces/view';
 import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
-import {CONTAINERS, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
+import {
+  CONTAINERS,
+  DISCONNECTED_NODES,
+  ELEMENT_CONTAINERS,
+  MULTIPLIER,
+  NODES,
+  NUM_ROOT_NODES,
+  SerializedContainerView,
+  SerializedView,
+  TEMPLATE_ID,
+  TEMPLATES,
+} from './interfaces';
 import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
 import {getLNodeForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
@@ -86,7 +113,7 @@ interface HydrationContext {
  * Computes the number of root nodes in a given view
  * (or child nodes in a given container if a tNode is provided).
  */
-function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode|null): number {
+function calcNumRootNodes(tView: TView, lView: LView, tNode: TNode | null): number {
   const rootNodes: unknown[] = [];
   collectNativeNodes(tView, lView, tNode, rootNodes);
   return rootNodes.length;
@@ -101,12 +128,14 @@ function calcNumRootNodesInLContainer(lContainer: LContainer): number {
   return rootNodes.length;
 }
 
-
 /**
  * Annotates root level component's LView for hydration,
  * see `annotateHostElementForHydration` for additional information.
  */
-function annotateComponentLViewForHydration(lView: LView, context: HydrationContext): number|null {
+function annotateComponentLViewForHydration(
+  lView: LView,
+  context: HydrationContext,
+): number | null {
   const hostElement = lView[HOST];
   // Root elements might also be annotated with the `ngSkipHydration` attribute,
   // check if it's present before starting the serialization process.
@@ -199,7 +228,9 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
  * @returns an array of the `SerializedView` objects
  */
 function serializeLContainer(
-    lContainer: LContainer, context: HydrationContext): SerializedContainerView[] {
+  lContainer: LContainer,
+  context: HydrationContext,
+): SerializedContainerView[] {
   const views: SerializedContainerView[] = [];
   let lastViewAsString = '';
 
@@ -208,7 +239,7 @@ function serializeLContainer(
 
     let template: string;
     let numRootNodes: number;
-    let serializedView: SerializedContainerView|undefined;
+    let serializedView: SerializedContainerView | undefined;
 
     if (isRootView(childLView)) {
       // If this is a root view, get an LView for the underlying component,
@@ -346,8 +377,10 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
           // appears at projection location), skip annotations for this content
           // since all DOM nodes in this projection were handled while processing
           // a parent lView, which contains those nodes.
-          if (!isProjectionTNode(projectionHeadTNode) &&
-              !isInSkipHydrationBlock(projectionHeadTNode)) {
+          if (
+            !isProjectionTNode(projectionHeadTNode) &&
+            !isInSkipHydrationBlock(projectionHeadTNode)
+          ) {
             if (isDisconnectedNode(projectionHeadTNode, lView)) {
               // Check whether this node is connected, since we may have a TNode
               // in the data structure as a projection segment head, but the
@@ -384,7 +417,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       }
 
       // Serialize views within this LContainer.
-      const hostNode = lView[i][HOST]!;  // host node of this container
+      const hostNode = lView[i][HOST]!; // host node of this container
 
       // LView[i][HOST] can be of 2 different types:
       // - either a DOM node
@@ -419,7 +452,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         // not be able to find an anchor. In this case, use full path instead.
         let nextTNode = tNode.next;
         // Skip over all `<ng-content>` slots in a row.
-        while (nextTNode !== null && (nextTNode.type & TNodeType.Projection)) {
+        while (nextTNode !== null && nextTNode.type & TNodeType.Projection) {
           nextTNode = nextTNode.next;
         }
         if (nextTNode && !isInSkipHydrationBlock(nextTNode)) {
@@ -484,8 +517,11 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
  */
 function conditionallyAnnotateNodePath(ngh: SerializedView, tNode: TNode, lView: LView<unknown>) {
   // Handle case #1 described above.
-  if (tNode.projectionNext && tNode.projectionNext !== tNode.next &&
-      !isInSkipHydrationBlock(tNode.projectionNext)) {
+  if (
+    tNode.projectionNext &&
+    tNode.projectionNext !== tNode.next &&
+    !isInSkipHydrationBlock(tNode.projectionNext)
+  ) {
     appendSerializedNodePath(ngh, tNode.projectionNext, lView);
   }
 
@@ -493,8 +529,12 @@ function conditionallyAnnotateNodePath(ngh: SerializedView, tNode: TNode, lView:
   // Note: we only do that for the first node (i.e. when `tNode.prev === null`),
   // the rest of the nodes would rely on the current node location, so no extra
   // annotation is needed.
-  if (tNode.prev === null && tNode.parent !== null && isDisconnectedNode(tNode.parent, lView) &&
-      !isDisconnectedNode(tNode, lView)) {
+  if (
+    tNode.prev === null &&
+    tNode.parent !== null &&
+    isDisconnectedNode(tNode.parent, lView) &&
+    !isDisconnectedNode(tNode, lView)
+  ) {
     appendSerializedNodePath(ngh, tNode, lView);
   }
 }
@@ -505,9 +545,9 @@ function conditionallyAnnotateNodePath(ngh: SerializedView, tNode: TNode, lView:
  */
 function componentUsesShadowDomEncapsulation(lView: LView): boolean {
   const instance = lView[CONTEXT];
-  return instance?.constructor ?
-      getComponentDef(instance.constructor)?.encapsulation === ViewEncapsulation.ShadowDom :
-      false;
+  return instance?.constructor
+    ? getComponentDef(instance.constructor)?.encapsulation === ViewEncapsulation.ShadowDom
+    : false;
 }
 
 /**
@@ -524,7 +564,10 @@ function componentUsesShadowDomEncapsulation(lView: LView): boolean {
  *          or `null` when a given component can not be serialized.
  */
 function annotateHostElementForHydration(
-    element: RElement, lView: LView, context: HydrationContext): number|null {
+  element: RElement,
+  lView: LView,
+  context: HydrationContext,
+): number | null {
   const renderer = lView[RENDERER];
   if (hasI18n(lView) || componentUsesShadowDomEncapsulation(lView)) {
     // Attach the skip hydration attribute if this component:
@@ -552,7 +595,9 @@ function annotateHostElementForHydration(
  * @param doc The document
  */
 function insertCorruptedTextNodeMarkers(
-    corruptedTextNodes: Map<HTMLElement, string>, doc: Document) {
+  corruptedTextNodes: Map<HTMLElement, string>,
+  doc: Document,
+) {
   for (const [textNode, marker] of corruptedTextNodes) {
     textNode.after(doc.createComment(marker));
   }

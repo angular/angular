@@ -14,7 +14,6 @@ import {bootstrapApplication} from '@angular/platform-browser';
   selector: 'hello-world',
   template: 'Hello World!',
 })
-class HelloWorld {
-}
+class HelloWorld {}
 
 bootstrapApplication(HelloWorld);

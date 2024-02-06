@@ -19,8 +19,9 @@ export const coreModule = '@angular/core';
 export type RewriteFn = (startPos: number, width: number, text: string) => void;
 
 export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
-  const exposedImports =
-      getImportSpecifiers(sourceFile, platformBrowserModule, [...symbolsToUpdate]);
+  const exposedImports = getImportSpecifiers(sourceFile, platformBrowserModule, [
+    ...symbolsToUpdate,
+  ]);
   if (exposedImports.length === 0) {
     return;
   }
@@ -32,8 +33,9 @@ function migrateImports(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
   let changeTracker = new ChangeTracker(ts.createPrinter());
   const updatedImports = new Map<ts.NamedImports, ts.NamedImports>();
   const addedImports = new Array();
-  const importSpecifiers =
-      getImportSpecifiers(sourceFile, platformBrowserModule, [...symbolsToUpdate]);
+  const importSpecifiers = getImportSpecifiers(sourceFile, platformBrowserModule, [
+    ...symbolsToUpdate,
+  ]);
   for (const importSpecifier of importSpecifiers) {
     const namedImports = closestNode(importSpecifier, ts.isNamedImports)!;
     const importToUpdate = updatedImports.get(namedImports) ?? namedImports;

@@ -19,11 +19,15 @@ import {isHostComponentStandalone} from './instructions/element_validation';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {TTextNode} from './interfaces/node';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
-import {pureFunction1Internal, pureFunction2Internal, pureFunction3Internal, pureFunction4Internal, pureFunctionVInternal} from './pure_function';
+import {
+  pureFunction1Internal,
+  pureFunction2Internal,
+  pureFunction3Internal,
+  pureFunction4Internal,
+  pureFunctionVInternal,
+} from './pure_function';
 import {getBindingRoot, getCurrentTNode, getLView, getTView} from './state';
 import {load} from './util/view_utils';
-
-
 
 /**
  * Create a pipe.
@@ -57,7 +61,7 @@ export function ɵɵpipe(index: number, pipeName: string): any {
   if (ngDevMode) {
     previousInjectorProfilerContext = setInjectorProfilerContext({
       injector: new NodeInjector(getCurrentTNode() as TTextNode, getLView()),
-      token: pipeDef.type
+      token: pipeDef.type,
     });
   }
   const previousInjectImplementation = setInjectImplementation(ɵɵdirectiveInject);
@@ -85,14 +89,18 @@ export function ɵɵpipe(index: number, pipeName: string): any {
  * @param registry Full list of available pipes
  * @returns Matching PipeDef
  */
-function getPipeDef(name: string, registry: PipeDefList|null): PipeDef<any>|undefined {
+function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> | undefined {
   if (registry) {
     if (ngDevMode) {
-      const pipes = registry.filter(pipe => pipe.name === name);
+      const pipes = registry.filter((pipe) => pipe.name === name);
       // TODO: Throw an error in the next major
       if (pipes.length > 1) {
-        console.warn(formatRuntimeError(
-            RuntimeErrorCode.MULTIPLE_MATCHING_PIPES, getMultipleMatchingPipesMessage(name)));
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.MULTIPLE_MATCHING_PIPES,
+            getMultipleMatchingPipesMessage(name),
+          ),
+        );
       }
     }
     for (let i = registry.length - 1; i >= 0; i--) {
@@ -121,10 +129,9 @@ function getMultipleMatchingPipesMessage(name: string) {
   const hostIsStandalone = isHostComponentStandalone(lView);
   const componentInfoMessage = context ? ` in the '${context.constructor.name}' component` : '';
   const verifyMessage = `check ${
-      hostIsStandalone ? '\'@Component.imports\' of this component' :
-                         'the imports of this module'}`;
-  const errorMessage =
-      `Multiple pipes match the name \`${name}\`${componentInfoMessage}. ${verifyMessage}`;
+    hostIsStandalone ? "'@Component.imports' of this component" : 'the imports of this module'
+  }`;
+  const errorMessage = `Multiple pipes match the name \`${name}\`${componentInfoMessage}. ${verifyMessage}`;
   return errorMessage;
 }
 
@@ -141,10 +148,11 @@ function getPipeNotFoundErrorMessage(name: string) {
   const hostIsStandalone = isHostComponentStandalone(lView);
   const componentInfoMessage = context ? ` in the '${context.constructor.name}' component` : '';
   const verifyMessage = `Verify that it is ${
-      hostIsStandalone ? 'included in the \'@Component.imports\' of this component' :
-                         'declared or imported in this module'}`;
-  const errorMessage =
-      `The pipe '${name}' could not be found${componentInfoMessage}. ${verifyMessage}`;
+    hostIsStandalone
+      ? "included in the '@Component.imports' of this component"
+      : 'declared or imported in this module'
+  }`;
+  const errorMessage = `The pipe '${name}' could not be found${componentInfoMessage}. ${verifyMessage}`;
   return errorMessage;
 }
 
@@ -164,10 +172,16 @@ export function ɵɵpipeBind1(index: number, offset: number, v1: any): any {
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return isPure(lView, adjustedIndex) ?
-      pureFunction1Internal(
-          lView, getBindingRoot(), offset, pipeInstance.transform, v1, pipeInstance) :
-      pipeInstance.transform(v1);
+  return isPure(lView, adjustedIndex)
+    ? pureFunction1Internal(
+        lView,
+        getBindingRoot(),
+        offset,
+        pipeInstance.transform,
+        v1,
+        pipeInstance,
+      )
+    : pipeInstance.transform(v1);
 }
 
 /**
@@ -187,10 +201,17 @@ export function ɵɵpipeBind2(index: number, slotOffset: number, v1: any, v2: an
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return isPure(lView, adjustedIndex) ?
-      pureFunction2Internal(
-          lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
-      pipeInstance.transform(v1, v2);
+  return isPure(lView, adjustedIndex)
+    ? pureFunction2Internal(
+        lView,
+        getBindingRoot(),
+        slotOffset,
+        pipeInstance.transform,
+        v1,
+        v2,
+        pipeInstance,
+      )
+    : pipeInstance.transform(v1, v2);
 }
 
 /**
@@ -211,10 +232,18 @@ export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: an
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return isPure(lView, adjustedIndex) ?
-      pureFunction3Internal(
-          lView, getBindingRoot(), slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
-      pipeInstance.transform(v1, v2, v3);
+  return isPure(lView, adjustedIndex)
+    ? pureFunction3Internal(
+        lView,
+        getBindingRoot(),
+        slotOffset,
+        pipeInstance.transform,
+        v1,
+        v2,
+        v3,
+        pipeInstance,
+      )
+    : pipeInstance.transform(v1, v2, v3);
 }
 
 /**
@@ -233,14 +262,29 @@ export function ɵɵpipeBind3(index: number, slotOffset: number, v1: any, v2: an
  * @codeGenApi
  */
 export function ɵɵpipeBind4(
-    index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any {
+  index: number,
+  slotOffset: number,
+  v1: any,
+  v2: any,
+  v3: any,
+  v4: any,
+): any {
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return isPure(lView, adjustedIndex) ? pureFunction4Internal(
-                                            lView, getBindingRoot(), slotOffset,
-                                            pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
-                                        pipeInstance.transform(v1, v2, v3, v4);
+  return isPure(lView, adjustedIndex)
+    ? pureFunction4Internal(
+        lView,
+        getBindingRoot(),
+        slotOffset,
+        pipeInstance.transform,
+        v1,
+        v2,
+        v3,
+        v4,
+        pipeInstance,
+      )
+    : pipeInstance.transform(v1, v2, v3, v4);
 }
 
 /**
@@ -259,10 +303,16 @@ export function ɵɵpipeBindV(index: number, slotOffset: number, values: [any, .
   const adjustedIndex = index + HEADER_OFFSET;
   const lView = getLView();
   const pipeInstance = load<PipeTransform>(lView, adjustedIndex);
-  return isPure(lView, adjustedIndex) ?
-      pureFunctionVInternal(
-          lView, getBindingRoot(), slotOffset, pipeInstance.transform, values, pipeInstance) :
-      pipeInstance.transform.apply(pipeInstance, values);
+  return isPure(lView, adjustedIndex)
+    ? pureFunctionVInternal(
+        lView,
+        getBindingRoot(),
+        slotOffset,
+        pipeInstance.transform,
+        values,
+        pipeInstance,
+      )
+    : pipeInstance.transform.apply(pipeInstance, values);
 }
 
 function isPure(lView: LView, index: number): boolean {

@@ -33,20 +33,28 @@ describe('Compiler options migration', () => {
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
-    writeFile('/tsconfig.json', JSON.stringify({
-      compilerOptions: {
-        lib: ['es2015'],
-        strictNullChecks: true,
-      },
-    }));
+    writeFile(
+      '/tsconfig.json',
+      JSON.stringify({
+        compilerOptions: {
+          lib: ['es2015'],
+          strictNullChecks: true,
+        },
+      }),
+    );
 
-    writeFile('/angular.json', JSON.stringify({
-      version: 1,
-      projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
-    }));
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}},
+      }),
+    );
 
     // We need to declare the Angular symbols we're testing for, otherwise type checking won't work.
-    writeFile('/node_modules/@angular/core/index.d.ts', `
+    writeFile(
+      '/node_modules/@angular/core/index.d.ts',
+      `
     export enum ViewEncapsulation {Emulated = 0,  None = 2,  ShadowDom = 3}
     export enum MissingTranslationStrategy { Error = 0, Warning = 1, Ignore = 2}
     export type CompilerOptions = {
@@ -55,9 +63,12 @@ describe('Compiler options migration', () => {
       preserveWhitespaces?: boolean,
       useJit: boolean,
       missingTranslation?: MissingTranslationStrategy,
-    };`);
+    };`,
+    );
 
-    writeFile('/node_modules/@not-angular/core/index.d.ts', `
+    writeFile(
+      '/node_modules/@not-angular/core/index.d.ts',
+      `
     export enum ViewEncapsulation {Emulated = 0,  None = 2,  ShadowDom = 3}
     export enum MissingTranslationStrategy { Error = 0, Warning = 1, Ignore = 2}
     export type CompilerOptions = {
@@ -66,7 +77,8 @@ describe('Compiler options migration', () => {
       preserveWhitespaces?: boolean,
       useJit: boolean,
       missingTranslation?: MissingTranslationStrategy,
-    };`);
+    };`,
+    );
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -82,7 +94,9 @@ describe('Compiler options migration', () => {
   });
 
   it('should be able to remove useJit and missingTranslation', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import {CompilerOptions, ViewEncapsulation, MissingTranslationStrategy} from '@angular/core';
 
       const compilerOptions: CompilerOptions = {
@@ -91,7 +105,8 @@ describe('Compiler options migration', () => {
         useJit: true,
         missingTranslation: MissingTranslationStrategy.Ignore,
       };
-    `);
+    `,
+    );
 
     await runMigration();
     const content = tree.readContent('/index.ts');
@@ -100,9 +115,10 @@ describe('Compiler options migration', () => {
     expect(content).not.toContain(`MissingTranslationStrategy`);
   });
 
-
   it('should be able to remove useJit and missingTranslation', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import {CompilerOptions, ViewEncapsulation, MissingTranslationStrategy} from '@angular/core';
 
       function withOptions(compilerOptions: CompilerOptions) {}
@@ -113,7 +129,8 @@ describe('Compiler options migration', () => {
         useJit: true,
         missingTranslation: MissingTranslationStrategy.Ignore,
       });
-    `);
+    `,
+    );
 
     await runMigration();
     const content = tree.readContent('/index.ts');
@@ -123,7 +140,9 @@ describe('Compiler options migration', () => {
   });
 
   it('should not remove properties is not a core CompilerOptions object', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
       import {CompilerOptions, ViewEncapsulation, MissingTranslationStrategy} from '@not-angular/core';
 
       const compilerOptions: CompilerOptions = {
@@ -132,7 +151,8 @@ describe('Compiler options migration', () => {
         useJit: true,
         missingTranslation: MissingTranslationStrategy.Ignore,
       };
-    `);
+    `,
+    );
 
     await runMigration();
     const content = tree.readContent('/index.ts');

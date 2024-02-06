@@ -19,10 +19,17 @@ import {InjectorScope} from './scope';
  * Create a new `Injector` which is configured using a `defType` of `InjectorType<any>`s.
  */
 export function createInjector(
-    defType: /* InjectorType<any> */ any, parent: Injector|null = null,
-    additionalProviders: Array<Provider|StaticProvider>|null = null, name?: string): Injector {
-  const injector =
-      createInjectorWithoutInjectorInstances(defType, parent, additionalProviders, name);
+  defType: /* InjectorType<any> */ any,
+  parent: Injector | null = null,
+  additionalProviders: Array<Provider | StaticProvider> | null = null,
+  name?: string,
+): Injector {
+  const injector = createInjectorWithoutInjectorInstances(
+    defType,
+    parent,
+    additionalProviders,
+    name,
+  );
   injector.resolveInjectorInitializers();
   return injector;
 }
@@ -33,13 +40,13 @@ export function createInjector(
  * should be resolved at a later point by calling `_resolveInjectorDefTypes`.
  */
 export function createInjectorWithoutInjectorInstances(
-    defType: /* InjectorType<any> */ any, parent: Injector|null = null,
-    additionalProviders: Array<Provider|StaticProvider>|null = null, name?: string,
-    scopes = new Set<InjectorScope>()): R3Injector {
-  const providers = [
-    additionalProviders || EMPTY_ARRAY,
-    importProvidersFrom(defType),
-  ];
+  defType: /* InjectorType<any> */ any,
+  parent: Injector | null = null,
+  additionalProviders: Array<Provider | StaticProvider> | null = null,
+  name?: string,
+  scopes = new Set<InjectorScope>(),
+): R3Injector {
+  const providers = [additionalProviders || EMPTY_ARRAY, importProvidersFrom(defType)];
   name = name || (typeof defType === 'object' ? undefined : stringify(defType));
 
   return new R3Injector(providers, parent || getNullInjector(), name || null, scopes);

@@ -9,7 +9,14 @@
 import {Type} from '../interface/type';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
 
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
+import {
+  ClassSansProvider,
+  ConstructorSansProvider,
+  ExistingSansProvider,
+  FactorySansProvider,
+  StaticClassSansProvider,
+  ValueSansProvider,
+} from './interface/provider';
 import {compileInjectable} from './jit/injectable';
 
 export {compileInjectable};
@@ -19,8 +26,13 @@ export {compileInjectable};
  *
  * @publicApi
  */
-export type InjectableProvider = ValueSansProvider|ExistingSansProvider|StaticClassSansProvider|
-    ConstructorSansProvider|FactorySansProvider|ClassSansProvider;
+export type InjectableProvider =
+  | ValueSansProvider
+  | ExistingSansProvider
+  | StaticClassSansProvider
+  | ConstructorSansProvider
+  | FactorySansProvider
+  | ClassSansProvider;
 
 /**
  * Type of the Injectable decorator / constructor function.
@@ -48,11 +60,13 @@ export interface InjectableDecorator {
    *
    */
   (): TypeDecorator;
-  (options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&
-   InjectableProvider): TypeDecorator;
-  new(): Injectable;
-  new(options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&
-      InjectableProvider): Injectable;
+  (
+    options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
+  ): TypeDecorator;
+  new (): Injectable;
+  new (
+    options?: {providedIn: Type<any> | 'root' | 'platform' | 'any' | null} & InjectableProvider,
+  ): Injectable;
 }
 
 /**
@@ -79,7 +93,7 @@ export interface Injectable {
    * modules share one instance. This option is DEPRECATED.
    *
    */
-  providedIn?: Type<any>|'root'|'platform'|'any'|null;
+  providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
 }
 
 /**
@@ -89,5 +103,9 @@ export interface Injectable {
  * @publicApi
  */
 export const Injectable: InjectableDecorator = makeDecorator(
-    'Injectable', undefined, undefined, undefined,
-    (type: Type<any>, meta: Injectable) => compileInjectable(type as any, meta));
+  'Injectable',
+  undefined,
+  undefined,
+  undefined,
+  (type: Type<any>, meta: Injectable) => compileInjectable(type as any, meta),
+);

@@ -33,17 +33,23 @@ describe('TransferState migration', () => {
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
-    writeFile('/tsconfig.json', JSON.stringify({
-      compilerOptions: {
-        lib: ['es2015'],
-        strictNullChecks: true,
-      },
-    }));
+    writeFile(
+      '/tsconfig.json',
+      JSON.stringify({
+        compilerOptions: {
+          lib: ['es2015'],
+          strictNullChecks: true,
+        },
+      }),
+    );
 
-    writeFile('/angular.json', JSON.stringify({
-      version: 1,
-      projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}}
-    }));
+    writeFile(
+      '/angular.json',
+      JSON.stringify({
+        version: 1,
+        projects: {t: {root: '', architect: {build: {options: {tsConfig: './tsconfig.json'}}}}},
+      }),
+    );
 
     previousWorkingDir = shx.pwd();
     tmpDirPath = getSystemPath(host.root);
@@ -69,47 +75,58 @@ describe('TransferState migration', () => {
 
   it('should change imports', async () => {
     writeFile(
-        '/index.ts',
-        `import { TransferState, StateKey, makeStateKey } from '@angular/platform-browser';`);
+      '/index.ts',
+      `import { TransferState, StateKey, makeStateKey } from '@angular/platform-browser';`,
+    );
 
     await runMigration();
 
     const content = tree.readContent('/index.ts');
     expect(content).not.toContain(`@angular/platform-browser`);
     expect(content).toContain(
-        `import { makeStateKey, StateKey, TransferState } from '@angular/core'`);
+      `import { makeStateKey, StateKey, TransferState } from '@angular/core'`,
+    );
   });
 
   it('should change imports with existing core import', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
     import { TransferState, StateKey, makeStateKey } from '@angular/platform-browser';
     import { NgOnInit } from '@angular/core';
-    `);
+    `,
+    );
 
     await runMigration();
 
     const content = tree.readContent('/index.ts');
     expect(content).toContain(
-        `import { NgOnInit, makeStateKey, StateKey, TransferState } from '@angular/core'`);
+      `import { NgOnInit, makeStateKey, StateKey, TransferState } from '@angular/core'`,
+    );
   });
 
   it('should change imports but keep others ', async () => {
     writeFile(
-        '/index.ts',
-        `import { TransferState, StateKey, makeStateKey, bootstrapApplication } from '@angular/platform-browser';`);
+      '/index.ts',
+      `import { TransferState, StateKey, makeStateKey, bootstrapApplication } from '@angular/platform-browser';`,
+    );
 
     await runMigration();
 
     const content = tree.readContent('/index.ts');
     expect(content).toContain(
-        `import { makeStateKey, StateKey, TransferState } from '@angular/core'`);
+      `import { makeStateKey, StateKey, TransferState } from '@angular/core'`,
+    );
     expect(content).toContain(`import { bootstrapApplication } from '@angular/platform-browser'`);
   });
 
   it('should not change imports', async () => {
-    writeFile('/index.ts', `
+    writeFile(
+      '/index.ts',
+      `
        import { TransferState } from '@not-angular/platform-browser'
-    `);
+    `,
+    );
 
     await runMigration();
 

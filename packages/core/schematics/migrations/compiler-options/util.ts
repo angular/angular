@@ -36,11 +36,14 @@ export function migrateFile(sourceFile: ts.SourceFile, rewriteFn: RewriteFn) {
 }
 
 function removeIdentifiers(sourceFile: ts.SourceFile, changeTracker: ChangeTracker) {
-  const missingTranslationStrategyImport =
-      getImportSpecifier(sourceFile, coreModule, 'MissingTranslationStrategy');
-  const namedImports = missingTranslationStrategyImport ?
-      closestNode(missingTranslationStrategyImport, ts.isNamedImports) :
-      null;
+  const missingTranslationStrategyImport = getImportSpecifier(
+    sourceFile,
+    coreModule,
+    'MissingTranslationStrategy',
+  );
+  const namedImports = missingTranslationStrategyImport
+    ? closestNode(missingTranslationStrategyImport, ts.isNamedImports)
+    : null;
 
   const visitNode = (node: ts.Node) => {
     if (ts.isVariableDeclaration(node) && node.type?.getText() !== compilerOptionsType) {

@@ -12,7 +12,20 @@ import {Renderer} from '@angular/core/src/render3/interfaces/renderer';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {TestBed} from '@angular/core/testing';
 
-import {ChangeDetectionStrategy, Component, Injector, Input, NgModuleRef, OnChanges, Output, RendererType2, SimpleChanges, ViewChild, ViewContainerRef, ViewEncapsulation} from '../../src/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Injector,
+  Input,
+  NgModuleRef,
+  OnChanges,
+  Output,
+  RendererType2,
+  SimpleChanges,
+  ViewChild,
+  ViewContainerRef,
+  ViewEncapsulation,
+} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
@@ -24,8 +37,8 @@ const THROWING_RENDERER_FACTOR2_PROVIDER = {
   useValue: {
     createRenderer: () => {
       throw new Error('Incorrect injector for Renderer2');
-    }
-  }
+    },
+  },
 };
 
 describe('ComponentFactory', () => {
@@ -38,8 +51,7 @@ describe('ComponentFactory', () => {
         standalone: true,
         template: '',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       const cf = cfr.resolveComponentFactory(TestComponent);
 
@@ -103,10 +115,9 @@ describe('ComponentFactory', () => {
         host: {
           'class': 'HOST_COMPONENT',
         },
-        encapsulation: ViewEncapsulation.None
+        encapsulation: ViewEncapsulation.None,
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       cf = cfr.resolveComponentFactory(TestComponent);
     });
@@ -114,9 +125,7 @@ describe('ComponentFactory', () => {
     describe('(when `ngModuleRef` is not provided)', () => {
       it('should retrieve `RendererFactory2` from the specified injector', () => {
         const injector = Injector.create({
-          providers: [
-            {provide: RendererFactory2, useValue: rendererFactorySpy},
-          ]
+          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
         });
 
         cf.create(injector);
@@ -130,7 +139,7 @@ describe('ComponentFactory', () => {
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: sanitizerFactorySpy, deps: []},
-          ]
+          ],
         });
 
         cf.create(injector);
@@ -142,9 +151,7 @@ describe('ComponentFactory', () => {
     describe('(when `ngModuleRef` is provided)', () => {
       it('should retrieve `RendererFactory2` from the specified injector first', () => {
         const injector = Injector.create({
-          providers: [
-            {provide: RendererFactory2, useValue: rendererFactorySpy},
-          ]
+          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
         });
         const mInjector = Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]});
 
@@ -153,36 +160,33 @@ describe('ComponentFactory', () => {
         expect(rendererFactorySpy.wasCalled).toBeTrue();
       });
 
-      it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector',
-         () => {
-           const injector = Injector.create({providers: []});
-           const mInjector = Injector.create({
-             providers: [
-               {provide: RendererFactory2, useValue: rendererFactorySpy},
-             ]
-           });
-
-           cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
-
-           expect(rendererFactorySpy.wasCalled).toBeTrue();
-         });
-
-      it('should retrieve `Sanitizer` from the specified injector first', () => {
-        const iSanitizerFactorySpy =
-            jasmine.createSpy('Injector#sanitizerFactory').and.returnValue({});
-        const injector = Injector.create({
-          providers: [
-            {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
-          ]
+      it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector', () => {
+        const injector = Injector.create({providers: []});
+        const mInjector = Injector.create({
+          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
         });
 
-        const mSanitizerFactorySpy =
-            jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
+        cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
+
+        expect(rendererFactorySpy.wasCalled).toBeTrue();
+      });
+
+      it('should retrieve `Sanitizer` from the specified injector first', () => {
+        const iSanitizerFactorySpy = jasmine
+          .createSpy('Injector#sanitizerFactory')
+          .and.returnValue({});
+        const injector = Injector.create({
+          providers: [{provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []}],
+        });
+
+        const mSanitizerFactorySpy = jasmine
+          .createSpy('NgModuleRef#sanitizerFactory')
+          .and.returnValue({});
         const mInjector = Injector.create({
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
-          ]
+          ],
         });
 
         cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
@@ -191,35 +195,32 @@ describe('ComponentFactory', () => {
         expect(mSanitizerFactorySpy).not.toHaveBeenCalled();
       });
 
-      it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector',
-         () => {
-           const injector = Injector.create({providers: []});
+      it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector', () => {
+        const injector = Injector.create({providers: []});
 
-           const mSanitizerFactorySpy =
-               jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
-           const mInjector = Injector.create({
-             providers: [
-               {provide: RendererFactory2, useValue: rendererFactorySpy},
-               {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
-             ]
-           });
+        const mSanitizerFactorySpy = jasmine
+          .createSpy('NgModuleRef#sanitizerFactory')
+          .and.returnValue({});
+        const mInjector = Injector.create({
+          providers: [
+            {provide: RendererFactory2, useValue: rendererFactorySpy},
+            {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+          ],
+        });
 
+        cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
-           cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
-
-           expect(mSanitizerFactorySpy).toHaveBeenCalled();
-         });
+        expect(mSanitizerFactorySpy).toHaveBeenCalled();
+      });
     });
 
     describe('(when the factory is bound to a `ngModuleRef`)', () => {
       it('should retrieve `RendererFactory2` from the specified injector first', () => {
         const injector = Injector.create({
-          providers: [
-            {provide: RendererFactory2, useValue: rendererFactorySpy},
-          ]
+          providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
         });
         (cf as any).ngModule = {
-          injector: Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]})
+          injector: Injector.create({providers: [THROWING_RENDERER_FACTOR2_PROVIDER]}),
         };
 
         cf.create(injector);
@@ -227,40 +228,37 @@ describe('ComponentFactory', () => {
         expect(rendererFactorySpy.wasCalled).toBeTrue();
       });
 
-      it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector',
-         () => {
-           const injector = Injector.create({providers: []});
-           (cf as any).ngModule = {
-             injector: Injector.create({
-               providers: [
-                 {provide: RendererFactory2, useValue: rendererFactorySpy},
-               ]
-             })
-           };
+      it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector', () => {
+        const injector = Injector.create({providers: []});
+        (cf as any).ngModule = {
+          injector: Injector.create({
+            providers: [{provide: RendererFactory2, useValue: rendererFactorySpy}],
+          }),
+        };
 
-           cf.create(injector);
+        cf.create(injector);
 
-           expect(rendererFactorySpy.wasCalled).toBeTrue();
-         });
+        expect(rendererFactorySpy.wasCalled).toBeTrue();
+      });
 
       it('should retrieve `Sanitizer` from the specified injector first', () => {
-        const iSanitizerFactorySpy =
-            jasmine.createSpy('Injector#sanitizerFactory').and.returnValue({});
+        const iSanitizerFactorySpy = jasmine
+          .createSpy('Injector#sanitizerFactory')
+          .and.returnValue({});
         const injector = Injector.create({
           providers: [
             {provide: RendererFactory2, useValue: rendererFactorySpy},
             {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
-          ]
+          ],
         });
 
-        const mSanitizerFactorySpy =
-            jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
+        const mSanitizerFactorySpy = jasmine
+          .createSpy('NgModuleRef#sanitizerFactory')
+          .and.returnValue({});
         (cf as any).ngModule = {
           injector: Injector.create({
-            providers: [
-              {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
-            ]
-          })
+            providers: [{provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []}],
+          }),
         };
 
         cf.create(injector);
@@ -269,32 +267,33 @@ describe('ComponentFactory', () => {
         expect(mSanitizerFactorySpy).not.toHaveBeenCalled();
       });
 
-      it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector',
-         () => {
-           const injector = Injector.create({providers: []});
+      it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector', () => {
+        const injector = Injector.create({providers: []});
 
-           const mSanitizerFactorySpy =
-               jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
-           (cf as any).ngModule = {
-             injector: Injector.create({
-               providers: [
-                 {provide: RendererFactory2, useValue: rendererFactorySpy},
-                 {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
-               ]
-             })
-           };
+        const mSanitizerFactorySpy = jasmine
+          .createSpy('NgModuleRef#sanitizerFactory')
+          .and.returnValue({});
+        (cf as any).ngModule = {
+          injector: Injector.create({
+            providers: [
+              {provide: RendererFactory2, useValue: rendererFactorySpy},
+              {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+            ],
+          }),
+        };
 
+        cf.create(injector);
 
-           cf.create(injector);
-
-           expect(mSanitizerFactorySpy).toHaveBeenCalled();
-         });
+        expect(mSanitizerFactorySpy).toHaveBeenCalled();
+      });
     });
 
     it('should ensure that rendererFactory is called after initial styling is set', () => {
       class TestMockRendererFactory extends MockRendererFactory {
-        override createRenderer(hostElement: RElement|null, rendererType: RendererType2|null):
-            Renderer {
+        override createRenderer(
+          hostElement: RElement | null,
+          rendererType: RendererType2 | null,
+        ): Renderer {
           if (hostElement) {
             hostElement.classList.add('HOST_RENDERER');
           }
@@ -305,7 +304,7 @@ describe('ComponentFactory', () => {
       const injector = Injector.create({
         providers: [
           {provide: RendererFactory2, useFactory: () => new TestMockRendererFactory(), deps: []},
-        ]
+        ],
       });
 
       const hostNode = document.createElement('div');
@@ -323,10 +322,11 @@ describe('ComponentFactory', () => {
         ngOnChanges(changes: SimpleChanges): void {
           const inChange = changes['in'];
           inputChangesLog.push(
-              `${inChange.previousValue}:${inChange.currentValue}:${inChange.firstChange}`);
+            `${inChange.previousValue}:${inChange.currentValue}:${inChange.firstChange}`,
+          );
         }
 
-        @Input() in : string|undefined;
+        @Input() in: string | undefined;
       }
 
       const fixture = TestBed.createComponent(DynamicCmp);
@@ -349,7 +349,7 @@ describe('ComponentFactory', () => {
     it('should allow setting mapped inputs on the ComponentRef', () => {
       @Component({template: `{{in}}`})
       class DynamicCmp {
-        @Input('publicName') in : string|undefined;
+        @Input('publicName') in: string | undefined;
       }
 
       const fixture = TestBed.createComponent(DynamicCmp);
@@ -369,8 +369,7 @@ describe('ComponentFactory', () => {
 
     it('should log or throw error on unknown inputs', () => {
       @Component({template: ``})
-      class NoInputsCmp {
-      }
+      class NoInputsCmp {}
 
       const fixture = TestBed.createComponent(NoInputsCmp);
       fixture.detectChanges();
@@ -378,10 +377,8 @@ describe('ComponentFactory', () => {
       spyOn(console, 'error');
       fixture.componentRef.setInput('doesNotExist', '');
 
-      const msgL1 =
-          `NG0303: Can't set value of the 'doesNotExist' input on the 'NoInputsCmp' component. `;
-      const msgL2 =
-          `Make sure that the 'doesNotExist' property is annotated with @Input() or a mapped @Input('doesNotExist') exists.`;
+      const msgL1 = `NG0303: Can't set value of the 'doesNotExist' input on the 'NoInputsCmp' component. `;
+      const msgL2 = `Make sure that the 'doesNotExist' property is annotated with @Input() or a mapped @Input('doesNotExist') exists.`;
       expect(console.error).toHaveBeenCalledWith(msgL1 + msgL2);
     });
 
@@ -391,7 +388,7 @@ describe('ComponentFactory', () => {
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class DynamicCmp {
-        @Input() in : string|undefined;
+        @Input() in: string | undefined;
       }
 
       const fixture = TestBed.createComponent(DynamicCmp);
@@ -412,7 +409,7 @@ describe('ComponentFactory', () => {
       })
       class DynamicCmp {
         @Input()
-            set in(v: string) {
+        set in(v: string) {
           log.push(v);
         }
       }

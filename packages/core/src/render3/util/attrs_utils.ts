@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CharCode} from '../../util/char_code';
-import { AttributeMarker } from '../interfaces/attribute_marker';
+import {AttributeMarker} from '../interfaces/attribute_marker';
 import {TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
-
-
 
 /**
  * Assigns all attribute values to the provided element via the inferred renderer.
@@ -90,9 +88,12 @@ export function setUpAttributes(renderer: Renderer, native: RElement, attrs: TAt
  * @param marker The attribute marker to test.
  * @returns true if the marker is a "name-only" marker (e.g. `Bindings`, `Template` or `I18n`).
  */
-export function isNameOnlyAttributeMarker(marker: string|AttributeMarker|CssSelector) {
-  return marker === AttributeMarker.Bindings || marker === AttributeMarker.Template ||
-      marker === AttributeMarker.I18n;
+export function isNameOnlyAttributeMarker(marker: string | AttributeMarker | CssSelector) {
+  return (
+    marker === AttributeMarker.Bindings ||
+    marker === AttributeMarker.Template ||
+    marker === AttributeMarker.I18n
+  );
 }
 
 export function isAnimationProp(name: string): boolean {
@@ -110,7 +111,10 @@ export function isAnimationProp(name: string): boolean {
  * @param dst Location of where the merged `TAttributes` should end up.
  * @param src `TAttributes` which should be appended to `dst`
  */
-export function mergeHostAttrs(dst: TAttributes|null, src: TAttributes|null): TAttributes|null {
+export function mergeHostAttrs(
+  dst: TAttributes | null,
+  src: TAttributes | null,
+): TAttributes | null {
   if (src === null || src.length === 0) {
     // do nothing
   } else if (dst === null || dst.length === 0) {
@@ -126,8 +130,9 @@ export function mergeHostAttrs(dst: TAttributes|null, src: TAttributes|null): TA
         if (srcMarker === AttributeMarker.NamespaceURI) {
           // Case where we need to consume `key1`, `key2`, `value` items.
         } else if (
-            srcMarker === AttributeMarker.ImplicitAttributes ||
-            srcMarker === AttributeMarker.Styles) {
+          srcMarker === AttributeMarker.ImplicitAttributes ||
+          srcMarker === AttributeMarker.Styles
+        ) {
           // Case where we have to consume `key1` and `value` only.
           mergeHostAttribute(dst, srcMarker, item as string, null, src[++i] as string);
         } else {
@@ -150,8 +155,12 @@ export function mergeHostAttrs(dst: TAttributes|null, src: TAttributes|null): TA
  * @param value Value to add or to overwrite to `TAttributes` Only used if `marker` is not Class.
  */
 export function mergeHostAttribute(
-    dst: TAttributes, marker: AttributeMarker, key1: string, key2: string|null,
-    value: string|null): void {
+  dst: TAttributes,
+  marker: AttributeMarker,
+  key1: string,
+  key2: string | null,
+  value: string | null,
+): void {
   let i = 0;
   // Assume that new markers will be inserted at the end.
   let markerInsertPosition = dst.length;

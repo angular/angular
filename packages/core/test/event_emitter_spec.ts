@@ -17,7 +17,7 @@ describe('EventEmitter', () => {
     emitter = new EventEmitter();
   });
 
-  it('should call the next callback', done => {
+  it('should call the next callback', (done) => {
     emitter.subscribe((value: number) => {
       expect(value).toEqual(99);
       done();
@@ -25,34 +25,34 @@ describe('EventEmitter', () => {
     emitter.emit(99);
   });
 
-  it('should call the throw callback', done => {
+  it('should call the throw callback', (done) => {
     emitter.subscribe({
       next: () => {},
       error: (error: any) => {
         expect(error).toEqual('Boom');
         done();
-      }
+      },
     });
     emitter.error('Boom');
   });
 
-  it('should work when no throw callback is provided', done => {
+  it('should work when no throw callback is provided', (done) => {
     emitter.subscribe({
       next: () => {},
       error: () => {
         done();
-      }
+      },
     });
     emitter.error('Boom');
   });
 
-  it('should call the return callback', done => {
+  it('should call the return callback', (done) => {
     emitter.subscribe({
       next: () => {},
       error: () => {},
       complete: () => {
         done();
-      }
+      },
     });
     emitter.complete();
   });
@@ -62,26 +62,27 @@ describe('EventEmitter', () => {
     emitter.subscribe({
       next: () => {
         called = true;
-      }
+      },
     });
     emitter.emit(99);
 
     expect(called).toBe(true);
   });
 
-  it('delivers next and error events synchronously', done => {
+  it('delivers next and error events synchronously', (done) => {
     const log: number[] = [];
 
     emitter.subscribe(
-        (x: number) => {
-          log.push(x);
-          expect(log).toEqual([1, 2]);
-        },
-        (err: any) => {
-          log.push(err);
-          expect(log).toEqual([1, 2, 3, 4]);
-          done();
-        });
+      (x: number) => {
+        log.push(x);
+        expect(log).toEqual([1, 2]);
+      },
+      (err: any) => {
+        log.push(err);
+        expect(log).toEqual([1, 2, 3, 4]);
+        done();
+      },
+    );
     log.push(1);
     emitter.emit(2);
     log.push(3);
@@ -101,7 +102,7 @@ describe('EventEmitter', () => {
       complete: () => {
         log.push(4);
         expect(log).toEqual([1, 2, 3, 4]);
-      }
+      },
     });
     log.push(1);
     emitter.emit(2);
@@ -111,7 +112,7 @@ describe('EventEmitter', () => {
     expect(log).toEqual([1, 2, 3, 4, 5]);
   });
 
-  it('delivers events asynchronously when forced to async mode', done => {
+  it('delivers events asynchronously when forced to async mode', (done) => {
     const e = new EventEmitter<number>(true);
     const log: number[] = [];
     e.subscribe((x) => {
@@ -145,46 +146,43 @@ describe('EventEmitter', () => {
     expect(emitter.observers.length).toBe(0);
   });
 
-  it('unsubscribing a subscriber invokes the dispose method', done => {
+  it('unsubscribing a subscriber invokes the dispose method', (done) => {
     const sub = emitter.subscribe();
     sub.add(() => done());
     sub.unsubscribe();
   });
 
-  it('unsubscribing a subscriber after applying operators with pipe() invokes the dispose method',
-     done => {
-       const sub = emitter.pipe(filter(() => true)).subscribe();
-       sub.add(() => done());
-       sub.unsubscribe();
-     });
+  it('unsubscribing a subscriber after applying operators with pipe() invokes the dispose method', (done) => {
+    const sub = emitter.pipe(filter(() => true)).subscribe();
+    sub.add(() => done());
+    sub.unsubscribe();
+  });
 
-  it('error thrown inside an Rx chain propagates to the error handler and disposes the chain',
-     () => {
-       let errorPropagated = false;
-       emitter
-           .pipe(
-               filter(() => {
-                 throw new Error();
-               }),
-               )
-           .subscribe(
-               () => {},
-               err => errorPropagated = true,
-           );
+  it('error thrown inside an Rx chain propagates to the error handler and disposes the chain', () => {
+    let errorPropagated = false;
+    emitter
+      .pipe(
+        filter(() => {
+          throw new Error();
+        }),
+      )
+      .subscribe(
+        () => {},
+        (err) => (errorPropagated = true),
+      );
 
-       emitter.next(1);
+    emitter.next(1);
 
-       expect(errorPropagated).toBe(true);
-       expect(emitter.observers.length).toBe(0);
-     });
+    expect(errorPropagated).toBe(true);
+    expect(emitter.observers.length).toBe(0);
+  });
 
   it('error sent by EventEmitter should dispose the Rx chain and remove subscribers', () => {
     let errorPropagated = false;
-    emitter.pipe(filter(() => true))
-        .subscribe(
-            () => {},
-            () => errorPropagated = true,
-        );
+    emitter.pipe(filter(() => true)).subscribe(
+      () => {},
+      () => (errorPropagated = true),
+    );
 
     emitter.error(1);
 

@@ -8,8 +8,22 @@
 
 import {visitAll} from '@angular/compiler';
 
-import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
-import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
+import {
+  ElementCollector,
+  ElementToMigrate,
+  endMarker,
+  MigrateError,
+  Result,
+  startMarker,
+} from './types';
+import {
+  calculateNesting,
+  getMainBlock,
+  getOriginals,
+  hasLineBreaks,
+  parseTemplate,
+  reduceNestingOffset,
+} from './util';
 
 export const boundcase = '[ngSwitchCase]';
 export const switchcase = '*ngSwitchCase';
@@ -17,20 +31,17 @@ export const nakedcase = 'ngSwitchCase';
 export const switchdefault = '*ngSwitchDefault';
 export const nakeddefault = 'ngSwitchDefault';
 
-export const cases = [
-  boundcase,
-  switchcase,
-  nakedcase,
-  switchdefault,
-  nakeddefault,
-];
+export const cases = [boundcase, switchcase, nakedcase, switchdefault, nakeddefault];
 
 /**
  * Replaces structural directive ngSwitch instances with new switch.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function migrateCase(template: string):
-    {migrated: string, errors: MigrateError[], changed: boolean} {
+export function migrateCase(template: string): {
+  migrated: string;
+  errors: MigrateError[];
+  changed: boolean;
+} {
   let errors: MigrateError[] = [];
   let parsed = parseTemplate(template);
   if (parsed.tree === undefined) {
@@ -88,8 +99,7 @@ function migrateNgSwitchCase(etm: ElementToMigrate, tmpl: string, offset: number
   const originals = getOriginals(etm, tmpl, offset);
 
   const {start, middle, end} = getMainBlock(etm, tmpl, offset);
-  const startBlock =
-      `${startMarker}${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${start}`;
+  const startBlock = `${startMarker}${leadingSpace}@case (${condition}) {${leadingSpace}${lbString}${start}`;
   const endBlock = `${end}${lbString}${leadingSpace}}${endMarker}`;
 
   const defaultBlock = startBlock + middle + endBlock;

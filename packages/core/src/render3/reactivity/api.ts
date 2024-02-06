@@ -16,7 +16,7 @@ import {SIGNAL} from '@angular/core/primitives/signals';
  *
  * Ordinary values can be turned into `Signal`s with the `signal` function.
  */
-export type Signal<T> = (() => T)&{
+export type Signal<T> = (() => T) & {
   [SIGNAL]: unknown;
 };
 

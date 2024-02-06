@@ -6,14 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, JitCompilerUsage, R3DirectiveMetadataFacade} from '../../compiler/compiler_facade';
-import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
+import {
+  getCompilerFacade,
+  JitCompilerUsage,
+  R3DirectiveMetadataFacade,
+} from '../../compiler/compiler_facade';
+import {
+  R3ComponentMetadataFacade,
+  R3QueryMetadataFacade,
+} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
 import {Component, Directive, Input} from '../../metadata/directives';
-import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
+import {
+  componentNeedsResolution,
+  maybeQueueResolutionOfComponentResources,
+} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
 import {flatten} from '../../util/array_utils';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../../util/empty';
@@ -26,7 +36,11 @@ import {stringifyForError} from '../util/stringify_utils';
 
 import {angularCoreEnv} from './environment';
 import {getJitOptions} from './jit_options';
-import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
+import {
+  flushModuleScopingQueueAsMuchAsPossible,
+  patchComponentDefWithScope,
+  transitiveScopesFor,
+} from './module';
 import {isComponent, verifyStandaloneImport} from './util';
 
 /**
@@ -58,7 +72,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   // See the `initNgDevMode` docstring for more information.
   (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
-  let ngComponentDef: ComponentDef<unknown>|null = null;
+  let ngComponentDef: ComponentDef<unknown> | null = null;
 
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(type, metadata);
@@ -71,8 +85,11 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
   Object.defineProperty(type, NG_COMP_DEF, {
     get: () => {
       if (ngComponentDef === null) {
-        const compiler =
-            getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'component', type: type});
+        const compiler = getCompilerFacade({
+          usage: JitCompilerUsage.Decorator,
+          kind: 'component',
+          type: type,
+        });
 
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${type.name}' is not resolved:`];
@@ -117,8 +134,10 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           typeSourceSpan: compiler.createParseSourceSpan('Component', type.name, templateUrl),
           template: metadata.template || '',
           preserveWhitespaces,
-          styles: typeof metadata.styles === 'string' ? [metadata.styles] :
-                                                        (metadata.styles || EMPTY_ARRAY),
+          styles:
+            typeof metadata.styles === 'string'
+              ? [metadata.styles]
+              : metadata.styles || EMPTY_ARRAY,
           animations: metadata.animations,
           // JIT components are always compiled against an empty set of `declarations`. Instead, the
           // `directiveDefs` and `pipeDefs` are updated at a later point:
@@ -137,8 +156,11 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           if (meta.usesInheritance) {
             addDirectiveDefToUndecoratedParents(type);
           }
-          ngComponentDef =
-              compiler.compileComponent(angularCoreEnv, templateUrl, meta) as ComponentDef<unknown>;
+          ngComponentDef = compiler.compileComponent(
+            angularCoreEnv,
+            templateUrl,
+            meta,
+          ) as ComponentDef<unknown>;
 
           if (metadata.standalone) {
             // Patch the component definition for standalone components with `directiveDefs` and
@@ -177,8 +199,11 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           if (metadata.standalone) {
             ngComponentDef.schemas = metadata.schemas;
           } else {
-            throw new Error(`The 'schemas' was specified for the ${
-                stringifyForError(type)} but is only valid on a component that is standalone.`);
+            throw new Error(
+              `The 'schemas' was specified for the ${stringifyForError(
+                type,
+              )} but is only valid on a component that is standalone.`,
+            );
           }
         } else if (metadata.standalone) {
           ngComponentDef.schemas = [];
@@ -197,12 +222,15 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
  * memoized functions here allows for the delayed resolution of any `forwardRef`s present in the
  * component's `imports`.
  */
-function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
-  directiveDefs: () => DirectiveDefList,
-  pipeDefs: () => PipeDefList,
+function getStandaloneDefFunctions(
+  type: Type<any>,
+  imports: Type<any>[],
+): {
+  directiveDefs: () => DirectiveDefList;
+  pipeDefs: () => PipeDefList;
 } {
-  let cachedDirectiveDefs: DirectiveDefList|null = null;
-  let cachedPipeDefs: PipeDefList|null = null;
+  let cachedDirectiveDefs: DirectiveDefList | null = null;
+  let cachedPipeDefs: PipeDefList | null = null;
   const directiveDefs = () => {
     if (!USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
       if (cachedDirectiveDefs === null) {
@@ -252,8 +280,8 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
       const scope = depsTracker.getStandaloneComponentScope(type, imports);
 
       return [...scope.compilation.directives]
-          .map(p => (getComponentDef(p) || getDirectiveDef(p))!)
-          .filter(d => d !== null);
+        .map((p) => (getComponentDef(p) || getDirectiveDef(p))!)
+        .filter((d) => d !== null);
     }
   };
 
@@ -301,7 +329,7 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
 
       const scope = depsTracker.getStandaloneComponentScope(type, imports);
 
-      return [...scope.compilation.pipes].map(p => getPipeDef(p)!).filter(d => d !== null);
+      return [...scope.compilation.pipes].map((p) => getPipeDef(p)!).filter((d) => d !== null);
     }
   };
 
@@ -311,8 +339,9 @@ function getStandaloneDefFunctions(type: Type<any>, imports: Type<any>[]): {
   };
 }
 
-function hasSelectorScope<T>(component: Type<T>):
-    component is(Type<T>& {ngSelectorScope: Type<any>}) {
+function hasSelectorScope<T>(
+  component: Type<T>,
+): component is Type<T> & {ngSelectorScope: Type<any>} {
   return (component as {ngSelectorScope?: any}).ngSelectorScope !== undefined;
 }
 
@@ -323,7 +352,7 @@ function hasSelectorScope<T>(component: Type<T>):
  * In the event that compilation is not immediate, `compileDirective` will return a `Promise` which
  * will resolve when compilation completes and the directive becomes usable.
  */
-export function compileDirective(type: Type<any>, directive: Directive|null): void {
+export function compileDirective(type: Type<any>, directive: Directive | null): void {
   let ngDirectiveDef: any = null;
 
   addDirectiveFactoryDef(type, directive || {});
@@ -335,10 +364,16 @@ export function compileDirective(type: Type<any>, directive: Directive|null): vo
         // that use `@Directive()` with no selector. In that case, pass empty object to the
         // `directiveMetadata` function instead of null.
         const meta = getDirectiveMetadata(type, directive || {});
-        const compiler =
-            getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'directive', type});
-        ngDirectiveDef =
-            compiler.compileDirective(angularCoreEnv, meta.sourceMapUrl, meta.metadata);
+        const compiler = getCompilerFacade({
+          usage: JitCompilerUsage.Decorator,
+          kind: 'directive',
+          type,
+        });
+        ngDirectiveDef = compiler.compileDirective(
+          angularCoreEnv,
+          meta.sourceMapUrl,
+          meta.metadata,
+        );
       }
       return ngDirectiveDef;
     },
@@ -359,21 +394,24 @@ function getDirectiveMetadata(type: Type<any>, metadata: Directive) {
   return {metadata: facade, sourceMapUrl};
 }
 
-function addDirectiveFactoryDef(type: Type<any>, metadata: Directive|Component) {
+function addDirectiveFactoryDef(type: Type<any>, metadata: Directive | Component) {
   let ngFactoryDef: any = null;
 
   Object.defineProperty(type, NG_FACTORY_DEF, {
     get: () => {
       if (ngFactoryDef === null) {
         const meta = getDirectiveMetadata(type, metadata);
-        const compiler =
-            getCompilerFacade({usage: JitCompilerUsage.Decorator, kind: 'directive', type});
+        const compiler = getCompilerFacade({
+          usage: JitCompilerUsage.Decorator,
+          kind: 'directive',
+          type,
+        });
         ngFactoryDef = compiler.compileFactory(angularCoreEnv, `ng:///${type.name}/ɵfac.js`, {
           name: meta.metadata.name,
           type: meta.metadata.type,
           typeArgumentCount: 0,
           deps: reflectDependencies(type),
-          target: compiler.FactoryTarget.Directive
+          target: compiler.FactoryTarget.Directive,
         });
       }
       return ngFactoryDef;
@@ -413,9 +451,10 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
     isStandalone: !!metadata.standalone,
     isSignal: !!metadata.signals,
-    hostDirectives: metadata.hostDirectives?.map(
-                        directive => typeof directive === 'function' ? {directive} : directive) ||
-        null
+    hostDirectives:
+      metadata.hostDirectives?.map((directive) =>
+        typeof directive === 'function' ? {directive} : directive,
+      ) || null,
   };
 }
 
@@ -430,15 +469,18 @@ function addDirectiveDefToUndecoratedParents(type: Type<any>) {
   while (parent && parent !== objPrototype) {
     // Since inheritance works if the class was annotated already, we only need to add
     // the def if there are no annotations and the def hasn't been created already.
-    if (!getDirectiveDef(parent) && !getComponentDef(parent) &&
-        shouldAddAbstractDirective(parent)) {
+    if (
+      !getDirectiveDef(parent) &&
+      !getComponentDef(parent) &&
+      shouldAddAbstractDirective(parent)
+    ) {
       compileDirective(parent, null);
     }
     parent = Object.getPrototypeOf(parent);
   }
 }
 
-function convertToR3QueryPredicate(selector: any): any|string[] {
+function convertToR3QueryPredicate(selector: any): any | string[] {
   return typeof selector === 'string' ? splitByComma(selector) : resolveForwardRef(selector);
 }
 
@@ -455,18 +497,21 @@ export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3Qu
   };
 }
 function extractQueriesMetadata(
-    type: Type<any>, propMetadata: {[key: string]: any[]},
-    isQueryAnn: (ann: any) => ann is Query): R3QueryMetadataFacade[] {
+  type: Type<any>,
+  propMetadata: {[key: string]: any[]},
+  isQueryAnn: (ann: any) => ann is Query,
+): R3QueryMetadataFacade[] {
   const queriesMeta: R3QueryMetadataFacade[] = [];
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
       const annotations = propMetadata[field];
-      annotations.forEach(ann => {
+      annotations.forEach((ann) => {
         if (isQueryAnn(ann)) {
           if (!ann.selector) {
             throw new Error(
-                `Can't construct a query for the property "${field}" of ` +
-                `"${stringifyForError(type)}" since the query selector wasn't defined.`);
+              `Can't construct a query for the property "${field}" of ` +
+                `"${stringifyForError(type)}" since the query selector wasn't defined.`,
+            );
           }
           if (annotations.some(isInputAnnotation)) {
             throw new Error(`Cannot combine @Input decorators with query decorators`);
@@ -479,7 +524,7 @@ function extractQueriesMetadata(
   return queriesMeta;
 }
 
-function extractExportAs(exportAs: string|undefined): string[]|null {
+function extractExportAs(exportAs: string | undefined): string[] | null {
   return exportAs === undefined ? null : splitByComma(exportAs);
 }
 
@@ -498,18 +543,24 @@ function isInputAnnotation(value: any): value is Input {
 }
 
 function splitByComma(value: string): string[] {
-  return value.split(',').map(piece => piece.trim());
+  return value.split(',').map((piece) => piece.trim());
 }
 
 const LIFECYCLE_HOOKS = [
-  'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
-  'ngAfterContentInit', 'ngAfterContentChecked'
+  'ngOnChanges',
+  'ngOnInit',
+  'ngOnDestroy',
+  'ngDoCheck',
+  'ngAfterViewInit',
+  'ngAfterViewChecked',
+  'ngAfterContentInit',
+  'ngAfterContentChecked',
 ];
 
 function shouldAddAbstractDirective(type: Type<any>): boolean {
   const reflect = getReflect();
 
-  if (LIFECYCLE_HOOKS.some(hookName => reflect.hasLifecycleHook(type, hookName))) {
+  if (LIFECYCLE_HOOKS.some((hookName) => reflect.hasLifecycleHook(type, hookName))) {
     return true;
   }
 
@@ -522,9 +573,14 @@ function shouldAddAbstractDirective(type: Type<any>): boolean {
       const current = annotations[i];
       const metadataName = current.ngMetadataName;
 
-      if (isInputAnnotation(current) || isContentQuery(current) || isViewQuery(current) ||
-          metadataName === 'Output' || metadataName === 'HostBinding' ||
-          metadataName === 'HostListener') {
+      if (
+        isInputAnnotation(current) ||
+        isContentQuery(current) ||
+        isViewQuery(current) ||
+        metadataName === 'Output' ||
+        metadataName === 'HostBinding' ||
+        metadataName === 'HostListener'
+      ) {
         return true;
       }
     }

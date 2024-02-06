@@ -6,7 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, contentChild, contentChildren, Directive, ElementRef, viewChild, viewChildren} from '@angular/core';
+import {
+  Component,
+  computed,
+  contentChild,
+  contentChildren,
+  Directive,
+  ElementRef,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -153,36 +162,35 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.isThere()).toBe(1);
     });
 
-    it('should return the same array instance when there were no changes in results after view manipulation',
-       () => {
-         @Component({
-           standalone: true,
-           template: `
+    it('should return the same array instance when there were no changes in results after view manipulation', () => {
+      @Component({
+        standalone: true,
+        template: `
             <div #el></div>
             @if (show) {
               <div></div>
             }
           `,
-         })
-         class AppComponent {
-           divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
+      })
+      class AppComponent {
+        divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
 
-           show = false;
-         }
+        show = false;
+      }
 
-         const fixture = TestBed.createComponent(AppComponent);
-         fixture.detectChanges();
-         const result1 = fixture.componentInstance.divEls();
-         expect(result1.length).toBe(1);
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      const result1 = fixture.componentInstance.divEls();
+      expect(result1.length).toBe(1);
 
-         fixture.componentInstance.show = true;
-         fixture.detectChanges();
-         // subsequent reads should return the same result instance since the query results didn't
-         // change
-         const result2 = fixture.componentInstance.divEls();
-         expect(result2.length).toBe(1);
-         expect(result2).toBe(result1);
-       });
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      // subsequent reads should return the same result instance since the query results didn't
+      // change
+      const result2 = fixture.componentInstance.divEls();
+      expect(result2.length).toBe(1);
+      expect(result2).toBe(result1);
+    });
 
     it('should be empty when no query matches exist', () => {
       @Component({
@@ -215,8 +223,11 @@ describe('queries as signals', () => {
         elementReq = contentChild.required('el');
 
         noOfEls = computed(
-            () => this.elements().length + (this.element() !== undefined ? 1 : 0) +
-                (this.elementReq() !== undefined ? 1 : 0));
+          () =>
+            this.elements().length +
+            (this.element() !== undefined ? 1 : 0) +
+            (this.elementReq() !== undefined ? 1 : 0),
+        );
       }
 
       @Component({
@@ -260,8 +271,11 @@ describe('queries as signals', () => {
         elementReq = contentChild.required('el');
 
         noOfEls = computed(
-            () => this.elements().length + (this.element() !== undefined ? 1 : 0) +
-                (this.elementReq() !== undefined ? 1 : 0));
+          () =>
+            this.elements().length +
+            (this.element() !== undefined ? 1 : 0) +
+            (this.elementReq() !== undefined ? 1 : 0),
+        );
       }
 
       @Component({
@@ -295,8 +309,7 @@ describe('queries as signals', () => {
 
     it('should not return partial results during the first-time view rendering', () => {
       @Directive({selector: '[marker]', standalone: true})
-      class MarkerForResults {
-      }
+      class MarkerForResults {}
 
       @Directive({
         selector: '[declare]',
@@ -305,7 +318,6 @@ describe('queries as signals', () => {
       class DeclareQuery {
         results = contentChildren(MarkerForResults);
       }
-
 
       @Directive({selector: '[inspect]', standalone: true})
       class InspectsQueryResults {
@@ -326,13 +338,13 @@ describe('queries as signals', () => {
                 </div>
              `,
       })
-      class AppComponent {
-      }
+      class AppComponent {}
 
       const fixture = TestBed.createComponent(AppComponent);
       fixture.detectChanges();
-      const queryDir =
-          fixture.debugElement.query(By.directive(DeclareQuery)).injector.get(DeclareQuery);
+      const queryDir = fixture.debugElement
+        .query(By.directive(DeclareQuery))
+        .injector.get(DeclareQuery);
 
       expect(queryDir.results().length).toBe(2);
     });
@@ -352,13 +364,13 @@ describe('queries as signals', () => {
         imports: [DeclareQuery],
         template: `<div declare></div>`,
       })
-      class AppComponent {
-      }
+      class AppComponent {}
 
       const fixture = TestBed.createComponent(AppComponent);
       fixture.detectChanges();
-      const queryDir =
-          fixture.debugElement.query(By.directive(DeclareQuery)).injector.get(DeclareQuery);
+      const queryDir = fixture.debugElement
+        .query(By.directive(DeclareQuery))
+        .injector.get(DeclareQuery);
 
       expect(queryDir.result()).toBeUndefined();
       expect(queryDir.results().length).toBe(0);
@@ -366,79 +378,77 @@ describe('queries as signals', () => {
   });
 
   describe('reactivity and performance', () => {
-    it('should not dirty a children query when a list of matches does not change - a view with matches',
-       () => {
-         let recomputeCount = 0;
+    it('should not dirty a children query when a list of matches does not change - a view with matches', () => {
+      let recomputeCount = 0;
 
-         @Component({
-           standalone: true,
-           template: `
+      @Component({
+        standalone: true,
+        template: `
           <div #el></div>
           @if (show) {
             <div #el></div>
           }
         `,
-         })
-         class AppComponent {
-           divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
-           foundElCount = computed(() => {
-             recomputeCount++;
-             return this.divEls().length;
-           });
-           show = false;
-         }
+      })
+      class AppComponent {
+        divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
+        foundElCount = computed(() => {
+          recomputeCount++;
+          return this.divEls().length;
+        });
+        show = false;
+      }
 
-         const fixture = TestBed.createComponent(AppComponent);
-         fixture.detectChanges();
-         expect(fixture.componentInstance.foundElCount()).toBe(1);
-         expect(recomputeCount).toBe(1);
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foundElCount()).toBe(1);
+      expect(recomputeCount).toBe(1);
 
-         // trigger view manipulation that should dirty queries but not change the results
-         fixture.componentInstance.show = true;
-         fixture.detectChanges();
-         fixture.componentInstance.show = false;
-         fixture.detectChanges();
+      // trigger view manipulation that should dirty queries but not change the results
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
 
-         expect(fixture.componentInstance.foundElCount()).toBe(1);
-         expect(recomputeCount).toBe(1);
-       });
+      expect(fixture.componentInstance.foundElCount()).toBe(1);
+      expect(recomputeCount).toBe(1);
+    });
 
-    it('should not dirty a children query when a list of matches does not change - a view with another container',
-       () => {
-         let recomputeCount = 0;
+    it('should not dirty a children query when a list of matches does not change - a view with another container', () => {
+      let recomputeCount = 0;
 
-         @Component({
-           standalone: true,
-           template: `
+      @Component({
+        standalone: true,
+        template: `
           <div #el></div>
           @if (show) {
             <!-- an empty if to create a container -->
             @if (true) {}
           }
         `,
-         })
-         class AppComponent {
-           divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
-           foundElCount = computed(() => {
-             recomputeCount++;
-             return this.divEls().length;
-           });
-           show = false;
-         }
+      })
+      class AppComponent {
+        divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
+        foundElCount = computed(() => {
+          recomputeCount++;
+          return this.divEls().length;
+        });
+        show = false;
+      }
 
-         const fixture = TestBed.createComponent(AppComponent);
-         fixture.detectChanges();
-         expect(fixture.componentInstance.foundElCount()).toBe(1);
-         expect(recomputeCount).toBe(1);
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.foundElCount()).toBe(1);
+      expect(recomputeCount).toBe(1);
 
-         // trigger view manipulation that should dirty queries but not change the results
-         fixture.componentInstance.show = true;
-         fixture.detectChanges();
-         fixture.componentInstance.show = false;
-         fixture.detectChanges();
+      // trigger view manipulation that should dirty queries but not change the results
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
 
-         expect(fixture.componentInstance.foundElCount()).toBe(1);
-         expect(recomputeCount).toBe(1);
-       });
+      expect(fixture.componentInstance.foundElCount()).toBe(1);
+      expect(recomputeCount).toBe(1);
+    });
   });
 });

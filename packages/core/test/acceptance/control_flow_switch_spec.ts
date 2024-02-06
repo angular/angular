@@ -27,7 +27,7 @@ describe('control flow - switch', () => {
             @case (1) {case 1}
             @default {default}
           }
-        `
+        `,
     })
     class TestComponent {
       case = 0;
@@ -57,7 +57,7 @@ describe('control flow - switch', () => {
             @case (2) {case 2}
             @default {default}
           }
-        `
+        `,
     })
     class TestComponent {
       case = 0;
@@ -87,7 +87,7 @@ describe('control flow - switch', () => {
             @case (2 | multiply:2) {case 4}
             @default {default}
           }
-        `
+        `,
     })
     class TestComponent {
       case = 0;
@@ -142,8 +142,7 @@ describe('control flow - switch', () => {
       selector: 'test',
       template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
     })
-    class TestComponent {
-    }
+    class TestComponent {}
 
     @Component({
       standalone: true,
@@ -154,10 +153,9 @@ describe('control flow - switch', () => {
           <span foo>foo</span>
         }
       } After</test>
-    `
+    `,
     })
-    class App {
-    }
+    class App {}
 
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();

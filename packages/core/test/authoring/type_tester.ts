@@ -15,11 +15,11 @@ import url from 'url';
 const TESTS = new Map<string, (value: string) => string>([
   [
     'signal_input_signature_test',
-    v => v.includes(',') ? `InputSignalWithTransform<${v}>` : `InputSignal<${v}>`
+    (v) => (v.includes(',') ? `InputSignalWithTransform<${v}>` : `InputSignal<${v}>`),
   ],
-  ['signal_queries_signature_test', v => `Signal<${v}>`],
-  ['signal_model_signature_test', v => `ModelSignal<${v}>`],
-  ['unwrap_writable_signal_signature_test', v => v]
+  ['signal_queries_signature_test', (v) => `Signal<${v}>`],
+  ['signal_model_signature_test', (v) => `ModelSignal<${v}>`],
+  ['unwrap_writable_signal_signature_test', (v) => v],
 ]);
 
 const containingDir = path.dirname(url.fileURLToPath(import.meta.url));
@@ -36,7 +36,8 @@ function testFile(testFileName: string, getType: (v: string) => string): boolean
   const fileContent = fs.readFileSync(path.join(containingDir, `${testFileName}.d.ts`), 'utf8');
   const sourceFile = ts.createSourceFile('test.ts', fileContent, ts.ScriptTarget.ESNext, true);
   const testClazz = sourceFile.statements.find(
-      (s): s is ts.ClassDeclaration => ts.isClassDeclaration(s) && isTestClass(s));
+    (s): s is ts.ClassDeclaration => ts.isClassDeclaration(s) && isTestClass(s),
+  );
 
   if (testClazz === undefined) {
     return false;
@@ -49,7 +50,9 @@ function testFile(testFileName: string, getType: (v: string) => string): boolean
     }
 
     const leadingCommentRanges = ts.getLeadingCommentRanges(sourceFile.text, member.getFullStart());
-    const leadingComments = leadingCommentRanges?.map(r => sourceFile.text.substring(r.pos, r.end));
+    const leadingComments = leadingCommentRanges?.map((r) =>
+      sourceFile.text.substring(r.pos, r.end),
+    );
 
     if (leadingComments === undefined || leadingComments.length === 0) {
       throw new Error(`No expected type for: ${member.name.getText()}`);
@@ -73,14 +76,14 @@ function testFile(testFileName: string, getType: (v: string) => string): boolean
 async function main() {
   let failing = false;
 
-  TESTS.forEach((callback, filename) => failing ||= testFile(filename, callback));
+  TESTS.forEach((callback, filename) => (failing ||= testFile(filename, callback)));
 
   if (failing) {
     throw new Error('Failing assertions');
   }
 }
 
-main().catch(e => {
+main().catch((e) => {
   console.error(e);
   process.exitCode = 1;
 });

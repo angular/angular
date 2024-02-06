@@ -17,12 +17,32 @@ import {createLView} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from './interfaces/container';
 import {TNode} from './interfaces/node';
 import {RComment, RElement} from './interfaces/renderer_dom';
-import {DECLARATION_LCONTAINER, FLAGS, HYDRATION, LView, LViewFlags, QUERIES, RENDERER, T_HOST, TVIEW} from './interfaces/view';
-import {addViewToDOM, destroyLView, detachView, getBeforeNodeForView, insertView, nativeParentNode} from './node_manipulation';
+import {
+  DECLARATION_LCONTAINER,
+  FLAGS,
+  HYDRATION,
+  LView,
+  LViewFlags,
+  QUERIES,
+  RENDERER,
+  T_HOST,
+  TVIEW,
+} from './interfaces/view';
+import {
+  addViewToDOM,
+  destroyLView,
+  detachView,
+  getBeforeNodeForView,
+  insertView,
+  nativeParentNode,
+} from './node_manipulation';
 
 export function createAndRenderEmbeddedLView<T>(
-    declarationLView: LView<unknown>, templateTNode: TNode, context: T,
-    options?: {injector?: Injector, dehydratedView?: DehydratedContainerView|null}): LView<T> {
+  declarationLView: LView<unknown>,
+  templateTNode: TNode,
+  context: T,
+  options?: {injector?: Injector; dehydratedView?: DehydratedContainerView | null},
+): LView<T> {
   const embeddedTView = templateTNode.tView!;
   ngDevMode && assertDefined(embeddedTView, 'TView must be defined for a template node.');
   ngDevMode && assertTNodeForLView(templateTNode, declarationLView);
@@ -31,8 +51,18 @@ export function createAndRenderEmbeddedLView<T>(
   const isSignalView = declarationLView[FLAGS] & LViewFlags.SignalView;
   const viewFlags = isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways;
   const embeddedLView = createLView<T>(
-      declarationLView, embeddedTView, context, viewFlags, null, templateTNode, null, null, null,
-      options?.injector ?? null, options?.dehydratedView ?? null);
+    declarationLView,
+    embeddedTView,
+    context,
+    viewFlags,
+    null,
+    templateTNode,
+    null,
+    null,
+    null,
+    options?.injector ?? null,
+    options?.dehydratedView ?? null,
+  );
 
   const declarationLContainer = declarationLView[templateTNode.index];
   ngDevMode && assertLContainer(declarationLContainer);
@@ -49,8 +79,10 @@ export function createAndRenderEmbeddedLView<T>(
   return embeddedLView;
 }
 
-export function getLViewFromLContainer<T>(lContainer: LContainer, index: number): LView<T>|
-    undefined {
+export function getLViewFromLContainer<T>(
+  lContainer: LContainer,
+  index: number,
+): LView<T> | undefined {
   const adjustedIndex = CONTAINER_HEADER_OFFSET + index;
   // avoid reading past the array boundaries
   if (adjustedIndex < lContainer.length) {
@@ -69,13 +101,20 @@ export function getLViewFromLContainer<T>(lContainer: LContainer, index: number)
  * block (in which case view contents was re-created, thus needing insertion).
  */
 export function shouldAddViewToDom(
-    tNode: TNode, dehydratedView?: DehydratedContainerView|null): boolean {
-  return !dehydratedView || dehydratedView.firstChild === null ||
-      hasInSkipHydrationBlockFlag(tNode);
+  tNode: TNode,
+  dehydratedView?: DehydratedContainerView | null,
+): boolean {
+  return (
+    !dehydratedView || dehydratedView.firstChild === null || hasInSkipHydrationBlockFlag(tNode)
+  );
 }
 
 export function addLViewToLContainer(
-    lContainer: LContainer, lView: LView<unknown>, index: number, addToDOM = true): void {
+  lContainer: LContainer,
+  lView: LView<unknown>,
+  index: number,
+  addToDOM = true,
+): void {
   const tView = lView[TVIEW];
 
   // Insert into the view tree so the new view can be change-detected
@@ -100,8 +139,10 @@ export function addLViewToLContainer(
   }
 }
 
-export function removeLViewFromLContainer(lContainer: LContainer, index: number): LView<unknown>|
-    undefined {
+export function removeLViewFromLContainer(
+  lContainer: LContainer,
+  index: number,
+): LView<unknown> | undefined {
   const lView = detachView(lContainer, index);
   if (lView !== undefined) {
     destroyLView(lView[TVIEW], lView);

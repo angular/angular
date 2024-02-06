@@ -40,15 +40,17 @@ export interface InputOptions<ReadT, WriteT> {
  * @developerPreview
  */
 export type InputOptionsWithoutTransform<ReadT> =
-    // Note: We still keep a notion of `transform` for auto-completion.
-    Omit<InputOptions<ReadT, ReadT>, 'transform'>&{transform?: undefined};
+  // Note: We still keep a notion of `transform` for auto-completion.
+  Omit<InputOptions<ReadT, ReadT>, 'transform'> & {transform?: undefined};
 /**
  * Signal input options with the transform option required.
  *
  * @developerPreview
  */
-export type InputOptionsWithTransform<ReadT, WriteT> =
-    Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>>&InputOptions<ReadT, WriteT>;
+export type InputOptionsWithTransform<ReadT, WriteT> = Required<
+  Pick<InputOptions<ReadT, WriteT>, 'transform'>
+> &
+  InputOptions<ReadT, WriteT>;
 
 export const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
 export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
@@ -104,8 +106,9 @@ export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, Read
  * @param options Additional options for the input. e.g. a transform, or an alias.
  */
 export function createInputSignal<ReadT, WriteT>(
-    initialValue: ReadT,
-    options?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT> {
+  initialValue: ReadT,
+  options?: InputOptions<ReadT, WriteT>,
+): InputSignalWithTransform<ReadT, WriteT> {
   const node: InputSignalNode<ReadT, WriteT> = Object.create(INPUT_SIGNAL_NODE);
 
   node.value = initialValue;
@@ -120,8 +123,9 @@ export function createInputSignal<ReadT, WriteT>(
 
     if (node.value === REQUIRED_UNSET_VALUE) {
       throw new RuntimeError(
-          RuntimeErrorCode.REQUIRED_INPUT_NO_VALUE,
-          ngDevMode && 'Input is required but no value is available yet.');
+        RuntimeErrorCode.REQUIRED_INPUT_NO_VALUE,
+        ngDevMode && 'Input is required but no value is available yet.',
+      );
     }
 
     return node.value;

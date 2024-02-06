@@ -22,10 +22,10 @@ export function getNativeRequestAnimationFrame() {
   // usually executed within the same rendering frame (but this is more implementation details of
   // browsers).
   let nativeRequestAnimationFrame: (callback: FrameRequestCallback) => number =
-      global[isBrowser ? 'requestAnimationFrame' : 'setTimeout'];
+    global[isBrowser ? 'requestAnimationFrame' : 'setTimeout'];
 
   let nativeCancelAnimationFrame: (handle: number) => void =
-      global[isBrowser ? 'cancelAnimationFrame' : 'clearTimeout'];
+    global[isBrowser ? 'cancelAnimationFrame' : 'clearTimeout'];
 
   if (typeof Zone !== 'undefined' && nativeRequestAnimationFrame! && nativeCancelAnimationFrame!) {
     // Note: zone.js sets original implementations on patched APIs behind the
@@ -34,13 +34,15 @@ export function getNativeRequestAnimationFrame() {
     // unpatched implementation of the `requestAnimationFrame`, which isn't intercepted by the
     // Angular zone. We use the unpatched implementation to avoid another change detection when
     // coalescing tasks.
-    const unpatchedRequestAnimationFrame =
-        (nativeRequestAnimationFrame as any)[(Zone as any).__symbol__('OriginalDelegate')];
+    const unpatchedRequestAnimationFrame = (nativeRequestAnimationFrame as any)[
+      (Zone as any).__symbol__('OriginalDelegate')
+    ];
     if (unpatchedRequestAnimationFrame) {
       nativeRequestAnimationFrame = unpatchedRequestAnimationFrame;
     }
-    const unpatchedCancelAnimationFrame =
-        (nativeCancelAnimationFrame as any)[(Zone as any).__symbol__('OriginalDelegate')];
+    const unpatchedCancelAnimationFrame = (nativeCancelAnimationFrame as any)[
+      (Zone as any).__symbol__('OriginalDelegate')
+    ];
     if (unpatchedCancelAnimationFrame) {
       nativeCancelAnimationFrame = unpatchedCancelAnimationFrame;
     }

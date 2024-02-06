@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -6,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 
 /** Template string function that can be used to strip indentation from a given string literal. */
 export function dedent(strings: TemplateStringsArray, ...values: any[]) {
@@ -23,7 +21,9 @@ export function dedent(strings: TemplateStringsArray, ...values: any[]) {
     lines.pop();
   }
   let minWhitespacePrefix = lines.reduce(
-      (min, line) => Math.min(min, numOfWhiteSpaceLeadingChars(line)), Number.MAX_SAFE_INTEGER);
+    (min, line) => Math.min(min, numOfWhiteSpaceLeadingChars(line)),
+    Number.MAX_SAFE_INTEGER,
+  );
   return lines.map((line) => line.substring(minWhitespacePrefix)).join('\n');
 }
 
@@ -46,7 +46,6 @@ function numOfWhiteSpaceLeadingChars(text: string): number {
   return text.match(/^\s*/)![0].length;
 }
 
-
 /**
  * Jasmine AsymmetricMatcher which can be used to assert `.debug` properties.
  *
@@ -61,13 +60,13 @@ function numOfWhiteSpaceLeadingChars(text: string): number {
  * @param expected Expected value.
  */
 export function matchDebug<T>(expected: T): any {
-  const matcher = function() {};
+  const matcher = function () {};
   let actual: any = matchDebug;
 
-  matcher.asymmetricMatch = function(objectWithDebug: any, matchersUtil: jasmine.MatchersUtil) {
-    return matchersUtil.equals(actual = objectWithDebug.debug, expected);
+  matcher.asymmetricMatch = function (objectWithDebug: any, matchersUtil: jasmine.MatchersUtil) {
+    return matchersUtil.equals((actual = objectWithDebug.debug), expected);
   };
-  matcher.jasmineToString = function(pp: (value: any) => string) {
+  matcher.jasmineToString = function (pp: (value: any) => string) {
     if (actual === matchDebug) {
       // `asymmetricMatch` never got called hence no error to display
       return '';
@@ -78,15 +77,23 @@ export function matchDebug<T>(expected: T): any {
 }
 
 export function buildFailureMessage(
-    actual: any, expected: any, pp: (value: any) => string): string {
+  actual: any,
+  expected: any,
+  pp: (value: any) => string,
+): string {
   const diffs: string[] = [];
   listPropertyDifferences(diffs, '', actual, expected, 5, pp);
   return '\n  ' + diffs.join('\n  ');
 }
 
 function listPropertyDifferences(
-    diffs: string[], path: string, actual: any, expected: any, depth: number,
-    pp: (value: any) => string) {
+  diffs: string[],
+  path: string,
+  actual: any,
+  expected: any,
+  depth: number,
+  pp: (value: any) => string,
+) {
   if (actual === expected) return;
   if (typeof actual !== typeof expected) {
     diffs.push(`${path}: Expected ${pp(actual)} to be ${pp(expected)}`);
@@ -96,16 +103,33 @@ function listPropertyDifferences(
     } else {
       const maxLength = Math.max(actual.length, expected.length);
       listPropertyDifferences(
-          diffs, path + '.length', expected.length, actual.length, depth - 1, pp);
+        diffs,
+        path + '.length',
+        expected.length,
+        actual.length,
+        depth - 1,
+        pp,
+      );
       for (let i = 0; i < maxLength; i++) {
         const actualItem = actual[i];
         const expectedItem = expected[i];
         listPropertyDifferences(
-            diffs, path + '[' + i + ']', actualItem, expectedItem, depth - 1, pp);
+          diffs,
+          path + '[' + i + ']',
+          actualItem,
+          expectedItem,
+          depth - 1,
+          pp,
+        );
       }
     }
   } else if (
-      depth && expected && typeof expected === 'object' && actual && typeof actual === 'object') {
+    depth &&
+    expected &&
+    typeof expected === 'object' &&
+    actual &&
+    typeof actual === 'object'
+  ) {
     new Set(Object.keys(expected).concat(Object.keys(actual))).forEach((key) => {
       const actualItem = actual[key];
       const expectedItem = expected[key];

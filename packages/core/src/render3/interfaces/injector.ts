@@ -64,7 +64,7 @@ export const enum NodeInjectorOffset {
  * The interfaces encodes number of parents `LView`s to traverse and index in the `LView`
  * pointing to the parent injector.
  */
-export type RelativeInjectorLocation = number&{
+export type RelativeInjectorLocation = number & {
   __brand__: 'RelativeInjectorLocationFlags';
 };
 
@@ -175,7 +175,7 @@ export class NodeInjectorFactory {
   /**
    * The inject implementation to be activated when using the factory.
    */
-  injectImpl: null|(<T>(token: ProviderToken<T>, flags?: InjectFlags) => T);
+  injectImpl: null | (<T>(token: ProviderToken<T>, flags?: InjectFlags) => T);
 
   /**
    * Marker set to true during factory invocation to see if we get into recursive loop.
@@ -251,34 +251,36 @@ export class NodeInjectorFactory {
    * `providers` (`['all']`) and then extend it with `viewProviders` (`['all'] + ['viewOnly'] =
    * ['all', 'viewOnly']`).
    */
-  providerFactory?: NodeInjectorFactory|null;
-
+  providerFactory?: NodeInjectorFactory | null;
 
   constructor(
+    /**
+     * Factory to invoke in order to create a new instance.
+     */
+    public factory: (
+      this: NodeInjectorFactory,
+      _: undefined,
       /**
-       * Factory to invoke in order to create a new instance.
+       * array where injectables tokens are stored. This is used in
+       * case of an error reporting to produce friendlier errors.
        */
-      public factory:
-          (this: NodeInjectorFactory, _: undefined,
-           /**
-            * array where injectables tokens are stored. This is used in
-            * case of an error reporting to produce friendlier errors.
-            */
-           tData: TData,
-           /**
-            * array where existing instances of injectables are stored. This is used in case
-            * of multi shadow is needed. See `multi` field documentation.
-            */
-           lView: LView,
-           /**
-            * The TNode of the same element injector.
-            */
-           tNode: TDirectiveHostNode) => any,
+      tData: TData,
       /**
-       * Set to `true` if the token is declared in `viewProviders` (or if it is component).
+       * array where existing instances of injectables are stored. This is used in case
+       * of multi shadow is needed. See `multi` field documentation.
        */
-      isViewProvider: boolean,
-      injectImplementation: null|(<T>(token: ProviderToken<T>, flags?: InjectFlags) => T)) {
+      lView: LView,
+      /**
+       * The TNode of the same element injector.
+       */
+      tNode: TDirectiveHostNode,
+    ) => any,
+    /**
+     * Set to `true` if the token is declared in `viewProviders` (or if it is component).
+     */
+    isViewProvider: boolean,
+    injectImplementation: null | (<T>(token: ProviderToken<T>, flags?: InjectFlags) => T),
+  ) {
     ngDevMode && assertDefined(factory, 'Factory not specified');
     ngDevMode && assertEqual(typeof factory, 'function', 'Expected factory function.');
     this.canSeeViewProviders = isViewProvider;

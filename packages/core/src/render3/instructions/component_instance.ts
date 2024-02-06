@@ -10,7 +10,6 @@ import {assertDefined} from '../../util/assert';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW} from '../interfaces/view';
 import {getLView} from '../state';
 
-
 /**
  * Instruction that returns the component instance in which the current instruction is executing.
  * This is a constant-time version of `nextContent` for the case where we know that we need the

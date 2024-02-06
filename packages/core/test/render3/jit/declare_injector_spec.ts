@@ -21,9 +21,9 @@ describe('Injector declaration jit compilation', () => {
     const TestToken = new InjectionToken('TestToken');
     const testTokenValue = {};
     const def = ɵɵngDeclareInjector({
-                  type: TestClass,
-                  providers: [OtherClass, {provide: TestToken, useValue: testTokenValue}]
-                }) as ɵɵInjectorDef<TestClass>;
+      type: TestClass,
+      providers: [OtherClass, {provide: TestToken, useValue: testTokenValue}],
+    }) as ɵɵInjectorDef<TestClass>;
 
     expect(def.providers).toEqual([OtherClass, {provide: TestToken, useValue: testTokenValue}]);
     expect(def.imports).toEqual([]);
@@ -31,8 +31,10 @@ describe('Injector declaration jit compilation', () => {
 
   it('should compile an Injector declaration with imports', () => {
     const OtherInjector: any = {};
-    const def = ɵɵngDeclareInjector({type: TestClass, imports: [OtherInjector]}) as
-        ɵɵInjectorDef<TestClass>;
+    const def = ɵɵngDeclareInjector({
+      type: TestClass,
+      imports: [OtherInjector],
+    }) as ɵɵInjectorDef<TestClass>;
 
     expect(def.providers).toEqual([]);
     expect(def.imports).toEqual([OtherInjector]);

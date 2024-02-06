@@ -32,8 +32,9 @@ import {NgModuleFactory} from './ng_module_factory';
  */
 export class ModuleWithComponentFactories<T> {
   constructor(
-      public ngModuleFactory: NgModuleFactory<T>,
-      public componentFactories: ComponentFactory<any>[]) {}
+    public ngModuleFactory: NgModuleFactory<T>,
+    public componentFactories: ComponentFactory<any>[],
+  ) {}
 }
 
 /**
@@ -75,21 +76,23 @@ export class Compiler {
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
     const ngModuleFactory = this.compileModuleSync(moduleType);
     const moduleDef = getNgModuleDef(moduleType)!;
-    const componentFactories =
-        maybeUnwrapFn(moduleDef.declarations)
-            .reduce((factories: ComponentFactory<any>[], declaration: Type<any>) => {
-              const componentDef = getComponentDef(declaration);
-              componentDef && factories.push(new ComponentFactoryR3(componentDef));
-              return factories;
-            }, [] as ComponentFactory<any>[]);
+    const componentFactories = maybeUnwrapFn(moduleDef.declarations).reduce(
+      (factories: ComponentFactory<any>[], declaration: Type<any>) => {
+        const componentDef = getComponentDef(declaration);
+        componentDef && factories.push(new ComponentFactoryR3(componentDef));
+        return factories;
+      },
+      [] as ComponentFactory<any>[],
+    );
     return new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
   }
 
   /**
    * Same as {@link #compileModuleAsync} but also creates ComponentFactories for all components.
    */
-  compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
-      Promise<ModuleWithComponentFactories<T>> {
+  compileModuleAndAllComponentsAsync<T>(
+    moduleType: Type<T>,
+  ): Promise<ModuleWithComponentFactories<T>> {
     return Promise.resolve(this.compileModuleAndAllComponentsSync(moduleType));
   }
 
@@ -106,7 +109,7 @@ export class Compiler {
   /**
    * Returns the id for a given NgModule, if one is defined and known to the compiler.
    */
-  getModuleId(moduleType: Type<any>): string|undefined {
+  getModuleId(moduleType: Type<any>): string | undefined {
     return undefined;
   }
 }
@@ -117,9 +120,9 @@ export class Compiler {
  * @publicApi
  */
 export type CompilerOptions = {
-  defaultEncapsulation?: ViewEncapsulation,
-  providers?: StaticProvider[],
-  preserveWhitespaces?: boolean,
+  defaultEncapsulation?: ViewEncapsulation;
+  providers?: StaticProvider[];
+  preserveWhitespaces?: boolean;
 };
 
 /**
@@ -127,8 +130,9 @@ export type CompilerOptions = {
  *
  * @publicApi
  */
-export const COMPILER_OPTIONS =
-    new InjectionToken<CompilerOptions[]>(ngDevMode ? 'compilerOptions' : '');
+export const COMPILER_OPTIONS = new InjectionToken<CompilerOptions[]>(
+  ngDevMode ? 'compilerOptions' : '',
+);
 
 /**
  * A factory for creating a Compiler

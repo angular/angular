@@ -18,7 +18,7 @@ import {ChangeDetectionScheduler} from './zoneless_scheduling';
 class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private appRef = inject(ApplicationRef);
   private taskService = inject(PendingTasks);
-  private pendingRenderTaskId: number|null = null;
+  private pendingRenderTaskId: number | null = null;
 
   notify(): void {
     if (this.pendingRenderTaskId !== null) return;
@@ -51,10 +51,11 @@ class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
    * best of both worlds.
    */
   private async raceTimeoutAndRequestAnimationFrame() {
-    const timeout = new Promise<void>(resolve => setTimeout(resolve));
-    const rAF = typeof global['requestAnimationFrame'] === 'function' ?
-        new Promise<void>(resolve => requestAnimationFrame(() => resolve())) :
-        null;
+    const timeout = new Promise<void>((resolve) => setTimeout(resolve));
+    const rAF =
+      typeof global['requestAnimationFrame'] === 'function'
+        ? new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+        : null;
     await Promise.race([timeout, rAF]);
 
     this.tick();

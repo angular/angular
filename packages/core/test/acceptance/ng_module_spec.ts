@@ -7,7 +7,25 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, createNgModule, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, Directive, Injectable, InjectionToken, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, Pipe, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelement as element, ɵɵproperty as property,} from '@angular/core';
+import {
+  Component,
+  createNgModule,
+  CUSTOM_ELEMENTS_SCHEMA,
+  destroyPlatform,
+  Directive,
+  Injectable,
+  InjectionToken,
+  NgModule,
+  NgModuleRef,
+  NO_ERRORS_SCHEMA,
+  Pipe,
+  ɵsetClassMetadata as setClassMetadata,
+  ɵɵdefineComponent as defineComponent,
+  ɵɵdefineInjector as defineInjector,
+  ɵɵdefineNgModule as defineNgModule,
+  ɵɵelement as element,
+  ɵɵproperty as property,
+} from '@angular/core';
 import {KNOWN_CONTROL_FLOW_DIRECTIVES} from '@angular/core/src/render3/instructions/element_validation';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -16,18 +34,15 @@ import {withBody} from '@angular/private/testing';
 
 describe('NgModule', () => {
   @Component({template: 'hello'})
-  class TestCmp {
-  }
+  class TestCmp {}
 
   @Component({template: 'hello'})
-  class TestCmp2 {
-  }
+  class TestCmp2 {}
 
   describe('bootstrap', () => {
     it('should throw when specified bootstrap component is not added to a module', () => {
       @NgModule({bootstrap: [TestCmp, [TestCmp2]]})
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
@@ -39,8 +54,7 @@ describe('NgModule', () => {
 
     it('should not throw when specified bootstrap component is added to a module', () => {
       @NgModule({declarations: [TestCmp, TestCmp2], bootstrap: [TestCmp, [TestCmp2]]})
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
@@ -81,22 +95,20 @@ describe('NgModule', () => {
         standalone: true,
         template: '',
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       @NgModule({
         declarations: [MyComp],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
       expect(() => {
         TestBed.createComponent(MyComp);
-      })
-          .toThrowError(
-              `Unexpected "MyComp" found in the "declarations" array of the "MyModule" NgModule, "MyComp" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`);
+      }).toThrowError(
+        `Unexpected "MyComp" found in the "declarations" array of the "MyModule" NgModule, "MyComp" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`,
+      );
     });
 
     it('should throw when a standalone directive is added to NgModule declarations', () => {
@@ -104,29 +116,26 @@ describe('NgModule', () => {
         selector: '[my-dir]',
         standalone: true,
       })
-      class MyDir {
-      }
+      class MyDir {}
 
       @Component({
         selector: 'my-comp',
         template: '',
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       @NgModule({
         declarations: [MyDir],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({declarations: [MyComp], imports: [MyModule]});
 
       expect(() => {
         TestBed.createComponent(MyComp);
-      })
-          .toThrowError(
-              `Unexpected "MyDir" found in the "declarations" array of the "MyModule" NgModule, "MyDir" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`);
+      }).toThrowError(
+        `Unexpected "MyDir" found in the "declarations" array of the "MyModule" NgModule, "MyDir" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`,
+      );
     });
 
     it('should throw when a standalone pipe is added to NgModule declarations', () => {
@@ -134,85 +143,81 @@ describe('NgModule', () => {
         name: 'my-pipe',
         standalone: true,
       })
-      class MyPipe {
-      }
+      class MyPipe {}
 
       @Component({
         selector: 'my-comp',
         template: '',
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       @NgModule({
         declarations: [MyPipe],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({declarations: [MyComp], imports: [MyModule]});
 
       expect(() => {
         TestBed.createComponent(MyComp);
-      })
-          .toThrowError(
-              `Unexpected "MyPipe" found in the "declarations" array of the "MyModule" NgModule, "MyPipe" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`);
+      }).toThrowError(
+        `Unexpected "MyPipe" found in the "declarations" array of the "MyModule" NgModule, "MyPipe" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`,
+      );
     });
 
-    it('should throw a testing specific error when a standalone component is added to the configureTestingModule declarations',
-       () => {
-         @Component({
-           selector: 'my-comp',
-           template: '',
-           standalone: true,
-         })
-         class MyComp {
-         }
+    it('should throw a testing specific error when a standalone component is added to the configureTestingModule declarations', () => {
+      @Component({
+        selector: 'my-comp',
+        template: '',
+        standalone: true,
+      })
+      class MyComp {}
 
-         expect(() => {
-           TestBed.configureTestingModule({declarations: [MyComp]});
-         })
-             .toThrowError(
-                 `Unexpected "MyComp" found in the "declarations" array of the "TestBed.configureTestingModule" call, "MyComp" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`);
-       });
+      expect(() => {
+        TestBed.configureTestingModule({declarations: [MyComp]});
+      }).toThrowError(
+        `Unexpected "MyComp" found in the "declarations" array of the "TestBed.configureTestingModule" call, "MyComp" is marked as standalone and can't be declared in any NgModule - did you intend to import it instead (by adding it to the "imports" array)?`,
+      );
+    });
   });
 
   describe('destroy', () => {
     beforeEach(destroyPlatform);
     afterEach(destroyPlatform);
 
-    it('should clear bootstrapped component contents',
-       withBody('<div>before</div><button></button><div>after</div>', async () => {
-         let wasOnDestroyCalled = false;
-         @Component({
-           selector: 'button',
-           template: 'button content',
-         })
-         class App {
-           ngOnDestroy() {
-             wasOnDestroyCalled = true;
-           }
-         }
+    it(
+      'should clear bootstrapped component contents',
+      withBody('<div>before</div><button></button><div>after</div>', async () => {
+        let wasOnDestroyCalled = false;
+        @Component({
+          selector: 'button',
+          template: 'button content',
+        })
+        class App {
+          ngOnDestroy() {
+            wasOnDestroyCalled = true;
+          }
+        }
 
-         @NgModule({
-           imports: [BrowserModule],
-           declarations: [App],
-           bootstrap: [App],
-         })
-         class AppModule {
-         }
-         const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
+        @NgModule({
+          imports: [BrowserModule],
+          declarations: [App],
+          bootstrap: [App],
+        })
+        class AppModule {}
+        const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
 
-         const button = document.body.querySelector('button')!;
-         expect(button.textContent).toEqual('button content');
-         expect(document.body.childNodes.length).toEqual(3);
+        const button = document.body.querySelector('button')!;
+        expect(button.textContent).toEqual('button content');
+        expect(document.body.childNodes.length).toEqual(3);
 
-         ngModuleRef.destroy();
+        ngModuleRef.destroy();
 
-         expect(wasOnDestroyCalled).toEqual(true);
-         expect(document.body.querySelector('button')).toBeFalsy();  // host element is removed
-         expect(document.body.childNodes.length).toEqual(2);         // other elements are preserved
-       }));
+        expect(wasOnDestroyCalled).toEqual(true);
+        expect(document.body.querySelector('button')).toBeFalsy(); // host element is removed
+        expect(document.body.childNodes.length).toEqual(2); // other elements are preserved
+      }),
+    );
   });
 
   describe('schemas', () => {
@@ -233,17 +238,16 @@ describe('NgModule', () => {
         imports: [CommonModule],
         declarations: [MyComp],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
       const spy = spyOn(console, 'error');
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
-      expect(spy.calls.mostRecent().args[0])
-          .toMatch(
-              /Can't bind to 'unknown-prop' since it isn't a known property of 'div' \(used in the 'MyComp' component template\)/);
+      expect(spy.calls.mostRecent().args[0]).toMatch(
+        /Can't bind to 'unknown-prop' since it isn't a known property of 'div' \(used in the 'MyComp' component template\)/,
+      );
     });
 
     it('should log an error on unknown props of `ng-template` if NO_ERRORS_SCHEMA is absent', () => {
@@ -258,8 +262,7 @@ describe('NgModule', () => {
       @NgModule({
         declarations: [MyComp],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
@@ -267,9 +270,9 @@ describe('NgModule', () => {
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
-      expect(spy.calls.mostRecent().args[0])
-          .toMatch(
-              /Can't bind to 'ngIf' since it isn't a known property of 'ng-template' \(used in the 'MyComp' component template\)/);
+      expect(spy.calls.mostRecent().args[0]).toMatch(
+        /Can't bind to 'ngIf' since it isn't a known property of 'ng-template' \(used in the 'MyComp' component template\)/,
+      );
     });
 
     it('should log an error on unknown props of `ng-container` if NO_ERRORS_SCHEMA is absent', () => {
@@ -284,8 +287,7 @@ describe('NgModule', () => {
       @NgModule({
         declarations: [MyComp],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
@@ -293,9 +295,9 @@ describe('NgModule', () => {
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
-      expect(spy.calls.mostRecent().args[0])
-          .toMatch(
-              /Can't bind to 'ngIf' since it isn't a known property of 'ng-container' \(used in the 'MyComp' component template\)/);
+      expect(spy.calls.mostRecent().args[0]).toMatch(
+        /Can't bind to 'ngIf' since it isn't a known property of 'ng-container' \(used in the 'MyComp' component template\)/,
+      );
     });
 
     it('should log an error on unknown props of `ng-content` if NO_ERRORS_SCHEMA is absent', () => {
@@ -310,8 +312,7 @@ describe('NgModule', () => {
       @NgModule({
         declarations: [MyComp],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
@@ -319,41 +320,39 @@ describe('NgModule', () => {
       const fixture = TestBed.createComponent(MyComp);
       fixture.detectChanges();
 
-      expect(spy.calls.mostRecent().args[0])
-          .toMatch(
-              /Can't bind to 'ngIf' since it isn't a known property of 'ng-content' \(used in the 'MyComp' component template\)/);
+      expect(spy.calls.mostRecent().args[0]).toMatch(
+        /Can't bind to 'ngIf' since it isn't a known property of 'ng-content' \(used in the 'MyComp' component template\)/,
+      );
     });
 
-    it('should throw an error with errorOnUnknownProperties on unknown props if NO_ERRORS_SCHEMA is absent',
-       () => {
-         @Component({
-           selector: 'my-comp',
-           template: `
+    it('should throw an error with errorOnUnknownProperties on unknown props if NO_ERRORS_SCHEMA is absent', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
           <ng-container *ngIf="condition">
             <div [unknown-prop]="true"></div>
           </ng-container>
         `,
-         })
-         class MyComp {
-           condition = true;
-         }
+      })
+      class MyComp {
+        condition = true;
+      }
 
-         @NgModule({
-           imports: [CommonModule],
-           declarations: [MyComp],
-         })
-         class MyModule {
-         }
+      @NgModule({
+        imports: [CommonModule],
+        declarations: [MyComp],
+      })
+      class MyModule {}
 
-         TestBed.configureTestingModule({imports: [MyModule], errorOnUnknownProperties: true});
+      TestBed.configureTestingModule({imports: [MyModule], errorOnUnknownProperties: true});
 
-         expect(() => {
-           const fixture = TestBed.createComponent(MyComp);
-           fixture.detectChanges();
-         })
-             .toThrowError(
-                 /NG0303: Can't bind to 'unknown-prop' since it isn't a known property of 'div' \(used in the 'MyComp' component template\)/g);
-       });
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).toThrowError(
+        /NG0303: Can't bind to 'unknown-prop' since it isn't a known property of 'div' \(used in the 'MyComp' component template\)/g,
+      );
+    });
 
     it('should not throw on unknown props if NO_ERRORS_SCHEMA is present', () => {
       @Component({
@@ -373,8 +372,7 @@ describe('NgModule', () => {
         schemas: [NO_ERRORS_SCHEMA],
         declarations: [MyComp],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
@@ -384,188 +382,167 @@ describe('NgModule', () => {
       }).not.toThrow();
     });
 
-    it('should not throw on unknown props with errorOnUnknownProperties if NO_ERRORS_SCHEMA is present',
-       () => {
-         @Component({
-           selector: 'my-comp',
-           template: `
+    it('should not throw on unknown props with errorOnUnknownProperties if NO_ERRORS_SCHEMA is present', () => {
+      @Component({
+        selector: 'my-comp',
+        template: `
           <ng-container *ngIf="condition">
             <div [unknown-prop]="true"></div>
           </ng-container>
         `,
-         })
-         class MyComp {
-           condition = true;
-         }
+      })
+      class MyComp {
+        condition = true;
+      }
 
-         @NgModule({
-           imports: [CommonModule],
-           schemas: [NO_ERRORS_SCHEMA],
-           declarations: [MyComp],
-         })
-         class MyModule {
-         }
+      @NgModule({
+        imports: [CommonModule],
+        schemas: [NO_ERRORS_SCHEMA],
+        declarations: [MyComp],
+      })
+      class MyModule {}
 
-         TestBed.configureTestingModule({imports: [MyModule], errorOnUnknownProperties: true});
+      TestBed.configureTestingModule({imports: [MyModule], errorOnUnknownProperties: true});
 
-         expect(() => {
-           const fixture = TestBed.createComponent(MyComp);
-           fixture.detectChanges();
-         }).not.toThrow();
-       });
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
 
-    it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
-       () => {
-         @Component({template: `<custom-el></custom-el>`})
-         class MyComp {
-         }
+    it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name', () => {
+      @Component({template: `<custom-el></custom-el>`})
+      class MyComp {}
 
-         const spy = spyOn(console, 'error');
-         TestBed.configureTestingModule({declarations: [MyComp]});
-         const fixture = TestBed.createComponent(MyComp);
-         fixture.detectChanges();
-         expect(spy.calls.mostRecent().args[0]).toMatch(/'custom-el' is not a known element/);
-       });
+      const spy = spyOn(console, 'error');
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(spy.calls.mostRecent().args[0]).toMatch(/'custom-el' is not a known element/);
+    });
 
-    it('should log an error about unknown element for a standalone component without CUSTOM_ELEMENTS_SCHEMA',
-       () => {
-         @Component({
-           template: `<custom-el></custom-el>`,
-           standalone: true,
-         })
-         class MyComp {
-         }
+    it('should log an error about unknown element for a standalone component without CUSTOM_ELEMENTS_SCHEMA', () => {
+      @Component({
+        template: `<custom-el></custom-el>`,
+        standalone: true,
+      })
+      class MyComp {}
 
-         const spy = spyOn(console, 'error');
-         TestBed.configureTestingModule({imports: [MyComp]});
-         const fixture = TestBed.createComponent(MyComp);
-         fixture.detectChanges();
-         expect(spy.calls.mostRecent().args[0]).toMatch(/'custom-el' is not a known element/);
-       });
+      const spy = spyOn(console, 'error');
+      TestBed.configureTestingModule({imports: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(spy.calls.mostRecent().args[0]).toMatch(/'custom-el' is not a known element/);
+    });
 
-    it('should not log an error about unknown element for a standalone component with CUSTOM_ELEMENTS_SCHEMA',
-       () => {
-         @Component({
-           template: `<custom-el></custom-el>`,
-           standalone: true,
-           schemas: [CUSTOM_ELEMENTS_SCHEMA],
-         })
-         class MyComp {
-         }
+    it('should not log an error about unknown element for a standalone component with CUSTOM_ELEMENTS_SCHEMA', () => {
+      @Component({
+        template: `<custom-el></custom-el>`,
+        standalone: true,
+        schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      })
+      class MyComp {}
 
-         const spy = spyOn(console, 'error');
-         TestBed.configureTestingModule({imports: [MyComp]});
-         const fixture = TestBed.createComponent(MyComp);
-         fixture.detectChanges();
-         expect(spy).not.toHaveBeenCalled();
-       });
+      const spy = spyOn(console, 'error');
+      TestBed.configureTestingModule({imports: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(spy).not.toHaveBeenCalled();
+    });
 
-    it('should throw an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name',
-       () => {
-         @Component({template: `<custom-el></custom-el>`})
-         class MyComp {
-         }
+    it('should throw an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element with dash in tag name', () => {
+      @Component({template: `<custom-el></custom-el>`})
+      class MyComp {}
 
-         TestBed.configureTestingModule({declarations: [MyComp], errorOnUnknownElements: true});
-         expect(() => {
-           const fixture = TestBed.createComponent(MyComp);
-           fixture.detectChanges();
-         }).toThrowError(/NG0304: 'custom-el' is not a known element/g);
-       });
+      TestBed.configureTestingModule({declarations: [MyComp], errorOnUnknownElements: true});
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).toThrowError(/NG0304: 'custom-el' is not a known element/g);
+    });
 
-    it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
-       () => {
-         @Component({template: `<custom></custom>`})
-         class MyComp {
-         }
+    it('should log an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name', () => {
+      @Component({template: `<custom></custom>`})
+      class MyComp {}
 
-         const spy = spyOn(console, 'error');
-         TestBed.configureTestingModule({declarations: [MyComp]});
-         const fixture = TestBed.createComponent(MyComp);
-         fixture.detectChanges();
-         expect(spy.calls.mostRecent().args[0]).toMatch(/'custom' is not a known element/);
-       });
+      const spy = spyOn(console, 'error');
+      TestBed.configureTestingModule({declarations: [MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+      expect(spy.calls.mostRecent().args[0]).toMatch(/'custom' is not a known element/);
+    });
 
-    it('should throw an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name',
-       () => {
-         @Component({template: `<custom></custom>`})
-         class MyComp {
-         }
+    it('should throw an error about unknown element without CUSTOM_ELEMENTS_SCHEMA for element without dash in tag name', () => {
+      @Component({template: `<custom></custom>`})
+      class MyComp {}
 
-         TestBed.configureTestingModule({declarations: [MyComp], errorOnUnknownElements: true});
-         expect(() => {
-           const fixture = TestBed.createComponent(MyComp);
-           fixture.detectChanges();
-         }).toThrowError(/NG0304: 'custom' is not a known element/g);
-       });
+      TestBed.configureTestingModule({declarations: [MyComp], errorOnUnknownElements: true});
+      expect(() => {
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+      }).toThrowError(/NG0304: 'custom' is not a known element/g);
+    });
 
     it('should report unknown property bindings on ng-content', () => {
       @Component({template: `<ng-content *unknownProp="123"></ng-content>`})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App]});
       const spy = spyOn(console, 'error');
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(spy.calls.mostRecent()?.args[0])
-          .toMatch(
-              /Can't bind to 'unknownProp' since it isn't a known property of 'ng-content' \(used in the 'App' component template\)/);
+      expect(spy.calls.mostRecent()?.args[0]).toMatch(
+        /Can't bind to 'unknownProp' since it isn't a known property of 'ng-content' \(used in the 'App' component template\)/,
+      );
     });
 
-    it('should throw an error on unknown property bindings on ng-content when errorOnUnknownProperties is enabled',
-       () => {
-         @Component({template: `<ng-content *unknownProp="123"></ng-content>`})
-         class App {
-         }
+    it('should throw an error on unknown property bindings on ng-content when errorOnUnknownProperties is enabled', () => {
+      @Component({template: `<ng-content *unknownProp="123"></ng-content>`})
+      class App {}
 
-         TestBed.configureTestingModule({declarations: [App], errorOnUnknownProperties: true});
-         expect(() => {
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
-         })
-             .toThrowError(
-                 /NG0303: Can't bind to 'unknownProp' since it isn't a known property of 'ng-content' \(used in the 'App' component template\)/g);
-       });
+      TestBed.configureTestingModule({declarations: [App], errorOnUnknownProperties: true});
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      }).toThrowError(
+        /NG0303: Can't bind to 'unknownProp' since it isn't a known property of 'ng-content' \(used in the 'App' component template\)/g,
+      );
+    });
 
     it('should report unknown property bindings on ng-container', () => {
       @Component({template: `<ng-container [unknown-prop]="123"></ng-container>`})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App]});
       const spy = spyOn(console, 'error');
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(spy.calls.mostRecent()?.args[0])
-          .toMatch(
-              /Can't bind to 'unknown-prop' since it isn't a known property of 'ng-container' \(used in the 'App' component template\)/);
+      expect(spy.calls.mostRecent()?.args[0]).toMatch(
+        /Can't bind to 'unknown-prop' since it isn't a known property of 'ng-container' \(used in the 'App' component template\)/,
+      );
     });
 
-    it('should throw error on unknown property bindings on ng-container when errorOnUnknownProperties is enabled',
-       () => {
-         @Component({template: `<ng-container [unknown-prop]="123"></ng-container>`})
-         class App {
-         }
+    it('should throw error on unknown property bindings on ng-container when errorOnUnknownProperties is enabled', () => {
+      @Component({template: `<ng-container [unknown-prop]="123"></ng-container>`})
+      class App {}
 
-         TestBed.configureTestingModule({declarations: [App], errorOnUnknownProperties: true});
-         expect(() => {
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
-         })
-             .toThrowError(
-                 /NG0303: Can't bind to 'unknown-prop' since it isn't a known property of 'ng-container' \(used in the 'App' component template\)/g);
-       });
+      TestBed.configureTestingModule({declarations: [App], errorOnUnknownProperties: true});
+      expect(() => {
+        const fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      }).toThrowError(
+        /NG0303: Can't bind to 'unknown-prop' since it isn't a known property of 'ng-container' \(used in the 'App' component template\)/g,
+      );
+    });
 
     it('should log an error on unknown props and include a note on Web Components', () => {
       @Component({
         selector: 'may-be-web-component',
         template: `...`,
       })
-      class MaybeWebComp {
-      }
+      class MaybeWebComp {}
 
       @Component({
         selector: 'my-comp',
@@ -578,8 +555,7 @@ describe('NgModule', () => {
       @NgModule({
         declarations: [MyComp, MaybeWebComp],
       })
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
 
@@ -600,72 +576,74 @@ describe('NgModule', () => {
     });
 
     KNOWN_CONTROL_FLOW_DIRECTIVES.forEach((correspondingImport, directive) => {
-      it(`should produce a warning when the '${directive}' directive ` +
-             `is used in a template, but not imported in corresponding NgModule`,
-         () => {
-           @Component({
-             template: `<div *${directive}="expr"></div>`,
-           })
-           class App {
-             expr = true;
-           }
+      it(
+        `should produce a warning when the '${directive}' directive ` +
+          `is used in a template, but not imported in corresponding NgModule`,
+        () => {
+          @Component({
+            template: `<div *${directive}="expr"></div>`,
+          })
+          class App {
+            expr = true;
+          }
 
-           @NgModule({
-             declarations: [App],
-           })
-           class Module {
-           }
+          @NgModule({
+            declarations: [App],
+          })
+          class Module {}
 
-           TestBed.configureTestingModule({imports: [Module]});
-           const spy = spyOn(console, 'error');
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
+          TestBed.configureTestingModule({imports: [Module]});
+          const spy = spyOn(console, 'error');
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
 
-           const errorMessage = spy.calls.mostRecent()?.args[0];
+          const errorMessage = spy.calls.mostRecent()?.args[0];
 
-           // Split the error message into chunks, so it's easier to debug if needed.
-           const lines = [
-             `NG0303: Can't bind to '${
-                 directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
-             `If the '${directive}' is an Angular control flow directive, please make sure ` +
-                 `that either the '${
-                     correspondingImport}' directive or the 'CommonModule' is a part of an @NgModule where this component is declared.`,
-           ];
-           lines.forEach((line) => expect(errorMessage).toMatch(line));
-         });
+          // Split the error message into chunks, so it's easier to debug if needed.
+          const lines = [
+            `NG0303: Can't bind to '${directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
+            `If the '${directive}' is an Angular control flow directive, please make sure ` +
+              `that either the '${correspondingImport}' directive or the 'CommonModule' is a part of an @NgModule where this component is declared.`,
+          ];
+          lines.forEach((line) => expect(errorMessage).toMatch(line));
+        },
+      );
 
-      it(`should produce a warning when the '${directive}' directive ` +
-             `is used in a template, but not imported in a standalone component`,
-         () => {
-           @Component({
-             standalone: true,
-             template: `<div *${directive}="expr"></div>`,
-           })
-           class App {
-             expr = true;
-           }
+      it(
+        `should produce a warning when the '${directive}' directive ` +
+          `is used in a template, but not imported in a standalone component`,
+        () => {
+          @Component({
+            standalone: true,
+            template: `<div *${directive}="expr"></div>`,
+          })
+          class App {
+            expr = true;
+          }
 
-           const spy = spyOn(console, 'error');
-           const fixture = TestBed.createComponent(App);
-           fixture.detectChanges();
+          const spy = spyOn(console, 'error');
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
 
-           const errorMessage = spy.calls.mostRecent()?.args[0];
+          const errorMessage = spy.calls.mostRecent()?.args[0];
 
-           // Split the error message into chunks, so it's easier to debug if needed.
-           const lines = [
-             `NG0303: Can't bind to '${
-                 directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
-             `If the '${directive}' is an Angular control flow directive, please make sure ` +
-                 `that either the '${
-                     correspondingImport}' directive or the 'CommonModule' is included in the '@Component.imports' of this component.`,
-           ];
-           lines.forEach((line) => expect(errorMessage).toMatch(line));
-         });
+          // Split the error message into chunks, so it's easier to debug if needed.
+          const lines = [
+            `NG0303: Can't bind to '${directive}' since it isn't a known property of 'div' \\(used in the 'App' component template\\).`,
+            `If the '${directive}' is an Angular control flow directive, please make sure ` +
+              `that either the '${correspondingImport}' directive or the 'CommonModule' is included in the '@Component.imports' of this component.`,
+          ];
+          lines.forEach((line) => expect(errorMessage).toMatch(line));
+        },
+      );
     });
 
     describe('AOT-compiled components', () => {
       function createComponent(
-          template: (rf: any) => void, vars: number, consts?: (number|string)[][]) {
+        template: (rf: any) => void,
+        vars: number,
+        consts?: (number | string)[][],
+      ) {
         class Comp {
           static ɵfac = () => new Comp();
           static ɵcmp = defineComponent({
@@ -679,14 +657,16 @@ describe('NgModule', () => {
           });
         }
         setClassMetadata(
-            Comp,
-            [
-              {
-                type: Component,
-                args: [{selector: 'comp', template: '...'}],
-              },
-            ],
-            null, null);
+          Comp,
+          [
+            {
+              type: Component,
+              args: [{selector: 'comp', template: '...'}],
+            },
+          ],
+          null,
+          null,
+        );
         return Comp;
       }
 
@@ -696,19 +676,21 @@ describe('NgModule', () => {
           static ɵinj = defineInjector({});
         }
         setClassMetadata(
-            Module,
-            [
-              {
-                type: NgModule,
-                args: [
-                  {
-                    declarations: [Comp],
-                    schemas: [NO_ERRORS_SCHEMA],
-                  },
-                ],
-              },
-            ],
-            null, null);
+          Module,
+          [
+            {
+              type: NgModule,
+              args: [
+                {
+                  declarations: [Comp],
+                  schemas: [NO_ERRORS_SCHEMA],
+                },
+              ],
+            },
+          ],
+          null,
+          null,
+        );
         return Module;
       }
 
@@ -756,14 +738,18 @@ describe('NgModule', () => {
          *  })
          *  class MyComp {}
          */
-        const MyComp = createComponent((rf: any) => {
-          if (rf & 1) {
-            element(0, 'div', 0);
-          }
-          if (rf & 2) {
-            property('foo', true);
-          }
-        }, 1, [[3, 'foo']]);
+        const MyComp = createComponent(
+          (rf: any) => {
+            if (rf & 1) {
+              element(0, 'div', 0);
+            }
+            if (rf & 2) {
+              property('foo', true);
+            }
+          },
+          1,
+          [[3, 'foo']],
+        );
 
         /*
          *  @NgModule({
@@ -787,8 +773,7 @@ describe('NgModule', () => {
 
     it('should not log an error about unknown elements with CUSTOM_ELEMENTS_SCHEMA', () => {
       @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+      class MyComp {}
 
       const spy = spyOn(console, 'error');
       TestBed.configureTestingModule({
@@ -803,8 +788,7 @@ describe('NgModule', () => {
 
     it('should not throw an error about unknown elements with CUSTOM_ELEMENTS_SCHEMA', () => {
       @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+      class MyComp {}
 
       const spy = spyOn(console, 'error');
       TestBed.configureTestingModule({
@@ -822,8 +806,7 @@ describe('NgModule', () => {
 
     it('should not log an error about unknown elements with NO_ERRORS_SCHEMA', () => {
       @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+      class MyComp {}
 
       const spy = spyOn(console, 'error');
       TestBed.configureTestingModule({
@@ -838,8 +821,7 @@ describe('NgModule', () => {
 
     it('should not throw an error about unknown elements with NO_ERRORS_SCHEMA', () => {
       @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+      class MyComp {}
 
       const spy = spyOn(console, 'error');
       TestBed.configureTestingModule({
@@ -860,12 +842,10 @@ describe('NgModule', () => {
         selector: 'custom-el',
         template: '',
       })
-      class CustomEl {
-      }
+      class CustomEl {}
 
       @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+      class MyComp {}
 
       const spy = spyOn(console, 'error');
       TestBed.configureTestingModule({declarations: [MyComp, CustomEl]});
@@ -880,12 +860,10 @@ describe('NgModule', () => {
         selector: 'custom-el',
         template: '',
       })
-      class CustomEl {
-      }
+      class CustomEl {}
 
       @Component({template: `<custom-el></custom-el>`})
-      class MyComp {
-      }
+      class MyComp {}
 
       const spy = spyOn(console, 'error');
       TestBed.configureTestingModule({
@@ -910,12 +888,10 @@ describe('NgModule', () => {
           </svg>
         `,
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       @NgModule({declarations: [MyComp]})
-      class MyModule {
-      }
+      class MyModule {}
 
       const spy = spyOn(console, 'error');
       TestBed.configureTestingModule({imports: [MyModule]});
@@ -935,12 +911,10 @@ describe('NgModule', () => {
           </svg>
         `,
       })
-      class MyComp {
-      }
+      class MyComp {}
 
       @NgModule({declarations: [MyComp]})
-      class MyModule {
-      }
+      class MyModule {}
 
       const spy = spyOn(console, 'error');
       TestBed.configureTestingModule({imports: [MyModule], errorOnUnknownElements: true});
@@ -960,14 +934,12 @@ describe('NgModule', () => {
       @NgModule({
         providers: [{provide: TOKEN_A, useValue: 'TokenValueA'}],
       })
-      class AppModule {
-      }
+      class AppModule {}
 
       @NgModule({
         providers: [{provide: TOKEN_B, useValue: 'TokenValueB'}],
       })
-      class ChildModule {
-      }
+      class ChildModule {}
 
       // Simple case, just passing NgModule class.
       const ngModuleRef = createNgModule(AppModule);
@@ -985,7 +957,7 @@ describe('NgModule', () => {
 
   it('should be able to use DI through the NgModuleRef inside the module constructor', () => {
     const token = new InjectionToken<string>('token');
-    let value: string|undefined;
+    let value: string | undefined;
 
     @NgModule({
       imports: [CommonModule],
@@ -1004,23 +976,22 @@ describe('NgModule', () => {
     expect(value).toBe('foo');
   });
 
-  it('should be able to create a component through the ComponentFactoryResolver of an NgModuleRef in a module constructor',
-     () => {
-       let componentInstance: TestCmp|undefined;
+  it('should be able to create a component through the ComponentFactoryResolver of an NgModuleRef in a module constructor', () => {
+    let componentInstance: TestCmp | undefined;
 
-       @NgModule({
-         declarations: [TestCmp],
-         exports: [TestCmp],
-       })
-       class MyModule {
-         constructor(ngModuleRef: NgModuleRef<any>) {
-           const factory = ngModuleRef.componentFactoryResolver.resolveComponentFactory(TestCmp);
-           componentInstance = factory.create(ngModuleRef.injector).instance;
-         }
-       }
+    @NgModule({
+      declarations: [TestCmp],
+      exports: [TestCmp],
+    })
+    class MyModule {
+      constructor(ngModuleRef: NgModuleRef<any>) {
+        const factory = ngModuleRef.componentFactoryResolver.resolveComponentFactory(TestCmp);
+        componentInstance = factory.create(ngModuleRef.injector).instance;
+      }
+    }
 
-       TestBed.configureTestingModule({imports: [MyModule]});
-       TestBed.createComponent(TestCmp);
-       expect(componentInstance).toBeInstanceOf(TestCmp);
-     });
+    TestBed.configureTestingModule({imports: [MyModule]});
+    TestBed.createComponent(TestCmp);
+    expect(componentInstance).toBeInstanceOf(TestCmp);
+  });
 });

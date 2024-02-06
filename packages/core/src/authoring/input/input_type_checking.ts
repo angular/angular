@@ -9,13 +9,17 @@
 import {InputSignalWithTransform} from './input_signal';
 
 /** Retrieves the `WriteT` of an `InputSignal` and `InputSignalWithTransform`. */
-export type ɵUnwrapInputSignalWriteType<Field> =
-    Field extends InputSignalWithTransform<unknown, infer WriteT>? WriteT : never;
+export type ɵUnwrapInputSignalWriteType<Field> = Field extends InputSignalWithTransform<
+  unknown,
+  infer WriteT
+>
+  ? WriteT
+  : never;
 
 /**
  * Unwraps all `InputSignal`/`InputSignalWithTransform` class fields of
  * the given directive.
  */
 export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
-  [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
+  [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>;
 };

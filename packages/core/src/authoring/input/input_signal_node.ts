@@ -19,7 +19,7 @@ export interface InputSignalNode<ReadT, WriteT> extends SignalNode<ReadT> {
    * User-configured transform that will run whenever a new value is applied
    * to the input signal node.
    */
-  transformFn: ((value: WriteT) => ReadT)|undefined;
+  transformFn: ((value: WriteT) => ReadT) | undefined;
 
   /**
    * Applies a new value to the input signal. Expects transforms to be run
@@ -42,6 +42,6 @@ export const INPUT_SIGNAL_NODE: InputSignalNode<unknown, unknown> = /* @__PURE__
 
     applyValueToInputSignal<ReadT, WriteT>(node: InputSignalNode<ReadT, WriteT>, value: ReadT) {
       signalSetFn(node, value);
-    }
+    },
   };
 })();

@@ -22,7 +22,10 @@ class Todo {
     this._title = value.trim();
   }
 
-  constructor(private _title: string, public completed: boolean = false) {
+  constructor(
+    private _title: string,
+    public completed: boolean = false,
+  ) {
     this.editing = false;
   }
 }
@@ -47,7 +50,7 @@ class TodoStore {
   }
 
   setAllTo(completed: boolean) {
-    this.todos.forEach((t: Todo) => t.completed = completed);
+    this.todos.forEach((t: Todo) => (t.completed = completed));
   }
 
   removeCompleted() {
@@ -129,7 +132,10 @@ class TodoStore {
 class ToDoAppComponent {
   newTodoText = '';
 
-  constructor(public todoStore: TodoStore, private readonly cdr: ChangeDetectorRef) {
+  constructor(
+    public todoStore: TodoStore,
+    private readonly cdr: ChangeDetectorRef,
+  ) {
     (window as any).todoAppComponent = this;
   }
 
@@ -198,8 +204,7 @@ class ToDoAppComponent {
   imports: [BrowserModule],
   bootstrap: [ToDoAppComponent],
 })
-class ToDoAppModule {
-}
+class ToDoAppModule {}
 
 loadTranslations(translations);
 

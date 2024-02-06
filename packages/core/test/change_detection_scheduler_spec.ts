@@ -8,7 +8,25 @@
 
 import {AsyncPipe} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  createComponent,
+  destroyPlatform,
+  ElementRef,
+  EnvironmentInjector,
+  ErrorHandler,
+  inject,
+  Input,
+  PLATFORM_ID,
+  signal,
+  TemplateRef,
+  Type,
+  ViewChild,
+  ViewContainerRef,
+  ɵprovideZonelessChangeDetection as provideZonelessChangeDetection,
+} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -110,8 +128,9 @@ describe('Angular with NoopNgZone', () => {
       const fixture = await createFixture(TestComponent);
       expect(fixture.nativeElement.innerText).toEqual('initial');
 
-      fixture.debugElement.query(p => p.nativeElement.tagName === 'DIV')
-          .triggerEventHandler('click');
+      fixture.debugElement
+        .query((p) => p.nativeElement.tagName === 'DIV')
+        .triggerEventHandler('click');
       expect(fixture.isStable()).toBe(false);
       await fixture.whenStable();
       expect(fixture.nativeElement.innerText).toEqual('new');
@@ -191,8 +210,9 @@ describe('Angular with NoopNgZone', () => {
 
       const fixture = await createFixture(TestComponent);
 
-      const otherComponent =
-          createComponent(DynamicCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+      const otherComponent = createComponent(DynamicCmp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
       fixture.componentInstance.viewContainer.insert(otherComponent.hostView);
       expect(fixture.isStable()).toBe(false);
       await fixture.whenStable();
@@ -216,8 +236,9 @@ describe('Angular with NoopNgZone', () => {
       }
 
       const fixture = await createFixture(TestComponent);
-      const component =
-          createComponent(DynamicCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+      const component = createComponent(DynamicCmp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
 
       fixture.componentInstance.viewContainer.insert(component.hostView);
       await fixture.whenStable();
@@ -226,8 +247,9 @@ describe('Angular with NoopNgZone', () => {
       await fixture.whenStable();
       expect(fixture.nativeElement.innerText).toEqual('');
 
-      const component2 =
-          createComponent(DynamicCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+      const component2 = createComponent(DynamicCmp, {
+        environmentInjector: TestBed.inject(EnvironmentInjector),
+      });
       fixture.componentInstance.viewContainer.insert(component2.hostView);
       await fixture.whenStable();
       expect(fixture.nativeElement.innerText).toEqual('binding');
@@ -237,49 +259,53 @@ describe('Angular with NoopNgZone', () => {
     });
 
     function whenStable(applicationRef = TestBed.inject(ApplicationRef)): Promise<boolean> {
-      return firstValueFrom(applicationRef.isStable.pipe(filter(stable => stable)));
+      return firstValueFrom(applicationRef.isStable.pipe(filter((stable) => stable)));
     }
 
     function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
       return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
     }
 
-    it('when destroying a view (*no* animations)', withBody('<app></app>', async () => {
-         destroyPlatform();
-         @Component({
-           template: '{{"binding"}}',
-           standalone: true,
-         })
-         class DynamicCmp {
-           elementRef = inject(ElementRef);
-         }
-         @Component({
-           selector: 'app',
-           template: '<ng-template #ref></ng-template>',
-           standalone: true,
-         })
-         class App {
-           @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
-         }
-         const applicationRef = await bootstrapApplication(App, {
-           providers: [
-             provideZonelessChangeDetection(),
-             {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
-           ]
-         });
-         const appViewRef = (applicationRef as any)._views[0] as {context: App, rootNodes: any[]};
-         await whenStable(applicationRef);
+    it(
+      'when destroying a view (*no* animations)',
+      withBody('<app></app>', async () => {
+        destroyPlatform();
+        @Component({
+          template: '{{"binding"}}',
+          standalone: true,
+        })
+        class DynamicCmp {
+          elementRef = inject(ElementRef);
+        }
+        @Component({
+          selector: 'app',
+          template: '<ng-template #ref></ng-template>',
+          standalone: true,
+        })
+        class App {
+          @ViewChild('ref', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+        }
+        const applicationRef = await bootstrapApplication(App, {
+          providers: [
+            provideZonelessChangeDetection(),
+            {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+          ],
+        });
+        const appViewRef = (applicationRef as any)._views[0] as {context: App; rootNodes: any[]};
+        await whenStable(applicationRef);
 
-         const component2 =
-             createComponent(DynamicCmp, {environmentInjector: applicationRef.injector});
-         appViewRef.context.viewContainer.insert(component2.hostView);
-         expect(isStable(applicationRef.injector)).toBe(false);
-         await whenStable(applicationRef);
-         component2.destroy();
-         expect(isStable(applicationRef.injector)).toBe(true);
-         expect(appViewRef.rootNodes[0].innerText).toEqual('');
-         destroyPlatform();
-       }));
+        const component2 = createComponent(DynamicCmp, {
+          environmentInjector: applicationRef.injector,
+        });
+        appViewRef.context.viewContainer.insert(component2.hostView);
+        expect(isStable(applicationRef.injector)).toBe(false);
+        await whenStable(applicationRef);
+        component2.destroy();
+        expect(isStable(applicationRef.injector)).toBe(true);
+        expect(appViewRef.rootNodes[0].innerText).toEqual('');
+        destroyPlatform();
+      }),
+    );
 
     it('when attaching view to ApplicationRef', async () => {
       @Component({
@@ -330,13 +356,12 @@ describe('Angular with NoopNgZone', () => {
 
       val.set('new');
       await TestBed.inject(ApplicationRef)
-          .isStable
-          .pipe(
-              filter(stable => stable),
-              take(1),
-              tap(() => val.set('newer')),
-              )
-          .toPromise();
+        .isStable.pipe(
+          filter((stable) => stable),
+          take(1),
+          tap(() => val.set('newer')),
+        )
+        .toPromise();
       await fixture.whenStable();
       expect(fixture.nativeElement.innerText).toEqual('newer');
     });
@@ -360,13 +385,14 @@ describe('Angular with NoopNgZone', () => {
       providers: [
         provideZonelessChangeDetection(),
         {
-          provide: ErrorHandler, useClass: class extends ErrorHandler {
+          provide: ErrorHandler,
+          useClass: class extends ErrorHandler {
             override handleError(error: any): void {
               throw error;
             }
-          }
+          },
         },
-      ]
+      ],
     });
 
     const fixture = await createFixture(TestComponent);

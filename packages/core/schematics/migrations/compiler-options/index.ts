@@ -14,7 +14,7 @@ import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/com
 
 import {migrateFile} from './util';
 
-export default function(): Rule {
+export default function (): Rule {
   return async (tree: Tree) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
@@ -22,7 +22,8 @@ export default function(): Rule {
 
     if (!allPaths.length) {
       throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot run the guard and resolve interfaces migration.');
+        'Could not find any tsconfig file. Cannot run the guard and resolve interfaces migration.',
+      );
     }
 
     for (const tsconfigPath of allPaths) {
@@ -33,13 +34,14 @@ export default function(): Rule {
 
 function runGuardAndResolveInterfacesMigration(tree: Tree, tsconfigPath: string, basePath: string) {
   const program = createMigrationProgram(tree, tsconfigPath, basePath);
-  const sourceFiles = program.getSourceFiles().filter(
-      (sourceFile) => canMigrateFile(basePath, sourceFile, program));
+  const sourceFiles = program
+    .getSourceFiles()
+    .filter((sourceFile) => canMigrateFile(basePath, sourceFile, program));
 
   for (const sourceFile of sourceFiles) {
-    let update: UpdateRecorder|null = null;
+    let update: UpdateRecorder | null = null;
 
-    const rewriter = (startPos: number, width: number, text: string|null) => {
+    const rewriter = (startPos: number, width: number, text: string | null) => {
       if (update === null) {
         // Lazily initialize update, because most files will not require migration.
         update = tree.beginUpdate(relative(basePath, sourceFile.fileName));

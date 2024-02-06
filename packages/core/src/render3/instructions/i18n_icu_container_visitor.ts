@@ -37,8 +37,10 @@ export function loadIcuContainerVisitor() {
    * @param tIcuContainerNode Current `TIcuContainerNode`
    * @param lView `LView` where the `RNode`s should be looked up.
    */
-  function icuContainerIteratorStart(tIcuContainerNode: TIcuContainerNode, lView: LView): () =>
-      RNode | null {
+  function icuContainerIteratorStart(
+    tIcuContainerNode: TIcuContainerNode,
+    lView: LView,
+  ): () => RNode | null {
     _lView = lView;
     while (_stack.length) _stack.pop();
     ngDevMode && assertTNodeForLView(tIcuContainerNode, lView);
@@ -57,8 +59,7 @@ export function loadIcuContainerVisitor() {
     }
   }
 
-
-  function icuContainerIteratorNext(): RNode|null {
+  function icuContainerIteratorNext(): RNode | null {
     if (_index < _removes.length) {
       const removeOpCode = _removes[_index++] as number;
       ngDevMode && assertNumber(removeOpCode, 'Expecting OpCode number');

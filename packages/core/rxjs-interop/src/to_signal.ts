@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertInInjectionContext, assertNotInReactiveContext, computed, DestroyRef, inject, Injector, signal, Signal, WritableSignal, ɵRuntimeError, ɵRuntimeErrorCode} from '@angular/core';
+import {
+  assertInInjectionContext,
+  assertNotInReactiveContext,
+  computed,
+  DestroyRef,
+  inject,
+  Injector,
+  signal,
+  Signal,
+  WritableSignal,
+  ɵRuntimeError,
+  ɵRuntimeErrorCode,
+} from '@angular/core';
 import {Observable, Subscribable} from 'rxjs';
 
 /**
@@ -61,23 +73,27 @@ export interface ToSignalOptions {
 }
 
 // Base case: no options -> `undefined` in the result type.
-export function toSignal<T>(source: Observable<T>|Subscribable<T>): Signal<T|undefined>;
+export function toSignal<T>(source: Observable<T> | Subscribable<T>): Signal<T | undefined>;
 // Options with `undefined` initial value and no `requiredSync` -> `undefined`.
 export function toSignal<T>(
-    source: Observable<T>|Subscribable<T>,
-    options: ToSignalOptions&{initialValue?: undefined, requireSync?: false}): Signal<T|undefined>;
+  source: Observable<T> | Subscribable<T>,
+  options: ToSignalOptions & {initialValue?: undefined; requireSync?: false},
+): Signal<T | undefined>;
 // Options with `null` initial value -> `null`.
 export function toSignal<T>(
-    source: Observable<T>|Subscribable<T>,
-    options: ToSignalOptions&{initialValue?: null, requireSync?: false}): Signal<T|null>;
+  source: Observable<T> | Subscribable<T>,
+  options: ToSignalOptions & {initialValue?: null; requireSync?: false},
+): Signal<T | null>;
 // Options with `undefined` initial value and `requiredSync` -> strict result type.
 export function toSignal<T>(
-    source: Observable<T>|Subscribable<T>,
-    options: ToSignalOptions&{initialValue?: undefined, requireSync: true}): Signal<T>;
+  source: Observable<T> | Subscribable<T>,
+  options: ToSignalOptions & {initialValue?: undefined; requireSync: true},
+): Signal<T>;
 // Options with a more specific initial value type.
 export function toSignal<T, const U extends T>(
-    source: Observable<T>|Subscribable<T>,
-    options: ToSignalOptions&{initialValue: U, requireSync?: false}): Signal<T|U>;
+  source: Observable<T> | Subscribable<T>,
+  options: ToSignalOptions & {initialValue: U; requireSync?: false},
+): Signal<T | U>;
 
 /**
  * Get the current value of an `Observable` as a reactive `Signal`.
@@ -104,28 +120,31 @@ export function toSignal<T, const U extends T>(
  * @developerPreview
  */
 export function toSignal<T, U = undefined>(
-    source: Observable<T>|Subscribable<T>,
-    options?: ToSignalOptions&{initialValue?: U}): Signal<T|U> {
+  source: Observable<T> | Subscribable<T>,
+  options?: ToSignalOptions & {initialValue?: U},
+): Signal<T | U> {
   ngDevMode &&
-      assertNotInReactiveContext(
-          toSignal,
-          'Invoking `toSignal` causes new subscriptions every time. ' +
-              'Consider moving `toSignal` outside of the reactive context and read the signal value where needed.');
+    assertNotInReactiveContext(
+      toSignal,
+      'Invoking `toSignal` causes new subscriptions every time. ' +
+        'Consider moving `toSignal` outside of the reactive context and read the signal value where needed.',
+    );
 
   const requiresCleanup = !options?.manualCleanup;
   requiresCleanup && !options?.injector && assertInInjectionContext(toSignal);
-  const cleanupRef =
-      requiresCleanup ? options?.injector?.get(DestroyRef) ?? inject(DestroyRef) : null;
+  const cleanupRef = requiresCleanup
+    ? options?.injector?.get(DestroyRef) ?? inject(DestroyRef)
+    : null;
 
   // Note: T is the Observable value type, and U is the initial value type. They don't have to be
   // the same - the returned signal gives values of type `T`.
-  let state: WritableSignal<State<T|U>>;
+  let state: WritableSignal<State<T | U>>;
   if (options?.requireSync) {
     // Initially the signal is in a `NoValue` state.
     state = signal({kind: StateKind.NoValue});
   } else {
     // If an initial value was passed, use it. Otherwise, use `undefined` as the initial value.
-    state = signal<State<T|U>>({kind: StateKind.Value, value: options?.initialValue as U});
+    state = signal<State<T | U>>({kind: StateKind.Value, value: options?.initialValue as U});
   }
 
   // Note: This code cannot run inside a reactive context (see assertion above). If we'd support
@@ -135,8 +154,8 @@ export function toSignal<T, U = undefined>(
   // subscription. Additional context (related to async pipe):
   // https://github.com/angular/angular/pull/50522.
   const sub = source.subscribe({
-    next: value => state.set({kind: StateKind.Value, value}),
-    error: error => {
+    next: (value) => state.set({kind: StateKind.Value, value}),
+    error: (error) => {
       if (options?.rejectErrors) {
         // Kick the error back to RxJS. It will be caught and rethrown in a macrotask, which causes
         // the error to end up as an uncaught exception.
@@ -150,8 +169,9 @@ export function toSignal<T, U = undefined>(
 
   if (ngDevMode && options?.requireSync && state().kind === StateKind.NoValue) {
     throw new ɵRuntimeError(
-        ɵRuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
-        '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.');
+      ɵRuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
+      '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.',
+    );
   }
 
   // Unsubscribe when the current context is destroyed, if requested.
@@ -170,8 +190,9 @@ export function toSignal<T, U = undefined>(
         // This shouldn't really happen because the error is thrown on creation.
         // TODO(alxhub): use a RuntimeError when we finalize the error semantics
         throw new ɵRuntimeError(
-            ɵRuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
-            '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.');
+          ɵRuntimeErrorCode.REQUIRE_SYNC_WITHOUT_SYNC_EMIT,
+          '`toSignal()` called with `requireSync` but `Observable` did not emit synchronously.',
+        );
     }
   });
 }
@@ -196,4 +217,4 @@ interface ErrorState {
   error: unknown;
 }
 
-type State<T> = NoValueState|ValueState<T>|ErrorState;
+type State<T> = NoValueState | ValueState<T> | ErrorState;

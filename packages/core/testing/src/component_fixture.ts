@@ -6,13 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵDeferBlockDetails as DeferBlockDetails, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  ComponentRef,
+  DebugElement,
+  ElementRef,
+  getDebugNode,
+  inject,
+  NgZone,
+  RendererFactory2,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+  ɵDeferBlockDetails as DeferBlockDetails,
+  ɵEffectScheduler as EffectScheduler,
+  ɵgetDeferBlocks as getDeferBlocks,
+  ɵNoopNgZone as NoopNgZone,
+  ɵPendingTasks as PendingTasks,
+} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
-import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
-
+import {
+  AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs,
+  ComponentFixtureAutoDetect,
+  ComponentFixtureNoNgZone,
+} from './test_bed_common';
 
 /**
  * Fixture for debugging and testing a component.
@@ -45,7 +64,7 @@ export abstract class ComponentFixture<T> {
    */
   changeDetectorRef: ChangeDetectorRef;
 
-  private _renderer: RendererFactory2|null|undefined;
+  private _renderer: RendererFactory2 | null | undefined;
   private _isDestroyed: boolean = false;
   /** @internal */
   protected readonly _noZoneOptionIsSet = inject(ComponentFixtureNoNgZone, {optional: true});
@@ -126,7 +145,6 @@ export abstract class ComponentFixture<T> {
     return Promise.resolve(deferBlockFixtures);
   }
 
-
   private _getRenderer() {
     if (this._renderer === undefined) {
       this._renderer = this.componentRef.injector.get(RendererFactory2, null);
@@ -164,7 +182,7 @@ export abstract class ComponentFixture<T> {
  */
 export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   private readonly disableDetectChangesError =
-      inject(AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, {optional: true}) ?? false;
+    inject(AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, {optional: true}) ?? false;
   private readonly pendingTasks = inject(PendingTasks);
 
   initialize(): void {
@@ -174,12 +192,14 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   override detectChanges(checkNoChanges: boolean = true): void {
     if (!this.disableDetectChangesError) {
       throw new Error(
-          'Do not use `detectChanges` directly when using zoneless change detection.' +
-          ' Instead, wait for the next render or `fixture.whenStable`.');
+        'Do not use `detectChanges` directly when using zoneless change detection.' +
+          ' Instead, wait for the next render or `fixture.whenStable`.',
+      );
     } else if (!checkNoChanges) {
       throw new Error(
-          'Cannot disable `checkNoChanges` in this configuration. ' +
-          'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.');
+        'Cannot disable `checkNoChanges` in this configuration. ' +
+          'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.',
+      );
     }
     this._effectRunner.flush();
     this._appRef.tick();
@@ -194,10 +214,13 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     if (this.isStable()) {
       return Promise.resolve(false);
     }
-    return this._appRef.isStable.pipe(first(stable => stable)).toPromise().then(() => true);
+    return this._appRef.isStable
+      .pipe(first((stable) => stable))
+      .toPromise()
+      .then(() => true);
   }
 
-  override autoDetectChanges(autoDetect?: boolean|undefined): void {
+  override autoDetectChanges(autoDetect?: boolean | undefined): void {
     throw new Error('Cannot call autoDetectChanges when using change detection scheduling.');
   }
 }
@@ -209,53 +232,61 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private _subscriptions = new Subscription();
   private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
   private _isStable: boolean = true;
-  private _promise: Promise<boolean>|null = null;
-  private _resolve: ((result: boolean) => void)|null = null;
+  private _promise: Promise<boolean> | null = null;
+  private _resolve: ((result: boolean) => void) | null = null;
 
   initialize(): void {
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
-      this._subscriptions.add(this._ngZone.onUnstable.subscribe({
-        next: () => {
-          this._isStable = false;
-        }
-      }));
-      this._subscriptions.add(this._ngZone.onMicrotaskEmpty.subscribe({
-        next: () => {
-          if (this._autoDetect) {
-            // Do a change detection run with checkNoChanges set to true to check
-            // there are no changes on the second run.
-            this.detectChanges(true);
-          }
-        }
-      }));
-      this._subscriptions.add(this._ngZone.onStable.subscribe({
-        next: () => {
-          this._isStable = true;
-          // Check whether there is a pending whenStable() completer to resolve.
-          if (this._promise !== null) {
-            // If so check whether there are no pending macrotasks before resolving.
-            // Do this check in the next tick so that ngZone gets a chance to update the state of
-            // pending macrotasks.
-            queueMicrotask(() => {
-              if (!this._ngZone.hasPendingMacrotasks) {
-                if (this._promise !== null) {
-                  this._resolve!(true);
-                  this._resolve = null;
-                  this._promise = null;
+      this._subscriptions.add(
+        this._ngZone.onUnstable.subscribe({
+          next: () => {
+            this._isStable = false;
+          },
+        }),
+      );
+      this._subscriptions.add(
+        this._ngZone.onMicrotaskEmpty.subscribe({
+          next: () => {
+            if (this._autoDetect) {
+              // Do a change detection run with checkNoChanges set to true to check
+              // there are no changes on the second run.
+              this.detectChanges(true);
+            }
+          },
+        }),
+      );
+      this._subscriptions.add(
+        this._ngZone.onStable.subscribe({
+          next: () => {
+            this._isStable = true;
+            // Check whether there is a pending whenStable() completer to resolve.
+            if (this._promise !== null) {
+              // If so check whether there are no pending macrotasks before resolving.
+              // Do this check in the next tick so that ngZone gets a chance to update the state of
+              // pending macrotasks.
+              queueMicrotask(() => {
+                if (!this._ngZone.hasPendingMacrotasks) {
+                  if (this._promise !== null) {
+                    this._resolve!(true);
+                    this._resolve = null;
+                    this._promise = null;
+                  }
                 }
-              }
-            });
-          }
-        }
-      }));
+              });
+            }
+          },
+        }),
+      );
 
-      this._subscriptions.add(this._ngZone.onError.subscribe({
-        next: (error: any) => {
-          throw error;
-        }
-      }));
+      this._subscriptions.add(
+        this._ngZone.onError.subscribe({
+          next: (error: any) => {
+            throw error;
+          },
+        }),
+      );
     });
   }
 
@@ -284,7 +315,7 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     } else if (this._promise !== null) {
       return this._promise;
     } else {
-      this._promise = new Promise(res => {
+      this._promise = new Promise((res) => {
         this._resolve = res;
       });
       return this._promise;

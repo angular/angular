@@ -6,17 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createInputSignal, InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal, InputSignalWithTransform} from './input_signal';
+import {
+  createInputSignal,
+  InputOptions,
+  InputOptionsWithoutTransform,
+  InputOptionsWithTransform,
+  InputSignal,
+  InputSignalWithTransform,
+} from './input_signal';
 import {REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 export function inputFunction<ReadT, WriteT>(
-    initialValue?: ReadT,
-    opts?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT|undefined, WriteT> {
+  initialValue?: ReadT,
+  opts?: InputOptions<ReadT, WriteT>,
+): InputSignalWithTransform<ReadT | undefined, WriteT> {
   return createInputSignal(initialValue, opts);
 }
 
-export function inputRequiredFunction<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>):
-    InputSignalWithTransform<ReadT, WriteT> {
+export function inputRequiredFunction<ReadT, WriteT>(
+  opts?: InputOptions<ReadT, WriteT>,
+): InputSignalWithTransform<ReadT, WriteT> {
   return createInputSignal(REQUIRED_UNSET_VALUE as never, opts);
 }
 
@@ -53,10 +62,12 @@ export interface InputFunction {
    *
    * @developerPreview
    */
-  <ReadT>(): InputSignal<ReadT|undefined>;
+  <ReadT>(): InputSignal<ReadT | undefined>;
   <ReadT>(initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-  <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>):
-      InputSignalWithTransform<ReadT, WriteT>;
+  <ReadT, WriteT>(
+    initialValue: ReadT,
+    opts: InputOptionsWithTransform<ReadT, WriteT>,
+  ): InputSignalWithTransform<ReadT, WriteT>;
 
   /**
    * Initializes a required input.
@@ -69,8 +80,9 @@ export interface InputFunction {
   required: {
     <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
 
-    <ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>):
-        InputSignalWithTransform<ReadT, WriteT>;
+    <ReadT, WriteT>(
+      opts: InputOptionsWithTransform<ReadT, WriteT>,
+    ): InputSignalWithTransform<ReadT, WriteT>;
   };
 }
 
@@ -104,5 +116,5 @@ export const input: InputFunction = (() => {
   // this assignment, unless this `input` constant export is accessed. It's a
   // self-contained side effect that is local to the user facing`input` export.
   (inputFunction as any).required = inputRequiredFunction;
-  return inputFunction as (typeof inputFunction&{required: typeof inputRequiredFunction});
+  return inputFunction as typeof inputFunction & {required: typeof inputRequiredFunction};
 })();

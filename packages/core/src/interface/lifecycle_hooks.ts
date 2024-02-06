@@ -7,7 +7,6 @@
  */
 import {SimpleChanges} from './simple_change';
 
-
 /**
  * @description
  * A lifecycle hook that is called when any data-bound property of a directive changes.

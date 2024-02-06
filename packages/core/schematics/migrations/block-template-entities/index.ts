@@ -14,7 +14,7 @@ import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/com
 
 import {analyze, AnalyzedFile, migrateTemplate} from './util';
 
-export default function(): Rule {
+export default function (): Rule {
   return async (tree: Tree) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
@@ -22,7 +22,8 @@ export default function(): Rule {
 
     if (!allPaths.length) {
       throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot run the block syntax template entities migration.');
+        'Could not find any tsconfig file. Cannot run the block syntax template entities migration.',
+      );
     }
 
     for (const tsconfigPath of allPaths) {
@@ -33,8 +34,9 @@ export default function(): Rule {
 
 function runBlockTemplateEntitiesMigration(tree: Tree, tsconfigPath: string, basePath: string) {
   const program = createMigrationProgram(tree, tsconfigPath, basePath);
-  const sourceFiles =
-      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
+  const sourceFiles = program
+    .getSourceFiles()
+    .filter((sourceFile) => canMigrateFile(basePath, sourceFile, program));
   const analysis = new Map<string, AnalyzedFile>();
 
   for (const sourceFile of sourceFiles) {

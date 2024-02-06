@@ -6,9 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {NgIf} from '@angular/common';
-import {ChangeDetectorRef, Component, Directive, inject, OnInit, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Directive,
+  inject,
+  OnInit,
+  Pipe,
+  PipeTransform,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('control flow - for', () => {
@@ -69,7 +78,7 @@ describe('control flow - for', () => {
       template: '@for ((item of items); track idx; let idx = $index) {|} @empty {Empty}',
     })
     class TestComponent {
-      items: number[]|null|undefined = [1, 2, 3];
+      items: number[] | null | undefined = [1, 2, 3];
     }
 
     const fixture = TestBed.createComponent(TestComponent);
@@ -110,7 +119,7 @@ describe('control flow - for', () => {
     @Component({
       template: '@for (item of items | test; track item;) {{{item}}|}',
       imports: [TestPipe],
-      standalone: true
+      standalone: true,
     })
     class TestComponent {
       items = [1, 2, 3];
@@ -147,8 +156,7 @@ describe('control flow - for', () => {
         }
       `,
     })
-    class TestComponent {
-    }
+    class TestComponent {}
 
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
@@ -184,34 +192,32 @@ describe('control flow - for', () => {
       expect(offsetReads).toBeGreaterThan(prevReads);
     });
 
-    it('should be able to access component properties in the tracking function from a loop at the root of the template',
-       () => {
-         const calls = new Set();
+    it('should be able to access component properties in the tracking function from a loop at the root of the template', () => {
+      const calls = new Set();
 
-         @Component({
-           template: `@for ((item of items); track trackingFn(item, compProp)) {{{item}}}`,
-         })
-         class TestComponent {
-           items = ['a', 'b'];
-           compProp = 'hello';
+      @Component({
+        template: `@for ((item of items); track trackingFn(item, compProp)) {{{item}}}`,
+      })
+      class TestComponent {
+        items = ['a', 'b'];
+        compProp = 'hello';
 
-           trackingFn(item: string, message: string) {
-             calls.add(`${item}:${message}`);
-             return item;
-           }
-         }
+        trackingFn(item: string, message: string) {
+          calls.add(`${item}:${message}`);
+          return item;
+        }
+      }
 
-         const fixture = TestBed.createComponent(TestComponent);
-         fixture.detectChanges();
-         expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
-       });
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
+    });
 
-    it('should be able to access component properties in the tracking function from a nested template',
-       () => {
-         const calls = new Set();
+    it('should be able to access component properties in the tracking function from a nested template', () => {
+      const calls = new Set();
 
-         @Component({
-           template: `
+      @Component({
+        template: `
                     @if (true) {
                       @if (true) {
                         @if (true) {
@@ -220,21 +226,21 @@ describe('control flow - for', () => {
                       }
                     }
                    `,
-         })
-         class TestComponent {
-           items = ['a', 'b'];
-           compProp = 'hello';
+      })
+      class TestComponent {
+        items = ['a', 'b'];
+        compProp = 'hello';
 
-           trackingFn(item: string, message: string) {
-             calls.add(`${item}:${message}`);
-             return item;
-           }
-         }
+        trackingFn(item: string, message: string) {
+          calls.add(`${item}:${message}`);
+          return item;
+        }
+      }
 
-         const fixture = TestBed.createComponent(TestComponent);
-         fixture.detectChanges();
-         expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
-       });
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
+    });
   });
 
   describe('list diffing and view operations', () => {
@@ -268,7 +274,6 @@ describe('control flow - for', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('1(0)|3(1)|');
 
-
       // add in the middle
       fixture.componentInstance.items.splice(1, 0, 2);
       fixture.detectChanges();
@@ -286,7 +291,6 @@ describe('control flow - for', () => {
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('1(0)|2(1)|3(2)|');
-
 
       // an item in the middle stays the same, the rest gets replaced
       fixture.componentInstance.items = [5, 2, 7];
@@ -318,7 +322,6 @@ describe('control flow - for', () => {
         {'name': 'Task 14', 'id': 14},
         {'name': 'Task 70', 'id': 70},
         {'name': 'Task 34', 'id': 34},
-
       ];
 
       const AFTER = [
@@ -332,8 +335,7 @@ describe('control flow - for', () => {
         template: ``,
         selector: 'child-cmp',
       })
-      class ChildCmp {
-      }
+      class ChildCmp {}
 
       @Component({
         standalone: true,
@@ -366,8 +368,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -376,7 +377,7 @@ describe('control flow - for', () => {
         <test>Before @for (item of items; track $index) {
           <span foo>{{item}}</span>
         } After</test>
-      `
+      `,
       })
       class App {
         items = [1, 2, 3];
@@ -394,8 +395,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -404,7 +404,7 @@ describe('control flow - for', () => {
         <test>Before @for (item of items; track $index) {} @empty {
           <span foo>Empty</span>
         } After</test>
-      `
+      `,
       })
       class App {
         items = [];
@@ -421,10 +421,9 @@ describe('control flow - for', () => {
         standalone: true,
         selector: 'test',
         template:
-            'Main: <ng-content/> Loop slot: <ng-content select="[loop]"/> Empty slot: <ng-content select="[empty]"/>',
+          'Main: <ng-content/> Loop slot: <ng-content select="[loop]"/> Empty slot: <ng-content select="[empty]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -435,7 +434,7 @@ describe('control flow - for', () => {
         } @empty {
           <span empty>Empty</span>
         } After</test>
-      `
+      `,
       })
       class App {
         items = [1, 2, 3];
@@ -444,13 +443,15 @@ describe('control flow - for', () => {
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.textContent)
-          .toBe('Main: Before  After Loop slot: 123 Empty slot: ');
+      expect(fixture.nativeElement.textContent).toBe(
+        'Main: Before  After Loop slot: 123 Empty slot: ',
+      );
 
       fixture.componentInstance.items = [];
       fixture.detectChanges();
-      expect(fixture.nativeElement.textContent)
-          .toBe('Main: Before  After Loop slot:  Empty slot: Empty');
+      expect(fixture.nativeElement.textContent).toBe(
+        'Main: Before  After Loop slot:  Empty slot: Empty',
+      );
     });
 
     it('should project an @for with multiple root nodes into the catch-all slot', () => {
@@ -459,8 +460,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -470,7 +470,7 @@ describe('control flow - for', () => {
           <span foo>one{{item}}</span>
           <div foo>two{{item}}</div>
         } After</test>
-      `
+      `,
       })
       class App {
         items = [1, 2];
@@ -488,8 +488,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -501,7 +500,7 @@ describe('control flow - for', () => {
             <span>|</span>
           </ng-container>
         } After</test>
-      `
+      `,
       })
       class App {
         items = [1, 2, 3];
@@ -521,8 +520,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -533,7 +531,7 @@ describe('control flow - for', () => {
           <span foo>{{item}}</span>
           <!-- after -->
         } After</test>
-      `
+      `,
       })
       class App {
         items = [1, 2, 3];
@@ -545,63 +543,58 @@ describe('control flow - for', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
     });
 
-    it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes',
-       () => {
-         @Component({
-           standalone: true,
-           selector: 'test',
-           template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
-         })
-         class TestComponent {
-         }
+    it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {}
 
-         @Component({
-           standalone: true,
-           imports: [TestComponent],
-           preserveWhitespaces: true,
-           // Note the whitespace due to the indentation inside @for.
-           template:
-               '<test>Before @for (item of items; track $index) {<span foo>{{item}}</span>} After</test>'
-         })
-         class App {
-           items = [1, 2, 3];
-         }
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        preserveWhitespaces: true,
+        // Note the whitespace due to the indentation inside @for.
+        template:
+          '<test>Before @for (item of items; track $index) {<span foo>{{item}}</span>} After</test>',
+      })
+      class App {
+        items = [1, 2, 3];
+      }
 
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
-       });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+    });
 
-    it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes',
-       () => {
-         @Component({
-           standalone: true,
-           selector: 'test',
-           template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
-         })
-         class TestComponent {
-         }
+    it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {}
 
-         @Component({
-           standalone: true,
-           imports: [TestComponent],
-           preserveWhitespaces: true,
-           // Note the whitespace due to the indentation inside @for.
-           template: `
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        preserveWhitespaces: true,
+        // Note the whitespace due to the indentation inside @for.
+        template: `
               <test>Before @for (item of items; track $index) {
                 <span foo>{{item}}</span>
               } After</test>
-            `
-         })
-         class App {
-           items = [1, 2, 3];
-         }
+            `,
+      })
+      class App {
+        items = [1, 2, 3];
+      }
 
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent)
-             .toMatch(/Main: Before\s+1\s+2\s+3\s+After Slot:/);
-       });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toMatch(/Main: Before\s+1\s+2\s+3\s+After Slot:/);
+    });
 
     it('should not project the root node across multiple layers of @for', () => {
       @Component({
@@ -609,8 +602,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -621,7 +613,7 @@ describe('control flow - for', () => {
             <span foo>{{item}}</span>
           }
         } After</test>
-      `
+      `,
       })
       class App {
         items = [1, 2];
@@ -638,15 +630,14 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
         imports: [TestComponent, NgIf],
         template: `<test>Before @for (item of items; track $index) {
         <span *ngIf="true" foo>{{item}}</span>
-      } After</test>`
+      } After</test>`,
       })
       class App {
         items = [1, 2];
@@ -669,8 +660,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Directive({
         selector: '[foo]',
@@ -688,7 +678,7 @@ describe('control flow - for', () => {
         template: `<test>Before @for (item of items; track $index) {
         <span foo>{{item}}</span>
       } After</test>
-      `
+      `,
       })
       class App {
         items = [1];
@@ -709,8 +699,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Directive({
         selector: '[templateDir]',
@@ -718,8 +707,8 @@ describe('control flow - for', () => {
       })
       class TemplateDirective implements OnInit {
         constructor(
-            private viewContainerRef: ViewContainerRef,
-            private templateRef: TemplateRef<any>,
+          private viewContainerRef: ViewContainerRef,
+          private templateRef: TemplateRef<any>,
         ) {
           directiveCount++;
         }
@@ -736,7 +725,7 @@ describe('control flow - for', () => {
         template: `<test>Before @for (item of items; track $index) {
         <span *templateDir foo>{{item}}</span>
       } After</test>
-      `
+      `,
       })
       class App {
         items = [1];
@@ -757,8 +746,7 @@ describe('control flow - for', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Directive({
         selector: '[templateDir]',
@@ -766,8 +754,8 @@ describe('control flow - for', () => {
       })
       class TemplateDirective implements OnInit {
         constructor(
-            private viewContainerRef: ViewContainerRef,
-            private templateRef: TemplateRef<any>,
+          private viewContainerRef: ViewContainerRef,
+          private templateRef: TemplateRef<any>,
         ) {
           directiveCount++;
         }
@@ -784,7 +772,7 @@ describe('control flow - for', () => {
         template: `<test>Before @for (item of items; track $index) {
         <ng-template templateDir foo>{{item}}</ng-template>
       } After</test>
-      `
+      `,
       })
       class App {
         items = [1];

@@ -12,10 +12,16 @@ import {ANNOTATIONS, makeDecorator, makePropDecorator} from '../../src/util/deco
 class DecoratedParent {}
 class DecoratedChild extends DecoratedParent {}
 
-const TerminalDecorator =
-    makeDecorator('TerminalDecorator', (data: any) => ({terminal: true, ...data}));
+const TerminalDecorator = makeDecorator('TerminalDecorator', (data: any) => ({
+  terminal: true,
+  ...data,
+}));
 const TestDecorator = makeDecorator(
-    'TestDecorator', (data: any) => data, Object, (fn: any) => fn.Terminal = TerminalDecorator);
+  'TestDecorator',
+  (data: any) => data,
+  Object,
+  (fn: any) => (fn.Terminal = TerminalDecorator),
+);
 
 describe('Property decorators', () => {
   // https://github.com/angular/angular/issues/12224
@@ -57,7 +63,7 @@ describe('decorators', () => {
     expect(annotation.marker).toEqual('WORKS');
   });
 
-  it('should not apply decorators from the prototype chain', function() {
+  it('should not apply decorators from the prototype chain', function () {
     TestDecorator({marker: 'parent'})(DecoratedParent);
     TestDecorator({marker: 'child'})(DecoratedChild);
 

@@ -10,8 +10,6 @@ import {Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
-
-
 /**
  * An interface that a function passed into `forwardRef` has to implement.
  *
@@ -68,10 +66,10 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
-  (<any>forwardRefFn).toString = function() {
+  (<any>forwardRefFn).toString = function () {
     return stringify(this());
   };
-  return (<Type<any>><any>forwardRefFn);
+  return <Type<any>>(<any>forwardRefFn);
 }
 
 /**
@@ -92,7 +90,10 @@ export function resolveForwardRef<T>(type: T): T {
 }
 
 /** Checks whether a function is wrapped by a `forwardRef`. */
-export function isForwardRef(fn: any): fn is() => any {
-  return typeof fn === 'function' && fn.hasOwnProperty(__forward_ref__) &&
-      fn.__forward_ref__ === forwardRef;
+export function isForwardRef(fn: any): fn is () => any {
+  return (
+    typeof fn === 'function' &&
+    fn.hasOwnProperty(__forward_ref__) &&
+    fn.__forward_ref__ === forwardRef
+  );
 }

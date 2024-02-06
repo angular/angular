@@ -44,7 +44,7 @@ import {getInsertInFrontOfRNodeWithI18n, processI18nInsertBefore} from '../node_
 export function addTNodeAndUpdateInsertBeforeIndex(previousTNodes: TNode[], newTNode: TNode) {
   // Start with Rule1
   ngDevMode &&
-      assertEqual(newTNode.insertBeforeIndex, null, 'We expect that insertBeforeIndex is not set');
+    assertEqual(newTNode.insertBeforeIndex, null, 'We expect that insertBeforeIndex is not set');
 
   previousTNodes.push(newTNode);
   if (previousTNodes.length > 1) {
@@ -53,8 +53,10 @@ export function addTNodeAndUpdateInsertBeforeIndex(previousTNodes: TNode[], newT
       // Text nodes are created eagerly and so they don't need their `indexBeforeIndex` updated.
       // It is safe to ignore them.
       if (!isI18nText(existingTNode)) {
-        if (isNewTNodeCreatedBefore(existingTNode, newTNode) &&
-            getInsertBeforeIndex(existingTNode) === null) {
+        if (
+          isNewTNodeCreatedBefore(existingTNode, newTNode) &&
+          getInsertBeforeIndex(existingTNode) === null
+        ) {
           // If it was created before us in time, (and it does not yet have `insertBeforeIndex`)
           // then add the `insertBeforeIndex`.
           setInsertBeforeIndex(existingTNode, newTNode.index);
@@ -72,7 +74,7 @@ function isNewTNodeCreatedBefore(existingTNode: TNode, newTNode: TNode): boolean
   return isI18nText(newTNode) || existingTNode.index > newTNode.index;
 }
 
-function getInsertBeforeIndex(tNode: TNode): number|null {
+function getInsertBeforeIndex(tNode: TNode): number | null {
   const index = tNode.insertBeforeIndex;
   return Array.isArray(index) ? index[0] : index;
 }

@@ -15,7 +15,7 @@ describe('property bindings', () => {
   it('should support bindings to properties', () => {
     @Component({template: `<span [id]="id"></span>`})
     class Comp {
-      id: string|undefined;
+      id: string | undefined;
     }
 
     TestBed.configureTestingModule({declarations: [Comp]});
@@ -88,41 +88,43 @@ describe('property bindings', () => {
     expect(labelNode.nativeElement.getAttribute('for')).toBe('some-textarea');
   });
 
-  it('should not map properties whose names do not correspond to their attribute names, ' +
-         'if they correspond to inputs',
-     () => {
-       @Component({template: '', selector: 'my-comp'})
-       class MyComp {
-          @Input() for !:string;
-       }
+  it(
+    'should not map properties whose names do not correspond to their attribute names, ' +
+      'if they correspond to inputs',
+    () => {
+      @Component({template: '', selector: 'my-comp'})
+      class MyComp {
+        @Input() for!: string;
+      }
 
-       @Component({template: '<my-comp [for]="forValue"></my-comp>'})
-       class App {
-         forValue?: string;
-       }
+      @Component({template: '<my-comp [for]="forValue"></my-comp>'})
+      class App {
+        forValue?: string;
+      }
 
-       TestBed.configureTestingModule({declarations: [App, MyComp]});
-       const fixture = TestBed.createComponent(App);
-       const myCompNode = fixture.debugElement.query(By.directive(MyComp));
-       fixture.componentInstance.forValue = 'hello';
-       fixture.detectChanges();
-       expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
-       expect(myCompNode.componentInstance.for).toBe('hello');
+      TestBed.configureTestingModule({declarations: [App, MyComp]});
+      const fixture = TestBed.createComponent(App);
+      const myCompNode = fixture.debugElement.query(By.directive(MyComp));
+      fixture.componentInstance.forValue = 'hello';
+      fixture.detectChanges();
+      expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
+      expect(myCompNode.componentInstance.for).toBe('hello');
 
-       fixture.componentInstance.forValue = 'hej';
-       fixture.detectChanges();
-       expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
-       expect(myCompNode.componentInstance.for).toBe('hej');
-     });
+      fixture.componentInstance.forValue = 'hej';
+      fixture.detectChanges();
+      expect(myCompNode.nativeElement.getAttribute('for')).toBeFalsy();
+      expect(myCompNode.componentInstance.for).toBe('hej');
+    },
+  );
 
   it('should use the sanitizer in bound properties', () => {
     @Component({
       template: `
         <a [href]="url">
-      `
+      `,
     })
     class App {
-      url: string|SafeUrl = 'javascript:alert("haha, I am taking over your computer!!!");';
+      url: string | SafeUrl = 'javascript:alert("haha, I am taking over your computer!!!");';
     }
 
     TestBed.configureTestingModule({declarations: [App]});
@@ -133,8 +135,9 @@ describe('property bindings', () => {
     expect(a.href.indexOf('unsafe:')).toBe(0);
 
     const domSanitzer: DomSanitizer = TestBed.inject(DomSanitizer);
-    fixture.componentInstance.url =
-        domSanitzer.bypassSecurityTrustUrl('javascript:alert("the developer wanted this");');
+    fixture.componentInstance.url = domSanitzer.bypassSecurityTrustUrl(
+      'javascript:alert("the developer wanted this");',
+    );
     fixture.detectChanges();
 
     expect(a.href.indexOf('unsafe:')).toBe(-1);
@@ -158,7 +161,7 @@ describe('property bindings', () => {
   it('should support interpolation for properties', () => {
     @Component({template: `<span id="{{'_' + id + '_'}}"></span>`})
     class Comp {
-      id: string|undefined;
+      id: string | undefined;
     }
 
     TestBed.configureTestingModule({declarations: [Comp]});
@@ -179,14 +182,14 @@ describe('property bindings', () => {
       selector: '[myButton]',
     })
     class MyButton {
-      @Input() disabled: boolean|undefined;
+      @Input() disabled: boolean | undefined;
     }
 
     @Directive({
       selector: '[otherDir]',
     })
     class OtherDir {
-      @Input() id: number|undefined;
+      @Input() id: number | undefined;
       @Output('click') clickStream = new EventEmitter<void>();
     }
 
@@ -194,19 +197,19 @@ describe('property bindings', () => {
       selector: '[otherDisabledDir]',
     })
     class OtherDisabledDir {
-      @Input() disabled: boolean|undefined;
+      @Input() disabled: boolean | undefined;
     }
 
     @Directive({
       selector: '[idDir]',
     })
     class IdDir {
-      @Input('id') idNumber: string|undefined;
+      @Input('id') idNumber: string | undefined;
     }
 
     it('should check input properties before setting (directives)', () => {
       @Component({
-        template: `<button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button>`
+        template: `<button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button>`,
       })
       class App {
         id = 0;
@@ -271,7 +274,7 @@ describe('property bindings', () => {
         template: '',
       })
       class Comp {
-        @Input() id: number|undefined;
+        @Input() id: number | undefined;
       }
 
       @Component({template: `<comp [id]="id"></comp>`})
@@ -295,8 +298,9 @@ describe('property bindings', () => {
     });
 
     it('should support two input properties with the same name', () => {
-      @Component(
-          {template: `<button myButton otherDisabledDir [disabled]="isDisabled">Click me</button>`})
+      @Component({
+        template: `<button myButton otherDisabledDir [disabled]="isDisabled">Click me</button>`,
+      })
       class App {
         isDisabled = true;
       }
@@ -304,8 +308,9 @@ describe('property bindings', () => {
       TestBed.configureTestingModule({declarations: [App, MyButton, OtherDisabledDir]});
       const fixture = TestBed.createComponent(App);
       const button = fixture.debugElement.query(By.directive(MyButton)).injector.get(MyButton);
-      const otherDisabledDir =
-          fixture.debugElement.query(By.directive(OtherDisabledDir)).injector.get(OtherDisabledDir);
+      const otherDisabledDir = fixture.debugElement
+        .query(By.directive(OtherDisabledDir))
+        .injector.get(OtherDisabledDir);
       const buttonEl = fixture.nativeElement.children[0];
       fixture.detectChanges();
 
@@ -354,7 +359,7 @@ describe('property bindings', () => {
           <button idDir [id]="id1">Click me</button>
           <button *ngIf="condition" [id]="id2">Click me too (2)</button>
           <button *ngIf="!condition" otherDir [id]="id3">Click me too (3)</button>
-        `
+        `,
       })
       class App {
         condition = true;
@@ -363,8 +368,10 @@ describe('property bindings', () => {
         id3 = 3;
       }
 
-      TestBed.configureTestingModule(
-          {declarations: [App, IdDir, OtherDir], imports: [CommonModule]});
+      TestBed.configureTestingModule({
+        declarations: [App, IdDir, OtherDir],
+        imports: [CommonModule],
+      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
       let buttonElements = fixture.nativeElement.querySelectorAll('button');
@@ -394,20 +401,19 @@ describe('property bindings', () => {
   describe('attributes and input properties', () => {
     @Directive({selector: '[myDir]', exportAs: 'myDir'})
     class MyDir {
-      @Input() role: string|undefined;
-      @Input('dir') direction: string|undefined;
+      @Input() role: string | undefined;
+      @Input('dir') direction: string | undefined;
       @Output('change') changeStream = new EventEmitter<void>();
     }
 
     @Directive({selector: '[myDirB]'})
     class MyDirB {
-      @Input('role') roleB: string|undefined;
+      @Input('role') roleB: string | undefined;
     }
 
     it('should set input property based on attribute if existing', () => {
       @Component({template: `<div role="button" myDir></div>`})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
@@ -442,8 +448,7 @@ describe('property bindings', () => {
 
     it('should set two directive input properties based on same attribute', () => {
       @Component({template: `<div role="button" myDir myDirB></div>`})
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
       const fixture = TestBed.createComponent(App);
@@ -461,8 +466,7 @@ describe('property bindings', () => {
       @Component({
         template: `<div role="button" dir="rtl" myDir></div>`,
       })
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyDir]});
       const fixture = TestBed.createComponent(App);
@@ -503,8 +507,7 @@ describe('property bindings', () => {
           <div role="listbox" myDirB></div>
         `,
       })
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyDir, MyDirB]});
       const fixture = TestBed.createComponent(App);
@@ -567,18 +570,16 @@ describe('property bindings', () => {
     it('should process attributes properly inside a for loop', () => {
       @Component({
         selector: 'comp',
-        template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`
+        template: `<div role="button" myDir #dir="myDir"></div>role: {{dir.role}}`,
       })
-      class Comp {
-      }
+      class Comp {}
 
       @Component({
         template: `
           <comp *ngFor="let i of [0, 1]"></comp>
-        `
+        `,
       })
-      class App {
-      }
+      class App {}
 
       TestBed.configureTestingModule({declarations: [App, MyDir, Comp], imports: [CommonModule]});
       const fixture = TestBed.createComponent(App);
@@ -605,38 +606,34 @@ describe('property bindings', () => {
     });
   });
 
-  it('should not throw on synthetic property bindings when a directive on the same element injects ViewContainerRef',
-     () => {
-       @Component({
-         selector: 'my-comp',
-         template: '',
-         animations: [trigger('trigger', [state('void', style({opacity: 0}))])],
-         host: {'[@trigger]': '"void"'}
-       })
-       class MyComp {
-       }
+  it('should not throw on synthetic property bindings when a directive on the same element injects ViewContainerRef', () => {
+    @Component({
+      selector: 'my-comp',
+      template: '',
+      animations: [trigger('trigger', [state('void', style({opacity: 0}))])],
+      host: {'[@trigger]': '"void"'},
+    })
+    class MyComp {}
 
-       @Directive({selector: '[my-dir]'})
-       class MyDir {
-         constructor(public viewContainerRef: ViewContainerRef) {}
-       }
+    @Directive({selector: '[my-dir]'})
+    class MyDir {
+      constructor(public viewContainerRef: ViewContainerRef) {}
+    }
 
-       @Component({template: '<my-comp my-dir></my-comp>'})
-       class App {
-       }
+    @Component({template: '<my-comp my-dir></my-comp>'})
+    class App {}
 
-       TestBed.configureTestingModule({declarations: [App, MyDir, MyComp]});
+    TestBed.configureTestingModule({declarations: [App, MyDir, MyComp]});
 
-       expect(() => {
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
-       }).not.toThrow();
-     });
+    expect(() => {
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+    }).not.toThrow();
+  });
 
   it('should allow quoted binding syntax inside property binding', () => {
     @Component({template: `<span [id]="'{{ id }}'"></span>`})
-    class Comp {
-    }
+    class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
@@ -646,12 +643,11 @@ describe('property bindings', () => {
 
   it('should allow quoted binding syntax with escaped quotes inside property binding', () => {
     @Component({template: `<span [id]="'{{ \\' }}'"></span>`})
-    class Comp {
-    }
+    class Comp {}
 
     TestBed.configureTestingModule({declarations: [Comp]});
     const fixture = TestBed.createComponent(Comp);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('span').id).toBe('{{ \' }}');
+    expect(fixture.nativeElement.querySelector('span').id).toBe("{{ ' }}");
   });
 });

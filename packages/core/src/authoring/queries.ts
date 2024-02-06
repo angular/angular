@@ -7,17 +7,24 @@
  */
 
 import {ProviderToken} from '../di/provider_token';
-import {createMultiResultQuerySignalFn, createSingleResultOptionalQuerySignalFn, createSingleResultRequiredQuerySignalFn} from '../render3/query_reactive';
+import {
+  createMultiResultQuerySignalFn,
+  createSingleResultOptionalQuerySignalFn,
+  createSingleResultRequiredQuerySignalFn,
+} from '../render3/query_reactive';
 import {Signal} from '../render3/reactivity/api';
 
 function viewChildFn<LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT>|string,
-    opts?: {read?: ProviderToken<ReadT>}): Signal<ReadT|undefined> {
+  locator: ProviderToken<LocatorT> | string,
+  opts?: {read?: ProviderToken<ReadT>},
+): Signal<ReadT | undefined> {
   return createSingleResultOptionalQuerySignalFn<ReadT>();
 }
 
 function viewChildRequiredFn<LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT>|string, opts?: {read?: ProviderToken<ReadT>}): Signal<ReadT> {
+  locator: ProviderToken<LocatorT> | string,
+  opts?: {read?: ProviderToken<ReadT>},
+): Signal<ReadT> {
   return createSingleResultRequiredQuerySignalFn<ReadT>();
 }
 
@@ -36,9 +43,11 @@ export interface ViewChildFunction {
    *
    * @developerPreview
    */
-  <LocatorT>(locator: ProviderToken<LocatorT>|string): Signal<LocatorT|undefined>;
-  <LocatorT, ReadT>(locator: ProviderToken<LocatorT>|string, opts: {read: ProviderToken<ReadT>}):
-      Signal<ReadT|undefined>;
+  <LocatorT>(locator: ProviderToken<LocatorT> | string): Signal<LocatorT | undefined>;
+  <LocatorT, ReadT>(
+    locator: ProviderToken<LocatorT> | string,
+    opts: {read: ProviderToken<ReadT>},
+  ): Signal<ReadT | undefined>;
 
   /**
    * Initializes a view child query that is expected to always match an element.
@@ -46,10 +55,12 @@ export interface ViewChildFunction {
    * @developerPreview
    */
   required: {
-    <LocatorT>(locator: ProviderToken<LocatorT>|string): Signal<LocatorT>;
+    <LocatorT>(locator: ProviderToken<LocatorT> | string): Signal<LocatorT>;
 
-    <LocatorT, ReadT>(locator: ProviderToken<LocatorT>|string, opts: {read: ProviderToken<ReadT>}):
-        Signal<ReadT>;
+    <LocatorT, ReadT>(
+      locator: ProviderToken<LocatorT> | string,
+      opts: {read: ProviderToken<ReadT>},
+    ): Signal<ReadT>;
   };
 }
 
@@ -79,14 +90,16 @@ export const viewChild: ViewChildFunction = (() => {
   // this assignment, unless this `viewChild` constant export is accessed. It's a
   // self-contained side effect that is local to the user facing `viewChild` export.
   (viewChildFn as any).required = viewChildRequiredFn;
-  return viewChildFn as (typeof viewChildFn&{required: typeof viewChildRequiredFn});
+  return viewChildFn as typeof viewChildFn & {required: typeof viewChildRequiredFn};
 })();
 
-export function viewChildren<LocatorT>(locator: ProviderToken<LocatorT>|
-                                       string): Signal<ReadonlyArray<LocatorT>>;
+export function viewChildren<LocatorT>(
+  locator: ProviderToken<LocatorT> | string,
+): Signal<ReadonlyArray<LocatorT>>;
 export function viewChildren<LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT>|string,
-    opts: {read: ProviderToken<ReadT>}): Signal<ReadonlyArray<ReadT>>;
+  locator: ProviderToken<LocatorT> | string,
+  opts: {read: ProviderToken<ReadT>},
+): Signal<ReadonlyArray<ReadT>>;
 
 /**
  * Initializes a view children query.
@@ -106,20 +119,23 @@ export function viewChildren<LocatorT, ReadT>(
  * ```
  */
 export function viewChildren<LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT>|string,
-    opts?: {read?: ProviderToken<ReadT>}): Signal<ReadonlyArray<ReadT>> {
+  locator: ProviderToken<LocatorT> | string,
+  opts?: {read?: ProviderToken<ReadT>},
+): Signal<ReadonlyArray<ReadT>> {
   return createMultiResultQuerySignalFn<ReadT>();
 }
 
 export function contentChildFn<LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT>|string,
-    opts?: {descendants?: boolean, read?: ProviderToken<ReadT>}): Signal<ReadT|undefined> {
+  locator: ProviderToken<LocatorT> | string,
+  opts?: {descendants?: boolean; read?: ProviderToken<ReadT>},
+): Signal<ReadT | undefined> {
   return createSingleResultOptionalQuerySignalFn<ReadT>();
 }
 
 function contentChildRequiredFn<LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT>|string,
-    opts?: {descendants?: boolean, read?: ProviderToken<ReadT>}): Signal<ReadT> {
+  locator: ProviderToken<LocatorT> | string,
+  opts?: {descendants?: boolean; read?: ProviderToken<ReadT>},
+): Signal<ReadT> {
   return createSingleResultRequiredQuerySignalFn<ReadT>();
 }
 
@@ -138,14 +154,21 @@ export interface ContentChildFunction {
    * Consider using `contentChild.required` for queries that should always match.
    * @developerPreview
    */
-  <LocatorT>(locator: ProviderToken<LocatorT>|string, opts?: {
-    descendants?: boolean,
-    read?: undefined
-  }): Signal<LocatorT|undefined>;
+  <LocatorT>(
+    locator: ProviderToken<LocatorT> | string,
+    opts?: {
+      descendants?: boolean;
+      read?: undefined;
+    },
+  ): Signal<LocatorT | undefined>;
 
-  <LocatorT, ReadT>(locator: ProviderToken<LocatorT>|string, opts: {
-    descendants?: boolean, read: ProviderToken<ReadT>
-  }): Signal<ReadT|undefined>;
+  <LocatorT, ReadT>(
+    locator: ProviderToken<LocatorT> | string,
+    opts: {
+      descendants?: boolean;
+      read: ProviderToken<ReadT>;
+    },
+  ): Signal<ReadT | undefined>;
 
   /**
    * Initializes a content child query that is always expected to match.
@@ -153,14 +176,18 @@ export interface ContentChildFunction {
    * @developerPreview
    */
   required: {
-    <LocatorT>(locator: ProviderToken<LocatorT>|string, opts?: {
-      descendants?: boolean,
-      read?: undefined,
-    }): Signal<LocatorT>;
+    <LocatorT>(
+      locator: ProviderToken<LocatorT> | string,
+      opts?: {
+        descendants?: boolean;
+        read?: undefined;
+      },
+    ): Signal<LocatorT>;
 
     <LocatorT, ReadT>(
-        locator: ProviderToken<LocatorT>|string,
-        opts: {descendants?: boolean, read: ProviderToken<ReadT>}): Signal<ReadT>;
+      locator: ProviderToken<LocatorT> | string,
+      opts: {descendants?: boolean; read: ProviderToken<ReadT>},
+    ): Signal<ReadT>;
   };
 }
 
@@ -187,16 +214,17 @@ export const contentChild: ContentChildFunction = (() => {
   // this assignment, unless this `viewChild` constant export is accessed. It's a
   // self-contained side effect that is local to the user facing `viewChild` export.
   (contentChildFn as any).required = contentChildRequiredFn;
-  return contentChildFn as (typeof contentChildFn&{required: typeof contentChildRequiredFn});
+  return contentChildFn as typeof contentChildFn & {required: typeof contentChildRequiredFn};
 })();
 
-
 export function contentChildren<LocatorT>(
-    locator: ProviderToken<LocatorT>|string,
-    opts?: {descendants?: boolean, read?: undefined}): Signal<ReadonlyArray<LocatorT>>;
+  locator: ProviderToken<LocatorT> | string,
+  opts?: {descendants?: boolean; read?: undefined},
+): Signal<ReadonlyArray<LocatorT>>;
 export function contentChildren<LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT>|string,
-    opts: {descendants?: boolean, read: ProviderToken<ReadT>}): Signal<ReadonlyArray<ReadT>>;
+  locator: ProviderToken<LocatorT> | string,
+  opts: {descendants?: boolean; read: ProviderToken<ReadT>},
+): Signal<ReadonlyArray<ReadT>>;
 
 /**
  * Initializes a content children query.
@@ -216,7 +244,8 @@ export function contentChildren<LocatorT, ReadT>(
  * ```
  */
 export function contentChildren<LocatorT, ReadT>(
-    locator: ProviderToken<LocatorT>|string,
-    opts?: {descendants?: boolean, read?: ProviderToken<ReadT>}): Signal<ReadonlyArray<ReadT>> {
+  locator: ProviderToken<LocatorT> | string,
+  opts?: {descendants?: boolean; read?: ProviderToken<ReadT>},
+): Signal<ReadonlyArray<ReadT>> {
   return createMultiResultQuerySignalFn<ReadT>();
 }

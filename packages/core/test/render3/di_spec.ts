@@ -7,11 +7,20 @@
  */
 
 import {Component, Directive, Self} from '@angular/core';
-import {createLView, createTView, getOrCreateTNode} from '@angular/core/src/render3/instructions/shared';
+import {
+  createLView,
+  createTView,
+  getOrCreateTNode,
+} from '@angular/core/src/render3/instructions/shared';
 import {NodeInjectorOffset} from '@angular/core/src/render3/interfaces/injector';
 import {TestBed} from '@angular/core/testing';
 
-import {bloomAdd, bloomHashBitOrFactory as bloomHash, bloomHasToken, getOrCreateNodeInjectorForNode} from '../../src/render3/di';
+import {
+  bloomAdd,
+  bloomHashBitOrFactory as bloomHash,
+  bloomHasToken,
+  getOrCreateNodeInjectorForNode,
+} from '../../src/render3/di';
 import {TNodeType} from '../../src/render3/interfaces/node';
 import {HEADER_OFFSET, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
 import {enterView, leaveView} from '../../src/render3/state';
@@ -21,8 +30,7 @@ describe('di', () => {
     describe('flags', () => {
       it('should check only the current node with @Self even with false positive', () => {
         @Directive({selector: '[notOnSelf]', standalone: true})
-        class DirNotOnSelf {
-        }
+        class DirNotOnSelf {}
 
         @Directive({selector: '[tryInjectFromSelf]', standalone: true})
         class DirTryInjectFromSelf {
@@ -38,13 +46,12 @@ describe('di', () => {
           standalone: true,
           imports: [DirNotOnSelf, DirTryInjectFromSelf],
         })
-        class App {
-        }
+        class App {}
         expect(() => {
           TestBed.createComponent(App).detectChanges();
-        })
-            .toThrowError(
-                'NG0201: No provider for DirNotOnSelf found in NodeInjector. Find more at https://angular.io/errors/NG0201');
+        }).toThrowError(
+          'NG0201: No provider for DirNotOnSelf found in NodeInjector. Find more at https://angular.io/errors/NG0201',
+        );
       });
     });
   });
@@ -140,20 +147,33 @@ describe('di', () => {
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
       const contentView = createLView(
-          null,
-          createTView(TViewType.Component, null, null, 1, 0, null, null, null, null, null, null),
-          {}, LViewFlags.CheckAlways, null, null, {
-            rendererFactory: {} as any,
-            sanitizer: null,
-            inlineEffectRunner: null,
-            afterRenderEventManager: null,
-            changeDetectionScheduler: null,
-          },
-          {} as any, null, null, null);
+        null,
+        createTView(TViewType.Component, null, null, 1, 0, null, null, null, null, null, null),
+        {},
+        LViewFlags.CheckAlways,
+        null,
+        null,
+        {
+          rendererFactory: {} as any,
+          sanitizer: null,
+          inlineEffectRunner: null,
+          afterRenderEventManager: null,
+          changeDetectionScheduler: null,
+        },
+        {} as any,
+        null,
+        null,
+        null,
+      );
       enterView(contentView);
       try {
-        const parentTNode =
-            getOrCreateTNode(contentView[TVIEW], HEADER_OFFSET, TNodeType.Element, null, null);
+        const parentTNode = getOrCreateTNode(
+          contentView[TVIEW],
+          HEADER_OFFSET,
+          TNodeType.Element,
+          null,
+          null,
+        );
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.

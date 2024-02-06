@@ -75,18 +75,25 @@ import {assertComponentDef} from './errors';
  *
  * @publicApi
  */
-export function createComponent<C>(component: Type<C>, options: {
-  environmentInjector: EnvironmentInjector,
-  hostElement?: Element,
-  elementInjector?: Injector,
-  projectableNodes?: Node[][],
-}): ComponentRef<C> {
+export function createComponent<C>(
+  component: Type<C>,
+  options: {
+    environmentInjector: EnvironmentInjector;
+    hostElement?: Element;
+    elementInjector?: Injector;
+    projectableNodes?: Node[][];
+  },
+): ComponentRef<C> {
   ngDevMode && assertComponentDef(component);
   const componentDef = getComponentDef(component)!;
   const elementInjector = options.elementInjector || getNullInjector();
   const factory = new ComponentFactory<C>(componentDef);
   return factory.create(
-      elementInjector, options.projectableNodes, options.hostElement, options.environmentInjector);
+    elementInjector,
+    options.projectableNodes,
+    options.hostElement,
+    options.environmentInjector,
+  );
 }
 
 /**
@@ -108,14 +115,14 @@ export interface ComponentMirror<C> {
    * The inputs of the component.
    */
   get inputs(): ReadonlyArray<{
-    readonly propName: string,
-    readonly templateName: string,
-    readonly transform?: (value: any) => any,
+    readonly propName: string;
+    readonly templateName: string;
+    readonly transform?: (value: any) => any;
   }>;
   /**
    * The outputs of the component.
    */
-  get outputs(): ReadonlyArray<{readonly propName: string, readonly templateName: string}>;
+  get outputs(): ReadonlyArray<{readonly propName: string; readonly templateName: string}>;
   /**
    * Selector for all <ng-content> elements in the component.
    */
@@ -171,7 +178,7 @@ export interface ComponentMirror<C> {
  *
  * @publicApi
  */
-export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|null {
+export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C> | null {
   const componentDef = getComponentDef(component);
   if (!componentDef) return null;
 
@@ -184,13 +191,13 @@ export function reflectComponentType<C>(component: Type<C>): ComponentMirror<C>|
       return factory.componentType;
     },
     get inputs(): ReadonlyArray<{
-      propName: string,
-      templateName: string,
-      transform?: (value: any) => any,
+      propName: string;
+      templateName: string;
+      transform?: (value: any) => any;
     }> {
       return factory.inputs;
     },
-    get outputs(): ReadonlyArray<{propName: string, templateName: string}> {
+    get outputs(): ReadonlyArray<{propName: string; templateName: string}> {
       return factory.outputs;
     },
     get ngContentSelectors(): ReadonlyArray<string> {

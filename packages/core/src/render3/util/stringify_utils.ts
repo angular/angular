@@ -23,7 +23,6 @@ export function renderStringify(value: any): string {
   return String(value);
 }
 
-
 /**
  * Used to stringify a value so that it can be displayed in an error message.
  *

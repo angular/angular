@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HtmlParser, LexerTokenType, Node, RecursiveVisitor, Text, visitAll} from '@angular/compiler';
+import {
+  HtmlParser,
+  LexerTokenType,
+  Node,
+  RecursiveVisitor,
+  Text,
+  visitAll,
+} from '@angular/compiler';
 import {dirname, join} from 'path';
 import ts from 'typescript';
 
@@ -51,8 +58,9 @@ export class AnalyzedFile {
       analyzedFiles.set(path, analysis);
     }
 
-    const duplicate =
-        analysis.ranges.find(current => current[0] === range[0] && current[1] === range[1]);
+    const duplicate = analysis.ranges.find(
+      (current) => current[0] === range[0] && current[1] === range[1],
+    );
 
     if (!duplicate) {
       analysis.ranges.push(range);
@@ -66,20 +74,24 @@ export class AnalyzedFile {
  * @param analyzedFiles Map in which to store the results.
  */
 export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, AnalyzedFile>) {
-  forEachClass(sourceFile, node => {
+  forEachClass(sourceFile, (node) => {
     // Note: we have a utility to resolve the Angular decorators from a class declaration already.
     // We don't use it here, because it requires access to the type checker which makes it more
     // time-consuming to run internally.
-    const decorator = ts.getDecorators(node)?.find(dec => {
-      return ts.isCallExpression(dec.expression) && ts.isIdentifier(dec.expression.expression) &&
-          dec.expression.expression.text === 'Component';
-    }) as (ts.Decorator & {expression: ts.CallExpression}) |
-        undefined;
+    const decorator = ts.getDecorators(node)?.find((dec) => {
+      return (
+        ts.isCallExpression(dec.expression) &&
+        ts.isIdentifier(dec.expression.expression) &&
+        dec.expression.expression.text === 'Component'
+      );
+    }) as (ts.Decorator & {expression: ts.CallExpression}) | undefined;
 
-    const metadata = decorator && decorator.expression.arguments.length > 0 &&
-            ts.isObjectLiteralExpression(decorator.expression.arguments[0]) ?
-        decorator.expression.arguments[0] :
-        null;
+    const metadata =
+      decorator &&
+      decorator.expression.arguments.length > 0 &&
+      ts.isObjectLiteralExpression(decorator.expression.arguments[0])
+        ? decorator.expression.arguments[0]
+        : null;
 
     if (!metadata) {
       return;
@@ -88,17 +100,21 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
     for (const prop of metadata.properties) {
       // All the properties we care about should have static
       // names and be initialized to a static string.
-      if (!ts.isPropertyAssignment(prop) || !ts.isStringLiteralLike(prop.initializer) ||
-          (!ts.isIdentifier(prop.name) && !ts.isStringLiteralLike(prop.name))) {
+      if (
+        !ts.isPropertyAssignment(prop) ||
+        !ts.isStringLiteralLike(prop.initializer) ||
+        (!ts.isIdentifier(prop.name) && !ts.isStringLiteralLike(prop.name))
+      ) {
         continue;
       }
 
       switch (prop.name.text) {
         case 'template':
           // +1/-1 to exclude the opening/closing characters from the range.
-          AnalyzedFile.addRange(
-              sourceFile.fileName, analyzedFiles,
-              [prop.initializer.getStart() + 1, prop.initializer.getEnd() - 1]);
+          AnalyzedFile.addRange(sourceFile.fileName, analyzedFiles, [
+            prop.initializer.getStart() + 1,
+            prop.initializer.getEnd() - 1,
+          ]);
           break;
 
         case 'templateUrl':
@@ -115,12 +131,12 @@ export function analyze(sourceFile: ts.SourceFile, analyzedFiles: Map<string, An
  * Escapes the block syntax characters in a template string.
  * Returns null if the migration failed (e.g. there was a syntax error).
  */
-export function migrateTemplate(template: string): string|null {
+export function migrateTemplate(template: string): string | null {
   if (!CONTROL_FLOW_CHARS_PATTERN.test(template)) {
     return null;
   }
 
-  let rootNodes: Node[]|null = null;
+  let rootNodes: Node[] | null = null;
 
   try {
     // Note: we use the HtmlParser here, instead of the `parseTemplate` function, because the
@@ -138,8 +154,7 @@ export function migrateTemplate(template: string): string|null {
     if (parsed.errors.length === 0) {
       rootNodes = parsed.rootNodes;
     }
-  } catch {
-  }
+  } catch {}
 
   // Don't migrate invalid templates.
   if (rootNodes === null) {

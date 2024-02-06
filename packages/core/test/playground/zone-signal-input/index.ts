@@ -23,7 +23,7 @@ import {bootstrapApplication} from '@angular/platform-browser';
 })
 export class Greet<T> {
   counter = input(0);
-  bla = input();  // TODO: should be a diagnostic. no type & no value
+  bla = input(); // TODO: should be a diagnostic. no type & no value
   bla2 = input<string>();
   bla3 = input.required<string>();
   bla4 = input(0, {alias: 'bla4Public'});
@@ -41,7 +41,7 @@ export class Greet<T> {
 
   // Eventually in signal components, a mix not allowed. For now, this is
   // supported though.
-  @Input() oldInput: string|undefined;
+  @Input() oldInput: string | undefined;
 }
 
 @Component({
@@ -70,7 +70,7 @@ export class MyApp {
   twoWay = false;
 
   protected updateName() {
-    this.name.update(n => `${n}-`);
+    this.name.update((n) => `${n}-`);
   }
 
   onClickFromChild() {

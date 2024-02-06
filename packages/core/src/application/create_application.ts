@@ -41,7 +41,7 @@ import {_callAndReportToErrorHandler, ApplicationRef} from './application_ref';
 
 export function internalCreateApplication(config: {
   rootComponent?: Type<unknown>;
-  appProviders?: Array<Provider|EnvironmentProviders>;
+  appProviders?: Array<Provider | EnvironmentProviders>;
   platformProviders?: Provider[];
 }): Promise<ApplicationRef> {
   try {
@@ -55,14 +55,11 @@ export function internalCreateApplication(config: {
 
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
-    const allAppProviders = [
-      provideZoneChangeDetection(),
-      ...(appProviders || []),
-    ];
+    const allAppProviders = [provideZoneChangeDetection(), ...(appProviders || [])];
     const adapter = new EnvironmentNgModuleRefAdapter({
       providers: allAppProviders,
       parent: platformInjector as EnvironmentInjector,
-      debugName: (typeof ngDevMode === 'undefined' || ngDevMode) ? 'Environment Injector' : '',
+      debugName: typeof ngDevMode === 'undefined' || ngDevMode ? 'Environment Injector' : '',
       // We skip environment initializers because we need to run them inside the NgZone, which
       // happens after we get the NgZone instance from the Injector.
       runEnvironmentInitializers: false,
@@ -72,11 +69,12 @@ export function internalCreateApplication(config: {
 
     return ngZone.run(() => {
       envInjector.resolveInjectorInitializers();
-      const exceptionHandler: ErrorHandler|null = envInjector.get(ErrorHandler, null);
+      const exceptionHandler: ErrorHandler | null = envInjector.get(ErrorHandler, null);
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && !exceptionHandler) {
         throw new RuntimeError(
-            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-            'No `ErrorHandler` found in the Dependency Injection tree.');
+          RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+          'No `ErrorHandler` found in the Dependency Injection tree.',
+        );
       }
 
       let onErrorSubscription: Subscription;
@@ -84,7 +82,7 @@ export function internalCreateApplication(config: {
         onErrorSubscription = ngZone.onError.subscribe({
           next: (error: any) => {
             exceptionHandler!.handleError(error);
-          }
+          },
         });
       });
 

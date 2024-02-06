@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignal, SIGNAL, SignalGetter, SignalNode, signalSetFn, signalUpdateFn} from '@angular/core/primitives/signals';
+import {
+  createSignal,
+  SIGNAL,
+  SignalGetter,
+  SignalNode,
+  signalSetFn,
+  signalUpdateFn,
+} from '@angular/core/primitives/signals';
 
 import {isSignal, Signal, ValueEqualityFn} from './api';
 
@@ -42,7 +49,7 @@ export interface WritableSignal<T> extends Signal<T> {
  * Utility function used during template type checking to extract the value from a `WritableSignal`.
  * @codeGenApi
  */
-export function ɵunwrapWritableSignal<T>(value: T|{[WRITABLE_SIGNAL]: T}): T {
+export function ɵunwrapWritableSignal<T>(value: T | {[WRITABLE_SIGNAL]: T}): T {
   // Note: needs to be kept in sync with the copy in `fake_core/index.ts`.
   // Note: the function uses `WRITABLE_SIGNAL` as a brand instead of `WritableSignal<T>`,
   // because the latter incorrectly unwraps non-signal getter functions.
@@ -63,7 +70,7 @@ export interface CreateSignalOptions<T> {
  * Create a `Signal` that can be set or updated directly.
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
-  const signalFn = createSignal(initialValue) as SignalGetter<T>& WritableSignal<T>;
+  const signalFn = createSignal(initialValue) as SignalGetter<T> & WritableSignal<T>;
   const node = signalFn[SIGNAL];
   if (options?.equal) {
     node.equal = options.equal;
@@ -79,7 +86,7 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
 }
 
 function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
-  const node = this[SIGNAL] as SignalNode<T>& {readonlyFn?: Signal<T>};
+  const node = this[SIGNAL] as SignalNode<T> & {readonlyFn?: Signal<T>};
   if (node.readonlyFn === undefined) {
     const readonlyFn = () => this();
     (readonlyFn as any)[SIGNAL] = node;

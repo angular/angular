@@ -15,7 +15,6 @@ import {LView} from './interfaces/view';
 import {getInsertInFrontOfRNodeWithNoI18n, nativeInsertBefore} from './node_manipulation';
 import {unwrapRNode} from './util/view_utils';
 
-
 /**
  * Find a node in front of which `currentTNode` should be inserted (takes i18n into account).
  *
@@ -27,10 +26,14 @@ import {unwrapRNode} from './util/view_utils';
  * @param lView current `LView`
  */
 export function getInsertInFrontOfRNodeWithI18n(
-    parentTNode: TNode, currentTNode: TNode, lView: LView): RNode|null {
+  parentTNode: TNode,
+  currentTNode: TNode,
+  lView: LView,
+): RNode | null {
   const tNodeInsertBeforeIndex = currentTNode.insertBeforeIndex;
-  const insertBeforeIndex =
-      Array.isArray(tNodeInsertBeforeIndex) ? tNodeInsertBeforeIndex[0] : tNodeInsertBeforeIndex;
+  const insertBeforeIndex = Array.isArray(tNodeInsertBeforeIndex)
+    ? tNodeInsertBeforeIndex[0]
+    : tNodeInsertBeforeIndex;
   if (insertBeforeIndex === null) {
     return getInsertInFrontOfRNodeWithNoI18n(parentTNode, currentTNode, lView);
   } else {
@@ -39,15 +42,18 @@ export function getInsertInFrontOfRNodeWithI18n(
   }
 }
 
-
 /**
  * Process `TNode.insertBeforeIndex` by adding i18n text nodes.
  *
  * See `TNode.insertBeforeIndex`
  */
 export function processI18nInsertBefore(
-    renderer: Renderer, childTNode: TNode, lView: LView, childRNode: RNode|RNode[],
-    parentRElement: RElement|null): void {
+  renderer: Renderer,
+  childTNode: TNode,
+  lView: LView,
+  childRNode: RNode | RNode[],
+  parentRElement: RElement | null,
+): void {
   const tNodeInsertBeforeIndex = childTNode.insertBeforeIndex;
   if (Array.isArray(tNodeInsertBeforeIndex)) {
     // An array indicates that there are i18n nodes that need to be added as children of this
@@ -56,8 +62,8 @@ export function processI18nInsertBefore(
     // insert the `childRNode`. Additional elements are the extra nodes to be added as children of
     // `childRNode`.
     ngDevMode && assertDomNode(childRNode);
-    let i18nParent: RElement|null = childRNode as RElement;
-    let anchorRNode: RNode|null = null;
+    let i18nParent: RElement | null = childRNode as RElement;
+    let anchorRNode: RNode | null = null;
     if (!(childTNode.type & TNodeType.AnyRNode)) {
       anchorRNode = i18nParent;
       i18nParent = parentRElement;

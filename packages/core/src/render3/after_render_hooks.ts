@@ -133,7 +133,7 @@ export interface InternalAfterNextRenderOptions {
 
 /** `AfterRenderRef` that does nothing. */
 const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
-  destroy() {}
+  destroy() {},
 };
 
 /**
@@ -152,7 +152,9 @@ const NOOP_AFTER_RENDER_REF: AfterRenderRef = {
  *       to be tree-shaken, and the framework shouldn't need much of the behavior.
  */
 export function internalAfterNextRender(
-    callback: VoidFunction, options?: InternalAfterNextRenderOptions) {
+  callback: VoidFunction,
+  options?: InternalAfterNextRenderOptions,
+) {
   const injector = options?.injector ?? inject(Injector);
 
   // Similarly to the public `afterNextRender` function, an internal one
@@ -213,10 +215,11 @@ export function internalAfterNextRender(
  */
 export function afterRender(callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef {
   ngDevMode &&
-      assertNotInReactiveContext(
-          afterRender,
-          'Call `afterRender` outside of a reactive context. For example, schedule the render ' +
-              'callback inside the component constructor`.');
+    assertNotInReactiveContext(
+      afterRender,
+      'Call `afterRender` outside of a reactive context. For example, schedule the render ' +
+        'callback inside the component constructor`.',
+    );
 
   !options && assertInInjectionContext(afterRender);
   const injector = options?.injector ?? inject(Injector);
@@ -230,7 +233,8 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
-  const callbackHandler = afterRenderEventManager.handler ??= new AfterRenderCallbackHandlerImpl();
+  const callbackHandler = (afterRenderEventManager.handler ??=
+    new AfterRenderCallbackHandlerImpl());
   const phase = options?.phase ?? AfterRenderPhase.MixedReadWrite;
   const destroy = () => {
     callbackHandler.unregister(instance);
@@ -293,7 +297,9 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
  * @developerPreview
  */
 export function afterNextRender(
-    callback: VoidFunction, options?: AfterRenderOptions): AfterRenderRef {
+  callback: VoidFunction,
+  options?: AfterRenderOptions,
+): AfterRenderRef {
   !options && assertInInjectionContext(afterNextRender);
   const injector = options?.injector ?? inject(Injector);
 
@@ -306,7 +312,8 @@ export function afterNextRender(
   const afterRenderEventManager = injector.get(AfterRenderEventManager);
   // Lazily initialize the handler implementation, if necessary. This is so that it can be
   // tree-shaken if `afterRender` and `afterNextRender` aren't used.
-  const callbackHandler = afterRenderEventManager.handler ??= new AfterRenderCallbackHandlerImpl();
+  const callbackHandler = (afterRenderEventManager.handler ??=
+    new AfterRenderCallbackHandlerImpl());
   const phase = options?.phase ?? AfterRenderPhase.MixedReadWrite;
   const destroy = () => {
     callbackHandler.unregister(instance);
@@ -327,11 +334,13 @@ export function afterNextRender(
  */
 class AfterRenderCallback {
   private zone: NgZone;
-  private errorHandler: ErrorHandler|null;
+  private errorHandler: ErrorHandler | null;
 
   constructor(
-      injector: Injector, public readonly phase: AfterRenderPhase,
-      private callbackFn: VoidFunction) {
+    injector: Injector,
+    public readonly phase: AfterRenderPhase,
+    private callbackFn: VoidFunction,
+  ) {
     this.zone = injector.get(NgZone);
     this.errorHandler = injector.get(ErrorHandler, null, {optional: true});
   }
@@ -426,7 +435,7 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
  */
 export class AfterRenderEventManager {
   /* @internal */
-  handler: AfterRenderCallbackHandler|null = null;
+  handler: AfterRenderCallbackHandler | null = null;
 
   /* @internal */
   internalCallbacks: VoidFunction[] = [];

@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {assertIndexInRange} from '../../util/assert';
 import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
@@ -19,9 +18,12 @@ import {getCurrentDirectiveDef, getCurrentTNode, getLView, getTView} from '../st
 import {getComponentLViewByIndex, getNativeByTNode, unwrapRNode} from '../util/view_utils';
 
 import {markViewDirty} from './mark_view_dirty';
-import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadComponentRenderer} from './shared';
-
-
+import {
+  getOrCreateLViewCleanup,
+  getOrCreateTViewCleanup,
+  handleError,
+  loadComponentRenderer,
+} from './shared';
 
 /**
  * Adds an event listener to the current node.
@@ -39,13 +41,23 @@ import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadCompo
  * @codeGenApi
  */
 export function ɵɵlistener(
-    eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean,
-    eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener {
-  const lView = getLView<{}|null>();
+  eventName: string,
+  listenerFn: (e?: any) => any,
+  useCapture?: boolean,
+  eventTargetResolver?: GlobalTargetResolver,
+): typeof ɵɵlistener {
+  const lView = getLView<{} | null>();
   const tView = getTView();
   const tNode = getCurrentTNode()!;
   listenerInternal(
-      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, eventTargetResolver);
+    tView,
+    lView,
+    lView[RENDERER],
+    tNode,
+    eventName,
+    listenerFn,
+    eventTargetResolver,
+  );
   return ɵɵlistener;
 }
 
@@ -71,9 +83,11 @@ export function ɵɵlistener(
  * @codeGenApi
  */
 export function ɵɵsyntheticHostListener(
-    eventName: string, listenerFn: (e?: any) => any): typeof ɵɵsyntheticHostListener {
+  eventName: string,
+  listenerFn: (e?: any) => any,
+): typeof ɵɵsyntheticHostListener {
   const tNode = getCurrentTNode()!;
-  const lView = getLView<{}|null>();
+  const lView = getLView<{} | null>();
   const tView = getTView();
   const currentDef = getCurrentDirectiveDef(tView.data);
   const renderer = loadComponentRenderer(currentDef, tNode, lView);
@@ -87,7 +101,11 @@ export function ɵɵsyntheticHostListener(
  * are registered for a given element.
  */
 function findExistingListener(
-    tView: TView, lView: LView, eventName: string, tNodeIdx: number): ((e?: any) => any)|null {
+  tView: TView,
+  lView: LView,
+  eventName: string,
+  tNodeIdx: number,
+): ((e?: any) => any) | null {
   const tCleanup = tView.cleanup;
   if (tCleanup != null) {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
@@ -114,11 +132,17 @@ function findExistingListener(
 }
 
 export function listenerInternal(
-    tView: TView, lView: LView<{}|null>, renderer: Renderer, tNode: TNode, eventName: string,
-    listenerFn: (e?: any) => any, eventTargetResolver?: GlobalTargetResolver): void {
+  tView: TView,
+  lView: LView<{} | null>,
+  renderer: Renderer,
+  tNode: TNode,
+  eventName: string,
+  listenerFn: (e?: any) => any,
+  eventTargetResolver?: GlobalTargetResolver,
+): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstCreatePass = tView.firstCreatePass;
-  const tCleanup: false|any[] = firstCreatePass && getOrCreateTViewCleanup(tView);
+  const tCleanup: false | any[] = firstCreatePass && getOrCreateTViewCleanup(tView);
   const context = lView[CONTEXT];
 
   // When the ɵɵlistener instruction was generated and is executed we know that there is either a
@@ -134,13 +158,13 @@ export function listenerInternal(
   // - The corresponding TNode represents a DOM element.
   // - The event target has a resolver (usually resulting in a global object,
   //   such as `window` or `document`).
-  if ((tNode.type & TNodeType.AnyRNode) || eventTargetResolver) {
+  if (tNode.type & TNodeType.AnyRNode || eventTargetResolver) {
     const native = getNativeByTNode(tNode, lView) as RElement;
     const target = eventTargetResolver ? eventTargetResolver(native) : native;
     const lCleanupIndex = lCleanup.length;
-    const idxOrTargetGetter = eventTargetResolver ?
-        (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index])) :
-        tNode.index;
+    const idxOrTargetGetter = eventTargetResolver
+      ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
+      : tNode.index;
 
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
@@ -182,7 +206,6 @@ export function listenerInternal(
       lCleanup.push(listenerFn, cleanupFn);
       tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, lCleanupIndex + 1);
     }
-
   } else {
     // Even if there is no native listener to add, we still need to wrap the listener so that OnPush
     // ancestors are marked dirty when an event occurs.
@@ -191,7 +214,7 @@ export function listenerInternal(
 
   // subscribe to directive outputs
   const outputs = tNode.outputs;
-  let props: NodeOutputBindings[keyof NodeOutputBindings]|undefined;
+  let props: NodeOutputBindings[keyof NodeOutputBindings] | undefined;
   if (processOutputs && outputs !== null && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
@@ -203,12 +226,14 @@ export function listenerInternal(
         const output = directiveInstance[minifiedName];
 
         if (ngDevMode && !isOutputSubscribable(output)) {
-          throw new Error(`@Output ${minifiedName} not initialized in '${
-              directiveInstance.constructor.name}'.`);
+          throw new Error(
+            `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`,
+          );
         }
 
-        const subscriptionOrCallback =
-            (output as SubscribableOutput<unknown>).subscribe(listenerFn);
+        const subscriptionOrCallback = (output as SubscribableOutput<unknown>).subscribe(
+          listenerFn,
+        );
         const idx = lCleanup.length;
         lCleanup.push(listenerFn, subscriptionOrCallback);
         if (tCleanup) {
@@ -223,7 +248,11 @@ export function listenerInternal(
 }
 
 function executeListenerWithErrorHandling(
-    lView: LView, context: {}|null, listenerFn: (e?: any) => any, e: any): boolean {
+  lView: LView,
+  context: {} | null,
+  listenerFn: (e?: any) => any,
+  e: any,
+): boolean {
   try {
     profiler(ProfilerEvent.OutputStart, context, listenerFn);
     // Only explicitly returning false from a listener should preventDefault
@@ -247,8 +276,12 @@ function executeListenerWithErrorHandling(
  * (the procedural renderer does this already, so in those cases, we should skip)
  */
 function wrapListener(
-    tNode: TNode, lView: LView<{}|null>, context: {}|null, listenerFn: (e?: any) => any,
-    wrapWithPreventDefault: boolean): EventListener {
+  tNode: TNode,
+  lView: LView<{} | null>,
+  context: {} | null,
+  listenerFn: (e?: any) => any,
+  wrapWithPreventDefault: boolean,
+): EventListener {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
   return function wrapListenerIn_markDirtyAndPreventDefault(e: any) {
@@ -261,7 +294,7 @@ function wrapListener(
     // In order to be backwards compatible with View Engine, events on component host nodes
     // must also mark the component view itself dirty (i.e. the view that it owns).
     const startView =
-        tNode.componentOffset > -1 ? getComponentLViewByIndex(tNode.index, lView) : lView;
+      tNode.componentOffset > -1 ? getComponentLViewByIndex(tNode.index, lView) : lView;
     markViewDirty(startView);
 
     let result = executeListenerWithErrorHandling(lView, context, listenerFn, e);
@@ -284,7 +317,7 @@ function wrapListener(
 
 /** Describes a subscribable output field value. */
 interface SubscribableOutput<T> {
-  subscribe(listener: (v: T) => void): {unsubscribe: () => void;}|(() => void);
+  subscribe(listener: (v: T) => void): {unsubscribe: () => void} | (() => void);
 }
 
 /**
@@ -294,6 +327,7 @@ interface SubscribableOutput<T> {
  * `OutputEmitter`.
  */
 function isOutputSubscribable(value: unknown): value is SubscribableOutput<unknown> {
-  return value != null &&
-      typeof (value as Partial<SubscribableOutput<unknown>>).subscribe === 'function';
+  return (
+    value != null && typeof (value as Partial<SubscribableOutput<unknown>>).subscribe === 'function'
+  );
 }

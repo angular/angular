@@ -21,7 +21,7 @@ interface Options {
   format: boolean;
 }
 
-export default function(options: Options): Rule {
+export default function (options: Options): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     const basePath = process.cwd();
     const pathToMigrate = normalizePath(join(basePath, options.path));
@@ -32,15 +32,21 @@ export default function(options: Options): Rule {
 
     if (!allPaths.length) {
       throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot run the control flow migration.');
+        'Could not find any tsconfig file. Cannot run the control flow migration.',
+      );
     }
 
     context.logger.warn('IMPORTANT! This migration is in developer preview. Use with caution.');
     let errors: string[] = [];
 
     for (const tsconfigPath of allPaths) {
-      const migrateErrors =
-          runControlFlowMigration(tree, tsconfigPath, basePath, pathToMigrate, options);
+      const migrateErrors = runControlFlowMigration(
+        tree,
+        tsconfigPath,
+        basePath,
+        pathToMigrate,
+        options,
+      );
       errors = [...errors, ...migrateErrors];
     }
 
@@ -54,21 +60,31 @@ export default function(options: Options): Rule {
 }
 
 function runControlFlowMigration(
-    tree: Tree, tsconfigPath: string, basePath: string, pathToMigrate: string,
-    schematicOptions: Options): string[] {
+  tree: Tree,
+  tsconfigPath: string,
+  basePath: string,
+  pathToMigrate: string,
+  schematicOptions: Options,
+): string[] {
   if (schematicOptions.path.startsWith('..')) {
     throw new SchematicsException(
-        'Cannot run control flow migration outside of the current project.');
+      'Cannot run control flow migration outside of the current project.',
+    );
   }
 
   const program = createMigrationProgram(tree, tsconfigPath, basePath);
-  const sourceFiles = program.getSourceFiles().filter(
-      sourceFile => sourceFile.fileName.startsWith(pathToMigrate) &&
-          canMigrateFile(basePath, sourceFile, program));
+  const sourceFiles = program
+    .getSourceFiles()
+    .filter(
+      (sourceFile) =>
+        sourceFile.fileName.startsWith(pathToMigrate) &&
+        canMigrateFile(basePath, sourceFile, program),
+    );
 
   if (sourceFiles.length === 0) {
-    throw new SchematicsException(`Could not find any files to migrate under the path ${
-        pathToMigrate}. Cannot run the control flow migration.`);
+    throw new SchematicsException(
+      `Could not find any files to migrate under the path ${pathToMigrate}. Cannot run the control flow migration.`,
+    );
   }
 
   const analysis = new Map<string, AnalyzedFile>();
@@ -93,8 +109,14 @@ function runControlFlowMigration(
       const template = content.slice(start, end);
       const length = (end ?? content.length) - start;
 
-      const {migrated, errors} =
-          migrateTemplate(template, type, node, file, schematicOptions.format, analysis);
+      const {migrated, errors} = migrateTemplate(
+        template,
+        type,
+        node,
+        file,
+        schematicOptions.format,
+        analysis,
+      );
 
       if (migrated !== null) {
         update.remove(start, length);
@@ -119,12 +141,12 @@ function runControlFlowMigration(
 }
 
 function sortFilePaths(names: string[]): string[] {
-  names.sort((a, _) => a.endsWith('.html') ? -1 : 0);
+  names.sort((a, _) => (a.endsWith('.html') ? -1 : 0));
   return names;
 }
 
 function generateErrorMessage(path: string, errors: MigrateError[]): string {
   let errorMessage = `Template "${path}" encountered ${errors.length} errors during migration:\n`;
-  errorMessage += errors.map(e => ` - ${e.type}: ${e.error}\n`);
+  errorMessage += errors.map((e) => ` - ${e.type}: ${e.error}\n`);
   return errorMessage;
 }

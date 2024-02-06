@@ -9,7 +9,15 @@
 import {Subscription} from 'rxjs';
 
 import {ApplicationRef} from '../../application/application_ref';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Injectable, InjectionToken, makeEnvironmentProviders, StaticProvider} from '../../di';
+import {
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  inject,
+  Injectable,
+  InjectionToken,
+  makeEnvironmentProviders,
+  StaticProvider,
+} from '../../di';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {PendingTasks} from '../../pending_tasks';
@@ -33,7 +41,7 @@ export class NgZoneChangeDetectionScheduler {
         this.zone.run(() => {
           this.applicationRef.tick();
         });
-      }
+      },
     });
   }
 
@@ -42,13 +50,13 @@ export class NgZoneChangeDetectionScheduler {
   }
 }
 
-
 /**
  * Internal token used to verify that `provideZoneChangeDetection` is not used
  * with the bootstrapModule API.
  */
 export const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'provideZoneChangeDetection token' : '');
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'provideZoneChangeDetection token' : '',
+);
 
 export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone): StaticProvider[] {
   return [
@@ -57,14 +65,18 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
       provide: ENVIRONMENT_INITIALIZER,
       multi: true,
       useFactory: () => {
-        const ngZoneChangeDetectionScheduler =
-            inject(NgZoneChangeDetectionScheduler, {optional: true});
-        if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-            ngZoneChangeDetectionScheduler === null) {
+        const ngZoneChangeDetectionScheduler = inject(NgZoneChangeDetectionScheduler, {
+          optional: true,
+        });
+        if (
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          ngZoneChangeDetectionScheduler === null
+        ) {
           throw new RuntimeError(
-              RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-              `A required Injectable was not found in the dependency injection tree. ` +
-                  'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.');
+            RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+            `A required Injectable was not found in the dependency injection tree. ` +
+              'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.',
+          );
         }
         return () => ngZoneChangeDetectionScheduler!.initialize();
       },
@@ -77,7 +89,7 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
         return () => {
           service.initialize();
         };
-      }
+      },
     },
     {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
   ];
@@ -110,11 +122,13 @@ export function ngZoneApplicationErrorHandlerFactory() {
  * @see {@link NgZoneOptions}
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
-  const zoneProviders =
-      internalProvideZoneChangeDetection(() => new NgZone(getNgZoneOptions(options)));
+  const zoneProviders = internalProvideZoneChangeDetection(
+    () => new NgZone(getNgZoneOptions(options)),
+  );
   return makeEnvironmentProviders([
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: PROVIDED_NG_ZONE, useValue: true} :
-                                                      [],
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? {provide: PROVIDED_NG_ZONE, useValue: true}
+      : [],
     zoneProviders,
   ]);
 }
@@ -195,32 +209,39 @@ export class ZoneStablePendingTask {
     }
     this.initialized = true;
 
-    let task: number|null = null;
+    let task: number | null = null;
     if (!this.zone.isStable && !this.zone.hasPendingMacrotasks && !this.zone.hasPendingMicrotasks) {
       task = this.pendingTasks.add();
     }
 
     this.zone.runOutsideAngular(() => {
-      this.subscription.add(this.zone.onStable.subscribe(() => {
-        NgZone.assertNotInAngularZone();
+      this.subscription.add(
+        this.zone.onStable.subscribe(() => {
+          NgZone.assertNotInAngularZone();
 
-        // Check whether there are no pending macro/micro tasks in the next tick
-        // to allow for NgZone to update the state.
-        queueMicrotask(() => {
-          if (task !== null && !this.zone.hasPendingMacrotasks && !this.zone.hasPendingMicrotasks) {
-            this.pendingTasks.remove(task);
-            task = null;
-          }
-        });
-      }));
+          // Check whether there are no pending macro/micro tasks in the next tick
+          // to allow for NgZone to update the state.
+          queueMicrotask(() => {
+            if (
+              task !== null &&
+              !this.zone.hasPendingMacrotasks &&
+              !this.zone.hasPendingMicrotasks
+            ) {
+              this.pendingTasks.remove(task);
+              task = null;
+            }
+          });
+        }),
+      );
     });
 
-    this.subscription.add(this.zone.onUnstable.subscribe(() => {
-      NgZone.assertInAngularZone();
-      task ??= this.pendingTasks.add();
-    }));
+    this.subscription.add(
+      this.zone.onUnstable.subscribe(() => {
+        NgZone.assertInAngularZone();
+        task ??= this.pendingTasks.add();
+      }),
+    );
   }
-
 
   ngOnDestroy() {
     this.subscription.unsubscribe();

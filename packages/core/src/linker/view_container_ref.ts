@@ -11,7 +11,11 @@ import {EnvironmentInjector} from '../di/r3_injector';
 import {validateMatchingNode} from '../hydration/error_handling';
 import {CONTAINERS} from '../hydration/interfaces';
 import {hasInSkipHydrationBlockFlag, isInSkipHydrationBlock} from '../hydration/skip_hydration';
-import {getSegmentHead, isDisconnectedNode, markRNodeAsClaimedByHydration} from '../hydration/utils';
+import {
+  getSegmentHead,
+  isDisconnectedNode,
+  markRNodeAsClaimedByHydration,
+} from '../hydration/utils';
 import {findMatchingDehydratedView, locateDehydratedViewsInContainer} from '../hydration/views';
 import {isType, Type} from '../interface/type';
 import {assertNodeInjector} from '../render3/assert';
@@ -19,21 +23,58 @@ import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {getComponentDef} from '../render3/definition';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
 import {addToViewTree, createLContainer} from '../render3/instructions/shared';
-import {CONTAINER_HEADER_OFFSET, DEHYDRATED_VIEWS, LContainer, NATIVE, VIEW_REFS} from '../render3/interfaces/container';
+import {
+  CONTAINER_HEADER_OFFSET,
+  DEHYDRATED_VIEWS,
+  LContainer,
+  NATIVE,
+  VIEW_REFS,
+} from '../render3/interfaces/container';
 import {NodeInjectorOffset} from '../render3/interfaces/injector';
-import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from '../render3/interfaces/node';
+import {
+  TContainerNode,
+  TDirectiveHostNode,
+  TElementContainerNode,
+  TElementNode,
+  TNode,
+  TNodeType,
+} from '../render3/interfaces/node';
 import {RComment, RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
+import {
+  HEADER_OFFSET,
+  HYDRATION,
+  LView,
+  PARENT,
+  RENDERER,
+  T_HOST,
+  TVIEW,
+} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
-import {destroyLView, detachView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
+import {
+  destroyLView,
+  detachView,
+  nativeInsertBefore,
+  nativeNextSibling,
+  nativeParentNode,
+} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
-import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from '../render3/util/injector_utils';
+import {
+  getParentInjectorIndex,
+  getParentInjectorView,
+  hasParentInjector,
+} from '../render3/util/injector_utils';
 import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';
 import {addLViewToLContainer, shouldAddViewToDom} from '../render3/view_manipulation';
 import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertEqual, assertGreaterThan, assertLessThan, throwError} from '../util/assert';
+import {
+  assertDefined,
+  assertEqual,
+  assertGreaterThan,
+  assertLessThan,
+  throwError,
+} from '../util/assert';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {createElementRef, ElementRef} from './element_ref';
@@ -124,7 +165,7 @@ export abstract class ViewContainerRef {
    * @param index The 0-based index of the view to retrieve.
    * @returns The `ViewRef` instance, or null if the index is out of range.
    */
-  abstract get(index: number): ViewRef|null;
+  abstract get(index: number): ViewRef | null;
 
   /**
    * Reports how many views are currently attached to this container.
@@ -145,10 +186,14 @@ export abstract class ViewContainerRef {
    *
    * @returns The `ViewRef` instance for the newly created view.
    */
-  abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
-    index?: number,
-    injector?: Injector
-  }): EmbeddedViewRef<C>;
+  abstract createEmbeddedView<C>(
+    templateRef: TemplateRef<C>,
+    context?: C,
+    options?: {
+      index?: number;
+      injector?: Injector;
+    },
+  ): EmbeddedViewRef<C>;
 
   /**
    * Instantiates an embedded view and inserts it
@@ -161,8 +206,11 @@ export abstract class ViewContainerRef {
    *
    * @returns The `ViewRef` instance for the newly created view.
    */
-  abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
-      EmbeddedViewRef<C>;
+  abstract createEmbeddedView<C>(
+    templateRef: TemplateRef<C>,
+    context?: C,
+    index?: number,
+  ): EmbeddedViewRef<C>;
 
   /**
    * Instantiates a single component and inserts its host view into this container.
@@ -184,13 +232,16 @@ export abstract class ViewContainerRef {
    *
    * @returns The new `ComponentRef` which contains the component instance and the host view.
    */
-  abstract createComponent<C>(componentType: Type<C>, options?: {
-    index?: number,
-    injector?: Injector,
-    ngModuleRef?: NgModuleRef<unknown>,
-    environmentInjector?: EnvironmentInjector|NgModuleRef<unknown>,
-    projectableNodes?: Node[][],
-  }): ComponentRef<C>;
+  abstract createComponent<C>(
+    componentType: Type<C>,
+    options?: {
+      index?: number;
+      injector?: Injector;
+      ngModuleRef?: NgModuleRef<unknown>;
+      environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
+      projectableNodes?: Node[][];
+    },
+  ): ComponentRef<C>;
 
   /**
    * Instantiates a single component and inserts its host view into this container.
@@ -211,9 +262,12 @@ export abstract class ViewContainerRef {
    *     Component class directly.
    */
   abstract createComponent<C>(
-      componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
-      projectableNodes?: any[][],
-      environmentInjector?: EnvironmentInjector|NgModuleRef<any>): ComponentRef<C>;
+    componentFactory: ComponentFactory<C>,
+    index?: number,
+    injector?: Injector,
+    projectableNodes?: any[][],
+    environmentInjector?: EnvironmentInjector | NgModuleRef<any>,
+  ): ComponentRef<C>;
 
   /**
    * Inserts a view into this container.
@@ -254,7 +308,7 @@ export abstract class ViewContainerRef {
    * @param index The 0-based index of the view to detach.
    * If not specified, the last view in the container is detached.
    */
-  abstract detach(index?: number): ViewRef|null;
+  abstract detach(index?: number): ViewRef | null;
 
   /**
    * @internal
@@ -280,9 +334,10 @@ const VE_ViewContainerRef = ViewContainerRef;
 // for that lands, this can be cleaned up.
 const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   constructor(
-      private _lContainer: LContainer,
-      private _hostTNode: TElementNode|TContainerNode|TElementContainerNode,
-      private _hostLView: LView) {
+    private _lContainer: LContainer,
+    private _hostTNode: TElementNode | TContainerNode | TElementContainerNode,
+    private _hostLView: LView,
+  ) {
     super();
   }
 
@@ -301,8 +356,9 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       const parentView = getParentInjectorView(parentLocation, this._hostLView);
       const injectorIndex = getParentInjectorIndex(parentLocation);
       ngDevMode && assertNodeInjector(parentView, injectorIndex);
-      const parentTNode =
-          parentView[TVIEW].data[injectorIndex + NodeInjectorOffset.TNODE] as TElementNode;
+      const parentTNode = parentView[TVIEW].data[
+        injectorIndex + NodeInjectorOffset.TNODE
+      ] as TElementNode;
       return new NodeInjector(parentTNode, parentView);
     } else {
       return new NodeInjector(null, this._hostLView);
@@ -315,27 +371,40 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     }
   }
 
-  override get(index: number): ViewRef|null {
+  override get(index: number): ViewRef | null {
     const viewRefs = getViewRefs(this._lContainer);
-    return viewRefs !== null && viewRefs[index] || null;
+    return (viewRefs !== null && viewRefs[index]) || null;
   }
 
   override get length(): number {
     return this._lContainer.length - CONTAINER_HEADER_OFFSET;
   }
 
-  override createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, options?: {
+  override createEmbeddedView<C>(
+    templateRef: TemplateRef<C>,
+    context?: C,
+    options?: {
+      index?: number;
+      injector?: Injector;
+    },
+  ): EmbeddedViewRef<C>;
+  override createEmbeddedView<C>(
+    templateRef: TemplateRef<C>,
+    context?: C,
     index?: number,
-    injector?: Injector
-  }): EmbeddedViewRef<C>;
-  override createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
-      EmbeddedViewRef<C>;
-  override createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, indexOrOptions?: number|{
-    index?: number,
-    injector?: Injector
-  }): EmbeddedViewRef<C> {
-    let index: number|undefined;
-    let injector: Injector|undefined;
+  ): EmbeddedViewRef<C>;
+  override createEmbeddedView<C>(
+    templateRef: TemplateRef<C>,
+    context?: C,
+    indexOrOptions?:
+      | number
+      | {
+          index?: number;
+          injector?: Injector;
+        },
+  ): EmbeddedViewRef<C> {
+    let index: number | undefined;
+    let injector: Injector | undefined;
 
     if (typeof indexOrOptions === 'number') {
       index = indexOrOptions;
@@ -345,39 +414,54 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     }
 
     const dehydratedView = findMatchingDehydratedView(this._lContainer, templateRef.ssrId);
-    const viewRef =
-        templateRef.createEmbeddedViewImpl(context || <any>{}, injector, dehydratedView);
+    const viewRef = templateRef.createEmbeddedViewImpl(
+      context || <any>{},
+      injector,
+      dehydratedView,
+    );
     this.insertImpl(viewRef, index, shouldAddViewToDom(this._hostTNode, dehydratedView));
     return viewRef;
   }
 
-  override createComponent<C>(componentType: Type<C>, options?: {
-    index?: number,
-    injector?: Injector,
-    projectableNodes?: Node[][],
-    ngModuleRef?: NgModuleRef<unknown>,
-  }): ComponentRef<C>;
+  override createComponent<C>(
+    componentType: Type<C>,
+    options?: {
+      index?: number;
+      injector?: Injector;
+      projectableNodes?: Node[][];
+      ngModuleRef?: NgModuleRef<unknown>;
+    },
+  ): ComponentRef<C>;
   /**
    * @deprecated Angular no longer requires component factories to dynamically create components.
    *     Use different signature of the `createComponent` method, which allows passing
    *     Component class directly.
    */
   override createComponent<C>(
-      componentFactory: ComponentFactory<C>, index?: number|undefined,
-      injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
-      environmentInjector?: EnvironmentInjector|NgModuleRef<any>|undefined): ComponentRef<C>;
+    componentFactory: ComponentFactory<C>,
+    index?: number | undefined,
+    injector?: Injector | undefined,
+    projectableNodes?: any[][] | undefined,
+    environmentInjector?: EnvironmentInjector | NgModuleRef<any> | undefined,
+  ): ComponentRef<C>;
   override createComponent<C>(
-      componentFactoryOrType: ComponentFactory<C>|Type<C>, indexOrOptions?: number|undefined|{
-        index?: number,
-        injector?: Injector,
-        ngModuleRef?: NgModuleRef<unknown>,
-        environmentInjector?: EnvironmentInjector|NgModuleRef<unknown>,
-        projectableNodes?: Node[][],
-      },
-      injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
-      environmentInjector?: EnvironmentInjector|NgModuleRef<any>|undefined): ComponentRef<C> {
+    componentFactoryOrType: ComponentFactory<C> | Type<C>,
+    indexOrOptions?:
+      | number
+      | undefined
+      | {
+          index?: number;
+          injector?: Injector;
+          ngModuleRef?: NgModuleRef<unknown>;
+          environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
+          projectableNodes?: Node[][];
+        },
+    injector?: Injector | undefined,
+    projectableNodes?: any[][] | undefined,
+    environmentInjector?: EnvironmentInjector | NgModuleRef<any> | undefined,
+  ): ComponentRef<C> {
     const isComponentFactory = componentFactoryOrType && !isType(componentFactoryOrType);
-    let index: number|undefined;
+    let index: number | undefined;
 
     // This function supports 2 signatures and we need to handle options correctly for both:
     //   1. When first argument is a Component type. This signature also requires extra
@@ -387,37 +471,43 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     if (isComponentFactory) {
       if (ngDevMode) {
         assertEqual(
-            typeof indexOrOptions !== 'object', true,
-            'It looks like Component factory was provided as the first argument ' +
-                'and an options object as the second argument. This combination of arguments ' +
-                'is incompatible. You can either change the first argument to provide Component ' +
-                'type or change the second argument to be a number (representing an index at ' +
-                'which to insert the new component\'s host view into this container)');
+          typeof indexOrOptions !== 'object',
+          true,
+          'It looks like Component factory was provided as the first argument ' +
+            'and an options object as the second argument. This combination of arguments ' +
+            'is incompatible. You can either change the first argument to provide Component ' +
+            'type or change the second argument to be a number (representing an index at ' +
+            "which to insert the new component's host view into this container)",
+        );
       }
       index = indexOrOptions as number | undefined;
     } else {
       if (ngDevMode) {
         assertDefined(
-            getComponentDef(componentFactoryOrType),
-            `Provided Component class doesn't contain Component definition. ` +
-                `Please check whether provided class has @Component decorator.`);
+          getComponentDef(componentFactoryOrType),
+          `Provided Component class doesn't contain Component definition. ` +
+            `Please check whether provided class has @Component decorator.`,
+        );
         assertEqual(
-            typeof indexOrOptions !== 'number', true,
-            'It looks like Component type was provided as the first argument ' +
-                'and a number (representing an index at which to insert the new component\'s ' +
-                'host view into this container as the second argument. This combination of arguments ' +
-                'is incompatible. Please use an object as the second argument instead.');
+          typeof indexOrOptions !== 'number',
+          true,
+          'It looks like Component type was provided as the first argument ' +
+            "and a number (representing an index at which to insert the new component's " +
+            'host view into this container as the second argument. This combination of arguments ' +
+            'is incompatible. Please use an object as the second argument instead.',
+        );
       }
       const options = (indexOrOptions || {}) as {
-        index?: number,
-        injector?: Injector,
-        ngModuleRef?: NgModuleRef<unknown>,
-        environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>,
-        projectableNodes?: Node[][],
+        index?: number;
+        injector?: Injector;
+        ngModuleRef?: NgModuleRef<unknown>;
+        environmentInjector?: EnvironmentInjector | NgModuleRef<unknown>;
+        projectableNodes?: Node[][];
       };
       if (ngDevMode && options.environmentInjector && options.ngModuleRef) {
         throwError(
-            `Cannot pass both environmentInjector and ngModuleRef options to createComponent().`);
+          `Cannot pass both environmentInjector and ngModuleRef options to createComponent().`,
+        );
       }
       index = options.index;
       injector = options.injector;
@@ -425,9 +515,9 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       environmentInjector = options.environmentInjector || options.ngModuleRef;
     }
 
-    const componentFactory: ComponentFactory<C> = isComponentFactory ?
-        componentFactoryOrType as ComponentFactory<C>:
-        new R3ComponentFactory(getComponentDef(componentFactoryOrType)!);
+    const componentFactory: ComponentFactory<C> = isComponentFactory
+      ? (componentFactoryOrType as ComponentFactory<C>)
+      : new R3ComponentFactory(getComponentDef(componentFactoryOrType)!);
     const contextInjector = injector || this.parentInjector;
 
     // If an `NgModuleRef` is not provided explicitly, try retrieving it from the DI tree.
@@ -462,10 +552,17 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     const componentDef = getComponentDef(componentFactory.componentType ?? {});
     const dehydratedView = findMatchingDehydratedView(this._lContainer, componentDef?.id ?? null);
     const rNode = dehydratedView?.firstChild ?? null;
-    const componentRef =
-        componentFactory.create(contextInjector, projectableNodes, rNode, environmentInjector);
+    const componentRef = componentFactory.create(
+      contextInjector,
+      projectableNodes,
+      rNode,
+      environmentInjector,
+    );
     this.insertImpl(
-        componentRef.hostView, index, shouldAddViewToDom(this._hostTNode, dehydratedView));
+      componentRef.hostView,
+      index,
+      shouldAddViewToDom(this._hostTNode, dehydratedView),
+    );
     return componentRef;
   }
 
@@ -494,15 +591,19 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       } else {
         const prevLContainer = lView[PARENT] as LContainer;
         ngDevMode &&
-            assertEqual(
-                isLContainer(prevLContainer), true,
-                'An attached view should have its PARENT point to a container.');
-
+          assertEqual(
+            isLContainer(prevLContainer),
+            true,
+            'An attached view should have its PARENT point to a container.',
+          );
 
         // We need to re-create a R3ViewContainerRef instance since those are not stored on
         // LView (nor anywhere else).
         const prevVCRef = new R3ViewContainerRef(
-            prevLContainer, prevLContainer[T_HOST] as TDirectiveHostNode, prevLContainer[PARENT]);
+          prevLContainer,
+          prevLContainer[T_HOST] as TDirectiveHostNode,
+          prevLContainer[PARENT],
+        );
 
         prevVCRef.detach(prevVCRef.indexOf(viewRef));
       }
@@ -548,12 +649,12 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     }
   }
 
-  override detach(index?: number): ViewRef|null {
+  override detach(index?: number): ViewRef | null {
     const adjustedIdx = this._adjustIndex(index, -1);
     const view = detachView(this._lContainer, adjustedIdx);
 
     const wasDetached =
-        view && removeFromArray(getOrCreateViewRefs(this._lContainer), adjustedIdx) != null;
+      view && removeFromArray(getOrCreateViewRefs(this._lContainer), adjustedIdx) != null;
     return wasDetached ? new R3ViewRef(view!) : null;
   }
 
@@ -570,7 +671,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   }
 };
 
-function getViewRefs(lContainer: LContainer): ViewRef[]|null {
+function getViewRefs(lContainer: LContainer): ViewRef[] | null {
   return lContainer[VIEW_REFS] as ViewRef[];
 }
 
@@ -586,8 +687,9 @@ function getOrCreateViewRefs(lContainer: LContainer): ViewRef[] {
  * @returns The ViewContainerRef instance to use
  */
 export function createContainerRef(
-    hostTNode: TElementNode|TContainerNode|TElementContainerNode,
-    hostLView: LView): ViewContainerRef {
+  hostTNode: TElementNode | TContainerNode | TElementContainerNode,
+  hostLView: LView,
+): ViewContainerRef {
   ngDevMode && assertTNodeType(hostTNode, TNodeType.AnyContainer | TNodeType.AnyRNode);
 
   let lContainer: LContainer;
@@ -623,13 +725,18 @@ function insertAnchorNode(hostLView: LView, hostTNode: TNode): RComment {
   const hostNative = getNativeByTNode(hostTNode, hostLView)!;
   const parentOfHostNative = nativeParentNode(renderer, hostNative);
   nativeInsertBefore(
-      renderer, parentOfHostNative!, commentNode, nativeNextSibling(renderer, hostNative), false);
+    renderer,
+    parentOfHostNative!,
+    commentNode,
+    nativeNextSibling(renderer, hostNative),
+    false,
+  );
   return commentNode;
 }
 
 let _locateOrCreateAnchorNode = createAnchorNode;
 let _populateDehydratedViewsInLContainer: typeof populateDehydratedViewsInLContainerImpl = () =>
-    false;  // noop by default
+  false; // noop by default
 
 /**
  * Looks up dehydrated views that belong to a given LContainer and populates
@@ -645,7 +752,10 @@ let _populateDehydratedViewsInLContainer: typeof populateDehydratedViewsInLConta
  *   in a skip hydration section.
  */
 export function populateDehydratedViewsInLContainer(
-    lContainer: LContainer, tNode: TNode, hostLView: LView): boolean {
+  lContainer: LContainer,
+  tNode: TNode,
+  hostLView: LView,
+): boolean {
   return _populateDehydratedViewsInLContainer(lContainer, tNode, hostLView);
 }
 
@@ -654,7 +764,11 @@ export function populateDehydratedViewsInLContainer(
  * assigned to the `lContainer[NATIVE]` slot.
  */
 function createAnchorNode(
-    lContainer: LContainer, hostLView: LView, hostTNode: TNode, slotValue: any) {
+  lContainer: LContainer,
+  hostLView: LView,
+  hostTNode: TNode,
+  slotValue: any,
+) {
   // We already have a native element (anchor) set, return.
   if (lContainer[NATIVE]) return;
 
@@ -681,7 +795,10 @@ function createAnchorNode(
  *   in a skip hydration section.
  */
 function populateDehydratedViewsInLContainerImpl(
-    lContainer: LContainer, tNode: TNode, hostLView: LView): boolean {
+  lContainer: LContainer,
+  tNode: TNode,
+  hostLView: LView,
+): boolean {
   // We already have a native element (anchor) set and the process
   // of finding dehydrated views happened (so the `lContainer[DEHYDRATED_VIEWS]`
   // is not null), exit early.
@@ -691,8 +808,10 @@ function populateDehydratedViewsInLContainerImpl(
 
   const hydrationInfo = hostLView[HYDRATION];
   const noOffsetIndex = tNode.index - HEADER_OFFSET;
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock(tNode) ||
-      isDisconnectedNode(hydrationInfo, noOffsetIndex);
+  const isNodeCreationMode =
+    !hydrationInfo ||
+    isInSkipHydrationBlock(tNode) ||
+    isDisconnectedNode(hydrationInfo, noOffsetIndex);
 
   // Regular creation mode.
   if (isNodeCreationMode) {
@@ -700,17 +819,20 @@ function populateDehydratedViewsInLContainerImpl(
   }
 
   // Hydration mode, looking up an anchor node and dehydrated views in DOM.
-  const currentRNode: RNode|null = getSegmentHead(hydrationInfo, noOffsetIndex);
+  const currentRNode: RNode | null = getSegmentHead(hydrationInfo, noOffsetIndex);
 
   const serializedViews = hydrationInfo.data[CONTAINERS]?.[noOffsetIndex];
   ngDevMode &&
-      assertDefined(
-          serializedViews,
-          'Unexpected state: no hydration info available for a given TNode, ' +
-              'which represents a view container.');
+    assertDefined(
+      serializedViews,
+      'Unexpected state: no hydration info available for a given TNode, ' +
+        'which represents a view container.',
+    );
 
-  const [commentNode, dehydratedViews] =
-      locateDehydratedViewsInContainer(currentRNode!, serializedViews!);
+  const [commentNode, dehydratedViews] = locateDehydratedViewsInContainer(
+    currentRNode!,
+    serializedViews!,
+  );
 
   if (ngDevMode) {
     validateMatchingNode(commentNode, Node.COMMENT_NODE, null, hostLView, tNode, true);
@@ -729,7 +851,11 @@ function populateDehydratedViewsInLContainerImpl(
 }
 
 function locateOrCreateAnchorNode(
-    lContainer: LContainer, hostLView: LView, hostTNode: TNode, slotValue: any): void {
+  lContainer: LContainer,
+  hostLView: LView,
+  hostTNode: TNode,
+  slotValue: any,
+): void {
   if (!_populateDehydratedViewsInLContainer(lContainer, hostTNode, hostLView)) {
     // Populating dehydrated views operation returned `false`, which indicates
     // that the logic was running in client-only mode, this an anchor comment

@@ -7,7 +7,27 @@
  */
 
 import {CommonModule, NgTemplateOutlet} from '@angular/common';
-import {AfterViewChecked, ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, createComponent, Directive, DoCheck, EmbeddedViewRef, EnvironmentInjector, ErrorHandler, inject, Input, signal, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  AfterViewChecked,
+  ApplicationRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  createComponent,
+  Directive,
+  DoCheck,
+  EmbeddedViewRef,
+  EnvironmentInjector,
+  ErrorHandler,
+  inject,
+  Input,
+  signal,
+  TemplateRef,
+  Type,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -72,7 +92,7 @@ describe('change detection for transplanted views', () => {
         <ng-template #myTmpl let-greeting>
           {{greeting}} {{logName()}}!
         </ng-template>
-      `
+      `,
     })
     class CheckAlwaysDeclareComp extends DeclareComp {
       constructor(changeDetector: ChangeDetectorRef) {
@@ -88,7 +108,7 @@ describe('change detection for transplanted views', () => {
         <ng-template #myTmpl let-greeting>
           {{greeting}} {{logName()}}!
         </ng-template>`,
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class OnPushDeclareComp extends DeclareComp {
       constructor(changeDetector: ChangeDetectorRef) {
@@ -105,7 +125,7 @@ describe('change detection for transplanted views', () => {
           {{greeting}} {{surname()}}{{logExecutionContext()}}!
         </ng-template>
       `,
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class SignalOnPushDeclareComp {
       @ViewChild('myTmpl') myTmpl!: TemplateRef<any>;
@@ -142,7 +162,7 @@ describe('change detection for transplanted views', () => {
       <signal-onpush-declare-comp *ngIf="showSignalOnPushDeclare" />
 
       <onpush-insert-comp *ngIf="showOnPushInsert" />
-      `
+      `,
     })
     class AppComp {
       showCheckAlwaysDeclare = false;
@@ -154,8 +174,8 @@ describe('change detection for transplanted views', () => {
       }
     }
 
-    let viewExecutionLog!: Array<string|null>;
-    let logValue!: string|null;
+    let viewExecutionLog!: Array<string | null>;
+    let logValue!: string | null;
     let fixture!: ComponentFixture<AppComp>;
     let appComp!: AppComp;
     let onPushInsertComp!: OnPushInsertComp;
@@ -167,8 +187,11 @@ describe('change detection for transplanted views', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [
-          OnPushInsertComp, SignalOnPushDeclareComp, CheckAlwaysDeclareComp, OnPushDeclareComp,
-          AppComp
+          OnPushInsertComp,
+          SignalOnPushDeclareComp,
+          CheckAlwaysDeclareComp,
+          OnPushDeclareComp,
+          AppComp,
         ],
         imports: [CommonModule],
       });
@@ -186,8 +209,9 @@ describe('change detection for transplanted views', () => {
 
       it('should set up the component under test correctly', () => {
         expect(viewExecutionLog.length).toEqual(0);
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('SignalOnPushDeclareComp(world) OnPushInsertComp(Hello) Hello templateName!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'SignalOnPushDeclareComp(world) OnPushInsertComp(Hello) Hello templateName!',
+        );
       });
 
       it('should CD at insertion and declaration', () => {
@@ -196,26 +220,26 @@ describe('change detection for transplanted views', () => {
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
         expect(trim(fixture.nativeElement.textContent))
-            .withContext(
-                'CD did not run on the transplanted template because it is inside an OnPush component and no signal changed')
-            .toEqual(
-                'SignalOnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello templateName!');
+          .withContext(
+            'CD did not run on the transplanted template because it is inside an OnPush component and no signal changed',
+          )
+          .toEqual('SignalOnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello templateName!');
 
         onPushInsertComp.greeting = 'Hi';
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual([]);
         viewExecutionLog.length = 0;
         expect(trim(fixture.nativeElement.textContent))
-            .withContext('Insertion component is OnPush.')
-            .toEqual(
-                'SignalOnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello templateName!');
+          .withContext('Insertion component is OnPush.')
+          .toEqual('SignalOnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello templateName!');
 
         onPushInsertComp.changeDetectorRef.markForCheck();
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('SignalOnPushDeclareComp(Angular) OnPushInsertComp(Hi) Hi templateName!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'SignalOnPushDeclareComp(Angular) OnPushInsertComp(Hi) Hi templateName!',
+        );
 
         // Destroy insertion should also destroy declaration
         appComp.showOnPushInsert = false;
@@ -229,9 +253,9 @@ describe('change detection for transplanted views', () => {
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual(
-                'SignalOnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello templateName!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'SignalOnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello templateName!',
+        );
       });
     });
 
@@ -245,8 +269,9 @@ describe('change detection for transplanted views', () => {
 
       it('should set up the component under test correctly', () => {
         expect(viewExecutionLog.length).toEqual(0);
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('DeclareComp(world) OnPushInsertComp(Hello) Hello world!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'DeclareComp(world) OnPushInsertComp(Hello) Hello world!',
+        );
       });
 
       it('should CD at insertion point only', () => {
@@ -254,26 +279,27 @@ describe('change detection for transplanted views', () => {
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual(
-                'DeclareComp(Angular) OnPushInsertComp(Hello) Hello Angular!',
-                'Expect transplanted LView to be CD because the declaration is CD.');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'DeclareComp(Angular) OnPushInsertComp(Hello) Hello Angular!',
+          'Expect transplanted LView to be CD because the declaration is CD.',
+        );
 
         onPushInsertComp.greeting = 'Hi';
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual(
-                'DeclareComp(Angular) OnPushInsertComp(Hello) Hello Angular!',
-                'expect no change because it is on push.');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'DeclareComp(Angular) OnPushInsertComp(Hello) Hello Angular!',
+          'expect no change because it is on push.',
+        );
 
         onPushInsertComp.changeDetectorRef.markForCheck();
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('DeclareComp(Angular) OnPushInsertComp(Hi) Hi Angular!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'DeclareComp(Angular) OnPushInsertComp(Hi) Hi Angular!',
+        );
 
         // Destroy insertion should also destroy declaration
         appComp.showOnPushInsert = false;
@@ -287,8 +313,9 @@ describe('change detection for transplanted views', () => {
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('DeclareComp(Angular) OnPushInsertComp(Hello) Hello Angular!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'DeclareComp(Angular) OnPushInsertComp(Hello) Hello Angular!',
+        );
 
         // Destroy declaration, But we should still be able to see updates in insertion
         appComp.showCheckAlwaysDeclare = false;
@@ -297,8 +324,9 @@ describe('change detection for transplanted views', () => {
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('OnPushInsertComp(Hello) Hello Angular!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'OnPushInsertComp(Hello) Hello Angular!',
+        );
       });
 
       it('is not checked if detectChanges is called in declaration component', () => {
@@ -306,17 +334,21 @@ describe('change detection for transplanted views', () => {
         declareComp.changeDetector.detectChanges();
         expect(viewExecutionLog).toEqual([]);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('DeclareComp(Angular) OnPushInsertComp(Hello) Hello world!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'DeclareComp(Angular) OnPushInsertComp(Hello) Hello world!',
+        );
       });
 
       it('is checked as part of CheckNoChanges pass', () => {
         fixture.detectChanges(true);
-        expect(viewExecutionLog)
-            .toEqual(['Insert', null /* logName set to null afterViewChecked */]);
+        expect(viewExecutionLog).toEqual([
+          'Insert',
+          null /* logName set to null afterViewChecked */,
+        ]);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('DeclareComp(world) OnPushInsertComp(Hello) Hello world!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'DeclareComp(world) OnPushInsertComp(Hello) Hello world!',
+        );
       });
     });
 
@@ -330,8 +362,9 @@ describe('change detection for transplanted views', () => {
 
       it('should set up component under test correctly', () => {
         expect(viewExecutionLog.length).toEqual(0);
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('OnPushDeclareComp(world) OnPushInsertComp(Hello) Hello world!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'OnPushDeclareComp(world) OnPushInsertComp(Hello) Hello world!',
+        );
       });
 
       it('should not check anything when no views are dirty', () => {
@@ -347,16 +380,18 @@ describe('change detection for transplanted views', () => {
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('OnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello Angular!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'OnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello Angular!',
+        );
 
         // mark insertion point dirty
         onPushInsertComp.changeDetectorRef.markForCheck();
         fixture.detectChanges(false);
         expect(viewExecutionLog).toEqual(['Insert']);
         viewExecutionLog.length = 0;
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('OnPushDeclareComp(Angular) OnPushInsertComp(Hi) Hi Angular!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'OnPushDeclareComp(Angular) OnPushInsertComp(Hi) Hi Angular!',
+        );
 
         // mark both insertion and declaration point dirty
         onPushInsertComp.changeDetectorRef.markForCheck();
@@ -369,8 +404,9 @@ describe('change detection for transplanted views', () => {
       it('is checked if detectChanges is called in declaration component', () => {
         onPushDeclareComp.name = 'Angular';
         onPushDeclareComp.changeDetector.detectChanges();
-        expect(trim(fixture.nativeElement.textContent))
-            .toEqual('OnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello world!');
+        expect(trim(fixture.nativeElement.textContent)).toEqual(
+          'OnPushDeclareComp(Angular) OnPushInsertComp(Hello) Hello world!',
+        );
       });
 
       // TODO(FW-1774): blocked by https://github.com/angular/angular/pull/34443
@@ -378,8 +414,10 @@ describe('change detection for transplanted views', () => {
         // mark declaration point dirty
         onPushDeclareComp.changeDetector.markForCheck();
         fixture.detectChanges(false);
-        expect(viewExecutionLog)
-            .toEqual(['Insert', null /* logName set to null in afterViewChecked */]);
+        expect(viewExecutionLog).toEqual([
+          'Insert',
+          null /* logName set to null in afterViewChecked */,
+        ]);
         viewExecutionLog.length = 0;
 
         // mark insertion point dirty
@@ -396,23 +434,22 @@ describe('change detection for transplanted views', () => {
         viewExecutionLog.length = 0;
       });
 
-      it('does not cause infinite change detection if transplanted view is dirty and destroyed before refresh',
-         () => {
-           // mark declaration point dirty
-           onPushDeclareComp.changeDetector.markForCheck();
-           // detach insertion so the transplanted view doesn't get refreshed when CD runs
-           onPushInsertComp.changeDetectorRef.detach();
-           // run CD, which will set the `RefreshView` flag on the transplanted view
-           fixture.detectChanges(false);
-           // reattach insertion so the DESCENDANT_VIEWS counters update
-           onPushInsertComp.changeDetectorRef.reattach();
-           // make it so the insertion is destroyed before getting refreshed
-           fixture.componentInstance.showOnPushInsert = false;
-           // run CD again. If we didn't clear the flag/counters when destroying the view, this
-           // would cause an infinite CD because the counters will be >1 but we will never reach a
-           // view to refresh and decrement the counters.
-           fixture.detectChanges(false);
-         });
+      it('does not cause infinite change detection if transplanted view is dirty and destroyed before refresh', () => {
+        // mark declaration point dirty
+        onPushDeclareComp.changeDetector.markForCheck();
+        // detach insertion so the transplanted view doesn't get refreshed when CD runs
+        onPushInsertComp.changeDetectorRef.detach();
+        // run CD, which will set the `RefreshView` flag on the transplanted view
+        fixture.detectChanges(false);
+        // reattach insertion so the DESCENDANT_VIEWS counters update
+        onPushInsertComp.changeDetectorRef.reattach();
+        // make it so the insertion is destroyed before getting refreshed
+        fixture.componentInstance.showOnPushInsert = false;
+        // run CD again. If we didn't clear the flag/counters when destroying the view, this
+        // would cause an infinite CD because the counters will be >1 but we will never reach a
+        // view to refresh and decrement the counters.
+        fixture.detectChanges(false);
+      });
     });
   });
 
@@ -423,7 +460,7 @@ describe('change detection for transplanted views', () => {
             <div>Insertion({{name}})</div>
             <ng-container [ngTemplateOutlet]="template" [ngTemplateOutletContext]="{$implicit: name}">
             </ng-container>`,
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class Insertion {
       @Input() template!: TemplateRef<{}>;
@@ -441,7 +478,7 @@ describe('change detection for transplanted views', () => {
             <div>TemplateContext({{contextName}})</div>
           </ng-template>
         `,
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class Declaration {
       @ViewChild('template') template?: TemplateRef<{}>;
@@ -460,7 +497,7 @@ describe('change detection for transplanted views', () => {
         <insertion *ngIf="showInsertion" [template]="declaration?.template">
         </insertion>
         <declaration></declaration>
-        `
+        `,
     })
     class App {
       @ViewChild(Declaration) declaration!: Declaration;
@@ -470,8 +507,9 @@ describe('change detection for transplanted views', () => {
     }
 
     beforeEach(() => {
-      fixture = TestBed.configureTestingModule({declarations: [App, Declaration, Insertion]})
-                    .createComponent(App);
+      fixture = TestBed.configureTestingModule({
+        declarations: [App, Declaration, Insertion],
+      }).createComponent(App);
       appComponent = fixture.componentInstance;
       fixture.detectChanges(false);
       appComponent.showInsertion = true;
@@ -480,24 +518,22 @@ describe('change detection for transplanted views', () => {
     });
 
     it('should set up component under test correctly', () => {
-      expect(fixture.nativeElement.textContent)
-          .toEqual(
-              'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(initial)');
+      expect(fixture.nativeElement.textContent).toEqual(
+        'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(initial)',
+      );
       expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(0);
     });
 
-
-    it('should update declaration view when there is a change in the declaration and insertion is marked dirty',
-       () => {
-         appComponent.declaration.name = 'new name';
-         appComponent.insertion.changeDetectorRef.markForCheck();
-         fixture.detectChanges(false);
-         expect(fixture.nativeElement.textContent)
-             .toEqual(
-                 'Insertion(initial)TemplateDeclaration(new name)TemplateContext(initial)Declaration(initial)',
-                 'Name should not update in declaration view because only insertion was marked dirty');
-         expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
-       });
+    it('should update declaration view when there is a change in the declaration and insertion is marked dirty', () => {
+      appComponent.declaration.name = 'new name';
+      appComponent.insertion.changeDetectorRef.markForCheck();
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement.textContent).toEqual(
+        'Insertion(initial)TemplateDeclaration(new name)TemplateContext(initial)Declaration(initial)',
+        'Name should not update in declaration view because only insertion was marked dirty',
+      );
+      expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
+    });
 
     it('updates the declaration view when there is a change to either declaration or insertion', () => {
       appComponent.declaration.name = 'new name';
@@ -505,7 +541,7 @@ describe('change detection for transplanted views', () => {
       fixture.detectChanges(false);
 
       const expectedContent =
-          'Insertion(initial)TemplateDeclaration(new name)TemplateContext(initial)Declaration(new name)';
+        'Insertion(initial)TemplateDeclaration(new name)TemplateContext(initial)Declaration(new name)';
       expect(fixture.nativeElement.textContent).toEqual(expectedContent);
       expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
     });
@@ -514,22 +550,21 @@ describe('change detection for transplanted views', () => {
       appComponent.insertion.name = 'new name';
       appComponent.declaration.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
-      expect(fixture.nativeElement.textContent)
-          .toEqual(
-              'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(initial)');
+      expect(fixture.nativeElement.textContent).toEqual(
+        'Insertion(initial)TemplateDeclaration(initial)TemplateContext(initial)Declaration(initial)',
+      );
       expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
     });
 
-    it('should update insertion view and template when there is a change to insertion and insertion marked dirty',
-       () => {
-         appComponent.insertion.name = 'new name';
-         appComponent.insertion.changeDetectorRef.markForCheck();
-         fixture.detectChanges(false);
-         expect(fixture.nativeElement.textContent)
-             .toEqual(
-                 'Insertion(new name)TemplateDeclaration(initial)TemplateContext(new name)Declaration(initial)');
-         expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
-       });
+    it('should update insertion view and template when there is a change to insertion and insertion marked dirty', () => {
+      appComponent.insertion.name = 'new name';
+      appComponent.insertion.changeDetectorRef.markForCheck();
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement.textContent).toEqual(
+        'Insertion(new name)TemplateDeclaration(initial)TemplateContext(new name)Declaration(initial)',
+      );
+      expect(appComponent.declaration.transplantedViewRefreshCount).toEqual(1);
+    });
 
     it('should not refresh the template if nothing is marked dirty', () => {
       fixture.detectChanges(false);
@@ -541,16 +576,17 @@ describe('change detection for transplanted views', () => {
       appComponent.insertion.changeDetectorRef.markForCheck();
       fixture.detectChanges(false);
       expect(appComponent.declaration.transplantedViewRefreshCount)
-          .withContext(
-              'Should refresh twice because insertion executes and then declaration marks transplanted view dirty again')
-          .toEqual(2);
+        .withContext(
+          'Should refresh twice because insertion executes and then declaration marks transplanted view dirty again',
+        )
+        .toEqual(2);
     });
   });
 
   describe('transplanted views shielded by OnPush', () => {
     @Component({
       selector: 'check-always-insertion',
-      template: `<ng-container [ngTemplateOutlet]="template"></ng-container>`
+      template: `<ng-container [ngTemplateOutlet]="template"></ng-container>`,
     })
     class CheckAlwaysInsertion {
       @Input() template!: TemplateRef<{}>;
@@ -559,7 +595,7 @@ describe('change detection for transplanted views', () => {
     @Component({
       selector: 'on-push-insertion-host',
       template: `<check-always-insertion [template]="template"></check-always-insertion>`,
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class OnPushInsertionHost {
       @Input() template!: TemplateRef<{}>;
@@ -570,7 +606,7 @@ describe('change detection for transplanted views', () => {
       <ng-template #template>{{value}}</ng-template>
       <on-push-insertion-host [template]="template"></on-push-insertion-host>
       `,
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class OnPushDeclaration {
       @ViewChild(OnPushInsertionHost) onPushInsertionHost?: OnPushInsertionHost;
@@ -592,7 +628,7 @@ describe('change detection for transplanted views', () => {
       template: `
       <ng-template #template>{{value}}</ng-template>
       <on-push-insertion-host [template]="template"></on-push-insertion-host>
-      `
+      `,
     })
     class CheckAlwaysDeclaration {
       @ViewChild(OnPushInsertionHost) onPushInsertionHost?: OnPushInsertionHost;
@@ -600,13 +636,14 @@ describe('change detection for transplanted views', () => {
     }
 
     function getFixture<T>(componentUnderTest: Type<T>): ComponentFixture<T> {
-      return TestBed
-          .configureTestingModule({
-            declarations: [
-              CheckAlwaysDeclaration, OnPushDeclaration, CheckAlwaysInsertion, OnPushInsertionHost
-            ]
-          })
-          .createComponent(componentUnderTest);
+      return TestBed.configureTestingModule({
+        declarations: [
+          CheckAlwaysDeclaration,
+          OnPushDeclaration,
+          CheckAlwaysInsertion,
+          OnPushInsertionHost,
+        ],
+      }).createComponent(componentUnderTest);
     }
 
     it('can recover from errors thrown during change detection', () => {
@@ -667,7 +704,7 @@ describe('change detection for transplanted views', () => {
     @Component({
       selector: 'triple',
       template: '<div *ngFor="let unused of [1,2,3]; template: template"></div>',
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class TripleTemplate {
       @Input() template!: TemplateRef<{}>;
@@ -677,22 +714,23 @@ describe('change detection for transplanted views', () => {
       template: `
         <ng-template #template>{{name}}</ng-template>
         <triple [template]="template"></triple>
-      `
+      `,
     })
     class App {
       name = 'Penny';
     }
 
-    const fixture =
-        TestBed.configureTestingModule({declarations: [App, TripleTemplate]}).createComponent(App);
+    const fixture = TestBed.configureTestingModule({
+      declarations: [App, TripleTemplate],
+    }).createComponent(App);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toEqual('PennyPennyPenny');
     fixture.componentInstance.name = 'Sheldon';
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent)
-        .toEqual(
-            'SheldonSheldonSheldon',
-            'Expected transplanted view to be refreshed even when insertion is not dirty');
+    expect(fixture.nativeElement.textContent).toEqual(
+      'SheldonSheldonSheldon',
+      'Expected transplanted view to be refreshed even when insertion is not dirty',
+    );
   });
 
   describe('ViewRef and ViewContainerRef operations', () => {
@@ -701,7 +739,9 @@ describe('change detection for transplanted views', () => {
       @ViewChild(TemplateRef) templateRef!: TemplateRef<{}>;
 
       constructor(
-          readonly rootViewContainerRef: ViewContainerRef, readonly cdr: ChangeDetectorRef) {}
+        readonly rootViewContainerRef: ViewContainerRef,
+        readonly cdr: ChangeDetectorRef,
+      ) {}
 
       checks = 0;
       incrementChecks() {
@@ -713,8 +753,9 @@ describe('change detection for transplanted views', () => {
     let component: AppComponent;
     let viewRef: EmbeddedViewRef<{}>;
     beforeEach(() => {
-      fixture = TestBed.configureTestingModule({declarations: [AppComponent]})
-                    .createComponent(AppComponent);
+      fixture = TestBed.configureTestingModule({declarations: [AppComponent]}).createComponent(
+        AppComponent,
+      );
       component = fixture.componentInstance;
       fixture.detectChanges();
       viewRef = component.templateRef.createEmbeddedView({});
@@ -736,44 +777,42 @@ describe('change detection for transplanted views', () => {
       expect(component.checks).toEqual(1);
     });
 
-    it('should work when change detecting detached transplanted view already marked for refresh',
-       () => {
-         // detach the viewRef only. This just removes the LViewFlags.Attached rather than actually
-         // detaching the view from the container.
-         viewRef.detach();
-         // Calling detectChanges marks transplanted views for check
-         component.cdr.detectChanges();
-         expect(() => {
-           // Calling detectChanges on the transplanted view itself will clear the refresh flag. It
-           // _should not_ also attempt to update the parent counters because it's detached and
-           // should not affect parent counters.
-           viewRef.detectChanges();
-         }).not.toThrow();
-         expect(component.checks).toEqual(1);
-       });
+    it('should work when change detecting detached transplanted view already marked for refresh', () => {
+      // detach the viewRef only. This just removes the LViewFlags.Attached rather than actually
+      // detaching the view from the container.
+      viewRef.detach();
+      // Calling detectChanges marks transplanted views for check
+      component.cdr.detectChanges();
+      expect(() => {
+        // Calling detectChanges on the transplanted view itself will clear the refresh flag. It
+        // _should not_ also attempt to update the parent counters because it's detached and
+        // should not affect parent counters.
+        viewRef.detectChanges();
+      }).not.toThrow();
+      expect(component.checks).toEqual(1);
+    });
 
-    it('should work when re-inserting a previously detached transplanted view marked for refresh',
-       () => {
-         // Test case for inserting a view with refresh flag
-         viewRef.detach();
-         // mark transplanted views for check but does not refresh transplanted view because it is
-         // detached
-         component.cdr.detectChanges();
-         // reattach view itself
-         viewRef.reattach();
-         expect(() => {
-           // detach and reattach view from ViewContainerRef
-           component.rootViewContainerRef.detach();
-           component.rootViewContainerRef.insert(viewRef);
-           // calling detectChanges will clear the refresh flag. If the above operations messed up
-           // the counter, this would fail when attempted to decrement.
-           fixture.detectChanges(false);
-         }).not.toThrow();
-         // The transplanted view gets refreshed twice because it's actually inserted "backwards"
-         // The view is defined in AppComponent but inserted in its ViewContainerRef (as an
-         // embedded view in AppComponent's host view).
-         expect(component.checks).toEqual(2);
-       });
+    it('should work when re-inserting a previously detached transplanted view marked for refresh', () => {
+      // Test case for inserting a view with refresh flag
+      viewRef.detach();
+      // mark transplanted views for check but does not refresh transplanted view because it is
+      // detached
+      component.cdr.detectChanges();
+      // reattach view itself
+      viewRef.reattach();
+      expect(() => {
+        // detach and reattach view from ViewContainerRef
+        component.rootViewContainerRef.detach();
+        component.rootViewContainerRef.insert(viewRef);
+        // calling detectChanges will clear the refresh flag. If the above operations messed up
+        // the counter, this would fail when attempted to decrement.
+        fixture.detectChanges(false);
+      }).not.toThrow();
+      // The transplanted view gets refreshed twice because it's actually inserted "backwards"
+      // The view is defined in AppComponent but inserted in its ViewContainerRef (as an
+      // embedded view in AppComponent's host view).
+      expect(component.checks).toEqual(2);
+    });
 
     it('should work when detaching an attached transplanted view with the refresh flag', () => {
       viewRef.detach();
@@ -804,14 +843,13 @@ describe('change detection for transplanted views', () => {
     });
   });
 
-
   describe('when detached', () => {
     @Component({
       selector: 'on-push-component',
       template: `
           <ng-container #vc></ng-container>
         `,
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class OnPushComponent {
       @ViewChild('vc', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
@@ -846,7 +884,7 @@ describe('change detection for transplanted views', () => {
       <ng-template #transplantedTemplate>{{ incrementChecks() }}</ng-template>
       <on-push-component [template]="transplantedTemplate"></on-push-component>
       <check-always-component [template]="transplantedTemplate"></check-always-component>
-        `
+        `,
     })
     class App {
       @ViewChild(OnPushComponent) onPushComponent!: OnPushComponent;
@@ -942,7 +980,7 @@ describe('change detection for transplanted views', () => {
           <ng-template #transplantedTemplate></ng-template>
           <insertion [template]="transplantedTemplate"></insertion>
         `,
-        imports: [Insertion]
+        imports: [Insertion],
       })
       class Root {
         readonly cdr = inject(ChangeDetectorRef);
@@ -958,7 +996,7 @@ describe('change detection for transplanted views', () => {
         standalone: true,
         selector: 'insertion',
         template: `<ng-container #vc></ng-container>`,
-        changeDetection: ChangeDetectionStrategy.OnPush
+        changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class Insertion {
         @ViewChild('vc', {read: ViewContainerRef, static: true}) viewContainer!: ViewContainerRef;
@@ -985,7 +1023,7 @@ describe('change detection for transplanted views', () => {
           <declaration [value]="value"></declaration>
           {{incrementChecks()}}
         `,
-        imports: [Insertion, Declaration]
+        imports: [Insertion, Declaration],
       })
       class Root {
         @ViewChild(Declaration, {static: true}) declaration!: Declaration;
@@ -1037,7 +1075,7 @@ describe('change detection for transplanted views', () => {
       imports: [MarkForCheck, Insertion],
       template: `<ng-template #myTmpl> <markForCheck/> </ng-template>`,
       standalone: true,
-      selector: 'declaration'
+      selector: 'declaration',
     })
     class Declaration {
       @ViewChild('myTmpl', {static: true}) template!: TemplateRef<{}>;
@@ -1045,19 +1083,21 @@ describe('change detection for transplanted views', () => {
     @Component({
       standalone: true,
       imports: [Declaration, Insertion],
-      template: '<insertion [template]="declaration.template"/><declaration #declaration/>'
+      template: '<insertion [template]="declaration.template"/><declaration #declaration/>',
     })
-    class App {
-    }
+    class App {}
 
     TestBed.configureTestingModule({
-      providers: [{
-        provide: ErrorHandler, useClass: class extends ErrorHandler {
-          override handleError(e: any) {
-            throw e;
-          }
-        }
-      }]
+      providers: [
+        {
+          provide: ErrorHandler,
+          useClass: class extends ErrorHandler {
+            override handleError(e: any) {
+              throw e;
+            }
+          },
+        },
+      ],
     });
 
     const app = createComponent(App, {environmentInjector: TestBed.inject(EnvironmentInjector)});
@@ -1071,6 +1111,6 @@ describe('change detection for transplanted views', () => {
   });
 });
 
-function trim(text: string|null): string {
+function trim(text: string | null): string {
   return text ? text.replace(/[\s\n]+/gm, ' ').trim() : '';
 }

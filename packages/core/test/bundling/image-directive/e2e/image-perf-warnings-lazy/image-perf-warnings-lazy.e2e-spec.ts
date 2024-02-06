@@ -16,7 +16,7 @@ describe('Image performance warnings', () => {
   it('should log a warning when a LCP image is loaded lazily', async () => {
     await browser.get('/e2e/image-perf-warnings-lazy');
     // Wait for load event
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 600));
     // Verify that both images were rendered.
     const imgs = element.all(by.css('img'));
     let srcA = await imgs.get(0).getAttribute('src');

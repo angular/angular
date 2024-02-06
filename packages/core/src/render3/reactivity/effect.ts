@@ -21,7 +21,6 @@ import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 
 import {assertNotInReactiveContext} from './asserts';
 
-
 /**
  * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
  * before the next effect run. The cleanup function makes it possible to "cancel" any work that the
@@ -83,7 +82,7 @@ export abstract class EffectScheduler {
 export class ZoneAwareEffectScheduler implements EffectScheduler {
   private hasQueuedFlush = false;
   private queuedEffectCount = 0;
-  private queues = new Map<Zone|null, Set<SchedulableEffect>>();
+  private queues = new Map<Zone | null, Set<SchedulableEffect>>();
 
   scheduleEffect(handle: SchedulableEffect): void {
     this.enqueue(handle);
@@ -148,16 +147,22 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
  * available/requested.
  */
 class EffectHandle implements EffectRef, SchedulableEffect {
-  unregisterOnDestroy: (() => void)|undefined;
+  unregisterOnDestroy: (() => void) | undefined;
   readonly watcher: Watch;
 
   constructor(
-      private scheduler: EffectScheduler,
-      private effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
-      public creationZone: Zone|null, destroyRef: DestroyRef|null, private injector: Injector,
-      allowSignalWrites: boolean) {
+    private scheduler: EffectScheduler,
+    private effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
+    public creationZone: Zone | null,
+    destroyRef: DestroyRef | null,
+    private injector: Injector,
+    allowSignalWrites: boolean,
+  ) {
     this.watcher = createWatch(
-        (onCleanup) => this.runEffect(onCleanup), () => this.schedule(), allowSignalWrites);
+      (onCleanup) => this.runEffect(onCleanup),
+      () => this.schedule(),
+      allowSignalWrites,
+    );
     this.unregisterOnDestroy = destroyRef?.onDestroy(() => this.destroy());
   }
 
@@ -238,22 +243,28 @@ export interface CreateEffectOptions {
  * @developerPreview
  */
 export function effect(
-    effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
-    options?: CreateEffectOptions): EffectRef {
+  effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
+  options?: CreateEffectOptions,
+): EffectRef {
   ngDevMode &&
-      assertNotInReactiveContext(
-          effect,
-          'Call `effect` outside of a reactive context. For example, schedule the ' +
-              'effect inside the component constructor.');
+    assertNotInReactiveContext(
+      effect,
+      'Call `effect` outside of a reactive context. For example, schedule the ' +
+        'effect inside the component constructor.',
+    );
 
   !options?.injector && assertInInjectionContext(effect);
   const injector = options?.injector ?? inject(Injector);
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
 
   const handle = new EffectHandle(
-      injector.get(APP_EFFECT_SCHEDULER), effectFn,
-      (typeof Zone === 'undefined') ? null : Zone.current, destroyRef, injector,
-      options?.allowSignalWrites ?? false);
+    injector.get(APP_EFFECT_SCHEDULER),
+    effectFn,
+    typeof Zone === 'undefined' ? null : Zone.current,
+    destroyRef,
+    injector,
+    options?.allowSignalWrites ?? false,
+  );
 
   // Effects need to be marked dirty manually to trigger their initial run. The timing of this
   // marking matters, because the effects may read signals that track component inputs, which are
@@ -263,7 +274,7 @@ export function effect(
   // the context of a component or not. If it is, then we check whether the component has already
   // run its update pass, and defer the effect's initial scheduling until the update pass if it
   // hasn't already run.
-  const cdr = injector.get(ChangeDetectorRef, null, {optional: true}) as ViewRef<unknown>| null;
+  const cdr = injector.get(ChangeDetectorRef, null, {optional: true}) as ViewRef<unknown> | null;
   if (!cdr || !(cdr._lView[FLAGS] & LViewFlags.FirstLViewPass)) {
     // This effect is either not running in a view injector, or the view has already
     // undergone its first change detection pass, which is necessary for any required inputs to be

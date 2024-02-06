@@ -7,12 +7,72 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, provideZoneChangeDetection, resolveForwardRef, StaticProvider, Type, ɵclearResolutionOfComponentResourcesQueue, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDEFER_BLOCK_CONFIG as DEFER_BLOCK_CONFIG, ɵDeferBlockBehavior as DeferBlockBehavior, ɵdepsTracker as depsTracker, ɵDirectiveDef as DirectiveDef, ɵgenerateStandaloneInDeclarationsError, ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn, ɵgetInjectableDef as getInjectableDef, ɵInternalEnvironmentProviders as InternalEnvironmentProviders, ɵisComponentDefPendingResolution, ɵisEnvironmentProviders as isEnvironmentProviders, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵresolveComponentResources, ɵrestoreComponentResolutionQueue, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT as USE_RUNTIME_DEPS_TRACKER_FOR_JIT, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
+import {
+  ApplicationInitStatus,
+  Compiler,
+  COMPILER_OPTIONS,
+  Component,
+  Directive,
+  Injector,
+  InjectorType,
+  LOCALE_ID,
+  ModuleWithComponentFactories,
+  ModuleWithProviders,
+  NgModule,
+  NgModuleFactory,
+  NgZone,
+  Pipe,
+  PlatformRef,
+  Provider,
+  provideZoneChangeDetection,
+  resolveForwardRef,
+  StaticProvider,
+  Type,
+  ɵclearResolutionOfComponentResourcesQueue,
+  ɵcompileComponent as compileComponent,
+  ɵcompileDirective as compileDirective,
+  ɵcompileNgModuleDefs as compileNgModuleDefs,
+  ɵcompilePipe as compilePipe,
+  ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID,
+  ɵDEFER_BLOCK_CONFIG as DEFER_BLOCK_CONFIG,
+  ɵDeferBlockBehavior as DeferBlockBehavior,
+  ɵdepsTracker as depsTracker,
+  ɵDirectiveDef as DirectiveDef,
+  ɵgenerateStandaloneInDeclarationsError,
+  ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
+  ɵgetInjectableDef as getInjectableDef,
+  ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
+  ɵisComponentDefPendingResolution,
+  ɵisEnvironmentProviders as isEnvironmentProviders,
+  ɵNG_COMP_DEF as NG_COMP_DEF,
+  ɵNG_DIR_DEF as NG_DIR_DEF,
+  ɵNG_INJ_DEF as NG_INJ_DEF,
+  ɵNG_MOD_DEF as NG_MOD_DEF,
+  ɵNG_PIPE_DEF as NG_PIPE_DEF,
+  ɵNgModuleFactory as R3NgModuleFactory,
+  ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes,
+  ɵNgModuleType as NgModuleType,
+  ɵpatchComponentDefWithScope as patchComponentDefWithScope,
+  ɵRender3ComponentFactory as ComponentFactory,
+  ɵRender3NgModuleRef as NgModuleRef,
+  ɵresolveComponentResources,
+  ɵrestoreComponentResolutionQueue,
+  ɵsetLocaleId as setLocaleId,
+  ɵtransitiveScopesFor as transitiveScopesFor,
+  ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT as USE_RUNTIME_DEPS_TRACKER_FOR_JIT,
+  ɵɵInjectableDeclaration as InjectableDeclaration,
+} from '@angular/core';
 
 import {ComponentDef, ComponentType} from '../../src/render3';
 
 import {MetadataOverride} from './metadata_override';
-import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
+import {
+  ComponentResolver,
+  DirectiveResolver,
+  NgModuleResolver,
+  PipeResolver,
+  Resolver,
+} from './resolvers';
 import {DEFER_BLOCK_DEFAULT_BEHAVIOR, TestModuleMetadata} from './test_bed_common';
 
 enum TestingModuleOverride {
@@ -21,13 +81,17 @@ enum TestingModuleOverride {
 }
 
 function isTestingModuleOverride(value: unknown): value is TestingModuleOverride {
-  return value === TestingModuleOverride.DECLARATION ||
-      value === TestingModuleOverride.OVERRIDE_TEMPLATE;
+  return (
+    value === TestingModuleOverride.DECLARATION || value === TestingModuleOverride.OVERRIDE_TEMPLATE
+  );
 }
 
 function assertNoStandaloneComponents(
-    types: Type<any>[], resolver: Resolver<any>, location: string) {
-  types.forEach(type => {
+  types: Type<any>[],
+  resolver: Resolver<any>,
+  location: string,
+) {
+  types.forEach((type) => {
     if (!getAsyncClassMetadataFn(type)) {
       const component = resolver.resolve(type);
       if (component && component.standalone) {
@@ -39,10 +103,10 @@ function assertNoStandaloneComponents(
 
 // Resolvers for Angular decorators
 type Resolvers = {
-  module: Resolver<NgModule>,
-  component: Resolver<Directive>,
-  directive: Resolver<Component>,
-  pipe: Resolver<Pipe>,
+  module: Resolver<NgModule>;
+  component: Resolver<Directive>;
+  directive: Resolver<Component>;
+  pipe: Resolver<Pipe>;
 };
 
 interface CleanupOperation {
@@ -52,7 +116,7 @@ interface CleanupOperation {
 }
 
 export class TestBedCompiler {
-  private originalComponentResolutionQueue: Map<Type<any>, Component>|null = null;
+  private originalComponentResolutionQueue: Map<Type<any>, Component> | null = null;
 
   // Testing module configuration
   private declarations: Type<any>[] = [];
@@ -85,21 +149,21 @@ export class TestBedCompiler {
   // - when a component is declared in `TestBed.configureTestingModule()` call or
   //   a component's template is overridden via `TestBed.overrideTemplateUsingTestingModule()`.
   //   we use a special value from the `TestingModuleOverride` enum.
-  private componentToModuleScope = new Map<Type<any>, Type<any>|TestingModuleOverride|null>();
+  private componentToModuleScope = new Map<Type<any>, Type<any> | TestingModuleOverride | null>();
 
   // Map that keeps initial version of component/directive/pipe defs in case
   // we compile a Type again, thus overriding respective static fields. This is
   // required to make sure we restore defs to their initial states between test runs.
   // Note: one class may have multiple defs (for example: ɵmod and ɵinj in case of an
   // NgModule), store all of them in a map.
-  private initialNgDefs = new Map<Type<any>, Map<string, PropertyDescriptor|undefined>>();
+  private initialNgDefs = new Map<Type<any>, Map<string, PropertyDescriptor | undefined>>();
 
   // Array that keeps cleanup operations for initial versions of component/directive/pipe/module
   // defs in case TestBed makes changes to the originals.
   private defCleanupOps: CleanupOperation[] = [];
 
-  private _injector: Injector|null = null;
-  private compilerProviders: Provider[]|null = null;
+  private _injector: Injector | null = null;
+  private compilerProviders: Provider[] | null = null;
 
   private providerOverrides: Provider[] = [];
   private rootProviderOverrides: Provider[] = [];
@@ -110,16 +174,19 @@ export class TestBedCompiler {
   private scopesWithOverriddenProviders = new Set<Type<any>>();
 
   private testModuleType: NgModuleType<any>;
-  private testModuleRef: NgModuleRef<any>|null = null;
+  private testModuleRef: NgModuleRef<any> | null = null;
 
   private deferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
 
-  constructor(private platform: PlatformRef, private additionalModuleTypes: Type<any>|Type<any>[]) {
+  constructor(
+    private platform: PlatformRef,
+    private additionalModuleTypes: Type<any> | Type<any>[],
+  ) {
     class DynamicTestModule {}
     this.testModuleType = DynamicTestModule as any;
   }
 
-  setCompilerProviders(providers: Provider[]|null): void {
+  setCompilerProviders(providers: Provider[] | null): void {
     this.compilerProviders = providers;
     this._injector = null;
   }
@@ -129,8 +196,10 @@ export class TestBedCompiler {
     if (moduleDef.declarations !== undefined) {
       // Verify that there are no standalone components
       assertNoStandaloneComponents(
-          moduleDef.declarations, this.resolvers.component,
-          '"TestBed.configureTestingModule" call');
+        moduleDef.declarations,
+        this.resolvers.component,
+        '"TestBed.configureTestingModule" call',
+      );
       this.queueTypeArray(moduleDef.declarations, TestingModuleOverride.DECLARATION);
       this.declarations.push(...moduleDef.declarations);
     }
@@ -192,25 +261,32 @@ export class TestBedCompiler {
   }
 
   private verifyNoStandaloneFlagOverrides(
-      type: Type<any>, override: MetadataOverride<Component|Directive|Pipe>) {
-    if (override.add?.hasOwnProperty('standalone') || override.set?.hasOwnProperty('standalone') ||
-        override.remove?.hasOwnProperty('standalone')) {
+    type: Type<any>,
+    override: MetadataOverride<Component | Directive | Pipe>,
+  ) {
+    if (
+      override.add?.hasOwnProperty('standalone') ||
+      override.set?.hasOwnProperty('standalone') ||
+      override.remove?.hasOwnProperty('standalone')
+    ) {
       throw new Error(
-          `An override for the ${type.name} class has the \`standalone\` flag. ` +
-          `Changing the \`standalone\` flag via TestBed overrides is not supported.`);
+        `An override for the ${type.name} class has the \`standalone\` flag. ` +
+          `Changing the \`standalone\` flag via TestBed overrides is not supported.`,
+      );
     }
   }
 
   overrideProvider(
-      token: any,
-      provider: {useFactory?: Function, useValue?: any, deps?: any[], multi?: boolean}): void {
+    token: any,
+    provider: {useFactory?: Function; useValue?: any; deps?: any[]; multi?: boolean},
+  ): void {
     let providerDef: Provider;
     if (provider.useFactory !== undefined) {
       providerDef = {
         provide: token,
         useFactory: provider.useFactory,
         deps: provider.deps || [],
-        multi: provider.multi
+        multi: provider.multi,
       };
     } else if (provider.useValue !== undefined) {
       providerDef = {provide: token, useValue: provider.useValue, multi: provider.multi};
@@ -218,11 +294,11 @@ export class TestBedCompiler {
       providerDef = {provide: token};
     }
 
-    const injectableDef: InjectableDeclaration<any>|null =
-        typeof token !== 'string' ? getInjectableDef(token) : null;
+    const injectableDef: InjectableDeclaration<any> | null =
+      typeof token !== 'string' ? getInjectableDef(token) : null;
     const providedIn = injectableDef === null ? null : resolveForwardRef(injectableDef.providedIn);
     const overridesBucket =
-        providedIn === 'root' ? this.rootProviderOverrides : this.providerOverrides;
+      providedIn === 'root' ? this.rootProviderOverrides : this.providerOverrides;
     overridesBucket.push(providerDef);
 
     // Keep overrides grouped by token as well for fast lookups using token
@@ -252,8 +328,9 @@ export class TestBedCompiler {
     // resolution). In order to avoid this, we preemptively set styleUrls to an empty array,
     // preserve current styles available on Component def and restore styles back once compilation
     // is complete.
-    const override =
-        overrideStyleUrls ? {template, styles: [], styleUrls: [], styleUrl: undefined} : {template};
+    const override = overrideStyleUrls
+      ? {template, styles: [], styleUrls: [], styleUrl: undefined}
+      : {template};
     this.overrideComponent(type, {set: override});
 
     if (overrideStyleUrls && def.styles && def.styles.length > 0) {
@@ -292,7 +369,10 @@ export class TestBedCompiler {
     // to the logic in the `configureTestingModule` function, since at this point we have
     // all async metadata resolved.
     assertNoStandaloneComponents(
-        this.declarations, this.resolvers.component, '"TestBed.configureTestingModule" call');
+      this.declarations,
+      this.resolvers.component,
+      '"TestBed.configureTestingModule" call',
+    );
 
     // Run compilers for all queued types.
     let needsAsyncResources = this.compileTypesSync();
@@ -388,11 +468,12 @@ export class TestBedCompiler {
   private compileTypesSync(): boolean {
     // Compile all queued components, directives, pipes.
     let needsAsyncResources = false;
-    this.pendingComponents.forEach(declaration => {
+    this.pendingComponents.forEach((declaration) => {
       if (getAsyncClassMetadataFn(declaration)) {
         throw new Error(
-            `Component '${declaration.name}' has unresolved metadata. ` +
-            `Please call \`await TestBed.compileComponents()\` before running this test.`);
+          `Component '${declaration.name}' has unresolved metadata. ` +
+            `Please call \`await TestBed.compileComponents()\` before running this test.`,
+        );
       }
 
       needsAsyncResources = needsAsyncResources || ɵisComponentDefPendingResolution(declaration);
@@ -410,7 +491,7 @@ export class TestBedCompiler {
     });
     this.pendingComponents.clear();
 
-    this.pendingDirectives.forEach(declaration => {
+    this.pendingDirectives.forEach((declaration) => {
       const metadata = this.resolvers.directive.resolve(declaration);
       if (metadata === null) {
         throw invalidTypeError(declaration.name, 'Directive');
@@ -420,7 +501,7 @@ export class TestBedCompiler {
     });
     this.pendingDirectives.clear();
 
-    this.pendingPipes.forEach(declaration => {
+    this.pendingPipes.forEach((declaration) => {
       const metadata = this.resolvers.pipe.resolve(declaration);
       if (metadata === null) {
         throw invalidTypeError(declaration.name, 'Pipe');
@@ -441,7 +522,7 @@ export class TestBedCompiler {
       const testingModuleDef = (this.testModuleType as any)[NG_MOD_DEF];
       const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
       if (affectedModules.size > 0) {
-        affectedModules.forEach(moduleType => {
+        affectedModules.forEach((moduleType) => {
           if (!USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
             this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
             (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
@@ -452,16 +533,17 @@ export class TestBedCompiler {
       }
     }
 
-    const moduleToScope = new Map<Type<any>|TestingModuleOverride, NgModuleTransitiveScopes>();
-    const getScopeOfModule =
-        (moduleType: Type<any>|TestingModuleOverride): NgModuleTransitiveScopes => {
-          if (!moduleToScope.has(moduleType)) {
-            const isTestingModule = isTestingModuleOverride(moduleType);
-            const realType = isTestingModule ? this.testModuleType : moduleType as Type<any>;
-            moduleToScope.set(moduleType, transitiveScopesFor(realType));
-          }
-          return moduleToScope.get(moduleType)!;
-        };
+    const moduleToScope = new Map<Type<any> | TestingModuleOverride, NgModuleTransitiveScopes>();
+    const getScopeOfModule = (
+      moduleType: Type<any> | TestingModuleOverride,
+    ): NgModuleTransitiveScopes => {
+      if (!moduleToScope.has(moduleType)) {
+        const isTestingModule = isTestingModuleOverride(moduleType);
+        const realType = isTestingModule ? this.testModuleType : (moduleType as Type<any>);
+        moduleToScope.set(moduleType, transitiveScopesFor(realType));
+      }
+      return moduleToScope.get(moduleType)!;
+    };
 
     this.componentToModuleScope.forEach((moduleType, componentType) => {
       if (moduleType !== null) {
@@ -498,7 +580,6 @@ export class TestBedCompiler {
     this.seenDirectives.clear();
   }
 
-
   /**
    * Applies provider overrides to a given type (either an NgModule or a standalone component)
    * and all imported NgModules and standalone components recursively.
@@ -533,9 +614,9 @@ export class TestBedCompiler {
         this.applyProviderOverridesInScope(dependency);
       }
     } else {
-      const providers: Array<Provider|InternalEnvironmentProviders> = [
+      const providers: Array<Provider | InternalEnvironmentProviders> = [
         ...injectorDef.providers,
-        ...(this.providerOverridesByModule.get(type as InjectorType<any>) || [])
+        ...(this.providerOverridesByModule.get(type as InjectorType<any>) || []),
       ];
       if (this.hasProviderOverrides(providers)) {
         this.maybeStoreNgDef(NG_INJ_DEF, type);
@@ -557,10 +638,11 @@ export class TestBedCompiler {
           this.defCleanupOps.push({
             object: importedModule,
             fieldName: 'providers',
-            originalValue: importedModule.providers
+            originalValue: importedModule.providers,
           });
           importedModule.providers = this.getOverriddenProviders(
-              importedModule.providers as Array<Provider|InternalEnvironmentProviders>);
+            importedModule.providers as Array<Provider | InternalEnvironmentProviders>,
+          );
         }
       }
     }
@@ -568,11 +650,12 @@ export class TestBedCompiler {
 
   private patchComponentsWithExistingStyles(): void {
     this.existingComponentStyles.forEach(
-        (styles, type) => (type as any)[NG_COMP_DEF].styles = styles);
+      (styles, type) => ((type as any)[NG_COMP_DEF].styles = styles),
+    );
     this.existingComponentStyles.clear();
   }
 
-  private queueTypeArray(arr: any[], moduleType: Type<any>|TestingModuleOverride): void {
+  private queueTypeArray(arr: any[], moduleType: Type<any> | TestingModuleOverride): void {
     for (const value of arr) {
       if (Array.isArray(value)) {
         this.queueTypeArray(value, moduleType);
@@ -590,7 +673,7 @@ export class TestBedCompiler {
     compileNgModuleDefs(ngModule as NgModuleType<any>, metadata);
   }
 
-  private queueType(type: Type<any>, moduleType: Type<any>|TestingModuleOverride|null): void {
+  private queueType(type: Type<any>, moduleType: Type<any> | TestingModuleOverride | null): void {
     const component = this.resolvers.component.resolve(type);
     if (component) {
       // Check whether a give Type has respective NG def (ɵcmp) and compile if def is
@@ -616,8 +699,10 @@ export class TestBedCompiler {
       // real module, which was imported. This pattern is understood to mean that the component
       // should use its original scope, but that the testing module should also contain the
       // component in its scope.
-      if ((!this.componentToModuleScope.has(type) ||
-           this.componentToModuleScope.get(type) === TestingModuleOverride.DECLARATION)) {
+      if (
+        !this.componentToModuleScope.has(type) ||
+        this.componentToModuleScope.get(type) === TestingModuleOverride.DECLARATION
+      ) {
         this.componentToModuleScope.set(type, moduleType);
       }
       return;
@@ -711,13 +796,13 @@ export class TestBedCompiler {
             // the whole path that leads to that module as affected, but do not descend into its
             // imports, since we already examined them before.
             if (affectedModules.has(value)) {
-              path.forEach(item => affectedModules.add(item));
+              path.forEach((item) => affectedModules.add(item));
             }
             continue;
           }
           seenModules.add(value);
           if (this.overriddenModules.has(value)) {
-            path.forEach(item => affectedModules.add(item));
+            path.forEach((item) => affectedModules.add(item));
           }
           // Examine module imports recursively to look for overridden modules.
           const moduleDef = (value as any)[NG_MOD_DEF];
@@ -761,8 +846,9 @@ export class TestBedCompiler {
     if (this.originalComponentResolutionQueue === null) {
       this.originalComponentResolutionQueue = new Map();
     }
-    ɵclearResolutionOfComponentResourcesQueue().forEach(
-        (value, key) => this.originalComponentResolutionQueue!.set(key, value));
+    ɵclearResolutionOfComponentResourcesQueue().forEach((value, key) =>
+      this.originalComponentResolutionQueue!.set(key, value),
+    );
   }
 
   /*
@@ -785,24 +871,25 @@ export class TestBedCompiler {
     });
     // Restore initial component/directive/pipe defs
     this.initialNgDefs.forEach(
-        (defs: Map<string, PropertyDescriptor|undefined>, type: Type<any>) => {
-          if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
-            depsTracker.clearScopeCacheFor(type);
+      (defs: Map<string, PropertyDescriptor | undefined>, type: Type<any>) => {
+        if (USE_RUNTIME_DEPS_TRACKER_FOR_JIT) {
+          depsTracker.clearScopeCacheFor(type);
+        }
+        defs.forEach((descriptor, prop) => {
+          if (!descriptor) {
+            // Delete operations are generally undesirable since they have performance
+            // implications on objects they were applied to. In this particular case, situations
+            // where this code is invoked should be quite rare to cause any noticeable impact,
+            // since it's applied only to some test cases (for example when class with no
+            // annotations extends some @Component) when we need to clear 'ɵcmp' field on a given
+            // class to restore its original state (before applying overrides and running tests).
+            delete (type as any)[prop];
+          } else {
+            Object.defineProperty(type, prop, descriptor);
           }
-          defs.forEach((descriptor, prop) => {
-            if (!descriptor) {
-              // Delete operations are generally undesirable since they have performance
-              // implications on objects they were applied to. In this particular case, situations
-              // where this code is invoked should be quite rare to cause any noticeable impact,
-              // since it's applied only to some test cases (for example when class with no
-              // annotations extends some @Component) when we need to clear 'ɵcmp' field on a given
-              // class to restore its original state (before applying overrides and running tests).
-              delete (type as any)[prop];
-            } else {
-              Object.defineProperty(type, prop, descriptor);
-            }
-          });
         });
+      },
+    );
     this.initialNgDefs.clear();
     this.scopesWithOverriddenProviders.clear();
     this.restoreComponentResolutionQueue();
@@ -826,12 +913,16 @@ export class TestBedCompiler {
     const imports = [RootScopeModule, this.additionalModuleTypes, this.imports || []];
 
     // clang-format off
-    compileNgModuleDefs(this.testModuleType, {
-      declarations: this.declarations,
-      imports,
-      schemas: this.schemas,
-      providers,
-    }, /* allowDuplicateDeclarationsInRoot */ true);
+    compileNgModuleDefs(
+      this.testModuleType,
+      {
+        declarations: this.declarations,
+        imports,
+        schemas: this.schemas,
+        providers,
+      },
+      /* allowDuplicateDeclarationsInRoot */ true,
+    );
     // clang-format on
 
     this.applyProviderOverridesInScope(this.testModuleType);
@@ -844,13 +935,13 @@ export class TestBedCompiler {
 
     const providers: StaticProvider[] = [];
     const compilerOptions = this.platform.injector.get(COMPILER_OPTIONS);
-    compilerOptions.forEach(opts => {
+    compilerOptions.forEach((opts) => {
       if (opts.providers) {
         providers.push(opts.providers);
       }
     });
     if (this.compilerProviders !== null) {
-      providers.push(...this.compilerProviders as StaticProvider[]);
+      providers.push(...(this.compilerProviders as StaticProvider[]));
     }
 
     this._injector = Injector.create({providers, parent: this.platform.injector});
@@ -858,25 +949,31 @@ export class TestBedCompiler {
   }
 
   // get overrides for a specific provider (if any)
-  private getSingleProviderOverrides(provider: Provider): Provider|null {
+  private getSingleProviderOverrides(provider: Provider): Provider | null {
     const token = getProviderToken(provider);
     return this.providerOverridesByToken.get(token) || null;
   }
 
-  private getProviderOverrides(providers?: Array<Provider|InternalEnvironmentProviders>):
-      Provider[] {
+  private getProviderOverrides(
+    providers?: Array<Provider | InternalEnvironmentProviders>,
+  ): Provider[] {
     if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
     // There are two flattening operations here. The inner flattenProviders() operates on the
     // metadata's providers and applies a mapping function which retrieves overrides for each
     // incoming provider. The outer flatten() then flattens the produced overrides array. If this is
     // not done, the array can contain other empty arrays (e.g. `[[], []]`) which leak into the
     // providers array and contaminate any error messages that might be generated.
-    return flatten(flattenProviders(
-        providers, (provider: Provider) => this.getSingleProviderOverrides(provider) || []));
+    return flatten(
+      flattenProviders(
+        providers,
+        (provider: Provider) => this.getSingleProviderOverrides(provider) || [],
+      ),
+    );
   }
 
-  private getOverriddenProviders(providers?: Array<Provider|InternalEnvironmentProviders>):
-      Provider[] {
+  private getOverriddenProviders(
+    providers?: Array<Provider | InternalEnvironmentProviders>,
+  ): Provider[] {
     if (!providers || !providers.length || this.providerOverridesByToken.size === 0) return [];
 
     const flattenedProviders = flattenProviders(providers);
@@ -906,7 +1003,9 @@ export class TestBedCompiler {
     return final;
   }
 
-  private hasProviderOverrides(providers?: Array<Provider|InternalEnvironmentProviders>): boolean {
+  private hasProviderOverrides(
+    providers?: Array<Provider | InternalEnvironmentProviders>,
+  ): boolean {
     return this.getProviderOverrides(providers).length > 0;
   }
 
@@ -928,7 +1027,7 @@ function initResolvers(): Resolvers {
     module: new NgModuleResolver(),
     component: new ComponentResolver(),
     directive: new DirectiveResolver(),
-    pipe: new PipeResolver()
+    pipe: new PipeResolver(),
   };
 }
 
@@ -938,8 +1037,8 @@ function isStandaloneComponent<T>(value: Type<T>): value is ComponentType<T> {
 }
 
 function getComponentDef(value: ComponentType<unknown>): ComponentDef<unknown>;
-function getComponentDef(value: Type<unknown>): ComponentDef<unknown>|null;
-function getComponentDef(value: Type<unknown>): ComponentDef<unknown>|null {
+function getComponentDef(value: Type<unknown>): ComponentDef<unknown> | null;
+function getComponentDef(value: Type<unknown>): ComponentDef<unknown> | null {
   return (value as any).ɵcmp ?? null;
 }
 
@@ -951,13 +1050,13 @@ function isNgModule<T>(value: Type<T>): boolean {
   return hasNgModuleDef(value);
 }
 
-function maybeUnwrapFn<T>(maybeFn: (() => T)|T): T {
+function maybeUnwrapFn<T>(maybeFn: (() => T) | T): T {
   return maybeFn instanceof Function ? maybeFn() : maybeFn;
 }
 
 function flatten<T>(values: any[]): T[] {
   const out: T[] = [];
-  values.forEach(value => {
+  values.forEach((value) => {
     if (Array.isArray(value)) {
       out.push(...flatten<T>(value));
     } else {
@@ -972,11 +1071,14 @@ function identityFn<T>(value: T): T {
 }
 
 function flattenProviders<T>(
-    providers: Array<Provider|InternalEnvironmentProviders>, mapFn: (provider: Provider) => T): T[];
-function flattenProviders(providers: Array<Provider|InternalEnvironmentProviders>): Provider[];
+  providers: Array<Provider | InternalEnvironmentProviders>,
+  mapFn: (provider: Provider) => T,
+): T[];
+function flattenProviders(providers: Array<Provider | InternalEnvironmentProviders>): Provider[];
 function flattenProviders(
-    providers: Array<Provider|InternalEnvironmentProviders>,
-    mapFn: (provider: Provider) => any = identityFn): any[] {
+  providers: Array<Provider | InternalEnvironmentProviders>,
+  mapFn: (provider: Provider) => any = identityFn,
+): any[] {
   const out: any[] = [];
   for (let provider of providers) {
     if (isEnvironmentProviders(provider)) {
@@ -1032,8 +1134,9 @@ class R3TestCompiler implements Compiler {
     return new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
   }
 
-  async compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
-      Promise<ModuleWithComponentFactories<T>> {
+  async compileModuleAndAllComponentsAsync<T>(
+    moduleType: Type<T>,
+  ): Promise<ModuleWithComponentFactories<T>> {
     const ngModuleFactory = await this.compileModuleAsync(moduleType);
     const componentFactories = this.testBed._getComponentFactories(moduleType as NgModuleType<T>);
     return new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
@@ -1043,8 +1146,8 @@ class R3TestCompiler implements Compiler {
 
   clearCacheFor(type: Type<any>): void {}
 
-  getModuleId(moduleType: Type<any>): string|undefined {
+  getModuleId(moduleType: Type<any>): string | undefined {
     const meta = this.testBed._getModuleResolver().resolve(moduleType);
-    return meta && meta.id || undefined;
+    return (meta && meta.id) || undefined;
   }
 }

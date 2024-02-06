@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {parseTsconfigFile} from './parse_tsconfig';
 
-type FakeReadFileFn = (fileName: string) => string|undefined;
+type FakeReadFileFn = (fileName: string) => string | undefined;
 
 /**
  * Creates a TypeScript program instance for a TypeScript project within
@@ -24,10 +24,19 @@ type FakeReadFileFn = (fileName: string) => string|undefined;
  * @param additionalFiles Additional file paths that should be added to the program.
  */
 export function createMigrationProgram(
-    tree: Tree, tsconfigPath: string, basePath: string, fakeFileRead?: FakeReadFileFn,
-    additionalFiles?: string[]) {
-  const {rootNames, options, host} =
-      createProgramOptions(tree, tsconfigPath, basePath, fakeFileRead, additionalFiles);
+  tree: Tree,
+  tsconfigPath: string,
+  basePath: string,
+  fakeFileRead?: FakeReadFileFn,
+  additionalFiles?: string[],
+) {
+  const {rootNames, options, host} = createProgramOptions(
+    tree,
+    tsconfigPath,
+    basePath,
+    fakeFileRead,
+    additionalFiles,
+  );
   return ts.createProgram(rootNames, options, host);
 }
 
@@ -42,8 +51,13 @@ export function createMigrationProgram(
  * @param optionOverrides Overrides of the parsed compiler options.
  */
 export function createProgramOptions(
-    tree: Tree, tsconfigPath: string, basePath: string, fakeFileRead?: FakeReadFileFn,
-    additionalFiles?: string[], optionOverrides?: ts.CompilerOptions) {
+  tree: Tree,
+  tsconfigPath: string,
+  basePath: string,
+  fakeFileRead?: FakeReadFileFn,
+  additionalFiles?: string[],
+  optionOverrides?: ts.CompilerOptions,
+) {
   // Resolve the tsconfig path to an absolute path. This is needed as TypeScript otherwise
   // is not able to resolve root directories in the given tsconfig. More details can be found
   // in the following issue: https://github.com/microsoft/TypeScript/issues/37731.
@@ -55,8 +69,11 @@ export function createProgramOptions(
 }
 
 function createMigrationCompilerHost(
-    tree: Tree, options: ts.CompilerOptions, basePath: string,
-    fakeRead?: FakeReadFileFn): ts.CompilerHost {
+  tree: Tree,
+  options: ts.CompilerOptions,
+  basePath: string,
+  fakeRead?: FakeReadFileFn,
+): ts.CompilerHost {
   const host = ts.createCompilerHost(options, true);
   const defaultReadFile = host.readFile;
 
@@ -64,15 +81,16 @@ function createMigrationCompilerHost(
   // program to be based on the file contents in the virtual file tree. Otherwise
   // if we run multiple migrations we might have intersecting changes and
   // source files.
-  host.readFile = fileName => {
+  host.readFile = (fileName) => {
     const treeRelativePath = relative(basePath, fileName);
-    let result: string|undefined = fakeRead?.(treeRelativePath);
+    let result: string | undefined = fakeRead?.(treeRelativePath);
 
     if (typeof result !== 'string') {
       // If the relative path resolved to somewhere outside of the tree, fall back to
       // TypeScript's default file reading function since the `tree` will throw an error.
-      result = treeRelativePath.startsWith('..') ? defaultReadFile.call(host, fileName) :
-                                                   tree.read(treeRelativePath)?.toString();
+      result = treeRelativePath.startsWith('..')
+        ? defaultReadFile.call(host, fileName)
+        : tree.read(treeRelativePath)?.toString();
     }
 
     // Strip BOM as otherwise TSC methods (Ex: getWidth) will return an offset,
@@ -91,10 +109,16 @@ function createMigrationCompilerHost(
  * @param program Program that includes the source file.
  */
 export function canMigrateFile(
-    basePath: string, sourceFile: ts.SourceFile, program: ts.Program): boolean {
+  basePath: string,
+  sourceFile: ts.SourceFile,
+  program: ts.Program,
+): boolean {
   // We shouldn't migrate .d.ts files, files from an external library or type checking files.
-  if (sourceFile.fileName.endsWith('.ngtypecheck.ts') || sourceFile.isDeclarationFile ||
-      program.isSourceFileFromExternalLibrary(sourceFile)) {
+  if (
+    sourceFile.fileName.endsWith('.ngtypecheck.ts') ||
+    sourceFile.isDeclarationFile ||
+    program.isSourceFileFromExternalLibrary(sourceFile)
+  ) {
     return false;
   }
 

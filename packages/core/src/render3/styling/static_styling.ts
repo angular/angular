@@ -8,7 +8,7 @@
 
 import {concatStringsWithSpace} from '../../util/stringify';
 import {assertFirstCreatePass} from '../assert';
-import { AttributeMarker } from '../interfaces/attribute_marker';
+import {AttributeMarker} from '../interfaces/attribute_marker';
 import {TAttributes, TNode} from '../interfaces/node';
 import {getTView} from '../state';
 
@@ -24,12 +24,15 @@ import {getTView} from '../state';
  *   - `true` Write to `TNode.styles` / `TNode.classes`
  */
 export function computeStaticStyling(
-    tNode: TNode, attrs: TAttributes|null, writeToHost: boolean): void {
+  tNode: TNode,
+  attrs: TAttributes | null,
+  writeToHost: boolean,
+): void {
   ngDevMode &&
-      assertFirstCreatePass(getTView(), 'Expecting to be called in first template pass only');
-  let styles: string|null = writeToHost ? tNode.styles : null;
-  let classes: string|null = writeToHost ? tNode.classes : null;
-  let mode: AttributeMarker|0 = 0;
+    assertFirstCreatePass(getTView(), 'Expecting to be called in first template pass only');
+  let styles: string | null = writeToHost ? tNode.styles : null;
+  let classes: string | null = writeToHost ? tNode.classes : null;
+  let mode: AttributeMarker | 0 = 0;
   if (attrs !== null) {
     for (let i = 0; i < attrs.length; i++) {
       const value = attrs[i];
@@ -44,6 +47,6 @@ export function computeStaticStyling(
       }
     }
   }
-  writeToHost ? tNode.styles = styles : tNode.stylesWithoutHost = styles;
-  writeToHost ? tNode.classes = classes : tNode.classesWithoutHost = classes;
+  writeToHost ? (tNode.styles = styles) : (tNode.stylesWithoutHost = styles);
+  writeToHost ? (tNode.classes = classes) : (tNode.classesWithoutHost = classes);
 }

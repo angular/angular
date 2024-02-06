@@ -8,7 +8,12 @@
 import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {TEMPLATES} from '../../hydration/interfaces';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
-import {calcSerializedContainerSize, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
+import {
+  calcSerializedContainerSize,
+  isDisconnectedNode,
+  markRNodeAsClaimedByHydration,
+  setSegmentHead,
+} from '../../hydration/utils';
 import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertEqual} from '../../util/assert';
 import {assertFirstCreatePass} from '../assert';
@@ -20,30 +25,66 @@ import {RComment} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TViewType} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
-import {getLView, getTView, isInSkipHydrationBlock, lastNodeWasCreated, setCurrentTNode, wasLastNodeCreated} from '../state';
+import {
+  getLView,
+  getTView,
+  isInSkipHydrationBlock,
+  lastNodeWasCreated,
+  setCurrentTNode,
+  wasLastNodeCreated,
+} from '../state';
 import {getConstant} from '../util/view_utils';
 
-import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {
+  addToViewTree,
+  createDirectivesInstances,
+  createLContainer,
+  createTView,
+  getOrCreateTNode,
+  resolveDirectives,
+  saveResolvedLocalsInData,
+} from './shared';
 
 function templateFirstCreatePass(
-    index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>|null,
-    decls: number, vars: number, tagName?: string|null, attrsIndex?: number|null,
-    localRefsIndex?: number|null): TContainerNode {
+  index: number,
+  tView: TView,
+  lView: LView,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+): TContainerNode {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
   const tViewConsts = tView.consts;
 
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version
   const tNode = getOrCreateTNode(
-      tView, index, TNodeType.Container, tagName || null,
-      getConstant<TAttributes>(tViewConsts, attrsIndex));
+    tView,
+    index,
+    TNodeType.Container,
+    tagName || null,
+    getConstant<TAttributes>(tViewConsts, attrsIndex),
+  );
 
   resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
   registerPostOrderHooks(tView, tNode);
 
-  const embeddedTView = tNode.tView = createTView(
-      TViewType.Embedded, tNode, templateFn, decls, vars, tView.directiveRegistry,
-      tView.pipeRegistry, null, tView.schemas, tViewConsts, null /* ssrId */);
+  const embeddedTView = (tNode.tView = createTView(
+    TViewType.Embedded,
+    tNode,
+    templateFn,
+    decls,
+    vars,
+    tView.directiveRegistry,
+    tView.pipeRegistry,
+    null,
+    tView.schemas,
+    tViewConsts,
+    null /* ssrId */,
+  ));
 
   if (tView.queries !== null) {
     tView.queries.template(tView, tNode);
@@ -73,17 +114,32 @@ function templateFirstCreatePass(
  * @codeGenApi
  */
 export function ɵɵtemplate(
-    index: number, templateFn: ComponentTemplate<any>|null, decls: number, vars: number,
-    tagName?: string|null, attrsIndex?: number|null, localRefsIndex?: number|null,
-    localRefExtractor?: LocalRefExtractor): typeof ɵɵtemplate {
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵtemplate {
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
 
-  const tNode = tView.firstCreatePass ? templateFirstCreatePass(
-                                            adjustedIndex, tView, lView, templateFn, decls, vars,
-                                            tagName, attrsIndex, localRefsIndex) :
-                                        tView.data[adjustedIndex] as TContainerNode;
+  const tNode = tView.firstCreatePass
+    ? templateFirstCreatePass(
+        adjustedIndex,
+        tView,
+        lView,
+        templateFn,
+        decls,
+        vars,
+        tagName,
+        attrsIndex,
+        localRefsIndex,
+      )
+    : (tView.data[adjustedIndex] as TContainerNode);
   setCurrentTNode(tNode, false);
 
   const comment = _locateOrCreateContainerAnchor(tView, lView, tNode, index) as RComment;
@@ -119,7 +175,11 @@ let _locateOrCreateContainerAnchor = createContainerAnchorImpl;
  * Regular creation mode for LContainers and their anchor (comment) nodes.
  */
 function createContainerAnchorImpl(
-    tView: TView, lView: LView, tNode: TNode, index: number): RComment {
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  index: number,
+): RComment {
   lastNodeWasCreated(true);
   return lView[RENDERER].createComment(ngDevMode ? 'container' : '');
 }
@@ -130,10 +190,14 @@ function createContainerAnchorImpl(
  * anchor (comment) nodes.
  */
 function locateOrCreateContainerAnchorImpl(
-    tView: TView, lView: LView, tNode: TNode, index: number): RComment {
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  index: number,
+): RComment {
   const hydrationInfo = lView[HYDRATION];
   const isNodeCreationMode =
-      !hydrationInfo || isInSkipHydrationBlock() || isDisconnectedNode(hydrationInfo, index);
+    !hydrationInfo || isInSkipHydrationBlock() || isDisconnectedNode(hydrationInfo, index);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -156,7 +220,7 @@ function locateOrCreateContainerAnchorImpl(
       tNode.tView.ssrId = ssrId;
     } else {
       ngDevMode &&
-          assertEqual(tNode.tView.ssrId, ssrId, 'Unexpected value of the `ssrId` for this TView');
+        assertEqual(tNode.tView.ssrId, ssrId, 'Unexpected value of the `ssrId` for this TView');
     }
   }
 

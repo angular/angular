@@ -20,7 +20,7 @@ import {RComment, RElement, RNode, RText} from './renderer_dom';
  * it will be easy to implement such API.
  */
 
-export type GlobalTargetName = 'document'|'window'|'body';
+export type GlobalTargetName = 'document' | 'window' | 'body';
 
 export type GlobalTargetResolver = (element: any) => EventTarget;
 
@@ -33,41 +33,46 @@ export type GlobalTargetResolver = (element: any) => EventTarget;
 export interface Renderer {
   destroy(): void;
   createComment(value: string): RComment;
-  createElement(name: string, namespace?: string|null): RElement;
+  createElement(name: string, namespace?: string | null): RElement;
   createText(value: string): RText;
   /**
    * This property is allowed to be null / undefined,
    * in which case the view engine won't call it.
    * This is used as a performance optimization for production mode.
    */
-  destroyNode?: ((node: RNode) => void)|null;
+  destroyNode?: ((node: RNode) => void) | null;
   appendChild(parent: RElement, newChild: RNode): void;
-  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null, isMove?: boolean): void;
+  insertBefore(parent: RNode, newChild: RNode, refChild: RNode | null, isMove?: boolean): void;
   removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void;
-  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): RElement;
+  selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): RElement;
 
-  parentNode(node: RNode): RElement|null;
-  nextSibling(node: RNode): RNode|null;
+  parentNode(node: RNode): RElement | null;
+  nextSibling(node: RNode): RNode | null;
 
   setAttribute(
-      el: RElement, name: string, value: string|TrustedHTML|TrustedScript|TrustedScriptURL,
-      namespace?: string|null): void;
-  removeAttribute(el: RElement, name: string, namespace?: string|null): void;
+    el: RElement,
+    name: string,
+    value: string | TrustedHTML | TrustedScript | TrustedScriptURL,
+    namespace?: string | null,
+  ): void;
+  removeAttribute(el: RElement, name: string, namespace?: string | null): void;
   addClass(el: RElement, name: string): void;
   removeClass(el: RElement, name: string): void;
   setStyle(el: RElement, style: string, value: any, flags?: RendererStyleFlags2): void;
   removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2): void;
   setProperty(el: RElement, name: string, value: any): void;
-  setValue(node: RText|RComment, value: string): void;
+  setValue(node: RText | RComment, value: string): void;
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
   listen(
-      target: GlobalTargetName|RNode, eventName: string,
-      callback: (event: any) => boolean | void): () => void;
+    target: GlobalTargetName | RNode,
+    eventName: string,
+    callback: (event: any) => boolean | void,
+  ): () => void;
 }
 
 export interface RendererFactory {
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer;
+  createRenderer(hostElement: RElement | null, rendererType: RendererType2 | null): Renderer;
   begin?(): void;
   end?(): void;
 }

@@ -6,13 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, Directive, effect, EventEmitter, input, Output, ViewChild} from '@angular/core';
+import {
+  Component,
+  computed,
+  Directive,
+  effect,
+  EventEmitter,
+  input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('signal inputs', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    errorOnUnknownProperties: true,
-  }));
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      errorOnUnknownProperties: true,
+    }),
+  );
 
   it('should be possible to bind to an input', () => {
     @Component({
@@ -194,8 +205,9 @@ describe('signal inputs', () => {
       value = 1;
     }
 
-    expect(() => TestBed.createComponent(TestCmp))
-        .toThrowError(/Input is required but no value is available yet/);
+    expect(() => TestBed.createComponent(TestCmp)).toThrowError(
+      /Input is required but no value is available yet/,
+    );
   });
 
   it('should be possible to bind to an inherited input', () => {
@@ -209,8 +221,7 @@ describe('signal inputs', () => {
       standalone: true,
       template: 'input:{{input()}}',
     })
-    class InputComp extends BaseDir {
-    }
+    class InputComp extends BaseDir {}
 
     @Component({
       standalone: true,

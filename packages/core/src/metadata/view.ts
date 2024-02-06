@@ -46,5 +46,5 @@ export enum ViewEncapsulation {
    * a ShadowRoot for the component's host element which is then used to encapsulate
    * all the Component's styling.
    */
-  ShadowDom = 3
+  ShadowDom = 3,
 }

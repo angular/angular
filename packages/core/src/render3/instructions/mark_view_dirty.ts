@@ -21,7 +21,7 @@ import {getLViewParent} from '../util/view_utils';
  * @param lView The starting LView to mark dirty
  * @returns the root LView
  */
-export function markViewDirty(lView: LView): LView|null {
+export function markViewDirty(lView: LView): LView | null {
   lView[ENVIRONMENT].changeDetectionScheduler?.notify();
   while (lView) {
     lView[FLAGS] |= LViewFlags.Dirty;

@@ -72,7 +72,7 @@ export interface EventEmitter<T> extends Subject<T> {
    * @param [isAsync=false] When true, deliver events asynchronously.
    *
    */
-  new(isAsync?: boolean): EventEmitter<T>;
+  new (isAsync?: boolean): EventEmitter<T>;
 
   /**
    * Emits an event containing a given value.
@@ -87,8 +87,11 @@ export interface EventEmitter<T> extends Subject<T> {
    * @param complete When supplied, a custom handler for a completion notification from this
    *     emitter.
    */
-  subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void):
-      Subscription;
+  subscribe(
+    next?: (value: T) => void,
+    error?: (error: any) => void,
+    complete?: () => void,
+  ): Subscription;
   /**
    * Registers handlers for events emitted by this instance.
    * @param observerOrNext When supplied, a custom handler for emitted events, or an observer
@@ -101,7 +104,7 @@ export interface EventEmitter<T> extends Subject<T> {
 }
 
 class EventEmitter_ extends Subject<any> {
-  __isAsync: boolean;  // tslint:disable-line
+  __isAsync: boolean; // tslint:disable-line
 
   constructor(isAsync: boolean = false) {
     super();
@@ -156,6 +159,7 @@ function _wrapInTimeout(fn: (value: unknown) => any) {
  * @publicApi
  */
 export const EventEmitter: {
-  new (isAsync?: boolean): EventEmitter<any>; new<T>(isAsync?: boolean): EventEmitter<T>;
+  new (isAsync?: boolean): EventEmitter<any>;
+  new <T>(isAsync?: boolean): EventEmitter<T>;
   readonly prototype: EventEmitter<any>;
 } = EventEmitter_ as any;
