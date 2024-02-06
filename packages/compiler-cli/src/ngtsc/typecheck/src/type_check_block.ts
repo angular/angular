@@ -791,9 +791,7 @@ class TcbDirectiveInputsOp extends TcbOp {
                   dirId, ts.factory.createIdentifier(fieldName));
         }
 
-        if (isTwoWayBinding) {
-          target = this.getTwoWayBindingExpression(target);
-        } else if (isSignal) {
+        if (isSignal) {
           // For signal inputs, we unwrap the target `InputSignal`. Note that
           // we intentionally do the following things:
           //   1. keep the direct access to `dir.[field]` so that modifiers are honored.
@@ -809,6 +807,10 @@ class TcbDirectiveInputsOp extends TcbOp {
           }
 
           target = ts.factory.createElementAccessExpression(target, inputSignalBrandWriteSymbol);
+        }
+
+        if (isTwoWayBinding) {
+          target = this.getTwoWayBindingTarget(target);
         }
 
         if (attr.attribute.keySpan !== undefined) {
@@ -849,50 +851,33 @@ class TcbDirectiveInputsOp extends TcbOp {
     }
   }
 
-  private getTwoWayBindingExpression(target: ts.LeftHandSideExpression): ts.LeftHandSideExpression {
-    // TODO(crisbeto): we should be able to avoid the extra variable that captures the type.
-    // Skipping it for since we don't have a good way to convert the `PropertyAccessExpression`
-    // into an `QualifiedName`.
+  private getTwoWayBindingTarget(target: ts.LeftHandSideExpression): ts.LeftHandSideExpression {
     // Two-way bindings to inputs allow both the input's defined type and a `WritableSignal`
     // of that type. For example `[(value)]="val"` where `@Input() value: number | string`
     // allows `val` to be `number | string | WritableSignal<number | string>`. We generate the
     // following expressions to expand the type:
     // ```
     // var captureType = dir.value;
-    // (id as unknown as ɵConditionallyUnwrapSignal<typeof captureType> |
-    // WritableSignal<ɵConditionallyUnwrapSignal<typeof captureType>>) = expression;
+    // (dir.value as typeof captureType | WritableSignal<typeof captureType>) = expression;
     // ```
-    // Note that the TCB can be simplified a bit by making the union type part of the utility type
-    // (e.g. `type ɵTwoWayAssign<T> = T extends Signal ? ReturnType<T> |
-    // WritableSignal<ReturnType<T>> : ReturnType<T> | WritableSignal<ReturnType<T>>`), however at
-    // the time of writing, this generates a suboptimal diagnostic message where TS splits up the
-    // signature, e.g. "Type 'number' is not assignable to type 'string | boolean |
-    // WritableSignal<string> | WritableSignal<false> | WritableSignal<true>'" instead of Type
-    // 'number' is not assignable to type 'string | boolean | WritableSignal<string | boolean>'.
+    // Some notes:
+    // - We wrap the assignment, insted of for example declaring a variable and assigning to it,
+    //   because keeping the assignment makes it easier to do lookups in the language service.
+    // - The `captureType` variable can be inline, but for signal input expressions it can be
+    //   long so we use it make the code a bit neater. It also saves us some code that would
+    //   have to convert property/element access expressions into type query nodes.
     const captureType = this.tcb.allocateId();
+    const captureTypeVar = tsCreateVariable(captureType, target);
+    markIgnoreDiagnostics(captureTypeVar);
+    this.scope.addStatement(captureTypeVar);
 
-    // ɵConditionallyUnwrapSignal<typeof captureType>
-    const unwrappedRef = this.tcb.env.referenceExternalType(
-        R3Identifiers.ConditionallyUnwrapSignal.moduleName,
-        R3Identifiers.ConditionallyUnwrapSignal.name,
-        [new ExpressionType(new TypeofExpr(new WrappedNodeExpr(captureType)))]);
-
-    // WritableSignal<ɵConditionallyUnwrapSignal<typeof captureType>>
+    const typeQuery = ts.factory.createTypeQueryNode(captureType);
     const writableSignalRef = this.tcb.env.referenceExternalType(
         R3Identifiers.WritableSignal.moduleName, R3Identifiers.WritableSignal.name,
-        [new ExpressionType(new WrappedNodeExpr(unwrappedRef))]);
+        [new ExpressionType(new TypeofExpr(new WrappedNodeExpr(captureType)))]);
 
-    // ɵConditionallyUnwrapSignal<typeof captureType> |
-    // WritableSignal<ɵConditionallyUnwrapSignal<typeof captureType>>
-    const type = ts.factory.createUnionTypeNode([unwrappedRef, writableSignalRef]);
-    this.scope.addStatement(tsCreateVariable(captureType, target));
-
-    // (target as unknown as ɵConditionallyUnwrapSignal<typeof captureType> |
-    // WritableSignal<ɵConditionallyUnwrapSignal<typeof captureType>>)
     return ts.factory.createParenthesizedExpression(ts.factory.createAsExpression(
-        ts.factory.createAsExpression(
-            target, ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword)),
-        type));
+        target, ts.factory.createUnionTypeNode([typeQuery, writableSignalRef])));
   }
 }
 

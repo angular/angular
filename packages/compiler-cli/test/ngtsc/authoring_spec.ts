@@ -586,6 +586,37 @@ runInEachFileSystem(() => {
         }));
       });
 
+      it('should check two-way binding of a signal to a decorator-based input/output pair', () => {
+        env.write('test.ts', `
+          import {Component, Directive, Input, Output, signal, EventEmitter} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+          })
+          export class TestDir {
+            @Input() value = 0;
+            @Output() valueChange = new EventEmitter<number>();
+          }
+
+          @Component({
+            standalone: true,
+            template: \`<div dir [(value)]="value"></div>\`,
+            imports: [TestDir],
+          })
+          export class TestComp {
+            value = signal(false);
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(jasmine.objectContaining({
+          messageText:
+              `Type 'WritableSignal<boolean>' is not assignable to type 'number | WritableSignal<number>'.`
+        }));
+      });
+
       it('should not allow a non-writable signal to be assigned to a model', () => {
         env.write('test.ts', `
           import {Component, Directive, model, input} from '@angular/core';
@@ -696,6 +727,120 @@ runInEachFileSystem(() => {
         expect(diagnostics[0].messageText)
             .toBe(`Required input 'value' from directive TestDir must be specified.`);
       });
+
+      it('should check generic two-way model binding with a primitive value', () => {
+        env.write('test.ts', `
+          import {Component, Directive, model} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+          })
+          export class TestDir<T extends {id: string}> {
+            value = model.required<T>();
+          }
+
+          @Component({
+            standalone: true,
+            template: \`<div dir [(value)]="value"></div>\`,
+            imports: [TestDir],
+          })
+          export class TestComp {
+            value = {id: 1};
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(jasmine.objectContaining({
+          messageText:
+              `Type '{ id: number; }' is not assignable to type '{ id: string; } | WritableSignal<{ id: string; }>'.`
+        }));
+      });
+
+      it('should check generic two-way model binding with a signal value', () => {
+        env.write('test.ts', `
+          import {Component, Directive, model, signal} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+          })
+          export class TestDir<T extends {id: string}> {
+            value = model.required<T>();
+          }
+
+          @Component({
+            standalone: true,
+            template: \`<div dir [(value)]="value"></div>\`,
+            imports: [TestDir],
+          })
+          export class TestComp {
+            value = signal({id: 1});
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toEqual(jasmine.objectContaining({
+          messageText:
+              `Type 'WritableSignal<{ id: number; }>' is not assignable to type '{ id: string; } | WritableSignal<{ id: string; }>'.`
+        }));
+      });
+
+      it('should report unwrapped signals assigned to a model in a one-way binding', () => {
+        env.write('test.ts', `
+          import {Component, Directive, model, signal} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+          })
+          export class TestDir {
+            value = model(0);
+          }
+
+          @Component({
+            standalone: true,
+            template: \`<div dir [value]="value"></div>\`,
+            imports: [TestDir],
+          })
+          export class TestComp {
+            value = signal(1);
+          }
+        `);
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText)
+            .toBe(`Type 'WritableSignal<number>' is not assignable to type 'number'.`);
+      });
+    });
+
+    it('should allow two-way binding to a generic model input', () => {
+      env.write('test.ts', `
+        import {Component, Directive, model, signal} from '@angular/core';
+
+        @Directive({
+          selector: '[dir]',
+          standalone: true,
+        })
+        export class TestDir<T> {
+          value = model.required<T>();
+        }
+
+        @Component({
+          standalone: true,
+          template: \`<div dir [(value)]="value"></div>\`,
+          imports: [TestDir],
+        })
+        export class TestComp {
+          value = signal(1);
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags).toEqual([]);
     });
   });
 });

@@ -409,5 +409,4 @@ export class Identifiers {
   static InputSignalBrandWriteType = {name: 'ɵINPUT_SIGNAL_BRAND_WRITE_TYPE', moduleName: CORE};
   static UnwrapDirectiveSignalInputs = {name: 'ɵUnwrapDirectiveSignalInputs', moduleName: CORE};
   static WritableSignal = {name: 'WritableSignal', moduleName: CORE};
-  static ConditionallyUnwrapSignal = {name: 'ɵConditionallyUnwrapSignal', moduleName: CORE};
 }

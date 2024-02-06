@@ -418,6 +418,35 @@ export declare class AnimationEvent {
       expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![1])).toBe('ChildCmpDir');
     });
 
+    it('should type check a two-way binding to a generic property', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir<T extends {id: string}> {
+          @Input() val!: T;
+          @Output() valChange = new EventEmitter<T>();
+        }
+
+        @Component({
+          template: '<input dir [(val)]="invalidType">',
+          standalone: true,
+          imports: [Dir],
+        })
+        export class FooCmp {
+          invalidType = {id: 1};
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(jasmine.objectContaining({
+        messageText:
+            `Type '{ id: number; }' is not assignable to type '{ id: string; } | WritableSignal<{ id: string; }>'.`
+      }));
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write('test.ts', `
