@@ -964,7 +964,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     const contextName = `${this.contextName}${contextNameSuffix}_${index}`;
-    const name = `${contextName}_Template`;
+    // Note: For the unique name, we don't include an unique suffix, unless really needed.
+    // This keeps the generated output more clean as most of the time, we don't expect conflicts.
+    const name =
+        this.constantPool.uniqueName(`${contextName}_Template`, /** alwaysIncludeSuffix */ false);
 
     // Create the template function
     const visitor = new TemplateDefinitionBuilder(
