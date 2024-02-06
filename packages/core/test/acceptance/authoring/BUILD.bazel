@@ -10,6 +10,7 @@ TEST_FILES = glob(
 TEST_DEPS = [
     "//packages/core",
     "//packages/core/testing",
+    "//packages/platform-browser",
 ]
 
 ts_library(
