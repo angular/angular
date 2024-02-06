@@ -34,6 +34,7 @@ export function tryParseSignalModelMapping(
   const bindingPropertyName = options?.alias ?? classPropertyName;
 
   return {
+    call: model.call,
     input: {
       isSignal: true,
       transform: null,

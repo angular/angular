@@ -16,7 +16,7 @@ import {MockAotContext, MockCompilerHost} from './mocks';
 const TEST_FILE_INPUT = '/test.ts';
 const TEST_FILE_OUTPUT = `/test.js`;
 
-describe('signal inputs metadata transform', () => {
+describe('initializer API metadata transform', () => {
   let host: MockCompilerHost;
   let context: MockAotContext;
 

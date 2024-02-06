@@ -15,9 +15,6 @@ export const REQUIRED_UNSET_VALUE = /* @__PURE__ */ Symbol('ModelSignalNode#UNSE
  * signals by adding the ability to track subscriptions and to be required.
  */
 export interface ModelSignalNode<T> extends SignalNode<T|typeof REQUIRED_UNSET_VALUE> {
-  /** Currently-active subscriptions on the model. */
-  subscriptions: ((value: T) => void)[];
-
   /** Used by the runtime to write a value to the signal input. */
   applyValueToInputSignal: (node: ModelSignalNode<T>, value: T) => void;
 }
@@ -28,7 +25,6 @@ export interface ModelSignalNode<T> extends SignalNode<T|typeof REQUIRED_UNSET_V
 export const MODEL_SIGNAL_NODE: ModelSignalNode<unknown> = /* @__PURE__ */ (() => {
   return {
     ...SIGNAL_NODE,
-    subscriptions: [],
 
     // TODO(crisbeto): figure out how to avoid this.
     // Maybe set an input flag that the value is writeable?

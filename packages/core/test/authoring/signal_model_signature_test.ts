@@ -51,11 +51,9 @@ export class InputSignatureTest {
 
   /** unknown */
   noInitialValueNoType = model();
+
   /** string */
   requiredNoInitialValueNoType = model.required<string>();
-
-  /** string | undefined */
-  assignableToWritableSignal: WritableSignal<string|undefined> = model<string>();
 
   /** @internal */
   __shouldErrorIfInitialValueWithRequired = model.required({
