@@ -20,4 +20,8 @@ export class AppPage {
   unsetLastName() {
     return element(by.css('.unset-last-name-btn')).click();
   }
+
+  getGreetCount() {
+    return element(by.id('greet-count')).getText() as Promise<string>;
+  }
 }
