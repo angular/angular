@@ -92,7 +92,7 @@ function forceTooltipScrollTop() {
 
 function getMarkedHtmlFromString(content: string): HTMLDivElement {
   const wrapper = document.createElement('div');
-  wrapper.innerHTML = marked(content);
+  wrapper.innerHTML = marked(content) as string;
 
   return wrapper;
 }
@@ -137,7 +137,7 @@ function getTagsHtml(tags: JSDocTagInfo[]): HTMLDivElement {
     }
   }
 
-  tagsWrapper.innerHTML = marked(contentString);
+  tagsWrapper.innerHTML = marked(contentString) as string;
 
   return tagsWrapper;
 }
