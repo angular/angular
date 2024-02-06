@@ -18,8 +18,9 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputFlags, InputTransformFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {TAttributes, TConstantsOrFactory} from './interfaces/node';
+import type {ComponentDef, ComponentDefFeature, ComponentTemplate, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import { InputFlags } from './interfaces/input_flags';
+import type {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
 

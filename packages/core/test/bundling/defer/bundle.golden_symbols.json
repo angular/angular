@@ -1218,9 +1218,6 @@
     "name": "init_definition"
   },
   {
-    "name": "init_definition2"
-  },
-  {
     "name": "init_definition_factory"
   },
   {
@@ -1462,6 +1459,9 @@
   },
   {
     "name": "init_input"
+  },
+  {
+    "name": "init_input_flags"
   },
   {
     "name": "init_input_signal"

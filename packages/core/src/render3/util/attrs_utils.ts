@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CharCode} from '../../util/char_code';
-import {AttributeMarker, TAttributes} from '../interfaces/node';
+import { AttributeMarker } from '../interfaces/attribute_marker';
+import {TAttributes} from '../interfaces/node';
 import {CssSelector} from '../interfaces/projection';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
