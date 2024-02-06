@@ -344,6 +344,7 @@ export interface ContentChildDecorator {
 export interface ContentChildFunction {
     <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
         descendants?: boolean;
+        read?: undefined;
     }): Signal<LocatorT | undefined>;
     // (undocumented)
     <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
@@ -353,6 +354,7 @@ export interface ContentChildFunction {
     required: {
         <LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
             descendants?: boolean;
+            read?: undefined;
         }): Signal<LocatorT>;
         <LocatorT, ReadT>(locator: ProviderToken<LocatorT> | string, opts: {
             descendants?: boolean;
@@ -370,6 +372,7 @@ export const ContentChildren: ContentChildrenDecorator;
 // @public (undocumented)
 export function contentChildren<LocatorT>(locator: ProviderToken<LocatorT> | string, opts?: {
     descendants?: boolean;
+    read?: undefined;
 }): Signal<ReadonlyArray<LocatorT>>;
 
 // @public (undocumented)
