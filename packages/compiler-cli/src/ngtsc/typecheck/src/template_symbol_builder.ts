@@ -358,17 +358,16 @@ export class SymbolBuilder {
     for (const node of nodes) {
       let assignment: ts.PropertyAccessExpression|ts.ElementAccessExpression|null = null;
 
-      // One-way bindings usually are in the form of `dir.input = expression`.
       if (isAccessExpression(node.left)) {
+        // One-way bindings usually are in the form of `dir.input = expression`.
         assignment = node.left;
       } else if (
-          // The property side of two-way bindings is in the
-          // form of `(dir.input as unknown as someType) = expression`.
           isTwoWayBinding && ts.isParenthesizedExpression(node.left) &&
           ts.isAsExpression(node.left.expression) &&
-          ts.isAsExpression(node.left.expression.expression) &&
-          isAccessExpression(node.left.expression.expression.expression)) {
-        assignment = node.left.expression.expression.expression;
+          isAccessExpression(node.left.expression.expression)) {
+        // The property side of two-way bindings is in the
+        // form of `(dir.input as someType) = expression`.
+        assignment = node.left.expression.expression;
       }
 
       if (assignment === null) {
