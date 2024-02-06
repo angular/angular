@@ -513,7 +513,7 @@ export abstract class BackendService {
    */
   protected abstract getRequestMethod(req: any): string;
 
-  protected indexOf(collection: any[], id: number) {
+  protected indexOf(collection: any[], id: number): number {
     return collection.findIndex((item: any) => item.id === id);
   }
 
