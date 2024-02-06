@@ -350,31 +350,15 @@ export class SymbolBuilder {
       return host !== null ? {kind: SymbolKind.DomBinding, host} : null;
     }
 
-    const isTwoWayBinding =
-        binding instanceof TmplAstBoundAttribute && binding.type === BindingType.TwoWay;
     const nodes = findAllMatchingNodes(
         this.typeCheckBlock, {withSpan: binding.sourceSpan, filter: isAssignment});
     const bindings: BindingSymbol[] = [];
     for (const node of nodes) {
-      let assignment: ts.PropertyAccessExpression|ts.ElementAccessExpression|null = null;
-
-      if (isAccessExpression(node.left)) {
-        // One-way bindings usually are in the form of `dir.input = expression`.
-        assignment = node.left;
-      } else if (
-          isTwoWayBinding && ts.isParenthesizedExpression(node.left) &&
-          ts.isAsExpression(node.left.expression) &&
-          isAccessExpression(node.left.expression.expression)) {
-        // The property side of two-way bindings is in the
-        // form of `(dir.input as someType) = expression`.
-        assignment = node.left.expression.expression;
-      }
-
-      if (assignment === null) {
+      if (!isAccessExpression(node.left)) {
         continue;
       }
 
-      const signalInputAssignment = unwrapSignalInputWriteTAccessor(assignment);
+      const signalInputAssignment = unwrapSignalInputWriteTAccessor(node.left);
       let symbolInfo: TsNodeSymbolInfo|null = null;
 
       // Signal inputs need special treatment because they are generated with an extra keyed
@@ -392,7 +376,7 @@ export class SymbolBuilder {
           tsType: typeSymbol.tsType,
         };
       } else {
-        symbolInfo = this.getSymbolOfTsNode(assignment);
+        symbolInfo = this.getSymbolOfTsNode(node.left);
       }
 
       if (symbolInfo === null || symbolInfo.tsSymbol === null) {
@@ -400,7 +384,7 @@ export class SymbolBuilder {
       }
 
       const target = this.getDirectiveSymbolForAccessExpression(
-          signalInputAssignment?.fieldExpr ?? assignment, consumer);
+          signalInputAssignment?.fieldExpr ?? node.left, consumer);
       if (target === null) {
         continue;
       }

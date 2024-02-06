@@ -642,7 +642,7 @@ class TcbDirectiveCtorOp extends TcbOp {
           attr.attribute instanceof TmplAstTextAttribute) {
         continue;
       }
-      for (const {fieldName} of attr.inputs) {
+      for (const {fieldName, isTwoWayBinding} of attr.inputs) {
         // Skip the field if an attribute has already been bound to it; we can't have a duplicate
         // key in the type constructor call.
         if (genericInputs.has(fieldName)) {
@@ -656,6 +656,7 @@ class TcbDirectiveCtorOp extends TcbOp {
           field: fieldName,
           expression,
           sourceSpan: attr.attribute.sourceSpan,
+          isTwoWayBinding,
         });
       }
     }
@@ -809,13 +810,15 @@ class TcbDirectiveInputsOp extends TcbOp {
           target = ts.factory.createElementAccessExpression(target, inputSignalBrandWriteSymbol);
         }
 
-        if (isTwoWayBinding) {
-          target = this.getTwoWayBindingTarget(target);
-        }
-
         if (attr.attribute.keySpan !== undefined) {
           addParseSpanInfo(target, attr.attribute.keySpan);
         }
+
+        // Two-way bindings accept `T | WritableSignal<T>` so we have to unwrap the value.
+        if (isTwoWayBinding) {
+          assignment = unwrapWritableSignal(assignment, this.tcb);
+        }
+
         // Finally the assignment is extended by assigning it into the target expression.
         assignment =
             ts.factory.createBinaryExpression(target, ts.SyntaxKind.EqualsToken, assignment);
@@ -849,35 +852,6 @@ class TcbDirectiveInputsOp extends TcbOp {
       this.tcb.oobRecorder.missingRequiredInputs(
           this.tcb.id, this.node, this.dir.name, this.dir.isComponent, missing);
     }
-  }
-
-  private getTwoWayBindingTarget(target: ts.LeftHandSideExpression): ts.LeftHandSideExpression {
-    // Two-way bindings to inputs allow both the input's defined type and a `WritableSignal`
-    // of that type. For example `[(value)]="val"` where `@Input() value: number | string`
-    // allows `val` to be `number | string | WritableSignal<number | string>`. We generate the
-    // following expressions to expand the type:
-    // ```
-    // var captureType = dir.value;
-    // (dir.value as typeof captureType | WritableSignal<typeof captureType>) = expression;
-    // ```
-    // Some notes:
-    // - We wrap the assignment, insted of for example declaring a variable and assigning to it,
-    //   because keeping the assignment makes it easier to do lookups in the language service.
-    // - The `captureType` variable can be inline, but for signal input expressions it can be
-    //   long so we use it make the code a bit neater. It also saves us some code that would
-    //   have to convert property/element access expressions into type query nodes.
-    const captureType = this.tcb.allocateId();
-    const captureTypeVar = tsCreateVariable(captureType, target);
-    markIgnoreDiagnostics(captureTypeVar);
-    this.scope.addStatement(captureTypeVar);
-
-    const typeQuery = ts.factory.createTypeQueryNode(captureType);
-    const writableSignalRef = this.tcb.env.referenceExternalType(
-        R3Identifiers.WritableSignal.moduleName, R3Identifiers.WritableSignal.name,
-        [new ExpressionType(new TypeofExpr(new WrappedNodeExpr(captureType)))]);
-
-    return ts.factory.createParenthesizedExpression(ts.factory.createAsExpression(
-        target, ts.factory.createUnionTypeNode([typeQuery, writableSignalRef])));
   }
 }
 
@@ -2523,7 +2497,12 @@ function tcbCallTypeCtor(
 
     if (input.type === 'binding') {
       // For bound inputs, the property is assigned the binding expression.
-      const expr = widenBinding(input.expression, tcb);
+      let expr = widenBinding(input.expression, tcb);
+
+      if (input.isTwoWayBinding) {
+        expr = unwrapWritableSignal(expr, tcb);
+      }
+
       const assignment =
           ts.factory.createPropertyAssignment(propertyName, wrapForDiagnostics(expr));
       addParseSpanInfo(assignment, input.sourceSpan);
@@ -2624,6 +2603,15 @@ function widenBinding(expr: ts.Expression, tcb: Context): ts.Expression {
 }
 
 /**
+ * Wraps an expression in an `unwrapSignal` call which extracts the signal's value.
+ */
+function unwrapWritableSignal(expression: ts.Expression, tcb: Context): ts.CallExpression {
+  const unwrapRef = tcb.env.referenceExternalSymbol(
+      R3Identifiers.unwrapWritableSignal.moduleName, R3Identifiers.unwrapWritableSignal.name);
+  return ts.factory.createCallExpression(unwrapRef, undefined, [expression]);
+}
+
+/**
  * An input binding that corresponds with a field of a directive.
  */
 interface TcbDirectiveBoundInput {
@@ -2643,6 +2631,11 @@ interface TcbDirectiveBoundInput {
    * The source span of the full attribute binding.
    */
   sourceSpan: ParseSourceSpan;
+
+  /**
+   * Whether the binding is part of a two-way binding.
+   */
+  isTwoWayBinding: boolean;
 }
 
 /**

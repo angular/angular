@@ -34,6 +34,14 @@ export interface WritableSignal<T> extends Signal<T> {
 }
 
 /**
+ * Utility function used during template type checking to extract the value from a `WritableSignal`.
+ * @codeGenApi
+ */
+export function ɵunwrapWritableSignal<T>(value: T|WritableSignal<T>): T {
+  return null!;
+}
+
+/**
  * Options passed to the `signal` creation function.
  */
 export interface CreateSignalOptions<T> {

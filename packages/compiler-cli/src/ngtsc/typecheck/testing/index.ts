@@ -177,6 +177,10 @@ export function angularCoreDts(): TestFile {
 
     export type Signal<T> = (() => T);
 
+    export function ɵunwrapWritableSignal<T>(value: T|WritableSignal<T>): T {
+      return null!;
+    }
+
     export interface ModelOptions {
       alias?: string;
     }

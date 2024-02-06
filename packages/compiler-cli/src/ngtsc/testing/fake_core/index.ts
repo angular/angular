@@ -132,6 +132,10 @@ export interface WritableSignal<T> extends Signal<T> {
   asReadonly(): Signal<T>;
 }
 
+export function ɵunwrapWritableSignal<T>(value: T|WritableSignal<T>): T {
+  return null!;
+}
+
 export function signal<T>(initialValue: T): WritableSignal<T> {
   return null!;
 }

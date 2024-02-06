@@ -37,7 +37,7 @@ runInEachFileSystem(() => {
         template: `<div dir [(value)]="bla">`,
         component: `bla = true;`,
         expected: [
-          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string | WritableSignal<string>'.`,
+          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
         ],
       },
       {
