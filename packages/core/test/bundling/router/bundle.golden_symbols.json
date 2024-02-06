@@ -315,6 +315,9 @@
     "name": "MATRIX_PARAM_SEGMENT_RE"
   },
   {
+    "name": "MAXIMUM_REFRESH_RERUNS"
+  },
+  {
     "name": "MODIFIER_KEYS"
   },
   {
@@ -1090,6 +1093,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInViewIfRequired"
   },
   {
     "name": "detectChangesInternal"

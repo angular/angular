@@ -20,6 +20,10 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
+<<<<<<< HEAD
+=======
+import {EventEmitter} from '../event_emitter';
+>>>>>>> 3558a9db6b (refactor(core): ComponentFixture autodetect should detect changes within ApplicationRef.tick)
 import {Type} from '../interface/type';
 import {isG3} from '../is_internal';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
@@ -276,6 +280,12 @@ export class ApplicationRef {
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly afterRenderEffectManager = inject(AfterRenderEventManager);
 
+  // Needed for ComponentFixture temporarily during migration of autoDetect behavior
+  // Eventually the hostView of the fixture should just attach to ApplicationRef.
+  private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
+  private beforeRender = new EventEmitter<{isFirstPass: boolean}>();
+  private afterTick = new EventEmitter<void>();
+
   /**
    * Indicates whether this instance was destroyed.
    */
@@ -508,6 +518,7 @@ export class ApplicationRef {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
       this.internalErrorHandler(e);
     } finally {
+      this.afterTick.emit();
       this._runningTick = false;
       setActiveConsumer(prevConsumer);
     }
@@ -526,53 +537,30 @@ export class ApplicationRef {
       }
 
       const isFirstPass = runs === 0;
+      this.beforeRender.emit({isFirstPass});
       for (let {_lView, notifyErrorHandler} of this._views) {
-        // When re-checking, only check views which actually need it.
-        if (!isFirstPass && !shouldRecheckView(_lView)) {
-          continue;
-        }
-        this.detectChangesInView(_lView, notifyErrorHandler, isFirstPass);
+        detectChangesInViewIfRequired(isFirstPass, _lView, notifyErrorHandler);
       }
       runs++;
 
       afterRenderEffectManager.executeInternalCallbacks();
       // If we have a newly dirty view after running internal callbacks, recheck the views again
       // before running user-provided callbacks
-      if (this._views.some(({_lView}) => shouldRecheckView(_lView))) {
+      if ([...this.externalTestViews.keys(), ...this._views].some(
+              ({_lView}) => shouldRecheckView(_lView))) {
         continue;
       }
 
       afterRenderEffectManager.execute();
       // If after running all afterRender callbacks we have no more views that need to be refreshed,
       // we can break out of the loop
-      if (!this._views.some(({_lView}) => shouldRecheckView(_lView))) {
+      if (![...this.externalTestViews.keys(), ...this._views].some(
+              ({_lView}) => shouldRecheckView(_lView))) {
         break;
       }
     }
   }
 
-  private detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
-    let mode: ChangeDetectionMode;
-    if (isFirstPass) {
-      // The first pass is always in Global mode, which includes `CheckAlways` views.
-      mode = ChangeDetectionMode.Global;
-      // Add `RefreshView` flag to ensure this view is refreshed if not already dirty.
-      // `RefreshView` flag is used intentionally over `Dirty` because it gets cleared before
-      // executing any of the actual refresh code while the `Dirty` flag doesn't get cleared
-      // until the end of the refresh. Using `RefreshView` prevents creating a potential
-      // difference in the state of the LViewFlags during template execution.
-      lView[FLAGS] |= LViewFlags.RefreshView;
-    } else if (lView[FLAGS] & LViewFlags.Dirty) {
-      // The root view has been explicitly marked for check, so check it in Global mode.
-      mode = ChangeDetectionMode.Global;
-    } else {
-      // The view has not been marked for check, but contains a view marked for refresh
-      // (likely via a signal). Start this change detection in Targeted mode to skip the root
-      // view and check just the view(s) that need refreshed.
-      mode = ChangeDetectionMode.Targeted;
-    }
-    detectChangesInternal(lView, notifyErrorHandler, mode);
-  }
 
   /**
    * Attaches a view so that it will be dirty checked.
@@ -718,8 +706,40 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
 }
 
 
+export function detectChangesInViewIfRequired(
+    isFirstPass: boolean, lView: LView, notifyErrorHandler: boolean) {
+  // When re-checking, only check views which actually need it.
+  if (!isFirstPass && !shouldRecheckView(lView)) {
+    return;
+  }
+  detectChangesInView(lView, notifyErrorHandler, isFirstPass);
+}
+
 function shouldRecheckView(view: LView): boolean {
   return requiresRefreshOrTraversal(view) ||
       // TODO(atscott): Remove isG3 check and make this a breaking change for v18
       (isG3 && !!(view[FLAGS] & LViewFlags.Dirty));
+}
+
+function detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
+  let mode: ChangeDetectionMode;
+  if (isFirstPass) {
+    // The first pass is always in Global mode, which includes `CheckAlways` views.
+    mode = ChangeDetectionMode.Global;
+    // Add `RefreshView` flag to ensure this view is refreshed if not already dirty.
+    // `RefreshView` flag is used intentionally over `Dirty` because it gets cleared before
+    // executing any of the actual refresh code while the `Dirty` flag doesn't get cleared
+    // until the end of the refresh. Using `RefreshView` prevents creating a potential
+    // difference in the state of the LViewFlags during template execution.
+    lView[FLAGS] |= LViewFlags.RefreshView;
+  } else if (lView[FLAGS] & LViewFlags.Dirty) {
+    // The root view has been explicitly marked for check, so check it in Global mode.
+    mode = ChangeDetectionMode.Global;
+  } else {
+    // The view has not been marked for check, but contains a view marked for refresh
+    // (likely via a signal). Start this change detection in Targeted mode to skip the root
+    // view and check just the view(s) that need refreshed.
+    mode = ChangeDetectionMode.Targeted;
+  }
+  detectChangesInternal(lView, notifyErrorHandler, mode);
 }

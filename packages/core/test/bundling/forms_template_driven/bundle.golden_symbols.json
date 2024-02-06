@@ -273,6 +273,9 @@
     "name": "LifecycleHooksFeature"
   },
   {
+    "name": "MAXIMUM_REFRESH_RERUNS"
+  },
+  {
     "name": "MODIFIER_KEYS"
   },
   {
@@ -874,6 +877,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInViewIfRequired"
   },
   {
     "name": "detectChangesInternal"

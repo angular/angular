@@ -144,6 +144,9 @@
     "name": "LifecycleHooksFeature"
   },
   {
+    "name": "MAXIMUM_REFRESH_RERUNS"
+  },
+  {
     "name": "MONKEY_PATCH_KEY_NAME"
   },
   {
@@ -505,6 +508,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInViewIfRequired"
   },
   {
     "name": "detectChangesInternal"

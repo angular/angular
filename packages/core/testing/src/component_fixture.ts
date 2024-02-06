@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ɵChangeDetectionScheduler as ChangeDetectionScheduler, ɵDeferBlockDetails as DeferBlockDetails, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, EventEmitter, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {first} from 'rxjs/operators';
+import {first, take} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
 import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
@@ -61,6 +61,8 @@ export abstract class ComponentFixture<T> {
   // behavior.
   /** @internal */
   protected readonly _appRef = inject(ApplicationRef);
+  /** @internal */
+  protected readonly _testAppRef = this._appRef as unknown as TestAppRef;
 
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
@@ -202,6 +204,12 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   }
 }
 
+interface TestAppRef {
+  externalTestViews: Set<ViewRef>;
+  beforeRender: EventEmitter<{isFirstPass: boolean}>;
+  afterTick: EventEmitter<void>;
+}
+
 /**
  * ComponentFixture behavior that attempts to act as a "mini application".
  */
@@ -211,23 +219,22 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private _isStable: boolean = true;
   private _promise: Promise<boolean>|null = null;
   private _resolve: ((result: boolean) => void)|null = null;
+  private afterTickSubscription: Subscription|undefined = undefined;
+  private beforeRenderSubscription: Subscription|undefined = undefined;
 
   initialize(): void {
+    if (this._autoDetect) {
+      this.subscribeToAppRefEvents();
+    }
+    this.componentRef.hostView.onDestroy(() => {
+      this.unsubscribeFromAppRefEvents();
+    });
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
       this._subscriptions.add(this._ngZone.onUnstable.subscribe({
         next: () => {
           this._isStable = false;
-        }
-      }));
-      this._subscriptions.add(this._ngZone.onMicrotaskEmpty.subscribe({
-        next: () => {
-          if (this._autoDetect) {
-            // Do a change detection run with checkNoChanges set to true to check
-            // there are no changes on the second run.
-            this.detectChanges(true);
-          }
         }
       }));
       this._subscriptions.add(this._ngZone.onStable.subscribe({
@@ -295,11 +302,56 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     if (this._noZoneOptionIsSet) {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
     }
+
+    if (autoDetect !== this._autoDetect) {
+      if (autoDetect) {
+        this.subscribeToAppRefEvents();
+      } else {
+        this.unsubscribeFromAppRefEvents();
+      }
+    }
+
     this._autoDetect = autoDetect;
     this.detectChanges();
   }
 
+  private subscribeToAppRefEvents() {
+    this._ngZone.runOutsideAngular(() => {
+      this.afterTickSubscription = this._testAppRef.afterTick.subscribe(() => {
+        this.componentRef.changeDetectorRef.checkNoChanges();
+      });
+      this.beforeRenderSubscription = this._testAppRef.beforeRender.subscribe(({isFirstPass}) => {
+        try {
+          ɵdetectChangesInViewIfRequired(
+              isFirstPass, (this.componentRef.hostView as any)._lView,
+              (this.componentRef.hostView as any).notifyErrorHandler);
+        } finally {
+          // If an error ocurred during change detection, remove the test view from the application
+          // ref tracking until the tick completes so that it doesn't interfere with regular views
+          // there. After the tick is done, we add ourselves back so we change detect in subsequent
+          // runs.
+          this.unsubscribeFromAppRefEvents();
+          this.afterTickSubscription = this._testAppRef.afterTick.pipe(take(1)).subscribe(() => {
+            this._ngZone.runOutsideAngular(() => {
+              this.subscribeToAppRefEvents();
+            });
+          });
+        }
+      });
+      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+    });
+  }
+
+  private unsubscribeFromAppRefEvents() {
+    this.afterTickSubscription?.unsubscribe();
+    this.beforeRenderSubscription?.unsubscribe();
+    this.afterTickSubscription = undefined;
+    this.beforeRenderSubscription = undefined;
+    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+  }
+
   override destroy(): void {
+    this.unsubscribeFromAppRefEvents();
     this._subscriptions.unsubscribe();
     super.destroy();
   }

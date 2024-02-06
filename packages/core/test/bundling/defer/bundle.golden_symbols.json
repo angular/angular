@@ -747,6 +747,9 @@
     "name": "detectChangesInViewIfAttached"
   },
   {
+    "name": "detectChangesInViewIfRequired"
+  },
+  {
     "name": "detectChangesInternal"
   },
   {
