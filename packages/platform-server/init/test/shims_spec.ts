@@ -16,6 +16,9 @@ describe('applyShims()', () => {
     const currentProps = Object.keys(global);
     for (const prop of currentProps) {
       if (globalClone.hasOwnProperty(prop)) {
+        if (prop === 'crypto') {
+          continue;
+        }
         (global as any)[prop] = (globalClone as any)[prop];
       } else {
         delete (global as any)[prop];

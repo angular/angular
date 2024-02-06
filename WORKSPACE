@@ -64,7 +64,16 @@ load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(
     name = "nodejs",
-    node_version = "18.13.0",
+    node_repositories = {
+      "20.11.0-darwin_arm64": ("node-v20.11.0-darwin-arm64.tar.gz", "node-v20.11.0-darwin-arm64", "94e443d007e2882f8e5aecc85d978f7591520dc3b642adc7583b3cb0b3fc37d7"),
+      "20.11.0-darwin_amd64": ("node-v20.11.0-darwin-x64.tar.gz", "node-v20.11.0-darwin-x64", "c0ba02c905814258bd99a362027f8d4d2cc738218a9cf1dce2620e8735e3a80e"),
+      "20.11.0-linux_arm64": ("node-v20.11.0-linux-arm64.tar.xz", "node-v20.11.0-linux-arm64", "f6df68c6793244071f69023a9b43a0cf0b13d65cbe86d55925c28e4134d9aafb"),
+      "20.11.0-linux_ppc64le": ("node-v20.11.0-linux-ppc64le.tar.xz", "node-v20.11.0-linux-ppc64le", "6a0e1fa23d7bc707711bbc36159b4220eca123e13435d266d690c6b6c443dc67"),
+      "20.11.0-linux_s390x": ("node-v20.11.0-linux-s390x.tar.xz", "node-v20.11.0-linux-s390x", "cc92efa3fa101d613539451b1cf323ea9ac6198b4a68a7d3bf3b1090c6a7b5da"),
+      "20.11.0-linux_amd64": ("node-v20.11.0-linux-x64.tar.xz", "node-v20.11.0-linux-x64", "822780369d0ea309e7d218e41debbd1a03f8cdf354ebf8a4420e89f39cc2e612"),
+      "20.11.0-windows_amd64": ("node-v20.11.0-win-x64.zip", "node-v20.11.0-win-x64", "893115cd92ad27bf178802f15247115e93c0ef0c753b93dca96439240d64feb5"),
+    },
+    node_version = "20.11.0",
 )
 
 # Download npm dependencies.
