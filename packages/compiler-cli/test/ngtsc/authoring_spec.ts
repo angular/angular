@@ -222,8 +222,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText)
-          .toBe(`Type 'number' is not assignable to type 'string | WritableSignal<string>'.`);
+      expect(diags[0].messageText).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
     describe('type checking', () => {
@@ -552,8 +551,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText)
-            .toBe(`Type 'boolean' is not assignable to type 'number | WritableSignal<number>'.`);
+        expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
       });
 
       it('should check a signal value bound to a model input via a two-way binding', () => {
@@ -580,10 +578,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(jasmine.objectContaining({
-          messageText:
-              `Type 'WritableSignal<boolean>' is not assignable to type 'number | WritableSignal<number>'.`
-        }));
+        expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
       });
 
       it('should check two-way binding of a signal to a decorator-based input/output pair', () => {
@@ -611,10 +606,7 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(jasmine.objectContaining({
-          messageText:
-              `Type 'WritableSignal<boolean>' is not assignable to type 'number | WritableSignal<number>'.`
-        }));
+        expect(diags[0].messageText).toBe(`Type 'boolean' is not assignable to type 'number'.`);
       });
 
       it('should not allow a non-writable signal to be assigned to a model', () => {
@@ -641,10 +633,8 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(jasmine.objectContaining({
-          messageText:
-              `Type 'InputSignal<number>' is not assignable to type 'number | WritableSignal<number>'.`
-        }));
+        expect(diags[0].messageText)
+            .toBe(`Type 'InputSignal<number>' is not assignable to type 'number'.`);
       });
 
       it('should allow a model signal to be bound to another model signal', () => {
@@ -752,10 +742,8 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(jasmine.objectContaining({
-          messageText:
-              `Type '{ id: number; }' is not assignable to type '{ id: string; } | WritableSignal<{ id: string; }>'.`
-        }));
+        expect(diags[0].messageText)
+            .toBe(`Type '{ id: number; }' is not assignable to type '{ id: string; }'.`);
       });
 
       it('should check generic two-way model binding with a signal value', () => {
@@ -782,10 +770,8 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toEqual(jasmine.objectContaining({
-          messageText:
-              `Type 'WritableSignal<{ id: number; }>' is not assignable to type '{ id: string; } | WritableSignal<{ id: string; }>'.`
-        }));
+        expect(diags[0].messageText)
+            .toEqual(`Type '{ id: number; }' is not assignable to type '{ id: string; }'.`);
       });
 
       it('should report unwrapped signals assigned to a model in a one-way binding', () => {

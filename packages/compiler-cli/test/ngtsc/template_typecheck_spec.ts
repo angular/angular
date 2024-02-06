@@ -441,11 +441,43 @@ export declare class AnimationEvent {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(diags[0].messageText).toEqual(jasmine.objectContaining({
-        messageText:
-            `Type '{ id: number; }' is not assignable to type '{ id: string; } | WritableSignal<{ id: string; }>'.`
-      }));
+      expect(diags[0].messageText)
+          .toEqual(`Type '{ id: number; }' is not assignable to type '{ id: string; }'.`);
     });
+
+    it('should use the setter type when assigning using a two-way binding to an input with different getter and setter types',
+       () => {
+         env.tsconfig({strictTemplates: true});
+         env.write('test.ts', `
+            import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+            @Directive({selector: '[dir]', standalone: true})
+            export class Dir {
+              @Input()
+              set val(value: string | null | undefined) {
+                this._val = value as string;
+              }
+              get val(): string {
+                return this._val;
+              }
+              private _val: string;
+
+              @Output() valChange = new EventEmitter<string>();
+            }
+
+            @Component({
+              template: '<input dir [(val)]="nullableType">',
+              standalone: true,
+              imports: [Dir],
+            })
+            export class FooCmp {
+              nullableType = null;
+            }
+          `);
+
+         const diags = env.driveDiagnostics();
+         expect(diags).toEqual([]);
+       });
 
     describe('strictInputTypes', () => {
       beforeEach(() => {
@@ -2410,8 +2442,7 @@ export declare class AnimationEvent {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText)
-            .toBe(
-                `Type 'number' is not assignable to type 'string | boolean | WritableSignal<string | boolean>'.`);
+            .toBe(`Type 'number' is not assignable to type 'string | boolean'.`);
       });
     });
 
