@@ -24,6 +24,11 @@ describe('cli-signal-inputs App', () => {
     expect(page.getGreetText()).toEqual('John - transformed-fallback');
   });
 
+  it('should properly query via `viewChildren`', () => {
+    page.navigateTo();
+    expect(page.getGreetCount()).toEqual('Greet component count: 2');
+  });
+
   afterEach(async () => {
     // Assert that there are no errors emitted from the browser
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);

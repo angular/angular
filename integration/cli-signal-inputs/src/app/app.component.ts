@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, viewChildren} from '@angular/core';
 
 import {GreetComponent} from './greet.component';
 
@@ -13,6 +13,8 @@ import {GreetComponent} from './greet.component';
 
     <button class="set-last-name-btn" (click)="lastName = 'Doe'">Set last name</button>
     <button class="unset-last-name-btn" (click)="lastName = undefined">Unset last name</button>
+
+    <p id="greet-count">Greet component count: {{greets().length}}</p>
   `,
   imports: [GreetComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,4 +22,6 @@ import {GreetComponent} from './greet.component';
 export class AppComponent {
   firstName = 'John';
   lastName: string|undefined = undefined;
+
+  greets = viewChildren(GreetComponent);
 }
