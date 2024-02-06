@@ -377,9 +377,9 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#5f2378db2eaa3beef4cf7a97d691ad7dcb17b6b5":
-  version "0.0.0-5254150825dd7a7bf8a86cf5aeccd31a8076dee5"
-  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#5f2378db2eaa3beef4cf7a97d691ad7dcb17b6b5"
+"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#87eb92c0cc022678fa3fedbd5ac25b84f285a7fa":
+  version "0.0.0-c83e99a12397014162531ca125c94549db55dd84"
+  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#87eb92c0cc022678fa3fedbd5ac25b84f285a7fa"
   dependencies:
     "@angular/cdk" "17.2.0-next.0"
     "@angular/common" "17.2.0-next.0"

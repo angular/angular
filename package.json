@@ -153,7 +153,7 @@
     "@angular-devkit/architect-cli": "^0.1702.0-next",
     "@angular/animations": "^17.2.0-next",
     "@angular/build-tooling": "https://github.com/angular/dev-infra-private-build-tooling-builds.git#07da06414a4ce04a8f9710f2bc9346c2c753a0d2",
-    "@angular/docs": "https://github.com/angular/dev-infra-private-docs-builds.git#5f2378db2eaa3beef4cf7a97d691ad7dcb17b6b5",
+    "@angular/docs": "https://github.com/angular/dev-infra-private-docs-builds.git#87eb92c0cc022678fa3fedbd5ac25b84f285a7fa",
     "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#eacabd9f66aad05822ccb5b0dc893ebe7eb62321",
     "@babel/helper-remap-async-to-generator": "^7.18.9",
     "@babel/plugin-proposal-async-generator-functions": "^7.20.7",
