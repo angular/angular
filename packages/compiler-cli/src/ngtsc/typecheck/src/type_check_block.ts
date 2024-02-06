@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ExpressionType, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType, TypeofExpr, WrappedNodeExpr} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -792,12 +792,12 @@ class TcbDirectiveInputsOp extends TcbOp {
                   dirId, ts.factory.createIdentifier(fieldName));
         }
 
+        // For signal inputs, we unwrap the target `InputSignal`. Note that
+        // we intentionally do the following things:
+        //   1. keep the direct access to `dir.[field]` so that modifiers are honored.
+        //   2. follow the existing pattern where multiple targets assign a single expression.
+        //      This is a significant requirement for language service auto-completion.
         if (isSignal) {
-          // For signal inputs, we unwrap the target `InputSignal`. Note that
-          // we intentionally do the following things:
-          //   1. keep the direct access to `dir.[field]` so that modifiers are honored.
-          //   2. follow the existing pattern where multiple targets assign a single expression.
-          //      This is a significant requirement for language service auto-completion.
           const inputSignalBrandWriteSymbol = this.tcb.env.referenceExternalSymbol(
               R3Identifiers.InputSignalBrandWriteType.moduleName,
               R3Identifiers.InputSignalBrandWriteType.name);
