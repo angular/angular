@@ -138,8 +138,11 @@ export interface ContentChildFunction {
    * Consider using `contentChild.required` for queries that should always match.
    * @developerPreview
    */
-  <LocatorT>(locator: ProviderToken<LocatorT>|string, opts?: {descendants?: boolean}):
-      Signal<LocatorT|undefined>;
+  <LocatorT>(locator: ProviderToken<LocatorT>|string, opts?: {
+    descendants?: boolean,
+    read?: undefined
+  }): Signal<LocatorT|undefined>;
+
   <LocatorT, ReadT>(locator: ProviderToken<LocatorT>|string, opts: {
     descendants?: boolean, read: ProviderToken<ReadT>
   }): Signal<ReadT|undefined>;
@@ -150,8 +153,11 @@ export interface ContentChildFunction {
    * @developerPreview
    */
   required: {
-    <LocatorT>(locator: ProviderToken<LocatorT>|string, opts?: {descendants?: boolean}):
-        Signal<LocatorT>;
+    <LocatorT>(locator: ProviderToken<LocatorT>|string, opts?: {
+      descendants?: boolean,
+      read?: undefined,
+    }): Signal<LocatorT>;
+
     <LocatorT, ReadT>(
         locator: ProviderToken<LocatorT>|string,
         opts: {descendants?: boolean, read: ProviderToken<ReadT>}): Signal<ReadT>;
@@ -187,7 +193,7 @@ export const contentChild: ContentChildFunction = (() => {
 
 export function contentChildren<LocatorT>(
     locator: ProviderToken<LocatorT>|string,
-    opts?: {descendants?: boolean}): Signal<ReadonlyArray<LocatorT>>;
+    opts?: {descendants?: boolean, read?: undefined}): Signal<ReadonlyArray<LocatorT>>;
 export function contentChildren<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts: {descendants?: boolean, read: ProviderToken<ReadT>}): Signal<ReadonlyArray<ReadT>>;
