@@ -9,8 +9,7 @@
 import {bindingUpdated} from '../bindings';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {RENDERER} from '../interfaces/view';
-import {isSignal} from '../reactivity/api';
-import {isWritableSignal} from '../reactivity/signal';
+import {isWritableSignal, WritableSignal} from '../reactivity/signal';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 
 import {listenerInternal} from './listener';
@@ -31,10 +30,11 @@ import {elementPropertyInternal, storePropertyBindingMetadata} from './shared';
  * @codeGenApi
  */
 export function ɵɵtwoWayProperty<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn|null): typeof ɵɵtwoWayProperty {
+    propName: string, value: T|WritableSignal<T>,
+    sanitizer?: SanitizerFn|null): typeof ɵɵtwoWayProperty {
   // TODO(crisbeto): perf impact of re-evaluating this on each change detection?
-  if (isSignal(value)) {
-    value = value() as T;
+  if (isWritableSignal(value)) {
+    value = value();
   }
 
   const lView = getLView();
