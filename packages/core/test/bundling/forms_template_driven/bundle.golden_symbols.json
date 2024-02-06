@@ -1293,9 +1293,6 @@
     "name": "isReadableStreamLike"
   },
   {
-    "name": "isSignal"
-  },
-  {
     "name": "isStylingMatch"
   },
   {
@@ -1312,6 +1309,9 @@
   },
   {
     "name": "isValueProvider"
+  },
+  {
+    "name": "isWritableSignal"
   },
   {
     "name": "iterator"
