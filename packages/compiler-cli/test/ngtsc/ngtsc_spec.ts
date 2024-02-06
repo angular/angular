@@ -4521,7 +4521,7 @@ function allTests(os: string) {
     `);
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('MSG_EXTERNAL_8321000940098097247$$TEST_TS_1');
+      expect(jsContents).toContain('MSG_EXTERNAL_8321000940098097247$$TEST_TS_0');
     });
 
     it('should take i18nUseExternalIds config option into account', () => {
