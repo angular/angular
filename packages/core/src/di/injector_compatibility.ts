@@ -15,7 +15,7 @@ import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
-import {Injector} from './injector';
+import type {Injector} from './injector';
 import {DecoratorFlags, InjectFlags, InjectOptions, InternalInjectFlags} from './interface/injector';
 import {ProviderToken} from './provider_token';
 

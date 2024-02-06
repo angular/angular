@@ -185,7 +185,7 @@ export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵ
 export {RenderFlags} from './interfaces/definition';
 export {
   AttributeMarker
-} from './interfaces/node';
+} from './interfaces/attribute_marker';
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 export {
   setClassMetadata,

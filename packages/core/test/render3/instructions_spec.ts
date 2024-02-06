@@ -13,7 +13,7 @@ import {TestBed} from '@angular/core/testing';
 import {getSortedClassName} from '@angular/core/testing/src/styling';
 
 import {ɵɵadvance, ɵɵattribute, ɵɵclassMap, ɵɵelement, ɵɵproperty, ɵɵstyleMap, ɵɵstyleProp} from '../../src/render3/index';
-import {AttributeMarker} from '../../src/render3/interfaces/node';
+import {AttributeMarker} from '../../src/render3/interfaces/attribute_marker';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, getSanitizationBypassType, SafeValue, unwrapSafeValue} from '../../src/sanitization/bypass';
 import {ɵɵsanitizeHtml, ɵɵsanitizeResourceUrl, ɵɵsanitizeScript, ɵɵsanitizeStyle, ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';

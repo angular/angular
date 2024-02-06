@@ -8,7 +8,8 @@
 
 import {createTNode} from '@angular/core/src/render3/instructions/shared';
 
-import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
+import {AttributeMarker} from '../../src/render3/interfaces/attribute_marker';
+import {TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags} from '../../src/render3/interfaces/projection';
 import {extractAttrsAndClassesFromSelector, getProjectAsAttrValue, isNodeMatchingSelector, isNodeMatchingSelectorList, stringifyCSSSelectorList} from '../../src/render3/node_selector_matcher';
 
