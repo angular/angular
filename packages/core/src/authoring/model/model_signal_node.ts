@@ -14,7 +14,7 @@ export const REQUIRED_UNSET_VALUE = /* @__PURE__ */ Symbol('ModelSignalNode#UNSE
  * Reactive node type for a model signal. Model signals extend
  * signals by adding the ability to track subscriptions and to be required.
  */
-export interface ModelSignalNode<T> extends SignalNode<T|typeof REQUIRED_UNSET_VALUE> {
+export interface ModelSignalNode<T> extends SignalNode<T> {
   /** Used by the runtime to write a value to the signal input. */
   applyValueToInputSignal: (node: ModelSignalNode<T>, value: T) => void;
 }

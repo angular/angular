@@ -63,13 +63,7 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
 
   function getter(): T {
     producerAccessed(node);
-
-    if (node.value === REQUIRED_UNSET_VALUE) {
-      throw new RuntimeError(
-          RuntimeErrorCode.REQUIRED_MODEL_NO_VALUE,
-          ngDevMode && 'Model is required but no value is available yet.');
-    }
-
+    assertModelSet(node.value);
     return node.value;
   }
 
@@ -89,7 +83,8 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
     }
   };
 
-  getter.update = (updateFn: (value: T|typeof REQUIRED_UNSET_VALUE) => T) => {
+  getter.update = (updateFn: (value: T) => T) => {
+    assertModelSet(node.value);
     getter.set(updateFn(node.value));
   };
 
@@ -113,4 +108,13 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
   }
 
   return getter as ModelSignal<T>;
+}
+
+/** Asserts that a model's value is set. */
+function assertModelSet(value: unknown): void {
+  if (value === REQUIRED_UNSET_VALUE) {
+    throw new RuntimeError(
+        RuntimeErrorCode.REQUIRED_MODEL_NO_VALUE,
+        ngDevMode && 'Model is required but no value is available yet.');
+  }
 }
