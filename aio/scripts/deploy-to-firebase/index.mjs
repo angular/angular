@@ -385,7 +385,7 @@ function deploy(data) {
   preDeployActions.forEach(fn => fn(data));
 
   u.logSectionHeader('Deploy AIO to Firebase hosting.');
-  const firebase = cmd => u.yarn(`firebase ${cmd} --token "${firebaseToken}"`);
+  const firebase = cmd => u.yarn(`firebase --debug ${cmd} --token "${firebaseToken}"`);
   firebase(`use "${projectId}"`);
   firebase('target:clear hosting aio');
   firebase(`target:apply hosting aio "${siteId}"`);
