@@ -342,7 +342,7 @@ runInEachFileSystem(() => {
           '{ "value": "valueChange"; }, never, never, false, never>;');
     });
 
-    it('should declare an input/output pair for a field initialized to an alised model()', () => {
+    it('should declare an input/output pair for a field initialized to an aliased model()', () => {
       env.write('test.ts', `
         import {Directive, model} from '@angular/core';
 

@@ -89,6 +89,29 @@ describe('model signal', () => {
     expect(values).toEqual([1, 2]);
   });
 
+  it('should not share subscriptions between models', () => {
+    let emitCount = 0;
+    const signal1 = model(0) as SubscribableSignal<number>;
+    const signal2 = model(0) as SubscribableSignal<number>;
+    const callback = () => emitCount++;
+    const subscription1 = signal1.subscribe(callback);
+    const subscription2 = signal2.subscribe(callback);
+
+    signal1.set(1);
+    expect(emitCount).toBe(1);
+
+    signal2.set(1);
+    expect(emitCount).toBe(2);
+
+    subscription1.unsubscribe();
+    signal2.set(2);
+    expect(emitCount).toBe(3);
+
+    subscription2.unsubscribe();
+    signal2.set(3);
+    expect(emitCount).toBe(3);
+  });
+
   it('should throw if there is no value for required model', () => {
     const signal = model.required();
 

@@ -42,7 +42,7 @@ export interface ModelSignal<T> extends WritableSignal<T> {
   [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
 
   /**
-   * Subscribes to changes in the model's value.
+   * Subscribes to changes in the model's value. Used by listener instructions at runtime.
    * @internal
    */
   subscribe(callback: (value: T) => void): {unsubscribe: () => void};
@@ -56,6 +56,7 @@ export interface ModelSignal<T> extends WritableSignal<T> {
  * @param options Additional options for the model.
  */
 export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
+  const subscriptions: ((value: T) => void)[] = [];
   const node: ModelSignalNode<T> = Object.create(MODEL_SIGNAL_NODE);
 
   node.value = initialValue;
@@ -73,8 +74,6 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
   }
 
   function notifySubscribers(value: T): void {
-    const subscriptions = node.subscriptions;
-
     for (let i = 0; i < subscriptions.length; i++) {
       subscriptions[i](value);
     }
@@ -95,15 +94,15 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
   };
 
   getter.subscribe = (callback: (value: T) => void) => {
-    node.subscriptions.push(callback);
+    subscriptions.push(callback);
 
     // TODO(crisbeto): figure out if we can get rid of the object literal.
     return {
       unsubscribe: () => {
-        const index = node.subscriptions.indexOf(callback);
+        const index = subscriptions.indexOf(callback);
 
         if (index > -1) {
-          node.subscriptions.splice(index, 1);
+          subscriptions.splice(index, 1);
         }
       }
     };

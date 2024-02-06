@@ -152,14 +152,11 @@ export type InputMapping = InputOrOutput&{
 
 /** Metadata for a model mapping. */
 export interface ModelMapping {
-  /** Information about the input declared by the model. */
-  input: InputOrOutput&{
-    /** Whether the input declared by the model is required. */
-    required: boolean;
+  /** Node defining the model mapping. */
+  call: ts.CallExpression;
 
-    /** Model inputs can't have transforms. Keeping it here for consistency. */
-    transform: null;
-  };
+  /** Information about the input declared by the model. */
+  input: InputMapping;
 
   /** Information about the output implicitly declared by the model. */
   output: InputOrOutput;

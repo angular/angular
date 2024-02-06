@@ -67,6 +67,7 @@ async function main() {
       'signal_input_signature_test',
       v => v.includes(',') ? `InputSignalWithTransform<${v}>` : `InputSignal<${v}>`, true);
   failing ||= testFile('signal_queries_signature_test', v => `Signal<${v}>`, false);
+  failing ||= testFile('signal_model_signature_test', v => `ModelSignal<${v}>`, false);
 
   if (failing) {
     throw new Error('Failing assertions');

@@ -36,7 +36,6 @@ describe('model inputs', () => {
 
     // Changing the value from within the directive.
     host.dir.value.set(2);
-    fixture.detectChanges();
     expect(host.value()).toBe(2);
     expect(host.dir.value()).toBe(2);
 
@@ -73,7 +72,6 @@ describe('model inputs', () => {
 
     // Changing the value from within the directive.
     host.dir.value.set(2);
-    fixture.detectChanges();
     expect(host.value).toBe(2);
     expect(host.dir.value()).toBe(2);
 
@@ -456,7 +454,7 @@ describe('model inputs', () => {
     expect(host.dir.value()).toBe(3);
   });
 
-  it('should allow a two-way-bound signal to be bound in the template', () => {
+  it('should reflect changes to a two-way-bound signal in the DOM', () => {
     @Directive({
       selector: '[dir]',
       standalone: true,
@@ -501,9 +499,9 @@ describe('model inputs', () => {
     class Dir implements OnChanges {
       value = model(0);
 
-      ngOnChanges(allCahnges: SimpleChanges): void {
-        if (allCahnges['value']) {
-          changes.push(allCahnges['value']);
+      ngOnChanges(allChanges: SimpleChanges): void {
+        if (allChanges['value']) {
+          changes.push(allChanges['value']);
         }
       }
     }

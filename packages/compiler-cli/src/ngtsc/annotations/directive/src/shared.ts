@@ -1127,7 +1127,8 @@ function parseOutputFields(
           `Using @Output with a model input is not allowed.`);
     }
 
-    const queryNode = decoratorOutput?.decorator.node ?? initializerOutput?.call;
+    const queryNode =
+        decoratorOutput?.decorator.node ?? initializerOutput?.call ?? modelMapping?.call;
     if (queryNode !== undefined && member.isStatic) {
       throw new FatalDiagnosticError(
           ErrorCode.INCORRECTLY_DECLARED_ON_STATIC_MEMBER, queryNode,
@@ -1148,7 +1149,8 @@ function parseOutputFields(
 
     // Validate that initializer-based outputs are not accidentally declared
     // in the `outputs` class metadata.
-    if (initializerOutput !== null && outputsFromMeta.hasOwnProperty(member.name)) {
+    if (((initializerOutput !== null || modelMapping !== null) &&
+         outputsFromMeta.hasOwnProperty(member.name))) {
       throw new FatalDiagnosticError(
           ErrorCode.INITIALIZER_API_DECORATOR_METADATA_COLLISION, member.node ?? clazz,
           `Output "${member.name}" is unexpectedly declared in @${classDecorator.name} as well.`);
