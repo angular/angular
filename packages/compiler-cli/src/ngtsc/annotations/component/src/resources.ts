@@ -17,7 +17,7 @@ import {DynamicValue, PartialEvaluator, traceDynamicValue} from '../../../partia
 import {ClassDeclaration, DeclarationNode, Decorator} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
 import {TemplateSourceMapping} from '../../../typecheck/api';
-import {createValueHasWrongTypeError, isStringArray, ResourceLoader} from '../../common';
+import {createValueHasWrongTypeError, isStringArray, ResourceLoader, assertLocalCompilationUnresolvedConst} from '../../common';
 
 /**
  * The literal style url extracted from the decorator, along with metadata for diagnostics.
@@ -151,14 +151,13 @@ export function extractTemplate(
       const resolvedTemplate = evaluator.evaluate(template.expression);
 
       // The identifier used for @Component.template cannot be resolved in local compilation mode. An error specific to this situation is generated.
-      if (compilationMode === CompilationMode.LOCAL && resolvedTemplate instanceof DynamicValue &&
-          resolvedTemplate.isFromUnknownIdentifier()) {
-
-        throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
-            template.expression, 
-            'Unresolved identifier found for @Component.template field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the template, 3) Move the template into a separate .html file and include it using @Component.templateUrl');
-      }
+      assertLocalCompilationUnresolvedConst(
+        compilationMode, resolvedTemplate, template.expression, 
+        'Unresolved identifier found for @Component.template field! ' + 
+        'Did you import this identifier from a file outside of the compilation unit? ' + 'This is not allowed when Angular compiler runs in local mode. ' +
+        'Possible solutions: 1) Move the declaration into a file within the ' +
+        'compilation unit, 2) Inline the template, 3) Move the template into ' +
+        'a separate .html file and include it using @Component.templateUrl');
 
       if (typeof resolvedTemplate !== 'string') {
         throw createValueHasWrongTypeError(
