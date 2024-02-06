@@ -4,7 +4,7 @@ Event binding lets you listen for and respond to user actions such as keystrokes
 
 ## Binding to events
 
-HELPFUL: For information on binding to properties, see [Event binding](guide/templates/property-binding).
+HELPFUL: For information on binding to properties, see [Property binding](guide/templates/property-binding).
 
 To bind to an event you use the Angular event binding syntax.
 This syntax consists of a target event name within parentheses to the left of an equal sign, and a quoted template statement to the right.
