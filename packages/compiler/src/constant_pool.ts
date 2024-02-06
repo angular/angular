@@ -92,6 +92,14 @@ export class ConstantPool {
   private literalFactories = new Map<string, o.Expression>();
   private sharedConstants = new Map<string, o.Expression>();
 
+  /**
+   * Constant pool also tracks claimed names from {@link uniqueName}.
+   * This is useful to avoid collisions if variables are intended to be
+   * named a certain way- but may conflict. We wouldn't want to always suffix
+   * them with unique numbers.
+   */
+  private _claimedNames = new Map<string, number>();
+
   private nextNameIndex = 0;
 
   constructor(private readonly isClosureCompilerEnabled: boolean = false) {}
@@ -238,14 +246,18 @@ export class ConstantPool {
   }
 
   /**
-   * Produce a unique name.
+   * Produce a unique name in the context of this pool.
    *
    * The name might be unique among different prefixes if any of the prefixes end in
    * a digit so the prefix should be a constant string (not based on user input) and
    * must not end in a digit.
    */
-  uniqueName(prefix: string): string {
-    return `${prefix}${this.nextNameIndex++}`;
+  uniqueName(name: string, alwaysIncludeSuffix = true): string {
+    const count = this._claimedNames.get(name) ?? 0;
+    const result = count === 0 && !alwaysIncludeSuffix ? `${name}` : `${name}${count}`;
+
+    this._claimedNames.set(name, count + 1);
+    return result;
   }
 
   private freshName(): string {
