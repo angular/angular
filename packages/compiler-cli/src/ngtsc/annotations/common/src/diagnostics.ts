@@ -18,6 +18,7 @@ import {identifierOfNode, isFromDtsFile} from '../../../util/src/typescript';
 
 import {InjectableClassRegistry} from './injectable_registry';
 import {isAbstractClassDeclaration, readBaseClass} from './util';
+import { CompilationMode } from '../../../transform';
 
 
 /**
@@ -402,4 +403,20 @@ function getInheritedUndecoratedCtorDiagnostic(
           `resolve the parameters of ${baseClassName}'s constructor. Either add a @${
               baseNeedsDecorator} decorator ` +
           `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`);
+}
+
+/**
+ * Throws `FatalDiagnosticError` with error code `LOCAL_COMPILATION_UNRESOLVED_CONST` 
+ * if the compilation mode is local and the value is not resolved due to being imported
+ * from external files. This is a common scenario for errors in local compilation mode,
+ * and so this helper can be used to quickly generate the relevant errors.
+ */
+export function assertLocalCompilationUnresolvedConst(compilationMode: CompilationMode, value: ResolvedValue, nodeToHighlight: ts.Node, errorMessage: string): void {
+  if (compilationMode === CompilationMode.LOCAL && value instanceof DynamicValue &&
+    value.isFromUnknownIdentifier()) {
+    throw new FatalDiagnosticError(
+        ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
+        nodeToHighlight, 
+        errorMessage);
+  }
 }
