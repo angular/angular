@@ -2026,3 +2026,63 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: conditional_same_component_names.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+function it(_desc, fn) { }
+it('case 1', () => {
+    class TestComponent {
+    }
+    TestComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    TestComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestComponent, selector: "ng-component", ngImport: i0, template: `
+      @if (true) {
+        First
+      } @else {
+        Second
+      }
+    `, isInline: true });
+    i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, decorators: [{
+                type: Component,
+                args: [{
+                        template: `
+      @if (true) {
+        First
+      } @else {
+        Second
+      }
+    `,
+                    }]
+            }] });
+});
+it('case 2', () => {
+    class TestComponent {
+    }
+    TestComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+    TestComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestComponent, selector: "ng-component", ngImport: i0, template: `
+      @if (true) {
+        First
+      } @else {
+        Second
+      }
+    `, isInline: true });
+    i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, decorators: [{
+                type: Component,
+                args: [{
+                        template: `
+      @if (true) {
+        First
+      } @else {
+        Second
+      }
+    `,
+                    }]
+            }] });
+});
+
+/****************************************************************************************************
+ * PARTIAL FILE: conditional_same_component_names.d.ts
+ ****************************************************************************************************/
+export {};
+
