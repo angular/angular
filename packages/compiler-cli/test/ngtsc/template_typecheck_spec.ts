@@ -69,6 +69,34 @@ export declare class AnimationEvent {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
+    it('should not fail with a runtime error when generating TCB', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, input} from '@angular/core';
+
+        @Component({
+          selector: 'sub-cmp',
+          standalone: true,
+          template: '',
+        })
+        class Sub { // intentionally not exported
+          someInput = input.required<string>();
+        }
+
+        @Component({
+          template: \`<sub-cmp [someInput]="''" />\`,
+          standalone: true,
+          imports: [Sub],
+        })
+        export class MyComponent {}
+      `);
+
+      const diagnostics = env.driveDiagnostics();
+      expect(diagnostics).toEqual([jasmine.objectContaining(
+          {messageText: jasmine.objectContaining({messageText: 'Unable to import symbol Sub.'})},
+          )]);
+    });
+
     it('should check regular attributes that are directive inputs', () => {
       env.tsconfig(
           {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
