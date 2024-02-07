@@ -39,14 +39,20 @@ describe('navigateForTest', () => {
   it('executes guards on the path', async () => {
     let guardCalled = false;
     TestBed.configureTestingModule({
-      providers: [provideRouter([{
-        path: '',
-        canActivate: [() => {
-          guardCalled = true;
-          return true;
-        }],
-        children: []
-      }])]
+      providers: [
+        provideRouter([
+          {
+            path: '',
+            canActivate: [
+              () => {
+                guardCalled = true;
+                return true;
+              },
+            ],
+            children: [],
+          },
+        ]),
+      ],
     });
     await RouterTestingHarness.create('/');
     expect(guardCalled).toBeTrue();
@@ -54,17 +60,22 @@ describe('navigateForTest', () => {
 
   it('throws error if routing throws', async () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter(
+      providers: [
+        provideRouter(
           [
             {
               path: 'e',
-              canActivate: [() => {
-                throw new Error('oh no');
-              }],
-              children: []
+              canActivate: [
+                () => {
+                  throw new Error('oh no');
+                },
+              ],
+              children: [],
             },
           ],
-          withRouterConfig({resolveNavigationPromiseOnError: true}))]
+          withRouterConfig({resolveNavigationPromiseOnError: true}),
+        ),
+      ],
     });
     const harness = await RouterTestingHarness.create();
     await expectAsync(harness.navigateByUrl('e')).toBeResolvedTo(null);
@@ -77,9 +88,7 @@ describe('navigateForTest', () => {
     }
 
     TestBed.configureTestingModule({
-      providers: [
-        provideRouter([{path: ':id', component: TestCmp}]),
-      ]
+      providers: [provideRouter([{path: ':id', component: TestCmp}])],
     });
     const harness = await RouterTestingHarness.create();
     const activatedComponent = await harness.navigateByUrl('/123', TestCmp);
@@ -89,33 +98,25 @@ describe('navigateForTest', () => {
     expect(harness.routeNativeElement?.innerHTML).toContain('456');
   });
 
-  it('throws an error if the routed component instance does not match the one required',
-     async () => {
-       @Component({standalone: true, template: ''})
-       class TestCmp {
-       }
-       @Component({standalone: true, template: ''})
-       class OtherCmp {
-       }
+  it('throws an error if the routed component instance does not match the one required', async () => {
+    @Component({standalone: true, template: ''})
+    class TestCmp {}
+    @Component({standalone: true, template: ''})
+    class OtherCmp {}
 
-       TestBed.configureTestingModule({
-         providers: [
-           provideRouter([{path: '**', component: TestCmp}]),
-         ]
-       });
-       const harness = await RouterTestingHarness.create();
-       await expectAsync(harness.navigateByUrl('/123', OtherCmp)).toBeRejected();
-     });
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: '**', component: TestCmp}])],
+    });
+    const harness = await RouterTestingHarness.create();
+    await expectAsync(harness.navigateByUrl('/123', OtherCmp)).toBeRejected();
+  });
 
   it('throws an error if navigation fails but expected a component instance', async () => {
     @Component({standalone: true, template: ''})
-    class TestCmp {
-    }
+    class TestCmp {}
 
     TestBed.configureTestingModule({
-      providers: [
-        provideRouter([{path: '**', canActivate: [() => false], component: TestCmp}]),
-      ]
+      providers: [provideRouter([{path: '**', canActivate: [() => false], component: TestCmp}])],
     });
     const harness = await RouterTestingHarness.create();
     await expectAsync(harness.navigateByUrl('/123', TestCmp)).toBeRejected();
@@ -123,11 +124,9 @@ describe('navigateForTest', () => {
 
   it('waits for redirects using router.navigate', async () => {
     @Component({standalone: true, template: 'test'})
-    class TestCmp {
-    }
+    class TestCmp {}
     @Component({standalone: true, template: 'redirect'})
-    class OtherCmp {
-    }
+    class OtherCmp {}
 
     TestBed.configureTestingModule({
       providers: [
@@ -135,11 +134,11 @@ describe('navigateForTest', () => {
           {
             path: 'test',
             canActivate: [() => inject(Router).navigateByUrl('/redirect')],
-            component: TestCmp
+            component: TestCmp,
           },
           {path: 'redirect', canActivate: [() => of(true).pipe(delay(100))], component: OtherCmp},
         ]),
-      ]
+      ],
     });
     await RouterTestingHarness.create('test');
     expect(TestBed.inject(Router).url).toEqual('/redirect');

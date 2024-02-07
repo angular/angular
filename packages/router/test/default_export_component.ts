@@ -13,5 +13,4 @@ import {Component} from '@angular/core';
   template: 'default exported',
   selector: 'test-route',
 })
-export default class TestRoute {
-}
+export default class TestRoute {}

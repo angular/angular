@@ -10,7 +10,18 @@ import {Location} from '@angular/common';
 import {inject, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
-import {BeforeActivateRoutes, Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationStart, PrivateRouterEvents, RoutesRecognized,} from '../events';
+import {
+  BeforeActivateRoutes,
+  Event,
+  NavigationCancel,
+  NavigationCancellationCode,
+  NavigationEnd,
+  NavigationError,
+  NavigationSkipped,
+  NavigationStart,
+  PrivateRouterEvents,
+  RoutesRecognized,
+} from '../events';
 import {Navigation, RestoredState} from '../navigation_transition';
 import {ROUTER_CONFIGURATION} from '../router_config';
 import {createEmptyState, RouterState} from '../router_state';
@@ -58,7 +69,7 @@ export abstract class StateManager {
   abstract getRawUrlTree(): UrlTree;
 
   /** Returns the current state stored by the browser for the current history entry. */
-  abstract restoredState(): RestoredState|null|undefined;
+  abstract restoredState(): RestoredState | null | undefined;
 
   /** Returns the current RouterState. */
   abstract getRouterState(): RouterState;
@@ -69,13 +80,14 @@ export abstract class StateManager {
    * also includes programmatic APIs called by non-Router JavaScript.
    */
   abstract registerNonRouterCurrentEntryChangeListener(
-      listener: (url: string, state: RestoredState|null|undefined) => void): SubscriptionLike;
+    listener: (url: string, state: RestoredState | null | undefined) => void,
+  ): SubscriptionLike;
 
   /**
    * Handles a navigation event sent from the Router. These are typically events that indicate a
    * navigation has started, progressed, been cancelled, or finished.
    */
-  abstract handleRouterEvent(e: Event|PrivateRouterEvents, currentTransition: Navigation): void;
+  abstract handleRouterEvent(e: Event | PrivateRouterEvents, currentTransition: Navigation): void;
 }
 
 @Injectable({providedIn: 'root'})
@@ -84,7 +96,7 @@ export class HistoryStateManager extends StateManager {
   private readonly urlSerializer = inject(UrlSerializer);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly canceledNavigationResolution =
-      this.options.canceledNavigationResolution || 'replace';
+    this.options.canceledNavigationResolution || 'replace';
 
   private urlHandlingStrategy = inject(UrlHandlingStrategy);
   private urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
@@ -112,7 +124,7 @@ export class HistoryStateManager extends StateManager {
   private currentPageId: number = 0;
   private lastSuccessfulId: number = -1;
 
-  override restoredState(): RestoredState|null|undefined {
+  override restoredState(): RestoredState | null | undefined {
     return this.location.getState() as RestoredState | null | undefined;
   }
 
@@ -145,15 +157,16 @@ export class HistoryStateManager extends StateManager {
   }
 
   override registerNonRouterCurrentEntryChangeListener(
-      listener: (url: string, state: RestoredState|null|undefined) => void): SubscriptionLike {
-    return this.location.subscribe(event => {
+    listener: (url: string, state: RestoredState | null | undefined) => void,
+  ): SubscriptionLike {
+    return this.location.subscribe((event) => {
       if (event['type'] === 'popstate') {
         listener(event['url']!, event.state as RestoredState | null | undefined);
       }
     });
   }
 
-  override handleRouterEvent(e: Event|PrivateRouterEvents, currentTransition: Navigation) {
+  override handleRouterEvent(e: Event | PrivateRouterEvents, currentTransition: Navigation) {
     if (e instanceof NavigationStart) {
       this.stateMemento = this.createStateMemento();
     } else if (e instanceof NavigationSkipped) {
@@ -162,14 +175,18 @@ export class HistoryStateManager extends StateManager {
       if (this.urlUpdateStrategy === 'eager') {
         if (!currentTransition.extras.skipLocationChange) {
           const rawUrl = this.urlHandlingStrategy.merge(
-              currentTransition.finalUrl!, currentTransition.initialUrl);
+            currentTransition.finalUrl!,
+            currentTransition.initialUrl,
+          );
           this.setBrowserUrl(rawUrl, currentTransition);
         }
       }
     } else if (e instanceof BeforeActivateRoutes) {
       this.currentUrlTree = currentTransition.finalUrl!;
-      this.rawUrlTree =
-          this.urlHandlingStrategy.merge(currentTransition.finalUrl!, currentTransition.initialUrl);
+      this.rawUrlTree = this.urlHandlingStrategy.merge(
+        currentTransition.finalUrl!,
+        currentTransition.initialUrl,
+      );
       this.routerState = currentTransition.targetRouterState!;
       if (this.urlUpdateStrategy === 'deferred') {
         if (!currentTransition.extras.skipLocationChange) {
@@ -177,9 +194,10 @@ export class HistoryStateManager extends StateManager {
         }
       }
     } else if (
-        e instanceof NavigationCancel &&
-        (e.code === NavigationCancellationCode.GuardRejected ||
-         e.code === NavigationCancellationCode.NoDataFromResolver)) {
+      e instanceof NavigationCancel &&
+      (e.code === NavigationCancellationCode.GuardRejected ||
+        e.code === NavigationCancellationCode.NoDataFromResolver)
+    ) {
       this.restoreHistory(currentTransition);
     } else if (e instanceof NavigationError) {
       this.restoreHistory(currentTransition, true);
@@ -196,13 +214,13 @@ export class HistoryStateManager extends StateManager {
       const currentBrowserPageId = this.browserPageId;
       const state = {
         ...transition.extras.state,
-        ...this.generateNgRouterState(transition.id, currentBrowserPageId)
+        ...this.generateNgRouterState(transition.id, currentBrowserPageId),
       };
       this.location.replaceState(path, '', state);
     } else {
       const state = {
         ...transition.extras.state,
-        ...this.generateNgRouterState(transition.id, this.browserPageId + 1)
+        ...this.generateNgRouterState(transition.id, this.browserPageId + 1),
       };
       this.location.go(path, '', state);
     }
@@ -248,14 +266,18 @@ export class HistoryStateManager extends StateManager {
     // the part of the navigation handled by the Angular router rather than the whole URL. In
     // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
     // when merging, such as the query params so they are not lost on a refresh.
-    this.rawUrlTree =
-        this.urlHandlingStrategy.merge(this.currentUrlTree, navigation.finalUrl ?? this.rawUrlTree);
+    this.rawUrlTree = this.urlHandlingStrategy.merge(
+      this.currentUrlTree,
+      navigation.finalUrl ?? this.rawUrlTree,
+    );
   }
 
   private resetUrlToCurrentUrlTree(): void {
     this.location.replaceState(
-        this.urlSerializer.serialize(this.rawUrlTree), '',
-        this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId));
+      this.urlSerializer.serialize(this.rawUrlTree),
+      '',
+      this.generateNgRouterState(this.lastSuccessfulId, this.currentPageId),
+    );
   }
 
   private generateNgRouterState(navigationId: number, routerPageId: number) {
