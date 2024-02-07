@@ -38,7 +38,7 @@ export const RouterUpgradeInitializer = {
   provide: APP_BOOTSTRAP_LISTENER,
   multi: true,
   useFactory: locationSyncBootstrapListener as (ngUpgrade: UpgradeModule) => () => void,
-  deps: [UpgradeModule]
+  deps: [UpgradeModule],
 };
 
 /**
@@ -62,7 +62,7 @@ export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
  *
  * @publicApi
  */
-export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'hash' = 'path') {
+export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'hash' = 'path') {
   if (!ngUpgrade.$injector) {
     throw new Error(`
         RouterUpgradeInitializer can be used only after UpgradeModule.bootstrap has been called.
@@ -73,36 +73,41 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'has
   const router: Router = ngUpgrade.injector.get(Router);
   const location: Location = ngUpgrade.injector.get(Location);
 
-  ngUpgrade.$injector.get('$rootScope')
-      .$on(
-          '$locationChangeStart',
-          (event: any, newUrl: string, oldUrl: string,
-           newState?: {[k: string]: unknown}|RestoredState,
-           oldState?: {[k: string]: unknown}|RestoredState) => {
-            // Navigations coming from Angular router have a navigationId state
-            // property. Don't trigger Angular router navigation again if it is
-            // caused by a URL change from the current Angular router
-            // navigation.
-            const currentNavigationId = router.getCurrentNavigation()?.id;
-            const newStateNavigationId = newState?.navigationId;
-            if (newStateNavigationId !== undefined &&
-                newStateNavigationId === currentNavigationId) {
-              return;
-            }
+  ngUpgrade.$injector
+    .get('$rootScope')
+    .$on(
+      '$locationChangeStart',
+      (
+        event: any,
+        newUrl: string,
+        oldUrl: string,
+        newState?: {[k: string]: unknown} | RestoredState,
+        oldState?: {[k: string]: unknown} | RestoredState,
+      ) => {
+        // Navigations coming from Angular router have a navigationId state
+        // property. Don't trigger Angular router navigation again if it is
+        // caused by a URL change from the current Angular router
+        // navigation.
+        const currentNavigationId = router.getCurrentNavigation()?.id;
+        const newStateNavigationId = newState?.navigationId;
+        if (newStateNavigationId !== undefined && newStateNavigationId === currentNavigationId) {
+          return;
+        }
 
-            let url;
-            if (urlType === 'path') {
-              url = resolveUrl(newUrl);
-            } else if (urlType === 'hash') {
-              // Remove the first hash from the URL
-              const hashIdx = newUrl.indexOf('#');
-              url = resolveUrl(newUrl.substring(0, hashIdx) + newUrl.substring(hashIdx + 1));
-            } else {
-              throw 'Invalid URLType passed to setUpLocationSync: ' + urlType;
-            }
-            const path = location.normalize(url.pathname);
-            router.navigateByUrl(path + url.search + url.hash);
-          });
+        let url;
+        if (urlType === 'path') {
+          url = resolveUrl(newUrl);
+        } else if (urlType === 'hash') {
+          // Remove the first hash from the URL
+          const hashIdx = newUrl.indexOf('#');
+          url = resolveUrl(newUrl.substring(0, hashIdx) + newUrl.substring(hashIdx + 1));
+        } else {
+          throw 'Invalid URLType passed to setUpLocationSync: ' + urlType;
+        }
+        const path = location.normalize(url.pathname);
+        router.navigateByUrl(path + url.search + url.hash);
+      },
+    );
 }
 
 /**
@@ -123,8 +128,8 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path'|'has
  * https://github.com/angular/angular.js/blob/2c7400e7d07b0f6cec1817dab40b9250ce8ebce6/src/ng/urlUtils.js#L26-L33
  * for more info.
  */
-let anchor: HTMLAnchorElement|undefined;
-function resolveUrl(url: string): {pathname: string, search: string, hash: string} {
+let anchor: HTMLAnchorElement | undefined;
+function resolveUrl(url: string): {pathname: string; search: string; hash: string} {
   anchor ??= document.createElement('a');
 
   anchor.setAttribute('href', url);
@@ -134,6 +139,6 @@ function resolveUrl(url: string): {pathname: string, search: string, hash: strin
     // IE does not start `pathname` with `/` like other browsers.
     pathname: `/${anchor.pathname.replace(/^\//, '')}`,
     search: anchor.search,
-    hash: anchor.hash
+    hash: anchor.hash,
   };
 }
