@@ -427,11 +427,28 @@ export class NgCompiler {
    * Get all Angular-related diagnostics for this compilation.
    */
   getDiagnostics(): ts.Diagnostic[] {
-    const diagnostics: ts.Diagnostic[] = [];
-    diagnostics.push(...this.getNonTemplateDiagnostics(), ...this.getTemplateDiagnostics());
-    if (this.options.strictTemplates) {
-      diagnostics.push(...this.getExtendedTemplateDiagnostics());
+    const diagnostics: ts.Diagnostic[] = [
+      ...this.getNonTemplateDiagnostics(),
+    ];
+
+    // Type check code may throw fatal diagnostic errors if e.g. the type check
+    // block cannot be generated. Gracefully return the associated diagnostic.
+    // Note: If a fatal diagnostic is raised, do not repeat the same diagnostics
+    // by running the extended template checking code, which will attempt to
+    // generate the same TCB.
+    try {
+      diagnostics.push(...this.getTemplateDiagnostics());
+
+      if (this.options.strictTemplates) {
+        diagnostics.push(...this.getExtendedTemplateDiagnostics());
+      }
+    } catch (err: unknown) {
+      if (!(err instanceof FatalDiagnosticError)) {
+        throw err;
+      }
+      diagnostics.push(err.toDiagnostic());
     }
+
     return this.addMessageTextDetails(diagnostics);
   }
 
@@ -444,21 +461,22 @@ export class NgCompiler {
     const diagnostics: ts.Diagnostic[] =
         [...this.getNonTemplateDiagnostics().filter(diag => diag.file === file)];
 
+    // Type check code may throw fatal diagnostic errors if e.g. the type check
+    // block cannot be generated. Gracefully return the associated diagnostic.
+    // Note: If a fatal diagnostic is raised, do not repeat the same diagnostics
+    // by running the extended template checking code, which will attempt to
+    // generate the same TCB.
     try {
       diagnostics.push(...this.getTemplateDiagnosticsForFile(file, optimizeFor));
+
       if (this.options.strictTemplates) {
         diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
       }
-    } catch (e) {
-      // Type check code may throw fatal diagnostic errors if e.g. the type check
-      // block cannot be generated. Gracefully return the associated diagnostic.
-      // Note: If a fatal diagnostic is raised, do not repeat the same diagnostics
-      // by running the extended template checking code, which will attempt to
-      // generate the same TCB.
-      if (e instanceof FatalDiagnosticError) {
-        diagnostics.push(e.toDiagnostic());
+    } catch (err: unknown) {
+      if (!(err instanceof FatalDiagnosticError)) {
+        throw err;
       }
-      throw e;
+      diagnostics.push(err.toDiagnostic());
     }
 
     return this.addMessageTextDetails(diagnostics);
@@ -471,6 +489,12 @@ export class NgCompiler {
     const compilation = this.ensureAnalyzed();
     const ttc = compilation.templateTypeChecker;
     const diagnostics: ts.Diagnostic[] = [];
+
+    // Type check code may throw fatal diagnostic errors if e.g. the type check
+    // block cannot be generated. Gracefully return the associated diagnostic.
+    // Note: If a fatal diagnostic is raised, do not repeat the same diagnostics
+    // by running the extended template checking code, which will attempt to
+    // generate the same TCB.
     try {
       diagnostics.push(...ttc.getDiagnosticsForComponent(component));
 
@@ -884,23 +908,16 @@ export class NgCompiler {
 
   private getTemplateDiagnostics(): ReadonlyArray<ts.Diagnostic> {
     const compilation = this.ensureAnalyzed();
-
-    // Get the diagnostics.
     const diagnostics: ts.Diagnostic[] = [];
+
+    // Get diagnostics for all files.
     for (const sf of this.inputProgram.getSourceFiles()) {
       if (sf.isDeclarationFile || this.adapter.isShim(sf)) {
         continue;
       }
 
-      try {
-        diagnostics.push(
-            ...compilation.templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram));
-      } catch (err) {
-        if (!(err instanceof FatalDiagnosticError)) {
-          throw err;
-        }
-        diagnostics.push(err.toDiagnostic());
-      }
+      diagnostics.push(
+          ...compilation.templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram));
     }
 
     const program = this.programDriver.getProgram();
@@ -1028,8 +1045,8 @@ export class NgCompiler {
       ]);
 
       // If an entrypoint is present, then all user imports should be directed through the
-      // entrypoint and private exports are not needed. The compiler will validate that all publicly
-      // visible directives/pipes are importable via this entrypoint.
+      // entrypoint and private exports are not needed. The compiler will validate that all
+      // publicly visible directives/pipes are importable via this entrypoint.
       if (this.entryPoint === null && this.options.generateDeepReexports === true) {
         // No entrypoint is present and deep re-exports were requested, so configure the aliasing
         // system to generate them.
