@@ -11,11 +11,17 @@ import ts from 'typescript';
 import {ErrorCode} from './error_code';
 import {ngErrorCode} from './util';
 
-export class FatalDiagnosticError {
+export class FatalDiagnosticError extends Error {
   constructor(
       readonly code: ErrorCode, readonly node: ts.Node,
-      readonly message: string|ts.DiagnosticMessageChain,
-      readonly relatedInformation?: ts.DiagnosticRelatedInformation[]) {}
+      readonly diagnosticMessage: string|ts.DiagnosticMessageChain,
+      readonly relatedInformation?: ts.DiagnosticRelatedInformation[]) {
+    super(`FatalDiagnosticError #${code}: ${diagnosticMessage}`);
+  }
+
+  // Trying to hide `.message` from `Error` to encourage users to look
+  // at `diagnosticMessage` instead.
+  override message: never = null!;
 
   /**
    * @internal
@@ -23,7 +29,7 @@ export class FatalDiagnosticError {
   _isFatalDiagnosticError = true;
 
   toDiagnostic(): ts.DiagnosticWithLocation {
-    return makeDiagnostic(this.code, this.node, this.message, this.relatedInformation);
+    return makeDiagnostic(this.code, this.node, this.diagnosticMessage, this.relatedInformation);
   }
 }
 
