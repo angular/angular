@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
 import {InjectableClassRegistry} from '../../annotations/common';
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
-import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../diagnostics';
+import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, isFatalDiagnosticError, ngErrorCode} from '../../diagnostics';
 import {DocEntry, DocsExtractor} from '../../docs';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
@@ -436,7 +436,7 @@ export class NgCompiler {
         diagnostics.push(...this.getExtendedTemplateDiagnostics());
       }
     } catch (err: unknown) {
-      if (!(err instanceof FatalDiagnosticError)) {
+      if (!isFatalDiagnosticError(err)) {
         throw err;
       }
       diagnostics.push(err.toDiagnostic());
@@ -466,7 +466,7 @@ export class NgCompiler {
         diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
       }
     } catch (err: unknown) {
-      if (!(err instanceof FatalDiagnosticError)) {
+      if (!isFatalDiagnosticError(err)) {
         throw err;
       }
       diagnostics.push(err.toDiagnostic());
@@ -496,7 +496,7 @@ export class NgCompiler {
         diagnostics.push(...extendedTemplateChecker.getDiagnosticsForComponent(component));
       }
     } catch (err: unknown) {
-      if (!(err instanceof FatalDiagnosticError)) {
+      if (!isFatalDiagnosticError(err)) {
         throw err;
       }
       diagnostics.push(err.toDiagnostic());
