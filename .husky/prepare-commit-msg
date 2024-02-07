@@ -1,6 +1,3 @@
-#!/bin/sh
-. "$(dirname $0)/_/husky.sh"
-
 set +e
 
 yarn -s ng-dev commit-message restore-commit-message-draft $1 $2 2>/dev/null
