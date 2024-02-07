@@ -9,13 +9,47 @@
 import {Location} from '@angular/common';
 import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable, of, Subject} from 'rxjs';
-import {catchError, defaultIfEmpty, filter, finalize, map, switchMap, take, takeUntil, tap} from 'rxjs/operators';
+import {
+  catchError,
+  defaultIfEmpty,
+  filter,
+  finalize,
+  map,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
 import {INPUT_BINDER} from './directives/router_outlet';
-import {BeforeActivateRoutes, Event, GuardsCheckEnd, GuardsCheckStart, IMPERATIVE_NAVIGATION, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped, NavigationSkippedCode, NavigationStart, NavigationTrigger, RedirectRequest, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {
+  BeforeActivateRoutes,
+  Event,
+  GuardsCheckEnd,
+  GuardsCheckStart,
+  IMPERATIVE_NAVIGATION,
+  NavigationCancel,
+  NavigationCancellationCode,
+  NavigationEnd,
+  NavigationError,
+  NavigationSkipped,
+  NavigationSkippedCode,
+  NavigationStart,
+  NavigationTrigger,
+  RedirectRequest,
+  ResolveEnd,
+  ResolveStart,
+  RouteConfigLoadEnd,
+  RouteConfigLoadStart,
+  RoutesRecognized,
+} from './events';
 import {NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
-import {isNavigationCancelingError, isRedirectingNavigationCancelingError, redirectingNavigationError} from './navigation_canceling_error';
+import {
+  isNavigationCancelingError,
+  isRedirectingNavigationCancelingError,
+  redirectingNavigationError,
+} from './navigation_canceling_error';
 import {activateRoutes} from './operators/activate_routes';
 import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
@@ -26,14 +60,18 @@ import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ROUTER_CONFIGURATION} from './router_config';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
-import {ActivatedRoute, ActivatedRouteSnapshot, createEmptyState, RouterState, RouterStateSnapshot} from './router_state';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  createEmptyState,
+  RouterState,
+  RouterStateSnapshot,
+} from './router_state';
 import {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
 import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
-
-
 
 /**
  * @description
@@ -86,7 +124,7 @@ export interface UrlCreationOptions {
    * A value of `null` or `undefined` indicates that the navigation commands should be applied
    * relative to the root.
    */
-  relativeTo?: ActivatedRoute|null;
+  relativeTo?: ActivatedRoute | null;
 
   /**
    * Sets query parameters to the URL.
@@ -96,7 +134,7 @@ export interface UrlCreationOptions {
    * router.navigate(['/results'], { queryParams: { page: 1 } });
    * ```
    */
-  queryParams?: Params|null;
+  queryParams?: Params | null;
 
   /**
    * Sets the hash fragment for the URL.
@@ -130,7 +168,7 @@ export interface UrlCreationOptions {
    * the new value is used.
    *
    */
-  queryParamsHandling?: QueryParamsHandling|null;
+  queryParamsHandling?: QueryParamsHandling | null;
 
   /**
    * When true, preserves the URL fragment for the next navigation
@@ -162,12 +200,12 @@ export interface UrlCreationOptions {
 export interface NavigationExtras extends UrlCreationOptions, NavigationBehaviorOptions {}
 
 export type RestoredState = {
-  [k: string]: any,
+  [k: string]: any;
   // TODO(#27607): Remove `navigationId` and `ɵrouterPageId` and move to `ng` or `ɵ` namespace.
-  navigationId: number,
+  navigationId: number;
   // The `ɵ` prefix is there to reduce the chance of colliding with any existing user properties on
   // the history state.
-  ɵrouterPageId?: number,
+  ɵrouterPageId?: number;
 };
 
 /**
@@ -227,7 +265,7 @@ export interface Navigation {
    * * 'popstate'--Triggered by a popstate event.
    * * 'hashchange'--Triggered by a hashchange event.
    */
-  trigger: 'imperative'|'popstate'|'hashchange';
+  trigger: 'imperative' | 'popstate' | 'hashchange';
   /**
    * Options that controlled the strategy used for this navigation.
    * See `NavigationExtras`.
@@ -238,7 +276,7 @@ export interface Navigation {
    * is available, therefore this previous `Navigation` object has a `null` value
    * for its own `previousNavigation`.
    */
-  previousNavigation: Navigation|null;
+  previousNavigation: Navigation | null;
 }
 
 export interface NavigationTransition {
@@ -253,13 +291,13 @@ export interface NavigationTransition {
   reject: any;
   promise: Promise<boolean>;
   source: NavigationTrigger;
-  restoredState: RestoredState|null;
+  restoredState: RestoredState | null;
   currentSnapshot: RouterStateSnapshot;
-  targetSnapshot: RouterStateSnapshot|null;
+  targetSnapshot: RouterStateSnapshot | null;
   currentRouterState: RouterState;
-  targetRouterState: RouterState|null;
+  targetRouterState: RouterState | null;
   guards: Checks;
-  guardsResult: boolean|UrlTree|null;
+  guardsResult: boolean | UrlTree | null;
 }
 
 /**
@@ -276,20 +314,20 @@ interface InternalRouterInterface {
   errorHandler: (error: any) => any;
   navigated: boolean;
   routeReuseStrategy: RouteReuseStrategy;
-  onSameUrlNavigation: 'reload'|'ignore';
+  onSameUrlNavigation: 'reload' | 'ignore';
 }
 
 @Injectable({providedIn: 'root'})
 export class NavigationTransitions {
-  currentNavigation: Navigation|null = null;
-  currentTransition: NavigationTransition|null = null;
-  lastSuccessfulNavigation: Navigation|null = null;
+  currentNavigation: Navigation | null = null;
+  currentTransition: NavigationTransition | null = null;
+  lastSuccessfulNavigation: Navigation | null = null;
   /**
    * These events are used to communicate back to the Router about the state of the transition. The
    * Router wants to respond to these events in various ways. Because the `NavigationTransition`
    * class is not public, this event subject is not publicly exposed.
    */
-  readonly events = new Subject<Event|BeforeActivateRoutes|RedirectRequest>();
+  readonly events = new Subject<Event | BeforeActivateRoutes | RedirectRequest>();
   /**
    * Used to abort the current transition with an error.
    */
@@ -303,7 +341,7 @@ export class NavigationTransitions {
   private readonly titleStrategy?: TitleStrategy = inject(TitleStrategy);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly paramsInheritanceStrategy =
-      this.options.paramsInheritanceStrategy || 'emptyOnly';
+    this.options.paramsInheritanceStrategy || 'emptyOnly';
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
 
@@ -320,7 +358,7 @@ export class NavigationTransitions {
    */
   afterPreactivation: () => Observable<void> = () => of(void 0);
   /** @internal */
-  rootComponentType: Type<any>|null = null;
+  rootComponentType: Type<any> | null = null;
 
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
@@ -334,17 +372,30 @@ export class NavigationTransitions {
   }
 
   handleNavigationRequest(
-      request: Pick<
-          NavigationTransition,
-          'source'|'restoredState'|'currentUrlTree'|'currentRawUrl'|'rawUrl'|'extras'|'resolve'|
-          'reject'|'promise'|'currentSnapshot'|'currentRouterState'>) {
+    request: Pick<
+      NavigationTransition,
+      | 'source'
+      | 'restoredState'
+      | 'currentUrlTree'
+      | 'currentRawUrl'
+      | 'rawUrl'
+      | 'extras'
+      | 'resolve'
+      | 'reject'
+      | 'promise'
+      | 'currentSnapshot'
+      | 'currentRouterState'
+    >,
+  ) {
     const id = ++this.navigationId;
     this.transitions?.next({...this.transitions.value, ...request, id});
   }
 
   setupNavigations(
-      router: InternalRouterInterface, initialUrlTree: UrlTree,
-      initialRouterState: RouterState): Observable<NavigationTransition> {
+    router: InternalRouterInterface,
+    initialUrlTree: UrlTree,
+    initialRouterState: RouterState,
+  ): Observable<NavigationTransition> {
     this.transitions = new BehaviorSubject<NavigationTransition>({
       id: 0,
       currentUrlTree: initialUrlTree,
@@ -366,384 +417,450 @@ export class NavigationTransitions {
       guardsResult: null,
     });
     return this.transitions.pipe(
-               filter(t => t.id !== 0),
+      filter((t) => t.id !== 0),
 
-               // Extract URL
-               map(t =>
-                       ({...t, extractedUrl: this.urlHandlingStrategy.extract(t.rawUrl)} as
-                        NavigationTransition)),
+      // Extract URL
+      map(
+        (t) =>
+          ({
+            ...t,
+            extractedUrl: this.urlHandlingStrategy.extract(t.rawUrl),
+          }) as NavigationTransition,
+      ),
 
-               // Using switchMap so we cancel executing navigations when a new one comes in
-               switchMap(overallTransitionState => {
-                 this.currentTransition = overallTransitionState;
-                 let completed = false;
-                 let errored = false;
-                 return of(overallTransitionState)
-                     .pipe(
-                         // Store the Navigation object
-                         tap(t => {
-                           this.currentNavigation = {
-                             id: t.id,
-                             initialUrl: t.rawUrl,
-                             extractedUrl: t.extractedUrl,
-                             trigger: t.source,
-                             extras: t.extras,
-                             previousNavigation: !this.lastSuccessfulNavigation ? null : {
-                               ...this.lastSuccessfulNavigation,
-                               previousNavigation: null,
-                             },
-                           };
-                         }),
-                         switchMap(t => {
-                           const urlTransition = !router.navigated ||
-                               this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
+      // Using switchMap so we cancel executing navigations when a new one comes in
+      switchMap((overallTransitionState) => {
+        this.currentTransition = overallTransitionState;
+        let completed = false;
+        let errored = false;
+        return of(overallTransitionState).pipe(
+          // Store the Navigation object
+          tap((t) => {
+            this.currentNavigation = {
+              id: t.id,
+              initialUrl: t.rawUrl,
+              extractedUrl: t.extractedUrl,
+              trigger: t.source,
+              extras: t.extras,
+              previousNavigation: !this.lastSuccessfulNavigation
+                ? null
+                : {
+                    ...this.lastSuccessfulNavigation,
+                    previousNavigation: null,
+                  },
+            };
+          }),
+          switchMap((t) => {
+            const urlTransition =
+              !router.navigated || this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
 
-                           const onSameUrlNavigation =
-                               t.extras.onSameUrlNavigation ?? router.onSameUrlNavigation;
-                           if (!urlTransition && onSameUrlNavigation !== 'reload') {
-                             const reason = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-                                 `Navigation to ${
-                                     t.rawUrl} was ignored because it is the same as the current Router URL.` :
-                                 '';
-                             this.events.next(new NavigationSkipped(
-                                 t.id, this.urlSerializer.serialize(t.rawUrl), reason,
-                                 NavigationSkippedCode.IgnoredSameUrlNavigation));
-                             t.resolve(null);
-                             return EMPTY;
-                           }
+            const onSameUrlNavigation = t.extras.onSameUrlNavigation ?? router.onSameUrlNavigation;
+            if (!urlTransition && onSameUrlNavigation !== 'reload') {
+              const reason =
+                typeof ngDevMode === 'undefined' || ngDevMode
+                  ? `Navigation to ${t.rawUrl} was ignored because it is the same as the current Router URL.`
+                  : '';
+              this.events.next(
+                new NavigationSkipped(
+                  t.id,
+                  this.urlSerializer.serialize(t.rawUrl),
+                  reason,
+                  NavigationSkippedCode.IgnoredSameUrlNavigation,
+                ),
+              );
+              t.resolve(null);
+              return EMPTY;
+            }
 
-                           if (this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl)) {
-                             return of(t).pipe(
-                                 // Fire NavigationStart event
-                                 switchMap(t => {
-                                   const transition = this.transitions?.getValue();
-                                   this.events.next(new NavigationStart(
-                                       t.id, this.urlSerializer.serialize(t.extractedUrl), t.source,
-                                       t.restoredState));
-                                   if (transition !== this.transitions?.getValue()) {
-                                     return EMPTY;
-                                   }
+            if (this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl)) {
+              return of(t).pipe(
+                // Fire NavigationStart event
+                switchMap((t) => {
+                  const transition = this.transitions?.getValue();
+                  this.events.next(
+                    new NavigationStart(
+                      t.id,
+                      this.urlSerializer.serialize(t.extractedUrl),
+                      t.source,
+                      t.restoredState,
+                    ),
+                  );
+                  if (transition !== this.transitions?.getValue()) {
+                    return EMPTY;
+                  }
 
-                                   // This delay is required to match old behavior that forced
-                                   // navigation to always be async
-                                   return Promise.resolve(t);
-                                 }),
+                  // This delay is required to match old behavior that forced
+                  // navigation to always be async
+                  return Promise.resolve(t);
+                }),
 
-                                 // Recognize
-                                 recognize(
-                                     this.environmentInjector, this.configLoader,
-                                     this.rootComponentType, router.config, this.urlSerializer,
-                                     this.paramsInheritanceStrategy),
+                // Recognize
+                recognize(
+                  this.environmentInjector,
+                  this.configLoader,
+                  this.rootComponentType,
+                  router.config,
+                  this.urlSerializer,
+                  this.paramsInheritanceStrategy,
+                ),
 
-                                 // Update URL if in `eager` update mode
-                                 tap(t => {
-                                   overallTransitionState.targetSnapshot = t.targetSnapshot;
-                                   overallTransitionState.urlAfterRedirects = t.urlAfterRedirects;
-                                   this.currentNavigation = {
-                                     ...this.currentNavigation!,
-                                     finalUrl: t.urlAfterRedirects
-                                   };
+                // Update URL if in `eager` update mode
+                tap((t) => {
+                  overallTransitionState.targetSnapshot = t.targetSnapshot;
+                  overallTransitionState.urlAfterRedirects = t.urlAfterRedirects;
+                  this.currentNavigation = {
+                    ...this.currentNavigation!,
+                    finalUrl: t.urlAfterRedirects,
+                  };
 
-                                   // Fire RoutesRecognized
-                                   const routesRecognized = new RoutesRecognized(
-                                       t.id, this.urlSerializer.serialize(t.extractedUrl),
-                                       this.urlSerializer.serialize(t.urlAfterRedirects!),
-                                       t.targetSnapshot!);
-                                   this.events.next(routesRecognized);
-                                 }));
-                           } else if (
-                               urlTransition &&
-                               this.urlHandlingStrategy.shouldProcessUrl(t.currentRawUrl)) {
-                             /* When the current URL shouldn't be processed, but the previous one
-                              * was, we handle this "error condition" by navigating to the
-                              * previously successful URL, but leaving the URL intact.*/
-                             const {id, extractedUrl, source, restoredState, extras} = t;
-                             const navStart = new NavigationStart(
-                                 id, this.urlSerializer.serialize(extractedUrl), source,
-                                 restoredState);
-                             this.events.next(navStart);
-                             const targetSnapshot =
-                                 createEmptyState(this.rootComponentType).snapshot;
+                  // Fire RoutesRecognized
+                  const routesRecognized = new RoutesRecognized(
+                    t.id,
+                    this.urlSerializer.serialize(t.extractedUrl),
+                    this.urlSerializer.serialize(t.urlAfterRedirects!),
+                    t.targetSnapshot!,
+                  );
+                  this.events.next(routesRecognized);
+                }),
+              );
+            } else if (
+              urlTransition &&
+              this.urlHandlingStrategy.shouldProcessUrl(t.currentRawUrl)
+            ) {
+              /* When the current URL shouldn't be processed, but the previous one
+               * was, we handle this "error condition" by navigating to the
+               * previously successful URL, but leaving the URL intact.*/
+              const {id, extractedUrl, source, restoredState, extras} = t;
+              const navStart = new NavigationStart(
+                id,
+                this.urlSerializer.serialize(extractedUrl),
+                source,
+                restoredState,
+              );
+              this.events.next(navStart);
+              const targetSnapshot = createEmptyState(this.rootComponentType).snapshot;
 
-                             this.currentTransition = overallTransitionState = {
-                               ...t,
-                               targetSnapshot,
-                               urlAfterRedirects: extractedUrl,
-                               extras: {...extras, skipLocationChange: false, replaceUrl: false},
-                             };
-                             this.currentNavigation!.finalUrl = extractedUrl;
-                             return of(overallTransitionState);
-                           } else {
-                             /* When neither the current or previous URL can be processed, do
-                              * nothing other than update router's internal reference to the
-                              * current "settled" URL. This way the next navigation will be coming
-                              * from the current URL in the browser.
-                              */
-                             const reason = (typeof ngDevMode === 'undefined' || ngDevMode) ?
-                                 `Navigation was ignored because the UrlHandlingStrategy` +
-                                     ` indicated neither the current URL ${
-                                         t.currentRawUrl} nor target URL ${
-                                         t.rawUrl} should be processed.` :
-                                 '';
-                             this.events.next(new NavigationSkipped(
-                                 t.id, this.urlSerializer.serialize(t.extractedUrl), reason,
-                                 NavigationSkippedCode.IgnoredByUrlHandlingStrategy));
-                             t.resolve(null);
-                             return EMPTY;
-                           }
-                         }),
+              this.currentTransition = overallTransitionState = {
+                ...t,
+                targetSnapshot,
+                urlAfterRedirects: extractedUrl,
+                extras: {...extras, skipLocationChange: false, replaceUrl: false},
+              };
+              this.currentNavigation!.finalUrl = extractedUrl;
+              return of(overallTransitionState);
+            } else {
+              /* When neither the current or previous URL can be processed, do
+               * nothing other than update router's internal reference to the
+               * current "settled" URL. This way the next navigation will be coming
+               * from the current URL in the browser.
+               */
+              const reason =
+                typeof ngDevMode === 'undefined' || ngDevMode
+                  ? `Navigation was ignored because the UrlHandlingStrategy` +
+                    ` indicated neither the current URL ${t.currentRawUrl} nor target URL ${t.rawUrl} should be processed.`
+                  : '';
+              this.events.next(
+                new NavigationSkipped(
+                  t.id,
+                  this.urlSerializer.serialize(t.extractedUrl),
+                  reason,
+                  NavigationSkippedCode.IgnoredByUrlHandlingStrategy,
+                ),
+              );
+              t.resolve(null);
+              return EMPTY;
+            }
+          }),
 
-                         // --- GUARDS ---
-                         tap(t => {
-                           const guardsStart = new GuardsCheckStart(
-                               t.id, this.urlSerializer.serialize(t.extractedUrl),
-                               this.urlSerializer.serialize(t.urlAfterRedirects!),
-                               t.targetSnapshot!);
-                           this.events.next(guardsStart);
-                         }),
+          // --- GUARDS ---
+          tap((t) => {
+            const guardsStart = new GuardsCheckStart(
+              t.id,
+              this.urlSerializer.serialize(t.extractedUrl),
+              this.urlSerializer.serialize(t.urlAfterRedirects!),
+              t.targetSnapshot!,
+            );
+            this.events.next(guardsStart);
+          }),
 
-                         map(t => {
-                           this.currentTransition = overallTransitionState = {
-                             ...t,
-                             guards: getAllRouteGuards(
-                                 t.targetSnapshot!, t.currentSnapshot, this.rootContexts)
-                           };
-                           return overallTransitionState;
-                         }),
+          map((t) => {
+            this.currentTransition = overallTransitionState = {
+              ...t,
+              guards: getAllRouteGuards(t.targetSnapshot!, t.currentSnapshot, this.rootContexts),
+            };
+            return overallTransitionState;
+          }),
 
-                         checkGuards(
-                             this.environmentInjector, (evt: Event) => this.events.next(evt)),
-                         tap(t => {
-                           overallTransitionState.guardsResult = t.guardsResult;
-                           if (isUrlTree(t.guardsResult)) {
-                             throw redirectingNavigationError(this.urlSerializer, t.guardsResult);
-                           }
+          checkGuards(this.environmentInjector, (evt: Event) => this.events.next(evt)),
+          tap((t) => {
+            overallTransitionState.guardsResult = t.guardsResult;
+            if (isUrlTree(t.guardsResult)) {
+              throw redirectingNavigationError(this.urlSerializer, t.guardsResult);
+            }
 
-                           const guardsEnd = new GuardsCheckEnd(
-                               t.id, this.urlSerializer.serialize(t.extractedUrl),
-                               this.urlSerializer.serialize(t.urlAfterRedirects!),
-                               t.targetSnapshot!, !!t.guardsResult);
-                           this.events.next(guardsEnd);
-                         }),
+            const guardsEnd = new GuardsCheckEnd(
+              t.id,
+              this.urlSerializer.serialize(t.extractedUrl),
+              this.urlSerializer.serialize(t.urlAfterRedirects!),
+              t.targetSnapshot!,
+              !!t.guardsResult,
+            );
+            this.events.next(guardsEnd);
+          }),
 
-                         filter(t => {
-                           if (!t.guardsResult) {
-                             this.cancelNavigationTransition(
-                                 t, '', NavigationCancellationCode.GuardRejected);
-                             return false;
-                           }
-                           return true;
-                         }),
+          filter((t) => {
+            if (!t.guardsResult) {
+              this.cancelNavigationTransition(t, '', NavigationCancellationCode.GuardRejected);
+              return false;
+            }
+            return true;
+          }),
 
-                         // --- RESOLVE ---
-                         switchTap(t => {
-                           if (t.guards.canActivateChecks.length) {
-                             return of(t).pipe(
-                                 tap(t => {
-                                   const resolveStart = new ResolveStart(
-                                       t.id, this.urlSerializer.serialize(t.extractedUrl),
-                                       this.urlSerializer.serialize(t.urlAfterRedirects!),
-                                       t.targetSnapshot!);
-                                   this.events.next(resolveStart);
-                                 }),
-                                 switchMap(t => {
-                                   let dataResolved = false;
-                                   return of(t).pipe(
-                                       resolveData(
-                                           this.paramsInheritanceStrategy,
-                                           this.environmentInjector),
-                                       tap({
-                                         next: () => dataResolved = true,
-                                         complete: () => {
-                                           if (!dataResolved) {
-                                             this.cancelNavigationTransition(
-                                                 t,
-                                                 (typeof ngDevMode === 'undefined' || ngDevMode) ?
-                                                     `At least one route resolver didn't emit any value.` :
-                                                     '',
-                                                 NavigationCancellationCode.NoDataFromResolver);
-                                           }
-                                         }
-                                       }),
-                                   );
-                                 }),
-                                 tap(t => {
-                                   const resolveEnd = new ResolveEnd(
-                                       t.id, this.urlSerializer.serialize(t.extractedUrl),
-                                       this.urlSerializer.serialize(t.urlAfterRedirects!),
-                                       t.targetSnapshot!);
-                                   this.events.next(resolveEnd);
-                                 }));
-                           }
-                           return undefined;
-                         }),
+          // --- RESOLVE ---
+          switchTap((t) => {
+            if (t.guards.canActivateChecks.length) {
+              return of(t).pipe(
+                tap((t) => {
+                  const resolveStart = new ResolveStart(
+                    t.id,
+                    this.urlSerializer.serialize(t.extractedUrl),
+                    this.urlSerializer.serialize(t.urlAfterRedirects!),
+                    t.targetSnapshot!,
+                  );
+                  this.events.next(resolveStart);
+                }),
+                switchMap((t) => {
+                  let dataResolved = false;
+                  return of(t).pipe(
+                    resolveData(this.paramsInheritanceStrategy, this.environmentInjector),
+                    tap({
+                      next: () => (dataResolved = true),
+                      complete: () => {
+                        if (!dataResolved) {
+                          this.cancelNavigationTransition(
+                            t,
+                            typeof ngDevMode === 'undefined' || ngDevMode
+                              ? `At least one route resolver didn't emit any value.`
+                              : '',
+                            NavigationCancellationCode.NoDataFromResolver,
+                          );
+                        }
+                      },
+                    }),
+                  );
+                }),
+                tap((t) => {
+                  const resolveEnd = new ResolveEnd(
+                    t.id,
+                    this.urlSerializer.serialize(t.extractedUrl),
+                    this.urlSerializer.serialize(t.urlAfterRedirects!),
+                    t.targetSnapshot!,
+                  );
+                  this.events.next(resolveEnd);
+                }),
+              );
+            }
+            return undefined;
+          }),
 
-                         // --- LOAD COMPONENTS ---
-                         switchTap((t: NavigationTransition) => {
-                           const loadComponents =
-                               (route: ActivatedRouteSnapshot): Array<Observable<void>> => {
-                                 const loaders: Array<Observable<void>> = [];
-                                 if (route.routeConfig?.loadComponent &&
-                                     !route.routeConfig._loadedComponent) {
-                                   loaders.push(this.configLoader.loadComponent(route.routeConfig)
-                                                    .pipe(
-                                                        tap(loadedComponent => {
-                                                          route.component = loadedComponent;
-                                                        }),
-                                                        map(() => void 0),
-                                                        ));
-                                 }
-                                 for (const child of route.children) {
-                                   loaders.push(...loadComponents(child));
-                                 }
-                                 return loaders;
-                               };
-                           return combineLatest(loadComponents(t.targetSnapshot!.root))
-                               .pipe(defaultIfEmpty(null), take(1));
-                         }),
+          // --- LOAD COMPONENTS ---
+          switchTap((t: NavigationTransition) => {
+            const loadComponents = (route: ActivatedRouteSnapshot): Array<Observable<void>> => {
+              const loaders: Array<Observable<void>> = [];
+              if (route.routeConfig?.loadComponent && !route.routeConfig._loadedComponent) {
+                loaders.push(
+                  this.configLoader.loadComponent(route.routeConfig).pipe(
+                    tap((loadedComponent) => {
+                      route.component = loadedComponent;
+                    }),
+                    map(() => void 0),
+                  ),
+                );
+              }
+              for (const child of route.children) {
+                loaders.push(...loadComponents(child));
+              }
+              return loaders;
+            };
+            return combineLatest(loadComponents(t.targetSnapshot!.root)).pipe(
+              defaultIfEmpty(null),
+              take(1),
+            );
+          }),
 
-                         switchTap(() => this.afterPreactivation()),
+          switchTap(() => this.afterPreactivation()),
 
-                         switchMap(() => {
-                           const {currentSnapshot, targetSnapshot} = overallTransitionState;
-                           const viewTransitionStarted = this.createViewTransition?.(
-                               this.environmentInjector, currentSnapshot.root,
-                               targetSnapshot!.root);
+          switchMap(() => {
+            const {currentSnapshot, targetSnapshot} = overallTransitionState;
+            const viewTransitionStarted = this.createViewTransition?.(
+              this.environmentInjector,
+              currentSnapshot.root,
+              targetSnapshot!.root,
+            );
 
-                           // If view transitions are enabled, block the navigation until the view
-                           // transition callback starts. Otherwise, continue immediately.
-                           return viewTransitionStarted ?
-                               from(viewTransitionStarted).pipe(map(() => overallTransitionState)) :
-                               of(overallTransitionState);
-                         }),
+            // If view transitions are enabled, block the navigation until the view
+            // transition callback starts. Otherwise, continue immediately.
+            return viewTransitionStarted
+              ? from(viewTransitionStarted).pipe(map(() => overallTransitionState))
+              : of(overallTransitionState);
+          }),
 
-                         map((t: NavigationTransition) => {
-                           const targetRouterState = createRouterState(
-                               router.routeReuseStrategy, t.targetSnapshot!, t.currentRouterState);
-                           this.currentTransition =
-                               overallTransitionState = {...t, targetRouterState};
-                           this.currentNavigation!.targetRouterState = targetRouterState;
-                           return overallTransitionState;
-                         }),
+          map((t: NavigationTransition) => {
+            const targetRouterState = createRouterState(
+              router.routeReuseStrategy,
+              t.targetSnapshot!,
+              t.currentRouterState,
+            );
+            this.currentTransition = overallTransitionState = {...t, targetRouterState};
+            this.currentNavigation!.targetRouterState = targetRouterState;
+            return overallTransitionState;
+          }),
 
-                         tap(() => {
-                           this.events.next(new BeforeActivateRoutes());
-                         }),
+          tap(() => {
+            this.events.next(new BeforeActivateRoutes());
+          }),
 
-                         activateRoutes(
-                             this.rootContexts, router.routeReuseStrategy,
-                             (evt: Event) => this.events.next(evt), this.inputBindingEnabled),
+          activateRoutes(
+            this.rootContexts,
+            router.routeReuseStrategy,
+            (evt: Event) => this.events.next(evt),
+            this.inputBindingEnabled,
+          ),
 
-                         // Ensure that if some observable used to drive the transition doesn't
-                         // complete, the navigation still finalizes This should never happen, but
-                         // this is done as a safety measure to avoid surfacing this error (#49567).
-                         take(1),
+          // Ensure that if some observable used to drive the transition doesn't
+          // complete, the navigation still finalizes This should never happen, but
+          // this is done as a safety measure to avoid surfacing this error (#49567).
+          take(1),
 
-                         tap({
-                           next: (t: NavigationTransition) => {
-                             completed = true;
-                             this.lastSuccessfulNavigation = this.currentNavigation;
-                             this.events.next(new NavigationEnd(
-                                 t.id, this.urlSerializer.serialize(t.extractedUrl),
-                                 this.urlSerializer.serialize(t.urlAfterRedirects!)));
-                             this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
-                             t.resolve(true);
-                           },
-                           complete: () => {
-                             completed = true;
-                           }
-                         }),
+          tap({
+            next: (t: NavigationTransition) => {
+              completed = true;
+              this.lastSuccessfulNavigation = this.currentNavigation;
+              this.events.next(
+                new NavigationEnd(
+                  t.id,
+                  this.urlSerializer.serialize(t.extractedUrl),
+                  this.urlSerializer.serialize(t.urlAfterRedirects!),
+                ),
+              );
+              this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
+              t.resolve(true);
+            },
+            complete: () => {
+              completed = true;
+            },
+          }),
 
-                         // There used to be a lot more logic happening directly within the
-                         // transition Observable. Some of this logic has been refactored out to
-                         // other places but there may still be errors that happen there. This gives
-                         // us a way to cancel the transition from the outside. This may also be
-                         // required in the future to support something like the abort signal of the
-                         // Navigation API where the navigation gets aborted from outside the
-                         // transition.
-                         takeUntil(this.transitionAbortSubject.pipe(tap(err => {
-                           throw err;
-                         }))),
+          // There used to be a lot more logic happening directly within the
+          // transition Observable. Some of this logic has been refactored out to
+          // other places but there may still be errors that happen there. This gives
+          // us a way to cancel the transition from the outside. This may also be
+          // required in the future to support something like the abort signal of the
+          // Navigation API where the navigation gets aborted from outside the
+          // transition.
+          takeUntil(
+            this.transitionAbortSubject.pipe(
+              tap((err) => {
+                throw err;
+              }),
+            ),
+          ),
 
-                         finalize(() => {
-                           /* When the navigation stream finishes either through error or success,
-                            * we set the `completed` or `errored` flag. However, there are some
-                            * situations where we could get here without either of those being set.
-                            * For instance, a redirect during NavigationStart. Therefore, this is a
-                            * catch-all to make sure the NavigationCancel event is fired when a
-                            * navigation gets cancelled but not caught by other means. */
-                           if (!completed && !errored) {
-                             const cancelationReason =
-                                 (typeof ngDevMode === 'undefined' || ngDevMode) ?
-                                 `Navigation ID ${
-                                     overallTransitionState
-                                         .id} is not equal to the current navigation id ${
-                                     this.navigationId}` :
-                                 '';
-                             this.cancelNavigationTransition(
-                                 overallTransitionState, cancelationReason,
-                                 NavigationCancellationCode.SupersededByNewNavigation);
-                           }
-                           // Only clear current navigation if it is still set to the one that
-                           // finalized.
-                           if (this.currentNavigation?.id === overallTransitionState.id) {
-                             this.currentNavigation = null;
-                           }
-                         }),
-                         catchError((e) => {
-                           errored = true;
-                           /* This error type is issued during Redirect, and is handled as a
-                            * cancellation rather than an error. */
-                           if (isNavigationCancelingError(e)) {
-                             this.events.next(new NavigationCancel(
-                                 overallTransitionState.id,
-                                 this.urlSerializer.serialize(overallTransitionState.extractedUrl),
-                                 e.message, e.cancellationCode));
+          finalize(() => {
+            /* When the navigation stream finishes either through error or success,
+             * we set the `completed` or `errored` flag. However, there are some
+             * situations where we could get here without either of those being set.
+             * For instance, a redirect during NavigationStart. Therefore, this is a
+             * catch-all to make sure the NavigationCancel event is fired when a
+             * navigation gets cancelled but not caught by other means. */
+            if (!completed && !errored) {
+              const cancelationReason =
+                typeof ngDevMode === 'undefined' || ngDevMode
+                  ? `Navigation ID ${overallTransitionState.id} is not equal to the current navigation id ${this.navigationId}`
+                  : '';
+              this.cancelNavigationTransition(
+                overallTransitionState,
+                cancelationReason,
+                NavigationCancellationCode.SupersededByNewNavigation,
+              );
+            }
+            // Only clear current navigation if it is still set to the one that
+            // finalized.
+            if (this.currentNavigation?.id === overallTransitionState.id) {
+              this.currentNavigation = null;
+            }
+          }),
+          catchError((e) => {
+            errored = true;
+            /* This error type is issued during Redirect, and is handled as a
+             * cancellation rather than an error. */
+            if (isNavigationCancelingError(e)) {
+              this.events.next(
+                new NavigationCancel(
+                  overallTransitionState.id,
+                  this.urlSerializer.serialize(overallTransitionState.extractedUrl),
+                  e.message,
+                  e.cancellationCode,
+                ),
+              );
 
-                             // When redirecting, we need to delay resolving the navigation
-                             // promise and push it to the redirect navigation
-                             if (!isRedirectingNavigationCancelingError(e)) {
-                               overallTransitionState.resolve(false);
-                             } else {
-                               this.events.next(new RedirectRequest(e.url));
-                             }
+              // When redirecting, we need to delay resolving the navigation
+              // promise and push it to the redirect navigation
+              if (!isRedirectingNavigationCancelingError(e)) {
+                overallTransitionState.resolve(false);
+              } else {
+                this.events.next(new RedirectRequest(e.url));
+              }
 
-                             /* All other errors should reset to the router's internal URL reference
-                              * to the pre-error state. */
-                           } else {
-                             this.events.next(new NavigationError(
-                                 overallTransitionState.id,
-                                 this.urlSerializer.serialize(overallTransitionState.extractedUrl),
-                                 e, overallTransitionState.targetSnapshot ?? undefined));
-                             try {
-                               overallTransitionState.resolve(router.errorHandler(e));
-                             } catch (ee) {
-                               // TODO(atscott): consider flipping the default behavior of
-                               // resolveNavigationPromiseOnError to be `resolve(false)` when
-                               // undefined. This is the most sane thing to do given that
-                               // applications very rarely handle the promise rejection and, as a
-                               // result, would get "unhandled promise rejection" console logs.
-                               // The vast majority of applications would not be affected by this
-                               // change so omitting a migration seems reasonable. Instead,
-                               // applications that rely on rejection can specifically opt-in to the
-                               // old behavior.
-                               if (this.options.resolveNavigationPromiseOnError) {
-                                 overallTransitionState.resolve(false);
-                               } else {
-                                 overallTransitionState.reject(ee);
-                               }
-                             }
-                           }
-                           return EMPTY;
-                         }));
-                 // casting because `pipe` returns observable({}) when called with 8+ arguments
-               })) as Observable<NavigationTransition>;
+              /* All other errors should reset to the router's internal URL reference
+               * to the pre-error state. */
+            } else {
+              this.events.next(
+                new NavigationError(
+                  overallTransitionState.id,
+                  this.urlSerializer.serialize(overallTransitionState.extractedUrl),
+                  e,
+                  overallTransitionState.targetSnapshot ?? undefined,
+                ),
+              );
+              try {
+                overallTransitionState.resolve(router.errorHandler(e));
+              } catch (ee) {
+                // TODO(atscott): consider flipping the default behavior of
+                // resolveNavigationPromiseOnError to be `resolve(false)` when
+                // undefined. This is the most sane thing to do given that
+                // applications very rarely handle the promise rejection and, as a
+                // result, would get "unhandled promise rejection" console logs.
+                // The vast majority of applications would not be affected by this
+                // change so omitting a migration seems reasonable. Instead,
+                // applications that rely on rejection can specifically opt-in to the
+                // old behavior.
+                if (this.options.resolveNavigationPromiseOnError) {
+                  overallTransitionState.resolve(false);
+                } else {
+                  overallTransitionState.reject(ee);
+                }
+              }
+            }
+            return EMPTY;
+          }),
+        );
+        // casting because `pipe` returns observable({}) when called with 8+ arguments
+      }),
+    ) as Observable<NavigationTransition>;
   }
 
   private cancelNavigationTransition(
-      t: NavigationTransition, reason: string, code: NavigationCancellationCode) {
-    const navCancel =
-        new NavigationCancel(t.id, this.urlSerializer.serialize(t.extractedUrl), reason, code);
+    t: NavigationTransition,
+    reason: string,
+    code: NavigationCancellationCode,
+  ) {
+    const navCancel = new NavigationCancel(
+      t.id,
+      this.urlSerializer.serialize(t.extractedUrl),
+      reason,
+      code,
+    );
     this.events.next(navCancel);
     t.resolve(false);
   }
@@ -759,8 +876,10 @@ export class NavigationTransitions {
     // [Object object] with the custom serializer and be "the same" when they
     // aren't).
     // (Same for isUpdatedBrowserUrl)
-    return this.currentTransition?.extractedUrl.toString() !==
-        this.currentTransition?.currentUrlTree.toString();
+    return (
+      this.currentTransition?.extractedUrl.toString() !==
+      this.currentTransition?.currentUrlTree.toString()
+    );
   }
 
   /**
@@ -772,10 +891,13 @@ export class NavigationTransitions {
     // The extracted URL is the part of the URL that this application cares about. `extract` may
     // return only part of the browser URL and that part may have not changed even if some other
     // portion of the URL did.
-    const extractedBrowserUrl =
-        this.urlHandlingStrategy.extract(this.urlSerializer.parse(this.location.path(true)));
-    return extractedBrowserUrl.toString() !== this.currentTransition?.extractedUrl.toString() &&
-        !this.currentTransition?.extras.skipLocationChange;
+    const extractedBrowserUrl = this.urlHandlingStrategy.extract(
+      this.urlSerializer.parse(this.location.path(true)),
+    );
+    return (
+      extractedBrowserUrl.toString() !== this.currentTransition?.extractedUrl.toString() &&
+      !this.currentTransition?.extras.skipLocationChange
+    );
   }
 }
 

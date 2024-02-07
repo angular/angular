@@ -9,7 +9,14 @@
 import {Observable} from 'rxjs';
 import {filter, map, take} from 'rxjs/operators';
 
-import {Event, NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationError, NavigationSkipped} from '../events';
+import {
+  Event,
+  NavigationCancel,
+  NavigationCancellationCode,
+  NavigationEnd,
+  NavigationError,
+  NavigationSkipped,
+} from '../events';
 
 enum NavigationResult {
   COMPLETE,
@@ -28,27 +35,32 @@ enum NavigationResult {
  */
 export function afterNextNavigation(router: {events: Observable<Event>}, action: () => void) {
   router.events
-      .pipe(
-          filter(
-              (e): e is NavigationEnd|NavigationCancel|NavigationError|NavigationSkipped =>
-                  e instanceof NavigationEnd || e instanceof NavigationCancel ||
-                  e instanceof NavigationError || e instanceof NavigationSkipped),
-          map(e => {
-            if (e instanceof NavigationEnd || e instanceof NavigationSkipped) {
-              return NavigationResult.COMPLETE;
-            }
-            const redirecting = e instanceof NavigationCancel ?
-                (e.code === NavigationCancellationCode.Redirect ||
-                 e.code === NavigationCancellationCode.SupersededByNewNavigation) :
-                false;
-            return redirecting ? NavigationResult.REDIRECTING : NavigationResult.FAILED;
-          }),
-          filter(
-              (result): result is NavigationResult.COMPLETE|NavigationResult.FAILED =>
-                  result !== NavigationResult.REDIRECTING),
-          take(1),
-          )
-      .subscribe(() => {
-        action();
-      });
+    .pipe(
+      filter(
+        (e): e is NavigationEnd | NavigationCancel | NavigationError | NavigationSkipped =>
+          e instanceof NavigationEnd ||
+          e instanceof NavigationCancel ||
+          e instanceof NavigationError ||
+          e instanceof NavigationSkipped,
+      ),
+      map((e) => {
+        if (e instanceof NavigationEnd || e instanceof NavigationSkipped) {
+          return NavigationResult.COMPLETE;
+        }
+        const redirecting =
+          e instanceof NavigationCancel
+            ? e.code === NavigationCancellationCode.Redirect ||
+              e.code === NavigationCancellationCode.SupersededByNewNavigation
+            : false;
+        return redirecting ? NavigationResult.REDIRECTING : NavigationResult.FAILED;
+      }),
+      filter(
+        (result): result is NavigationResult.COMPLETE | NavigationResult.FAILED =>
+          result !== NavigationResult.REDIRECTING,
+      ),
+      take(1),
+    )
+    .subscribe(() => {
+      action();
+    });
 }

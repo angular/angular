@@ -9,7 +9,6 @@
 import {Route, UrlMatchResult} from './models';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
-
 /**
  * The primary routing outlet.
  *
@@ -59,7 +58,7 @@ export interface ParamMap {
    * or the first value if the parameter has multiple values,
    * or `null` when there is no such parameter.
    */
-  get(name: string): string|null;
+  get(name: string): string | null;
   /**
    * Retrieves multiple values for a parameter.
    * @param name The parameter name.
@@ -84,7 +83,7 @@ class ParamsAsMap implements ParamMap {
     return Object.prototype.hasOwnProperty.call(this.params, name);
   }
 
-  get(name: string): string|null {
+  get(name: string): string | null {
     if (this.has(name)) {
       const v = this.params[name];
       return Array.isArray(v) ? v[0] : v;
@@ -134,7 +133,10 @@ export function convertToParamMap(params: Params): ParamMap {
  * @publicApi
  */
 export function defaultUrlMatcher(
-    segments: UrlSegment[], segmentGroup: UrlSegmentGroup, route: Route): UrlMatchResult|null {
+  segments: UrlSegment[],
+  segmentGroup: UrlSegmentGroup,
+  route: Route,
+): UrlMatchResult | null {
   const parts = route.path!.split('/');
 
   if (parts.length > segments.length) {
@@ -142,8 +144,10 @@ export function defaultUrlMatcher(
     return null;
   }
 
-  if (route.pathMatch === 'full' &&
-      (segmentGroup.hasChildren() || parts.length < segments.length)) {
+  if (
+    route.pathMatch === 'full' &&
+    (segmentGroup.hasChildren() || parts.length < segments.length)
+  ) {
     // The config is longer than the actual URL but we are looking for a full match, return null
     return null;
   }
