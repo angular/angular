@@ -17,6 +17,11 @@ export class FatalDiagnosticError extends Error {
       readonly diagnosticMessage: string|ts.DiagnosticMessageChain,
       readonly relatedInformation?: ts.DiagnosticRelatedInformation[]) {
     super(`FatalDiagnosticError #${code}: ${diagnosticMessage}`);
+
+    // Extending `Error` ends up breaking some internal tests. This appears to be a known issue
+    // when extending errors in TS and the workaround is to explicitly set the prototype.
+    // https://stackoverflow.com/questions/41102060/typescript-extending-error-class
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 
   // Trying to hide `.message` from `Error` to encourage users to look
