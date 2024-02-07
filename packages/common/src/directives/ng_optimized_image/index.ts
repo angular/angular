@@ -13,5 +13,6 @@ export {provideCloudinaryLoader} from './image_loaders/cloudinary_loader';
 export {IMAGE_LOADER, ImageLoader, ImageLoaderConfig} from './image_loaders/image_loader';
 export {provideImageKitLoader} from './image_loaders/imagekit_loader';
 export {provideImgixLoader} from './image_loaders/imgix_loader';
+export {provideNetlifyLoader} from './image_loaders/netlify_loader';
 export {ImagePlaceholderConfig, NgOptimizedImage} from './ng_optimized_image';
 export {PRECONNECT_CHECK_BLOCKLIST} from './preconnect_link_checker';

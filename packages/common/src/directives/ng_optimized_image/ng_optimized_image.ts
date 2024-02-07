@@ -44,6 +44,7 @@ import {
 } from './image_loaders/image_loader';
 import {imageKitLoaderInfo} from './image_loaders/imagekit_loader';
 import {imgixLoaderInfo} from './image_loaders/imgix_loader';
+import {netlifyLoaderInfo} from './image_loaders/netlify_loader';
 import {LCPImageObserver} from './lcp_image_observer';
 import {PreconnectLinkChecker} from './preconnect_link_checker';
 import {PreloadLinkCreator} from './preload-link-creator';
@@ -128,7 +129,12 @@ export const DATA_URL_WARN_LIMIT = 4000;
 export const DATA_URL_ERROR_LIMIT = 10000;
 
 /** Info about built-in loaders we can test for. */
-export const BUILT_IN_LOADERS = [imgixLoaderInfo, imageKitLoaderInfo, cloudinaryLoaderInfo];
+export const BUILT_IN_LOADERS = [
+  imgixLoaderInfo,
+  imageKitLoaderInfo,
+  cloudinaryLoaderInfo,
+  netlifyLoaderInfo,
+];
 
 /**
  * Config options used in rendering placeholder images.

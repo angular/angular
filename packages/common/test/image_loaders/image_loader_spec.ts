@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {IMAGE_LOADER, ImageLoader} from '@angular/common/src/directives/ng_optimized_image';
+import {
+  IMAGE_LOADER,
+  ImageLoader,
+  provideNetlifyLoader,
+} from '@angular/common/src/directives/ng_optimized_image';
 import {provideCloudflareLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudflare_loader';
 import {provideCloudinaryLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudinary_loader';
 import {provideImageKitLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imagekit_loader';
 import {provideImgixLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/imgix_loader';
 import {isValidPath} from '@angular/common/src/directives/ng_optimized_image/url';
+import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {createEnvironmentInjector, EnvironmentInjector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
@@ -204,6 +209,57 @@ describe('Built-in image directive loaders', () => {
       const src = 'https://angular.io/img.png';
       const loader = createCloudflareLoader(path);
       expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
+    });
+  });
+
+  describe('Netlify loader', () => {
+    function createNetlifyLoader(path?: string): ImageLoader {
+      const injector = createEnvironmentInjector(
+        [provideNetlifyLoader(path)],
+        TestBed.inject(EnvironmentInjector),
+      );
+      return injector.get(IMAGE_LOADER);
+    }
+    it('should construct an image loader with an empty path', () => {
+      const loader = createNetlifyLoader();
+      let config = {src: 'img.png'};
+      expect(loader(config)).toBe('/.netlify/images?url=%2Fimg.png');
+    });
+    it('should construct an image loader with the given path', () => {
+      const loader = createNetlifyLoader('https://mysite.com');
+      let config = {src: 'img.png'};
+      expect(loader(config)).toBe('https://mysite.com/.netlify/images?url=%2Fimg.png');
+    });
+    it('should construct an image loader with the given path', () => {
+      const loader = createNetlifyLoader('https://mysite.com');
+      const config = {src: 'img.png', width: 100};
+      expect(loader(config)).toBe('https://mysite.com/.netlify/images?url=%2Fimg.png&w=100');
+    });
+
+    it('should construct an image URL with custom options', () => {
+      const loader = createNetlifyLoader('https://mysite.com');
+      const config = {src: 'img.png', width: 100, loaderParams: {quality: 50}};
+      expect(loader(config)).toBe('https://mysite.com/.netlify/images?url=%2Fimg.png&w=100&q=50');
+    });
+
+    it('should construct an image with an absolute URL', () => {
+      const path = 'https://mysite.com';
+      const src = 'https://angular.io/img.png';
+      const loader = createNetlifyLoader(path);
+      expect(loader({src})).toBe(
+        'https://mysite.com/.netlify/images?url=https%3A%2F%2Fangular.io%2Fimg.png',
+      );
+    });
+
+    it('should warn if an unknown loader parameter is provided', () => {
+      const path = 'https://mysite.com';
+      const loader = createNetlifyLoader(path);
+      const config = {src: 'img.png', loaderParams: {unknown: 'value'}};
+      spyOn(console, 'warn');
+      expect(loader(config)).toBe('https://mysite.com/.netlify/images?url=%2Fimg.png');
+      expect(console.warn).toHaveBeenCalledWith(
+        `NG0${RuntimeErrorCode.INVALID_LOADER_ARGUMENTS}: The Netlify image loader has detected an \`<img>\` tag with the unsupported attribute "\`unknown\`".`,
+      );
     });
   });
 

@@ -890,6 +890,9 @@ export const provideImageKitLoader: (path: string) => Provider[];
 export const provideImgixLoader: (path: string) => Provider[];
 
 // @public
+export function provideNetlifyLoader(path?: string): Provider[];
+
+// @public
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 // @public
