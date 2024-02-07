@@ -32,6 +32,7 @@ import {isChildOf, parentCollapsed} from './directive-forest-utils';
 import {IndexedNode} from './index-forest';
 import {MatIcon} from '@angular/material/icon';
 import {FilterComponent} from './filter/filter.component';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -45,6 +46,7 @@ import {FilterComponent} from './filter/filter.component';
     CdkFixedSizeVirtualScroll,
     CdkVirtualForOf,
     MatIcon,
+    MatTooltip,
   ],
 })
 export class DirectiveForestComponent {
