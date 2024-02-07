@@ -126,13 +126,21 @@ export type Signal<T> = (() => T)&{
   [SIGNAL]: unknown;
 };
 
+/**
+ * Symbol used to tell distinguish `WritableSignal` from other non-writable signals and functions.
+ */
+const WRITABLE_SIGNAL = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
+
 export interface WritableSignal<T> extends Signal<T> {
+  [WRITABLE_SIGNAL]: T;
   set(value: T): void;
   update(updateFn: (value: T) => T): void;
   asReadonly(): Signal<T>;
 }
 
-export function ɵunwrapWritableSignal<T>(value: T|WritableSignal<T>): T {
+// Note: needs to be kept in sync with the copies in `render3/reactivity/signal.ts` and
+// `ngtsc/typecheck/testing/index.ts` to ensure consistent tests.
+export function ɵunwrapWritableSignal<T>(value: T|{[WRITABLE_SIGNAL]: T}): T {
   return null!;
 }
 

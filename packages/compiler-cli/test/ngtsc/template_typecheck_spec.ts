@@ -479,6 +479,36 @@ export declare class AnimationEvent {
          expect(diags).toEqual([]);
        });
 
+    it('should type check a two-way binding to a function value', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        type TestFn = (val: number | null | undefined) => string;
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir {
+          @Input() val!: TestFn;
+          @Output() valChange = new EventEmitter<TestFn>();
+        }
+
+        @Component({
+          template: '<input dir [(val)]="invalidType">',
+          standalone: true,
+          imports: [Dir],
+        })
+        export class FooCmp {
+          invalidType = (val: string) => 0;
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(jasmine.objectContaining({
+        messageText: `Type '(val: string) => number' is not assignable to type 'TestFn'.`,
+      }));
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write('test.ts', `
