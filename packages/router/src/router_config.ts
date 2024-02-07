@@ -10,7 +10,6 @@ import {InjectionToken} from '@angular/core';
 
 import {OnSameUrlNavigation} from './models';
 
-
 /**
  * Error handler that is invoked when a navigation error occurs.
  *
@@ -46,7 +45,7 @@ export type ErrorHandler = (error: any) => any;
  *
  * @publicApi
  */
-export type InitialNavigation = 'disabled'|'enabledBlocking'|'enabledNonBlocking';
+export type InitialNavigation = 'disabled' | 'enabledBlocking' | 'enabledNonBlocking';
 
 /**
  * Extra configuration options that can be used with the `withRouterConfig` function.
@@ -75,7 +74,7 @@ export interface RouterConfigOptions {
    *
    * The default value is `replace` when not set.
    */
-  canceledNavigationResolution?: 'replace'|'computed';
+  canceledNavigationResolution?: 'replace' | 'computed';
 
   /**
    * Configures the default for handling a navigation request to the current URL.
@@ -103,7 +102,7 @@ export interface RouterConfigOptions {
    * `a;foo=bar/b`.
    *
    */
-  paramsInheritanceStrategy?: 'emptyOnly'|'always';
+  paramsInheritanceStrategy?: 'emptyOnly' | 'always';
 
   /**
    * Defines when the router updates the browser URL. By default ('deferred'),
@@ -112,7 +111,7 @@ export interface RouterConfigOptions {
    * Updating the URL early allows you to handle a failure of navigation by
    * showing an error message with the URL that failed.
    */
-  urlUpdateStrategy?: 'deferred'|'eager';
+  urlUpdateStrategy?: 'deferred' | 'eager';
 
   /**
    * When `true`, the `Promise` will instead resolve with `false`, as it does with other failed
@@ -138,7 +137,7 @@ export interface InMemoryScrollingOptions {
    * Anchor scrolling does not happen on 'popstate'. Instead, we restore the position
    * that we stored or scroll to the top.
    */
-  anchorScrolling?: 'disabled'|'enabled';
+  anchorScrolling?: 'disabled' | 'enabled';
 
   /**
    * Configures if the scroll position needs to be restored when navigating back.
@@ -174,7 +173,7 @@ export interface InMemoryScrollingOptions {
    * }
    * ```
    */
-  scrollPositionRestoration?: 'disabled'|'enabled'|'top';
+  scrollPositionRestoration?: 'disabled' | 'enabled' | 'top';
 }
 
 /**
@@ -255,7 +254,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
    * When given a function, the router invokes the function every time
    * it restores scroll position.
    */
-  scrollOffset?: [number, number]|(() => [number, number]);
+  scrollOffset?: [number, number] | (() => [number, number]);
 }
 
 /**
@@ -264,7 +263,9 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
  * @publicApi
  */
 export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'router config' : '', {
-      providedIn: 'root',
-      factory: () => ({}),
-    });
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'router config' : '',
+  {
+    providedIn: 'root',
+    factory: () => ({}),
+  },
+);

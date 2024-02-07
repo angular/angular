@@ -24,7 +24,6 @@ import {RouterOutlet} from '../directives/router_outlet';
   imports: [RouterOutlet],
   standalone: true,
 })
-export class ɵEmptyOutletComponent {
-}
+export class ɵEmptyOutletComponent {}
 
 export {ɵEmptyOutletComponent as EmptyOutletComponent};

@@ -10,8 +10,14 @@ import {DOCUMENT} from '@angular/common';
 import {Component, destroyPlatform, inject} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
-import {Event, NavigationEnd, provideRouter, Router, withDisabledInitialNavigation, withViewTransitions} from '@angular/router';
-
+import {
+  Event,
+  NavigationEnd,
+  provideRouter,
+  Router,
+  withDisabledInitialNavigation,
+  withViewTransitions,
+} from '@angular/router';
 
 describe('view transitions', () => {
   if (isNode) {
@@ -27,16 +33,17 @@ describe('view transitions', () => {
     standalone: true,
     template: ``,
   })
-  class App {
-  }
+  class App {}
   beforeEach(withBody('<test-app></test-app>', () => {}));
   it('should skip initial transition', async () => {
     const appRef = await bootstrapApplication(App, {
-      providers: [provideRouter(
+      providers: [
+        provideRouter(
           [{path: '**', component: App}],
           withDisabledInitialNavigation(),
           withViewTransitions({skipInitialTransition: true}),
-          )]
+        ),
+      ],
     });
 
     const doc = appRef.injector.get(DOCUMENT);
@@ -57,16 +64,14 @@ describe('view transitions', () => {
       template: `b`,
       standalone: true,
     })
-    class ComponentB {
-    }
+    class ComponentB {}
 
-
-    const res = await bootstrapApplication(
-        App,
-        {providers: [provideRouter([{path: 'b', component: ComponentB}], withViewTransitions())]});
+    const res = await bootstrapApplication(App, {
+      providers: [provideRouter([{path: 'b', component: ComponentB}], withViewTransitions())],
+    });
     const router = res.injector.get(Router);
     const eventLog = [] as Event[];
-    router.events.subscribe(e => {
+    router.events.subscribe((e) => {
       eventLog.push(e);
     });
 
@@ -90,11 +95,13 @@ describe('view transitions', () => {
 
       const transitionSpy = jasmine.createSpy();
       const appRef = await bootstrapApplication(App, {
-        providers: [provideRouter(
+        providers: [
+          provideRouter(
             [{path: '**', component: App}],
             withDisabledInitialNavigation(),
             withViewTransitions({onViewTransitionCreated: transitionSpy}),
-            )]
+          ),
+        ],
       });
 
       const doc = appRef.injector.get(DOCUMENT);

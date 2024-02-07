@@ -20,6 +20,7 @@ export const format: FormatConfig = {
       'packages/examples/**/*.{js,ts}',
       'packages/misc/**/*.{js,ts}',
       'packages/private/**/*.{js,ts}',
+      'packages/router/**/*.{js,ts}',
       'packages/service-worker/**/*.{js,ts}',
       'packages/upgrade/**/*.{js,ts}',
 
@@ -33,7 +34,7 @@ export const format: FormatConfig = {
   },
   'clang-format': {
     'matchers': [
-      //'**/*.{js,ts}',
+      '**/*.{js,ts}',
       // TODO: burn down format failures and remove aio and integration exceptions.
       '!aio/**',
       '!integration/**',
@@ -70,6 +71,7 @@ export const format: FormatConfig = {
       '!packages/examples/**/*.{js,ts}',
       '!packages/misc/**/*.{js,ts}',
       '!packages/private/**/*.{js,ts}',
+      '!packages/router/**/*.{js,ts}',
       '!packages/service-worker/**/*.{js,ts}',
       '!packages/upgrade/**/*.{js,ts}',
     ],
