@@ -6,7 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Optional, Output, QueryList, Renderer2, SimpleChanges} from '@angular/core';
+import {
+  AfterContentInit,
+  ChangeDetectorRef,
+  ContentChildren,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Optional,
+  Output,
+  QueryList,
+  Renderer2,
+  SimpleChanges,
+} from '@angular/core';
 import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
 
@@ -15,7 +30,6 @@ import {Router} from '../router';
 import {IsActiveMatchOptions} from '../url_tree';
 
 import {RouterLink} from './router_link';
-
 
 /**
  *
@@ -110,8 +124,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    *
    * @see {@link Router#isActive}
    */
-  @Input() routerLinkActiveOptions: {exact: boolean}|IsActiveMatchOptions = {exact: false};
-
+  @Input() routerLinkActiveOptions: {exact: boolean} | IsActiveMatchOptions = {exact: false};
 
   /**
    * Aria-current attribute to apply when the router link is active.
@@ -120,7 +133,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    *
    * @see {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-current}
    */
-  @Input() ariaCurrentWhenActive?: 'page'|'step'|'location'|'date'|'time'|true|false;
+  @Input() ariaCurrentWhenActive?: 'page' | 'step' | 'location' | 'date' | 'time' | true | false;
 
   /**
    *
@@ -141,8 +154,12 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   @Output() readonly isActiveChange: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
-      private router: Router, private element: ElementRef, private renderer: Renderer2,
-      private readonly cdr: ChangeDetectorRef, @Optional() private link?: RouterLink) {
+    private router: Router,
+    private element: ElementRef,
+    private renderer: Renderer2,
+    private readonly cdr: ChangeDetectorRef,
+    @Optional() private link?: RouterLink,
+  ) {
     this.routerEventsSubscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.update();
@@ -153,28 +170,32 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   /** @nodoc */
   ngAfterContentInit(): void {
     // `of(null)` is used to force subscribe body to execute once immediately (like `startWith`).
-    of(this.links.changes, of(null)).pipe(mergeAll()).subscribe(_ => {
-      this.update();
-      this.subscribeToEachLinkOnChanges();
-    });
+    of(this.links.changes, of(null))
+      .pipe(mergeAll())
+      .subscribe((_) => {
+        this.update();
+        this.subscribeToEachLinkOnChanges();
+      });
   }
 
   private subscribeToEachLinkOnChanges() {
     this.linkInputChangesSubscription?.unsubscribe();
     const allLinkChanges = [...this.links.toArray(), this.link]
-                               .filter((link): link is RouterLink => !!link)
-                               .map(link => link.onChanges);
-    this.linkInputChangesSubscription = from(allLinkChanges).pipe(mergeAll()).subscribe(link => {
-      if (this._isActive !== this.isLinkActive(this.router)(link)) {
-        this.update();
-      }
-    });
+      .filter((link): link is RouterLink => !!link)
+      .map((link) => link.onChanges);
+    this.linkInputChangesSubscription = from(allLinkChanges)
+      .pipe(mergeAll())
+      .subscribe((link) => {
+        if (this._isActive !== this.isLinkActive(this.router)(link)) {
+          this.update();
+        }
+      });
   }
 
   @Input()
-  set routerLinkActive(data: string[]|string) {
+  set routerLinkActive(data: string[] | string) {
     const classes = Array.isArray(data) ? data : data.split(' ');
-    this.classes = classes.filter(c => !!c);
+    this.classes = classes.filter((c) => !!c);
   }
 
   /** @nodoc */
@@ -203,7 +224,10 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
         });
         if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
           this.renderer.setAttribute(
-              this.element.nativeElement, 'aria-current', this.ariaCurrentWhenActive.toString());
+            this.element.nativeElement,
+            'aria-current',
+            this.ariaCurrentWhenActive.toString(),
+          );
         } else {
           this.renderer.removeAttribute(this.element.nativeElement, 'aria-current');
         }
@@ -215,11 +239,12 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
 
   private isLinkActive(router: Router): (link: RouterLink) => boolean {
-    const options: boolean|IsActiveMatchOptions =
-        isActiveMatchOptions(this.routerLinkActiveOptions) ?
-        this.routerLinkActiveOptions :
-        // While the types should disallow `undefined` here, it's possible without strict inputs
-        (this.routerLinkActiveOptions.exact || false);
+    const options: boolean | IsActiveMatchOptions = isActiveMatchOptions(
+      this.routerLinkActiveOptions,
+    )
+      ? this.routerLinkActiveOptions
+      : // While the types should disallow `undefined` here, it's possible without strict inputs
+        this.routerLinkActiveOptions.exact || false;
     return (link: RouterLink) => {
       const urlTree = link.urlTree;
       return urlTree ? router.isActive(urlTree, options) : false;
@@ -228,14 +253,15 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
   private hasActiveLinks(): boolean {
     const isActiveCheckFn = this.isLinkActive(this.router);
-    return this.link && isActiveCheckFn(this.link) || this.links.some(isActiveCheckFn);
+    return (this.link && isActiveCheckFn(this.link)) || this.links.some(isActiveCheckFn);
   }
 }
 
 /**
  * Use instead of `'paths' in options` to be compatible with property renaming
  */
-function isActiveMatchOptions(options: {exact: boolean}|
-                              IsActiveMatchOptions): options is IsActiveMatchOptions {
+function isActiveMatchOptions(
+  options: {exact: boolean} | IsActiveMatchOptions,
+): options is IsActiveMatchOptions {
   return !!(options as IsActiveMatchOptions).paths;
 }

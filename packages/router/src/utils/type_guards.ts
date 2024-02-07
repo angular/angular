@@ -9,7 +9,11 @@
 import {EmptyError} from 'rxjs';
 
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn} from '../models';
-import {NAVIGATION_CANCELING_ERROR, NavigationCancelingError, RedirectingNavigationCancelingError} from '../navigation_canceling_error';
+import {
+  NAVIGATION_CANCELING_ERROR,
+  NavigationCancelingError,
+  RedirectingNavigationCancelingError,
+} from '../navigation_canceling_error';
 import {isUrlTree} from '../url_tree';
 
 /**

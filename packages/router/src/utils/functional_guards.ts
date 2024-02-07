@@ -20,7 +20,11 @@ import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanMatchFn, ResolveF
  * @see {@link Route}
  */
 export function mapToCanMatch(providers: Array<Type<{canMatch: CanMatchFn}>>): CanMatchFn[] {
-  return providers.map(provider => (...params) => inject(provider).canMatch(...params));
+  return providers.map(
+    (provider) =>
+      (...params) =>
+        inject(provider).canMatch(...params),
+  );
 }
 
 /**
@@ -32,9 +36,14 @@ export function mapToCanMatch(providers: Array<Type<{canMatch: CanMatchFn}>>): C
  * @publicApi
  * @see {@link Route}
  */
-export function mapToCanActivate(providers: Array<Type<{canActivate: CanActivateFn}>>):
-    CanActivateFn[] {
-  return providers.map(provider => (...params) => inject(provider).canActivate(...params));
+export function mapToCanActivate(
+  providers: Array<Type<{canActivate: CanActivateFn}>>,
+): CanActivateFn[] {
+  return providers.map(
+    (provider) =>
+      (...params) =>
+        inject(provider).canActivate(...params),
+  );
 }
 /**
  * Maps an array of injectable classes with canActivateChild functions to an array of equivalent
@@ -46,8 +55,13 @@ export function mapToCanActivate(providers: Array<Type<{canActivate: CanActivate
  * @see {@link Route}
  */
 export function mapToCanActivateChild(
-    providers: Array<Type<{canActivateChild: CanActivateChildFn}>>): CanActivateChildFn[] {
-  return providers.map(provider => (...params) => inject(provider).canActivateChild(...params));
+  providers: Array<Type<{canActivateChild: CanActivateChildFn}>>,
+): CanActivateChildFn[] {
+  return providers.map(
+    (provider) =>
+      (...params) =>
+        inject(provider).canActivateChild(...params),
+  );
 }
 /**
  * Maps an array of injectable classes with canDeactivate functions to an array of equivalent
@@ -59,8 +73,13 @@ export function mapToCanActivateChild(
  * @see {@link Route}
  */
 export function mapToCanDeactivate<T = unknown>(
-    providers: Array<Type<{canDeactivate: CanDeactivateFn<T>}>>): CanDeactivateFn<T>[] {
-  return providers.map(provider => (...params) => inject(provider).canDeactivate(...params));
+  providers: Array<Type<{canDeactivate: CanDeactivateFn<T>}>>,
+): CanDeactivateFn<T>[] {
+  return providers.map(
+    (provider) =>
+      (...params) =>
+        inject(provider).canDeactivate(...params),
+  );
 }
 /**
  * Maps an injectable class with a resolve function to an equivalent `ResolveFn`

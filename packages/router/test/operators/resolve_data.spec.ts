@@ -15,32 +15,35 @@ import {EMPTY, interval, NEVER, of} from 'rxjs';
 describe('resolveData operator', () => {
   it('should take only the first emitted value of every resolver', async () => {
     TestBed.configureTestingModule({
-      providers: [provideRouter([{path: '**', children: [], resolve: {e1: () => interval()}}])]
+      providers: [provideRouter([{path: '**', children: [], resolve: {e1: () => interval()}}])],
     });
     await RouterTestingHarness.create('/');
     expect(TestBed.inject(Router).routerState.root.firstChild?.snapshot.data).toEqual({e1: 0});
   });
 
   it('should cancel navigation if a resolver does not complete', async () => {
-    TestBed.configureTestingModule(
-        {providers: [provideRouter([{path: '**', children: [], resolve: {e1: () => EMPTY}}])]});
+    TestBed.configureTestingModule({
+      providers: [provideRouter([{path: '**', children: [], resolve: {e1: () => EMPTY}}])],
+    });
     await RouterTestingHarness.create('/a');
     expect(TestBed.inject(Router).url).toEqual('/');
   });
 
   it('should cancel navigation if 1 of 2 resolvers does not emit', async () => {
     TestBed.configureTestingModule({
-      providers:
-          [provideRouter([{path: '**', children: [], resolve: {e0: () => of(0), e1: () => EMPTY}}])]
+      providers: [
+        provideRouter([{path: '**', children: [], resolve: {e0: () => of(0), e1: () => EMPTY}}]),
+      ],
     });
     await RouterTestingHarness.create('/a');
     expect(TestBed.inject(Router).url).toEqual('/');
   });
 
-  it('should complete instantly if at least one resolver doesn\'t emit', async () => {
+  it("should complete instantly if at least one resolver doesn't emit", async () => {
     TestBed.configureTestingModule({
-      providers:
-          [provideRouter([{path: '**', children: [], resolve: {e0: () => EMPTY, e1: () => NEVER}}])]
+      providers: [
+        provideRouter([{path: '**', children: [], resolve: {e0: () => EMPTY, e1: () => NEVER}}]),
+      ],
     });
     await RouterTestingHarness.create('/a');
     expect(TestBed.inject(Router).url).toEqual('/');
@@ -50,29 +53,35 @@ describe('resolveData operator', () => {
     let value = 0;
     let bValue = 0;
     TestBed.configureTestingModule({
-      providers: [provideRouter([
-        {
-          path: 'a',
-          runGuardsAndResolvers: () => false,
-          children: [{
-            path: '',
-            resolve: {d0: () => ++value},
-            runGuardsAndResolvers: 'always',
-            children: [],
-          }],
-        },
-        {
-          path: 'b',
-          outlet: 'aux',
-          runGuardsAndResolvers: () => false,
-          children: [{
-            path: '',
-            resolve: {d1: () => ++bValue},
-            runGuardsAndResolvers: 'always',
-            children: [],
-          }]
-        },
-      ])]
+      providers: [
+        provideRouter([
+          {
+            path: 'a',
+            runGuardsAndResolvers: () => false,
+            children: [
+              {
+                path: '',
+                resolve: {d0: () => ++value},
+                runGuardsAndResolvers: 'always',
+                children: [],
+              },
+            ],
+          },
+          {
+            path: 'b',
+            outlet: 'aux',
+            runGuardsAndResolvers: () => false,
+            children: [
+              {
+                path: '',
+                resolve: {d1: () => ++bValue},
+                runGuardsAndResolvers: 'always',
+                children: [],
+              },
+            ],
+          },
+        ]),
+      ],
     });
     const router = TestBed.inject(Router);
     const harness = await RouterTestingHarness.create('/a(aux:b)');
@@ -87,43 +96,52 @@ describe('resolveData operator', () => {
   it('should update children inherited data when resolvers run', async () => {
     let value = 0;
     TestBed.configureTestingModule({
-      providers: [provideRouter([{
-        path: 'a',
-        children: [{path: 'b', children: []}],
-        resolve: {d0: () => ++value},
-        runGuardsAndResolvers: 'always',
-      }])]
+      providers: [
+        provideRouter([
+          {
+            path: 'a',
+            children: [{path: 'b', children: []}],
+            resolve: {d0: () => ++value},
+            runGuardsAndResolvers: 'always',
+          },
+        ]),
+      ],
     });
     const harness = await RouterTestingHarness.create('/a/b');
     expect(TestBed.inject(Router).routerState.root.firstChild?.snapshot.data).toEqual({d0: 1});
     expect(TestBed.inject(Router).routerState.root.firstChild?.firstChild?.snapshot.data).toEqual({
-      d0: 1
+      d0: 1,
     });
 
     await harness.navigateByUrl('/a/b#new');
     expect(TestBed.inject(Router).routerState.root.firstChild?.snapshot.data).toEqual({d0: 2});
     expect(TestBed.inject(Router).routerState.root.firstChild?.firstChild?.snapshot.data).toEqual({
-      d0: 2
+      d0: 2,
     });
   });
 
   it('should have correct data when parent resolver runs but data is not inherited', async () => {
     @Component({template: ''})
-    class Empty {
-    }
+    class Empty {}
 
     TestBed.configureTestingModule({
-      providers: [provideRouter([{
-        path: 'a',
-        component: Empty,
-        data: {parent: 'parent'},
-        resolve: {other: () => 'other'},
-        children: [{
-          path: 'b',
-          data: {child: 'child'},
-          component: Empty,
-        }]
-      }])]
+      providers: [
+        provideRouter([
+          {
+            path: 'a',
+            component: Empty,
+            data: {parent: 'parent'},
+            resolve: {other: () => 'other'},
+            children: [
+              {
+                path: 'b',
+                data: {child: 'child'},
+                component: Empty,
+              },
+            ],
+          },
+        ]),
+      ],
     });
     await RouterTestingHarness.create('/a/b');
     const rootSnapshot = TestBed.inject(Router).routerState.root.firstChild!.snapshot;
@@ -133,22 +151,27 @@ describe('resolveData operator', () => {
 
   it('should have static title when there is a resolver', async () => {
     @Component({template: ''})
-    class Empty {
-    }
+    class Empty {}
 
     TestBed.configureTestingModule({
-      providers: [provideRouter([{
-        path: 'a',
-        title: 'a title',
-        component: Empty,
-        resolve: {other: () => 'other'},
-        children: [{
-          path: 'b',
-          title: 'b title',
-          component: Empty,
-          resolve: {otherb: () => 'other b'},
-        }]
-      }])]
+      providers: [
+        provideRouter([
+          {
+            path: 'a',
+            title: 'a title',
+            component: Empty,
+            resolve: {other: () => 'other'},
+            children: [
+              {
+                path: 'b',
+                title: 'b title',
+                component: Empty,
+                resolve: {otherb: () => 'other b'},
+              },
+            ],
+          },
+        ]),
+      ],
     });
     await RouterTestingHarness.create('/a/b');
     const rootSnapshot = TestBed.inject(Router).routerState.root.firstChild!.snapshot;
@@ -158,16 +181,24 @@ describe('resolveData operator', () => {
 
   it('should inherit resolved data from parent of parent route', async () => {
     @Component({template: ''})
-    class Empty {
-    }
+    class Empty {}
 
     TestBed.configureTestingModule({
-      providers: [provideRouter([{
-        path: 'a',
-        resolve: {aResolve: () => 'a'},
-        children:
-            [{path: 'b', resolve: {bResolve: () => 'b'}, children: [{path: 'c', component: Empty}]}]
-      }])]
+      providers: [
+        provideRouter([
+          {
+            path: 'a',
+            resolve: {aResolve: () => 'a'},
+            children: [
+              {
+                path: 'b',
+                resolve: {bResolve: () => 'b'},
+                children: [{path: 'c', component: Empty}],
+              },
+            ],
+          },
+        ]),
+      ],
     });
     await RouterTestingHarness.create('/a/b/c');
     const rootSnapshot = TestBed.inject(Router).routerState.root.firstChild!.snapshot;
