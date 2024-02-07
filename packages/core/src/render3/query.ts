@@ -349,7 +349,7 @@ function createSpecialToken(lView: LView, tNode: TNode, read: any): any {
  * processing once and only once for a given view instance (a set of results for a given view
  * doesn't change).
  */
-export function materializeViewResults<T>(
+function materializeViewResults<T>(
     tView: TView, lView: LView, tQuery: TQuery, queryIndex: number): T[] {
   const lQuery = lView[QUERIES]!.queries![queryIndex];
   if (lQuery.matches === null) {
@@ -379,8 +379,7 @@ export function materializeViewResults<T>(
  * A helper function that collects (already materialized) query results from a tree of views,
  * starting with a provided LView.
  */
-export function collectQueryResults<T>(
-    tView: TView, lView: LView, queryIndex: number, result: T[]): T[] {
+function collectQueryResults<T>(tView: TView, lView: LView, queryIndex: number, result: T[]): T[] {
   const tQuery = tView.queries!.getByIndex(queryIndex);
   const tQueryMatches = tQuery.matches;
   if (tQueryMatches !== null) {
@@ -496,4 +495,16 @@ export function saveContentQueryAndDirectiveIndex(tView: TView, directiveIndex: 
 export function getTQuery(tView: TView, index: number): TQuery {
   ngDevMode && assertDefined(tView.queries, 'TQueries must be defined to retrieve a TQuery');
   return tView.queries!.getByIndex(index);
+}
+
+/**
+ * A helper function collecting results from all the views where a given query was active.
+ * @param lView
+ * @param queryIndex
+ */
+export function getQueryResults<V>(lView: LView, queryIndex: number): V[] {
+  const tView = lView[TVIEW];
+  const tQuery = getTQuery(tView, queryIndex);
+  return tQuery.crossesNgTemplate ? collectQueryResults<V>(tView, lView, queryIndex, []) :
+                                    materializeViewResults<V>(tView, lView, tQuery, queryIndex);
 }
