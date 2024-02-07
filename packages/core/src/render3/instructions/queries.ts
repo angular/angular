@@ -10,7 +10,7 @@ import {ProviderToken} from '../../di';
 import {unwrapElementRef} from '../../linker/element_ref';
 import {QueryList} from '../../linker/query_list';
 import {QueryFlags} from '../interfaces/query';
-import {collectQueryResults, createContentQuery, createViewQuery, getTQuery, loadQueryInternal, materializeViewResults} from '../query';
+import {createContentQuery, createViewQuery, getQueryResults, getTQuery, loadQueryInternal} from '../query';
 import {getCurrentQueryIndex, getLView, getTView, setCurrentQueryIndex} from '../state';
 import {isCreationMode} from '../util/view_utils';
 
@@ -69,9 +69,7 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
     if (tQuery.matches === null) {
       queryList.reset([]);
     } else {
-      const result = tQuery.crossesNgTemplate ?
-          collectQueryResults(tView, lView, queryIndex, []) :
-          materializeViewResults(tView, lView, tQuery, queryIndex);
+      const result = getQueryResults(lView, queryIndex);
       queryList.reset(result, unwrapElementRef);
       queryList.notifyOnChanges();
     }

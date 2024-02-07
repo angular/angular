@@ -1356,6 +1356,9 @@
     "name": "getPromiseCtor"
   },
   {
+    "name": "getQueryResults"
+  },
+  {
     "name": "getSanitizer"
   },
   {
@@ -2098,9 +2101,6 @@
   },
   {
     "name": "ɵɵlistener"
-  },
-  {
-    "name": "ɵɵqueryRefresh"
   },
   {
     "name": "ɵɵsanitizeResourceUrl"

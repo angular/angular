@@ -13,8 +13,8 @@ import {unwrapElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {EMPTY_ARRAY} from '../util/empty';
 
-import {FLAGS, LView, LViewFlags, TVIEW} from './interfaces/view';
-import {collectQueryResults, getTQuery, loadQueryInternal, materializeViewResults} from './query';
+import {FLAGS, LView, LViewFlags} from './interfaces/view';
+import {getQueryResults, loadQueryInternal} from './query';
 import {Signal} from './reactivity/api';
 import {signal, WritableSignal} from './reactivity/signal';
 import {getLView} from './state';
@@ -27,7 +27,7 @@ interface QuerySignalNode<T> extends ComputedNode<T|ReadonlyArray<T>> {
 }
 
 /**
- * Query-as signal factory function in charge of creating a new computed signal capturing query
+ * A signal factory function in charge of creating a new computed signal capturing query
  * results. This centralized creation function is used by all types of queries (child / children,
  * required / optional).
  *
@@ -107,15 +107,9 @@ function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V|
   }
 
   const queryList = loadQueryInternal<V>(lView, queryIndex);
-  const tView = lView[TVIEW];
-  const tQuery = getTQuery(tView, queryIndex);
+  const results = getQueryResults<V>(lView, queryIndex);
 
-  // TODO(refactor): add an utility method for the following logic
-  const result = tQuery.crossesNgTemplate ?
-      collectQueryResults<V>(tView, lView, queryIndex, []) :
-      materializeViewResults<V>(tView, lView, tQuery, queryIndex);
-
-  queryList.reset(result, unwrapElementRef);
+  queryList.reset(results, unwrapElementRef);
 
   return firstOnly ? queryList.first : queryList.toArray();
 }
