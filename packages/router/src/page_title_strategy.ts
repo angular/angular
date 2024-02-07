@@ -43,12 +43,12 @@ export abstract class TitleStrategy {
   /**
    * @returns The `title` of the deepest primary route.
    */
-  buildTitle(snapshot: RouterStateSnapshot): string|undefined {
-    let pageTitle: string|undefined;
-    let route: ActivatedRouteSnapshot|undefined = snapshot.root;
+  buildTitle(snapshot: RouterStateSnapshot): string | undefined {
+    let pageTitle: string | undefined;
+    let route: ActivatedRouteSnapshot | undefined = snapshot.root;
     while (route !== undefined) {
       pageTitle = this.getResolvedTitleForRoute(route) ?? pageTitle;
-      route = route.children.find(child => child.outlet === PRIMARY_OUTLET);
+      route = route.children.find((child) => child.outlet === PRIMARY_OUTLET);
     }
     return pageTitle;
   }

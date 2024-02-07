@@ -2,6 +2,7 @@
   "printWidth": 100,
   "tabWidth": 2,
   "tabs": false,
+  "embeddedLanguageFormatting": "off",
   "singleQuote": true,
   "semicolon": true,
   "quoteProps": "preserve",

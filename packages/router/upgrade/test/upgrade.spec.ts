@@ -39,7 +39,7 @@ export class $rootScopeMock {
 
   $broadcast(evt: string, ...args: any[]) {
     if (this.events[evt]) {
-      this.events[evt].forEach(fn => {
+      this.events[evt].forEach((fn) => {
         fn.apply(fn, [/** angular.IAngularEvent*/ {}, ...args]);
       });
     }
@@ -47,7 +47,7 @@ export class $rootScopeMock {
       defaultPrevented: false,
       preventDefault() {
         this.defaultPrevented = true;
-      }
+      },
     };
   }
 
@@ -61,7 +61,7 @@ export class $rootScopeMock {
   }
 
   $digest() {
-    this.watchers.forEach(fn => fn());
+    this.watchers.forEach((fn) => fn());
   }
 }
 
@@ -73,7 +73,10 @@ describe('setUpLocationSync', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterModule.forRoot([{path: '1', children: []}, {path: '2', children: []}]),
+        RouterModule.forRoot([
+          {path: '1', children: []},
+          {path: '2', children: []},
+        ]),
         UpgradeModule,
         LocationUpgradeTestModule.config(),
       ],
@@ -96,16 +99,15 @@ describe('setUpLocationSync', () => {
       `);
   });
 
-  it('should get the $rootScope from AngularJS and set an $on watch on $locationChangeStart',
-     () => {
-       const $rootScope = upgradeModule.$injector.get('$rootScope');
-       spyOn($rootScope, '$on');
+  it('should get the $rootScope from AngularJS and set an $on watch on $locationChangeStart', () => {
+    const $rootScope = upgradeModule.$injector.get('$rootScope');
+    spyOn($rootScope, '$on');
 
-       setUpLocationSync(upgradeModule);
+    setUpLocationSync(upgradeModule);
 
-       expect($rootScope.$on).toHaveBeenCalledTimes(1);
-       expect($rootScope.$on).toHaveBeenCalledWith('$locationChangeStart', jasmine.any(Function));
-     });
+    expect($rootScope.$on).toHaveBeenCalledTimes(1);
+    expect($rootScope.$on).toHaveBeenCalledWith('$locationChangeStart', jasmine.any(Function));
+  });
 
   it('should navigate by url every time $locationChangeStart is broadcasted', () => {
     const url = 'https://google.com';
@@ -168,36 +170,36 @@ describe('setUpLocationSync', () => {
   });
 
   it('should not duplicate navigations triggered by Angular router', fakeAsync(() => {
-       spyOn(TestBed.inject(UrlCodec), 'parse').and.returnValue({
-         pathname: '',
-         href: '',
-         protocol: '',
-         host: '',
-         search: '',
-         hash: '',
-         hostname: '',
-         port: '',
-       });
-       const $rootScope = upgradeModule.$injector.get('$rootScope');
-       spyOn($rootScope, '$broadcast').and.callThrough();
-       setUpLocationSync(upgradeModule);
-       // Inject location shim so its urlChangeListener subscribes
-       TestBed.inject($locationShim);
+    spyOn(TestBed.inject(UrlCodec), 'parse').and.returnValue({
+      pathname: '',
+      href: '',
+      protocol: '',
+      host: '',
+      search: '',
+      hash: '',
+      hostname: '',
+      port: '',
+    });
+    const $rootScope = upgradeModule.$injector.get('$rootScope');
+    spyOn($rootScope, '$broadcast').and.callThrough();
+    setUpLocationSync(upgradeModule);
+    // Inject location shim so its urlChangeListener subscribes
+    TestBed.inject($locationShim);
 
-       router.navigateByUrl('/1');
-       location.normalize.and.returnValue('/1');
-       flush();
-       expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
-       expect($rootScope.$broadcast.calls.argsFor(0)[0]).toEqual('$locationChangeStart');
-       expect($rootScope.$broadcast.calls.argsFor(1)[0]).toEqual('$locationChangeSuccess');
-       $rootScope.$broadcast.calls.reset();
-       router.navigateByUrl.calls.reset();
+    router.navigateByUrl('/1');
+    location.normalize.and.returnValue('/1');
+    flush();
+    expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
+    expect($rootScope.$broadcast.calls.argsFor(0)[0]).toEqual('$locationChangeStart');
+    expect($rootScope.$broadcast.calls.argsFor(1)[0]).toEqual('$locationChangeSuccess');
+    $rootScope.$broadcast.calls.reset();
+    router.navigateByUrl.calls.reset();
 
-       location.go('/2');
-       location.normalize.and.returnValue('/2');
-       flush();
-       expect($rootScope.$broadcast.calls.argsFor(0)[0]).toEqual('$locationChangeStart');
-       expect($rootScope.$broadcast.calls.argsFor(1)[0]).toEqual('$locationChangeSuccess');
-       expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
-     }));
+    location.go('/2');
+    location.normalize.and.returnValue('/2');
+    flush();
+    expect($rootScope.$broadcast.calls.argsFor(0)[0]).toEqual('$locationChangeStart');
+    expect($rootScope.$broadcast.calls.argsFor(1)[0]).toEqual('$locationChangeSuccess');
+    expect(router.navigateByUrl).toHaveBeenCalledTimes(1);
+  }));
 });

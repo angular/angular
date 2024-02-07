@@ -10,4 +10,12 @@
 // The public API re-exports everything from this file, which can be patched
 // locally in g3 to prevent regressions after cleanups complete.
 
-export {CanActivate, CanActivateChild, CanDeactivate, CanLoad, CanMatch, DeprecatedGuard, Resolve} from './models';
+export {
+  CanActivate,
+  CanActivateChild,
+  CanDeactivate,
+  CanLoad,
+  CanMatch,
+  DeprecatedGuard,
+  Resolve,
+} from './models';

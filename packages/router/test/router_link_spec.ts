@@ -15,10 +15,12 @@ describe('RouterLink', () => {
   it('does not modify tabindex if already set on non-anchor element', () => {
     @Component({template: `<div [routerLink]="link" tabindex="1"></div>`})
     class LinkComponent {
-      link: string|null|undefined = '/';
+      link: string | null | undefined = '/';
     }
-    TestBed.configureTestingModule(
-        {imports: [RouterModule.forRoot([])], declarations: [LinkComponent]});
+    TestBed.configureTestingModule({
+      imports: [RouterModule.forRoot([])],
+      declarations: [LinkComponent],
+    });
     const fixture = TestBed.createComponent(LinkComponent);
     fixture.detectChanges();
     const link = fixture.debugElement.query(By.css('div')).nativeElement;
@@ -37,10 +39,10 @@ describe('RouterLink', () => {
           [preserveFragment]="preserveFragment"
           [skipLocationChange]="skipLocationChange"
           [replaceUrl]="replaceUrl"></div>
-      `
+      `,
     })
     class LinkComponent {
-      link: string|null|undefined = '/';
+      link: string | null | undefined = '/';
       preserveFragment: unknown;
       skipLocationChange: unknown;
       replaceUrl: unknown;
@@ -117,10 +119,10 @@ describe('RouterLink', () => {
             [preserveFragment]="preserveFragment"
             [skipLocationChange]="skipLocationChange"
             [replaceUrl]="replaceUrl"></a>
-        `
+        `,
       })
       class LinkComponent {
-        link: string|null|undefined = '/';
+        link: string | null | undefined = '/';
         preserveFragment: unknown;
         skipLocationChange: unknown;
         replaceUrl: unknown;
@@ -179,8 +181,7 @@ describe('RouterLink', () => {
 
     it('should handle routerLink in svg templates', () => {
       @Component({template: `<svg><a routerLink="test"></a></svg>`})
-      class LinkComponent {
-      }
+      class LinkComponent {}
 
       TestBed.configureTestingModule({
         imports: [RouterModule.forRoot([])],

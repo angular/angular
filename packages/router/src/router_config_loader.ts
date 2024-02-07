@@ -6,15 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, EnvironmentInjector, inject, Injectable, InjectionToken, Injector, NgModuleFactory, Type} from '@angular/core';
+import {
+  Compiler,
+  EnvironmentInjector,
+  inject,
+  Injectable,
+  InjectionToken,
+  Injector,
+  NgModuleFactory,
+  Type,
+} from '@angular/core';
 import {ConnectableObservable, from, Observable, of, Subject} from 'rxjs';
 import {finalize, map, mergeMap, refCount, tap} from 'rxjs/operators';
 
 import {DefaultExport, LoadedRouterConfig, Route, Routes} from './models';
 import {wrapIntoObservable} from './utils/collection';
 import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
-
-
 
 /**
  * The [DI token](guide/glossary/#di-token) for a router configuration.
@@ -48,24 +55,24 @@ export class RouterConfigLoader {
     if (this.onLoadStartListener) {
       this.onLoadStartListener(route);
     }
-    const loadRunner = wrapIntoObservable(route.loadComponent!())
-                           .pipe(
-                               map(maybeUnwrapDefaultExport),
-                               tap(component => {
-                                 if (this.onLoadEndListener) {
-                                   this.onLoadEndListener(route);
-                                 }
-                                 (typeof ngDevMode === 'undefined' || ngDevMode) &&
-                                     assertStandalone(route.path ?? '', component);
-                                 route._loadedComponent = component;
-                               }),
-                               finalize(() => {
-                                 this.componentLoaders.delete(route);
-                               }),
-                           );
+    const loadRunner = wrapIntoObservable(route.loadComponent!()).pipe(
+      map(maybeUnwrapDefaultExport),
+      tap((component) => {
+        if (this.onLoadEndListener) {
+          this.onLoadEndListener(route);
+        }
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          assertStandalone(route.path ?? '', component);
+        route._loadedComponent = component;
+      }),
+      finalize(() => {
+        this.componentLoaders.delete(route);
+      }),
+    );
     // Use custom ConnectableObservable as share in runners pipe increasing the bundle size too much
-    const loader =
-        new ConnectableObservable(loadRunner, () => new Subject<Type<unknown>>()).pipe(refCount());
+    const loader = new ConnectableObservable(loadRunner, () => new Subject<Type<unknown>>()).pipe(
+      refCount(),
+    );
     this.componentLoaders.set(route, loader);
     return loader;
   }
@@ -80,16 +87,22 @@ export class RouterConfigLoader {
     if (this.onLoadStartListener) {
       this.onLoadStartListener(route);
     }
-    const moduleFactoryOrRoutes$ =
-        loadChildren(route, this.compiler, parentInjector, this.onLoadEndListener);
+    const moduleFactoryOrRoutes$ = loadChildren(
+      route,
+      this.compiler,
+      parentInjector,
+      this.onLoadEndListener,
+    );
     const loadRunner = moduleFactoryOrRoutes$.pipe(
-        finalize(() => {
-          this.childrenLoaders.delete(route);
-        }),
+      finalize(() => {
+        this.childrenLoaders.delete(route);
+      }),
     );
     // Use custom ConnectableObservable as share in runners pipe increasing the bundle size too much
-    const loader = new ConnectableObservable(loadRunner, () => new Subject<LoadedRouterConfig>())
-                       .pipe(refCount());
+    const loader = new ConnectableObservable(
+      loadRunner,
+      () => new Subject<LoadedRouterConfig>(),
+    ).pipe(refCount());
     this.childrenLoaders.set(route, loader);
     return loader;
   }
@@ -104,54 +117,56 @@ export class RouterConfigLoader {
  * an update to the extractor.
  */
 export function loadChildren(
-    route: Route, compiler: Compiler, parentInjector: Injector,
-    onLoadEndListener?: (r: Route) => void): Observable<LoadedRouterConfig> {
-  return wrapIntoObservable(route.loadChildren!())
-      .pipe(
-          map(maybeUnwrapDefaultExport),
-          mergeMap((t) => {
-            if (t instanceof NgModuleFactory || Array.isArray(t)) {
-              return of(t);
-            } else {
-              return from(compiler.compileModuleAsync(t));
-            }
-          }),
-          map((factoryOrRoutes: NgModuleFactory<any>|Routes) => {
-            if (onLoadEndListener) {
-              onLoadEndListener(route);
-            }
-            // This injector comes from the `NgModuleRef` when lazy loading an `NgModule`. There is
-            // no injector associated with lazy loading a `Route` array.
-            let injector: EnvironmentInjector|undefined;
-            let rawRoutes: Route[];
-            let requireStandaloneComponents = false;
-            if (Array.isArray(factoryOrRoutes)) {
-              rawRoutes = factoryOrRoutes;
-              requireStandaloneComponents = true;
-            } else {
-              injector = factoryOrRoutes.create(parentInjector).injector;
-              // When loading a module that doesn't provide `RouterModule.forChild()` preloader
-              // will get stuck in an infinite loop. The child module's Injector will look to
-              // its parent `Injector` when it doesn't find any ROUTES so it will return routes
-              // for it's parent module instead.
-              rawRoutes = injector.get(ROUTES, [], {optional: true, self: true}).flat();
-            }
-            const routes = rawRoutes.map(standardizeConfig);
-            (typeof ngDevMode === 'undefined' || ngDevMode) &&
-                validateConfig(routes, route.path, requireStandaloneComponents);
-            return {routes, injector};
-          }),
-      );
+  route: Route,
+  compiler: Compiler,
+  parentInjector: Injector,
+  onLoadEndListener?: (r: Route) => void,
+): Observable<LoadedRouterConfig> {
+  return wrapIntoObservable(route.loadChildren!()).pipe(
+    map(maybeUnwrapDefaultExport),
+    mergeMap((t) => {
+      if (t instanceof NgModuleFactory || Array.isArray(t)) {
+        return of(t);
+      } else {
+        return from(compiler.compileModuleAsync(t));
+      }
+    }),
+    map((factoryOrRoutes: NgModuleFactory<any> | Routes) => {
+      if (onLoadEndListener) {
+        onLoadEndListener(route);
+      }
+      // This injector comes from the `NgModuleRef` when lazy loading an `NgModule`. There is
+      // no injector associated with lazy loading a `Route` array.
+      let injector: EnvironmentInjector | undefined;
+      let rawRoutes: Route[];
+      let requireStandaloneComponents = false;
+      if (Array.isArray(factoryOrRoutes)) {
+        rawRoutes = factoryOrRoutes;
+        requireStandaloneComponents = true;
+      } else {
+        injector = factoryOrRoutes.create(parentInjector).injector;
+        // When loading a module that doesn't provide `RouterModule.forChild()` preloader
+        // will get stuck in an infinite loop. The child module's Injector will look to
+        // its parent `Injector` when it doesn't find any ROUTES so it will return routes
+        // for it's parent module instead.
+        rawRoutes = injector.get(ROUTES, [], {optional: true, self: true}).flat();
+      }
+      const routes = rawRoutes.map(standardizeConfig);
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        validateConfig(routes, route.path, requireStandaloneComponents);
+      return {routes, injector};
+    }),
+  );
 }
 
-function isWrappedDefaultExport<T>(value: T|DefaultExport<T>): value is DefaultExport<T> {
+function isWrappedDefaultExport<T>(value: T | DefaultExport<T>): value is DefaultExport<T> {
   // We use `in` here with a string key `'default'`, because we expect `DefaultExport` objects to be
   // dynamically imported ES modules with a spec-mandated `default` key. Thus we don't expect that
   // `default` will be a renamed property.
   return value && typeof value === 'object' && 'default' in value;
 }
 
-function maybeUnwrapDefaultExport<T>(input: T|DefaultExport<T>): T {
+function maybeUnwrapDefaultExport<T>(input: T | DefaultExport<T>): T {
   // As per `isWrappedDefaultExport`, the `default` key here is generated by the browser and not
   // subject to property renaming, so we reference it with bracket access.
   return isWrappedDefaultExport(input) ? input['default'] : input;
