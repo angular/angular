@@ -323,6 +323,7 @@ groups:
           'aio/content/examples/providers/**/{*,.*}',
           'aio/content/images/guide/providers/**/{*,.*}',
           'aio/content/guide/singleton-services.md',
+          'aio/content/guide/signal-inputs.md',
           'aio/content/guide/sharing-ngmodules.md',
           'aio/content/guide/standalone-components.md',
           'aio/content/guide/standalone-migration.md',

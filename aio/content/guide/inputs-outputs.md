@@ -25,6 +25,13 @@ The `<parent-component>` serves as the context for the `<child-component>`.
 `@Input()` lets a parent component update data in the child component.
 Conversely, `@Output()` lets the child send data to a parent component.
 
+<div class="alert is-helpful">
+
+Signal-based inputs are available in developer preview and may be a better fit for some use cases as an alternative to `@Input`.
+Learn more in the [signal inputs guide](/guide/signal-inputs).
+
+</div>
+
 <a id="input"></a>
 
 ## Sending data to a child component
@@ -214,11 +221,11 @@ To make `Input` property as required for a child component while passing values 
 
 <code-example header="src/app/item-details-metadata.component.ts" path="inputs-outputs/src/app/item-details-metadata.component.ts" region="use-input-metadata-required"></code-example>
 
-Next, in the parent template add the following: 
+Next, in the parent template add the following:
 
 <code-example header="src/app/app.component.html" path="inputs-outputs/src/app/app.component.html" region="input-parent-metadata"></code-example>
 
-If required inputs in a child component are not specified in the parent component template will result a compile time error: 
+If required inputs in a child component are not specified in the parent component template will result a compile time error:
 
 <div class="alert is-helpful">
 NG8008: Required input item from component ItemDetailMetadataComponent must be specified.
