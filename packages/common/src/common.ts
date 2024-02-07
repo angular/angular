@@ -112,5 +112,6 @@ export {
   provideCloudinaryLoader,
   provideImageKitLoader,
   provideImgixLoader,
+  provideNetlifyLoader,
 } from './directives/ng_optimized_image';
 export {normalizeQueryParams as ɵnormalizeQueryParams} from './location/util';

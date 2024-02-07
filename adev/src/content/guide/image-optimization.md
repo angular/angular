@@ -302,6 +302,7 @@ Based on the image services commonly used with Angular applications, `NgOptimize
 | Cloudinary | `provideCloudinaryLoader` | [Documentation](https://cloudinary.com/documentation/resizing_and_cropping) |
 | ImageKit | `provideImageKitLoader` | [Documentation](https://docs.imagekit.io/) |
 | Imgix | `provideImgixLoader` | [Documentation](https://docs.imgix.com/) |
+| Netlify | `provideNetlifyLoader` | [Documentation](https://docs.netlify.com/image-cdn/overview/) |
 
 To use the **generic loader** no additional code changes are necessary. This is the default behavior.
 
