@@ -22,6 +22,15 @@ const SIGNAL_FNS = new Set([
   'ModelSignal',
 ]);
 
+/** Names of known signal instance properties. */
+const SIGNAL_INSTANCE_PROPERTIES = new Set(['set', 'update', 'asReadonly']);
+
+/**
+ * Names of known function instance properties.
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function#instance_properties
+ */
+const FUNCTION_INSTANCE_PROPERTIES = new Set(['name', 'length', 'prototype']);
+
 /**
  * Ensures Signals are invoked when used in template interpolations.
  */
@@ -53,17 +62,44 @@ function isSignal(symbol: ts.Symbol|undefined): boolean {
   });
 }
 
+function isFunctionInstanceProperty(name: string): boolean {
+  return FUNCTION_INSTANCE_PROPERTIES.has(name);
+}
+
+function isSignalInstanceProperty(name: string): boolean {
+  return SIGNAL_INSTANCE_PROPERTIES.has(name);
+}
+
 function buildDiagnosticForSignal(
     ctx: TemplateContext<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>, node: PropertyRead,
     component: ts.ClassDeclaration):
     Array<NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>> {
+  // check for `{{ mySignal }}`
   const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
-
   if (symbol?.kind === SymbolKind.Expression &&
       (isSignal(symbol.tsType.symbol) || isSignal(symbol.tsType.aliasSymbol))) {
     const templateMapping =
         ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation)!;
     const errorString = `${node.name} is a function and should be invoked: ${node.name}()`;
+    const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
+    return [diagnostic];
+  }
+
+  // check for `{{ mySignal.name }}` or `{{ mySignal.length }}` or `{{ mySignal.prototype }}`
+  // as these are the names of instance properties of Function, the compiler does _not_ throw an
+  // error.
+  // We also check for `{{ mySignal.set }}` or `{{ mySignal.update }}` or
+  // `{{ mySignal.asReadonly }}` as these are the names of instance properties of Signal
+  const symbolOfReceiver = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
+  if ((isFunctionInstanceProperty(node.name) || isSignalInstanceProperty(node.name)) &&
+      symbolOfReceiver?.kind === SymbolKind.Expression &&
+      (isSignal(symbolOfReceiver.tsType.symbol) || isSignal(symbolOfReceiver.tsType.aliasSymbol))) {
+    const templateMapping =
+        ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbolOfReceiver.tcbLocation)!;
+
+    const errorString =
+        `${(node.receiver as PropertyRead).name} is a function and should be invoked: ${
+            (node.receiver as PropertyRead).name}()`;
     const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
     return [diagnostic];
   }
