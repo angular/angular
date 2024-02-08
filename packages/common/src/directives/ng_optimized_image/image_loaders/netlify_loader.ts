@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {isAbsoluteUrl, isValidPath} from '../url';
-import {IMAGE_LOADER, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
+import {
+  Provider,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
+
 import {RuntimeErrorCode} from '../../../errors';
-import {formatRuntimeError} from '@angular/core/src/errors';
+import {isAbsoluteUrl, isValidPath} from '../url';
+
+import {IMAGE_LOADER, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
 
 /**
  * Name and URL tester for Netlify.
@@ -21,6 +26,7 @@ export const netlifyLoaderInfo: ImageLoaderInfo = {
 };
 
 const NETLIFY_LOADER_REGEX = /https?\:\/\/[^\/]+\.netlify\.app\/.+/;
+
 /**
  * Tests whether a URL is from a Netlify site. This won't catch sites with a custom domain,
  * but it's a good start for sites in development. This is only used to warn users who haven't
