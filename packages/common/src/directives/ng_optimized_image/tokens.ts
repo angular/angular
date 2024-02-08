@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '@angular/core';
+import { InjectionToken } from '@angular/core';
 
 /**
  * In SSR scenarios, a preload `<link>` element is generated for priority images.
@@ -25,3 +25,15 @@ export const DEFAULT_PRELOADED_IMAGES_LIMIT = 5;
  */
 export const PRELOADED_IMAGES = new InjectionToken<Set<string>>(
     'NG_OPTIMIZED_PRELOADED_IMAGES', {providedIn: 'root', factory: () => new Set<string>()});
+
+
+/**
+ * Helps to keep track of domains that already have a corresponding
+ * preconnect link in the document head (to avoid generating multiple
+ * preconnect links for the same domain).
+ *
+ * This Set tracks the domains extracted from the image source
+ * facilitating the speculative loading mechanism
+ */
+export const PRECONNECTED_DOMAINS = new InjectionToken<Set<string>>(
+    'NG_OPTIMIZED_PRECONNECTED_DOMAINS', {providedIn: 'root', factory: () => new Set<string>()});

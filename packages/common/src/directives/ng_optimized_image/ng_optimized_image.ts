@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {booleanAttribute, Directive, ElementRef, inject, Injector, Input, NgZone, numberAttribute, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, SimpleChanges, ɵformatRuntimeError as formatRuntimeError, ɵIMAGE_CONFIG as IMAGE_CONFIG, ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS, ɵImageConfig as ImageConfig, ɵperformanceMarkFeature as performanceMarkFeature, ɵRuntimeError as RuntimeError, ɵSafeValue as SafeValue, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+import { Directive, ElementRef, ɵIMAGE_CONFIG as IMAGE_CONFIG, ɵIMAGE_CONFIG_DEFAULTS as IMAGE_CONFIG_DEFAULTS, ɵImageConfig as ImageConfig, Injector, Input, NgZone, OnChanges, OnDestroy, OnInit, PLATFORM_ID, Renderer2, ɵRuntimeError as RuntimeError, ɵSafeValue as SafeValue, SimpleChanges, booleanAttribute, ɵformatRuntimeError as formatRuntimeError, inject, numberAttribute, ɵperformanceMarkFeature as performanceMarkFeature, ɵunwrapSafeValue as unwrapSafeValue } from '@angular/core';
 
-import {RuntimeErrorCode} from '../../errors';
-import {isPlatformServer} from '../../platform_id';
+import { RuntimeErrorCode } from '../../errors';
+import { isPlatformServer } from '../../platform_id';
 
-import {imgDirectiveDetails} from './error_helper';
-import {cloudinaryLoaderInfo} from './image_loaders/cloudinary_loader';
-import {IMAGE_LOADER, ImageLoader, ImageLoaderConfig, noopImageLoader} from './image_loaders/image_loader';
-import {imageKitLoaderInfo} from './image_loaders/imagekit_loader';
-import {imgixLoaderInfo} from './image_loaders/imgix_loader';
-import {LCPImageObserver} from './lcp_image_observer';
-import {PreconnectLinkChecker} from './preconnect_link_checker';
-import {PreloadLinkCreator} from './preload-link-creator';
+import { imgDirectiveDetails } from './error_helper';
+import { cloudinaryLoaderInfo } from './image_loaders/cloudinary_loader';
+import { IMAGE_LOADER, ImageLoader, ImageLoaderConfig, noopImageLoader } from './image_loaders/image_loader';
+import { imageKitLoaderInfo } from './image_loaders/imagekit_loader';
+import { imgixLoaderInfo } from './image_loaders/imgix_loader';
+import { LCPImageObserver } from './lcp_image_observer';
+import { PreconnectLinkCreator } from './preconnect-link-creator';
+import { PreloadLinkCreator } from './preload-link-creator';
 
 /**
  * When a Base64-encoded image is passed as an input to the `NgOptimizedImage` directive,
@@ -349,8 +349,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       }
 
       if (this.priority) {
-        const checker = this.injector.get(PreconnectLinkChecker);
-        checker.assertPreconnect(this.getRewrittenSrc(), this.ngSrc);
+        const preconnectLinkCreator = this.injector.get(PreconnectLinkCreator);
+        preconnectLinkCreator.createPreconnectLinkTag(this.renderer, this.getRewrittenSrc());
       }
     }
     this.setHostAttributes();
