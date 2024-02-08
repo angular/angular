@@ -1,3 +1,26 @@
+<a name="17.1.3"></a>
+# 17.1.3 (2024-02-08)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bc4a6a9715](https://github.com/angular/angular/commit/bc4a6a9715547881ed8e65169a5aaebfd3188a7f) | fix | do not error due to multiple components named equally ([#54273](https://github.com/angular/angular/pull/54273)) |
+| [a997e08c6f](https://github.com/angular/angular/commit/a997e08c6f5c5321e5d18f3368ff0886fa133d59) | fix | handle default imports in defer blocks ([#53695](https://github.com/angular/angular/pull/53695)) |
+| [63a9027720](https://github.com/angular/angular/commit/63a9027720611002c6ee3b443a11e9feff213059) | fix | interpolatedSignalNotInvoked diagnostic for model signals ([#54338](https://github.com/angular/angular/pull/54338)) |
+| [40e1edc977](https://github.com/angular/angular/commit/40e1edc977fbe398adc535167f8ede2db8985656) | fix | properly catch fatal diagnostics in type checking ([#54309](https://github.com/angular/angular/pull/54309)) |
+| [9f6605d11b](https://github.com/angular/angular/commit/9f6605d11b7ee75f289b5a2ed69e201d65b038d8) | fix | support jumping to definitions of signal-based inputs ([#54233](https://github.com/angular/angular/pull/54233)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7df133dcc2](https://github.com/angular/angular/commit/7df133dcc243cd6b0f779fa35de7f916e6938301) | fix | `afterRender` hooks should allow updating state ([#54074](https://github.com/angular/angular/pull/54074)) |
+| [744e20641a](https://github.com/angular/angular/commit/744e20641a21d18c324bd9c157c8912d38741826) | fix | Fix possible infinite loop with `markForCheck` by partially reverting [#54074](https://github.com/angular/angular/pull/54074) ([#54329](https://github.com/angular/angular/pull/54329)) |
+| [0fb114274c](https://github.com/angular/angular/commit/0fb114274cead9f317a2fc902cc3a3f6b046e708) | fix | update imports to be compatible with rxjs 6 ([#54193](https://github.com/angular/angular/pull/54193)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [238f2a8bc9](https://github.com/angular/angular/commit/238f2a8bc9c46b0d08aff163349ecc1493441a69) | fix | Clear internal transition when navigation finalizes ([#54261](https://github.com/angular/angular/pull/54261)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.1.2"></a>
 # 17.1.2 (2024-01-31)
 ### 
