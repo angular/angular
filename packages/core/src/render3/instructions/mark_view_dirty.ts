@@ -19,19 +19,23 @@ import {getLViewParent} from '../util/view_utils';
  * an additional time to get the root view and schedule a tick on it.
  *
  * @param lView The starting LView to mark dirty
- * @returns the root LView
  */
-export function markViewDirty(lView: LView): LView|null {
+export function markViewDirty(lView: LView) {
   lView[ENVIRONMENT].changeDetectionScheduler?.notify();
   while (lView) {
+    // If we're already refreshing the view, we should not mark it or ancestors dirty.
+    // This is `ExpressionHasChangedAfterItWasCheckedError` if any bindings have actually changed
+    // and completely unnecessary to refresh views again if there weren't any updated bindings.
+    if (lView[FLAGS] & LViewFlags.ExecutingRefresh) {
+      return;
+    }
     lView[FLAGS] |= LViewFlags.Dirty;
     const parent = getLViewParent(lView);
     // Stop traversing up as soon as you find a root view that wasn't attached to any container
     if (isRootView(lView) && !parent) {
-      return lView;
+      return;
     }
     // continue otherwise
     lView = parent!;
   }
-  return null;
 }

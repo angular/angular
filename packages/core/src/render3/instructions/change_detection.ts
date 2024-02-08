@@ -134,6 +134,7 @@ export function refreshView<T>(
   !isInCheckNoChangesPass && lView[ENVIRONMENT].inlineEffectRunner?.flush();
 
 
+  lView[FLAGS] |= LViewFlags.ExecutingRefresh;
   // Start component reactive context
   // - We might already be in a reactive context if this is an embedded view of the host.
   // - We might be descending into a view that needs a consumer.
@@ -277,6 +278,7 @@ export function refreshView<T>(
       maybeReturnReactiveLViewConsumer(currentConsumer);
     }
     leaveView();
+    lView[FLAGS] &= ~LViewFlags.ExecutingRefresh;
   }
 }
 
