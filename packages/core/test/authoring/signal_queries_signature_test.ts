@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, forwardRef, InjectionToken, Signal} from '@angular/core';
-// TODO: export authoring functions
-import {contentChild, contentChildren, viewChild, viewChildren} from '@angular/core/src/authoring/queries';
+import {contentChild, contentChildren, ElementRef, forwardRef, InjectionToken, Signal, viewChild, viewChildren} from '@angular/core';
 
 class QueryType {
   // a random field to brand the type
