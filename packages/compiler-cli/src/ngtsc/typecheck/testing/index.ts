@@ -7,6 +7,8 @@
  */
 
 import {BindingPipe, CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, ParseTemplateOptions, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement} from '@angular/compiler';
+import {readFileSync} from 'fs';
+import path from 'path';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
@@ -18,7 +20,7 @@ import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope';
-import {makeProgram} from '../../testing';
+import {makeProgram, resolveFromRunfiles} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {OptimizeFor, ProgramTypeCheckAdapter, TemplateDiagnostic, TemplateTypeChecker, TypeCheckContext} from '../api';
 import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/api';
@@ -90,133 +92,12 @@ export function typescriptLibDts(): TestFile {
 }
 
 export function angularCoreDts(): TestFile {
+  const directory =
+      resolveFromRunfiles('angular/packages/compiler-cli/src/ngtsc/testing/fake_core/npm_package');
+
   return {
     name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
-    contents: `
-    export declare class TemplateRef<C> {
-      readonly elementRef: unknown;
-      createEmbeddedView(context: C): unknown;
-    }
-
-    export declare class EventEmitter<T> {
-      subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): unknown;
-      subscribe(observerOrNext?: any, error?: any, complete?: any): unknown;
-    }
-
-    export declare type NgIterable<T> = Array<T> | Iterable<T>;
-
-    /**
-     * -------
-     * Signals
-     * ------
-     */
-
-    export declare const SIGNAL: unique symbol;
-    export declare type Signal<T> = (() => T) & {
-      [SIGNAL]: unknown;
-    };
-    export declare function signal<T>(initialValue: T): WritableSignal<T>;
-    export declare function computed<T>(computation: () => T): Signal<T>;
-
-    const WRITABLE_SIGNAL = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
-
-    export interface WritableSignal<T> extends Signal<T> {
-      [WRITABLE_SIGNAL]: T;
-      set(value: T): void;
-      update(updateFn: (value: T) => T): void;
-      asReadonly(): Signal<T>;
-    }
-
-    /**
-     * -------
-     * Signal inputs
-     * ------
-     */
-
-    export interface InputOptions<ReadT, WriteT> {
-      alias?: string;
-      transform?: (v: WriteT) => ReadT;
-    }
-
-    export type InputOptionsWithoutTransform<ReadT> =
-        InputOptions<ReadT, ReadT>&{transform?: undefined};
-    export type InputOptionsWithTransform<ReadT, WriteT> =
-        Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>>&InputOptions<ReadT, WriteT>;
-
-    const ɵINPUT_SIGNAL_BRAND_READ_TYPE: unique symbol;
-    export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE: unique symbol;
-
-    export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
-      [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
-      [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
-    }
-    export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {}
-
-    export function inputFunction<ReadT>(): InputSignal<ReadT|undefined>;
-    export function inputFunction<ReadT>(
-        initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-    export function inputFunction<ReadT, WriteT>(
-        initialValue: ReadT,
-        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
-    export function inputFunction<ReadT, WriteT>(
-        _initialValue?: ReadT,
-        _opts?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT|undefined, WriteT> {
-      return null!;
-    }
-
-    export function inputRequiredFunction<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>):
-        InputSignal<ReadT>;
-    export function inputRequiredFunction<ReadT, WriteT>(
-        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
-    export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputSignalWithTransform<ReadT, WriteT>):
-        InputSignalWithTransform<ReadT, WriteT> {
-      return null!;
-    }
-
-    export type InputFunction = typeof inputFunction&{required: typeof inputRequiredFunction};
-
-    export const input: InputFunction = (() => {
-      (inputFunction as any).required = inputRequiredFunction;
-      return inputFunction as InputFunction;
-    })();
-
-    export type Signal<T> = (() => T);
-
-    // Note: needs to be kept in sync with the copies in render3/reactivity/signal.ts and
-    // fake_core/index.ts to ensure consistent tests.
-    export function ɵunwrapWritableSignal<T>(value: T|{[WRITABLE_SIGNAL]: T}): T {
-      return null!;
-    }
-
-    export interface ModelOptions {
-      alias?: string;
-    }
-
-    export interface ModelSignal<T> extends WritableSignal<T> {
-      [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
-      [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
-      subscribe(callback: (value: T) => void): {unsubscribe: () => void};
-    }
-
-    export interface ModelFunction {
-      <T>(): ModelSignal<T|undefined>;
-      <T>(initialValue: T, opts?: ModelOptions): ModelSignal<T>;
-      required<T>(opts?: ModelOptions): ModelSignal<T>;
-    }
-
-    export const model: ModelFunction = null!;
-
-    export type ɵUnwrapInputSignalWriteType<Field> =
-        Field extends InputSignalWithTransform<unknown, infer WriteT>? WriteT : never;
-    export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
-      [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
-    };
-
-    export interface OutputEmitter<T> {
-      emit(value: T): void;
-      subscribe(listener: (v: T) => void): void;
-    }
-   `
+    contents: readFileSync(path.join(directory, 'index.d.ts'), 'utf8'),
   };
 }
 

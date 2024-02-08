@@ -106,7 +106,7 @@ describe('type definitions', () => {
           project, {templateOverride: `<my-dir (name¦Changes)="doSmth()" />`});
       expect(definitions!.length).toEqual(1);
 
-      assertTextSpans(definitions, ['EventEmitter']);
+      assertTextSpans(definitions, ['OutputEmitter']);
       assertFileNames(definitions, ['index.d.ts']);
     });
   });

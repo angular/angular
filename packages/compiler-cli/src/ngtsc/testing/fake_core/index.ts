@@ -138,8 +138,7 @@ export interface WritableSignal<T> extends Signal<T> {
   asReadonly(): Signal<T>;
 }
 
-// Note: needs to be kept in sync with the copies in `render3/reactivity/signal.ts` and
-// `ngtsc/typecheck/testing/index.ts` to ensure consistent tests.
+// Note: needs to be kept in sync with the copies in `render3/reactivity/signal.ts`.
 export function ɵunwrapWritableSignal<T>(value: T|{[WRITABLE_SIGNAL]: T}): T {
   return null!;
 }
@@ -217,7 +216,20 @@ export const viewChildren: any = null!;
 export const contentChild: any = null!;
 export const contentChildren: any = null!;
 
+export interface OutputEmitter<T> {
+  emit(value: T): void;
+  subscribe(listener: (v: T) => void): void;
+}
+
 /** Initializer-based output() API. */
-export function output<T>(_opts?: {alias?: string}): EventEmitter<T> {
+export function output<T>(_opts?: {alias?: string}): OutputEmitter<T> {
+  return null!;
+}
+
+export interface CreateComputedOptions<T> {
+  equal?: (a: T, b: T) => boolean;
+}
+
+export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
   return null!;
 }
