@@ -41,9 +41,10 @@ export interface ModelSignal<T> extends WritableSignal<T> {
   [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
   [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
 
+  // TODO(crisbeto): mark this as @internal
   /**
    * Subscribes to changes in the model's value. Used by listener instructions at runtime.
-   * @internal
+   * @deprecated Do not use, will be removed.
    */
   subscribe(callback: (value: T) => void): {unsubscribe: () => void};
 }
