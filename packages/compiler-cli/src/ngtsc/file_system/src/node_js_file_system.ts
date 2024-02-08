@@ -7,7 +7,7 @@
  */
 /// <reference types="node" />
 import fs from 'fs';
-import module from 'module';
+import {createRequire} from 'module';
 import * as p from 'path';
 import {fileURLToPath} from 'url';
 
@@ -96,7 +96,7 @@ export class NodeJSReadonlyFileSystem extends NodeJSPathManipulation implements 
   }
   getDefaultLibLocation(): AbsoluteFsPath {
     // G3-ESM-MARKER: G3 uses CommonJS, but externally everything in ESM.
-    const requireFn = isCommonJS ? require : module.createRequire(currentFileUrl!);
+    const requireFn = isCommonJS ? require : createRequire(currentFileUrl!);
     return this.resolve(requireFn.resolve('typescript'), '..');
   }
 }
