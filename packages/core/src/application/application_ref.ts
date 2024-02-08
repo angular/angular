@@ -702,5 +702,8 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
 
 
 function shouldRecheckView(view: LView): boolean {
-  return requiresRefreshOrTraversal(view) || !!(view[FLAGS] & LViewFlags.Dirty);
+  return requiresRefreshOrTraversal(view);
+  // TODO(atscott): We need to support rechecking views marked dirty again in afterRender hooks
+  // in order to support the transition to zoneless. b/308152025
+  /* || !!(view[FLAGS] & LViewFlags.Dirty); */
 }
