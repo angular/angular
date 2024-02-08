@@ -183,6 +183,23 @@ describe('queries as signals', () => {
          expect(result2.length).toBe(1);
          expect(result2).toBe(result1);
        });
+
+    it('should be empty when no query matches exist', () => {
+      @Component({
+        standalone: true,
+        template: ``,
+      })
+      class AppComponent {
+        result = viewChild('unknown');
+        results = viewChildren('unknown');
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.result()).toBeUndefined();
+      expect(fixture.componentInstance.results().length).toBe(0);
+    });
   });
 
   describe('content queries', () => {
@@ -318,6 +335,33 @@ describe('queries as signals', () => {
           fixture.debugElement.query(By.directive(DeclareQuery)).injector.get(DeclareQuery);
 
       expect(queryDir.results().length).toBe(2);
+    });
+
+    it('should be empty when no query matches exist', () => {
+      @Directive({
+        selector: '[declare]',
+        standalone: true,
+      })
+      class DeclareQuery {
+        result = contentChild('unknown');
+        results = contentChildren('unknown');
+      }
+
+      @Component({
+        standalone: true,
+        imports: [DeclareQuery],
+        template: `<div declare></div>`,
+      })
+      class AppComponent {
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      const queryDir =
+          fixture.debugElement.query(By.directive(DeclareQuery)).injector.get(DeclareQuery);
+
+      expect(queryDir.result()).toBeUndefined();
+      expect(queryDir.results().length).toBe(0);
     });
   });
 });
