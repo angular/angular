@@ -127,6 +127,11 @@ export interface InternalAfterNextRenderOptions {
    * If this is not provided, the current injection context will be used instead (via `inject`).
    */
   injector?: Injector;
+  /**
+   * When true, the hook will execute both on client and on the server.
+   * 
+   * When false or undefined, the hook only executes in the browser.
+   */
   runOnServer?: boolean;
 }
 
