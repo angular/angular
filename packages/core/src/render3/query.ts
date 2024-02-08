@@ -354,9 +354,9 @@ function materializeViewResults<T>(
   const lQuery = lView[QUERIES]!.queries![queryIndex];
   if (lQuery.matches === null) {
     const tViewData = tView.data;
-    const tQueryMatches = tQuery.matches!;
-    const result: T|null[] = [];
-    for (let i = 0; i < tQueryMatches.length; i += 2) {
+    const tQueryMatches = tQuery.matches;
+    const result: Array<T|null> = [];
+    for (let i = 0; tQueryMatches !== null && i < tQueryMatches.length; i += 2) {
       const matchedNodeIdx = tQueryMatches[i];
       if (matchedNodeIdx < 0) {
         // we at the <ng-template> marker which might have results in views created based on this
