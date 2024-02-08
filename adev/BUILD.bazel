@@ -1,4 +1,5 @@
 load("//:packages.bzl", "link_packages")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
 
@@ -96,12 +97,36 @@ copy_to_bin(
     srcs = APPLICATION_FILES,
 )
 
+bool_flag(
+    name = "fast_build_mode",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "fast",
+    flag_values = {
+        ":fast_build_mode": "true",
+    },
+)
+
+config_setting(
+    name = "full",
+    flag_values = {
+        ":fast_build_mode": "false",
+    },
+)
+
+config_based_architect_flags = select({
+    ":fast": ["--no-prerender"],
+    ":full": ["--prerender"],
+})
+
 architect(
     name = "build",
     args = [
         "angular-dev:build",
         "--output-path=build",
-    ],
+    ] + config_based_architect_flags,
     chdir = "$(RULEDIR)",
     data = APPLICATION_DEPS + [
         ":application_files_bin",
@@ -116,7 +141,7 @@ architect(
         "--poll=1000",
         "--live-reload",
         "--watch",
-    ],
+    ] + config_based_architect_flags,
     chdir = package_name(),
     data = APPLICATION_DEPS + [
         ":application_files_bin",
