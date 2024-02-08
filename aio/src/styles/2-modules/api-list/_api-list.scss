@@ -94,6 +94,10 @@ aio-api-list {
     h2 {
       margin-top: 16px;
       margin-bottom: 16px;
+
+      & .deprecated-api-item {
+        text-decoration: line-through;
+      }
     }
 
     /* API CLASS LIST */
