@@ -65,10 +65,13 @@ copy_to_directory(
         "//packages/upgrade:upgrade_docs",
         "//packages/upgrade/static:upgrade_static_docs",
         "//packages/upgrade/static/testing:upgrade_static_testing_docs",
+        "//tools/manual_api_docs/blocks:blocks_docs",
+        "//tools/manual_api_docs/elements:elements_docs",
     ],
     replace_prefixes = {
         "adev/src/content": "",
         "packages/**/": "api/",
+        "tools/**/": "api/",
     },
 )
 

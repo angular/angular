@@ -27,7 +27,14 @@ function main() {
     };
   });
 
-  writeFileSync(outputFileExecRootRelativePath, JSON.stringify(entries), {encoding: 'utf8'});
+  writeFileSync(
+    outputFileExecRootRelativePath,
+    JSON.stringify({
+      moduleName: '@angular/core',
+      entries,
+    }),
+    {encoding: 'utf8'},
+  );
 }
 
 main();
