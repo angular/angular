@@ -12,13 +12,12 @@
  * the resulting types match our expectations (via comments asserting the `.d.ts`).
  */
 
-import {WritableSignal} from '@angular/core';
-
-import {model} from '../../src/authoring/model/model';
+import {model} from '@angular/core';
 // import preserved to simplify `.d.ts` emit and simplify the `type_tester` logic.
-import {ModelSignal} from '../../src/authoring/model/model_signal';
+// tslint:disable-next-line no-duplicate-imports
+import {ModelSignal} from '@angular/core';
 
-export class InputSignatureTest {
+export class SignalModelSignatureTest {
   /** string | undefined */
   noInitialValueExplicitRead = model<string>();
 
