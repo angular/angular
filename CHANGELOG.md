@@ -1,3 +1,39 @@
+<a name="17.2.0-rc.0"></a>
+# 17.2.0-rc.0 (2024-02-08)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [03c3b3eb79](https://github.com/angular/angular/commit/03c3b3eb79ec061b0031d6ad7ba386d185c87d8d) | feat | add Netlify image loader ([#54311](https://github.com/angular/angular/pull/54311)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a592904c69](https://github.com/angular/angular/commit/a592904c691844d2c1aed00bd914edabef49f9b1) | fix | allow custom/duplicate decorators for `@Injectable` classes in local compilation mode ([#54139](https://github.com/angular/angular/pull/54139)) |
+| [4b1d948b36](https://github.com/angular/angular/commit/4b1d948b36285ec6d80dbe93e0b92133f9d4be94) | fix | consider the case of duplicate Angular decorators in local compilation diagnostics ([#54139](https://github.com/angular/angular/pull/54139)) |
+| [bfbb30618b](https://github.com/angular/angular/commit/bfbb30618b3204dc62f9fc36b82b98f307f1a6a2) | fix | do not error due to multiple components named equally ([#54273](https://github.com/angular/angular/pull/54273)) |
+| [96bcf4fb12](https://github.com/angular/angular/commit/96bcf4fb1208d1f073784a2cde4a03553e905807) | fix | forbid custom/duplicate decorator when option `forbidOrphanComponents` is set ([#54139](https://github.com/angular/angular/pull/54139)) |
+| [95dcf5fafa](https://github.com/angular/angular/commit/95dcf5fafa1c48875b985968ad42edec3062fb6e) | fix | handle default imports in defer blocks ([#53695](https://github.com/angular/angular/pull/53695)) |
+| [6c8b09468a](https://github.com/angular/angular/commit/6c8b09468a05a80cba3960861f0ab8d3bae80415) | fix | highlight the unresolved element in the @Component.styles array for the error LOCAL_COMPILATION_UNRESOLVED_CONST ([#54230](https://github.com/angular/angular/pull/54230)) |
+| [38b01a3554](https://github.com/angular/angular/commit/38b01a3554a4833f5324cc21fc3a7ddb2099dff3) | fix | interpolatedSignalNotInvoked diagnostic for model signals ([#54338](https://github.com/angular/angular/pull/54338)) |
+| [8e237a0161](https://github.com/angular/angular/commit/8e237a016134bfbfd4f8a312531ff1376f4f4a36) | fix | properly catch fatal diagnostics in type checking ([#54309](https://github.com/angular/angular/pull/54309)) |
+| [f39cb06418](https://github.com/angular/angular/commit/f39cb064183d984254bdf4e41b61d3dc9379738a) | fix | show specific error for unresolved @Directive.exportAs in local compilation mode ([#54230](https://github.com/angular/angular/pull/54230)) |
+| [f3851b5945](https://github.com/angular/angular/commit/f3851b59459a1d9c214ace3db5a716d51c1f93c7) | fix | show specific error for unresolved @HostBinding's argument in local compilation mode ([#54230](https://github.com/angular/angular/pull/54230)) |
+| [39ddd884e8](https://github.com/angular/angular/commit/39ddd884e826cc0be63fd0f7d7de20d642877ef9) | fix | show specific error for unresolved @HostListener's event name in local compilation mode ([#54230](https://github.com/angular/angular/pull/54230)) |
+| [5d633240fd](https://github.com/angular/angular/commit/5d633240fd5927c4318a9240e60c3a30b2333cee) | fix | show the correct message for the error LOCAL_COMPILATION_UNRESOLVED_CONST when an unresolved symbol used for @Component.styles ([#54230](https://github.com/angular/angular/pull/54230)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [702ab28b4c](https://github.com/angular/angular/commit/702ab28b4c07a903c403a20af2ca287348b6afd0) | feat | add support for model inputs ([#54252](https://github.com/angular/angular/pull/54252)) |
+| [e95ef2cbc6](https://github.com/angular/angular/commit/e95ef2cbc6f850d8fe96218b74cff76cea947674) | feat | expose queries as signals ([#54283](https://github.com/angular/angular/pull/54283)) |
+| [432afd1ef4](https://github.com/angular/angular/commit/432afd1ef41e0bfd905e71e8b15ec7c9ab337352) | fix | `afterRender` hooks should allow updating state ([#54074](https://github.com/angular/angular/pull/54074)) |
+| [898a532aef](https://github.com/angular/angular/commit/898a532aef4121757125e8bcb5909cbbe8142991) | fix | Fix possible infinite loop with `markForCheck` by partially reverting [#54074](https://github.com/angular/angular/pull/54074) ([#54329](https://github.com/angular/angular/pull/54329)) |
+| [3cf612c857](https://github.com/angular/angular/commit/3cf612c857493e1a28578b7ae8a621617f0ea5e7) | fix | update imports to be compatible with rxjs 6 ([#54193](https://github.com/angular/angular/pull/54193)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6681292823](https://github.com/angular/angular/commit/6681292823277c8b9df002b6658224287b90e954) | fix | Clear internal transition when navigation finalizes ([#54261](https://github.com/angular/angular/pull/54261)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.1.3"></a>
 # 17.1.3 (2024-02-08)
 ### compiler-cli
