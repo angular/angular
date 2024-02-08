@@ -40,7 +40,8 @@ class InterpolatedSignalCheck extends
 function isSignal(symbol: ts.Symbol|undefined): boolean {
   return (symbol?.escapedName === 'WritableSignal' || symbol?.escapedName === 'Signal' ||
           symbol?.escapedName === 'InputSignal' ||
-          symbol?.escapedName === 'InputSignalWithTransform') &&
+          symbol?.escapedName === 'InputSignalWithTransform' ||
+          symbol?.escapedName === 'ModelSignal') &&
       (symbol as any).parent.escapedName.includes('@angular/core');
 }
 
