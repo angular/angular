@@ -98,5 +98,7 @@ generate_api_manifest(
         "//packages/upgrade:upgrade_docs_extraction",
         "//packages/upgrade/static:upgrade_static_docs_extraction",
         "//packages/upgrade/static/testing:upgrade_static_testing_docs_extraction",
+        "//tools/manual_api_docs/blocks",
+        "//tools/manual_api_docs/elements",
     ],
 )
