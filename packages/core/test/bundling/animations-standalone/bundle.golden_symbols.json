@@ -1,5 +1,8 @@
 [
   {
+    "name": "ANIMATABLE_DEV_WARNINGS_ENABLED"
+  },
+  {
     "name": "ANIMATION_MODULE_TYPE"
   },
   {

@@ -7,7 +7,7 @@
 import { EnvironmentProviders } from '@angular/core';
 
 // @public
-export function provideAnimationsAsync(type?: 'animations' | 'noop'): EnvironmentProviders;
+export function provideAnimationsAsync(type?: 'animations' | 'noop', disableAnimatableDevWarnings?: boolean): EnvironmentProviders;
 
 // (No @packageDocumentation comment for this package)
 
