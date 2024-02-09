@@ -15,7 +15,7 @@ import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputM
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
-import {createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, assertLocalCompilationUnresolvedConst, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
+import {assertLocalCompilationUnresolvedConst, createSourceSpan, createValueHasWrongTypeError, forwardRefResolver, getAngularDecorators, getConstructorDependencies, isAngularDecorator, ReferencesRegistry, toR3Reference, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from '../../common';
 
 import {tryParseSignalInputMapping} from './input_function';
 import {tryParseSignalModelMapping} from './model_function';
@@ -125,12 +125,13 @@ export function extractDirectiveMetadata(
   if (directive.has('selector')) {
     const expr = directive.get('selector')!;
     const resolved = evaluator.evaluate(expr);
-    assertLocalCompilationUnresolvedConst(compilationMode, resolved, null,
-      'Unresolved identifier found for @Component.selector field! Did you ' + 
-      'import this identifier from a file outside of the compilation unit? ' + 
-      'This is not allowed when Angular compiler runs in local mode. Possible ' + 
-      'solutions: 1) Move the declarations into a file within the compilation ' + 
-      'unit, 2) Inline the selector');
+    assertLocalCompilationUnresolvedConst(
+        compilationMode, resolved, null,
+        'Unresolved identifier found for @Component.selector field! Did you ' +
+            'import this identifier from a file outside of the compilation unit? ' +
+            'This is not allowed when Angular compiler runs in local mode. Possible ' +
+            'solutions: 1) Move the declarations into a file within the compilation ' +
+            'unit, 2) Inline the selector');
     if (typeof resolved !== 'string') {
       throw createValueHasWrongTypeError(expr, resolved, `selector must be a string`);
     }
@@ -143,7 +144,8 @@ export function extractDirectiveMetadata(
     }
   }
 
-  const host = extractHostBindings(decoratedElements, evaluator, coreModule, compilationMode, directive);
+  const host =
+      extractHostBindings(decoratedElements, evaluator, coreModule, compilationMode, directive);
 
   const providers: Expression|null = directive.has('providers') ?
       new WrappedNodeExpr(
@@ -163,12 +165,13 @@ export function extractDirectiveMetadata(
     const expr = directive.get('exportAs')!;
     const resolved = evaluator.evaluate(expr);
 
-    assertLocalCompilationUnresolvedConst(compilationMode, resolved, null, 
-      'Unresolved identifier found for exportAs field! Did you import this ' + 
-      'identifier from a file outside of the compilation unit? This is not ' + 
-      'allowed when Angular compiler runs in local mode. Possible solutions: ' + 
-      '1) Move the declarations into a file within the compilation unit, ' + 
-      '2) Inline the selector');
+    assertLocalCompilationUnresolvedConst(
+        compilationMode, resolved, null,
+        'Unresolved identifier found for exportAs field! Did you import this ' +
+            'identifier from a file outside of the compilation unit? This is not ' +
+            'allowed when Angular compiler runs in local mode. Possible solutions: ' +
+            '1) Move the declarations into a file within the compilation unit, ' +
+            '2) Inline the selector');
 
     if (typeof resolved !== 'string') {
       throw createValueHasWrongTypeError(expr, resolved, `exportAs must be a string`);
@@ -371,7 +374,8 @@ export function extractDecoratorQueryMetadata(
 
 
 export function extractHostBindings(
-    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string|undefined, compilationMode: CompilationMode, metadata?: Map<string, ts.Expression>): ParsedHostBindings {
+    members: ClassMember[], evaluator: PartialEvaluator, coreModule: string|undefined,
+    compilationMode: CompilationMode, metadata?: Map<string, ts.Expression>): ParsedHostBindings {
   let bindings: ParsedHostBindings;
   if (metadata && metadata.has('host')) {
     bindings = evaluateHostExpressionBindings(metadata.get('host')!, evaluator);
@@ -394,11 +398,13 @@ export function extractHostBindings(
             const resolved = evaluator.evaluate(decorator.args[0]);
 
             // Specific error for local compilation mode if the argument cannot be resolved
-            assertLocalCompilationUnresolvedConst(compilationMode, resolved, null, 
-              'Unresolved identifier found for @HostBinding\'s argument! Did ' + 
-              'you import this identifier from a file outside of the compilation ' + 
-              'unit? This is not allowed when Angular compiler runs in local mode. ' + 'Possible solutions: 1) Move the declaration into a file within ' + 
-              'the compilation unit, 2) Inline the argument');
+            assertLocalCompilationUnresolvedConst(
+                compilationMode, resolved, null,
+                'Unresolved identifier found for @HostBinding\'s argument! Did ' +
+                    'you import this identifier from a file outside of the compilation ' +
+                    'unit? This is not allowed when Angular compiler runs in local mode. ' +
+                    'Possible solutions: 1) Move the declaration into a file within ' +
+                    'the compilation unit, 2) Inline the argument');
 
             if (typeof resolved !== 'string') {
               throw createValueHasWrongTypeError(
@@ -431,12 +437,13 @@ export function extractHostBindings(
             const resolved = evaluator.evaluate(decorator.args[0]);
 
             // Specific error for local compilation mode if the event name cannot be resolved
-            assertLocalCompilationUnresolvedConst(compilationMode, resolved, null, 
-              'Unresolved identifier found for @HostListener\'s event name ' + 
-              'argument! Did you import this identifier from a file outside of ' + 
-              'the compilation unit? This is not allowed when Angular compiler ' + 
-              'runs in local mode. Possible solutions: 1) Move the declaration ' + 
-              'into a file within the compilation unit, 2) Inline the argument');
+            assertLocalCompilationUnresolvedConst(
+                compilationMode, resolved, null,
+                'Unresolved identifier found for @HostListener\'s event name ' +
+                    'argument! Did you import this identifier from a file outside of ' +
+                    'the compilation unit? This is not allowed when Angular compiler ' +
+                    'runs in local mode. Possible solutions: 1) Move the declaration ' +
+                    'into a file within the compilation unit, 2) Inline the argument');
 
             if (typeof resolved !== 'string') {
               throw createValueHasWrongTypeError(
@@ -524,26 +531,28 @@ export function parseDirectiveStyles(
   const evaluated = evaluator.evaluate(expression);
   const value = typeof evaluated === 'string' ? [evaluated] : evaluated;
 
-  // Check if the identifier used for @Component.styles cannot be resolved in local compilation mode. if the case, an error specific to this situation is generated.
+  // Check if the identifier used for @Component.styles cannot be resolved in local compilation
+  // mode. if the case, an error specific to this situation is generated.
   if (compilationMode === CompilationMode.LOCAL) {
     let unresolvedNode: ts.Node|null = null;
     if (Array.isArray(value)) {
-      const entry = value.find(e => e instanceof DynamicValue && e.isFromUnknownIdentifier()) as DynamicValue|undefined;
+      const entry = value.find(e => e instanceof DynamicValue && e.isFromUnknownIdentifier()) as
+              DynamicValue |
+          undefined;
       unresolvedNode = entry?.node ?? null;
     } else if (value instanceof DynamicValue && value.isFromUnknownIdentifier()) {
       unresolvedNode = value.node;
     }
-    
+
     if (unresolvedNode !== null) {
       throw new FatalDiagnosticError(
-          ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
-          unresolvedNode, 
-          'Unresolved identifier found for @Component.styles field! Did you import ' + 
-          'this identifier from a file outside of the compilation unit? This is ' + 
-          'not allowed when Angular compiler runs in local mode. Possible ' + 
-          'solutions: 1) Move the declarations into a file within the compilation ' + 
-          'unit, 2) Inline the styles, 3) Move the styles into separate files and ' + 
-          'include it using @Component.styleUrls');
+          ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, unresolvedNode,
+          'Unresolved identifier found for @Component.styles field! Did you import ' +
+              'this identifier from a file outside of the compilation unit? This is ' +
+              'not allowed when Angular compiler runs in local mode. Possible ' +
+              'solutions: 1) Move the declarations into a file within the compilation ' +
+              'unit, 2) Inline the styles, 3) Move the styles into separate files and ' +
+              'include it using @Component.styleUrls');
     }
   }
 
@@ -1282,7 +1291,7 @@ function extractHostDirectives(
       if (!ts.isIdentifier(hostReference.node) &&
           !ts.isPropertyAccessExpression(hostReference.node)) {
         throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_EXPRESSION_FOR_HOST_DIRECTIVE, hostReference.node,
+            ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION, hostReference.node,
             `In local compilation mode, host directive cannot be an expression. Use an identifier instead`);
       }
 
