@@ -442,7 +442,7 @@ function processCleanups(tView: TView, lView: LView): void {
         const targetIdx = tCleanup[i + 3];
         ngDevMode && assertNumber(targetIdx, 'cleanup target must be a number');
         if (targetIdx >= 0) {
-          // unregister
+          // Destroy anything whose teardown is a function call (e.g. QueryList, ModelSignal).
           lCleanup[targetIdx]();
         } else {
           // Subscription

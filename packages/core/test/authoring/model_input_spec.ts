@@ -15,7 +15,7 @@ import {ModelSignal} from '@angular/core/src/authoring/model/model_signal';
  * in `ModelSignal`, but it's marked as internal which makes it unavailable in tests.
  */
 type SubscribableSignal<T> = ModelSignal<T>&{
-  subscribe(callback: (value: T) => void): {unsubscribe: () => void};
+  subscribe(callback: (value: T) => void): () => void;
 };
 
 describe('model signal', () => {
@@ -68,7 +68,7 @@ describe('model signal', () => {
     signal.set(1);
     expect(values).toEqual([1]);
 
-    subscription.unsubscribe();
+    subscription();
     signal.set(2);
     expect(values).toEqual([1]);
   });
@@ -103,11 +103,11 @@ describe('model signal', () => {
     signal2.set(1);
     expect(emitCount).toBe(2);
 
-    subscription1.unsubscribe();
+    subscription1();
     signal2.set(2);
     expect(emitCount).toBe(3);
 
-    subscription2.unsubscribe();
+    subscription2();
     signal2.set(3);
     expect(emitCount).toBe(3);
   });

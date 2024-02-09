@@ -564,4 +564,29 @@ describe('model inputs', () => {
       }),
     ]);
   });
+
+  it('should not throw for mixed model and output subscriptions', () => {
+    @Directive({selector: '[dir]', standalone: true})
+    class Dir {
+      model = model(0);
+      @Output() output = new EventEmitter();
+      model2 = model(0);
+      @Output() output2 = new EventEmitter();
+    }
+
+    @Component({
+      template: `
+        <div dir (model)="noop()" (output)="noop()" (model2)="noop()" (output2)="noop()"></div>
+      `,
+      standalone: true,
+      imports: [Dir],
+    })
+    class App {
+      noop() {}
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(() => fixture.destroy()).not.toThrow();
+  });
 });
