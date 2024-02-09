@@ -364,4 +364,81 @@ describe('queries as signals', () => {
       expect(queryDir.results().length).toBe(0);
     });
   });
+
+  describe('reactivity and performance', () => {
+    it('should not dirty a children query when a list of matches does not change - a view with matches',
+       () => {
+         let recomputeCount = 0;
+
+         @Component({
+           standalone: true,
+           template: `
+          <div #el></div>
+          @if (show) {
+            <div #el></div>
+          }
+        `,
+         })
+         class AppComponent {
+           divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
+           foundElCount = computed(() => {
+             recomputeCount++;
+             return this.divEls().length;
+           });
+           show = false;
+         }
+
+         const fixture = TestBed.createComponent(AppComponent);
+         fixture.detectChanges();
+         expect(fixture.componentInstance.foundElCount()).toBe(1);
+         expect(recomputeCount).toBe(1);
+
+         // trigger view manipulation that should dirty queries but not change the results
+         fixture.componentInstance.show = true;
+         fixture.detectChanges();
+         fixture.componentInstance.show = false;
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.foundElCount()).toBe(1);
+         expect(recomputeCount).toBe(1);
+       });
+
+    it('should not dirty a children query when a list of matches does not change - a view with another container',
+       () => {
+         let recomputeCount = 0;
+
+         @Component({
+           standalone: true,
+           template: `
+          <div #el></div>
+          @if (show) {
+            <!-- an empty if to create a container -->
+            @if (true) {}
+          }
+        `,
+         })
+         class AppComponent {
+           divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
+           foundElCount = computed(() => {
+             recomputeCount++;
+             return this.divEls().length;
+           });
+           show = false;
+         }
+
+         const fixture = TestBed.createComponent(AppComponent);
+         fixture.detectChanges();
+         expect(fixture.componentInstance.foundElCount()).toBe(1);
+         expect(recomputeCount).toBe(1);
+
+         // trigger view manipulation that should dirty queries but not change the results
+         fixture.componentInstance.show = true;
+         fixture.detectChanges();
+         fixture.componentInstance.show = false;
+         fixture.detectChanges();
+
+         expect(fixture.componentInstance.foundElCount()).toBe(1);
+         expect(recomputeCount).toBe(1);
+       });
+  });
 });

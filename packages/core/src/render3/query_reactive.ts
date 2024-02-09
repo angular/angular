@@ -24,6 +24,11 @@ interface QuerySignalNode<T> extends ComputedNode<T|ReadonlyArray<T>> {
   _queryIndex?: number;
   _queryList?: QueryList<T>;
   _dirtyCounter: WritableSignal<number>;
+  /**
+   * Stores the last seen, flattened results for a query. This is to avoid marking the signal result
+   * computed as dirty when there was view manipulation that didn't impact final results.
+   */
+  _flatValue?: T|ReadonlyArray<T>;
 }
 
 /**
@@ -58,6 +63,7 @@ function createQuerySignalFn<V>(firstOnly: boolean, required: boolean) {
   });
   node = signalFn[SIGNAL] as QuerySignalNode<V>;
   node._dirtyCounter = signal(0);
+  node._flatValue = undefined;
 
   if (ngDevMode) {
     signalFn.toString = () => `[Query Signal]`;
@@ -111,5 +117,15 @@ function refreshSignalQuery<V>(node: QuerySignalNode<V>, firstOnly: boolean): V|
 
   queryList.reset(results, unwrapElementRef);
 
-  return firstOnly ? queryList.first : queryList.toArray();
+  if (firstOnly) {
+    return queryList.first;
+  } else {
+    // TODO: remove access to the private _changesDetected field by abstracting / removing usage of
+    // QueryList in the signal-based queries (perf follow-up)
+    const resultChanged = (queryList as any as {_changesDetected: boolean})._changesDetected;
+    if (resultChanged || node._flatValue === undefined) {
+      return node._flatValue = queryList.toArray();
+    }
+    return node._flatValue;
+  }
 }
