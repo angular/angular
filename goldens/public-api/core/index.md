@@ -1099,6 +1099,10 @@ export interface ModelSignal<T> extends WritableSignal<T> {
     [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
     // (undocumented)
     [SIGNAL]: ModelSignalNode<T>;
+    // @deprecated (undocumented)
+    subscribe(callback: (value: T) => void): {
+        unsubscribe: () => void;
+    };
 }
 
 // @public @deprecated
