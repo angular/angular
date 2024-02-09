@@ -1,3 +1,12 @@
+<a name="17.2.0-rc.1"></a>
+# 17.2.0-rc.1 (2024-02-09)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4b96f370ee](https://github.com/angular/angular/commit/4b96f370eea08d2531cc54f65a651f94b504692d) | fix | expose model signal subscribe for type checking purposes ([#54357](https://github.com/angular/angular/pull/54357)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.2.0-rc.0"></a>
 # 17.2.0-rc.0 (2024-02-08)
 ### common
