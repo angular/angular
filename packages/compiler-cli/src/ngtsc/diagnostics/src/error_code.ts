@@ -488,12 +488,18 @@ export enum ErrorCode {
   SUGGEST_SUBOPTIMAL_TYPE_INFERENCE = 10002,
 
   /**
-   * In local compilation mode a const is required to be resolved statically but cannot be so since it is imported from a file outside of the compilation unit. This usually happens with const being used as Angular decorators parameters such as `@Component.template`, `@HostListener.eventName`, etc.
+   * In local compilation mode a const is required to be resolved statically but cannot be so since
+   * it is imported from a file outside of the compilation unit. This usually happens with const
+   * being used as Angular decorators parameters such as `@Component.template`,
+   * `@HostListener.eventName`, etc.
    */
   LOCAL_COMPILATION_UNRESOLVED_CONST = 11001,
 
   /**
-   * In local compilation mode some element in the hostDirective array is an expression (e.g., a forward ref function). This is not supported in local compilation mode as it is not a very common use case.
+   * In local compilation mode a certain expression or syntax is not supported. This is usually
+   * because the expression/syntax is not very common and so we did not add support for it yet. This
+   * can be changed in the future and support for more expressions could be added if need be.
+   * Meanwhile, this error is thrown to indicate a current unavailability.
    */
-  LOCAL_COMPILATION_EXPRESSION_FOR_HOST_DIRECTIVE = 11003,
+  LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION = 11003,
 }
