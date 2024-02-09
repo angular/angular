@@ -11,6 +11,17 @@ import path from 'path';
 import ts from 'typescript';
 import url from 'url';
 
+/** Currently-configured tests. */
+const TESTS = new Map<string, (value: string) => string>([
+  [
+    'signal_input_signature_test',
+    v => v.includes(',') ? `InputSignalWithTransform<${v}>` : `InputSignal<${v}>`
+  ],
+  ['signal_queries_signature_test', v => `Signal<${v}>`],
+  ['signal_model_signature_test', v => `ModelSignal<${v}>`],
+  ['unwrap_writable_signal_signature_test', v => v]
+]);
+
 const containingDir = path.dirname(url.fileURLToPath(import.meta.url));
 
 /**
@@ -21,8 +32,7 @@ function isTestClass(classDeclaration: ts.ClassDeclaration): boolean {
   return classDeclaration.name !== undefined && classDeclaration.name.text.endsWith('Test');
 }
 
-function testFile(
-    testFileName: string, getType: (v: string) => string, inferWriteType: boolean): boolean {
+function testFile(testFileName: string, getType: (v: string) => string): boolean {
   const fileContent = fs.readFileSync(path.join(containingDir, `${testFileName}.d.ts`), 'utf8');
   const sourceFile = ts.createSourceFile('test.ts', fileContent, ts.ScriptTarget.ESNext, true);
   const testClazz = sourceFile.statements.find(
@@ -63,11 +73,7 @@ function testFile(
 async function main() {
   let failing = false;
 
-  failing ||= testFile(
-      'signal_input_signature_test',
-      v => v.includes(',') ? `InputSignalWithTransform<${v}>` : `InputSignal<${v}>`, true);
-  failing ||= testFile('signal_queries_signature_test', v => `Signal<${v}>`, false);
-  failing ||= testFile('signal_model_signature_test', v => `ModelSignal<${v}>`, false);
+  TESTS.forEach((callback, filename) => failing ||= testFile(filename, callback));
 
   if (failing) {
     throw new Error('Failing assertions');
