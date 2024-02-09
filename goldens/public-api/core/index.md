@@ -1100,9 +1100,7 @@ export interface ModelSignal<T> extends WritableSignal<T> {
     // (undocumented)
     [SIGNAL]: ModelSignalNode<T>;
     // @deprecated (undocumented)
-    subscribe(callback: (value: T) => void): {
-        unsubscribe: () => void;
-    };
+    subscribe(callback: (value: T) => void): () => void;
 }
 
 // @public @deprecated
