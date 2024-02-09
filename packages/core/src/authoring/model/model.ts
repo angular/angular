@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
+
 import {createModelSignal, ModelOptions, ModelSignal} from './model_signal';
-import {REQUIRED_UNSET_VALUE} from './model_signal_node';
 
 export function modelFunction<T>(initialValue?: T): ModelSignal<T|undefined> {
   return createModelSignal(initialValue);

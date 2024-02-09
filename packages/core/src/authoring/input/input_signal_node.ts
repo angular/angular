@@ -14,8 +14,7 @@ export const REQUIRED_UNSET_VALUE = /* @__PURE__ */ Symbol('InputSignalNode#UNSE
  * Reactive node type for an input signal. An input signal extends a signal.
  * There are special properties to enable transforms and required inputs.
  */
-export interface InputSignalNode<ReadT, WriteT> extends
-    SignalNode<ReadT|typeof REQUIRED_UNSET_VALUE> {
+export interface InputSignalNode<ReadT, WriteT> extends SignalNode<ReadT> {
   /**
    * User-configured transform that will run whenever a new value is applied
    * to the input signal node.
