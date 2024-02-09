@@ -43,7 +43,7 @@ export interface ModelSignal<T> extends WritableSignal<T> {
 
   // TODO(crisbeto): either make this a public API or mark as internal pending discussion.
   /** @deprecated Do not use, will be removed. */
-  subscribe(callback: (value: T) => void): {unsubscribe: () => void};
+  subscribe(callback: (value: T) => void): () => void;
 }
 
 /**
@@ -89,14 +89,11 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
   getter.subscribe = (callback: (value: T) => void) => {
     subscriptions.push(callback);
 
-    // TODO(crisbeto): figure out if we can get rid of the object literal.
-    return {
-      unsubscribe: () => {
-        const index = subscriptions.indexOf(callback);
+    return () => {
+      const index = subscriptions.indexOf(callback);
 
-        if (index > -1) {
-          subscriptions.splice(index, 1);
-        }
+      if (index > -1) {
+        subscriptions.splice(index, 1);
       }
     };
   };
