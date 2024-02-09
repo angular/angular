@@ -23,7 +23,7 @@ jobs:
       SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
     steps:
       - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f89362d698858f9674463e48fde514b097a15838
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@c83e99a12397014162531ca125c94549db55dd84
         with:
           cache-node-modules: true
           # Checking out the pull request commit is intended here as we need to run the changed code tests.
@@ -31,7 +31,7 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@f89362d698858f9674463e48fde514b097a15838
+        uses: angular/dev-infra/github-actions/bazel/setup@c83e99a12397014162531ca125c94549db55dd84
       - name: Starting Saucelabs tunnel service
         run: ./tools/saucelabs/sauce-service.sh run &
       # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
