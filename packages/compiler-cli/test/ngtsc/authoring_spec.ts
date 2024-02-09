@@ -797,9 +797,12 @@ runInEachFileSystem(() => {
         `);
 
         const diagnostics = env.driveDiagnostics();
-        expect(diagnostics.length).toBe(1);
+        expect(diagnostics.length).toBe(2);
         expect(diagnostics[0].messageText)
             .toBe(`Type 'WritableSignal<number>' is not assignable to type 'number'.`);
+        // also caught by the interpolated signal extended diagnostic
+        expect(diagnostics[1].messageText)
+          .toBe(`value is a function and should be invoked: value()`);
       });
     });
 
