@@ -12,8 +12,7 @@ import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Signal} from '../../render3/reactivity/api';
 import {WritableSignal} from '../../render3/reactivity/signal';
 import {ɵINPUT_SIGNAL_BRAND_READ_TYPE, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE} from '../input/input_signal';
-
-import {MODEL_SIGNAL_NODE, ModelSignalNode, REQUIRED_UNSET_VALUE} from './model_signal_node';
+import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
 
 /**
  * @developerPreview
@@ -37,7 +36,7 @@ export interface ModelOptions {
  * @developerPreview
  */
 export interface ModelSignal<T> extends WritableSignal<T> {
-  [SIGNAL]: ModelSignalNode<T>;
+  [SIGNAL]: InputSignalNode<T, T>;
   [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
   [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
 
@@ -55,7 +54,7 @@ export interface ModelSignal<T> extends WritableSignal<T> {
  */
 export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
   const subscriptions: ((value: T) => void)[] = [];
-  const node: ModelSignalNode<T> = Object.create(MODEL_SIGNAL_NODE);
+  const node: InputSignalNode<T, T> = Object.create(INPUT_SIGNAL_NODE);
 
   node.value = initialValue;
 

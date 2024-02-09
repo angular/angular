@@ -1563,9 +1563,6 @@
     "name": "init_model_signal"
   },
   {
-    "name": "init_model_signal_node"
-  },
-  {
     "name": "init_module"
   },
   {

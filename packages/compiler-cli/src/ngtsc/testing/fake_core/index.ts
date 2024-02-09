@@ -199,7 +199,7 @@ export interface ModelOptions {
 export interface ModelSignal<T> extends WritableSignal<T> {
   [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
   [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
-  subscribe(callback: (value: T) => void): {unsubscribe: () => void};
+  subscribe(callback: (value: T) => void): () => void;
 }
 
 export interface ModelFunction {
