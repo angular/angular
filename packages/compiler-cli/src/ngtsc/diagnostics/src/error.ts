@@ -95,3 +95,14 @@ export function addDiagnosticChain(
 export function isFatalDiagnosticError(err: any): err is FatalDiagnosticError {
   return err._isFatalDiagnosticError === true;
 }
+
+/**
+ * Whether the compiler diagnostics represents an error related to local compilation mode.
+ *
+ * This helper has application in 1P where we check whether a diagnostic is related to local
+ * compilation in order to add some g3 specific info to it.
+ */
+export function isLocalCompilationDiagnostics(diagnostic: ts.Diagnostic): boolean {
+  return diagnostic.code === ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST) ||
+      diagnostic.code === ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION);
+}
