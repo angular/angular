@@ -66,7 +66,14 @@ export function typeCheckDiagnose(c: TestCase) {
       name => `${outputs[name].restrictionModifier ?? ''} ${name}: ${outputs[name].type}`);
 
   const testComponent = `
-      import {InputSignal, EventEmitter, OutputEmitter, InputSignalWithTransform} from '@angular/core';
+      import {
+        InputSignal,
+        EventEmitter,
+        OutputEmitter,
+        InputSignalWithTransform,
+        ModelSignal,
+        WritableSignal,
+      } from '@angular/core';
 
       ${c.extraFileContent ?? ''}
 
