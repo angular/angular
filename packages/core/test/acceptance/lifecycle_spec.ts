@@ -24,7 +24,7 @@ describe('onChanges', () => {
       ngOnChanges(changes: SimpleChanges) {
         for (let key in changes) {
           const simpleChange = changes[key];
-          log.push(key + ': ' + simpleChange.previousValue + ' -> ' + simpleChange.currentValue);
+          log.push(key + ': ' + simpleChange?.previousValue + ' -> ' + simpleChange?.currentValue);
         }
       }
     }
@@ -1139,9 +1139,9 @@ describe('meta-programming', () => {
     ChildPrototype.ngOnInit = () => events.push('onInit');
     ChildPrototype.ngOnChanges = (e: SimpleChanges) => {
       const name = e['name'];
-      expect(name.previousValue).toEqual(undefined);
-      expect(name.currentValue).toEqual('value');
-      expect(name.firstChange).toEqual(true);
+      expect(name?.previousValue).toEqual(undefined);
+      expect(name?.currentValue).toEqual('value');
+      expect(name?.firstChange).toEqual(true);
       events.push('ngOnChanges');
     };
     ChildPrototype.ngDoCheck = () => events.push('ngDoCheck');
@@ -1183,9 +1183,9 @@ describe('meta-programming', () => {
        BasePrototype.ngOnInit = () => events.push('onInit');
        BasePrototype.ngOnChanges = (e: SimpleChanges) => {
          const name = e['name'];
-         expect(name.previousValue).toEqual(undefined);
-         expect(name.currentValue).toEqual('value');
-         expect(name.firstChange).toEqual(true);
+         expect(name?.previousValue).toEqual(undefined);
+         expect(name?.currentValue).toEqual('value');
+         expect(name?.firstChange).toEqual(true);
          events.push('ngOnChanges');
        };
 

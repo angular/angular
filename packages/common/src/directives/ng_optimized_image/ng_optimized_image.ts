@@ -942,13 +942,13 @@ function assertNoPostInitInputChange(
 ) {
   inputs.forEach((input) => {
     const isUpdated = changes.hasOwnProperty(input);
-    if (isUpdated && !changes[input].isFirstChange()) {
+    if (isUpdated && !changes[input]?.isFirstChange()) {
       if (input === 'ngSrc') {
         // When the `ngSrc` input changes, we detect that only in the
         // `ngOnChanges` hook, thus the `ngSrc` is already set. We use
         // `ngSrc` in the error message, so we use a previous value, but
         // not the updated one in it.
-        dir = {ngSrc: changes[input].previousValue} as NgOptimizedImage;
+        dir = {ngSrc: changes[input]?.previousValue} as NgOptimizedImage;
       }
       throw postInitInputChangeError(dir, input);
     }

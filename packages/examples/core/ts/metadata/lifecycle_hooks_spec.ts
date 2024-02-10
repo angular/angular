@@ -131,7 +131,7 @@ import {TestBed} from '@angular/core/testing';
       expect(log.length).toBe(1);
       expect(log[0][0]).toBe('ngOnChanges');
       const changes: SimpleChanges = log[0][1][0];
-      expect(changes['prop'].currentValue).toBe(true);
+      expect(changes['prop']?.currentValue).toBe(true);
     });
   });
 

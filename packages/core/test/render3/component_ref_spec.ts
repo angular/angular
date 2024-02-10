@@ -323,7 +323,7 @@ describe('ComponentFactory', () => {
         ngOnChanges(changes: SimpleChanges): void {
           const inChange = changes['in'];
           inputChangesLog.push(
-              `${inChange.previousValue}:${inChange.currentValue}:${inChange.firstChange}`);
+              `${inChange?.previousValue}:${inChange?.currentValue}:${inChange?.firstChange}`);
         }
 
         @Input() in : string|undefined;
