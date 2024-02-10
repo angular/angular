@@ -41,8 +41,8 @@ const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = true;
  * By default, the value is set to `true`.
  * @publicApi
  */
-export const REMOVE_STYLES_ON_COMPONENT_DESTROY =
-    new InjectionToken<boolean>(ngDevMode ? 'RemoveStylesOnCompDestroy' : '', {
+export const REMOVE_STYLES_ON_COMPONENT_DESTROY = new InjectionToken<boolean>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'RemoveStylesOnCompDestroy' : '', {
       providedIn: 'root',
       factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
     });

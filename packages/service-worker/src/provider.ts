@@ -24,7 +24,9 @@ import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
 
-export const SCRIPT = new InjectionToken<string>(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
+export const SCRIPT = new InjectionToken<string>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '',
+);
 
 export function ngswAppInitializer(
   injector: Injector,

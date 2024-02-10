@@ -20,8 +20,8 @@ let _platformInjector: Injector|null = null;
  * Internal token to indicate whether having multiple bootstrapped platform should be allowed (only
  * one bootstrapped platform is allowed by default). This token helps to support SSR scenarios.
  */
-export const ALLOW_MULTIPLE_PLATFORMS =
-    new InjectionToken<boolean>(ngDevMode ? 'AllowMultipleToken' : '');
+export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'AllowMultipleToken' : '');
 
 /**
  * Creates a platform.

@@ -58,8 +58,8 @@ function hasValidLength(value: any): boolean {
  *
  * @publicApi
  */
-export const NG_VALIDATORS =
-    new InjectionToken<ReadonlyArray<Validator|Function>>(ngDevMode ? 'NgValidators' : '');
+export const NG_VALIDATORS = new InjectionToken<ReadonlyArray<Validator|Function>>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'NgValidators' : '');
 
 /**
  * @description
@@ -90,8 +90,8 @@ export const NG_VALIDATORS =
  *
  * @publicApi
  */
-export const NG_ASYNC_VALIDATORS =
-    new InjectionToken<ReadonlyArray<Validator|Function>>(ngDevMode ? 'NgAsyncValidators' : '');
+export const NG_ASYNC_VALIDATORS = new InjectionToken<ReadonlyArray<Validator|Function>>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'NgAsyncValidators' : '');
 
 /**
  * A regular expression that matches valid e-mail addresses.

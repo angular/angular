@@ -53,8 +53,8 @@ export const DEFER_BLOCK_DEPENDENCY_INTERCEPTOR =
 /**
  * **INTERNAL**, token used for configuring defer block behavior.
  */
-export const DEFER_BLOCK_CONFIG =
-    new InjectionToken<DeferBlockConfig>(ngDevMode ? 'DEFER_BLOCK_CONFIG' : '');
+export const DEFER_BLOCK_CONFIG = new InjectionToken<DeferBlockConfig>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'DEFER_BLOCK_CONFIG' : '');
 
 /**
  * Returns whether defer blocks should be triggered.

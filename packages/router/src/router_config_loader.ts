@@ -33,7 +33,9 @@ import {assertStandalone, standardizeConfig, validateConfig} from './utils/confi
  *
  * @publicApi
  */
-export const ROUTES = new InjectionToken<Route[][]>(ngDevMode ? 'ROUTES' : '');
+export const ROUTES = new InjectionToken<Route[][]>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'ROUTES' : '',
+);
 
 type ComponentLoader = Observable<Type<unknown>>;
 

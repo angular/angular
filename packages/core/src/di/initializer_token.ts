@@ -14,5 +14,5 @@ import {InjectionToken} from './injection_token';
  *
  * @publicApi
  */
-export const ENVIRONMENT_INITIALIZER =
-    new InjectionToken<ReadonlyArray<() => void>>(ngDevMode ? 'ENVIRONMENT_INITIALIZER' : '');
+export const ENVIRONMENT_INITIALIZER = new InjectionToken<ReadonlyArray<() => void>>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'ENVIRONMENT_INITIALIZER' : '');

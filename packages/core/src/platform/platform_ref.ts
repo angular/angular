@@ -30,8 +30,8 @@ import {getNgZone} from '../zone/ng_zone';
  * `PlatformRef` class (i.e. register the callback via `PlatformRef.onDestroy`), thus making the
  * entire class tree-shakeable.
  */
-export const PLATFORM_DESTROY_LISTENERS =
-    new InjectionToken<Set<VoidFunction>>(ngDevMode ? 'PlatformDestroyListeners' : '');
+export const PLATFORM_DESTROY_LISTENERS = new InjectionToken<Set<VoidFunction>>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'PlatformDestroyListeners' : '');
 
 /**
  * The Angular platform is the entry point for Angular on a web page.
