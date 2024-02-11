@@ -51,7 +51,8 @@
       &:has(.docs-reference-api-tab) {
         width: 60%;
       }
-      &:not(.docs-reference-api-tab) {
+      &:not(:has(.docs-reference-api-tab)) {
+        width: 100%;
         max-width: var(--page-width);
       }
     }
