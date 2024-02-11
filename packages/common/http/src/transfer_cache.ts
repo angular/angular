@@ -197,13 +197,14 @@ function getFilteredHeaders(
 
 function makeCacheKey(request: HttpRequest<any>): StateKey<TransferHttpResponse> {
   // make the params encoded same as a url so it's easy to identify
-  const {params, method, responseType, url} = request;
+  const {params, method, responseType, url, body} = request;
   const encodedParams = params
     .keys()
     .sort()
     .map((k) => `${k}=${params.getAll(k)}`)
     .join('&');
-  const key = method + '.' + responseType + '.' + url + '?' + encodedParams;
+  const strBody = typeof body === 'string' ? body : '';
+  const key = [method, responseType, url, strBody, encodedParams].join('|');
 
   const hash = generateHash(key);
 
