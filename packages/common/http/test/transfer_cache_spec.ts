@@ -98,8 +98,8 @@ describe('TransferCache', () => {
 
     it('should store HTTP calls in cache when application is not stable', () => {
       makeRequestAndExpectOne('/test', 'foo');
-      const key = makeStateKey('432906284');
       const transferState = TestBed.inject(TransferState);
+      const key = makeStateKey(Object.keys((transferState as any).store)[0]);
       expect(transferState.get(key, null)).toEqual(jasmine.objectContaining({[BODY]: 'foo'}));
     });
 
@@ -115,7 +115,7 @@ describe('TransferCache', () => {
 
       const transferState = TestBed.inject(TransferState);
       expect(JSON.parse(transferState.toJson()) as Record<string, unknown>).toEqual({
-        '3706062792': {
+        '2400571479': {
           [BODY]: 'foo',
           [HEADERS]: {},
           [STATUS]: 200,
@@ -123,7 +123,7 @@ describe('TransferCache', () => {
           [URL]: '/test-1',
           [RESPONSE_TYPE]: 'json',
         },
-        '3706062823': {
+        '2400572440': {
           [BODY]: 'buzz',
           [HEADERS]: {},
           [STATUS]: 200,
