@@ -793,6 +793,11 @@
               "tooltip": "Signal inputs to optimize change detection and developer experience."
             },
             {
+              "url": "guide/signal-queries",
+              "title": "Signal queries",
+              "tooltip": "Signal queries exposing results as a reactive signal primitive."
+            },
+            {
               "url": "guide/rxjs-interop",
               "title": "RxJS Interop for Signals",
               "tooltip": "Angular signals and Observable interop"
