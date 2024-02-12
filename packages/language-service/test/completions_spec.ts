@@ -388,6 +388,74 @@ describe('completions', () => {
        });
   });
 
+  describe('model inputs', () => {
+    const directiveWithModel = {
+      'Dir': `
+         @Directive({
+           selector: '[dir]',
+         })
+         export class Dir {
+           twoWayValue = model<string>();
+         }
+    `
+    };
+
+    it('should return completions for both properties and events', () => {
+      const {templateFile} = setup(`<button dir ></button>`, ``, directiveWithModel);
+      templateFile.moveCursorToText(`<button dir ¦>`);
+      const completions = templateFile.getCompletionsAtPosition();
+
+      expectContain(completions, DisplayInfoKind.PROPERTY, ['[twoWayValue]']);
+      expectContain(completions, DisplayInfoKind.PROPERTY, ['[(twoWayValue)]']);
+      expectContain(completions, DisplayInfoKind.EVENT, ['(twoWayValueChange)']);
+    });
+
+    it('should return property access completions in the property side of the binding', () => {
+      const {templateFile} = setup(`<input dir [twoWayValue]="'foo'.">`, '', directiveWithModel);
+      templateFile.moveCursorToText(`dir [twoWayValue]="'foo'.¦">`);
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, ts.ScriptElementKind.memberFunctionElement,
+          [`charAt`, 'toLowerCase', /* etc. */]);
+    });
+
+    it('should return property access completions in the event side of the binding', () => {
+      const {templateFile} =
+          setup(`<input dir (twoWayValueChange)="'foo'.">`, '', directiveWithModel);
+      templateFile.moveCursorToText(`dir (twoWayValueChange)="'foo'.¦">`);
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, ts.ScriptElementKind.memberFunctionElement,
+          [`charAt`, 'toLowerCase', /* etc. */]);
+    });
+
+    it('should return property access completions in a two-way binding', () => {
+      const {templateFile} = setup(`<input dir [(twoWayValue)]="'foo'.">`, '', directiveWithModel);
+      templateFile.moveCursorToText(`dir [(twoWayValue)]="'foo'.¦">`);
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, ts.ScriptElementKind.memberFunctionElement,
+          [`charAt`, 'toLowerCase', /* etc. */]);
+    });
+
+    it('should return completions of string literals, number literals, `true`, ' +
+           '`false`, `null` and `undefined`',
+       () => {
+         const {templateFile} =
+             setup(`<input dir (twoWayValueChange)="$event.">`, '', directiveWithModel);
+         templateFile.moveCursorToText('dir (twoWayValueChange)="$event.¦">');
+
+         const completions = templateFile.getCompletionsAtPosition();
+
+         expectContain(
+             completions, ts.ScriptElementKind.memberFunctionElement,
+             [`charAt`, 'toLowerCase', /* etc. */]);
+       });
+  });
+
   describe('for blocks', () => {
     const completionPrefixes = ['@', '@i'];
 
@@ -1680,7 +1748,15 @@ function setup(
   const env = LanguageServiceTestEnv.setup();
   const project = env.addProject('test', {
     'test.ts': `
-         import {Component, input, output, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
+         import {Component,
+          input,
+          output,
+          model,
+          Directive,
+          NgModule,
+          Pipe,
+          TemplateRef,
+        } from '@angular/core';
 
          ${functionDeclarations}
 
