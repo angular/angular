@@ -8,7 +8,7 @@
 
 import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
 import {Console} from '../console';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders, Provider} from '../di';
+import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironmentProviders, Provider,} from '../di';
 import {inject} from '../di/injector_compatibility';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
@@ -25,8 +25,8 @@ import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 
 import {cleanupDehydratedViews} from './cleanup';
-import {enableClaimDehydratedIcuCaseImpl, enablePrepareI18nBlockForHydrationImpl, isI18nHydrationEnabled, setIsI18nHydrationSupportEnabled} from './i18n';
-import {IS_HYDRATION_DOM_REUSE_ENABLED, IS_I18N_HYDRATION_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
+import {enableClaimDehydratedIcuCaseImpl, enablePrepareI18nBlockForHydrationImpl, isI18nHydrationEnabled, setIsI18nHydrationSupportEnabled,} from './i18n';
+import {IS_HYDRATION_DOM_REUSE_ENABLED, IS_I18N_HYDRATION_ENABLED, PRESERVE_HOST_CONTENT,} from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 
@@ -104,13 +104,12 @@ function printHydrationStats(injector: Injector) {
   console.log(message);
 }
 
-
 /**
  * Returns a Promise that is resolved when an application becomes stable.
  */
 function whenStableWithTimeout(appRef: ApplicationRef, injector: Injector): Promise<void> {
   const whenStablePromise = whenStable(appRef);
-  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
     const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
     const console = injector.get(Console);
     const ngZone = injector.get(NgZone);
@@ -149,7 +148,7 @@ export function withDomHydration(): EnvironmentProviders {
           // hydration annotations. Otherwise, keep hydration disabled.
           const transferState = inject(TransferState, {optional: true});
           isEnabled = !!transferState?.get(NGH_DATA_KEY, null);
-          if (!isEnabled && (typeof ngDevMode !== 'undefined' && ngDevMode)) {
+          if (!isEnabled && (typeof ngDevMode === 'undefined' || ngDevMode)) {
             const console = inject(Console);
             const message = formatRuntimeError(
                 RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
@@ -157,7 +156,8 @@ export function withDomHydration(): EnvironmentProviders {
                     'serialized information present in the server response, ' +
                     'thus hydration was not enabled. ' +
                     'Make sure the `provideClientHydration()` is included into the list ' +
-                    'of providers in the server part of the application configuration.');
+                    'of providers in the server part of the application configuration.',
+            );
             // tslint:disable-next-line:no-console
             console.warn(message);
           }
@@ -195,7 +195,7 @@ export function withDomHydration(): EnvironmentProviders {
         // On a server, an application is rendered from scratch,
         // so the host content needs to be empty.
         return isPlatformBrowser() && inject(IS_HYDRATION_DOM_REUSE_ENABLED);
-      }
+      },
     },
     {
       provide: APP_BOOTSTRAP_LISTENER,
@@ -213,7 +213,8 @@ export function withDomHydration(): EnvironmentProviders {
             // to ensure that change detection is properly run afterward.
             whenStableWithTimeout(appRef, injector).then(() => {
               cleanupDehydratedViews(appRef);
-              if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+
+              if (typeof ngDevMode === 'undefined' || ngDevMode) {
                 printHydrationStats(injector);
               }
             });
@@ -222,7 +223,7 @@ export function withDomHydration(): EnvironmentProviders {
         return () => {};  // noop
       },
       multi: true,
-    }
+    },
   ]);
 }
 
@@ -285,10 +286,12 @@ function verifySsrContentsIntegrity(): void {
   if (!hydrationMarker) {
     throw new RuntimeError(
         RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
-        typeof ngDevMode !== 'undefined' && ngDevMode &&
+        typeof ngDevMode === 'undefined' || ngDevMode ?
             'Angular hydration logic detected that HTML content of this page was modified after it ' +
                 'was produced during server side rendering. Make sure that there are no optimizations ' +
                 'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
-                'relies on HTML produced by the server, including whitespaces and comment nodes.');
+                'relies on HTML produced by the server, including whitespaces and comment nodes.' :
+            '',
+    );
   }
 }

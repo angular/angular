@@ -199,9 +199,8 @@ export function provideClientHydration(
   }
 
   if (
-    typeof ngDevMode !== 'undefined' &&
-    ngDevMode &&
-    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) &&
+    (typeof ngDevMode === 'undefined' ||
+      (ngDevMode && featuresKind.has(HydrationFeatureKind.NoHttpTransferCache))) &&
     hasHttpTransferCacheOptions
   ) {
     // TODO: Make this a runtime error
@@ -211,7 +210,7 @@ export function provideClientHydration(
   }
 
   return makeEnvironmentProviders([
-    typeof ngDevMode !== 'undefined' && ngDevMode ? provideZoneJsCompatibilityDetector() : [],
+    typeof ngDevMode === 'undefined' || ngDevMode ? provideZoneJsCompatibilityDetector() : [],
     withDomHydration(),
     featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions
       ? []

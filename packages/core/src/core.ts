@@ -60,7 +60,7 @@ export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
 
 import {global} from './util/global';
-if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+if (typeof ngDevMode === 'undefined' || ngDevMode) {
   // This helper is to give a reasonable error message to people upgrading to v9 that have not yet
   // installed `@angular/localize` in their app.
   // tslint:disable-next-line: no-toplevel-property-access

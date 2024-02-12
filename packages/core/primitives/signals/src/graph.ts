@@ -198,7 +198,7 @@ interface ProducerNode extends ReactiveNode {
 export function producerAccessed(node: ReactiveNode): void {
   if (inNotificationPhase) {
     throw new Error(
-      typeof ngDevMode !== 'undefined' && ngDevMode
+      typeof ngDevMode === 'undefined' || ngDevMode
         ? `Assertion error: signal read during notification phase`
         : '',
     );
@@ -457,7 +457,7 @@ function producerRemoveLiveConsumerAtIndex(node: ReactiveNode, idx: number): voi
   assertProducerNode(node);
   assertConsumerNode(node);
 
-  if (typeof ngDevMode !== 'undefined' && ngDevMode && idx >= node.liveConsumerNode.length) {
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && idx >= node.liveConsumerNode.length) {
     throw new Error(
       `Assertion error: active consumer index ${idx} is out of bounds of ${node.liveConsumerNode.length} consumers)`,
     );
