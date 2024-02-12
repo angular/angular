@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {patchMacroTask, zoneSymbol} from '../common/utils';
+import {patchMacroTask} from '../common/utils';
 import {ZoneType} from '../zone-impl';
 
 export function patchFs(Zone: ZoneType): void {
@@ -36,11 +36,13 @@ export function patchFs(Zone: ZoneType): void {
       'futimes',
       'lchmod',
       'lchown',
+      'lutimes',
       'link',
       'lstat',
       'mkdir',
       'mkdtemp',
       'open',
+      'opendir',
       'read',
       'readdir',
       'readFile',
@@ -55,6 +57,7 @@ export function patchFs(Zone: ZoneType): void {
       'utimes',
       'write',
       'writeFile',
+      'writev',
     ];
 
     TO_PATCH_MACROTASK_METHODS.filter(
