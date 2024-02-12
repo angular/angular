@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {patchMacroTask, zoneSymbol} from '../common/utils';
+import {patchMacroTask} from '../common/utils';
 
 Zone.__load_patch('fs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   let fs: any;
@@ -20,11 +20,11 @@ Zone.__load_patch('fs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // watch, watchFile, unwatchFile has been patched
   // because EventEmitter has been patched
   const TO_PATCH_MACROTASK_METHODS = [
-    'access',  'appendFile', 'chmod',    'chown',    'close',     'exists',    'fchmod',
-    'fchown',  'fdatasync',  'fstat',    'fsync',    'ftruncate', 'futimes',   'lchmod',
-    'lchown',  'link',       'lstat',    'mkdir',    'mkdtemp',   'open',      'read',
-    'readdir', 'readFile',   'readlink', 'realpath', 'rename',    'rmdir',     'stat',
-    'symlink', 'truncate',   'unlink',   'utimes',   'write',     'writeFile',
+    'access',    'appendFile', 'chmod',    'chown',     'close',   'exists',  'fchmod',  'fchown',
+    'fdatasync', 'fstat',      'fsync',    'ftruncate', 'futimes', 'lchmod',  'lchown',  'lutimes',
+    'link',      'lstat',      'mkdir',    'mkdtemp',   'open',    'opendir', 'read',    'readdir',
+    'readFile',  'readlink',   'realpath', 'rename',    'rmdir',   'stat',    'symlink', 'truncate',
+    'unlink',    'utimes',     'write',    'writeFile', 'writev'
   ];
 
   TO_PATCH_MACROTASK_METHODS.filter(name => !!fs[name] && typeof fs[name] === 'function')
@@ -44,11 +44,13 @@ Zone.__load_patch('fs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // `patchMacroTask` has overridden the `realpath` function and its `native` property.
   if (realpathOriginalDelegate?.native) {
     fs.realpath.native = realpathOriginalDelegate.native;
-    patchMacroTask(fs.realpath, 'native', (self, args) => ({
-      args,
-      target: self,
-      cbIdx: args.length > 0 ? args.length - 1 : -1,
-      name: 'fs.realpath.native',
-    }));
+    patchMacroTask(fs.realpath, 'native', (self, args) => {
+      return {
+        args,
+        target: self,
+        cbIdx: args.length > 0 ? args.length - 1 : -1,
+        name: 'fs.realpath.native',
+      };
+    });
   }
 });
