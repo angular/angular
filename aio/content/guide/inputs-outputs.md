@@ -27,8 +27,8 @@ Conversely, `@Output()` lets the child send data to a parent component.
 
 <div class="alert is-helpful">
 
-Signal-based inputs are available in developer preview and can be an alternative to `@Input()`.
-Consider exploring [signal inputs](/guide/signal-inputs).
+Signal-based inputs are available in developer preview and may be a better fit for some use cases as an alternative to `@Input`.
+Learn more in the [signal inputs guide](/guide/signal-inputs).
 
 </div>
 

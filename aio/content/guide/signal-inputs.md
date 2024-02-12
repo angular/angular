@@ -1,18 +1,47 @@
 # Signal inputs
 
-Signal inputs are an alternative approach to `@Input()`.
+Signal inputs are a reactive alternative to decorator-based `@Input()`.
 
 <div class="alert is-helpful">
 
 Signal inputs are currently in [developer preview](/guide/releases#developer-preview).
-API might change without deprecation.
 
 </div>
 
-## What are signal inputs?
+## Overview
 
-Signal inputs are an alternative to decorator-based `@Input()` directive inputs.
-They are tightly integrated with the [signals library](/guide/signals) and provide numerous benefits:
+Signal inputs allow values to be bound from parent components.
+Those values are exposed using a `Signal` and might change during the lifecycle of your component.
+
+Angular supports two variants of inputs:
+
+**Optional inputs**
+Inputs are optional by default, unless you use `input.required`.
+You can specify an explicit initial value, or Angular will use `undefined` implicitly.
+
+**Required inputs**
+Required inputs always have a value of the given input type.
+They are declared using the `input.required` function.
+
+```typescript
+import {Component, input} from '@angular/core';
+
+@Component({...})
+export class MyComp {
+  // optional
+  firstName = input<string>();         // InputSignal<string|undefined>
+  age = input(0);                      // InputSignal<number>
+
+  // required
+  lastName = input.required<string>(); // InputSignal<string>
+}
+```
+
+An input is automatically recognized by Angular whenever you use the `input` or `input.required` functions as initializer of class members.
+
+## Why should we use signal inputs and not `@Input()`?
+
+In comparison to decorator-based `@Input`, signal inputs provide numerous benefits:
 
 1. Signal inputs are more **type safe**:
   <br/>• Required inputs do not require initial values, or tricks to tell TypeScript that an input _always_ has a value.
@@ -20,47 +49,32 @@ They are tightly integrated with the [signals library](/guide/signals) and provi
 2. Signal inputs, when used in templates, will **automatically** mark `OnPush` components as dirty.
 3. Values can be easily **derived** whenever an input changes using `computed`.
 
-## Overview
+## Aliasing an input
 
-Conceptually, signal inputs are similar to the inputs you already know with `@Input`.
-
-The difference is that you no longer use a decorator to declare an input, but instead the input is automatically recognized by Angular whenever you use the `input` or `input.required` functions as initializer of class members.
+Angular uses the class member name as the name of the input.
+You can alias inputs to change their public name to be different.
 
 ```typescript
-import {Component, input} from '@angular/core';
-
-@Component({...})
-export class MyComp {
-  firstName = input<string>();         // InputSignal<string|undefined>
-  lastName = input.required<string>(); // InputSignal<string>
-
-  age = input(0);                      // InputSignal<number>
+class StudentDirective {
+  age = input(null, {alias: 'studentAge'});
 }
 ```
 
-## Types of inputs
-
-With signal inputs we have a more clear distinction of possible input variants.
-Angular supports:
-
-* Optional inputs that _can_ have an initial value (see `age` above).
-* Required inputs that always have a value of the given type.
-
-These two variants are available by the `input` and `input.required` functions exposed by `@angular/core`.
+This allows users to bind to your input using `[studentAge]`, while inside your component you can access the input values using `this.age`.
 
 ## Using in templates
 
 Signal inputs are non-writable signals.
 As with signals declared via `signal()`, you access the current value of the input by calling the input signal.
 
-This access to the the value is captured in reactive contexts and can notify active consumers, like Angular itself, whenever the input value changes.
-
 ```html
 <p>First name: {{firstName()}}</p>
 <p>Last name: {{lastName()}}</p>
 ```
 
-An input signal in practice is a trivial extension of signals that were mentioned in [the signals library guide](/guide/signals).
+This access to the the value is captured in reactive contexts and can notify active consumers, like Angular itself, whenever the input value changes.
+
+An input signal in practice is a trivial extension of signals that you know from the [the signals guide](/guide/signals).
 
 ```typescript
 export class InputSignal<T> extends Signal<T> { ... }`.
@@ -68,9 +82,7 @@ export class InputSignal<T> extends Signal<T> { ... }`.
 
 ## Deriving values
 
-Similar to normal signals, you can derive values from inputs using `computed`.
-Computed signals memoize values.
-See more details in the [dedicated section for computed](/guide/signals#computed-signals).
+As with signals, you can derive values from inputs using `computed`.
 
 ```typescript
 import {Component, input, computed} from '@angular/core';
@@ -84,13 +96,22 @@ export class MyComp {
 }
 ```
 
+Computed signals memoize values.
+See more details in the [dedicated section for computed](/guide/signals#computed-signals).
+
 ## Monitoring changes
 
-Previously, with `@Input` it was rather difficult to monitor whenever an is input changing.
-Users monitored inputs using the `ngOnChanges` lifecycle hook, or making use of setters to perform logic whenever the input changes.
+When using decorator-based inputs (`@Input`), it is difficult to monitor whenever an input's value is changing.
+Developers used two approaches to monitor value changes:
 
-With signal inputs, users can make use of the `effect` function to run logic whenever the input changes.
-For example, issuing HTTP requests whenever the first name, or last name inputs change.
+* using the `ngOnChanges` lifecycle hook.
+* using setters to run logic whenever the input changes.
+
+With signal inputs, users can leverage the `effect` function.
+The function will execute whenever the input changes.
+
+Consider the following example.
+The new value is printed to the console whenever the `firstName` input changes.
 
 ```typescript
 import {input, effect} from '@angular/core';
@@ -100,7 +121,7 @@ class MyComp {
 
   constructor() {
     effect(() => {
-      this.fetchUserFromDatabase(this.firstName());
+      console.log(this.firstName());
     });
   }
 }
@@ -109,64 +130,34 @@ class MyComp {
 The `fetchUserFromDatabase` function is invoked every time the `firstName` input changes.
 This will happen as soon as `firstName` is available, and for subsequent changes during the lifetime of `MyComp`.
 
-## Aliasing an input
-
-Inputs can be aliased in case the name of the input cannot match the class member name.
-
-```typescript
-class MyComp {
-  _rawAge = input(0, {alias: 'age'});
-}
-```
-
-With the example above, you will use `this._rawAge` inside your component or template.
-Consumers of `MyComp` can bind to `[age]` using Angular's input binding syntax.
-
 ## Value transforms
 
 You may want to coerce or parse input values without changing the meaning of the input.
 Transforms convert the raw value from parent templates to the expected input type.
 Transforms should be [pure functions](https://en.wikipedia.org/wiki/Pure_function).
 
-<div class="alert is-important">
-
-Do not use transforms if they change the meaning of the input, or if they are [impure](https://en.wikipedia.org/wiki/Pure_function).
-
-Instead, consider using a `computed` for transformations with different meaning, or an `effect` for impure code that should run whenever the input changes.
-
-</div>
-
-In some cases though, value transforms are a good fit for input.
-Consider an input for `disabled` that is accepting `boolean` values.
-
 ```typescript
-class MyCustomComp {
-  disabled = input(false); // InputSignal<boolean>
+class MyComp {
+  disabled = input(false, {
+    transform: (value: boolean|string) => typeof v === 'string' ? v === '' : v,
+  });
 }
 ```
 
-Inside your component, you expected `disabled` to be either `true` or `false`.
-On the other hand though, users of your component may pass an empty string in templates, as a shorthand, and expect that to be treated as `true`.
+In the example above, you are declaring an input named `disabled` that is accepting values of type `boolean` and `string`.
+This is captured by the explicit parameter type of `value` in the `transform` option.
+These values are then parsed to a `boolean` with the transform, resulting in booleans.
+
+That way, you are only dealing with `boolean` inside your component when calling `this.disabled()`, while users of your component can pass an empty string as a shorthand to mark your component as disabled.
 
 ```html
 <my-custom-comp disabled>
 ```
 
-This will **fail** type checking because an empty string is not assignable to a `boolean`.
-As a component author, you can decide to explicitly support this shorthand by adding a value transform, or by [deriving](#deriving-values) a boolean using `computed`.
+<div class="alert is-important">
 
-```typescript
-class MyComp {
-  disabled = input(false, {
-    transform: (v: boolean|string) => v === '' || v,
-  });
+Do not use transforms if they change the meaning of the input, or if they are [impure](https://en.wikipedia.org/wiki/Pure_function#Impure_functions).
 
-  // or alternatively:
-  disabledRaw = input<string|boolean>(false, {alias: 'disabled'});
-  disabled = computed(() => this.disabled() === '' || !!this.disabled());
-}
-```
+Instead, use `computed` for transformations with different meaning, or an `effect` for impure code that should run whenever the input changes.
 
-The first approach is more concise and transforms are built exactly for such use-cases.
-
-An import note is that the `disabled` input with a `transform` will automatically accept `boolean` and `string` values based on the transform `v: boolean|string` parameter.
+</div>
