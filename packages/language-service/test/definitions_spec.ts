@@ -208,6 +208,103 @@ describe('definitions', () => {
     assertFileNames([def3, def2, def], ['dir3.ts', 'dir2.ts', 'dir.ts']);
   });
 
+  it('gets definitions for all model inputs when attribute matches more than one in a static attribute',
+     () => {
+       initMockFileSystem('Native');
+       const files = {
+         'app.ts': `
+          import {Component, NgModule} from '@angular/core';
+          import {CommonModule} from '@angular/common';
+
+          @Component({templateUrl: 'app.html'})
+          export class AppCmp {}
+        `,
+         'app.html': '<div dir inputA="abc"></div>',
+         'dir.ts': `
+        import {Directive, model} from '@angular/core';
+
+        @Directive({selector: '[dir]'})
+        export class MyDir {
+          inputA = model('');
+        }`,
+         'dir2.ts': `
+        import {Directive, model} from '@angular/core';
+
+        @Directive({selector: '[dir]'})
+        export class MyDir2 {
+          inputA = model('');
+        }`
+
+       };
+       const env = LanguageServiceTestEnv.setup();
+       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+       const template = project.openFile('app.html');
+       template.moveCursorToText('inpu¦tA="abc"');
+
+       const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+       expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length))
+           .toBe('inputA');
+
+       expect(definitions.length).toBe(2);
+       const [def, def2] = definitions;
+       expect(def.textSpan).toContain('inputA');
+       expect(def2.textSpan).toContain('inputA');
+       // TODO(atscott): investigate why the text span includes more than just 'inputA'
+       // assertTextSpans([def, def2], ['inputA']);
+       assertFileNames([def, def2], ['dir2.ts', 'dir.ts']);
+     });
+
+  it('gets definitions for all model inputs when attribute matches more than one in a two-way binding',
+     () => {
+       initMockFileSystem('Native');
+       const files = {
+         'app.ts': `
+            import {Component, NgModule} from '@angular/core';
+            import {CommonModule} from '@angular/common';
+
+            @Component({templateUrl: 'app.html'})
+            export class AppCmp {
+              value = 'abc';
+            }
+          `,
+         'app.html': '<div dir [(inputA)]="value"></div>',
+         'dir.ts': `
+            import {Directive, model} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class MyDir {
+            inputA = model('');
+          }`,
+         'dir2.ts': `
+          import {Directive, model} from '@angular/core';
+
+          @Directive({selector: '[dir]'})
+          export class MyDir2 {
+            inputA = model('');
+          }`
+
+       };
+       const env = LanguageServiceTestEnv.setup();
+       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+       const template = project.openFile('app.html');
+       template.moveCursorToText('[(inpu¦tA)]="value"');
+
+       const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+       expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length))
+           .toBe('inputA');
+
+       expect(definitions.length).toBe(4);
+       const [def, def2, def3, def4] = definitions;
+
+       // We have four definitons to the `inputA` member, because each `model()`
+       // instance implicitly creates both an input and an output.
+       expect(def.textSpan).toContain('inputA');
+       expect(def2.textSpan).toContain('inputA');
+       expect(def3.textSpan).toContain('inputA');
+       expect(def4.textSpan).toContain('inputA');
+       assertFileNames([def, def2, def3, def4], ['dir2.ts', 'dir.ts', 'dir2.ts', 'dir.ts']);
+     });
+
   it('should go to the pre-compiled style sheet', () => {
     initMockFileSystem('Native');
     const files = {

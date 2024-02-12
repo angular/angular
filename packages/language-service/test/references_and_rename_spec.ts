@@ -1285,6 +1285,35 @@ describe('find references and rename locations', () => {
     assertTextSpans(refs, ['model', 'modelChange']);
   });
 
+  it('should get references to model() input binding', () => {
+    const files = {
+      'dir.ts': `
+        import {Directive, model} from '@angular/core';
+
+        @Directive({selector: '[signal-model]'})
+        export class SignalModel {
+          signalModel = model<string>();
+        }`,
+      'app.ts': `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<div signal-model [(signalModel)]="title"></div>'})
+        export class AppCmp {
+          title = 'title';
+        }`
+    };
+
+    env = LanguageServiceTestEnv.setup();
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const file = project.openFile('app.ts');
+    file.moveCursorToText('[(signal¦Model)]');
+
+    const refs = getReferencesAtPosition(file)!;
+    expect(refs.length).toBe(2);
+    assertFileNames(refs, ['dir.ts', 'app.ts']);
+    assertTextSpans(refs, ['signalModel']);
+  });
+
   describe('directives', () => {
     describe('when cursor is on the directive class', () => {
       let file: OpenBuffer;
@@ -1513,7 +1542,7 @@ describe('find references and rename locations', () => {
         import {Component} from '@angular/core';
 
         @Component({
-          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }', 
+          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }',
           standalone: true
         })
         export class AppCmp {

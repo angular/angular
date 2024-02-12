@@ -111,6 +111,69 @@ describe('type definitions', () => {
     });
   });
 
+  describe('model inputs', () => {
+    const files = {
+      'app.ts': `
+        import {Component, Directive, model} from '@angular/core';
+
+        @Directive({
+          selector: 'my-dir',
+          standalone: true
+        })
+        export class MyDir {
+          twoWayValue = model<string>();
+        }
+
+        @Component({
+          templateUrl: 'app.html',
+          standalone: true,
+          imports: [MyDir],
+        })
+        export class AppCmp {
+          noop() {}
+          value = 'hello';
+        }
+      `,
+      'app.html': `Will be overridden`,
+    };
+
+    it('should return the definition for the property side of a two-way binding', () => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir [twoWa¦yValue]="value" />`});
+
+      expect(definitions.length).toBe(1);
+      assertTextSpans(definitions, ['ModelSignal']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+
+    it('should return the definition for the event side of a two-way binding', () => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir (twoWayV¦alueChange)="noop()" />`});
+
+      expect(definitions.length).toBe(1);
+      assertTextSpans(definitions, ['ModelSignal']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+
+    it('should return the definition of a two-way binding', () => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir [(twoWa¦yValue)]="value" />`});
+
+      expect(definitions.length).toBe(1);
+      assertTextSpans(definitions, ['ModelSignal']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+  });
+
   function getTypeDefinitionsAndAssertBoundSpan(
       project: Project, {templateOverride}: {templateOverride: string}) {
     const text = templateOverride.replace('¦', '');
