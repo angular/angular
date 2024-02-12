@@ -141,7 +141,7 @@ architect(
         "--poll=1000",
         "--live-reload",
         "--watch",
-    ] + config_based_architect_flags,
+    ],
     chdir = package_name(),
     data = APPLICATION_DEPS + [
         ":application_files_bin",
