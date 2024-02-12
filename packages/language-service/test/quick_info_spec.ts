@@ -14,7 +14,7 @@ import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv, Project}
 function quickInfoSkeleton(): {[fileName: string]: string} {
   return {
     'app.ts': `
-        import {Component, Directive, EventEmitter, Input, NgModule, Output, Pipe, PipeTransform} from '@angular/core';
+        import {Component, Directive, EventEmitter, Input, NgModule, Output, Pipe, PipeTransform, model} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
         export interface Address {
@@ -71,6 +71,14 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
           @Output() modelChange!: EventEmitter<string>;
         }
 
+        @Directive({
+          selector: '[signal-model]',
+          exportAs: 'signalModel',
+        })
+        export class SignalModel {
+          signalModel = model<string>();
+        }
+
         @Directive({selector: 'button[custom-button][compound]'})
         export class CompoundCustomButtonDirective {
           @Input() config?: {color?: string};
@@ -82,6 +90,7 @@ function quickInfoSkeleton(): {[fileName: string]: string} {
             CompoundCustomButtonDirective,
             StringModel,
             TestComponent,
+            SignalModel,
           ],
           imports: [
             CommonModule,
@@ -235,6 +244,15 @@ describe('quick info', () => {
             templateOverride: `<test-comp string-model [(mo¦del)]="title"></test-comp>`,
             expectedSpanText: 'model',
             expectedDisplayString: '(property) StringModel.model: string'
+          });
+        });
+
+        it('should work for signal-based two-way binding providers', () => {
+          expectQuickInfo({
+            templateOverride: `<test-comp signal-model [(signa¦lModel)]="title"></test-comp>`,
+            expectedSpanText: 'signalModel',
+            expectedDisplayString:
+                '(property) SignalModel.signalModel: ModelSignal<string | undefined>'
           });
         });
       });
