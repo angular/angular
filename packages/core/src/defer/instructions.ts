@@ -258,12 +258,13 @@ export function ɵɵdeferOnImmediate() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const tView = lView[TVIEW];
+  const injector = lView[INJECTOR]!;
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  // Render placeholder block only if loading template is not present
-  // to avoid content flickering, since it would be immediately replaced
+  // Render placeholder block only if loading template is not present and we're on
+  // the client to avoid content flickering, since it would be immediately replaced
   // by the loading block.
-  if (tDetails.loadingTmplIndex === null) {
+  if (!shouldTriggerDeferBlock(injector) || tDetails.loadingTmplIndex === null) {
     renderPlaceholder(lView, tNode);
   }
   triggerDeferBlock(lView, tNode);
