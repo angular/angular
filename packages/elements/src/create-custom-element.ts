@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, Type} from '@angular/core';
+import {Injector, Type, reflectComponentType} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
 import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
-import {getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
+import {getDefaultAttributeToPropertyInputs} from './utils';
 
 /**
  * Prototype for a class constructor based on an Angular component
@@ -133,7 +133,7 @@ export function createCustomElement<P>(
   component: Type<any>,
   config: NgElementConfig,
 ): NgElementConstructor<P> {
-  const inputs = getComponentInputs(component, config.injector);
+  const inputs = reflectComponentType(component)?.inputs ?? [];
 
   const strategyFactory =
     config.strategyFactory || new ComponentNgElementStrategyFactory(component, config.injector);
