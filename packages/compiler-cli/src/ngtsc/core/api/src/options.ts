@@ -74,6 +74,14 @@ export interface InternalOptions {
    * @internal
    */
   _enableBlockSyntax?: boolean;
+
+  /**
+   * Detected version of `@angular/core` in the workspace. Used by the
+   * compiler to adjust the output depending on the available symbols.
+   *
+   * @internal
+   */
+  _angularCoreVersion?: string;
 }
 
 /**

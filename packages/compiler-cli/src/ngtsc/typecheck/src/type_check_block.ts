@@ -815,7 +815,7 @@ class TcbDirectiveInputsOp extends TcbOp {
         }
 
         // Two-way bindings accept `T | WritableSignal<T>` so we have to unwrap the value.
-        if (isTwoWayBinding) {
+        if (isTwoWayBinding && this.tcb.env.config.allowSignalsInTwoWayBindings) {
           assignment = unwrapWritableSignal(assignment, this.tcb);
         }
 
@@ -2499,7 +2499,7 @@ function tcbCallTypeCtor(
       // For bound inputs, the property is assigned the binding expression.
       let expr = widenBinding(input.expression, tcb);
 
-      if (input.isTwoWayBinding) {
+      if (input.isTwoWayBinding && tcb.env.config.allowSignalsInTwoWayBindings) {
         expr = unwrapWritableSignal(expr, tcb);
       }
 

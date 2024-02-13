@@ -214,6 +214,7 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   useInlineTypeConstructors: true,
   suggestionsForSuboptimalTypeInference: false,
   controlFlowPreventingContentProjection: 'warning',
+  allowSignalsInTwoWayBindings: true,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -325,6 +326,7 @@ export function tcb(
     enableTemplateTypeChecker: false,
     useInlineTypeConstructors: true,
     suggestionsForSuboptimalTypeInference: false,
+    allowSignalsInTwoWayBindings: true,
     ...config
   };
   options = options || {

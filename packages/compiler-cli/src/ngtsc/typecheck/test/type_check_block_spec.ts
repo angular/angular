@@ -673,8 +673,10 @@ describe('type check blocks', () => {
       isGeneric: true,
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
-    expect(block).toContain('const _ctor1: <T extends string = any>(init: Pick<i0.TwoWay<T>, "input">) => i0.TwoWay<T> = null!');
-    expect(block).toContain('var _t1 = _ctor1({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });');
+    expect(block).toContain(
+        'const _ctor1: <T extends string = any>(init: Pick<i0.TwoWay<T>, "input">) => i0.TwoWay<T> = null!');
+    expect(block).toContain(
+        'var _t1 = _ctor1({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });');
     expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal((((this).value)));');
   });
 
@@ -697,7 +699,8 @@ describe('type check blocks', () => {
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as i0.TwoWay;');
-    expect(block).toContain('_t1.input[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((this).value)));');
+    expect(block).toContain(
+        '_t1.input[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((this).value)));');
   });
 
   it('should handle a two-way binding to an input with a transform', () => {
@@ -871,6 +874,7 @@ describe('type check blocks', () => {
       useInlineTypeConstructors: true,
       suggestionsForSuboptimalTypeInference: false,
       controlFlowPreventingContentProjection: 'warning',
+      allowSignalsInTwoWayBindings: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -1212,6 +1216,37 @@ describe('type check blocks', () => {
         expect(block).toContain(
             'var _t1 = null! as i0.Dir; ' +
             '_t1.fieldA = (((this).foo)); ');
+      });
+    });
+
+    describe('config.allowSignalsInTwoWayBindings', () => {
+      it('should not unwrap signals in two-way binding expressions', () => {
+        const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
+        const DIRECTIVES: TestDeclaration[] = [{
+          type: 'directive',
+          name: 'TwoWay',
+          selector: '[twoWay]',
+          inputs: {input: 'input'},
+          outputs: {inputChange: 'inputChange'},
+        }];
+        const block =
+            tcb(TEMPLATE, DIRECTIVES, {...BASE_CONFIG, allowSignalsInTwoWayBindings: false});
+        expect(block).not.toContain('ɵunwrapWritableSignal');
+      });
+
+      it('should not unwrap signals in two-way bindings to generic directives', () => {
+        const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
+        const DIRECTIVES: TestDeclaration[] = [{
+          type: 'directive',
+          name: 'TwoWay',
+          selector: '[twoWay]',
+          inputs: {input: 'input'},
+          outputs: {inputChange: 'inputChange'},
+          isGeneric: true,
+        }];
+        const block =
+            tcb(TEMPLATE, DIRECTIVES, {...BASE_CONFIG, allowSignalsInTwoWayBindings: false});
+        expect(block).not.toContain('ɵunwrapWritableSignal');
       });
     });
   });
