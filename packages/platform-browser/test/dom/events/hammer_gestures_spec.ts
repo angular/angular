@@ -7,8 +7,8 @@
  */
 import {ApplicationRef, NgZone} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
-import {EventManager} from '@angular/platform-browser';
-import {HammerGestureConfig, HammerGesturesPlugin,} from '@angular/platform-browser/src/dom/events/hammer_gestures';
+import {EVENT_MANAGER_PLUGINS, EventManager} from '@angular/platform-browser';
+import {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerGesturesPlugin, provideHammer,} from '@angular/platform-browser/src/dom/events/hammer_gestures';
 
 describe('HammerGesturesPlugin', () => {
   let plugin: HammerGesturesPlugin;
@@ -184,5 +184,23 @@ describe('HammerGesturesPlugin', () => {
          expect(appRef.tick).not.toHaveBeenCalled();
          expect(loaderIsCalledInAngularZone).toEqual(false);
        }));
+  });
+});
+
+describe('provideHammer', () => {
+  it('should be provided a default hammer gestures plugin', () => {
+    TestBed.configureTestingModule({providers: [provideHammer()]});
+
+    const plugin = TestBed.inject(EVENT_MANAGER_PLUGINS)
+                       .find(plugin => plugin instanceof HammerGesturesPlugin);
+
+    expect(plugin).toBeTruthy();
+    expect(TestBed.inject(HAMMER_GESTURE_CONFIG)).toBeTruthy();
+  });
+
+  it('should configure hammer loader', () => {
+    TestBed.configureTestingModule({providers: [provideHammer(() => Promise.resolve())]});
+
+    expect(TestBed.inject(HAMMER_LOADER)).toBeTruthy();
   });
 });

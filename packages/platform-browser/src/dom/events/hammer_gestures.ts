@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, InjectionToken, NgModule, Optional, Provider, ɵConsole as Console} from '@angular/core';
+import {EnvironmentProviders, Inject, Injectable, InjectionToken, makeEnvironmentProviders, NgModule, Optional, Provider, ɵConsole as Console} from '@angular/core';
 
 import {EVENT_MANAGER_PLUGINS, EventManagerPlugin} from './event_manager';
 
@@ -16,44 +16,20 @@ import {EVENT_MANAGER_PLUGINS, EventManagerPlugin} from './event_manager';
 /**
  * Supported HammerJS recognizer event names.
  */
-const EVENT_NAMES = {
+const EVENT_NAMES = [
   // pan
-  'pan': true,
-  'panstart': true,
-  'panmove': true,
-  'panend': true,
-  'pancancel': true,
-  'panleft': true,
-  'panright': true,
-  'panup': true,
-  'pandown': true,
+  'pan', 'panstart', 'panmove', 'panend', 'pancancel', 'panleft', 'panright', 'panup', 'pandown',
   // pinch
-  'pinch': true,
-  'pinchstart': true,
-  'pinchmove': true,
-  'pinchend': true,
-  'pinchcancel': true,
-  'pinchin': true,
-  'pinchout': true,
+  'pinch', 'pinchstart', 'pinchmove', 'pinchend', 'pinchcancel', 'pinchin', 'pinchout',
   // press
-  'press': true,
-  'pressup': true,
+  'press', 'pressup',
   // rotate
-  'rotate': true,
-  'rotatestart': true,
-  'rotatemove': true,
-  'rotateend': true,
-  'rotatecancel': true,
+  'rotate', 'rotatestart', 'rotatemove', 'rotateend', 'rotatecancel',
   // swipe
-  'swipe': true,
-  'swipeleft': true,
-  'swiperight': true,
-  'swipeup': true,
-  'swipedown': true,
+  'swipe', 'swipeleft', 'swiperight', 'swipeup', 'swipedown',
   // tap
-  'tap': true,
-  'doubletap': true
-};
+  'tap', 'doubletap'
+];
 
 /**
  * DI token for providing [HammerJS](https://hammerjs.github.io/) support to Angular.
@@ -62,7 +38,8 @@ const EVENT_NAMES = {
  * @ngModule HammerModule
  * @publicApi
  */
-export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('HammerGestureConfig');
+export const HAMMER_GESTURE_CONFIG =
+    new InjectionToken<HammerGestureConfig>(ngDevMode ? 'HammerGestureConfig' : '');
 
 
 /**
@@ -77,7 +54,7 @@ export type HammerLoader = () => Promise<void>;
  *
  * @publicApi
  */
-export const HAMMER_LOADER = new InjectionToken<HammerLoader>('HammerLoader');
+export const HAMMER_LOADER = new InjectionToken<HammerLoader>(ngDevMode ? 'HammerLoader' : '');
 
 export interface HammerInstance {
   on(eventName: string, callback?: Function): void;
@@ -172,7 +149,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
   }
 
   override supports(eventName: string): boolean {
-    if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
+    if (!EVENT_NAMES.includes(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
       return false;
     }
 
@@ -244,8 +221,8 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     return zone.runOutsideAngular(() => {
       // Creating the manager bind events, must be done outside of angular
       const mc = this._config.buildHammer(element);
-      const callback = function(eventObj: HammerInput) {
-        zone.runGuarded(function() {
+      const callback = (eventObj: HammerInput) => {
+        zone.runGuarded(() => {
           handler(eventObj);
         });
       };
@@ -253,9 +230,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       return () => {
         mc.off(eventName, callback);
         // destroy mc to prevent memory leak
-        if (typeof mc.destroy === 'function') {
-          mc.destroy();
-        }
+        mc.destroy?.();
       };
     });
   }
@@ -266,7 +241,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
 }
 
 /**
- * Adds support for HammerJS.
+ * Adds support for [HammerJS](https://hammerjs.github.io).
  *
  * Import this module at the root of your application so that Angular can work with
  * HammerJS to detect gesture events.
@@ -276,8 +251,50 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
  *
  * @publicApi
  */
-@NgModule({
-  providers: [
+@NgModule({providers: [provideHammer()]})
+export class HammerModule {
+}
+
+/**
+ * Set up providers to add support for [HammerJS](https://hammerjs.github.io)
+ * so that Angular can detect gesture events with HammerJS.
+ *
+ * Note that applications still need to include the HammerJS script itself. This function
+ * simply sets up the coordination layer between HammerJS and Angular's `EventManager`.
+ *
+ * @usageNotes
+ *
+ * This function is useful when you want to enable HammerJS gestures in an application
+ * that is bootstrapped using the "bootstrapApplication" function. In this case, there
+ * is no need to import the `HammerModule` NgModule at all, just add the provider
+ * returned by this function to the "providers" list as shown below.
+ *
+ * ```typescript
+ * bootstrapApplication(RootComponent, {
+ *   providers: [
+ *     provideHammer()
+ *   ]
+ * });
+ * ```
+ *
+ * You will also need to include HammerJS in your application yourself. For example:
+ *
+ * ```typescript
+ * import 'hammerjs';
+ * ```
+ *
+ * You can also customize how HammerJS is loaded by passing in a loader parameter.
+ *
+ * ```typescript
+ * provideHammer(() => new Promise(...))
+ * ```
+ *
+ * @publicApi
+ * @param loader Function that loads HammerJS, returning a promise that is resolved once HammerJs is
+ *     loaded.
+ */
+export function provideHammer(loader?: HammerLoader): EnvironmentProviders {
+  const providers: Provider[] = [
     {
       provide: EVENT_MANAGER_PLUGINS,
       useClass: HammerGesturesPlugin,
@@ -285,7 +302,11 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
       deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]]
     },
     {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
-  ]
-})
-export class HammerModule {
+  ];
+
+  if (loader) {
+    providers.push({provide: HAMMER_LOADER, useValue: loader});
+  }
+
+  return makeEnvironmentProviders(providers);
 }
