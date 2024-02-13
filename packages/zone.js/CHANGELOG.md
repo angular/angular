@@ -1,3 +1,15 @@
+## [0.14.4](https://github.com/angular/angular/compare/zone.js-0.14.3...zone.js-0.14.4) (2024-02-13)
+
+
+### Bug Fixes
+
+* **zone.js:** add `__Zone_ignore_on_properties` to `ZoneGlobalConfigurations` ([#50737](https://github.com/angular/angular/issues/50737)) ([f87f058](https://github.com/angular/angular/commit/f87f058a69443d9427530c979b39e3630190a7fd))
+* **zone.js:** patch `fs.realpath.native` as macrotask ([#54208](https://github.com/angular/angular/issues/54208)) ([19fae76](https://github.com/angular/angular/commit/19fae76bada7146e8993fb672b8d321fb08967f2)), closes [#45546](https://github.com/angular/angular/issues/45546)
+* **zone.js:** patch `Response` methods returned by `fetch` ([#50653](https://github.com/angular/angular/issues/50653)) ([260d3ed](https://github.com/angular/angular/commit/260d3ed0d91648d3ba75d7d9896f38195093c7e4)), closes [#50327](https://github.com/angular/angular/issues/50327)
+* **zone.js:** patch form-associated custom element callbacks ([#50686](https://github.com/angular/angular/issues/50686)) ([1c990cd](https://github.com/angular/angular/commit/1c990cdb2962fa879762d5e26f87f547a00e1795))
+
+
+
 ## [0.14.3](https://github.com/angular/angular/compare/zone.js-0.14.2...zone.js-0.14.3) (2023-12-19)
 
 
