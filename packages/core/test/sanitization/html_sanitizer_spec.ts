@@ -206,17 +206,59 @@ describe('HTML sanitizer', () => {
     try {
       sanitizeHtml(defaultDoc, '<form><input name="parentNode" /></form>');
     } catch (e) {
-      // depending on the browser, we might ge an exception
+      // depending on the browser, we might get an exception
     }
     try {
       sanitizeHtml(defaultDoc, '<form><input name="nextSibling" /></form>');
     } catch (e) {
-      // depending on the browser, we might ge an exception
+      // depending on the browser, we might get an exception
     }
     try {
       sanitizeHtml(defaultDoc, '<form><div><div><input name="nextSibling" /></div></div></form>');
     } catch (e) {
-      // depending on the browser, we might ge an exception
+      // depending on the browser, we might get an exception
+    }
+    try {
+      sanitizeHtml(defaultDoc, '<input name="nextSibling" form="a"><form id="a"></form>');
+    } catch (e) {
+      // depending on the browser, we might get an exception
+    }
+  });
+
+  it('should properly sanitize the content when `nodeName` is clobbered', () => {
+    const output = sanitizeHtml(defaultDoc, '<form><input name=nodeName></form>text');
+    expect(output).toBe('text');
+  });
+
+  it('should sanitize the content when `nextSibling` or `firstChild` were clobbered', () => {
+    const nextSibling = () =>
+        sanitizeHtml(defaultDoc, '<input name="nextSibling" form="a">A<form id="a"></form>');
+    const firstChild = () =>
+        sanitizeHtml(defaultDoc, '<object form="a" id="firstChild"></object>B<form id="a"></form>');
+
+    // Note: we have a different behavior here in a real browser and when running in Node,
+    // when Domino is used to emulate DOM:
+    //
+    //  * In Node, Domino doesn't match browser behavior exactly, thus it's not susceptible to
+    //    element clobbering. Both `.nextSibling` and `.firstChild` (that we use to traverse
+    //    the DOM during sanitization) point to correct elements, as if no clobbering happens.
+    //    In this case, we just sanitize the content (the content becomes safe).
+    //
+    //  * In a real browser, sanitization code triggers a code path that recognizes that
+    //    clobbering happened and throws an error.
+    //
+    // So in both cases we achieve the result of preventing potentially dangerous content from
+    // being included into an application, but there is a difference in observable behavior
+    // depending on a platform.
+    if (isBrowser) {
+      // Running in a real browser
+      const errorMsg = 'Failed to sanitize html because the element is clobbered: ';
+      expect(nextSibling).toThrowError(`${errorMsg}<input name="nextSibling" form="a">`);
+      expect(firstChild).toThrowError(`${errorMsg}<object form="a" id="firstChild"></object>`);
+    } else {
+      // Running in Node, using Domino DOM emulation
+      expect(nextSibling()).toBe('A');
+      expect(firstChild()).toBe('B');
     }
   });
 
