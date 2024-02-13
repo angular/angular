@@ -222,7 +222,7 @@
   "// 3": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
   "// 4": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config.",
   "resolutions": {
-    "**/https-proxy-agent": "7.0.2",
+    "**/https-proxy-agent": "7.0.3",
     "**/saucelabs": "7.5.0"
   }
 }
