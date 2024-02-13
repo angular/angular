@@ -31,6 +31,11 @@ export interface PluginConfig {
    * versions of Angular that do not support blocks (pre-v17) used with the language service.
    */
   enableBlockSyntax?: false;
+
+  /**
+   * Version of `@angular/core` that was detected in the user's workspace.
+   */
+  angularCoreVersion?: string;
 }
 
 export type GetTcbResponse = {

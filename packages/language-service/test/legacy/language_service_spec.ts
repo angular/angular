@@ -83,13 +83,24 @@ describe('language service adapter', () => {
     });
 
     it('should always disable block syntax if enableBlockSyntax is false', () => {
-      const {project, tsLS, configFileFs} = setup();
+      const {project, tsLS} = setup();
       const ngLS = new LanguageService(project, tsLS, {
         enableBlockSyntax: false,
       });
 
       expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
         '_enableBlockSyntax': false,
+      }));
+    });
+
+    it('should pass the @angular/core version along to the compiler', () => {
+      const {project, tsLS} = setup();
+      const ngLS = new LanguageService(project, tsLS, {
+        angularCoreVersion: '17.2.11-rc.8',
+      });
+
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        '_angularCoreVersion': '17.2.11-rc.8',
       }));
     });
   });
