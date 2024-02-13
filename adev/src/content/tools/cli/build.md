@@ -39,10 +39,7 @@ You can determine which builder is being used for a particular project by lookin
 
 </docs-code>
 
-This page discusses usage and options of `@angular-devkit/build-angular:browser`.
-
-The properties for the other builders are mostly the same. 
-For differences, see [`browser-esbuild` documentation](tools/cli/esbuild).
+This page discusses usage and options of `@angular-devkit/build-angular:application`.
 
 ## Output directory
 
