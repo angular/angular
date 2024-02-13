@@ -40,12 +40,14 @@ export function toObservable<T>(
   !options?.injector && assertInInjectionContext(toObservable);
   const injector = options?.injector ?? inject(Injector);
   const subscribers = new Set<Subscriber<T>>();
+  let hasValue = false;
   let lastValue: T
   let hasError = false;
   let errorSeen: any = null;
   let isComplete = false;
 
   const next = (value: T) => {
+    hasValue = true;
     lastValue = value;
     // Clone array to prevent reentrant code from adding
     // or removing subscribers during notification.
@@ -91,6 +93,14 @@ export function toObservable<T>(
   injector.get(DestroyRef).onDestroy(complete);
 
   return new Observable(subscriber => {
+    if (!isComplete && !hasError) {
+      subscribers.add(subscriber);
+    }
+
+    if (hasValue) {
+      subscriber.next(lastValue);
+    }
+
     if (isComplete) {
       subscriber.complete();
       return;
@@ -100,9 +110,7 @@ export function toObservable<T>(
       subscriber.error(errorSeen);
       return;
     }
-    
-    subscribers.add(subscriber);
-    subscriber.next(lastValue);
+
     return () => subscribers.delete(subscriber);
   });
 }
