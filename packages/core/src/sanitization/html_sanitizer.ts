@@ -116,6 +116,7 @@ class SanitizingHtmlSerializer {
     // again, so it shouldn't be vulnerable to DOM clobbering.
     let current: Node = el.firstChild!;
     let traverseContent = true;
+    let parentNodes = [];
     while (current) {
       if (current.nodeType === Node.ELEMENT_NODE) {
         traverseContent = this.startElement(current as Element);
@@ -126,23 +127,27 @@ class SanitizingHtmlSerializer {
         this.sanitizedSomething = true;
       }
       if (traverseContent && current.firstChild) {
-        current = current.firstChild!;
+        // Push current node to the parent stack before entering its content.
+        parentNodes.push(current);
+        current = getFirstChild(current)!;
         continue;
       }
       while (current) {
-        // Leaving the element. Walk up and to the right, closing tags as we go.
+        // Leaving the element.
+        // Walk up and to the right, closing tags as we go.
         if (current.nodeType === Node.ELEMENT_NODE) {
           this.endElement(current as Element);
         }
 
-        let next = this.checkClobberedElement(current, current.nextSibling!);
+        let next = getNextSibling(current)!;
 
         if (next) {
           current = next;
           break;
         }
 
-        current = this.checkClobberedElement(current, current.parentNode!);
+        // There was no next sibling, walk up to the parent node (extract it from the stack).
+        current = parentNodes.pop()!;
       }
     }
     return this.buf.join('');
@@ -157,7 +162,7 @@ class SanitizingHtmlSerializer {
    * @return True if the element's contents should be traversed.
    */
   private startElement(element: Element): boolean {
-    const tagName = element.nodeName.toLowerCase();
+    const tagName = getNodeName(element).toLowerCase();
     if (!VALID_ELEMENTS.hasOwnProperty(tagName)) {
       this.sanitizedSomething = true;
       return !SKIP_TRAVERSING_CONTENT_IF_INVALID_ELEMENTS.hasOwnProperty(tagName);
@@ -183,7 +188,7 @@ class SanitizingHtmlSerializer {
   }
 
   private endElement(current: Element) {
-    const tagName = current.nodeName.toLowerCase();
+    const tagName = getNodeName(current).toLowerCase();
     if (VALID_ELEMENTS.hasOwnProperty(tagName) && !VOID_ELEMENTS.hasOwnProperty(tagName)) {
       this.buf.push('</');
       this.buf.push(tagName);
@@ -194,16 +199,55 @@ class SanitizingHtmlSerializer {
   private chars(chars: string) {
     this.buf.push(encodeEntities(chars));
   }
+}
 
-  checkClobberedElement(node: Node, nextNode: Node): Node {
-    if (nextNode &&
-        (node.compareDocumentPosition(nextNode) &
-         Node.DOCUMENT_POSITION_CONTAINED_BY) === Node.DOCUMENT_POSITION_CONTAINED_BY) {
-      throw new Error(`Failed to sanitize html because the element is clobbered: ${
-          (node as Element).outerHTML}`);
-    }
-    return nextNode;
+/**
+ * Verifies whether a given child node is a descendant of a given parent node.
+ * It may not be the case when properties like `.firstChild` are clobbered and
+ * accessing `.firstChild` results in an unexpected node returned.
+ */
+function isClobberedElement(parentNode: Node, childNode: Node): boolean {
+  return (parentNode.compareDocumentPosition(childNode) & Node.DOCUMENT_POSITION_CONTAINED_BY) !==
+      Node.DOCUMENT_POSITION_CONTAINED_BY;
+}
+
+/**
+ * Retrieves next sibling node and makes sure that there is no
+ * clobbering of the `nextSibling` property happening.
+ */
+function getNextSibling(node: Node): Node|null {
+  const nextSibling = node.nextSibling;
+  // Make sure there is no `nextSibling` clobbering: navigating to
+  // the next sibling and going back to the previous one should result
+  // in the original node.
+  if (nextSibling && node !== nextSibling.previousSibling) {
+    throw clobberedElementError(nextSibling);
   }
+  return nextSibling;
+}
+
+/**
+ * Retrieves first child node and makes sure that there is no
+ * clobbering of the `firstChild` property happening.
+ */
+function getFirstChild(node: Node): Node|null {
+  const firstChild = node.firstChild;
+  if (firstChild && isClobberedElement(node, firstChild)) {
+    throw clobberedElementError(firstChild);
+  }
+  return firstChild;
+}
+
+/** Gets a reasonable nodeName, even for clobbered nodes. */
+export function getNodeName(node: Node): string {
+  const nodeName = node.nodeName;
+  // If the property is clobbered, assume it is an `HTMLFormElement`.
+  return (typeof nodeName === 'string') ? nodeName : 'FORM';
+}
+
+function clobberedElementError(node: Node) {
+  return new Error(
+      `Failed to sanitize html because the element is clobbered: ${(node as Element).outerHTML}`);
 }
 
 // Regular Expressions for parsing tags and attributes
