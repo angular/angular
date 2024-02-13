@@ -1,0 +1,9 @@
+{
+  // This tsconfig is required for our scripts that use `ts-node`.
+  // Due to https://github.com/TypeStrong/ts-node/issues/2094 we can't pass the parameters
+  // through the command line in Node 20+ so we have to do it through the tsconfig.
+  "extends": "./packages/tsconfig.json",
+  "ts-node": {
+    "transpileOnly": true
+  }
+}
