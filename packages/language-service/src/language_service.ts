@@ -523,6 +523,8 @@ function parseNgCompilerOptions(
     options['_enableBlockSyntax'] = false;
   }
 
+  options['_angularCoreVersion'] = config.angularCoreVersion;
+
   return options;
 }
 

@@ -266,6 +266,7 @@ export class NgCompiler {
   readonly ignoreForEmit: Set<ts.SourceFile>;
   readonly enableTemplateTypeChecker: boolean;
   private readonly enableBlockSyntax: boolean;
+  private readonly angularCoreVersion: Version|null;
 
   /**
    * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
@@ -330,7 +331,10 @@ export class NgCompiler {
   ) {
     this.enableTemplateTypeChecker =
         enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
+    // TODO(crisbeto): remove this flag and base `enableBlockSyntx` on the `angularCoreVersion`.
     this.enableBlockSyntax = options['_enableBlockSyntax'] ?? true;
+    this.angularCoreVersion =
+        options['_angularCoreVersion'] == null ? null : new Version(options['_angularCoreVersion']);
     this.constructionDiagnostics.push(
         ...this.adapter.constructionDiagnostics, ...verifyCompatibleTypeCheckOptions(this.options));
 
@@ -791,6 +795,14 @@ export class NgCompiler {
 
     const useInlineTypeConstructors = this.programDriver.supportsInlineOperations;
 
+    // Only Angular versions greater than 17.2 have the necessary symbols to type check signals in
+    // two-way bindings. We also allow version 0.0.0 in case somebody is using Angular at head.
+    const allowSignalsInTwoWayBindings = this.angularCoreVersion === null ||
+        this.angularCoreVersion.major > 17 ||
+        this.angularCoreVersion.major === 17 && this.angularCoreVersion.minor >= 2 ||
+        (this.angularCoreVersion.major === 0 && this.angularCoreVersion.minor === 0 ||
+         this.angularCoreVersion.patch === 0);
+
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
     let typeCheckingConfig: TypeCheckingConfig;
@@ -829,6 +841,7 @@ export class NgCompiler {
         suggestionsForSuboptimalTypeInference: this.enableTemplateTypeChecker && !strictTemplates,
         controlFlowPreventingContentProjection:
             this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        allowSignalsInTwoWayBindings,
       };
     } else {
       typeCheckingConfig = {
@@ -859,6 +872,7 @@ export class NgCompiler {
         suggestionsForSuboptimalTypeInference: false,
         controlFlowPreventingContentProjection:
             this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
+        allowSignalsInTwoWayBindings,
       };
     }
 
@@ -1440,4 +1454,18 @@ function versionMapFromProgram(
     versions.set(absoluteFromSourceFile(sf), driver.getSourceFileVersion(sf));
   }
   return versions;
+}
+
+/** Representation of a parsed persion string. */
+class Version {
+  readonly major: number;
+  readonly minor: number;
+  readonly patch: number;
+
+  constructor(public full: string) {
+    [this.major, this.minor, this.patch] = full.split('.').map(part => {
+      const parsed = parseInt(part);
+      return isNaN(parsed) ? -1 : parsed;
+    });
+  }
 }
