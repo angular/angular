@@ -46,7 +46,7 @@ By default, Angular uses `en-US` as the source locale of your project.
 
 To change the source locale of your project for the build, complete the following actions.
 
-1. Open the [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file.
+1. Open the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
 1. Change the source locale in the `sourceLocale` field.
 
 ## What's next
@@ -55,7 +55,7 @@ To change the source locale of your project for the build, complete the followin
   <docs-pill href="guide/i18n/format-data-locale" title="Format data based on locale"/>
 </docs-pill-row>
 
-[AioGuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
+[GuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
 
 [GithubAngularAngularTreeMasterPackagesCommonLocales]: <https://github.com/angular/angular/tree/main/packages/common/locales> "angular/packages/common/locales | angular/angular | GitHub"
 

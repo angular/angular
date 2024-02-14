@@ -3,9 +3,9 @@
 The Angular extractor generates a file with a translation unit entry each of the following instances.
 
 * Each `i18n` attribute in a component template
-* Each [`$localize`][AioApiLocalizeInitLocalize] tagged message string in component code
+* Each [`$localize`][ApiLocalizeInitLocalize] tagged message string in component code
 
-As described in [How meanings control text extraction and merges][AioGuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges], Angular assigns each translation unit a unique ID.
+As described in [How meanings control text extraction and merges][GuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges], Angular assigns each translation unit a unique ID.
 
 The following example displays translation units with unique IDs.
 
@@ -21,7 +21,7 @@ Most developers don't need to use a custom ID.
 If you want to use a unique syntax to convey additional metadata, use a custom ID.
 Additional metadata may include the library, component, or area of the application in which the text appears.
 
-To specify a custom ID in the `i18n` attribute or [`$localize`][AioApiLocalizeInitLocalize] tagged message string, use the `@@` prefix.
+To specify a custom ID in the `i18n` attribute or [`$localize`][ApiLocalizeInitLocalize] tagged message string, use the `@@` prefix.
 The following example defines the `introductionHeader` custom ID in a heading element.
 
 <docs-code header="app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-solo-id"/>
@@ -93,6 +93,6 @@ Both elements now use the same translation \(`Bonjour`\), because both were defi
 
 <docs-code path="adev/src/content/examples/i18n/doc-files/rendered-output.html"/>
 
-[AioApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API | Angular"
+[ApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API | Angular"
 
-[AioGuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges]: guide/i18n/prepare#h1-example "How meanings control text extraction and merges - Prepare components for translations | Angular"
+[GuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges]: guide/i18n/prepare#h1-example "How meanings control text extraction and merges - Prepare components for translations | Angular"

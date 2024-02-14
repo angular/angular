@@ -1,19 +1,19 @@
 # Work with translation files
 
-After you prepare a component for translation, use the [`extract-i18n`][AioCliExtractI18n] [Angular CLI][AioCliMain] command to extract the marked text in the component into a *source language* file.
+After you prepare a component for translation, use the [`extract-i18n`][CliExtractI18n] [Angular CLI][CliMain] command to extract the marked text in the component into a *source language* file.
 
-The marked text includes text marked with `i18n`, attributes marked with `i18n-`*attribute*, and text tagged with `$localize` as described in [Prepare component for translation][AioGuideI18nCommonPrepare].
+The marked text includes text marked with `i18n`, attributes marked with `i18n-`*attribute*, and text tagged with `$localize` as described in [Prepare component for translation][GuideI18nCommonPrepare].
 
 Complete the following steps to create and update translation files for your project.
 
-1. [Extract the source language file][AioGuideI18nCommonTranslationFilesExtractTheSourceLanguageFile].
+1. [Extract the source language file][GuideI18nCommonTranslationFilesExtractTheSourceLanguageFile].
     1. Optionally, change the location, format, and name.
-1. Copy the source language file to [create a translation file for each language][AioGuideI18nCommonTranslationFilesCreateATranslationFileForEachLanguage].
-1. [Translate each translation file][AioGuideI18nCommonTranslationFilesTranslateEachTranslationFile].
+1. Copy the source language file to [create a translation file for each language][GuideI18nCommonTranslationFilesCreateATranslationFileForEachLanguage].
+1. [Translate each translation file][GuideI18nCommonTranslationFilesTranslateEachTranslationFile].
 1. Translate plurals and alternate expressions separately.
-    1. [Translate plurals][AioGuideI18nCommonTranslationFilesTranslatePlurals].
-    1. [Translate alternate expressions][AioGuideI18nCommonTranslationFilesTranslateAlternateExpressions].
-    1. [Translate nested expressions][AioGuideI18nCommonTranslationFilesTranslateNestedExpressions].
+    1. [Translate plurals][GuideI18nCommonTranslationFilesTranslatePlurals].
+    1. [Translate alternate expressions][GuideI18nCommonTranslationFilesTranslateAlternateExpressions].
+    1. [Translate nested expressions][GuideI18nCommonTranslationFilesTranslateNestedExpressions].
 
 ## Extract the source language file
 
@@ -28,7 +28,7 @@ To extract the source language file, complete the following actions.
 The `extract-i18n` command creates a source language file named `messages.xlf` in the root directory of your project.
 For more information about the XML Localization Interchange File Format \(XLIFF, version 1.2\), see [XLIFF][WikipediaWikiXliff].
 
-Use the following [`extract-i18n`][AioCliExtractI18n] command options to change the source language file location, format, and file name.
+Use the following [`extract-i18n`][CliExtractI18n] command options to change the source language file location, format, and file name.
 
 | Command option  | Details |
 |:---             |:---     |
@@ -82,7 +82,7 @@ The following example demonstrates naming the output file.
 
 To create a translation file for a locale or language, complete the following actions.
 
-1. [Extract the source language file][AioGuideI18nCommonTranslationFilesExtractTheSourceLanguageFile].
+1. [Extract the source language file][GuideI18nCommonTranslationFilesExtractTheSourceLanguageFile].
 1. Make a copy of the source language file to create a *translation* file for each language.
 1. Rename the *translation* file to add the locale.
 
@@ -125,7 +125,7 @@ Unless you are fluent in the language and have the time to edit translations, yo
 
 ### Translation process example for French
 
-To demonstrate the process, review the `messages.fr.xlf` file in the [Example Angular Internationalization application][AioGuideI18nExample].  The [Example Angular Internationalization application][AioGuideI18nExample] includes a French translation for you to edit without a special XLIFF editor or knowledge of French.
+To demonstrate the process, review the `messages.fr.xlf` file in the [Example Angular Internationalization application][GuideI18nExample].  The [Example Angular Internationalization application][GuideI18nExample] includes a French translation for you to edit without a special XLIFF editor or knowledge of French.
 
 The following actions describe the translation process for French.
 
@@ -134,13 +134,13 @@ The following actions describe the translation process for French.
 
     <docs-code header="src/locale/messages.fr.xlf (&lt;trans-unit&gt;)" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" visibleRegion="translated-hello-before"/>
 
-    The `id="introductionHeader"` is a [custom ID][AioGuideI18nOptionalManageMarkedText], but without the `@@` prefix required in the source HTML.
+    The `id="introductionHeader"` is a [custom ID][GuideI18nOptionalManageMarkedText], but without the `@@` prefix required in the source HTML.
 
 1. Duplicate the `<source>... </source>` element in the text node, rename it to `target`, and then replace the content with the French text.
 
     <docs-code header="src/locale/messages.fr.xlf (&lt;trans-unit&gt;, after translation)" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" visibleRegion="translated-hello"/>
 
-    In a more complex translation, the information and context in the [description and meaning elements][AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings] help you choose the right words for translation.
+    In a more complex translation, the information and context in the [description and meaning elements][GuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings] help you choose the right words for translation.
 
 1. Translate the other text nodes.
     The following example displays the way to translate.
@@ -151,7 +151,7 @@ IMPORTANT: Don't change the IDs for translation units.
 Each `id` attribute is generated by Angular and depends on the content of the component text and the assigned meaning.
 
 If you change either the text or the meaning, then the `id` attribute changes.
-For more about managing text updates and IDs, see [custom IDs][AioGuideI18nOptionalManageMarkedText].
+For more about managing text updates and IDs, see [custom IDs][GuideI18nOptionalManageMarkedText].
 
 ## Translate plurals
 
@@ -222,22 +222,22 @@ The following example displays both translation units after translating.
   <docs-pill href="guide/i18n/merge" title="Merge translations into the app"/>
 </docs-pill-row>
 
-[AioCliMain]: cli "CLI Overview and Command Reference | Angular"
-[AioCliExtractI18n]: cli/extract-i18n "ng extract-i18n | CLI | Angular"
+[CliMain]: cli "CLI Overview and Command Reference | Angular"
+[CliExtractI18n]: cli/extract-i18n "ng extract-i18n | CLI | Angular"
 
-[AioGuideI18nCommonPrepare]: guide/i18n/prepare "Prepare component for translation | Angular"
-[AioGuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n/prepare#add-helpful-descriptions-and-meanings "Add helpful descriptions and meanings - Prepare component for translation | Angular"
+[GuideI18nCommonPrepare]: guide/i18n/prepare "Prepare component for translation | Angular"
+[GuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings]: guide/i18n/prepare#add-helpful-descriptions-and-meanings "Add helpful descriptions and meanings - Prepare component for translation | Angular"
 
-[AioGuideI18nCommonTranslationFilesCreateATranslationFileForEachLanguage]: guide/i18n/translation-files#create-a-translation-file-for-each-language "Create a translation file for each language - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesExtractTheSourceLanguageFile]: guide/i18n/translation-files#extract-the-source-language-file "Extract the source language file - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesTranslateAlternateExpressions]: guide/i18n/translation-files#translate-alternate-expressions "Translate alternate expressions - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesTranslateEachTranslationFile]: guide/i18n/translation-files#translate-each-translation-file "Translate each translation file - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesTranslateNestedExpressions]: guide/i18n/translation-files#translate-nested-expressions "Translate nested expressions - Work with translation files | Angular"
-[AioGuideI18nCommonTranslationFilesTranslatePlurals]: guide/i18n/translation-files#translate-plurals "Translate plurals - Work with translation files | Angular"
+[GuideI18nCommonTranslationFilesCreateATranslationFileForEachLanguage]: guide/i18n/translation-files#create-a-translation-file-for-each-language "Create a translation file for each language - Work with translation files | Angular"
+[GuideI18nCommonTranslationFilesExtractTheSourceLanguageFile]: guide/i18n/translation-files#extract-the-source-language-file "Extract the source language file - Work with translation files | Angular"
+[GuideI18nCommonTranslationFilesTranslateAlternateExpressions]: guide/i18n/translation-files#translate-alternate-expressions "Translate alternate expressions - Work with translation files | Angular"
+[GuideI18nCommonTranslationFilesTranslateEachTranslationFile]: guide/i18n/translation-files#translate-each-translation-file "Translate each translation file - Work with translation files | Angular"
+[GuideI18nCommonTranslationFilesTranslateNestedExpressions]: guide/i18n/translation-files#translate-nested-expressions "Translate nested expressions - Work with translation files | Angular"
+[GuideI18nCommonTranslationFilesTranslatePlurals]: guide/i18n/translation-files#translate-plurals "Translate plurals - Work with translation files | Angular"
 
-[AioGuideI18nExample]: guide/i18n/example "Example Angular Internationalization application | Angular"
+[GuideI18nExample]: guide/i18n/example "Example Angular Internationalization application | Angular"
 
-[AioGuideI18nOptionalManageMarkedText]: guide/i18n/manage-marked-text "Manage marked text with custom IDs | Angular"
+[GuideI18nOptionalManageMarkedText]: guide/i18n/manage-marked-text "Manage marked text with custom IDs | Angular"
 
 [GithubGoogleAppResourceBundleWikiApplicationresourcebundlespecification]: https://github.com/google/app-resource-bundle/wiki/ApplicationResourceBundleSpecification "ApplicationResourceBundleSpecification | google/app-resource-bundle | GitHub"
 

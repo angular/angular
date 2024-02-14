@@ -1,14 +1,14 @@
 # Format data based on locale
 
 Angular provides the following built-in data transformation [pipes](guide/pipes).
-The data transformation pipes use the [`LOCALE_ID`][AioApiCoreLocaleId] token to format data based on rules of each locale.
+The data transformation pipes use the [`LOCALE_ID`][ApiCoreLocaleId] token to format data based on rules of each locale.
 
 | Data transformation pipe                   | Details |
 |:---                                        |:---     |
-| [`DatePipe`][AioApiCommonDatepipe]         | Formats a date value.                             |
-| [`CurrencyPipe`][AioApiCommonCurrencypipe] | Transforms a number into a currency string.       |
-| [`DecimalPipe`][AioApiCommonDecimalpipe]   | Transforms a number into a decimal number string. |
-| [`PercentPipe`][AioApiCommonPercentpipe]   | Transforms a number into a percentage string.     |
+| [`DatePipe`][ApiCommonDatepipe]         | Formats a date value.                             |
+| [`CurrencyPipe`][ApiCommonCurrencypipe] | Transforms a number into a currency string.       |
+| [`DecimalPipe`][ApiCommonDecimalpipe]   | Transforms a number into a decimal number string. |
+| [`PercentPipe`][ApiCommonPercentpipe]   | Transforms a number into a percentage string.     |
 
 ## Use DatePipe to display the current date
 
@@ -44,9 +44,9 @@ HELPFUL: The locale specified for the `CurrencyPipe` overrides the global `LOCAL
   <docs-pill href="guide/i18n/prepare" title="Prepare component for translation"/>
 </docs-pill-row>
 
-[AioApiCommonCurrencypipe]: api/common/CurrencyPipe "CurrencyPipe | Common - API | Angular"
+[ApiCommonCurrencypipe]: api/common/CurrencyPipe "CurrencyPipe | Common - API | Angular"
 
-[AioApiCommonDatepipe]: api/common/DatePipe "DatePipe | Common - API | Angular"
-[AioApiCommonDecimalpipe]: api/common/DecimalPipe "DecimalPipe | Common - API | Angular"
-[AioApiCommonPercentpipe]: api/common/PercentPipe "PercentPipe | Common - API | Angular"
-[AioApiCoreLocaleId]: api/core/LOCALE_ID "LOCALE_ID | Core - API | Angular"
+[ApiCommonDatepipe]: api/common/DatePipe "DatePipe | Common - API | Angular"
+[ApiCommonDecimalpipe]: api/common/DecimalPipe "DecimalPipe | Common - API | Angular"
+[ApiCommonPercentpipe]: api/common/PercentPipe "PercentPipe | Common - API | Angular"
+[ApiCoreLocaleId]: api/core/LOCALE_ID "LOCALE_ID | Core - API | Angular"

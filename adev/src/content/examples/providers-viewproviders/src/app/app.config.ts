@@ -3,7 +3,7 @@ import { provideProtractorTestingSupport } from '@angular/platform-browser';
 
 const appConfig: ApplicationConfig = {
     providers: [
-        // required for e2e testing on aio
+        // required for e2e testing
         provideProtractorTestingSupport()
     ]
 };
