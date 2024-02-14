@@ -185,6 +185,11 @@ export class PartialLinkerSelector<TExpression> {
  * @returns A semver range for the provided `version` and comparator.
  */
 function getRange(comparator: '<='|'>=', versionStr: string): semver.Range {
+  // If the provided version is exactly `0.0.0` then we are known to be running with an unpublished
+  // version of angular and assume that all ranges are compatible.
+  if (versionStr === '0.0.0' && (PLACEHOLDER_VERSION as string) === '0.0.0') {
+    return new semver.Range('*.*.*');
+  }
   const version = new semver.SemVer(versionStr);
   // Wipe out any prerelease versions
   version.prerelease = [];
