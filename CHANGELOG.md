@@ -1,3 +1,12 @@
+<a name="17.2.1"></a>
+# 17.2.1 (2024-02-14)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7234824228](https://github.com/angular/angular/commit/7234824228df11249a5ebe01a6dee381be74e02e) | fix | fix broken version detection condition ([#54443](https://github.com/angular/angular/pull/54443)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.2.0"></a>
 # 17.2.0 (2024-02-14)
 ### common
