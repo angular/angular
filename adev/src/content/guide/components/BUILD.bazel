@@ -8,5 +8,6 @@ generate_guides(
     data = [
         "//adev/src/assets/images:components.svg",
     ],
+    mermaid_blocks = True,
     visibility = ["//adev:__subpackages__"],
 )

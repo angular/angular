@@ -6,8 +6,7 @@ Components provide structure for organizing your project into easy-to-understand
 
 Here is an example of how a Todo application could be broken down into a tree of components.
 
-<!-- TODO(josephperrott): enable this mermaid chart -->
-```
+```mermaid
 flowchart TD
     A[TodoApp]-->B
     A-->C
