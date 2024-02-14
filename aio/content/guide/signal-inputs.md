@@ -1,7 +1,7 @@
 # Signal inputs
 
 Signal inputs allow values to be bound from parent components.
-Those values are exposed using a `Signal` and might change during the lifecycle of your component.
+Those values are exposed using a `Signal` and can change during the lifecycle of your component.
 
 <div class="alert is-helpful">
 
@@ -43,7 +43,7 @@ You can alias inputs to change their public name to be different.
 
 ```typescript
 class StudentDirective {
-  age = input(null, {alias: 'studentAge'});
+  age = input(0, {alias: 'studentAge'});
 }
 ```
 
@@ -51,7 +51,7 @@ This allows users to bind to your input using `[studentAge]`, while inside your 
 
 ## Using in templates
 
-Signal inputs are non-writable signals.
+Signal inputs are read-only signals.
 As with signals declared via `signal()`, you access the current value of the input by calling the input signal.
 
 ```html
