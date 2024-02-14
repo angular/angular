@@ -10,6 +10,6 @@
 // `USE_TEMPLATE_PIPELINE` constant instead. In 1P builds, this file is read directly.
 
 /**
- * Whether the prototype template pipeline should be enabled.
+ * Whether the prototype template pipeline should be enabled in 1P.
  */
-export const USE_TEMPLATE_PIPELINE: boolean = false;
+export const USE_TEMPLATE_PIPELINE: boolean = true;
