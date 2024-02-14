@@ -285,3 +285,35 @@ jobs:
         run: |
           TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
           yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}
+
+  adev-deploy:
+    needs: [adev]
+    if: needs.adev.result == 'success' && github.event_name == 'push' && github.ref_name == 'main'
+    env:
+      DEPLOY_PROJECT: angular-dev-site
+      DEPLOY_SITE: angular-dev-site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@c83e99a12397014162531ca125c94549db55dd84
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@c83e99a12397014162531ca125c94549db55dd84
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@c83e99a12397014162531ca125c94549db55dd84
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Build adev to ensure it continues to work
+        run: yarn bazel build --config=aio_local_deps //adev:build
+      - name: Move generated project files into deployment directory
+        run: cp -r dist/bin/adev/build adev/build
+      - name: Setup firebase context
+        run: |
+          npx -y firebase-tools@latest target:clear --config adev/firebase.json --project ${{ env.DEPLOY_PROJECT }} hosting angular-docs
+          npx -y firebase-tools@latest target:apply --config adev/firebase.json --project ${{ env.DEPLOY_PROJECT }} hosting angular-docs ${{ env.DEPLOY_SITE }}
+      - name: Deploy to firebase
+        uses: FirebaseExtended/action-hosting-deploy@120e124148ab7016bec2374e5050f15051255ba2 # v0.7.1
+        with:
+          entryPoint: './adev'
+          firebaseServiceAccount: ${{ secrets.ANGULAR_DEV_SITE_DEPLOY }}
+          projectId: ${{ env.DEPLOY_PROJECT }}
+          channelId: live
