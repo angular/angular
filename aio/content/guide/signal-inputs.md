@@ -1,6 +1,7 @@
 # Signal inputs
 
-Signal inputs are a reactive alternative to decorator-based `@Input()`.
+Signal inputs allow values to be bound from parent components.
+Those values are exposed using a `Signal` and might change during the lifecycle of your component.
 
 <div class="alert is-helpful">
 
@@ -8,10 +9,6 @@ Signal inputs are currently in [developer preview](/guide/releases#developer-pre
 
 </div>
 
-## Overview
-
-Signal inputs allow values to be bound from parent components.
-Those values are exposed using a `Signal` and might change during the lifecycle of your component.
 
 Angular supports two variants of inputs:
 
@@ -39,16 +36,6 @@ export class MyComp {
 
 An input is automatically recognized by Angular whenever you use the `input` or `input.required` functions as initializer of class members.
 
-## Why should we use signal inputs and not `@Input()`?
-
-In comparison to decorator-based `@Input`, signal inputs provide numerous benefits:
-
-1. Signal inputs are more **type safe**:
-  <br/>• Required inputs do not require initial values, or tricks to tell TypeScript that an input _always_ has a value.
-  <br/>• Transforms are automatically checked to match the accepted input values.
-2. Signal inputs, when used in templates, will **automatically** mark `OnPush` components as dirty.
-3. Values can be easily **derived** whenever an input changes using `computed`.
-
 ## Aliasing an input
 
 Angular uses the class member name as the name of the input.
@@ -72,9 +59,9 @@ As with signals declared via `signal()`, you access the current value of the inp
 <p>Last name: {{lastName()}}</p>
 ```
 
-This access to the the value is captured in reactive contexts and can notify active consumers, like Angular itself, whenever the input value changes.
+This access to the value is captured in reactive contexts and can notify active consumers, like Angular itself, whenever the input value changes.
 
-An input signal in practice is a trivial extension of signals that you know from the [the signals guide](/guide/signals).
+An input signal in practice is a trivial extension of signals that you know from [the signals guide](/guide/signals).
 
 ```typescript
 export class InputSignal<T> extends Signal<T> { ... }`.
@@ -101,12 +88,6 @@ See more details in the [dedicated section for computed](/guide/signals#computed
 
 ## Monitoring changes
 
-When using decorator-based inputs (`@Input`), it is difficult to monitor whenever an input's value is changing.
-Developers used two approaches to monitor value changes:
-
-* using the `ngOnChanges` lifecycle hook.
-* using setters to run logic whenever the input changes.
-
 With signal inputs, users can leverage the `effect` function.
 The function will execute whenever the input changes.
 
@@ -127,7 +108,7 @@ class MyComp {
 }
 ```
 
-The `fetchUserFromDatabase` function is invoked every time the `firstName` input changes.
+The `console.log` function is invoked every time the `firstName` input changes.
 This will happen as soon as `firstName` is available, and for subsequent changes during the lifetime of `MyComp`.
 
 ## Value transforms
@@ -161,3 +142,16 @@ Do not use transforms if they change the meaning of the input, or if they are [i
 Instead, use `computed` for transformations with different meaning, or an `effect` for impure code that should run whenever the input changes.
 
 </div>
+
+## Why should we use signal inputs and not `@Input()`?
+
+Signal inputs are a reactive alternative to decorator-based `@Input()`.
+
+In comparison to decorator-based `@Input`, signal inputs provide numerous benefits:
+
+1. Signal inputs are more **type safe**:
+  <br/>• Required inputs do not require initial values, or tricks to tell TypeScript that an input _always_ has a value.
+  <br/>• Transforms are automatically checked to match the accepted input values.
+2. Signal inputs, when used in templates, will **automatically** mark `OnPush` components as dirty.
+3. Values can be easily **derived** whenever an input changes using `computed`.
+4. Easier and more local monitoring of inputs using `effect` instead of `ngOnChanges` or setters.
