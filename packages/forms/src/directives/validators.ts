@@ -563,7 +563,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
 };
 
 /**
- * A directive that adds max length validation to controls marked with the
+ * A directive that adds maximum length validation to controls marked with the
  * `maxlength` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
  *
  * @see [Form Validation](guide/form-validation)
@@ -591,7 +591,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
 export class MaxLengthValidator extends AbstractValidatorDirective {
   /**
    * @description
-   * Tracks changes to the minimum length bound to this directive.
+   * Tracks changes to the maximum length bound to this directive.
    */
   @Input() maxlength!: string|number|null;
 
