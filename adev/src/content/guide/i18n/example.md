@@ -2,7 +2,7 @@
 
 <!-- ## Explore the translated example application -->
 
-<!-- Explore the sample application with French translations used in the [Angular Internationalization][AioGuideI18nOverview] guide: -->
+<!-- Explore the sample application with French translations used in the [Angular Internationalization][GuideI18nOverview] guide: -->
 <!-- TODO: link to GitHub -->
 <!-- <docs-code live path="adev/src/content/examples/i18n" title="live example"/> -->
 

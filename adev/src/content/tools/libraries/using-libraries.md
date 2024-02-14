@@ -2,11 +2,11 @@
 
 When you build your Angular application, take advantage of sophisticated first-party libraries, as well as rich ecosystem of third-party libraries.
 [Angular Material][AngularMaterialMain] is an example of a sophisticated first-party library.
-For links to the most popular libraries, see [Angular Resources][AioResources].
+For links to the most popular libraries, see [Angular Resources][Resources].
 
 ## Install libraries
 
-Libraries are published as [npm packages][AioGuideNpmPackages], usually together with schematics that integrate them with the Angular CLI.
+Libraries are published as [npm packages][GuideNpmPackages], usually together with schematics that integrate them with the Angular CLI.
 To integrate reusable library code into an application, you need to install the package and import the provided functionality in the location you use it.
 For most published Angular libraries, use the `ng add <lib_name>` Angular CLI command.
 
@@ -70,7 +70,7 @@ Define more typings as needed.
 ## Updating libraries
 
 A library is able to be updated by the publisher, and also has individual dependencies which need to be kept current.
-To check for updates to your installed libraries, use the [`ng update`][AioCliUpdate] Angular CLI command.
+To check for updates to your installed libraries, use the [`ng update`][CliUpdate] Angular CLI command.
 
 Use `ng update <lib_name>` Angular CLI command to update individual library versions.
 The Angular CLI checks the latest published release of the library, and if the latest version is newer than your installed version, downloads it and updates your `package.json` to match the latest version.
@@ -82,7 +82,7 @@ See the [Angular Update Guide][AngularUpdateMain] for help.
 ## Adding a library to the runtime global scope
 
 If a legacy JavaScript library is not imported into an application, you may add it to the runtime global scope and load it as if it was added in a script tag.
-Configure the Angular CLI to do this at build time using the `scripts` and `styles` options of the build target in the [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file.
+Configure the Angular CLI to do this at build time using the `scripts` and `styles` options of the build target in the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
 
 For example, to use the [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroduction] library
 
@@ -177,13 +177,13 @@ If you do not add the interface for the script-defined extension, your IDE shows
 
 </docs-code>
 
-[AioCliUpdate]: cli/update "ng update | CLI |Angular"
+[CliUpdate]: cli/update "ng update | CLI |Angular"
 
-[AioGuideNpmPackages]: reference/configs/npm-packages "Workspace npm dependencies | Angular"
+[GuideNpmPackages]: reference/configs/npm-packages "Workspace npm dependencies | Angular"
 
-[AioGuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
+[GuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
 
-[AioResources]: resources "Explore Angular Resources | Angular"
+[Resources]: resources "Explore Angular Resources | Angular"
 
 [AngularMaterialMain]: https://material.angular.io "Angular Material | Angular"
 
