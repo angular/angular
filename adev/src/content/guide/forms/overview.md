@@ -107,8 +107,7 @@ The view-to-model diagram shows how data flows when an input field's value is ch
 1. The `FormControl` instance emits the new value through the `valueChanges` observable.
 1. Any subscribers to the `valueChanges` observable receive the new value.
 
-<!-- TODO(josephperrott): enable this mermaid chart -->
-```
+```mermaid
 flowchart TB
     U{User}
     I("&lt;input&gt;")
@@ -128,8 +127,7 @@ The model-to-view diagram shows how a programmatic change to the model is propag
 1. Any subscribers to the `valueChanges` observable receive the new value.
 1. The control value accessor on the form input element updates the element with the new value.
 
-<!-- TODO(josephperrott): enable this mermaid chart -->
-```
+```mermaid
 flowchart TB
     U{User}
     I(&lt;input&gt;)
@@ -156,8 +154,7 @@ The view-to-model diagram shows how data flows when an input field's value is ch
 1. The control value accessor also calls the `NgModel.viewToModelUpdate()` method which emits an `ngModelChange` event.
 1. Because the component template uses two-way data binding for the `favoriteColor` property, the `favoriteColor` property in the component is updated to the value emitted by the `ngModelChange` event \(*Blue*\).
 
-<!-- TODO(josephperrott): enable this mermaid chart -->
-```
+```mermaid
 flowchart TB
     U{User}
     I(&lt;input&gt;)
@@ -188,8 +185,7 @@ The model-to-view diagram shows how data flows from model to view when the `favo
 1. Any subscribers to the `valueChanges` observable receive the new value.
 1. The control value accessor updates the form input element in the view with the latest `favoriteColor` value.
 
-<!-- TODO(josephperrott): enable this mermaid chart -->
-```
+```mermaid
 flowchart TB
     C(Component)
     P(Property bound to NgModel)
