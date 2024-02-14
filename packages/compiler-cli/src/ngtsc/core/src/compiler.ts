@@ -799,8 +799,8 @@ export class NgCompiler {
     // two-way bindings. We also allow version 0.0.0 in case somebody is using Angular at head.
     const allowSignalsInTwoWayBindings = this.angularCoreVersion === null ||
         this.angularCoreVersion.major > 17 ||
-        this.angularCoreVersion.major === 17 && this.angularCoreVersion.minor >= 2 ||
-        (this.angularCoreVersion.major === 0 && this.angularCoreVersion.minor === 0 ||
+        (this.angularCoreVersion.major === 17 && this.angularCoreVersion.minor >= 2) ||
+        (this.angularCoreVersion.major === 0 && this.angularCoreVersion.minor === 0 &&
          this.angularCoreVersion.patch === 0);
 
     // First select a type-checking configuration, based on whether full template type-checking is
