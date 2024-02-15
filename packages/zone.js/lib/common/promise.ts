@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {patchMethod} from './utils';
 import {ZoneType} from '../zone-impl';
+
+import {patchMethod} from './utils';
 
 export function patchPromise(Zone: ZoneType): void {
   Zone.__load_patch('ZoneAwarePromise', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
@@ -61,7 +62,8 @@ export function patchPromise(Zone: ZoneType): void {
       }
     };
 
-    const UNHANDLED_PROMISE_REJECTION_HANDLER_SYMBOL = __symbol__('unhandledPromiseRejectionHandler');
+    const UNHANDLED_PROMISE_REJECTION_HANDLER_SYMBOL =
+        __symbol__('unhandledPromiseRejectionHandler');
 
     function handleUnhandledRejection(this: unknown, e: any) {
       api.onUnhandledError(e);
@@ -257,7 +259,7 @@ export function patchPromise(Zone: ZoneType): void {
       const delegate = promiseState ?
           (typeof onFulfilled === 'function') ? onFulfilled : forwardResolution :
           (typeof onRejected === 'function') ? onRejected :
-                                              forwardRejection;
+                                               forwardRejection;
       zone.scheduleMicroTask(source, () => {
         try {
           const parentPromiseValue = (promise as any)[symbolValue];
@@ -454,8 +456,8 @@ export function patchPromise(Zone: ZoneType): void {
       }
 
       constructor(
-          executor:
-              (resolve: (value?: R|PromiseLike<R>) => void, reject: (error?: any) => void) => void) {
+          executor: (resolve: (value?: R|PromiseLike<R>) => void, reject: (error?: any) => void) =>
+              void) {
         const promise: ZoneAwarePromise<R> = this;
         if (!(promise instanceof ZoneAwarePromise)) {
           throw new Error('Must be an instanceof Promise.');
@@ -490,9 +492,9 @@ export function patchPromise(Zone: ZoneType): void {
         // `this.constructor` will be undefined. One of the use cases is SystemJS creating
         // prototype-less objects (modules) via `Object.create(null)`. The SystemJS creates an empty
         // object and copies promise properties into that object (within the `getOrCreateLoad`
-        // function). The zone.js then checks if the resolved value has the `then` method and invokes
-        // it with the `value` context. Otherwise, this will throw an error: `TypeError: Cannot read
-        // properties of undefined (reading 'Symbol(Symbol.species)')`.
+        // function). The zone.js then checks if the resolved value has the `then` method and
+        // invokes it with the `value` context. Otherwise, this will throw an error: `TypeError:
+        // Cannot read properties of undefined (reading 'Symbol(Symbol.species)')`.
         let C = (this.constructor as any)?.[Symbol.species];
         if (!C || typeof C !== 'function') {
           C = this.constructor || ZoneAwarePromise;
@@ -507,8 +509,8 @@ export function patchPromise(Zone: ZoneType): void {
         return chainPromise;
       }
 
-      catch<TResult = never>(onRejected?: ((reason: any) => TResult | PromiseLike<TResult>)|undefined|
-                            null): Promise<R|TResult> {
+      catch<TResult = never>(onRejected?: ((reason: any) => TResult | PromiseLike<TResult>)|
+                             undefined|null): Promise<R|TResult> {
         return this.then(null, onRejected);
       }
 

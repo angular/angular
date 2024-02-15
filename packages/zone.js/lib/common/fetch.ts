@@ -34,7 +34,7 @@ export function patchFetch(Zone: ZoneType): void {
 
     const createFetchTask =
         (source: string, data: TaskData|undefined, originalImpl: any, self: any, args: any[],
-        ac?: AbortController) => new Promise((resolve, reject) => {
+         ac?: AbortController) => new Promise((resolve, reject) => {
           const task = Zone.current.scheduleMacroTask(
               source, placeholder, data,
               () => {
