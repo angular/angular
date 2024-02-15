@@ -24,7 +24,7 @@ export class RouterTestingHarness {
     get routeNativeElement(): HTMLElement | null;
 }
 
-// @public
+// @public @deprecated
 export class RouterTestingModule {
     // (undocumented)
     static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterTestingModule>;

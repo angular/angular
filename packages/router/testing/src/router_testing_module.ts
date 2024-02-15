@@ -66,6 +66,11 @@ function throwInvalidConfigError(parameter: string): never {
  * ```
  *
  * @publicApi
+ * @deprecated Use `provideRouter` or `RouterModule`/`RouterModule.forRoot` instead.
+ * This module was previously used to provide a helpful collection of test fakes,
+ * most notably those for `Location` and `LocationStrategy`.  These are generally not
+ * required anymore, as `MockPlatformLocation` is provided in `TestBed` by default.
+ * However, you can use them directly with `provideLocationMocks`.
  */
 @NgModule({
   exports: [RouterModule],
