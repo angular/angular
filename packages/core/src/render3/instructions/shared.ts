@@ -30,9 +30,11 @@ import {attachPatchData} from '../context_discovery';
 import {getFactoryDef} from '../definition_factory';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from '../di';
 import {throwMultipleComponentError} from '../errors';
+import {AttributeMarker} from '../interfaces/attribute_marker';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, HostBindingsFunction, HostDirectiveBindingMap, HostDirectiveDefs, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {NodeInjectorFactory} from '../interfaces/injector';
+import {InputFlags} from '../interfaces/input_flags';
 import {getUniqueLViewId} from '../interfaces/lview_tracking';
 import {InitialInputData, InitialInputs, LocalRefExtractor, NodeInputBindings, NodeOutputBindings, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
@@ -56,8 +58,6 @@ import {selectIndexInternal} from './advance';
 import {ɵɵdirectiveInject} from './di';
 import {handleUnknownPropertyError, isPropertyValid, matchingSchemas} from './element_validation';
 import {writeToDirectiveInput} from './write_to_directive_input';
-import { AttributeMarker } from '../interfaces/attribute_marker';
-import { InputFlags } from '../interfaces/input_flags';
 
 /**
  * Invoke `HostBindingsFunction`s for view.
@@ -287,7 +287,11 @@ export function executeContentQueries(tView: TView, tNode: TNode, lView: LView) 
       for (let directiveIndex = start; directiveIndex < end; directiveIndex++) {
         const def = tView.data[directiveIndex] as DirectiveDef<any>;
         if (def.contentQueries) {
-          def.contentQueries(RenderFlags.Create, lView[directiveIndex], directiveIndex);
+          const directiveInstance = lView[directiveIndex];
+          ngDevMode &&
+              assertDefined(
+                  directiveIndex, 'Incorrect reference to a directive defining a content query');
+          def.contentQueries(RenderFlags.Create, directiveInstance, directiveIndex);
         }
       }
     } finally {

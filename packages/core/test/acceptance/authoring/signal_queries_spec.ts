@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, contentChild, contentChildren, Directive, ElementRef, viewChild, viewChildren} from '@angular/core';
+import {Component, computed, contentChild, contentChildren, createComponent, Directive, ElementRef, EnvironmentInjector, viewChild, viewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -440,5 +440,39 @@ describe('queries as signals', () => {
          expect(fixture.componentInstance.foundElCount()).toBe(1);
          expect(recomputeCount).toBe(1);
        });
+  });
+
+  describe('dynamic component creation', () => {
+    it('should return empty results for content queries of dynamically created components', () => {
+      // https://github.com/angular/angular/issues/54450
+      @Component({
+        selector: 'query-cmp',
+        standalone: true,
+        template: ``,
+      })
+      class QueryComponent {
+        elements = contentChildren('el');
+        element = contentChild('el');
+      }
+
+      @Component({
+        standalone: true,
+        template: ``,
+      })
+      class TestComponent {
+        constructor(private _envInjector: EnvironmentInjector) {}
+
+        createDynamic() {
+          return createComponent(QueryComponent, {environmentInjector: this._envInjector});
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmpRef = fixture.componentInstance.createDynamic();
+      cmpRef.changeDetectorRef.detectChanges();
+
+      expect(cmpRef.instance.elements()).toEqual([]);
+      expect(cmpRef.instance.element()).toBeUndefined();
+    });
   });
 });
