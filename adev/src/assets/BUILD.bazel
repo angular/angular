@@ -27,6 +27,7 @@ copy_to_directory(
         "//adev/src/content/introduction",
         "//adev/src/content/introduction/essentials",
         "//adev/src/content/reference",
+        "//adev/src/content/reference/concepts",
         "//adev/src/content/reference/configs",
         "//adev/src/content/reference/errors",
         "//adev/src/content/reference/extended-diagnostics",
