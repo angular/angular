@@ -302,8 +302,7 @@ The following diagrams show the execution order of Angular's lifecycle hooks.
 
 ### During initialization
 
-<!-- TODO(josephperrott): enable this mermaid chart -->
-```
+```mermaid
 graph TD;
 id[constructor]-->CHANGE;
 subgraph CHANGE [Change detection]
@@ -320,8 +319,7 @@ CHANGE--Rendering-->afterRender
 
 ### Subsequent updates
 
-<!-- TODO(josephperrott): enable this mermaid chart -->
-```
+```mermaid
 graph TD;
 subgraph CHANGE [Change detection]
 direction TB
