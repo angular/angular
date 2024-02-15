@@ -206,7 +206,7 @@
     "marked": "^12.0.0",
     "mermaid": "^10.8.0",
     "ogl": "^1.0.3",
-    "patch-package": "^7.0.0",
+    "patch-package": "^8.0.0",
     "playwright-core": "^1.41.2",
     "prettier": "^3.0.0",
     "sauce-connect": "https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz",

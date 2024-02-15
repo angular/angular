@@ -143,7 +143,7 @@
     "lodash": "^4.17.21",
     "lunr": "^2.3.9",
     "npm-run-all": "^4.1.5",
-    "patch-package": "^7.0.0",
+    "patch-package": "^8.0.0",
     "protractor": "~7.0.0",
     "puppeteer-core": "21.3.8",
     "rehype-slug": "^4.0.1",
