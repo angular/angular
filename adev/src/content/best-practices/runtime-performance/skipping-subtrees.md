@@ -33,7 +33,8 @@ If Angular handles an event within a component without `OnPush` strategy, the fr
 
 As an example, if we set the change detection strategy of `MainComponent` to `OnPush` and the user interacts with a component outside the subtree with root `MainComponent`, Angular will check all the green components from the diagram below (`AppComponent`, `HeaderComponent`, `SearchComponent`, `ButtonComponent`) unless `MainComponent` receives new inputs:
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 graph TD;
     app[AppComponent] --- header[HeaderComponent];
     app --- main["MainComponent (OnPush)"];
@@ -61,7 +62,8 @@ As an example, if Angular handles an event within `MainComponent`, the framework
 
 <img alt="Change detection propagation from OnPush component" src="assets/content/images/best-practices/runtime-performance/on-push-trigger.svg">
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 graph TD;
     app[AppComponent] --- header[HeaderComponent];
     app --- main["MainComponent (OnPush)"];
@@ -87,7 +89,8 @@ If Angular handles an event in a component with OnPush, the framework will execu
 
 As an example, in the diagram below, Angular handles an event in `LoginComponent` which uses OnPush. Angular will invoke change detection in the entire component subtree including `MainComponent` (`LoginComponent`’s parent), even though `MainComponent` has `OnPush` as well. Angular checks `MainComponent` as well because `LoginComponent` is part of its view.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 graph TD;
     app[AppComponent] --- header[HeaderComponent];
     app --- main["MainComponent (OnPush)"];
@@ -112,7 +115,8 @@ Angular will run change detection within a child component with `OnPush` when se
 
 For example, in the diagram below, `AppComponent` passes a new input to `MainComponent`, which has `OnPush`. Angular will run change detection in `MainComponent` but will not run change detection in `LoginComponent`, which also has `OnPush`, unless it receives new inputs as well.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 graph TD;
     app[AppComponent] --- header[HeaderComponent];
     app --- main["MainComponent (OnPush)"];

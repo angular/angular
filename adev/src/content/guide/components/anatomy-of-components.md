@@ -87,7 +87,8 @@ component's **view**.
 
 In composing components in this way, **you can think of your Angular application as a tree of components**.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 flowchart TD
     A[AccountSettings]-->B
     A-->C
