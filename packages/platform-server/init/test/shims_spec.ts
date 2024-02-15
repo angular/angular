@@ -9,12 +9,18 @@ import domino from '../src/bundled-domino';
 import {applyShims} from '../src/shims';
 
 describe('applyShims()', () => {
+  // Globals that only have getters so they have to be skipped in tests.
+  const readonlyGlobals = new Set(['crypto']);
   const globalClone = {...global};
 
   afterEach(() => {
     // Un-patch `global`.
     const currentProps = Object.keys(global);
     for (const prop of currentProps) {
+      if (readonlyGlobals.has(prop)) {
+        continue;
+      }
+
       if (globalClone.hasOwnProperty(prop)) {
         (global as any)[prop] = (globalClone as any)[prop];
       } else {
