@@ -80,7 +80,7 @@ describe('Runtime i18n', () => {
       const index = 1;
       const opCodes = getOpCodes(message, () => {
                         ɵɵelementStart(0, 'div');
-                        ɵɵi18nStart(index, 0);
+                        ɵɵi18nStart(index, 0, []);
                         ɵɵelementEnd();
                       }, nbConsts, HEADER_OFFSET + index) as TI18n;
 
@@ -101,7 +101,7 @@ describe('Runtime i18n', () => {
       const index = 1;
       const opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
-        ɵɵi18nStart(index, 0);
+        ɵɵi18nStart(index, 0, []);
         ɵɵelementEnd();
       }, nbConsts, HEADER_OFFSET + index);
 
@@ -126,7 +126,7 @@ describe('Runtime i18n', () => {
       const index = 1;
       const opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
-        ɵɵi18nStart(index, 0);
+        ɵɵi18nStart(index, 0, []);
         ɵɵelementEnd();
       }, nbConsts, HEADER_OFFSET + index);
 
@@ -151,7 +151,7 @@ describe('Runtime i18n', () => {
       const index = 1;
       const opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
-        ɵɵi18nStart(index, 0);
+        ɵɵi18nStart(index, 0, []);
         ɵɵelementEnd();
       }, nbConsts, HEADER_OFFSET + index);
 
@@ -186,7 +186,7 @@ describe('Runtime i18n', () => {
       let index = 1;
       let opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
-        ɵɵi18nStart(index, 0);
+        ɵɵi18nStart(index, 0, []);
         ɵɵelementEnd();
       }, nbConsts, HEADER_OFFSET + index);
 
@@ -210,7 +210,7 @@ describe('Runtime i18n', () => {
       index = 1;
       opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
-        ɵɵi18nStart(index, 0, 1);
+        ɵɵi18nStart(index, 0, [], 1);
       }, nbConsts, index + HEADER_OFFSET);
 
       expect(opCodes).toEqual({
@@ -228,7 +228,7 @@ describe('Runtime i18n', () => {
       index = 1;
       opCodes = getOpCodes(message, () => {
         ɵɵelementStart(0, 'div');
-        ɵɵi18nStart(index, 0, 2);
+        ɵɵi18nStart(index, 0, [], 2);
       }, nbConsts, index + HEADER_OFFSET);
 
       expect(opCodes).toEqual({
@@ -249,7 +249,7 @@ describe('Runtime i18n', () => {
       const index = 1;
       const opCodes = getOpCodes(message, () => {
                         ɵɵelementStart(0, 'div');
-                        ɵɵi18nStart(index, 0);
+                        ɵɵi18nStart(index, 0, []);
                         ɵɵelementEnd();
                       }, nbConsts, HEADER_OFFSET + index) as TI18n;
 

@@ -109,7 +109,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.I18nStart:
         ir.OpList.replace(
             op,
-            ng.i18nStart(op.handle.slot!, op.messageIndex!, op.subTemplateIndex!, op.sourceSpan));
+            ng.i18nStart(
+                op.handle.slot!, op.messageIndex!, op.placeholderIndices ?? [],
+                op.subTemplateIndex!, op.sourceSpan));
         break;
       case ir.OpKind.I18nEnd:
         ir.OpList.replace(op, ng.i18nEnd(op.sourceSpan));

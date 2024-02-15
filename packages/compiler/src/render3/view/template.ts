@@ -550,7 +550,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private i18nStart(span: ParseSourceSpan|null = null, meta: i18n.I18nMeta, selfClosing?: boolean):
       void {
     const index = this.allocateDataSlot();
-    this.i18n = this.i18nContext ?
+    const i18n = this.i18n = this.i18nContext ?
         this.i18nContext.forkChildContext(index, this.templateIndex!, meta) :
         new I18nContext(index, this.i18nGenerateMainBlockVar(), 0, this.templateIndex, meta);
 
@@ -562,7 +562,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // into i18nStart call for top level i18n context
       params.push(o.literal(id));
     }
-    this.creationInstruction(span, selfClosing ? R3.i18n : R3.i18nStart, params);
+    this.creationInstruction(span, selfClosing ? R3.i18n : R3.i18nStart, () => {
+      const {id, ref, nodes} = i18n;
+      const params: o.Expression[] = [o.literal(index), this.addToConsts(ref)];
+      if (!selfClosing) {
+        const nodeEntries: o.Expression[] = [];
+        for (const index of nodes) {
+          nodeEntries.push(o.literal(index));
+        }
+        params.push(o.literalArr(nodeEntries));
+      }
+      if (id > 0) {
+        // do not push 4th argument (sub-block id)
+        // into i18nStart call for top level i18n context
+        params.push(o.literal(id));
+      }
+      return params;
+    });
   }
 
   private i18nEnd(span: ParseSourceSpan|null = null, selfClosing?: boolean): void {

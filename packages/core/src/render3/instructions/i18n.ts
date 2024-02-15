@@ -9,6 +9,7 @@ import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
 
 import {assertDefined} from '../../util/assert';
+import {EMPTY_ARRAY} from '../../util/empty';
 import {bindingUpdated} from '../bindings';
 import {applyCreateOpCodes, applyI18n, setMaskBit} from '../i18n/i18n_apply';
 import {i18nAttributesFirstPass, i18nStartFirstCreatePass} from '../i18n/i18n_parse';
@@ -41,12 +42,14 @@ import {getConstant} from '../util/view_utils';
  *
  * @param index A unique index of the translation in the static block.
  * @param messageIndex An index of the translation message from the `def.consts` array.
+ * @param placeholderIndices Set of placeholders included in the template
  * @param subTemplateIndex Optional sub-template index in the `message`.
  *
  * @codeGenApi
  */
 export function ɵɵi18nStart(
-    index: number, messageIndex: number, subTemplateIndex: number = -1): void {
+    index: number, messageIndex: number, placeholderIndices: number[],
+    subTemplateIndex: number = -1): void {
   const tView = getTView();
   const lView = getLView();
   const adjustedIndex = HEADER_OFFSET + index;
@@ -122,7 +125,7 @@ export function ɵɵi18nEnd(): void {
  * @codeGenApi
  */
 export function ɵɵi18n(index: number, messageIndex: number, subTemplateIndex?: number): void {
-  ɵɵi18nStart(index, messageIndex, subTemplateIndex);
+  ɵɵi18nStart(index, messageIndex, EMPTY_ARRAY, subTemplateIndex);
   ɵɵi18nEnd();
 }
 

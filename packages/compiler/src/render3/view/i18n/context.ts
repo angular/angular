@@ -44,6 +44,7 @@ export class I18nContext {
   public bindings = new Set<AST>();
   public placeholders = new Map<string, any[]>();
   public isEmitted: boolean = false;
+  public nodes = new Set<number>();
 
   private _registry!: any;
   private _unresolvedCtxCount: number = 0;
@@ -105,6 +106,7 @@ export class I18nContext {
     this.appendTag(TagType.TEMPLATE, node as i18n.TagPlaceholder, index, false);
     this.appendTag(TagType.TEMPLATE, node as i18n.TagPlaceholder, index, true);
     this._unresolvedCtxCount++;
+    this.nodes.add(index);
   }
   appendBlock(node: i18n.BlockPlaceholder, index: number) {
     // add open and close tags at the same time,
@@ -112,9 +114,11 @@ export class I18nContext {
     this.appendBlockPart(node, index, false);
     this.appendBlockPart(node, index, true);
     this._unresolvedCtxCount++;
+    this.nodes.add(index);
   }
   appendElement(node: i18n.I18nMeta, index: number, closed?: boolean) {
     this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, closed);
+    this.nodes.add(index);
   }
   appendProjection(node: i18n.I18nMeta, index: number) {
     // Add open and close tags at the same time, since `<ng-content>` has no content,
@@ -123,6 +127,7 @@ export class I18nContext {
     // regular element tag placeholders, so we generate element placeholders for both types.
     this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, false);
     this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, true);
+    this.nodes.add(index);
   }
 
   /**

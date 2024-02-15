@@ -257,9 +257,13 @@ export function projection(
 }
 
 export function i18nStart(
-    slot: number, constIndex: number, subTemplateIndex: number,
+    slot: number, constIndex: number, placeholderIndices: number[], subTemplateIndex: number,
     sourceSpan: ParseSourceSpan|null): ir.CreateOp {
-  const args = [o.literal(slot), o.literal(constIndex)];
+  const placeholders: o.Expression[] = [];
+  for (const index of placeholderIndices) {
+    placeholders.push(o.literal(index));
+  }
+  const args = [o.literal(slot), o.literal(constIndex), o.literalArr(placeholders)];
   if (subTemplateIndex !== null) {
     args.push(o.literal(subTemplateIndex));
   }

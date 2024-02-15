@@ -74,6 +74,7 @@ import {generateTrackVariables} from './phases/track_variables';
 import {countVariables} from './phases/var_counting';
 import {optimizeVariables} from './phases/variable_optimization';
 import {wrapI18nIcus} from './phases/wrap_icus';
+import {collectI18nPlaceholderIndices} from './phases/i18n_placeholder_indices_collection';
 
 type Phase = {
   fn: (job: CompilationJob) => void; kind: Kind.Both | Kind.Host | Kind.Tmpl;
@@ -135,6 +136,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: collectI18nConsts},
   {kind: Kind.Tmpl, fn: collectConstExpressions},
   {kind: Kind.Both, fn: collectElementConsts},
+  {kind: Kind.Tmpl, fn: collectI18nPlaceholderIndices},
   {kind: Kind.Tmpl, fn: removeI18nContexts},
   {kind: Kind.Both, fn: countVariables},
   {kind: Kind.Tmpl, fn: generateAdvance},

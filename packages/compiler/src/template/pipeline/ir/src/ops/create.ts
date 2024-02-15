@@ -1099,6 +1099,11 @@ export interface I18nOpBase extends Op<CreateOp>, ConsumesSlotOpTrait {
   subTemplateIndex: number|null;
 
   /**
+   * Indices of placeholders for this i18n block. Initially null.
+   */
+  placeholderIndices: number[]|null;
+
+  /**
    * The i18n context generated from this block. Initially null, until the context is created.
    */
   context: XrefId|null;
@@ -1134,6 +1139,7 @@ export function createI18nStartOp(
     message,
     messageIndex: null,
     subTemplateIndex: null,
+    placeholderIndices: null,
     context: null,
     sourceSpan,
     ...NEW_OP,
