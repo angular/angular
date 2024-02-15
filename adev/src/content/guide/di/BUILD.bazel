@@ -9,5 +9,6 @@ generate_guides(
         "//adev/src/assets/images:dependency_injection.svg",
         "//adev/src/content/examples/resolution-modifiers:src/app/self/self.component.ts",
     ],
+    mermaid_blocks = True,
     visibility = ["//adev:__subpackages__"],
 )
