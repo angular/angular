@@ -92,7 +92,8 @@ For more information on `@Optional()`, see the [`@Optional()` section](#optional
 
 The following diagram represents the relationship between the `root` `ModuleInjector` and its parent injectors as the previous paragraphs describe.
 
-```mermaid
+<!-- TODO(josephperrott): enable this mermaid chart -->
+```
 stateDiagram-v2
     elementInjector: EnvironmentInjector\n(configured by Angular)\nhas special things like DomSanitizer => providedIn 'platform'
     rootInjector: root EnvironmentInjector\n(configured by AppConfig)\nhas things for your app => bootstrapApplication(..., AppConfig)
@@ -1111,6 +1112,7 @@ The root injector, marked as (A), uses _generic_ providers for details about `Ca
 
 3. Child component (C) as a child of Component (B). Component (C) defines its own, even _more specialized_ provider for `CarService`.
 
+<!-- TODO(josephperrott): enable this mermaid chart -->
 ```
 graph TD;
 subgraph COMPONENT_A[Component A]
@@ -1134,6 +1136,7 @@ When you resolve an instance of `Car` at the deepest component (C), its injector
 * An `Engine` resolved by injector (B)
 * Its `Tires` resolved by the root injector (A).
 
+<!-- TODO(josephperrott): enable this mermaid chart -->
 ```
 graph BT;
 
