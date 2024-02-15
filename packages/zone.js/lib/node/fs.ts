@@ -47,11 +47,11 @@ export function patchFs(Zone: ZoneType): void {
     if (realpathOriginalDelegate?.native) {
       fs.realpath.native = realpathOriginalDelegate.native;
       patchMacroTask(fs.realpath, 'native', (self, args) => ({
-        args,
-        target: self,
-        cbIdx: args.length > 0 ? args.length - 1 : -1,
-        name: 'fs.realpath.native',
-      }));
+                                              args,
+                                              target: self,
+                                              cbIdx: args.length > 0 ? args.length - 1 : -1,
+                                              name: 'fs.realpath.native',
+                                            }));
     }
   });
 }
