@@ -13,7 +13,7 @@ import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../cycles
 import {ErrorCode, FatalDiagnosticError, ngErrorCode} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
-import {DeferredSymbolTracker, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
+import {DeferredSymbolTracker, ImportedSymbolsTracker, ModuleResolver, Reference, ReferenceEmitter} from '../../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, HostDirectivesResolver, LocalMetadataRegistry, ResourceRegistry} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../../perf';
@@ -68,6 +68,7 @@ function setup(
   const typeCheckScopeRegistry =
       new TypeCheckScopeRegistry(scopeRegistry, metaReader, hostDirectivesResolver);
   const resourceLoader = new StubResourceLoader();
+  const importTracker = new ImportedSymbolsTracker();
 
   const handler = new ComponentDecoratorHandler(
       reflectionHost,
@@ -99,6 +100,7 @@ function setup(
       /* annotateForClosureCompiler */ false,
       NOOP_PERF_RECORDER,
       hostDirectivesResolver,
+      importTracker,
       true,
       compilationMode,
       new DeferredSymbolTracker(checker, /* onlyExplicitDeferDependencyImports */ false),
