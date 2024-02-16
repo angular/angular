@@ -8,7 +8,7 @@ The localization process includes the following actions.
 * Format data for a specific locale
 
 A *locale* identifies a region in which people speak a particular language or language variant.
-Possible regions includes countries and geographical regions.
+Possible regions include countries and geographical regions.
 A locale determines the formatting and parsing of the following details.
 
 * Measurement units including date and time, numbers, and currencies
