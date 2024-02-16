@@ -28,6 +28,7 @@ export const signalInputsTransform: PropertyTransform = (
     member,
     host,
     factory,
+    importTracker,
     importManager,
     classDecorator,
     isCore,
@@ -39,7 +40,7 @@ export const signalInputsTransform: PropertyTransform = (
 
   const inputMapping = tryParseSignalInputMapping(
       {name: member.name.text, value: member.initializer ?? null},
-      host,
+      importTracker,
       isCore,
   );
   if (inputMapping === null) {

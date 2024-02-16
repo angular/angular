@@ -33,6 +33,7 @@ export const queryFunctionsTransforms: PropertyTransform = (
     member,
     host,
     factory,
+    importTracker,
     importManager,
     classDecorator,
     isCore,
@@ -49,6 +50,7 @@ export const queryFunctionsTransforms: PropertyTransform = (
   const queryDefinition = tryParseSignalQueryFromInitializer(
       {name: member.name.text, value: member.initializer ?? null},
       host,
+      importTracker,
       isCore,
   );
   if (queryDefinition === null) {

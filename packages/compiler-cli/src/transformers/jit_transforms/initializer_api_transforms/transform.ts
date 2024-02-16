@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {isAngularDecorator} from '../../../ngtsc/annotations';
+import {ImportedSymbolsTracker} from '../../../ngtsc/imports';
 import {ReflectionHost} from '../../../ngtsc/reflection';
 import {addImports} from '../../../ngtsc/transform';
 import {ImportManager} from '../../../ngtsc/translator';
@@ -42,6 +43,7 @@ const propertyTransforms: PropertyTransform[] = [
  */
 export function getInitializerApiJitTransform(
     host: ReflectionHost,
+    importTracker: ImportedSymbolsTracker,
     isCore: boolean,
     ): ts.TransformerFactory<ts.SourceFile> {
   return ctx => {
@@ -50,7 +52,7 @@ export function getInitializerApiJitTransform(
 
       sourceFile = ts.visitNode(
           sourceFile,
-          createTransformVisitor(ctx, host, importManager, isCore),
+          createTransformVisitor(ctx, host, importManager, importTracker, isCore),
           ts.isSourceFile,
       );
 
@@ -68,6 +70,7 @@ function createTransformVisitor(
     ctx: ts.TransformationContext,
     host: ReflectionHost,
     importManager: ImportManager,
+    importTracker: ImportedSymbolsTracker,
     isCore: boolean,
     ): ts.Visitor<ts.Node, ts.Node> {
   const visitor: ts.Visitor<ts.Node, ts.Node> = (node: ts.Node): ts.Node => {
@@ -90,7 +93,7 @@ function createTransformVisitor(
           for (const transform of propertyTransforms) {
             const newNode = transform(
                 member as ts.PropertyDeclaration & {name: ts.Identifier | ts.StringLiteralLike},
-                host, ctx.factory, importManager, angularDecorator, isCore);
+                host, ctx.factory, importTracker, importManager, angularDecorator, isCore);
 
             if (newNode !== member) {
               hasChanged = true;

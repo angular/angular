@@ -8,8 +8,9 @@
 
 import ts from 'typescript';
 
+import {ImportedSymbolsTracker} from '../../../imports';
 import {ModelMapping} from '../../../metadata';
-import {ClassMember, ReflectionHost} from '../../../reflection';
+import {ClassMember} from '../../../reflection';
 
 import {tryParseInitializerApiMember} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
@@ -18,9 +19,9 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  * Attempts to parse a model class member. Returns the parsed model mapping if possible.
  */
 export function tryParseSignalModelMapping(
-    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
+    member: Pick<ClassMember, 'name'|'value'>, importTracker: ImportedSymbolsTracker,
     isCore: boolean): ModelMapping|null {
-  const model = tryParseInitializerApiMember(['model'], member, reflector, isCore);
+  const model = tryParseInitializerApiMember(['model'], member, importTracker, isCore);
   if (model === null) {
     return null;
   }

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ImportedSymbolsTracker} from '@angular/compiler-cli/src/ngtsc/imports';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {getInitializerApiJitTransform} from '@angular/compiler-cli/src/transformers/jit_transforms';
 import fs from 'fs';
@@ -28,11 +29,13 @@ async function main() {
   });
 
   const host = new TypeScriptReflectionHost(program.getTypeChecker());
+  const importTracker = new ImportedSymbolsTracker();
 
   for (const inputFileExecpath of inputFileExecpaths) {
     const outputFile = ts.transform(
         program.getSourceFile(inputFileExecpath)!,
-        [getInitializerApiJitTransform(host, /* isCore */ false)], program.getCompilerOptions());
+        [getInitializerApiJitTransform(host, importTracker, /* isCore */ false)],
+        program.getCompilerOptions());
 
     await fs.promises.writeFile(
         path.join(outputDirExecPath, `transformed_${path.basename(inputFileExecpath)}`),
