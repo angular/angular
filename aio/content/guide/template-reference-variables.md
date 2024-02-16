@@ -104,7 +104,7 @@ Template input variables can be seen in action in the long-form usage of `NgFor`
 ```html
 <ul>
   <ng-template ngFor let-hero [ngForOf]="heroes">
-    <li>{{hero.name}}
+    <li>{{hero.name}}</li>
   </ng-template>
 </ul>
 ```
@@ -118,7 +118,7 @@ When an `<ng-template>` is instantiated, multiple named values can be passed whi
 ```html
 <ul>
   <ng-template ngFor let-hero let-i="index" [ngForOf]="heroes">
-    <li>Hero number {{i}}: {{hero.name}}
+    <li>Hero number {{i}}: {{hero.name}}</li>
   </ng-template>
 </ul>
 ```
