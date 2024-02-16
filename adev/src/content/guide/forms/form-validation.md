@@ -79,7 +79,7 @@ If you look at the template for the `name` input again, it is fairly similar to 
 
 This form differs from the template-driven version in that it no longer exports any directives. Instead, it uses the `name` getter defined in  the component class.
 
-Notice that the `required` attribute is still present in the template. Although it's not necessary for validation, it should be retained to for accessibility purposes.
+Notice that the `required` attribute is still present in the template. Although it's not necessary for validation, it should be retained for accessibility purposes.
 
 ## Defining custom validators
 
