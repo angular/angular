@@ -62,6 +62,7 @@ ts_library(
     ],
     deps = [
         ":test_utils",
+        "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/transformers/jit_transforms",

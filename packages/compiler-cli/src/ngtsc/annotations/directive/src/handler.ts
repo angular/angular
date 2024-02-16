@@ -9,7 +9,7 @@
 import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, FactoryTarget, makeBindingParser, R3ClassMetadata, R3DirectiveMetadata, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
-import {Reference, ReferenceEmitter} from '../../../imports';
+import {ImportedSymbolsTracker, Reference, ReferenceEmitter} from '../../../imports';
 import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
 import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, InputMapping, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
@@ -62,6 +62,7 @@ export class DirectiveDecoratorHandler implements
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean,
       private perf: PerfRecorder,
+      private importTracker: ImportedSymbolsTracker,
       private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
       private readonly useTemplatePipeline: boolean,
@@ -104,8 +105,8 @@ export class DirectiveDecoratorHandler implements
     this.perf.eventCount(PerfEvent.AnalyzeDirective);
 
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
-        this.isCore, this.annotateForClosureCompiler, this.compilationMode,
+        node, decorator, this.reflector, this.importTracker, this.evaluator, this.refEmitter,
+        this.referencesRegistry, this.isCore, this.annotateForClosureCompiler, this.compilationMode,
         /* defaultSelector */ null, this.useTemplatePipeline);
     if (directiveResult === undefined) {
       return {};
