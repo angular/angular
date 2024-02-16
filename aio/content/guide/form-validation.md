@@ -110,7 +110,7 @@ This form differs from the template-driven version in that it no longer exports 
 Instead, it uses the `name` getter defined in  the component class.
 
 Notice that the `required` attribute is still present in the template.
-Although it's not necessary for validation, it should be retained to for accessibility purposes.
+Although it's not necessary for validation, it should be retained for accessibility purposes.
 
 <a id="custom-validators"></a>
 
