@@ -178,7 +178,7 @@ export function formatNumber(value: number, locale: string, digitsInfo?: string)
 // @public
 export function formatPercent(value: number, locale: string, digitsInfo?: string): string;
 
-// @public
+// @public @deprecated
 export enum FormatWidth {
     Full = 3,
     Long = 2,
@@ -186,7 +186,7 @@ export enum FormatWidth {
     Short = 0
 }
 
-// @public
+// @public @deprecated
 export enum FormStyle {
     // (undocumented)
     Format = 0,
@@ -194,67 +194,67 @@ export enum FormStyle {
     Standalone = 1
 }
 
-// @public
+// @public @deprecated
 export function getCurrencySymbol(code: string, format: 'wide' | 'narrow', locale?: string): string;
 
-// @public
+// @public @deprecated
 export function getLocaleCurrencyCode(locale: string): string | null;
 
-// @public
+// @public @deprecated
 export function getLocaleCurrencyName(locale: string): string | null;
 
-// @public
+// @public @deprecated
 export function getLocaleCurrencySymbol(locale: string): string | null;
 
-// @public
+// @public @deprecated
 export function getLocaleDateFormat(locale: string, width: FormatWidth): string;
 
-// @public
+// @public @deprecated
 export function getLocaleDateTimeFormat(locale: string, width: FormatWidth): string;
 
-// @public
+// @public @deprecated
 export function getLocaleDayNames(locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string>;
 
-// @public
+// @public @deprecated
 export function getLocaleDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): Readonly<[string, string]>;
 
-// @public
+// @public @deprecated
 export function getLocaleDirection(locale: string): 'ltr' | 'rtl';
 
-// @public
+// @public @deprecated
 export function getLocaleEraNames(locale: string, width: TranslationWidth): Readonly<[string, string]>;
 
-// @public
+// @public @deprecated
 export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[];
 
-// @public
+// @public @deprecated
 export function getLocaleExtraDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): string[];
 
-// @public
+// @public @deprecated
 export function getLocaleFirstDayOfWeek(locale: string): WeekDay;
 
-// @public
+// @public @deprecated
 export function getLocaleId(locale: string): string;
 
-// @public
+// @public @deprecated
 export function getLocaleMonthNames(locale: string, formStyle: FormStyle, width: TranslationWidth): ReadonlyArray<string>;
 
-// @public
+// @public @deprecated
 export function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): string;
 
-// @public
+// @public @deprecated
 export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): string;
 
-// @public
+// @public @deprecated (undocumented)
 export const getLocalePluralCase: (locale: string) => (value: number) => Plural;
 
-// @public
+// @public @deprecated
 export function getLocaleTimeFormat(locale: string, width: FormatWidth): string;
 
-// @public
+// @public @deprecated
 export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay];
 
-// @public
+// @public @deprecated
 export function getNumberOfCurrencyDigits(code: string): number;
 
 // @public
@@ -725,7 +725,7 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
     static ɵfac: i0.ɵɵFactoryDeclaration<NgTemplateOutlet<any>, never>;
 }
 
-// @public
+// @public @deprecated
 export enum NumberFormatStyle {
     // (undocumented)
     Currency = 2,
@@ -737,7 +737,7 @@ export enum NumberFormatStyle {
     Scientific = 3
 }
 
-// @public
+// @public @deprecated
 export const NumberSymbol: {
     readonly Decimal: 0;
     readonly Group: 1;
@@ -842,7 +842,7 @@ export abstract class PlatformLocation {
     static ɵprov: i0.ɵɵInjectableDeclaration<PlatformLocation>;
 }
 
-// @public
+// @public @deprecated
 export enum Plural {
     // (undocumented)
     Few = 3,
@@ -910,7 +910,7 @@ export class SlicePipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDeclaration<SlicePipe, "slice", true>;
 }
 
-// @public
+// @public @deprecated
 export type Time = {
     hours: number;
     minutes: number;
@@ -930,7 +930,7 @@ export class TitleCasePipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDeclaration<TitleCasePipe, "titlecase", true>;
 }
 
-// @public
+// @public @deprecated
 export enum TranslationWidth {
     Abbreviated = 1,
     Narrow = 0,
@@ -966,7 +966,7 @@ export abstract class ViewportScroller {
     static ɵprov: unknown;
 }
 
-// @public
+// @public @deprecated
 export enum WeekDay {
     // (undocumented)
     Friday = 5,
