@@ -12,8 +12,10 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormBuilder, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinLengthValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
-import {merge, NEVER, of, Subscription, timer} from 'rxjs';
+import {merge, NEVER, of, Subject, Subscription, timer} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
+
+import {ControlEvent} from '../src/model/abstract_model';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
@@ -989,6 +991,180 @@ describe('reactive forms integration tests', () => {
 
          form.reset();
        });
+  });
+
+  describe('unified form state change', () => {
+    it('Single level Control should emit changes for itself', () => {
+      const fc = new FormControl<string|null>('foo', Validators.required);
+
+      const values: ControlEvent[] = [];
+      fc.controlStateChanges.subscribe(event => values.push(event));
+      expect(values.length).toBe(0);
+
+      fc.markAsTouched();
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'touched', value: 'touched'});
+      fc.markAsUntouched();
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'touched', value: 'untouched'});
+      fc.markAsDirty();
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'pristine', value: 'dirty'});
+      fc.markAsPristine();
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'pristine', value: 'pristine'});
+
+      fc.disable();
+      expect(values.at(-2)).toEqual({changedControl: fc, type: 'status', value: 'DISABLED'});
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'value', value: 'foo'});
+      expect(values.length).toBe(6);
+
+      fc.enable();
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'status', value: 'VALID'});
+      expect(values.at(-2)).toEqual({changedControl: fc, type: 'value', value: 'foo'});
+      expect(values.length).toBe(8);
+
+      fc.setValue(null);
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'status', value: 'INVALID'});
+      expect(values.at(-2)).toEqual({changedControl: fc, type: 'value', value: null});
+      expect(values.length).toBe(10);  // setValue doesnt emit dirty or touched
+
+      fc.setValue('bar');
+      expect(values.at(-2)).toEqual({changedControl: fc, type: 'value', value: 'bar'});
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'status', value: 'VALID'});
+      expect(values.length).toBe(12);
+
+      const subject = new Subject<string>();
+      const asyncValidator = () => subject.pipe(map(() => null));
+      fc.addAsyncValidators(asyncValidator);
+      fc.updateValueAndValidity();
+
+      expect(values.at(-2)).toEqual({changedControl: fc, type: 'value', value: 'bar'});
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'status', value: 'PENDING'});
+      subject.next('');
+      subject.complete();
+      expect(values.at(-1)).toEqual({changedControl: fc, type: 'status', value: 'VALID'});
+      expect(values.length).toBe(15);
+    });
+
+    it('Nested formControl should emit changes for itself and its parent', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Values: ControlEvent[] = [];
+      const fc2Values: ControlEvent[] = [];
+      const fgValues: ControlEvent[] = [];
+      fc1.controlStateChanges.subscribe(event => fc1Values.push(event));
+      fc2.controlStateChanges.subscribe(event => fc2Values.push(event));
+      fg.controlStateChanges.subscribe(event => fgValues.push(event));
+
+      fc1.setValue('bar');
+      expect(fc1Values.at(-1)).toEqual({changedControl: fc1, type: 'status', value: 'VALID'});
+      expect(fc1Values.at(-2)).toEqual({changedControl: fc1, type: 'value', value: 'bar'});
+      expect(fc1Values.length).toBe(2);
+
+      expect(fgValues.at(-1)).toEqual({changedControl: fc1, type: 'status', value: 'VALID'});
+      expect(fgValues.at(-2))
+          .toEqual({changedControl: fc1, type: 'value', value: {fc1: 'bar', fc2: 'bar'}});
+      expect(fgValues.length).toBe(2);
+    });
+
+    it('Nested formControl should children as pristine as emit', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Values: ControlEvent[] = [];
+      const fc2Values: ControlEvent[] = [];
+      const fgValues: ControlEvent[] = [];
+      fc1.controlStateChanges.subscribe(event => fc1Values.push(event));
+      fc2.controlStateChanges.subscribe(event => fc2Values.push(event));
+      fg.controlStateChanges.subscribe(event => fgValues.push(event));
+
+      fc1.setValue('bar');
+      expect(fc1Values.length).toBe(2);
+      expect(fgValues.length).toBe(2);
+
+      fg.markAsPristine();
+      expect(fgValues.at(-1)).toEqual({changedControl: fg, type: 'pristine', value: 'pristine'});
+      expect(fc1Values.at(-1)).toEqual({changedControl: fc1, type: 'pristine', value: 'pristine'});
+      expect(fc2Values.at(-1)).toEqual({changedControl: fc2, type: 'pristine', value: 'pristine'});
+
+      expect(fc1Values.length).toBe(3);
+      expect(fc2Values.length).toBe(1);
+
+      // Marking children as pristine does not emit an event on the parent
+      expect(fgValues.length).toBe(3);
+    });
+
+    it('Nested formControl should emit dirty', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Values: ControlEvent[] = [];
+      const fc2Values: ControlEvent[] = [];
+      const fgValues: ControlEvent[] = [];
+      fc1.controlStateChanges.subscribe(event => fc1Values.push(event));
+      fc2.controlStateChanges.subscribe(event => fc2Values.push(event));
+      fg.controlStateChanges.subscribe(event => fgValues.push(event));
+
+      fc1.markAsDirty();
+      expect(fc1Values.length).toBe(1);
+      expect(fgValues.length).toBe(1);
+      expect(fc2Values.length).toBe(0);
+
+      // changedControl is the child control
+      expect(fgValues.at(-1)).toEqual({changedControl: fc1, type: 'pristine', value: 'dirty'});
+      expect(fc1Values.at(-1)).toEqual({changedControl: fc1, type: 'pristine', value: 'dirty'});
+    });
+
+    it('Nested formControl should emit touched', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Values: ControlEvent[] = [];
+      const fc2Values: ControlEvent[] = [];
+      const fgValues: ControlEvent[] = [];
+      fc1.controlStateChanges.subscribe(event => fc1Values.push(event));
+      fc2.controlStateChanges.subscribe(event => fc2Values.push(event));
+      fg.controlStateChanges.subscribe(event => fgValues.push(event));
+
+      fc1.markAsTouched();
+      expect(fc1Values.length).toBe(1);
+      expect(fgValues.length).toBe(1);
+      expect(fc2Values.length).toBe(0);
+
+      // changedControl is the child control
+      expect(fgValues.at(-1)).toEqual({changedControl: fc1, type: 'touched', value: 'touched'});
+      expect(fc1Values.at(-1)).toEqual({changedControl: fc1, type: 'touched', value: 'touched'});
+    });
+
+    it('Nested formControl should emit disabled', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Values: ControlEvent[] = [];
+      const fc2Values: ControlEvent[] = [];
+      const fgValues: ControlEvent[] = [];
+      fc1.controlStateChanges.subscribe(event => fc1Values.push(event));
+      fc2.controlStateChanges.subscribe(event => fc2Values.push(event));
+      fg.controlStateChanges.subscribe(event => fgValues.push(event));
+
+      fc1.disable();
+      expect(fc1Values.length).toBe(2);
+      expect(fgValues.length).toBe(4);
+      expect(fc2Values.length).toBe(0);
+
+      expect(fgValues.at(-4)).toEqual({changedControl: fg, type: 'value', value: {fc2: 'bar'}});
+      expect(fgValues.at(-3)).toEqual({changedControl: fg, type: 'status', value: 'VALID'});
+
+      // TODO: Check if this is expected
+      expect(fgValues.at(-2)).toEqual({changedControl: fc1, type: 'pristine', value: 'pristine'});
+      expect(fgValues.at(-1)).toEqual({changedControl: fc1, type: 'touched', value: 'untouched'});
+
+      expect(fc1Values.at(-2)).toEqual({changedControl: fc1, type: 'status', value: 'DISABLED'});
+      expect(fc1Values.at(-1)).toEqual({changedControl: fc1, type: 'value', value: 'foo'});
+    });
   });
 
   describe('setting status classes', () => {
