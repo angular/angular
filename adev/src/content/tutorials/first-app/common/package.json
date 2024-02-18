@@ -38,5 +38,10 @@
     "protractor": "~7.0.0",
     "ts-node": "~10.9.0",
     "typescript": "~5.2.0"
+  },
+  "overrides": {
+    "@angular-devkit/build-angular": {
+      "piscina": "4.2.1"
+    }
   }
 }
