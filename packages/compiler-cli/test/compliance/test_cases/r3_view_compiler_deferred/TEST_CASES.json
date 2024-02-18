@@ -232,6 +232,22 @@
       ]
     },
     {
+      "description": "should generate a deferred block with default imports",
+      "inputFiles": ["defer_default_deps.ts", "defer_default_deps_ext.ts"],
+      "compilationModeFilter": ["full compile"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "defer_default_deps_template.js",
+              "generated": "defer_default_deps.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate a lazy deferred block with empty and placeholder",
       "inputFiles": ["lazy_with_blocks.ts"],
       "compilationModeFilter": ["full compile"],
