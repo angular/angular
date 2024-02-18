@@ -9602,7 +9602,12 @@ function allTests(os: string) {
           const jsContents = env.getContents('test.js');
 
           expect(jsContents).toContain('ɵɵdefer(1, 0, TestCmp_Defer_1_DepsFn)');
-          expect(jsContents).toContain('() => [import("./cmp-a").then(m => m.default)]');
+          expect(jsContents)
+              .toContain(
+                  'const TestCmp_Defer_1_DepsFn = () => [import("./cmp-a").then(m => m.default), LocalDep];');
+          expect(jsContents)
+              .toContain(
+                  'i0.ɵsetClassMetadataAsync(TestCmp, () => [import("./cmp-a").then(m => m.default)]');
 
           // The `CmpA` symbol wasn't referenced elsewhere, so it can be defer-loaded
           // via dynamic imports and an original import can be removed.
