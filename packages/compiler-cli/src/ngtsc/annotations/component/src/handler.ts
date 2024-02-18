@@ -1275,9 +1275,10 @@ export class ComponentDecoratorHandler implements
         if (importDecl !== null && this.deferredSymbolTracker.canDefer(importDecl)) {
           deferBlockDep.isDeferrable = true;
           deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
+          deferBlockDep.isDefaultImport = isDefaultImport(importDecl);
           deferrableTypes.set(deferBlockDep.symbolName, {
             importPath: deferBlockDep.importPath,
-            isDefaultImport: isDefaultImport(importDecl),
+            isDefaultImport: deferBlockDep.isDefaultImport,
           });
         }
       }

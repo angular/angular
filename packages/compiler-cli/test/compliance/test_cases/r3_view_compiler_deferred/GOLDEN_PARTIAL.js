@@ -822,6 +822,85 @@ export declare class TestCmp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: defer_default_deps_ext.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+class CmpA {
+}
+CmpA.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CmpA, deps: [], target: i0.ɵɵFactoryTarget.Component });
+CmpA.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: CmpA, isStandalone: true, selector: "cmp-a", ngImport: i0, template: 'CmpA!', isInline: true });
+export default CmpA;
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CmpA, decorators: [{
+            type: Component,
+            args: [{ standalone: true, selector: 'cmp-a', template: 'CmpA!' }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_default_deps_ext.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export default class CmpA {
+    static ɵfac: i0.ɵɵFactoryDeclaration<CmpA, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CmpA, "cmp-a", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_default_deps.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import CmpA from './defer_default_deps_ext';
+import * as i0 from "@angular/core";
+export class LocalDep {
+}
+LocalDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LocalDep, deps: [], target: i0.ɵɵFactoryTarget.Component });
+LocalDep.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: LocalDep, isStandalone: true, selector: "local-dep", ngImport: i0, template: 'Local dependency', isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LocalDep, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'local-dep',
+                    standalone: true,
+                    template: 'Local dependency',
+                }]
+        }] });
+export class TestCmp {
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, isStandalone: true, selector: "test-cmp", ngImport: i0, template: `
+	@defer {
+	<cmp-a />
+	<local-dep />
+	}
+`, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test-cmp',
+                    standalone: true,
+                    imports: [CmpA, LocalDep],
+                    template: `
+	@defer {
+	<cmp-a />
+	<local-dep />
+	}
+`,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: defer_default_deps.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class LocalDep {
+    static ɵfac: i0.ɵɵFactoryDeclaration<LocalDep, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<LocalDep, "local-dep", never, {}, {}, never, never, true, never>;
+}
+export declare class TestCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: lazy_with_blocks.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
