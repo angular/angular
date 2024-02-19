@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, computed, contentChild, contentChildren, createComponent, Directive, ElementRef, EnvironmentInjector, viewChild, viewChildren} from '@angular/core';
+import {Component, computed, contentChild, contentChildren, createComponent, Directive, ElementRef, EnvironmentInjector, QueryList, viewChild, ViewChildren, viewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -473,6 +473,87 @@ describe('queries as signals', () => {
 
       expect(cmpRef.instance.elements()).toEqual([]);
       expect(cmpRef.instance.element()).toBeUndefined();
+    });
+  });
+
+
+  describe('mix of signal and decorator queries', () => {
+    it('should allow specifying both types of queries in one component', () => {
+      @Component({
+        standalone: true,
+        template: `
+          <div #el></div>
+          @if (show) {
+            <div #el></div>
+          }
+        `,
+      })
+      class AppComponent {
+        show = false;
+
+        divElsSignal = viewChildren<ElementRef<HTMLDivElement>>('el');
+
+        @ViewChildren('el') divElsDecorator!: QueryList<ElementRef<HTMLDivElement>>;
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.divElsSignal().length).toBe(1);
+      expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
+
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.divElsSignal().length).toBe(2);
+      expect(fixture.componentInstance.divElsDecorator.length).toBe(2);
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.divElsSignal().length).toBe(1);
+      expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
+    });
+
+    it('should allow combination via inheritance of both types of queries in one component', () => {
+      @Component({
+        standalone: true,
+        template: `
+            <div #el></div>
+            @if (show) {
+              <div #el></div>
+            }
+          `,
+      })
+      class BaseComponent {
+        show = false;
+        divElsSignal = viewChildren<ElementRef<HTMLDivElement>>('el');
+      }
+
+      @Component({
+        standalone: true,
+        template: `
+            <div #el></div>
+            @if (show) {
+              <div #el></div>
+            }
+          `
+      })
+      class AppComponent extends BaseComponent {
+        @ViewChildren('el') divElsDecorator!: QueryList<ElementRef<HTMLDivElement>>;
+      }
+
+      const fixture = TestBed.createComponent(AppComponent);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.divElsSignal().length).toBe(1);
+      expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
+
+      fixture.componentInstance.show = true;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.divElsSignal().length).toBe(2);
+      expect(fixture.componentInstance.divElsDecorator.length).toBe(2);
+
+      fixture.componentInstance.show = false;
+      fixture.detectChanges();
+      expect(fixture.componentInstance.divElsSignal().length).toBe(1);
+      expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
     });
   });
 });
