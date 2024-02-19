@@ -59,6 +59,6 @@ Angular assigns the `$event` value to the `AppComponent.fontSizePx` when the use
 <docs-callout title="Two-way binding in forms">
 
 Because no built-in HTML element follows the `x` value and `xChange` event pattern, two-way binding with form elements requires `NgModel`.
-For more information on how to use two-way binding in forms, see Angular [NgModel](guide/directives#ngModel).
+For more information on how to use two-way binding in forms, see Angular [NgModel](guide/directives#displaying-and-updating-properties-with-ngmodel).
 
 </docs-callout>
