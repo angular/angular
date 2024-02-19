@@ -41,6 +41,6 @@ The following table summarizes the `@NgModule` metadata properties.
 
 <docs-pill-row>
   <docs-pill href="guide/ngmodules/feature-modules" title="Feature Modules"/>
-  <docs-pill href="guide/providers" title="Providers"/>
-  <docs-pill href="guide/module-types" title="Types of Feature Modules"/>
+  <docs-pill href="guide/ngmodules/providers" title="Providers"/>
+  <docs-pill href="guide/ngmodules/module-types" title="Types of Feature Modules"/>
 </docs-pill-row>
