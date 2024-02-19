@@ -20,6 +20,7 @@ export {
   CreateSignalOptions,
   signal,
   WritableSignal,
+  ɵunwrapWritableSignal,
 } from './render3/reactivity/signal';
 export {
   untracked,
@@ -31,7 +32,6 @@ export {
   EffectCleanupFn,
   EffectCleanupRegisterFn,
   EffectScheduler as ɵEffectScheduler,
-  ZoneAwareQueueingScheduler as ɵZoneAwareQueueingScheduler
 } from './render3/reactivity/effect';
 export {
   assertNotInReactiveContext,

@@ -164,6 +164,13 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
                 op.name, listenerFn, eventTargetResolver, op.hostListener && op.isAnimationListener,
                 op.sourceSpan));
         break;
+      case ir.OpKind.TwoWayListener:
+        ir.OpList.replace(
+            op,
+            ng.twoWayListener(
+                op.name, reifyListenerHandler(unit, op.handlerFnName!, op.handlerOps, true),
+                op.sourceSpan));
+        break;
       case ir.OpKind.Variable:
         if (op.variable.name === null) {
           throw new Error(`AssertionError: unnamed variable ${op.xref}`);
@@ -300,6 +307,10 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
           ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
         }
         break;
+      case ir.OpKind.TwoWayProperty:
+        ir.OpList.replace(
+            op, ng.twoWayProperty(op.name, op.expression, op.sanitizer, op.sourceSpan));
+        break;
       case ir.OpKind.StyleProp:
         if (op.expression instanceof ir.Interpolation) {
           ir.OpList.replace(
@@ -354,7 +365,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
                   op.name, op.expression.strings, op.expression.expressions, op.sanitizer,
                   op.sourceSpan));
         } else {
-          ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer));
+          ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer, op.namespace));
         }
         break;
       case ir.OpKind.HostProperty:
@@ -416,6 +427,8 @@ function reifyIrExpression(expr: o.Expression): o.Expression {
       return ng.reference(expr.targetSlot.slot! + 1 + expr.offset);
     case ir.ExpressionKind.LexicalRead:
       throw new Error(`AssertionError: unresolved LexicalRead of ${expr.name}`);
+    case ir.ExpressionKind.TwoWayBindingSet:
+      throw new Error(`AssertionError: unresolved TwoWayBindingSet`);
     case ir.ExpressionKind.RestoreView:
       if (typeof expr.view === 'number') {
         throw new Error(`AssertionError: unresolved RestoreView`);

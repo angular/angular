@@ -63,33 +63,40 @@ export abstract class EffectScheduler {
    */
   abstract scheduleEffect(e: SchedulableEffect): void;
 
+  /**
+   * Run any scheduled effects.
+   */
+  abstract flush(): void;
+
   /** @nocollapse */
   static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: EffectScheduler,
     providedIn: 'root',
-    factory: () => new ZoneAwareMicrotaskScheduler(),
+    factory: () => new ZoneAwareEffectScheduler(),
   });
 }
 
 /**
- * Interface to an `EffectScheduler` capable of running scheduled effects synchronously.
+ * A wrapper around `ZoneAwareQueueingScheduler` that schedules flushing via the microtask queue
+ * when.
  */
-export interface FlushableEffectRunner {
-  /**
-   * Run any scheduled effects.
-   */
-  flush(): void;
-}
-
-/**
- * An `EffectScheduler` which is capable of queueing scheduled effects per-zone, and flushing them
- * as an explicit operation.
- */
-export class ZoneAwareQueueingScheduler implements EffectScheduler, FlushableEffectRunner {
+export class ZoneAwareEffectScheduler implements EffectScheduler {
+  private hasQueuedFlush = false;
   private queuedEffectCount = 0;
   private queues = new Map<Zone|null, Set<SchedulableEffect>>();
 
   scheduleEffect(handle: SchedulableEffect): void {
+    this.enqueue(handle);
+
+    if (!this.hasQueuedFlush) {
+      queueMicrotask(() => this.flush());
+      // Leave `hasQueuedFlush` as `true` so we don't queue another microtask if more effects are
+      // scheduled during flushing. We are guaranteed to empty the whole queue during flush.
+      this.hasQueuedFlush = false;
+    }
+  }
+
+  private enqueue(handle: SchedulableEffect): void {
     const zone = handle.creationZone as Zone | null;
     if (!this.queues.has(zone)) {
       this.queues.set(zone, new Set());
@@ -131,41 +138,6 @@ export class ZoneAwareQueueingScheduler implements EffectScheduler, FlushableEff
       handle.run();
     }
   }
-
-  /** @nocollapse */
-  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
-    token: ZoneAwareQueueingScheduler,
-    providedIn: 'root',
-    factory: () => new ZoneAwareQueueingScheduler(),
-  });
-}
-
-/**
- * A wrapper around `ZoneAwareQueueingScheduler` that schedules flushing via the microtask queue
- * when.
- */
-export class ZoneAwareMicrotaskScheduler implements EffectScheduler {
-  private hasQueuedFlush = false;
-  private delegate = new ZoneAwareQueueingScheduler();
-  private flushTask = () => {
-    // Leave `hasQueuedFlush` as `true` so we don't queue another microtask if more effects are
-    // scheduled during flushing. The flush of the `ZoneAwareQueueingScheduler` delegate is
-    // guaranteed to empty the queue.
-    this.delegate.flush();
-    this.hasQueuedFlush = false;
-
-    // This is a variable initialization, not a method.
-    // tslint:disable-next-line:semicolon
-  };
-
-  scheduleEffect(handle: SchedulableEffect): void {
-    this.delegate.scheduleEffect(handle);
-
-    if (!this.hasQueuedFlush) {
-      queueMicrotask(this.flushTask);
-      this.hasQueuedFlush = true;
-    }
-  }
 }
 
 /**
@@ -182,8 +154,8 @@ class EffectHandle implements EffectRef, SchedulableEffect {
   constructor(
       private scheduler: EffectScheduler,
       private effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
-      public creationZone: Zone|null, destroyRef: DestroyRef|null,
-      private errorHandler: ErrorHandler|null, allowSignalWrites: boolean) {
+      public creationZone: Zone|null, destroyRef: DestroyRef|null, private injector: Injector,
+      allowSignalWrites: boolean) {
     this.watcher = createWatch(
         (onCleanup) => this.runEffect(onCleanup), () => this.schedule(), allowSignalWrites);
     this.unregisterOnDestroy = destroyRef?.onDestroy(() => this.destroy());
@@ -193,7 +165,10 @@ class EffectHandle implements EffectRef, SchedulableEffect {
     try {
       this.effectFn(onCleanup);
     } catch (err) {
-      this.errorHandler?.handleError(err);
+      // Inject the `ErrorHandler` here in order to avoid circular DI error
+      // if the effect is used inside of a custom `ErrorHandler`.
+      const errorHandler = this.injector.get(ErrorHandler, null, {optional: true});
+      errorHandler?.handleError(err);
     }
   }
 
@@ -273,12 +248,11 @@ export function effect(
 
   !options?.injector && assertInInjectionContext(effect);
   const injector = options?.injector ?? inject(Injector);
-  const errorHandler = injector.get(ErrorHandler, null, {optional: true});
   const destroyRef = options?.manualCleanup !== true ? injector.get(DestroyRef) : null;
 
   const handle = new EffectHandle(
       injector.get(APP_EFFECT_SCHEDULER), effectFn,
-      (typeof Zone === 'undefined') ? null : Zone.current, destroyRef, errorHandler,
+      (typeof Zone === 'undefined') ? null : Zone.current, destroyRef, injector,
       options?.allowSignalWrites ?? false);
 
   // Effects need to be marked dirty manually to trigger their initial run. The timing of this

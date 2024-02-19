@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from './injection_token';
-import {Injector} from './injector';
+import type {Injector} from './injector';
 import {InjectorMarkers} from './injector_marker';
 
 
@@ -21,7 +21,7 @@ import {InjectorMarkers} from './injector_marker';
  * @publicApi
  */
 export const INJECTOR = new InjectionToken<Injector>(
-    'INJECTOR',
+    ngDevMode ? 'INJECTOR' : '',
     // Disable tslint because this is const enum which gets inlined not top level prop access.
     // tslint:disable-next-line: no-toplevel-property-access
     InjectorMarkers.Injector as any,  // Special value used by Ivy to identify `Injector`.

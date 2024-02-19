@@ -8,7 +8,15 @@
 
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {ViewEncapsulation} from '@angular/core';
-import {Descriptor, DirectiveMetadata, DirectivePosition, Events, MessageBus, NestedProp, Properties} from 'protocol';
+import {
+  Descriptor,
+  DirectiveMetadata,
+  DirectivePosition,
+  Events,
+  MessageBus,
+  NestedProp,
+  Properties,
+} from 'protocol';
 
 import {FlatNode, Property} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';
@@ -20,38 +28,45 @@ export interface DirectiveTreeData {
   treeControl: FlatTreeControl<FlatNode>;
 }
 
-const getDirectiveControls = (dataSource: PropertyDataSource):
-    {dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode>} => {
-      const treeControl = dataSource.treeControl;
-      return {
-        dataSource,
-        treeControl,
-      };
-    };
+const getDirectiveControls = (
+  dataSource: PropertyDataSource,
+): {dataSource: PropertyDataSource; treeControl: FlatTreeControl<FlatNode>} => {
+  const treeControl = dataSource.treeControl;
+  return {
+    dataSource,
+    treeControl,
+  };
+};
 
-export const constructPathOfKeysToPropertyValue =
-    (nodePropToGetKeysFor: Property, keys: string[] = []): string[] => {
-      keys.unshift(nodePropToGetKeysFor.name);
-      const parentNodeProp = nodePropToGetKeysFor.parent;
-      if (parentNodeProp) {
-        constructPathOfKeysToPropertyValue(parentNodeProp, keys);
-      }
-      return keys;
-    };
+export const constructPathOfKeysToPropertyValue = (
+  nodePropToGetKeysFor: Property,
+  keys: string[] = [],
+): string[] => {
+  keys.unshift(nodePropToGetKeysFor.name);
+  const parentNodeProp = nodePropToGetKeysFor.parent;
+  if (parentNodeProp) {
+    constructPathOfKeysToPropertyValue(parentNodeProp, keys);
+  }
+  return keys;
+};
 
 export class DirectivePropertyResolver {
   private _treeFlattener = getTreeFlattener();
 
-  private _treeControl =
-      new FlatTreeControl<FlatNode>((node) => node.level, (node) => node.expandable);
+  private _treeControl = new FlatTreeControl<FlatNode>(
+    (node) => node.level,
+    (node) => node.expandable,
+  );
 
   private _inputsDataSource: PropertyDataSource;
   private _outputsDataSource: PropertyDataSource;
   private _stateDataSource: PropertyDataSource;
 
   constructor(
-      private _messageBus: MessageBus<Events>, private _props: Properties,
-      private _directivePosition: DirectivePosition) {
+    private _messageBus: MessageBus<Events>,
+    private _props: Properties,
+    private _directivePosition: DirectivePosition,
+  ) {
     const {inputProps, outputProps, stateProps} = this._classifyProperties();
 
     this._inputsDataSource = this._createDataSourceFromProps(inputProps);
@@ -71,7 +86,7 @@ export class DirectivePropertyResolver {
     return getDirectiveControls(this._stateDataSource);
   }
 
-  get directiveMetadata(): DirectiveMetadata|undefined {
+  get directiveMetadata(): DirectiveMetadata | undefined {
     return this._props.metadata;
   }
 
@@ -83,11 +98,11 @@ export class DirectivePropertyResolver {
     return this._directivePosition;
   }
 
-  get directiveViewEncapsulation(): ViewEncapsulation|undefined {
+  get directiveViewEncapsulation(): ViewEncapsulation | undefined {
     return this._props.metadata?.encapsulation;
   }
 
-  get directiveHasOnPushStrategy(): boolean|undefined {
+  get directiveHasOnPushStrategy(): boolean | undefined {
     return this._props.metadata?.onPush;
   }
 
@@ -108,7 +123,7 @@ export class DirectivePropertyResolver {
     this._stateDataSource.update(stateProps);
   }
 
-  updateValue(node: FlatNode, newValue: any): void {
+  updateValue(node: FlatNode, newValue: unknown): void {
     const directiveId = this._directivePosition;
     const keyPath = constructPathOfKeysToPropertyValue(node.prop);
     this._messageBus.emit('updateState', [{directiveId, keyPath, newValue}]);
@@ -117,11 +132,17 @@ export class DirectivePropertyResolver {
 
   private _createDataSourceFromProps(props: {[name: string]: Descriptor}): PropertyDataSource {
     return new PropertyDataSource(
-        props, this._treeFlattener, this._treeControl, this._directivePosition, this._messageBus);
+      props,
+      this._treeFlattener,
+      this._treeControl,
+      this._directivePosition,
+      this._messageBus,
+    );
   }
 
   private _classifyProperties(): {
-    inputProps: {[name: string]: Descriptor}; outputProps: {[name: string]: Descriptor};
+    inputProps: {[name: string]: Descriptor};
+    outputProps: {[name: string]: Descriptor};
     stateProps: {[name: string]: Descriptor};
   } {
     const inputLabels: Set<string> = new Set(Object.values(this._props.metadata?.inputs || {}));
@@ -133,9 +154,11 @@ export class DirectivePropertyResolver {
     let propPointer: {[name: string]: Descriptor};
 
     Object.keys(this.directiveProperties).forEach((propName) => {
-      propPointer = inputLabels.has(propName) ? inputProps :
-          outputLabels.has(propName)          ? outputProps :
-                                                stateProps;
+      propPointer = inputLabels.has(propName)
+        ? inputProps
+        : outputLabels.has(propName)
+        ? outputProps
+        : stateProps;
       propPointer[propName] = this.directiveProperties[propName];
     });
 

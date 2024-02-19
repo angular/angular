@@ -24,7 +24,8 @@ import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
  */
 export type ComponentMetadataResolvedFields = SubsetOfKeys<
     R3ComponentMetadata<R3TemplateDependencyMetadata>,
-    'declarations'|'declarationListEmitMode'|'deferBlocks'|'deferrableDeclToImportDecl'>;
+    'declarations'|'declarationListEmitMode'|'deferBlocks'|'deferrableDeclToImportDecl'|
+    'deferrableTypes'|'deferBlockDepsEmitMode'>;
 
 export interface ComponentAnalysisData {
   /**
@@ -70,6 +71,13 @@ export interface ComponentAnalysisData {
 
   rawImports: ts.Expression|null;
   resolvedImports: Reference<ClassDeclaration>[]|null;
+  rawDeferredImports: ts.Expression|null;
+  resolvedDeferredImports: Reference<ClassDeclaration>[]|null;
+
+  /**
+   * Map of symbol name -> import path for types from `@Component.deferredImports` field.
+   */
+  explicitlyDeferredTypes: Map<string, {importPath: string, isDefaultImport: boolean}>|null;
 
   schemas: SchemaMetadata[]|null;
 

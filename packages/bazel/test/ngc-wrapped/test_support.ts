@@ -24,9 +24,9 @@ export interface TestSupport {
     depPaths,
     pathMapping,
   }: {
-    srcTargetPath: string,
-    depPaths?: string[],
-    pathMapping?: Array<{moduleName: string; path: string;}>,
+    srcTargetPath: string;
+    depPaths?: string[];
+    pathMapping?: Array<{moduleName: string; path: string}>;
   }): {compilerOptions: ts.CompilerOptions};
   read(fileName: string): string;
   write(fileName: string, content: string): void;
@@ -40,8 +40,8 @@ export function setup({
   bazelBin = 'bazel-bin',
   tsconfig = 'tsconfig.json',
 }: {
-  bazelBin?: string,
-  tsconfig?: string,
+  bazelBin?: string;
+  tsconfig?: string;
 } = {}): TestSupport {
   const runfilesPath = process.env['TEST_SRCDIR'];
 
@@ -56,7 +56,9 @@ export function setup({
   const tsConfigJsonPath = path.resolve(basePath, tsconfig);
 
   const emptyTsConfig = ts.readConfigFile(
-      runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'), read);
+    runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'),
+    read,
+  );
   const typesRoots = (emptyTsConfig as any).config.compilerOptions.typeRoots[0];
 
   return {
@@ -110,9 +112,9 @@ export function setup({
     depPaths = [],
     pathMapping = [],
   }: {
-    srcTargetPath: string,
-    depPaths?: string[],
-    pathMapping?: Array<{moduleName: string; path: string;}>,
+    srcTargetPath: string;
+    depPaths?: string[];
+    pathMapping?: Array<{moduleName: string; path: string}>;
   }) {
     srcTargetPath = path.resolve(basePath, srcTargetPath);
     const compilationTargetSrc = listFilesRecursive(srcTargetPath);
@@ -122,23 +124,25 @@ export function setup({
     depPaths = depPaths.concat([angularCorePath]);
     pathMapping = pathMapping.concat([
       {moduleName: '@angular/core', path: angularCorePath},
-      {moduleName: 'angular/packages/core', path: angularCorePath}
+      {moduleName: 'angular/packages/core', path: angularCorePath},
     ]);
 
     for (const depPath of depPaths) {
-      files.push(...listFilesRecursive(depPath).filter(f => f.endsWith('.d.ts')));
+      files.push(...listFilesRecursive(depPath).filter((f) => f.endsWith('.d.ts')));
     }
 
     const pathMappingObj = {};
     for (const mapping of pathMapping) {
       pathMappingObj[mapping.moduleName] = [mapping.path];
-      pathMappingObj[path.posix.join(mapping.moduleName, '*')] =
-          [path.posix.join(mapping.path, '*')];
+      pathMappingObj[path.posix.join(mapping.moduleName, '*')] = [
+        path.posix.join(mapping.path, '*'),
+      ];
     }
 
     const emptyTsConfig = ts.readConfigFile(
-        runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'),
-        read);
+      runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/empty/empty_tsconfig.json'),
+      read,
+    );
 
     const tsconfig = createTsConfig({
       defaultTsConfig: emptyTsConfig.config,
@@ -178,7 +182,7 @@ function makeTempDir(baseDir: string): string {
 }
 
 export function listFilesRecursive(dir: string, fileList: string[] = []) {
-  fs.readdirSync(dir).forEach(file => {
+  fs.readdirSync(dir).forEach((file) => {
     if (fs.statSync(path.join(dir, file)).isDirectory()) {
       listFilesRecursive(path.join(dir, file), fileList);
     } else {

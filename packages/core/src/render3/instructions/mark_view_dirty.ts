@@ -8,7 +8,7 @@
 
 import {isRootView} from '../interfaces/type_checks';
 import {ENVIRONMENT, FLAGS, LView, LViewFlags} from '../interfaces/view';
-import {getLViewParent} from '../util/view_traversal_utils';
+import {getLViewParent} from '../util/view_utils';
 
 /**
  * Marks current view and all ancestors dirty.

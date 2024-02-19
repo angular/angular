@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExperimentalNavigationInterceptOptions, FakeNavigateEvent, FakeNavigation, FakeNavigationCurrentEntryChangeEvent,} from '../../testing/src/navigation/fake_navigation';
+import {
+  ExperimentalNavigationInterceptOptions,
+  FakeNavigateEvent,
+  FakeNavigation,
+  FakeNavigationCurrentEntryChangeEvent,
+} from '../../testing/src/navigation/fake_navigation';
 
 interface Locals {
   navigation: FakeNavigation;
@@ -44,7 +49,7 @@ describe('navigation', () => {
     const navigationCurrentEntryChangeEvents: FakeNavigationCurrentEntryChangeEvent[] = [];
     const popStateEvents: PopStateEvent[] = [];
     const pendingInterceptOptions: ExperimentalNavigationInterceptOptions[] = [];
-    let extraNavigateCallback:|((event: FakeNavigateEvent) => void)|undefined = undefined;
+    let extraNavigateCallback: ((event: FakeNavigateEvent) => void) | undefined = undefined;
 
     navigation.addEventListener('navigate', (event: Event) => {
       const navigateEvent = event as FakeNavigateEvent;
@@ -61,9 +66,7 @@ describe('navigation', () => {
     });
     navigation.addEventListener('currententrychange', (event: Event) => {
       const currentNavigationEntryChangeEvent = event as FakeNavigationCurrentEntryChangeEvent;
-      locals.navigationCurrentEntryChangeEvents.push(
-          currentNavigationEntryChangeEvent,
-      );
+      locals.navigationCurrentEntryChangeEvents.push(currentNavigationEntryChangeEvent);
     });
     locals = {
       navigation,
@@ -83,26 +86,17 @@ describe('navigation', () => {
   const setUpEntries = async ({hash = false} = {}) => {
     locals.pendingInterceptOptions.push({});
     const pathPrefix = hash ? '#' : '/';
-    const firstPageEntry = await locals.navigation
-                               .navigate(
-                                   `${pathPrefix}page1`,
-                                   {state: {page1: true}},
-                                   )
-                               .finished;
+    const firstPageEntry = await locals.navigation.navigate(`${pathPrefix}page1`, {
+      state: {page1: true},
+    }).finished;
     locals.pendingInterceptOptions.push({});
-    const secondPageEntry = await locals.navigation
-                                .navigate(
-                                    `${pathPrefix}page2`,
-                                    {state: {page2: true}},
-                                    )
-                                .finished;
+    const secondPageEntry = await locals.navigation.navigate(`${pathPrefix}page2`, {
+      state: {page2: true},
+    }).finished;
     locals.pendingInterceptOptions.push({});
-    const thirdPageEntry = await locals.navigation
-                               .navigate(
-                                   `${pathPrefix}page3`,
-                                   {state: {page3: true}},
-                                   )
-                               .finished;
+    const thirdPageEntry = await locals.navigation.navigate(`${pathPrefix}page3`, {
+      state: {page3: true},
+    }).finished;
     locals.navigateEvents.length = 0;
     locals.navigationCurrentEntryChangeEvents.length = 0;
     locals.popStateEvents.length = 0;
@@ -111,23 +105,11 @@ describe('navigation', () => {
 
   const setUpEntriesWithHistory = ({hash = false} = {}) => {
     const pathPrefix = hash ? '#' : '/';
-    locals.navigation.pushState(
-        {state: {page1: true}},
-        '',
-        `${pathPrefix}page1`,
-    );
+    locals.navigation.pushState({state: {page1: true}}, '', `${pathPrefix}page1`);
     const firstPageEntry = locals.navigation.currentEntry;
-    locals.navigation.pushState(
-        {state: {page2: true}},
-        '',
-        `${pathPrefix}page2`,
-    );
+    locals.navigation.pushState({state: {page2: true}}, '', `${pathPrefix}page2`);
     const secondPageEntry = locals.navigation.currentEntry;
-    locals.navigation.pushState(
-        {state: {page3: true}},
-        '',
-        `${pathPrefix}page3`,
-    );
+    locals.navigation.pushState({state: {page3: true}}, '', `${pathPrefix}page3`);
     const thirdPageEntry = locals.navigation.currentEntry;
     locals.navigateEvents.length = 0;
     locals.navigationCurrentEntryChangeEvents.length = 0;
@@ -165,57 +147,51 @@ describe('navigation', () => {
       const {committed, finished} = locals.navigation.navigate('/test');
       expect(locals.navigateEvents.length).toBe(1);
       const navigateEvent = locals.navigateEvents[0];
-      expect(navigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                canIntercept: true,
-                hashChange: false,
-                info: undefined,
-                navigationType: 'push',
-                userInitiated: false,
-                signal: jasmine.any(AbortSignal),
-                destination: jasmine.objectContaining({
-                  url: 'https://test.com/test',
-                  key: null,
-                  id: null,
-                  index: -1,
-                  sameDocument: false,
-                }),
-              }),
-          );
+      expect(navigateEvent).toEqual(
+        jasmine.objectContaining({
+          canIntercept: true,
+          hashChange: false,
+          info: undefined,
+          navigationType: 'push',
+          userInitiated: false,
+          signal: jasmine.any(AbortSignal),
+          destination: jasmine.objectContaining({
+            url: 'https://test.com/test',
+            key: null,
+            id: null,
+            index: -1,
+            sameDocument: false,
+          }),
+        }),
+      );
       expect(navigateEvent.destination.getState()).toBeUndefined();
       const committedEntry = await committed;
-      expect(committedEntry)
-          .toEqual(
-              jasmine.objectContaining({
-                url: 'https://test.com/test',
-                key: '1',
-                id: '1',
-                index: 1,
-                sameDocument: true,
-              }),
-          );
+      expect(committedEntry).toEqual(
+        jasmine.objectContaining({
+          url: 'https://test.com/test',
+          key: '1',
+          id: '1',
+          index: 1,
+          sameDocument: true,
+        }),
+      );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigation.currentEntry).toBe(committedEntry);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-      expect(currentEntryChangeEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'push',
-                from: jasmine.objectContaining({
-                  url: initialEntry.url,
-                  key: initialEntry.key,
-                  id: initialEntry.id,
-                  index: initialEntry.index,
-                  sameDocument: initialEntry.sameDocument,
-                }),
-              }),
-          );
-      expect(currentEntryChangeEvent.from.getState())
-          .toBe(
-              initialEntry.getState(),
-          );
+      expect(currentEntryChangeEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'push',
+          from: jasmine.objectContaining({
+            url: initialEntry.url,
+            key: initialEntry.key,
+            id: initialEntry.id,
+            index: initialEntry.index,
+            sameDocument: initialEntry.sameDocument,
+          }),
+        }),
+      );
+      expect(currentEntryChangeEvent.from.getState()).toBe(initialEntry.getState());
       expect(locals.popStateEvents.length).toBe(1);
       const popStateEvent = locals.popStateEvents[0];
       expect(popStateEvent.state).toBeNull();
@@ -227,6 +203,17 @@ describe('navigation', () => {
       expect(locals.popStateEvents.length).toBe(1);
     });
 
+    it('push URL relative', async () => {
+      locals.pendingInterceptOptions.push({});
+      await locals.navigation.navigate('/a/b/c').finished;
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/a/b/c');
+      locals.pendingInterceptOptions.push({
+        handler: () => Promise.resolve(),
+      });
+      await locals.navigation.navigate('../').finished;
+      expect(locals.navigation.currentEntry.url).toBe('https://test.com/a/');
+    });
+
     it('replace URL', async () => {
       const initialEntry = locals.navigation.currentEntry;
       locals.pendingInterceptOptions.push({});
@@ -235,57 +222,51 @@ describe('navigation', () => {
       });
       expect(locals.navigateEvents.length).toBe(1);
       const navigateEvent = locals.navigateEvents[0];
-      expect(navigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                canIntercept: true,
-                hashChange: false,
-                info: undefined,
-                navigationType: 'replace',
-                userInitiated: false,
-                signal: jasmine.any(AbortSignal),
-                destination: jasmine.objectContaining({
-                  url: 'https://test.com/test',
-                  key: null,
-                  id: null,
-                  index: -1,
-                  sameDocument: false,
-                }),
-              }),
-          );
+      expect(navigateEvent).toEqual(
+        jasmine.objectContaining({
+          canIntercept: true,
+          hashChange: false,
+          info: undefined,
+          navigationType: 'replace',
+          userInitiated: false,
+          signal: jasmine.any(AbortSignal),
+          destination: jasmine.objectContaining({
+            url: 'https://test.com/test',
+            key: null,
+            id: null,
+            index: -1,
+            sameDocument: false,
+          }),
+        }),
+      );
       expect(navigateEvent.destination.getState()).toBeUndefined();
       const committedEntry = await committed;
-      expect(committedEntry)
-          .toEqual(
-              jasmine.objectContaining({
-                url: 'https://test.com/test',
-                key: '0',
-                id: '1',
-                index: 0,
-                sameDocument: true,
-              }),
-          );
+      expect(committedEntry).toEqual(
+        jasmine.objectContaining({
+          url: 'https://test.com/test',
+          key: '0',
+          id: '1',
+          index: 0,
+          sameDocument: true,
+        }),
+      );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigation.currentEntry).toBe(committedEntry);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-      expect(currentEntryChangeEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'replace',
-                from: jasmine.objectContaining({
-                  url: initialEntry.url,
-                  key: initialEntry.key,
-                  id: initialEntry.id,
-                  index: initialEntry.index,
-                  sameDocument: initialEntry.sameDocument,
-                }),
-              }),
-          );
-      expect(currentEntryChangeEvent.from.getState())
-          .toBe(
-              initialEntry.getState(),
-          );
+      expect(currentEntryChangeEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'replace',
+          from: jasmine.objectContaining({
+            url: initialEntry.url,
+            key: initialEntry.key,
+            id: initialEntry.id,
+            index: initialEntry.index,
+            sameDocument: initialEntry.sameDocument,
+          }),
+        }),
+      );
+      expect(currentEntryChangeEvent.from.getState()).toBe(initialEntry.getState());
       expect(locals.popStateEvents.length).toBe(1);
       const popStateEvent = locals.popStateEvents[0];
       expect(popStateEvent.state).toBeNull();
@@ -392,9 +373,7 @@ describe('navigation', () => {
     });
 
     it('push URL with handler', async () => {
-      let handlerFinishedResolve!: (
-          value: Promise<undefined>|undefined,
-          ) => void;
+      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
       const handlerFinished = new Promise<undefined>((resolve) => {
         handlerFinishedResolve = resolve;
       });
@@ -404,16 +383,15 @@ describe('navigation', () => {
       const {committed, finished} = locals.navigation.navigate('/test');
       expect(locals.navigateEvents.length).toBe(1);
       const committedEntry = await committed;
-      expect(committedEntry)
-          .toEqual(
-              jasmine.objectContaining({
-                url: 'https://test.com/test',
-                key: '1',
-                id: '1',
-                index: 1,
-                sameDocument: true,
-              }),
-          );
+      expect(committedEntry).toEqual(
+        jasmine.objectContaining({
+          url: 'https://test.com/test',
+          key: '1',
+          id: '1',
+          index: 1,
+          sameDocument: true,
+        }),
+      );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
@@ -423,9 +401,7 @@ describe('navigation', () => {
     });
 
     it('replace URL with handler', async () => {
-      let handlerFinishedResolve!: (
-          value: Promise<undefined>|undefined,
-          ) => void;
+      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
       const handlerFinished = new Promise<undefined>((resolve) => {
         handlerFinishedResolve = resolve;
       });
@@ -437,16 +413,15 @@ describe('navigation', () => {
       });
       expect(locals.navigateEvents.length).toBe(1);
       const committedEntry = await committed;
-      expect(committedEntry)
-          .toEqual(
-              jasmine.objectContaining({
-                url: 'https://test.com/test',
-                key: '0',
-                id: '1',
-                index: 0,
-                sameDocument: true,
-              }),
-          );
+      expect(committedEntry).toEqual(
+        jasmine.objectContaining({
+          url: 'https://test.com/test',
+          key: '0',
+          id: '1',
+          index: 0,
+          sameDocument: true,
+        }),
+      );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
@@ -456,9 +431,7 @@ describe('navigation', () => {
     });
 
     it('deferred commit', async () => {
-      let handlerFinishedResolve!: (
-          value: Promise<undefined>|undefined,
-          ) => void;
+      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
       const handlerFinished = new Promise<undefined>((resolve) => {
         handlerFinishedResolve = resolve;
       });
@@ -472,16 +445,15 @@ describe('navigation', () => {
       expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
       locals.navigateEvents[0].commit();
       const committedEntry = await committed;
-      expect(committedEntry)
-          .toEqual(
-              jasmine.objectContaining({
-                url: 'https://test.com/test',
-                key: '1',
-                id: '1',
-                index: 1,
-                sameDocument: true,
-              }),
-          );
+      expect(committedEntry).toEqual(
+        jasmine.objectContaining({
+          url: 'https://test.com/test',
+          key: '1',
+          id: '1',
+          index: 1,
+          sameDocument: true,
+        }),
+      );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
@@ -491,9 +463,7 @@ describe('navigation', () => {
     });
 
     it('deferred commit early resolve', async () => {
-      let handlerFinishedResolve!: (
-          value: Promise<undefined>|undefined,
-          ) => void;
+      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
       const handlerFinished = new Promise<undefined>((resolve) => {
         handlerFinishedResolve = resolve;
       });
@@ -507,16 +477,15 @@ describe('navigation', () => {
       expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
       handlerFinishedResolve(undefined);
       const committedEntry = await committed;
-      expect(committedEntry)
-          .toEqual(
-              jasmine.objectContaining({
-                url: 'https://test.com/test',
-                key: '1',
-                id: '1',
-                index: 1,
-                sameDocument: true,
-              }),
-          );
+      expect(committedEntry).toEqual(
+        jasmine.objectContaining({
+          url: 'https://test.com/test',
+          key: '1',
+          id: '1',
+          index: 1,
+          sameDocument: true,
+        }),
+      );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
@@ -554,9 +523,7 @@ describe('navigation', () => {
     });
 
     it('deferred commit twice throws', async () => {
-      let handlerFinishedResolve!: (
-          value: Promise<undefined>|undefined,
-          ) => void;
+      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
       const handlerFinished = new Promise<undefined>((resolve) => {
         handlerFinishedResolve = resolve;
       });
@@ -578,9 +545,7 @@ describe('navigation', () => {
     });
 
     it('deferred commit resolves on finished', async () => {
-      let handlerFinishedResolve!: (
-          value: Promise<undefined>|undefined,
-          ) => void;
+      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
       const handlerFinished = new Promise<undefined>((resolve) => {
         handlerFinishedResolve = resolve;
       });
@@ -594,16 +559,15 @@ describe('navigation', () => {
       expect(locals.navigation.currentEntry.url).toBe('https://test.com/');
       handlerFinishedResolve(undefined);
       const committedEntry = await committed;
-      expect(committedEntry)
-          .toEqual(
-              jasmine.objectContaining({
-                url: 'https://test.com/test',
-                key: '1',
-                id: '1',
-                index: 1,
-                sameDocument: true,
-              }),
-          );
+      expect(committedEntry).toEqual(
+        jasmine.objectContaining({
+          url: 'https://test.com/test',
+          key: '1',
+          id: '1',
+          index: 1,
+          sameDocument: true,
+        }),
+      );
       expect(committedEntry.getState()).toBeUndefined();
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
@@ -659,9 +623,10 @@ describe('navigation', () => {
     it('push with handler reject', async () => {
       let handlerFinishedReject!: (reason: unknown) => void;
       locals.pendingInterceptOptions.push({
-        handler: () => new Promise<undefined>((resolve, reject) => {
-          handlerFinishedReject = reject;
-        }),
+        handler: () =>
+          new Promise<undefined>((resolve, reject) => {
+            handlerFinishedReject = reject;
+          }),
       });
 
       const {committed, finished} = locals.navigation.navigate('/test');
@@ -680,9 +645,10 @@ describe('navigation', () => {
     it('replace with reject', async () => {
       let handlerFinishedReject!: (reason: unknown) => void;
       locals.pendingInterceptOptions.push({
-        handler: () => new Promise<undefined>((resolve, reject) => {
-          handlerFinishedReject = reject;
-        }),
+        handler: () =>
+          new Promise<undefined>((resolve, reject) => {
+            handlerFinishedReject = reject;
+          }),
       });
 
       const {committed, finished} = locals.navigation.navigate('/test', {
@@ -709,53 +675,43 @@ describe('navigation', () => {
 
       expect(locals.navigation.canGoBack).toBeTrue();
       expect(locals.navigation.canGoForward).toBeFalse();
-      const {committed, finished} = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
+      const {committed, finished} = locals.navigation.traverseTo(firstPageEntry.key);
       const navigateEvent = await locals.nextNavigateEvent();
-      expect(navigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                canIntercept: true,
-                hashChange: false,
-                info: undefined,
-                navigationType: 'traverse',
-                signal: jasmine.any(AbortSignal),
-                userInitiated: false,
-                destination: jasmine.objectContaining({
-                  url: firstPageEntry.url!,
-                  key: firstPageEntry.key,
-                  id: firstPageEntry.id,
-                  index: firstPageEntry.index,
-                  sameDocument: true,
-                }),
-              }),
-          );
-      expect(navigateEvent.destination.getState())
-          .toEqual(
-              firstPageEntry.getState(),
-          );
+      expect(navigateEvent).toEqual(
+        jasmine.objectContaining({
+          canIntercept: true,
+          hashChange: false,
+          info: undefined,
+          navigationType: 'traverse',
+          signal: jasmine.any(AbortSignal),
+          userInitiated: false,
+          destination: jasmine.objectContaining({
+            url: firstPageEntry.url!,
+            key: firstPageEntry.key,
+            id: firstPageEntry.id,
+            index: firstPageEntry.index,
+            sameDocument: true,
+          }),
+        }),
+      );
+      expect(navigateEvent.destination.getState()).toEqual(firstPageEntry.getState());
       const committedEntry = await committed;
       expect(committedEntry).toBe(firstPageEntry);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-      expect(currentEntryChangeEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'traverse',
-                from: jasmine.objectContaining({
-                  url: thirdPageEntry.url!,
-                  key: thirdPageEntry.key,
-                  id: thirdPageEntry.id,
-                  index: thirdPageEntry.index,
-                  sameDocument: true,
-                }),
-              }),
-          );
-      expect(currentEntryChangeEvent.from.getState())
-          .toEqual(
-              thirdPageEntry.getState(),
-          );
+      expect(currentEntryChangeEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'traverse',
+          from: jasmine.objectContaining({
+            url: thirdPageEntry.url!,
+            key: thirdPageEntry.key,
+            id: thirdPageEntry.id,
+            index: thirdPageEntry.index,
+            sameDocument: true,
+          }),
+        }),
+      );
+      expect(currentEntryChangeEvent.from.getState()).toEqual(thirdPageEntry.getState());
       expect(locals.popStateEvents.length).toBe(1);
       const popStateEvent = locals.popStateEvents[0];
       expect(popStateEvent.state).toBeNull();
@@ -782,52 +738,42 @@ describe('navigation', () => {
       expect(locals.navigation.canGoBack).toBeTrue();
       expect(locals.navigation.canGoForward).toBeTrue();
 
-      const {committed, finished} = locals.navigation.traverseTo(
-          thirdPageEntry.key,
-      );
+      const {committed, finished} = locals.navigation.traverseTo(thirdPageEntry.key);
       const navigateEvent = await locals.nextNavigateEvent();
-      expect(navigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                canIntercept: true,
-                hashChange: false,
-                info: undefined,
-                navigationType: 'traverse',
-                signal: jasmine.any(AbortSignal),
-                userInitiated: false,
-                destination: jasmine.objectContaining({
-                  url: thirdPageEntry.url!,
-                  key: thirdPageEntry.key,
-                  id: thirdPageEntry.id,
-                  index: thirdPageEntry.index,
-                  sameDocument: true,
-                }),
-              }),
-          );
-      expect(navigateEvent.destination.getState())
-          .toEqual(
-              thirdPageEntry.getState(),
-          );
+      expect(navigateEvent).toEqual(
+        jasmine.objectContaining({
+          canIntercept: true,
+          hashChange: false,
+          info: undefined,
+          navigationType: 'traverse',
+          signal: jasmine.any(AbortSignal),
+          userInitiated: false,
+          destination: jasmine.objectContaining({
+            url: thirdPageEntry.url!,
+            key: thirdPageEntry.key,
+            id: thirdPageEntry.id,
+            index: thirdPageEntry.index,
+            sameDocument: true,
+          }),
+        }),
+      );
+      expect(navigateEvent.destination.getState()).toEqual(thirdPageEntry.getState());
       const committedEntry = await committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-      expect(currentEntryChangeEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'traverse',
-                from: jasmine.objectContaining({
-                  url: firstPageEntry.url!,
-                  key: firstPageEntry.key,
-                  id: firstPageEntry.id,
-                  index: firstPageEntry.index,
-                  sameDocument: true,
-                }),
-              }),
-          );
-      expect(currentEntryChangeEvent.from.getState())
-          .toEqual(
-              firstPageEntry.getState(),
-          );
+      expect(currentEntryChangeEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'traverse',
+          from: jasmine.objectContaining({
+            url: firstPageEntry.url!,
+            key: firstPageEntry.key,
+            id: firstPageEntry.id,
+            index: firstPageEntry.index,
+            sameDocument: true,
+          }),
+        }),
+      );
+      expect(currentEntryChangeEvent.from.getState()).toEqual(firstPageEntry.getState());
       expect(locals.popStateEvents.length).toBe(1);
       const popStateEvent = locals.popStateEvents[0];
       expect(popStateEvent.state).toBeNull();
@@ -845,9 +791,7 @@ describe('navigation', () => {
     it('traverses back with hashchange', async () => {
       const [firstPageEntry] = await setUpEntries({hash: true});
 
-      const {finished, committed} = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
+      const {finished, committed} = locals.navigation.traverseTo(firstPageEntry.key);
       const navigateEvent = await locals.nextNavigateEvent();
       expect(navigateEvent.hashChange).toBeTrue();
       await committed;
@@ -865,9 +809,7 @@ describe('navigation', () => {
       locals.navigationCurrentEntryChangeEvents.length = 0;
       locals.popStateEvents.length = 0;
 
-      const {finished, committed} = locals.navigation.traverseTo(
-          thirdPageEntry.key,
-      );
+      const {finished, committed} = locals.navigation.traverseTo(thirdPageEntry.key);
       const navigateEvent = await locals.nextNavigateEvent();
       expect(navigateEvent.hashChange).toBeTrue();
       await committed;
@@ -881,10 +823,7 @@ describe('navigation', () => {
     it('traverses with info', async () => {
       const [firstPageEntry] = await setUpEntries();
       const info = {test: true};
-      const {finished, committed} = locals.navigation.traverseTo(
-          firstPageEntry.key,
-          {info},
-      );
+      const {finished, committed} = locals.navigation.traverseTo(firstPageEntry.key, {info});
       const navigateEvent = await locals.nextNavigateEvent();
       expect(navigateEvent.info).toBe(info);
       await committed;
@@ -896,14 +835,9 @@ describe('navigation', () => {
     it('traverses with history state', async () => {
       const [firstPageEntry] = setUpEntriesWithHistory();
 
-      const {finished, committed} = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
+      const {finished, committed} = locals.navigation.traverseTo(firstPageEntry.key);
       const navigateEvent = await locals.nextNavigateEvent();
-      expect(navigateEvent.destination.getHistoryState())
-          .toEqual(
-              firstPageEntry.getHistoryState(),
-          );
+      expect(navigateEvent.destination.getHistoryState()).toEqual(firstPageEntry.getHistoryState());
       await committed;
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
@@ -914,18 +848,14 @@ describe('navigation', () => {
 
     it('traverses with handler', async () => {
       const [firstPageEntry] = await setUpEntries();
-      let handlerFinishedResolve!: (
-          value: Promise<undefined>|undefined,
-          ) => void;
+      let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
       const handlerFinished = new Promise<undefined>((resolve) => {
         handlerFinishedResolve = resolve;
       });
       locals.pendingInterceptOptions.push({
         handler: () => handlerFinished,
       });
-      const {committed, finished} = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
+      const {committed, finished} = locals.navigation.traverseTo(firstPageEntry.key);
       const committedEntry = await committed;
       expect(committedEntry).toBe(firstPageEntry);
       expect(locals.navigation.currentEntry).toBe(firstPageEntry);
@@ -942,9 +872,7 @@ describe('navigation', () => {
       locals.pendingInterceptOptions.push({
         handler: () => new Promise(() => {}),
       });
-      const {committed, finished} = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
+      const {committed, finished} = locals.navigation.traverseTo(firstPageEntry.key);
       const navigateEvent = await locals.nextNavigateEvent();
       await committed;
       expect(locals.navigation.currentEntry).toBe(firstPageEntry);
@@ -966,14 +894,13 @@ describe('navigation', () => {
       const [firstPageEntry] = await setUpEntries();
       let handlerFinishedReject!: (reason: unknown) => void;
       locals.pendingInterceptOptions.push({
-        handler: () => new Promise<undefined>((resolve, reject) => {
-          handlerFinishedReject = reject;
-        }),
+        handler: () =>
+          new Promise<undefined>((resolve, reject) => {
+            handlerFinishedReject = reject;
+          }),
       });
 
-      const {committed, finished} = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
+      const {committed, finished} = locals.navigation.traverseTo(firstPageEntry.key);
       const navigateEvent = await locals.nextNavigateEvent();
       await committed;
       expect(locals.navigation.currentEntry).toBe(firstPageEntry);
@@ -1001,49 +928,41 @@ describe('navigation', () => {
       const [, secondPageEntry, thirdPageEntry] = await setUpEntries();
       const {committed, finished} = locals.navigation.back();
       const navigateEvent = await locals.nextNavigateEvent();
-      expect(navigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                canIntercept: true,
-                hashChange: false,
-                info: undefined,
-                navigationType: 'traverse',
-                signal: jasmine.any(AbortSignal),
-                userInitiated: false,
-                destination: jasmine.objectContaining({
-                  url: secondPageEntry.url!,
-                  key: secondPageEntry.key,
-                  id: secondPageEntry.id,
-                  index: secondPageEntry.index,
-                  sameDocument: true,
-                }),
-              }),
-          );
-      expect(navigateEvent.destination.getState())
-          .toEqual(
-              secondPageEntry.getState(),
-          );
+      expect(navigateEvent).toEqual(
+        jasmine.objectContaining({
+          canIntercept: true,
+          hashChange: false,
+          info: undefined,
+          navigationType: 'traverse',
+          signal: jasmine.any(AbortSignal),
+          userInitiated: false,
+          destination: jasmine.objectContaining({
+            url: secondPageEntry.url!,
+            key: secondPageEntry.key,
+            id: secondPageEntry.id,
+            index: secondPageEntry.index,
+            sameDocument: true,
+          }),
+        }),
+      );
+      expect(navigateEvent.destination.getState()).toEqual(secondPageEntry.getState());
       const committedEntry = await committed;
       expect(committedEntry).toBe(secondPageEntry);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-      expect(currentEntryChangeEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'traverse',
-                from: jasmine.objectContaining({
-                  url: thirdPageEntry.url!,
-                  key: thirdPageEntry.key,
-                  id: thirdPageEntry.id,
-                  index: thirdPageEntry.index,
-                  sameDocument: true,
-                }),
-              }),
-          );
-      expect(currentEntryChangeEvent.from.getState())
-          .toEqual(
-              thirdPageEntry.getState(),
-          );
+      expect(currentEntryChangeEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'traverse',
+          from: jasmine.objectContaining({
+            url: thirdPageEntry.url!,
+            key: thirdPageEntry.key,
+            id: thirdPageEntry.id,
+            index: thirdPageEntry.index,
+            sameDocument: true,
+          }),
+        }),
+      );
+      expect(currentEntryChangeEvent.from.getState()).toEqual(thirdPageEntry.getState());
       expect(locals.popStateEvents.length).toBe(1);
       const popStateEvent = locals.popStateEvents[0];
       expect(popStateEvent.state).toBeNull();
@@ -1082,49 +1001,41 @@ describe('navigation', () => {
 
       const {committed, finished} = locals.navigation.forward();
       const navigateEvent = await locals.nextNavigateEvent();
-      expect(navigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                canIntercept: true,
-                hashChange: false,
-                info: undefined,
-                navigationType: 'traverse',
-                signal: jasmine.any(AbortSignal),
-                userInitiated: false,
-                destination: jasmine.objectContaining({
-                  url: secondPageEntry.url!,
-                  key: secondPageEntry.key,
-                  id: secondPageEntry.id,
-                  index: secondPageEntry.index,
-                  sameDocument: true,
-                }),
-              }),
-          );
-      expect(navigateEvent.destination.getState())
-          .toEqual(
-              secondPageEntry.getState(),
-          );
+      expect(navigateEvent).toEqual(
+        jasmine.objectContaining({
+          canIntercept: true,
+          hashChange: false,
+          info: undefined,
+          navigationType: 'traverse',
+          signal: jasmine.any(AbortSignal),
+          userInitiated: false,
+          destination: jasmine.objectContaining({
+            url: secondPageEntry.url!,
+            key: secondPageEntry.key,
+            id: secondPageEntry.id,
+            index: secondPageEntry.index,
+            sameDocument: true,
+          }),
+        }),
+      );
+      expect(navigateEvent.destination.getState()).toEqual(secondPageEntry.getState());
       const committedEntry = await committed;
       expect(committedEntry).toBe(secondPageEntry);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-      expect(currentEntryChangeEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'traverse',
-                from: jasmine.objectContaining({
-                  url: firstPageEntry.url!,
-                  key: firstPageEntry.key,
-                  id: firstPageEntry.id,
-                  index: firstPageEntry.index,
-                  sameDocument: true,
-                }),
-              }),
-          );
-      expect(currentEntryChangeEvent.from.getState())
-          .toEqual(
-              firstPageEntry.getState(),
-          );
+      expect(currentEntryChangeEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'traverse',
+          from: jasmine.objectContaining({
+            url: firstPageEntry.url!,
+            key: firstPageEntry.key,
+            id: firstPageEntry.id,
+            index: firstPageEntry.index,
+            sameDocument: true,
+          }),
+        }),
+      );
+      expect(currentEntryChangeEvent.from.getState()).toEqual(firstPageEntry.getState());
       expect(locals.popStateEvents.length).toBe(1);
       const popStateEvent = locals.popStateEvents[0];
       expect(popStateEvent.state).toBeNull();
@@ -1172,14 +1083,10 @@ describe('navigation', () => {
 
     it('traversal current entry', async () => {
       const {committed, finished} = locals.navigation.traverseTo(
-          locals.navigation.currentEntry.key,
+        locals.navigation.currentEntry.key,
       );
-      await expectAsync(committed).toBeResolvedTo(
-          locals.navigation.currentEntry,
-      );
-      await expectAsync(finished).toBeResolvedTo(
-          locals.navigation.currentEntry,
-      );
+      await expectAsync(committed).toBeResolvedTo(locals.navigation.currentEntry);
+      await expectAsync(finished).toBeResolvedTo(locals.navigation.currentEntry);
       expect(locals.navigateEvents.length).toBe(0);
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(0);
       expect(locals.popStateEvents.length).toBe(0);
@@ -1188,22 +1095,14 @@ describe('navigation', () => {
     it('second traversal to same entry', async () => {
       const [firstPageEntry] = await setUpEntries();
       const traverseResult = locals.navigation.traverseTo(firstPageEntry.key);
-      const duplicateTraverseResult = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
+      const duplicateTraverseResult = locals.navigation.traverseTo(firstPageEntry.key);
       expect(traverseResult.committed).toBe(duplicateTraverseResult.committed);
       expect(traverseResult.finished).toBe(duplicateTraverseResult.finished);
-      await Promise.all([
-        traverseResult.committed,
-        duplicateTraverseResult.committed,
-      ]);
+      await Promise.all([traverseResult.committed, duplicateTraverseResult.committed]);
       // Only one NavigationCurrentEntryChangeEvent for duplicate traversals
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
-      await Promise.all([
-        traverseResult.finished,
-        duplicateTraverseResult.finished,
-      ]);
+      await Promise.all([traverseResult.finished, duplicateTraverseResult.finished]);
       // Only one NavigateEvent for duplicate traversals.
       expect(locals.navigateEvents.length).toBe(1);
     });
@@ -1211,27 +1110,22 @@ describe('navigation', () => {
     it('queues traverses', async () => {
       const [firstPageEntry, secondPageEntry] = await setUpEntries();
 
-      const firstTraverseResult = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
-      const secondTraverseResult = locals.navigation.traverseTo(
-          secondPageEntry.key,
-      );
+      const firstTraverseResult = locals.navigation.traverseTo(firstPageEntry.key);
+      const secondTraverseResult = locals.navigation.traverseTo(secondPageEntry.key);
 
       const firstTraverseCommittedEntry = await firstTraverseResult.committed;
       expect(firstTraverseCommittedEntry).toBe(firstPageEntry);
       expect(locals.navigation.currentEntry).toBe(firstPageEntry);
       expect(locals.navigateEvents.length).toBe(1);
       const firstNavigateEvent = locals.navigateEvents[0];
-      expect(firstNavigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'traverse',
-                destination: jasmine.objectContaining({
-                  key: firstPageEntry.key,
-                }),
-              }),
-          );
+      expect(firstNavigateEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'traverse',
+          destination: jasmine.objectContaining({
+            key: firstPageEntry.key,
+          }),
+        }),
+      );
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
       const firstTraverseFinishedEntry = await firstTraverseResult.finished;
@@ -1243,15 +1137,14 @@ describe('navigation', () => {
       expect(locals.navigation.currentEntry).toBe(secondPageEntry);
       expect(locals.navigateEvents.length).toBe(2);
       const secondNavigateEvent = locals.navigateEvents[1];
-      expect(secondNavigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'traverse',
-                destination: jasmine.objectContaining({
-                  key: secondPageEntry.key,
-                }),
-              }),
-          );
+      expect(secondNavigateEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'traverse',
+          destination: jasmine.objectContaining({
+            key: secondPageEntry.key,
+          }),
+        }),
+      );
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
       expect(locals.popStateEvents.length).toBe(2);
       const secondTraverseFinishedEntry = await secondTraverseResult.finished;
@@ -1264,12 +1157,8 @@ describe('navigation', () => {
     it('queues traverses after navigate', async () => {
       const [firstPageEntry, secondPageEntry] = await setUpEntries();
 
-      const firstTraverseResult = locals.navigation.traverseTo(
-          firstPageEntry.key,
-      );
-      const secondTraverseResult = locals.navigation.traverseTo(
-          secondPageEntry.key,
-      );
+      const firstTraverseResult = locals.navigation.traverseTo(firstPageEntry.key);
+      const secondTraverseResult = locals.navigation.traverseTo(secondPageEntry.key);
       locals.pendingInterceptOptions.push({});
       const navigateResult = locals.navigation.navigate('/page4', {
         state: {page4: true},
@@ -1280,15 +1169,14 @@ describe('navigation', () => {
       expect(locals.navigation.currentEntry).toBe(navigateResultCommittedEntry);
       expect(locals.navigateEvents.length).toBe(1);
       const firstNavigateEvent = locals.navigateEvents[0];
-      expect(firstNavigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'push',
-                destination: jasmine.objectContaining({
-                  url: 'https://test.com/page4',
-                }),
-              }),
-          );
+      expect(firstNavigateEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'push',
+          destination: jasmine.objectContaining({
+            url: 'https://test.com/page4',
+          }),
+        }),
+      );
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
       expect(locals.popStateEvents.length).toBe(1);
       const navigateResultFinishedEntry = await navigateResult.finished;
@@ -1300,15 +1188,14 @@ describe('navigation', () => {
       expect(locals.navigation.currentEntry).toBe(firstPageEntry);
       expect(locals.navigateEvents.length).toBe(2);
       const secondNavigateEvent = locals.navigateEvents[1];
-      expect(secondNavigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'traverse',
-                destination: jasmine.objectContaining({
-                  key: firstPageEntry.key,
-                }),
-              }),
-          );
+      expect(secondNavigateEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'traverse',
+          destination: jasmine.objectContaining({
+            key: firstPageEntry.key,
+          }),
+        }),
+      );
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(2);
       expect(locals.popStateEvents.length).toBe(2);
       const firstTraverseFinishedEntry = await firstTraverseResult.finished;
@@ -1320,15 +1207,14 @@ describe('navigation', () => {
       expect(locals.navigation.currentEntry).toBe(secondPageEntry);
       expect(locals.navigateEvents.length).toBe(3);
       const thirdNavigateEvent = locals.navigateEvents[2];
-      expect(thirdNavigateEvent)
-          .toEqual(
-              jasmine.objectContaining({
-                navigationType: 'traverse',
-                destination: jasmine.objectContaining({
-                  key: secondPageEntry.key,
-                }),
-              }),
-          );
+      expect(thirdNavigateEvent).toEqual(
+        jasmine.objectContaining({
+          navigationType: 'traverse',
+          destination: jasmine.objectContaining({
+            key: secondPageEntry.key,
+          }),
+        }),
+      );
       expect(locals.navigationCurrentEntryChangeEvents.length).toBe(3);
       expect(locals.popStateEvents.length).toBe(3);
       const secondTraverseFinishedEntry = await secondTraverseResult.finished;
@@ -1345,58 +1231,52 @@ describe('navigation', () => {
         locals.navigation.pushState(undefined, '', '/test');
         expect(locals.navigateEvents.length).toBe(1);
         const navigateEvent = locals.navigateEvents[0];
-        expect(navigateEvent)
-            .toEqual(
-                jasmine.objectContaining({
-                  canIntercept: true,
-                  hashChange: false,
-                  info: undefined,
-                  navigationType: 'push',
-                  userInitiated: false,
-                  signal: jasmine.any(AbortSignal),
-                  destination: jasmine.objectContaining({
-                    url: 'https://test.com/test',
-                    key: null,
-                    id: null,
-                    index: -1,
-                    sameDocument: true,
-                  }),
-                }),
-            );
+        expect(navigateEvent).toEqual(
+          jasmine.objectContaining({
+            canIntercept: true,
+            hashChange: false,
+            info: undefined,
+            navigationType: 'push',
+            userInitiated: false,
+            signal: jasmine.any(AbortSignal),
+            destination: jasmine.objectContaining({
+              url: 'https://test.com/test',
+              key: null,
+              id: null,
+              index: -1,
+              sameDocument: true,
+            }),
+          }),
+        );
         expect(navigateEvent.destination.getState()).toBeUndefined();
         expect(navigateEvent.destination.getHistoryState()).toBeUndefined();
         const currentEntry = locals.navigation.currentEntry;
-        expect(currentEntry)
-            .toEqual(
-                jasmine.objectContaining({
-                  url: 'https://test.com/test',
-                  key: '1',
-                  id: '1',
-                  index: 1,
-                  sameDocument: true,
-                }),
-            );
+        expect(currentEntry).toEqual(
+          jasmine.objectContaining({
+            url: 'https://test.com/test',
+            key: '1',
+            id: '1',
+            index: 1,
+            sameDocument: true,
+          }),
+        );
         expect(currentEntry.getState()).toBeUndefined();
         expect(currentEntry.getHistoryState()).toBeUndefined();
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
         const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-        expect(currentEntryChangeEvent)
-            .toEqual(
-                jasmine.objectContaining({
-                  navigationType: 'push',
-                  from: jasmine.objectContaining({
-                    url: initialEntry.url,
-                    key: initialEntry.key,
-                    id: initialEntry.id,
-                    index: initialEntry.index,
-                    sameDocument: initialEntry.sameDocument,
-                  }),
-                }),
-            );
-        expect(currentEntryChangeEvent.from.getState())
-            .toBe(
-                initialEntry.getState(),
-            );
+        expect(currentEntryChangeEvent).toEqual(
+          jasmine.objectContaining({
+            navigationType: 'push',
+            from: jasmine.objectContaining({
+              url: initialEntry.url,
+              key: initialEntry.key,
+              id: initialEntry.id,
+              index: initialEntry.index,
+              sameDocument: initialEntry.sameDocument,
+            }),
+          }),
+        );
+        expect(currentEntryChangeEvent.from.getState()).toBe(initialEntry.getState());
         expect(currentEntryChangeEvent.from.getHistoryState()).toBeNull();
         expect(locals.popStateEvents.length).toBe(0);
       });
@@ -1407,58 +1287,52 @@ describe('navigation', () => {
         locals.navigation.replaceState(null, '', '/test');
         expect(locals.navigateEvents.length).toBe(1);
         const navigateEvent = locals.navigateEvents[0];
-        expect(navigateEvent)
-            .toEqual(
-                jasmine.objectContaining({
-                  canIntercept: true,
-                  hashChange: false,
-                  info: undefined,
-                  navigationType: 'replace',
-                  userInitiated: false,
-                  signal: jasmine.any(AbortSignal),
-                  destination: jasmine.objectContaining({
-                    url: 'https://test.com/test',
-                    key: null,
-                    id: null,
-                    index: -1,
-                    sameDocument: true,
-                  }),
-                }),
-            );
+        expect(navigateEvent).toEqual(
+          jasmine.objectContaining({
+            canIntercept: true,
+            hashChange: false,
+            info: undefined,
+            navigationType: 'replace',
+            userInitiated: false,
+            signal: jasmine.any(AbortSignal),
+            destination: jasmine.objectContaining({
+              url: 'https://test.com/test',
+              key: null,
+              id: null,
+              index: -1,
+              sameDocument: true,
+            }),
+          }),
+        );
         expect(navigateEvent.destination.getState()).toBeUndefined();
         expect(navigateEvent.destination.getHistoryState()).toBeNull();
         const currentEntry = locals.navigation.currentEntry;
-        expect(currentEntry)
-            .toEqual(
-                jasmine.objectContaining({
-                  url: 'https://test.com/test',
-                  key: '0',
-                  id: '1',
-                  index: 0,
-                  sameDocument: true,
-                }),
-            );
+        expect(currentEntry).toEqual(
+          jasmine.objectContaining({
+            url: 'https://test.com/test',
+            key: '0',
+            id: '1',
+            index: 0,
+            sameDocument: true,
+          }),
+        );
         expect(currentEntry.getState()).toBeUndefined();
         expect(currentEntry.getHistoryState()).toBeNull();
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
         const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-        expect(currentEntryChangeEvent)
-            .toEqual(
-                jasmine.objectContaining({
-                  navigationType: 'replace',
-                  from: jasmine.objectContaining({
-                    url: initialEntry.url,
-                    key: initialEntry.key,
-                    id: initialEntry.id,
-                    index: initialEntry.index,
-                    sameDocument: initialEntry.sameDocument,
-                  }),
-                }),
-            );
-        expect(currentEntryChangeEvent.from.getState())
-            .toBe(
-                initialEntry.getState(),
-            );
+        expect(currentEntryChangeEvent).toEqual(
+          jasmine.objectContaining({
+            navigationType: 'replace',
+            from: jasmine.objectContaining({
+              url: initialEntry.url,
+              key: initialEntry.key,
+              id: initialEntry.id,
+              index: initialEntry.index,
+              sameDocument: initialEntry.sameDocument,
+            }),
+          }),
+        );
+        expect(currentEntryChangeEvent.from.getState()).toBe(initialEntry.getState());
         expect(currentEntryChangeEvent.from.getHistoryState()).toBeNull();
         expect(locals.popStateEvents.length).toBe(0);
       });
@@ -1493,10 +1367,7 @@ describe('navigation', () => {
         const navigateEvent = locals.navigateEvents[0];
         expect(navigateEvent.destination.url).toBe('https://test.com/#test');
         expect(navigateEvent.hashChange).toBeTrue();
-        expect(locals.navigation.currentEntry.url)
-            .toBe(
-                'https://test.com/#test',
-            );
+        expect(locals.navigation.currentEntry.url).toBe('https://test.com/#test');
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
         expect(locals.popStateEvents.length).toBe(0);
       });
@@ -1507,18 +1378,13 @@ describe('navigation', () => {
         const navigateEvent = locals.navigateEvents[0];
         expect(navigateEvent.destination.url).toBe('https://test.com/#test');
         expect(navigateEvent.hashChange).toBeTrue();
-        expect(locals.navigation.currentEntry.url)
-            .toBe(
-                'https://test.com/#test',
-            );
+        expect(locals.navigation.currentEntry.url).toBe('https://test.com/#test');
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
         expect(locals.popStateEvents.length).toBe(0);
       });
 
       it('push URL with handler', async () => {
-        let handlerFinishedResolve!: (
-            value: Promise<undefined>|undefined,
-            ) => void;
+        let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
         const handlerFinished = new Promise<undefined>((resolve) => {
           handlerFinishedResolve = resolve;
         });
@@ -1541,9 +1407,7 @@ describe('navigation', () => {
       });
 
       it('replace URL with handler', async () => {
-        let handlerFinishedResolve!: (
-            value: Promise<undefined>|undefined,
-            ) => void;
+        let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
         const handlerFinished = new Promise<undefined>((resolve) => {
           handlerFinishedResolve = resolve;
         });
@@ -1653,55 +1517,45 @@ describe('navigation', () => {
         expect(locals.navigation.canGoForward).toBeFalse();
         locals.navigation.go(-2);
         const navigateEvent = await locals.nextNavigateEvent();
-        expect(navigateEvent)
-            .toEqual(
-                jasmine.objectContaining({
-                  canIntercept: true,
-                  hashChange: false,
-                  info: undefined,
-                  navigationType: 'traverse',
-                  signal: jasmine.any(AbortSignal),
-                  userInitiated: false,
-                  destination: jasmine.objectContaining({
-                    url: firstPageEntry.url!,
-                    key: firstPageEntry.key,
-                    id: firstPageEntry.id,
-                    index: firstPageEntry.index,
-                    sameDocument: true,
-                  }),
-                }),
-            );
-        expect(navigateEvent.destination.getState())
-            .toEqual(
-                firstPageEntry.getState(),
-            );
-        expect(navigateEvent.destination.getHistoryState())
-            .toEqual(
-                firstPageEntry.getHistoryState(),
-            );
+        expect(navigateEvent).toEqual(
+          jasmine.objectContaining({
+            canIntercept: true,
+            hashChange: false,
+            info: undefined,
+            navigationType: 'traverse',
+            signal: jasmine.any(AbortSignal),
+            userInitiated: false,
+            destination: jasmine.objectContaining({
+              url: firstPageEntry.url!,
+              key: firstPageEntry.key,
+              id: firstPageEntry.id,
+              index: firstPageEntry.index,
+              sameDocument: true,
+            }),
+          }),
+        );
+        expect(navigateEvent.destination.getState()).toEqual(firstPageEntry.getState());
+        expect(navigateEvent.destination.getHistoryState()).toEqual(
+          firstPageEntry.getHistoryState(),
+        );
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
         const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-        expect(currentEntryChangeEvent)
-            .toEqual(
-                jasmine.objectContaining({
-                  navigationType: 'traverse',
-                  from: jasmine.objectContaining({
-                    url: thirdPageEntry.url!,
-                    key: thirdPageEntry.key,
-                    id: thirdPageEntry.id,
-                    index: thirdPageEntry.index,
-                    sameDocument: true,
-                  }),
-                }),
-            );
-        expect(currentEntryChangeEvent.from.getState())
-            .toEqual(
-                thirdPageEntry.getState(),
-            );
-        expect(currentEntryChangeEvent.from.getHistoryState())
-            .toEqual(
-                thirdPageEntry.getHistoryState(),
-            );
+        expect(currentEntryChangeEvent).toEqual(
+          jasmine.objectContaining({
+            navigationType: 'traverse',
+            from: jasmine.objectContaining({
+              url: thirdPageEntry.url!,
+              key: thirdPageEntry.key,
+              id: thirdPageEntry.id,
+              index: thirdPageEntry.index,
+              sameDocument: true,
+            }),
+          }),
+        );
+        expect(currentEntryChangeEvent.from.getState()).toEqual(thirdPageEntry.getState());
+        expect(currentEntryChangeEvent.from.getHistoryState()).toEqual(
+          thirdPageEntry.getHistoryState(),
+        );
         expect(locals.popStateEvents.length).toBe(1);
         const popStateEvent = locals.popStateEvents[0];
         expect(popStateEvent.state).toBeNull();
@@ -1722,47 +1576,39 @@ describe('navigation', () => {
 
         locals.navigation.go(2);
         const navigateEvent = await locals.nextNavigateEvent();
-        expect(navigateEvent)
-            .toEqual(
-                jasmine.objectContaining({
-                  canIntercept: true,
-                  hashChange: false,
-                  info: undefined,
-                  navigationType: 'traverse',
-                  signal: jasmine.any(AbortSignal),
-                  userInitiated: false,
-                  destination: jasmine.objectContaining({
-                    url: thirdPageEntry.url!,
-                    key: thirdPageEntry.key,
-                    id: thirdPageEntry.id,
-                    index: thirdPageEntry.index,
-                    sameDocument: true,
-                  }),
-                }),
-            );
-        expect(navigateEvent.destination.getState())
-            .toEqual(
-                thirdPageEntry.getState(),
-            );
+        expect(navigateEvent).toEqual(
+          jasmine.objectContaining({
+            canIntercept: true,
+            hashChange: false,
+            info: undefined,
+            navigationType: 'traverse',
+            signal: jasmine.any(AbortSignal),
+            userInitiated: false,
+            destination: jasmine.objectContaining({
+              url: thirdPageEntry.url!,
+              key: thirdPageEntry.key,
+              id: thirdPageEntry.id,
+              index: thirdPageEntry.index,
+              sameDocument: true,
+            }),
+          }),
+        );
+        expect(navigateEvent.destination.getState()).toEqual(thirdPageEntry.getState());
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
         const currentEntryChangeEvent = locals.navigationCurrentEntryChangeEvents[0];
-        expect(currentEntryChangeEvent)
-            .toEqual(
-                jasmine.objectContaining({
-                  navigationType: 'traverse',
-                  from: jasmine.objectContaining({
-                    url: firstPageEntry.url!,
-                    key: firstPageEntry.key,
-                    id: firstPageEntry.id,
-                    index: firstPageEntry.index,
-                    sameDocument: true,
-                  }),
-                }),
-            );
-        expect(currentEntryChangeEvent.from.getState())
-            .toEqual(
-                firstPageEntry.getState(),
-            );
+        expect(currentEntryChangeEvent).toEqual(
+          jasmine.objectContaining({
+            navigationType: 'traverse',
+            from: jasmine.objectContaining({
+              url: firstPageEntry.url!,
+              key: firstPageEntry.key,
+              id: firstPageEntry.id,
+              index: firstPageEntry.index,
+              sameDocument: true,
+            }),
+          }),
+        );
+        expect(currentEntryChangeEvent.from.getState()).toEqual(firstPageEntry.getState());
         expect(locals.popStateEvents.length).toBe(1);
         const popStateEvent = locals.popStateEvents[0];
         expect(popStateEvent.state).toBeNull();
@@ -1789,10 +1635,9 @@ describe('navigation', () => {
 
         locals.navigation.go(-2);
         const navigateEvent = await locals.nextNavigateEvent();
-        expect(navigateEvent.destination.getHistoryState())
-            .toEqual(
-                firstPageEntry.getHistoryState(),
-            );
+        expect(navigateEvent.destination.getHistoryState()).toEqual(
+          firstPageEntry.getHistoryState(),
+        );
         expect(locals.navigationCurrentEntryChangeEvents.length).toBe(1);
         expect(locals.popStateEvents.length).toBe(1);
         const popStateEvent = locals.popStateEvents[0];
@@ -1815,9 +1660,7 @@ describe('navigation', () => {
 
       it('go with handler', async () => {
         const [firstPageEntry] = await setUpEntries();
-        let handlerFinishedResolve!: (
-            value: Promise<undefined>|undefined,
-            ) => void;
+        let handlerFinishedResolve!: (value: Promise<undefined> | undefined) => void;
         const handlerFinished = new Promise<undefined>((resolve) => {
           handlerFinishedResolve = resolve;
         });
@@ -1856,9 +1699,10 @@ describe('navigation', () => {
         const [firstPageEntry] = await setUpEntries();
         let handlerFinishedReject!: (reason: unknown) => void;
         locals.pendingInterceptOptions.push({
-          handler: () => new Promise<undefined>((resolve, reject) => {
-            handlerFinishedReject = reject;
-          }),
+          handler: () =>
+            new Promise<undefined>((resolve, reject) => {
+              handlerFinishedReject = reject;
+            }),
         });
 
         locals.navigation.go(-2);

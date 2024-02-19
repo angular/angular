@@ -78,7 +78,7 @@ function generateTemporaries(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>):
             .map(name => ir.createStatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name))));
     opCount++;
 
-    if (op.kind === ir.OpKind.Listener) {
+    if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
       op.handlerOps.prepend(generateTemporaries(op.handlerOps) as ir.UpdateOp[]);
     }
   }

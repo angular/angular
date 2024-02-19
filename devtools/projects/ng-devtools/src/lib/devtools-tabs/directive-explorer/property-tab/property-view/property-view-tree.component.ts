@@ -11,11 +11,24 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 import {FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyDataSource} from '../../property-resolver/property-data-source';
+import {MatIcon} from '@angular/material/icon';
+import {PropertyEditorComponent} from './property-editor.component';
+import {PropertyPreviewComponent} from './property-preview.component';
+import {MatTree, MatTreeNode, MatTreeNodeDef} from '@angular/material/tree';
 
 @Component({
   selector: 'ng-property-view-tree',
   templateUrl: './property-view-tree.component.html',
   styleUrls: ['./property-view-tree.component.scss'],
+  standalone: true,
+  imports: [
+    MatTree,
+    MatTreeNode,
+    MatTreeNodeDef,
+    PropertyPreviewComponent,
+    PropertyEditorComponent,
+    MatIcon,
+  ],
 })
 export class PropertyViewTreeComponent {
   @Input({required: true}) dataSource!: PropertyDataSource;
@@ -41,7 +54,7 @@ export class PropertyViewTreeComponent {
     this.treeControl.expand(node);
   }
 
-  handleUpdate(node: FlatNode, newValue: any): void {
+  handleUpdate(node: FlatNode, newValue: unknown): void {
     this.updateValue.emit({
       node,
       newValue,

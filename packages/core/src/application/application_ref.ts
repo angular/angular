@@ -12,7 +12,6 @@ import {setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signal
 import {Observable} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
-import {getCompilerFacade, JitCompilerUsage} from '../compiler/compiler_facade';
 import {Console} from '../console';
 import {inject} from '../di';
 import {Injectable} from '../di/injectable';
@@ -20,21 +19,20 @@ import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
-import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
+import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../errors';
 import {Type} from '../interface/type';
-import {COMPILER_OPTIONS, CompilerOptions} from '../linker/compiler';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
-import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
+import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
-import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from '../metadata/resource_loading';
 import {PendingTasks} from '../pending_tasks';
-import {assertNgModuleType} from '../render3/assert';
+import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
-import {setJitOptions} from '../render3/jit/jit_options';
-import {NgModuleFactory as R3NgModuleFactory} from '../render3/ng_module_ref';
+import {ChangeDetectionMode, MAXIMUM_REFRESH_RERUNS, detectChangesInternal} from '../render3/instructions/change_detection';
+import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
+import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
 import {TESTABILITY} from '../testability/testability';
 import {isPromise} from '../util/lang';
@@ -53,56 +51,8 @@ import {ApplicationInitStatus} from './application_init';
  * @publicApi
  */
 export const APP_BOOTSTRAP_LISTENER =
-    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>('appBootstrapListener');
-
-export function compileNgModuleFactory<M>(
-    injector: Injector, options: CompilerOptions,
-    moduleType: Type<M>): Promise<NgModuleFactory<M>> {
-  ngDevMode && assertNgModuleType(moduleType);
-
-  const moduleFactory = new R3NgModuleFactory(moduleType);
-
-  // All of the logic below is irrelevant for AOT-compiled code.
-  if (typeof ngJitMode !== 'undefined' && !ngJitMode) {
-    return Promise.resolve(moduleFactory);
-  }
-
-  const compilerOptions = injector.get(COMPILER_OPTIONS, []).concat(options);
-
-  // Configure the compiler to use the provided options. This call may fail when multiple modules
-  // are bootstrapped with incompatible options, as a component can only be compiled according to
-  // a single set of options.
-  setJitOptions({
-    defaultEncapsulation: _lastDefined(compilerOptions.map(opts => opts.defaultEncapsulation)),
-    preserveWhitespaces: _lastDefined(compilerOptions.map(opts => opts.preserveWhitespaces)),
-  });
-
-  if (isComponentResourceResolutionQueueEmpty()) {
-    return Promise.resolve(moduleFactory);
-  }
-
-  const compilerProviders = compilerOptions.flatMap((option) => option.providers ?? []);
-
-  // In case there are no compiler providers, we just return the module factory as
-  // there won't be any resource loader. This can happen with Ivy, because AOT compiled
-  // modules can be still passed through "bootstrapModule". In that case we shouldn't
-  // unnecessarily require the JIT compiler.
-  if (compilerProviders.length === 0) {
-    return Promise.resolve(moduleFactory);
-  }
-
-  const compiler = getCompilerFacade({
-    usage: JitCompilerUsage.Decorator,
-    kind: 'NgModule',
-    type: moduleType,
-  });
-  const compilerInjector = Injector.create({providers: compilerProviders});
-  const resourceLoader = compilerInjector.get(compiler.ResourceLoader);
-  // The resource loader can also return a string while the "resolveComponentResources"
-  // always expects a promise. Therefore we need to wrap the returned value in a promise.
-  return resolveComponentResources(url => Promise.resolve(resourceLoader.get(url)))
-      .then(() => moduleFactory);
-}
+    new InjectionToken<ReadonlyArray<(compRef: ComponentRef<any>) => void>>(
+        ngDevMode ? 'appBootstrapListener' : '');
 
 export function publishDefaultGlobalUtils() {
   ngDevMode && _publishDefaultGlobalUtils();
@@ -323,6 +273,7 @@ export class ApplicationRef {
   /** @internal */
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+  private readonly afterRenderEffectManager = inject(AfterRenderEventManager);
 
   /**
    * Indicates whether this instance was destroyed.
@@ -483,13 +434,12 @@ export class ApplicationRef {
 
     if (!initStatus.done) {
       const standalone = !isComponentFactory && isStandalone(componentOrFactory);
-      const errorMessage =
+      const errorMessage = (typeof ngDevMode === 'undefined' || ngDevMode) &&
           'Cannot bootstrap as there are still asynchronous initializers running.' +
-          (standalone ? '' :
-                        ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
-      throw new RuntimeError(
-          RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING,
-          (typeof ngDevMode === 'undefined' || ngDevMode) && errorMessage);
+              (standalone ?
+                   '' :
+                   ' Bootstrap components in the `ngDoBootstrap` method of the root module.');
+      throw new RuntimeError(RuntimeErrorCode.ASYNC_INITIALIZERS_STILL_RUNNING, errorMessage);
     }
 
     let componentFactory: ComponentFactory<C>;
@@ -544,10 +494,10 @@ export class ApplicationRef {
 
     try {
       this._runningTick = true;
-      for (let view of this._views) {
-        view.detectChanges();
-      }
-      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+
+      this.detectChangesInAttachedViews();
+
+      if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
         for (let view of this._views) {
           view.checkNoChanges();
         }
@@ -558,6 +508,53 @@ export class ApplicationRef {
     } finally {
       this._runningTick = false;
     }
+  }
+
+  private detectChangesInAttachedViews() {
+    let runs = 0;
+    do {
+      if (runs === MAXIMUM_REFRESH_RERUNS) {
+        throw new RuntimeError(
+            RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+            ngDevMode &&
+                'Changes in afterRender or afterNextRender hooks caused infinite change detection while refresh views.');
+      }
+
+      const isFirstPass = runs === 0;
+      for (let {_lView, notifyErrorHandler} of this._views) {
+        // When re-checking, only check views which actually need it.
+        if (!isFirstPass && !shouldRecheckView(_lView)) {
+          continue;
+        }
+        this.detectChangesInView(_lView, notifyErrorHandler, isFirstPass);
+      }
+      this.afterRenderEffectManager.execute();
+
+      runs++;
+    } while (this._views.some(({_lView}) => shouldRecheckView(_lView)));
+  }
+
+  private detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
+    let mode: ChangeDetectionMode;
+    if (isFirstPass) {
+      // The first pass is always in Global mode, which includes `CheckAlways` views.
+      mode = ChangeDetectionMode.Global;
+      // Add `RefreshView` flag to ensure this view is refreshed if not already dirty.
+      // `RefreshView` flag is used intentionally over `Dirty` because it gets cleared before
+      // executing any of the actual refresh code while the `Dirty` flag doesn't get cleared
+      // until the end of the refresh. Using `RefreshView` prevents creating a potential
+      // difference in the state of the LViewFlags during template execution.
+      lView[FLAGS] |= LViewFlags.RefreshView;
+    } else if (lView[FLAGS] & LViewFlags.Dirty) {
+      // The root view has been explicitly marked for check, so check it in Global mode.
+      mode = ChangeDetectionMode.Global;
+    } else {
+      // The view has not been marked for check, but contains a view marked for refresh
+      // (likely via a signal). Start this change detection in Targeted mode to skip the root
+      // view and check just the view(s) that need refreshed.
+      mode = ChangeDetectionMode.Targeted;
+    }
+    detectChangesInternal(lView, notifyErrorHandler, mode);
   }
 
   /**
@@ -681,16 +678,6 @@ export function remove<T>(list: T[], el: T): void {
   }
 }
 
-function _lastDefined<T>(args: T[]): T|undefined {
-  for (let i = args.length - 1; i >= 0; i--) {
-    if (args[i] !== undefined) {
-      return args[i];
-    }
-  }
-  return undefined;
-}
-
-
 let whenStableStore: WeakMap<ApplicationRef, Promise<void>>|undefined;
 /**
  * Returns a Promise that resolves when the application becomes stable after this method is called
@@ -711,4 +698,12 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
   applicationRef.onDestroy(() => whenStableStore?.delete(applicationRef));
 
   return whenStablePromise;
+}
+
+
+function shouldRecheckView(view: LView): boolean {
+  return requiresRefreshOrTraversal(view);
+  // TODO(atscott): We need to support rechecking views marked dirty again in afterRender hooks
+  // in order to support the transition to zoneless. b/308152025
+  /* || !!(view[FLAGS] & LViewFlags.Dirty); */
 }

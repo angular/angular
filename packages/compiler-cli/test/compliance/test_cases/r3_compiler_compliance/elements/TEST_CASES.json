@@ -265,6 +265,17 @@
           "failureMessage": "Incorrect generated template."
         }
       ]
+    },
+    {
+      "description": "should support namespaces on attributes",
+      "inputFiles": [
+        "namespace_attr.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
     }
   ]
 }

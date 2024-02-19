@@ -12,7 +12,6 @@ import {Provider} from '@angular/core';
 import {HttpTestingController} from './api';
 import {HttpClientTestingBackend} from './backend';
 
-
 export function provideHttpClientTesting(): Provider[] {
   return [
     HttpClientTestingBackend,

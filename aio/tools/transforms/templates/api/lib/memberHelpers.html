@@ -19,8 +19,19 @@
   <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ doc.constructorDoc.anchor | urlencode $}">{$ renderMemberSyntax(doc.constructorDoc, 1) $}</a>{% endif -%}
   {% for member in doc.properties %}{% if not member.internal %}
   <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
-  {% for member in doc.methods %}{% if not member.internal %}
-  <a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">{$ renderMemberSyntax(member, 1) $}</a>{% endif %}{% endfor -%}
+  {%- for member in doc.methods -%}
+    {%- if not member.internal -%}
+      <br /><a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">
+        {$- renderMemberSyntax(member, 1) -$}
+      </a>
+
+      {%- for overload in member.overloads -%}
+        <br/><a class="code-anchor{% if member.deprecated %} deprecated-api-item{% endif %}" href="{$ doc.path $}#{$ member.anchor | urlencode $}">
+          {$- renderMemberSyntax(overload, 1) -$}
+        </a>
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
 
   {%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
 

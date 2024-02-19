@@ -12,15 +12,22 @@ import {ProfilerFrame} from 'protocol';
 import {Subscription} from 'rxjs';
 
 import {Theme, ThemeService} from '../../../../theme-service';
-import {FlamegraphFormatter, FlamegraphNode, ROOT_LEVEL_ELEMENT_LABEL,} from '../record-formatter/flamegraph-formatter/flamegraph-formatter';
+import {
+  FlamegraphFormatter,
+  FlamegraphNode,
+  ROOT_LEVEL_ELEMENT_LABEL,
+} from '../record-formatter/flamegraph-formatter/flamegraph-formatter';
 
 import {formatDirectiveProfile} from './profile-formatter';
 import {SelectedDirective, SelectedEntry} from './timeline-visualizer.component';
+import {NgxFlamegraphModule} from 'ngx-flamegraph';
 
 @Component({
   selector: 'ng-flamegraph-visualizer',
   templateUrl: './flamegraph-visualizer.component.html',
   styleUrls: ['./flamegraph-visualizer.component.scss'],
+  standalone: true,
+  imports: [NgxFlamegraphModule],
 })
 export class FlamegraphVisualizerComponent implements OnInit, OnDestroy {
   profilerBars: FlamegraphNode[] = [];
@@ -52,16 +59,18 @@ export class FlamegraphVisualizerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this._currentThemeSubscription = this.themeService.currentTheme.subscribe((theme) => {
       this.currentTheme = theme;
-      this.colors = theme === 'dark-theme' ? {
-        hue: [210, 90],
-        saturation: [90, 90],
-        lightness: [25, 25],
-      } :
-                                             {
-                                               hue: [50, 15],
-                                               saturation: [100, 100],
-                                               lightness: [75, 75],
-                                             };
+      this.colors =
+        theme === 'dark-theme'
+          ? {
+              hue: [210, 90],
+              saturation: [90, 90],
+              lightness: [25, 25],
+            }
+          : {
+              hue: [50, 15],
+              saturation: [100, 100],
+              lightness: [75, 75],
+            };
       this._selectFrame();
     });
   }
@@ -89,7 +98,8 @@ export class FlamegraphVisualizerComponent implements OnInit, OnDestroy {
   }
 
   private _selectFrame(): void {
-    this.profilerBars =
-        [this._formatter.formatFrame(this._frame, this._showChangeDetection, this.currentTheme)];
+    this.profilerBars = [
+      this._formatter.formatFrame(this._frame, this._showChangeDetection, this.currentTheme),
+    ];
   }
 }

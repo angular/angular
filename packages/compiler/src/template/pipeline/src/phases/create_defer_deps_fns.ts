@@ -20,12 +20,17 @@ export function createDeferDepsFns(job: ComponentCompilationJob): void {
         if (op.metadata.deps.length === 0) {
           continue;
         }
+        if (op.resolverFn !== null) {
+          continue;
+        }
         const dependencies: o.Expression[] = [];
         for (const dep of op.metadata.deps) {
           if (dep.isDeferrable) {
             // Callback function, e.g. `m () => m.MyCmp;`.
             const innerFn = o.arrowFn(
-                [new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(dep.symbolName));
+                // Default imports are always accessed through the `default` property.
+                [new o.FnParam('m', o.DYNAMIC_TYPE)],
+                o.variable('m').prop(dep.isDefaultImport ? 'default' : dep.symbolName));
 
             // Dynamic import, e.g. `import('./a').then(...)`.
             const importExpr =
@@ -41,8 +46,9 @@ export function createDeferDepsFns(job: ComponentCompilationJob): void {
           throw new Error(
               'AssertionError: slot must be assigned bfore extracting defer deps functions');
         }
+        const fullPathName = unit.fnName?.replace(`_Template`, ``);
         op.resolverFn = job.pool.getSharedFunctionReference(
-            depsFnExpr, `${job.componentName}_Defer_${op.handle.slot}_DepsFn`,
+            depsFnExpr, `${fullPathName}_Defer_${op.handle.slot}_DepsFn`,
             /* Don't use unique names for TDB compatibility */ false);
       }
     }

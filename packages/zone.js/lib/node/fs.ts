@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {patchMacroTask} from '../common/utils';
+import {patchMacroTask, zoneSymbol} from '../common/utils';
 
-Zone.__load_patch('fs', () => {
+Zone.__load_patch('fs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   let fs: any;
   try {
     fs = require('fs');
   } catch (err) {
   }
+
+  if (!fs) return;
 
   // watch, watchFile, unwatchFile has been patched
   // because EventEmitter has been patched
@@ -25,17 +27,28 @@ Zone.__load_patch('fs', () => {
     'symlink', 'truncate',   'unlink',   'utimes',   'write',     'writeFile',
   ];
 
-  if (fs) {
-    TO_PATCH_MACROTASK_METHODS.filter(name => !!fs[name] && typeof fs[name] === 'function')
-        .forEach(name => {
-          patchMacroTask(fs, name, (self: any, args: any[]) => {
-            return {
-              name: 'fs.' + name,
-              args: args,
-              cbIdx: args.length > 0 ? args.length - 1 : -1,
-              target: self
-            };
-          });
+  TO_PATCH_MACROTASK_METHODS.filter(name => !!fs[name] && typeof fs[name] === 'function')
+      .forEach(name => {
+        patchMacroTask(fs, name, (self: any, args: any[]) => {
+          return {
+            name: 'fs.' + name,
+            args: args,
+            cbIdx: args.length > 0 ? args.length - 1 : -1,
+            target: self
+          };
         });
+      });
+
+  const realpathOriginalDelegate = fs.realpath?.[api.symbol('OriginalDelegate')];
+  // This is the only specific method that should be additionally patched because the previous
+  // `patchMacroTask` has overridden the `realpath` function and its `native` property.
+  if (realpathOriginalDelegate?.native) {
+    fs.realpath.native = realpathOriginalDelegate.native;
+    patchMacroTask(fs.realpath, 'native', (self, args) => ({
+      args,
+      target: self,
+      cbIdx: args.length > 0 ? args.length - 1 : -1,
+      name: 'fs.realpath.native',
+    }));
   }
 });

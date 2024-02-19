@@ -120,7 +120,32 @@ export interface TrackByFunction<T> {
   <U extends T>(index: number, item: T&U): any;
 }
 
-export type Signal<T> = () => T;
+export const SIGNAL = /* @__PURE__ */ Symbol('SIGNAL');
+
+export type Signal<T> = (() => T)&{
+  [SIGNAL]: unknown;
+};
+
+/**
+ * Symbol used to tell distinguish `WritableSignal` from other non-writable signals and functions.
+ */
+const WRITABLE_SIGNAL = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
+
+export interface WritableSignal<T> extends Signal<T> {
+  [WRITABLE_SIGNAL]: T;
+  set(value: T): void;
+  update(updateFn: (value: T) => T): void;
+  asReadonly(): Signal<T>;
+}
+
+// Note: needs to be kept in sync with the copies in `render3/reactivity/signal.ts`.
+export function ɵunwrapWritableSignal<T>(value: T|{[WRITABLE_SIGNAL]: T}): T {
+  return null!;
+}
+
+export function signal<T>(initialValue: T): WritableSignal<T> {
+  return null!;
+}
 
 /**
  * -------
@@ -141,41 +166,70 @@ export type InputOptionsWithTransform<ReadT, WriteT> =
 const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
 export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
 
-export interface InputSignal<ReadT, WriteT = ReadT> extends Signal<ReadT> {
+export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
   [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
   [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
 }
+export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {}
 
-export function inputFunction<ReadT>(): InputSignal<ReadT|undefined>;
-export function inputFunction<ReadT>(
-    initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-export function inputFunction<ReadT, WriteT>(
-    initialValue: ReadT,
-    opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
-export function inputFunction<ReadT, WriteT>(
-    _initialValue?: ReadT,
-    _opts?: InputOptions<ReadT, WriteT>): InputSignal<ReadT|undefined, WriteT> {
-  return null!;
+export interface InputFunction {
+  <ReadT>(): InputSignal<ReadT|undefined>;
+  <ReadT>(initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
+  <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>):
+      InputSignalWithTransform<ReadT, WriteT>;
+
+  required: {
+    <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;<ReadT, WriteT>(
+        opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
+  };
 }
 
-export function inputRequiredFunction<ReadT>(opts?: InputOptionsWithoutTransform<ReadT>):
-    InputSignal<ReadT>;
-export function inputRequiredFunction<ReadT, WriteT>(
-    opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignal<ReadT, WriteT>;
-export function inputRequiredFunction<ReadT, WriteT>(_opts?: InputOptions<ReadT, WriteT>):
-    InputSignal<ReadT, WriteT> {
-  return null!;
-}
-
-export type InputFunction = typeof inputFunction&{required: typeof inputRequiredFunction};
-
-export const input: InputFunction = (() => {
-  (inputFunction as any).required = inputRequiredFunction;
-  return inputFunction as InputFunction;
-})();
+export const input: InputFunction = null!;
 
 export type ɵUnwrapInputSignalWriteType<Field> =
-    Field extends InputSignal<unknown, infer WriteT>? WriteT : never;
+    Field extends InputSignalWithTransform<unknown, infer WriteT>? WriteT : never;
 export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
   [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
 };
+
+export interface ModelOptions {
+  alias?: string;
+}
+
+export interface ModelSignal<T> extends WritableSignal<T> {
+  [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
+  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
+  subscribe(callback: (value: T) => void): () => void;
+}
+
+export interface ModelFunction {
+  <T>(): ModelSignal<T|undefined>;
+  <T>(initialValue: T, opts?: ModelOptions): ModelSignal<T>;
+  required<T>(opts?: ModelOptions): ModelSignal<T>;
+}
+
+export const model: ModelFunction = null!;
+
+/** Signal-based queries */
+export const viewChild: any = null!;
+export const viewChildren: any = null!;
+export const contentChild: any = null!;
+export const contentChildren: any = null!;
+
+export interface OutputEmitter<T> {
+  emit(value: T): void;
+  subscribe(listener: (v: T) => void): void;
+}
+
+/** Initializer-based output() API. */
+export function output<T>(_opts?: {alias?: string}): OutputEmitter<T> {
+  return null!;
+}
+
+export interface CreateComputedOptions<T> {
+  equal?: (a: T, b: T) => boolean;
+}
+
+export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
+  return null!;
+}

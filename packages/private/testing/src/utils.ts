@@ -72,8 +72,11 @@ export function withHead<T extends Function>(html: string, blockFn: T): T {
  * performs the necessary setup of the environment.
  */
 function wrapTestFn<T extends Function>(
-    elementGetter: () => HTMLElement, html: string, blockFn: T): T {
-  return function(done: DoneFn) {
+  elementGetter: () => HTMLElement,
+  html: string,
+  blockFn: T,
+): T {
+  return function (done: DoneFn) {
     if (typeof blockFn === 'function') {
       elementGetter().innerHTML = html;
       const blockReturn = blockFn();
@@ -101,36 +104,39 @@ function wrapTestFn<T extends Function>(
  * ```
  */
 export function expectPerfCounters(expectedCounters: Partial<NgDevModePerfCounters>): void {
-  Object.keys(expectedCounters).forEach(key => {
+  Object.keys(expectedCounters).forEach((key) => {
     const expected = (expectedCounters as any)[key];
     const actual = (ngDevMode as any)[key];
     expect(actual).toBe(expected, `ngDevMode.${key}`);
   });
 }
 
-let savedDocument: Document|undefined = undefined;
-let savedRequestAnimationFrame: ((callback: FrameRequestCallback) => number)|undefined = undefined;
-let savedNode: typeof Node|undefined = undefined;
+let savedDocument: Document | undefined = undefined;
+let savedRequestAnimationFrame: ((callback: FrameRequestCallback) => number) | undefined =
+  undefined;
+let savedNode: typeof Node | undefined = undefined;
 let requestAnimationFrameCount = 0;
-let domino: typeof import('../../../platform-server/src/bundled-domino')['default']|null|undefined =
-    undefined;
+let domino:
+  | (typeof import('../../../platform-server/src/bundled-domino'))['default']
+  | null
+  | undefined = undefined;
 
-async function loadDominoOrNull():
-    Promise<typeof import('../../../platform-server/src/bundled-domino')['default']|null> {
+async function loadDominoOrNull(): Promise<
+  (typeof import('../../../platform-server/src/bundled-domino'))['default'] | null
+> {
   if (domino !== undefined) {
     return domino;
   }
 
   try {
-    return domino = (await import('../../../platform-server/src/bundled-domino')).default;
+    return (domino = (await import('../../../platform-server/src/bundled-domino')).default);
   } catch {
-    return domino = null;
+    return (domino = null);
   }
 }
 
 /**
  * Ensure that global has `Document` if we are in node.js
- * @publicApi
  */
 export async function ensureDocument(): Promise<void> {
   if ((global as any).isBrowser) {
@@ -147,18 +153,14 @@ export async function ensureDocument(): Promise<void> {
   savedDocument = (global as any).document;
   (global as any).window = window;
   (global as any).document = window.document;
-  // Trick to avoid Event patching from
-  // https://github.com/angular/angular/blob/7cf5e95ac9f0f2648beebf0d5bd9056b79946970/packages/platform-browser/src/dom/events/dom_events.ts#L112-L132
-  // It fails with Domino with TypeError: Cannot assign to read only property
-  // 'stopImmediatePropagation' of object '#<Event>'
-  (global as any).Event = null;
+  (global as any).Event = domino.impl.Event;
   savedNode = (global as any).Node;
   // Domino types do not type `impl`, but it's a documented field.
   // See: https://www.npmjs.com/package/domino#usage.
-  (global as any).Node = (domino as typeof domino&{impl: any}).impl.Node;
+  (global as any).Node = (domino as typeof domino & {impl: any}).impl.Node;
 
   savedRequestAnimationFrame = (global as any).requestAnimationFrame;
-  (global as any).requestAnimationFrame = function(cb: () => void): number {
+  (global as any).requestAnimationFrame = function (cb: () => void): number {
     setImmediate(cb);
     return requestAnimationFrameCount++;
   };

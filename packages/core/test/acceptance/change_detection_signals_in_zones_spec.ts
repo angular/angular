@@ -8,7 +8,7 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, inject, Input, PLATFORM_ID, signal, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {afterNextRender, ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, EnvironmentInjector, inject, Input, PLATFORM_ID, signal, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {ReactiveNode, SIGNAL} from '@angular/core/primitives/signals';
 import {TestBed} from '@angular/core/testing';
 
@@ -170,6 +170,29 @@ describe('CheckAlways components', () => {
 
     incrementAfterCheckedUntil = Number.MAX_SAFE_INTEGER;
     expect(() => fixture.detectChanges()).toThrowError(/Infinite/);
+  });
+
+  it('refreshes all views attached to ApplicationRef until no longer dirty', () => {
+    const val = signal(0);
+    @Component({
+      template: '{{val()}}',
+      standalone: true,
+    })
+    class App {
+      val = val;
+      ngOnInit() {
+        this.val.update(v => v+1);
+      }
+    }
+    const fixture = TestBed.createComponent(App);
+    const fixture2 = TestBed.createComponent(App);
+    const appRef = TestBed.inject(ApplicationRef);
+    appRef.attachView(fixture.componentRef.hostView);
+    appRef.attachView(fixture2.componentRef.hostView);
+
+    appRef.tick();
+    expect(fixture.nativeElement.innerText).toEqual('2');
+    expect(fixture2.nativeElement.innerText).toEqual('2');
   });
 });
 
@@ -885,31 +908,6 @@ describe('OnPush components with signals', () => {
     const fixture = TestBed.createComponent(SignalComponent);
     fixture.componentInstance.cdr.detectChanges();
     expect(fixture.nativeElement.innerText).toEqual('2');
-  });
-
-  // Note: We probably don't want this to throw but need to decide how to handle reruns
-  // This asserts current behavior and should be updated when this is handled
-  it('throws error when writing to a signal in afterRender', () => {
-    const counter = signal(0);
-
-    @Component({
-      selector: 'test-component',
-      standalone: true,
-      template: ` {{counter()}} `,
-    })
-    class TestCmp {
-      counter = counter;
-      constructor() {
-        afterNextRender(() => {
-          this.counter.set(1);
-        });
-      }
-    }
-    TestBed.configureTestingModule(
-        {providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]});
-
-    const fixture = TestBed.createComponent(TestCmp);
-    expect(() => fixture.detectChanges()).toThrowError(/ExpressionChanged/);
   });
 
   it('destroys all signal consumers when destroying the view tree', () => {

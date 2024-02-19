@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveMeta as T2DirectiveMeta, SchemaMetadata} from '@angular/compiler';
+import {DirectiveMeta as T2DirectiveMeta, Expression, SchemaMetadata} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -150,6 +150,18 @@ export type InputMapping = InputOrOutput&{
   transform: DecoratorInputTransform|null
 };
 
+/** Metadata for a model mapping. */
+export interface ModelMapping {
+  /** Node defining the model mapping. */
+  call: ts.CallExpression;
+
+  /** Information about the input declared by the model. */
+  input: InputMapping;
+
+  /** Information about the output implicitly declared by the model. */
+  output: InputOrOutput;
+}
+
 /** Metadata for an `@Input()` transform function. */
 export interface DecoratorInputTransform {
   /**
@@ -227,6 +239,12 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   imports: Reference<ClassDeclaration>[]|null;
 
   /**
+   * For standalone components, the list of imported types that can be used
+   * in `@defer` blocks (when only explicit dependencies are allowed).
+   */
+  deferredImports: Reference<ClassDeclaration>[]|null;
+
+  /**
    * For standalone components, the list of schemas declared.
    */
   schemas: SchemaMetadata[]|null;
@@ -245,12 +263,24 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * Whether the directive should be assumed to export providers if imported as a standalone type.
    */
   assumedToExportProviders: boolean;
+
+  /**
+   * Whether this class was imported into a standalone component's
+   * scope via `@Component.deferredImports` field.
+   */
+  isExplicitlyDeferred: boolean;
 }
 
 /** Metadata collected about an additional directive that is being applied to a directive host. */
 export interface HostDirectiveMeta {
-  /** Reference to the host directive class. */
-  directive: Reference<ClassDeclaration>;
+  /**
+   * Reference to the host directive class.
+   *
+   * Only in local compilation mode this can be Expression
+   * which indicates the expression could not be resolved due to being imported from some external
+   * file. In this case, the expression is the raw expression as appears in the decorator.
+   */
+  directive: Reference<ClassDeclaration>|Expression;
 
   /** Whether the reference to the host directive is a forward reference. */
   isForwardReference: boolean;
@@ -260,6 +290,22 @@ export interface HostDirectiveMeta {
 
   /** Outputs from the host directive that have been exposed. */
   outputs: {[publicName: string]: string}|null;
+}
+
+/**
+ * Metadata collected about an additional directive that is being applied to a directive host in
+ * global compilation mode.
+ */
+export interface HostDirectiveMetaForGlobalMode extends HostDirectiveMeta {
+  directive: Reference<ClassDeclaration>;
+}
+
+/**
+ * Metadata collected about an additional directive that is being applied to a directive host in
+ * local compilation mode.
+ */
+export interface HostDirectiveMetaForLocalMode extends HostDirectiveMeta {
+  directive: Expression;
 }
 
 /**
@@ -291,6 +337,7 @@ export interface PipeMeta {
   nameExpr: ts.Expression|null;
   isStandalone: boolean;
   decorator: ts.Decorator|null;
+  isExplicitlyDeferred: boolean;
 }
 
 /**

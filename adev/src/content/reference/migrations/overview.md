@@ -18,4 +18,7 @@ Learn about how you can migrate your existing angular project to the latest feat
 
     Strictly typed reactive forms add type safety and the types enable a variety of other improvements, such as better autocomplete in IDEs, and an explicit way to specify form structure.
   </docs-card>
+    <docs-card title="Control Flow Syntax" link="Migrate now" href="reference/migrations/control-flow">
+    Control Flow Syntax is available with Angular 17 release and allows you to use more ergonomic syntax which is close to javascript, better type checking and lazy load part of the component. It replaces the need to imports CommonModule to use functionalities like *ngFor,`*ngIf. 
+  </docs-card>
 </docs-card-container>

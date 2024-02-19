@@ -50,20 +50,20 @@ describe('HttpHeaders', () => {
       // Note: the `strictNullChecks` set to `false` in TS config would make `null`
       // valid value within the headers object, thus this test verifies this scenario.
       const headers = new HttpHeaders({foo: null!});
-      expect(() => headers.get('foo'))
-          .toThrowError(
-              'Unexpected value of the `foo` header provided. ' +
-              'Expecting either a string, a number or an array, but got: `null`.');
+      expect(() => headers.get('foo')).toThrowError(
+        'Unexpected value of the `foo` header provided. ' +
+          'Expecting either a string, a number or an array, but got: `null`.',
+      );
     });
 
     it('should throw an error when undefined is passed as header', () => {
       // Note: the `strictNullChecks` set to `false` in TS config would make `undefined`
       // valid value within the headers object, thus this test verifies this scenario.
       const headers = new HttpHeaders({bar: undefined!});
-      expect(() => headers.get('bar'))
-          .toThrowError(
-              'Unexpected value of the `bar` header provided. ' +
-              'Expecting either a string, a number or an array, but got: `undefined`.');
+      expect(() => headers.get('bar')).toThrowError(
+        'Unexpected value of the `bar` header provided. ' +
+          'Expecting either a string, a number or an array, but got: `undefined`.',
+      );
     });
 
     it('should not throw an error when a number is passed as header', () => {
@@ -165,10 +165,11 @@ describe('HttpHeaders', () => {
 
   describe('response header strings', () => {
     it('should be parsed by the constructor', () => {
-      const response = `Date: Fri, 20 Nov 2015 01:45:26 GMT\n` +
-          `Content-Type: application/json; charset=utf-8\n` +
-          `Transfer-Encoding: chunked\n` +
-          `Connection: keep-alive`;
+      const response =
+        `Date: Fri, 20 Nov 2015 01:45:26 GMT\n` +
+        `Content-Type: application/json; charset=utf-8\n` +
+        `Transfer-Encoding: chunked\n` +
+        `Connection: keep-alive`;
       const headers = new HttpHeaders(response);
       expect(headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
       expect(headers.get('Content-Type')).toEqual('application/json; charset=utf-8');

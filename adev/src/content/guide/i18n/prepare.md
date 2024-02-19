@@ -77,7 +77,7 @@ To mark the title attribute for translation, complete the following action.
 
 In component code, the translation source text and the metadata are surrounded by backtick \(<code>&#96;</code>\) characters.
 
-Use the [`$localize`][AioApiLocalizeInitLocalize] tagged message string to mark a string in your code for translation.
+Use the [`$localize`][ApiLocalizeInitLocalize] tagged message string to mark a string in your code for translation.
 
 <!--todo: replace with docs-code -->
 
@@ -95,7 +95,7 @@ The i18n metadata is surrounded by colon \(`:`\) characters and prepends the tra
 
 ### Include interpolated text
 
-Include [interpolations](guide/templates/interpolation) in a [`$localize`][AioApiLocalizeInitLocalize] tagged message string.
+Include [interpolations](guide/templates/interpolation) in a [`$localize`][ApiLocalizeInitLocalize] tagged message string.
 
 <!--todo: replace with docs-code -->
 
@@ -125,19 +125,19 @@ The following parameters provide context and additional information to reduce co
 | Description        | Provide additional information or context                             |
 | Meaning            | Provide the meaning or intent of the text within the specific context |
 
-For additional information about custom IDs, see [Manage marked text with custom IDs][AioGuideI18nOptionalManageMarkedText].
+For additional information about custom IDs, see [Manage marked text with custom IDs][GuideI18nOptionalManageMarkedText].
 
 ### Add helpful descriptions and meanings
 
 To translate a text message accurately, provide additional information or context for the translator.
 
-Add a *description* of the text message as the value of the `i18n` attribute or [`$localize`][AioApiLocalizeInitLocalize] tagged message string.
+Add a *description* of the text message as the value of the `i18n` attribute or [`$localize`][ApiLocalizeInitLocalize] tagged message string.
 
 The following example shows the value of the `i18n` attribute.
 
 <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-desc"/>
 
-The following example shows the value of the [`$localize`][AioApiLocalizeInitLocalize] tagged message string with a description.
+The following example shows the value of the [`$localize`][ApiLocalizeInitLocalize] tagged message string with a description.
 
 <!--todo: replace with docs-code -->
 
@@ -160,7 +160,7 @@ The following example shows how to specify that the `<h1>` tag must be translate
 
 The result is any text marked with `site header`, as the *meaning* is translated exactly the same way.
 
-The following code example shows the value of the [`$localize`][AioApiLocalizeInitLocalize] tagged message string with a meaning and a description.
+The following code example shows the value of the [`$localize`][ApiLocalizeInitLocalize] tagged message string with a meaning and a description.
 
 <!--todo: replace with docs-code -->
 
@@ -210,8 +210,8 @@ An ICU clause defines the type of conditional text.
 
 | ICU clause                                                              | Details                                                             |
 |:---                                                                     |:---                                                                 |
-| [`plural`][AioGuideI18nCommonPrepareMarkPlurals]                        | Mark the use of plural numbers                                      |
-| [`select`][AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions] | Mark choices for alternate text based on your defined string values |
+| [`plural`][GuideI18nCommonPrepareMarkPlurals]                        | Mark the use of plural numbers                                      |
+| [`select`][GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions] | Mark choices for alternate text based on your defined string values |
 
 To simplify translation, use International Components for Unicode clauses \(ICU clauses\) with regular expressions.
 
@@ -419,12 +419,12 @@ The following code example shows nested clauses based on the `gender` and `minut
   <docs-pill href="guide/i18n/translation-files" title="Work with translation files"/>
 </docs-pill-row>
 
-[AioApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API  | Angular"
+[ApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API  | Angular"
 
-[AioGuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n/prepare#mark-alternates-and-nested-expressions "Mark alternates and nested expressions - Prepare templates for translation | Angular"
-[AioGuideI18nCommonPrepareMarkPlurals]: guide/i18n/prepare#mark-plurals "Mark plurals - Prepare component for translation | Angular"
+[GuideI18nCommonPrepareMarkAlternatesAndNestedExpressions]: guide/i18n/prepare#mark-alternates-and-nested-expressions "Mark alternates and nested expressions - Prepare templates for translation | Angular"
+[GuideI18nCommonPrepareMarkPlurals]: guide/i18n/prepare#mark-plurals "Mark plurals - Prepare component for translation | Angular"
 
-[AioGuideI18nOptionalManageMarkedText]: guide/i18n/manage-marked-text "Manage marked text with custom IDs | Angular"
+[GuideI18nOptionalManageMarkedText]: guide/i18n/manage-marked-text "Manage marked text with custom IDs | Angular"
 
 [GithubAngularAngularBlobEcffc3557fe1bff9718c01277498e877ca44588dPackagesCoreSrcI18nLocaleEnTsL14L18]: <https://github.com/angular/angular/blob/ecffc3557fe1bff9718c01277498e877ca44588d/packages/core/src/i18n/locale_en.ts#L14-L18> "Line 14 to 18 - angular/packages/core/src/i18n/locale_en.ts | angular/angular | GitHub"
 

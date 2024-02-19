@@ -49,7 +49,7 @@ export function parseExtractedStyles(job: CompilationJob) {
           for (let i = 0; i < parsedStyles.length - 1; i += 2) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.StyleProperty, parsedStyles[i],
+                    op.target, ir.BindingKind.StyleProperty, null, parsedStyles[i],
                     o.literal(parsedStyles[i + 1]), null, null, SecurityContext.STYLE),
                 op);
           }
@@ -59,7 +59,7 @@ export function parseExtractedStyles(job: CompilationJob) {
           for (const parsedClass of parsedClasses) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.ClassName, parsedClass, null, null, null,
+                    op.target, ir.BindingKind.ClassName, null, parsedClass, null, null, null,
                     SecurityContext.NONE),
                 op);
           }

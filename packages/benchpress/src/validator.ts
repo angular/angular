@@ -17,7 +17,7 @@ export abstract class Validator {
   /**
    * Calculates a valid sample out of the complete sample
    */
-  validate(completeSample: MeasureValues[]): MeasureValues[]|null {
+  validate(completeSample: MeasureValues[]): MeasureValues[] | null {
     throw new Error('NYI');
   }
 

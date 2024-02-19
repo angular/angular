@@ -61,15 +61,24 @@ ng build              # build the app for production; code is in the /dist folde
 
 </code-example>
 
-The Angular development server (`ng serve`) doesn't support service worker applications.
-The [`http-server package`](https://www.npmjs.com/package/http-server) from npm does.
-You can run it without installing it like this:
+To enable service worker support during local development, use the production configuration with the following command:
 
 <code-example format="shell" language="shell">
 
-npx http-server -p 8080 -c-1 dist/   
+ng serve --prod
 
 </code-example>
+
+Alternatively, you can use the [`http-server package`](https://www.npmjs.com/package/http-server) from
+npm, which supports service worker applications. Run it without installation using:
+
+<code-example format="shell" language="shell">
+
+npx http-server -p 8080 -c-1 dist/&lt;project-name&gt;/browser
+
+</code-example>
+
+This will serve your application with service worker support at http://localhost:8080.
 
 </div>
 
@@ -174,7 +183,7 @@ Make a change to the application, and watch the service worker install the updat
     <code-example format="shell" language="shell">
 
     ng build
-    npx http-server -p 8080 -c-1 dist/
+    npx http-server -p 8080 -c-1 dist/&lt;project-name&gt;/browser
 
     </code-example>
 

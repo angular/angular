@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-
 /**
  * A WebDriverAdapter bridges API differences between different WebDriver clients,
  * e.g. JS vs Dart Async vs Dart Sync webdriver.

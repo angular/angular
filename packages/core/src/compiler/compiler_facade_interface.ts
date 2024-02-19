@@ -68,7 +68,7 @@ export interface CompilerFacade {
 }
 
 export interface CoreEnvironment {
-  [name: string]: Function;
+  [name: string]: unknown;
 }
 
 export type ResourceLoader = {
@@ -314,6 +314,7 @@ export interface R3QueryMetadataFacade {
   emitDistinctChangesOnly: boolean;
   read: OpaqueValue|null;
   static: boolean;
+  isSignal: boolean;
 }
 
 export interface R3DeclareQueryMetadataFacade {
@@ -324,6 +325,7 @@ export interface R3DeclareQueryMetadataFacade {
   read?: OpaqueValue;
   static?: boolean;
   emitDistinctChangesOnly?: boolean;
+  isSignal?: boolean;
 }
 
 export interface R3DeclareInjectorFacade {

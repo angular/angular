@@ -10,14 +10,32 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {ProfilerFrame} from 'protocol';
 
 import {VisualizationMode} from './visualization-mode';
+import {MatButton} from '@angular/material/button';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatOption} from '@angular/material/core';
+import {MatSelect} from '@angular/material/select';
+import {MatInput} from '@angular/material/input';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {DecimalPipe} from '@angular/common';
 
 @Component({
   selector: 'ng-timeline-controls',
   templateUrl: './timeline-controls.component.html',
   styleUrls: ['./timeline-controls.component.scss'],
+  standalone: true,
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    MatButton,
+    DecimalPipe,
+  ],
 })
 export class TimelineControlsComponent {
-  @Input() record: ProfilerFrame|undefined;
+  @Input() record: ProfilerFrame | undefined;
   @Input({required: true}) estimatedFrameRate!: number;
   @Input({required: true}) visualizationMode!: VisualizationMode;
   @Input({required: true}) empty!: boolean;

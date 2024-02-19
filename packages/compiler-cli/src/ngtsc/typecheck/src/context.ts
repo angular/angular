@@ -12,6 +12,7 @@ import ts from 'typescript';
 import {ErrorCode, ngErrorCode} from '../../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
+import {PipeMeta} from '../../metadata';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
@@ -26,6 +27,7 @@ import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
+import {getImportString} from './ts_util';
 import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
@@ -209,9 +211,9 @@ export class TypeCheckContextImpl implements TypeCheckContext {
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
-      pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
-      parseErrors: ParseError[]|null, isStandalone: boolean, preserveWhitespaces: boolean): void {
+      pipes: Map<string, PipeMeta>, schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
+      file: ParseSourceFile, parseErrors: ParseError[]|null, isStandalone: boolean,
+      preserveWhitespaces: boolean): void {
     if (!this.host.shouldCheckComponent(ref.node)) {
       return;
     }
@@ -268,7 +270,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       if (!pipes.has(name)) {
         continue;
       }
-      usedPipes.push(pipes.get(name)!);
+      usedPipes.push(pipes.get(name)!.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
     }
 
     const inliningRequirement =
@@ -380,9 +382,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     });
 
     // Write out the imports that need to be added to the beginning of the file.
-    let imports = importManager.getAllImports(sf.fileName)
-                      .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
-                      .join('\n');
+    let imports = importManager.getAllImports(sf.fileName).map(getImportString).join('\n');
     code = imports + '\n' + code;
 
     return code;

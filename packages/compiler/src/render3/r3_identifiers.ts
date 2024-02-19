@@ -350,6 +350,16 @@ export class Identifiers {
   static loadQuery: o.ExternalReference = {name: 'ɵɵloadQuery', moduleName: CORE};
   static contentQuery: o.ExternalReference = {name: 'ɵɵcontentQuery', moduleName: CORE};
 
+  // Signal queries
+  static viewQuerySignal: o.ExternalReference = {name: 'ɵɵviewQuerySignal', moduleName: CORE};
+  static contentQuerySignal: o.ExternalReference = {name: 'ɵɵcontentQuerySignal', moduleName: CORE};
+  static queryAdvance: o.ExternalReference = {name: 'ɵɵqueryAdvance', moduleName: CORE};
+
+  // Two-way bindings
+  static twoWayProperty: o.ExternalReference = {name: 'ɵɵtwoWayProperty', moduleName: CORE};
+  static twoWayBindingSet: o.ExternalReference = {name: 'ɵɵtwoWayBindingSet', moduleName: CORE};
+  static twoWayListener: o.ExternalReference = {name: 'ɵɵtwoWayListener', moduleName: CORE};
+
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵɵNgOnChangesFeature', moduleName: CORE};
 
   static InheritDefinitionFeature:
@@ -375,6 +385,11 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static InputFlags: o.ExternalReference = {
+    name: 'ɵɵInputFlags',
+    moduleName: CORE,
+  };
+
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ɵɵsanitizeHtml', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵɵsanitizeStyle', moduleName: CORE};
@@ -393,4 +408,5 @@ export class Identifiers {
   // type-checking
   static InputSignalBrandWriteType = {name: 'ɵINPUT_SIGNAL_BRAND_WRITE_TYPE', moduleName: CORE};
   static UnwrapDirectiveSignalInputs = {name: 'ɵUnwrapDirectiveSignalInputs', moduleName: CORE};
+  static unwrapWritableSignal = {name: 'ɵunwrapWritableSignal', moduleName: CORE};
 }

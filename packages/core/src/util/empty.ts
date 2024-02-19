@@ -14,7 +14,7 @@ import {initNgDevMode} from './ng_dev_mode';
  * code.
  */
 
-export const EMPTY_OBJ: {} = {};
+export const EMPTY_OBJ: never = {} as never;
 export const EMPTY_ARRAY: any[] = [];
 
 // freezing the values prevents any code from accidentally inserting new values in

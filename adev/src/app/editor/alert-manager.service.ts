@@ -95,7 +95,7 @@ export class AlertManager {
     }
 
     this.snackBar.openFromComponent(ErrorSnackBar, {
-      panelClass: 'adev-invert-mode',
+      panelClass: 'docs-invert-mode',
       data: {
         message,
         actionText: 'I understand',

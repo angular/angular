@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
@@ -19,9 +18,9 @@ import {DialogComponent} from './dialog.component';
 @Component({
   selector: 'app-todo-demo',
   standalone: true,
-  imports:
-      [RouterLink, RouterOutlet, MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule],
-  styles: [`
+  imports: [RouterLink, RouterOutlet, MatDialogModule, FormsModule],
+  styles: [
+    `
       nav {
         padding-top: 20px;
         padding-bottom: 10px;
@@ -37,7 +36,8 @@ import {DialogComponent} from './dialog.component';
         padding: 10px;
         margin-right: 20px;
       }
-    `],
+    `,
+  ],
   template: `
     <nav>
       <a routerLink="/demo-app/todos/app">Todos</a>
@@ -47,7 +47,7 @@ import {DialogComponent} from './dialog.component';
     <button class="dialog-open-button" (click)="openDialog()">Open dialog</button>
 
     <router-outlet></router-outlet>
-  `
+  `,
 })
 export class TodoAppComponent {
   name!: string;

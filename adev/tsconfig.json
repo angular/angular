@@ -28,7 +28,10 @@
     "resolveJsonModule": true,
     "jsx": "react",
     "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment"
+    "jsxFragmentFactory": "Fragment",
+    "paths": {
+      "@angular/*": ["../packages/*"],
+    },
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

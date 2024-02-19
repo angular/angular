@@ -233,7 +233,7 @@ Similar to defining a component, directives are comprised of the following:
   - A selector that defines the tag name is when the component is called
 - A TypeScript class that defines the extended behavior the directive will add to the respective HTML element.
 
-For example, here’s what a custom directive for highlighting an element:
+For example, here’s a custom directive for highlighting an element:
 
 ```ts
 @Directive({
@@ -311,6 +311,7 @@ Standalone components are a new organizational pattern that were introduced in A
 For example, in the traditional NgModule pattern, you would need to create a TodoModule and manage all of its dependencies through this module.
 
 ```ts (Todo.module.ts)
+import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TodoList} from '../todo/todo-list.component';
 
@@ -325,7 +326,6 @@ export class TodoModule {}
 However, you can now achieve something similar with a standalone component without the need for a module file:
 
 ```ts (Todo.component.ts)
-import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TodoList} from '../todo/todo-list.component';
 

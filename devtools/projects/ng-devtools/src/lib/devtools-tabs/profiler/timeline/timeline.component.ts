@@ -15,6 +15,10 @@ import {createFilter, Filter, noopFilter} from './filter';
 import {mergeFrames} from './record-formatter/frame-merger';
 import {GraphNode} from './record-formatter/record-formatter';
 import {VisualizationMode} from './visualization-mode';
+import {TimelineVisualizerComponent} from './recording-visualizer/timeline-visualizer.component';
+import {FrameSelectorComponent} from './frame-selector.component';
+import {TimelineControlsComponent} from './timeline-controls.component';
+import {RecordingModalComponent} from './recording-modal.component';
 
 const MAX_HEIGHT = 50;
 
@@ -22,6 +26,13 @@ const MAX_HEIGHT = 50;
   selector: 'ng-recording-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
+  standalone: true,
+  imports: [
+    RecordingModalComponent,
+    TimelineControlsComponent,
+    FrameSelectorComponent,
+    TimelineVisualizerComponent,
+  ],
 })
 export class TimelineComponent implements OnDestroy {
   @Input()
@@ -44,7 +55,7 @@ export class TimelineComponent implements OnDestroy {
   @Output() exportProfile = new EventEmitter<void>();
   visualizationMode = VisualizationMode.BarGraph;
   changeDetection = false;
-  frame: ProfilerFrame|null = null;
+  frame: ProfilerFrame | null = null;
 
   private _filter: Filter = noopFilter;
   private _maxDuration = -Infinity;
@@ -54,9 +65,11 @@ export class TimelineComponent implements OnDestroy {
   private _graphDataSubject = new BehaviorSubject<GraphNode[]>([]);
   visualizing = false;
   graphData$ = this._graphDataSubject.pipe(
-      share(), map((nodes) => {
-        return (this._filtered = nodes.filter((node) => this._filter(node)));
-      }));
+    share(),
+    map((nodes) => {
+      return (this._filtered = nodes.filter((node) => this._filter(node)));
+    }),
+  );
 
   selectFrames({indexes}: {indexes: number[]}): void {
     this.frame = mergeFrames(indexes.map((index) => this._filtered[index].frame));
@@ -106,9 +119,9 @@ export class TimelineComponent implements OnDestroy {
       return;
     }
     const multiplicationFactor = parseFloat((MAX_HEIGHT / this._maxDuration).toFixed(2));
-    frames.forEach(
-        (frame) =>
-            this._graphDataSubject.value.push(this._getBarStyles(frame, multiplicationFactor)));
+    frames.forEach((frame) =>
+      this._graphDataSubject.value.push(this._getBarStyles(frame, multiplicationFactor)),
+    );
 
     // We need to pass a new reference, because the CDK virtual scroll
     // has OnPush strategy, so it doesn't update the UI otherwise.
@@ -118,7 +131,9 @@ export class TimelineComponent implements OnDestroy {
 
   private _generateBars(): GraphNode[] {
     const maxValue = this._allRecords.reduce(
-        (acc: number, frame: ProfilerFrame) => Math.max(acc, frame.duration), 0);
+      (acc: number, frame: ProfilerFrame) => Math.max(acc, frame.duration),
+      0,
+    );
     const multiplicationFactor = parseFloat((MAX_HEIGHT / maxValue).toFixed(2));
     this._maxDuration = Math.max(this._maxDuration, maxValue);
     return this._allRecords.map((r) => this._getBarStyles(r, multiplicationFactor));
@@ -130,8 +145,7 @@ export class TimelineComponent implements OnDestroy {
     const backgroundColor = this.getColorByFrameRate(this.estimateFrameRate(frame.duration));
 
     const style = {
-      'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${
-          colorPercentage}%, transparent ${colorPercentage}%)`,
+      'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
       cursor: 'pointer',
       'min-width': '25px',
       width: '25px',

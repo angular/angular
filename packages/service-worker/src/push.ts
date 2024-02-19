@@ -12,7 +12,6 @@ import {map, switchMap, take} from 'rxjs/operators';
 
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
 
-
 /**
  * Subscribe and listen to
  * [Web Push
@@ -111,10 +110,10 @@ export class SwPush {
    * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
    */
   readonly notificationClicks: Observable<{
-    action: string; notification: NotificationOptions &
-        {
-          title: string
-        }
+    action: string;
+    notification: NotificationOptions & {
+      title: string;
+    };
   }>;
 
   /**
@@ -122,7 +121,7 @@ export class SwPush {
    * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
    * associated to the Service Worker registration or `null` if there is no subscription.
    */
-  readonly subscription: Observable<PushSubscription|null>;
+  readonly subscription: Observable<PushSubscription | null>;
 
   /**
    * True if the Service Worker is enabled (supported by the browser and enabled via
@@ -132,8 +131,8 @@ export class SwPush {
     return this.sw.isEnabled;
   }
 
-  private pushManager: Observable<PushManager>|null = null;
-  private subscriptionChanges = new Subject<PushSubscription|null>();
+  private pushManager: Observable<PushManager> | null = null;
+  private subscriptionChanges = new Subject<PushSubscription | null>();
 
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
@@ -143,14 +142,17 @@ export class SwPush {
       return;
     }
 
-    this.messages = this.sw.eventsOfType<PushEvent>('PUSH').pipe(map(message => message.data));
+    this.messages = this.sw.eventsOfType<PushEvent>('PUSH').pipe(map((message) => message.data));
 
-    this.notificationClicks =
-        this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message: any) => message.data));
+    this.notificationClicks = this.sw
+      .eventsOfType('NOTIFICATION_CLICK')
+      .pipe(map((message: any) => message.data));
 
-    this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
+    this.pushManager = this.sw.registration.pipe(map((registration) => registration.pushManager));
 
-    const workerDrivenSubscriptions = this.pushManager.pipe(switchMap(pm => pm.getSubscription()));
+    const workerDrivenSubscriptions = this.pushManager.pipe(
+      switchMap((pm) => pm.getSubscription()),
+    );
     this.subscription = merge(workerDrivenSubscriptions, this.subscriptionChanges);
   }
 
@@ -173,12 +175,16 @@ export class SwPush {
     }
     pushOptions.applicationServerKey = applicationServerKey;
 
-    return this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1))
-        .toPromise()
-        .then(sub => {
-          this.subscriptionChanges.next(sub!);
-          return sub!;
-        });
+    return this.pushManager
+      .pipe(
+        switchMap((pm) => pm.subscribe(pushOptions)),
+        take(1),
+      )
+      .toPromise()
+      .then((sub) => {
+        this.subscriptionChanges.next(sub!);
+        return sub!;
+      });
   }
 
   /**
@@ -192,12 +198,12 @@ export class SwPush {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
 
-    const doUnsubscribe = (sub: PushSubscription|null) => {
+    const doUnsubscribe = (sub: PushSubscription | null) => {
       if (sub === null) {
         throw new Error('Not subscribed to push notifications.');
       }
 
-      return sub.unsubscribe().then(success => {
+      return sub.unsubscribe().then((success) => {
         if (!success) {
           throw new Error('Unsubscribe failed!');
         }

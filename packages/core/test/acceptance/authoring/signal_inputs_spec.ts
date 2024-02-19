@@ -1,0 +1,273 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {Component, computed, Directive, effect, EventEmitter, input, Output, ViewChild} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+
+describe('signal inputs', () => {
+  beforeEach(() => TestBed.configureTestingModule({
+    errorOnUnknownProperties: true,
+  }));
+
+  it('should be possible to bind to an input', () => {
+    @Component({
+      selector: 'input-comp',
+      standalone: true,
+      template: 'input:{{input()}}',
+    })
+    class InputComp {
+      input = input<number>();
+    }
+
+    @Component({
+      standalone: true,
+      template: `<input-comp [input]="value" />`,
+      imports: [InputComp],
+    })
+    class TestCmp {
+      value = 1;
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('input:1');
+
+    fixture.componentInstance.value = 2;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('input:2');
+  });
+
+  it('should be possible to use an input in a computed expression', () => {
+    @Component({
+      selector: 'input-comp',
+      standalone: true,
+      template: 'changed:{{changed()}}',
+    })
+    class InputComp {
+      input = input<number>();
+      changed = computed(() => `computed-${this.input()}`);
+    }
+
+    @Component({
+      standalone: true,
+      template: `<input-comp [input]="value" />`,
+      imports: [InputComp],
+    })
+    class TestCmp {
+      value = 1;
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('changed:computed-1');
+
+    fixture.componentInstance.value = 2;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('changed:computed-2');
+  });
+
+  it('should be possible to use an input in an effect', () => {
+    let effectLog: unknown[] = [];
+
+    @Component({
+      selector: 'input-comp',
+      standalone: true,
+      template: '',
+    })
+    class InputComp {
+      input = input<number>();
+
+      constructor() {
+        effect(() => {
+          effectLog.push(this.input());
+        });
+      }
+    }
+
+    @Component({
+      standalone: true,
+      template: `<input-comp [input]="value" />`,
+      imports: [InputComp],
+    })
+    class TestCmp {
+      value = 1;
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+
+    expect(effectLog).toEqual([]);
+    fixture.detectChanges();
+
+    expect(effectLog).toEqual([1]);
+
+    fixture.componentInstance.value = 2;
+    fixture.detectChanges();
+
+    expect(effectLog).toEqual([1, 2]);
+  });
+
+  it('should support transforms', () => {
+    @Component({
+      selector: 'input-comp',
+      standalone: true,
+      template: 'input:{{input()}}',
+    })
+    class InputComp {
+      input = input(0, {transform: (v: number) => v + 1000});
+    }
+
+    @Component({
+      standalone: true,
+      template: `<input-comp [input]="value" />`,
+      imports: [InputComp],
+    })
+    class TestCmp {
+      value = 1;
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    const inputComp = fixture.debugElement.children[0].componentInstance as InputComp;
+    expect(inputComp.input()).withContext('should not run transform on initial value').toBe(0);
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('input:1001');
+  });
+
+  it('should not run transforms lazily', () => {
+    let transformRunCount = 0;
+    @Component({
+      selector: 'input-comp',
+      standalone: true,
+      template: '',
+    })
+    class InputComp {
+      input = input(0, {
+        transform: (v: number) => (transformRunCount++, v + 1000),
+      });
+    }
+
+    @Component({
+      standalone: true,
+      template: `<input-comp [input]="value" />`,
+      imports: [InputComp],
+    })
+    class TestCmp {
+      value = 1;
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    expect(transformRunCount).toBe(0);
+
+    fixture.detectChanges();
+    expect(transformRunCount).toBe(1);
+  });
+
+  it('should throw error if a required input is accessed too early', () => {
+    @Component({
+      selector: 'input-comp',
+      standalone: true,
+      template: 'input:{{input()}}',
+    })
+    class InputComp {
+      input = input.required<string>();
+
+      constructor() {
+        this.input();
+      }
+    }
+
+    @Component({
+      standalone: true,
+      template: `<input-comp [input]="value" />`,
+      imports: [InputComp],
+    })
+    class TestCmp {
+      value = 1;
+    }
+
+    expect(() => TestBed.createComponent(TestCmp))
+        .toThrowError(/Input is required but no value is available yet/);
+  });
+
+  it('should be possible to bind to an inherited input', () => {
+    @Directive()
+    class BaseDir {
+      input = input<number>();
+    }
+
+    @Component({
+      selector: 'input-comp',
+      standalone: true,
+      template: 'input:{{input()}}',
+    })
+    class InputComp extends BaseDir {
+    }
+
+    @Component({
+      standalone: true,
+      template: `<input-comp [input]="value" />`,
+      imports: [InputComp],
+    })
+    class TestCmp {
+      value = 1;
+    }
+
+    const fixture = TestBed.createComponent(TestCmp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('input:1');
+
+    fixture.componentInstance.value = 2;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('input:2');
+  });
+
+  // TODO(crisbeto): we may not want to support this combination. Will discuss with the team.
+  it('should support two-way binding to signal input and @Output decorated member', () => {
+    @Directive({selector: '[dir]', standalone: true})
+    class Dir {
+      value = input(0);
+      @Output() valueChange = new EventEmitter<number>();
+    }
+
+    @Component({
+      template: '<div [(value)]="value" dir></div>',
+      standalone: true,
+      imports: [Dir],
+    })
+    class App {
+      @ViewChild(Dir) dir!: Dir;
+      value = 1;
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const host = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Initial value.
+    expect(host.value).toBe(1);
+    expect(host.dir.value()).toBe(1);
+
+    // Changing the value from within the directive.
+    host.dir.valueChange.emit(2);
+    fixture.detectChanges();
+    expect(host.value).toBe(2);
+    expect(host.dir.value()).toBe(2);
+
+    // Changing the value from the outside.
+    host.value = 3;
+    fixture.detectChanges();
+    expect(host.value).toBe(3);
+    expect(host.dir.value()).toBe(3);
+  });
+});

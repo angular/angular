@@ -166,8 +166,9 @@ groups:
         - AndrewKushnir
         - atscott
         - crisbeto
-        - JoostK
+        - devversion
         - dylhunn
+        - JoostK
 
   # =========================================================
   #  Framework: Migrations
@@ -321,7 +322,9 @@ groups:
           'aio/content/guide/providers.md',
           'aio/content/examples/providers/**/{*,.*}',
           'aio/content/images/guide/providers/**/{*,.*}',
+          'aio/content/guide/signal-queries.md',
           'aio/content/guide/singleton-services.md',
+          'aio/content/guide/signal-inputs.md',
           'aio/content/guide/sharing-ngmodules.md',
           'aio/content/guide/standalone-components.md',
           'aio/content/guide/standalone-migration.md',
@@ -352,6 +355,7 @@ groups:
         - AndrewKushnir
         - atscott
         - crisbeto
+        - devversion
         - dylhunn
         - jessicajaniuk
         - pkozlowski-opensource
@@ -1069,9 +1073,16 @@ groups:
           ])
     reviewers:
       users:
-        - twerske
         - josephperrott
         - jelbourn
+        - bencodezen
+        - jessicajaniuk
+        - dylhunn
+        - AndrewKushnir
+        - alxhub
+        - crisbeto
+        - atscott
+        - pkozlowski-opensource
 
   # =========================================================
   #  Docs-infra
@@ -1150,6 +1161,7 @@ groups:
         - josephperrott
         - mgechev
         - twerske
+        - ~jeanmeche
 
   # =========================================================
   #  Dev-infra
@@ -1394,6 +1406,7 @@ groups:
         - devversion # Paul Gschwendtner
         - dgp1130 # Doug Parker
         - dylhunn # Dylan Hunn
+        - jeanmeche # Matthieu Riegler
         - jelbourn # Jeremy Elbourn
         - jessicajaniuk # Jessica Janiuk
         - JiaLiPassion # Jia Li

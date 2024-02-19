@@ -11,7 +11,7 @@ import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiLabel} from '../pipes/api-label.pipe';
 
 @Component({
-  selector: 'adev-api-item-label',
+  selector: 'docs-api-item-label',
   standalone: true,
   templateUrl: './api-item-label.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

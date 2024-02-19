@@ -8,8 +8,7 @@
 
 
 import {assertIndexInRange} from '../../util/assert';
-import {isSubscribable} from '../../util/lang';
-import {PropertyAliasValue, TNode, TNodeType} from '../interfaces/node';
+import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
@@ -114,7 +113,7 @@ function findExistingListener(
   return null;
 }
 
-function listenerInternal(
+export function listenerInternal(
     tView: TView, lView: LView<{}|null>, renderer: Renderer, tNode: TNode, eventName: string,
     listenerFn: (e?: any) => any, eventTargetResolver?: GlobalTargetResolver): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
@@ -192,7 +191,7 @@ function listenerInternal(
 
   // subscribe to directive outputs
   const outputs = tNode.outputs;
-  let props: PropertyAliasValue|undefined;
+  let props: NodeOutputBindings[keyof NodeOutputBindings]|undefined;
   if (processOutputs && outputs !== null && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
@@ -203,15 +202,21 @@ function listenerInternal(
         const directiveInstance = lView[index];
         const output = directiveInstance[minifiedName];
 
-        if (ngDevMode && !isSubscribable(output)) {
+        if (ngDevMode && !isOutputSubscribable(output)) {
           throw new Error(`@Output ${minifiedName} not initialized in '${
               directiveInstance.constructor.name}'.`);
         }
 
-        const subscription = output.subscribe(listenerFn);
+        const subscriptionOrCallback =
+            (output as SubscribableOutput<unknown>).subscribe(listenerFn);
         const idx = lCleanup.length;
-        lCleanup.push(listenerFn, subscription);
-        tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
+        lCleanup.push(listenerFn, subscriptionOrCallback);
+        if (tCleanup) {
+          // The cleanup function expects negative indexes to be
+          // of type Subscription while positive are cleanup functions.
+          const cleanupIdx = typeof subscriptionOrCallback === 'function' ? idx + 1 : -(idx + 1);
+          tCleanup.push(eventName, tNode.index, idx, cleanupIdx);
+        }
       }
     }
   }
@@ -275,4 +280,20 @@ function wrapListener(
 
     return result;
   };
+}
+
+/** Describes a subscribable output field value. */
+interface SubscribableOutput<T> {
+  subscribe(listener: (v: T) => void): {unsubscribe: () => void;}|(() => void);
+}
+
+/**
+ * Whether the given value represents a subscribable output.
+ *
+ * For example, an `EventEmitter, a `Subject`, an `Observable` or an
+ * `OutputEmitter`.
+ */
+function isOutputSubscribable(value: unknown): value is SubscribableOutput<unknown> {
+  return value != null &&
+      typeof (value as Partial<SubscribableOutput<unknown>>).subscribe === 'function';
 }

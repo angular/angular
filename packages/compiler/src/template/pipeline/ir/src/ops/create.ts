@@ -23,11 +23,12 @@ import type {UpdateOp} from './update';
 /**
  * An operation usable on the creation side of the IR.
  */
-export type CreateOp = ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|
-    ElementEndOp|ContainerOp|ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|
-    DisableBindingsOp|TextOp|ListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|
-    ProjectionOp|ExtractedAttributeOp|DeferOp|DeferOnOp|RepeaterCreateOp|I18nMessageOp|I18nOp|
-    I18nStartOp|I18nEndOp|IcuStartOp|IcuEndOp|IcuPlaceholderOp|I18nContextOp|I18nAttributesOp;
+export type CreateOp =
+    ListEndOp<CreateOp>|StatementOp<CreateOp>|ElementOp|ElementStartOp|ElementEndOp|ContainerOp|
+    ContainerStartOp|ContainerEndOp|TemplateOp|EnableBindingsOp|DisableBindingsOp|TextOp|ListenerOp|
+    TwoWayListenerOp|PipeOp|VariableOp<CreateOp>|NamespaceOp|ProjectionDefOp|ProjectionOp|
+    ExtractedAttributeOp|DeferOp|DeferOnOp|RepeaterCreateOp|I18nMessageOp|I18nOp|I18nStartOp|
+    I18nEndOp|IcuStartOp|IcuEndOp|IcuPlaceholderOp|I18nContextOp|I18nAttributesOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -577,6 +578,60 @@ export function createListenerOp(
   };
 }
 
+/**
+ * Logical operation representing the event side of a two-way binding on an element
+ * in the creation IR.
+ */
+export interface TwoWayListenerOp extends Op<CreateOp> {
+  kind: OpKind.TwoWayListener;
+
+  target: XrefId;
+  targetSlot: SlotHandle;
+
+  /**
+   * Name of the event which is being listened to.
+   */
+  name: string;
+
+  /**
+   * Tag name of the element on which this listener is placed.
+   */
+  tag: string|null;
+
+  /**
+   * A list of `UpdateOp`s representing the body of the event listener.
+   */
+  handlerOps: OpList<UpdateOp>;
+
+  /**
+   * Name of the function
+   */
+  handlerFnName: string|null;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a `TwoWayListenerOp`.
+ */
+export function createTwoWayListenerOp(
+    target: XrefId, targetSlot: SlotHandle, name: string, tag: string|null,
+    handlerOps: Array<UpdateOp>, sourceSpan: ParseSourceSpan): TwoWayListenerOp {
+  const handlerList = new OpList<UpdateOp>();
+  handlerList.push(handlerOps);
+  return {
+    kind: OpKind.TwoWayListener,
+    target,
+    targetSlot,
+    tag,
+    name,
+    handlerOps: handlerList,
+    handlerFnName: null,
+    sourceSpan,
+    ...NEW_OP,
+  };
+}
+
 export interface PipeOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   kind: OpKind.Pipe;
   xref: XrefId;
@@ -684,6 +739,11 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
   bindingKind: BindingKind;
 
   /**
+   * The namespace of the attribute (or null if none).
+   */
+  namespace: string|null;
+
+  /**
    * The name of the extracted attribute.
    */
   name: string;
@@ -716,13 +776,14 @@ export interface ExtractedAttributeOp extends Op<CreateOp> {
  * Create an `ExtractedAttributeOp`.
  */
 export function createExtractedAttributeOp(
-    target: XrefId, bindingKind: BindingKind, name: string, expression: o.Expression|null,
-    i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
+    target: XrefId, bindingKind: BindingKind, namespace: string|null, name: string,
+    expression: o.Expression|null, i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
     securityContext: SecurityContext|SecurityContext[]): ExtractedAttributeOp {
   return {
     kind: OpKind.ExtractedAttribute,
     target,
     bindingKind,
+    namespace,
     name,
     expression,
     i18nContext,
@@ -792,7 +853,7 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 
 export function createDeferOp(
     xref: XrefId, main: XrefId, mainSlot: SlotHandle, metadata: R3DeferBlockMetadata,
-    sourceSpan: ParseSourceSpan): DeferOp {
+    resolverFn: o.Expression|null, sourceSpan: ParseSourceSpan): DeferOp {
   return {
     kind: OpKind.Defer,
     xref,
@@ -811,7 +872,7 @@ export function createDeferOp(
     errorView: null,
     errorSlot: null,
     metadata,
-    resolverFn: null,
+    resolverFn,
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,

@@ -64,6 +64,8 @@ export class DirectiveDecoratorHandler implements
       private perf: PerfRecorder,
       private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
+      private readonly useTemplatePipeline: boolean,
+      private readonly generateExtraImportsInLocalMode: boolean,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
@@ -103,7 +105,8 @@ export class DirectiveDecoratorHandler implements
 
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.refEmitter, this.referencesRegistry,
-        this.isCore, this.annotateForClosureCompiler, this.compilationMode);
+        this.isCore, this.annotateForClosureCompiler, this.compilationMode,
+        /* defaultSelector */ null, this.useTemplatePipeline);
     if (directiveResult === undefined) {
       return {};
     }
@@ -168,6 +171,7 @@ export class DirectiveDecoratorHandler implements
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
       imports: null,
+      deferredImports: null,
       schemas: null,
       ngContentSelectors: null,
       decorator: analysis.decorator,
@@ -175,6 +179,7 @@ export class DirectiveDecoratorHandler implements
       // Directives analyzed within our own compilation are not _assumed_ to export providers.
       // Instead, we statically analyze their imports to make a direct determination.
       assumedToExportProviders: false,
+      isExplicitlyDeferred: false,
     });
 
     this.injectableRegistry.registerInjectable(node, {
@@ -184,6 +189,10 @@ export class DirectiveDecoratorHandler implements
 
   resolve(node: ClassDeclaration, analysis: DirectiveHandlerData, symbol: DirectiveSymbol):
       ResolveResult<unknown> {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return {};
+    }
+
     if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
       symbol.baseClass = this.semanticDepGraphUpdater.getSymbol(analysis.baseClass.node);
     }
@@ -244,7 +253,7 @@ export class DirectiveDecoratorHandler implements
 
   compileLocal(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
-      pool: ConstantPool): CompileResult[] {
+      resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
     const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);

@@ -35,7 +35,7 @@ export async function main(args: string[]) {
   if (tscw.runAsWorker(args)) {
     await tscw.runWorkerLoop(runOneBuild);
   } else {
-    return await runOneBuild(args) ? 0 : 1;
+    return (await runOneBuild(args)) ? 0 : 1;
   }
   return 0;
 }
@@ -44,7 +44,9 @@ export async function main(args: string[]) {
 const fileCache = new tscw.FileCache<ts.SourceFile>(tscw.debug);
 
 export async function runOneBuild(
-    args: string[], inputs?: {[path: string]: string}): Promise<boolean> {
+  args: string[],
+  inputs?: {[path: string]: string},
+): Promise<boolean> {
   if (args[0] === '-p') {
     args.shift();
   }
@@ -87,19 +89,25 @@ export async function runOneBuild(
     'createExternalSymbolFactoryReexports',
     'extendedDiagnostics',
     'forbidOrphanComponents',
+    'onlyExplicitDeferDependencyImports',
+    'generateExtraImportsInLocalMode',
   ]);
 
   const userOverrides = Object.entries(userOptions)
-                            .filter(([key]) => allowedNgCompilerOptionsOverrides.has(key))
-                            .reduce((obj, [key, value]) => {
-                              obj[key] = value;
+    .filter(([key]) => allowedNgCompilerOptionsOverrides.has(key))
+    .reduce(
+      (obj, [key, value]) => {
+        obj[key] = value;
 
-                              return obj;
-                            }, {} as Record<string, unknown>);
+        return obj;
+      },
+      {} as Record<string, unknown>,
+    );
 
   // Angular Compiler options are always set under Bazel. See `ng_module.bzl`.
-  const angularConfigRawOptions =
-      (config as {angularCompilerOptions: ng.AngularCompilerOptions})['angularCompilerOptions'];
+  const angularConfigRawOptions = (config as {angularCompilerOptions: ng.AngularCompilerOptions})[
+    'angularCompilerOptions'
+  ];
 
   const compilerOpts: ng.AngularCompilerOptions = {
     ...userOverrides,
@@ -125,7 +133,7 @@ export async function runOneBuild(
   if (diagnostics.length) {
     console.error(ng.formatDiagnostics(diagnostics));
   }
-  return diagnostics.every(d => d.category !== ts.DiagnosticCategory.Error);
+  return diagnostics.every((d) => d.category !== ts.DiagnosticCategory.Error);
 }
 
 export function compile({
@@ -140,15 +148,17 @@ export function compile({
   gatherDiagnostics,
   bazelHost,
 }: {
-  allDepsCompiledWithBazel?: boolean,
-  useManifestPathsAsModuleName?: boolean, compilerOpts: ng.CompilerOptions, tsHost: ts.CompilerHost,
-  inputs?: {[path: string]: string},
-        bazelOpts: BazelOptions,
-        files: string[],
-        expectedOuts: string[],
-  gatherDiagnostics?: (program: ng.Program) => readonly ts.Diagnostic[],
-  bazelHost?: tscw.CompilerHost,
-}): {diagnostics: readonly ts.Diagnostic[], program: ng.Program|undefined} {
+  allDepsCompiledWithBazel?: boolean;
+  useManifestPathsAsModuleName?: boolean;
+  compilerOpts: ng.CompilerOptions;
+  tsHost: ts.CompilerHost;
+  inputs?: {[path: string]: string};
+  bazelOpts: BazelOptions;
+  files: string[];
+  expectedOuts: string[];
+  gatherDiagnostics?: (program: ng.Program) => readonly ts.Diagnostic[];
+  bazelHost?: tscw.CompilerHost;
+}): {diagnostics: readonly ts.Diagnostic[]; program: ng.Program | undefined} {
   let fileLoader: tscw.FileLoader;
 
   // These options are expected to be set in Bazel. See:
@@ -182,23 +192,27 @@ export function compile({
   if (!compilerOpts.rootDirs) {
     throw new Error('rootDirs is not set!');
   }
-  const bazelBin = compilerOpts.rootDirs.find(rootDir => BAZEL_BIN.test(rootDir));
+  const bazelBin = compilerOpts.rootDirs.find((rootDir) => BAZEL_BIN.test(rootDir));
   if (!bazelBin) {
     throw new Error(`Couldn't find bazel bin in the rootDirs: ${compilerOpts.rootDirs}`);
   }
 
-  const expectedOutsSet = new Set(expectedOuts.map(p => convertToForwardSlashPath(p)));
+  const expectedOutsSet = new Set(expectedOuts.map((p) => convertToForwardSlashPath(p)));
 
   const originalWriteFile = tsHost.writeFile.bind(tsHost);
-  tsHost.writeFile =
-      (fileName: string, content: string, writeByteOrderMark: boolean,
-       onError?: (message: string) => void, sourceFiles?: readonly ts.SourceFile[]) => {
-        const relative = relativeToRootDirs(convertToForwardSlashPath(fileName), [rootDir]);
-        if (expectedOutsSet.has(relative)) {
-          expectedOutsSet.delete(relative);
-          originalWriteFile(fileName, content, writeByteOrderMark, onError, sourceFiles);
-        }
-      };
+  tsHost.writeFile = (
+    fileName: string,
+    content: string,
+    writeByteOrderMark: boolean,
+    onError?: (message: string) => void,
+    sourceFiles?: readonly ts.SourceFile[],
+  ) => {
+    const relative = relativeToRootDirs(convertToForwardSlashPath(fileName), [rootDir]);
+    if (expectedOutsSet.has(relative)) {
+      expectedOutsSet.delete(relative);
+      originalWriteFile(fileName, content, writeByteOrderMark, onError, sourceFiles);
+    }
+  };
 
   if (!bazelHost) {
     bazelHost = new tscw.CompilerHost(files, compilerOpts, bazelOpts, tsHost, fileLoader);
@@ -248,8 +262,10 @@ export function compile({
   };
   const origBazelHostShouldNameModule = bazelHost.shouldNameModule.bind(bazelHost);
   bazelHost.shouldNameModule = (fileName: string) => {
-    const flatModuleOutPath =
-        path.posix.join(bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts');
+    const flatModuleOutPath = path.posix.join(
+      bazelOpts.package,
+      compilerOpts.flatModuleOutFile + '.ts',
+    );
 
     // The bundle index file is synthesized in bundle_index_host so it's not in the
     // compilationTargetSrc.
@@ -264,8 +280,10 @@ export function compile({
     // workspace then it will be formatted as `//package:target`.
     const targetWorkspace = bazelOpts.target.split('/')[0].replace(/^@/, '');
 
-    if (targetWorkspace &&
-        fileName === path.posix.join(baseUrl, 'external', targetWorkspace, flatModuleOutPath))
+    if (
+      targetWorkspace &&
+      fileName === path.posix.join(baseUrl, 'external', targetWorkspace, flatModuleOutPath)
+    )
       return true;
 
     return origBazelHostShouldNameModule(fileName);
@@ -273,11 +291,19 @@ export function compile({
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
   patchNgHost(
-      ngHost, compilerOpts, rootDirs, bazelOpts.workspaceName, bazelOpts.compilationTargetSrc,
-      !!useManifestPathsAsModuleName);
+    ngHost,
+    compilerOpts,
+    rootDirs,
+    bazelOpts.workspaceName,
+    bazelOpts.compilationTargetSrc,
+    !!useManifestPathsAsModuleName,
+  );
 
-  ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
-      bazelOpts.workspaceName, relativeToRootDirs(fileName, rootDirs).replace(EXT, ''));
+  ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
+    path.posix.join(
+      bazelOpts.workspaceName,
+      relativeToRootDirs(fileName, rootDirs).replace(EXT, ''),
+    );
   if (allDepsCompiledWithBazel) {
     // Note: The default implementation would work as well,
     // but we can be faster as we know how `toSummaryFileName` works.
@@ -292,7 +318,7 @@ export function compile({
   // report better errors.
   (ngHost as any).reportMissingResource = (resourceName: string) => {
     console.error(`\nAsset not found:\n  ${resourceName}`);
-    console.error('Check that it\'s included in the `assets` attribute of the `ng_module` rule.\n');
+    console.error("Check that it's included in the `assets` attribute of the `ng_module` rule.\n");
   };
 
   const emitCallback: ng.TsEmitCallback<ts.EmitResult> = ({
@@ -303,16 +329,25 @@ export function compile({
     emitOnlyDtsFiles,
     customTransformers = {},
   }) =>
-      program.emit(
-          targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
-
+    program.emit(
+      targetSourceFile,
+      writeFile,
+      cancellationToken,
+      emitOnlyDtsFiles,
+      customTransformers,
+    );
 
   if (!gatherDiagnostics) {
     gatherDiagnostics = (program) =>
-        gatherDiagnosticsForInputsOnly(compilerOpts, bazelOpts, program);
+      gatherDiagnosticsForInputsOnly(compilerOpts, bazelOpts, program);
   }
-  const {diagnostics, emitResult, program} = ng.performCompilation(
-      {rootNames: files, options: compilerOpts, host: ngHost, emitCallback, gatherDiagnostics});
+  const {diagnostics, emitResult, program} = ng.performCompilation({
+    rootNames: files,
+    options: compilerOpts,
+    host: ngHost,
+    emitCallback,
+    gatherDiagnostics,
+  });
   let externs = '/** @externs */\n';
   const hasError = diagnostics.some((diag) => diag.category === ts.DiagnosticCategory.Error);
   if (!hasError) {
@@ -353,7 +388,10 @@ export function compile({
  * See https://bazel.build/contribute/codebase#input-discovery
  */
 export function maybeWriteUnusedInputsList(
-    program: ts.Program, rootDir: string, bazelOpts: BazelOptions) {
+  program: ts.Program,
+  rootDir: string,
+  bazelOpts: BazelOptions,
+) {
   if (!bazelOpts?.unusedInputsListPath) {
     return;
   }
@@ -386,7 +424,9 @@ export function maybeWriteUnusedInputsList(
   // execroot directory.
   // See https://docs.bazel.build/versions/main/output_directories.html
   fs.writeFileSync(
-      bazelOpts.unusedInputsListPath, unusedInputs.map(f => path.relative(rootDir, f)).join('\n'));
+    bazelOpts.unusedInputsListPath,
+    unusedInputs.map((f) => path.relative(rootDir, f)).join('\n'),
+  );
 }
 
 function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolean {
@@ -398,7 +438,10 @@ function convertToForwardSlashPath(filePath: string): string {
 }
 
 function gatherDiagnosticsForInputsOnly(
-    options: ng.CompilerOptions, bazelOpts: BazelOptions, ngProgram: ng.Program): ts.Diagnostic[] {
+  options: ng.CompilerOptions,
+  bazelOpts: BazelOptions,
+  ngProgram: ng.Program,
+): ts.Diagnostic[] {
   const tsProgram = ngProgram.getTsProgram();
 
   // For the Ivy compiler, track the amount of time spent fetching TypeScript diagnostics.
@@ -412,7 +455,7 @@ function gatherDiagnosticsForInputsOnly(
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.
   diagnostics.push(...tsProgram.getOptionsDiagnostics());
   diagnostics.push(...tsProgram.getGlobalDiagnostics());
-  const programFiles = tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f));
+  const programFiles = tsProgram.getSourceFiles().filter((f) => isCompilationTarget(bazelOpts, f));
   for (let i = 0; i < programFiles.length; i++) {
     const sf = programFiles[i];
     // Note: We only get the diagnostics for individual files
@@ -445,9 +488,18 @@ function gatherDiagnosticsForInputsOnly(
  * Kept here just for compatibility with 1P tools. To be removed soon after 1P update.
  */
 export function patchNgHostWithFileNameToModuleName(
-    ngHost: ng.CompilerHost, compilerOpts: ng.CompilerOptions, bazelOpts: BazelOptions,
-    rootDirs: string[], useManifestPathsAsModuleName: boolean): void {
+  ngHost: ng.CompilerHost,
+  compilerOpts: ng.CompilerOptions,
+  bazelOpts: BazelOptions,
+  rootDirs: string[],
+  useManifestPathsAsModuleName: boolean,
+): void {
   patchNgHost(
-      ngHost, compilerOpts, rootDirs, bazelOpts.workspaceName, bazelOpts.compilationTargetSrc,
-      useManifestPathsAsModuleName);
+    ngHost,
+    compilerOpts,
+    rootDirs,
+    bazelOpts.workspaceName,
+    bazelOpts.compilationTargetSrc,
+    useManifestPathsAsModuleName,
+  );
 }

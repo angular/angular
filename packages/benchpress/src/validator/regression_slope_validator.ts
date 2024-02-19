@@ -23,15 +23,16 @@ export class RegressionSlopeValidator extends Validator {
   static PROVIDERS = [
     {
       provide: RegressionSlopeValidator,
-      deps: [RegressionSlopeValidator.SAMPLE_SIZE, RegressionSlopeValidator.METRIC]
+      deps: [RegressionSlopeValidator.SAMPLE_SIZE, RegressionSlopeValidator.METRIC],
     },
     {provide: RegressionSlopeValidator.SAMPLE_SIZE, useValue: 10},
-    {provide: RegressionSlopeValidator.METRIC, useValue: 'scriptTime'}
+    {provide: RegressionSlopeValidator.METRIC, useValue: 'scriptTime'},
   ];
 
   constructor(
-      @Inject(RegressionSlopeValidator.SAMPLE_SIZE) private _sampleSize: number,
-      @Inject(RegressionSlopeValidator.METRIC) private _metric: string) {
+    @Inject(RegressionSlopeValidator.SAMPLE_SIZE) private _sampleSize: number,
+    @Inject(RegressionSlopeValidator.METRIC) private _metric: string,
+  ) {
     super();
   }
 
@@ -39,10 +40,12 @@ export class RegressionSlopeValidator extends Validator {
     return {'sampleSize': this._sampleSize, 'regressionSlopeMetric': this._metric};
   }
 
-  override validate(completeSample: MeasureValues[]): MeasureValues[]|null {
+  override validate(completeSample: MeasureValues[]): MeasureValues[] | null {
     if (completeSample.length >= this._sampleSize) {
-      const latestSample =
-          completeSample.slice(completeSample.length - this._sampleSize, completeSample.length);
+      const latestSample = completeSample.slice(
+        completeSample.length - this._sampleSize,
+        completeSample.length,
+      );
       const xValues: number[] = [];
       const yValues: number[] = [];
       for (let i = 0; i < latestSample.length; i++) {
@@ -52,7 +55,11 @@ export class RegressionSlopeValidator extends Validator {
         yValues.push(latestSample[i].values[this._metric]);
       }
       const regressionSlope = Statistic.calculateRegressionSlope(
-          xValues, Statistic.calculateMean(xValues), yValues, Statistic.calculateMean(yValues));
+        xValues,
+        Statistic.calculateMean(xValues),
+        yValues,
+        Statistic.calculateMean(yValues),
+      );
       return regressionSlope >= 0 ? latestSample : null;
     } else {
       return null;

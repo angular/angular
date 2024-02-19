@@ -23,7 +23,10 @@ const formatOutput = (outputName: string) => {
     }
     output.push(parts[idx]);
   }
-  return output.filter((el) => !!el).reverse().join('-');
+  return output
+    .filter((el) => !!el)
+    .reverse()
+    .join('-');
 };
 
 export const formatDirectiveProfile = (nodes: DirectiveProfile[]) => {

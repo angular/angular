@@ -10,8 +10,11 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getDeclarationComponentDef} from '../render3/instructions/element_validation';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RNode} from '../render3/interfaces/renderer_dom';
-import {LView, TVIEW} from '../render3/interfaces/view';
+import {HOST, LView, TVIEW} from '../render3/interfaces/view';
 import {getParentRElement} from '../render3/node_manipulation';
+import {unwrapRNode} from '../render3/util/view_utils';
+
+import {markRNodeAsHavingHydrationMismatch} from './utils';
 
 const AT_THIS_LOCATION = '<-- AT THIS LOCATION';
 
@@ -48,7 +51,7 @@ function getFriendlyStringFromTNodeType(tNodeType: TNodeType): string {
  * Validates that provided nodes match during the hydration process.
  */
 export function validateMatchingNode(
-    node: RNode, nodeType: number, tagName: string|null, lView: LView, tNode: TNode,
+    node: RNode|null, nodeType: number, tagName: string|null, lView: LView, tNode: TNode,
     isViewContainerAnchor = false): void {
   if (!node ||
       ((node as Node).nodeType !== nodeType ||
@@ -60,21 +63,25 @@ export function validateMatchingNode(
     const hostComponentDef = getDeclarationComponentDef(lView);
     const componentClassName = hostComponentDef?.type?.name;
 
-    const expected = `Angular expected this DOM:\n\n${
-        describeExpectedDom(lView, tNode, isViewContainerAnchor)}\n\n`;
+    const expectedDom = describeExpectedDom(lView, tNode, isViewContainerAnchor);
+    const expected = `Angular expected this DOM:\n\n${expectedDom}\n\n`;
 
     let actual = '';
-
     if (!node) {
       // No node found during hydration.
       header += `the node was not found.\n\n`;
+
+      // Since the node is missing, we use the closest node to attach the error to
+      markRNodeAsHavingHydrationMismatch(unwrapRNode(lView[HOST]!), expectedDom);
     } else {
       const actualNode = shortRNodeDescription(
           (node as Node).nodeType, (node as HTMLElement).tagName ?? null,
           (node as HTMLElement).textContent ?? null);
 
       header += `found ${actualNode}.\n\n`;
-      actual = `Actual DOM is:\n\n${describeDomFromNode(node)}\n\n`;
+      const actualDom = describeDomFromNode(node);
+      actual = `Actual DOM is:\n\n${actualDom}\n\n`;
+      markRNodeAsHavingHydrationMismatch(node, expectedDom, actualDom);
     }
 
     const footer = getHydrationErrorFooter(componentClassName);
@@ -94,6 +101,8 @@ export function validateSiblingNodeExists(node: RNode|null): void {
     const footer = getHydrationErrorFooter();
 
     const message = header + actual + footer;
+
+    markRNodeAsHavingHydrationMismatch(node!, '', actual);
     throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_SIBLINGS, message);
   }
 }
@@ -109,10 +118,15 @@ export function validateNodeExists(
     let expected = '';
     let footer = '';
     if (lView !== null && tNode !== null) {
-      expected = `${describeExpectedDom(lView, tNode, false)}\n\n`;
+      expected = describeExpectedDom(lView, tNode, false);
       footer = getHydrationErrorFooter();
+
+      // Since the node is missing, we use the closest node to attach the error to
+      markRNodeAsHavingHydrationMismatch(unwrapRNode(lView[HOST]!), expected, '');
     }
-    throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, header + expected + footer);
+
+    throw new RuntimeError(
+        RuntimeErrorCode.HYDRATION_MISSING_NODE, `${header}${expected}\n\n${footer}`);
   }
 }
 
@@ -141,6 +155,7 @@ export function nodeNotFoundAtPathError(host: Node, path: string): Error {
       `using the "${path}" path, starting from the ${describeRNode(host)} node.\n\n`;
   const footer = getHydrationErrorFooter();
 
+  markRNodeAsHavingHydrationMismatch(host);
   throw new RuntimeError(RuntimeErrorCode.HYDRATION_MISSING_NODE, header + footer);
 }
 

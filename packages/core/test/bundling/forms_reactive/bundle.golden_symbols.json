@@ -246,7 +246,7 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
-    "name": "INJECTOR2"
+    "name": "INJECTOR"
   },
   {
     "name": "INJECTOR_DEF_TYPES"
@@ -265,6 +265,9 @@
   },
   {
     "name": "Injector"
+  },
+  {
+    "name": "InputFlags"
   },
   {
     "name": "IterableChangeRecord_"
@@ -468,9 +471,6 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
-    "name": "RadioControlRegistryModule"
-  },
-  {
     "name": "ReactiveFormsComponent"
   },
   {
@@ -493,6 +493,9 @@
   },
   {
     "name": "RuntimeError"
+  },
+  {
+    "name": "SIGNAL"
   },
   {
     "name": "SIMPLE_CHANGES_STORE"
@@ -669,7 +672,7 @@
     "name": "addLViewToLContainer"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "addToArray"
@@ -697,6 +700,9 @@
   },
   {
     "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyValueToInputField"
   },
   {
     "name": "applyView"
@@ -742,6 +748,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "checkStable"
@@ -879,6 +888,9 @@
     "name": "detachView"
   },
   {
+    "name": "detachViewFromDOM"
+  },
+  {
     "name": "detectChangesInChildComponents"
   },
   {
@@ -892,6 +904,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -973,9 +988,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getBeforeNodeForView"
@@ -1227,9 +1239,6 @@
     "name": "internalImportProvidersFrom"
   },
   {
-    "name": "invertObject"
-  },
-  {
     "name": "invokeDirectivesHostBindings"
   },
   {
@@ -1413,6 +1422,9 @@
     "name": "mergeHostAttrs"
   },
   {
+    "name": "mergeInputsWithTransforms"
+  },
+  {
     "name": "mergeValidators"
   },
   {
@@ -1483,6 +1495,9 @@
   },
   {
     "name": "optionsReducer"
+  },
+  {
+    "name": "parseAndConvertBindingsForDefinition"
   },
   {
     "name": "pickAsyncValidators"
@@ -1648,6 +1663,9 @@
   },
   {
     "name": "shouldAddViewToDom"
+  },
+  {
+    "name": "shouldRecheckView"
   },
   {
     "name": "shouldSearchParent"

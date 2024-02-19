@@ -40,12 +40,6 @@ export const enum ParseFlags {
    * Whether an output binding is being parsed.
    */
   Action = 1 << 0,
-
-  /**
-   * Whether an assignment event is being parsed, i.e. an expression originating from
-   * two-way-binding aka banana-in-a-box syntax.
-   */
-  AssignmentEvent = 1 << 1,
 }
 
 export class Parser {
@@ -54,17 +48,15 @@ export class Parser {
   constructor(private _lexer: Lexer) {}
 
   parseAction(
-      input: string, isAssignmentEvent: boolean, location: string, absoluteOffset: number,
+      input: string, location: string, absoluteOffset: number,
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ASTWithSource {
     this._checkNoInterpolation(input, location, interpolationConfig);
     const sourceToLex = this._stripComments(input);
     const tokens = this._lexer.tokenize(sourceToLex);
-    let flags = ParseFlags.Action;
-    if (isAssignmentEvent) {
-      flags |= ParseFlags.AssignmentEvent;
-    }
     const ast =
-        new _ParseAST(input, location, absoluteOffset, tokens, flags, this.errors, 0).parseChain();
+        new _ParseAST(input, location, absoluteOffset, tokens, ParseFlags.Action, this.errors, 0)
+            .parseChain();
+
     return new ASTWithSource(ast, input, location, absoluteOffset, this.errors);
   }
 
@@ -382,7 +374,7 @@ enum ParseContextFlags {
   Writable = 1,
 }
 
-export class _ParseAST {
+class _ParseAST {
   private rparensExpected = 0;
   private rbracketsExpected = 0;
   private rbracesExpected = 0;
@@ -394,24 +386,24 @@ export class _ParseAST {
   // and may change for subsequent expressions visited by the parser.
   private sourceSpanCache = new Map<string, AbsoluteSourceSpan>();
 
-  index: number = 0;
+  private index: number = 0;
 
   constructor(
-      public input: string, public location: string, public absoluteOffset: number,
-      public tokens: Token[], public parseFlags: ParseFlags, private errors: ParserError[],
+      private input: string, private location: string, private absoluteOffset: number,
+      private tokens: Token[], private parseFlags: ParseFlags, private errors: ParserError[],
       private offset: number) {}
 
-  peek(offset: number): Token {
+  private peek(offset: number): Token {
     const i = this.index + offset;
     return i < this.tokens.length ? this.tokens[i] : EOF;
   }
 
-  get next(): Token {
+  private get next(): Token {
     return this.peek(0);
   }
 
   /** Whether all the parser input has been processed. */
-  get atEOF(): boolean {
+  private get atEOF(): boolean {
     return this.index >= this.tokens.length;
   }
 
@@ -419,7 +411,7 @@ export class _ParseAST {
    * Index of the next token to be processed, or the end of the last token if all have been
    * processed.
    */
-  get inputIndex(): number {
+  private get inputIndex(): number {
     return this.atEOF ? this.currentEndIndex : this.next.index + this.offset;
   }
 
@@ -427,7 +419,7 @@ export class _ParseAST {
    * End index of the last processed token, or the start of the first token if none have been
    * processed.
    */
-  get currentEndIndex(): number {
+  private get currentEndIndex(): number {
     if (this.index > 0) {
       const curToken = this.peek(-1);
       return curToken.end + this.offset;
@@ -443,7 +435,7 @@ export class _ParseAST {
   /**
    * Returns the absolute offset of the start of the current token.
    */
-  get currentAbsoluteOffset(): number {
+  private get currentAbsoluteOffset(): number {
     return this.absoluteOffset + this.inputIndex;
   }
 
@@ -455,7 +447,7 @@ export class _ParseAST {
    * @param artificialEndIndex Optional ending index to be used if provided (and if greater than the
    *     natural ending index)
    */
-  span(start: number, artificialEndIndex?: number): ParseSpan {
+  private span(start: number, artificialEndIndex?: number): ParseSpan {
     let endIndex = this.currentEndIndex;
     if (artificialEndIndex !== undefined && artificialEndIndex > this.currentEndIndex) {
       endIndex = artificialEndIndex;
@@ -476,7 +468,7 @@ export class _ParseAST {
     return new ParseSpan(start, endIndex);
   }
 
-  sourceSpan(start: number, artificialEndIndex?: number): AbsoluteSourceSpan {
+  private sourceSpan(start: number, artificialEndIndex?: number): AbsoluteSourceSpan {
     const serial = `${start}@${this.inputIndex}:${artificialEndIndex}`;
     if (!this.sourceSpanCache.has(serial)) {
       this.sourceSpanCache.set(
@@ -485,7 +477,7 @@ export class _ParseAST {
     return this.sourceSpanCache.get(serial)!;
   }
 
-  advance() {
+  private advance() {
     this.index++;
   }
 
@@ -499,7 +491,7 @@ export class _ParseAST {
     return ret;
   }
 
-  consumeOptionalCharacter(code: number): boolean {
+  private consumeOptionalCharacter(code: number): boolean {
     if (this.next.isCharacter(code)) {
       this.advance();
       return true;
@@ -508,10 +500,11 @@ export class _ParseAST {
     }
   }
 
-  peekKeywordLet(): boolean {
+  private peekKeywordLet(): boolean {
     return this.next.isKeywordLet();
   }
-  peekKeywordAs(): boolean {
+
+  private peekKeywordAs(): boolean {
     return this.next.isKeywordAs();
   }
 
@@ -521,12 +514,12 @@ export class _ParseAST {
    *
    * See `this.error` and `this.skip` for more details.
    */
-  expectCharacter(code: number) {
+  private expectCharacter(code: number) {
     if (this.consumeOptionalCharacter(code)) return;
     this.error(`Missing expected ${String.fromCharCode(code)}`);
   }
 
-  consumeOptionalOperator(op: string): boolean {
+  private consumeOptionalOperator(op: string): boolean {
     if (this.next.isOperator(op)) {
       this.advance();
       return true;
@@ -535,16 +528,16 @@ export class _ParseAST {
     }
   }
 
-  expectOperator(operator: string) {
+  private expectOperator(operator: string) {
     if (this.consumeOptionalOperator(operator)) return;
     this.error(`Missing expected operator ${operator}`);
   }
 
-  prettyPrintToken(tok: Token): string {
+  private prettyPrintToken(tok: Token): string {
     return tok === EOF ? 'end of input' : `token ${tok}`;
   }
 
-  expectIdentifierOrKeyword(): string|null {
+  private expectIdentifierOrKeyword(): string|null {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword()) {
       if (n.isPrivateIdentifier()) {
@@ -558,7 +551,7 @@ export class _ParseAST {
     return n.toString() as string;
   }
 
-  expectIdentifierOrKeywordOrString(): string {
+  private expectIdentifierOrKeywordOrString(): string {
     const n = this.next;
     if (!n.isIdentifier() && !n.isKeyword() && !n.isString()) {
       if (n.isPrivateIdentifier()) {
@@ -610,12 +603,12 @@ export class _ParseAST {
     return new Chain(this.span(start), this.sourceSpan(start), exprs);
   }
 
-  parsePipe(): AST {
+  private parsePipe(): AST {
     const start = this.inputIndex;
     let result = this.parseExpression();
     if (this.consumeOptionalOperator('|')) {
       if (this.parseFlags & ParseFlags.Action) {
-        this.error('Cannot have a pipe in an action expression');
+        this.error(`Cannot have a pipe in an action expression`);
       }
 
       do {
@@ -659,11 +652,11 @@ export class _ParseAST {
     return result;
   }
 
-  parseExpression(): AST {
+  private parseExpression(): AST {
     return this.parseConditional();
   }
 
-  parseConditional(): AST {
+  private parseConditional(): AST {
     const start = this.inputIndex;
     const result = this.parseLogicalOr();
 
@@ -684,7 +677,7 @@ export class _ParseAST {
     }
   }
 
-  parseLogicalOr(): AST {
+  private parseLogicalOr(): AST {
     // '||'
     const start = this.inputIndex;
     let result = this.parseLogicalAnd();
@@ -695,7 +688,7 @@ export class _ParseAST {
     return result;
   }
 
-  parseLogicalAnd(): AST {
+  private parseLogicalAnd(): AST {
     // '&&'
     const start = this.inputIndex;
     let result = this.parseNullishCoalescing();
@@ -706,7 +699,7 @@ export class _ParseAST {
     return result;
   }
 
-  parseNullishCoalescing(): AST {
+  private parseNullishCoalescing(): AST {
     // '??'
     const start = this.inputIndex;
     let result = this.parseEquality();
@@ -717,7 +710,7 @@ export class _ParseAST {
     return result;
   }
 
-  parseEquality(): AST {
+  private parseEquality(): AST {
     // '==','!=','===','!=='
     const start = this.inputIndex;
     let result = this.parseRelational();
@@ -738,7 +731,7 @@ export class _ParseAST {
     return result;
   }
 
-  parseRelational(): AST {
+  private parseRelational(): AST {
     // '<', '>', '<=', '>='
     const start = this.inputIndex;
     let result = this.parseAdditive();
@@ -759,7 +752,7 @@ export class _ParseAST {
     return result;
   }
 
-  parseAdditive(): AST {
+  private parseAdditive(): AST {
     // '+', '-'
     const start = this.inputIndex;
     let result = this.parseMultiplicative();
@@ -778,7 +771,7 @@ export class _ParseAST {
     return result;
   }
 
-  parseMultiplicative(): AST {
+  private parseMultiplicative(): AST {
     // '*', '%', '/'
     const start = this.inputIndex;
     let result = this.parsePrefix();
@@ -798,7 +791,7 @@ export class _ParseAST {
     return result;
   }
 
-  parsePrefix(): AST {
+  private parsePrefix(): AST {
     if (this.next.type == TokenType.Operator) {
       const start = this.inputIndex;
       const operator = this.next.strValue;
@@ -821,7 +814,7 @@ export class _ParseAST {
     return this.parseCallChain();
   }
 
-  parseCallChain(): AST {
+  private parseCallChain(): AST {
     const start = this.inputIndex;
     let result = this.parsePrimary();
     while (true) {
@@ -848,7 +841,7 @@ export class _ParseAST {
     }
   }
 
-  parsePrimary(): AST {
+  private parsePrimary(): AST {
     const start = this.inputIndex;
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
       this.rparensExpected++;
@@ -912,7 +905,7 @@ export class _ParseAST {
     }
   }
 
-  parseExpressionList(terminator: number): AST[] {
+  private parseExpressionList(terminator: number): AST[] {
     const result: AST[] = [];
 
     do {
@@ -925,7 +918,7 @@ export class _ParseAST {
     return result;
   }
 
-  parseLiteralMap(): LiteralMap {
+  private parseLiteralMap(): LiteralMap {
     const keys: LiteralMapKey[] = [];
     const values: AST[] = [];
     const start = this.inputIndex;
@@ -958,7 +951,7 @@ export class _ParseAST {
     return new LiteralMap(this.span(start), this.sourceSpan(start), keys, values);
   }
 
-  parseAccessMember(readReceiver: AST, start: number, isSafe: boolean): AST {
+  private parseAccessMember(readReceiver: AST, start: number, isSafe: boolean): AST {
     const nameStart = this.inputIndex;
     const id = this.withContext(ParseContextFlags.Writable, () => {
       const id = this.expectIdentifierOrKeyword() ?? '';
@@ -971,7 +964,7 @@ export class _ParseAST {
     let receiver: AST;
 
     if (isSafe) {
-      if (this.consumeOptionalAssignment()) {
+      if (this.consumeOptionalOperator('=')) {
         this.error('The \'?.\' operator cannot be used in the assignment');
         receiver = new EmptyExpr(this.span(start), this.sourceSpan(start));
       } else {
@@ -979,7 +972,7 @@ export class _ParseAST {
             this.span(start), this.sourceSpan(start), nameSpan, readReceiver, id);
       }
     } else {
-      if (this.consumeOptionalAssignment()) {
+      if (this.consumeOptionalOperator('=')) {
         if (!(this.parseFlags & ParseFlags.Action)) {
           this.error('Bindings cannot contain assignments');
           return new EmptyExpr(this.span(start), this.sourceSpan(start));
@@ -997,7 +990,7 @@ export class _ParseAST {
     return receiver;
   }
 
-  parseCall(receiver: AST, start: number, isSafe: boolean): AST {
+  private parseCall(receiver: AST, start: number, isSafe: boolean): AST {
     const argumentStart = this.inputIndex;
     this.rparensExpected++;
     const args = this.parseCallArguments();
@@ -1010,25 +1003,7 @@ export class _ParseAST {
                     new Call(span, sourceSpan, receiver, args, argumentSpan);
   }
 
-  private consumeOptionalAssignment(): boolean {
-    // When parsing assignment events (originating from two-way-binding aka banana-in-a-box syntax),
-    // it is valid for the primary expression to be terminated by the non-null operator. This
-    // primary expression is substituted as LHS of the assignment operator to achieve
-    // two-way-binding, such that the LHS could be the non-null operator. The grammar doesn't
-    // naturally allow for this syntax, so assignment events are parsed specially.
-    if ((this.parseFlags & ParseFlags.AssignmentEvent) && this.next.isOperator('!') &&
-        this.peek(1).isOperator('=')) {
-      // First skip over the ! operator.
-      this.advance();
-      // Then skip over the = operator, to fully consume the optional assignment operator.
-      this.advance();
-      return true;
-    }
-
-    return this.consumeOptionalOperator('=');
-  }
-
-  parseCallArguments(): BindingPipe[] {
+  private parseCallArguments(): BindingPipe[] {
     if (this.next.isCharacter(chars.$RPAREN)) return [];
     const positionals: AST[] = [];
     do {
@@ -1041,7 +1016,7 @@ export class _ParseAST {
    * Parses an identifier, a keyword, a string with an optional `-` in between,
    * and returns the string along with its absolute source span.
    */
-  expectTemplateBindingKey(): TemplateBindingIdentifier {
+  private expectTemplateBindingKey(): TemplateBindingIdentifier {
     let result = '';
     let operatorFound = false;
     const start = this.currentAbsoluteOffset;
@@ -1117,7 +1092,7 @@ export class _ParseAST {
     return new TemplateBindingParseResult(bindings, [] /* warnings */, this.errors);
   }
 
-  parseKeyedReadOrWrite(receiver: AST, start: number, isSafe: boolean): AST {
+  private parseKeyedReadOrWrite(receiver: AST, start: number, isSafe: boolean): AST {
     return this.withContext(ParseContextFlags.Writable, () => {
       this.rbracketsExpected++;
       const key = this.parsePipe();
@@ -1258,7 +1233,7 @@ export class _ParseAST {
    * Records an error and skips over the token stream until reaching a recoverable point. See
    * `this.skip` for more details on token skipping.
    */
-  error(message: string, index: number|null = null) {
+  private error(message: string, index: number|null = null) {
     this.errors.push(new ParserError(message, this.input, this.locationText(index), this.location));
     this.skip();
   }

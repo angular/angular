@@ -1,3 +1,31 @@
+## [0.14.4](https://github.com/angular/angular/compare/zone.js-0.14.3...zone.js-0.14.4) (2024-02-13)
+
+
+### Bug Fixes
+
+* **zone.js:** add `__Zone_ignore_on_properties` to `ZoneGlobalConfigurations` ([#50737](https://github.com/angular/angular/issues/50737)) ([f87f058](https://github.com/angular/angular/commit/f87f058a69443d9427530c979b39e3630190a7fd))
+* **zone.js:** patch `fs.realpath.native` as macrotask ([#54208](https://github.com/angular/angular/issues/54208)) ([19fae76](https://github.com/angular/angular/commit/19fae76bada7146e8993fb672b8d321fb08967f2)), closes [#45546](https://github.com/angular/angular/issues/45546)
+* **zone.js:** patch `Response` methods returned by `fetch` ([#50653](https://github.com/angular/angular/issues/50653)) ([260d3ed](https://github.com/angular/angular/commit/260d3ed0d91648d3ba75d7d9896f38195093c7e4)), closes [#50327](https://github.com/angular/angular/issues/50327)
+* **zone.js:** patch form-associated custom element callbacks ([#50686](https://github.com/angular/angular/issues/50686)) ([1c990cd](https://github.com/angular/angular/commit/1c990cdb2962fa879762d5e26f87f547a00e1795))
+
+
+
+## [0.14.3](https://github.com/angular/angular/compare/zone.js-0.14.2...zone.js-0.14.3) (2023-12-19)
+
+
+### Bug Fixes
+
+* **zone.js:** handle fetch with AbortSignal ([#49595](https://github.com/angular/angular/issues/49595)) ([b06b24b](https://github.com/angular/angular/commit/b06b24b5049c07fbc18c76fd2a10e49fc93870be))
+* **zone.js:** Promise.resolve(subPromise) should return subPromise ([#53423](https://github.com/angular/angular/issues/53423)) ([08b0c87](https://github.com/angular/angular/commit/08b0c87a948007e086a2c5a5c17ccca5fd7a24c4)), closes [/promisesaplus.com/#point-51](https://github.com//promisesaplus.com//issues/point-51)
+* **zone.js:** support addEventListener with signal option. ([#49595](https://github.com/angular/angular/issues/49595)) ([d4973ff](https://github.com/angular/angular/commit/d4973ff9b074f4db918f71163e79b7d112c309f5)), closes [#49591](https://github.com/angular/angular/issues/49591)
+
+
+### Features
+
+* **zone.js:** implement Promise.withResolvers() ([#53514](https://github.com/angular/angular/issues/53514)) ([7a28f50](https://github.com/angular/angular/commit/7a28f50711535fcc285c7ee9021e8e7dc34a655d))
+
+
+
 ## [0.14.2](https://github.com/angular/angular/compare/zone.js-0.14.1...zone.js-0.14.2) (2023-11-03)
 
 

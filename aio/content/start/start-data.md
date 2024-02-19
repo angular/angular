@@ -255,7 +255,7 @@ Now that you've configured your application to retrieve shipping data, you can c
 
 This section guides you through modifying the `ShippingComponent` to retrieve shipping data via HTTP from the `shipping.json` file.
 
-1.  In `shipping.component.ts`, import `CartService`.
+1.  In `shipping.component.ts`, import `OnInit`, `Observable` and `CartService`.
 
     <code-example header="src/app/shipping/shipping.component.ts" path="getting-started/src/app/shipping/shipping.component.ts" region="imports"></code-example>
 

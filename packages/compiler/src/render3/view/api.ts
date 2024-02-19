@@ -126,6 +126,31 @@ export interface R3DirectiveMetadata {
 }
 
 /**
+ * Defines how dynamic imports for deferred dependencies should be emitted in the
+ * generated output:
+ *  - either in a function on per-component basis (in case of local compilation)
+ *  - or in a function on per-block basis (in full compilation mode)
+ */
+export const enum DeferBlockDepsEmitMode {
+  /**
+   * Dynamic imports are grouped on per-block basis.
+   *
+   * This is used in full compilation mode, when compiler has more information
+   * about particular dependencies that belong to this block.
+   */
+  PerBlock,
+
+  /**
+   * Dynamic imports are grouped on per-component basis.
+   *
+   * In local compilation, compiler doesn't have enough information to determine
+   * which deferred dependencies belong to which block. In this case we group all
+   * dynamic imports into a single file on per-component basis.
+   */
+  PerComponent,
+}
+
+/**
  * Specifies how a list of declaration type references should be emitted into the generated code.
  */
 export const enum DeclarationListEmitMode {
@@ -194,6 +219,11 @@ export interface R3DeferBlockTemplateDependency {
    * Import path where this dependency is located.
    */
   importPath: string|null;
+
+  /**
+   * Whether the symbol is the default export.
+   */
+  isDefaultImport: boolean;
 }
 
 /**
@@ -246,6 +276,18 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
    * Map of `@defer` blocks -> their corresponding metadata.
    */
   deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>;
+
+  /**
+   * Defines how dynamic imports for deferred dependencies should be grouped:
+   *  - either in a function on per-component basis (in case of local compilation)
+   *  - or in a function on per-block basis (in full compilation mode)
+   */
+  deferBlockDepsEmitMode: DeferBlockDepsEmitMode;
+
+  /**
+   * Map of deferrable symbol names -> corresponding import paths.
+   */
+  deferrableTypes: Map<string, {importPath: string, isDefaultImport: boolean}>;
 
   /**
    * Specifies how the 'directives' and/or `pipes` array, if generated, need to be emitted.
@@ -310,6 +352,8 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
    * not be set. If component has empty array imports then this field is not set.
    */
   rawImports?: o.Expression;
+
+  useTemplatePipeline: boolean;
 }
 
 /**
@@ -413,6 +457,12 @@ export interface R3QueryMetadata {
   /**
    * Either an expression representing a type or `InjectionToken` for the query
    * predicate, or a set of string selectors.
+   *
+   * Note: At compile time we split selectors as an optimization that avoids this
+   * extra work at runtime creation phase.
+   *
+   * Notably, if the selector is not statically analyzable due to an expression,
+   * the selectors may need to be split up at runtime.
    */
   predicate: MaybeForwardRefExpression|string[];
 
@@ -446,8 +496,13 @@ export interface R3QueryMetadata {
    * runs. This means that the query results can contain nodes inside *ngIf or *ngFor views, but
    * the results will not be available in the ngOnInit hook (only in the ngAfterContentInit for
    * content hooks and ngAfterViewInit for view hooks).
+   *
+   * Note: For signal-based queries, this option does not have any effect.
    */
   static: boolean;
+
+  /** Whether the query is signal-based. */
+  isSignal: boolean;
 }
 
 /**
@@ -471,6 +526,8 @@ export interface R3HostMetadata {
   properties: {[key: string]: string};
 
   specialAttributes: {styleAttr?: string; classAttr?: string;};
+
+  useTemplatePipeline: boolean;
 }
 
 /**

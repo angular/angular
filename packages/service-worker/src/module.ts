@@ -23,8 +23,10 @@ export class ServiceWorkerModule {
    * If `enabled` is set to `false` in the given options, the module will behave as if service
    * workers are not supported by the browser, and the service worker will not be registered.
    */
-  static register(script: string, options: SwRegistrationOptions = {}):
-      ModuleWithProviders<ServiceWorkerModule> {
+  static register(
+    script: string,
+    options: SwRegistrationOptions = {},
+  ): ModuleWithProviders<ServiceWorkerModule> {
     return {
       ngModule: ServiceWorkerModule,
       providers: [provideServiceWorker(script, options)],

@@ -6,10 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewChecked, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output,} from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {ContainerType} from 'protocol';
 
-type EditorType = string|number|boolean;
-type EditorResult = EditorType|Array<EditorType>;
+type EditorType = string | number | boolean;
+type EditorResult = EditorType | Array<EditorType>;
 
 enum PropertyEditorState {
   Read,
@@ -28,10 +39,14 @@ const parseValue = (value: EditorResult): EditorResult => {
   templateUrl: './property-editor.component.html',
   selector: 'ng-property-editor',
   styleUrls: ['./property-editor.component.scss'],
+  standalone: true,
+  imports: [FormsModule],
 })
 export class PropertyEditorComponent implements AfterViewChecked, OnInit {
   @Input({required: true}) key!: string;
   @Input({required: true}) initialValue!: EditorResult;
+  @Input() containerType: ContainerType = null;
+
   @Output() updateValue = new EventEmitter<EditorResult>();
 
   readState = PropertyEditorState.Read;
@@ -40,7 +55,10 @@ export class PropertyEditorComponent implements AfterViewChecked, OnInit {
   valueToSubmit!: EditorResult;
   currentPropertyState = this.readState;
 
-  constructor(private _cd: ChangeDetectorRef, private _elementRef: ElementRef) {}
+  constructor(
+    private _cd: ChangeDetectorRef,
+    private _elementRef: ElementRef,
+  ) {}
 
   ngOnInit(): void {
     this.valueToSubmit = this.initialValue;

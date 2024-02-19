@@ -9,7 +9,7 @@
 import {sanitizeIdentifier} from '../../../../parse_util';
 import {hyphenate} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
-import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
+import {type CompilationJob, type CompilationUnit, ViewCompilationUnit} from '../compilation';
 
 /**
  * Generate names for functions and variables across all views.
@@ -26,7 +26,11 @@ export function nameFunctionsAndVariables(job: CompilationJob): void {
 function addNamesToView(
     unit: CompilationUnit, baseName: string, state: {index: number}, compatibility: boolean): void {
   if (unit.fnName === null) {
-    unit.fnName = sanitizeIdentifier(`${baseName}_${unit.job.fnSuffix}`);
+    // Ensure unique names for view units. This is necessary because there might be multiple
+    // components with same names in the context of the same pool. Only add the suffix
+    // if really needed.
+    unit.fnName = unit.job.pool.uniqueName(
+        sanitizeIdentifier(`${baseName}_${unit.job.fnSuffix}`), /* alwaysIncludeSuffix */ false);
   }
 
   // Keep track of the names we assign to variables in the view. We'll need to propagate these
@@ -60,6 +64,16 @@ function addNamesToView(
               op.targetSlot.slot}_listener`;
         }
         op.handlerFnName = sanitizeIdentifier(op.handlerFnName);
+        break;
+      case ir.OpKind.TwoWayListener:
+        if (op.handlerFnName !== null) {
+          break;
+        }
+        if (op.targetSlot.slot === null) {
+          throw new Error(`Expected a slot to be assigned`);
+        }
+        op.handlerFnName = sanitizeIdentifier(`${unit.fnName}_${op.tag!.replace('-', '_')}_${
+            op.name}_${op.targetSlot.slot}_listener`);
         break;
       case ir.OpKind.Variable:
         varNames.set(op.xref, getVariableName(unit, op.variable, state));

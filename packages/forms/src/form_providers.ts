@@ -15,9 +15,6 @@ import {CALL_SET_DISABLED_STATE, setDisabledStateDefault, SetDisabledStateOption
  * Exports the required providers and directives for template-driven forms,
  * making them available for import by NgModules that import this module.
  *
- * Providers associated with this module:
- * * `RadioControlRegistry`
- *
  * @see [Forms Overview](/guide/forms-overview)
  * @see [Template-driven Forms Guide](/guide/forms)
  *
@@ -52,9 +49,6 @@ export class FormsModule {
 /**
  * Exports the required infrastructure and directives for reactive forms,
  * making them available for import by NgModules that import this module.
- *
- * Providers associated with this module:
- * * `RadioControlRegistry`
  *
  * @see [Forms Overview](guide/forms-overview)
  * @see [Reactive Forms Guide](guide/reactive-forms)

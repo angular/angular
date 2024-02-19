@@ -21,7 +21,7 @@ import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3NgModuleMetadataKind, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import type {BoundTarget} from './render3/view/t2_api';
 import {R3TargetBinder} from './render3/view/t2_binder';
@@ -29,6 +29,8 @@ import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {SelectorMatcher} from './selector';
+
+export const SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT = false;
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
@@ -193,10 +195,9 @@ export class CompilerFacadeImpl implements CompilerFacade {
       declarations: facade.declarations.map(convertDeclarationFacadeToMetadata),
       declarationListEmitMode: DeclarationListEmitMode.Direct,
       deferBlocks,
-
-      // TODO: leaving empty in JIT mode for now,
-      // to be implemented as one of the next steps.
+      deferrableTypes: new Map(),
       deferrableDeclToImportDecl: new Map(),
+      deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
 
       styles: [...facade.styles, ...template.styles],
       encapsulation: facade.encapsulation,
@@ -207,6 +208,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
                                                     null,
       relativeContextFilePath: '',
       i18nUseExternalIds: true,
+      useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT,
     };
     const jitExpressionSourceMap = `ng:///${facade.name}.js`;
     return this.compileComponentFromMeta(angularCoreEnv, jitExpressionSourceMap, meta);
@@ -292,6 +294,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
 function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadata {
   return {
     ...facade,
+    isSignal: facade.isSignal,
     predicate: convertQueryPredicate(facade.predicate),
     read: facade.read ? new WrappedNodeExpr(facade.read) : null,
     static: facade.static,
@@ -309,6 +312,7 @@ function convertQueryDeclarationToMetadata(declaration: R3DeclareQueryMetadataFa
     read: declaration.read ? new WrappedNodeExpr(declaration.read) : null,
     static: declaration.static ?? false,
     emitDistinctChangesOnly: declaration.emitDistinctChangesOnly ?? true,
+    isSignal: !!declaration.isSignal,
   };
 }
 
@@ -335,8 +339,10 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
             bindingPropertyName: ann.alias || field,
             classPropertyName: field,
             required: ann.required || false,
-            // TODO(signals): Support JIT signal inputs via decorator transform.
-            isSignal: false,
+            // For JIT, decorators are used to declare signal inputs. That is because of
+            // a technical limitation where it's not possible to statically reflect class
+            // members of a directive/component at runtime before instantiating the class.
+            isSignal: !!ann.isSignal,
             transformFunction: ann.transform != null ? new WrappedNodeExpr(ann.transform) : null,
           };
         } else if (isOutput(ann)) {
@@ -352,7 +358,10 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     typeSourceSpan: facade.typeSourceSpan,
     type: wrapReference(facade.type),
     deps: null,
-    host: extractHostBindings(facade.propMetadata, facade.typeSourceSpan, facade.host),
+    host: {
+      ...extractHostBindings(facade.propMetadata, facade.typeSourceSpan, facade.host),
+      useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT,
+    },
     inputs: {...inputsFromMetadata, ...inputsFromType},
     outputs: {...outputsFromMetadata, ...outputsFromType},
     queries: facade.queries.map(convertToR3QueryMetadata),
@@ -399,6 +408,7 @@ function convertHostDeclarationToMetadata(host: R3DeclareDirectiveFacade['host']
       classAttr: host.classAttribute,
       styleAttr: host.styleAttribute,
     },
+    useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT,
   };
 }
 
@@ -475,10 +485,9 @@ function convertDeclareComponentFacadeToMetadata(
                                                       null,
     animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
     deferBlocks,
-
-    // TODO: leaving empty in JIT mode for now,
-    // to be implemented as one of the next steps.
+    deferrableTypes: new Map(),
     deferrableDeclToImportDecl: new Map(),
+    deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
 
     changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
@@ -486,6 +495,7 @@ function convertDeclareComponentFacadeToMetadata(
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',
     i18nUseExternalIds: true,
+    useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT,
   };
 }
 

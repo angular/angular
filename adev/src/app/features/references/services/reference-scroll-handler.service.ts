@@ -160,6 +160,9 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       for (const line of Array.from(activeLines)) {
         line.classList.remove(API_TAB_ACTIVE_CODE_LINE);
       }
+      this.getAllMemberCards().forEach((card) => {
+        card.blur();
+      });
     } else {
       const lines = this.document.querySelectorAll<HTMLButtonElement>(
         `button[${MEMBER_ID_ATTRIBUTE}="${currentActiveMemberId}"]`,
@@ -167,6 +170,7 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       for (const line of Array.from(lines)) {
         line.classList.add(API_TAB_ACTIVE_CODE_LINE);
       }
+      this.document.getElementById(`${currentActiveMemberId}`)?.focus();
     }
   }
 

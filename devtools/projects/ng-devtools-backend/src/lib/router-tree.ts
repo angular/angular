@@ -31,7 +31,7 @@ export function parseRoutes(router: Router): Route {
   return root;
 }
 
-function assignChildrenToParent(parentPath: string|null, children: Routes): Route[] {
+function assignChildrenToParent(parentPath: string | null, children: Routes): Route[] {
   return children.map((child: AngularRoute) => {
     const childName = childRouteName(child);
     const childDescendents: [any] = (child as any)._loadedConfig?.routes || child.children;

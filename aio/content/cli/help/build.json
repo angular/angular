@@ -37,6 +37,12 @@
       "description": "The full path for the browser entry point to the application, relative to the current workspace."
     },
     {
+      "name": "clear-screen",
+      "type": "boolean",
+      "default": false,
+      "description": "Automatically clear the terminal screen during rebuilds."
+    },
+    {
       "name": "configuration",
       "type": "string",
       "aliases": [

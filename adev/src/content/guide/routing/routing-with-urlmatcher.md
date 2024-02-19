@@ -110,7 +110,7 @@ To learn more about the Angular Router, see the following topics:
 
 <docs-pill-row>
   <docs-pill href="guide/routing/common-router-tasks" title="In-app Routing and Navigation"/>
-  <docs-pill href="api/router" title="Router API"/>
+  <docs-pill href="api/router/Router" title="Router API"/>
 </docs-pill-row>
 
 HELPFUL: This content is based on [Custom Route Matching with the Angular Router](https://medium.com/@brandontroberts/custom-route-matching-with-the-angular-router-fbdd48665483), by [Brandon Roberts](https://twitter.com/brandontroberts).

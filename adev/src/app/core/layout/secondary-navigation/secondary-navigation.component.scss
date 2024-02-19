@@ -18,7 +18,7 @@
     transform: translateX(0);
     z-index: 99;
     transition: transform 0.3s ease;
-    &:has(.adev-nav-secondary--open) {
+    &:has(.docs-nav-secondary--open) {
       transform: translateX(82px);
       transition: transform 0.3s ease-in 0.3s;
     }
@@ -46,7 +46,7 @@
   @include mq.for-tablet-landscape-down {
     transform: translateX(-100%);
 
-    &.adev-nav-secondary--open {
+    &.docs-nav-secondary--open {
       transform: translateX(0);
     }
   }
@@ -56,7 +56,7 @@
     // exit immediately
     transition: transform 0.45s ease-in;
 
-    &.adev-nav-secondary--open {
+    &.docs-nav-secondary--open {
       transform: translateX(0);
       // enter delayed
       transition: transform 0.45s ease-out 0.2s;
@@ -64,8 +64,8 @@
   }
 }
 
-// seconday nav - translated on x to display levels
-.adev-nav-secondary {
+// secondary nav - translated on x to display levels
+.docs-nav-secondary {
   display: flex;
   flex-direction: row;
   max-width: var(--secondary-nav-width);

@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ElementRef, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 
 import {ZippyComponent} from './zippy.component';
 
@@ -26,7 +36,15 @@ export class DemoAppComponent {
   @Output() outputOne = new EventEmitter();
   @Output('output_two') outputTwo = new EventEmitter();
 
-  getTitle(): '► Click to expand'|'▼ Click to collapse' {
+  primitiveSignal = signal(123);
+  primitiveComputed = computed(() => this.primitiveSignal() ** 2);
+  objectSignal = signal({name: 'John', age: 40});
+  objectComputed = computed(() => {
+    const original = this.objectSignal();
+    return {...original, age: original.age + 1};
+  });
+
+  getTitle(): '► Click to expand' | '▼ Click to collapse' {
     if (!this.zippy || !this.zippy.visible) {
       return '► Click to expand';
     }

@@ -8,9 +8,9 @@
 
 /// <reference types="node" />
 
-export {forwardRefResolver, NoopReferencesRegistry, ReferencesRegistry, ResourceLoader, ResourceLoaderContext} from './common';
+export {forwardRefResolver, getAngularDecorators, isAngularDecorator, NoopReferencesRegistry, ReferencesRegistry, ResourceLoader, ResourceLoaderContext} from './common';
 export {ComponentDecoratorHandler} from './component';
-export {DirectiveDecoratorHandler} from './directive';
+export {DirectiveDecoratorHandler, queryDecoratorNames, QueryFunctionName, tryParseInitializerBasedOutput, tryParseSignalInputMapping, tryParseSignalModelMapping, tryParseSignalQueryFromInitializer} from './directive';
 export {NgModuleDecoratorHandler} from './ng_module';
 export {InjectableDecoratorHandler} from './src/injectable';
 export {PipeDecoratorHandler} from './src/pipe';

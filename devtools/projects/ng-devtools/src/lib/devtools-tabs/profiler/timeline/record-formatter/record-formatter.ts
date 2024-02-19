@@ -20,19 +20,22 @@ export interface AppEntry<T> {
 
 export interface GraphNode {
   toolTip: string;
-  style: any;
+  style: unknown;
   frame: ProfilerFrame;
 }
 
 export abstract class RecordFormatter<T> {
   abstract formatFrame(frame: ProfilerFrame): T;
-  abstract addFrame(nodes: T|T[], elements: ElementProfile[]): number|void;
+  abstract addFrame(nodes: T | T[], elements: ElementProfile[]): number | void;
 
   getLabel(element: ElementProfile): string {
-    const name = element.directives.filter((d) => d.isComponent).map((c) => c.name).join(', ');
-    const attributes =
-        [...new Set(element.directives.filter((d) => !d.isComponent).map((d) => d.name))].join(
-            ', ');
+    const name = element.directives
+      .filter((d) => d.isComponent)
+      .map((c) => c.name)
+      .join(', ');
+    const attributes = [
+      ...new Set(element.directives.filter((d) => !d.isComponent).map((d) => d.name)),
+    ].join(', ');
     return attributes === '' ? name : `${name}[${attributes}]`;
   }
 

@@ -10,8 +10,7 @@
 import {AfterViewInit, Component, Directive, ViewChild} from '@angular/core';
 
 @Directive({selector: 'child-directive'})
-class ChildDirective {
-}
+class ChildDirective {}
 
 @Component({selector: 'someCmp', templateUrl: 'someCmp.html'})
 class SomeCmp implements AfterViewInit {

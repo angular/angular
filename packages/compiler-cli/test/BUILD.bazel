@@ -53,24 +53,27 @@ jasmine_node_test(
 )
 
 ts_library(
-    name = "downlevel_decorator_transform_lib",
+    name = "jit_transforms_test_lib",
     testonly = True,
     srcs = [
         "downlevel_decorators_transform_spec.ts",
+        "initializer_api_transforms_spec.ts",
+        "signal_queries_metadata_transform_spec.ts",
     ],
     deps = [
         ":test_utils",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/transformers/downlevel_decorators_transform",
+        "//packages/compiler-cli/src/transformers/jit_transforms",
         "@npm//typescript",
     ],
 )
 
 jasmine_node_test(
-    name = "downlevel_decorator_transform",
+    name = "jit_transforms_test",
     bootstrap = ["//tools/testing:node"],
     deps = [
-        ":downlevel_decorator_transform_lib",
+        ":jit_transforms_test_lib",
     ],
 )
 

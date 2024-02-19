@@ -225,7 +225,7 @@ runInEachFileSystem((os) => {
           expectMapping(mappings, {
             source: '[(ngModel)]="name"',
             generated:
-                'i0.ɵɵlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { return ctx.name = $event; })',
+                'i0.ɵɵtwoWayListener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { i0.ɵɵtwoWayBindingSet(ctx.name, $event) || (ctx.name = $event); return $event; })',
             sourceUrl: '../test.ts'
           });
           expectMapping(mappings, {
@@ -246,7 +246,7 @@ runInEachFileSystem((os) => {
           expectMapping(mappings, {
             source: 'bindon-ngModel="name"',
             generated:
-                'i0.ɵɵlistener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { return ctx.name = $event; })',
+                'i0.ɵɵtwoWayListener("ngModelChange", function TestCmp_Template_input_ngModelChange_1_listener($event) { i0.ɵɵtwoWayBindingSet(ctx.name, $event) || (ctx.name = $event); return $event; })',
             sourceUrl: '../test.ts'
           });
           expectMapping(mappings, {

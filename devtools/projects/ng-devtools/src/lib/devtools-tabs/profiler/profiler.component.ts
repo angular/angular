@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Events, MessageBus, ProfilerFrame} from 'protocol';
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 
 import {FileApiService} from './file-api-service';
 import {ProfilerImportDialogComponent} from './profiler-import-dialog.component';
+import {TimelineComponent} from './timeline/timeline.component';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatIconButton} from '@angular/material/button';
+import {MatCard} from '@angular/material/card';
 
-type State = 'idle'|'recording'|'visualizing';
+type State = 'idle' | 'recording' | 'visualizing';
 
 const SUPPORTED_VERSIONS = [1];
 const PROFILER_VERSION = 1;
@@ -23,6 +28,8 @@ const PROFILER_VERSION = 1;
   selector: 'ng-profiler',
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss'],
+  standalone: true,
+  imports: [MatCard, MatIconButton, MatTooltip, MatIcon, TimelineComponent],
 })
 export class ProfilerComponent implements OnInit {
   state: State = 'idle';
@@ -32,9 +39,9 @@ export class ProfilerComponent implements OnInit {
   private _buffer: ProfilerFrame[] = [];
 
   constructor(
-      private _fileApiService: FileApiService,
-      private _messageBus: MessageBus<Events>,
-      public dialog: MatDialog,
+    private _fileApiService: FileApiService,
+    private _messageBus: MessageBus<Events>,
+    public dialog: MatDialog,
   ) {
     this._fileApiService.uploadedData.subscribe((importedFile) => {
       if (importedFile.error) {

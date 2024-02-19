@@ -117,11 +117,15 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RECURSIVE_APPLICATION_REF_TICK = 101,
     // (undocumented)
-    RECURSIVE_APPLICATION_RENDER = 102,
-    // (undocumented)
     RENDERER_NOT_FOUND = 407,
     // (undocumented)
     REQUIRE_SYNC_WITHOUT_SYNC_EMIT = 601,
+    // (undocumented)
+    REQUIRED_INPUT_NO_VALUE = -950,
+    // (undocumented)
+    REQUIRED_MODEL_NO_VALUE = -952,
+    // (undocumented)
+    REQUIRED_QUERY_NO_VALUE = -951,
     // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
     // (undocumented)

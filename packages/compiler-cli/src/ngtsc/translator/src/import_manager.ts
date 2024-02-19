@@ -12,26 +12,50 @@ import {ImportRewriter, NoopImportRewriter} from '../../imports';
 import {ImportGenerator, NamedImport} from './api/import_generator';
 
 /**
- * Information about an import that has been added to a module.
+ * Information about a namespace import that has been added to a module.
  */
-export interface Import {
+export interface NamespaceImport {
   /** The name of the module that has been imported. */
   specifier: string;
+
   /** The `ts.Identifier` by which the imported module is known. */
   qualifier: ts.Identifier;
 }
 
+/**
+ * Information about a side effect import that has been added to a module.
+ */
+export interface SideEffectImport {
+  /** The name of the module that has been imported. */
+  specifier: string;
+
+  /**
+   * The qualifier of a side effect import is always non-existent, and that can be used to check
+   * whether the import is side effect or not.
+   */
+  qualifier: null;
+}
+
+/**
+ * Information about an import that has been added to a module.
+ */
+export type Import = NamespaceImport|SideEffectImport;
+
 export class ImportManager implements ImportGenerator<ts.Identifier> {
-  private specifierToIdentifier = new Map<string, ts.Identifier>();
+  private specifierToIdentifier = new Map<string, ts.Identifier|null>();
   private nextIndex = 0;
 
-  constructor(protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i') {
-  }
+  constructor(
+      protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i',
+      private factory = ts.factory) {}
 
   generateNamespaceImport(moduleName: string): ts.Identifier {
-    if (!this.specifierToIdentifier.has(moduleName)) {
+    // The case `specifierToIdentifier.get(moduleName) === null` is also considered to overwrite the
+    // side effect import since namedspace import is enough.
+    if (!this.specifierToIdentifier.has(moduleName) ||
+        this.specifierToIdentifier.get(moduleName) === null) {
       this.specifierToIdentifier.set(
-          moduleName, ts.factory.createIdentifier(`${this.prefix}${this.nextIndex++}`));
+          moduleName, this.factory.createIdentifier(`${this.prefix}${this.nextIndex++}`));
     }
     return this.specifierToIdentifier.get(moduleName)!;
   }
@@ -51,6 +75,12 @@ export class ImportManager implements ImportGenerator<ts.Identifier> {
     const moduleImport = this.generateNamespaceImport(moduleName);
 
     return {moduleImport, symbol};
+  }
+
+  generateSideEffectImport(moduleName: string) {
+    if (!this.specifierToIdentifier.has(moduleName)) {
+      this.specifierToIdentifier.set(moduleName, null);
+    }
   }
 
   getAllImports(contextPath: string): Import[] {

@@ -150,7 +150,7 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
-    "name": "INJECTOR2"
+    "name": "INJECTOR"
   },
   {
     "name": "INJECTOR_DEF_TYPES"
@@ -172,6 +172,9 @@
   },
   {
     "name": "Injector"
+  },
+  {
+    "name": "InputFlags"
   },
   {
     "name": "LContainerFlags"
@@ -318,6 +321,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SIGNAL"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {
@@ -429,7 +435,7 @@
     "name": "activeConsumer"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "allocExpando"
@@ -448,6 +454,9 @@
   },
   {
     "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyValueToInputField"
   },
   {
     "name": "applyView"
@@ -478,6 +487,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "checkStable"
@@ -546,6 +558,9 @@
     "name": "detachMovedView"
   },
   {
+    "name": "detachViewFromDOM"
+  },
+  {
     "name": "detectChangesInChildComponents"
   },
   {
@@ -559,6 +574,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -607,9 +625,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getClosureSafeProperty"
@@ -759,9 +774,6 @@
     "name": "internalImportProvidersFrom"
   },
   {
-    "name": "invertObject"
-  },
-  {
     "name": "invokeHostBindingsInCreationMode"
   },
   {
@@ -885,6 +897,9 @@
     "name": "onLeave"
   },
   {
+    "name": "parseAndConvertBindingsForDefinition"
+  },
+  {
     "name": "processInjectorTypesWithProviders"
   },
   {
@@ -970,6 +985,9 @@
   },
   {
     "name": "shimStylesContent"
+  },
+  {
+    "name": "shouldRecheckView"
   },
   {
     "name": "shouldSearchParent"

@@ -6,14 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
-import {Component, DestroyRef, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
+import {
+  CdkVirtualScrollViewport,
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+} from '@angular/cdk/scrolling';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Observable, Subscription} from 'rxjs';
 
 import {TabUpdate} from '../../tab-update/index';
 
 import {GraphNode} from './record-formatter/record-formatter';
+import {MatIcon} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatCard} from '@angular/material/card';
+import {AsyncPipe, NgStyle} from '@angular/common';
 
 const ITEM_WIDTH = 30;
 
@@ -21,6 +38,18 @@ const ITEM_WIDTH = 30;
   selector: 'ng-frame-selector',
   templateUrl: './frame-selector.component.html',
   styleUrls: ['./frame-selector.component.scss'],
+  standalone: true,
+  imports: [
+    MatCard,
+    MatTooltip,
+    MatButton,
+    MatIcon,
+    CdkVirtualScrollViewport,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualForOf,
+    NgStyle,
+    AsyncPipe,
+  ],
 })
 export class FrameSelectorComponent {
   @ViewChild('barContainer') barContainer!: ElementRef;
@@ -28,11 +57,14 @@ export class FrameSelectorComponent {
   set graphData$(graphData: Observable<GraphNode[]>) {
     this._graphData$ = graphData;
     this._graphDataSubscription?.unsubscribe();
-    this._graphDataSubscription = this._graphData$.pipe(takeUntilDestroyed(this.destroyRef))
-                                      .subscribe((items) => setTimeout(() => {
-                                                   this.frameCount = items.length;
-                                                   this.viewport.scrollToIndex(items.length);
-                                                 }));
+    this._graphDataSubscription = this._graphData$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((items) =>
+        setTimeout(() => {
+          this.frameCount = items.length;
+          this.viewport.scrollToIndex(items.length);
+        }),
+      );
   }
 
   get graphData$(): Observable<GraphNode[]> {
@@ -57,10 +89,9 @@ export class FrameSelectorComponent {
   private _graphData$!: Observable<GraphNode[]>;
   private _graphDataSubscription?: Subscription;
 
-
   constructor(
-      private _tabUpdate: TabUpdate,
-      private destroyRef: DestroyRef,
+    private _tabUpdate: TabUpdate,
+    private destroyRef: DestroyRef,
   ) {
     this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
       if (this.viewport) {
@@ -84,7 +115,7 @@ export class FrameSelectorComponent {
     const sortedIndexes = indexArray.sort((a, b) => a - b);
 
     const groups: number[][] = [];
-    let prev: number|null = null;
+    let prev: number | null = null;
 
     for (const index of sortedIndexes) {
       // First iteration: create initial group and set prev variable to the first index
@@ -104,12 +135,12 @@ export class FrameSelectorComponent {
       prev = index;
     }
 
-    return groups.filter((group) => group.length > 0)
-        .map(
-            (group) => group.length === 1 ? group[0] + 1 :
-                                            `${group[0] + 1}-${group[group.length - 1] + 1}`,
-            )
-        .join(', ');
+    return groups
+      .filter((group) => group.length > 0)
+      .map((group) =>
+        group.length === 1 ? group[0] + 1 : `${group[0] + 1}-${group[group.length - 1] + 1}`,
+      )
+      .join(', ');
   }
 
   move(value: number): void {
@@ -134,12 +165,12 @@ export class FrameSelectorComponent {
     if (shiftKey) {
       const [start, end] = [Math.min(this.startFrameIndex, idx), Math.max(this.endFrameIndex, idx)];
       this.selectedFrameIndexes = new Set(
-          Array.from(Array(end - start + 1), (_, index) => index + start),
+        Array.from(Array(end - start + 1), (_, index) => index + start),
       );
     } else if (ctrlKey || metaKey) {
       if (this.selectedFrameIndexes.has(idx)) {
         if (this.selectedFrameIndexes.size === 1) {
-          return;  // prevent deselection when only one frame is selected
+          return; // prevent deselection when only one frame is selected
         }
 
         this.selectedFrameIndexes.delete(idx);
@@ -190,6 +221,6 @@ export class FrameSelectorComponent {
     const dragScrollSpeed = 2;
     const dx = event.clientX - this._viewportScrollState.xCoordinate;
     this.viewport.elementRef.nativeElement.scrollLeft =
-        this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
+      this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
   }
 }

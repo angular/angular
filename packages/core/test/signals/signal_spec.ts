@@ -123,6 +123,11 @@ describe('signals', () => {
     expect(double()).toBe(4);
   });
 
+  it('should have a toString implementation', () => {
+    const state = signal(false);
+    expect(state + '').toBe('[Signal: false]');
+  });
+
   describe('optimizations', () => {
     it('should not repeatedly poll status of a non-live node if no signals have changed', () => {
       const unrelated = signal(0);

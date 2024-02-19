@@ -12,6 +12,7 @@ import {InjectionToken, Injector} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {findMatchingDehydratedView} from '../hydration/views';
 import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref';
+import {PendingTasks} from '../pending_tasks';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {bindingUpdated} from '../render3/bindings';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/definition';
@@ -40,9 +41,11 @@ import {addDepsToRegistry, assertDeferredDependenciesLoaded, getLDeferBlockDetai
 
 /**
  * **INTERNAL**, avoid referencing it in application code.
- *
+ * *
  * Injector token that allows to provide `DeferBlockDependencyInterceptor` class
  * implementation.
+ *
+ * This token is only injected in devMode
  */
 export const DEFER_BLOCK_DEPENDENCY_INTERCEPTOR =
     new InjectionToken<DeferBlockDependencyInterceptor>('DEFER_BLOCK_DEPENDENCY_INTERCEPTOR');
@@ -255,12 +258,13 @@ export function ɵɵdeferOnImmediate() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const tView = lView[TVIEW];
+  const injector = lView[INJECTOR]!;
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
-  // Render placeholder block only if loading template is not present
-  // to avoid content flickering, since it would be immediately replaced
+  // Render placeholder block only if loading template is not present and we're on
+  // the client to avoid content flickering, since it would be immediately replaced
   // by the loading block.
-  if (tDetails.loadingTmplIndex === null) {
+  if (!shouldTriggerDeferBlock(injector) || tDetails.loadingTmplIndex === null) {
     renderPlaceholder(lView, tNode);
   }
   triggerDeferBlock(lView, tNode);
@@ -507,17 +511,18 @@ function applyDeferBlockState(
     lDetails[DEFER_BLOCK_STATE] = newState;
     const hostTView = hostLView[TVIEW];
     const adjustedIndex = stateTmplIndex + HEADER_OFFSET;
-    const tNode = getTNode(hostTView, adjustedIndex) as TContainerNode;
+    const activeBlockTNode = getTNode(hostTView, adjustedIndex) as TContainerNode;
 
     // There is only 1 view that can be present in an LContainer that
     // represents a defer block, so always refer to the first one.
     const viewIndex = 0;
 
     removeLViewFromLContainer(lContainer, viewIndex);
-    const dehydratedView = findMatchingDehydratedView(lContainer, tNode.tView!.ssrId);
-    const embeddedLView = createAndRenderEmbeddedLView(hostLView, tNode, null, {dehydratedView});
+    const dehydratedView = findMatchingDehydratedView(lContainer, activeBlockTNode.tView!.ssrId);
+    const embeddedLView =
+        createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {dehydratedView});
     addLViewToLContainer(
-        lContainer, embeddedLView, viewIndex, shouldAddViewToDom(tNode, dehydratedView));
+        lContainer, embeddedLView, viewIndex, shouldAddViewToDom(activeBlockTNode, dehydratedView));
     markViewDirty(embeddedLView);
   }
 }
@@ -654,6 +659,10 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
     }
   }
 
+  // Indicate that an application is not stable and has a pending task.
+  const pendingTasks = injector.get(PendingTasks);
+  const taskId = pendingTasks.add();
+
   // The `dependenciesFn` might be `null` when all dependencies within
   // a given defer block were eagerly referenced elsewhere in a file,
   // thus no dynamic `import()`s were produced.
@@ -661,6 +670,7 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
     tDetails.loadingPromise = Promise.resolve().then(() => {
       tDetails.loadingPromise = null;
       tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
+      pendingTasks.remove(taskId);
     });
     return;
   }
@@ -689,8 +699,10 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
       }
     }
 
-    // Loading is completed, we no longer need this Promise.
+    // Loading is completed, we no longer need the loading Promise
+    // and a pending task should also be removed.
     tDetails.loadingPromise = null;
+    pendingTasks.remove(taskId);
 
     if (failed) {
       tDetails.loadingState = DeferDependenciesLoadingState.FAILED;

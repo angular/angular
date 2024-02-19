@@ -20,9 +20,9 @@ interface HttpRequestInit {
   context?: HttpContext;
   reportProgress?: boolean;
   params?: HttpParams;
-  responseType?: 'arraybuffer'|'blob'|'json'|'text';
+  responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
   withCredentials?: boolean;
-  transferCache?: {includeHeaders?: string[]}|boolean;
+  transferCache?: {includeHeaders?: string[]} | boolean;
 }
 
 /**
@@ -95,7 +95,7 @@ export class HttpRequest<T> {
    * user-defined data type. However, interceptors should take care to preserve
    * idempotence by treating them as such.
    */
-  readonly body: T|null = null;
+  readonly body: T | null = null;
 
   /**
    * Outgoing headers for this request.
@@ -129,7 +129,7 @@ export class HttpRequest<T> {
    * This is used to parse the response appropriately before returning it to
    * the requestee.
    */
-  readonly responseType: 'arraybuffer'|'blob'|'json'|'text' = 'json';
+  readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text' = 'json';
 
   /**
    * The outgoing HTTP request method.
@@ -157,104 +157,133 @@ export class HttpRequest<T> {
   /**
    * The HttpTransferCache option for the request
    */
-  readonly transferCache?: {includeHeaders?: string[]}|boolean;
+  readonly transferCache?: {includeHeaders?: string[]} | boolean;
 
-  constructor(method: 'GET'|'HEAD', url: string, init?: {
-    headers?: HttpHeaders,
-    context?: HttpContext,
-    reportProgress?: boolean,
-    params?: HttpParams,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-    /**
-     * This property accepts either a boolean to enable/disable transferring cache for eligible
-     * requests performed using `HttpClient`, or an object, which allows to configure cache
-     * parameters, such as which headers should be included (no headers are included by default).
-     *
-     * Setting this property will override the options passed to `provideClientHydration()` for this
-     * particular request
-     */
-    transferCache?: {includeHeaders?: string[]}|boolean
-  });
-  constructor(method: 'DELETE'|'JSONP'|'OPTIONS', url: string, init?: {
-    headers?: HttpHeaders,
-    context?: HttpContext,
-    reportProgress?: boolean,
-    params?: HttpParams,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-  });
-  constructor(method: 'POST', url: string, body: T|null, init?: {
-    headers?: HttpHeaders,
-    context?: HttpContext,
-    reportProgress?: boolean,
-    params?: HttpParams,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-    /**
-     * This property accepts either a boolean to enable/disable transferring cache for eligible
-     * requests performed using `HttpClient`, or an object, which allows to configure cache
-     * parameters, such as which headers should be included (no headers are included by default).
-     *
-     * Setting this property will override the options passed to `provideClientHydration()` for this
-     * particular request
-     */
-    transferCache?: {includeHeaders?: string[]}|boolean
-  });
-  constructor(method: 'PUT'|'PATCH', url: string, body: T|null, init?: {
-    headers?: HttpHeaders,
-    context?: HttpContext,
-    reportProgress?: boolean,
-    params?: HttpParams,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-  });
-  constructor(method: string, url: string, body: T|null, init?: {
-    headers?: HttpHeaders,
-    context?: HttpContext,
-    reportProgress?: boolean,
-    params?: HttpParams,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-    /**
-     * This property accepts either a boolean to enable/disable transferring cache for eligible
-     * requests performed using `HttpClient`, or an object, which allows to configure cache
-     * parameters, such as which headers should be included (no headers are included by default).
-     *
-     * Setting this property will override the options passed to `provideClientHydration()` for this
-     * particular request
-     */
-    transferCache?: {includeHeaders?: string[]}|boolean
-  });
   constructor(
-      method: string, readonly url: string, third?: T|{
-        headers?: HttpHeaders,
-        context?: HttpContext,
-        reportProgress?: boolean,
-        params?: HttpParams,
-        responseType?: 'arraybuffer'|'blob'|'json'|'text',
-        withCredentials?: boolean,
-        transferCache?: {includeHeaders?: string[]}|boolean
-      }|null,
-      fourth?: {
-        headers?: HttpHeaders,
-        context?: HttpContext,
-        reportProgress?: boolean,
-        params?: HttpParams,
-        responseType?: 'arraybuffer'|'blob'|'json'|'text',
-        withCredentials?: boolean,
-        transferCache?: {includeHeaders?: string[]}|boolean
-      }) {
+    method: 'GET' | 'HEAD',
+    url: string,
+    init?: {
+      headers?: HttpHeaders;
+      context?: HttpContext;
+      reportProgress?: boolean;
+      params?: HttpParams;
+      responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+      withCredentials?: boolean;
+      /**
+       * This property accepts either a boolean to enable/disable transferring cache for eligible
+       * requests performed using `HttpClient`, or an object, which allows to configure cache
+       * parameters, such as which headers should be included (no headers are included by default).
+       *
+       * Setting this property will override the options passed to `provideClientHydration()` for this
+       * particular request
+       */
+      transferCache?: {includeHeaders?: string[]} | boolean;
+    },
+  );
+  constructor(
+    method: 'DELETE' | 'JSONP' | 'OPTIONS',
+    url: string,
+    init?: {
+      headers?: HttpHeaders;
+      context?: HttpContext;
+      reportProgress?: boolean;
+      params?: HttpParams;
+      responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+      withCredentials?: boolean;
+    },
+  );
+  constructor(
+    method: 'POST',
+    url: string,
+    body: T | null,
+    init?: {
+      headers?: HttpHeaders;
+      context?: HttpContext;
+      reportProgress?: boolean;
+      params?: HttpParams;
+      responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+      withCredentials?: boolean;
+      /**
+       * This property accepts either a boolean to enable/disable transferring cache for eligible
+       * requests performed using `HttpClient`, or an object, which allows to configure cache
+       * parameters, such as which headers should be included (no headers are included by default).
+       *
+       * Setting this property will override the options passed to `provideClientHydration()` for this
+       * particular request
+       */
+      transferCache?: {includeHeaders?: string[]} | boolean;
+    },
+  );
+  constructor(
+    method: 'PUT' | 'PATCH',
+    url: string,
+    body: T | null,
+    init?: {
+      headers?: HttpHeaders;
+      context?: HttpContext;
+      reportProgress?: boolean;
+      params?: HttpParams;
+      responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+      withCredentials?: boolean;
+    },
+  );
+  constructor(
+    method: string,
+    url: string,
+    body: T | null,
+    init?: {
+      headers?: HttpHeaders;
+      context?: HttpContext;
+      reportProgress?: boolean;
+      params?: HttpParams;
+      responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+      withCredentials?: boolean;
+      /**
+       * This property accepts either a boolean to enable/disable transferring cache for eligible
+       * requests performed using `HttpClient`, or an object, which allows to configure cache
+       * parameters, such as which headers should be included (no headers are included by default).
+       *
+       * Setting this property will override the options passed to `provideClientHydration()` for this
+       * particular request
+       */
+      transferCache?: {includeHeaders?: string[]} | boolean;
+    },
+  );
+  constructor(
+    method: string,
+    readonly url: string,
+    third?:
+      | T
+      | {
+          headers?: HttpHeaders;
+          context?: HttpContext;
+          reportProgress?: boolean;
+          params?: HttpParams;
+          responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+          withCredentials?: boolean;
+          transferCache?: {includeHeaders?: string[]} | boolean;
+        }
+      | null,
+    fourth?: {
+      headers?: HttpHeaders;
+      context?: HttpContext;
+      reportProgress?: boolean;
+      params?: HttpParams;
+      responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+      withCredentials?: boolean;
+      transferCache?: {includeHeaders?: string[]} | boolean;
+    },
+  ) {
     this.method = method.toUpperCase();
     // Next, need to figure out which argument holds the HttpRequestInit
     // options, if any.
-    let options: HttpRequestInit|undefined;
+    let options: HttpRequestInit | undefined;
 
     // Check whether a body argument is expected. The only valid way to omit
     // the body argument is to use a known no-body method like GET.
     if (mightHaveBody(this.method) || !!fourth) {
       // Body is the third argument, options are the fourth.
-      this.body = (third !== undefined) ? third as T : null;
+      this.body = third !== undefined ? (third as T) : null;
       options = fourth;
     } else {
       // No body required, options are the third argument. The body stays null.
@@ -290,14 +319,10 @@ export class HttpRequest<T> {
     }
 
     // If no headers have been passed in, construct a new HttpHeaders instance.
-    if (!this.headers) {
-      this.headers = new HttpHeaders();
-    }
+    this.headers ??= new HttpHeaders();
 
     // If no context have been passed in, construct a new HttpContext instance.
-    if (!this.context) {
-      this.context = new HttpContext();
-    }
+    this.context ??= new HttpContext();
 
     // If no parameters have been passed in, construct a new HttpUrlEncodedParams instance.
     if (!this.params) {
@@ -319,7 +344,7 @@ export class HttpRequest<T> {
         // 3) '?' exists at the end of the url -> append params directly.
         // This basically amounts to determining the character, if any, with
         // which to join the URL and parameters.
-        const sep: string = qIdx === -1 ? '?' : (qIdx < url.length - 1 ? '&' : '');
+        const sep: string = qIdx === -1 ? '?' : qIdx < url.length - 1 ? '&' : '';
         this.urlWithParams = url + sep + params;
       }
     }
@@ -329,15 +354,20 @@ export class HttpRequest<T> {
    * Transform the free-form body into a serialized format suitable for
    * transmission to the server.
    */
-  serializeBody(): ArrayBuffer|Blob|FormData|URLSearchParams|string|null {
+  serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null {
     // If no body is present, no need to serialize it.
     if (this.body === null) {
       return null;
     }
     // Check whether the body is already in a serialized form. If so,
     // it can just be returned directly.
-    if (isArrayBuffer(this.body) || isBlob(this.body) || isFormData(this.body) ||
-        isUrlSearchParams(this.body) || typeof this.body === 'string') {
+    if (
+      isArrayBuffer(this.body) ||
+      isBlob(this.body) ||
+      isFormData(this.body) ||
+      isUrlSearchParams(this.body) ||
+      typeof this.body === 'string'
+    ) {
       return this.body;
     }
     // Check whether the body is an instance of HttpUrlEncodedParams.
@@ -345,8 +375,11 @@ export class HttpRequest<T> {
       return this.body.toString();
     }
     // Check whether the body is an object or array, and serialize with JSON if so.
-    if (typeof this.body === 'object' || typeof this.body === 'boolean' ||
-        Array.isArray(this.body)) {
+    if (
+      typeof this.body === 'object' ||
+      typeof this.body === 'boolean' ||
+      Array.isArray(this.body)
+    ) {
       return JSON.stringify(this.body);
     }
     // Fall back on toString() for everything else.
@@ -359,7 +392,7 @@ export class HttpRequest<T> {
    *
    * If no such type can be inferred, this method will return `null`.
    */
-  detectContentTypeHeader(): string|null {
+  detectContentTypeHeader(): string | null {
     // An empty body has no content type.
     if (this.body === null) {
       return null;
@@ -387,8 +420,11 @@ export class HttpRequest<T> {
       return 'application/x-www-form-urlencoded;charset=UTF-8';
     }
     // Arrays, objects, boolean and numbers will be encoded as JSON.
-    if (typeof this.body === 'object' || typeof this.body === 'number' ||
-        typeof this.body === 'boolean') {
+    if (
+      typeof this.body === 'object' ||
+      typeof this.body === 'number' ||
+      typeof this.body === 'boolean'
+    ) {
       return 'application/json';
     }
     // No type could be inferred.
@@ -397,44 +433,46 @@ export class HttpRequest<T> {
 
   clone(): HttpRequest<T>;
   clone(update: {
-    headers?: HttpHeaders,
-    context?: HttpContext,
-    reportProgress?: boolean,
-    params?: HttpParams,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-    body?: T|null,
-    method?: string,
-    url?: string,
-    setHeaders?: {[name: string]: string|string[]},
-    setParams?: {[param: string]: string},
+    headers?: HttpHeaders;
+    context?: HttpContext;
+    reportProgress?: boolean;
+    params?: HttpParams;
+    responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+    withCredentials?: boolean;
+    body?: T | null;
+    method?: string;
+    url?: string;
+    setHeaders?: {[name: string]: string | string[]};
+    setParams?: {[param: string]: string};
   }): HttpRequest<T>;
   clone<V>(update: {
-    headers?: HttpHeaders,
-    context?: HttpContext,
-    reportProgress?: boolean,
-    params?: HttpParams,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-    body?: V|null,
-    method?: string,
-    url?: string,
-    setHeaders?: {[name: string]: string|string[]},
-    setParams?: {[param: string]: string},
-  }): HttpRequest<V>;
-  clone(update: {
-    headers?: HttpHeaders,
-    context?: HttpContext,
-    reportProgress?: boolean,
-    params?: HttpParams,
-    responseType?: 'arraybuffer'|'blob'|'json'|'text',
-    withCredentials?: boolean,
-    body?: any|null,
-    method?: string,
-    url?: string,
-    setHeaders?: {[name: string]: string|string[]},
+    headers?: HttpHeaders;
+    context?: HttpContext;
+    reportProgress?: boolean;
+    params?: HttpParams;
+    responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+    withCredentials?: boolean;
+    body?: V | null;
+    method?: string;
+    url?: string;
+    setHeaders?: {[name: string]: string | string[]};
     setParams?: {[param: string]: string};
-  } = {}): HttpRequest<any> {
+  }): HttpRequest<V>;
+  clone(
+    update: {
+      headers?: HttpHeaders;
+      context?: HttpContext;
+      reportProgress?: boolean;
+      params?: HttpParams;
+      responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+      withCredentials?: boolean;
+      body?: any | null;
+      method?: string;
+      url?: string;
+      setHeaders?: {[name: string]: string | string[]};
+      setParams?: {[param: string]: string};
+    } = {},
+  ): HttpRequest<any> {
     // For method, url, and responseType, take the current value unless
     // it is overridden in the update hash.
     const method = update.method || this.method;
@@ -445,14 +483,14 @@ export class HttpRequest<T> {
     // whatever current body is present is being overridden with an empty
     // body, whereas an `undefined` value in update.body implies no
     // override.
-    const body = (update.body !== undefined) ? update.body : this.body;
+    const body = update.body !== undefined ? update.body : this.body;
 
     // Carefully handle the boolean options to differentiate between
     // `false` and `undefined` in the update args.
     const withCredentials =
-        (update.withCredentials !== undefined) ? update.withCredentials : this.withCredentials;
+      update.withCredentials !== undefined ? update.withCredentials : this.withCredentials;
     const reportProgress =
-        (update.reportProgress !== undefined) ? update.reportProgress : this.reportProgress;
+      update.reportProgress !== undefined ? update.reportProgress : this.reportProgress;
 
     // Headers and params may be appended to if `setHeaders` or
     // `setParams` are used.
@@ -465,16 +503,19 @@ export class HttpRequest<T> {
     // Check whether the caller has asked to add headers.
     if (update.setHeaders !== undefined) {
       // Set every requested header.
-      headers =
-          Object.keys(update.setHeaders)
-              .reduce((headers, name) => headers.set(name, update.setHeaders![name]), headers);
+      headers = Object.keys(update.setHeaders).reduce(
+        (headers, name) => headers.set(name, update.setHeaders![name]),
+        headers,
+      );
     }
 
     // Check whether the caller has asked to set params.
     if (update.setParams) {
       // Set every requested param.
-      params = Object.keys(update.setParams)
-                   .reduce((params, param) => params.set(param, update.setParams![param]), params);
+      params = Object.keys(update.setParams).reduce(
+        (params, param) => params.set(param, update.setParams![param]),
+        params,
+      );
     }
 
     // Finally, construct the new HttpRequest using the pieces from above.

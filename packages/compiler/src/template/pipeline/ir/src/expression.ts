@@ -10,7 +10,7 @@ import * as o from '../../../../output/output_ast';
 import type {ParseSourceSpan} from '../../../../parse_util';
 
 import * as t from '../../../../render3/r3_ast';
-import {DerivedRepeaterVarIdentity, ExpressionKind, OpKind} from './enums';
+import {ExpressionKind, OpKind} from './enums';
 import {SlotHandle} from './handle';
 import type {XrefId} from './operations';
 import type {CreateOp} from './ops/create';
@@ -24,7 +24,7 @@ export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextEx
     GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
     PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
     SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr|
-    SlotLiteralExpr|ConditionalCaseExpr|DerivedRepeaterVarExpr|ConstCollectedExpr;
+    SlotLiteralExpr|ConditionalCaseExpr|ConstCollectedExpr|TwoWayBindingSetExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -69,7 +69,7 @@ export class LexicalReadExpr extends ExpressionBase {
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): void {}
 
-  override isEquivalent(other: LexicalReadExpr): boolean {
+  override isEquivalent(other: LexicalReadExpr): boolean {
     // We assume that the lexical reads are in the same context, which must be true for parent
     // expressions to be equivalent.
     // TODO: is this generally safe?
@@ -305,6 +305,36 @@ export class ResetViewExpr extends ExpressionBase {
   }
 }
 
+export class TwoWayBindingSetExpr extends ExpressionBase {
+  override readonly kind = ExpressionKind.TwoWayBindingSet;
+
+  constructor(public target: o.Expression, public value: o.Expression) {
+    super();
+  }
+
+  override visitExpression(visitor: o.ExpressionVisitor, context: any): void {
+    this.target.visitExpression(visitor, context);
+    this.value.visitExpression(visitor, context);
+  }
+
+  override isEquivalent(other: TwoWayBindingSetExpr): boolean {
+    return this.target.isEquivalent(other.target) && this.value.isEquivalent(other.value);
+  }
+
+  override isConstant(): boolean {
+    return false;
+  }
+
+  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag) {
+    this.target = transformExpressionsInExpression(this.target, transform, flags);
+    this.value = transformExpressionsInExpression(this.value, transform, flags);
+  }
+
+  override clone(): TwoWayBindingSetExpr {
+    return new TwoWayBindingSetExpr(this.target, this.value);
+  }
+}
+
 /**
  * Read of a variable declared as an `ir.VariableOp` and referenced through its `ir.XrefId`.
  */
@@ -534,7 +564,7 @@ export class SafePropertyReadExpr extends ExpressionBase {
     this.receiver.visitExpression(visitor, context);
   }
 
-  override isEquivalent(): boolean {
+  override isEquivalent(): boolean {
     return false;
   }
 
@@ -565,7 +595,7 @@ export class SafeKeyedReadExpr extends ExpressionBase {
     this.index.visitExpression(visitor, context);
   }
 
-  override isEquivalent(): boolean {
+  override isEquivalent(): boolean {
     return false;
   }
 
@@ -598,7 +628,7 @@ export class SafeInvokeFunctionExpr extends ExpressionBase {
     }
   }
 
-  override isEquivalent(): boolean {
+  override isEquivalent(): boolean {
     return false;
   }
 
@@ -631,7 +661,7 @@ export class SafeTernaryExpr extends ExpressionBase {
     this.expr.visitExpression(visitor, context);
   }
 
-  override isEquivalent(): boolean {
+  override isEquivalent(): boolean {
     return false;
   }
 
@@ -683,7 +713,7 @@ export class AssignTemporaryExpr extends ExpressionBase {
     this.expr.visitExpression(visitor, context);
   }
 
-  override isEquivalent(): boolean {
+  override isEquivalent(): boolean {
     return false;
   }
 
@@ -714,7 +744,7 @@ export class ReadTemporaryExpr extends ExpressionBase {
 
   override visitExpression(visitor: o.ExpressionVisitor, context: any): any {}
 
-  override isEquivalent(): boolean {
+  override isEquivalent(): boolean {
     return this.xref === this.xref;
   }
 
@@ -796,31 +826,6 @@ export class ConditionalCaseExpr extends ExpressionBase {
   }
 }
 
-export class DerivedRepeaterVarExpr extends ExpressionBase {
-  override readonly kind = ExpressionKind.DerivedRepeaterVar;
-
-  constructor(readonly xref: XrefId, readonly identity: DerivedRepeaterVarIdentity) {
-    super();
-  }
-
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {}
-
-  override visitExpression(visitor: o.ExpressionVisitor, context: any) {}
-
-  override isEquivalent(e: o.Expression): boolean {
-    return e instanceof DerivedRepeaterVarExpr && e.identity === this.identity &&
-        e.xref === this.xref;
-  }
-
-  override isConstant(): boolean {
-    return false;
-  }
-
-  override clone(): o.Expression {
-    return new DerivedRepeaterVarExpr(this.xref, this.identity);
-  }
-}
 
 export class ConstCollectedExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.ConstCollected;
@@ -909,6 +914,11 @@ export function transformExpressionsInOp(
       op.sanitizer =
           op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
       break;
+    case OpKind.TwoWayProperty:
+      op.expression = transformExpressionsInExpression(op.expression, transform, flags);
+      op.sanitizer =
+          op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
+      break;
     case OpKind.I18nExpression:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       break;
@@ -937,6 +947,7 @@ export function transformExpressionsInOp(
       }
       break;
     case OpKind.Listener:
+    case OpKind.TwoWayListener:
       for (const innerOp of op.handlerOps) {
         transformExpressionsInOp(innerOp, transform, flags | VisitorContextFlag.InChildOperation);
       }

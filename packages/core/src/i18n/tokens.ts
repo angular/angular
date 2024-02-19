@@ -63,7 +63,7 @@ export function getGlobalLocale(): string {
  *
  * @publicApi
  */
-export const LOCALE_ID: InjectionToken<string> = new InjectionToken('LocaleId', {
+export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 'LocaleId' : '', {
   providedIn: 'root',
   factory: () =>
       inject(LOCALE_ID, InjectFlags.Optional | InjectFlags.SkipSelf) || getGlobalLocale(),
@@ -107,10 +107,11 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken('LocaleId', 
  *
  * @publicApi
  */
-export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>('DefaultCurrencyCode', {
-  providedIn: 'root',
-  factory: () => USD_CURRENCY_CODE,
-});
+export const DEFAULT_CURRENCY_CODE =
+    new InjectionToken<string>(ngDevMode ? 'DefaultCurrencyCode' : '', {
+      providedIn: 'root',
+      factory: () => USD_CURRENCY_CODE,
+    });
 
 /**
  * Use this token at bootstrap to provide the content of your translation file (`xtb`,
@@ -136,7 +137,7 @@ export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>('DefaultCurrency
  *
  * @publicApi
  */
-export const TRANSLATIONS = new InjectionToken<string>('Translations');
+export const TRANSLATIONS = new InjectionToken<string>(ngDevMode ? 'Translations' : '');
 
 /**
  * Provide this token at bootstrap to set the format of your {@link TRANSLATIONS}: `xtb`,
@@ -159,7 +160,8 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  *
  * @publicApi
  */
-export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsFormat');
+export const TRANSLATIONS_FORMAT =
+    new InjectionToken<string>(ngDevMode ? 'TranslationsFormat' : '');
 
 /**
  * Use this enum at bootstrap as an option of `bootstrapModule` to define the strategy

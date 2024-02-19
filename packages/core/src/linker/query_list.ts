@@ -45,6 +45,7 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
  */
 export class QueryList<T> implements Iterable<T> {
   public readonly dirty = true;
+  private _onDirty?: () => void = undefined;
   private _results: Array<T> = [];
   private _changesDetected: boolean = false;
   private _changes: EventEmitter<QueryList<T>>|undefined = undefined;
@@ -173,9 +174,15 @@ export class QueryList<T> implements Iterable<T> {
       this._changes.emit(this);
   }
 
+  /** @internal */
+  onDirty(cb: () => void) {
+    this._onDirty = cb;
+  }
+
   /** internal */
   setDirty() {
     (this as {dirty: boolean}).dirty = true;
+    this._onDirty?.();
   }
 
   /** internal */

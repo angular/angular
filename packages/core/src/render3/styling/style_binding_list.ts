@@ -267,8 +267,8 @@ export function insertTStylingBinding(
   if (isKeyDuplicateOfStatic) {
     tData[index + 1] = setTStylingRangePrevDuplicate(tData[index + 1] as TStylingRange);
   }
-  markDuplicates(tData, tStylingKey, index, true, isClassBinding);
-  markDuplicates(tData, tStylingKey, index, false, isClassBinding);
+  markDuplicates(tData, tStylingKey, index, true);
+  markDuplicates(tData, tStylingKey, index, false);
   markDuplicateOfResidualStyling(tNode, tStylingKey, tData, index, isClassBinding);
 
   tBindings = toTStylingRange(tmplHead, tmplTail);
@@ -357,8 +357,11 @@ function markDuplicateOfResidualStyling(
  *        - `false` for next (higher priority).
  */
 function markDuplicates(
-    tData: TData, tStylingKey: TStylingKeyPrimitive, index: number, isPrevDir: boolean,
-    isClassBinding: boolean) {
+    tData: TData,
+    tStylingKey: TStylingKeyPrimitive,
+    index: number,
+    isPrevDir: boolean,
+) {
   const tStylingAtIndex = tData[index + 1] as TStylingRange;
   const isMap = tStylingKey === null;
   let cursor =

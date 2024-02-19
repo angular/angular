@@ -119,8 +119,7 @@ When Angular discovers that a component depends on a service, it first checks if
 
 When all requested services have been resolved and returned, Angular can call the component's constructor with those services as arguments.
 
-<!-- TODO(josephperrott): enable this mermaid chart -->
-```
+```mermaid
 graph TD;
 subgraph Injector
 serviceA[Service A]

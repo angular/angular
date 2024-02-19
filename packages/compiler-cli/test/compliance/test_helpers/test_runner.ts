@@ -45,9 +45,7 @@ function getFilenameForLocalCompilation(fileName: string): string {
  */
 export function runTests(
     type: CompilationMode, compileFn: (fs: FileSystem, test: ComplianceTest) => CompileResult,
-    options = {
-      isLocalCompilation: false
-    }) {
+    options: {isLocalCompilation?: boolean, skipMappingChecks?: boolean} = {}) {
   describe(`compliance tests (${type})`, () => {
     for (const test of getAllComplianceTests()) {
       if (!test.compilationModeFilter.includes(type)) {
@@ -73,7 +71,7 @@ export function runTests(
           const fs = initMockTestFileSystem(test.realTestPath);
           const {errors} = compileFn(fs, test);
           for (const expectation of test.expectations) {
-            transformExpectation(expectation, options.isLocalCompilation);
+            transformExpectation(expectation, !!options.isLocalCompilation);
             if (expectation.expectedErrors.length > 0) {
               checkErrors(
                   test.relativePath, expectation.failureMessage, expectation.expectedErrors,
@@ -82,7 +80,7 @@ export function runTests(
               checkNoUnexpectedErrors(test.relativePath, errors);
               checkExpectations(
                   fs, test.relativePath, expectation.failureMessage, expectation.files,
-                  expectation.extraChecks);
+                  expectation.extraChecks, options.skipMappingChecks);
             }
           }
         });

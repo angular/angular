@@ -13,9 +13,7 @@ export function getDOM(): DomAdapter {
 }
 
 export function setRootDomAdapter(adapter: DomAdapter) {
-  if (!_DOM) {
-    _DOM = adapter;
-  }
+  _DOM ??= adapter;
 }
 
 /* tslint:disable:requireParameterType */
@@ -49,12 +47,12 @@ export abstract class DomAdapter {
   abstract getGlobalEventTarget(doc: Document, target: string): any;
 
   // Used by PlatformLocation
-  abstract getBaseHref(doc: Document): string|null;
+  abstract getBaseHref(doc: Document): string | null;
   abstract resetBaseElement(): void;
 
   // TODO: remove dependency in DefaultValueAccessor
   abstract getUserAgent(): string;
 
   // Used in the legacy @angular/http package which has some usage in g3.
-  abstract getCookie(name: string): string|null;
+  abstract getCookie(name: string): string | null;
 }

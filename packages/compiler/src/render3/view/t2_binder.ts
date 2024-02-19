@@ -51,7 +51,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         TemplateBinder.applyWithScope(target.template, scope);
     return new R3BoundTarget(
         target, directives, eagerDirectives, bindings, references, expressions, symbols,
-        nestingLevel, scopedNodeEntities, usedPipes, eagerPipes, deferBlocks);
+        nestingLevel, scopedNodeEntities, usedPipes, eagerPipes, deferBlocks, scope);
   }
 }
 
@@ -67,6 +67,11 @@ class Scope implements Visitor {
    * Named members of the `Scope`, such as `Reference`s or `Variable`s.
    */
   readonly namedEntities = new Map<string, Reference|Variable>();
+
+  /**
+   * Set of elements that belong to this scope.
+   */
+  readonly elementsInScope = new Set<Element>();
 
   /**
    * Child `Scope`s for immediately nested `ScopedNode`s.
@@ -132,6 +137,8 @@ class Scope implements Visitor {
 
     // Recurse into the `Element`'s children.
     element.children.forEach(node => node.visit(this));
+
+    this.elementsInScope.add(element);
   }
 
   visitTemplate(template: Template) {
@@ -731,7 +738,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
       private nestingLevel: Map<ScopedNode, number>,
       private scopedNodeEntities: Map<ScopedNode|null, ReadonlySet<Reference|Variable>>,
       private usedPipes: Set<string>, private eagerPipes: Set<string>,
-      private deferredBlocks: Set<DeferredBlock>) {}
+      private deferredBlocks: Set<DeferredBlock>, private rootScope: Scope) {}
 
   getEntitiesInScope(node: ScopedNode|null): ReadonlySet<Reference|Variable> {
     return this.scopedNodeEntities.get(node) ?? new Set();
@@ -784,7 +791,6 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   getDeferBlocks(): DeferredBlock[] {
     return Array.from(this.deferredBlocks);
   }
-
 
   getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null {
     // Only triggers that refer to DOM nodes can be resolved.
@@ -847,6 +853,16 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
     }
 
     return null;
+  }
+
+  isDeferred(element: Element): boolean {
+    for (const deferBlock of this.deferredBlocks) {
+      const scope = this.rootScope.childScopes.get(deferBlock);
+      if (scope && scope.elementsInScope.has(element)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

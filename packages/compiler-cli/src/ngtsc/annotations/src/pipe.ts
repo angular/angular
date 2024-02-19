@@ -55,7 +55,8 @@ export class PipeDecoratorHandler implements
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
       private perf: PerfRecorder, private includeClassMetadata: boolean,
-      private readonly compilationMode: CompilationMode) {}
+      private readonly compilationMode: CompilationMode,
+      private readonly generateExtraImportsInLocalMode: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'PipeDecoratorHandler';
@@ -161,6 +162,7 @@ export class PipeDecoratorHandler implements
       nameExpr: analysis.pipeNameExpr,
       isStandalone: analysis.meta.isStandalone,
       decorator: analysis.decorator,
+      isExplicitlyDeferred: false,
     });
 
     this.injectableRegistry.registerInjectable(node, {
@@ -169,6 +171,10 @@ export class PipeDecoratorHandler implements
   }
 
   resolve(node: ClassDeclaration): ResolveResult<unknown> {
+    if (this.compilationMode === CompilationMode.LOCAL) {
+      return {};
+    }
+
     const duplicateDeclData = this.scopeRegistry.getDuplicateDeclarations(node);
     if (duplicateDeclData !== null) {
       // This pipe was declared twice (or more).

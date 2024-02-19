@@ -198,7 +198,7 @@
     "name": "GenericBrowserDomAdapter"
   },
   {
-    "name": "INJECTOR2"
+    "name": "INJECTOR"
   },
   {
     "name": "INJECTOR_DEF_TYPES"
@@ -220,6 +220,9 @@
   },
   {
     "name": "Injector"
+  },
+  {
+    "name": "InputFlags"
   },
   {
     "name": "KeyEventsPlugin"
@@ -405,6 +408,9 @@
     "name": "RuntimeError"
   },
   {
+    "name": "SIGNAL"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {
@@ -558,7 +564,7 @@
     "name": "addLViewToLContainer"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "addToViewTree"
@@ -586,6 +592,9 @@
   },
   {
     "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyValueToInputField"
   },
   {
     "name": "applyView"
@@ -616,6 +625,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "checkStable"
@@ -711,6 +723,9 @@
     "name": "detachView"
   },
   {
+    "name": "detachViewFromDOM"
+  },
+  {
     "name": "detectChangesInChildComponents"
   },
   {
@@ -724,6 +739,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -778,9 +796,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getBeforeNodeForView"
@@ -1011,10 +1026,16 @@
     "name": "init_application_module"
   },
   {
+    "name": "init_application_ngmodule_factory_compiler"
+  },
+  {
     "name": "init_application_ref"
   },
   {
     "name": "init_application_tokens"
+  },
+  {
+    "name": "init_apply_value_input_field"
   },
   {
     "name": "init_arrRemove"
@@ -1440,7 +1461,13 @@
     "name": "init_input"
   },
   {
+    "name": "init_input_flags"
+  },
+  {
     "name": "init_input_signal"
+  },
+  {
+    "name": "init_input_signal_node"
   },
   {
     "name": "init_input_transforms_feature"
@@ -1530,6 +1557,12 @@
     "name": "init_misc_utils"
   },
   {
+    "name": "init_model"
+  },
+  {
+    "name": "init_model_signal"
+  },
+  {
     "name": "init_module"
   },
   {
@@ -1617,6 +1650,9 @@
     "name": "init_operators"
   },
   {
+    "name": "init_output"
+  },
+  {
     "name": "init_partial"
   },
   {
@@ -1677,10 +1713,22 @@
     "name": "init_pure_function"
   },
   {
+    "name": "init_queries"
+  },
+  {
+    "name": "init_queries2"
+  },
+  {
+    "name": "init_queries_signals"
+  },
+  {
     "name": "init_query"
   },
   {
     "name": "init_query_list"
+  },
+  {
+    "name": "init_query_reactive"
   },
   {
     "name": "init_r3_injector"
@@ -1827,6 +1875,9 @@
     "name": "init_trusted_types_bypass"
   },
   {
+    "name": "init_two_way"
+  },
+  {
     "name": "init_type"
   },
   {
@@ -1893,10 +1944,16 @@
     "name": "init_weak_ref"
   },
   {
+    "name": "init_write_to_directive_input"
+  },
+  {
     "name": "init_zone"
   },
   {
     "name": "init_zoneless_scheduling"
+  },
+  {
+    "name": "init_zoneless_scheduling_impl"
   },
   {
     "name": "initializeDirectives"
@@ -1927,9 +1984,6 @@
   },
   {
     "name": "internalImportProvidersFrom"
-  },
-  {
-    "name": "invertObject"
   },
   {
     "name": "invokeAllTriggerCleanupFns"
@@ -2097,6 +2151,9 @@
     "name": "onLeave"
   },
   {
+    "name": "parseAndConvertBindingsForDefinition"
+  },
+  {
     "name": "performanceMarkFeature"
   },
   {
@@ -2218,6 +2275,9 @@
   },
   {
     "name": "shimStylesContent"
+  },
+  {
+    "name": "shouldRecheckView"
   },
   {
     "name": "shouldSearchParent"

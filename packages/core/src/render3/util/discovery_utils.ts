@@ -17,8 +17,8 @@ import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {CLEANUP, CONTEXT, FLAGS, LView, LViewFlags, TVIEW, TViewType} from '../interfaces/view';
 
-import {getLViewParent, getRootContext} from './view_traversal_utils';
-import {unwrapRNode} from './view_utils';
+import {getRootContext} from './view_traversal_utils';
+import {getLViewParent, unwrapRNode} from './view_utils';
 
 
 
@@ -275,8 +275,9 @@ export function getDirectiveMetadata(directiveOrComponentInstance: any): Compone
   // To ensure we don't get the metadata of the directive, we want to call `getComponentDef` first.
   const componentDef = getComponentDef(constructor);
   if (componentDef) {
+    const inputs = extractInputDebugMetadata(componentDef.inputs);
     return {
-      inputs: componentDef.inputs,
+      inputs,
       outputs: componentDef.outputs,
       encapsulation: componentDef.encapsulation,
       changeDetection: componentDef.onPush ? ChangeDetectionStrategy.OnPush :
@@ -285,7 +286,8 @@ export function getDirectiveMetadata(directiveOrComponentInstance: any): Compone
   }
   const directiveDef = getDirectiveDef(constructor);
   if (directiveDef) {
-    return {inputs: directiveDef.inputs, outputs: directiveDef.outputs};
+    const inputs = extractInputDebugMetadata(directiveDef.inputs);
+    return {inputs, outputs: directiveDef.outputs};
   }
   return null;
 }
@@ -467,4 +469,40 @@ function assertDomElement(value: any) {
   if (typeof Element !== 'undefined' && !(value instanceof Element)) {
     throw new Error('Expecting instance of DOM Element');
   }
+}
+
+/**
+ * A directive definition holds additional metadata using bitwise flags to indicate
+ * for example whether it is signal based.
+ *
+ * This information needs to be separate from the `publicName -> minifiedName`
+ * mappings for backwards compatibility.
+ */
+function extractInputDebugMetadata<T>(inputs: DirectiveDef<T>['inputs']) {
+  const res: DirectiveDebugMetadata['inputs'] = {};
+
+  for (const key in inputs) {
+    if (!inputs.hasOwnProperty(key)) {
+      continue;
+    }
+
+    const value = inputs[key];
+    if (value === undefined) {
+      continue;
+    }
+
+    let minifiedName: string;
+
+    if (Array.isArray(value)) {
+      minifiedName = value[0];
+      // flags are not used for now.
+      // TODO: Consider exposing flag information in discovery.
+    } else {
+      minifiedName = value;
+    }
+
+    res[key] = minifiedName;
+  }
+
+  return res;
 }

@@ -66,7 +66,7 @@ export const getTooltipExtension = (
             dom: tooltip,
 
             // Note: force the tooltip to scroll to the top on mount and on position change
-            // because depending on the position of the mouse and the siez of the tooltip content,
+            // because depending on the position of the mouse and the size of the tooltip content,
             // the tooltip might render with its initial scroll position on the bottom
             mount: (_) => forceTooltipScrollTop(),
             positioned: (_) => forceTooltipScrollTop(),
@@ -92,7 +92,7 @@ function forceTooltipScrollTop() {
 
 function getMarkedHtmlFromString(content: string): HTMLDivElement {
   const wrapper = document.createElement('div');
-  wrapper.innerHTML = marked(content);
+  wrapper.innerHTML = marked(content) as string;
 
   return wrapper;
 }
@@ -137,7 +137,7 @@ function getTagsHtml(tags: JSDocTagInfo[]): HTMLDivElement {
     }
   }
 
-  tagsWrapper.innerHTML = marked(contentString);
+  tagsWrapper.innerHTML = marked(contentString) as string;
 
   return tagsWrapper;
 }

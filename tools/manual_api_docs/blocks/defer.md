@@ -1,4 +1,4 @@
-A type of [block](api/core/defer) that can be used to defer load the JavaScript for components,
+A type of [block](api/core/@defer) that can be used to defer load the JavaScript for components,
 directives and pipes used inside a component template.
 
 ## Syntax
@@ -15,7 +15,7 @@ directives and pipes used inside a component template.
   <img alt="loading image" src="loading.gif" />
 } @error {
   <!-- error template fragment -->
-  <p>An loading error occured</p>
+  <p>An loading error occurred</p>
 }
 ```
 

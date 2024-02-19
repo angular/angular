@@ -45,6 +45,14 @@
     "picture": "alan-agius4.jpg",
     "bio": "Angular CLI Member, Loves TypeScript, Build Tools, Food, Beer & Coffee :)"
   },
+  "alejandrocuba": {
+    "name": "Alejandro Cuba Ruiz",
+    "picture": "alejandrocuba.jpg",
+    "twitter": "zorphdark",
+    "website": "https://alejandrocuba.com/",
+    "bio": "Alejandro is a Principal Software Engineer, co-organizer of the Angular Community Meetup, and a member of the ng-Champions program at ng-conf. As the host of the Angularidades podcast, he engages in conversations with front-end developers and visual designers from the Spanish-speaking community.",
+    "groups": ["GDE"]
+  },
   "alisaduncan": {
     "name": "Alisa Duncan",
     "picture": "alisaduncan.jpg",
@@ -108,6 +116,13 @@
     "bio": "SDE III @cisco | GDE for Angular | Microsoft MVP | Author | Speaker | Passionate Programmer",
     "groups": ["GDE"]
   },
+  "ankitasood": {
+    "name": "Ankita Sood",
+    "picture": "ankita.jpg",
+    "groups": ["GDE"],
+    "twitter": "guacamoleankita",
+    "bio": "Ankita is an Angular developer, mentor and speaker. She is passionate about all things Angular and Design."
+  },
   "antoniocardenas": {
     "name": "Antonio Cardenas",
     "picture": "antonio-cardenas.jpg",
@@ -156,8 +171,7 @@
     "name": "Aristeidis Bampakos",
     "picture": "aristeidis.jpg",
     "twitter": "abampakos",
-    "website": "https://medium.com/@abampakos",
-    "bio": "Aristeidis is a web development team lead at Plex-Earth working with Angular. He is the author of two books about Angular: Learning Angular - 3rd Edition and Angular Projects - 2nd Edition. He also works as an Angular senior tech instructor at Code.Hub where he teaches the Angular framework to other developers and professionals.",
+    "bio": "Aristeidis works as a Web Development Team Leader @ Plex-Earth, specializing in Angular development. He is the author of Learning Angular and Angular Projects books and also works as an Angular Senior Tech Instructor @ Code.Hub where he nurtures aspiring Angular developers and professionals. Aristeidis is currently leading the effort of making Angular accessible to the Greek development community by maintaining the Greek translation of the Angular documentation.",
     "groups": ["GDE"]
   },
   "bbrennan": {
@@ -1019,6 +1033,14 @@
     "website": "https://labs.thisdot.co/",
     "bio": "Tracy is the Co-Founder of This Dot Labs, a consultancy focused on helping companies with digital transformations. She is also a Google Developer Expert, RxJS Core Team member, a Women Techmakers Lead, and a frequent keynote speaker at conferences. She heads up Community Relations for Node.js at OpenJS Foundation, is the host of the Modern Web podcast, organizer of This.JavaScript, Contributor Days, Google Developer Group Silicon Valley and Triangle, and RxWorkshop. You can find her on Twitter @ladyleet or at https://labs.thisdot.co/."
   },
+  "trungvose": {
+    "name": "Trung Vo",
+    "picture": "trungvo.jpg",
+    "groups": ["GDE"],
+    "twitter": "trungvose",
+    "website": "https://trungk18.com",
+    "bio": "Trung Vo is a web expert and a Google Developer Expert in Angular, recognized for his open-source projects like Angular Spotify and Jira Clone. He contributes significantly to web development communities in Vietnam and Singapore, particularly through Angular Vietnam and Angular Singapore. Additionally, Trung is a seasoned speaker, having presented at global tech events worldwide."
+  },
   "twerske": {
     "name": "Emma Twersky",
     "picture": "twerske.jpg",
@@ -1089,6 +1111,14 @@
     "twitter": "willmendesneto",
     "website": "https://willmendesneto.github.io",
     "bio": "GDE (Google Developer Expert) Angular and Web Technologies, GDG Salvador organizer, passionate about technology and active in communities with a focus on web development, including Angular, JavaScript, HTML5, CSS3, Workflow, web performance, security and Internet of things. Participates in events organization, speaker at conferences in Brazil and other countries and contributes to several open source projects.",
+    "groups": ["GDE"]
+  },
+  "xocomil": {
+    "name": "Jason Warner",
+    "picture": "jasonwarner.jpg",
+    "twitter": "xocomil_1",
+    "website": "https://github.com/xocomil",
+    "bio": "Jason is a Senior Staff Engineer, Google Developer Expert in Angular and mentor. He enjoys code and is particularly passionate about front-end and Angular. Jason enjoys streaming on Twitch and interacting with community members. He loves to help others to achieve their goals.",
     "groups": ["GDE"]
   },
   "yannickbaron": {

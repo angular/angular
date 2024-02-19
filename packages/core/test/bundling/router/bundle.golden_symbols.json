@@ -255,7 +255,7 @@
     "name": "INITIAL_VALUE"
   },
   {
-    "name": "INJECTOR2"
+    "name": "INJECTOR"
   },
   {
     "name": "INJECTOR_DEF_TYPES"
@@ -280,6 +280,9 @@
   },
   {
     "name": "Injector"
+  },
+  {
+    "name": "InputFlags"
   },
   {
     "name": "ItemComponent"
@@ -612,6 +615,9 @@
     "name": "SEGMENT_RE"
   },
   {
+    "name": "SIGNAL"
+  },
+  {
     "name": "SIMPLE_CHANGES_STORE"
   },
   {
@@ -810,7 +816,7 @@
     "name": "addLViewToLContainer"
   },
   {
-    "name": "addPropertyAlias"
+    "name": "addPropertyBinding"
   },
   {
     "name": "addToArray"
@@ -841,6 +847,9 @@
   },
   {
     "name": "applyToElementOrContainer"
+  },
+  {
+    "name": "applyValueToInputField"
   },
   {
     "name": "applyView"
@@ -877,6 +886,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "captureNodeBindings"
   },
   {
     "name": "catchError"
@@ -952,6 +964,9 @@
   },
   {
     "name": "createContainerRef"
+  },
+  {
+    "name": "createContentQuery"
   },
   {
     "name": "createElementNode"
@@ -1059,6 +1074,9 @@
     "name": "detachView"
   },
   {
+    "name": "detachViewFromDOM"
+  },
+  {
     "name": "detectChangesInChildComponents"
   },
   {
@@ -1072,6 +1090,9 @@
   },
   {
     "name": "detectChangesInViewIfAttached"
+  },
+  {
+    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -1180,9 +1201,6 @@
   },
   {
     "name": "generateInitialInputs"
-  },
-  {
-    "name": "generatePropertyAliases"
   },
   {
     "name": "getAllRouteGuards"
@@ -1338,6 +1356,9 @@
     "name": "getPromiseCtor"
   },
   {
+    "name": "getQueryResults"
+  },
+  {
     "name": "getSanitizer"
   },
   {
@@ -1453,9 +1474,6 @@
   },
   {
     "name": "internalImportProvidersFrom"
-  },
-  {
-    "name": "invertObject"
   },
   {
     "name": "invokeDirectivesHostBindings"
@@ -1740,6 +1758,9 @@
     "name": "paramCompareMap"
   },
   {
+    "name": "parseAndConvertBindingsForDefinition"
+  },
+  {
     "name": "pathCompareMap"
   },
   {
@@ -1911,6 +1932,9 @@
     "name": "shouldAddViewToDom"
   },
   {
+    "name": "shouldRecheckView"
+  },
+  {
     "name": "shouldSearchParent"
   },
   {
@@ -1959,7 +1983,7 @@
     "name": "tap"
   },
   {
-    "name": "throwError2"
+    "name": "throwError"
   },
   {
     "name": "throwIfEmpty"
@@ -2077,9 +2101,6 @@
   },
   {
     "name": "ɵɵlistener"
-  },
-  {
-    "name": "ɵɵqueryRefresh"
   },
   {
     "name": "ɵɵsanitizeResourceUrl"

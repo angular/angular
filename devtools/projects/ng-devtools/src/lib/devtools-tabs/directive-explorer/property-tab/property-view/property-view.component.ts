@@ -9,13 +9,20 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DirectivePosition} from 'protocol';
 
-import {DirectivePropertyResolver, DirectiveTreeData} from '../../property-resolver/directive-property-resolver';
+import {
+  DirectivePropertyResolver,
+  DirectiveTreeData,
+} from '../../property-resolver/directive-property-resolver';
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
+import {PropertyViewBodyComponent} from './property-view-body.component';
+import {PropertyViewHeaderComponent} from './property-view-header.component';
 
 @Component({
   selector: 'ng-property-view',
   templateUrl: './property-view.component.html',
   styleUrls: ['./property-view.component.scss'],
+  standalone: true,
+  imports: [PropertyViewHeaderComponent, PropertyViewBodyComponent],
 })
 export class PropertyViewComponent {
   @Input({required: true}) directive!: string;
@@ -24,19 +31,19 @@ export class PropertyViewComponent {
 
   constructor(private _nestedProps: ElementPropertyResolver) {}
 
-  get controller(): DirectivePropertyResolver|undefined {
+  get controller(): DirectivePropertyResolver | undefined {
     return this._nestedProps.getDirectiveController(this.directive);
   }
 
-  get directiveInputControls(): DirectiveTreeData|void {
+  get directiveInputControls(): DirectiveTreeData | void {
     return this.controller?.directiveInputControls;
   }
 
-  get directiveOutputControls(): DirectiveTreeData|void {
+  get directiveOutputControls(): DirectiveTreeData | void {
     return this.controller?.directiveOutputControls;
   }
 
-  get directiveStateControls(): DirectiveTreeData|void {
+  get directiveStateControls(): DirectiveTreeData | void {
     return this.controller?.directiveStateControls;
   }
 }

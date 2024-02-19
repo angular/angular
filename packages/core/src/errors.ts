@@ -30,7 +30,6 @@ export const enum RuntimeErrorCode {
   // Change Detection Errors
   EXPRESSION_CHANGED_AFTER_CHECKED = -100,
   RECURSIVE_APPLICATION_REF_TICK = 101,
-  RECURSIVE_APPLICATION_RENDER = 102,
   INFINITE_CHANGE_DETECTION = 103,
 
   // Dependency Injection Errors
@@ -116,6 +115,11 @@ export const enum RuntimeErrorCode {
   VIEW_ALREADY_DESTROYED = 911,
   COMPONENT_ID_COLLISION = -912,
   IMAGE_PERFORMANCE_WARNING = -913,
+
+  // Signal integration errors
+  REQUIRED_INPUT_NO_VALUE = -950,
+  REQUIRED_QUERY_NO_VALUE = -951,
+  REQUIRED_MODEL_NO_VALUE = -952,
 
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,

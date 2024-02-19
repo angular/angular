@@ -69,6 +69,34 @@ export declare class AnimationEvent {
       expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
     });
 
+    it('should not fail with a runtime error when generating TCB', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, input} from '@angular/core';
+
+        @Component({
+          selector: 'sub-cmp',
+          standalone: true,
+          template: '',
+        })
+        class Sub { // intentionally not exported
+          someInput = input.required<string>();
+        }
+
+        @Component({
+          template: \`<sub-cmp [someInput]="''" />\`,
+          standalone: true,
+          imports: [Sub],
+        })
+        export class MyComponent {}
+      `);
+
+      const diagnostics = env.driveDiagnostics();
+      expect(diagnostics).toEqual([jasmine.objectContaining(
+          {messageText: jasmine.objectContaining({messageText: 'Unable to import symbol Sub.'})},
+          )]);
+    });
+
     it('should check regular attributes that are directive inputs', () => {
       env.tsconfig(
           {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
@@ -416,6 +444,97 @@ export declare class AnimationEvent {
       expect(diags[0].relatedInformation!.length).toBe(2);
       expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![0])).toBe('ChildCmp');
       expect(getSourceCodeForDiagnostic(diags[0].relatedInformation![1])).toBe('ChildCmpDir');
+    });
+
+    it('should type check a two-way binding to a generic property', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir<T extends {id: string}> {
+          @Input() val!: T;
+          @Output() valChange = new EventEmitter<T>();
+        }
+
+        @Component({
+          template: '<input dir [(val)]="invalidType">',
+          standalone: true,
+          imports: [Dir],
+        })
+        export class FooCmp {
+          invalidType = {id: 1};
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText)
+          .toEqual(`Type '{ id: number; }' is not assignable to type '{ id: string; }'.`);
+    });
+
+    it('should use the setter type when assigning using a two-way binding to an input with different getter and setter types',
+       () => {
+         env.tsconfig({strictTemplates: true});
+         env.write('test.ts', `
+            import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+            @Directive({selector: '[dir]', standalone: true})
+            export class Dir {
+              @Input()
+              set val(value: string | null | undefined) {
+                this._val = value as string;
+              }
+              get val(): string {
+                return this._val;
+              }
+              private _val: string;
+
+              @Output() valChange = new EventEmitter<string>();
+            }
+
+            @Component({
+              template: '<input dir [(val)]="nullableType">',
+              standalone: true,
+              imports: [Dir],
+            })
+            export class FooCmp {
+              nullableType = null;
+            }
+          `);
+
+         const diags = env.driveDiagnostics();
+         expect(diags).toEqual([]);
+       });
+
+    it('should type check a two-way binding to a function value', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+        type TestFn = (val: number | null | undefined) => string;
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class Dir {
+          @Input() val!: TestFn;
+          @Output() valChange = new EventEmitter<TestFn>();
+        }
+
+        @Component({
+          template: '<input dir [(val)]="invalidType">',
+          standalone: true,
+          imports: [Dir],
+        })
+        export class FooCmp {
+          invalidType = (val: string) => 0;
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toEqual(jasmine.objectContaining({
+        messageText: `Type '(val: string) => number' is not assignable to type 'TestFn'.`,
+      }));
     });
 
     describe('strictInputTypes', () => {
@@ -2355,6 +2474,34 @@ export declare class AnimationEvent {
                 `Type 'HTMLDivElement' is not assignable to type ` +
                 `'HTMLInputElement | ElementRef<HTMLInputElement>'`);
       });
+
+      it('should type check a two-way binding to an input with a transform', () => {
+        env.tsconfig({strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          export function toNumber(val: boolean | string) { return 1; }
+
+          @Directive({selector: '[dir]', standalone: true})
+          export class CoercionDir {
+            @Input({transform: toNumber}) val!: number;
+            @Output() valChange = new EventEmitter<number>();
+          }
+
+          @Component({
+            template: '<input dir [(val)]="invalidType">',
+            standalone: true,
+            imports: [CoercionDir],
+          })
+          export class FooCmp {
+            invalidType = 1;
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toBe(`Type 'number' is not assignable to type 'string | boolean'.`);
+      });
     });
 
     describe('restricted inputs', () => {
@@ -3658,7 +3805,7 @@ suppress
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
-            .toContain('HostBindDirective');
+            .toContain('Unable to import symbol HostBindDirective');
       });
 
       it('should check bindings to inherited host directive inputs', () => {

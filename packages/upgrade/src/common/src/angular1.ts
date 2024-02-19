@@ -8,22 +8,22 @@
 
 export type Ng1Token = string;
 
-export type Ng1Expression = string|Function;
+export type Ng1Expression = string | Function;
 
 export interface IAnnotatedFunction extends Function {
   // Older versions of `@types/angular` typings extend the global `Function` interface with
   // `$inject?: string[]`, which is not compatible with `$inject?: ReadonlyArray<string>` (used in
   // latest versions).
-  $inject?: Function extends {$inject?: string[]}? Ng1Token[]: ReadonlyArray<Ng1Token>;
+  $inject?: Function extends {$inject?: string[]} ? Ng1Token[] : ReadonlyArray<Ng1Token>;
 }
 
-export type IInjectable = (Ng1Token|Function)[]|IAnnotatedFunction;
+export type IInjectable = (Ng1Token | Function)[] | IAnnotatedFunction;
 
-export type SingleOrListOrMap<T> = T|T[]|{[key: string]: T};
+export type SingleOrListOrMap<T> = T | T[] | {[key: string]: T};
 
 export interface IModule {
   name: string;
-  requires: (string|IInjectable)[];
+  requires: (string | IInjectable)[];
   config(fn: IInjectable): IModule;
   directive(selector: string, factory: IInjectable): IModule;
   component(selector: string, component: IComponent): IModule;
@@ -34,7 +34,7 @@ export interface IModule {
   run(a: IInjectable): IModule;
 }
 export interface ICompileService {
-  (element: Element|NodeList|Node[]|string, transclude?: Function): ILinkFn;
+  (element: Element | NodeList | Node[] | string, transclude?: Function): ILinkFn;
 }
 export interface ILinkFn {
   (scope: IScope, cloneAttachFn?: ICloneAttachFunction, options?: ILinkFnOptions): IAugmentedJQuery;
@@ -72,41 +72,49 @@ export interface IDirective {
   compile?: IDirectiveCompileFn;
   controller?: IController;
   controllerAs?: string;
-  bindToController?: boolean|{[key: string]: string};
-  link?: IDirectiveLinkFn|IDirectivePrePost;
+  bindToController?: boolean | {[key: string]: string};
+  link?: IDirectiveLinkFn | IDirectivePrePost;
   name?: string;
   priority?: number;
   replace?: boolean;
   require?: DirectiveRequireProperty;
   restrict?: string;
-  scope?: boolean|{[key: string]: string};
-  template?: string|Function;
-  templateUrl?: string|Function;
+  scope?: boolean | {[key: string]: string};
+  template?: string | Function;
+  templateUrl?: string | Function;
   templateNamespace?: string;
   terminal?: boolean;
   transclude?: DirectiveTranscludeProperty;
 }
 export type DirectiveRequireProperty = SingleOrListOrMap<string>;
-export type DirectiveTranscludeProperty = boolean|'element'|{[key: string]: string};
+export type DirectiveTranscludeProperty = boolean | 'element' | {[key: string]: string};
 export interface IDirectiveCompileFn {
-  (templateElement: IAugmentedJQuery, templateAttributes: IAttributes,
-   transclude: ITranscludeFunction): IDirectivePrePost;
+  (
+    templateElement: IAugmentedJQuery,
+    templateAttributes: IAttributes,
+    transclude: ITranscludeFunction,
+  ): IDirectivePrePost;
 }
 export interface IDirectivePrePost {
   pre?: IDirectiveLinkFn;
   post?: IDirectiveLinkFn;
 }
 export interface IDirectiveLinkFn {
-  (scope: IScope, instanceElement: IAugmentedJQuery, instanceAttributes: IAttributes,
-   controller: any, transclude: ITranscludeFunction): void;
+  (
+    scope: IScope,
+    instanceElement: IAugmentedJQuery,
+    instanceAttributes: IAttributes,
+    controller: any,
+    transclude: ITranscludeFunction,
+  ): void;
 }
 export interface IComponent {
   bindings?: {[key: string]: string};
-  controller?: string|IInjectable;
+  controller?: string | IInjectable;
   controllerAs?: string;
   require?: DirectiveRequireProperty;
-  template?: string|Function;
-  templateUrl?: string|Function;
+  template?: string | Function;
+  templateUrl?: string | Function;
   transclude?: DirectiveTranscludeProperty;
 }
 export interface IAttributes {
@@ -122,7 +130,7 @@ export interface ITranscludeFunction {
 export interface ICloneAttachFunction {
   (clonedElement: IAugmentedJQuery, scope: IScope): any;
 }
-export type IAugmentedJQuery = Node[]&{
+export type IAugmentedJQuery = Node[] & {
   on?: (name: string, fn: () => void) => void;
   data?: (name: string, value?: any) => any;
   text?: () => string;
@@ -131,11 +139,11 @@ export type IAugmentedJQuery = Node[]&{
   contents?: () => IAugmentedJQuery;
   parent?: () => IAugmentedJQuery;
   empty?: () => void;
-  append?: (content: IAugmentedJQuery|string) => IAugmentedJQuery;
+  append?: (content: IAugmentedJQuery | string) => IAugmentedJQuery;
   controller?: (name: string) => any;
   isolateScope?: () => IScope;
   injector?: () => IInjectorService;
-  triggerHandler?: (eventTypeOrObject: string|Event, extraParameters?: any[]) => IAugmentedJQuery;
+  triggerHandler?: (eventTypeOrObject: string | Event, extraParameters?: any[]) => IAugmentedJQuery;
   remove?: () => void;
   removeData?: () => void;
 };
@@ -158,15 +166,22 @@ export interface ICompiledExpression {
   assign?: (context: any, value: any) => any;
 }
 export interface IHttpBackendService {
-  (method: string, url: string, post?: any, callback?: Function, headers?: any, timeout?: number,
-   withCredentials?: boolean): void;
+  (
+    method: string,
+    url: string,
+    post?: any,
+    callback?: Function,
+    headers?: any,
+    timeout?: number,
+    withCredentials?: boolean,
+  ): void;
 }
 export interface ICacheObject {
   put<T>(key: string, value?: T): T;
   get(key: string): any;
 }
 export interface ITemplateCacheService extends ICacheObject {}
-export type IController = string|IInjectable;
+export type IController = string | IInjectable;
 export interface IControllerService {
   (controllerConstructor: IController, locals?: any, later?: any, ident?: any): any;
   (controllerName: string, locals?: any): any;
@@ -178,8 +193,13 @@ export interface IInjectorService {
 }
 
 export interface IIntervalService {
-  (func: Function, delay: number, count?: number, invokeApply?: boolean,
-   ...args: any[]): Promise<any>;
+  (
+    func: Function,
+    delay: number,
+    count?: number,
+    invokeApply?: boolean,
+    ...args: any[]
+  ): Promise<any>;
   cancel(promise: Promise<any>): boolean;
 }
 
@@ -230,17 +250,20 @@ const noNgElement: typeof angular.element = (() => noNg()) as any;
 noNgElement.cleanData = noNg;
 
 let angular: {
-  bootstrap: (e: Element, modules: (string|IInjectable)[], config?: IAngularBootstrapConfig) =>
-      IInjectorService,
-  module: (prefix: string, dependencies?: string[]) => IModule,
+  bootstrap: (
+    e: Element,
+    modules: (string | IInjectable)[],
+    config?: IAngularBootstrapConfig,
+  ) => IInjectorService;
+  module: (prefix: string, dependencies?: string[]) => IModule;
   element: {
-    (e: string|Element|Document|IAugmentedJQuery): IAugmentedJQuery;
-    cleanData: (nodes: Node[]|NodeList) => void;
-  },
-  injector: (modules: Array<string|IInjectable>, strictDi?: boolean) => IInjectorService,
-  version: {major: number},
-  resumeBootstrap: () => void,
-  getTestability: (e: Element) => ITestabilityService
+    (e: string | Element | Document | IAugmentedJQuery): IAugmentedJQuery;
+    cleanData: (nodes: Node[] | NodeList) => void;
+  };
+  injector: (modules: Array<string | IInjectable>, strictDi?: boolean) => IInjectorService;
+  version: {major: number};
+  resumeBootstrap: () => void;
+  getTestability: (e: Element) => ITestabilityService;
 } = {
   bootstrap: noNg,
   module: noNg,
@@ -248,7 +271,7 @@ let angular: {
   injector: noNg,
   version: undefined as any,
   resumeBootstrap: noNg,
-  getTestability: noNg
+  getTestability: noNg,
 };
 
 try {
@@ -298,19 +321,22 @@ export function getAngularJSGlobal(): any {
 }
 
 export const bootstrap: typeof angular.bootstrap = (e, modules, config?) =>
-    angular.bootstrap(e, modules, config);
+  angular.bootstrap(e, modules, config);
 
 // Do not declare as `module` to avoid webpack bug
 // (see https://github.com/angular/angular/issues/30050).
 export const module_: typeof angular.module = (prefix, dependencies?) =>
-    angular.module(prefix, dependencies);
+  angular.module(prefix, dependencies);
 
-export const element: typeof angular.element = (e => angular.element(e)) as typeof angular.element;
-element.cleanData = nodes => angular.element.cleanData(nodes);
+export const element: typeof angular.element = ((e) =>
+  angular.element(e)) as typeof angular.element;
+element.cleanData = (nodes) => angular.element.cleanData(nodes);
 
-export const injector: typeof angular.injector =
-    (modules: Array<string|IInjectable>, strictDi?: boolean) => angular.injector(modules, strictDi);
+export const injector: typeof angular.injector = (
+  modules: Array<string | IInjectable>,
+  strictDi?: boolean,
+) => angular.injector(modules, strictDi);
 
 export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
-export const getTestability: typeof angular.getTestability = e => angular.getTestability(e);
+export const getTestability: typeof angular.getTestability = (e) => angular.getTestability(e);

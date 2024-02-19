@@ -17,14 +17,16 @@ import * as diViewChildrenExample from './di/ts/viewChildren/module';
 import * as testabilityWhenStableExample from './testability/ts/whenStable/module';
 
 @Component({selector: 'example-app', template: '<router-outlet></router-outlet>'})
-export class TestsAppComponent {
-}
+export class TestsAppComponent {}
 
 @NgModule({
   imports: [
-    animationDslExample.AppModule, diContentChildExample.AppModule,
-    diContentChildrenExample.AppModule, diViewChildExample.AppModule,
-    diViewChildrenExample.AppModule, testabilityWhenStableExample.AppModule,
+    animationDslExample.AppModule,
+    diContentChildExample.AppModule,
+    diContentChildrenExample.AppModule,
+    diViewChildExample.AppModule,
+    diViewChildrenExample.AppModule,
+    testabilityWhenStableExample.AppModule,
 
     // Router configuration so that the individual e2e tests can load their
     // app components.
@@ -35,10 +37,9 @@ export class TestsAppComponent {
       {path: 'di/viewChild', component: diViewChildExample.AppComponent},
       {path: 'di/viewChildren', component: diViewChildrenExample.AppComponent},
       {path: 'testability/whenStable', component: testabilityWhenStableExample.AppComponent},
-    ])
+    ]),
   ],
   declarations: [TestsAppComponent],
-  bootstrap: [TestsAppComponent]
+  bootstrap: [TestsAppComponent],
 })
-export class TestsAppModule {
-}
+export class TestsAppModule {}

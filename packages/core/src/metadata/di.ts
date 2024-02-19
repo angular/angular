@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
 import {ProviderToken} from '../di/provider_token';
 import {makePropDecorator} from '../util/decorators';
 
@@ -65,6 +64,20 @@ export interface Query {
   isViewQuery: boolean;
   selector: any;
   static?: boolean;
+
+  /**
+   * @internal
+   *
+   * Whether the query is a signal query.
+   *
+   * This option exists for JIT compatibility. Users are not expected to use this.
+   * Angular needs a way to capture queries from classes so that the internal query
+   * functions can be generated. This needs to happen before the component is instantiated.
+   * Due to this, for JIT compilation, signal queries need an additional decorator
+   * declaring the query. Angular provides a TS transformer to automatically handle this
+   * for JIT usage (e.g. in tests).
+   */
+  isSignal?: boolean;
 }
 
 // Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
@@ -178,13 +191,13 @@ export type ContentChildren = Query;
  * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
-    'ContentChildren', (selector?: any, data: any = {}) => ({
+    'ContentChildren', (selector?: any, opts: any = {}) => ({
                          selector,
                          first: false,
                          isViewQuery: false,
                          descendants: false,
                          emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
-                         ...data
+                         ...opts
                        }),
     Query);
 
@@ -276,8 +289,8 @@ export type ContentChild = Query;
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
     'ContentChild',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
+    (selector?: any, opts: any = {}) =>
+        ({selector, first: true, isViewQuery: false, descendants: true, ...opts}),
     Query);
 
 /**
@@ -359,13 +372,13 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren', (selector?: any, data: any = {}) => ({
+    'ViewChildren', (selector?: any, opts: any = {}) => ({
                       selector,
                       first: false,
                       isViewQuery: true,
                       descendants: true,
                       emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
-                      ...data
+                      ...opts
                     }),
     Query);
 
@@ -422,6 +435,8 @@ export interface ViewChildDecorator {
    *
    * @usageNotes
    *
+   * ### Example 1
+   *
    * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
    * ### Example 2
@@ -450,6 +465,6 @@ export type ViewChild = Query;
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
     'ViewChild',
-    (selector: any, data: any) =>
-        ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
+    (selector: any, opts: any) =>
+        ({selector, first: true, isViewQuery: true, descendants: true, ...opts}),
     Query);

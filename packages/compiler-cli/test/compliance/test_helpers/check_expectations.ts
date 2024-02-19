@@ -14,7 +14,7 @@ import {replaceMacros} from './expected_file_macros';
 import {verifyUniqueFunctions} from './function_checks';
 import {ExpectedFile, ExtraCheck} from './get_compliance_tests';
 import {verifyPlaceholdersIntegrity, verifyUniqueConsts} from './i18n_checks';
-import {checkMappings} from './sourcemap_helpers';
+import {stripAndCheckMappings} from './sourcemap_helpers';
 
 type ExtraCheckFunction = (generated: string, ...extraArgs: any[]) => boolean;
 const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {
@@ -31,10 +31,13 @@ const EXTRA_CHECK_FUNCTIONS: Record<string, ExtraCheckFunction> = {
  * @param testPath Path to the current test case (relative to the basePath).
  * @param failureMessage The message to display if the expectation fails.
  * @param expectedFiles The list of expected-generated pairs to compare.
+ * @param skipMappingCheck Whether to skip checking source mappings.
+ *   TODO: Remove this option. This only exists until we fix:
+ *         https://github.com/angular/angular/issues/51647.
  */
 export function checkExpectations(
     fs: ReadonlyFileSystem, testPath: string, failureMessage: string, expectedFiles: ExpectedFile[],
-    extraChecks: ExtraCheck[]): void {
+    extraChecks: ExtraCheck[], skipMappingCheck = false): void {
   const builtDirectory = getBuildOutputDirectory(fs);
   for (const expectedFile of expectedFiles) {
     const expectedPath = fs.resolve(getRootDirectory(fs), expectedFile.expected);
@@ -58,7 +61,9 @@ export function checkExpectations(
     const generated = fs.readFile(generatedPath);
     let expected = fs.readFile(expectedPath);
     expected = replaceMacros(expected);
-    expected = checkMappings(fs, generated, generatedPath, expected, expectedPath);
+    expected = stripAndCheckMappings(
+        fs, generated, generatedPath, expected, expectedPath,
+        /** skipMappingCheck */ !!skipMappingCheck);
 
     expectEmit(
         generated, expected,

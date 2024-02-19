@@ -39,6 +39,141 @@ describe('type definitions', () => {
     assertFileNames(definitions, ['index.d.ts']);
   });
 
+  describe('inputs', () => {
+    it('return the definition for a signal input', () => {
+      initMockFileSystem('Native');
+      const files = {
+        'app.ts': `
+          import {Component, Directive, input} from '@angular/core';
+
+          @Directive({
+            selector: 'my-dir',
+            standalone: true
+          })
+          export class MyDir {
+            firstName = input<string>();
+          }
+
+          @Component({
+            templateUrl: 'app.html',
+            standalone: true,
+            imports: [MyDir],
+          })
+          export class AppCmp {}
+        `,
+        'app.html': `Will be overridden`,
+      };
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir [first¦Name]="undefined" />`});
+      expect(definitions!.length).toEqual(1);
+
+      assertTextSpans(definitions, ['InputSignal']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+  });
+
+  describe('initializer-based output() API', () => {
+    it('return the definition for an output', () => {
+      initMockFileSystem('Native');
+      const files = {
+        'app.ts': `
+          import {Component, Directive, output} from '@angular/core';
+
+          @Directive({
+            selector: 'my-dir',
+            standalone: true
+          })
+          export class MyDir {
+            nameChanges = output<string>();
+          }
+
+          @Component({
+            templateUrl: 'app.html',
+            standalone: true,
+            imports: [MyDir],
+          })
+          export class AppCmp {
+            doSmth() {}
+          }
+        `,
+        'app.html': `Will be overridden`,
+      };
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir (name¦Changes)="doSmth()" />`});
+      expect(definitions!.length).toEqual(1);
+
+      assertTextSpans(definitions, ['OutputEmitter']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+  });
+
+  describe('model inputs', () => {
+    const files = {
+      'app.ts': `
+        import {Component, Directive, model} from '@angular/core';
+
+        @Directive({
+          selector: 'my-dir',
+          standalone: true
+        })
+        export class MyDir {
+          twoWayValue = model<string>();
+        }
+
+        @Component({
+          templateUrl: 'app.html',
+          standalone: true,
+          imports: [MyDir],
+        })
+        export class AppCmp {
+          noop() {}
+          value = 'hello';
+        }
+      `,
+      'app.html': `Will be overridden`,
+    };
+
+    it('should return the definition for the property side of a two-way binding', () => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir [twoWa¦yValue]="value" />`});
+
+      expect(definitions.length).toBe(1);
+      assertTextSpans(definitions, ['ModelSignal']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+
+    it('should return the definition for the event side of a two-way binding', () => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir (twoWayV¦alueChange)="noop()" />`});
+
+      expect(definitions.length).toBe(1);
+      assertTextSpans(definitions, ['ModelSignal']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+
+    it('should return the definition of a two-way binding', () => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+      const project = env.addProject('test', files);
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(
+          project, {templateOverride: `<my-dir [(twoWa¦yValue)]="value" />`});
+
+      expect(definitions.length).toBe(1);
+      assertTextSpans(definitions, ['ModelSignal']);
+      assertFileNames(definitions, ['index.d.ts']);
+    });
+  });
+
   function getTypeDefinitionsAndAssertBoundSpan(
       project: Project, {templateOverride}: {templateOverride: string}) {
     const text = templateOverride.replace('¦', '');

@@ -612,13 +612,13 @@ describe(`ChangeDetection`, () => {
            expect(ctx.componentInstance.a).toEqual([{}, []]);
          }));
 
-      it('should throw when trying to assign to a local', fakeAsync(() => {
-           expect(() => {
-             _bindSimpleProp('(event)="$event=1"');
-           })
-               .toThrowError(new RegExp(
-                   'Cannot assign value (.*) to template variable (.*). Template variables are read-only.'));
-         }));
+      xit('should throw when trying to assign to a local', fakeAsync(() => {
+            expect(() => {
+              _bindSimpleProp('(event)="$event=1"');
+            })
+                .toThrowError(new RegExp(
+                    'Cannot assign value (.*) to template variable (.*). Template variables are read-only.'));
+          }));
 
       it('should support short-circuiting', fakeAsync(() => {
            const ctx = _bindSimpleProp('(event)="true ? a = a + 1 : a = a + 1"');

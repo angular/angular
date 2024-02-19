@@ -541,7 +541,7 @@ export function getMainBlock(etm: ElementToMigrate, tmpl: string, offset: number
       const {childStart, childEnd} = etm.getChildSpan(offset);
       middle = tmpl.slice(childStart, childEnd);
     } else {
-      middle = startMarker + endMarker;
+      middle = '';
     }
     return {start: '', middle, end: ''};
   } else if (isI18nTemplate(etm, i18nAttr)) {

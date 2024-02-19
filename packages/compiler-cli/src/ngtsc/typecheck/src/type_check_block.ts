@@ -10,7 +10,7 @@ import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromN
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {BindingPropertyName, ClassPropertyName} from '../../metadata';
+import {BindingPropertyName, ClassPropertyName, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {TemplateId, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata} from '../api';
 
@@ -465,8 +465,8 @@ abstract class TcbDirectiveTypeOpBase extends TcbOp {
     }
 
     const id = this.tcb.allocateId();
-    addExpressionIdentifier(type, ExpressionIdentifier.DIRECTIVE);
-    addParseSpanInfo(type, this.node.startSourceSpan || this.node.sourceSpan);
+    addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
+    addParseSpanInfo(id, this.node.startSourceSpan || this.node.sourceSpan);
     this.scope.addStatement(tsDeclareVariable(id, type));
     return id;
   }
@@ -642,7 +642,7 @@ class TcbDirectiveCtorOp extends TcbOp {
           attr.attribute instanceof TmplAstTextAttribute) {
         continue;
       }
-      for (const {fieldName} of attr.inputs) {
+      for (const {fieldName, isTwoWayBinding} of attr.inputs) {
         // Skip the field if an attribute has already been bound to it; we can't have a duplicate
         // key in the type constructor call.
         if (genericInputs.has(fieldName)) {
@@ -656,6 +656,7 @@ class TcbDirectiveCtorOp extends TcbOp {
           field: fieldName,
           expression,
           sourceSpan: attr.attribute.sourceSpan,
+          isTwoWayBinding,
         });
       }
     }
@@ -711,7 +712,7 @@ class TcbDirectiveInputsOp extends TcbOp {
 
       let assignment: ts.Expression = wrapForDiagnostics(expr);
 
-      for (const {fieldName, required, transformType, isSignal} of attr.inputs) {
+      for (const {fieldName, required, transformType, isSignal, isTwoWayBinding} of attr.inputs) {
         let target: ts.LeftHandSideExpression;
 
         if (required) {
@@ -812,6 +813,12 @@ class TcbDirectiveInputsOp extends TcbOp {
         if (attr.attribute.keySpan !== undefined) {
           addParseSpanInfo(target, attr.attribute.keySpan);
         }
+
+        // Two-way bindings accept `T | WritableSignal<T>` so we have to unwrap the value.
+        if (isTwoWayBinding && this.tcb.env.config.allowSignalsInTwoWayBindings) {
+          assignment = unwrapWritableSignal(assignment, this.tcb);
+        }
+
         // Finally the assignment is extended by assigning it into the target expression.
         assignment =
             ts.factory.createBinaryExpression(target, ts.SyntaxKind.EqualsToken, assignment);
@@ -913,19 +920,20 @@ class TcbDomSchemaCheckerOp extends TcbOp {
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.element.inputs) {
-      if (binding.type === BindingType.Property && this.claimedInputs.has(binding.name)) {
+      const isPropertyBinding =
+          binding.type === BindingType.Property || binding.type === BindingType.TwoWay;
+
+      if (isPropertyBinding && this.claimedInputs.has(binding.name)) {
         // Skip this binding as it was claimed by a directive.
         continue;
       }
 
-      if (binding.type === BindingType.Property) {
-        if (binding.name !== 'style' && binding.name !== 'class') {
-          // A direct binding to a property.
-          const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
-          this.tcb.domSchemaChecker.checkProperty(
-              this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas,
-              this.tcb.hostIsStandalone);
-        }
+      if (isPropertyBinding && binding.name !== 'style' && binding.name !== 'class') {
+        // A direct binding to a property.
+        const propertyName = ATTR_TO_PROP.get(binding.name) ?? binding.name;
+        this.tcb.domSchemaChecker.checkProperty(
+            this.tcb.id, this.element, propertyName, binding.sourceSpan, this.tcb.schemas,
+            this.tcb.hostIsStandalone);
       }
     }
     return null;
@@ -1107,14 +1115,17 @@ class TcbUnclaimedInputsOp extends TcbOp {
 
     // TODO(alxhub): this could be more efficient.
     for (const binding of this.element.inputs) {
-      if (binding.type === BindingType.Property && this.claimedInputs.has(binding.name)) {
+      const isPropertyBinding =
+          binding.type === BindingType.Property || binding.type === BindingType.TwoWay;
+
+      if (isPropertyBinding && this.claimedInputs.has(binding.name)) {
         // Skip this binding as it was claimed by a directive.
         continue;
       }
 
       const expr = widenBinding(tcbExpression(binding.value, this.tcb, this.scope), this.tcb);
 
-      if (this.tcb.env.config.checkTypeOfDomBindings && binding.type === BindingType.Property) {
+      if (this.tcb.env.config.checkTypeOfDomBindings && isPropertyBinding) {
         if (binding.name !== 'style' && binding.name !== 'class') {
           if (elId === null) {
             elId = this.scope.resolve(this.element);
@@ -1164,7 +1175,8 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     const outputs = this.dir.outputs;
 
     for (const output of this.node.outputs) {
-      if (output.type !== ParsedEventType.Regular || !outputs.hasBindingPropertyName(output.name)) {
+      if (output.type === ParsedEventType.Animation ||
+          !outputs.hasBindingPropertyName(output.name)) {
         continue;
       }
 
@@ -1332,7 +1344,9 @@ class TcbBlockVariableOp extends TcbOp {
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     addParseSpanInfo(id, this.variable.keySpan);
-    this.scope.addStatement(tsCreateVariable(id, this.initializer));
+    const variable = tsCreateVariable(id, wrapForTypeChecker(this.initializer));
+    addParseSpanInfo(variable.declarationList.declarations[0], this.variable.sourceSpan);
+    this.scope.addStatement(variable);
     return id;
   }
 }
@@ -1355,7 +1369,9 @@ class TcbBlockImplicitVariableOp extends TcbOp {
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     addParseSpanInfo(id, this.variable.keySpan);
-    this.scope.addStatement(tsDeclareVariable(id, this.type));
+    const variable = tsDeclareVariable(id, this.type);
+    addParseSpanInfo(variable.declarationList.declarations[0], this.variable.sourceSpan);
+    this.scope.addStatement(variable);
     return id;
   }
 }
@@ -1610,6 +1626,7 @@ class TcbForOfOp extends TcbOp {
     }
     const initializer = ts.factory.createVariableDeclarationList(
         [ts.factory.createVariableDeclaration(initializerId)], ts.NodeFlags.Const);
+    addParseSpanInfo(initializer, this.block.item.keySpan);
     // It's common to have a for loop over a nullable value (e.g. produced by the `async` pipe).
     // Add a non-null expression to allow such values to be assigned.
     const expression = ts.factory.createNonNullExpression(
@@ -1651,9 +1668,8 @@ export class Context {
       readonly env: Environment, readonly domSchemaChecker: DomSchemaChecker,
       readonly oobRecorder: OutOfBandDiagnosticRecorder, readonly id: TemplateId,
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      private pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      readonly schemas: SchemaMetadata[], readonly hostIsStandalone: boolean,
-      readonly hostPreserveWhitespaces: boolean) {}
+      private pipes: Map<string, PipeMeta>, readonly schemas: SchemaMetadata[],
+      readonly hostIsStandalone: boolean, readonly hostPreserveWhitespaces: boolean) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
@@ -1665,7 +1681,7 @@ export class Context {
     return ts.factory.createIdentifier(`_t${this.nextId++}`);
   }
 
-  getPipeByName(name: string): Reference<ClassDeclaration<ts.ClassDeclaration>>|null {
+  getPipeByName(name: string): PipeMeta|null {
     if (!this.pipes.has(name)) {
       return null;
     }
@@ -2082,6 +2098,16 @@ class Scope {
             new TcbDomSchemaCheckerOp(this.tcb, node, /* checkElement */ true, claimedInputs));
       }
       return;
+    } else {
+      if (node instanceof TmplAstElement) {
+        const isDeferred = this.tcb.boundTarget.isDeferred(node);
+        if (!isDeferred && directives.some((dirMeta) => dirMeta.isExplicitlyDeferred)) {
+          // This node has directives/components that were defer-loaded (included into
+          // `@Component.deferredImports`), but the node itself was used outside of a
+          // `@defer` block, which is the error.
+          this.tcb.oobRecorder.deferredComponentUsedEagerly(this.tcb.id, node);
+        }
+      }
     }
 
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
@@ -2273,7 +2299,8 @@ interface TcbBoundAttribute {
     fieldName: ClassPropertyName,
     required: boolean,
     isSignal: boolean,
-    transformType: Reference<ts.TypeNode>|null
+    transformType: Reference<ts.TypeNode>|null,
+    isTwoWayBinding: boolean,
   }[];
 }
 
@@ -2365,17 +2392,27 @@ class TcbExpressionTranslator {
       return ts.factory.createThis();
     } else if (ast instanceof BindingPipe) {
       const expr = this.translate(ast.exp);
-      const pipeRef = this.tcb.getPipeByName(ast.name);
+      const pipeMeta = this.tcb.getPipeByName(ast.name);
       let pipe: ts.Expression|null;
-      if (pipeRef === null) {
+      if (pipeMeta === null) {
         // No pipe by that name exists in scope. Record this as an error.
         this.tcb.oobRecorder.missingPipe(this.tcb.id, ast);
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
         pipe = NULL_AS_ANY;
+      } else if (
+          pipeMeta.isExplicitlyDeferred &&
+          this.tcb.boundTarget.getEagerlyUsedPipes().includes(ast.name)) {
+        // This pipe was defer-loaded (included into `@Component.deferredImports`),
+        // but was used outside of a `@defer` block, which is the error.
+        this.tcb.oobRecorder.deferredPipeUsedEagerly(this.tcb.id, ast);
+
+        // Use an 'any' value to at least allow the rest of the expression to be checked.
+        pipe = NULL_AS_ANY;
       } else {
         // Use a variable declared as the pipe's type.
-        pipe = this.tcb.env.pipeInst(pipeRef);
+        pipe =
+            this.tcb.env.pipeInst(pipeMeta.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>);
       }
       const args = ast.args.map(arg => this.translate(arg));
       let methodAccess: ts.Expression =
@@ -2460,7 +2497,12 @@ function tcbCallTypeCtor(
 
     if (input.type === 'binding') {
       // For bound inputs, the property is assigned the binding expression.
-      const expr = widenBinding(input.expression, tcb);
+      let expr = widenBinding(input.expression, tcb);
+
+      if (input.isTwoWayBinding && tcb.env.config.allowSignalsInTwoWayBindings) {
+        expr = unwrapWritableSignal(expr, tcb);
+      }
+
       const assignment =
           ts.factory.createPropertyAssignment(propertyName, wrapForDiagnostics(expr));
       addParseSpanInfo(assignment, input.sourceSpan);
@@ -2487,7 +2529,8 @@ function getBoundAttributes(
 
   const processAttribute = (attr: TmplAstBoundAttribute|TmplAstTextAttribute) => {
     // Skip non-property bindings.
-    if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property) {
+    if (attr instanceof TmplAstBoundAttribute && attr.type !== BindingType.Property &&
+        attr.type !== BindingType.TwoWay) {
       return;
     }
 
@@ -2497,12 +2540,16 @@ function getBoundAttributes(
     if (inputs !== null) {
       boundInputs.push({
         attribute: attr,
-        inputs: inputs.map(input => ({
-                             fieldName: input.classPropertyName,
-                             required: input.required,
-                             transformType: input.transform?.type || null,
-                             isSignal: input.isSignal,
-                           }))
+        inputs: inputs.map(input => {
+          return ({
+            fieldName: input.classPropertyName,
+            required: input.required,
+            transformType: input.transform?.type || null,
+            isSignal: input.isSignal,
+            isTwoWayBinding:
+                attr instanceof TmplAstBoundAttribute && attr.type === BindingType.TwoWay,
+          });
+        })
       });
     }
   };
@@ -2556,6 +2603,15 @@ function widenBinding(expr: ts.Expression, tcb: Context): ts.Expression {
 }
 
 /**
+ * Wraps an expression in an `unwrapSignal` call which extracts the signal's value.
+ */
+function unwrapWritableSignal(expression: ts.Expression, tcb: Context): ts.CallExpression {
+  const unwrapRef = tcb.env.referenceExternalSymbol(
+      R3Identifiers.unwrapWritableSignal.moduleName, R3Identifiers.unwrapWritableSignal.name);
+  return ts.factory.createCallExpression(unwrapRef, undefined, [expression]);
+}
+
+/**
  * An input binding that corresponds with a field of a directive.
  */
 interface TcbDirectiveBoundInput {
@@ -2575,6 +2631,11 @@ interface TcbDirectiveBoundInput {
    * The source span of the full attribute binding.
    */
   sourceSpan: ParseSourceSpan;
+
+  /**
+   * Whether the binding is part of a two-way binding.
+   */
+  isTwoWayBinding: boolean;
 }
 
 /**

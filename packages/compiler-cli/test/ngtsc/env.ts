@@ -25,7 +25,7 @@ import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
 type TsConfigOptionsValue =
     string|boolean|number|null|TsConfigOptionsValue[]|{[key: string]: TsConfigOptionsValue};
-type TsConfigOptions = {
+export type TsConfigOptions = {
   [key: string]: TsConfigOptionsValue;
 };
 
@@ -204,7 +204,8 @@ export class NgtscTestEnvironment {
     }
     this.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
 
-    if (extraOpts['_useHostForImportGeneration'] === true) {
+    if (extraOpts['_useHostForImportGeneration'] ||
+        extraOpts['_useHostForImportAndAliasGeneration']) {
       setWrapHostForTest(makeWrapHost(new FileNameToModuleNameHost(this.fs)));
     }
   }

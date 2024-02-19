@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵdefineInjectable, ɵɵinject} from '@angular/core';
+import {inject, PLATFORM_ID, ɵɵdefineInjectable} from '@angular/core';
 
 import {DOCUMENT} from './dom_tokens';
-
-
+import {isPlatformBrowser} from './platform_id';
 
 /**
  * Defines a scroll position manager. Implemented by `BrowserViewportScroller`.
@@ -24,7 +23,10 @@ export abstract class ViewportScroller {
   static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: ViewportScroller,
     providedIn: 'root',
-    factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window)
+    factory: () =>
+      isPlatformBrowser(inject(PLATFORM_ID))
+        ? new BrowserViewportScroller(inject(DOCUMENT), window)
+        : new NullViewportScroller(),
   });
 
   /**
@@ -33,7 +35,7 @@ export abstract class ViewportScroller {
    * or a function that returns the top offset position.
    *
    */
-  abstract setOffset(offset: [number, number]|(() => [number, number])): void;
+  abstract setOffset(offset: [number, number] | (() => [number, number])): void;
 
   /**
    * Retrieves the current scroll position.
@@ -58,7 +60,7 @@ export abstract class ViewportScroller {
    * See also [window.history.scrollRestoration
    * info](https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration).
    */
-  abstract setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void;
+  abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
 }
 
 /**
@@ -67,7 +69,10 @@ export abstract class ViewportScroller {
 export class BrowserViewportScroller implements ViewportScroller {
   private offset: () => [number, number] = () => [0, 0];
 
-  constructor(private document: Document, private window: Window) {}
+  constructor(
+    private document: Document,
+    private window: Window,
+  ) {}
 
   /**
    * Configures the top offset used when scrolling to an anchor.
@@ -75,7 +80,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * or a function that returns the top offset position.
    *
    */
-  setOffset(offset: [number, number]|(() => [number, number])): void {
+  setOffset(offset: [number, number] | (() => [number, number])): void {
     if (Array.isArray(offset)) {
       this.offset = () => offset;
     } else {
@@ -88,11 +93,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @returns The position in screen coordinates.
    */
   getScrollPosition(): [number, number] {
-    if (this.supportsScrolling()) {
-      return [this.window.pageXOffset, this.window.pageYOffset];
-    } else {
-      return [0, 0];
-    }
+    return [this.window.scrollX, this.window.scrollY];
   }
 
   /**
@@ -100,9 +101,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param position The new position in screen coordinates.
    */
   scrollToPosition(position: [number, number]): void {
-    if (this.supportsScrolling()) {
-      this.window.scrollTo(position[0], position[1]);
-    }
+    this.window.scrollTo(position[0], position[1]);
   }
 
   /**
@@ -117,10 +116,6 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @see https://html.spec.whatwg.org/#scroll-to-fragid
    */
   scrollToAnchor(target: string): void {
-    if (!this.supportsScrolling()) {
-      return;
-    }
-
     const elSelected = findAnchorFromDocument(this.document, target);
 
     if (elSelected) {
@@ -138,10 +133,8 @@ export class BrowserViewportScroller implements ViewportScroller {
   /**
    * Disables automatic scroll restoration provided by the browser.
    */
-  setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void {
-    if (this.supportsScrolling()) {
-      this.window.history.scrollRestoration = scrollRestoration;
-    }
+  setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void {
+    this.window.history.scrollRestoration = scrollRestoration;
   }
 
   /**
@@ -157,17 +150,9 @@ export class BrowserViewportScroller implements ViewportScroller {
     const offset = this.offset();
     this.window.scrollTo(left - offset[0], top - offset[1]);
   }
-
-  private supportsScrolling(): boolean {
-    try {
-      return !!this.window && !!this.window.scrollTo && 'pageXOffset' in this.window;
-    } catch {
-      return false;
-    }
-  }
 }
 
-function findAnchorFromDocument(document: Document, target: string): HTMLElement|null {
+function findAnchorFromDocument(document: Document, target: string): HTMLElement | null {
   const documentResult = document.getElementById(target) || document.getElementsByName(target)[0];
 
   if (documentResult) {
@@ -176,8 +161,11 @@ function findAnchorFromDocument(document: Document, target: string): HTMLElement
 
   // `getElementById` and `getElementsByName` won't pierce through the shadow DOM so we
   // have to traverse the DOM manually and do the lookup through the shadow roots.
-  if (typeof document.createTreeWalker === 'function' && document.body &&
-      typeof document.body.attachShadow === 'function') {
+  if (
+    typeof document.createTreeWalker === 'function' &&
+    document.body &&
+    typeof document.body.attachShadow === 'function'
+  ) {
     const treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
     let currentNode = treeWalker.currentNode as HTMLElement | null;
 
@@ -188,7 +176,7 @@ function findAnchorFromDocument(document: Document, target: string): HTMLElement
         // Note that `ShadowRoot` doesn't support `getElementsByName`
         // so we have to fall back to `querySelector`.
         const result =
-            shadowRoot.getElementById(target) || shadowRoot.querySelector(`[name="${target}"]`);
+          shadowRoot.getElementById(target) || shadowRoot.querySelector(`[name="${target}"]`);
         if (result) {
           return result;
         }
@@ -208,7 +196,7 @@ export class NullViewportScroller implements ViewportScroller {
   /**
    * Empty implementation
    */
-  setOffset(offset: [number, number]|(() => [number, number])): void {}
+  setOffset(offset: [number, number] | (() => [number, number])): void {}
 
   /**
    * Empty implementation
@@ -230,5 +218,5 @@ export class NullViewportScroller implements ViewportScroller {
   /**
    * Empty implementation
    */
-  setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void {}
+  setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void {}
 }

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InputSignalNode} from '../../authoring/input/input_signal_node';
 import {ModuleWithProviders, ProcessProvidersFunction} from '../../di/interface/provider';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
@@ -15,7 +16,8 @@ import {FactoryFn} from '../definition_factory';
 
 import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
-import {TView} from './view';
+import type {TView} from './view';
+import {InputFlags} from './input_flags';
 
 
 /**
@@ -87,8 +89,6 @@ export interface PipeType<T> extends Type<T> {
   ɵpipe: unknown;
 }
 
-
-
 /**
  * Runtime link information for Directives.
  *
@@ -105,11 +105,10 @@ export interface PipeType<T> extends Type<T> {
  */
 export interface DirectiveDef<T> {
   /**
-   * A dictionary mapping the inputs' minified property names to their public API names, which
-   * are their aliases if any, or their original unminified property names
-   * (as in `@Input('alias') propertyName: any;`).
+   * A dictionary mapping the inputs' public name to their minified property names
+   * (along with flags if there are any).
    */
-  readonly inputs: {[P in keyof T]: string};
+  readonly inputs: {[P in keyof T]?: string|[minifiedName: string, flags: InputFlags]};
 
   /**
    * A dictionary mapping the private names of inputs to their transformation functions.
@@ -126,20 +125,20 @@ export interface DirectiveDef<T> {
    * used to do further processing after the `inputs` have been inverted.
    */
   readonly inputConfig:
-      {[classPropertyName: string]: string|[string, string, InputTransformFunction?]};
+      {[P in keyof T]?: string|[InputFlags, string, string?, InputTransformFunction?]};
 
   /**
    * @deprecated This is only here because `NgOnChanges` incorrectly uses declared name instead of
    * public or minified name.
    */
-  readonly declaredInputs: {[P in keyof T]: string};
+  readonly declaredInputs: Record<string, string>;
 
   /**
    * A dictionary mapping the outputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
    * (as in `@Output('alias') propertyName: any;`).
    */
-  readonly outputs: {[P in keyof T]: string};
+  readonly outputs: {[P in keyof T]?: string};
 
   /**
    * Function to create and refresh content queries associated with a given directive.
@@ -259,7 +258,8 @@ export interface DirectiveDef<T> {
 
   setInput:
       (<U extends T>(
-           this: DirectiveDef<U>, instance: U, value: any, publicName: string,
+           this: DirectiveDef<U>, instance: U,
+           inputSignalNode: null|InputSignalNode<unknown, unknown>, value: any, publicName: string,
            privateName: string) => void)|null;
 }
 

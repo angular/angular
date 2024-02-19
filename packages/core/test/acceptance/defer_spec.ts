@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, ErrorHandler, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, Directive, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Input, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 
@@ -131,7 +131,6 @@ function createFixture(template: string) {
       ...COMMON_PROVIDERS,
       {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
     ],
-    deferBlockBehavior: DeferBlockBehavior.Playthrough,
   });
 
   clearDirectiveDefs(MyCmp);
@@ -160,8 +159,7 @@ const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]
 
 describe('@defer', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule(
-        {providers: COMMON_PROVIDERS, deferBlockBehavior: DeferBlockBehavior.Playthrough});
+    TestBed.configureTestingModule({providers: COMMON_PROVIDERS});
   });
 
   it('should transition between placeholder, loading and loaded states', async () => {
@@ -558,7 +556,6 @@ describe('@defer', () => {
           ...COMMON_PROVIDERS,
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -837,7 +834,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -912,7 +908,6 @@ describe('@defer', () => {
             },
           },
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -988,7 +983,6 @@ describe('@defer', () => {
             },
           },
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(MyCmp);
@@ -1308,7 +1302,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       const fixture = TestBed.createComponent(RootCmp);
@@ -1429,7 +1422,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1515,7 +1507,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1597,7 +1588,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1666,7 +1656,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1749,7 +1738,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1832,7 +1820,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -1904,7 +1891,6 @@ describe('@defer', () => {
           ...COMMON_PROVIDERS,
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -2005,7 +1991,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -2088,7 +2073,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -2181,7 +2165,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -2236,7 +2219,7 @@ describe('@defer', () => {
         isVisible = false;
       }
 
-      TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
+      TestBed.configureTestingModule({});
 
       clearDirectiveDefs(RootCmp);
 
@@ -2720,12 +2703,14 @@ describe('@defer', () => {
          expect(spy).toHaveBeenCalledWith('keydown', jasmine.any(Function), jasmine.any(Object));
        }));
 
-    it('should bind the trigger events inside the NgZone', fakeAsync(() => {
+    it('should remove placeholder content on interaction', fakeAsync(() => {
          @Component({
            standalone: true,
            template: `
            @defer (on interaction(trigger)) {
              Main content
+           } @placeholder {
+            <div>placeholder</div>
            }
 
            <button #trigger></button>
@@ -2733,17 +2718,23 @@ describe('@defer', () => {
          })
          class MyCmp {
          }
+         TestBed.configureTestingModule({});
 
-         const eventsInZone: Record<string, boolean> = {};
-         const fixture = TestBed.createComponent(MyCmp);
-         const button = fixture.nativeElement.querySelector('button');
-
-         spyOn(button, 'addEventListener').and.callFake((name: string) => {
-           eventsInZone[name] = NgZone.isInAngularZone();
+         const appRef = TestBed.inject(ApplicationRef);
+         const zone = TestBed.inject(NgZone);
+         const componentRef =
+             createComponent(MyCmp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+         const button = componentRef.location.nativeElement.querySelector('button');
+         zone.run(() => {
+           appRef.attachView(componentRef.hostView);
          });
-         fixture.detectChanges();
-
-         expect(eventsInZone).toEqual({click: true, keydown: true});
+         expect(componentRef.location.nativeElement.innerHTML).toContain('<div>placeholder</div>');
+         zone.run(() => {
+           button.click();
+         });
+         tick();
+         expect(componentRef.location.nativeElement.innerHTML)
+             .not.toContain('<div>placeholder</div>');
        }));
 
     it('should prefetch resources on interaction', fakeAsync(() => {
@@ -2774,7 +2765,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -2823,7 +2813,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -3047,35 +3036,6 @@ describe('@defer', () => {
          expect(spy).toHaveBeenCalledWith('focusin', jasmine.any(Function), jasmine.any(Object));
        }));
 
-    it('should bind the trigger events inside the NgZone', fakeAsync(() => {
-         @Component({
-           standalone: true,
-           template: `
-          @defer (on hover(trigger)) {
-            Main content
-          }
-
-          <button #trigger></button>
-        `
-         })
-         class MyCmp {
-         }
-
-         const eventsInZone: Record<string, boolean> = {};
-         const fixture = TestBed.createComponent(MyCmp);
-         const button = fixture.nativeElement.querySelector('button');
-
-         spyOn(button, 'addEventListener').and.callFake((name: string) => {
-           eventsInZone[name] = NgZone.isInAngularZone();
-         });
-         fixture.detectChanges();
-
-         expect(eventsInZone).toEqual({
-           mouseenter: true,
-           focusin: true,
-         });
-       }));
-
     it('should prefetch resources on hover', fakeAsync(() => {
          // Domino doesn't support creating custom events so we have to skip this test.
          if (!isBrowser) {
@@ -3111,7 +3071,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -3166,7 +3125,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -3228,7 +3186,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -3287,9 +3244,7 @@ describe('@defer', () => {
       class RootCmp {
       }
 
-      TestBed.configureTestingModule({
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
-      });
+      TestBed.configureTestingModule({});
 
       clearDirectiveDefs(RootCmp);
 
@@ -3358,7 +3313,6 @@ describe('@defer', () => {
         providers: [
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
         ],
-        deferBlockBehavior: DeferBlockBehavior.Playthrough,
       });
 
       clearDirectiveDefs(RootCmp);
@@ -3427,7 +3381,7 @@ describe('@defer', () => {
            isVisible = false;
          }
 
-         TestBed.configureTestingModule({deferBlockBehavior: DeferBlockBehavior.Playthrough});
+         TestBed.configureTestingModule({});
 
          clearDirectiveDefs(RootCmp);
 
@@ -3828,7 +3782,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);
@@ -3878,7 +3831,6 @@ describe('@defer', () => {
                }
              },
            ],
-           deferBlockBehavior: DeferBlockBehavior.Playthrough,
          });
 
          clearDirectiveDefs(MyCmp);

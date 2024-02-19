@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, Call, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
-import {HostDirectiveMeta} from '../../metadata';
+import {HostDirectiveMeta, isHostDirectiveMetaForGlobalMode} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader} from '../../scope';
 import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
@@ -111,7 +111,7 @@ export class SymbolBuilder {
     const elementSourceSpan = element.startSourceSpan ?? element.sourceSpan;
     const tcbSourceFile = this.typeCheckBlock.getSourceFile();
     // directives could be either:
-    // - var _t1: TestDir /*T:D*/ = (null!);
+    // - var _t1: TestDir /*T:D*/ = null! as TestDir;
     // - var _t1 /*T:D*/ = _ctor1({});
     const isDirectiveDeclaration = (node: ts.Node): node is ts.TypeNode|ts.Identifier =>
         (ts.isTypeNode(node) || ts.isIdentifier(node)) && ts.isVariableDeclaration(node.parent) &&
@@ -161,6 +161,10 @@ export class SymbolBuilder {
       host: TmplAstTemplate|TmplAstElement, hostDirectives: HostDirectiveMeta[],
       symbols: DirectiveSymbol[]): void {
     for (const current of hostDirectives) {
+      if (!isHostDirectiveMetaForGlobalMode(current)) {
+        throw new Error('Impossible state: typecheck code path in local compilation mode.');
+      }
+
       if (!ts.isClassDeclaration(current.directive.node)) {
         continue;
       }
@@ -307,7 +311,6 @@ export class SymbolBuilder {
           continue;
         }
 
-
         const target = this.getDirectiveSymbolForAccessExpression(outputFieldAccess, consumer);
         if (target === null) {
           continue;
@@ -355,12 +358,33 @@ export class SymbolBuilder {
         continue;
       }
 
-      const symbolInfo = this.getSymbolOfTsNode(node.left);
+      const signalInputAssignment = unwrapSignalInputWriteTAccessor(node.left);
+      let symbolInfo: TsNodeSymbolInfo|null = null;
+
+      // Signal inputs need special treatment because they are generated with an extra keyed
+      // access. E.g. `_t1.prop[WriteT_ACCESSOR_SYMBOL]`. Observations:
+      //   - The keyed access for the write type needs to be resolved for the "input type".
+      //   - The definition symbol of the input should be the input class member, and not the
+      //     internal write accessor. Symbol should resolve `_t1.prop`.
+      if (signalInputAssignment !== null) {
+        const fieldSymbol = this.getSymbolOfTsNode(signalInputAssignment.fieldExpr);
+        const typeSymbol = this.getSymbolOfTsNode(signalInputAssignment.typeExpr);
+
+        symbolInfo = fieldSymbol === null || typeSymbol === null ? null : {
+          tcbLocation: fieldSymbol.tcbLocation,
+          tsSymbol: fieldSymbol.tsSymbol,
+          tsType: typeSymbol.tsType,
+        };
+      } else {
+        symbolInfo = this.getSymbolOfTsNode(node.left);
+      }
+
       if (symbolInfo === null || symbolInfo.tsSymbol === null) {
         continue;
       }
 
-      const target = this.getDirectiveSymbolForAccessExpression(node.left, consumer);
+      const target = this.getDirectiveSymbolForAccessExpression(
+          signalInputAssignment?.fieldExpr ?? node.left, consumer);
       if (target === null) {
         continue;
       }
@@ -379,11 +403,10 @@ export class SymbolBuilder {
   }
 
   private getDirectiveSymbolForAccessExpression(
-      node: ts.ElementAccessExpression|ts.PropertyAccessExpression,
+      fieldAccessExpr: ts.ElementAccessExpression|ts.PropertyAccessExpression,
       {isComponent, selector, isStructural}: TypeCheckableDirectiveMeta): DirectiveSymbol|null {
-    // In either case, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
-    // The retrieved symbol for _t1 will be the variable declaration.
-    const tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.expression);
+    // In all cases, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
+    const tsSymbol = this.getTypeChecker().getSymbolAtLocation(fieldAccessExpr.expression);
     if (tsSymbol?.declarations === undefined || tsSymbol.declarations.length === 0 ||
         selector === null) {
       return null;
@@ -425,19 +448,25 @@ export class SymbolBuilder {
   private getSymbolOfVariable(variable: TmplAstVariable): VariableSymbol|null {
     const node = findFirstMatchingNode(
         this.typeCheckBlock, {withSpan: variable.sourceSpan, filter: ts.isVariableDeclaration});
-    if (node === null || node.initializer === undefined) {
+    if (node === null) {
       return null;
     }
 
-    const expressionSymbol = this.getSymbolOfTsNode(node.initializer);
-    if (expressionSymbol === null) {
+    let nodeValueSymbol: TsNodeSymbolInfo|null = null;
+    if (ts.isForOfStatement(node.parent.parent)) {
+      nodeValueSymbol = this.getSymbolOfTsNode(node);
+    } else if (node.initializer !== undefined) {
+      nodeValueSymbol = this.getSymbolOfTsNode(node.initializer);
+    }
+
+    if (nodeValueSymbol === null) {
       return null;
     }
 
     return {
-      tsType: expressionSymbol.tsType,
-      tsSymbol: expressionSymbol.tsSymbol,
-      initializerLocation: expressionSymbol.tcbLocation,
+      tsType: nodeValueSymbol.tsType,
+      tsSymbol: nodeValueSymbol.tsSymbol,
+      initializerLocation: nodeValueSymbol.tcbLocation,
       kind: SymbolKind.Variable,
       declaration: variable,
       localVarLocation: {
@@ -615,8 +644,6 @@ export class SymbolBuilder {
     let tsSymbol: ts.Symbol|undefined;
     if (ts.isPropertyAccessExpression(node)) {
       tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.name);
-    } else if (ts.isElementAccessExpression(node)) {
-      tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.argumentExpression);
     } else {
       tsSymbol = this.getTypeChecker().getSymbolAtLocation(node);
     }
@@ -659,4 +686,36 @@ function anyNodeFilter(n: ts.Node): n is ts.Node {
 
 function sourceSpanEqual(a: ParseSourceSpan, b: ParseSourceSpan) {
   return a.start.offset === b.start.offset && a.end.offset === b.end.offset;
+}
+
+function unwrapSignalInputWriteTAccessor(expr: ts.LeftHandSideExpression): (null|{
+  fieldExpr: ts.ElementAccessExpression | ts.PropertyAccessExpression,
+  typeExpr: ts.ElementAccessExpression
+}) {
+  // e.g. `_t2.inputA[i2.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`
+  // 1. Assert that we are dealing with an element access expression.
+  // 2. Assert that we are dealing with a signal brand symbol access in the argument expression.
+  if (!ts.isElementAccessExpression(expr) ||
+      !ts.isPropertyAccessExpression(expr.argumentExpression)) {
+    return null;
+  }
+
+  // Assert that the property access in the element access is a simple identifier and
+  // refers to `ɵINPUT_SIGNAL_BRAND_WRITE_TYPE`.
+  if (!ts.isIdentifier(expr.argumentExpression.name) ||
+      expr.argumentExpression.name.text !== R3Identifiers.InputSignalBrandWriteType.name) {
+    return null;
+  }
+
+  // Assert that the `_t2.inputA` is actually either a keyed element access, or
+  // property access expression. This is checked for type safety and to catch unexpected cases.
+  if (!ts.isPropertyAccessExpression(expr.expression) &&
+      !ts.isElementAccessExpression(expr.expression)) {
+    throw new Error('Unexpected expression for signal input write type.');
+  }
+
+  return {
+    fieldExpr: expr.expression,
+    typeExpr: expr,
+  };
 }

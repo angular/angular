@@ -32,7 +32,7 @@ $width-breakpoint: 950px;
   }
 
   // If files are displayed, shpare the space
-  &:has(.adev-editor-tabs) {
+  &:has(.docs-editor-tabs) {
     .adev-tutorial-code-editor {
       display: block;
       box-sizing: border-box;
@@ -56,7 +56,7 @@ $width-breakpoint: 950px;
   height: 100%;
 }
 
-.adev-right-side {
+.docs-right-side {
   height: 100%;
 
   // prevent border flicker when resizing editor
@@ -71,7 +71,7 @@ $width-breakpoint: 950px;
   }
 }
 
-.adev-editor-tabs-and-refresh {
+.docs-editor-tabs-and-refresh {
   position: relative;
   height: 100%;
 
@@ -81,7 +81,7 @@ $width-breakpoint: 950px;
 }
 
 // preview, terminal, console side/container of the embedded editor
-.adev-editor-tabs {
+.docs-editor-tabs {
   height: 100%;
   display: block;
 }

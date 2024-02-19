@@ -34,6 +34,7 @@ const AOT_ONLY = new Set<string>([
   // used in type-checking.
   'ɵINPUT_SIGNAL_BRAND_WRITE_TYPE',
   'ɵUnwrapDirectiveSignalInputs',
+  'ɵunwrapWritableSignal',
 ]);
 
 /**

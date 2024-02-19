@@ -13,8 +13,8 @@ import {BrowserModule} from '@angular/platform-browser';
   selector: 'example-app',
   template: `
     <button class="start-button" (click)="start()">Start long-running task</button>
-    <div class="status">Status: {{status}}</div>
-  `
+    <div class="status">Status: {{ status }}</div>
+  `,
 })
 export class StableTestCmp {
   status = 'none';
@@ -27,5 +27,4 @@ export class StableTestCmp {
 }
 
 @NgModule({imports: [BrowserModule], declarations: [StableTestCmp], bootstrap: [StableTestCmp]})
-export class AppModule {
-}
+export class AppModule {}

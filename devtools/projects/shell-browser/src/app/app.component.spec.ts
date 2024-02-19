@@ -15,18 +15,16 @@ import {AppComponent} from './app.component';
 describe('AppComponent', () => {
   beforeEach(waitForAsync(() => {
     const applicationOperationsSPy = jasmine.createSpyObj('messageBus', ['viewSource']);
-    TestBed
-        .configureTestingModule({
-          declarations: [AppComponent],
-          imports: [RouterModule.forRoot([])],
-          providers: [
-            {
-              provide: ApplicationOperations,
-              useClass: applicationOperationsSPy,
-            },
-          ],
-        })
-        .compileComponents();
+    TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      imports: [RouterModule.forRoot([])],
+      providers: [
+        {
+          provide: ApplicationOperations,
+          useClass: applicationOperationsSPy,
+        },
+      ],
+    }).compileComponents();
   }));
 
   it('should create the app', () => {

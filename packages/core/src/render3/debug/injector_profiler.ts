@@ -84,6 +84,8 @@ export type InjectorProfilerEvent =
 
 /**
  * An object that contains information about a provider that has been configured
+ *
+ * TODO: rename to indicate that it is a debug structure eg. ProviderDebugInfo.
  */
 export interface ProviderRecord {
   /**

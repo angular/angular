@@ -140,15 +140,15 @@ describe('HtmlLexer', () => {
 
   describe('doctype', () => {
     it('should parse doctypes', () => {
-      expect(tokenizeAndHumanizeParts('<!doctype html>')).toEqual([
-        [TokenType.DOC_TYPE, 'doctype html'],
+      expect(tokenizeAndHumanizeParts('<!DOCTYPE html>')).toEqual([
+        [TokenType.DOC_TYPE, 'DOCTYPE html'],
         [TokenType.EOF],
       ]);
     });
 
     it('should store the locations', () => {
-      expect(tokenizeAndHumanizeSourceSpans('<!doctype html>')).toEqual([
-        [TokenType.DOC_TYPE, '<!doctype html>'],
+      expect(tokenizeAndHumanizeSourceSpans('<!DOCTYPE html>')).toEqual([
+        [TokenType.DOC_TYPE, '<!DOCTYPE html>'],
         [TokenType.EOF, ''],
       ]);
     });

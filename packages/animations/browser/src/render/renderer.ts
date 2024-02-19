@@ -9,11 +9,17 @@
 const ANIMATION_PREFIX = '@';
 const DISABLE_ANIMATIONS_FLAG = '@.disabled';
 
-import {Renderer2, RendererFactory2, RendererStyleFlags2, ɵAnimationRendererType as AnimationRendererType} from '@angular/core';
+import {
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  ɵAnimationRendererType as AnimationRendererType,
+} from '@angular/core';
 import type {AnimationEngine} from './animation_engine_next';
 
-type AnimationFactoryWithListenerCallback = RendererFactory2&
-    {scheduleListenerCallback: (count: number, fn: (e: any) => any, data: any) => void};
+type AnimationFactoryWithListenerCallback = RendererFactory2 & {
+  scheduleListenerCallback: (count: number, fn: (e: any) => any, data: any) => void;
+};
 
 export class BaseAnimationRenderer implements Renderer2 {
   // We need to explicitly type this property because of an api-extractor bug
@@ -21,8 +27,11 @@ export class BaseAnimationRenderer implements Renderer2 {
   readonly ɵtype: AnimationRendererType.Regular = AnimationRendererType.Regular;
 
   constructor(
-      protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine,
-      private _onDestroy?: () => void) {}
+    protected namespaceId: string,
+    public delegate: Renderer2,
+    public engine: AnimationEngine,
+    private _onDestroy?: () => void,
+  ) {}
 
   get data() {
     return this.delegate.data;
@@ -45,7 +54,7 @@ export class BaseAnimationRenderer implements Renderer2 {
     this._onDestroy?.();
   }
 
-  createElement(name: string, namespace?: string|null|undefined) {
+  createElement(name: string, namespace?: string | null | undefined) {
     return this.delegate.createElement(name, namespace);
   }
 
@@ -84,11 +93,11 @@ export class BaseAnimationRenderer implements Renderer2 {
     return this.delegate.nextSibling(node);
   }
 
-  setAttribute(el: any, name: string, value: string, namespace?: string|null|undefined): void {
+  setAttribute(el: any, name: string, value: string, namespace?: string | null | undefined): void {
     this.delegate.setAttribute(el, name, value, namespace);
   }
 
-  removeAttribute(el: any, name: string, namespace?: string|null|undefined): void {
+  removeAttribute(el: any, name: string, namespace?: string | null | undefined): void {
     this.delegate.removeAttribute(el, name, namespace);
   }
 
@@ -100,11 +109,11 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.delegate.removeClass(el, name);
   }
 
-  setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2|undefined): void {
+  setStyle(el: any, style: string, value: any, flags?: RendererStyleFlags2 | undefined): void {
     this.delegate.setStyle(el, style, value, flags);
   }
 
-  removeStyle(el: any, style: string, flags?: RendererStyleFlags2|undefined): void {
+  removeStyle(el: any, style: string, flags?: RendererStyleFlags2 | undefined): void {
     this.delegate.removeStyle(el, style, flags);
   }
 
@@ -131,8 +140,12 @@ export class BaseAnimationRenderer implements Renderer2 {
 
 export class AnimationRenderer extends BaseAnimationRenderer implements Renderer2 {
   constructor(
-      public factory: AnimationFactoryWithListenerCallback, namespaceId: string,
-      delegate: Renderer2, engine: AnimationEngine, onDestroy?: () => void) {
+    public factory: AnimationFactoryWithListenerCallback,
+    namespaceId: string,
+    delegate: Renderer2,
+    engine: AnimationEngine,
+    onDestroy?: () => void,
+  ) {
     super(namespaceId, delegate, engine, onDestroy);
     this.namespaceId = namespaceId;
   }
@@ -151,8 +164,10 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
   }
 
   override listen(
-      target: 'window'|'document'|'body'|any, eventName: string,
-      callback: (event: any) => any): () => void {
+    target: 'window' | 'document' | 'body' | any,
+    eventName: string,
+    callback: (event: any) => any,
+  ): () => void {
     if (eventName.charAt(0) == ANIMATION_PREFIX) {
       const element = resolveElementFromTarget(target);
       let name = eventName.slice(1);
@@ -162,7 +177,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
       if (name.charAt(0) != ANIMATION_PREFIX) {
         [name, phase] = parseTriggerCallbackName(name);
       }
-      return this.engine.listen(this.namespaceId, element, name, phase, event => {
+      return this.engine.listen(this.namespaceId, element, name, phase, (event) => {
         const countId = (event as any)['_data'] || -1;
         this.factory.scheduleListenerCallback(countId, callback, event);
       });
@@ -171,7 +186,7 @@ export class AnimationRenderer extends BaseAnimationRenderer implements Renderer
   }
 }
 
-function resolveElementFromTarget(target: 'window'|'document'|'body'|any): any {
+function resolveElementFromTarget(target: 'window' | 'document' | 'body' | any): any {
   switch (target) {
     case 'body':
       return document.body;

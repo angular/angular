@@ -15,7 +15,7 @@ function main() {
   const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
   const [srcs, outputFileExecRootRelativePath] = rawParamLines;
 
-  const entries: DocEntry[] = srcs.split(',').map(sourceFilePath => {
+  const entries: DocEntry[] = srcs.split(',').map((sourceFilePath) => {
     const fileContent = readFileSync(sourceFilePath, {encoding: 'utf8'});
 
     return {
@@ -27,7 +27,14 @@ function main() {
     };
   });
 
-  writeFileSync(outputFileExecRootRelativePath, JSON.stringify(entries), {encoding: 'utf8'});
+  writeFileSync(
+    outputFileExecRootRelativePath,
+    JSON.stringify({
+      moduleName: '@angular/core',
+      entries,
+    }),
+    {encoding: 'utf8'},
+  );
 }
 
 main();

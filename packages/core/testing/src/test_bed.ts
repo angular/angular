@@ -13,6 +13,7 @@
 /* clang-format off */
 import {
   Component,
+  ComponentRef,
   Directive,
   EnvironmentInjector,
   InjectFlags,
@@ -25,8 +26,10 @@ import {
   ProviderToken,
   runInInjectionContext,
   Type,
+  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵconvertToBitFlags as convertToBitFlags,
   ɵDeferBlockBehavior as DeferBlockBehavior,
+  ɵEffectScheduler as EffectScheduler,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetUnknownElementStrictMode as getUnknownElementStrictMode,
@@ -38,16 +41,15 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
-  ɵZoneAwareQueueingScheduler as ZoneAwareQueueingScheduler,
 } from '@angular/core';
 
 /* clang-format on */
 
 
 
-import {ComponentFixture} from './component_fixture';
+import {ComponentFixture, PseudoApplicationComponentFixture, ScheduledComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
+import {ComponentFixtureNoNgZone, DEFER_BLOCK_DEFAULT_BEHAVIOR, ModuleTeardownOptions, TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT, TestComponentRenderer, TestEnvironmentOptions, TestModuleMetadata, THROW_ON_UNKNOWN_ELEMENTS_DEFAULT, THROW_ON_UNKNOWN_PROPERTIES_DEFAULT} from './test_bed_common';
 import {TestBedCompiler} from './test_bed_compiler';
 
 /**
@@ -205,7 +207,7 @@ export class TestBedImpl implements TestBed {
    * Defer block behavior option that specifies whether defer blocks will be triggered manually
    * or set to play through.
    */
-  private _instanceDeferBlockBehavior = DeferBlockBehavior.Manual;
+  private _instanceDeferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
 
   /**
    * "Error on unknown elements" option that has been configured at the `TestBed` instance level.
@@ -481,7 +483,7 @@ export class TestBedImpl implements TestBed {
         this._instanceTeardownOptions = undefined;
         this._instanceErrorOnUnknownElementsOption = undefined;
         this._instanceErrorOnUnknownPropertiesOption = undefined;
-        this._instanceDeferBlockBehavior = DeferBlockBehavior.Manual;
+        this._instanceDeferBlockBehavior = DEFER_BLOCK_DEFAULT_BEHAVIOR;
       }
     }
     return this;
@@ -512,7 +514,7 @@ export class TestBedImpl implements TestBed {
     this._instanceTeardownOptions = moduleDef.teardown;
     this._instanceErrorOnUnknownElementsOption = moduleDef.errorOnUnknownElements;
     this._instanceErrorOnUnknownPropertiesOption = moduleDef.errorOnUnknownProperties;
-    this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior ?? DeferBlockBehavior.Manual;
+    this._instanceDeferBlockBehavior = moduleDef.deferBlockBehavior ?? DEFER_BLOCK_DEFAULT_BEHAVIOR;
     // Store the current value of the strict mode option,
     // so we can restore it later
     this._previousErrorOnUnknownElementsOption = getUnknownElementStrictMode();
@@ -632,8 +634,15 @@ export class TestBedImpl implements TestBed {
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
       const componentRef =
-          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef);
-      return this.runInInjectionContext(() => new ComponentFixture<any>(componentRef));
+          componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef) as
+          ComponentRef<T>;
+      return this.runInInjectionContext(() => {
+        const hasScheduler = this.inject(ChangeDetectionScheduler, null) !== null;
+        const fixture = hasScheduler ? new ScheduledComponentFixture(componentRef) :
+                                       new PseudoApplicationComponentFixture(componentRef);
+        fixture.initialize();
+        return fixture;
+      });
     };
     const noNgZone = this.inject(ComponentFixtureNoNgZone, false);
     const ngZone = noNgZone ? null : this.inject(NgZone, null);
@@ -782,7 +791,7 @@ export class TestBedImpl implements TestBed {
    * @developerPreview
    */
   flushEffects(): void {
-    this.inject(ZoneAwareQueueingScheduler).flush();
+    this.inject(EffectScheduler).flush();
   }
 }
 

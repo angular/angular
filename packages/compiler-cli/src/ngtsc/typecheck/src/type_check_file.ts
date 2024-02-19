@@ -17,6 +17,7 @@ import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
+import {getImportString} from './ts_util';
 import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 
 
@@ -60,7 +61,7 @@ export class TypeCheckFile extends Environment {
     ensureTypeCheckFilePreparationImports(this);
 
     let source: string = this.importManager.getAllImports(this.contextFile.fileName)
-                             .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
+                             .map(getImportString)
                              .join('\n') +
         '\n\n';
     const printer = ts.createPrinter({removeComments});

@@ -6,10 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, animateChild, query, stagger, style, transition, trigger,} from '@angular/animations';
+import {
+  animate,
+  animateChild,
+  query,
+  stagger,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 import {BargraphNode} from '../record-formatter/bargraph-formatter/bargraph-formatter';
+import {MatTooltip} from '@angular/material/tooltip';
 
 interface BarData {
   label: string;
@@ -25,13 +34,13 @@ interface BarData {
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.scss'],
   animations: [
-    trigger(
-        'appear',
-        [
-          transition(':enter', [style({width: 0}), animate('.3s ease', style({width: '*'}))]),
-        ]),
+    trigger('appear', [
+      transition(':enter', [style({width: 0}), animate('.3s ease', style({width: '*'}))]),
+    ]),
     trigger('stagger', [transition(':enter', [query(':enter', stagger('.1s', [animateChild()]))])]),
   ],
+  standalone: true,
+  imports: [MatTooltip],
 })
 export class BarChartComponent {
   @Input()
@@ -58,5 +67,6 @@ export class BarChartComponent {
 
 export function createBarText(bar: BargraphNode) {
   return `${bar.label} | ${bar.value.toFixed(1)} ms | ${bar.count} ${
-      bar.count === 1 ? 'instance' : 'instances'}`;
+    bar.count === 1 ? 'instance' : 'instances'
+  }`;
 }

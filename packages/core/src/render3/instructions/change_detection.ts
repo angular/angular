@@ -25,12 +25,12 @@ import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCo
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
  */
-const MAXIMUM_REFRESH_RERUNS = 100;
+export const MAXIMUM_REFRESH_RERUNS = 100;
 
-export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
+export function detectChangesInternal(
+    lView: LView, notifyErrorHandler = true, mode = ChangeDetectionMode.Global) {
   const environment = lView[ENVIRONMENT];
   const rendererFactory = environment.rendererFactory;
-  const afterRenderEventManager = environment.afterRenderEventManager;
 
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to invoke renderer factory functions in that mode
@@ -39,11 +39,10 @@ export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
 
   if (!checkNoChangesMode) {
     rendererFactory.begin?.();
-    afterRenderEventManager?.begin();
   }
 
   try {
-    detectChangesInViewWhileDirty(lView);
+    detectChangesInViewWhileDirty(lView, mode);
   } catch (error) {
     if (notifyErrorHandler) {
       handleError(lView, error);
@@ -56,15 +55,12 @@ export function detectChangesInternal(lView: LView, notifyErrorHandler = true) {
       // One final flush of the effects queue to catch any effects created in `ngAfterViewInit` or
       // other post-order hooks.
       environment.inlineEffectRunner?.flush();
-
-      // Invoke all callbacks registered via `after*Render`, if needed.
-      afterRenderEventManager?.end();
     }
   }
 }
 
-function detectChangesInViewWhileDirty(lView: LView) {
-  detectChangesInView(lView, ChangeDetectionMode.Global);
+function detectChangesInViewWhileDirty(lView: LView, mode: ChangeDetectionMode) {
+  detectChangesInView(lView, mode);
 
   let retries = 0;
   // If after running change detection, this view still needs to be refreshed or there are
@@ -104,7 +100,7 @@ export function checkNoChangesInternal(lView: LView, notifyErrorHandler = true) 
  * The change detection traversal algorithm switches between these modes based on various
  * conditions.
  */
-const enum ChangeDetectionMode {
+export const enum ChangeDetectionMode {
   /**
    * In `Global` mode, `Dirty` and `CheckAlways` views are refreshed as well as views with the
    * `RefreshView` flag.
@@ -309,7 +305,6 @@ function viewShouldHaveReactiveConsumer(tView: TView) {
 function detectChangesInEmbeddedViews(lView: LView, mode: ChangeDetectionMode) {
   for (let lContainer = getFirstLContainer(lView); lContainer !== null;
        lContainer = getNextLContainer(lContainer)) {
-    lContainer[FLAGS] &= ~LContainerFlags.HasChildViewsToRefresh;
     for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
       const embeddedLView = lContainer[i];
       detectChangesInViewIfAttached(embeddedLView, mode);

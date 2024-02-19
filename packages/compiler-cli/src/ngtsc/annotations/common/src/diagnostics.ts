@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../../diagnostics';
 import {Reference} from '../../../imports';
-import {ClassPropertyName, DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, MetadataReader} from '../../../metadata';
+import {ClassPropertyName, DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectiveMeta, isHostDirectiveMetaForGlobalMode, MetadataReader} from '../../../metadata';
 import {describeResolvedType, DynamicValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 import {DeclarationData, LocalModuleScopeRegistry} from '../../../scope';
@@ -18,6 +18,7 @@ import {identifierOfNode, isFromDtsFile} from '../../../util/src/typescript';
 
 import {InjectableClassRegistry} from './injectable_registry';
 import {isAbstractClassDeclaration, readBaseClass} from './util';
+import { CompilationMode } from '../../../transform';
 
 
 /**
@@ -161,6 +162,10 @@ export function validateHostDirectives(
   const diagnostics: ts.DiagnosticWithLocation[] = [];
 
   for (const current of hostDirectives) {
+    if (!isHostDirectiveMetaForGlobalMode(current)) {
+      throw new Error('Impossible state: diagnostics code path for local compilation');
+    }
+
     const hostMeta = flattenInheritedDirectiveMetadata(metaReader, current.directive);
 
     if (hostMeta === null) {
@@ -202,6 +207,10 @@ function validateHostDirectiveMappings(
     bindingType: 'input'|'output', hostDirectiveMeta: HostDirectiveMeta, meta: DirectiveMeta,
     origin: ts.Expression, diagnostics: ts.DiagnosticWithLocation[],
     requiredBindings: Set<ClassPropertyName>|null) {
+  if (!isHostDirectiveMetaForGlobalMode(hostDirectiveMeta)) {
+    throw new Error('Impossible state: diagnostics code path for local compilation');
+  }
+
   const className = meta.name;
   const hostDirectiveMappings =
       bindingType === 'input' ? hostDirectiveMeta.inputs : hostDirectiveMeta.outputs;
@@ -394,4 +403,23 @@ function getInheritedUndecoratedCtorDiagnostic(
           `resolve the parameters of ${baseClassName}'s constructor. Either add a @${
               baseNeedsDecorator} decorator ` +
           `to ${baseClassName}, or add an explicit constructor to ${node.name.text}.`);
+}
+
+/**
+ * Throws `FatalDiagnosticError` with error code `LOCAL_COMPILATION_UNRESOLVED_CONST` 
+ * if the compilation mode is local and the value is not resolved due to being imported
+ * from external files. This is a common scenario for errors in local compilation mode,
+ * and so this helper can be used to quickly generate the relevant errors.
+ * 
+ * @param nodeToHighlight Node to be highlighted in teh error message. 
+ * Will default to value.node if not provided.    
+ */
+export function assertLocalCompilationUnresolvedConst(compilationMode: CompilationMode, value: ResolvedValue, nodeToHighlight: ts.Node|null, errorMessage: string): void {
+  if (compilationMode === CompilationMode.LOCAL && value instanceof DynamicValue &&
+    value.isFromUnknownIdentifier()) {
+    throw new FatalDiagnosticError(
+        ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST, 
+        nodeToHighlight ?? value.node, 
+        errorMessage);
+  }
 }

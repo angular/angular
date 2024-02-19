@@ -10,10 +10,11 @@ import '../util/ng_dev_mode';
 
 import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
-import {AttributeMarker, TAttributes, TNode, TNodeType} from './interfaces/node';
+import {TAttributes, TNode, TNodeType} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags} from './interfaces/projection';
 import {classIndexOf} from './styling/class_differ';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
+import { AttributeMarker } from './interfaces/attribute_marker';
 
 const NG_TEMPLATE_SELECTOR = 'ng-template';
 

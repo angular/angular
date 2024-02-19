@@ -177,6 +177,9 @@ test:saucelabs --flaky_test_attempts=1
 
 # --ng_perf will ask the Ivy compiler to produce performance results for each build.
 build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
+# --adev_fast will run adev build/serve in a faster mode, skipping things like prerendering
+# for local development.
+build --flag_alias=fast_adev=//adev:fast_build_mode
 
 ####################################################
 # User bazel configuration

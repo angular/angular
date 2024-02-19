@@ -5,7 +5,7 @@ Angular uses the Unicode *locale identifier* \(Unicode locale ID\) to find the c
 <docs-callout title="Unicode locale ID">
 
 * A locale ID conforms to the [Unicode Common Locale Data Repository (CLDR) core specification][UnicodeCldrDevelopmentCoreSpecification].
-    For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationHVgyyng33o798].
+    For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationLocaleIDs].
 
 * CLDR and Angular use [BCP 47 tags][RfcEditorInfoBcp47] as the base for the locale ID
 
@@ -46,7 +46,7 @@ By default, Angular uses `en-US` as the source locale of your project.
 
 To change the source locale of your project for the build, complete the following actions.
 
-1. Open the [`angular.json`][AioGuideWorkspaceConfig] workspace build configuration file.
+1. Open the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
 1. Change the source locale in the `sourceLocale` field.
 
 ## What's next
@@ -55,12 +55,12 @@ To change the source locale of your project for the build, complete the followin
   <docs-pill href="guide/i18n/format-data-locale" title="Format data based on locale"/>
 </docs-pill-row>
 
-[AioGuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
+[GuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
 
 [GithubAngularAngularTreeMasterPackagesCommonLocales]: <https://github.com/angular/angular/tree/main/packages/common/locales> "angular/packages/common/locales | angular/angular | GitHub"
 
 [RfcEditorInfoBcp47]: https://www.rfc-editor.org/info/bcp47 "BCP 47 | RFC Editor"
 
-[UnicodeCldrDevelopmentCoreSpecification]: https://cldr.unicode.org/development/core-specification "Core Specification | Unicode CLDR Project"
+[UnicodeCldrDevelopmentCoreSpecification]: https://cldr.unicode.org/index/cldr-spec "Core Specification | Unicode CLDR Project"
 
-[UnicodeCldrDevelopmentCoreSpecificationHVgyyng33o798]: https://cldr.unicode.org/development/core-specification#h.vgyyng33o798 "Unicode Language and Locale Identifiers - Core Specification | Unicode CLDR Project"
+[UnicodeCldrDevelopmentCoreSpecificationLocaleID]: https://cldr.unicode.org/index/cldr-spec/picking-the-right-language-code "Unicode Language and Locale Identifiers - Core Specification | Unicode CLDR Project"

@@ -350,13 +350,6 @@ class AfterRenderCallback {
  */
 interface AfterRenderCallbackHandler {
   /**
-   * Validate that it's safe for a render operation to begin,
-   * throwing if not. Not guaranteed to be called if a render
-   * operation is started before handler was registered.
-   */
-  validateBegin(): void;
-
-  /**
    * Register a new callback.
    */
   register(callback: AfterRenderCallback): void;
@@ -367,7 +360,7 @@ interface AfterRenderCallbackHandler {
   unregister(callback: AfterRenderCallback): void;
 
   /**
-   * Execute callbacks.
+   * Execute callbacks. Returns `true` if any callbacks were executed.
    */
   execute(): void;
 
@@ -391,16 +384,6 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
     [AfterRenderPhase.Read]: new Set<AfterRenderCallback>(),
   };
   private deferredCallbacks = new Set<AfterRenderCallback>();
-
-  validateBegin(): void {
-    if (this.executingCallbacks) {
-      throw new RuntimeError(
-          RuntimeErrorCode.RECURSIVE_APPLICATION_RENDER,
-          ngDevMode &&
-              'A new render operation began before the previous operation ended. ' +
-                  'Did you trigger change detection from afterRender or afterNextRender?');
-    }
-  }
 
   register(callback: AfterRenderCallback): void {
     // If we're currently running callbacks, new callbacks should be deferred
@@ -442,8 +425,6 @@ class AfterRenderCallbackHandlerImpl implements AfterRenderCallbackHandler {
  * Delegates to an optional `AfterRenderCallbackHandler` for implementation.
  */
 export class AfterRenderEventManager {
-  private renderDepth = 0;
-
   /* @internal */
   handler: AfterRenderCallbackHandler|null = null;
 
@@ -451,32 +432,18 @@ export class AfterRenderEventManager {
   internalCallbacks: VoidFunction[] = [];
 
   /**
-   * Mark the beginning of a render operation (i.e. CD cycle).
-   * Throws if called while executing callbacks.
+   * Executes callbacks. Returns `true` if any callbacks executed.
    */
-  begin() {
-    this.handler?.validateBegin();
-    this.renderDepth++;
-  }
-
-  /**
-   * Mark the end of a render operation. Callbacks will be
-   * executed if there are no more pending operations.
-   */
-  end() {
-    ngDevMode && assertGreaterThan(this.renderDepth, 0, 'renderDepth must be greater than 0');
-    this.renderDepth--;
-
-    if (this.renderDepth === 0) {
-      // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
-      // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
-      // can still be tree-shaken unless used by the application.
-      for (const callback of this.internalCallbacks) {
-        callback();
-      }
-      this.internalCallbacks.length = 0;
-      this.handler?.execute();
+  execute(): void {
+    // Note: internal callbacks power `internalAfterNextRender`. Since internal callbacks
+    // are fairly trivial, they are kept separate so that `AfterRenderCallbackHandlerImpl`
+    // can still be tree-shaken unless used by the application.
+    const callbacks = [...this.internalCallbacks];
+    this.internalCallbacks.length = 0;
+    for (const callback of callbacks) {
+      callback();
     }
+    this.handler?.execute();
   }
 
   ngOnDestroy() {

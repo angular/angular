@@ -5,9 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Directive, DoCheck, ElementRef, Input, IterableDiffers, KeyValueDiffers, Renderer2, ɵstringify as stringify} from '@angular/core';
+import {
+  Directive,
+  DoCheck,
+  ElementRef,
+  Input,
+  IterableDiffers,
+  KeyValueDiffers,
+  Renderer2,
+  ɵstringify as stringify,
+} from '@angular/core';
 
-type NgClassSupportedTypes = string[]|Set<string>|{[klass: string]: any}|null|undefined;
+type NgClassSupportedTypes = string[] | Set<string> | {[klass: string]: any} | null | undefined;
 
 const WS_REGEXP = /\s+/;
 
@@ -68,9 +77,9 @@ export class NgClass implements DoCheck {
   private stateMap = new Map<string, CssClassState>();
 
   constructor(
-      // leaving references to differs in place since flex layout is extending NgClass...
-      private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
-      private _ngEl: ElementRef, private _renderer: Renderer2) {}
+    private _ngEl: ElementRef,
+    private _renderer: Renderer2,
+  ) {}
 
   @Input('class')
   set klass(value: string) {
@@ -78,7 +87,7 @@ export class NgClass implements DoCheck {
   }
 
   @Input('ngClass')
-  set ngClass(value: string|string[]|Set<string>|{[klass: string]: any}|null|undefined) {
+  set ngClass(value: string | string[] | Set<string> | {[klass: string]: any} | null | undefined) {
     this.rawClass = typeof value === 'string' ? value.trim().split(WS_REGEXP) : value;
   }
 
@@ -166,12 +175,13 @@ export class NgClass implements DoCheck {
     if (ngDevMode) {
       if (typeof klass !== 'string') {
         throw new Error(
-            `NgClass can only toggle CSS classes expressed as strings, got ${stringify(klass)}`);
+          `NgClass can only toggle CSS classes expressed as strings, got ${stringify(klass)}`,
+        );
       }
     }
     klass = klass.trim();
     if (klass.length > 0) {
-      klass.split(WS_REGEXP).forEach(klass => {
+      klass.split(WS_REGEXP).forEach((klass) => {
         if (enabled) {
           this._renderer.addClass(this._ngEl.nativeElement, klass);
         } else {

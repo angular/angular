@@ -8,10 +8,17 @@
 
 import ts from 'typescript';
 
+import {ClassDeclaration} from '../../reflection';
 import {getContainingImportDeclaration} from '../../reflection/src/typescript';
 
 const AssumeEager = 'AssumeEager';
 type AssumeEager = typeof AssumeEager;
+
+/**
+ * Maps imported symbol name to a set of locations where the symbols is used
+ * in a source file.
+ */
+type SymbolMap = Map<string, Set<ts.Identifier>|AssumeEager>;
 
 /**
  * Allows to register a symbol as deferrable and keep track of its usage.
@@ -21,10 +28,17 @@ type AssumeEager = typeof AssumeEager;
  * in favor of using a dynamic import for cases when defer blocks are used.
  */
 export class DeferredSymbolTracker {
-  private readonly imports =
-      new Map<ts.ImportDeclaration, Map<string, Set<ts.Identifier>|AssumeEager>>();
+  private readonly imports = new Map<ts.ImportDeclaration, SymbolMap>();
 
-  constructor(private readonly typeChecker: ts.TypeChecker) {}
+  /**
+   * Map of a component class -> all import declarations that bring symbols
+   * used within `@Component.deferredImports` field.
+   */
+  private readonly explicitlyDeferredImports = new Map<ClassDeclaration, ts.ImportDeclaration[]>();
+
+  constructor(
+      private readonly typeChecker: ts.TypeChecker,
+      private onlyExplicitDeferDependencyImports: boolean) {}
 
   /**
    * Given an import declaration node, extract the names of all imported symbols
@@ -72,17 +86,52 @@ export class DeferredSymbolTracker {
   }
 
   /**
+   * Retrieves a list of import declarations that contain symbols used within
+   * `@Component.deferredImports` of a specific component class, but those imports
+   * can not be removed, since there are other symbols imported alongside deferred
+   * components.
+   */
+  getNonRemovableDeferredImports(sourceFile: ts.SourceFile, classDecl: ClassDeclaration):
+      ts.ImportDeclaration[] {
+    const affectedImports: ts.ImportDeclaration[] = [];
+    const importDecls = this.explicitlyDeferredImports.get(classDecl) ?? [];
+    for (const importDecl of importDecls) {
+      if (importDecl.getSourceFile() === sourceFile && !this.canDefer(importDecl)) {
+        affectedImports.push(importDecl);
+      }
+    }
+    return affectedImports;
+  }
+
+  /**
    * Marks a given identifier and an associated import declaration as a candidate
    * for defer loading.
    */
-  markAsDeferrableCandidate(identifier: ts.Identifier, importDecl: ts.ImportDeclaration): void {
-    // Do we come across this import for the first time?
-    if (!this.imports.has(importDecl)) {
-      const symbolMap = this.extractImportedSymbols(importDecl);
-      this.imports.set(importDecl, symbolMap);
+  markAsDeferrableCandidate(
+      identifier: ts.Identifier, importDecl: ts.ImportDeclaration,
+      componentClassDecl: ClassDeclaration, isExplicitlyDeferred: boolean): void {
+    if (this.onlyExplicitDeferDependencyImports && !isExplicitlyDeferred) {
+      // Ignore deferrable candidates when only explicit deferred imports mode is enabled.
+      // In that mode only dependencies from the `@Component.deferredImports` field are
+      // defer-loadable.
+      return;
     }
 
-    const symbolMap = this.imports.get(importDecl)!;
+    if (isExplicitlyDeferred) {
+      if (this.explicitlyDeferredImports.has(componentClassDecl)) {
+        this.explicitlyDeferredImports.get(componentClassDecl)!.push(importDecl);
+      } else {
+        this.explicitlyDeferredImports.set(componentClassDecl, [importDecl]);
+      }
+    }
+
+    let symbolMap = this.imports.get(importDecl);
+
+    // Do we come across this import for the first time?
+    if (!symbolMap) {
+      symbolMap = this.extractImportedSymbols(importDecl);
+      this.imports.set(importDecl, symbolMap);
+    }
 
     if (!symbolMap.has(identifier.text)) {
       throw new Error(

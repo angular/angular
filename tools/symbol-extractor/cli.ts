@@ -21,7 +21,7 @@ process.exitCode = main(args) ? 0 : 1;
  *   cli javascriptFilePath.js goldenFilePath.json
  * ```
  */
-function main(argv: [string, string, string]|[string, string]): boolean {
+function main(argv: [string, string, string] | [string, string]): boolean {
   const javascriptFilePath = runfiles.resolveWorkspaceRelative(argv[0]);
   const goldenFilePath = runfiles.resolveWorkspaceRelative(argv[1]);
   const doUpdate = argv[2] == '--accept';

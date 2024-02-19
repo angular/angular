@@ -22,7 +22,7 @@ import {map} from 'rxjs/operators';
 import {ReferenceScrollHandler} from '../services/reference-scroll-handler.service';
 import {API_REFERENCE_DETAILS_PAGE_MEMBERS_CLASS_NAME} from '../constants/api-reference-prerender.constants';
 
-export const CLI_MAIN_CONTENT_SELECTOR = '.adev-reference-cli-content';
+export const CLI_MAIN_CONTENT_SELECTOR = '.docs-reference-cli-content';
 export const CLI_TOC = '.adev-reference-cli-toc';
 
 @Component({

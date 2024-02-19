@@ -12,8 +12,6 @@ import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';
 
-
-
 /**
  * @description
  * A {@link LocationStrategy} used to configure the {@link Location} service to
@@ -38,8 +36,9 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
   private _removeListenerFns: (() => void)[] = [];
 
   constructor(
-      private _platformLocation: PlatformLocation,
-      @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
+    private _platformLocation: PlatformLocation,
+    @Optional() @Inject(APP_BASE_HREF) _baseHref?: string,
+  ) {
     super();
     if (_baseHref != null) {
       this._baseHref = _baseHref;
@@ -55,7 +54,9 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
 
   override onPopState(fn: LocationChangeListener): void {
     this._removeListenerFns.push(
-        this._platformLocation.onPopState(fn), this._platformLocation.onHashChange(fn));
+      this._platformLocation.onPopState(fn),
+      this._platformLocation.onHashChange(fn),
+    );
   }
 
   override getBaseHref(): string {
@@ -65,19 +66,18 @@ export class HashLocationStrategy extends LocationStrategy implements OnDestroy 
   override path(includeHash: boolean = false): string {
     // the hash value is always prefixed with a `#`
     // and if it is empty then it will stay empty
-    let path = this._platformLocation.hash;
-    if (path == null) path = '#';
+    const path = this._platformLocation.hash ?? '#';
 
     return path.length > 0 ? path.substring(1) : path;
   }
 
   override prepareExternalUrl(internal: string): string {
     const url = joinWithSlash(this._baseHref, internal);
-    return url.length > 0 ? ('#' + url) : url;
+    return url.length > 0 ? '#' + url : url;
   }
 
   override pushState(state: any, title: string, path: string, queryParams: string) {
-    let url: string|null = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
+    let url: string | null = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
       url = this._platformLocation.pathname;
     }

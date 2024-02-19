@@ -6,8 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Metric, Options, Runner, SampleDescription, Sampler, SampleState, Validator, WebDriverAdapter} from '../index';
-
+import {
+  Injector,
+  Metric,
+  Options,
+  Runner,
+  SampleDescription,
+  Sampler,
+  SampleState,
+  Validator,
+  WebDriverAdapter,
+} from '../index';
 
 describe('runner', () => {
   let injector: Injector;
@@ -18,88 +27,103 @@ describe('runner', () => {
       defaultProviders = [];
     }
     runner = new Runner([
-      defaultProviders, {
+      defaultProviders,
+      {
         provide: Sampler,
         useFactory: (_injector: Injector) => {
           injector = _injector;
           return new MockSampler();
         },
-        deps: [Injector]
+        deps: [Injector],
       },
       {provide: Metric, useFactory: () => new MockMetric(), deps: []},
       {provide: Validator, useFactory: () => new MockValidator(), deps: []},
-      {provide: WebDriverAdapter, useFactory: () => new MockWebDriverAdapter(), deps: []}
+      {provide: WebDriverAdapter, useFactory: () => new MockWebDriverAdapter(), deps: []},
     ]);
     return runner;
   }
 
-  it('should set SampleDescription.id', done => {
+  it('should set SampleDescription.id', (done) => {
     createRunner()
-        .sample({id: 'someId'})
-        .then((_) => injector.get(SampleDescription))
-        .then((desc) => {
-          expect(desc.id).toBe('someId');
-          done();
-        });
+      .sample({id: 'someId'})
+      .then((_) => injector.get(SampleDescription))
+      .then((desc) => {
+        expect(desc.id).toBe('someId');
+        done();
+      });
   });
 
-  it('should merge SampleDescription.description', done => {
+  it('should merge SampleDescription.description', (done) => {
     createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
-        .sample(
-            {id: 'someId', providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {'b': 2}}]})
-        .then((_) => injector.get(SampleDescription))
-        .then((desc) => {
-          expect(desc.description)
-              .toEqual({'forceGc': false, 'userAgent': 'someUserAgent', 'a': 1, 'b': 2, 'v': 11});
-          done();
+      .sample({
+        id: 'someId',
+        providers: [{provide: Options.SAMPLE_DESCRIPTION, useValue: {'b': 2}}],
+      })
+      .then((_) => injector.get(SampleDescription))
+      .then((desc) => {
+        expect(desc.description).toEqual({
+          'forceGc': false,
+          'userAgent': 'someUserAgent',
+          'a': 1,
+          'b': 2,
+          'v': 11,
         });
+        done();
+      });
   });
 
-  it('should fill SampleDescription.metrics from the Metric', done => {
+  it('should fill SampleDescription.metrics from the Metric', (done) => {
     createRunner()
-        .sample({id: 'someId'})
-        .then((_) => injector.get(SampleDescription))
-        .then((desc) => {
-          expect(desc.metrics).toEqual({'m1': 'some metric'});
-          done();
-        });
+      .sample({id: 'someId'})
+      .then((_) => injector.get(SampleDescription))
+      .then((desc) => {
+        expect(desc.metrics).toEqual({'m1': 'some metric'});
+        done();
+      });
   });
 
-  it('should provide Options.EXECUTE', done => {
+  it('should provide Options.EXECUTE', (done) => {
     const execute = () => {};
-    createRunner().sample({id: 'someId', execute: execute}).then((_) => {
-      expect(injector.get(Options.EXECUTE)).toEqual(execute);
-      done();
-    });
+    createRunner()
+      .sample({id: 'someId', execute: execute})
+      .then((_) => {
+        expect(injector.get(Options.EXECUTE)).toEqual(execute);
+        done();
+      });
   });
 
-  it('should provide Options.PREPARE', done => {
+  it('should provide Options.PREPARE', (done) => {
     const prepare = () => {};
-    createRunner().sample({id: 'someId', prepare: prepare}).then((_) => {
-      expect(injector.get(Options.PREPARE)).toEqual(prepare);
-      done();
-    });
+    createRunner()
+      .sample({id: 'someId', prepare: prepare})
+      .then((_) => {
+        expect(injector.get(Options.PREPARE)).toEqual(prepare);
+        done();
+      });
   });
 
-  it('should provide Options.MICRO_METRICS', done => {
-    createRunner().sample({id: 'someId', microMetrics: {'a': 'b'}}).then((_) => {
-      expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
-      done();
-    });
+  it('should provide Options.MICRO_METRICS', (done) => {
+    createRunner()
+      .sample({id: 'someId', microMetrics: {'a': 'b'}})
+      .then((_) => {
+        expect(injector.get(Options.MICRO_METRICS)).toEqual({'a': 'b'});
+        done();
+      });
   });
 
-  it('should overwrite providers per sample call', done => {
+  it('should overwrite providers per sample call', (done) => {
     createRunner([{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 1}}])
-        .sample(
-            {id: 'someId', providers: [{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 2}}]})
-        .then((_) => injector.get(SampleDescription))
-        .then((desc) => {
-          expect(desc.description['a']).toBe(2);
-          done();
-        });
+      .sample({
+        id: 'someId',
+        providers: [{provide: Options.DEFAULT_DESCRIPTION, useValue: {'a': 2}}],
+      })
+      .then((_) => injector.get(SampleDescription))
+      .then((desc) => {
+        expect(desc.description['a']).toBe(2);
+        done();
+      });
   });
 });
-
 
 class MockWebDriverAdapter extends WebDriverAdapter {
   override executeScript(script: string): Promise<string> {

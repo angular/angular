@@ -11,6 +11,7 @@ ts_library(
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
         "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
         "//devtools/projects/protocol",
     ],
@@ -39,6 +40,10 @@ ts_test_library(
 ts_library(
     name = "highlighter",
     srcs = ["highlighter.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+        "//packages/core",
+    ],
 )
 
 ts_library(
@@ -99,6 +104,27 @@ ts_library(
     srcs = ["version.ts"],
 )
 
+karma_web_test_suite(
+    name = "client_event_subscribers_test",
+    deps = [
+        ":client_event_subscribers_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "client_event_subscribers_test_lib",
+    srcs = [
+        "client-event-subscribers.spec.ts",
+    ],
+    deps = [
+        ":client_event_subscribers",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
+        "@npm//rxjs",
+    ],
+)
+
 ts_library(
     name = "client_event_subscribers",
     srcs = ["client-event-subscribers.ts"],
@@ -110,6 +136,7 @@ ts_library(
         ":utils",
         "//devtools/projects/ng-devtools-backend/src/lib/component-inspector",
         "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
@@ -122,7 +149,9 @@ ts_library(
     srcs = ["component-tree.ts"],
     deps = [
         ":interfaces",
+        ":utils",
         "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
         "//devtools/projects/protocol",
         "//packages/core",

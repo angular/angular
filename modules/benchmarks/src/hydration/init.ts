@@ -16,12 +16,12 @@ import {buildTable, emptyTable, initTableUtils, TableCell} from './util';
 const DEFAULT_COLS_COUNT = '40';
 const DEFAULT_ROWS_COUNT = '200';
 
-function getUrlParamValue(name: string): string|null {
+function getUrlParamValue(name: string): string | null {
   const url = new URL(document.location.href);
   return url.searchParams.get(name);
 }
 
-export function syncUrlParamsToForm(): {cols: string, rows: string} {
+export function syncUrlParamsToForm(): {cols: string; rows: string} {
   let cols = getUrlParamValue('cols') ?? DEFAULT_COLS_COUNT;
   let rows = getUrlParamValue('rows') ?? DEFAULT_ROWS_COUNT;
   (document.getElementById('cols') as HTMLInputElement).value = cols;
@@ -66,7 +66,7 @@ export function init(appRef: ApplicationRef, insertSsrContent = true) {
       // Prepare DOM structure, similar to what SSR would produce.
       const hostElement = document.getElementById('table');
       hostElement.setAttribute('ngh', '0');
-      hostElement.textContent = '';  // clear existing DOM contents
+      hostElement.textContent = ''; // clear existing DOM contents
       hostElement.appendChild(createTableDom(data));
     }
   }

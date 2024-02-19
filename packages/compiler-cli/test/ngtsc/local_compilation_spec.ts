@@ -12,7 +12,7 @@ import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
-import {NgtscTestEnvironment} from './env';
+import {NgtscTestEnvironment, TsConfigOptions} from './env';
 
 const testFiles = loadStandardTestFiles();
 
@@ -20,8 +20,7 @@ runInEachFileSystem(() => {
   describe('local compilation', () => {
     let env!: NgtscTestEnvironment;
 
-    beforeEach(() => {
-      env = NgtscTestEnvironment.setup(testFiles);
+    function tsconfig(extraOpts: TsConfigOptions = {}) {
       const tsconfig: {[key: string]: any} = {
         extends: '../tsconfig-base.json',
         compilerOptions: {
@@ -30,9 +29,15 @@ runInEachFileSystem(() => {
         },
         angularCompilerOptions: {
           compilationMode: 'experimental-local',
+          ...extraOpts,
         },
       };
       env.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
+    }
+
+    beforeEach(() => {
+      env = NgtscTestEnvironment.setup(testFiles);
+      tsconfig();
     });
 
     it('should produce no TS semantic diagnostics', () => {
@@ -44,6 +49,260 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
 
       expect(diags).toEqual([]);
+    });
+
+    describe('extra imports generation', () => {
+      beforeEach(() => {
+        const tsconfig: {[key: string]: any} = {
+          extends: '../tsconfig-base.json',
+          compilerOptions: {
+            baseUrl: '.',
+            rootDirs: ['/app'],
+          },
+          angularCompilerOptions: {
+            compilationMode: 'experimental-local',
+            generateExtraImportsInLocalMode: true,
+          },
+        };
+        env.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
+      });
+
+      it('should only include NgModule external import as global import', () => {
+        env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+        import {SomeExternalStuff2} from '/some_external_file2';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [SomeExternalStuff, BModule]})
+        export class AModule {
+        }
+        `);
+        env.write('b.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class BModule {
+        }
+        `);
+        env.write('c.ts', `
+        // Some code
+        `);
+
+        env.driveMain();
+        const aContents = env.getContents('a.js');
+        const bContents = env.getContents('b.js');
+        const cContents = env.getContents('c.js');
+
+        // NgModule external import as global import
+        expect(aContents).toContain('import "/some_external_file"');
+        expect(bContents).toContain('import "/some_external_file"');
+        expect(cContents).toContain('import "/some_external_file"');
+
+        // External import which is not an NgModule import should not be global import
+        expect(aContents).not.toContain('import "/some_external_file2"');
+        expect(bContents).not.toContain('import "/some_external_file2"');
+        expect(cContents).not.toContain('import "/some_external_file2"');
+
+        // NgModule internal import should not be global import
+        expect(aContents).not.toContain('import "b"');
+        expect(bContents).not.toContain('import "b"');
+        expect(cContents).not.toContain('import "b"');
+      });
+
+      it('should include NgModule namespace external import as global import', () => {
+        env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import * as n from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [n.SomeExternalStuff]})
+        export class AModule {
+        }
+        `);
+        env.write('test.ts', `
+        // Some code
+        `);
+
+        env.driveMain();
+
+        expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+        expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+      });
+
+      it('should include nested NgModule external import as global import - case of named import',
+         () => {
+           env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[[SomeExternalStuff]]]})
+        export class AModule {
+        }
+        `);
+           env.write('test.ts', `
+        // Some code
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+           expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+         });
+
+      it('should include nested NgModule external import as global import - case of namespace import',
+         () => {
+           env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import * as n from '/some_external_file';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[[n.SomeExternalStuff]]]})
+        export class AModule {
+        }
+        `);
+           env.write('test.ts', `
+        // Some code
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('a.js')).toContain('import "/some_external_file"');
+           expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+         });
+
+      it('should include NgModule external imports as global imports - case of multiple nested imports including named and namespace imports',
+         () => {
+           env.write('a.ts', `
+        import {NgModule} from '@angular/core';
+        import {SomeExternalStuff} from '/some_external_file';
+        import * as n from '/some_external_file2';
+
+        import {BModule} from 'b';
+
+        @NgModule({imports: [[SomeExternalStuff], [n.SomeExternalStuff]]})
+        export class AModule {
+        }
+        `);
+           env.write('test.ts', `
+        // Some code
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('test.js')).toContain('import "/some_external_file"');
+           expect(env.getContents('test.js')).toContain('import "/some_external_file2"');
+         });
+
+      it('should include extra import for the local component dependencies (component, directive and pipe)',
+         () => {
+           env.write('internal_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '...', selector: 'internal-comp'})
+        export class InternalComp {
+        }
+        `);
+           env.write('internal_dir.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[internal-dir]'})
+        export class InternalDir {
+        }
+        `);
+           env.write('internal_pipe.ts', `
+        import {Pipe, PipeTransform} from '@angular/core';
+
+        @Pipe({name: 'internalPipe'})
+        export class InternalPipe implements PipeTransform {
+          transform(value: number): number {
+            return value*2;
+          }
+        }
+        `);
+           env.write('internal_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {InternalComp} from 'internal_comp';
+        import {InternalDir} from 'internal_dir';
+        import {InternalPipe} from 'internal_pipe';
+
+        @NgModule({declarations: [InternalComp, InternalDir, InternalPipe], exports: [InternalComp, InternalDir, InternalPipe]})
+        export class InternalModule {
+        }
+        `);
+           env.write('main_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<internal-comp></internal-comp> <span internal-dir></span> <span>{{2 | internalPipe}}</span>'})
+        export class MainComp {
+        }
+        `);
+           env.write('main_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {MainComp} from 'main_comp';
+        import {InternalModule} from 'internal_module';
+
+        @NgModule({declarations: [MainComp], imports: [InternalModule]})
+        export class MainModule {
+        }
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('main_comp.js')).toContain('import "internal_comp"');
+           expect(env.getContents('main_comp.js')).toContain('import "internal_dir"');
+           expect(env.getContents('main_comp.js')).toContain('import "internal_pipe"');
+         });
+
+      it('should not include extra import and remote scope runtime for the local component dependencies when cycle is produced',
+         () => {
+           env.write('internal_comp.ts', `
+        import {Component} from '@angular/core';
+        import {cycleCreatingDep} from './main_comp';
+
+        @Component({template: '...', selector: 'internal-comp'})
+        export class InternalComp {
+        }
+        `);
+           env.write('internal_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {InternalComp} from 'internal_comp';
+
+        @NgModule({declarations: [InternalComp], exports: [InternalComp]})
+        export class InternalModule {
+        }
+        `);
+           env.write('main_comp.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({template: '<internal-comp></internal-comp>'})
+        export class MainComp {
+        }
+        `);
+           env.write('main_module.ts', `
+        import {NgModule} from '@angular/core';
+
+        import {MainComp} from 'main_comp';
+        import {InternalModule} from 'internal_module';
+
+        @NgModule({declarations: [MainComp], imports: [InternalModule]})
+        export class MainModule {
+        }
+        `);
+
+           env.driveMain();
+
+           expect(env.getContents('main_comp.js')).not.toContain('import "internal_comp"');
+           expect(env.getContents('main_module.js')).not.toContain('ɵɵsetComponentScope');
+         });
     });
 
     describe('ng module injector def', () => {
@@ -229,14 +488,14 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {NgModule, Component} from '@angular/core';
-          
+
           @Component({
             selector: 'test-main',
             template: '<span>Hello world!</span>',
           })
           export class MainComponent {
           }
-          
+
           @NgModule({
             declarations: [MainComponent],
           })
@@ -257,7 +516,7 @@ runInEachFileSystem(() => {
           import {Component, forwardRef} from '@angular/core';
           import {SomeThing} from 'some-where';
           import {SomeThing2} from 'some-where2';
-          
+
           @Component({
             standalone: true,
             imports: [SomeThing, forwardRef(()=>SomeThing2)],
@@ -284,7 +543,7 @@ runInEachFileSystem(() => {
           import {SomeThing2} from 'some-where2';
 
           const NG_IMPORTS = [SomeThing, forwardRef(()=>SomeThing2)];
-          
+
           @Component({
             standalone: true,
             imports: NG_IMPORTS,
@@ -306,7 +565,7 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
       import {Component} from '@angular/core';
-      
+
       @Component({
         standalone: true,
         imports: [],
@@ -328,7 +587,7 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {Component} from '@angular/core';
-          
+
           @Component({
             standalone: true,
             selector: 'test-main',
@@ -350,7 +609,7 @@ runInEachFileSystem(() => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
           import {SomeWeirdThing} from 'some-where';
-          
+
           @Component({
             changeDetection: SomeWeirdThing,
             template: '<span>Hello world!</span>',
@@ -368,8 +627,8 @@ runInEachFileSystem(() => {
       it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.Emulated with no styles',
          () => {
            env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             encapsulation: ViewEncapsulation.Emulated,
             template: '<span>Hello world!</span>',
@@ -389,8 +648,8 @@ runInEachFileSystem(() => {
       it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.Emulated with styles',
          () => {
            env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             encapsulation: ViewEncapsulation.Emulated,
             styles: ['color: blue'],
@@ -411,8 +670,8 @@ runInEachFileSystem(() => {
       it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.ShadowDom',
          () => {
            env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             encapsulation: ViewEncapsulation.ShadowDom,
             template: '<span>Hello world!</span>',
@@ -430,8 +689,8 @@ runInEachFileSystem(() => {
       it('should place the correct value of encapsulation into the component def - case of ViewEncapsulation.None',
          () => {
            env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             encapsulation: ViewEncapsulation.None,
             template: '<span>Hello world!</span>',
@@ -448,8 +707,8 @@ runInEachFileSystem(() => {
 
       it('should default encapsulation to Emulated', () => {
         env.write('test.ts', `
-          import {Component, ViewEncapsulation} from '@angular/core';          
-          
+          import {Component, ViewEncapsulation} from '@angular/core';
+
           @Component({
             template: '<span>Hello world!</span>',
           })
@@ -460,8 +719,8 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        // If there is no style, don't generate css selectors on elements by setting encapsulation
-        // to none (=2)
+        // If there is no style, don't generate css selectors on elements by setting
+        // encapsulation to none (=2)
         expect(jsContents).toContain('encapsulation: 2');
       });
     });
@@ -481,7 +740,7 @@ runInEachFileSystem(() => {
             selector: 'test-main',
             template: '<span>Hello world</span>',
           })
-          export class MainComponent {         
+          export class MainComponent {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -489,11 +748,11 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
-          
+
           @NgModule({
-            declarations: [MainComponent],  
+            declarations: [MainComponent],
           })
           export class MainModule {
           }
@@ -522,7 +781,7 @@ runInEachFileSystem(() => {
             selector: 'test-main',
             template: '<span>Hello world</span>',
           })
-          export class MainComponent {         
+          export class MainComponent {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -530,7 +789,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -554,7 +813,7 @@ runInEachFileSystem(() => {
 
           @Directive({
           })
-          export class MainDirective {         
+          export class MainDirective {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -562,11 +821,11 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
-          
+
           @NgModule({
-            declarations: [MainDirective],  
+            declarations: [MainDirective],
           })
           export class MainModule {
           }
@@ -593,7 +852,7 @@ runInEachFileSystem(() => {
           @Directive({
             standalone: true,
           })
-          export class MainDirective {         
+          export class MainDirective {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -601,7 +860,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -624,7 +883,7 @@ runInEachFileSystem(() => {
           import * as SomeWhere4 from './some-where4'
 
           @Pipe({name: 'pipe'})
-          export class MainPipe {         
+          export class MainPipe {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -632,11 +891,11 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
-          
+
           @NgModule({
-            declarations: [MainPipe],  
+            declarations: [MainPipe],
           })
           export class MainModule {
           }
@@ -664,7 +923,7 @@ runInEachFileSystem(() => {
             name: 'pipe',
             standalone: true,
           })
-          export class MainPipe {         
+          export class MainPipe {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -672,7 +931,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -697,7 +956,7 @@ runInEachFileSystem(() => {
           @Injectable({
             providedIn: 'root',
           })
-          export class MainService {         
+          export class MainService {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -705,7 +964,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -729,7 +988,7 @@ runInEachFileSystem(() => {
 
           @NgModule({
           })
-          export class MainModule {         
+          export class MainModule {
             constructor(
               private someService1: SomeService1,
               private someService2: SomeService2,
@@ -737,7 +996,7 @@ runInEachFileSystem(() => {
               private someService4: SomeWhere4.nested.SomeService4,
               @Attribute('title') title: string,
               @Inject(MESSAGE_TOKEN) tokenMessage: SomeClass,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -755,10 +1014,10 @@ runInEachFileSystem(() => {
           import {Injectable} from '@angular/core';
 
           @Injectable()
-          export class MainService<S> {         
+          export class MainService<S> {
             constructor(
               private someService1: S,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -777,10 +1036,10 @@ runInEachFileSystem(() => {
           import {type MyService} from './somewhere';
 
           @Injectable()
-          export class MainService {         
+          export class MainService {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -799,10 +1058,10 @@ runInEachFileSystem(() => {
           type MyService = {a:string};
 
           @Injectable()
-          export class MainService {         
+          export class MainService {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -821,10 +1080,10 @@ runInEachFileSystem(() => {
           interface MyService {a:string}
 
           @Injectable()
-          export class MainService {         
+          export class MainService {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -842,10 +1101,10 @@ runInEachFileSystem(() => {
           import {Directive} from '@angular/core';
 
           @Directive()
-          export class MyDirective<S> {         
+          export class MyDirective<S> {
             constructor(
               private myService: S,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -864,10 +1123,10 @@ runInEachFileSystem(() => {
           import {type MyService} from './somewhere';
 
           @Directive()
-          export class MyDirective {         
+          export class MyDirective {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -883,14 +1142,14 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {Directive} from '@angular/core';
-          
+
           type MyService = {a:string};
 
           @Directive()
-          export class MyDirective {         
+          export class MyDirective {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -906,14 +1165,14 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {Directive} from '@angular/core';
-          
+
           interface MyService {a:string}
 
           @Directive()
-          export class MyDirective {         
+          export class MyDirective {
             constructor(
               private myService: MyService,
-              ) {}  
+              ) {}
           }
           `);
 
@@ -926,14 +1185,14 @@ runInEachFileSystem(() => {
          });
     });
 
-    describe('local compilation specific errors', () => {
-      it('should show extensive error message when using an imported symbol for component template',
+    describe('LOCAL_COMPILATION_UNRESOLVED_CONST errors', () => {
+      it('should show correct error message when using an external symbol for component template',
          () => {
            env.write('test.ts', `
           import {Component} from '@angular/core';
           import {ExternalString} from './some-where';
 
-          @Component({            
+          @Component({
             template: ExternalString,
           })
           export class Main {
@@ -944,25 +1203,28 @@ runInEachFileSystem(() => {
 
            expect(errors.length).toBe(1);
 
-           const {code, messageText} = errors[0];
+           const {code, messageText, length, relatedInformation} = errors[0];
 
-           expect(code).toBe(ngErrorCode(ErrorCode.
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+           expect(length).toBe(14);
+           expect(relatedInformation).toBeUndefined();
 
-                                         LOCAL_COMPILATION_IMPORTED_TEMPLATE_STRING));
            const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
-           expect(text).toContain('Unknown identifier used as template string: ExternalString');
-           expect(text).toContain('either inline it or move it to a separate file');
+           expect(text).toEqual(
+               'Unresolved identifier found for @Component.template field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the template, 3) Move the template into a separate .html file and include it using @Component.templateUrl');
          });
 
-      it('should show extensive error message when using an imported symbol for component styles',
+      it('should show correct error message when using an external symbol for component styles array',
          () => {
            env.write('test.ts', `
           import {Component} from '@angular/core';
           import {ExternalString} from './some-where';
 
-          @Component({            
-            styles: [ExternalString],
+          const InternalStyle = "p{color:blue}";
+
+          @Component({
+            styles: [InternalStyle, ExternalString],
             template: '',
 
           })
@@ -974,13 +1236,212 @@ runInEachFileSystem(() => {
 
            expect(errors.length).toBe(1);
 
-           const {code, messageText} = errors[0];
+           const {code, messageText, relatedInformation, length} = errors[0];
 
-           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_IMPORTED_STYLES_STRING));
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+           expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+
            const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
-           expect(text).toContain('Unknown identifier used as styles string: ExternalString');
-           expect(text).toContain('either inline it or move it to a separate file');
+           expect(text).toEqual(
+               'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls');
+         });
+
+      it('should show correct error message when using an external symbol for component styles', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({
+            styles: ExternalString,
+            template: '',
+
+          })
+          export class Main {
+          }
+          `);
+
+        const errors = env.driveDiagnostics();
+
+        expect(errors.length).toBe(1);
+
+        const {code, messageText, relatedInformation, length} = errors[0];
+
+        expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+
+        const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+        expect(text).toEqual(
+            'Unresolved identifier found for @Component.styles field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the styles, 3) Move the styles into separate files and include it using @Component.styleUrls');
+      });
+
+      it('should show correct error message when using an external symbol for component selector',
+         () => {
+           env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({
+            selector: ExternalString,
+            template: '',
+
+          })
+          export class Main {
+          }
+          `);
+
+           const errors = env.driveDiagnostics();
+
+           expect(errors.length).toBe(1);
+
+           const {code, messageText, relatedInformation, length} = errors[0];
+
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+           expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+
+           const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+           expect(text).toEqual(
+               'Unresolved identifier found for @Component.selector field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the selector');
+         });
+
+      it('should show correct error message when using an external symbol for component @HostListener\'s event name argument',
+         () => {
+           env.write('test.ts', `
+          import {Component, HostListener} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({
+            template: '',
+          })
+          export class Main {
+            @HostListener(ExternalString, ['$event'])
+            handle() {}
+          }
+          `);
+
+           const errors = env.driveDiagnostics();
+
+           expect(errors.length).toBe(1);
+
+           const {code, messageText, relatedInformation, length} = errors[0];
+
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+           expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+
+           const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+           expect(text).toEqual(
+               `Unresolved identifier found for @HostListener's event name argument! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the argument`);
+         });
+
+      it('should show correct error message when using an external symbol for directive @HostListener\'s event name argument',
+         () => {
+           env.write('test.ts', `
+          import {Directive, HostListener} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Directive({selector: '[test]'})
+          export class Main {
+            @HostListener(ExternalString, ['$event'])
+            handle() {}
+          }
+          `);
+
+           const errors = env.driveDiagnostics();
+
+           expect(errors.length).toBe(1);
+
+           const {code, messageText, relatedInformation, length} = errors[0];
+
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+           expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+
+           const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+           expect(text).toEqual(
+               `Unresolved identifier found for @HostListener's event name argument! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the argument`);
+         });
+
+      it('should show correct error message when using an external symbol for component @HostBinding\'s argument',
+         () => {
+           env.write('test.ts', `
+          import {Component, HostBinding} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Component({template: ''})
+          export class Main {
+            @HostBinding(ExternalString) id = 'some thing';
+          }
+          `);
+
+           const errors = env.driveDiagnostics();
+
+           expect(errors.length).toBe(1);
+
+           const {code, messageText, relatedInformation, length} = errors[0];
+
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+           expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+
+           const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+           expect(text).toEqual(
+               `Unresolved identifier found for @HostBinding's argument! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the argument`);
+         });
+
+      it('should show correct error message when using an external symbol for directive @HostBinding\'s argument',
+         () => {
+           env.write('test.ts', `
+          import {Directive, HostBinding} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Directive({selector: '[test]'})
+          export class Main {
+            @HostBinding(ExternalString) id = 'some thing';
+          }
+          `);
+
+           const errors = env.driveDiagnostics();
+
+           expect(errors.length).toBe(1);
+
+           const {code, messageText, relatedInformation, length} = errors[0];
+
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+           expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+
+           const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+           expect(text).toEqual(
+               `Unresolved identifier found for @HostBinding's argument! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declaration into a file within the compilation unit, 2) Inline the argument`);
+         });
+
+      it('should show correct error message when using an external symbol for @Directive.exportAs argument',
+         () => {
+           env.write('test.ts', `
+          import {Directive} from '@angular/core';
+          import {ExternalString} from './some-where';
+
+          @Directive({selector: '[test]', exportAs: ExternalString})
+          export class Main {
+          }
+          `);
+
+           const errors = env.driveDiagnostics();
+
+           expect(errors.length).toBe(1);
+
+           const {code, messageText, relatedInformation, length} = errors[0];
+
+           expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
+           expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+
+           const text = ts.flattenDiagnosticMessageText(messageText, '\n');
+
+           expect(text).toEqual(
+               `Unresolved identifier found for exportAs field! Did you import this identifier from a file outside of the compilation unit? This is not allowed when Angular compiler runs in local mode. Possible solutions: 1) Move the declarations into a file within the compilation unit, 2) Inline the selector`);
          });
     });
 
@@ -1032,6 +1493,720 @@ runInEachFileSystem(() => {
            expect(jsContents)
                .toContain('ɵɵsetNgModuleScope(AppModule, { declarations: [App] }); })();');
          });
+    });
+
+    describe('host directives', () => {
+      it('should generate component hostDirectives definition without input and output', () => {
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {ExternalDirective} from 'some_where';
+          import * as n from 'some_where2';
+
+          @Directive({standalone: true})
+          export class LocalDirective {
+          }
+    
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            hostDirectives: [ExternalDirective, n.ExternalDirective, LocalDirective]
+          })
+          export class MyComp {}
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'features: [i0.ɵɵHostDirectivesFeature([ExternalDirective, n.ExternalDirective, LocalDirective])]');
+      });
+
+      it('should generate component hostDirectives definition for externally imported directives with input and output',
+         () => {
+           env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {HostDir} from 'some_where';
+   
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            hostDirectives: [{
+              directive: HostDir,
+              inputs: ['value', 'color: colorAlias'],
+              outputs: ['opened', 'closed: closedAlias'],
+            }],
+          })
+          export class MyComp {}
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'features: [i0.ɵɵHostDirectivesFeature([{ directive: HostDir, ' +
+                   'inputs: ["value", "value", "color", "colorAlias"], ' +
+                   'outputs: ["opened", "opened", "closed", "closedAlias"] }])]');
+         });
+
+      it('should generate component hostDirectives definition for local directives with input and output',
+         () => {
+           env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          
+          @Directive({standalone: true})
+          export class LocalDirective {
+          }
+
+          @Component({
+            selector: 'my-comp',
+            template: '',
+            hostDirectives: [{
+              directive: LocalDirective,
+              inputs: ['value', 'color: colorAlias'],
+              outputs: ['opened', 'closed: closedAlias'],
+            }],
+          })
+          export class MyComp {}
+        `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           expect(jsContents)
+               .toContain(
+                   'features: [i0.ɵɵHostDirectivesFeature([{ directive: LocalDirective, ' +
+                   'inputs: ["value", "value", "color", "colorAlias"], ' +
+                   'outputs: ["opened", "opened", "closed", "closedAlias"] }])]');
+         });
+
+      it('should generate directive hostDirectives definitions', () => {
+        env.write('test.ts', `
+          import {Directive, Component} from '@angular/core';
+          import {ExternalDirective} from 'some_where';
+          
+          @Directive({
+            standalone: true,
+            hostDirectives: [ExternalDirective],
+          })
+          export class LocalDirective {
+          }
+  
+          @Directive({
+            standalone: true,
+            hostDirectives: [LocalDirective],
+          })
+          export class LocalDirective2 {
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'ɵɵdefineDirective({ type: LocalDirective, standalone: true, ' +
+                'features: [i0.ɵɵHostDirectivesFeature([ExternalDirective])] });');
+        expect(jsContents)
+            .toContain(
+                'ɵɵdefineDirective({ type: LocalDirective2, standalone: true, ' +
+                'features: [i0.ɵɵHostDirectivesFeature([LocalDirective])] });');
+      });
+
+      it('should generate hostDirectives definition with forward references of local directives', () => {
+        env.write('test.ts', `
+          import {Component, Directive, forwardRef, Input} from '@angular/core';
+  
+          @Component({
+            selector: 'my-component',
+            template: '',
+            hostDirectives: [forwardRef(() => DirectiveB)]
+          })
+          export class MyComponent {
+          }
+  
+          @Directive({
+            standalone: true,
+            hostDirectives: [{directive: forwardRef(() => DirectiveA), inputs: ['value']}],
+          })
+          export class DirectiveB {
+          }
+  
+          @Directive({standalone: true})
+          export class DirectiveA {
+            @Input() value: any;
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'features: [i0.ɵɵHostDirectivesFeature(function () { return [DirectiveB]; })]');
+        expect(jsContents)
+            .toContain(
+                'features: [i0.ɵɵHostDirectivesFeature(function () { return [{ directive: DirectiveA, inputs: ["value", "value"] }]; })]');
+      });
+
+      it('should produce fatal diagnostics for host directives with forward references of externally imported directive',
+         () => {
+           env.write('test.ts', `
+          import {Component, Directive, forwardRef} from '@angular/core';
+          import {ExternalDirective} from 'some_where';
+  
+          @Component({
+            selector: 'my-component',
+            template: '',
+            hostDirectives: [forwardRef(() => ExternalDirective)]
+            //hostDirectives: [ExternalDirective]
+          })
+          export class MyComponent {
+          }
+        `);
+
+           const messages = env.driveDiagnostics();
+
+           expect(messages[0].code)
+               .toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNSUPPORTED_EXPRESSION));
+           expect(messages[0].messageText)
+               .toEqual(
+                   'In local compilation mode, host directive cannot be an expression. Use an identifier instead');
+         });
+    });
+
+
+    describe('input transform', () => {
+      it('should generate input info for transform function imported externally using name', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+        import {externalFunc} from './some_where';
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: externalFunc})
+          x: string = '';
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", externalFunc] }');
+      });
+
+      it('should generate input info for transform function imported externally using namespace', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+        import * as n from './some_where';
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: n.externalFunc})
+          x: string = '';
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", n.externalFunc] }');
+      });
+
+      it('should generate input info for transform function defined locally', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: localFunc})
+          x: string = '';
+        }
+
+        function localFunc(value: string) {
+          return value;
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", localFunc] }');
+      });
+
+      it('should generate input info for inline transform function', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: (v: string) => v + 'TRANSFORMED!'})
+          x: string = '';
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", (v) => v + \'TRANSFORMED!\'] }');
+      });
+
+      it('should not check inline function param type', () => {
+        env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+
+        @Component({
+          template: '<span>{{x}}</span>',
+        })
+        export class Main {
+          @Input({transform: v => v + 'TRANSFORMED!'})
+          x: string = '';
+        }
+     `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        expect(jsContents)
+            .toContain(
+                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", v => v + \'TRANSFORMED!\'] }');
+      });
+    });
+
+    describe('@defer', () => {
+      beforeEach(() => {
+        tsconfig({onlyExplicitDeferDependencyImports: true});
+      });
+
+      it('should handle `@Component.deferredImports` field', () => {
+        env.write('deferred-a.ts', `
+          import {Component} from '@angular/core';
+          @Component({
+            standalone: true,
+            selector: 'deferred-cmp-a',
+            template: 'DeferredCmpA contents',
+          })
+          export class DeferredCmpA {
+          }
+        `);
+
+        env.write('deferred-b.ts', `
+          import {Component} from '@angular/core';
+          @Component({
+            standalone: true,
+            selector: 'deferred-cmp-b',
+            template: 'DeferredCmpB contents',
+          })
+          export class DeferredCmpB {
+          }
+        `);
+
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {DeferredCmpA} from './deferred-a';
+          import {DeferredCmpB} from './deferred-b';
+          @Component({
+            standalone: true,
+            deferredImports: [DeferredCmpA, DeferredCmpB],
+            template: \`
+              @defer {
+                <deferred-cmp-a />
+              }
+              @defer {
+                <deferred-cmp-b />
+              }
+            \`,
+          })
+          export class AppCmp {
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // Expect that all deferrableImports in local compilation mode
+        // are located in a single function (since we can't detect in
+        // the local mode which components belong to which block).
+        expect(jsContents)
+            .toContain(
+                'const AppCmp_DeferFn = () => [' +
+                'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+                'import("./deferred-b").then(m => m.DeferredCmpB)];');
+
+        // Make sure there are no eager imports present in the output.
+        expect(jsContents).not.toContain(`from './deferred-a'`);
+        expect(jsContents).not.toContain(`from './deferred-b'`);
+
+        // All defer instructions use the same dependency function.
+        expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_DeferFn);');
+        expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_DeferFn);');
+
+        // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
+        expect(jsContents)
+            .toContain(
+                'ɵsetClassMetadataAsync(AppCmp, () => [' +
+                'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+                'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
+                '(DeferredCmpA, DeferredCmpB) => {');
+      });
+
+      it('should handle `@Component.imports` field', () => {
+        env.write('deferred-a.ts', `
+          import {Component} from '@angular/core';
+          @Component({
+            standalone: true,
+            selector: 'deferred-cmp-a',
+            template: 'DeferredCmpA contents',
+          })
+          export class DeferredCmpA {
+          }
+        `);
+
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {DeferredCmpA} from './deferred-a';
+          @Component({
+            standalone: true,
+            imports: [DeferredCmpA],
+            template: \`
+              @defer {
+                <deferred-cmp-a />
+              }
+            \`,
+          })
+          export class AppCmp {
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+
+        // In local compilation mode we can't detect which components
+        // belong to `@defer` blocks, thus can't determine whether corresponding
+        // classes can be defer-loaded. In this case we retain eager imports
+        // and do not generate defer dependency functions for `@defer` instructions.
+
+        // Eager imports are retained in the output.
+        expect(jsContents).toContain(`from './deferred-a'`);
+
+        // Defer instructions do not have a dependency function,
+        // since all dependencies were defined in `@Component.imports`.
+        expect(jsContents).toContain('ɵɵdefer(1, 0);');
+
+        // Expect `ɵsetClassMetadata` (sync) to be generated.
+        expect(jsContents).toContain('ɵsetClassMetadata(AppCmp,');
+      });
+
+      it('should handle defer blocks that rely on deps from `deferredImports` and `imports`',
+         () => {
+           env.write('eager-a.ts', `
+              import {Component} from '@angular/core';
+              @Component({
+                standalone: true,
+                selector: 'eager-cmp-a',
+                template: 'EagerCmpA contents',
+              })
+              export class EagerCmpA {
+              }
+            `);
+
+           env.write('deferred-a.ts', `
+              import {Component} from '@angular/core';
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-a',
+                template: 'DeferredCmpA contents',
+              })
+              export class DeferredCmpA {
+              }
+            `);
+
+           env.write('deferred-b.ts', `
+              import {Component} from '@angular/core';
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-b',
+                template: 'DeferredCmpB contents',
+              })
+              export class DeferredCmpB {
+              }
+            `);
+
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+              import {DeferredCmpA} from './deferred-a';
+              import {DeferredCmpB} from './deferred-b';
+              import {EagerCmpA} from './eager-a';
+              @Component({
+                standalone: true,
+                imports: [EagerCmpA],
+                deferredImports: [DeferredCmpA, DeferredCmpB],
+                template: \`
+                  @defer {
+                    <eager-cmp-a />
+                    <deferred-cmp-a />
+                  }
+                  @defer {
+                    <eager-cmp-a />
+                    <deferred-cmp-b />
+                  }
+                \`,
+              })
+              export class AppCmp {
+              }
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Expect that all deferrableImports in local compilation mode
+           // are located in a single function (since we can't detect in
+           // the local mode which components belong to which block).
+           // Eager dependencies are **not* included here.
+           expect(jsContents)
+               .toContain(
+                   'const AppCmp_DeferFn = () => [' +
+                   'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+                   'import("./deferred-b").then(m => m.DeferredCmpB)];');
+
+           // Make sure there are no eager imports present in the output.
+           expect(jsContents).not.toContain(`from './deferred-a'`);
+           expect(jsContents).not.toContain(`from './deferred-b'`);
+
+           // Eager dependencies retain their imports.
+           expect(jsContents).toContain(`from './eager-a';`);
+
+           // All defer instructions use the same dependency function.
+           expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmp_DeferFn);');
+           expect(jsContents).toContain('ɵɵdefer(4, 3, AppCmp_DeferFn);');
+
+           // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
+           expect(jsContents)
+               .toContain(
+                   'ɵsetClassMetadataAsync(AppCmp, () => [' +
+                   'import("./deferred-a").then(m => m.DeferredCmpA), ' +
+                   'import("./deferred-b").then(m => m.DeferredCmpB)], ' +
+                   '(DeferredCmpA, DeferredCmpB) => {');
+         });
+
+      it('should support importing multiple deferrable deps from a single file ' +
+             'and use them within `@Component.deferrableImports` field',
+         () => {
+           env.write('deferred-deps.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-a',
+                template: 'DeferredCmpA contents',
+              })
+              export class DeferredCmpA {
+              }
+
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-b',
+                template: 'DeferredCmpB contents',
+              })
+              export class DeferredCmpB {
+              }
+            `);
+
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+
+              // This import brings multiple symbols, but all of them are
+              // used within @Component.deferredImports, thus this import
+              // can be removed in favor of dynamic imports.
+              import {DeferredCmpA, DeferredCmpB} from './deferred-deps';
+
+              @Component({
+                standalone: true,
+                deferredImports: [DeferredCmpA],
+                template: \`
+                  @defer {
+                    <deferred-cmp-a />
+                  }
+                \`,
+              })
+              export class AppCmpA {}
+
+              @Component({
+                standalone: true,
+                deferredImports: [DeferredCmpB],
+                template: \`
+                  @defer {
+                    <deferred-cmp-b />
+                  }
+                \`,
+              })
+              export class AppCmpB {}
+            `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+
+           // Expect that we generate 2 different defer functions
+           // (one for each component).
+           expect(jsContents)
+               .toContain(
+                   'const AppCmpA_DeferFn = () => [' +
+                   'import("./deferred-deps").then(m => m.DeferredCmpA)]');
+           expect(jsContents)
+               .toContain(
+                   'const AppCmpB_DeferFn = () => [' +
+                   'import("./deferred-deps").then(m => m.DeferredCmpB)]');
+
+           // Make sure there are no eager imports present in the output.
+           expect(jsContents).not.toContain(`from './deferred-deps'`);
+
+           // Defer instructions use per-component dependency function.
+           expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpA_DeferFn)');
+           expect(jsContents).toContain('ɵɵdefer(1, 0, AppCmpB_DeferFn)');
+
+           // Expect `ɵsetClassMetadataAsync` to contain dynamic imports too.
+           expect(jsContents)
+               .toContain(
+                   'ɵsetClassMetadataAsync(AppCmpA, () => [' +
+                   'import("./deferred-deps").then(m => m.DeferredCmpA)]');
+           expect(jsContents)
+               .toContain(
+                   'ɵsetClassMetadataAsync(AppCmpB, () => [' +
+                   'import("./deferred-deps").then(m => m.DeferredCmpB)]');
+         });
+
+      it('should produce a diagnostic in case imports with symbols used ' +
+             'in `deferredImports` can not be removed',
+         () => {
+           env.write('deferred-deps.ts', `
+              import {Component} from '@angular/core';
+
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-a',
+                template: 'DeferredCmpA contents',
+              })
+              export class DeferredCmpA {
+              }
+
+              @Component({
+                standalone: true,
+                selector: 'deferred-cmp-b',
+                template: 'DeferredCmpB contents',
+              })
+              export class DeferredCmpB {
+              }
+
+              export function utilityFn() {}
+            `);
+
+           env.write('test.ts', `
+              import {Component} from '@angular/core';
+
+              // This import can not be removed, since it'd contain
+              // 'utilityFn' symbol once we remove 'DeferredCmpA' and
+              // 'DeferredCmpB' and generate a dynamic import for it.
+              // In this situation compiler produces a diagnostic to
+              // indicate that.
+              import {DeferredCmpA, DeferredCmpB, utilityFn} from './deferred-deps';
+
+              @Component({
+                standalone: true,
+                deferredImports: [DeferredCmpA],
+                template: \`
+                  @defer {
+                    <deferred-cmp-a />
+                  }
+                \`,
+              })
+              export class AppCmpA {
+                ngOnInit() {
+                  utilityFn();
+                }
+              }
+
+              @Component({
+                standalone: true,
+                deferredImports: [DeferredCmpB],
+                template: \`
+                  @defer {
+                    <deferred-cmp-b />
+                  }
+                \`,
+              })
+              export class AppCmpB {}
+
+              @Component({
+                standalone: true,
+                template: 'Component without any dependencies'
+              })
+              export class ComponentWithoutDeps {}
+            `);
+
+           const diags = env.driveDiagnostics();
+
+           // Expect 2 diagnostics: one for each component `AppCmpA` and `AppCmpB`,
+           // since both of them refer to symbols from an import declaration that
+           // can not be removed.
+           expect(diags.length).toBe(2);
+
+           for (let i = 0; i < 2; i++) {
+             const {code, messageText} = diags[i];
+             expect(code).toBe(ngErrorCode(ErrorCode.DEFERRED_DEPENDENCY_IMPORTED_EAGERLY));
+             expect(messageText)
+                 .toContain(
+                     'This import contains symbols that are used both inside and outside ' +
+                     'of the `@Component.deferredImports` fields in the file.');
+           }
+         });
+    });
+
+    describe('custom decorator', () => {
+      it('should produce diagnostic for each custom decorator', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+          import {customDecorator1, customDecorator2} from './some-where';
+
+          @customDecorator1('hello')
+          @Component({
+            template: ExternalString,
+          })
+          @customDecorator2
+          export class Main {
+          }
+          `);
+
+        const errors = env.driveDiagnostics();
+
+        expect(errors.length).toBe(2);
+
+        const text1 = ts.flattenDiagnosticMessageText(errors[0].messageText, '\n');
+        const text2 = ts.flattenDiagnosticMessageText(errors[1].messageText, '\n');
+
+        expect(errors[0].code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
+        expect(errors[1].code).toBe(ngErrorCode(ErrorCode.DECORATOR_UNEXPECTED));
+        expect(text1).toContain(
+            'In local compilation mode, Angular does not support custom decorators');
+        expect(text2).toContain(
+            'In local compilation mode, Angular does not support custom decorators');
+      });
     });
   });
 });

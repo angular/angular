@@ -14,7 +14,7 @@ import {ActivatedRoute} from '@angular/router';
 import {map} from 'rxjs/operators';
 
 @Component({
-  selector: 'adev-docs',
+  selector: 'docs-docs',
   standalone: true,
   imports: [CommonModule, DocViewer],
   styleUrls: ['./docs.component.scss'],

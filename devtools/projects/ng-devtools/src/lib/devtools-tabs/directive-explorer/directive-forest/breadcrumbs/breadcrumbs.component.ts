@@ -6,16 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, ViewChild,} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
 import {FlatNode} from '../component-data-source';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {MatCard} from '@angular/material/card';
 
 @Component({
   selector: 'ng-breadcrumbs',
   templateUrl: './breadcrumbs.component.html',
   styleUrls: ['./breadcrumbs.component.scss'],
+  standalone: true,
+  imports: [MatCard, MatIcon, MatButton],
 })
 export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   @Input({required: true}) parents!: FlatNode[];
@@ -31,8 +47,9 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   updateScrollButtonVisibility$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.updateScrollButtonVisibility$.pipe(debounceTime(100))
-        .subscribe(() => this.updateScrollButtonVisibility());
+    this.updateScrollButtonVisibility$
+      .pipe(debounceTime(100))
+      .subscribe(() => this.updateScrollButtonVisibility());
   }
 
   ngAfterViewInit(): void {

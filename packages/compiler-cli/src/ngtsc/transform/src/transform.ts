@@ -9,7 +9,7 @@
 import {ConstantPool} from '@angular/compiler';
 import ts from 'typescript';
 
-import {DefaultImportTracker, ImportRewriter} from '../../imports';
+import {DefaultImportTracker, ImportRewriter, LocalCompilationExtraImportsTracker} from '../../imports';
 import {getDefaultImportDeclaration} from '../../imports/src/default';
 import {PerfPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
@@ -35,7 +35,9 @@ interface FileOverviewMeta {
 
 export function ivyTransformFactory(
     compilation: TraitCompiler, reflector: ReflectionHost, importRewriter: ImportRewriter,
-    defaultImportTracker: DefaultImportTracker, perf: PerfRecorder, isCore: boolean,
+    defaultImportTracker: DefaultImportTracker,
+    localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|null,
+    perf: PerfRecorder, isCore: boolean,
     isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   const recordWrappedNode = createRecorderFn(defaultImportTracker);
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
@@ -43,8 +45,8 @@ export function ivyTransformFactory(
       return perf.inPhase(
           PerfPhase.Compile,
           () => transformIvySourceFile(
-              compilation, context, reflector, importRewriter, file, isCore,
-              isClosureCompilerEnabled, recordWrappedNode));
+              compilation, context, reflector, importRewriter, localCompilationExtraImportsTracker,
+              file, isCore, isClosureCompilerEnabled, recordWrappedNode));
     };
   };
 }
@@ -279,8 +281,9 @@ class IvyTransformationVisitor extends Visitor {
  */
 function transformIvySourceFile(
     compilation: TraitCompiler, context: ts.TransformationContext, reflector: ReflectionHost,
-    importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
-    isClosureCompilerEnabled: boolean,
+    importRewriter: ImportRewriter,
+    localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|null,
+    file: ts.SourceFile, isCore: boolean, isClosureCompilerEnabled: boolean,
     recordWrappedNode: RecordWrappedNodeFn<ts.Expression>): ts.SourceFile {
   const constantPool = new ConstantPool(isClosureCompilerEnabled);
   const importManager = new ImportManager(importRewriter);
@@ -321,8 +324,15 @@ function transformIvySourceFile(
   // result of adding extra imports and constant pool statements.
   const fileOverviewMeta = isClosureCompilerEnabled ? getFileOverviewComment(sf.statements) : null;
 
+  // Add extra imports.
+  if (localCompilationExtraImportsTracker !== null) {
+    for (const moduleName of localCompilationExtraImportsTracker.getImportsForFile(sf)) {
+      importManager.generateSideEffectImport(moduleName);
+    }
+  }
+
   // Add new imports for this file.
-  sf = addImports(importManager, sf, constants);
+  sf = addImports(context.factory, importManager, sf, constants);
 
   if (fileOverviewMeta !== null) {
     setFileOverviewComment(sf, fileOverviewMeta);

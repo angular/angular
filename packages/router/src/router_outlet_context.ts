@@ -11,18 +11,17 @@ import {ComponentRef, EnvironmentInjector, Injectable} from '@angular/core';
 import {RouterOutletContract} from './directives/router_outlet';
 import {ActivatedRoute} from './router_state';
 
-
 /**
  * Store contextual information about a `RouterOutlet`
  *
  * @publicApi
  */
 export class OutletContext {
-  outlet: RouterOutletContract|null = null;
-  route: ActivatedRoute|null = null;
-  injector: EnvironmentInjector|null = null;
+  outlet: RouterOutletContract | null = null;
+  route: ActivatedRoute | null = null;
+  injector: EnvironmentInjector | null = null;
   children = new ChildrenOutletContexts();
-  attachRef: ComponentRef<any>|null = null;
+  attachRef: ComponentRef<any> | null = null;
 }
 
 /**
@@ -80,7 +79,7 @@ export class ChildrenOutletContexts {
     return context;
   }
 
-  getContext(childName: string): OutletContext|null {
+  getContext(childName: string): OutletContext | null {
     return this.contexts.get(childName) || null;
   }
 }

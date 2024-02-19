@@ -9,6 +9,7 @@ import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
 import {setupFrameworkInjectorProfiler} from '../debug/framework_injector_profiler';
 import {setProfiler} from '../profiler';
+import {isSignal} from '../reactivity/api';
 
 import {applyChanges} from './change_detection_utils';
 import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
@@ -33,6 +34,32 @@ import {getDependenciesFromInjectable, getInjectorMetadata, getInjectorProviders
  * */
 export const GLOBAL_PUBLISH_EXPANDO_KEY = 'ng';
 
+const globalUtilsFunctions = {
+  /**
+   * Warning: functions that start with `ɵ` are considered *INTERNAL* and should not be relied upon
+   * in application's code. The contract of those functions might be changed in any release and/or a
+   * function can be removed completely.
+   */
+  'ɵgetDependenciesFromInjectable': getDependenciesFromInjectable,
+  'ɵgetInjectorProviders': getInjectorProviders,
+  'ɵgetInjectorResolutionPath': getInjectorResolutionPath,
+  'ɵgetInjectorMetadata': getInjectorMetadata,
+  'ɵsetProfiler': setProfiler,
+
+  'getDirectiveMetadata': getDirectiveMetadata,
+  'getComponent': getComponent,
+  'getContext': getContext,
+  'getListeners': getListeners,
+  'getOwningComponent': getOwningComponent,
+  'getHostElement': getHostElement,
+  'getInjector': getInjector,
+  'getRootComponents': getRootComponents,
+  'getDirectives': getDirectives,
+  'applyChanges': applyChanges,
+  'isSignal': isSignal,
+};
+type GlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
+
 let _published = false;
 /**
  * Publishes a collection of default debug tools onto`window.ng`.
@@ -45,51 +72,34 @@ export function publishDefaultGlobalUtils() {
     _published = true;
 
     setupFrameworkInjectorProfiler();
-    publishGlobalUtil('ɵgetDependenciesFromInjectable', getDependenciesFromInjectable);
-    publishGlobalUtil('ɵgetInjectorProviders', getInjectorProviders);
-    publishGlobalUtil('ɵgetInjectorResolutionPath', getInjectorResolutionPath);
-    publishGlobalUtil('ɵgetInjectorMetadata', getInjectorMetadata);
-    /**
-     * Warning: this function is *INTERNAL* and should not be relied upon in application's code.
-     * The contract of the function might be changed in any release and/or the function can be
-     * removed completely.
-     */
-    publishGlobalUtil('ɵsetProfiler', setProfiler);
-    publishGlobalUtil('getDirectiveMetadata', getDirectiveMetadata);
-    publishGlobalUtil('getComponent', getComponent);
-    publishGlobalUtil('getContext', getContext);
-    publishGlobalUtil('getListeners', getListeners);
-    publishGlobalUtil('getOwningComponent', getOwningComponent);
-    publishGlobalUtil('getHostElement', getHostElement);
-    publishGlobalUtil('getInjector', getInjector);
-    publishGlobalUtil('getRootComponents', getRootComponents);
-    publishGlobalUtil('getDirectives', getDirectives);
-    publishGlobalUtil('applyChanges', applyChanges);
+    for (const [methodName, method] of Object.entries(globalUtilsFunctions)) {
+      publishGlobalUtil(methodName as GlobalUtilsFunctions, method);
+    }
   }
 }
 
-export declare type GlobalDevModeContainer = {
-  [GLOBAL_PUBLISH_EXPANDO_KEY]: {[fnName: string]: Function};
+/**
+ * Default debug tools available under `window.ng`.
+ */
+export type GlobalDevModeUtils = {
+  [GLOBAL_PUBLISH_EXPANDO_KEY]: typeof globalUtilsFunctions;
 };
 
 /**
  * Publishes the given function to `window.ng` so that it can be
  * used from the browser console when an application is not in production.
  */
-export function publishGlobalUtil(name: string, fn: Function): void {
+export function publishGlobalUtil<K extends GlobalUtilsFunctions>(
+    name: K, fn: typeof globalUtilsFunctions[K]): void {
   if (typeof COMPILED === 'undefined' || !COMPILED) {
     // Note: we can't export `ng` when using closure enhanced optimization as:
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
     // - we can't declare a closure extern as the namespace `ng` is already used within Google
     //   for typings for AngularJS (via `goog.provide('ng....')`).
-    const w = global as any as GlobalDevModeContainer;
+    const w = global as GlobalDevModeUtils;
     ngDevMode && assertDefined(fn, 'function not defined');
-    if (w) {
-      let container = w[GLOBAL_PUBLISH_EXPANDO_KEY];
-      if (!container) {
-        container = w[GLOBAL_PUBLISH_EXPANDO_KEY] = {};
-      }
-      container[name] = fn;
-    }
+
+    w[GLOBAL_PUBLISH_EXPANDO_KEY] ??= {} as any;
+    w[GLOBAL_PUBLISH_EXPANDO_KEY][name] = fn;
   }
 }

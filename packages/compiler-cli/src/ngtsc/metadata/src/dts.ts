@@ -135,6 +135,7 @@ export class DtsMetadataReader implements MetadataReader {
       // Imports are tracked in metadata only for template type-checking purposes,
       // so standalone components from .d.ts files don't have any.
       imports: null,
+      deferredImports: null,
       // The same goes for schemas.
       schemas: null,
       decorator: null,
@@ -143,6 +144,7 @@ export class DtsMetadataReader implements MetadataReader {
       // `preserveWhitespaces` isn't encoded in the .d.ts and is only
       // used to increase the accuracy of a diagnostic.
       preserveWhitespaces: false,
+      isExplicitlyDeferred: false,
     };
   }
 
@@ -178,6 +180,7 @@ export class DtsMetadataReader implements MetadataReader {
       nameExpr: null,
       isStandalone,
       decorator: null,
+      isExplicitlyDeferred: false,
     };
   }
 }

@@ -36,8 +36,8 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   }
 
   // if there is an embedded editor in view, apply column width
-  &:has(.adev-tutorial-editor) {
-    .adev-tutorial-content {
+  &:has(.docs-tutorial-editor) {
+    .docs-tutorial-content {
       width: $column-width;
 
       @include mq.for-tablet-landscape-down {
@@ -50,7 +50,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   // if tutorial nav exists, size editor to fit vertically within viewport on mobile
   @include mq.for-tablet-landscape-down {
     &:has(.adev-tutorial-nav-container) {
-      .adev-tutorial-editor {
+      .docs-tutorial-editor {
         height: calc(100vh - 200px);
       }
     }
@@ -58,7 +58,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
 
   @include mq.for-phone-only {
     &:has(.adev-tutorial-nav-container) {
-      .adev-tutorial-editor {
+      .docs-tutorial-editor {
         // account for reveal answer button height when on smaller screens
         height: calc(100vh - 200px);
       }
@@ -66,7 +66,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   }
 }
 
-.adev-tutorial-content {
+.docs-tutorial-content {
   max-width: var(--page-width);
   min-width: 300px;
   width: 100%;
@@ -127,7 +127,7 @@ $column-width: calc(50% - #{$resizer-width} - var(--layout-padding));
   }
 }
 
-.adev-tutorial-editor {
+.docs-tutorial-editor {
   position: sticky;
   top: 0;
   width: 100%;

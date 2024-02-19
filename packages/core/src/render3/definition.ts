@@ -18,10 +18,78 @@ import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
 
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {TAttributes, TConstantsOrFactory} from './interfaces/node';
+import type {ComponentDef, ComponentDefFeature, ComponentTemplate, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import { InputFlags } from './interfaces/input_flags';
+import type {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
+
+/**
+ * Map of inputs for a given directive/component.
+ *
+ * Given:
+ * ```
+ * class MyComponent {
+ *   @Input()
+ *   publicInput1: string;
+ *
+ *   @Input('publicInput2')
+ *   declaredInput2: string;
+ *
+ *   @Input({transform: (value: boolean) => value ? 1 : 0})
+ *   transformedInput3: number;
+ *
+ *   signalInput = input(3);
+ * }
+ * ```
+ *
+ * is described as:
+ * ```
+ * {
+ *   publicInput1: 'publicInput1',
+ *   declaredInput2: [InputFlags.None, 'declaredInput2', 'publicInput2'],
+ *   transformedInput3: [
+ *     InputFlags.None,
+ *     'transformedInput3',
+ *     'transformedInput3',
+ *     (value: boolean) => value ? 1 : 0
+ *   ],
+ *   signalInput: [InputFlags.SignalBased, "signalInput"],
+ * }
+ * ```
+ *
+ * Which the minifier may translate to:
+ * ```
+ * {
+ *   minifiedPublicInput1: 'publicInput1',
+ *   minifiedDeclaredInput2: [InputFlags.None, 'publicInput2', 'declaredInput2'],
+ *   minifiedTransformedInput3: [
+ *     InputFlags.None,
+ *     'transformedInput3',
+ *     'transformedInput3',
+ *     (value: boolean) => value ? 1 : 0
+ *   ],
+ *   minifiedSignalInput: [InputFlags.SignalBased, "signalInput"],
+ * }
+ * ```
+ *
+ * This allows the render to re-construct the minified, public, and declared names
+ * of properties.
+ *
+ * NOTE:
+ *  - Because declared and public name are usually same we only generate the array
+ *    `['declared', 'public']` format when they differ, or there is a transform.
+ *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
+ *    inconsistent behavior in that it uses declared names rather than minified or public. 
+ */
+type DirectiveInputs<T> = {
+  [P in keyof T]?:
+      // Basic case. Mapping minified name to public name.
+  string|
+  // Complex input when there are flags, or differing public name and declared name, or there
+  // is a transform. Such inputs are not as common, so the array form is only generated then.
+  [flags: InputFlags, publicName: string, declaredName?: string, transform?: InputTransformFunction]
+};
 
 interface DirectiveDefinition<T> {
   /**
@@ -34,61 +102,8 @@ interface DirectiveDefinition<T> {
 
   /**
    * A map of input names.
-   *
-   * The format is in: `{[actualPropertyName: string]:(string|[string, string, Function])}`.
-   *
-   * Given:
-   * ```
-   * class MyComponent {
-   *   @Input()
-   *   publicInput1: string;
-   *
-   *   @Input('publicInput2')
-   *   declaredInput2: string;
-   *
-   *   @Input({transform: (value: boolean) => value ? 1 : 0})
-   *   transformedInput3: number;
-   * }
-   * ```
-   *
-   * is described as:
-   * ```
-   * {
-   *   publicInput1: 'publicInput1',
-   *   declaredInput2: ['declaredInput2', 'publicInput2'],
-   *   transformedInput3: [
-   *     'transformedInput3',
-   *     'transformedInput3',
-   *     (value: boolean) => value ? 1 : 0
-   *   ]
-   * }
-   * ```
-   *
-   * Which the minifier may translate to:
-   * ```
-   * {
-   *   minifiedPublicInput1: 'publicInput1',
-   *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
-   *   minifiedTransformedInput3: [
-   *     'transformedInput3',
-   *     'transformedInput3',
-   *     (value: boolean) => value ? 1 : 0
-   *   ]
-   * }
-   * ```
-   *
-   * This allows the render to re-construct the minified, public, and declared names
-   * of properties.
-   *
-   * NOTE:
-   *  - Because declared and public name are usually same we only generate the array
-   *    `['declared', 'public']` format when they differ.
-   *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
-   *    inconsistent behavior in that it uses declared names rather than minified or public. For
-   *    this reason `NgOnChanges` will be deprecated and removed in future version and this
-   *    API will be simplified to be consistent with `output`.
    */
-  inputs?: {[P in keyof T]?: string|[string, string, InputTransformFunction?]};
+  inputs?: DirectiveInputs<T>;
 
   /**
    * A map of output names.
@@ -310,7 +325,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: ComponentDefinition<
     (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
     const baseDef = getNgDirectiveDef(componentDefinition as DirectiveDefinition<T>);
-    const def: Mutable<ComponentDef<unknown>, keyof ComponentDef<unknown>> = {
+    const def: Mutable<ComponentDef<T>, keyof ComponentDef<T>> = {
       ...baseDef,
       decls: componentDefinition.decls,
       vars: componentDefinition.vars,
@@ -394,9 +409,14 @@ export function ɵɵdefineNgModule<T>(def: {
 }
 
 /**
- * Inverts an inputs or outputs lookup such that the keys, which were the
- * minified keys, are part of the values, and the values are parsed so that
- * the publicName of the property is the new key
+ * Converts binding objects from the `DirectiveDefinition` into more efficient
+ * lookup dictionaries that are optimized for the framework runtime.
+ *
+ * This function converts inputs or output directive information into new objects
+ * where the public name conveniently maps to the minified internal field name.
+ *
+ * For inputs, the input flags are additionally persisted into the new data structure,
+ * so that those can be quickly retrieved when needed.
  *
  * e.g. for
  *
@@ -407,6 +427,8 @@ export function ɵɵdefineNgModule<T>(def: {
  *
  *   @Input('publicName2')
  *   declaredPropName2: number;
+ *
+ *   inputSignal = input(3);
  * }
  * ```
  *
@@ -416,6 +438,7 @@ export function ɵɵdefineNgModule<T>(def: {
  * {
  *   propName1: 'propName1',
  *   declaredPropName2: ['publicName2', 'declaredPropName2'],
+ *   inputSignal: [InputFlags.SignalBased, 'inputSignal'],
  * }
  * ```
  *
@@ -425,45 +448,69 @@ export function ɵɵdefineNgModule<T>(def: {
  * {
  *   minifiedPropName1: 'propName1',
  *   minifiedPropName2: ['publicName2', 'declaredPropName2'],
+ *   minifiedInputSignal: [InputFlags.SignalBased, 'inputSignal'],
  * }
  * ```
  *
- * becomes: (public name => minifiedName)
+ * becomes: (public name => minifiedName + isSignal if needed)
  *
  * ```
  * {
  *  'propName1': 'minifiedPropName1',
  *  'publicName2': 'minifiedPropName2',
+ *  'inputSignal': ['minifiedInputSignal', InputFlags.SignalBased],
  * }
  * ```
  *
- * Optionally the function can take `secondary` which will result in: (public name => declared name)
+ * Optionally the function can take `declaredInputs` which will result
+ * in: (public name => declared name)
  *
  * ```
  * {
  *  'propName1': 'propName1',
  *  'publicName2': 'declaredPropName2',
+ *  'inputSignal': 'inputSignal',
  * }
  * ```
  *
 
  */
-function invertObject<T>(
-    obj?: {[P in keyof T]?: string|[string, string, ...unknown[]]},
-    secondary?: Record<string, string>): {[P in keyof T]: string} {
+function parseAndConvertBindingsForDefinition<T>(obj: DirectiveDefinition<T>['outputs']|
+                                                 undefined): Record<keyof T, string>;
+function parseAndConvertBindingsForDefinition<T>(
+    obj: DirectiveInputs<T>|undefined, declaredInputs: Record<string, string>):
+    Record<keyof T, string|[minifiedName: string, flags: InputFlags]>;
+
+function parseAndConvertBindingsForDefinition<T>(
+    obj: undefined|DirectiveInputs<T>|DirectiveDefinition<T>['outputs'],
+    declaredInputs?: Record<string, string>):
+    Record<keyof T, string|[minifiedName: string, flags: InputFlags]> {
   if (obj == null) return EMPTY_OBJ as any;
   const newLookup: any = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
-      let publicName: string|[string, string, ...unknown[]] = obj[minifiedKey]!;
-      let declaredName = publicName;
-      if (Array.isArray(publicName)) {
-        declaredName = publicName[1];
-        publicName = publicName[0];
+      const value = obj[minifiedKey]!;
+      let publicName: string;
+      let declaredName: string;
+      let inputFlags = InputFlags.None;
+
+      if (Array.isArray(value)) {
+        inputFlags = value[0];
+        publicName = value[1];
+        declaredName = value[2] ?? publicName;  // declared name might not be set to save bytes.
+      } else {
+        publicName = value;
+        declaredName = value;
       }
-      newLookup[publicName] = minifiedKey;
-      if (secondary) {
-        (secondary[publicName] = declaredName as string);
+
+      // For inputs, capture the declared name, or if some flags are set.
+      if (declaredInputs) {
+        // Perf note: An array is only allocated for the input if there are flags.
+        newLookup[publicName] =
+            inputFlags !== InputFlags.None ? [minifiedKey, inputFlags] : minifiedKey;
+        declaredInputs[publicName] = declaredName as string;
+      } else {
+        newLookup[publicName] = minifiedKey;
       }
     }
   }
@@ -579,7 +626,7 @@ export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleD
 }
 
 function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
-    Mutable<DirectiveDef<unknown>, keyof DirectiveDef<unknown>> {
+    Mutable<DirectiveDef<T>, keyof DirectiveDef<T>> {
   const declaredInputs: Record<string, string> = {};
 
   return {
@@ -590,7 +637,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
     hostVars: directiveDefinition.hostVars || 0,
     hostAttrs: directiveDefinition.hostAttrs || null,
     contentQueries: directiveDefinition.contentQueries || null,
-    declaredInputs,
+    declaredInputs: declaredInputs,
     inputTransforms: null,
     inputConfig: directiveDefinition.inputs || EMPTY_OBJ,
     exportAs: directiveDefinition.exportAs || null,
@@ -602,14 +649,14 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>):
     setInput: null,
     findHostDirectiveDefs: null,
     hostDirectives: null,
-    inputs: invertObject(directiveDefinition.inputs, declaredInputs),
-    outputs: invertObject(directiveDefinition.outputs),
+    inputs: parseAndConvertBindingsForDefinition(directiveDefinition.inputs, declaredInputs),
+    outputs: parseAndConvertBindingsForDefinition(directiveDefinition.outputs),
     debugInfo: null,
   };
 }
 
-function initFeatures(definition:|Mutable<DirectiveDef<unknown>, keyof DirectiveDef<unknown>>|
-                      Mutable<ComponentDef<unknown>, keyof ComponentDef<unknown>>): void {
+function initFeatures<T>(definition:|Mutable<DirectiveDef<T>, keyof DirectiveDef<T>>|
+                         Mutable<ComponentDef<T>, keyof ComponentDef<T>>): void {
   definition.features?.forEach((fn) => fn(definition));
 }
 
@@ -641,7 +688,7 @@ export const GENERATED_COMP_IDS = new Map<string, Type<unknown>>();
  * A method can returns a component ID from the component definition using a variant of DJB2 hash
  * algorithm.
  */
-function getComponentId(componentDef: ComponentDef<unknown>): string {
+function getComponentId<T>(componentDef: ComponentDef<T>): string {
   let hash = 0;
 
   // We cannot rely solely on the component selector as the same selector can be used in different

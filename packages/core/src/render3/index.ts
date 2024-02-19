@@ -91,6 +91,15 @@ export {
   ɵɵpropertyInterpolate8,
   ɵɵpropertyInterpolateV,
 
+  ɵɵcontentQuery,
+  ɵɵcontentQuerySignal,
+
+  ɵɵloadQuery,
+  ɵɵqueryRefresh,
+  ɵɵqueryAdvance,
+  ɵɵviewQuery,
+  ɵɵviewQuerySignal,
+
   ɵɵreference,
 
   ɵɵrepeater,
@@ -155,6 +164,11 @@ export {
   ɵɵtextInterpolate7,
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
+
+  ɵɵtwoWayProperty,
+  ɵɵtwoWayBindingSet,
+  ɵɵtwoWayListener,
+
   ɵgetUnknownElementStrictMode,
   ɵsetUnknownElementStrictMode,
   ɵgetUnknownPropertyStrictMode,
@@ -171,7 +185,7 @@ export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵ
 export {RenderFlags} from './interfaces/definition';
 export {
   AttributeMarker
-} from './interfaces/node';
+} from './interfaces/attribute_marker';
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 export {
   setClassMetadata,
@@ -198,11 +212,6 @@ export {
   ɵɵpureFunction8,
   ɵɵpureFunctionV,
 } from './pure_function';
-export {
-  ɵɵcontentQuery,
-  ɵɵloadQuery,
-  ɵɵqueryRefresh,
-  ɵɵviewQuery} from './query';
 export {
   ɵɵdisableBindings,
 

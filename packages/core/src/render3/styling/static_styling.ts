@@ -8,7 +8,8 @@
 
 import {concatStringsWithSpace} from '../../util/stringify';
 import {assertFirstCreatePass} from '../assert';
-import {AttributeMarker, TAttributes, TNode} from '../interfaces/node';
+import { AttributeMarker } from '../interfaces/attribute_marker';
+import {TAttributes, TNode} from '../interfaces/node';
 import {getTView} from '../state';
 
 /**

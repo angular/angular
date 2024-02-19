@@ -57,13 +57,13 @@ import {reify} from './phases/reify';
 import {removeEmptyBindings} from './phases/remove_empty_bindings';
 import {removeI18nContexts} from './phases/remove_i18n_contexts';
 import {removeUnusedI18nAttributesOps} from './phases/remove_unused_i18n_attrs';
-import {generateRepeaterDerivedVars} from './phases/repeater_derived_vars';
 import {resolveContexts} from './phases/resolve_contexts';
 import {resolveDollarEvent} from './phases/resolve_dollar_event';
 import {resolveI18nElementPlaceholders} from './phases/resolve_i18n_element_placeholders';
 import {resolveI18nExpressionPlaceholders} from './phases/resolve_i18n_expression_placeholders';
 import {resolveNames} from './phases/resolve_names';
 import {resolveSanitizers} from './phases/resolve_sanitizers';
+import {transformTwoWayBindingSet} from './phases/transform_two_way_binding_set';
 import {saveAndRestoreView} from './phases/save_restore_view';
 import {allocateSlots} from './phases/slot_allocation';
 import {specializeStyleBindings} from './phases/style_binding_specialization';
@@ -116,10 +116,10 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: saveAndRestoreView},
   {kind: Kind.Both, fn: deleteAnyCasts},
   {kind: Kind.Both, fn: resolveDollarEvent},
-  {kind: Kind.Tmpl, fn: generateRepeaterDerivedVars},
   {kind: Kind.Tmpl, fn: generateTrackVariables},
   {kind: Kind.Both, fn: resolveNames},
   {kind: Kind.Tmpl, fn: resolveDeferTargetNames},
+  {kind: Kind.Tmpl, fn: transformTwoWayBindingSet},
   {kind: Kind.Tmpl, fn: optimizeTrackFns},
   {kind: Kind.Both, fn: resolveContexts},
   {kind: Kind.Both, fn: resolveSanitizers},
@@ -128,7 +128,6 @@ const phases: Phase[] = [
   {kind: Kind.Both, fn: expandSafeReads},
   {kind: Kind.Both, fn: generateTemporaryVariables},
   {kind: Kind.Tmpl, fn: allocateSlots},
-  {kind: Kind.Tmpl, fn: createDeferDepsFns},
   {kind: Kind.Tmpl, fn: resolveI18nElementPlaceholders},
   {kind: Kind.Tmpl, fn: resolveI18nExpressionPlaceholders},
   {kind: Kind.Tmpl, fn: extractI18nMessages},
@@ -141,6 +140,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateAdvance},
   {kind: Kind.Both, fn: optimizeVariables},
   {kind: Kind.Both, fn: nameFunctionsAndVariables},
+  {kind: Kind.Tmpl, fn: createDeferDepsFns},
   {kind: Kind.Tmpl, fn: mergeNextContextExpressions},
   {kind: Kind.Tmpl, fn: generateNgContainerOps},
   {kind: Kind.Tmpl, fn: collapseEmptyInstructions},

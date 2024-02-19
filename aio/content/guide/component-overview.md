@@ -142,6 +142,20 @@ To declare the styles within the component, add a `styles` property to the `@Com
 
 The `styles` property takes an array of strings that contain the CSS rule declarations.
 
+### Creating a component manually
+
+Our recommendation is to make components standalone using the `standalone: true` flag in the `@Component` decorator. 
+
+<code-example path="component-overview/src/app/component-overview/component-overview.component.4.ts" region="standalonedeclaration"></code-example>
+
+However, in the case of working with a `NgModule` based application, the component needs to be added to the proper `@NgModule`.
+To embed a component in a module, embed it in the array of declarations found in the `@NgModule` decorator.
+
+<code-example path="component-overview/src/app/component-overview/component-overview.module.ts" region="componentmoduledeclaration"></code-example>
+
+With these steps completed, your Angular component is ready for integration and use within your application. 
+
+
 ## Next steps
 
 *   For an architectural overview of components, see [Introduction to components and templates](guide/architecture-components)

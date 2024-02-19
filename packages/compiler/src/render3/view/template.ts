@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BuiltinFunctionCall, convertActionBinding, convertPropertyBinding, convertPureComponentScopeFunction, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
+import {BuiltinFunctionCall, convertActionBinding, convertAssignmentActionBinding, convertPropertyBinding, convertPureComponentScopeFunction, convertUpdateArguments, LocalResolver} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, Call, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
@@ -82,9 +82,13 @@ export function prepareEventListenerParameters(
   const implicitReceiverExpr = (scope === null || scope.bindingLevel === 0) ?
       o.variable(CONTEXT_NAME) :
       scope.getOrCreateSharedContextVar(0);
-  const bindingStatements = convertActionBinding(
-      scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
-      EVENT_BINDING_SCOPE_GLOBALS);
+  const bindingStatements = eventAst.type === ParsedEventType.TwoWay ?
+      convertAssignmentActionBinding(
+          scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
+          EVENT_BINDING_SCOPE_GLOBALS) :
+      convertActionBinding(
+          scope, implicitReceiverExpr, handler, 'b', eventAst.handlerSpan, implicitReceiverAccesses,
+          EVENT_BINDING_SCOPE_GLOBALS);
   const statements = [];
   const variableDeclarations = scope?.variableDeclarations();
   const restoreViewStatement = scope?.restoreViewStatement();
@@ -248,6 +252,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private i18nUseExternalIds: boolean,
       private deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>,
       private elementLocations: Map<t.Element, {index: number, level: number}>,
+      private allDeferrableDepsFn: o.ReadVarExpr|null,
       private _constants: ComponentDefConsts = createComponentDefConsts()) {
     this._bindingScope = parentBindingScope.nestedScope(level);
 
@@ -712,7 +717,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     element.inputs.forEach(input => {
       const stylingInputWasSet = stylingBuilder.registerBoundInput(input);
       if (!stylingInputWasSet) {
-        if (input.type === BindingType.Property && input.i18n) {
+        if ((input.type === BindingType.Property || input.type === BindingType.TwoWay) &&
+            input.i18n) {
           boundI18nAttrs.push(input);
         } else {
           allOtherInputs.push(input);
@@ -775,7 +781,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (element.outputs.length > 0) {
         for (const outputAst of element.outputs) {
           this.creationInstruction(
-              outputAst.sourceSpan, R3.listener,
+              outputAst.sourceSpan,
+              outputAst.type === ParsedEventType.TwoWay ? R3.twoWayListener : R3.listener,
               this.prepareListenerParameter(element.name, outputAst, elementIndex));
         }
       }
@@ -802,7 +809,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // special value to symbolize that there is no RHS to this binding
     // TODO (matsko): revisit this once FW-959 is approached
     const emptyValueBindInstruction = o.literal(undefined);
-    const propertyBindings: Omit<Instruction, 'reference'>[] = [];
+    const propertyBindings: Instruction[] = [];
     const attributeBindings: Omit<Instruction, 'reference'>[] = [];
 
     // Generate element input bindings
@@ -824,6 +831,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
         propertyBindings.push({
           span: input.sourceSpan,
+          reference: R3.property,
           paramsOrFn: getBindingFunctionParams(
               () => hasValue ? this.convertPropertyBinding(value) : emptyValueBindInstruction,
               prepareSyntheticPropertyName(input.name))
@@ -864,7 +872,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           }
           this.allocateBindingSlots(value);
 
-          if (inputType === BindingType.Property) {
+          // Note: we don't separate two-way property bindings and regular ones,
+          // because their assignment order needs to be maintained.
+          if (inputType === BindingType.Property || inputType === BindingType.TwoWay) {
             if (value instanceof Interpolation) {
               // prop="{{value}}" and friends
               this.interpolatedUpdateInstruction(
@@ -875,6 +885,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               // Collect all the properties so that we can chain into a single function at the end.
               propertyBindings.push({
                 span: input.sourceSpan,
+                reference: inputType === BindingType.TwoWay ? R3.twoWayProperty : R3.property,
                 paramsOrFn: getBindingFunctionParams(
                     () => this.convertPropertyBinding(value), attrName, params)
               });
@@ -910,7 +921,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     for (const propertyBinding of propertyBindings) {
       this.updateInstructionWithAdvance(
-          elementIndex, propertyBinding.span, R3.property, propertyBinding.paramsOrFn);
+          elementIndex, propertyBinding.span, propertyBinding.reference,
+          propertyBinding.paramsOrFn);
     }
 
     for (const attributeBinding of attributeBindings) {
@@ -952,13 +964,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     const contextName = `${this.contextName}${contextNameSuffix}_${index}`;
-    const name = `${contextName}_Template`;
+    // Note: For the unique name, we don't include an unique suffix, unless really needed.
+    // This keeps the generated output more clean as most of the time, we don't expect conflicts.
+    const name =
+        this.constantPool.uniqueName(`${contextName}_Template`, /** alwaysIncludeSuffix */ false);
 
     // Create the template function
     const visitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n, index, name,
         this._namespace, this.fileBasedI18nSuffix, this.i18nUseExternalIds, this.deferBlocks,
-        this.elementLocations, this._constants);
+        this.elementLocations, this.allDeferrableDepsFn, this._constants);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -1046,7 +1061,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Generate listeners for directive output
       for (const outputAst of template.outputs) {
         this.creationInstruction(
-            outputAst.sourceSpan, R3.listener,
+            outputAst.sourceSpan,
+            outputAst.type === ParsedEventType.TwoWay ? R3.twoWayListener : R3.listener,
             this.prepareListenerParameter('ng_template', outputAst, templateIndex));
       }
     }
@@ -1249,6 +1265,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitSwitchBlock(block: t.SwitchBlock): void {
+    if (block.cases.length === 0) {
+      return;
+    }
+
     // We have to process the block in two steps: once here and again in the update instruction
     // callback in order to generate the correct expressions when pipes or pure functions are used.
     const caseData = block.cases.map(currentCase => {
@@ -1350,7 +1370,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         deferred.sourceSpan, R3.defer, trimTrailingNulls([
           o.literal(deferredIndex),
           o.literal(primaryTemplateIndex),
-          this.createDeferredDepsFunction(depsFnName, metadata),
+          this.allDeferrableDepsFn ?? this.createDeferredDepsFunction(depsFnName, metadata),
           o.literal(loadingIndex),
           o.literal(placeholderIndex),
           o.literal(errorIndex),
@@ -1383,7 +1403,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (deferredDep.isDeferrable) {
         // Callback function, e.g. `m () => m.MyCmp;`.
         const innerFn = o.arrowFn(
-            [new o.FnParam('m', o.DYNAMIC_TYPE)], o.variable('m').prop(deferredDep.symbolName));
+            [new o.FnParam('m', o.DYNAMIC_TYPE)],
+            // Default imports are always accessed through the `default` property.
+            o.variable('m').prop(deferredDep.isDefaultImport ? 'default' : deferredDep.symbolName));
 
         // Dynamic import, e.g. `import('./a').then(...)`.
         const importExpr =
@@ -1863,7 +1885,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         throw new Error('advance instruction can only go forwards');
       }
 
-      this.instructionFn(this._updateCodeFns, span, R3.advance, [o.literal(delta)]);
+      this.instructionFn(
+          this._updateCodeFns, span, R3.advance, delta > 1 ? [o.literal(delta)] : []);
       this._currentIndex = nodeIndex;
     }
   }

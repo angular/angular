@@ -63,7 +63,7 @@ export class Location implements OnDestroy {
   /** @internal */
   _urlChangeListeners: ((url: string, state: unknown) => void)[] = [];
   /** @internal */
-  _urlChangeSubscription: SubscriptionLike|null = null;
+  _urlChangeSubscription: SubscriptionLike | null = null;
 
   constructor(locationStrategy: LocationStrategy) {
     this._locationStrategy = locationStrategy;
@@ -166,7 +166,9 @@ export class Location implements OnDestroy {
   go(path: string, query: string = '', state: any = null): void {
     this._locationStrategy.pushState(state, '', path, query);
     this._notifyUrlChangeListeners(
-        this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
+      this.prepareExternalUrl(path + normalizeQueryParams(query)),
+      state,
+    );
   }
 
   /**
@@ -180,7 +182,9 @@ export class Location implements OnDestroy {
   replaceState(path: string, query: string = '', state: any = null): void {
     this._locationStrategy.replaceState(state, '', path, query);
     this._notifyUrlChangeListeners(
-        this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
+      this.prepareExternalUrl(path + normalizeQueryParams(query)),
+      state,
+    );
   }
 
   /**
@@ -223,11 +227,9 @@ export class Location implements OnDestroy {
   onUrlChange(fn: (url: string, state: unknown) => void): VoidFunction {
     this._urlChangeListeners.push(fn);
 
-    if (!this._urlChangeSubscription) {
-      this._urlChangeSubscription = this.subscribe(v => {
-        this._notifyUrlChangeListeners(v.url, v.state);
-      });
-    }
+    this._urlChangeSubscription ??= this.subscribe((v) => {
+      this._notifyUrlChangeListeners(v.url, v.state);
+    });
 
     return () => {
       const fnIndex = this._urlChangeListeners.indexOf(fn);
@@ -242,7 +244,7 @@ export class Location implements OnDestroy {
 
   /** @internal */
   _notifyUrlChangeListeners(url: string = '', state: unknown) {
-    this._urlChangeListeners.forEach(fn => fn(url, state));
+    this._urlChangeListeners.forEach((fn) => fn(url, state));
   }
 
   /**
@@ -259,8 +261,10 @@ export class Location implements OnDestroy {
    * @returns Subscribed events.
    */
   subscribe(
-      onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
-      onReturn?: (() => void)|null): SubscriptionLike {
+    onNext: (value: PopStateEvent) => void,
+    onThrow?: ((exception: any) => void) | null,
+    onReturn?: (() => void) | null,
+  ): SubscriptionLike {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
@@ -321,7 +325,7 @@ function _stripOrigin(baseHref: string): string {
   // syntactically incorrect code after Closure Compiler minification.
   // This was likely caused by a bug in Closure Compiler, but
   // for now, the check is rewritten to use `new RegExp` instead.
-  const isAbsoluteUrl = (new RegExp('^(https?:)?//')).test(baseHref);
+  const isAbsoluteUrl = new RegExp('^(https?:)?//').test(baseHref);
   if (isAbsoluteUrl) {
     const [, pathname] = baseHref.split(/\/\/[^\/]+/);
     return pathname;

@@ -7,11 +7,11 @@ function MyComponent_div_0_span_3_Template(rf, ctx) {
 	if (rf & 2) {
 	  const $item$ = $i0$.ɵɵnextContext().$implicit;
 	  const $foo$ = $i0$.ɵɵreference(2);
-	  $r3$.ɵɵadvance(1);
+	  $r3$.ɵɵadvance();
 	  $i0$.ɵɵtextInterpolate2(" ", $foo$, " - ", $item$, " ");
 	}
   }
-  
+
   function MyComponent_div_0_Template(rf, ctx) {
 	if (rf & 1) {
 	  $i0$.ɵɵelementStart(0, "div");
@@ -25,7 +25,7 @@ function MyComponent_div_0_span_3_Template(rf, ctx) {
 	  $i0$.ɵɵproperty("ngIf", $app$.showing);
 	}
   }
-  
+
   // ...
   consts: [["foo", ""], [__AttributeMarker.Template__, "ngFor", "ngForOf"], [__AttributeMarker.Template__, "ngIf"]],
   template:function MyComponent_Template(rf, ctx){
@@ -36,4 +36,3 @@ function MyComponent_div_0_span_3_Template(rf, ctx) {
 	  $i0$.ɵɵproperty("ngForOf", ctx.items);
 	}
   }
-  

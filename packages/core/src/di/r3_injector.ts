@@ -23,7 +23,7 @@ import {resolveForwardRef} from './forward_ref';
 import {ENVIRONMENT_INITIALIZER} from './initializer_token';
 import {setInjectImplementation} from './inject_switch';
 import {InjectionToken} from './injection_token';
-import {Injector} from './injector';
+import type {Injector} from './injector';
 import {catchInjectorError, convertToBitFlags, injectArgs, NG_TEMP_TOKEN_PATH, setCurrentInjector, THROW_IF_NOT_FOUND, ɵɵinject} from './injector_compatibility';
 import {INJECTOR} from './injector_token';
 import {getInheritedInjectableDef, getInjectableDef, InjectorType, ɵɵInjectableDeclaration} from './interface/defs';
@@ -408,9 +408,11 @@ export class R3Injector extends EnvironmentInjector {
       token = provider;
       multiRecord.multi!.push(provider);
     } else {
-      const existing = this.records.get(token);
-      if (ngDevMode && existing && existing.multi !== undefined) {
-        throwMixedMultiProviderError();
+      if (ngDevMode) {
+        const existing = this.records.get(token);
+        if (existing && existing.multi !== undefined) {
+          throwMixedMultiProviderError();
+        }
       }
     }
     this.records.set(token, record);
@@ -487,10 +489,11 @@ function getUndecoratedInjectableFactory(token: Function) {
   // If the token has parameters then it has dependencies that we cannot resolve implicitly.
   const paramLength = token.length;
   if (paramLength > 0) {
-    const args: string[] = newArray(paramLength, '?');
     throw new RuntimeError(
         RuntimeErrorCode.INVALID_INJECTION_TOKEN,
-        ngDevMode && `Can't resolve all parameters for ${stringify(token)}: (${args.join(', ')}).`);
+        ngDevMode &&
+            `Can't resolve all parameters for ${stringify(token)}: (${
+                newArray(paramLength, '?').join(', ')}).`);
   }
 
   // The constructor function appears to have no parameters.

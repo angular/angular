@@ -4,7 +4,7 @@
   width: 100%;
 
   // While editor is loading, display an svg of the editor
-  .adev-dark-mode & {
+  .docs-dark-mode & {
     .adev-editor-scroll-container img {
       content: url('../../../assets/images/editor-dark-horizontal.svg');
       @include mq.for-tablet-down {
@@ -12,7 +12,7 @@
       }
     }
   }
-  .adev-light-mode & {
+  .docs-light-mode & {
     .adev-editor-scroll-container img {
       content: url('../../../assets/images/editor-light-horizontal.svg');
       @include mq.for-tablet-down {
@@ -142,7 +142,8 @@
     display: inline-block;
     padding: 7px;
     opacity: 0;
-    transition: opacity 0.5s linear;
+    visibility: hidden;
+    transition: opacity 0.5s linear, visibility 0.5s linear;
 
     button {
       font-size: 1rem;
@@ -307,6 +308,7 @@
     .adev-cta,
     .adev-arrow {
       opacity: 1;
+      visibility: visible;
     }
   }
 

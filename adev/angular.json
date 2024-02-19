@@ -26,8 +26,6 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
-            // TODO(josephperrott): enabled prerender
-            "prerender": false,
             "polyfills": ["src/polyfills.ts", "zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -89,6 +87,7 @@
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "include": ["src/app"],
+            "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["@angular/docs/styles/global-styles.scss"],

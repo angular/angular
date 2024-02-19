@@ -6,33 +6,55 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {Component, ElementRef, inject, NgZone, ViewChild} from '@angular/core';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {MatIconModule} from '@angular/material/icon';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatTooltipModule} from '@angular/material/tooltip';
-import {ComponentExplorerView, DevToolsNode, Events, MessageBus, SerializedInjector, SerializedProviderRecord} from 'protocol';
+import {MatButton} from '@angular/material/button';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatExpansionPanel} from '@angular/material/expansion';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {
+  ComponentExplorerView,
+  DevToolsNode,
+  Events,
+  MessageBus,
+  SerializedInjector,
+  SerializedProviderRecord,
+} from 'protocol';
 
-import {AngularSplitModule} from '../../vendor/angular-split/public_api';
-import {InjectorTreeD3Node, InjectorTreeVisualizer} from '../dependency-injection/injector-tree-visualizer';
+import {SplitAreaDirective, SplitComponent} from '../../vendor/angular-split/public_api';
+import {
+  InjectorTreeD3Node,
+  InjectorTreeVisualizer,
+} from '../dependency-injection/injector-tree-visualizer';
 import {ResolutionPathComponent} from '../dependency-injection/resolution-path.component';
 
 import {InjectorProvidersComponent} from './injector-providers.component';
-import {filterOutAngularInjectors, filterOutInjectorsWithNoProviders, generateEdgeIdsFromNodeIds, getInjectorIdsToRootFromNode, grabInjectorPathsFromDirectiveForest, splitInjectorPathsIntoElementAndEnvironmentPaths, transformInjectorResolutionPathsIntoTree} from './injector-tree-fns';
-
+import {
+  filterOutAngularInjectors,
+  filterOutInjectorsWithNoProviders,
+  generateEdgeIdsFromNodeIds,
+  getInjectorIdsToRootFromNode,
+  grabInjectorPathsFromDirectiveForest,
+  splitInjectorPathsIntoElementAndEnvironmentPaths,
+  transformInjectorResolutionPathsIntoTree,
+} from './injector-tree-fns';
 
 @Component({
   standalone: true,
   selector: 'ng-injector-tree',
   imports: [
-    MatButtonModule, AngularSplitModule, ResolutionPathComponent, MatTabsModule, MatExpansionModule,
-    InjectorProvidersComponent, MatIconModule, MatTooltipModule, MatCheckboxModule
+    MatButton,
+    SplitComponent,
+    SplitAreaDirective,
+    ResolutionPathComponent,
+    MatExpansionPanel,
+    InjectorProvidersComponent,
+    MatIcon,
+    MatTooltip,
+    MatCheckbox,
   ],
   templateUrl: `./injector-tree.component.html`,
-  styleUrls: ['./injector-tree.component.scss']
+  styleUrls: ['./injector-tree.component.scss'],
 })
 export class InjectorTreeComponent {
   @ViewChild('svgContainer', {static: false}) private svgContainer!: ElementRef;
@@ -45,7 +67,7 @@ export class InjectorTreeComponent {
   zone = inject(NgZone);
 
   firstRender = true;
-  selectedNode: InjectorTreeD3Node|null = null;
+  selectedNode: InjectorTreeD3Node | null = null;
   rawDirectiveForest: DevToolsNode[] = [];
   injectorTreeGraph!: InjectorTreeVisualizer;
   elementInjectorTreeGraph!: InjectorTreeVisualizer;
@@ -71,13 +93,13 @@ export class InjectorTreeComponent {
     });
 
     this._messageBus.on(
-        'latestInjectorProviders',
-        (_: SerializedInjector, providers: SerializedProviderRecord[]) => {
-          this.providers = Array.from(providers).sort((a, b) => {
-            return a.token.localeCompare(b.token);
-          });
+      'latestInjectorProviders',
+      (_: SerializedInjector, providers: SerializedProviderRecord[]) => {
+        this.providers = Array.from(providers).sort((a, b) => {
+          return a.token.localeCompare(b.token);
         });
-
+      },
+    );
 
     this._messageBus.on('highlightComponent', (id: number) => {
       const injectorNode = this.getNodeByComponentId(this.elementInjectorTreeGraph, id);
@@ -139,7 +161,7 @@ export class InjectorTreeComponent {
       // In Angular we have two types of injectors, element injectors and environment injectors.
       // We want to split the resolution paths into two groups, one for each type of injector.
       const {elementPaths, environmentPaths, startingElementToEnvironmentPath} =
-          splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths);
+        splitInjectorPathsIntoElementAndEnvironmentPaths(injectorPaths);
       this.elementToEnvironmentPath = startingElementToEnvironmentPath;
 
       // Here for our 2 groups of resolution paths, we want to convert them into a tree structure.
@@ -216,7 +238,7 @@ export class InjectorTreeComponent {
     this.snapToRoot(this.elementInjectorTreeGraph);
   }
 
-  getNodeByComponentId(graph: InjectorTreeVisualizer, id: number): InjectorTreeD3Node|null {
+  getNodeByComponentId(graph: InjectorTreeVisualizer, id: number): InjectorTreeD3Node | null {
     const graphElement = graph.graphElement;
     const element = graphElement.querySelector(`.node[data-component-id="${id}"]`);
     if (element === null) {
@@ -237,8 +259,10 @@ export class InjectorTreeComponent {
     }
 
     this.injectorTreeGraph?.cleanup?.();
-    this.injectorTreeGraph =
-        new InjectorTreeVisualizer(this.svgContainer.nativeElement, this.g.nativeElement);
+    this.injectorTreeGraph = new InjectorTreeVisualizer(
+      this.svgContainer.nativeElement,
+      this.g.nativeElement,
+    );
   }
 
   setUpElementInjectorVisualizer(): void {
@@ -248,8 +272,10 @@ export class InjectorTreeComponent {
 
     this.elementInjectorTreeGraph?.cleanup?.();
     this.elementInjectorTreeGraph = new InjectorTreeVisualizer(
-        this.elementSvgContainer.nativeElement, this.elementG.nativeElement,
-        {nodeSeparation: () => 1});
+      this.elementSvgContainer.nativeElement,
+      this.elementG.nativeElement,
+      {nodeSeparation: () => 1},
+    );
   }
 
   highlightPathFromSelectedInjector(): void {
@@ -266,21 +292,22 @@ export class InjectorTreeComponent {
 
     if (this.selectedNode.data.injector.type === 'element') {
       const idsToRoot = getInjectorIdsToRootFromNode(this.selectedNode);
-      idsToRoot.forEach(id => this.highlightNodeById(this.elementG, id));
+      idsToRoot.forEach((id) => this.highlightNodeById(this.elementG, id));
       const edgeIds = generateEdgeIdsFromNodeIds(idsToRoot);
-      edgeIds.forEach((edgeId => this.highlightEdgeById(this.elementG, edgeId)));
+      edgeIds.forEach((edgeId) => this.highlightEdgeById(this.elementG, edgeId));
 
       const environmentPath =
-          this.elementToEnvironmentPath.get(this.selectedNode.data.injector.id) ?? [];
-      environmentPath.forEach(injector => this.highlightNodeById(this.g, injector.id));
-      const environmentEdgeIds =
-          generateEdgeIdsFromNodeIds(environmentPath.map(injector => injector.id));
-      environmentEdgeIds.forEach(edgeId => this.highlightEdgeById(this.g, edgeId));
+        this.elementToEnvironmentPath.get(this.selectedNode.data.injector.id) ?? [];
+      environmentPath.forEach((injector) => this.highlightNodeById(this.g, injector.id));
+      const environmentEdgeIds = generateEdgeIdsFromNodeIds(
+        environmentPath.map((injector) => injector.id),
+      );
+      environmentEdgeIds.forEach((edgeId) => this.highlightEdgeById(this.g, edgeId));
     } else {
       const idsToRoot = getInjectorIdsToRootFromNode(this.selectedNode);
-      idsToRoot.forEach(id => this.highlightNodeById(this.g, id));
+      idsToRoot.forEach((id) => this.highlightNodeById(this.g, id));
       const edgeIds = generateEdgeIdsFromNodeIds(idsToRoot);
-      edgeIds.forEach(edgeId => this.highlightEdgeById(this.g, edgeId));
+      edgeIds.forEach((edgeId) => this.highlightEdgeById(this.g, edgeId));
     }
   }
 
@@ -331,10 +358,12 @@ export class InjectorTreeComponent {
       return;
     }
     const injector = this.selectedNode.data.injector;
-    this._messageBus.emit('getInjectorProviders', [{
-                            id: injector.id,
-                            type: injector.type,
-                            name: injector.name,
-                          }]);
+    this._messageBus.emit('getInjectorProviders', [
+      {
+        id: injector.id,
+        type: injector.type,
+        name: injector.name,
+      },
+    ]);
   }
 }

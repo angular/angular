@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithSource, Binary, BindingPipe, Conditional, Interpolation, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate} from '@angular/compiler';
-import {AST, LiteralArray, LiteralMap} from '@angular/compiler/src/compiler';
+import {ASTWithSource, Binary, BindingPipe, Conditional, Interpolation, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstForLoopBlock, TmplAstNode, TmplAstReference, TmplAstTemplate} from '@angular/compiler';
+import {AST, LiteralArray, LiteralMap, TmplAstIfBlock} from '@angular/compiler/src/compiler';
 import ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
@@ -337,6 +337,172 @@ runInEachFileSystem(() => {
               .toContain('NgForOfContext');
           expect(program.getTypeChecker().typeToString(indexSymbol.tsType!)).toEqual('number');
           expect((indexSymbol).declaration).toEqual(templateNode.variables[1]);
+        }
+      });
+
+      describe('control flow @if block', () => {
+        let templateTypeChecker: TemplateTypeChecker;
+        let cmp: ClassDeclaration<ts.ClassDeclaration>;
+        let ifBlockNode: TmplAstIfBlock;
+        let program: ts.Program;
+
+        beforeEach(() => {
+          const fileName = absoluteFrom('/main.ts');
+          const templateString = `
+            @if (user; as userAlias) {
+              {{userAlias.name}} {{userAlias.streetNumber}}
+            }`;
+          const testValues = setup([
+            {
+              fileName,
+              templates: {'Cmp': templateString},
+              source: `
+            export interface User {
+              name: string;
+              streetNumber: number;
+            }
+            export class Cmp { user?: User; }
+            `,
+            },
+          ]);
+          templateTypeChecker = testValues.templateTypeChecker;
+          program = testValues.program;
+          const sf = getSourceFileOrError(testValues.program, fileName);
+          cmp = getClass(sf, 'Cmp');
+          ifBlockNode = templateTypeChecker.getTemplate(cmp)![0] as unknown as TmplAstIfBlock;
+        });
+
+
+        it('should retrieve a symbol for the loop expression', () => {
+          const symbol =
+              templateTypeChecker.getSymbolOfNode(ifBlockNode.branches[0].expression!, cmp)!;
+          assertExpressionSymbol(symbol);
+          expectUserSymbol(symbol);
+        });
+
+        it('should retrieve a symbol for the track expression', () => {
+          const symbol =
+              templateTypeChecker.getSymbolOfNode(ifBlockNode.branches[0].expressionAlias!, cmp)!;
+          assertVariableSymbol(symbol);
+          expectUserSymbol(symbol);
+        });
+
+        function expectUserSymbol(userSymbol: VariableSymbol|ExpressionSymbol) {
+          expect(userSymbol.tsSymbol!.escapedName).toContain('user');
+          expect(program.getTypeChecker().typeToString(userSymbol.tsType!))
+              .toEqual('User | undefined');
+        }
+      });
+
+      describe('control flow @for block', () => {
+        let templateTypeChecker: TemplateTypeChecker;
+        let cmp: ClassDeclaration<ts.ClassDeclaration>;
+        let forLoopNode: TmplAstForLoopBlock;
+        let program: ts.Program;
+
+        beforeEach(() => {
+          const fileName = absoluteFrom('/main.ts');
+          const dirFile = absoluteFrom('/dir.ts');
+          const templateString = `
+            @for (user of users; let i = $index; track user) {
+              <div dir>
+                {{user.name}} {{user.streetNumber}}
+                <div [tabIndex]="i"></div>
+              </div>
+            }`;
+          const testValues = setup([
+            {
+              fileName,
+              templates: {'Cmp': templateString},
+              source: `
+            export interface User {
+              name: string;
+              streetNumber: number;
+            }
+            export class Cmp { users: User[]; }
+            `,
+            },
+            {
+              fileName: dirFile,
+              source: `export class TestDir {name:string}`,
+              templates: {},
+            },
+          ]);
+          templateTypeChecker = testValues.templateTypeChecker;
+          program = testValues.program;
+          const sf = getSourceFileOrError(testValues.program, fileName);
+          cmp = getClass(sf, 'Cmp');
+          forLoopNode = templateTypeChecker.getTemplate(cmp)![0] as unknown as TmplAstForLoopBlock;
+        });
+
+
+        it('should retrieve a symbol for the loop expression', () => {
+          const symbol = templateTypeChecker.getSymbolOfNode(forLoopNode.expression.ast, cmp)!;
+          assertExpressionSymbol(symbol);
+          expect(program.getTypeChecker().symbolToString(symbol.tsSymbol!)).toEqual('users');
+          expect(program.getTypeChecker().typeToString(symbol.tsType)).toEqual('Array<User>');
+        });
+
+        it('should retrieve a symbol for the track expression', () => {
+          const userSymbol = templateTypeChecker.getSymbolOfNode(forLoopNode.trackBy.ast, cmp)!;
+          expectUserSymbol(userSymbol);
+        });
+
+        it('should retrieve a symbol for property reads of the loop variable', () => {
+          const boundText =
+              (forLoopNode.children[0] as TmplAstElement).children[0] as TmplAstBoundText;
+          const interpolation = (boundText.value as ASTWithSource).ast as Interpolation;
+          const namePropRead = interpolation.expressions[0] as PropertyRead;
+          const streetNumberPropRead = interpolation.expressions[1] as PropertyRead;
+
+          const nameSymbol = templateTypeChecker.getSymbolOfNode(namePropRead, cmp)!;
+          assertExpressionSymbol(nameSymbol);
+          expect(program.getTypeChecker().symbolToString(nameSymbol.tsSymbol!)).toEqual('name');
+          expect(program.getTypeChecker().typeToString(nameSymbol.tsType)).toEqual('string');
+
+          const streetSymbol = templateTypeChecker.getSymbolOfNode(streetNumberPropRead, cmp)!;
+          assertExpressionSymbol(streetSymbol);
+          expect(program.getTypeChecker().symbolToString(streetSymbol.tsSymbol!))
+              .toEqual('streetNumber');
+          expect(program.getTypeChecker().typeToString(streetSymbol.tsType)).toEqual('number');
+
+          const userSymbol = templateTypeChecker.getSymbolOfNode(namePropRead.receiver, cmp)!;
+          expectUserSymbol(userSymbol);
+        });
+
+        it('finds symbols for loop variable', () => {
+          const userVar = forLoopNode.item;
+          const userSymbol = templateTypeChecker.getSymbolOfNode(userVar, cmp)!;
+          expectUserSymbol(userSymbol);
+        });
+
+        it('finds symbols for $index variable', () => {
+          const iVar = forLoopNode.contextVariables.$index;
+          const iSymbol = templateTypeChecker.getSymbolOfNode(iVar, cmp)!;
+          expectIndexSymbol(iSymbol);
+        });
+
+        it('finds symbol when using the index in the body', () => {
+          const innerElementNodes =
+              onlyAstElements((forLoopNode.children[0] as TmplAstElement).children);
+          const indexSymbol =
+              templateTypeChecker.getSymbolOfNode(innerElementNodes[0].inputs[0].value, cmp)!;
+          expectIndexSymbol(indexSymbol);
+        });
+
+        function expectUserSymbol(userSymbol: Symbol) {
+          assertVariableSymbol(userSymbol);
+          expect(userSymbol.tsSymbol!.escapedName).toContain('User');
+          expect(program.getTypeChecker().typeToString(userSymbol.tsType!)).toEqual('User');
+          expect((userSymbol).declaration).toEqual(forLoopNode.item);
+        }
+
+        function expectIndexSymbol(indexSymbol: Symbol) {
+          assertVariableSymbol(indexSymbol);
+          expect(indexSymbol.tsSymbol)
+              .toBeNull();  // implicit variable doesn't have a TS definition location
+          expect(program.getTypeChecker().typeToString(indexSymbol.tsType!)).toEqual('number');
+          expect((indexSymbol).declaration).toEqual(forLoopNode.contextVariables.$index);
         }
       });
     });
@@ -946,6 +1112,69 @@ runInEachFileSystem(() => {
           {
             fileName: dirFile,
             source: `export class TestDir {inputA!: string; inputB!: string}`,
+            templates: {},
+          }
+        ]);
+        const sf = getSourceFileOrError(program, fileName);
+        const cmp = getClass(sf, 'Cmp');
+
+        const nodes = templateTypeChecker.getTemplate(cmp)!;
+
+        const inputAbinding = (nodes[0] as TmplAstElement).inputs[0];
+        const aSymbol = templateTypeChecker.getSymbolOfNode(inputAbinding, cmp)!;
+        assertInputBindingSymbol(aSymbol);
+        expect((aSymbol.bindings[0].tsSymbol!.declarations![0] as ts.PropertyDeclaration)
+                   .name.getText())
+            .toEqual('inputA');
+
+        const inputBbinding = (nodes[0] as TmplAstElement).inputs[1];
+        const bSymbol = templateTypeChecker.getSymbolOfNode(inputBbinding, cmp)!;
+        assertInputBindingSymbol(bSymbol);
+        expect((bSymbol.bindings[0].tsSymbol!.declarations![0] as ts.PropertyDeclaration)
+                   .name.getText())
+            .toEqual('inputB');
+      });
+
+      it('can retrieve a symbol for a signal-input binding', () => {
+        const fileName = absoluteFrom('/main.ts');
+        const dirFile = absoluteFrom('/dir.ts');
+        const templateString = `<div dir [inputA]="'my input A'" [aliased]="'my inputB'"></div>`;
+        const {program, templateTypeChecker} = setup([
+          {
+            fileName,
+            templates: {'Cmp': templateString},
+            declarations: [{
+              name: 'TestDir',
+              selector: '[dir]',
+              file: dirFile,
+              type: 'directive',
+              inputs: {
+                inputA: {
+                  bindingPropertyName: 'inputA',
+                  isSignal: true,
+                  classPropertyName: 'inputA',
+                  required: false,
+                  transform: null,
+                },
+                inputB: {
+                  bindingPropertyName: 'aliased',
+                  isSignal: true,
+                  classPropertyName: 'inputB',
+                  required: true,
+                  transform: null,
+                }
+              },
+            }]
+          },
+          {
+            fileName: dirFile,
+            source: `
+              import {InputSignal} from '@angular/core';
+
+              export class TestDir {
+                inputA: InputSignal<string> = null!;
+                inputB: InputSignal<string> = null!;
+              }`,
             templates: {},
           }
         ]);

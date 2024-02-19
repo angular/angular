@@ -9,7 +9,7 @@
 import {retrieveHydrationInfo} from '../../hydration/utils';
 import {assertEqual} from '../../util/assert';
 import {RenderFlags} from '../interfaces/definition';
-import {CONTEXT, FLAGS, HOST, HYDRATION, INJECTOR, LView, LViewFlags, TVIEW, TView} from '../interfaces/view';
+import {CONTEXT, FLAGS, HOST, HYDRATION, INJECTOR, LView, LViewFlags, QUERIES, TVIEW, TView} from '../interfaces/view';
 import {enterView, leaveView} from '../state';
 import {getComponentLViewByIndex, isCreationMode} from '../util/view_utils';
 
@@ -94,6 +94,10 @@ export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
     if (tView.firstCreatePass) {
       tView.firstCreatePass = false;
     }
+
+    // Mark all queries active in this view as dirty. This is necessary for signal-based queries to
+    // have a clear marking point where we can read query results atomically (for a given view).
+    lView[QUERIES]?.finishViewCreation(tView);
 
     // We resolve content queries specifically marked as `static` in creation mode. Dynamic
     // content queries are resolved during change detection (i.e. update mode), after embedded

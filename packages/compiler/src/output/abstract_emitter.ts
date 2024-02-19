@@ -415,6 +415,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       case o.BinaryOperator.And:
         opStr = '&&';
         break;
+      case o.BinaryOperator.BitwiseOr:
+        opStr = '|';
+        break;
       case o.BinaryOperator.BitwiseAnd:
         opStr = '&';
         break;

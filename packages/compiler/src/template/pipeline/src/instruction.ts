@@ -112,6 +112,15 @@ export function listener(
       syntheticHost ? Identifiers.syntheticHostListener : Identifiers.listener, args, sourceSpan);
 }
 
+export function twoWayBindingSet(target: o.Expression, value: o.Expression): o.Expression {
+  return o.importExpr(Identifiers.twoWayBindingSet).callFn([target, value]);
+}
+
+export function twoWayListener(
+    name: string, handlerFn: o.Expression, sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return call(Identifiers.twoWayListener, [o.literal(name), handlerFn], sourceSpan);
+}
+
 export function pipe(slot: number, name: string): ir.CreateOp {
   return call(
       Identifiers.pipe,
@@ -135,12 +144,7 @@ export function namespaceMath(): ir.CreateOp {
 }
 
 export function advance(delta: number, sourceSpan: ParseSourceSpan): ir.UpdateOp {
-  return call(
-      Identifiers.advance,
-      [
-        o.literal(delta),
-      ],
-      sourceSpan);
+  return call(Identifiers.advance, delta > 1 ? [o.literal(delta)] : [], sourceSpan);
 }
 
 export function reference(slot: number): o.Expression {
@@ -330,11 +334,25 @@ export function property(
   return call(Identifiers.property, args, sourceSpan);
 }
 
-export function attribute(
-    name: string, expression: o.Expression, sanitizer: o.Expression|null): ir.UpdateOp {
+export function twoWayProperty(
+    name: string, expression: o.Expression, sanitizer: o.Expression|null,
+    sourceSpan: ParseSourceSpan): ir.UpdateOp {
   const args = [o.literal(name), expression];
   if (sanitizer !== null) {
     args.push(sanitizer);
+  }
+  return call(Identifiers.twoWayProperty, args, sourceSpan);
+}
+
+export function attribute(
+    name: string, expression: o.Expression, sanitizer: o.Expression|null,
+    namespace: string|null): ir.UpdateOp {
+  const args = [o.literal(name), expression];
+  if (sanitizer !== null || namespace !== null) {
+    args.push(sanitizer ?? o.literal(null));
+  }
+  if (namespace !== null) {
+    args.push(o.literal(namespace));
   }
   return call(Identifiers.attribute, args, null);
 }

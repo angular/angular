@@ -40,10 +40,19 @@ export function extractAttributes(job: CompilationJob): void {
             ir.OpList.insertBefore<ir.CreateOp>(
                 // Deliberaly null i18nMessage value
                 ir.createExtractedAttributeOp(
-                    op.target, bindingKind, op.name, /* expression */ null, /* i18nContext */ null,
+                    op.target, bindingKind, null, op.name, /* expression */ null,
+                    /* i18nContext */ null,
                     /* i18nMessage */ null, op.securityContext),
                 lookupElement(elements, op.target));
           }
+          break;
+        case ir.OpKind.TwoWayProperty:
+          ir.OpList.insertBefore<ir.CreateOp>(
+              ir.createExtractedAttributeOp(
+                  op.target, ir.BindingKind.TwoWayProperty, null, op.name, /* expression */ null,
+                  /* i18nContext */ null,
+                  /* i18nMessage */ null, op.securityContext),
+              lookupElement(elements, op.target));
           break;
         case ir.OpKind.StyleProp:
         case ir.OpKind.ClassProp:
@@ -56,7 +65,7 @@ export function extractAttributes(job: CompilationJob): void {
               op.expression instanceof ir.EmptyExpr) {
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.Property, op.name, /* expression */ null,
+                    op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
                     /* i18nContext */ null,
                     /* i18nMessage */ null, SecurityContext.STYLE),
                 lookupElement(elements, op.target));
@@ -65,7 +74,7 @@ export function extractAttributes(job: CompilationJob): void {
         case ir.OpKind.Listener:
           if (!op.isAnimationListener) {
             const extractedAttributeOp = ir.createExtractedAttributeOp(
-                op.target, ir.BindingKind.Property, op.name, /* expression */ null,
+                op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
                 /* i18nContext */ null,
                 /* i18nMessage */ null, SecurityContext.NONE);
             if (job.kind === CompilationJobKind.Host) {
@@ -81,6 +90,17 @@ export function extractAttributes(job: CompilationJob): void {
               ir.OpList.insertBefore<ir.CreateOp>(
                   extractedAttributeOp, lookupElement(elements, op.target));
             }
+          }
+          break;
+        case ir.OpKind.TwoWayListener:
+          // Two-way listeners aren't supported in host bindings.
+          if (job.kind !== CompilationJobKind.Host) {
+            const extractedAttributeOp = ir.createExtractedAttributeOp(
+                op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
+                /* i18nContext */ null,
+                /* i18nMessage */ null, SecurityContext.NONE);
+            ir.OpList.insertBefore<ir.CreateOp>(
+                extractedAttributeOp, lookupElement(elements, op.target));
           }
           break;
       }
@@ -122,7 +142,7 @@ function extractAttributeOp(
     const extractedAttributeOp = ir.createExtractedAttributeOp(
         op.target,
         op.isStructuralTemplateAttribute ? ir.BindingKind.Template : ir.BindingKind.Attribute,
-        op.name, op.expression, op.i18nContext, op.i18nMessage, op.securityContext);
+        op.namespace, op.name, op.expression, op.i18nContext, op.i18nMessage, op.securityContext);
     if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
       // matter.

@@ -17,7 +17,7 @@ import {DynamicValue, PartialEvaluator, traceDynamicValue} from '../../../partia
 import {ClassDeclaration, DeclarationNode, Decorator} from '../../../reflection';
 import {CompilationMode} from '../../../transform';
 import {TemplateSourceMapping} from '../../../typecheck/api';
-import {createValueHasWrongTypeError, isStringArray, ResourceLoader} from '../../common';
+import {createValueHasWrongTypeError, isStringArray, ResourceLoader, assertLocalCompilationUnresolvedConst} from '../../common';
 
 /**
  * The literal style url extracted from the decorator, along with metadata for diagnostics.
@@ -150,25 +150,14 @@ export function extractTemplate(
     } else {
       const resolvedTemplate = evaluator.evaluate(template.expression);
 
-      // In local compilation mode we use imported strings from another file as template as it
-      // cannot be resolved in single file mode. We warn the user here about the situation
-      // explicitly.
-      if (compilationMode === CompilationMode.LOCAL && resolvedTemplate instanceof DynamicValue &&
-          resolvedTemplate.isFromUnknownIdentifier()) {
-        const relatedInformation = traceDynamicValue(template.expression, resolvedTemplate);
-
-        const chain: ts.DiagnosticMessageChain = {
-          messageText: `Unknown identifier used as template string: ${
-              template.expression
-                  .getText()} (did you import this string from another file? This is not allowed in local compilation mode. Please either inline it or move it to a separate file and include it using 'templateUrl')`,
-          category: ts.DiagnosticCategory.Error,
-          code: 0,
-        };
-
-        throw new FatalDiagnosticError(
-            ErrorCode.LOCAL_COMPILATION_IMPORTED_TEMPLATE_STRING, template.expression, chain,
-            relatedInformation);
-      }
+      // The identifier used for @Component.template cannot be resolved in local compilation mode. An error specific to this situation is generated.
+      assertLocalCompilationUnresolvedConst(
+        compilationMode, resolvedTemplate, template.expression, 
+        'Unresolved identifier found for @Component.template field! ' + 
+        'Did you import this identifier from a file outside of the compilation unit? ' + 'This is not allowed when Angular compiler runs in local mode. ' +
+        'Possible solutions: 1) Move the declaration into a file within the ' +
+        'compilation unit, 2) Inline the template, 3) Move the template into ' +
+        'a separate .html file and include it using @Component.templateUrl');
 
       if (typeof resolvedTemplate !== 'string') {
         throw createValueHasWrongTypeError(

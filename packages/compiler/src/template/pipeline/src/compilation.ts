@@ -67,7 +67,8 @@ export class ComponentCompilationJob extends CompilationJob {
   constructor(
       componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode,
       readonly relativeContextFilePath: string, readonly i18nUseExternalIds: boolean,
-      readonly deferBlocksMeta: Map<t.DeferredBlock, R3DeferBlockMetadata>) {
+      readonly deferBlocksMeta: Map<t.DeferredBlock, R3DeferBlockMetadata>,
+      readonly allDeferrableDepsFn: o.ReadVarExpr|null) {
     super(componentName, pool, compatibility);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
@@ -178,7 +179,7 @@ export abstract class CompilationUnit {
   * ops(): Generator<ir.CreateOp|ir.UpdateOp> {
     for (const op of this.create) {
       yield op;
-      if (op.kind === ir.OpKind.Listener) {
+      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
         for (const listenerOp of op.handlerOps) {
           yield listenerOp;
         }

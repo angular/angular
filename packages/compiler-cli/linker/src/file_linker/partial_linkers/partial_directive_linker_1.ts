@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileDirectiveFromMetadata, ConstantPool, ForwardRefHandling, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareHostDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
+import {compileDirectiveFromMetadata, ConstantPool, ForwardRefHandling, LegacyInputPartialMapping, makeBindingParser, outputAst as o, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareHostDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
@@ -13,7 +13,7 @@ import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {LinkedDefinition, PartialLinker} from './partial_linker';
-import {extractForwardRef, wrapReference} from './util';
+import {extractForwardRef, SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER, wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
@@ -81,14 +81,39 @@ export function toR3DirectiveMeta<TExpression>(
  * Decodes the AST value for a single input to its representation as used in the metadata.
  */
 function toInputMapping<TExpression>(
-    value: AstValue<string|[string, string], TExpression>, key: string): R3InputMetadata {
+    value: AstValue<NonNullable<R3DeclareDirectiveMetadata['inputs']>[string], TExpression>,
+    key: string): R3InputMetadata {
+  if (value.isObject()) {
+    const obj = value.getObject();
+    const transformValue = obj.getValue('transformFunction');
+
+    return {
+      classPropertyName: obj.getString('classPropertyName'),
+      bindingPropertyName: obj.getString('publicName'),
+      isSignal: obj.getBoolean('isSignal'),
+      required: obj.getBoolean('isRequired'),
+      transformFunction: transformValue.isNull() ? null : transformValue.getOpaque(),
+    };
+  }
+
+  return parseLegacyInputPartialOutput(
+      key, value as AstValue<LegacyInputPartialMapping, TExpression>);
+}
+
+/**
+ * Parses the legacy partial output for inputs.
+ *
+ * More details, see: `legacyInputsPartialMetadata` in `partial/directive.ts`.
+ * TODO(legacy-partial-output-inputs): Remove function in v18.
+ */
+function parseLegacyInputPartialOutput<TExpression>(
+    key: string, value: AstValue<LegacyInputPartialMapping, TExpression>): R3InputMetadata {
   if (value.isString()) {
     return {
       bindingPropertyName: value.getString(),
       classPropertyName: key,
       required: false,
       transformFunction: null,
-      // TODO: Handle `isSignal` information for inputs.
       isSignal: false,
     };
   }
@@ -105,7 +130,6 @@ function toInputMapping<TExpression>(
     classPropertyName: values[1].getString(),
     transformFunction: values.length > 2 ? values[2].getOpaque() : null,
     required: false,
-    // TODO: Handle `isSignal` information for inputs.
     isSignal: false,
   };
 }
@@ -121,6 +145,7 @@ function toHostMetadata<TExpression>(metaObj: AstObject<R3DeclareDirectiveMetada
       listeners: {},
       properties: {},
       specialAttributes: {},
+      useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER,
     };
   }
 
@@ -145,6 +170,7 @@ function toHostMetadata<TExpression>(metaObj: AstObject<R3DeclareDirectiveMetada
         host.getObject('properties').toLiteral(value => value.getString()) :
         {},
     specialAttributes,
+    useTemplatePipeline: SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER,
   };
 }
 
@@ -169,6 +195,7 @@ function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TEx
         obj.has('emitDistinctChangesOnly') ? obj.getBoolean('emitDistinctChangesOnly') : true,
     read: obj.has('read') ? obj.getOpaque('read') : null,
     static: obj.has('static') ? obj.getBoolean('static') : false,
+    isSignal: obj.has('isSignal') ? obj.getBoolean('isSignal') : false,
   };
 }
 

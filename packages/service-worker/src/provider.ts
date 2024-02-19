@@ -7,7 +7,16 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, ApplicationRef, EnvironmentProviders, InjectionToken, Injector, makeEnvironmentProviders, NgZone, PLATFORM_ID,} from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationRef,
+  EnvironmentProviders,
+  InjectionToken,
+  Injector,
+  makeEnvironmentProviders,
+  NgZone,
+  PLATFORM_ID,
+} from '@angular/core';
 import {merge, Observable, of} from 'rxjs';
 import {delay, filter, take} from 'rxjs/operators';
 
@@ -15,14 +24,18 @@ import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
 
-export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
+export const SCRIPT = new InjectionToken<string>(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
 
 export function ngswAppInitializer(
-    injector: Injector, script: string, options: SwRegistrationOptions,
-    platformId: string): Function {
+  injector: Injector,
+  script: string,
+  options: SwRegistrationOptions,
+  platformId: string,
+): Function {
   return () => {
-    if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
-          options.enabled !== false)) {
+    if (
+      !(isPlatformBrowser(platformId) && 'serviceWorker' in navigator && options.enabled !== false)
+    ) {
       return;
     }
 
@@ -40,8 +53,9 @@ export function ngswAppInitializer(
     if (typeof options.registrationStrategy === 'function') {
       readyToRegister$ = options.registrationStrategy();
     } else {
-      const [strategy, ...args] =
-          (options.registrationStrategy || 'registerWhenStable:30000').split(':');
+      const [strategy, ...args] = (
+        options.registrationStrategy || 'registerWhenStable:30000'
+      ).split(':');
 
       switch (strategy) {
         case 'registerImmediately':
@@ -51,13 +65,15 @@ export function ngswAppInitializer(
           readyToRegister$ = delayWithTimeout(+args[0] || 0);
           break;
         case 'registerWhenStable':
-          readyToRegister$ = !args[0] ? whenStable(injector) :
-                                        merge(whenStable(injector), delayWithTimeout(+args[0]));
+          readyToRegister$ = !args[0]
+            ? whenStable(injector)
+            : merge(whenStable(injector), delayWithTimeout(+args[0]));
           break;
         default:
           // Unknown strategy.
           throw new Error(
-              `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`);
+            `Unknown ServiceWorker registration strategy: ${options.registrationStrategy}`,
+          );
       }
     }
 
@@ -66,11 +82,15 @@ export function ngswAppInitializer(
     // given that some registration strategies wait for the app to stabilize).
     // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
     const ngZone = injector.get(NgZone);
-    ngZone.runOutsideAngular(
-        () => readyToRegister$.pipe(take(1)).subscribe(
-            () =>
-                navigator.serviceWorker.register(script, {scope: options.scope})
-                    .catch(err => console.error('Service worker registration failed with:', err))));
+    ngZone.runOutsideAngular(() =>
+      readyToRegister$
+        .pipe(take(1))
+        .subscribe(() =>
+          navigator.serviceWorker
+            .register(script, {scope: options.scope})
+            .catch((err) => console.error('Service worker registration failed with:', err)),
+        ),
+    );
   };
 }
 
@@ -80,14 +100,16 @@ function delayWithTimeout(timeout: number): Observable<unknown> {
 
 function whenStable(injector: Injector): Observable<unknown> {
   const appRef = injector.get(ApplicationRef);
-  return appRef.isStable.pipe(filter(stable => stable));
+  return appRef.isStable.pipe(filter((stable) => stable));
 }
 
 export function ngswCommChannelFactory(
-    opts: SwRegistrationOptions, platformId: string): NgswCommChannel {
+  opts: SwRegistrationOptions,
+  platformId: string,
+): NgswCommChannel {
   return new NgswCommChannel(
-      isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
-                                                                undefined);
+    isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker : undefined,
+  );
 }
 
 /**
@@ -147,7 +169,7 @@ export abstract class SwRegistrationOptions {
    *
    * Default: 'registerWhenStable:30000'
    */
-  registrationStrategy?: string|(() => Observable<unknown>);
+  registrationStrategy?: string | (() => Observable<unknown>);
 }
 
 /**
@@ -168,7 +190,9 @@ export abstract class SwRegistrationOptions {
  * ```
  */
 export function provideServiceWorker(
-    script: string, options: SwRegistrationOptions = {}): EnvironmentProviders {
+  script: string,
+  options: SwRegistrationOptions = {},
+): EnvironmentProviders {
   return makeEnvironmentProviders([
     SwPush,
     SwUpdate,
@@ -177,7 +201,7 @@ export function provideServiceWorker(
     {
       provide: NgswCommChannel,
       useFactory: ngswCommChannelFactory,
-      deps: [SwRegistrationOptions, PLATFORM_ID]
+      deps: [SwRegistrationOptions, PLATFORM_ID],
     },
     {
       provide: APP_INITIALIZER,

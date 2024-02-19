@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {unwrapSignal} from '../utils';
+
 // Intentionally do not include all the prototype (Except for getters and setters)
 // because it contains inherited methods (hasOwnProperty, etc.). Also ignore symbols
 // because it is tricky to pass a path to a symbol.
@@ -16,12 +18,13 @@ export function getKeys(obj: {}): string[] {
   if (!obj) {
     return [];
   }
+  obj = unwrapSignal(obj);
   const properties = Object.getOwnPropertyNames(obj);
 
   const prototypeMembers = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(obj));
 
   const ignoreList = ['__proto__'];
-  const gettersAndSetters = Object.keys(prototypeMembers).filter(methodName => {
+  const gettersAndSetters = Object.keys(prototypeMembers).filter((methodName) => {
     if (ignoreList.includes(methodName)) {
       return false;
     }
@@ -39,6 +42,6 @@ export function getKeys(obj: {}): string[] {
  * @param propName The string representation of the target property name
  * @returns The Descriptor object of the property
  */
-export const getDescriptor = (instance: any, propName: string) =>
-    Object.getOwnPropertyDescriptor(instance, propName) ||
-    Object.getOwnPropertyDescriptor(Object.getPrototypeOf(instance), propName);
+export const getDescriptor = (instance: any, propName: string): PropertyDescriptor | undefined =>
+  Object.getOwnPropertyDescriptor(instance, propName) ||
+  Object.getOwnPropertyDescriptor(Object.getPrototypeOf(instance), propName);

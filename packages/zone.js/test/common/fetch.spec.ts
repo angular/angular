@@ -156,6 +156,39 @@ describe(
           });
         });
 
+        // https://github.com/angular/angular/issues/50327
+        it('Response.json() should be considered as macroTask', done => {
+          fetchZone.run(() => {
+            global['fetch']('/base/angular/packages/zone.js/test/assets/sample.json')
+                .then((response: any) => {
+                  const promise = response.json();
+                  // Ensure it's a `ZoneAwarePromise`.
+                  expect(promise).toBeInstanceOf(global.Promise);
+                  return promise;
+                })
+                .then(() => {
+                  expect(logs).toEqual([
+                    'scheduleTask:fetch:macroTask', 'scheduleTask:Promise.then:microTask',
+                    'invokeTask:Promise.then:microTask', 'invokeTask:fetch:macroTask',
+                    'scheduleTask:Promise.then:microTask', 'invokeTask:Promise.then:microTask',
+                    // Please refer to the issue link above. Previously, `Response` methods were not
+                    // patched by zone.js, and their return values were considered only as
+                    // microtasks (not macrotasks). The Angular zone stabilized prematurely,
+                    // occurring before the resolution of the `response.json()` promise due to the
+                    // falsy value of `zone.hasPendingMacrotasks`. We are now ensuring that
+                    // `Response` methods are treated as macrotasks, similar to the behavior of
+                    // `fetch`.
+                    'scheduleTask:Response.json:macroTask', 'scheduleTask:Promise.then:microTask',
+                    'invokeTask:Promise.then:microTask', 'invokeTask:Response.json:macroTask',
+                    'scheduleTask:Promise.then:microTask', 'invokeTask:Promise.then:microTask',
+                    'scheduleTask:Promise.then:microTask', 'invokeTask:Promise.then:microTask'
+                  ]);
+
+                  done();
+                });
+          });
+        });
+
         it('cancel fetch should invoke onCancelTask',
            ifEnvSupportsWithDone('AbortController', (done: DoneFn) => {
              if (isSafari()) {

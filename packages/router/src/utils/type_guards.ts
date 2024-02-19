@@ -9,7 +9,11 @@
 import {EmptyError} from 'rxjs';
 
 import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn} from '../models';
-import {NAVIGATION_CANCELING_ERROR, NavigationCancelingError, RedirectingNavigationCancelingError} from '../navigation_canceling_error';
+import {
+  NAVIGATION_CANCELING_ERROR,
+  NavigationCancelingError,
+  RedirectingNavigationCancelingError,
+} from '../navigation_canceling_error';
 import {isUrlTree} from '../url_tree';
 
 /**
@@ -50,16 +54,6 @@ export function isCanDeactivate<T>(guard: any): guard is {canDeactivate: CanDeac
 }
 export function isCanMatch(guard: any): guard is {canMatch: CanMatchFn} {
   return guard && isFunction<CanMatchFn>(guard.canMatch);
-}
-
-export function isRedirectingNavigationCancelingError(
-    error: unknown|
-    RedirectingNavigationCancelingError): error is RedirectingNavigationCancelingError {
-  return isNavigationCancelingError(error) && isUrlTree((error as any).url);
-}
-
-export function isNavigationCancelingError(error: unknown): error is NavigationCancelingError {
-  return error && (error as any)[NAVIGATION_CANCELING_ERROR];
 }
 
 export function isEmptyError(e: Error): e is EmptyError {

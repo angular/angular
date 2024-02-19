@@ -22,7 +22,8 @@ import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 /**
  * An operation usable on the update side of the IR.
  */
-export type UpdateOp = ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|AttributeOp|StylePropOp|
+export type UpdateOp =
+    ListEndOp<UpdateOp>|StatementOp<UpdateOp>|PropertyOp|TwoWayPropertyOp|AttributeOp|StylePropOp|
     ClassPropOp|StyleMapOp|ClassMapOp|InterpolateTextOp|AdvanceOp|VariableOp<UpdateOp>|BindingOp|
     HostPropertyOp|ConditionalOp|I18nExpressionOp|I18nApplyOp|RepeaterOp|DeferWhenOp;
 
@@ -240,6 +241,78 @@ export function createPropertyOp(
 }
 
 /**
+ * A logical operation representing the property binding side of a two-way binding in the update IR.
+ */
+export interface TwoWayPropertyOp extends Op<UpdateOp>, ConsumesVarsTrait,
+                                          DependsOnSlotContextOpTrait {
+  kind: OpKind.TwoWayProperty;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Name of the property.
+   */
+  name: string;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression;
+
+  /**
+   * The security context of the binding.
+   */
+  securityContext: SecurityContext|SecurityContext[];
+
+  /**
+   * The sanitizer for this property.
+   */
+  sanitizer: o.Expression|null;
+
+  isStructuralTemplateAttribute: boolean;
+
+  /**
+   * The kind of template targeted by the binding, or null if this binding does not target a
+   * template.
+   */
+  templateKind: TemplateKind|null;
+
+  i18nContext: XrefId|null;
+  i18nMessage: i18n.Message|null;
+
+  sourceSpan: ParseSourceSpan;
+}
+
+/**
+ * Create a `TwoWayPropertyOp`.
+ */
+export function createTwoWayPropertyOp(
+    target: XrefId, name: string, expression: o.Expression,
+    securityContext: SecurityContext|SecurityContext[], isStructuralTemplateAttribute: boolean,
+    templateKind: TemplateKind|null, i18nContext: XrefId|null, i18nMessage: i18n.Message|null,
+    sourceSpan: ParseSourceSpan): TwoWayPropertyOp {
+  return {
+    kind: OpKind.TwoWayProperty,
+    target,
+    name,
+    expression,
+    securityContext,
+    sanitizer: null,
+    isStructuralTemplateAttribute,
+    templateKind,
+    i18nContext,
+    i18nMessage,
+    sourceSpan,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
  * A logical operation representing binding to a style property in the update IR.
  */
 export interface StylePropOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSlotContextOpTrait {
@@ -407,6 +480,11 @@ export interface AttributeOp extends Op<UpdateOp> {
   target: XrefId;
 
   /**
+   * The namespace of the attribute (or null if none).
+   */
+  namespace: string|null;
+
+  /**
    * The name of the attribute.
    */
   name: string;
@@ -456,13 +534,14 @@ export interface AttributeOp extends Op<UpdateOp> {
  * Create an `AttributeOp`.
  */
 export function createAttributeOp(
-    target: XrefId, name: string, expression: o.Expression|Interpolation,
+    target: XrefId, namespace: string|null, name: string, expression: o.Expression|Interpolation,
     securityContext: SecurityContext|SecurityContext[], isTextAttribute: boolean,
     isStructuralTemplateAttribute: boolean, templateKind: TemplateKind|null,
     i18nMessage: i18n.Message|null, sourceSpan: ParseSourceSpan): AttributeOp {
   return {
     kind: OpKind.Attribute,
     target,
+    namespace,
     name,
     expression,
     securityContext,

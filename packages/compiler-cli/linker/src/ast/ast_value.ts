@@ -13,8 +13,11 @@ import {AstHost, Range} from './ast_host';
 
 /**
  * Represents only those types in `T` that are object types.
+ *
+ * Note: Excluding `Array` types as we consider object literals are "objects"
+ * in the AST.
  */
-type ObjectType<T> = Extract<T, object>;
+type ObjectType<T> = T extends Array<any>? never : T extends Record<string, any>? T : never;
 
 /**
  * Represents the value type of an object literal.
@@ -196,6 +199,9 @@ export class AstObject<T extends object, TExpression> {
  * main goal is to provide references to a documented type.
  */
 export class AstValue<T, TExpression> {
+  /** Type brand that ensures that the `T` type is respected for assignability. */
+  ɵtypeBrand: T = null!;
+
   constructor(readonly expression: TExpression, private host: AstHost<TExpression>) {}
 
   /**
@@ -267,6 +273,11 @@ export class AstValue<T, TExpression> {
    */
   isArray(): boolean {
     return this.host.isArrayLiteral(this.expression);
+  }
+
+  /** Whether the value is explicitly set to `null`. */
+  isNull(): boolean {
+    return this.host.isNull(this.expression);
   }
 
   /**

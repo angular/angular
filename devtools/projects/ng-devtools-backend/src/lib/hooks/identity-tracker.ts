@@ -12,7 +12,7 @@ import {buildDirectiveForest} from '../component-tree';
 import {ComponentInstanceType, ComponentTreeNode, DirectiveInstanceType} from '../interfaces';
 
 export declare interface Type<T> extends Function {
-  new(...args: any[]): T;
+  new (...args: any[]): T;
 }
 
 interface TreeNode {
@@ -22,7 +22,8 @@ interface TreeNode {
 }
 
 export type NodeArray = {
-  directive: any; isComponent: boolean;
+  directive: any;
+  isComponent: boolean;
 }[];
 
 export class IdentityTracker {
@@ -43,11 +44,11 @@ export class IdentityTracker {
     return IdentityTracker._instance;
   }
 
-  getDirectivePosition(dir: any): ElementPosition|undefined {
+  getDirectivePosition(dir: any): ElementPosition | undefined {
     return this._currentDirectivePosition.get(dir);
   }
 
-  getDirectiveId(dir: any): number|undefined {
+  getDirectiveId(dir: any): number | undefined {
     return this._currentDirectiveId.get(dir);
   }
 
@@ -56,7 +57,9 @@ export class IdentityTracker {
   }
 
   index(): {
-    newNodes: NodeArray; removedNodes: NodeArray; indexedForest: IndexedNode[];
+    newNodes: NodeArray;
+    removedNodes: NodeArray;
+    indexedForest: IndexedNode[];
     directiveForest: ComponentTreeNode[];
   } {
     const directiveForest = buildDirectiveForest();
@@ -78,8 +81,11 @@ export class IdentityTracker {
   }
 
   private _index(
-      node: IndexedNode, parent: TreeNode|null, newNodes: {directive: any; isComponent: boolean}[],
-      allNodes: Set<any>): void {
+    node: IndexedNode,
+    parent: TreeNode | null,
+    newNodes: {directive: any; isComponent: boolean}[],
+    allNodes: Set<any>,
+  ): void {
     if (node.component) {
       allNodes.add(node.component.instance);
       this.isComponent.set(node.component.instance, true);
@@ -113,7 +119,10 @@ export interface IndexedNode extends DevToolsNode<DirectiveInstanceType, Compone
 }
 
 const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
-    node: T, idx: number, parentPosition: number[] = []): IndexedNode => {
+  node: T,
+  idx: number,
+  parentPosition: number[] = [],
+): IndexedNode => {
   const position = parentPosition.concat([idx]);
   return {
     position,
@@ -122,8 +131,10 @@ const indexTree = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstan
     directives: node.directives.map((d) => ({position, ...d})),
     children: node.children.map((n, i) => indexTree(n, i, position)),
     nativeElement: node.nativeElement,
+    hydration: node.hydration,
   } as IndexedNode;
 };
 
 export const indexForest = <T extends DevToolsNode<DirectiveInstanceType, ComponentInstanceType>>(
-    forest: T[]): IndexedNode[] => forest.map((n, i) => indexTree(n, i));
+  forest: T[],
+): IndexedNode[] => forest.map((n, i) => indexTree(n, i));

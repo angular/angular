@@ -1428,6 +1428,48 @@ describe('standalone migration', () => {
       `));
      });
 
+  it('should not migrate `configureTestingModule` with a non-array expression in the `declarations` field',
+     async () => {
+       const initialContent = `
+          import {NgModule, Component} from '@angular/core';
+          import {TestBed} from '@angular/core/testing';
+          import {ButtonModule} from './button.module';
+          import {MatCardModule} from '@angular/material/card';
+
+          function setup(declarations: any[], imports: any[]) {
+            TestBed.configureTestingModule({
+              declarations: declarations,
+              imports,
+            });
+            return TestBed.createComponent(App);
+          }
+
+          describe('bootstrapping an app', () => {
+            it('should work', () => {
+              const fixture = setup([App, Hello], [ButtonModule, MatCardModule]);
+              expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+            });
+
+            it('should work in a different way', () => {
+              const fixture = setup([App, Hello], [MatCardModule]);
+              expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+            });
+          });
+
+          @Component({selector: 'hello', template: 'Hello'})
+          class Hello {}
+
+          @Component({template: '<hello></hello>'})
+          class App {}
+        `;
+
+       writeFile('app.spec.ts', initialContent);
+
+       await runMigration('convert-to-standalone');
+
+       expect(tree.readContent('app.spec.ts')).toBe(initialContent);
+     });
+
   it('should not migrate modules with a `bootstrap` array', async () => {
     const initialModule = `
       import {NgModule, Component} from '@angular/core';

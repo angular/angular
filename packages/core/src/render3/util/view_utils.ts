@@ -9,8 +9,8 @@
 import {getEnsureDirtyViewsAreAlwaysReachable} from '../../change_detection/flags';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
-import {assertTNode, assertTNodeForLView} from '../assert';
-import {LContainer, LContainerFlags, TYPE} from '../interfaces/container';
+import {assertLView, assertTNode, assertTNodeForLView} from '../assert';
+import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
@@ -197,8 +197,9 @@ export function walkUpViews(nestingLevel: number, currentView: LView): LView {
 }
 
 export function requiresRefreshOrTraversal(lView: LView) {
-  return lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
-      lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty;
+  return !!(
+      lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+      lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty);
 }
 
 
@@ -231,24 +232,19 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
  */
 export function markAncestorsForTraversal(lView: LView) {
   lView[ENVIRONMENT].changeDetectionScheduler?.notify();
-  let parent = lView[PARENT];
+  let parent = getLViewParent(lView);
   while (parent !== null) {
     // We stop adding markers to the ancestors once we reach one that already has the marker. This
     // is to avoid needlessly traversing all the way to the root when the marker already exists.
-    if ((isLContainer(parent) && (parent[FLAGS] & LContainerFlags.HasChildViewsToRefresh) ||
-         (isLView(parent) && parent[FLAGS] & LViewFlags.HasChildViewsToRefresh))) {
+    if (parent[FLAGS] & LViewFlags.HasChildViewsToRefresh) {
       break;
     }
 
-    if (isLContainer(parent)) {
-      parent[FLAGS] |= LContainerFlags.HasChildViewsToRefresh;
-    } else {
-      parent[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
-      if (!viewAttachedToChangeDetector(parent)) {
-        break;
-      }
+    parent[FLAGS] |= LViewFlags.HasChildViewsToRefresh;
+    if (!viewAttachedToChangeDetector(parent)) {
+      break;
     }
-    parent = parent[PARENT];
+    parent = getLViewParent(parent);
   }
 }
 
@@ -276,4 +272,15 @@ export function removeLViewOnDestroy(lView: LView, onDestroyCallback: () => void
   if (destroyCBIdx !== -1) {
     lView[ON_DESTROY_HOOKS].splice(destroyCBIdx, 1);
   }
+}
+
+/**
+ * Gets the parent LView of the passed LView, if the PARENT is an LContainer, will get the parent of
+ * that LContainer, which is an LView
+ * @param lView the lView whose parent to get
+ */
+export function getLViewParent(lView: LView): LView|null {
+  ngDevMode && assertLView(lView);
+  const parent = lView[PARENT];
+  return isLContainer(parent) ? parent[PARENT] : parent;
 }
