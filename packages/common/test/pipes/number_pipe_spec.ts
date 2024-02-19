@@ -72,10 +72,10 @@ describe('Number pipes', () => {
           `NG02100: InvalidPipeArgument: '123abc is not a number' for pipe 'DecimalPipe'`,
         );
         expect(() => pipe.transform('123.456.789')).toThrowError(
-          `NG02100: InvalidPipeArgument: '123.456.789 is not a number' for pipe 'DecimalPipe'`
+          `NG02100: InvalidPipeArgument: '123.456.789 is not a number' for pipe 'DecimalPipe'`,
         );
         expect(() => pipe.transform('123.abc')).toThrowError(
-          `NG02100: InvalidPipeArgument: '123.abc is not a number' for pipe 'DecimalPipe'`
+          `NG02100: InvalidPipeArgument: '123.abc is not a number' for pipe 'DecimalPipe'`,
         );
       });
     });
