@@ -30,26 +30,31 @@ export const enum QueryFlags {
   /**
    * No flags
    */
-  none = 0b0000,
+  none = 0b00000,
 
   /**
    * Whether or not the query should descend into children.
    */
-  descendants = 0b0001,
+  descendants = 0b00001,
 
   /**
    * The query can be computed statically and hence can be assigned eagerly.
    *
    * NOTE: Backwards compatibility with ViewEngine.
    */
-  isStatic = 0b0010,
+  isStatic = 0b00010,
 
   /**
    * If the `QueryList` should fire change event only if actual change to query was computed (vs old
    * behavior where the change was fired whenever the query was recomputed, even if the recomputed
    * query resulted in the same list.)
    */
-  emitDistinctChangesOnly = 0b0100,
+  emitDistinctChangesOnly = 0b00100,
+
+  /**
+   * If this is a child query and we should look for the first match only.
+   */
+  first = 0b01000,
 }
 
 /**

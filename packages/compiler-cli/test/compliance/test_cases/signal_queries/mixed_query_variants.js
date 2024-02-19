@@ -2,8 +2,8 @@ TestDir.ɵdir = /* @__PURE__ */ $r3$.ɵɵdefineDirective({
   …
   contentQueries: function TestDir_ContentQueries(rf, ctx, dirIndex) {
     if (rf & 1) {
-      i0.ɵɵcontentQuerySignal(dirIndex, ctx.signalContentChild, _c0, 5);
-      i0.ɵɵcontentQuery(dirIndex, _c0, 5);
+      i0.ɵɵcontentQuerySignal(dirIndex, ctx.signalContentChild, _c0, 13);
+      i0.ɵɵcontentQuery(dirIndex, _c0, 13);
     } if (rf & 2) {
       i0.ɵɵqueryAdvance();
       let _t;
@@ -12,8 +12,8 @@ TestDir.ɵdir = /* @__PURE__ */ $r3$.ɵɵdefineDirective({
   },
   viewQuery: function TestDir_Query(rf, ctx) {
     if (rf & 1) {
-      i0.ɵɵviewQuerySignal(ctx.signalViewChild, _c1, 5);
-      i0.ɵɵviewQuery(_c1, 5);
+      i0.ɵɵviewQuerySignal(ctx.signalViewChild, _c1, 13);
+      i0.ɵɵviewQuery(_c1, 13);
     } if (rf & 2) {
       i0.ɵɵqueryAdvance();
       let _t;

@@ -314,6 +314,11 @@ class TQuery_ implements TQuery {
     } else {
       this.matches.push(tNodeIdx, matchIdx);
     }
+
+    // upon finding the first non-container match we can stop processing child queries
+    if (tNodeIdx >= 0 && this.metadata.flags & QueryFlags.first) {
+      this._appliesToNextNode = false;
+    }
   }
 }
 

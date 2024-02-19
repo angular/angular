@@ -5,8 +5,8 @@ ContentQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   // ...
   contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
     if (rf & 1) {
-    $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, 5);
-    $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, 4);
+      $r3$.ɵɵcontentQuery(dirIndex, $e0_attrs$, 13);
+      $r3$.ɵɵcontentQuery(dirIndex, $e1_attrs$, 4);
     }
     if (rf & 2) {
     let $tmp$;
