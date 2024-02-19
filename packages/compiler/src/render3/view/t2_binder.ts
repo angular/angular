@@ -51,7 +51,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
         TemplateBinder.applyWithScope(target.template, scope);
     return new R3BoundTarget(
         target, directives, eagerDirectives, bindings, references, expressions, symbols,
-        nestingLevel, scopedNodeEntities, usedPipes, eagerPipes, deferBlocks, scope);
+        nestingLevel, scopedNodeEntities, usedPipes, eagerPipes, deferBlocks);
   }
 }
 
@@ -472,7 +472,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   private constructor(
       private bindings: Map<AST, Reference|Variable>,
       private symbols: Map<Reference|Variable, ScopedNode>, private usedPipes: Set<string>,
-      private eagerPipes: Set<string>, private deferBlocks: Set<DeferredBlock>,
+      private eagerPipes: Set<string>, private deferBlocks: Map<DeferredBlock, Scope>,
       private nestingLevel: Map<ScopedNode, number>, private scope: Scope,
       private rootNode: ScopedNode|null, private level: number) {
     super();
@@ -510,7 +510,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     nestingLevel: Map<ScopedNode, number>,
     usedPipes: Set<string>,
     eagerPipes: Set<string>,
-    deferBlocks: Set<DeferredBlock>,
+    deferBlocks: Map<DeferredBlock, Scope>,
   } {
     const expressions = new Map<AST, Reference|Variable>();
     const symbols = new Map<Variable|Reference, Template>();
@@ -518,7 +518,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     const usedPipes = new Set<string>();
     const eagerPipes = new Set<string>();
     const template = nodes instanceof Template ? nodes : null;
-    const deferBlocks = new Set<DeferredBlock>();
+    const deferBlocks = new Map<DeferredBlock, Scope>();
     // The top-level template has nesting level 0.
     const binder = new TemplateBinder(
         expressions, symbols, usedPipes, eagerPipes, deferBlocks, nestingLevel, scope, template, 0);
@@ -547,9 +547,17 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
       nodeOrNodes.trackBy.visit(this);
       nodeOrNodes.children.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, this.level);
+    } else if (nodeOrNodes instanceof DeferredBlock) {
+      if (this.scope.rootNode !== nodeOrNodes) {
+        throw new Error(
+            `Assertion error: resolved incorrect scope for deferred block ${nodeOrNodes}`);
+      }
+      this.deferBlocks.set(nodeOrNodes, this.scope);
+      nodeOrNodes.children.forEach(node => node.visit(this));
+      this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
         nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof ForLoopBlockEmpty ||
-        nodeOrNodes instanceof DeferredBlock || nodeOrNodes instanceof DeferredBlockError ||
+        nodeOrNodes instanceof DeferredBlockError ||
         nodeOrNodes instanceof DeferredBlockPlaceholder ||
         nodeOrNodes instanceof DeferredBlockLoading) {
       nodeOrNodes.children.forEach(node => node.visit(this));
@@ -616,9 +624,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitDeferredBlock(deferred: DeferredBlock) {
-    this.deferBlocks.add(deferred);
     this.ingestScopedNode(deferred);
-
     deferred.triggers.when?.value.visit(this);
     deferred.prefetchTriggers.when?.value.visit(this);
     deferred.placeholder && this.visitNode(deferred.placeholder);
@@ -738,7 +744,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
       private nestingLevel: Map<ScopedNode, number>,
       private scopedNodeEntities: Map<ScopedNode|null, ReadonlySet<Reference|Variable>>,
       private usedPipes: Set<string>, private eagerPipes: Set<string>,
-      private deferredBlocks: Set<DeferredBlock>, private rootScope: Scope) {}
+      private deferBlocks: Map<DeferredBlock, Scope>) {}
 
   getEntitiesInScope(node: ScopedNode|null): ReadonlySet<Reference|Variable> {
     return this.scopedNodeEntities.get(node) ?? new Set();
@@ -789,7 +795,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   }
 
   getDeferBlocks(): DeferredBlock[] {
-    return Array.from(this.deferredBlocks);
+    return Array.from(this.deferBlocks.keys());
   }
 
   getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null {
@@ -856,12 +862,20 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   }
 
   isDeferred(element: Element): boolean {
-    for (const deferBlock of this.deferredBlocks) {
-      const scope = this.rootScope.childScopes.get(deferBlock);
-      if (scope && scope.elementsInScope.has(element)) {
-        return true;
+    for (const deferredScope of this.deferBlocks.values()) {
+      const stack = [deferredScope];
+
+      while (stack.length > 0) {
+        const current = stack.pop()!;
+
+        if (current.elementsInScope.has(element)) {
+          return true;
+        }
+
+        stack.push(...current.childScopes.values());
       }
     }
+
     return false;
   }
 

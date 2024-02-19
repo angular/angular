@@ -10063,6 +10063,86 @@ function allTests(os: string) {
                expect(diags.length).toBe(1);
                expect(diags[0].code).toBe(ngErrorCode(ErrorCode.DEFERRED_PIPE_USED_EAGERLY));
              });
+
+          it('should not produce an error when a deferred block is wrapped in a conditional',
+             () => {
+               env.write('deferred-a.ts', `
+                  import {Component} from '@angular/core';
+                  @Component({
+                    standalone: true,
+                    selector: 'deferred-cmp-a',
+                    template: 'DeferredCmpA contents',
+                  })
+                  export class DeferredCmpA {
+                  }
+                `);
+
+               env.write('test.ts', `
+                 import {Component} from '@angular/core';
+                 import {DeferredCmpA} from './deferred-a';
+                 @Component({
+                   standalone: true,
+                   deferredImports: [DeferredCmpA],
+                   template: \`
+                     @if (true) {
+                       @if (true) {
+                        @if (true) {
+                          @defer {
+                            <deferred-cmp-a />
+                          }
+                        }
+                       }
+                     }
+                   \`,
+                 })
+                 export class AppCmp {
+                  condition = true;
+                 }
+               `);
+
+               const diags = env.driveDiagnostics();
+               expect(diags).toEqual([]);
+             });
+
+          it('should not produce an error when a dependency is wrapped in a condition inside of a deferred block',
+             () => {
+               env.write('deferred-a.ts', `
+                  import {Component} from '@angular/core';
+                  @Component({
+                    standalone: true,
+                    selector: 'deferred-cmp-a',
+                    template: 'DeferredCmpA contents',
+                  })
+                  export class DeferredCmpA {
+                  }
+                `);
+
+               env.write('test.ts', `
+                 import {Component} from '@angular/core';
+                 import {DeferredCmpA} from './deferred-a';
+                 @Component({
+                   standalone: true,
+                   deferredImports: [DeferredCmpA],
+                   template: \`
+                      @defer {
+                        @if (true) {
+                          @if (true) {
+                            @if (true) {
+                              <deferred-cmp-a />
+                            }
+                          }
+                        }
+                      }
+                   \`,
+                 })
+                 export class AppCmp {
+                  condition = true;
+                 }
+               `);
+
+               const diags = env.driveDiagnostics();
+               expect(diags).toEqual([]);
+             });
         });
       });
 
