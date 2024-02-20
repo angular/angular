@@ -1,4 +1,5 @@
 load("//:packages.bzl", "link_packages")
+load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
@@ -131,6 +132,8 @@ architect(
     data = APPLICATION_DEPS + [
         ":application_files_bin",
     ],
+    # Network is required to inline fonts.
+    exec_properties = ENABLE_NETWORK,
     output_dir = True,
 )
 
