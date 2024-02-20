@@ -652,19 +652,19 @@ export function formatTemplate(tmpl: string, templateType: string): string {
 
     // matches closing of an html element
     // </element>
-    const closeElRegex = /\s*<\/([a-zA-Z0-9\-]+)*>/;
+    const closeElRegex = /\s*<\/([a-zA-Z0-9\-_]+)*>/;
 
     // matches closing of a self closing html element when the element is on multiple lines
     // [binding]="value" />
-    const closeMultiLineElRegex = /^\s*([a-zA-Z0-9\-\[\]]+)?=?"?([^”<]+)?"?\s?\/>$/;
+    const closeMultiLineElRegex = /^\s*([a-zA-Z0-9\-_\[\]]+)?=?"?([^”<]+)?"?\s?\/>$/;
 
     // matches closing of a self closing html element when the element is on multiple lines
     // with no / in the closing: [binding]="value">
-    const closeSelfClosingMultiLineRegex = /^\s*([a-zA-Z0-9\-\[\]]+)?=?"?([^”\/<]+)?"?\s?>$/;
+    const closeSelfClosingMultiLineRegex = /^\s*([a-zA-Z0-9\-_\[\]]+)?=?"?([^”\/<]+)?"?\s?>$/;
 
     // matches an open and close of an html element on a single line with no breaks
     // <div>blah</div>
-    const singleLineElRegex = /\s*<([a-zA-Z0-9]+)(?![^>]*\/>)[^>]*>.*<\/([a-zA-Z0-9\-]+)*>/;
+    const singleLineElRegex = /\s*<([a-zA-Z0-9]+)(?![^>]*\/>)[^>]*>.*<\/([a-zA-Z0-9\-_]+)*>/;
 
     const lines = tmpl.split('\n');
     const formatted = [];

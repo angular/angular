@@ -4932,6 +4932,42 @@ describe('control flow migration', () => {
 
          expect(actual).toBe(expected);
        });
+
+    it('should handle dom nodes with underscores mixed in', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', [
+        `<div *ngIf="show">show</div>`,
+        `<a-very-long-component-name-that-has_underscores-too`,
+        `  [selected]="selected | async "`,
+        `>`,
+        `</a-very-long-component-name-that-has_underscores-too>`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.html');
+      const expected = [
+        `@if (show) {`,
+        `  <div>show</div>`,
+        `}`,
+        `<a-very-long-component-name-that-has_underscores-too`,
+        `  [selected]="selected | async "`,
+        `  >`,
+        `</a-very-long-component-name-that-has_underscores-too>`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('imports', () => {
