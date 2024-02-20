@@ -562,32 +562,34 @@ runInEachFileSystem(() => {
           .toBe(`Type 'WritableSignal<number>' is not assignable to type 'number'.`);
     });
 
-    it('should widen the type of two-way bindings on Angular version 0.0.0', () => {
-      env.tsconfig({_angularCoreVersion: '0.0.0-PLACEHOLDER', strictTemplates: true});
-      env.write('test.ts', `
-        import {Component, Directive, Input, Output, EventEmitter, signal} from '@angular/core';
+    it('should widen the type of two-way bindings on supported Angular versions', () => {
+      ['17.2.0', '17.2.0-rc.0', '0.0.0-PLACEHOLDER', '18.0.0'].forEach(version => {
+        env.tsconfig({_angularCoreVersion: version, strictTemplates: true});
+        env.write('test.ts', `
+          import {Component, Directive, Input, Output, EventEmitter, signal} from '@angular/core';
 
-        @Directive({
-          selector: '[dir]',
-          standalone: true,
-        })
-        export class TestDir {
-          @Input() value = 0;
-          @Output() valueChange = new EventEmitter<number>();
-        }
+          @Directive({
+            selector: '[dir]',
+            standalone: true,
+          })
+          export class TestDir {
+            @Input() value = 0;
+            @Output() valueChange = new EventEmitter<number>();
+          }
 
-        @Component({
-          standalone: true,
-          template: \`<div dir [(value)]="value"></div>\`,
-          imports: [TestDir],
-        })
-        export class TestComp {
-          value = signal(1);
-        }
-      `);
+          @Component({
+            standalone: true,
+            template: \`<div dir [(value)]="value"></div>\`,
+            imports: [TestDir],
+          })
+          export class TestComp {
+            value = signal(1);
+          }
+        `);
 
-      const diags = env.driveDiagnostics();
-      expect(diags).toEqual([]);
+        const diags = env.driveDiagnostics();
+        expect(diags).withContext(`On version ${version}`).toEqual([]);
+      });
     });
   });
 });
