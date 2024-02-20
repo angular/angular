@@ -21,6 +21,9 @@ In addition to optimizing the loading of the LCP image, `NgOptimizedImage` enfor
 
 ## Getting Started
 
+<br>
+<br>
+
 <docs-workflow>
 <docs-step title="Import `NgOptimizedImage` directive">
 Import `NgOptimizedImage` directive from `@angular/common`:
