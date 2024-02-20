@@ -9,6 +9,7 @@ rollup_bundle(
     visibility = ["//packages/language-service:__pkg__"],
     deps = [
         "//packages/language-service/src",
+        "@npm//@rollup/plugin-commonjs",
         "@npm//@rollup/plugin-node-resolve",
     ],
 )
