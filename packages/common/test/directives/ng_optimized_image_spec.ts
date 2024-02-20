@@ -9,7 +9,7 @@
 import {CommonModule, DOCUMENT, IMAGE_CONFIG, ImageConfig} from '@angular/common';
 import {RuntimeErrorCode} from '@angular/common/src/errors';
 import {PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {Component, PLATFORM_ID, Provider, Type} from '@angular/core';
+import {ChangeDetectionStrategy, Component, PLATFORM_ID, Provider, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -1078,7 +1078,6 @@ describe('Image directive', () => {
         fixture.detectChanges();
         const nativeElement = fixture.nativeElement as HTMLElement;
         const img = nativeElement.querySelector('img')!;
-        const styles = parseInlineStyles(img);
         // Double quotes removed to account for different browser behavior.
         expect(img.getAttribute('style')?.replace(/"/g, '').replace(/\s/g, '')).toBe(
           `background-size:cover;background-position:50%50%;background-repeat:no-repeat;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEU);filter:blur(${PLACEHOLDER_BLUR_AMOUNT}px);`,
@@ -1098,6 +1097,19 @@ describe('Image directive', () => {
       expect(styles.get('background-image')?.replace(/"/g, '')).toBe(
         `url(${IMG_BASE_URL}/path/img.png?w=30&ph=true)`,
       );
+    });
+
+    it('should replace the placeholder with the actual image on load', () => {
+      setupTestingModule();
+      const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder="true" />';
+      const fixture = createTestComponent(template, ChangeDetectionStrategy.OnPush);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(parseInlineStyles(img).has('background-image')).toBe(true);
+      img.dispatchEvent(new Event('load'));
+      fixture.detectChanges();
+      expect(parseInlineStyles(img).has('background-image')).toBe(false);
     });
 
     it('should use the placeholderResolution set in imageConfig', () => {
@@ -2177,10 +2189,13 @@ function setUpModuleNoLoader() {
   });
 }
 
-function createTestComponent(template: string): ComponentFixture<TestComponent> {
-  return TestBed.overrideComponent(TestComponent, {set: {template: template}}).createComponent(
-    TestComponent,
-  );
+function createTestComponent(
+  template: string,
+  changeDetection = ChangeDetectionStrategy.OnPush,
+): ComponentFixture<TestComponent> {
+  return TestBed.overrideComponent(TestComponent, {
+    set: {template, changeDetection},
+  }).createComponent(TestComponent);
 }
 
 function parseInlineStyles(img: HTMLImageElement): Map<string, string> {
