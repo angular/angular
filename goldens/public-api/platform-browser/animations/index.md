@@ -25,6 +25,7 @@ export class BrowserAnimationsModule {
 
 // @public
 export interface BrowserAnimationsModuleConfig {
+    disableAnimatableDevWarnings?: boolean;
     disableAnimations?: boolean;
 }
 

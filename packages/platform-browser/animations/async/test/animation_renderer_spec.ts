@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, AnimationPlayer, AnimationTriggerMetadata, style, transition, trigger} from '@angular/animations';
-import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory, ɵBaseAnimationRenderer as BaseAnimationRenderer} from '@angular/animations/browser';
+import {animate, AnimationPlayer, AnimationTriggerMetadata, style, transition, trigger,} from '@angular/animations';
+import {ɵAnimationEngine as AnimationEngine, ɵAnimationRenderer as AnimationRenderer, ɵAnimationRendererFactory as AnimationRendererFactory, ɵBaseAnimationRenderer as BaseAnimationRenderer,} from '@angular/animations/browser';
 import {DOCUMENT} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild, ɵChangeDetectionScheduler as ChangeDetectionScheduler} from '@angular/core';
+import {ANIMATION_MODULE_TYPE, Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild, ɵChangeDetectionScheduler as ChangeDetectionScheduler,} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {InjectableAnimationEngine} from '@angular/platform-browser/animations/src/providers';
 import {el} from '@angular/platform-browser/testing/src/browser_util';
 
-import {AsyncAnimationRendererFactory, DynamicDelegationRenderer} from '../src/async_animation_renderer';
+import {AsyncAnimationRendererFactory, DynamicDelegationRenderer,} from '../src/async_animation_renderer';
 
 type AnimationBrowserModule = typeof import('@angular/animations/browser');
 
@@ -33,26 +33,38 @@ describe('AnimationRenderer', () => {
       providers: [
         {
           provide: RendererFactory2,
-          useFactory:
-              (doc: Document, renderer: DomRendererFactory2, zone: NgZone,
-               engine: MockAnimationEngine) => {
-                const animationModule = {
-                  ɵcreateEngine:
-                      (_: 'animations'|'noop', _2: Document, _3: ChangeDetectionScheduler|null):
-                          AnimationEngine => engine,
-                  ɵAnimationEngine: MockAnimationEngine as any,
-                  ɵAnimationRenderer: AnimationRenderer,
-                  ɵBaseAnimationRenderer: BaseAnimationRenderer,
-                  ɵAnimationRendererFactory: AnimationRendererFactory,
-                } satisfies Partial<AnimationBrowserModule>as AnimationBrowserModule;
+          useFactory: (
+              doc: Document,
+              renderer: DomRendererFactory2,
+              zone: NgZone,
+              engine: MockAnimationEngine,
+              ) => {
+            const animationModule = {
+              ɵcreateEngine: (
+                  _: 'animations'|'noop',
+                  _2: Document,
+                  _3: ChangeDetectionScheduler|null,
+                  _4: boolean,
+                  ): AnimationEngine => engine,
+              ɵAnimationEngine: MockAnimationEngine as any,
+              ɵAnimationRenderer: AnimationRenderer,
+              ɵBaseAnimationRenderer: BaseAnimationRenderer,
+              ɵAnimationRendererFactory: AnimationRendererFactory,
+            } satisfies Partial<AnimationBrowserModule>as AnimationBrowserModule;
 
-                return new AsyncAnimationRendererFactory(
-                    doc, renderer, zone, 'animations', Promise.resolve(animationModule));
-              },
-          deps: [DOCUMENT, DomRendererFactory2, NgZone, AnimationEngine]
+            return new AsyncAnimationRendererFactory(
+                doc,
+                renderer,
+                zone,
+                'animations',
+                true,
+                Promise.resolve(animationModule),
+            );
+          },
+          deps: [DOCUMENT, DomRendererFactory2, NgZone, AnimationEngine],
         },
         {provide: ANIMATION_MODULE_TYPE, useValue: 'BrowserAnimations'},
-        {provide: AnimationEngine, useClass: MockAnimationEngine}
+        {provide: AnimationEngine, useClass: MockAnimationEngine},
       ],
     });
   });
@@ -62,7 +74,7 @@ describe('AnimationRenderer', () => {
       id: 'id',
       encapsulation: null!,
       styles: [],
-      data: {'animation': animationTriggers}
+      data: {'animation': animationTriggers},
     };
     const factory = TestBed.inject(RendererFactory2) as AsyncAnimationRendererFactory;
     const renderer = factory.createRenderer(element, type);
@@ -140,7 +152,7 @@ describe('AnimationRenderer', () => {
     it('should resolve the body|document|window nodes given their values as strings as input',
        async () => {
          const renderer = await makeRenderer();
-         const engine = ((renderer)['delegate'] as AnimationRenderer).engine as MockAnimationEngine;
+         const engine = (renderer['delegate'] as AnimationRenderer).engine as MockAnimationEngine;
 
          const cb = (event: any): boolean => {
            return true;
@@ -230,10 +242,18 @@ describe('AnimationRenderer', () => {
       @Component({
         selector: 'my-cmp',
         template: '<div [@myAnimation]="exp" (@myAnimation.start)="onStart($event)"></div>',
-        animations: [trigger(
-            'myAnimation',
-            [transition(
-                '* => state', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+        animations: [
+          trigger(
+              'myAnimation',
+              [
+                transition(
+                    '* => state',
+                    [
+                      style({'opacity': '0'}),
+                      animate(500, style({'opacity': '1'})),
+                    ]),
+              ]),
+        ],
       })
       class Cmp {
         exp: any;
@@ -266,10 +286,18 @@ describe('AnimationRenderer', () => {
          @Component({
            selector: 'my-cmp',
            template: '<div #elm *ngIf="exp"></div>',
-           animations: [trigger(
-               'someAnimation',
-               [transition(
-                   '* => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+           animations: [
+             trigger(
+                 'someAnimation',
+                 [
+                   transition(
+                       '* => *',
+                       [
+                         style({'opacity': '0'}),
+                         animate(500, style({'opacity': '1'})),
+                       ]),
+                 ]),
+           ],
          })
          class Cmp {
            exp: any;
@@ -308,7 +336,7 @@ describe('AnimationRenderer', () => {
            animations: [
              trigger('animation1', [transition('a => b', [])]),
              trigger('animation2', [transition(':leave', [])]),
-           ]
+           ],
          })
          class Cmp {
            exp1: any = true;
@@ -372,13 +400,17 @@ class MockAnimationEngine extends InjectableAnimationEngine {
   triggers: AnimationTriggerMetadata[] = [];
 
   private _capture(name: string, args: any[]) {
-    const data = this.captures[name] = this.captures[name] || [];
+    const data = (this.captures[name] = this.captures[name] || []);
     data.push(args);
   }
 
   override registerTrigger(
-      componentId: string, namespaceId: string, hostElement: any, name: string,
-      metadata: AnimationTriggerMetadata): void {
+      componentId: string,
+      namespaceId: string,
+      hostElement: any,
+      name: string,
+      metadata: AnimationTriggerMetadata,
+      ): void {
     this.triggers.push(metadata);
   }
 
@@ -396,8 +428,12 @@ class MockAnimationEngine extends InjectableAnimationEngine {
   }
 
   override listen(
-      namespaceId: string, element: any, eventName: string, eventPhase: string,
-      callback: (event: any) => any): () => void {
+      namespaceId: string,
+      element: any,
+      eventName: string,
+      eventPhase: string,
+      callback: (event: any) => any,
+      ): () => void {
     // we don't capture the callback here since the renderer wraps it in a zone
     this._capture('listen', [element, eventName, eventPhase]);
     return () => {};
@@ -418,5 +454,5 @@ function assertHasParent(element: any, yes: boolean = true) {
 }
 
 function finishPlayers(players: AnimationPlayer[]) {
-  players.forEach(player => player.finish());
+  players.forEach((player) => player.finish());
 }

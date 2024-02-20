@@ -32,5 +32,5 @@ export function makeTrigger(
   if (warnings.length) {
     triggerParsingWarnings(name, warnings);
   }
-  return buildTrigger(name, triggerAst, new NoopAnimationStyleNormalizer());
+  return buildTrigger(name, triggerAst, new NoopAnimationStyleNormalizer(), true);
 }

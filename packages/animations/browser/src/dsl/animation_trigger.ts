@@ -15,8 +15,9 @@ export function buildTrigger(
   name: string,
   ast: TriggerAst,
   normalizer: AnimationStyleNormalizer,
+  animatableDevWarningsEnabled: boolean,
 ): AnimationTrigger {
-  return new AnimationTrigger(name, ast, normalizer);
+  return new AnimationTrigger(name, ast, normalizer, animatableDevWarningsEnabled);
 }
 
 export class AnimationTrigger {
@@ -28,6 +29,7 @@ export class AnimationTrigger {
     public name: string,
     public ast: TriggerAst,
     private _normalizer: AnimationStyleNormalizer,
+    animatableDevWarningsEnabled: boolean,
   ) {
     ast.states.forEach((ast) => {
       const defaultParams = (ast.options && ast.options.params) || {};
@@ -38,9 +40,16 @@ export class AnimationTrigger {
     balanceProperties(this.states, 'false', '0');
 
     ast.transitions.forEach((ast) => {
-      this.transitionFactories.push(new AnimationTransitionFactory(name, ast, this.states));
+      this.transitionFactories.push(
+        new AnimationTransitionFactory(name, ast, this.states, animatableDevWarningsEnabled),
+      );
     });
-    this.fallbackTransition = createFallbackTransition(name, this.states, this._normalizer);
+    this.fallbackTransition = createFallbackTransition(
+      name,
+      this.states,
+      this._normalizer,
+      animatableDevWarningsEnabled,
+    );
   }
 
   get containsQueries() {
@@ -68,6 +77,7 @@ function createFallbackTransition(
   triggerName: string,
   states: Map<string, AnimationStateStyles>,
   normalizer: AnimationStyleNormalizer,
+  animatableDevWarningsEnabled: boolean,
 ): AnimationTransitionFactory {
   const matchers = [(fromState: any, toState: any) => true];
   const animation: SequenceAst = {type: AnimationMetadataType.Sequence, steps: [], options: null};
@@ -79,7 +89,12 @@ function createFallbackTransition(
     queryCount: 0,
     depCount: 0,
   };
-  return new AnimationTransitionFactory(triggerName, transition, states);
+  return new AnimationTransitionFactory(
+    triggerName,
+    transition,
+    states,
+    animatableDevWarningsEnabled,
+  );
 }
 
 function balanceProperties(

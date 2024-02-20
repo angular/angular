@@ -11,6 +11,7 @@ import {
   AnimationOptions,
   ɵStyleDataMap,
 } from '@angular/animations';
+import {AnimationTransitionOptions} from '@angular/animations/src/animation_metadata';
 
 const EMPTY_ANIMATION_OPTIONS: AnimationOptions = {};
 
@@ -32,7 +33,9 @@ export interface AstVisitor {
 
 export interface Ast<T extends AnimationMetadataType> {
   type: T;
-  options: AnimationOptions | null;
+  options:
+    | (T extends AnimationMetadataType.Transition ? AnimationTransitionOptions : AnimationOptions)
+    | null;
 }
 
 export interface TriggerAst extends Ast<AnimationMetadataType.Trigger> {

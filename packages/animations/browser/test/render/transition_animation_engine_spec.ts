@@ -818,7 +818,7 @@ function registerTrigger(
   ) as TriggerAst;
   if (errors.length) {
   }
-  const trigger = buildTrigger(name, ast, new NoopAnimationStyleNormalizer());
+  const trigger = buildTrigger(name, ast, new NoopAnimationStyleNormalizer(), true);
   engine.register(id, element);
   engine.registerTrigger(id, name, trigger);
 }

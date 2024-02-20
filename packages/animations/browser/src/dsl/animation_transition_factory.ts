@@ -8,7 +8,7 @@
 import {AnimationOptions, ɵStyleDataMap} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {getOrSetDefaultValue} from '../render/shared';
+import {getNonAnimatablePropsWarning, getOrSetDefaultValue} from '../render/shared';
 import {interpolateParams} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
@@ -29,6 +29,7 @@ export class AnimationTransitionFactory {
     private _triggerName: string,
     public ast: TransitionAst,
     private _stateStyles: Map<string, AnimationStateStyles>,
+    private animatableDevWarningsEnabled: boolean,
   ) {}
 
   match(currentState: any, nextState: any, element: any, params: {[key: string]: any}): boolean {
@@ -129,7 +130,14 @@ export class AnimationTransitionFactory {
     });
 
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      checkNonAnimatableInTimelines(timelines, this._triggerName, driver);
+      if (this.animatableDevWarningsEnabled) {
+        checkNonAnimatableInTimelines(
+          timelines,
+          this._triggerName,
+          driver,
+          this.ast.options?.allowedProps ?? [],
+        );
+      }
     }
 
     return createTransitionInstruction(
@@ -161,18 +169,21 @@ export class AnimationTransitionFactory {
  * @param timelines The built timelines for the current instruction.
  * @param triggerName The name of the trigger for the current instruction.
  * @param driver Animation driver used to perform the check.
+ * @param allowedProps Properties that should be treated as if they were animatable.
  *
  */
 function checkNonAnimatableInTimelines(
   timelines: AnimationTimelineInstruction[],
   triggerName: string,
   driver: AnimationDriver,
+  allowedProps: string[],
 ): void {
   if (!driver.validateAnimatableStyleProperty) {
     return;
   }
 
-  const allowedNonAnimatableProps = new Set<string>([
+  const allowedPropsSet = new Set<string>([
+    ...allowedProps,
     // 'easing' is a utility/synthetic prop we use to represent
     // easing functions, it represents a property of the animation
     // which is not animatable but different values can be used
@@ -186,7 +197,7 @@ function checkNonAnimatableInTimelines(
     const nonAnimatablePropsInitialValues = new Map<string, string | number>();
     keyframes.forEach((keyframe) => {
       const entriesToCheck = Array.from(keyframe.entries()).filter(
-        ([prop]) => !allowedNonAnimatableProps.has(prop),
+        ([prop]) => !allowedPropsSet.has(prop),
       );
       for (const [prop, value] of entriesToCheck) {
         if (!driver.validateAnimatableStyleProperty!(prop)) {
@@ -204,13 +215,7 @@ function checkNonAnimatableInTimelines(
   });
 
   if (invalidNonAnimatableProps.size > 0) {
-    console.warn(
-      `Warning: The animation trigger "${triggerName}" is attempting to animate the following` +
-        ' not animatable properties: ' +
-        Array.from(invalidNonAnimatableProps).join(', ') +
-        '\n' +
-        '(to check the list of all animatable properties visit https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animated_properties)',
-    );
+    console.warn(getNonAnimatablePropsWarning(triggerName, Array.from(invalidNonAnimatableProps)));
   }
 }
 
