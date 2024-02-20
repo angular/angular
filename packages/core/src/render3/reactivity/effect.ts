@@ -20,6 +20,7 @@ import {DestroyRef} from '../../linker/destroy_ref';
 import {FLAGS, LViewFlags, EFFECTS_TO_SCHEDULE} from '../interfaces/view';
 
 import {assertNotInReactiveContext} from './asserts';
+import {performanceMarkFeature} from '../../util/performance';
 
 
 /**
@@ -240,6 +241,7 @@ export interface CreateEffectOptions {
 export function effect(
     effectFn: (onCleanup: EffectCleanupRegisterFn) => void,
     options?: CreateEffectOptions): EffectRef {
+  performanceMarkFeature('NgSignals');
   ngDevMode &&
       assertNotInReactiveContext(
           effect,
