@@ -8,6 +8,8 @@
 
 import {createSignal, SIGNAL, SignalGetter, SignalNode, signalSetFn, signalUpdateFn} from '@angular/core/primitives/signals';
 
+import {performanceMarkFeature} from '../../util/performance';
+
 import {isSignal, Signal, ValueEqualityFn} from './api';
 
 /** Symbol used distinguish `WritableSignal` from other non-writable signals and functions. */
@@ -63,6 +65,7 @@ export interface CreateSignalOptions<T> {
  * Create a `Signal` that can be set or updated directly.
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
+  performanceMarkFeature('NgSignals');
   const signalFn = createSignal(initialValue) as SignalGetter<T>& WritableSignal<T>;
   const node = signalFn[SIGNAL];
   if (options?.equal) {
