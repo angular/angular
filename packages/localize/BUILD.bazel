@@ -83,7 +83,7 @@ generate_api_docs(
     name = "localize_docs",
     srcs = [
         ":files_for_docgen",
-        "//packages:common_files_and_deps_for_docs",
+        "//packages/localize/src/utils:files_for_docgen",
     ],
     entry_point = ":index.ts",
     module_name = "@angular/localize",

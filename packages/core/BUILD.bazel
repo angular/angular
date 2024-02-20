@@ -129,8 +129,6 @@ filegroup(
         "src/**/*.ts",
     ]) + [
         "PACKAGE.md",
-        "global/PACKAGE.md",
-        "global/index.ts",
     ],
 )
 

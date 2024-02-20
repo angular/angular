@@ -45,6 +45,7 @@ copy_to_directory(
         "//packages/common/testing:common_testing_docs",
         "//packages/common/upgrade:common_upgrade_docs",
         "//packages/core:core_docs",
+        "//packages/core/global:core_global_docs",
         "//packages/core/rxjs-interop:core_rxjs-interop_docs",
         "//packages/core/testing:core_testing_docs",
         "//packages/elements:elements_docs",
