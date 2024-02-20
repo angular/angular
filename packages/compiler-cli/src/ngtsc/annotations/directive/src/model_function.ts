@@ -19,9 +19,9 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  * Attempts to parse a model class member. Returns the parsed model mapping if possible.
  */
 export function tryParseSignalModelMapping(
-    member: Pick<ClassMember, 'name'|'value'>, importTracker: ImportedSymbolsTracker,
-    isCore: boolean): ModelMapping|null {
-  const model = tryParseInitializerApiMember(['model'], member, importTracker, isCore);
+    member: Pick<ClassMember, 'name'|'value'>, importTracker: ImportedSymbolsTracker): ModelMapping|
+    null {
+  const model = tryParseInitializerApiMember(['model'], member, importTracker);
   if (model === null) {
     return null;
   }

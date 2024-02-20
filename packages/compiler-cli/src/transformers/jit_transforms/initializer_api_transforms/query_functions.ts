@@ -51,7 +51,6 @@ export const queryFunctionsTransforms: PropertyTransform = (
       {name: member.name.text, value: member.initializer ?? null},
       host,
       importTracker,
-      isCore,
   );
   if (queryDefinition === null) {
     return member;

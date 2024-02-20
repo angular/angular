@@ -48,9 +48,9 @@ interface InitializerFunctionMetadata {
  * allowing for checking multiple types in one pass.
  */
 export function tryParseInitializerApiMember<FnNames extends InitializerApiFunction[]>(
-    fnNames: FnNames, member: Pick<ClassMember, 'value'>, importTracker: ImportedSymbolsTracker,
-    isCore: boolean): InitializerFunctionMetadata|null {
-  if (isCore || member.value === null || !ts.isCallExpression(member.value)) {
+    fnNames: FnNames, member: Pick<ClassMember, 'value'>,
+    importTracker: ImportedSymbolsTracker): InitializerFunctionMetadata|null {
+  if (member.value === null || !ts.isCallExpression(member.value)) {
     return null;
   }
 

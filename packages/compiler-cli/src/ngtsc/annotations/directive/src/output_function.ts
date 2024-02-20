@@ -21,9 +21,9 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  * input mapping if possible.
  */
 export function tryParseInitializerBasedOutput(
-    member: Pick<ClassMember, 'name'|'value'>, importTracker: ImportedSymbolsTracker,
-    isCore: boolean): {call: ts.CallExpression, metadata: InputOrOutput}|null {
-  const output = tryParseInitializerApiMember(['output', 'ɵoutput'], member, importTracker, isCore);
+    member: Pick<ClassMember, 'name'|'value'>, importTracker: ImportedSymbolsTracker):
+    {call: ts.CallExpression, metadata: InputOrOutput}|null {
+  const output = tryParseInitializerApiMember(['output', 'ɵoutput'], member, importTracker);
   if (output === null) {
     return null;
   }

@@ -20,9 +20,9 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  * input mapping if possible.
  */
 export function tryParseSignalInputMapping(
-    member: Pick<ClassMember, 'name'|'value'>, importTracker: ImportedSymbolsTracker,
-    isCore: boolean): InputMapping|null {
-  const signalInput = tryParseInitializerApiMember(['input'], member, importTracker, isCore);
+    member: Pick<ClassMember, 'name'|'value'>, importTracker: ImportedSymbolsTracker): InputMapping|
+    null {
+  const signalInput = tryParseInitializerApiMember(['input'], member, importTracker);
   if (signalInput === null) {
     return null;
   }

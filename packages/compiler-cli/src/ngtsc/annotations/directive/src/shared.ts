@@ -765,8 +765,8 @@ function tryParseInputFieldMapping(
   const classPropertyName = member.name;
 
   const decorator = tryGetDecoratorOnMember(member, 'Input', isCore);
-  const signalInputMapping = tryParseSignalInputMapping(member, importTracker, isCore);
-  const modelInputMapping = tryParseSignalModelMapping(member, importTracker, isCore);
+  const signalInputMapping = tryParseSignalInputMapping(member, importTracker);
+  const modelInputMapping = tryParseSignalModelMapping(member, importTracker);
 
   if (decorator !== null && signalInputMapping !== null) {
     throw new FatalDiagnosticError(
@@ -1058,8 +1058,7 @@ function parseQueriesOfClassFields(
 
   for (const member of members) {
     const decoratorQuery = tryGetQueryFromFieldDecorator(member, reflector, evaluator, isCore);
-    const signalQuery =
-        tryParseSignalQueryFromInitializer(member, reflector, importTracker, isCore);
+    const signalQuery = tryParseSignalQueryFromInitializer(member, reflector, importTracker);
 
     if (decoratorQuery !== null && signalQuery !== null) {
       throw new FatalDiagnosticError(
@@ -1125,8 +1124,8 @@ function parseOutputFields(
 
   for (const member of members) {
     const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
-    const initializerOutput = tryParseInitializerBasedOutput(member, importTracker, isCore);
-    const modelMapping = tryParseSignalModelMapping(member, importTracker, isCore);
+    const initializerOutput = tryParseInitializerBasedOutput(member, importTracker);
+    const modelMapping = tryParseSignalModelMapping(member, importTracker);
 
     if (decoratorOutput !== null && initializerOutput !== null) {
       throw new FatalDiagnosticError(
