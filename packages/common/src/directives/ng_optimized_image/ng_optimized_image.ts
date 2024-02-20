@@ -29,6 +29,7 @@ import {
   ɵRuntimeError as RuntimeError,
   ɵSafeValue as SafeValue,
   ɵunwrapSafeValue as unwrapSafeValue,
+  ChangeDetectorRef,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -433,7 +434,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
       }
     }
     if (this.placeholder) {
-      this.removePlaceholderOnLoad(this, this.imgElement, this.renderer);
+      this.removePlaceholderOnLoad(this.imgElement);
     }
     this.setHostAttributes();
   }
@@ -648,22 +649,17 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
     return Boolean(placeholderConfig.blur);
   }
 
-  private removePlaceholderOnLoad(
-    dir: NgOptimizedImage,
-    img: HTMLImageElement,
-    renderer: Renderer2,
-  ): void {
-    const removeLoadListenerFn = renderer.listen(img, 'load', () => {
+  private removePlaceholderOnLoad(img: HTMLImageElement): void {
+    const callback = () => {
+      const changeDetectorRef = this.injector.get(ChangeDetectorRef);
       removeLoadListenerFn();
       removeErrorListenerFn();
-      dir.placeholder = false;
-    });
+      this.placeholder = false;
+      changeDetectorRef.markForCheck();
+    };
 
-    const removeErrorListenerFn = renderer.listen(img, 'error', () => {
-      removeLoadListenerFn();
-      removeErrorListenerFn();
-      dir.placeholder = false;
-    });
+    const removeLoadListenerFn = this.renderer.listen(img, 'load', callback);
+    const removeErrorListenerFn = this.renderer.listen(img, 'error', callback);
   }
 
   /** @nodoc */
