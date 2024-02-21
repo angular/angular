@@ -113,7 +113,7 @@ The following example changes the `<input>` value to uppercase:
 
 Here are all variations in action, including the uppercase version:
 
-<img alt="NgModel variations" src="assets/content/images/guide/built-in-directives/ng-model-anim.gif">
+<img alt="NgModel variations" src="assets/images/guide/built-in-directives/ng-model-anim.gif">
 
 ### `NgModel` and value accessors
 
@@ -268,7 +268,7 @@ In the following illustration of the `trackBy` effect, **Reset items** creates n
 - With no `trackBy`, both buttons trigger complete DOM element replacement.
 - With `trackBy`, only changing the `id` triggers element replacement.
 
-<img alt="Animation of trackBy" src="assets/content/images/guide/built-in-directives/ngfor-trackby.gif">
+<img alt="Animation of trackBy" src="assets/images/guide/built-in-directives/ngfor-trackby.gif">
 
 ## Hosting a directive without a DOM element
 
@@ -280,7 +280,7 @@ Here's a conditional paragraph using `<ng-container>`.
 
 <docs-code header="src/app/app.component.html (ngif-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="ngif-ngcontainer"/>
 
-<img alt="ngcontainer paragraph with proper style" src="assets/content/images/guide/structural-directives/good-paragraph.png">
+<img alt="ngcontainer paragraph with proper style" src="assets/images/guide/structural-directives/good-paragraph.png">
 
 1. Import the `ngModel` directive from `FormsModule`.
 
@@ -290,7 +290,7 @@ Here's a conditional paragraph using `<ng-container>`.
 
     <docs-code header="src/app/app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="select-ngcontainer"/>
 
-    <img alt="ngcontainer options work properly" src="assets/content/images/guide/structural-directives/select-ngcontainer-anim.gif">
+    <img alt="ngcontainer options work properly" src="assets/images/guide/structural-directives/select-ngcontainer-anim.gif">
 
 ## Switching cases with `NgSwitch`
 
@@ -330,7 +330,7 @@ To use the directives, add the `NgSwitch`, `NgSwitchCase` and `NgSwitchDefault` 
 
     <docs-code header="In each child component, here StoutItemComponent" path="adev/src/content/examples/built-in-directives/src/app/item-switch.component.ts" visibleRegion="input"/>
 
-    <img alt="Animation of NgSwitch" src="assets/content/images/guide/built-in-directives/ngswitch.gif">
+    <img alt="Animation of NgSwitch" src="assets/images/guide/built-in-directives/ngswitch.gif">
 
 Switch directives also work with built-in HTML elements and web components.
 For example, you could replace the `<app-best-item>` switch case with a `<div>` as follows.

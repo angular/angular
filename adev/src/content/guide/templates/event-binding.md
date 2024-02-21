@@ -17,7 +17,7 @@ Create the following example; the target event name is `click` and the template 
 
 The event binding listens for the button's click events and calls the component's `onSave()` method whenever a click occurs.
 
-<img src='assets/content/images/guide/template-syntax/syntax-diagram.svg' alt="Syntax diagram">
+<img src='assets/images/guide/template-syntax/syntax-diagram.svg' alt="Syntax diagram">
 
 ### Determining an event target
 

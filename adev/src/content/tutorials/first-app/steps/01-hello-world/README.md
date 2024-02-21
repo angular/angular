@@ -104,7 +104,7 @@ In your IDE:
 
 1. If you stopped the `ng serve` command from step 1, in the **Terminal** window of your IDE, run `ng serve` again.
 1. Open your browser and navigate to `localhost:4200` and confirm that the app builds without error and displays *Hello world* in the title and body of your app:
-    <img alt="browser frame of page displaying the text 'Hello World'" src="assets/content/images/tutorials/first-app/homes-app-lesson-01-browser.png">
+    <img alt="browser frame of page displaying the text 'Hello World'" src="assets/images/tutorials/first-app/homes-app-lesson-01-browser.png">
 </docs-step>
 
 </docs-workflow>

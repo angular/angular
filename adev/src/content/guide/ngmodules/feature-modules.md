@@ -147,7 +147,7 @@ Next, in the `AppComponent`, `app.component.html`, add the tag `<app-customer-da
 
 Now, in addition to the title that renders by default, the `CustomerDashboardComponent` template renders too:
 
-<img alt="feature module component" src="assets/content/images/guide/ngmodules/feature-module.png">
+<img alt="feature module component" src="assets/images/guide/ngmodules/feature-module.png">
 
 ## More on NgModules
 

@@ -14,4 +14,4 @@ Debug specs in the browser in the same way that you debug an application.
 1. Set a breakpoint in the test.
 1. Refresh the browser, and notice how it stops at the breakpoint.
 
-<img alt="Karma debugging" src="assets/content/images/guide/testing/karma-1st-spec-debug.png">
+<img alt="Karma debugging" src="assets/images/guide/testing/karma-1st-spec-debug.png">

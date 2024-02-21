@@ -6,7 +6,7 @@ exports_files(
 
 copy_to_bin(
     name = "images",
-    srcs = glob(["*"]),
+    srcs = glob(["**/*"]),
     visibility = [
         "//visibility:public",
     ],

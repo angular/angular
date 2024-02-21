@@ -82,7 +82,7 @@ For example, one could run JavaScript in a following way:
 
 Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `script` element but keeps safe content such as the `<b>` element.
 
-<img alt="A screenshot showing interpolated and bound HTML values" src="assets/content/images/guide/security/binding-inner-html.png#small">
+<img alt="A screenshot showing interpolated and bound HTML values" src="assets/images/guide/security/binding-inner-html.png#small">
 
 ### Direct use of the DOM APIs and explicit sanitization calls
 
@@ -121,7 +121,7 @@ To prevent this, mark the URL value as a trusted URL using the `bypassSecurityTr
 
 <docs-code header="src/app/bypass-security.component.ts (trust-url)" path="adev/src/content/examples/security/src/app/bypass-security.component.ts" visibleRegion="trust-url"/>
 
-<img alt="A screenshot showing an alert box created from a trusted URL" src="assets/content/images/guide/security/bypass-security-component.png#medium">
+<img alt="A screenshot showing an alert box created from a trusted URL" src="assets/images/guide/security/bypass-security-component.png#medium">
 
 If you need to convert user input into a trusted value, use a component method.
 The following template lets users enter a YouTube video ID and load the corresponding video in an `<iframe>`.

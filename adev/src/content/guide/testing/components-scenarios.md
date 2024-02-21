@@ -859,7 +859,7 @@ Here are some tests that confirm those links are wired to the `routerLink` direc
 
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
 
-<img alt="HeroDetailComponent in action" src="assets/content/images/guide/testing/hero-detail.component.png">
+<img alt="HeroDetailComponent in action" src="assets/images/guide/testing/hero-detail.component.png">
 
 But there's plenty of template complexity even in this simple form.
 

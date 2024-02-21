@@ -70,7 +70,7 @@ The template has been updated to bind the `filterResults` function to the `click
 
 1. Refresh the browser and confirm that you can search the housing location data by city when you click the "Search" button after entering text.
 
-<img alt="filtered search results based on user input" src="assets/content/images/tutorials/first-app/homes-app-lesson-13-step-3.png">
+<img alt="filtered search results based on user input" src="assets/images/tutorials/first-app/homes-app-lesson-13-step-3.png">
 </docs-step>
 
 </docs-workflow>
