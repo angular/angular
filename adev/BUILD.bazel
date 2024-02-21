@@ -135,6 +135,9 @@ architect(
     # Network is required to inline fonts.
     exec_properties = ENABLE_NETWORK,
     output_dir = True,
+    tags = [
+        "no-remote-exec",
+    ],
 )
 
 architect(
@@ -148,6 +151,9 @@ architect(
     chdir = package_name(),
     data = APPLICATION_DEPS + [
         ":application_files_bin",
+    ],
+    tags = [
+        "no-remote-exec",
     ],
 )
 
