@@ -132,6 +132,9 @@ architect(
         ":application_files_bin",
     ],
     output_dir = True,
+    tags = [
+        "no-remote-exec",
+    ],
 )
 
 architect(
@@ -145,6 +148,9 @@ architect(
     chdir = package_name(),
     data = APPLICATION_DEPS + [
         ":application_files_bin",
+    ],
+    tags = [
+        "no-remote-exec",
     ],
 )
 
