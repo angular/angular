@@ -133,7 +133,7 @@ When the form is valid, click _Save_ and the application renders the current for
 
 The following figure shows the final form.
 
-<img alt="Dynamic-Form" src="assets/content/images/guide/dynamic-form/dynamic-form.png">
+<img alt="Dynamic-Form" src="assets/images/guide/dynamic-form/dynamic-form.png">
 
 ## Next steps
 

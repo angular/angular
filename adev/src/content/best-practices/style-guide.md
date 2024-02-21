@@ -884,7 +884,7 @@ Here are templates and/or snippets for some of the web development editors and I
 
 <a href="https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2">
 
-<img alt="Use Extension" src="assets/content/images/guide/styleguide/use-extension.gif">
+<img alt="Use Extension" src="assets/images/guide/styleguide/use-extension.gif">
 
 </a>
 

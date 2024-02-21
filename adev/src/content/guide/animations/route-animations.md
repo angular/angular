@@ -21,7 +21,7 @@ Illustrate a router transition animation by navigating between two routes, *Home
 Both of these component views are children of the top-most view, hosted by `AppComponent`.
 Implement a router transition animation that slides in the new view to the right and slides out the old view when navigating between the two routes.
 
-<img alt="Animations in action" width="440" src="assets/content/images/guide/animations/route-animation.gif">
+<img alt="Animations in action" width="440" src="assets/images/guide/animations/route-animation.gif">
 
 ## Route configuration
 

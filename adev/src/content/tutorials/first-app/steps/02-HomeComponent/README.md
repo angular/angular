@@ -82,7 +82,7 @@ In the **Edit** pane of your IDE:
     *Hello world* in your app should change to *home works!* from the `HomeComponent`.
 1. Check the running app in the browser and confirm that the app has been updated.
 
-    <img alt="browser frame of page displaying the text 'home works!'" src="assets/content/images/tutorials/first-app/homes-app-lesson-02-step-2.png">
+    <img alt="browser frame of page displaying the text 'home works!'" src="assets/images/tutorials/first-app/homes-app-lesson-02-step-2.png">
 
 </docs-step>
 
@@ -111,7 +111,7 @@ In the **Edit** pane of your IDE:
     You should find the filter query box and button in your app and they should be styled.
     Correct any errors before you continue to the next step.
 
-    <img alt="browser frame of homes-app displaying logo, filter text input box and search button" src="assets/content/images/tutorials/first-app/homes-app-lesson-02-step-3.png">
+    <img alt="browser frame of homes-app displaying logo, filter text input box and search button" src="assets/images/tutorials/first-app/homes-app-lesson-02-step-3.png">
     </docs-step>
 
 </docs-workflow>

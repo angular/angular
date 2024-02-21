@@ -156,7 +156,7 @@ ng serve
 
 Then go to `localhost:4200` where you should see "customer-app" and three buttons.
 
-<img alt="three buttons in the browser" src="assets/content/images/guide/modules/lazy-loading-three-buttons.png" width="300">
+<img alt="three buttons in the browser" src="assets/images/guide/modules/lazy-loading-three-buttons.png" width="300">
 
 These buttons work, because the Angular CLI automatically added the routes for the feature modules to the `routes` array in `app-routing.module.ts`.
 
@@ -259,17 +259,17 @@ const routes: Routes = [
 You can verify that a module is indeed being lazy loaded with the Chrome developer tools.
 In Chrome, open the developer tools by pressing <kbd>⌘ Cmd</kbd>+<kbd>Option</kbd>+<kbd>i</kbd> on a Mac or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>j</kbd> on a PC and go to the Network Tab.
 
-<img alt="lazy loaded modules diagram" src="assets/content/images/guide/modules/lazy-loading-network-tab.png" width="600">
+<img alt="lazy loaded modules diagram" src="assets/images/guide/modules/lazy-loading-network-tab.png" width="600">
 
 Click on the Orders or Customers button.
 If you see a chunk appear, everything is wired up properly and the feature module is being lazy loaded.
 A chunk should appear for Orders and for Customers but only appears once for each.
 
-<img alt="lazy loaded modules diagram" src="assets/content/images/guide/modules/lazy-loading-chunk-arrow.png" width="600">
+<img alt="lazy loaded modules diagram" src="assets/images/guide/modules/lazy-loading-chunk-arrow.png" width="600">
 
 To see it again, or to test after making changes, click the circle with a line through it in the upper left of the Network Tab:
 
-<img alt="lazy loaded modules diagram" src="assets/content/images/guide/modules/lazy-loading-clear.gif" width="200">
+<img alt="lazy loaded modules diagram" src="assets/images/guide/modules/lazy-loading-clear.gif" width="200">
 
 Then reload with <kbd>⌘ Cmd</kbd>+<kbd>R</kbd> or <kbd>Ctrl</kbd>+<kbd>R</kbd>, depending on your platform.
 

@@ -35,7 +35,7 @@ The last line of the log shows that Karma ran three tests that all passed.
 
 The test output is displayed in the browser using [Karma Jasmine HTML Reporter](https://github.com/dfederm/karma-jasmine-html-reporter).
 
-<img alt="Jasmine HTML Reporter in the browser" src="assets/content/images/guide/testing/initial-jasmine-html-reporter.png">
+<img alt="Jasmine HTML Reporter in the browser" src="assets/images/guide/testing/initial-jasmine-html-reporter.png">
 
 Click on a test row to re-run just that test or click on a description to re-run the tests in the selected test group \("test suite"\).
 

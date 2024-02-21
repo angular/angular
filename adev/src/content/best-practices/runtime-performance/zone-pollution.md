@@ -13,7 +13,7 @@ This section covers how to identify such conditions, and how to run code outside
 
 You can detect unnecessary change detection calls using Angular DevTools. Often they appear as consecutive bars in the profiler’s timeline with source `setTimeout`, `setInterval`, `requestAnimationFrame`, or an event handler. When you have limited calls within your application of these APIs, the change detection invocation is usually caused by a third-party library.
 
-<img alt="Angular DevTools profiler preview showing Zone pollution" src="assets/content/images/best-practices/runtime-performance/zone-pollution.png">
+<img alt="Angular DevTools profiler preview showing Zone pollution" src="assets/images/best-practices/runtime-performance/zone-pollution.png">
 
 In the image above, there is a series of change detection calls triggered by event handlers associated with an element. That’s a common challenge when using third-party, non-native Angular components, which do not alter the default behavior of `NgZone`.
 

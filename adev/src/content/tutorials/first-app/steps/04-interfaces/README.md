@@ -80,7 +80,7 @@ There are a few more lessons to complete before that happens.
 
 1. Save your changes and confirm the app does not have any errors. Open the browser and confirm that your application still displays the message "housing-location works!"
 
-    <img alt="browser frame of homes-app displaying logo, filter text input box and search button and the message 'housing-location works!'" src="assets/content/images/tutorials/first-app/homes-app-lesson-03-step-2.png">
+    <img alt="browser frame of homes-app displaying logo, filter text input box and search button and the message 'housing-location works!'" src="assets/images/tutorials/first-app/homes-app-lesson-03-step-2.png">
 
 1. Correct any errors before you continue to the next step.
 </docs-step>

@@ -36,7 +36,7 @@ In this case, `:id` is dynamic and will change based on how the route is request
     For the `routerLink` to work in the template, add a file level import of `RouterLink` and `RouterOutlet` from '@angular/router', then update the component `imports` array to include both `RouterLink` and `RouterOutlet`.
 1. At this point you can confirm that the routing is working in your app. In the browser, refresh the home page and click the "Learn More" button for a housing location.
 
-    <img alt="details page displaying the text 'details works!'" src="assets/content/images/tutorials/first-app/homes-app-lesson-11-step-1.png">
+    <img alt="details page displaying the text 'details works!'" src="assets/images/tutorials/first-app/homes-app-lesson-11-step-1.png">
 
 </docs-step>
 
@@ -97,7 +97,7 @@ To access the data you will add a call to the `HousingService`.
 
 1. In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
 
-    <img alt="Details page listing home info" src="assets/content/images/tutorials/first-app/homes-app-lesson-11-step-3.png">
+    <img alt="Details page listing home info" src="assets/images/tutorials/first-app/homes-app-lesson-11-step-3.png">
 
 </docs-step>
 

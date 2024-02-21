@@ -35,7 +35,7 @@ Autocompletion can speed up your development time by providing you with contextu
 This example shows autocomplete in an interpolation.
 As you type it out, you can press tab to complete.
 
-<img alt="autocompletion" src="assets/content/images/guide/language-service/language-completion.gif">
+<img alt="autocompletion" src="assets/images/guide/language-service/language-completion.gif">
 
 There are also completions within elements.
 Any elements you have as a component selector will show up in the completion list.
@@ -45,14 +45,14 @@ Any elements you have as a component selector will show up in the completion lis
 The Angular Language Service can forewarn you of mistakes in your code.
 In this example, Angular doesn't know what `orders` is or where it comes from.
 
-<img alt="error checking" src="assets/content/images/guide/language-service/language-error.gif">
+<img alt="error checking" src="assets/images/guide/language-service/language-error.gif">
 
 ### Quick info and navigation
 
 The quick-info feature lets you hover to see where components, directives, and modules come from.
 You can then click "Go to definition" or press F12 to go directly to the definition.
 
-<img alt="navigation" src="assets/content/images/guide/language-service/language-navigation.gif">
+<img alt="navigation" src="assets/images/guide/language-service/language-navigation.gif">
 
 ## Angular Language Service in your editor
 

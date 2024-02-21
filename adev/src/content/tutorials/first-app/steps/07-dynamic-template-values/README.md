@@ -37,7 +37,7 @@ In the code editor:
 <docs-step title="Confirm the changes render in the browser">
 1.  Save all changes.
 1.  Open the browser and confirm that the app renders the photo, city and state sample data.
-    <img alt="browser frame of homes-app displaying logo, filter text input box, search button and the same housing location UI card" src="assets/content/images/tutorials/first-app/homes-app-lesson-07-step-2.png">
+    <img alt="browser frame of homes-app displaying logo, filter text input box, search button and the same housing location UI card" src="assets/images/tutorials/first-app/homes-app-lesson-07-step-2.png">
 </docs-step>
 
 </docs-workflow>

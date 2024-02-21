@@ -44,7 +44,7 @@ Now the app has a dataset that you can use to display the entries in the browser
 1. Refresh the browser and confirm that the app now renders a grid of housing locations.
 
     <section class="lightbox">
-    <img alt="browser frame of homes-app displaying logo, filter text input box, search button and a grid of housing location cards" src="assets/content/images/tutorials/first-app/homes-app-lesson-08-step-2.png">
+    <img alt="browser frame of homes-app displaying logo, filter text input box, search button and a grid of housing location cards" src="assets/images/tutorials/first-app/homes-app-lesson-08-step-2.png">
     </section>
 
 </docs-step>

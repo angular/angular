@@ -14,7 +14,7 @@ This is useful for defining transitions that apply regardless of the HTML elemen
 
 For example, a transition of `open => *` applies when the element's state changes from open to anything else.
 
-<img alt="wildcard state expressions" src="assets/content/images/guide/animations/wildcard-state-500.png">
+<img alt="wildcard state expressions" src="assets/images/guide/animations/wildcard-state-500.png">
 
 The following is another code sample using the wildcard state together with the previous example using the `open` and `closed` states.
 Instead of defining each state-to-state transition pair, any transition to `closed` takes 1 second, and any transition to `open` takes 0.5 seconds.
@@ -33,7 +33,7 @@ In the two-state button example, the wildcard isn't that useful because there ar
 In general, use wildcard states when an element has multiple potential states that it can change to.
 If the button can change from `open` to either `closed` or something like `inProgress`, using a wildcard state could reduce the amount of coding needed.
 
-<img alt="wildcard state with 3 states" src="assets/content/images/guide/animations/wildcard-3-states.png">
+<img alt="wildcard state with 3 states" src="assets/images/guide/animations/wildcard-3-states.png">
 
 <docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" visibleRegion="trigger-transition"/>
 
@@ -211,7 +211,7 @@ To create an animation with multiple steps run in sequence, use *keyframes*.
 Angular's `keyframe()` function allows several style changes within a single timing segment.
 For example, the button, instead of fading, could change color several times over a single 2-second time span.
 
-<img alt="keyframes" src="assets/content/images/guide/animations/keyframes-500.png">
+<img alt="keyframes" src="assets/images/guide/animations/keyframes-500.png">
 
 The code for this color change might look like this.
 
@@ -227,7 +227,7 @@ If you omit them, evenly spaced offsets are automatically assigned.
 For example, three keyframes without predefined offsets receive offsets of 0, 0.5, and 1.
 Specifying an offset of 0.8 for the middle transition in the preceding example might look like this.
 
-<img alt="keyframes with offset" src="assets/content/images/guide/animations/keyframes-offset-500.png">
+<img alt="keyframes with offset" src="assets/images/guide/animations/keyframes-offset-500.png">
 
 The code with offsets specified would be as follows.
 
@@ -244,7 +244,7 @@ Here's an example of using keyframes to create a pulse effect:
 * The original `open` and `closed` states, with the original changes in height, color, and opacity, occurring over a timeframe of 1 second
 * A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1 second timeframe
 
-<img alt="keyframes with irregular pulsation" src="assets/content/images/guide/animations/keyframes-pulsation.png">
+<img alt="keyframes with irregular pulsation" src="assets/images/guide/animations/keyframes-pulsation.png">
 
 The code snippet for this animation might look like this.
 

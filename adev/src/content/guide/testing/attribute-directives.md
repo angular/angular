@@ -29,7 +29,7 @@ A better solution is to create an artificial test component that demonstrates al
 
 <docs-code header="app/shared/highlight.directive.spec.ts (TestComponent)" path="adev/src/content/examples/testing/src/app/shared/highlight.directive.spec.ts" visibleRegion="test-component"/>
 
-<img alt="HighlightDirective spec in action" src="assets/content/images/guide/testing/highlight-directive-spec.png">
+<img alt="HighlightDirective spec in action" src="assets/images/guide/testing/highlight-directive-spec.png">
 
 HELPFUL: The `<input>` case binds the `HighlightDirective` to the name of a color value in the input box.
 The initial value is the word "cyan" which should be the background color of the input box.

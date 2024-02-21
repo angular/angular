@@ -74,7 +74,7 @@ In the **Edit** pane of your IDE, in `src/app/details/details.component.ts`:
 1. Confirm that the app builds without error.
     Correct any errors before you continue to the next step.
 
-    <img alt="details page with a form for applying to live at this location" src="assets/content/images/tutorials/first-app/homes-app-lesson-12-step-3.png">
+    <img alt="details page with a form for applying to live at this location" src="assets/images/tutorials/first-app/homes-app-lesson-12-step-3.png">
 
 </docs-step>
 

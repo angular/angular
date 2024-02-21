@@ -81,7 +81,7 @@ export class UserService {
 
 With `providedIn: 'any'`, all eagerly loaded modules share a singleton instance; however, lazy loaded modules each get their own unique instance, as shown in the following diagram.
 
-<img alt="any-provider-scope" class="left" src="assets/content/images/guide/providers/any-provider.svg">
+<img alt="any-provider-scope" class="left" src="assets/images/guide/providers/any-provider.svg">
 
 ## Limiting provider scope with components
 
