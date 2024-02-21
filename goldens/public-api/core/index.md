@@ -858,7 +858,7 @@ export interface InjectOptions {
     skipSelf?: boolean;
 }
 
-// @public
+// @public @deprecated
 export const INJECTOR: InjectionToken<Injector>;
 
 // @public

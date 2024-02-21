@@ -15,10 +15,9 @@ import {InjectorMarkers} from './injector_marker';
 /**
  * An InjectionToken that gets the current `Injector` for `createInjector()`-style injectors.
  *
- * Requesting this token instead of `Injector` allows `StaticInjector` to be tree-shaken from a
- * project.
- *
  * @publicApi
+ *
+ * @deprecated Use `inject(Injector)` instead, or inject `Injector` via constructor DI injection.
  */
 export const INJECTOR = new InjectionToken<Injector>(
     ngDevMode ? 'INJECTOR' : '',
