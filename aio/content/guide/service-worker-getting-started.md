@@ -65,7 +65,7 @@ To enable service worker support during local development, use the production co
 
 <code-example format="shell" language="shell">
 
-ng serve --prod
+ng serve --configuration production
 
 </code-example>
 
