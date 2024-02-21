@@ -311,7 +311,6 @@ svg.personified  {
   width: 2rem;
   height: 2rem;
   font-size: 1rem;
-  padding: 4px 5px;
   border: 2px solid var(--electric-violet);
   border-radius: 4px;
   cursor: pointer;
