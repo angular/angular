@@ -77,7 +77,7 @@ export class NodeRuntimeState {
    * recommend using desktop.
    */
   private checkUnsupportedEnvironment(): void {
-    if (isIos || isFirefox) {
+    if (isIos) {
       this.setError({
         message: 'Unsupported environment',
         type: ErrorType.UNSUPPORTED_BROWSER_ENVIRONMENT,
