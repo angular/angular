@@ -4,9 +4,9 @@ package(default_visibility = ["//visibility:public"])
 
 filegroup(
     name = "files_for_docgen",
-    srcs = glob([
+    srcs = [
         "index.ts",
-    ]),
+    ],
 )
 
 generate_api_docs(
