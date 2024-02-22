@@ -39,7 +39,8 @@
             "webWorkerTsConfig": "tsconfig.worker.json",
             "optimization": {
               "fonts": {
-                "inline": true
+                // TODO(josephperrott): enabled inline scripts
+                "inline": false
               }
             }
           },
