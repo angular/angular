@@ -9207,11 +9207,11 @@ function allTests(os: string) {
                 'ɵɵtwoWayProperty("value", (tmp_0_0 = (tmp_0_0 = ctx.a) !== null && ' +
                 'tmp_0_0 !== undefined ? tmp_0_0 : !ctx.b) !== null && tmp_0_0 !== undefined ? tmp_0_0 : ctx.c);');
 
-        expect(jsContents).toContain('let tmp_b_0;');
+        expect(jsContents).toContain('let tmp_0_0;');
         expect(jsContents)
             .toContain(
-                '(tmp_b_0 = (tmp_b_0 = ctx.a) !== null && tmp_b_0 !== undefined ? ' +
-                'tmp_b_0 : !ctx.b) !== null && tmp_b_0 !== undefined ? tmp_b_0 : ' +
+                '(tmp_0_0 = (tmp_0_0 = ctx.a) !== null && tmp_0_0 !== undefined ? ' +
+                'tmp_0_0 : !ctx.b) !== null && tmp_0_0 !== undefined ? tmp_0_0 : ' +
                 'i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event); return $event;');
       });
 

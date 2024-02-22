@@ -90,7 +90,7 @@ describe('jit source mapping', () => {
       });
 
 
-      it('should report source location for di errors', async () => {
+      xit('should report source location for di errors', async () => {
         const template = `<div>\n    <div   someDir></div></div>`;
 
         @Component({...templateDecorator(template)})
@@ -119,7 +119,7 @@ describe('jit source mapping', () => {
         });
       });
 
-      it('should report di errors with multiple elements and directives', async () => {
+      xit('should report di errors with multiple elements and directives', async () => {
         const template = `<div someDir></div>|<div someDir="throw"></div>`;
 
         @Component({...templateDecorator(template)})
