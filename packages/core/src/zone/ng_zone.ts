@@ -9,9 +9,9 @@
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
+import {getCallbackScheduler} from '../util/callback_scheduler';
 import {global} from '../util/global';
 import {noop} from '../util/noop';
-import {getNativeRequestAnimationFrame} from '../util/raf';
 
 import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
 
@@ -164,8 +164,8 @@ export class NgZone {
     self.shouldCoalesceEventChangeDetection =
         !shouldCoalesceRunChangeDetection && shouldCoalesceEventChangeDetection;
     self.shouldCoalesceRunChangeDetection = shouldCoalesceRunChangeDetection;
-    self.lastRequestAnimationFrameId = -1;
-    self.nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
+    self.callbackScheduled = false;
+    self.scheduleCallback = getCallbackScheduler();
     forkInnerZoneWithAngularBehavior(self);
   }
 
@@ -273,7 +273,7 @@ interface NgZonePrivate extends NgZone {
 
   hasPendingMacrotasks: boolean;
   hasPendingMicrotasks: boolean;
-  lastRequestAnimationFrameId: number;
+  callbackScheduled: boolean;
   /**
    * A flag to indicate if NgZone is currently inside
    * checkStable and to prevent re-entry. The flag is
@@ -325,7 +325,9 @@ interface NgZonePrivate extends NgZone {
    */
   shouldCoalesceRunChangeDetection: boolean;
 
-  nativeRequestAnimationFrame: (callback: FrameRequestCallback) => number;
+  scheduleCallback: (callback: Function) => {
+    cancel: () => void
+  };
 
   // Cache a  "fake" top eventTask so you don't need to schedule a new task every
   // time you run a `checkStable`.
@@ -379,10 +381,11 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
    * so we also need to check the _nesting here to prevent multiple
    * change detections.
    */
-  if (zone.isCheckStableRunning || zone.lastRequestAnimationFrameId !== -1) {
+  if (zone.isCheckStableRunning || zone.callbackScheduled) {
     return;
   }
-  zone.lastRequestAnimationFrameId = zone.nativeRequestAnimationFrame.call(global, () => {
+  zone.callbackScheduled = true;
+  zone.scheduleCallback.call(global, () => {
     // This is a work around for https://github.com/angular/angular/issues/36839.
     // The core issue is that when event coalescing is enabled it is possible for microtasks
     // to get flushed too early (As is the case with `Promise.then`) between the
@@ -394,7 +397,7 @@ function delayChangeDetectionForEvents(zone: NgZonePrivate) {
     // eventTask execution.
     if (!zone.fakeTopEventTask) {
       zone.fakeTopEventTask = Zone.root.scheduleEventTask('fakeTopEventTask', () => {
-        zone.lastRequestAnimationFrameId = -1;
+        zone.callbackScheduled = false;
         updateMicroTaskStatus(zone);
         zone.isCheckStableRunning = true;
         checkStable(zone);
@@ -473,7 +476,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 function updateMicroTaskStatus(zone: NgZonePrivate) {
   if (zone._hasPendingMicrotasks ||
       ((zone.shouldCoalesceEventChangeDetection || zone.shouldCoalesceRunChangeDetection) &&
-       zone.lastRequestAnimationFrameId !== -1)) {
+       zone.callbackScheduled === true)) {
     zone.hasPendingMicrotasks = true;
   } else {
     zone.hasPendingMicrotasks = false;
