@@ -1083,6 +1083,7 @@ groups:
         - crisbeto
         - atscott
         - pkozlowski-opensource
+        - ~jeanmeche
 
   # =========================================================
   #  Docs-infra
