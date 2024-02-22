@@ -10,8 +10,8 @@ import {EventEmitter, NgZone} from '@angular/core';
 import {fakeAsync, flushMicrotasks, inject, waitForAsync} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 
+import {getCallbackScheduler} from '../../src/util/callback_scheduler';
 import {global} from '../../src/util/global';
-import {getNativeRequestAnimationFrame} from '../../src/util/raf';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 
 const resultTimer = 1000;
@@ -910,6 +910,31 @@ function commonTests() {
   });
 
   describe('coalescing', () => {
+    it('should execute callback when a view transition is waiting for the callback to complete',
+       async () => {
+         if (!(document as any).startViewTransition) {
+           return;
+         }
+
+         const scheduler = getCallbackScheduler();
+         const startTime = performance.now();
+         // When there is a pending view transition, `requestAnimationFrame` is blocked
+         // because the browser is waiting to take a screenshot. This test ensures that
+         // the scheduler does not block completion of the transition for too long.
+         // This test would fail if the scheduling function _only_ used `rAF`
+         // but works if there is another mechanism as well (i.e. race with setTimeout).
+         // https://github.com/angular/angular/issues/54544
+         const transition = (document as any).startViewTransition(() => {
+           return new Promise<void>(resolve => {
+             scheduler(() => {
+               resolve();
+             });
+           });
+         });
+         await transition.finished;
+         expect(performance.now() - startTime).toBeLessThan(1000);
+       });
+
     describe(
         'shouldCoalesceRunChangeDetection = false, shouldCoalesceEventChangeDetection = false',
         () => {
@@ -959,15 +984,8 @@ function commonTests() {
         });
 
     describe('shouldCoalesceEventChangeDetection = true, shouldCoalesceRunChangeDetection = false', () => {
-      let nativeRequestAnimationFrame: (fn: FrameRequestCallback) => void;
+      const scheduler = getCallbackScheduler();
       let nativeSetTimeout: any = global[Zone.__symbol__('setTimeout')];
-      if (!global.requestAnimationFrame) {
-        nativeRequestAnimationFrame = function(fn: Function) {
-          global[Zone.__symbol__('setTimeout')](fn, 16);
-        };
-      } else {
-        nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
-      }
       let patchedImmediate: any;
       let coalesceZone: NgZone;
       let logs: string[] = [];
@@ -995,7 +1013,7 @@ function commonTests() {
         });
         task!.invoke();
         expect(logs).toEqual(['microTask empty', 'myEvent']);
-        nativeRequestAnimationFrame(() => {
+        scheduler(() => {
           expect(logs).toEqual(['microTask empty', 'myEvent', 'microTask empty']);
           done();
         });
@@ -1014,7 +1032,7 @@ function commonTests() {
            });
            tasks.forEach(t => t.invoke());
            expect(logs).toEqual(['microTask empty', 'eventTask1', 'eventTask2']);
-           nativeRequestAnimationFrame(() => {
+           scheduler(() => {
              expect(logs).toEqual(
                  ['microTask empty', 'eventTask1', 'eventTask2', 'microTask empty']);
              done();
@@ -1063,7 +1081,7 @@ function commonTests() {
            });
            tasks.forEach(t => t.invoke());
            expect(logs).toEqual(['microTask empty', 'eventTask1', 'eventTask2', 'macroTask']);
-           nativeRequestAnimationFrame(() => {
+           scheduler(() => {
              expect(logs).toEqual(
                  ['microTask empty', 'eventTask1', 'eventTask2', 'macroTask', 'microTask empty']);
              done();
@@ -1087,7 +1105,7 @@ function commonTests() {
            tasks.forEach(t => t.invoke());
            expect(logs).toEqual(
                ['microTask empty', 'macroTask', 'microTask empty', 'eventTask1', 'eventTask2']);
-           nativeRequestAnimationFrame(() => {
+           scheduler(() => {
              expect(logs).toEqual([
                'microTask empty', 'macroTask', 'microTask empty', 'eventTask1', 'eventTask2',
                'microTask empty'
@@ -1098,15 +1116,8 @@ function commonTests() {
     });
 
     describe('shouldCoalesceRunChangeDetection = true', () => {
-      let nativeRequestAnimationFrame: (fn: FrameRequestCallback) => void;
+      const scheduler = getCallbackScheduler();
       let nativeSetTimeout: any = global[Zone.__symbol__('setTimeout')];
-      if (!global.requestAnimationFrame) {
-        nativeRequestAnimationFrame = function(fn: Function) {
-          global[Zone.__symbol__('setTimeout')](fn, 16);
-        };
-      } else {
-        nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
-      }
       let patchedImmediate: any;
       let coalesceZone: NgZone;
       let logs: string[] = [];
@@ -1128,7 +1139,7 @@ function commonTests() {
       it('should run in requestAnimationFrame async', done => {
         coalesceZone.run(() => {});
         expect(logs).toEqual([]);
-        nativeRequestAnimationFrame(() => {
+        scheduler(() => {
           expect(logs).toEqual(['microTask empty']);
           done();
         });
@@ -1139,7 +1150,7 @@ function commonTests() {
            coalesceZone.run(() => {});
            coalesceZone.run(() => {});
            expect(logs).toEqual([]);
-           nativeRequestAnimationFrame(() => {
+           scheduler(() => {
              expect(logs).toEqual(['microTask empty']);
              done();
            });
@@ -1178,7 +1189,7 @@ function commonTests() {
            });
            tasks.forEach(t => t.invoke());
            expect(logs).toEqual(['macroTask', 'eventTask1', 'eventTask2', 'macroTask']);
-           nativeRequestAnimationFrame(() => {
+           scheduler(() => {
              expect(logs).toEqual(
                  ['macroTask', 'eventTask1', 'eventTask2', 'macroTask', 'microTask empty']);
              done();
