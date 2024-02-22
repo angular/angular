@@ -3,6 +3,11 @@
     <h6>Getting Started</h6>
     <h1 tabindex="-1">API Reference</h1>
   </header>
+
+  @if (featuredGroup().items.length) {
+  <adev-api-items-section [group]="featuredGroup()" class="adev-featured-list" />
+  }
+
   <form class="adev-reference-list-form">
     <docs-text-field
       name="query"
@@ -34,12 +39,8 @@
     </ul>
   </form>
 
-  @if (featuredGroup().items.length) {
-    <adev-api-items-section [group]="featuredGroup()" class="adev-featured-list" />
-  }
   @for (group of filteredGroups(); track group) {
     <adev-api-items-section [group]="group" />
   }
 
-  <span id="deprecated-description" class="docs-deprecated-description">Deprecated</span>
 </div>
