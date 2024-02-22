@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, EventEmitter, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, EventEmitter, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵisG3 as isG3, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks,} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {first, take} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
-import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
-
+import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone,} from './test_bed_common';
 
 /**
  * Fixture for debugging and testing a component.
@@ -128,7 +127,6 @@ export abstract class ComponentFixture<T> {
     return Promise.resolve(deferBlockFixtures);
   }
 
-
   private _getRenderer() {
     if (this._renderer === undefined) {
       this._renderer = this.componentRef.injector.get(RendererFactory2, null);
@@ -177,11 +175,13 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     if (!this.disableDetectChangesError) {
       throw new Error(
           'Do not use `detectChanges` directly when using zoneless change detection.' +
-          ' Instead, wait for the next render or `fixture.whenStable`.');
+              ' Instead, wait for the next render or `fixture.whenStable`.',
+      );
     } else if (!checkNoChanges) {
       throw new Error(
           'Cannot disable `checkNoChanges` in this configuration. ' +
-          'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.');
+              'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.',
+      );
     }
     this._effectRunner.flush();
     this._appRef.tick();
@@ -196,7 +196,7 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     if (this.isStable()) {
       return Promise.resolve(false);
     }
-    return this._appRef.isStable.pipe(first(stable => stable)).toPromise().then(() => true);
+    return this._appRef.isStable.pipe(first((stable) => stable)).toPromise().then(() => true);
   }
 
   override autoDetectChanges(autoDetect?: boolean|undefined): void {
@@ -232,37 +232,57 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
-      this._subscriptions.add(this._ngZone.onUnstable.subscribe({
-        next: () => {
-          this._isStable = false;
-        }
-      }));
-      this._subscriptions.add(this._ngZone.onStable.subscribe({
-        next: () => {
-          this._isStable = true;
-          // Check whether there is a pending whenStable() completer to resolve.
-          if (this._promise !== null) {
-            // If so check whether there are no pending macrotasks before resolving.
-            // Do this check in the next tick so that ngZone gets a chance to update the state of
-            // pending macrotasks.
-            queueMicrotask(() => {
-              if (!this._ngZone.hasPendingMacrotasks) {
-                if (this._promise !== null) {
-                  this._resolve!(true);
-                  this._resolve = null;
-                  this._promise = null;
+      this._subscriptions.add(
+          this._ngZone.onUnstable.subscribe({
+            next: () => {
+              this._isStable = false;
+            },
+          }),
+      );
+      // TODO(atscott): Remove and make this a breaking change externally in v18
+      if (!isG3) {
+        this._subscriptions.add(
+            this._ngZone.onMicrotaskEmpty.subscribe({
+              next: () => {
+                if (this._autoDetect) {
+                  // Do a change detection run with checkNoChanges set to true to check
+                  // there are no changes on the second run.
+                  this.detectChanges(true);
                 }
+              },
+            }),
+        );
+      }
+      this._subscriptions.add(
+          this._ngZone.onStable.subscribe({
+            next: () => {
+              this._isStable = true;
+              // Check whether there is a pending whenStable() completer to resolve.
+              if (this._promise !== null) {
+                // If so check whether there are no pending macrotasks before resolving.
+                // Do this check in the next tick so that ngZone gets a chance to update the state
+                // of pending macrotasks.
+                queueMicrotask(() => {
+                  if (!this._ngZone.hasPendingMacrotasks) {
+                    if (this._promise !== null) {
+                      this._resolve!(true);
+                      this._resolve = null;
+                      this._promise = null;
+                    }
+                  }
+                });
               }
-            });
-          }
-        }
-      }));
+            },
+          }),
+      );
 
-      this._subscriptions.add(this._ngZone.onError.subscribe({
-        next: (error: any) => {
-          throw error;
-        }
-      }));
+      this._subscriptions.add(
+          this._ngZone.onError.subscribe({
+            next: (error: any) => {
+              throw error;
+            },
+          }),
+      );
     });
   }
 
@@ -291,7 +311,7 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     } else if (this._promise !== null) {
       return this._promise;
     } else {
-      this._promise = new Promise(res => {
+      this._promise = new Promise((res) => {
         this._resolve = res;
       });
       return this._promise;
@@ -316,26 +336,33 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   }
 
   private subscribeToAppRefEvents() {
+    // TODO(atscott): Remove and make this a breaking change externally in v18
+    if (!isG3) {
+      return;
+    }
+
     this._ngZone.runOutsideAngular(() => {
       this.afterTickSubscription = this._testAppRef.afterTick.subscribe(() => {
-        this.componentRef.changeDetectorRef.checkNoChanges();
+        this.checkNoChanges();
       });
       this.beforeRenderSubscription = this._testAppRef.beforeRender.subscribe(({isFirstPass}) => {
         try {
           ɵdetectChangesInViewIfRequired(
-              isFirstPass, (this.componentRef.hostView as any)._lView,
-              (this.componentRef.hostView as any).notifyErrorHandler);
-        } finally {
+              isFirstPass,
+              (this.componentRef.hostView as any)._lView,
+              (this.componentRef.hostView as any).notifyErrorHandler,
+          );
+        } catch (e: unknown) {
           // If an error ocurred during change detection, remove the test view from the application
           // ref tracking until the tick completes so that it doesn't interfere with regular views
           // there. After the tick is done, we add ourselves back so we change detect in subsequent
           // runs.
           this.unsubscribeFromAppRefEvents();
           this.afterTickSubscription = this._testAppRef.afterTick.pipe(take(1)).subscribe(() => {
-            this._ngZone.runOutsideAngular(() => {
-              this.subscribeToAppRefEvents();
-            });
+            this.subscribeToAppRefEvents();
           });
+
+          throw e;
         }
       });
       this._testAppRef.externalTestViews.add(this.componentRef.hostView);
@@ -343,6 +370,11 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   }
 
   private unsubscribeFromAppRefEvents() {
+    // TODO(atscott): Remove and make this a breaking change externally in v18
+    if (!isG3) {
+      return;
+    }
+
     this.afterTickSubscription?.unsubscribe();
     this.beforeRenderSubscription?.unsubscribe();
     this.afterTickSubscription = undefined;
