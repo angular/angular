@@ -77,8 +77,9 @@
   justify-content: flex-start;
   flex-wrap: wrap-reverse;
   gap: 1.5rem;
-  padding-block-start: 0;
+  padding-block-start: 1.5rem;
   padding-block-end: 2rem;
+  border-block: 1px solid var(--senary-contrast);
 }
 
 .adev-reference-list-form-part-two {
@@ -89,15 +90,10 @@
 
 .adev-featured-list {
   display: block;
-  padding-block-end: 2rem;
-  padding-block-start: 1.5rem;
+  padding-block-end: 1rem;
   margin-block: 1rem;
-  border-block: 1px solid var(--senary-contrast);
-}
-
-
-.docs-deprecated-description {
-  display: none;
+  border-top: 0;
+  margin-top: -1.5rem;
 }
 
 .docs-api-item-label-full {
