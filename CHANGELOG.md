@@ -1,3 +1,12 @@
+<a name="17.3.0-next.0"></a>
+# 17.3.0-next.0 (2024-02-21)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [da7fbb40f0](https://github.com/angular/angular/commit/da7fbb40f06e6e37504f69e7b335f8219f424de2) | fix | detect when the linker is working in unpublished angular and widen supported versions ([#54439](https://github.com/angular/angular/pull/54439)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.2.2"></a>
 # 17.2.2 (2024-02-21)
 ### common
