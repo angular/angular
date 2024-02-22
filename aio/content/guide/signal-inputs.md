@@ -120,7 +120,7 @@ Transforms should be [pure functions](https://en.wikipedia.org/wiki/Pure_functio
 ```typescript
 class MyComp {
   disabled = input(false, {
-    transform: (value: boolean|string) => typeof v === 'string' ? v === '' : v,
+    transform: (value: boolean|string) => typeof value === 'string' ? value === '' : value,
   });
 }
 ```
