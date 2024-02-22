@@ -90,7 +90,45 @@ runInEachFileSystem(() => {
 
           /** Or "tomato" if you are British */
           Tomato: "tomato",
-        }
+        };
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+
+      expect(docs.length).toBe(1);
+      expect(docs[0].entryType).toBe(EntryType.Enum);
+      expect(docs[0].jsdocTags).toEqual([]);
+
+      const enumEntry = docs[0] as EnumEntry;
+      expect(enumEntry.name).toBe('PizzaTopping');
+      expect(enumEntry.members.length).toBe(2);
+
+      const [cheeseEntry, tomatoEntry] = enumEntry.members;
+
+      expect(cheeseEntry.name).toBe('Cheese');
+      expect(cheeseEntry.description).toBe('It is cheese');
+      expect(cheeseEntry.value).toBe('0');
+      expect(cheeseEntry.type).toBe('PizzaTopping.Cheese');
+
+      expect(tomatoEntry.name).toBe('Tomato');
+      expect(tomatoEntry.description).toBe('Or "tomato" if you are British');
+      expect(tomatoEntry.value).toBe('"tomato"');
+      expect(tomatoEntry.type).toBe('PizzaTopping.Tomato');
+    });
+
+    it('should extract an object literal cast to a const and marked as an enum', () => {
+      env.write('index.ts', `
+        /**
+         * Toppings for your pizza.
+         * @object-literal-as-enum
+         */
+        export const PizzaTopping = {
+          /** It is cheese */
+          Cheese: 0,
+
+          /** Or "tomato" if you are British */
+          Tomato: "tomato",
+        } as const;
       `);
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');

@@ -68,11 +68,18 @@ export function isSyntheticAngularConstant(declaration: ts.VariableDeclaration) 
  */
 function extractLiteralPropertiesAsEnumMembers(declaration: ts.VariableDeclaration):
     EnumMemberEntry[] {
-  const initializer = declaration.initializer;
+  let initializer = declaration.initializer;
+
+  // Unwrap `as` and parenthesized expressions.
+  while (initializer &&
+         (ts.isAsExpression(initializer) || ts.isParenthesizedExpression(initializer))) {
+    initializer = initializer.expression;
+  }
 
   if (initializer === undefined || !ts.isObjectLiteralExpression(initializer)) {
     throw new Error(`Declaration tagged with "${
-        LITERAL_AS_ENUM_TAG}" must be initialized to an object literal`);
+        LITERAL_AS_ENUM_TAG}" must be initialized to an object literal, but received ${
+        initializer ? ts.SyntaxKind[initializer.kind] : 'undefined'}`);
   }
 
   return initializer.properties.map(prop => {
