@@ -1030,9 +1030,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * The raw value of this control. For most control implementations, the raw value will include
    * disabled children.
    */
-  getRawValue(): any {
-    return this.value;
-  }
+  abstract getRawValue(): TRawValue;
 
   /**
    * Recalculates the value and validation status of the control.

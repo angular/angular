@@ -622,6 +622,12 @@ describe('Typed Class', () => {
       ac = new FormGroup({a: new FormControl(true, {nonNullable: true})});
     });
 
+    it('should not allow assignment to an AbstractControl with an incompatible TRawValue', () => {
+      let ac: AbstractControl<{x?: boolean}, {x: boolean}>;
+      // @ts-expect-error
+      ac = new FormGroup({});
+    });
+
     it('is assignable to UntypedFormGroup', () => {
       let ufg: UntypedFormGroup;
       const fg = new FormGroup({name: new FormControl('bob')});
