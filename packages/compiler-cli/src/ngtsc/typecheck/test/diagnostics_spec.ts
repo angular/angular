@@ -203,7 +203,7 @@ runInEachFileSystem(() => {
           [{type: 'pipe', name: 'Pipe', pipeName: 'pipe'}]);
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 28): Argument of type 'number' is not assignable to parameter of type 'string'.`,
+        `TestComponent.html(1, 35): Argument of type 'number' is not assignable to parameter of type 'string'.`,
       ]);
     });
 
@@ -333,7 +333,7 @@ runInEachFileSystem(() => {
       }`);
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 31): Argument of type '-2' is not assignable to parameter of type '1 | -1'.`,
+        `TestComponent.html(1, 32): Argument of type '-2' is not assignable to parameter of type '1 | -1'.`,
       ]);
     });
 

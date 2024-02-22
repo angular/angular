@@ -115,6 +115,8 @@ export enum FormatWidth {
   Full,
 }
 
+// This needs to be an object literal, rather than an enum, because TypeScript 5.4+
+// doesn't allow numeric keys and we have `Infinity` and `NaN`.
 /**
  * Symbols that can be used to replace placeholders in number patterns.
  * Examples are based on `en-US` values.
@@ -123,81 +125,84 @@ export enum FormatWidth {
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
  *
  * @publicApi
+ * @object-literal-as-enum
  */
-export enum NumberSymbol {
+export const NumberSymbol = {
   /**
    * Decimal separator.
    * For `en-US`, the dot character.
    * Example: 2,345`.`67
    */
-  Decimal,
+  Decimal: 0,
   /**
    * Grouping separator, typically for thousands.
    * For `en-US`, the comma character.
    * Example: 2`,`345.67
    */
-  Group,
+  Group: 1,
   /**
    * List-item separator.
    * Example: "one, two, and three"
    */
-  List,
+  List: 2,
   /**
    * Sign for percentage (out of 100).
    * Example: 23.4%
    */
-  PercentSign,
+  PercentSign: 3,
   /**
    * Sign for positive numbers.
    * Example: +23
    */
-  PlusSign,
+  PlusSign: 4,
   /**
    * Sign for negative numbers.
    * Example: -23
    */
-  MinusSign,
+  MinusSign: 5,
   /**
    * Computer notation for exponential value (n times a power of 10).
    * Example: 1.2E3
    */
-  Exponential,
+  Exponential: 6,
   /**
    * Human-readable format of exponential.
    * Example: 1.2x103
    */
-  SuperscriptingExponent,
+  SuperscriptingExponent: 7,
   /**
    * Sign for permille (out of 1000).
    * Example: 23.4‰
    */
-  PerMille,
+  PerMille: 8,
   /**
    * Infinity, can be used with plus and minus.
    * Example: ∞, +∞, -∞
    */
-  Infinity,
+  Infinity: 9,
   /**
    * Not a number.
    * Example: NaN
    */
-  NaN,
+  NaN: 10,
   /**
    * Symbol used between time units.
    * Example: 10:52
    */
-  TimeSeparator,
+  TimeSeparator: 11,
   /**
    * Decimal separator for currency values (fallback to `Decimal`).
    * Example: $2,345.67
    */
-  CurrencyDecimal,
+  CurrencyDecimal: 12,
   /**
    * Group separator for currency values (fallback to `Group`).
    * Example: $2,345.67
    */
-  CurrencyGroup,
-}
+  CurrencyGroup: 13,
+} as const;
+
+export type NumberSymbol = (typeof NumberSymbol)[keyof typeof NumberSymbol];
 
 /**
  * The value for each day of the week, based on the `en-US` locale
@@ -406,7 +411,7 @@ export function getLocaleDateTimeFormat(locale: string, width: FormatWidth): str
 /**
  * Retrieves a localized number symbol that can be used to replace placeholders in number formats.
  * @param locale The locale code.
- * @param symbol The symbol to localize.
+ * @param symbol The symbol to localize. Must be one of `NumberSymbol`.
  * @returns The character for the localized symbol.
  * @see {@link NumberSymbol}
  * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
