@@ -79,6 +79,21 @@ For more information on how to use two-way binding in forms, see Angular [NgMode
 
 </div>
 
+## Two-way binding to signals
+
+Angular supports binding both plain values and signals to two-way bindings. If you pass a writable signal to a two-way binding, Angular will automatically keep it in sync with the underlying input and output.
+
+```typescript
+@Component({
+  template: '<input [(ngModel)]="name">',
+  imports: [FormsModule]
+})
+export class MyComp {
+  name = signal('Bob');
+}
+```
+
+
 <!-- links -->
 
 <!-- external links -->

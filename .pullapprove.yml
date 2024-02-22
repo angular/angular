@@ -347,6 +347,7 @@ groups:
           'aio/content/guide/defer.md',
           'aio/content/guide/signals.md',
           'aio/content/guide/control_flow.md',
+          'aio/content/guide/model-inputs.md',
           'aio/content/examples/injection-token/**/{*,.*}',
           ])
     reviewers:

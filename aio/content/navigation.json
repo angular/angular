@@ -793,6 +793,11 @@
               "tooltip": "Signal inputs to optimize change detection and developer experience."
             },
             {
+              "url": "guide/model-inputs",
+              "title": "Model inputs",
+              "tooltip": "Model inputs define inputs that emit a changed event when updated."
+            },
+            {
               "url": "guide/signal-queries",
               "title": "Signal queries",
               "tooltip": "Signal queries exposing results as a reactive signal primitive."
