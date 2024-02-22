@@ -744,22 +744,25 @@ export enum NumberFormatStyle {
 }
 
 // @public
-export enum NumberSymbol {
-    CurrencyDecimal = 12,
-    CurrencyGroup = 13,
-    Decimal = 0,
-    Exponential = 6,
-    Group = 1,
-    Infinity = 9,
-    List = 2,
-    MinusSign = 5,
-    NaN = 10,
-    PercentSign = 3,
-    PerMille = 8,
-    PlusSign = 4,
-    SuperscriptingExponent = 7,
-    TimeSeparator = 11
-}
+export const NumberSymbol: {
+    readonly Decimal: 0;
+    readonly Group: 1;
+    readonly List: 2;
+    readonly PercentSign: 3;
+    readonly PlusSign: 4;
+    readonly MinusSign: 5;
+    readonly Exponential: 6;
+    readonly SuperscriptingExponent: 7;
+    readonly PerMille: 8;
+    readonly Infinity: 9;
+    readonly NaN: 10;
+    readonly TimeSeparator: 11;
+    readonly CurrencyDecimal: 12;
+    readonly CurrencyGroup: 13;
+};
+
+// @public (undocumented)
+export type NumberSymbol = (typeof NumberSymbol)[keyof typeof NumberSymbol];
 
 // @public
 export class PathLocationStrategy extends LocationStrategy implements OnDestroy {
