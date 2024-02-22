@@ -102,6 +102,7 @@ const _subscribableStrategy = new SubscribableStrategy();
 export class AsyncPipe implements OnDestroy, PipeTransform {
   private _ref: ChangeDetectorRef | null;
   private _latestValue: any = null;
+  private markForCheckOnValueUpdate = true;
 
   private _subscription: Unsubscribable | Promise<any> | null = null;
   private _obj: Subscribable<any> | Promise<any> | EventEmitter<any> | null = null;
@@ -134,7 +135,15 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   transform<T>(obj: Observable<T> | Subscribable<T> | Promise<T> | null | undefined): T | null {
     if (!this._obj) {
       if (obj) {
-        this._subscribe(obj);
+        try {
+          // Only call `markForCheck` if the value is updated asynchronously.
+          // Synchronous updates _during_ subscription should not wastefully mark for check -
+          // this value is already going to be returned from the transform function.
+          this.markForCheckOnValueUpdate = false;
+          this._subscribe(obj);
+        } finally {
+          this.markForCheckOnValueUpdate = true;
+        }
       }
       return this._latestValue;
     }
@@ -181,9 +190,9 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
   private _updateLatestValue(async: any, value: Object): void {
     if (async === this._obj) {
       this._latestValue = value;
-      // Note: `this._ref` is only cleared in `ngOnDestroy` so is known to be available when a
-      // value is being updated.
-      this._ref!.markForCheck();
+      if (this.markForCheckOnValueUpdate) {
+        this._ref?.markForCheck();
+      }
     }
   }
 }
