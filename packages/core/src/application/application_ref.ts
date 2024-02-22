@@ -19,8 +19,9 @@ import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
-import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
+import {isG3} from '../is_internal';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleRef} from '../linker/ng_module_factory';
@@ -29,7 +30,7 @@ import {PendingTasks} from '../pending_tasks';
 import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
-import {ChangeDetectionMode, MAXIMUM_REFRESH_RERUNS, detectChangesInternal} from '../render3/instructions/change_detection';
+import {ChangeDetectionMode, detectChangesInternal, MAXIMUM_REFRESH_RERUNS} from '../render3/instructions/change_detection';
 import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
@@ -702,8 +703,7 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
 
 
 function shouldRecheckView(view: LView): boolean {
-  return requiresRefreshOrTraversal(view);
-  // TODO(atscott): We need to support rechecking views marked dirty again in afterRender hooks
-  // in order to support the transition to zoneless. b/308152025
-  /* || !!(view[FLAGS] & LViewFlags.Dirty); */
+  return requiresRefreshOrTraversal(view) ||
+      // TODO(atscott): Remove isG3 check and make this a breaking change for v18
+      (isG3 && !!(view[FLAGS] & LViewFlags.Dirty));
 }
