@@ -37,7 +37,7 @@ import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../ut
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
-const SHOULD_USE_TEMPLATE_PIPELINE = false;
+const SHOULD_USE_TEMPLATE_PIPELINE = true;
 
 /**
  * State information about a compilation which is only generated once some data is requested from

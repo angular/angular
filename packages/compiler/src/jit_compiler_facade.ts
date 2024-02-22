@@ -30,7 +30,7 @@ import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 import {SelectorMatcher} from './selector';
 
-export const SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT = false;
+export const SHOULD_USE_TEMPLATE_PIPELINE_FOR_JIT = true;
 
 export class CompilerFacadeImpl implements CompilerFacade {
   FactoryTarget = FactoryTarget;
