@@ -184,7 +184,7 @@ The Angular router selects this route any time the requested URL doesn't match a
 To set up a wildcard route, add the following code to your `routes` definition.
 
 ```
-{ path: '**', component: &lt;component-name&gt; }
+{ path: '**', component: PageNotFoundComponent }
 ```
 
 The two asterisks, `**`, indicate to Angular that this `routes` definition is a wildcard route.
