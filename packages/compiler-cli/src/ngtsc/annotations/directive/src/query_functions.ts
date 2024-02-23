@@ -37,9 +37,9 @@ const defaultDescendantsValue = (type: QueryFunctionName) => type !== 'contentCh
  */
 export function tryParseSignalQueryFromInitializer(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker):
+    importTracker: ImportedSymbolsTracker, isCore: boolean):
     {name: QueryFunctionName, metadata: R3QueryMetadata, call: ts.CallExpression}|null {
-  const query = tryParseInitializerApiMember(queryFunctionNames, member, importTracker);
+  const query = tryParseInitializerApiMember(queryFunctionNames, member, importTracker, isCore);
   if (query === null) {
     return null;
   }

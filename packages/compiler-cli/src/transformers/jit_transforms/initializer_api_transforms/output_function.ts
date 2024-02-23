@@ -37,6 +37,7 @@ export const initializerApiOutputTransform: PropertyTransform = (
   const output = tryParseInitializerBasedOutput(
       {name: member.name.text, value: member.initializer ?? null},
       importTracker,
+      isCore,
   );
   if (output === null) {
     return member;
