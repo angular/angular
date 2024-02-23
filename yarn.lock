@@ -431,6 +431,15 @@
   optionalDependencies:
     parse5 "^7.1.2"
 
+"@angular/cdk@17.3.0-next.0":
+  version "17.3.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-17.3.0-next.0.tgz#a4240f611376c47383e7da287d4e8c56bb33f5a4"
+  integrity sha512-UfWGS8I6SPEBm+r2ePbP5t5fb5mOxkyPNTqMDyGmrz4d7ukqduhV33lR8vXCim+/X18QBeQMviaa+LObLCgbcA==
+  dependencies:
+    tslib "^2.3.0"
+  optionalDependencies:
+    parse5 "^7.1.2"
+
 "@angular/cli@17.2.0-rc.0":
   version "17.2.0-rc.0"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-17.2.0-rc.0.tgz#38419cbe7300a41152a15e38b6f1fdbf662c378f"
@@ -455,17 +464,17 @@
     symbol-observable "4.0.0"
     yargs "17.7.2"
 
-"@angular/common@17.2.0-rc.1":
-  version "17.2.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/common/-/common-17.2.0-rc.1.tgz#ee11b007e8bf3e3656dc187932f22855c9ff5a3f"
-  integrity sha512-SbtHBu1X174Qadeydk6pzmby+7PEBpTXxfmTCTvhovQuE/stxWigMuEx/gKOiYwm6vlk2D3kKA2mlfMrL/MNGQ==
+"@angular/common@17.3.0-next.0":
+  version "17.3.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/common/-/common-17.3.0-next.0.tgz#62700365dd950a5e0fd00376a8c089a8affe4602"
+  integrity sha512-LWxNQER11cAcLkUORh97IKcoAgqNHO99bmYjSOA+OTOErdqQqvy1BJOQ+lYPPQKPsNgtybYYsYrsah6e7ctyHQ==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@17.2.0-rc.1":
-  version "17.2.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-17.2.0-rc.1.tgz#9c85ac59da4154df2a8b99bca99415cd51da50ab"
-  integrity sha512-CwS5kV4vn4s4+ae/PBWQpvZHPKByIW1TUAL5G36Ks1itKaTLX4sd4rBRhoVk+q/d8uiyLcdAHhb3R+XVSsEIRQ==
+"@angular/core@17.3.0-next.0":
+  version "17.3.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-17.3.0-next.0.tgz#5efb483ff5e1c3e2cb4bbfc385cad13e6a3c7cce"
+  integrity sha512-/JtC/qP3kY30gYH8MaXlPcDxFnIAFmfZzg6jCyi2xNSoiGCnjzABHWK0GjcGdkftduZx66FOPgMR+/k8J31WGQ==
   dependencies:
     tslib "^2.3.0"
 
@@ -476,20 +485,20 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#a0ac4ac3c0c7d9609bc57e04d60efc67e92fa236":
-  version "0.0.0-710e2680e31e8206eebb0ea7345fc661fad7a1af"
-  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#a0ac4ac3c0c7d9609bc57e04d60efc67e92fa236"
+"@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#234b4d802ab803bf54010eb9cff12176d28e3590":
+  version "0.0.0-278005b2346d2fc6f79235e5bbe6ba2678bcfa79"
+  resolved "https://github.com/angular/dev-infra-private-docs-builds.git#234b4d802ab803bf54010eb9cff12176d28e3590"
   dependencies:
-    "@angular/cdk" "17.2.0-rc.0"
-    "@angular/common" "17.2.0-rc.1"
-    "@angular/core" "17.2.0-rc.1"
-    "@angular/forms" "17.2.0-rc.1"
-    "@angular/material" "17.2.0-rc.0"
-    "@angular/platform-browser" "17.2.0-rc.1"
-    "@angular/router" "17.2.0-rc.1"
+    "@angular/cdk" "17.3.0-next.0"
+    "@angular/common" "17.3.0-next.0"
+    "@angular/core" "17.3.0-next.0"
+    "@angular/forms" "17.3.0-next.0"
+    "@angular/material" "17.3.0-next.0"
+    "@angular/platform-browser" "17.3.0-next.0"
+    "@angular/router" "17.3.0-next.0"
     "@webcontainer/api" "^1.1.8"
     algoliasearch "^4.20.0"
-    diff "5.1.0"
+    diff "5.2.0"
     emoji-regex "10.3.0"
     glob "10.3.10"
     highlight.js "11.9.0"
@@ -502,10 +511,10 @@
     xterm-addon-fit "^0.8.0"
     zone.js "^0.14.2"
 
-"@angular/forms@17.2.0-rc.1":
-  version "17.2.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-17.2.0-rc.1.tgz#e48a1587b8dad6b0d62d0c21ffde8108a7b82ef6"
-  integrity sha512-D2iw6eGqjJaYJhlTemfC/pJdzEstYTXIvMxQk2hre17FPjx0SoU2ePIhTwGf+NSuJJYFS9NaB0ryz6VxG1yxjw==
+"@angular/forms@17.3.0-next.0":
+  version "17.3.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-17.3.0-next.0.tgz#c245499209793f2d2ec6ed84f51a89f9ab9df405"
+  integrity sha512-zyGyy0RFN0QzL94s4914PsE62LBFiQJzKAD7PmTmgEFzUISqVW3EgOxfZ8mrf60a91WQjK965mcFkCirHwBVLw==
   dependencies:
     tslib "^2.3.0"
 
@@ -563,6 +572,60 @@
     "@material/typography" "15.0.0-canary.7f224ddd4.0"
     tslib "^2.3.0"
 
+"@angular/material@17.3.0-next.0":
+  version "17.3.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-17.3.0-next.0.tgz#a82aca3ee52ce8168dca5b7792e93eaf5c247d82"
+  integrity sha512-OFEmOt/Qa9lHF2KI74nnHBS1ARifiu8GsVCz56M2+UmzwQWWpMKtz5pmC68/FWF6SMK3aBvBTFiB6w+P+tIuiQ==
+  dependencies:
+    "@material/animation" "15.0.0-canary.7f224ddd4.0"
+    "@material/auto-init" "15.0.0-canary.7f224ddd4.0"
+    "@material/banner" "15.0.0-canary.7f224ddd4.0"
+    "@material/base" "15.0.0-canary.7f224ddd4.0"
+    "@material/button" "15.0.0-canary.7f224ddd4.0"
+    "@material/card" "15.0.0-canary.7f224ddd4.0"
+    "@material/checkbox" "15.0.0-canary.7f224ddd4.0"
+    "@material/chips" "15.0.0-canary.7f224ddd4.0"
+    "@material/circular-progress" "15.0.0-canary.7f224ddd4.0"
+    "@material/data-table" "15.0.0-canary.7f224ddd4.0"
+    "@material/density" "15.0.0-canary.7f224ddd4.0"
+    "@material/dialog" "15.0.0-canary.7f224ddd4.0"
+    "@material/dom" "15.0.0-canary.7f224ddd4.0"
+    "@material/drawer" "15.0.0-canary.7f224ddd4.0"
+    "@material/elevation" "15.0.0-canary.7f224ddd4.0"
+    "@material/fab" "15.0.0-canary.7f224ddd4.0"
+    "@material/feature-targeting" "15.0.0-canary.7f224ddd4.0"
+    "@material/floating-label" "15.0.0-canary.7f224ddd4.0"
+    "@material/form-field" "15.0.0-canary.7f224ddd4.0"
+    "@material/icon-button" "15.0.0-canary.7f224ddd4.0"
+    "@material/image-list" "15.0.0-canary.7f224ddd4.0"
+    "@material/layout-grid" "15.0.0-canary.7f224ddd4.0"
+    "@material/line-ripple" "15.0.0-canary.7f224ddd4.0"
+    "@material/linear-progress" "15.0.0-canary.7f224ddd4.0"
+    "@material/list" "15.0.0-canary.7f224ddd4.0"
+    "@material/menu" "15.0.0-canary.7f224ddd4.0"
+    "@material/menu-surface" "15.0.0-canary.7f224ddd4.0"
+    "@material/notched-outline" "15.0.0-canary.7f224ddd4.0"
+    "@material/radio" "15.0.0-canary.7f224ddd4.0"
+    "@material/ripple" "15.0.0-canary.7f224ddd4.0"
+    "@material/rtl" "15.0.0-canary.7f224ddd4.0"
+    "@material/segmented-button" "15.0.0-canary.7f224ddd4.0"
+    "@material/select" "15.0.0-canary.7f224ddd4.0"
+    "@material/shape" "15.0.0-canary.7f224ddd4.0"
+    "@material/slider" "15.0.0-canary.7f224ddd4.0"
+    "@material/snackbar" "15.0.0-canary.7f224ddd4.0"
+    "@material/switch" "15.0.0-canary.7f224ddd4.0"
+    "@material/tab" "15.0.0-canary.7f224ddd4.0"
+    "@material/tab-bar" "15.0.0-canary.7f224ddd4.0"
+    "@material/tab-indicator" "15.0.0-canary.7f224ddd4.0"
+    "@material/tab-scroller" "15.0.0-canary.7f224ddd4.0"
+    "@material/textfield" "15.0.0-canary.7f224ddd4.0"
+    "@material/theme" "15.0.0-canary.7f224ddd4.0"
+    "@material/tooltip" "15.0.0-canary.7f224ddd4.0"
+    "@material/top-app-bar" "15.0.0-canary.7f224ddd4.0"
+    "@material/touch-target" "15.0.0-canary.7f224ddd4.0"
+    "@material/typography" "15.0.0-canary.7f224ddd4.0"
+    tslib "^2.3.0"
+
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#c21f93acb618bcaeda52a8065e7b6c9242def182":
   version "0.0.0-c83e99a12397014162531ca125c94549db55dd84"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#c21f93acb618bcaeda52a8065e7b6c9242def182"
@@ -570,17 +633,17 @@
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
 
-"@angular/platform-browser@17.2.0-rc.1":
-  version "17.2.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-17.2.0-rc.1.tgz#d8265b48dbf0235dfe975822e13c65513de29d74"
-  integrity sha512-UGxDneEMO5y5+ckgXQNoa8Khq+bJqw6XT2FlLtkDS4j2/6QMvnUtZP3bkPh15S5ec7GF2zch+1fEH97x+YMkfw==
+"@angular/platform-browser@17.3.0-next.0":
+  version "17.3.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-17.3.0-next.0.tgz#475aa92cfa4acf9b5cae37ffa44e2733d2209ad0"
+  integrity sha512-C9njXV9bV2T6vEuIeZ7SCkUU18JRglMtlL9ORWvWSVSUUV/b7rGMGg7B7nmc505xI9/xFnTW8nr2QnV1/tNVRg==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/router@17.2.0-rc.1":
-  version "17.2.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/router/-/router-17.2.0-rc.1.tgz#89805117a3f4ecbd5b5c2fed2ec256031eca21e2"
-  integrity sha512-VSjvCmqmNjZ4VrEXhjGgGhaCniq2a1kPRJ5EY2HYh/rD1wgc/X0OlbbQpzhJQ65At4rpTkvWG4XTBhmo2n+MDA==
+"@angular/router@17.3.0-next.0":
+  version "17.3.0-next.0"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-17.3.0-next.0.tgz#c29779c3dcea43af736a2cd94e15218360c4d29a"
+  integrity sha512-GbHbMXEG2oxZvj/Ido3G7/g+yxTegdtUP3WKee54DFlkNdt27FMkjeV9UOakKKXO//b8t/7wWXfS6nqgBJrtRw==
   dependencies:
     tslib "^2.3.0"
 
@@ -8269,15 +8332,20 @@ di@^0.0.1:
   resolved "https://registry.yarnpkg.com/di/-/di-0.0.1.tgz#806649326ceaa7caa3306d75d985ea2748ba913c"
   integrity sha512-uJaamHkagcZtHPqCIHZxnFrXlunQXgBOsZSUOWwFw31QJCAbyTBoHMW75YOTur5ZNx8pIeAKgf6GWIgaqqiLhA==
 
-diff@5.1.0, diff@^5.0.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/diff/-/diff-5.1.0.tgz#bc52d298c5ea8df9194800224445ed43ffc87e40"
-  integrity sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==
+diff@5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-5.2.0.tgz#26ded047cd1179b78b9537d5ef725503ce1ae531"
+  integrity sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==
 
 diff@^4.0.1:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/diff/-/diff-4.0.2.tgz#60f3aecb89d5fae520c11aa19efc2bb982aade7d"
   integrity sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==
+
+diff@^5.0.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-5.1.0.tgz#bc52d298c5ea8df9194800224445ed43ffc87e40"
+  integrity sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==
 
 dir-glob@^3.0.1:
   version "3.0.1"
