@@ -37,6 +37,7 @@ copy_to_directory(
         "//adev/src/content/tutorials",
         "//adev/src/content/tutorials/first-app:first-app-guides",
         "//adev/src/content/tutorials/learn-angular:learn-angular-guides",
+        "//aio/content/cli/help:cli_docs",
         "//packages/animations:animations_docs",
         "//packages/animations/browser:animations_browser_docs",
         "//packages/animations/browser/testing:animations_browser_testing_docs",
@@ -72,6 +73,7 @@ copy_to_directory(
         "//tools/manual_api_docs/elements:elements_docs",
     ],
     replace_prefixes = {
+        "aio/content/cli/**/": "cli/",
         "adev/src/content": "",
         "packages/**/": "api/",
         "tools/**/": "api/",
