@@ -76,7 +76,7 @@
     "@types/babel__core": "7.20.5",
     "@types/babel__generator": "7.6.8",
     "@types/bluebird": "^3.5.27",
-    "@types/chrome": "^0.0.260",
+    "@types/chrome": "^0.0.261",
     "@types/convert-source-map": "^2.0.0",
     "@types/diff": "^5.0.0",
     "@types/dom-view-transitions": "^1.0.1",
@@ -130,7 +130,7 @@
     "rollup-plugin-sourcemaps": "^0.6.3",
     "rxjs": "^7.0.0",
     "selenium-webdriver": "3.5.0",
-    "selenium-webdriver4": "npm:selenium-webdriver@4.17.0",
+    "selenium-webdriver4": "npm:selenium-webdriver@4.18.1",
     "semver-dsl": "^1.0.1",
     "shelljs": "^0.8.5",
     "source-map": "0.7.4",
@@ -196,7 +196,7 @@
     "gsap": "^3.12.3",
     "gulp": "^4.0.2",
     "gulp-conventional-changelog": "^4.0.0",
-    "husky": "9.0.10",
+    "husky": "9.0.11",
     "inquirer": "^9.2.7",
     "jsdom": "^24.0.0",
     "karma-coverage": "^2.2.1",
@@ -224,7 +224,7 @@
   "// 3": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
   "// 4": "Ensure that a single instance of the `saucelabs` package is used. Protractor and the Karma sauce launcher pull this package as dependency. A single instance allows for e.g. easier patching in the Karma config.",
   "resolutions": {
-    "**/https-proxy-agent": "7.0.3",
+    "**/https-proxy-agent": "7.0.4",
     "**/saucelabs": "7.5.0"
   }
 }

@@ -41,7 +41,7 @@
   },
   "overrides": {
     "@angular-devkit/build-angular": {
-      "piscina": "4.2.1"
+      "piscina": "4.3.2"
     }
   }
 }
