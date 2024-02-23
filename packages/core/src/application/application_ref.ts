@@ -549,7 +549,7 @@ export class ApplicationRef {
       // If we have a newly dirty view after running internal callbacks, recheck the views again
       // before running user-provided callbacks
       if ([...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => shouldRecheckView(_lView))) {
+              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
         continue;
       }
 
@@ -557,7 +557,7 @@ export class ApplicationRef {
       // If after running all afterRender callbacks we have no more views that need to be refreshed,
       // we can break out of the loop
       if (![...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => shouldRecheckView(_lView))) {
+              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
         break;
       }
     }
@@ -711,15 +711,12 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
 export function detectChangesInViewIfRequired(
     lView: LView, isFirstPass: boolean, notifyErrorHandler: boolean) {
   // When re-checking, only check views which actually need it.
-  if (!isFirstPass && !shouldRecheckView(lView)) {
+  if (!isFirstPass && !requiresRefreshOrTraversal(lView)) {
     return;
   }
   detectChangesInView(lView, notifyErrorHandler, isFirstPass);
 }
 
-function shouldRecheckView(view: LView): boolean {
-  return requiresRefreshOrTraversal(view) || !!(view[FLAGS] & LViewFlags.Dirty);
-}
 
 function detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
   const mode = isFirstPass || lView[FLAGS] & LViewFlags.Dirty ?

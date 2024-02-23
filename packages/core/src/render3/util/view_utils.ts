@@ -9,15 +9,13 @@
 import {getEnsureDirtyViewsAreAlwaysReachable} from '../../change_detection/flags';
 import {NotificationType} from '../../change_detection/scheduling/zoneless_scheduling';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
+import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan,} from '../../util/assert';
 import {assertLView, assertTNode, assertTNodeForLView} from '../assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView} from '../interfaces/view';
-
-
+import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView,} from '../interfaces/view';
 
 /**
  * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`)
@@ -104,7 +102,6 @@ export function getNativeByTNodeOrNull(tNode: TNode|null, lView: LView): RNode|n
   return null;
 }
 
-
 // fixme(misko): The return Type should be `TNode|null`
 export function getTNode(tView: TView, index: number): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
@@ -151,8 +148,14 @@ export function viewAttachedToContainer(view: LView): boolean {
 /** Returns a constant from `TConstants` instance. */
 export function getConstant<T>(consts: TConstants|null, index: null|undefined): null;
 export function getConstant<T>(consts: TConstants, index: number): T|null;
-export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null;
-export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null {
+export function getConstant<T>(
+    consts: TConstants|null,
+    index: number|null|undefined,
+    ): T|null;
+export function getConstant<T>(
+    consts: TConstants|null,
+    index: number|null|undefined,
+    ): T|null {
   if (index === null || index === undefined) return null;
   ngDevMode && assertIndexInRange(consts!, index);
   return consts![index] as unknown as T;
@@ -190,7 +193,8 @@ export function walkUpViews(nestingLevel: number, currentView: LView): LView {
     ngDevMode &&
         assertDefined(
             currentView[DECLARATION_VIEW],
-            'Declaration view should be defined if nesting level is greater than 0.');
+            'Declaration view should be defined if nesting level is greater than 0.',
+        );
     currentView = currentView[DECLARATION_VIEW]!;
     nestingLevel--;
   }
@@ -199,10 +203,10 @@ export function walkUpViews(nestingLevel: number, currentView: LView): LView {
 
 export function requiresRefreshOrTraversal(lView: LView) {
   return !!(
-      lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+      lView[FLAGS] &
+          (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh | LViewFlags.Dirty) ||
       lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty);
 }
-
 
 /**
  * Updates the `HasChildViewsToRefresh` flag on the parents of the `LView` as well as the
@@ -213,7 +217,8 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
   // TODO(atscott): Simplify if...else cases once getEnsureDirtyViewsAreAlwaysReachable is always
   // `true`. When we attach a view that's marked `Dirty`, we should ensure that it is reached during
   // the next CD traversal so we add the `RefreshView` flag and mark ancestors accordingly.
-  if (requiresRefreshOrTraversal(lView)) {
+  if (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+      lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty) {
     markAncestorsForTraversal(lView);
   } else if (lView[FLAGS] & LViewFlags.Dirty) {
     if (getEnsureDirtyViewsAreAlwaysReachable()) {
@@ -256,7 +261,9 @@ export function markAncestorsForTraversal(lView: LView) {
 export function storeLViewOnDestroy(lView: LView, onDestroyCallback: () => void) {
   if ((lView[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
     throw new RuntimeError(
-        RuntimeErrorCode.VIEW_ALREADY_DESTROYED, ngDevMode && 'View has already been destroyed.');
+        RuntimeErrorCode.VIEW_ALREADY_DESTROYED,
+        ngDevMode && 'View has already been destroyed.',
+    );
   }
   if (lView[ON_DESTROY_HOOKS] === null) {
     lView[ON_DESTROY_HOOKS] = [];
