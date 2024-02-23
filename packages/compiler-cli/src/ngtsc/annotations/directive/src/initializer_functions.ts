@@ -103,8 +103,7 @@ function parseTopLevelCall(
     return null;
   }
 
-  return fnNames.some(
-             name => importTracker.isPotentialReferenceToNamedImport(node, name, CORE_MODULE)) ?
+  return fnNames.some(name => importTracker.isReferenceToNamedImport(node, name, CORE_MODULE)) ?
       {node, isRequired: false} :
       null;
 }
@@ -124,8 +123,8 @@ function parseTopLevelRequiredCall(
   }
 
   const expression = node.expression;
-  const matchesCoreApi = fnNames.some(
-      name => importTracker.isPotentialReferenceToNamedImport(expression, name, CORE_MODULE));
+  const matchesCoreApi =
+      fnNames.some(name => importTracker.isReferenceToNamedImport(expression, name, CORE_MODULE));
 
   return matchesCoreApi ? {node: expression, isRequired: true} : null;
 }
@@ -149,14 +148,13 @@ function parseTopLevelCallFromNamespace(
 
   // `prop = core.input()`
   if (ts.isIdentifier(node.expression) && ts.isIdentifier(node.name) &&
-      importTracker.isPotentialReferenceToNamespaceImport(node.expression, CORE_MODULE)) {
+      importTracker.isReferenceToNamespaceImport(node.expression, CORE_MODULE)) {
     apiReference = node.name;
   } else if (
       // `prop = core.input.required()`
       ts.isPropertyAccessExpression(node.expression) &&
       ts.isIdentifier(node.expression.expression) && ts.isIdentifier(node.expression.name) &&
-      importTracker.isPotentialReferenceToNamespaceImport(
-          node.expression.expression, CORE_MODULE) &&
+      importTracker.isReferenceToNamespaceImport(node.expression.expression, CORE_MODULE) &&
       node.name.text === 'required') {
     apiReference = node.expression.name;
     isRequired = true;

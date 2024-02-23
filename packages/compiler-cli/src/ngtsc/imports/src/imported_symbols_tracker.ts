@@ -23,26 +23,20 @@ type NamespaceImportsMap = {
 };
 
 /**
- * Tracks which symbols are imported in specific files and under what names. Allows for efficient
- * querying for references to those symbols without having to consult the type checker early in the
- * process.
- *
- * Note that the tracker doesn't account for variable shadowing so a final verification with the
- * type checker may be necessary, depending on the context. Also does not track dynamic imports.
+ * Tracks which symbols are imported in specific files and under what names.
+ * Allows for efficient querying for references to those symbols.
  */
 export class ImportedSymbolsTracker {
   private fileToNamedImports = new WeakMap<ts.SourceFile, NamedImportsMap>();
   private fileToNamespaceImports = new WeakMap<ts.SourceFile, NamespaceImportsMap>();
 
   /**
-   * Checks if an identifier is a potential reference to a specific named import within the same
-   * file.
+   * Checks if an identifier is a reference to a specific named import within the same file.
    * @param node Identifier to be checked.
    * @param exportedName Name of the exported symbol that is being searched for.
    * @param moduleName Module from which the symbol should be imported.
    */
-  isPotentialReferenceToNamedImport(node: ts.Identifier, exportedName: string, moduleName: string):
-      boolean {
+  isReferenceToNamedImport(node: ts.Identifier, exportedName: string, moduleName: string): boolean {
     const sourceFile = node.getSourceFile();
     this.scanImports(sourceFile);
     const fileImports = this.fileToNamedImports.get(sourceFile)!;
@@ -52,12 +46,11 @@ export class ImportedSymbolsTracker {
   }
 
   /**
-   * Checks if an identifier is a potential reference to a specific namespace import within the same
-   * file.
+   * Checks if an identifier is a reference to a specific namespace import within the same file.
    * @param node Identifier to be checked.
    * @param moduleName Module from which the namespace is imported.
    */
-  isPotentialReferenceToNamespaceImport(node: ts.Identifier, moduleName: string): boolean {
+  isReferenceToNamespaceImport(node: ts.Identifier, moduleName: string): boolean {
     const sourceFile = node.getSourceFile();
     this.scanImports(sourceFile);
     const namespaces = this.fileToNamespaceImports.get(sourceFile)!;
@@ -95,7 +88,7 @@ export class ImportedSymbolsTracker {
           const exportedName =
               element.propertyName === undefined ? localName : element.propertyName.text;
           namedImports[moduleName] ??= {};
-          namedImports[moduleName][exportedName] ??= new Set();
+          namedImports[moduleName][exportedName] = new Set();
           namedImports[moduleName][exportedName].add(localName);
         }
       }
