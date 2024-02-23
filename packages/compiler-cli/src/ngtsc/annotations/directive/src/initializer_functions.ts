@@ -8,8 +8,7 @@
 
 import ts from 'typescript';
 
-import {ImportedSymbolsTracker} from '../../../imports';
-import {ClassMember} from '../../../reflection';
+import {ClassMember, ReflectionHost} from '../../../reflection';
 import {CORE_MODULE} from '../../common';
 
 /**
@@ -48,102 +47,98 @@ interface InitializerFunctionMetadata {
  * allowing for checking multiple types in one pass.
  */
 export function tryParseInitializerApiMember<FnNames extends InitializerApiFunction[]>(
-    fnNames: FnNames, member: Pick<ClassMember, 'value'>, importTracker: ImportedSymbolsTracker,
-    isCore: boolean): InitializerFunctionMetadata|null {
-  if (isCore || member.value === null || !ts.isCallExpression(member.value)) {
+    fnNames: FnNames, member: Pick<ClassMember, 'value'>, reflector: ReflectionHost,
+    isCore: boolean): InitializerFunctionMetadata&{apiName: FnNames[number]}|null {
+  if (member.value === null || !ts.isCallExpression(member.value)) {
     return null;
   }
-
   const call = member.value;
-  return parseTopLevelCall(call, fnNames, importTracker) ||
-      parseTopLevelRequiredCall(call, fnNames, importTracker) ||
-      parseTopLevelCallFromNamespace(call, fnNames, importTracker);
-}
 
-/**
- * Attempts to parse a top-level call to an initializer function,
- * e.g. `prop = input()`. Returns null if it can't be parsed.
- */
-function parseTopLevelCall(
-    call: ts.CallExpression, fnNames: InitializerApiFunction[],
-    importTracker: ImportedSymbolsTracker): InitializerFunctionMetadata|null {
-  const node = call.expression;
-
-  if (!ts.isIdentifier(node)) {
+  // Extract target. Either:
+  //    - `[input]`
+  //    - `core.[input]`
+  //    - `input.[required]`
+  //    - `core.input.[required]`.
+  let target = extractPropertyTarget(call.expression);
+  if (target === null) {
     return null;
   }
 
-  const matchingNamedImport =
-      fnNames.find(name => importTracker.isReferenceToNamedImport(node, name, CORE_MODULE));
+  // Find if the `target` matches one of the expected APIs we are looking for.
+  // e.g. `input`, or `viewChild`.
+  let apiName = fnNames.find(n => n === target!.text);
 
-  return matchingNamedImport === undefined ? null : {
-    apiName: matchingNamedImport,
-    call,
-    isRequired: false,
-  };
-}
+  // Case 1: API is directly called. e.g. `input`
+  // If no API name was matched, continue looking for `input.required`.
+  if (apiName !== undefined) {
+    if (!isReferenceToInitializerApiFunction(apiName, target, isCore, reflector)) {
+      return null;
+    }
+    return {apiName, call, isRequired: false};
+  }
 
-/**
- * Attempts to parse a top-level call to a required initializer,
- * e.g. `prop = input.required()`. Returns null if it can't be parsed.
- */
-function parseTopLevelRequiredCall(
-    call: ts.CallExpression, fnNames: InitializerApiFunction[],
-    importTracker: ImportedSymbolsTracker): InitializerFunctionMetadata|null {
-  const node = call.expression;
-
-  if (!ts.isPropertyAccessExpression(node) || !ts.isIdentifier(node.expression) ||
-      node.name.text !== 'required') {
+  // Case 2: API is the `.required`
+  // Ensure there is a property access to `[input].required` or `[core.input].required`.
+  if (target.text !== 'required' || !ts.isPropertyAccessExpression(call.expression)) {
     return null;
   }
 
-  const expression = node.expression;
-  const matchingNamedImport =
-      fnNames.find(name => importTracker.isReferenceToNamedImport(expression, name, CORE_MODULE));
+  // e.g. `[input.required]` (the full property access is this)
+  const apiPropertyAccess = call.expression;
+  // e.g. `[input].required` (we now extract the left side of the access).
+  target = extractPropertyTarget(apiPropertyAccess.expression);
+  if (target === null) {
+    return null;
+  }
 
-  return matchingNamedImport === undefined ? null : {
-    apiName: matchingNamedImport,
+  // Find if the `target` matches one of the expected APIs are are looking for.
+  apiName = fnNames.find(n => n === target!.text);
+
+  // Ensure the call refers to the real API function from Angular core.
+  if (apiName === undefined ||
+      !isReferenceToInitializerApiFunction(apiName, target, isCore, reflector)) {
+    return null;
+  }
+
+  return {
+    apiName,
     call,
     isRequired: true,
   };
 }
 
+/**
+ * Extracts the identifier property target of a expression, supporting
+ * one level deep property accesses.
+ *
+ * e.g. `input.required` will return `required`.
+ * e.g. `input` will return `input`.
+ *
+ */
+function extractPropertyTarget(node: ts.Expression): ts.Identifier|null {
+  if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.name)) {
+    return node.name;
+  } else if (ts.isIdentifier(node)) {
+    return node;
+  }
+  return null;
+}
 
 /**
- * Attempts to parse a top-level call to a function referenced via a namespace import,
- * e.g. `prop = core.input.required()`. Returns null if it can't be parsed.
+ * Verifies that the given identifier resolves to the given initializer API
+ * function expression from Angular core.
  */
-function parseTopLevelCallFromNamespace(
-    call: ts.CallExpression, fnNames: InitializerApiFunction[],
-    importTracker: ImportedSymbolsTracker): InitializerFunctionMetadata|null {
-  const node = call.expression;
-
-  if (!ts.isPropertyAccessExpression(node)) {
-    return null;
+function isReferenceToInitializerApiFunction(
+    functionName: InitializerApiFunction, target: ts.Identifier, isCore: boolean,
+    reflector: ReflectionHost): boolean {
+  let targetImport: {name: string, from: string}|null = reflector.getImportOfIdentifier(target);
+  if (targetImport === null) {
+    if (!isCore) {
+      return false;
+    }
+    // We are compiling the core module, where no import can be present.
+    targetImport = {name: target.text, from: CORE_MODULE};
   }
 
-  let apiReference: ts.Identifier|null = null;
-  let isRequired = false;
-
-  // `prop = core.input()`
-  if (ts.isIdentifier(node.expression) && ts.isIdentifier(node.name) &&
-      importTracker.isReferenceToNamespaceImport(node.expression, CORE_MODULE)) {
-    apiReference = node.name;
-  } else if (
-      // `prop = core.input.required()`
-      ts.isPropertyAccessExpression(node.expression) &&
-      ts.isIdentifier(node.expression.expression) && ts.isIdentifier(node.expression.name) &&
-      importTracker.isReferenceToNamespaceImport(node.expression.expression, CORE_MODULE) &&
-      node.name.text === 'required') {
-    apiReference = node.expression.name;
-    isRequired = true;
-  }
-
-  return (apiReference === null || !fnNames.includes(apiReference.text as InitializerApiFunction)) ?
-      null :
-      {
-        apiName: apiReference.text as InitializerApiFunction,
-        call,
-        isRequired,
-      };
+  return targetImport.name === functionName && targetImport.from === CORE_MODULE;
 }

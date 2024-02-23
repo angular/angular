@@ -8,7 +8,6 @@
 
 import ts from 'typescript';
 
-import {ImportedSymbolsTracker} from '../src/ngtsc/imports';
 import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
 import {getDownlevelDecoratorsTransform, getInitializerApiJitTransform} from '../src/transformers/jit_transforms';
 
@@ -59,10 +58,9 @@ describe('signal queries metadata transform', () => {
     const testFile = program.getSourceFile(TEST_FILE_INPUT);
     const typeChecker = program.getTypeChecker();
     const reflectionHost = new TypeScriptReflectionHost(typeChecker);
-    const importTracker = new ImportedSymbolsTracker();
     const transformers: ts.CustomTransformers = {
       before: [
-        getInitializerApiJitTransform(reflectionHost, importTracker, /* isCore */ false),
+        getInitializerApiJitTransform(reflectionHost, /* isCore */ false),
       ]
     };
 

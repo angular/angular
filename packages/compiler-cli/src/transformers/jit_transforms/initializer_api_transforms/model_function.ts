@@ -21,7 +21,6 @@ export const signalModelTransform: PropertyTransform = (
     member,
     host,
     factory,
-    importTracker,
     importManager,
     decorator,
     isCore,
@@ -34,7 +33,7 @@ export const signalModelTransform: PropertyTransform = (
 
   const modelMapping = tryParseSignalModelMapping(
       {name: member.name.text, value: member.initializer ?? null},
-      importTracker,
+      host,
       isCore,
   );
 

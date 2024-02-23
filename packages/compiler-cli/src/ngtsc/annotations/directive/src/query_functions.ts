@@ -11,7 +11,6 @@ import {createMayBeForwardRefExpression, ForwardRefHandling, MaybeForwardRefExpr
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
-import {ImportedSymbolsTracker} from '../../../imports';
 import {ClassMember, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {tryUnwrapForwardRef} from '../../common';
 
@@ -36,10 +35,9 @@ const defaultDescendantsValue = (type: QueryFunctionName) => type !== 'contentCh
  * @returns Resolved query metadata, or null if no query is declared.
  */
 export function tryParseSignalQueryFromInitializer(
-    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker, isCore: boolean):
+    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost, isCore: boolean):
     {name: QueryFunctionName, metadata: R3QueryMetadata, call: ts.CallExpression}|null {
-  const query = tryParseInitializerApiMember(queryFunctionNames, member, importTracker, isCore);
+  const query = tryParseInitializerApiMember(queryFunctionNames, member, reflector, isCore);
   if (query === null) {
     return null;
   }
@@ -60,10 +58,10 @@ export function tryParseSignalQueryFromInitializer(
   const read = options?.has('read') ? parseReadOption(options.get('read')!) : null;
   const descendants = options?.has('descendants') ?
       parseDescendantsOption(options.get('descendants')!) :
-      defaultDescendantsValue(query.apiName as QueryFunctionName);
+      defaultDescendantsValue(query.apiName);
 
   return {
-    name: query.apiName as QueryFunctionName,
+    name: query.apiName,
     call: query.call,
     metadata: {
       isSignal: true,
