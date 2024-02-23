@@ -4968,6 +4968,36 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should handle single-line element with a log tag name and a closing bracket on a new line',
+       async () => {
+         writeFile('/comp.ts', `
+          import {Component} from '@angular/core';
+          import {NgIf} from '@angular/common';
+
+          @Component({templateUrl: './comp.html'})
+          class Comp {
+            show = false;
+          }
+        `);
+
+         writeFile('/comp.html', [
+           `<ng-container *ngIf="true">`,
+           `<component-name-with-several-dashes></component-name-with-several-dashes`,
+           `></ng-container>`,
+         ].join('\n'));
+
+         await runMigration();
+         const actual = tree.readContent('/comp.html');
+         const expected = [
+           `@if (true) {`,
+           `  <component-name-with-several-dashes></component-name-with-several-dashes`,
+           `    >`,
+           `  }`,
+         ].join('\n');
+
+         expect(actual).toBe(expected);
+       });
   });
 
   describe('imports', () => {

@@ -652,7 +652,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
 
     // matches closing of an html element
     // </element>
-    const closeElRegex = /\s*<\/([a-zA-Z0-9\-_]+)*>/;
+    const closeElRegex = /\s*<\/([a-zA-Z0-9\-_]+)\s*>/m;
 
     // matches closing of a self closing html element when the element is on multiple lines
     // [binding]="value" />
@@ -664,7 +664,7 @@ export function formatTemplate(tmpl: string, templateType: string): string {
 
     // matches an open and close of an html element on a single line with no breaks
     // <div>blah</div>
-    const singleLineElRegex = /\s*<([a-zA-Z0-9]+)(?![^>]*\/>)[^>]*>.*<\/([a-zA-Z0-9\-_]+)*>/;
+    const singleLineElRegex = /\s*<([a-zA-Z0-9]+)(?![^>]*\/>)[^>]*>.*<\/([a-zA-Z0-9\-_]+)\s*>/;
 
     const lines = tmpl.split('\n');
     const formatted = [];
