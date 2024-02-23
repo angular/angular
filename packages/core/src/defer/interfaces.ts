@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../di/interface/provider';
+import type {Provider} from '../di/interface/provider';
 import type {DependencyType} from '../render3/interfaces/definition';
 
 /**

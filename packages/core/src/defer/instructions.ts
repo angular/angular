@@ -532,7 +532,7 @@ function applyDeferBlockState(
       // to the logic that creates a view.
       const tDetails = getTDeferBlockDetails(hostTView, tNode);
       const providers = tDetails.providers;
-      if (Array.isArray(providers) && providers.length > 0) {
+      if (providers && providers.length > 0) {
         const parentInjector = hostLView[INJECTOR] as Injector;
         const parentEnvInjector = parentInjector.get(EnvironmentInjector);
         injector =

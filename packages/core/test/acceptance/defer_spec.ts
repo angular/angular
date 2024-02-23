@@ -3980,6 +3980,78 @@ describe('@defer', () => {
     });
   });
 
+  describe('DI', () => {
+    it('should provide access to tokens from a parent component', async () => {
+      const TokenA = new InjectionToken('A');
+      const TokenB = new InjectionToken('B');
+
+      @Component({
+        standalone: true,
+        selector: 'parent-cmp',
+        template: '<ng-content />',
+        providers: [{provide: TokenA, useValue: 'TokenA.ParentCmp'}],
+      })
+      class ParentCmp {
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'child-cmp',
+        template: 'Token A: {{ parentTokenA }} | Token B: {{ parentTokenB }}',
+      })
+      class ChildCmp {
+        parentTokenA = inject(TokenA);
+        parentTokenB = inject(TokenB);
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'app-root',
+        template: `
+          <parent-cmp>
+            @defer (when isVisible) {
+              <child-cmp />
+            }
+          </parent-cmp>
+        `,
+        imports: [ChildCmp, ParentCmp],
+        providers: [{provide: TokenB, useValue: 'TokenB.RootCmp'}]
+      })
+      class RootCmp {
+        isVisible = true;
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            return [dynamicImportOf(ChildCmp)];
+          };
+        }
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+        ],
+        deferBlockBehavior: DeferBlockBehavior.Playthrough,
+      });
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify that tokens from parent components are available for injection
+      // inside a component within a `@defer` block.
+      const tokenA = 'TokenA.ParentCmp';
+      const tokenB = 'TokenB.RootCmp';
+
+      expect(fixture.nativeElement.innerHTML)
+          .toContain(`<child-cmp>Token A: ${tokenA} | Token B: ${tokenB}</child-cmp>`);
+    });
+  });
+
   describe('NgModules', () => {
     it('should provide access to tokens from imported NgModules', async () => {
       let serviceInitCount = 0;
