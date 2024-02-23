@@ -10,7 +10,7 @@ import {createMayBeForwardRefExpression, emitDistinctChangesOnlyDefaultValue, Ex
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
-import {assertSuccessfulReferenceEmit, ImportedSymbolsTracker, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
+import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../../imports';
 import {ClassPropertyMapping, DecoratorInputTransform, HostDirectiveMeta, InputMapping, InputOrOutput, isHostDirectiveMetaForGlobalMode} from '../../../metadata';
 import {DynamicValue, EnumValue, PartialEvaluator, ResolvedValue, traceDynamicValue} from '../../../partial_evaluator';
 import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
@@ -38,10 +38,9 @@ const QUERY_TYPES = new Set<string>(queryDecoratorNames);
  */
 export function extractDirectiveMetadata(
     clazz: ClassDeclaration, decorator: Readonly<Decorator>, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker, evaluator: PartialEvaluator,
-    refEmitter: ReferenceEmitter, referencesRegistry: ReferencesRegistry, isCore: boolean,
-    annotateForClosureCompiler: boolean, compilationMode: CompilationMode,
-    defaultSelector: string|null, useTemplatePipeline: boolean): {
+    evaluator: PartialEvaluator, refEmitter: ReferenceEmitter,
+    referencesRegistry: ReferencesRegistry, isCore: boolean, annotateForClosureCompiler: boolean,
+    compilationMode: CompilationMode, defaultSelector: string|null, useTemplatePipeline: boolean): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   inputs: ClassPropertyMapping<InputMapping>,
@@ -85,19 +84,19 @@ export function extractDirectiveMetadata(
   const inputsFromMeta =
       parseInputsArray(clazz, directive, evaluator, reflector, refEmitter, compilationMode);
   const inputsFromFields = parseInputFields(
-      clazz, members, evaluator, reflector, importTracker, refEmitter, isCore, compilationMode,
-      inputsFromMeta, decorator);
+      clazz, members, evaluator, reflector, refEmitter, isCore, compilationMode, inputsFromMeta,
+      decorator);
   const inputs = ClassPropertyMapping.fromMappedObject({...inputsFromMeta, ...inputsFromFields});
 
   // And outputs.
   const outputsFromMeta = parseOutputsArray(directive, evaluator);
-  const outputsFromFields = parseOutputFields(
-      clazz, decorator, members, isCore, reflector, importTracker, evaluator, outputsFromMeta);
+  const outputsFromFields =
+      parseOutputFields(clazz, decorator, members, isCore, reflector, evaluator, outputsFromMeta);
   const outputs = ClassPropertyMapping.fromMappedObject({...outputsFromMeta, ...outputsFromFields});
 
   // Parse queries of fields.
   const {viewQueries, contentQueries} =
-      parseQueriesOfClassFields(members, reflector, importTracker, evaluator, isCore);
+      parseQueriesOfClassFields(members, reflector, evaluator, isCore);
 
   if (directive.has('queries')) {
     const signalQueryFields = new Set(
@@ -751,13 +750,13 @@ function tryGetDecoratorOnMember(
 
 function tryParseInputFieldMapping(
     clazz: ClassDeclaration, member: ClassMember, evaluator: PartialEvaluator,
-    reflector: ReflectionHost, importTracker: ImportedSymbolsTracker, isCore: boolean,
-    refEmitter: ReferenceEmitter, compilationMode: CompilationMode): InputMapping|null {
+    reflector: ReflectionHost, isCore: boolean, refEmitter: ReferenceEmitter,
+    compilationMode: CompilationMode): InputMapping|null {
   const classPropertyName = member.name;
 
   const decorator = tryGetDecoratorOnMember(member, 'Input', isCore);
-  const signalInputMapping = tryParseSignalInputMapping(member, reflector, importTracker);
-  const modelInputMapping = tryParseSignalModelMapping(member, reflector, importTracker);
+  const signalInputMapping = tryParseSignalInputMapping(member, reflector, isCore);
+  const modelInputMapping = tryParseSignalModelMapping(member, reflector, isCore);
 
   if (decorator !== null && signalInputMapping !== null) {
     throw new FatalDiagnosticError(
@@ -839,9 +838,8 @@ function tryParseInputFieldMapping(
 /** Parses the class members that declare inputs (via decorator or initializer). */
 function parseInputFields(
     clazz: ClassDeclaration, members: ClassMember[], evaluator: PartialEvaluator,
-    reflector: ReflectionHost, importTracker: ImportedSymbolsTracker, refEmitter: ReferenceEmitter,
-    isCore: boolean, compilationMode: CompilationMode,
-    inputsFromClassDecorator: Record<string, InputMapping>,
+    reflector: ReflectionHost, refEmitter: ReferenceEmitter, isCore: boolean,
+    compilationMode: CompilationMode, inputsFromClassDecorator: Record<string, InputMapping>,
     classDecorator: Decorator): Record<string, InputMapping> {
   const inputs = {} as Record<string, InputMapping>;
 
@@ -852,7 +850,6 @@ function parseInputFields(
         member,
         evaluator,
         reflector,
-        importTracker,
         isCore,
         refEmitter,
         compilationMode,
@@ -1031,8 +1028,8 @@ function assertEmittableInputType(
  * initializers for signal-based queries.
  */
 function parseQueriesOfClassFields(
-    members: ClassMember[], reflector: ReflectionHost, importTracker: ImportedSymbolsTracker,
-    evaluator: PartialEvaluator, isCore: boolean): {
+    members: ClassMember[], reflector: ReflectionHost, evaluator: PartialEvaluator,
+    isCore: boolean): {
   viewQueries: R3QueryMetadata[],
   contentQueries: R3QueryMetadata[],
 } {
@@ -1049,7 +1046,7 @@ function parseQueriesOfClassFields(
 
   for (const member of members) {
     const decoratorQuery = tryGetQueryFromFieldDecorator(member, reflector, evaluator, isCore);
-    const signalQuery = tryParseSignalQueryFromInitializer(member, reflector, importTracker);
+    const signalQuery = tryParseSignalQueryFromInitializer(member, reflector, isCore);
 
     if (decoratorQuery !== null && signalQuery !== null) {
       throw new FatalDiagnosticError(
@@ -1109,14 +1106,14 @@ function parseOutputsArray(
 /** Parses the class members that are outputs. */
 function parseOutputFields(
     clazz: ClassDeclaration, classDecorator: Decorator, members: ClassMember[], isCore: boolean,
-    reflector: ReflectionHost, importTracker: ImportedSymbolsTracker, evaluator: PartialEvaluator,
+    reflector: ReflectionHost, evaluator: PartialEvaluator,
     outputsFromMeta: Record<string, string>): Record<string, string> {
   const outputs = {} as Record<string, string>;
 
   for (const member of members) {
     const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
-    const initializerOutput = tryParseInitializerBasedOutput(member, reflector, importTracker);
-    const modelMapping = tryParseSignalModelMapping(member, reflector, importTracker);
+    const initializerOutput = tryParseInitializerBasedOutput(member, reflector, isCore);
+    const modelMapping = tryParseSignalModelMapping(member, reflector, isCore);
 
     if (decoratorOutput !== null && initializerOutput !== null) {
       throw new FatalDiagnosticError(
