@@ -34,7 +34,6 @@ export const signalModelTransform: PropertyTransform = (
 
   const modelMapping = tryParseSignalModelMapping(
       {name: member.name.text, value: member.initializer ?? null},
-      host,
       importTracker,
   );
 

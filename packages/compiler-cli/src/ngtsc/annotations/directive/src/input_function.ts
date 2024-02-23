@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../../../imports';
 import {InputMapping} from '../../../metadata';
-import {ClassMember, ReflectionHost} from '../../../reflection';
+import {ClassMember} from '../../../reflection';
 
 import {tryParseInitializerApiMember} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
@@ -20,9 +20,9 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  * input mapping if possible.
  */
 export function tryParseSignalInputMapping(
-    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker): InputMapping|null {
-  const signalInput = tryParseInitializerApiMember(['input'], member, reflector, importTracker);
+    member: Pick<ClassMember, 'name'|'value'>, importTracker: ImportedSymbolsTracker): InputMapping|
+    null {
+  const signalInput = tryParseInitializerApiMember(['input'], member, importTracker);
   if (signalInput === null) {
     return null;
   }

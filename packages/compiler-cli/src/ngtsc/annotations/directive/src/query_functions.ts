@@ -39,7 +39,7 @@ export function tryParseSignalQueryFromInitializer(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker):
     {name: QueryFunctionName, metadata: R3QueryMetadata, call: ts.CallExpression}|null {
-  const query = tryParseInitializerApiMember(queryFunctionNames, member, reflector, importTracker);
+  const query = tryParseInitializerApiMember(queryFunctionNames, member, importTracker);
   if (query === null) {
     return null;
   }

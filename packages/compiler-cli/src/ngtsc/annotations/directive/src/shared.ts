@@ -765,8 +765,8 @@ function tryParseInputFieldMapping(
   const classPropertyName = member.name;
 
   const decorator = tryGetDecoratorOnMember(member, 'Input', isCore);
-  const signalInputMapping = tryParseSignalInputMapping(member, reflector, importTracker);
-  const modelInputMapping = tryParseSignalModelMapping(member, reflector, importTracker);
+  const signalInputMapping = tryParseSignalInputMapping(member, importTracker);
+  const modelInputMapping = tryParseSignalModelMapping(member, importTracker);
 
   if (decorator !== null && signalInputMapping !== null) {
     throw new FatalDiagnosticError(
@@ -1124,8 +1124,8 @@ function parseOutputFields(
 
   for (const member of members) {
     const decoratorOutput = tryParseDecoratorOutput(member, evaluator, isCore);
-    const initializerOutput = tryParseInitializerBasedOutput(member, reflector, importTracker);
-    const modelMapping = tryParseSignalModelMapping(member, reflector, importTracker);
+    const initializerOutput = tryParseInitializerBasedOutput(member, importTracker);
+    const modelMapping = tryParseSignalModelMapping(member, importTracker);
 
     if (decoratorOutput !== null && initializerOutput !== null) {
       throw new FatalDiagnosticError(

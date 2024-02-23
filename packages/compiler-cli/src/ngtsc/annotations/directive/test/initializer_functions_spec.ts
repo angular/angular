@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
 import {ImportedSymbolsTracker} from '../../../imports';
-import {ClassMember, TypeScriptReflectionHost} from '../../../reflection';
+import {ClassMember} from '../../../reflection';
 import {makeProgram} from '../../../testing';
 import {tryParseInitializerApiMember} from '../src/initializer_functions';
 
@@ -19,7 +19,7 @@ import {tryParseInitializerApiMember} from '../src/initializer_functions';
 runInEachFileSystem(() => {
   describe('initializer function detection', () => {
     it('should identify a non-required function that is imported directly', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import {Directive, model} from '@angular/core';
 
         @Directive()
@@ -28,7 +28,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
 
       expect(result).toEqual({
         apiName: 'model',
@@ -38,7 +38,7 @@ runInEachFileSystem(() => {
     });
 
     it('should identify a required function that is imported directly', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import {Directive, model} from '@angular/core';
 
         @Directive()
@@ -47,7 +47,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
 
       expect(result).toEqual({
         apiName: 'model',
@@ -57,7 +57,7 @@ runInEachFileSystem(() => {
     });
 
     it('should identify a non-required function that is aliased', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import {Directive, model as alias} from '@angular/core';
 
         @Directive()
@@ -66,7 +66,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
 
       expect(result).toEqual({
         apiName: 'model',
@@ -76,7 +76,7 @@ runInEachFileSystem(() => {
     });
 
     it('should identify a required function that is aliased', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import {Directive, model as alias} from '@angular/core';
 
         @Directive()
@@ -85,7 +85,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
 
       expect(result).toEqual({
         apiName: 'model',
@@ -95,7 +95,7 @@ runInEachFileSystem(() => {
     });
 
     it('should identify a non-required function that is imported via namespace import', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import * as core from '@angular/core';
 
         @core.Directive()
@@ -104,7 +104,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
 
       expect(result).toEqual({
         apiName: 'model',
@@ -114,7 +114,7 @@ runInEachFileSystem(() => {
     });
 
     it('should identify a required function that is imported via namespace import', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import * as core from '@angular/core';
 
         @core.Directive()
@@ -123,7 +123,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
 
       expect(result).toEqual({
         apiName: 'model',
@@ -133,7 +133,7 @@ runInEachFileSystem(() => {
     });
 
     it('should not identify a valid core function that is not being checked for', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import {Directive, input} from '@angular/core';
 
         @Directive()
@@ -142,12 +142,12 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
       expect(result).toBe(null);
     });
 
     it('should not identify a function coming from a different module', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import {Directive} from '@angular/core';
         import {model} from '@not-angular/core';
 
@@ -157,12 +157,12 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
       expect(result).toBe(null);
     });
 
     it('should not identify an invalid call on a core function', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import {Directive, model} from '@angular/core';
 
         @Directive()
@@ -171,12 +171,12 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
       expect(result).toBe(null);
     });
 
     it('should not identify an invalid call on a core function through a namespace import', () => {
-      const {member, reflector, importTracker} = setup(`
+      const {member, importTracker} = setup(`
         import {Directive} from '@angular/core';
         import * as core from '@angular/core';
 
@@ -186,25 +186,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
-      expect(result).toBe(null);
-    });
-
-    it('should identify shadowed declarations', () => {
-      const {member, reflector, importTracker} = setup(`
-        import {Directive, model} from '@angular/core';
-
-        function wrapper() {
-          function model(value: number): any {}
-
-          @Directive()
-          class Dir {
-            test = model(1);
-          }
-        }
-      `);
-
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember(['model'], member, importTracker);
       expect(result).toBe(null);
     });
   });
@@ -243,7 +225,6 @@ function setup(contents: string) {
   ]);
   const sourceFile = program.getSourceFile(fileName);
   const importTracker = new ImportedSymbolsTracker();
-  const reflector = new TypeScriptReflectionHost(program.getTypeChecker());
 
   if (sourceFile === undefined) {
     throw new Error(`Cannot resolve test file ${fileName}`);
@@ -263,5 +244,5 @@ function setup(contents: string) {
     throw new Error(`Could not resolve a class property with a name of "test" in the test file`);
   }
 
-  return {member, reflector, importTracker};
+  return {member, importTracker};
 }
