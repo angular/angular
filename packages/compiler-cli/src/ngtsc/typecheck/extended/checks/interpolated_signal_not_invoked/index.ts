@@ -13,6 +13,15 @@ import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
+/** Names of known signal functions. */
+const SIGNAL_FNS = new Set([
+  'WritableSignal',
+  'Signal',
+  'InputSignal',
+  'InputSignalWithTransform',
+  'ModelSignal',
+]);
+
 /**
  * Ensures Signals are invoked when used in template interpolations.
  */
@@ -26,23 +35,22 @@ class InterpolatedSignalCheck extends
       node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>[] {
     if (node instanceof Interpolation) {
       return node.expressions.filter((item): item is PropertyRead => item instanceof PropertyRead)
-          .flatMap((item) => {
-            if (item instanceof PropertyRead) {
-              return buildDiagnosticForSignal(ctx, item, component);
-            }
-            return [];
-          });
+          .flatMap(item => buildDiagnosticForSignal(ctx, item, component));
     }
     return [];
   }
 }
 
 function isSignal(symbol: ts.Symbol|undefined): boolean {
-  return (symbol?.escapedName === 'WritableSignal' || symbol?.escapedName === 'Signal' ||
-          symbol?.escapedName === 'InputSignal' ||
-          symbol?.escapedName === 'InputSignalWithTransform' ||
-          symbol?.escapedName === 'ModelSignal') &&
-      (symbol as any).parent.escapedName.includes('@angular/core');
+  const declarations = symbol?.getDeclarations();
+
+  return declarations !== undefined && declarations.some(decl => {
+    const fileName = decl.getSourceFile().fileName;
+
+    return (ts.isInterfaceDeclaration(decl) || ts.isTypeAliasDeclaration(decl)) &&
+        SIGNAL_FNS.has(decl.name.text) &&
+        (fileName.includes('@angular/core') || fileName.includes('angular2/rc/packages/core'));
+  });
 }
 
 function buildDiagnosticForSignal(
@@ -55,7 +63,6 @@ function buildDiagnosticForSignal(
       (isSignal(symbol.tsType.symbol) || isSignal(symbol.tsType.aliasSymbol))) {
     const templateMapping =
         ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation)!;
-
     const errorString = `${node.name} is a function and should be invoked: ${node.name}()`;
     const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
     return [diagnostic];
