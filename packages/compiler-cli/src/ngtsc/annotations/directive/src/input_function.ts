@@ -8,9 +8,9 @@
 
 import ts from 'typescript';
 
-import {ImportedSymbolsTracker} from '../../../imports';
+import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {InputMapping} from '../../../metadata';
-import {ClassMember, ReflectionHost} from '../../../reflection';
+import {ClassMember, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 
 import {tryParseInitializerApiMember} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
@@ -21,8 +21,8 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  */
 export function tryParseSignalInputMapping(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker): InputMapping|null {
-  const signalInput = tryParseInitializerApiMember(['input'], member, reflector, importTracker);
+    isCore: boolean): InputMapping|null {
+  const signalInput = tryParseInitializerApiMember(['input'], member, reflector, isCore);
   if (signalInput === null) {
     return null;
   }
