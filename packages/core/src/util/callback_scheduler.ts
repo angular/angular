@@ -32,7 +32,7 @@ import {global} from './global';
  * By running change detection after the first of `setTimeout` and `rAF` to execute, we get the
  * best of both worlds.
  */
-export function getCallbackScheduler() {
+export function getCallbackScheduler(): (callback: Function) => void {
   // Note: the `getNativeRequestAnimationFrame` is used in the `NgZone` class, but we cannot use the
   // `inject` function. The `NgZone` instance may be created manually, and thus the injection
   // context will be unavailable. This might be enough to check whether `requestAnimationFrame` is
@@ -58,7 +58,7 @@ export function getCallbackScheduler() {
     nativeSetTimeout = (nativeSetTimeout as any)[ORIGINAL_DELEGATE_SYMBOL] ?? nativeSetTimeout;
   }
 
-  function scheduleCallback(callback: Function): {cancel: () => void} {
+  return (callback: Function) => {
     let executeCallback = true;
     nativeSetTimeout(() => {
       if (!executeCallback) {
@@ -74,13 +74,5 @@ export function getCallbackScheduler() {
       executeCallback = false;
       callback();
     });
-
-    return {
-      cancel: () => {
-        executeCallback = false;
-      },
-    };
-  }
-
-  return scheduleCallback;
+  };
 }

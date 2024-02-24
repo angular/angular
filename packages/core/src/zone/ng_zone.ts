@@ -325,9 +325,7 @@ interface NgZonePrivate extends NgZone {
    */
   shouldCoalesceRunChangeDetection: boolean;
 
-  scheduleCallback: (callback: Function) => {
-    cancel: () => void
-  };
+  scheduleCallback: (callback: Function) => void;
 
   // Cache a  "fake" top eventTask so you don't need to schedule a new task every
   // time you run a `checkStable`.
