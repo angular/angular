@@ -106,7 +106,18 @@ Effects always run **at least once.** When an effect runs, it tracks any signal 
 
 Effects always execute **asynchronously**, during the change detection process.
 
-Note: the `effect()` API is still in [developer preview](/guide/releases#developer-preview) as we work to integrate signal-based reactivity into the core framework.
+<div class="alert is-helpful">
+
+In order to be able to read signal inputs, effects in components will first run after `NgOnInit` is invoked. This means change detection will need to run on the components for the effect to run.
+
+</div>
+
+<div class="alert is-helpful">
+
+The `effect()` API is still in [developer preview](/guide/releases#developer-preview) as we work to integrate signal-based reactivity into the core framework.
+
+</div>
+
 
 ### Use cases for effects
 
