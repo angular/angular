@@ -576,8 +576,10 @@ export function patchEventTarget(
               target[symbolEventName] = null;
               // in the target, we have an event listener which is added by on_property
               // such as target.onclick = function() {}, so we need to clear this internal
-              // property too if all delegates all removed
-              if (typeof eventName === 'string') {
+              // property too if all delegates with capture=false were removed
+              // https:// github.com/angular/angular/issues/31643
+              // https://github.com/angular/angular/issues/54581
+              if (!capture && typeof eventName === 'string') {
                 const onPropertySymbol = ZONE_SYMBOL_PREFIX + 'ON_PROPERTY' + eventName;
                 target[onPropertySymbol] = null;
               }
