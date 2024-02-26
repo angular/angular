@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgIf, isPlatformBrowser} from '@angular/common';
+import {NgComponentOutlet, isPlatformBrowser} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -32,11 +32,10 @@ import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
   selector: 'adev-playground',
   standalone: true,
   imports: [
-    CommonModule,
+    NgComponentOutlet,
     DocViewer,
     NavigationList,
     ClickOutside,
-    NgIf,
     RouterLink,
     IconComponent,
     CdkMenu,

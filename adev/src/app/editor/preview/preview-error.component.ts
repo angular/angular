@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {isFirefox, isIos} from '@angular/docs';
 
@@ -18,7 +17,7 @@ import {ErrorType, NodeRuntimeState} from '../node-runtime-state.service';
   templateUrl: './preview-error.component.html',
   styleUrls: ['./preview-error.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, NgSwitch, NgSwitchCase],
+  imports: [],
 })
 export class PreviewError {
   private readonly nodeRuntimeState = inject(NodeRuntimeState);

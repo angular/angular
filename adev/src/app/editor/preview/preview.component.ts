@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -26,6 +25,7 @@ import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 import {NodeRuntimeState} from '../node-runtime-state.service';
 
 import type {PreviewError} from './preview-error.component';
+import { NgComponentOutlet } from '@angular/common';
 
 type PreviewUrlEmittedValue = {
   url: string | null;
@@ -38,7 +38,7 @@ type PreviewUrlEmittedValue = {
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NgIf, NgSwitch, NgSwitchCase],
+  imports: [NgComponentOutlet],
 })
 export class Preview implements AfterViewInit {
   @ViewChild('preview') previewIframe: ElementRef<HTMLIFrameElement> | undefined;

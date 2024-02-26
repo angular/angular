@@ -10,7 +10,6 @@ import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@ang
 import ApiItemsSection from '../api-items-section/api-items-section.component';
 import {FormsModule} from '@angular/forms';
 import {SlideToggle, TextField} from '@angular/docs';
-import {NgFor, NgIf} from '@angular/common';
 import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
@@ -22,8 +21,6 @@ export const ALL_STATUSES_KEY = 'All';
   selector: 'adev-reference-list',
   standalone: true,
   imports: [
-    NgFor,
-    NgIf,
     ApiItemsSection,
     ApiItemLabel,
     FormsModule,

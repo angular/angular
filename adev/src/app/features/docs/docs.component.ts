@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule} from '@angular/common';
 import {DocContent, DocViewer} from '@angular/docs';
 import {Component, inject} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
@@ -16,7 +15,7 @@ import {map} from 'rxjs/operators';
 @Component({
   selector: 'docs-docs',
   standalone: true,
-  imports: [CommonModule, DocViewer],
+  imports: [DocViewer],
   styleUrls: ['./docs.component.scss'],
   templateUrl: './docs.component.html',
 })
