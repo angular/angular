@@ -1084,7 +1084,7 @@ groups:
         - crisbeto
         - atscott
         - pkozlowski-opensource
-        - ~jeanmeche
+        - ~JeanMeche
 
   # =========================================================
   #  Docs-infra
@@ -1163,7 +1163,7 @@ groups:
         - josephperrott
         - mgechev
         - twerske
-        - ~jeanmeche
+        - ~JeanMeche
 
   # =========================================================
   #  Dev-infra
@@ -1408,7 +1408,7 @@ groups:
         - devversion # Paul Gschwendtner
         - dgp1130 # Doug Parker
         - dylhunn # Dylan Hunn
-        - jeanmeche # Matthieu Riegler
+        - JeanMeche # Matthieu Riegler
         - jelbourn # Jeremy Elbourn
         - jessicajaniuk # Jessica Janiuk
         - JiaLiPassion # Jia Li
