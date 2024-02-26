@@ -272,7 +272,7 @@ function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeCheck
   return {local, decl, symbolNames};
 }
 
-function entityNameToValue(node: ts.EntityName): ts.Expression|null {
+export function entityNameToValue(node: ts.EntityName): ts.Expression|null {
   if (ts.isQualifiedName(node)) {
     const left = entityNameToValue(node.left);
     return left !== null ? ts.factory.createPropertyAccessExpression(left, node.right) : null;

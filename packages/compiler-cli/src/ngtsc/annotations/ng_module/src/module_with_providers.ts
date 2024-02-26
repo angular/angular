@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {Reference} from '../../../imports';
 import {ForeignFunctionResolver, SyntheticValue} from '../../../partial_evaluator';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, typeNodeToValueExpr} from '../../../reflection';
+import {ClassDeclaration, entityNameToValue, isNamedClassDeclaration, ReflectionHost, typeNodeToValueExpr} from '../../../reflection';
 
 /**
  * Creates a foreign function resolver to detect a `ModuleWithProviders<T>` type in a return type
@@ -92,7 +92,16 @@ export function createModuleWithProvidersResolver(
           const ngModuleType = ts.isPropertySignature(m) && ts.isIdentifier(m.name) &&
                   m.name.text === 'ngModule' && m.type ||
               null;
-          const ngModuleExpression = ngModuleType && typeNodeToValueExpr(ngModuleType);
+
+          let ngModuleExpression: ts.Expression|null = null;
+
+          // Handle `: typeof X` or `: X` cases.
+          if (ngModuleType !== null && ts.isTypeQueryNode(ngModuleType)) {
+            ngModuleExpression = entityNameToValue(ngModuleType.exprName);
+          } else if (ngModuleType !== null) {
+            ngModuleExpression = typeNodeToValueExpr(ngModuleType);
+          }
+
           if (ngModuleExpression) {
             return ngModuleExpression;
           }
