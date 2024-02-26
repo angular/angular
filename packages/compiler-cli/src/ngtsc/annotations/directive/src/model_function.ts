@@ -21,7 +21,8 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
 export function tryParseSignalModelMapping(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): ModelMapping|null {
-  const model = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+  const model = tryParseInitializerApiMember(
+      [{functionName: 'model', owningModule: '@angular/core'}], member, reflector, importTracker);
   if (model === null) {
     return null;
   }

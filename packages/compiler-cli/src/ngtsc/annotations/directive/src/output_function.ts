@@ -24,8 +24,12 @@ export function tryParseInitializerBasedOutput(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): {call: ts.CallExpression, metadata: InputOrOutput}|
     null {
-  const output =
-      tryParseInitializerApiMember(['output', 'ɵoutput'], member, reflector, importTracker);
+  const output = tryParseInitializerApiMember(
+      [
+        {functionName: 'output', owningModule: '@angular/core'},
+        {functionName: 'outputFromObservable', owningModule: '@angular/core/rxjs-interop'},
+      ],
+      member, reflector, importTracker);
   if (output === null) {
     return null;
   }
@@ -35,7 +39,11 @@ export function tryParseInitializerBasedOutput(
         `Output does not support ".required()".`);
   }
 
-  const optionsNode = output.call.arguments[0] as ts.Expression | undefined;
+  // Options are the first parameter for `output()`, while for
+  // the interop `outputFromObservable()` they are the second argument.
+  const optionsNode = (output.api.functionName === 'output' ?
+                           output.call.arguments[0] :
+                           output.call.arguments[1]) as (ts.Expression | undefined);
   const options =
       optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
   const classPropertyName = member.name;

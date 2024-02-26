@@ -22,7 +22,8 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
 export function tryParseSignalInputMapping(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): InputMapping|null {
-  const signalInput = tryParseInitializerApiMember(['input'], member, reflector, importTracker);
+  const signalInput = tryParseInitializerApiMember(
+      [{functionName: 'input', owningModule: '@angular/core'}], member, reflector, importTracker);
   if (signalInput === null) {
     return null;
   }

@@ -15,7 +15,7 @@ import {ImportedSymbolsTracker} from '../../../imports';
 import {ClassMember, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {tryUnwrapForwardRef} from '../../common';
 
-import {tryParseInitializerApiMember} from './initializer_functions';
+import {InitializerApiFunction, tryParseInitializerApiMember} from './initializer_functions';
 
 /** Possible query initializer API functions. */
 export type QueryFunctionName = 'viewChild'|'contentChild'|'viewChildren'|'contentChildren';
@@ -39,12 +39,15 @@ export function tryParseSignalQueryFromInitializer(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker):
     {name: QueryFunctionName, metadata: R3QueryMetadata, call: ts.CallExpression}|null {
-  const query = tryParseInitializerApiMember(queryFunctionNames, member, reflector, importTracker);
+  const initializerFns = queryFunctionNames.map(
+      fnName => ({functionName: fnName, owningModule: '@angular/core' as const}));
+  const query = tryParseInitializerApiMember(initializerFns, member, reflector, importTracker);
   if (query === null) {
     return null;
   }
 
-  const isSingleQuery = query.apiName === 'viewChild' || query.apiName === 'contentChild';
+  const {functionName} = query.api;
+  const isSingleQuery = functionName === 'viewChild' || functionName === 'contentChild';
   const predicateNode = query.call.arguments[0] as ts.Expression | undefined;
   if (predicateNode === undefined) {
     throw new FatalDiagnosticError(
@@ -60,10 +63,10 @@ export function tryParseSignalQueryFromInitializer(
   const read = options?.has('read') ? parseReadOption(options.get('read')!) : null;
   const descendants = options?.has('descendants') ?
       parseDescendantsOption(options.get('descendants')!) :
-      defaultDescendantsValue(query.apiName as QueryFunctionName);
+      defaultDescendantsValue(functionName);
 
   return {
-    name: query.apiName as QueryFunctionName,
+    name: functionName,
     call: query.call,
     metadata: {
       isSignal: true,

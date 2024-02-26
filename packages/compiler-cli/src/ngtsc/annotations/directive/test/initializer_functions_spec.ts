@@ -13,10 +13,15 @@ import {runInEachFileSystem} from '../../../file_system/testing';
 import {ImportedSymbolsTracker} from '../../../imports';
 import {ClassMember, TypeScriptReflectionHost} from '../../../reflection';
 import {makeProgram} from '../../../testing';
-import {tryParseInitializerApiMember} from '../src/initializer_functions';
+import {InitializerApiFunction, tryParseInitializerApiMember} from '../src/initializer_functions';
 
 
 runInEachFileSystem(() => {
+  const modelApi: InitializerApiFunction = {
+    functionName: 'model',
+    owningModule: '@angular/core',
+  };
+
   describe('initializer function detection', () => {
     it('should identify a non-required function that is imported directly', () => {
       const {member, reflector, importTracker} = setup(`
@@ -28,10 +33,62 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
 
       expect(result).toEqual({
-        apiName: 'model',
+        api: modelApi,
+        isRequired: false,
+        call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
+      });
+    });
+
+    it('should check for multiple initializer APIs', () => {
+      const {member, reflector, importTracker} = setup(`
+        import {Directive, model} from '@angular/core';
+
+        @Directive()
+        export class Dir {
+          test = model(1);
+        }
+      `);
+
+      const result = tryParseInitializerApiMember(
+          [
+            {functionName: 'input', owningModule: '@angular/core'},
+            modelApi,
+          ],
+          member, reflector, importTracker);
+
+      expect(result).toEqual({
+        api: modelApi,
+        isRequired: false,
+        call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
+      });
+    });
+
+    it('should support initializer APIs from different modules', () => {
+      const {member, reflector, importTracker} = setup(`
+        import {Directive} from '@angular/core';
+        import {outputFromObservable} from '@angular/core/rxjs-interop';
+
+        @Directive()
+        export class Dir {
+          test = outputFromObservable(1);
+        }
+      `);
+
+      const result = tryParseInitializerApiMember(
+          [
+            modelApi,
+            {functionName: 'outputFromObservable', owningModule: '@angular/core/rxjs-interop'},
+          ],
+          member, reflector, importTracker);
+
+      expect(result).toEqual({
+        api: {
+          functionName: 'outputFromObservable',
+          owningModule: '@angular/core/rxjs-interop',
+        },
         isRequired: false,
         call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
       });
@@ -47,10 +104,10 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
 
       expect(result).toEqual({
-        apiName: 'model',
+        api: modelApi,
         isRequired: true,
         call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
       });
@@ -66,10 +123,10 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
 
       expect(result).toEqual({
-        apiName: 'model',
+        api: modelApi,
         isRequired: false,
         call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
       });
@@ -85,10 +142,10 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
 
       expect(result).toEqual({
-        apiName: 'model',
+        api: modelApi,
         isRequired: true,
         call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
       });
@@ -104,10 +161,10 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
 
       expect(result).toEqual({
-        apiName: 'model',
+        api: modelApi,
         isRequired: false,
         call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
       });
@@ -123,10 +180,10 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
 
       expect(result).toEqual({
-        apiName: 'model',
+        api: modelApi,
         isRequired: true,
         call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
       });
@@ -142,7 +199,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
       expect(result).toBe(null);
     });
 
@@ -157,7 +214,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
       expect(result).toBe(null);
     });
 
@@ -171,7 +228,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
       expect(result).toBe(null);
     });
 
@@ -186,7 +243,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
       expect(result).toBe(null);
     });
 
@@ -204,7 +261,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
       expect(result).toBe(null);
     });
   });
@@ -221,10 +278,10 @@ runInEachFileSystem(() => {
           }
         `);
 
-       const result = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
+       const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
 
        expect(result).toEqual({
-         apiName: 'model',
+         api: modelApi,
          isRequired: false,
          call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
        });
@@ -239,15 +296,14 @@ function setup(contents: string) {
       name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
       contents: `
         export const Directive: any;
-
-        export interface InitializerFunction {
-          (initialValue: any): any;
-          required(): any;
-          unknown(): any;
-        }
-
-        export const input: InitializerFunction;
-        export const model: InitializerFunction;
+        export const input: any;
+        export const model: any;
+      `,
+    },
+    {
+      name: absoluteFrom('/node_modules/@angular/core/rxjs-interop/index.d.ts'),
+      contents: `
+        export const outputFromObservable: any;
       `,
     },
     {
@@ -259,11 +315,7 @@ function setup(contents: string) {
     {
       name: absoluteFrom('/node_modules/@not-angular/core/index.d.ts'),
       contents: `
-        export interface InitializerFunction {
-          (initialValue: any): any;
-          required(): any;
-        }
-        export const model: InitializerFunction;
+        export const model: any;
       `,
     },
     {name: fileName, contents}
