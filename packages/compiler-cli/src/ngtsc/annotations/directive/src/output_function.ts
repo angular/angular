@@ -9,6 +9,7 @@
 import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
+import {ImportedSymbolsTracker} from '../../../imports';
 import {InputOrOutput} from '../../../metadata';
 import {ClassMember, ReflectionHost} from '../../../reflection';
 
@@ -21,8 +22,10 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  */
 export function tryParseInitializerBasedOutput(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
-    isCore: boolean): {call: ts.CallExpression, metadata: InputOrOutput}|null {
-  const output = tryParseInitializerApiMember(['output', 'ɵoutput'], member, reflector, isCore);
+    importTracker: ImportedSymbolsTracker): {call: ts.CallExpression, metadata: InputOrOutput}|
+    null {
+  const output =
+      tryParseInitializerApiMember(['output', 'ɵoutput'], member, reflector, importTracker);
   if (output === null) {
     return null;
   }

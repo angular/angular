@@ -8,6 +8,7 @@
 
 import ts from 'typescript';
 
+import {ImportedSymbolsTracker} from '../../../imports';
 import {ModelMapping} from '../../../metadata';
 import {ClassMember, ReflectionHost} from '../../../reflection';
 
@@ -19,8 +20,8 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  */
 export function tryParseSignalModelMapping(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
-    isCore: boolean): ModelMapping|null {
-  const model = tryParseInitializerApiMember(['model'], member, reflector, isCore);
+    importTracker: ImportedSymbolsTracker): ModelMapping|null {
+  const model = tryParseInitializerApiMember(['model'], member, reflector, importTracker);
   if (model === null) {
     return null;
   }

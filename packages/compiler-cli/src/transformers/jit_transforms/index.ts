@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {PartialEvaluator} from '../../ngtsc/partial_evaluator';
+import {ImportedSymbolsTracker} from '../../ngtsc/imports';
 import {TypeScriptReflectionHost} from '../../ngtsc/reflection';
 
 import {getDownlevelDecoratorsTransform} from './downlevel_decorators_transform';
@@ -39,13 +39,14 @@ export function angularJitApplicationTransform(
     program: ts.Program, isCore = false): ts.TransformerFactory<ts.SourceFile> {
   const typeChecker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(typeChecker);
-  const evaluator = new PartialEvaluator(reflectionHost, typeChecker, null);
+  const importTracker = new ImportedSymbolsTracker();
 
   const downlevelDecoratorTransform = getDownlevelDecoratorsTransform(
       typeChecker, reflectionHost, [], isCore,
       /* enableClosureCompiler */ false);
 
-  const initializerApisJitTransform = getInitializerApiJitTransform(reflectionHost, isCore);
+  const initializerApisJitTransform =
+      getInitializerApiJitTransform(reflectionHost, importTracker, isCore);
 
   return (ctx) => {
     return (sourceFile) => {

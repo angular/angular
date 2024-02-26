@@ -19,6 +19,7 @@ ts_library(
     srcs = ["authoring_test_compiler.ts"],
     deps = [
         "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/transformers/jit_transforms",
