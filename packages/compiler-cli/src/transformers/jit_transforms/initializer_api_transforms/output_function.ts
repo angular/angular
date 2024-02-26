@@ -24,6 +24,7 @@ export const initializerApiOutputTransform: PropertyTransform = (
     member,
     host,
     factory,
+    importTracker,
     importManager,
     classDecorator,
     isCore,
@@ -36,7 +37,7 @@ export const initializerApiOutputTransform: PropertyTransform = (
   const output = tryParseInitializerBasedOutput(
       {name: member.name.text, value: member.initializer ?? null},
       host,
-      isCore,
+      importTracker,
   );
   if (output === null) {
     return member;
