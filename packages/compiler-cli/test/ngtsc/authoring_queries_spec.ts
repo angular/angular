@@ -242,6 +242,7 @@ runInEachFileSystem(() => {
             selector: 'test',
             template: '',
             queries: {
+              // @ts-ignore
               el: new viewChild('myLocator'),
             },
           })

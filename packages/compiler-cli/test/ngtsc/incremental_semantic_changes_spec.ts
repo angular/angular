@@ -206,7 +206,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[a-dep]',
-            template: 'a-dep',
           })
           export class ADep {
             @Input()

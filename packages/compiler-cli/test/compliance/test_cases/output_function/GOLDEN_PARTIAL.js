@@ -24,9 +24,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestDir {
-    a: import("@angular/core").OutputEmitter<unknown>;
-    b: import("@angular/core").OutputEmitter<string>;
-    c: import("@angular/core").OutputEmitter<void>;
+    a: import("@angular/core").OutputEmitterRef<void>;
+    b: import("@angular/core").OutputEmitterRef<string>;
+    c: import("@angular/core").OutputEmitterRef<void>;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, { "a": "a"; "b": "b"; "c": "cPublic"; }, never, never, true, never>;
 }
@@ -58,9 +58,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestComp {
-    a: import("@angular/core").OutputEmitter<unknown>;
-    b: import("@angular/core").OutputEmitter<string>;
-    c: import("@angular/core").OutputEmitter<void>;
+    a: import("@angular/core").OutputEmitterRef<void>;
+    b: import("@angular/core").OutputEmitterRef<string>;
+    c: import("@angular/core").OutputEmitterRef<void>;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, { "a": "a"; "b": "b"; "c": "cPublic"; }, never, never, true, never>;
 }
@@ -102,10 +102,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import { EventEmitter } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class TestDir {
-    click1: import("@angular/core").OutputEmitter<unknown>;
-    click2: import("@angular/core").OutputEmitter<boolean>;
-    _bla: import("@angular/core").OutputEmitter<void>;
-    clickDecorator1: EventEmitter<unknown>;
+    click1: import("@angular/core").OutputEmitterRef<void>;
+    click2: import("@angular/core").OutputEmitterRef<boolean>;
+    _bla: import("@angular/core").OutputEmitterRef<void>;
+    clickDecorator1: EventEmitter<any>;
     clickDecorator2: EventEmitter<boolean>;
     _blaDecorator: EventEmitter<void>;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>;

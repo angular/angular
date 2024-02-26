@@ -20,8 +20,8 @@ jasmine_node_test(
     name = "linked",
     bootstrap = ["//tools/testing:node_no_angular"],
     data = [
-        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
         "//packages/compiler-cli/test/compliance/test_cases",
+        "//packages/core:npm_package",
     ],
     shard_count = 2,
     deps = [

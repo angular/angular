@@ -45,21 +45,16 @@ const angularFolder = new CachedFolder(loadAngularFolder);
 const rxjsFolder = new CachedFolder(() => loadFolder(resolveFromRunfiles('npm/node_modules/rxjs')));
 
 export function loadStandardTestFiles(
-    {fakeCore = true, fakeCommon = false, rxjs = false}:
-        {fakeCore?: boolean, fakeCommon?: boolean, rxjs?: boolean} = {}): Folder {
+    {fakeCommon = false, rxjs = false}: {fakeCommon?: boolean, rxjs?: boolean} = {}): Folder {
   const tmpFs = new MockFileSystemPosix(true);
   const basePath = '/' as AbsoluteFsPath;
 
   tmpFs.mount(tmpFs.resolve('/node_modules/typescript'), typescriptFolder.get());
+  tmpFs.mount(tmpFs.resolve('/node_modules/@angular'), angularFolder.get());
 
   loadTsLib(tmpFs, basePath);
 
-  if (fakeCore) {
-    loadFakeCore(tmpFs, basePath);
-  } else {
-    tmpFs.mount(tmpFs.resolve('/node_modules/@angular'), angularFolder.get());
-  }
-
+  // TODO: Consider removing.
   if (fakeCommon) {
     loadFakeCommon(tmpFs, basePath);
   }
@@ -77,13 +72,6 @@ export function loadTsLib(fs: FileSystem, basePath: string = '/') {
       fs.resolve(basePath, 'node_modules/tslib'));
 }
 
-export function loadFakeCore(fs: FileSystem, basePath: string = '/') {
-  loadTestDirectory(
-      fs,
-      resolveFromRunfiles('angular/packages/compiler-cli/src/ngtsc/testing/fake_core/npm_package'),
-      fs.resolve(basePath, 'node_modules/@angular/core'));
-}
-
 export function loadFakeCommon(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
       fs,
@@ -92,6 +80,11 @@ export function loadFakeCommon(fs: FileSystem, basePath: string = '/') {
       fs.resolve(basePath, 'node_modules/@angular/common'));
 }
 
+export function loadAngularCore(fs: FileSystem, basePath: string = '/') {
+  loadTestDirectory(
+      fs, resolveFromRunfiles('angular/packages/core/npm_package'),
+      fs.resolve(basePath, 'node_modules/@angular/core'));
+}
 
 function loadFolder(path: string): Folder {
   const tmpFs = new MockFileSystemPosix(true);

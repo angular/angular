@@ -434,7 +434,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import { EventEmitter } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
-    someDirective: EventEmitter<unknown>;
+    someDirective: EventEmitter<any>;
     static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[someDirective]", never, {}, { "someDirective": "someDirective"; }, never, never, false, never>;
 }

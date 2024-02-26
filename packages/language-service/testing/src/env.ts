@@ -25,7 +25,6 @@ export class LanguageServiceTestEnv {
       throw new Error(`LanguageServiceTestEnvironment only works with a mock filesystem`);
     }
     fs.init(loadStandardTestFiles({
-      fakeCore: true,
       fakeCommon: true,
     }));
 

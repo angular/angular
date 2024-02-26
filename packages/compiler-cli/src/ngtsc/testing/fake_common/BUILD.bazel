@@ -9,7 +9,7 @@ ts_library(
     ],
     module_name = "@angular/common",
     deps = [
-        "//packages/compiler-cli/src/ngtsc/testing/fake_core",
+        "//packages/core",
     ],
 )
 

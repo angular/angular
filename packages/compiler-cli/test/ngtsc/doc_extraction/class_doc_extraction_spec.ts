@@ -13,7 +13,7 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
 runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
@@ -111,7 +111,7 @@ runInEachFileSystem(() => {
 
     it('should extract a method with a rest parameter', () => {
       env.write('index.ts', `
-        export class UserProfile {            
+        export class UserProfile {
           getNames(prefix: string, ...ids: string[]): string[] {
             return [];
           }
@@ -181,14 +181,14 @@ runInEachFileSystem(() => {
     it('should extract member tags', () => {
       // Test both properties and methods with zero, one, and multiple tags.
       env.write('index.ts', `
-        export class UserProfile {            
+        export class UserProfile {
             eyeColor = 'brown';
             protected name: string;
             readonly age = 25;
             address?: string;
             static country = 'USA';
             protected readonly birthday = '1/1/2000';
-            
+
             getEyeColor(): string { return 'brown'; }
             protected getName(): string { return 'Morgan'; }
             getAge?(): number { return 25; }
@@ -237,12 +237,12 @@ runInEachFileSystem(() => {
     it('should extract getters and setters', () => {
       // Test getter-only, a getter + setter, and setter-only.
       env.write('index.ts', `
-        export class UserProfile {            
+        export class UserProfile {
           get userId(): number { return 123; }
-          
+
           get userName(): string { return 'Morgan'; }
           set userName(value: string) { }
-          
+
           set isAdmin(value: boolean) { }
         }
       `);

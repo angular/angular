@@ -13,7 +13,7 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
 runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
@@ -72,10 +72,10 @@ runInEachFileSystem(() => {
     it('should extract NgModule directive info', () => {
       env.write('index.ts', `
         import {Directive, NgModule} from '@angular/core';
-        
+
         @NgModule({declarations: [UserProfile]})
         export class ProfileModule { }
-        
+
         @Directive({
           standalone: false,
           selector: 'user-profile',
@@ -98,10 +98,10 @@ runInEachFileSystem(() => {
     it('should extract NgModule component info', () => {
       env.write('index.ts', `
         import {Component, NgModule} from '@angular/core';
-        
+
         @NgModule({declarations: [UserProfile]})
         export class ProfileModule { }
-        
+
         @Component({
           standalone: false,
           selector: 'user-profile',
@@ -130,7 +130,7 @@ runInEachFileSystem(() => {
           selector: 'user-profile',
           exportAs: 'userProfile',
         })
-        export class UserProfile { 
+        export class UserProfile {
           @Input() name: string = '';
           @Input('first') firstName = '';
           @Input({required: true}) middleName = '';
@@ -184,7 +184,7 @@ runInEachFileSystem(() => {
           exportAs: 'userProfile',
           template: '',
         })
-        export class UserProfile { 
+        export class UserProfile {
           @Input() name: string = '';
           @Input('first') firstName = '';
           @Output() saved = new EventEmitter();
@@ -229,14 +229,14 @@ runInEachFileSystem(() => {
           exportAs: 'userProfile',
           template: '',
         })
-        export class UserProfile { 
+        export class UserProfile {
           @Input()
           get userId(): number { return 123; }
-          
+
           @Input()
           get userName(): string { return 'Morgan'; }
           set userName(value: string) { }
-          
+
           @Input()
           set isAdmin(value: boolean) { }
         }

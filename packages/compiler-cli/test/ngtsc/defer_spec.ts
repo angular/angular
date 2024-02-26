@@ -720,6 +720,7 @@ runInEachFileSystem(() => {
 
           @Component({
             standalone: true,
+            // @ts-ignore
             deferredImports: [DeferredCmpA, DeferredCmpB],
             template: \`
               @defer {
@@ -811,6 +812,7 @@ runInEachFileSystem(() => {
             @Component({
               standalone: true,
               imports: [EagerCmpA],
+              // @ts-ignore
               deferredImports: [DeferredCmpA, DeferredCmpB],
               template: \`
                 @defer {
@@ -872,6 +874,7 @@ runInEachFileSystem(() => {
               class MyInjectable {}
               @Component({
                 standalone: true,
+                // @ts-ignore
                 deferredImports: [MyInjectable],
                 template: '',
               })
@@ -892,6 +895,7 @@ runInEachFileSystem(() => {
               class MyModule {}
               @Component({
                 standalone: true,
+                // @ts-ignore
                 deferredImports: [MyModule],
                 template: '',
               })
@@ -934,6 +938,7 @@ runInEachFileSystem(() => {
               import {DeferredCmpB} from './deferred-b';
               @Component({
                 standalone: true,
+                // @ts-ignore
                 deferredImports: [DeferredCmpA, DeferredCmpB],
                 template: \`
                   <deferred-cmp-a />
@@ -970,6 +975,7 @@ runInEachFileSystem(() => {
               import {DeferredCmpA} from './deferred-a';
               @Component({
                 standalone: true,
+                // @ts-ignore
                 deferredImports: [DeferredCmpA],
                 imports: [DeferredCmpA],
                 template: \`
@@ -1017,6 +1023,7 @@ runInEachFileSystem(() => {
               import {DeferredPipeB} from './deferred-pipe-b';
               @Component({
                 standalone: true,
+                // @ts-ignore
                 deferredImports: [DeferredPipeA, DeferredPipeB],
                 template: \`
                   {{ 'Eager' | deferredPipeA }}
@@ -1050,6 +1057,7 @@ runInEachFileSystem(() => {
             import {DeferredCmpA} from './deferred-a';
             @Component({
               standalone: true,
+              // @ts-ignore
               deferredImports: [DeferredCmpA],
               template: \`
                 @if (true) {
@@ -1090,6 +1098,7 @@ runInEachFileSystem(() => {
               import {DeferredCmpA} from './deferred-a';
               @Component({
                 standalone: true,
+                // @ts-ignore
                 deferredImports: [DeferredCmpA],
                 template: \`
                   @defer {

@@ -225,8 +225,8 @@ import * as i0 from "@angular/core";
 export declare class HostDir {
     value: number;
     color: string;
-    opened: EventEmitter<unknown>;
-    closed: EventEmitter<unknown>;
+    opened: EventEmitter<any>;
+    closed: EventEmitter<any>;
     static ɵfac: i0.ɵɵFactoryDeclaration<HostDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, never, never, { "value": { "alias": "value"; "required": false; }; "color": { "alias": "color"; "required": false; }; }, { "opened": "opened"; "closed": "closed"; }, never, never, true, never>;
 }
@@ -289,8 +289,8 @@ import * as i0 from "@angular/core";
 export declare class HostDir {
     value: number;
     color: string;
-    opened: EventEmitter<unknown>;
-    closed: EventEmitter<unknown>;
+    opened: EventEmitter<any>;
+    closed: EventEmitter<any>;
     static ɵfac: i0.ɵɵFactoryDeclaration<HostDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostDir, never, never, { "value": { "alias": "valueAlias"; "required": false; }; "color": { "alias": "colorAlias"; "required": false; }; }, { "opened": "openedAlias"; "closed": "closedAlias"; }, never, never, true, never>;
 }

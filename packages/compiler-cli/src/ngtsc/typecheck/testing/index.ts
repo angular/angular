@@ -91,14 +91,19 @@ export function typescriptLibDts(): TestFile {
   };
 }
 
-export function angularCoreDts(): TestFile {
-  const directory =
-      resolveFromRunfiles('angular/packages/compiler-cli/src/ngtsc/testing/fake_core/npm_package');
+export function angularCoreDtsFiles(): TestFile[] {
+  const directory = resolveFromRunfiles('angular/packages/core/npm_package');
 
-  return {
-    name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
-    contents: readFileSync(path.join(directory, 'index.d.ts'), 'utf8'),
-  };
+  return [
+    {
+      name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
+      contents: readFileSync(path.join(directory, 'index.d.ts'), 'utf8'),
+    },
+    {
+      name: absoluteFrom('/node_modules/@angular/core/primitives/signals/index.d.ts'),
+      contents: readFileSync(path.join(directory, 'primitives/signals/index.d.ts'), 'utf8'),
+    },
+  ];
 }
 
 export function angularAnimationsDts(): TestFile {
@@ -399,7 +404,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
 } {
   const files = [
     typescriptLibDts(),
-    angularCoreDts(),
+    ...angularCoreDtsFiles(),
     angularAnimationsDts(),
   ];
   const fakeMetadataRegistry = new Map();

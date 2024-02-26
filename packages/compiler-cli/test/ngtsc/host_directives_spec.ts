@@ -327,7 +327,7 @@ runInEachFileSystem(() => {
             {
               directive: forwardRef(() => DirectiveB),
               inputs: ['input: inputAlias'],
-              output: ['output: outputAlias']
+              outputs: ['output: outputAlias']
             }
           ]
         })
@@ -344,7 +344,8 @@ runInEachFileSystem(() => {
       expect(jsContents)
           .toContain(
               'features: [i0.ɵɵHostDirectivesFeature(function () { ' +
-              'return [i1.DirectiveA, { directive: i2.DirectiveB, inputs: ["input", "inputAlias"] }]; })]');
+              'return [i1.DirectiveA, { directive: i2.DirectiveB, inputs: ["input", "inputAlias"], ' +
+              'outputs: ["output", "outputAlias"] }]; })]');
 
       expect(dtsContents).toContain('import * as i1 from "./dir-a";');
       expect(dtsContents).toContain('import * as i2 from "./dir-b";');
@@ -353,7 +354,7 @@ runInEachFileSystem(() => {
               'ɵɵComponentDeclaration<MyComp, "my-comp", never, {}, ' +
               '{}, never, never, false, [{ directive: typeof i1.DirectiveA; ' +
               'inputs: {}; outputs: {}; }, { directive: typeof i2.DirectiveB; ' +
-              'inputs: { "input": "inputAlias"; }; outputs: {}; }]>;');
+              'inputs: { "input": "inputAlias"; }; outputs: { "output": "outputAlias"; }; }]>;');
     });
 
     it('should generate a hostDirectives definition referring to external directives', () => {
@@ -558,6 +559,7 @@ runInEachFileSystem(() => {
 
           @Component({
             template: '',
+            // @ts-ignore
             hostDirectives: {}
           })
           export class MyComp {}
@@ -571,7 +573,7 @@ runInEachFileSystem(() => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
 
-          const hostA = {};
+          const hostA = {} as any;
 
           @Component({
             template: '',
@@ -592,6 +594,7 @@ runInEachFileSystem(() => {
 
           @Component({
             template: '',
+            // @ts-ignore
             hostDirectives: [hostA]
           })
           export class MyComp {}

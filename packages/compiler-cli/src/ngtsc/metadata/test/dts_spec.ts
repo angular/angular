@@ -10,13 +10,13 @@ import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_syst
 import {runInEachFileSystem} from '../../file_system/testing';
 import {OwningModule, Reference} from '../../imports';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {loadFakeCore, makeProgram} from '../../testing';
+import {loadAngularCore, makeProgram} from '../../testing';
 import {DtsMetadataReader} from '../src/dts';
 import {isHostDirectiveMetaForGlobalMode} from '../src/util';
 
 runInEachFileSystem(() => {
   beforeEach(() => {
-    loadFakeCore(getFileSystem());
+    loadAngularCore(getFileSystem());
   });
 
   describe('DtsMetadataReader', () => {

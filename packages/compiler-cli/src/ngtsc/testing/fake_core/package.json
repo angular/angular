@@ -1,5 +1,0 @@
-{
-  "name": "@angular/core",
-  "version": "0.0.0-FAKE-FOR-TESTS",
-  "description": "Fake version of core for ngtsc tests"
-}

@@ -11,7 +11,7 @@ def partial_compliance_golden(filePath):
     data = [
         "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/compiler-cli/test/compliance/test_cases",
-        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+        "//packages/core:npm_package",
         filePath,
     ]
 

@@ -35,15 +35,15 @@ import * as i0 from "@angular/core";
 export declare class SomeToken {
 }
 export declare class TestDir {
-    query1: any;
-    query2: any;
-    query3: any;
-    query4: any;
-    query5: any;
-    query6: any;
-    query7: any;
-    query8: any;
-    query9: any;
+    query1: import("@angular/core").Signal<unknown>;
+    query2: import("@angular/core").Signal<readonly unknown[]>;
+    query3: import("@angular/core").Signal<unknown>;
+    query4: import("@angular/core").Signal<readonly unknown[]>;
+    query5: import("@angular/core").Signal<any>;
+    query6: import("@angular/core").Signal<readonly SomeToken[]>;
+    query7: import("@angular/core").Signal<SomeToken | undefined>;
+    query8: import("@angular/core").Signal<readonly unknown[]>;
+    query9: import("@angular/core").Signal<readonly unknown[]>;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, ["query3", "query4", "query8", "query9"], never, true, never>;
 }
@@ -76,10 +76,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestComp {
-    query1: any;
-    query2: any;
-    query3: any;
-    query4: any;
+    query1: import("@angular/core").Signal<unknown>;
+    query2: import("@angular/core").Signal<readonly unknown[]>;
+    query3: import("@angular/core").Signal<unknown>;
+    query4: import("@angular/core").Signal<readonly unknown[]>;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestComp, "ng-component", never, {}, {}, ["query3", "query4"], never, true, never>;
 }
@@ -116,9 +116,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 import * as i0 from "@angular/core";
 export declare class TestDir {
     decoratorViewChild: unknown;
-    signalViewChild: any;
+    signalViewChild: import("@angular/core").Signal<unknown>;
     decoratorContentChild: unknown;
-    signalContentChild: any;
+    signalContentChild: import("@angular/core").Signal<unknown>;
     static ɵfac: i0.ɵɵFactoryDeclaration<TestDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, {}, {}, ["signalContentChild", "decoratorContentChild"], never, true, never>;
 }
