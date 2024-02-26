@@ -22,7 +22,6 @@
     "packages/docs/**",
     "packages/elements/schematics/**",
     "packages/examples/**",
-    "packages/language-service/**",
     "packages/localize/**",
     "packages/private/**",
     "packages/service-worker/**",
