@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build --configuration production",
     "pretest": "ng version",
-    "test": "ng test && ng e2e",
+    "test": "ng test && ng e2e && ng build --configuration=production",
     "lint": "ng lint",
     "e2e": "ng e2e --port 0"
   },

@@ -24,15 +24,20 @@ describe('greet component', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.clickCount).toBe(1);
+    expect(fixture.componentInstance.clickCount2).toBe(1);
   });
 });
 
 @Component({
   standalone: true,
-  template: `<greet [firstName]="firstName" (clickFromInside)="clickCount = clickCount + 1"/>`,
+  template: `
+    <greet [firstName]="firstName" (clickFromInside)="clickCount = clickCount + 1"
+           (clickFromInside2)="clickCount2 = clickCount2 + 1"/>
+  `,
   imports: [GreetComponent],
 })
 class TestCmp {
   clickCount = 0;
+  clickCount2 = 0;
   firstName = 'Initial';
 }

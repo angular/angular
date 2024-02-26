@@ -1,4 +1,6 @@
-import {ChangeDetectionStrategy, Component, Input, input, ɵoutput} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, input, output} from '@angular/core';
+import {outputFromObservable} from '@angular/core/rxjs-interop';
+import {Subject} from 'rxjs';
 
 @Component({
   selector: 'greet',
@@ -18,9 +20,15 @@ export class GreetComponent {
 
   @Input() decoratorInput = 0;
 
-  clickFromInside = ɵoutput();
+  clickFromInside = output<string>();
+
+  private clickFromInsideInterop$ = new Subject<number>();
+  clickFromInsideInterop = outputFromObservable(this.clickFromInsideInterop$, {
+    alias: 'clickFromInside2',
+  });
 
   dispatchOutputEvent() {
-    this.clickFromInside.emit();
+    this.clickFromInside.emit('someString');
+    this.clickFromInsideInterop$.next(1);
   }
 }
