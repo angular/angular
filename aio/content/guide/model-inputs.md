@@ -13,9 +13,9 @@ When creating a component, you can define a model input similarly to how you cre
 input.
 
 ```typescript
-import {Directive, model, input} from '@angular/core';
+import {Component, model, input} from '@angular/core';
 
-@Directive({...})
+@Component({...})
 export class CustomCheckbox {
   // This is a model input.
   checked = model(false);
@@ -32,9 +32,9 @@ In other respects, you can use model inputs the same way you use standard inputs
 value by calling the signal function, including in reactive contexts like `computed` and `effect`.
 
 ```typescript
-import {Directive, model, input} from '@angular/core';
+import {Component, model, input} from '@angular/core';
 
-@Directive({
+@Component({
   selector: 'custom-checkbox',
   template: '<div (click)="toggle()"> ... </div>',
 })
