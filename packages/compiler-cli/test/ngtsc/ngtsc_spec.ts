@@ -3824,7 +3824,7 @@ function allTests(os: string) {
       export interface MyType extends ModuleWithProviders {}
 
       declare class RouterModule {
-        static forRoot(): (MyType)&{ngModule:RouterModule};
+        static forRoot(): (MyType)&{ngModule: typeof RouterModule};
         static ɵmod: ɵɵNgModuleDeclaration<RouterModule, never, never, never>;
       }
   `);
