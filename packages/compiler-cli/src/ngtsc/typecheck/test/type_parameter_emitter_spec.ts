@@ -15,14 +15,14 @@ import {getDeclaration, makeProgram} from '../../testing';
 import {Environment} from '../src/environment';
 import {TypeCheckFile} from '../src/type_check_file';
 import {TypeParameterEmitter} from '../src/type_parameter_emitter';
-import {ALL_ENABLED_CONFIG, angularCoreDts, typescriptLibDts} from '../testing';
+import {ALL_ENABLED_CONFIG, angularCoreDtsFiles, typescriptLibDts} from '../testing';
 
 
 runInEachFileSystem(() => {
   describe('type parameter emitter', () => {
     function createEmitter(source: string, additionalFiles: TestFile[] = []) {
       const files: TestFile[] = [
-        angularCoreDts(),
+        ...angularCoreDtsFiles(),
         {name: absoluteFrom('/app/main.ts'), contents: source},
         ...additionalFiles,
       ];

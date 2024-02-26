@@ -45,7 +45,6 @@ export interface WritableSignal<T> extends Signal<T> {
  * @codeGenApi
  */
 export function ɵunwrapWritableSignal<T>(value: T|{[WRITABLE_SIGNAL]: T}): T {
-  // Note: needs to be kept in sync with the copy in `fake_core/index.ts`.
   // Note: the function uses `WRITABLE_SIGNAL` as a brand instead of `WritableSignal<T>`,
   // because the latter incorrectly unwraps non-signal getter functions.
   return null!;

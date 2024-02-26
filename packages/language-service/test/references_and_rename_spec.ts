@@ -799,7 +799,6 @@ describe('find references and rename locations', () => {
 
         it('should find references', () => {
           const refs = getReferencesAtPosition(file)!;
-          expect(refs.length).toBe(5);
           assertFileNames(refs, ['index.d.ts', 'prefix-pipe.ts', 'app.ts']);
           assertTextSpans(refs, ['transform', 'prefixPipe']);
         });
@@ -1596,7 +1595,7 @@ describe('find references and rename locations', () => {
       const comp = `
             import {Component, Input} from '@angular/core';
 
-            @Component({name: 'my-comp', template: ''})
+            @Component({selector: 'my-comp', template: ''})
             export class MyComp {
               @Input() myProp!: string;
             }`;
@@ -1616,7 +1615,7 @@ describe('find references and rename locations', () => {
       const text = `
             import {Component} from '@angular/core';
 
-            @Component({name: 'my-comp', template: '{{ myObj["myProp"] }}'})
+            @Component({selector: 'my-comp', template: '{{ myObj["myProp"] }}'})
             export class MyComp {
               readonly myObj = {'myProp': 'hello world'};
             }`;
@@ -1651,7 +1650,7 @@ describe('find references and rename locations', () => {
         'my-comp.ts': `
             import {Component, Input} from '@angular/core';
 
-            @Component({name: 'my-comp', template: '<div dir="something"></div>'})
+            @Component({selector: 'my-comp', template: '<div dir="something"></div>'})
             export class MyComp {
               @Input() myProp!: string;
             }`

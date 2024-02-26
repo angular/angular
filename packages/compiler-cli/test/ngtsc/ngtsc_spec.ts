@@ -811,7 +811,7 @@ function allTests(os: string) {
       })
       export class TestPipe {}
 
-      @AngularInjectable({})
+      @AngularInjectable()
       export class TestInjectable {}
 
       @AngularNgModule({
@@ -1200,6 +1200,7 @@ function allTests(os: string) {
           import {Component, ${fieldDecoratorName}, NgModule} from '@angular/core';
 
           export class SomeBaseClass {
+            // @ts-ignore — Because no arguments are specified.
             @${fieldDecoratorName}() someMember: any;
           }
         `);
@@ -1984,6 +1985,7 @@ function allTests(os: string) {
         env.write('test.ts', `
           import {NgModule} from '@angular/core';
 
+          // @ts-ignore
           @NgModule('invalidNgModuleArgumentType')
           export class MyModule {}
         `);
@@ -2040,6 +2042,7 @@ function allTests(os: string) {
               template: '...'
             })
             export class TestCmp {
+              // @ts-ignore
               @${decorator}('foo', 'invalidOptionsArgumentType') foo: any;
             }
           `);
@@ -2076,6 +2079,7 @@ function allTests(os: string) {
               template: '...'
             })
             export class TestCmp {
+              // @ts-ignore
               @${decorator}('foo', {}, 'invalid-extra-arg') foo: any;
             }
           `);
@@ -2093,6 +2097,7 @@ function allTests(os: string) {
               template: '...'
             })
             export class TestCmp {
+              // @ts-ignore
               @${decorator}({'invalid-predicate-type': true}) foo: any;
             }
           `);
@@ -2110,6 +2115,7 @@ function allTests(os: string) {
               template: '...'
             })
             export class TestCmp {
+              // @ts-ignore
               @${decorator}(['predicate-a', {'invalid-predicate-type': true}]) foo: any;
             }
           `);
@@ -2126,6 +2132,7 @@ function allTests(os: string) {
 
           @Directive({
             selector: 'test-dir',
+            // @ts-ignore
             inputs: 'invalid-field-type',
           })
           export class TestDir {}
@@ -2159,6 +2166,7 @@ function allTests(os: string) {
 
           @Directive({
             selector: 'test-dir',
+            // @ts-ignore
             outputs: 'invalid-field-type',
           })
           export class TestDir {}
@@ -2181,6 +2189,7 @@ function allTests(os: string) {
                 template: '...'
               })
               export class TestCmp {
+                // @ts-ignore
                 @ContentChild('foo', {descendants: 'invalid'}) foo: any;
               }
             `);
@@ -2201,6 +2210,7 @@ function allTests(os: string) {
               template: '...'
             })
             export class TestCmp {
+              // @ts-ignore
               @${decorator}(['invalid-arg-type']) foo: any;
             }
           `);
@@ -2219,6 +2229,7 @@ function allTests(os: string) {
               template: '...'
             })
             export class TestCmp {
+              // @ts-ignore
               @${decorator}('name', 'invalid-extra-arg') foo: any;
             }
           `);
@@ -2238,6 +2249,7 @@ function allTests(os: string) {
             template: '...'
           })
           export class TestCmp {
+            // @ts-ignore
             @HostBinding(['invalid-arg-type']) foo: any;
           }
         `);
@@ -2255,6 +2267,7 @@ function allTests(os: string) {
             template: '...'
           })
           export class TestCmp {
+            // @ts-ignore
             @HostBinding('name', 'invalid-extra-arg') foo: any;
           }
         `);
@@ -2269,6 +2282,7 @@ function allTests(os: string) {
 
           @Directive({
             selector: 'test-dir',
+            // @ts-ignore
             host: 'invalid-host-type'
           })
           export class TestDir {}
@@ -2285,6 +2299,7 @@ function allTests(os: string) {
 
               @Directive({
                 selector: 'test-dir',
+                // @ts-ignore
                 host: {'key': ['invalid-host-value']}
               })
               export class TestDir {}
@@ -2301,6 +2316,7 @@ function allTests(os: string) {
 
           @Directive({
             selector: 'test-dir',
+            // @ts-ignore
             queries: 'invalid-queries-type'
           })
           export class TestDir {}
@@ -2351,6 +2367,7 @@ function allTests(os: string) {
         env.write('test.ts', `
           import {Injectable} from '@angular/core';
 
+          // @ts-ignore
           @Injectable('invalid')
           export class TestProvider {}
         `);
@@ -2358,11 +2375,11 @@ function allTests(os: string) {
             ErrorCode.DECORATOR_ARG_NOT_LITERAL, '@Injectable argument must be an object literal');
       });
 
-      it('should produce a diangostic if the transform value is not a function', () => {
+      it('should produce a diagnostic if the transform value is not a function', () => {
         env.write('/test.ts', `
           import {Directive, Input} from '@angular/core';
 
-          const NOT_A_FUNCTION = 1;
+          const NOT_A_FUNCTION: any = null!;
 
           @Directive({selector: '[dir]', standalone: true})
           export class Dir {
@@ -2373,12 +2390,12 @@ function allTests(os: string) {
         verifyThrownError(ErrorCode.VALUE_HAS_WRONG_TYPE, `Input transform must be a function`);
       });
 
-      it('should produce a diangostic if the transform value in the inputs array is not a function',
+      it('should produce a diagnostic if the transform value in the inputs array is not a function',
          () => {
            env.write('/test.ts', `
           import {Directive, Input} from '@angular/core';
 
-          const NOT_A_FUNCTION = 1;
+          const NOT_A_FUNCTION: any = null!;
 
           @Directive({
             selector: '[dir]',
@@ -2395,7 +2412,7 @@ function allTests(os: string) {
 
            verifyThrownError(
                ErrorCode.VALUE_HAS_WRONG_TYPE,
-               `Transform of value at position 0 of @Directive.inputs array must be a function Value is of type 'number'.`);
+               `Transform of value at position 0 of @Directive.inputs array must be a function Value is of type 'null'.`);
          });
 
       it('should produce a diangostic if the transform function first parameter has no arguments',
@@ -3897,7 +3914,7 @@ function allTests(os: string) {
             er: ElementRef,
             i: Injector,
             r2: Renderer2,
-            tr: TemplateRef,
+            tr: TemplateRef<unknown>,
             vcr: ViewContainerRef,
           ) {}
         }
@@ -3915,7 +3932,7 @@ function allTests(os: string) {
         import {Attribute, Component, Directive, Pipe, Self, SkipSelf, Host, Optional} from '@angular/core';
 
         export class MyService {}
-        export function dynamic() {};
+        export function dynamic() {return ''};
 
         @Directive()
         export class WithDecorators {
@@ -3983,32 +4000,32 @@ function allTests(os: string) {
           constructor(@Self() service: MyService) {}
         }
 
-        @Injectable({ useExisting: MyService })
+        @Injectable({ useExisting: MyService, providedIn: 'root' })
         export class InjUseExisting {
           constructor(@Self() service: MyService) {}
         }
 
-        @Injectable({ useClass: MyService })
+        @Injectable({ useClass: MyService, providedIn: 'root' })
         export class InjUseClass {
           constructor(@Self() service: MyService) {}
         }
 
-        @Injectable({ useClass: MyService, deps: [[new Host(), MyService]] })
+        @Injectable({ useClass: MyService, deps: [[new Host(), MyService]], providedIn: 'root' })
         export class InjUseClassWithDeps {
           constructor(@Self() service: MyService) {}
         }
 
-        @Injectable({ useFactory: () => new Injectable(new MyService()) })
+        @Injectable({ useFactory: () => new MyService(), providedIn: 'root' })
         export class InjUseFactory {
           constructor(@Self() service: MyService) {}
         }
 
-        @Injectable({ useFactory: (service: MyService) => new Injectable(service), deps: [[new Host(), MyService]] })
+        @Injectable({ useFactory: (service: MyService) => service, deps: [[new Host(), MyService]], providedIn: 'root'})
         export class InjUseFactoryWithDeps {
           constructor(@Self() service: MyService) {}
         }
 
-        @Injectable({ useValue: new Injectable(new MyService()) })
+        @Injectable({ useValue: new MyService(), providedIn: 'root' })
         export class InjUseValue {
           constructor(@Self() service: MyService) {}
         }
@@ -4650,6 +4667,7 @@ function allTests(os: string) {
       @Component({
         selector: 'comp-a',
         template: '...',
+        // @ts-ignore
         encapsulation: 'invalid-value'
       })
       class CompA {}
@@ -4684,6 +4702,7 @@ function allTests(os: string) {
       @Component({
         selector: 'comp-a',
         template: '...',
+        // @ts-ignore
         changeDetection: 'invalid-value'
       })
       class CompA {}
@@ -6078,6 +6097,7 @@ function allTests(os: string) {
             @Component({
               selector: 'test',
               template: '...',
+              // @ts-ignore
               styleUrls: '...'
             })
             export class TestCmp {}

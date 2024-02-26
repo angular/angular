@@ -18,7 +18,7 @@ import {factory as invalidBananaInBoxFactory} from '../../src/ngtsc/typecheck/ex
 import {NgtscTestEnvironment} from './env';
 import {getClass} from './util';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
 
 

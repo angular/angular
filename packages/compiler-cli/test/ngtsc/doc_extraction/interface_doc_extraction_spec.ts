@@ -13,7 +13,7 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {NgtscTestEnvironment} from '../env';
 
-const testFiles = loadStandardTestFiles({fakeCore: true, fakeCommon: true});
+const testFiles = loadStandardTestFiles({fakeCommon: true});
 
 runInEachFileSystem(() => {
   let env!: NgtscTestEnvironment;
@@ -64,7 +64,7 @@ runInEachFileSystem(() => {
 
     it('should extract a method with a rest parameter', () => {
       env.write('index.ts', `
-        export interface UserProfile {            
+        export interface UserProfile {
           getNames(prefix: string, ...ids: string[]): string[];
         }
       `);
@@ -135,7 +135,7 @@ runInEachFileSystem(() => {
             address?: string;
             static country: string;
             protected readonly birthday: string;
-            
+
             getEyeColor(): string;
             protected getName(): string;
             getAge?(): number;

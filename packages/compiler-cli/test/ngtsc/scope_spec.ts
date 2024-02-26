@@ -197,6 +197,7 @@ runInEachFileSystem(() => {
           import {NgModule} from '@angular/core';
           import {NotAClass} from './dep';
 
+          // @ts-ignore
           @NgModule({imports: [NotAClass]})
           class IsAModule {}
         `);

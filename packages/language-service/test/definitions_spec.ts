@@ -424,7 +424,7 @@ describe('definitions', () => {
         'app.ts': `
 	 import {Component, Directive, NgModule, Input} from '@angular/core';
 
-	 @Directive({selector: '[dollar\\\\$]', template: ''})
+	 @Directive({selector: '[dollar\\\\$]'})
 	 export class DollarDir {
 	   @Input() dollar$!: string;
 	 }

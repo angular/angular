@@ -26,7 +26,7 @@ jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node_no_angular"],
     data = [
-        "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
+        "//packages/core:npm_package",
     ],
     deps =
         [

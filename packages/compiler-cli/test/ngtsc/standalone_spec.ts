@@ -398,6 +398,7 @@ runInEachFileSystem(() => {
                selector: 'test-cmp',
                template: '<div></div>',
                standalone: true,
+               // @ts-ignore
                imports: [moduleWithProviders()],
              })
              export class TestCmpWithLiteralImports {}
@@ -408,6 +409,7 @@ runInEachFileSystem(() => {
                selector: 'test-cmp',
                template: '<div></div>',
                standalone: true,
+               // @ts-ignore
                imports: IMPORTS,
              })
              export class TestCmpWithReferencedImports {}
@@ -440,6 +442,7 @@ runInEachFileSystem(() => {
             selector: 'test-cmp',
             template: '<div></div>',
             standalone: true,
+            // @ts-ignore
             imports: [TestModule.forRoot()],
           })
           export class TestCmp {}
