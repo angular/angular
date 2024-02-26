@@ -121,6 +121,9 @@ export const enum RuntimeErrorCode {
   REQUIRED_QUERY_NO_VALUE = -951,
   REQUIRED_MODEL_NO_VALUE = -952,
 
+  // Output()
+  OUTPUT_REF_DESTROYED = 953,
+
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
   RUNTIME_DEPS_ORPHAN_COMPONENT = 1001,
