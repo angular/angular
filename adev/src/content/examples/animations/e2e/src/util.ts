@@ -1,4 +1,4 @@
-import { Locator, ElementFinder, browser, by, element } from 'protractor';
+import {Locator, ElementFinder, browser, by, element} from 'protractor';
 
 /**
  *
@@ -6,8 +6,9 @@ import { Locator, ElementFinder, browser, by, element } from 'protractor';
  */
 export function locate(locator: Locator, ...locators: Locator[]) {
   return locators.reduce(
-      (current: ElementFinder, next: Locator) => current.element(next),
-      element(locator)) as ElementFinder;
+    (current: ElementFinder, next: Locator) => current.element(next),
+    element(locator),
+  ) as ElementFinder;
 }
 
 export async function sleepFor(time = 1000) {

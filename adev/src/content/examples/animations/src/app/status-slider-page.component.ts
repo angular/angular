@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { StatusSliderComponent } from './status-slider.component';
+import {Component} from '@angular/core';
+import {StatusSliderComponent} from './status-slider.component';
 
 @Component({
   standalone: true,
@@ -10,6 +10,6 @@ import { StatusSliderComponent } from './status-slider.component';
       <app-status-slider></app-status-slider>
     </section>
   `,
-  imports: [StatusSliderComponent]
+  imports: [StatusSliderComponent],
 })
 export class StatusSliderPageComponent {}

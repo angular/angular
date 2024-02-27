@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
-import { Hero } from './hero';
+import {Hero} from './hero';
 
 @Component({
   selector: 'app-hero-main',
@@ -9,7 +9,7 @@ import { Hero } from './hero';
     <app-hero-details [hero]="hero" [class.active]="hero.active">
       <app-hero-controls [hero]="hero"></app-hero-controls>
     </app-hero-details>
-  `
+  `,
 })
 export class HeroAppMainComponent {
   @Input() hero!: Hero;

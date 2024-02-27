@@ -1,15 +1,15 @@
-import { Component } from '@angular/core';
-import { NgClass } from '@angular/common';
+import {Component} from '@angular/core';
+import {NgClass} from '@angular/common';
 
-import { ItemDetailComponent } from './item-detail.component';
-import { ItemListComponent } from './item-list.component';
+import {ItemDetailComponent} from './item-detail.component';
+import {ItemListComponent} from './item-list.component';
 
 @Component({
   standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   imports: [ItemDetailComponent, ItemListComponent, NgClass],
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   // #docregion item-image
@@ -24,10 +24,12 @@ export class AppComponent {
   // #enddocregion parent-data-type
 
   // #docregion pass-object
-  currentItems = [{
-    id: 21,
-    name: 'phone'
-  }];
+  currentItems = [
+    {
+      id: 21,
+      name: 'phone',
+    },
+  ];
   // #enddocregion pass-object
 
   interpolationTitle = 'Interpolation';

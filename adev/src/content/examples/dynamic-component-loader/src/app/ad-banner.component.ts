@@ -1,9 +1,9 @@
 // #docregion
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
-import { AdDirective } from './ad.directive';
-import { AdItem } from './ad-item';
-import { AdComponent } from './ad.component';
+import {AdDirective} from './ad.directive';
+import {AdItem} from './ad-item';
+import {AdComponent} from './ad.component';
 
 @Component({
   selector: 'app-ad-banner',
@@ -13,7 +13,7 @@ import { AdComponent } from './ad.component';
       <h3>Advertisements</h3>
       <ng-template adHost></ng-template>
     </div>
-  `
+  `,
   // #enddocregion ad-host
 })
 // #docregion class

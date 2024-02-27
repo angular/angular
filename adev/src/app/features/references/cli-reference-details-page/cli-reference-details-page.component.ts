@@ -59,7 +59,7 @@ export default class CliReferenceDetailsPage implements OnInit {
   private setPageContent(): void {
     this.activatedRoute.data
       .pipe(
-        map(data => data['docContent']),
+        map((data) => data['docContent']),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((doc: DocContent | undefined) => {

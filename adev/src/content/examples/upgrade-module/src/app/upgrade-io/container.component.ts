@@ -1,6 +1,6 @@
 // #docregion
-import { Component } from '@angular/core';
-import { Hero } from '../hero';
+import {Component} from '@angular/core';
+import {Hero} from '../hero';
 
 @Component({
   selector: 'my-container',
@@ -9,7 +9,7 @@ import { Hero } from '../hero';
     <hero-detail [hero]="hero"
                  (deleted)="heroDeleted($event)">
     </hero-detail>
-  `
+  `,
 })
 export class ContainerComponent {
   hero = new Hero(1, 'Windstorm');

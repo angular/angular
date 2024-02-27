@@ -1,5 +1,5 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-version-parent',
@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
     <button type="button" (click)="newMinor()">New minor version</button>
     <button type="button" (click)="newMajor()">New major version</button>
     <app-version-child [major]="major" [minor]="minor"></app-version-child>
-  `
+  `,
 })
 export class VersionParentComponent {
   major = 1;

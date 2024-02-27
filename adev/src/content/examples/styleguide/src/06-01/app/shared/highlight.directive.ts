@@ -1,10 +1,10 @@
 // #docregion
-import { Directive, HostListener } from '@angular/core';
+import {Directive, HostListener} from '@angular/core';
 
 // #docregion example
 @Directive({
   standalone: true,
-  selector: '[tohHighlight]'
+  selector: '[tohHighlight]',
 })
 export class HighlightDirective {
   @HostListener('mouseover') onMouseEnter() {

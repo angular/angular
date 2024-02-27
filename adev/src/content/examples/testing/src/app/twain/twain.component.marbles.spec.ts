@@ -1,12 +1,12 @@
 // #docplaster
-import { fakeAsync, ComponentFixture, TestBed, tick } from '@angular/core/testing';
+import {fakeAsync, ComponentFixture, TestBed, tick} from '@angular/core/testing';
 
 // #docregion import-marbles
-import { cold, getTestScheduler } from 'jasmine-marbles';
+import {cold, getTestScheduler} from 'jasmine-marbles';
 // #enddocregion import-marbles
 
-import { TwainService } from './twain.service';
-import { TwainComponent } from './twain.component';
+import {TwainService} from './twain.service';
+import {TwainComponent} from './twain.component';
 
 describe('TwainComponent (marbles)', () => {
   let component: TwainComponent;
@@ -29,7 +29,7 @@ describe('TwainComponent (marbles)', () => {
 
     TestBed.configureTestingModule({
       imports: [TwainComponent],
-      providers: [{ provide: TwainService, useValue: twainService }],
+      providers: [{provide: TwainService, useValue: twainService}],
     });
 
     fixture = TestBed.createComponent(TwainComponent);
@@ -43,7 +43,7 @@ describe('TwainComponent (marbles)', () => {
   it('should show quote after getQuote (marbles)', () => {
     // observable test quote value and complete(), after delay
     // #docregion test-quote-marbles
-    const q$ = cold('---x|', { x: testQuote });
+    const q$ = cold('---x|', {x: testQuote});
     // #enddocregion test-quote-marbles
     getQuoteSpy.and.returnValue(q$);
 

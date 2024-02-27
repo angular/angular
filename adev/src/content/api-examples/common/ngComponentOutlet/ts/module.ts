@@ -82,7 +82,10 @@ export class NgComponentOutletCompleteExample implements OnInit {
   @ViewChild('svet', {static: true}) svetTemplateRef!: TemplateRef<any>;
   myContent?: any[][];
 
-  constructor(injector: Injector, private vcr: ViewContainerRef) {
+  constructor(
+    injector: Injector,
+    private vcr: ViewContainerRef,
+  ) {
     this.myInjector = Injector.create({
       providers: [{provide: Greeter, deps: []}],
       parent: injector,

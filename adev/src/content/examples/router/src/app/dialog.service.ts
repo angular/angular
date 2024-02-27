@@ -1,6 +1,6 @@
 // #docregion
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Observable, of} from 'rxjs';
 
 /**
  * Async modal dialog service

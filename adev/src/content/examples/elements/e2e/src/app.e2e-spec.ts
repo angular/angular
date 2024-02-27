@@ -1,4 +1,4 @@
-import { browser, by, element, ElementFinder, ExpectedConditions as EC } from 'protractor';
+import {browser, by, element, ElementFinder, ExpectedConditions as EC} from 'protractor';
 
 describe('Elements', () => {
   const messageInput = element(by.css('input'));

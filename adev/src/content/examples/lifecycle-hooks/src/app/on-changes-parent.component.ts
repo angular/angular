@@ -1,12 +1,12 @@
-import { Component, ViewChild } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 
-import { Hero } from './hero';
-import { OnChangesComponent } from './on-changes.component';
+import {Hero} from './hero';
+import {OnChangesComponent} from './on-changes.component';
 
 @Component({
   selector: 'on-changes-parent',
   templateUrl: './on-changes-parent.component.html',
-  styles: ['']
+  styles: [''],
 })
 export class OnChangesParentComponent {
   hero!: Hero;

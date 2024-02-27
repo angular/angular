@@ -1,8 +1,8 @@
-import { Component, Inject } from '@angular/core';
+import {Component, Inject} from '@angular/core';
 
-import { APP_CONFIG, AppConfig } from './injection.config';
-import { CarComponent } from './car/car.component';
-import { HeroesComponent } from './heroes/heroes.component';
+import {APP_CONFIG, AppConfig} from './injection.config';
+import {CarComponent} from './car/car.component';
+import {HeroesComponent} from './heroes/heroes.component';
 
 @Component({
   standalone: true,
@@ -12,7 +12,7 @@ import { HeroesComponent } from './heroes/heroes.component';
     <app-car></app-car>
     <app-heroes></app-heroes>
   `,
-  imports: [CarComponent, HeroesComponent]
+  imports: [CarComponent, HeroesComponent],
 })
 export class AppComponent {
   title: string;

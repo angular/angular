@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 
 import {
   Provider1Component,
@@ -28,6 +28,6 @@ import {
     Provider10Component,
     ProvidersComponent,
   ],
-  exports: [ ProvidersComponent ]
- })
- export class ProvidersModule {}
+  exports: [ProvidersComponent],
+})
+export class ProvidersModule {}

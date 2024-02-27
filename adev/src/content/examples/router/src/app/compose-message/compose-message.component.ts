@@ -1,18 +1,21 @@
 // #docregion
-import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-compose-message',
   templateUrl: './compose-message.component.html',
-  styleUrls: ['./compose-message.component.css']
+  styleUrls: ['./compose-message.component.css'],
 })
 export class ComposeMessageComponent {
   details = '';
   message = '';
   sending = false;
 
-  constructor(private router: Router, private route: ActivatedRoute) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   send() {
     this.sending = true;

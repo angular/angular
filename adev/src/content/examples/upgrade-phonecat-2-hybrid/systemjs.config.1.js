@@ -8,7 +8,7 @@
     // #enddocregion angular-paths, rxjs-paths, tslib-paths, plugin-babel
     paths: {
       // paths serve as alias
-      'npm:': '/node_modules/'
+      'npm:': '/node_modules/',
     },
     // #docregion angular-paths, rxjs-paths, tslib-paths, plugin-babel
     map: {
@@ -23,7 +23,8 @@
       '@angular/common/http': 'npm:@angular/common/fesm2022/http.mjs',
       '@angular/compiler': 'npm:@angular/compiler/fesm2022/compiler.mjs',
       '@angular/platform-browser': 'npm:@angular/platform-browser/fesm2022/platform-browser.mjs',
-      '@angular/platform-browser-dynamic': 'npm:@angular/platform-browser-dynamic/fesm2022/platform-browser-dynamic.mjs',
+      '@angular/platform-browser-dynamic':
+        'npm:@angular/platform-browser-dynamic/fesm2022/platform-browser-dynamic.mjs',
       '@angular/router': 'npm:@angular/router/fesm2022/router.mjs',
       '@angular/router/upgrade': 'npm:@angular/router/fesm2022/upgrade.mjs',
       '@angular/forms': 'npm:@angular/forms/fesm2022/forms.mjs',
@@ -44,7 +45,7 @@
 
       // #docregion plugin-babel
       'plugin-babel': 'npm:systemjs-plugin-babel/plugin-babel.js',
-      'systemjs-babel-build': 'npm:systemjs-plugin-babel/systemjs-babel-browser.js'
+      'systemjs-babel-build': 'npm:systemjs-plugin-babel/systemjs-babel-browser.js',
       // #docregion paths, angular-paths, rxjs-paths, tslib-paths
     },
     // #enddocregion paths, angular-paths, rxjs-paths, tslib-paths
@@ -60,36 +61,36 @@
         defaultExtension: 'js',
         meta: {
           './*.js': {
-            loader: 'ng-loader'
-          }
-        }
+            loader: 'ng-loader',
+          },
+        },
       },
       'angular-in-memory-web-api': {
         main: './index.js',
-        defaultExtension: 'js'
+        defaultExtension: 'js',
       },
       // #docregion rxjs-paths
       'rxjs': {
         defaultExtension: 'js',
         format: 'cjs',
-        main: 'index.js'
+        main: 'index.js',
       },
       'rxjs/operators': {
         defaultExtension: 'js',
         format: 'cjs',
-        main: 'index.js'
+        main: 'index.js',
       },
       // #enddocregion rxjs-paths
       // #docregion plugin-babel
       'meta': {
         '*.mjs': {
           babelOptions: {
-            es2015: false
-          }
-        }
-      }
+            es2015: false,
+          },
+        },
+      },
       // #docregion rxjs-paths
-    }
+    },
     // #docregion angular-paths, tslib-paths
   });
   // #enddocregion angular-paths, rxjs-paths, tslib-paths, plugin-babel

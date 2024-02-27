@@ -1,15 +1,14 @@
 // #docplaster
 // #docregion , v1, final
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { Actor } from '../actor';
+import {Actor} from '../actor';
 
 @Component({
   selector: 'app-actor-form',
   templateUrl: './actor-form.component.html',
 })
 export class ActorFormComponent {
-
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];
 
   model = new Actor(18, 'Tom Cruise', this.skills[3], 'CW Productions');
@@ -17,7 +16,9 @@ export class ActorFormComponent {
   // #docregion submitted
   submitted = false;
 
-  onSubmit() { this.submitted = true; }
+  onSubmit() {
+    this.submitted = true;
+  }
   // #enddocregion submitted
 
   // #enddocregion final
@@ -31,7 +32,7 @@ export class ActorFormComponent {
 
   heroine(): Actor {
     // #docregion Marilyn
-    const myActress =  new Actor(42, 'Marilyn Monroe', 'Singing');
+    const myActress = new Actor(42, 'Marilyn Monroe', 'Singing');
     console.log('My actress is called ' + myActress.name); // "My actress is called Marilyn"
     // #enddocregion Marilyn
     return myActress;
@@ -42,8 +43,7 @@ export class ActorFormComponent {
   // Reveal in html:
   //   Name via form.controls = {{showFormControls(actorForm)}}
   showFormControls(form: any) {
-    return form && form.controls.name &&
-    form.controls.name.value; // Tom Cruise
+    return form && form.controls.name && form.controls.name.value; // Tom Cruise
   }
 
   /////////////////////////////

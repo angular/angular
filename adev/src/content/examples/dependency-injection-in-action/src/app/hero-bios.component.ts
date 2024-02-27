@@ -1,11 +1,11 @@
 // #docplaster
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { HeroService } from './hero.service';
-import { LoggerService } from './logger.service';
-import { HeroBioComponent } from './hero-bio.component';
-import { HeroContactComponent } from './hero-contact.component';
+import {HeroService} from './hero.service';
+import {LoggerService} from './logger.service';
+import {HeroBioComponent} from './hero-bio.component';
+import {HeroContactComponent} from './hero-contact.component';
 
 //////// HeroBiosComponent ////
 // #docregion simple
@@ -17,14 +17,14 @@ import { HeroContactComponent } from './hero-contact.component';
     <app-hero-bio [heroId]="2"></app-hero-bio>
     <app-hero-bio [heroId]="3"></app-hero-bio>`,
   providers: [HeroService],
-  imports: [HeroBioComponent]
+  imports: [HeroBioComponent],
 })
 export class HeroBiosComponent {
-// #enddocregion simple
+  // #enddocregion simple
   constructor(logger: LoggerService) {
     logger.logInfo('Creating HeroBiosComponent');
   }
-// #docregion simple
+  // #docregion simple
 }
 // #enddocregion simple
 
@@ -40,7 +40,7 @@ export class HeroBiosComponent {
     <app-hero-bio [heroId]="3"> <app-hero-contact></app-hero-contact> </app-hero-bio>`,
   // #enddocregion template
   providers: [HeroService],
-  imports: [HeroBioComponent, HeroContactComponent]
+  imports: [HeroBioComponent, HeroContactComponent],
 })
 export class HeroBiosAndContactsComponent {
   constructor(logger: LoggerService) {

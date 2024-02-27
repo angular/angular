@@ -7,7 +7,7 @@
  */
 
 // TODO(josephperrott): Figure out why this is needed now.
-import "@angular/compiler";
+import '@angular/compiler';
 
 import {bootstrapApplication} from '@angular/platform-browser';
 import {appConfig} from './app/app.config';

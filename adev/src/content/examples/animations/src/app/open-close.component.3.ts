@@ -1,8 +1,8 @@
 // #docplaster
 // #docregion reusable
-import { Component, Input } from '@angular/core';
-import { transition, trigger, useAnimation, AnimationEvent } from '@angular/animations';
-import { transitionAnimation } from './animations';
+import {Component, Input} from '@angular/core';
+import {transition, trigger, useAnimation, AnimationEvent} from '@angular/animations';
+import {transitionAnimation} from './animations';
 
 @Component({
   standalone: true,
@@ -15,14 +15,14 @@ import { transitionAnimation } from './animations';
             height: 0,
             opacity: 1,
             backgroundColor: 'red',
-            time: '1s'
-          }
-        })
-      ])
-    ])
+            time: '1s',
+          },
+        }),
+      ]),
+    ]),
   ],
   templateUrl: 'open-close.component.html',
-  styleUrls: ['open-close.component.css']
+  styleUrls: ['open-close.component.css'],
 })
 // #enddocregion reusable
 export class OpenCloseBooleanComponent {

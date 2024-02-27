@@ -1,8 +1,8 @@
 // #docregion
-import { Component, Input, OnDestroy } from '@angular/core';
+import {Component, Input, OnDestroy} from '@angular/core';
 
-import { MissionService } from './mission.service';
-import { Subscription } from 'rxjs';
+import {MissionService} from './mission.service';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-astronaut',
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
         Confirm
       </button>
     </p>
-  `
+  `,
 })
 export class AstronautComponent implements OnDestroy {
   @Input() astronaut = '';
@@ -26,11 +26,10 @@ export class AstronautComponent implements OnDestroy {
   subscription: Subscription;
 
   constructor(private missionService: MissionService) {
-    this.subscription = missionService.missionAnnounced$.subscribe(
-      mission => {
-        this.mission = mission;
-        this.announced = true;
-        this.confirmed = false;
+    this.subscription = missionService.missionAnnounced$.subscribe((mission) => {
+      this.mission = mission;
+      this.announced = true;
+      this.confirmed = false;
     });
   }
 

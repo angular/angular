@@ -1,7 +1,7 @@
 // #docregion
 export const heroDetail = {
   bindings: {
-    hero: '='
+    hero: '=',
   },
   template: `
     <h2>{{$ctrl.hero.name}}</h2>
@@ -9,17 +9,17 @@ export const heroDetail = {
       <ng-transclude></ng-transclude>
     </div>
   `,
-  transclude: true
+  transclude: true,
 };
 // #enddocregion
 
-import { Directive, ElementRef, Injector, Input } from '@angular/core';
-import { UpgradeComponent } from '@angular/upgrade/static';
-import { Hero } from '../hero';
+import {Directive, ElementRef, Injector, Input} from '@angular/core';
+import {UpgradeComponent} from '@angular/upgrade/static';
+import {Hero} from '../hero';
 
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: 'hero-detail'
+  selector: 'hero-detail',
 })
 export class HeroDetailDirective extends UpgradeComponent {
   @Input() hero!: Hero;

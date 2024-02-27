@@ -1,8 +1,8 @@
 // #docplaster
 // #docregion
-import { inject } from '@angular/core';
-import { Router, NavigationExtras } from '@angular/router';
-import { AuthService } from './auth.service';
+import {inject} from '@angular/core';
+import {Router, NavigationExtras} from '@angular/router';
+import {AuthService} from './auth.service';
 
 export const authGuard = () => {
   const authService = inject(AuthService);
@@ -18,11 +18,10 @@ export const authGuard = () => {
   // Set our navigation extras object
   // that contains our global query params and fragment
   const navigationExtras: NavigationExtras = {
-    queryParams: { session_id: sessionId },
-    fragment: 'anchor'
+    queryParams: {session_id: sessionId},
+    fragment: 'anchor',
   };
 
   // Redirect to the login page with extras
   return router.createUrlTree(['/login'], navigationExtras);
 };
-

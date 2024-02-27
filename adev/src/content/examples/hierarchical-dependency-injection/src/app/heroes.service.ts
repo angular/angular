@@ -1,21 +1,21 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-import { Observable, Observer } from 'rxjs';
+import {Observable, Observer} from 'rxjs';
 
-import { Hero, HeroTaxReturn } from './hero';
+import {Hero, HeroTaxReturn} from './hero';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HeroesService {
   heroes: Hero[] = [
-    { id: 1, name: 'RubberMan', tid: '082-27-5678'},
-    { id: 2, name: 'Tornado',   tid: '099-42-4321'}
+    {id: 1, name: 'RubberMan', tid: '082-27-5678'},
+    {id: 2, name: 'Tornado', tid: '099-42-4321'},
   ];
 
   heroTaxReturns: HeroTaxReturn[] = [
     new HeroTaxReturn(10, this.heroes[0], 35000),
-    new HeroTaxReturn(20, this.heroes[1], 1250000)
+    new HeroTaxReturn(20, this.heroes[1], 1250000),
   ];
 
   getHeroes(): Observable<Hero[]> {
@@ -27,7 +27,7 @@ export class HeroesService {
 
   getTaxReturn(hero: Hero): Observable<HeroTaxReturn> {
     return new Observable<HeroTaxReturn>((observer: Observer<HeroTaxReturn>) => {
-      const htr = this.heroTaxReturns.find(t => t.hero.id === hero.id);
+      const htr = this.heroTaxReturns.find((t) => t.hero.id === hero.id);
       observer.next(htr || new HeroTaxReturn(0, hero));
       observer.complete();
     });
@@ -35,7 +35,7 @@ export class HeroesService {
 
   saveTaxReturn(heroTaxReturn: HeroTaxReturn): Observable<HeroTaxReturn> {
     return new Observable<HeroTaxReturn>((observer: Observer<HeroTaxReturn>) => {
-      const htr = this.heroTaxReturns.find(t => t.id === heroTaxReturn.id);
+      const htr = this.heroTaxReturns.find((t) => t.id === heroTaxReturn.id);
       if (htr) {
         heroTaxReturn = Object.assign(htr, heroTaxReturn); // demo: mutate
       } else {

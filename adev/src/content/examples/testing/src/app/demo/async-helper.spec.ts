@@ -1,6 +1,6 @@
-import { fakeAsync, tick, waitForAsync } from '@angular/core/testing';
-import { interval, of } from 'rxjs';
-import { delay, take } from 'rxjs/operators';
+import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
+import {interval, of} from 'rxjs';
+import {delay, take} from 'rxjs/operators';
 
 describe('Angular async helper', () => {
   describe('async', () => {
@@ -119,7 +119,7 @@ describe('Angular async helper', () => {
       const callback = jasmine.createSpy('callback');
       nestedTimer(callback);
       expect(callback).not.toHaveBeenCalled();
-      tick(0, { processNewMacroTasksSynchronously: false });
+      tick(0, {processNewMacroTasksSynchronously: false});
       // the nested timeout will not be triggered
       expect(callback).not.toHaveBeenCalled();
       tick(0);

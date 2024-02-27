@@ -1,17 +1,17 @@
 // #docplaster
-import { HttpClient, HttpHandler, provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { provideRouter, Router } from '@angular/router';
-import { RouterTestingHarness } from '@angular/router/testing';
+import {HttpClient, HttpHandler, provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {provideRouter, Router} from '@angular/router';
+import {RouterTestingHarness} from '@angular/router/testing';
 
-import { asyncData, click } from '../../testing';
-import { Hero } from '../model/hero';
-import { sharedImports } from '../shared/shared';
+import {asyncData, click} from '../../testing';
+import {Hero} from '../model/hero';
+import {sharedImports} from '../shared/shared';
 
-import { HeroDetailComponent } from './hero-detail.component';
-import { HeroDetailService } from './hero-detail.service';
-import { HeroListComponent } from './hero-list.component';
+import {HeroDetailComponent} from './hero-detail.component';
+import {HeroDetailService} from './hero-detail.service';
+import {HeroListComponent} from './hero-list.component';
 
 ////// Testing Vars //////
 let component: HeroDetailComponent;
@@ -32,7 +32,7 @@ const testHero = getTestHeroes()[0];
 function overrideSetup() {
   // #docregion hds-spy
   class HeroDetailServiceSpy {
-    testHero: Hero = { ...testHero };
+    testHero: Hero = {...testHero};
 
     /* emit cloned test hero */
     getHero = jasmine
@@ -54,19 +54,19 @@ function overrideSetup() {
         imports: [HeroDetailComponent, HeroListComponent],
         providers: [
           provideRouter([
-            { path: 'heroes', component: HeroListComponent },
-            { path: 'heroes/:id', component: HeroDetailComponent },
+            {path: 'heroes', component: HeroListComponent},
+            {path: 'heroes/:id', component: HeroDetailComponent},
           ]),
           HttpClient,
           HttpHandler,
           // HeroDetailService at this level is IRRELEVANT!
-          { provide: HeroDetailService, useValue: {} },
+          {provide: HeroDetailService, useValue: {}},
         ],
       }),
     )
       // #docregion override-component-method
       .overrideComponent(HeroDetailComponent, {
-        set: { providers: [{ provide: HeroDetailService, useClass: HeroDetailServiceSpy }] },
+        set: {providers: [{provide: HeroDetailService, useClass: HeroDetailServiceSpy}]},
       })
       // #enddocregion override-component-method
       .compileComponents();
@@ -117,7 +117,7 @@ function overrideSetup() {
 }
 
 ////////////////////
-import { getTestHeroes } from '../model/testing/test-hero.service';
+import {getTestHeroes} from '../model/testing/test-hero.service';
 
 const firstHero = getTestHeroes()[0];
 
@@ -129,8 +129,8 @@ function heroModuleSetup() {
         imports: [HeroDetailComponent, HeroListComponent],
         providers: [
           provideRouter([
-            { path: 'heroes/:id', component: HeroDetailComponent },
-            { path: 'heroes', component: HeroListComponent },
+            {path: 'heroes/:id', component: HeroDetailComponent},
+            {path: 'heroes', component: HeroListComponent},
           ]),
           provideHttpClient(),
           provideHttpClientTesting(),
@@ -161,7 +161,7 @@ function heroModuleSetup() {
 
     it('should save when click save but not navigate immediately', () => {
       click(page.saveBtn);
-      expect(TestBed.inject(HttpTestingController).expectOne({ method: 'PUT', url: 'api/heroes' }));
+      expect(TestBed.inject(HttpTestingController).expectOne({method: 'PUT', url: 'api/heroes'}));
       expect(TestBed.inject(Router).url).toEqual('/heroes/41');
     });
 
@@ -208,9 +208,9 @@ function heroModuleSetup() {
 }
 
 /////////////////////
-import { FormsModule } from '@angular/forms';
-import { TitleCasePipe } from '../shared/title-case.pipe';
-import { appConfig } from '../app.config';
+import {FormsModule} from '@angular/forms';
+import {TitleCasePipe} from '../shared/title-case.pipe';
+import {appConfig} from '../app.config';
 
 function formsModuleSetup() {
   // #docregion setup-forms-module
@@ -221,7 +221,7 @@ function formsModuleSetup() {
         providers: [
           provideHttpClient(),
           provideHttpClientTesting(),
-          provideRouter([{ path: 'heroes/:id', component: HeroDetailComponent }]),
+          provideRouter([{path: 'heroes/:id', component: HeroDetailComponent}]),
         ],
       }),
     ).compileComponents();
@@ -245,7 +245,7 @@ function sharedModuleSetup() {
       Object.assign({}, appConfig, {
         imports: [HeroDetailComponent, sharedImports],
         providers: [
-          provideRouter([{ path: 'heroes/:id', component: HeroDetailComponent }]),
+          provideRouter([{path: 'heroes/:id', component: HeroDetailComponent}]),
           provideHttpClient(),
           provideHttpClientTesting(),
         ],

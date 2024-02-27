@@ -18,11 +18,11 @@ import {
   PipeTransform,
   SimpleChanges,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import {FormsModule} from '@angular/forms';
+import {of} from 'rxjs';
+import {delay} from 'rxjs/operators';
 
-import { sharedImports } from '../shared/shared';
+import {sharedImports} from '../shared/shared';
 
 ////////// The App: Services and Components for the tests. //////////////
 
@@ -69,7 +69,7 @@ export class MasterService {
 /*
  * Reverse the input string.
  */
-@Pipe({ name: 'reverse', standalone: true })
+@Pipe({name: 'reverse', standalone: true})
 export class ReversePipe implements PipeTransform {
   transform(s: string) {
     let r = '';
@@ -190,7 +190,7 @@ export class InputComponent {
 // }
 
 // As the styleguide recommends
-@Directive({ standalone: true, selector: 'input[value]' })
+@Directive({standalone: true, selector: 'input[value]'})
 export class InputValueBinderDirective {
   @HostBinding() @Input() value: any;
 
@@ -249,7 +249,7 @@ export class IoComponent {
   imports: [IoComponent, sharedImports],
 })
 export class IoParentComponent {
-  heroes: Hero[] = [{ name: 'Bob' }, { name: 'Carol' }, { name: 'Ted' }, { name: 'Alice' }];
+  heroes: Hero[] = [{name: 'Bob'}, {name: 'Carol'}, {name: 'Ted'}, {name: 'Alice'}];
   selectedHero!: Hero;
   onSelect(hero: Hero) {
     this.selectedHero = hero;
@@ -314,7 +314,7 @@ export class ExternalTemplateComponent implements OnInit {
 })
 export class InnerCompWithExternalTemplateComponent {}
 
-@Component({ standalone: true, selector: 'needs-content', template: '<ng-content></ng-content>' })
+@Component({standalone: true, selector: 'needs-content', template: '<ng-content></ng-content>'})
 export class NeedsContentComponent {
   // children with #content local variable
   @ContentChildren('content') children: any;
@@ -480,7 +480,7 @@ export class ShellComponent {}
     LightswitchComponent,
     NeedsContentComponent,
     ReversePipeComponent,
-    MyIfParentComponent
+    MyIfParentComponent,
   ],
 })
 export class DemoComponent {}

@@ -1,13 +1,17 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 /// Model ///
 export class Car {
   name = 'Avocado Motors';
-  constructor(public engine: Engine, public tires: Tires) { }
+  constructor(
+    public engine: Engine,
+    public tires: Tires,
+  ) {}
 
   get description() {
-    return `${this.name} car with ` +
-      `${this.engine.cylinders} cylinders and ${this.tires.make} tires.`;
+    return (
+      `${this.name} car with ` + `${this.engine.cylinders} cylinders and ${this.tires.make} tires.`
+    );
   }
 }
 
@@ -16,21 +20,23 @@ export class Engine {
 }
 
 export class Tires {
-  make  = 'Flintstone';
+  make = 'Flintstone';
   model = 'Square';
 }
 
 //// Engine services ///
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EngineService {
   id = 'E1';
-  getEngine() { return new Engine(); }
+  getEngine() {
+    return new Engine();
+  }
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EngineService2 {
   id = 'E2';
@@ -43,28 +49,29 @@ export class EngineService2 {
 
 //// Tire services ///
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TiresService {
   id = 'T1';
-  getTires() { return new Tires(); }
+  getTires() {
+    return new Tires();
+  }
 }
 
 /// Car Services ///
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CarService {
   id = 'C1';
 
   constructor(
     protected engineService: EngineService,
-    protected tiresService: TiresService) { }
+    protected tiresService: TiresService,
+  ) {}
 
   getCar() {
-    return new Car(
-      this.engineService.getEngine(),
-      this.tiresService.getTires());
+    return new Car(this.engineService.getEngine(), this.tiresService.getTires());
   }
 
   get name() {
@@ -73,14 +80,15 @@ export class CarService {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CarService2 extends CarService {
   override id = 'C2';
 
   constructor(
     protected override engineService: EngineService,
-    protected override tiresService: TiresService) {
+    protected override tiresService: TiresService,
+  ) {
     super(engineService, tiresService);
   }
 
@@ -92,14 +100,15 @@ export class CarService2 extends CarService {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CarService3 extends CarService2 {
   override id = 'C3';
 
   constructor(
     protected override engineService: EngineService,
-    protected override tiresService: TiresService) {
+    protected override tiresService: TiresService,
+  ) {
     super(engineService, tiresService);
   }
 
@@ -109,4 +118,3 @@ export class CarService3 extends CarService2 {
     return car;
   }
 }
-

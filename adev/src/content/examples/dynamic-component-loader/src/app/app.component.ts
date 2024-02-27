@@ -1,8 +1,8 @@
 // #docregion
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import { AdService } from './ad.service';
-import { AdItem } from './ad-item';
+import {AdService} from './ad.service';
+import {AdItem} from './ad-item';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +10,7 @@ import { AdItem } from './ad-item';
     <div>
       <app-ad-banner [ads]="ads"></app-ad-banner>
     </div>
-  `
+  `,
 })
 export class AppComponent implements OnInit {
   ads: AdItem[] = [];
@@ -21,4 +21,3 @@ export class AppComponent implements OnInit {
     this.ads = this.adService.getAds();
   }
 }
-

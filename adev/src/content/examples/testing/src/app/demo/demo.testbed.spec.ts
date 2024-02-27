@@ -1,5 +1,5 @@
 // #docplaster
-import { Component, DebugElement, Injectable } from '@angular/core';
+import {Component, DebugElement, Injectable} from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
@@ -8,10 +8,10 @@ import {
   tick,
   waitForAsync,
 } from '@angular/core/testing';
-import { FormsModule, NgControl, NgModel } from '@angular/forms';
-import { By } from '@angular/platform-browser';
+import {FormsModule, NgControl, NgModel} from '@angular/forms';
+import {By} from '@angular/platform-browser';
 
-import { addMatchers, click } from '../../testing';
+import {addMatchers, click} from '../../testing';
 
 import {
   BankAccountComponent,
@@ -51,7 +51,7 @@ describe('demo (with TestBed):', () => {
 
     // #docregion value-service-inject-before-each
     beforeEach(() => {
-      TestBed.configureTestingModule({ providers: [ValueService] });
+      TestBed.configureTestingModule({providers: [ValueService]});
       // #enddocregion value-service-before-each
       service = TestBed.inject(ValueService);
       // #docregion value-service-before-each
@@ -105,7 +105,7 @@ describe('demo (with TestBed):', () => {
 
       TestBed.configureTestingModule({
         // Provide both the service-to-test and its (spy) dependency
-        providers: [MasterService, { provide: ValueService, useValue: spy }],
+        providers: [MasterService, {provide: ValueService, useValue: spy}],
       });
       // Inject both the service-to-test and its (spy) dependency
       masterService = TestBed.inject(MasterService);
@@ -129,7 +129,7 @@ describe('demo (with TestBed):', () => {
 
   describe('use inject within `it`', () => {
     beforeEach(() => {
-      TestBed.configureTestingModule({ providers: [ValueService] });
+      TestBed.configureTestingModule({providers: [ValueService]});
     });
 
     it('should use modified providers', inject([ValueService], (service: ValueService) => {
@@ -142,7 +142,7 @@ describe('demo (with TestBed):', () => {
     let serviceValue: string;
 
     beforeEach(() => {
-      TestBed.configureTestingModule({ providers: [ValueService] });
+      TestBed.configureTestingModule({providers: [ValueService]});
     });
 
     beforeEach(waitForAsync(
@@ -400,7 +400,7 @@ describe('demo (with TestBed):', () => {
         imports: [Child1Component],
       })
         .overrideComponent(Child1Component, {
-          set: { template: '<span>Fake</span>' },
+          set: {template: '<span>Fake</span>'},
         })
         .createComponent(Child1Component);
 
@@ -413,8 +413,8 @@ describe('demo (with TestBed):', () => {
         imports: [TestProvidersComponent],
       })
         .overrideComponent(TestProvidersComponent, {
-          remove: { providers: [ValueService] },
-          add: { providers: [{ provide: ValueService, useClass: FakeValueService }] },
+          remove: {providers: [ValueService]},
+          add: {providers: [{provide: ValueService, useClass: FakeValueService}]},
 
           // Or replace them all (this component has only one provider)
           // set:    { providers: [{ provide: ValueService, useClass: FakeValueService }] },
@@ -441,7 +441,7 @@ describe('demo (with TestBed):', () => {
           // },
 
           // Or replace them all (this component has only one viewProvider)
-          set: { viewProviders: [{ provide: ValueService, useClass: FakeValueService }] },
+          set: {viewProviders: [{provide: ValueService, useClass: FakeValueService}]},
         })
         .createComponent(TestViewProvidersComponent);
 
@@ -464,10 +464,10 @@ describe('demo (with TestBed):', () => {
         providers: [ValueService],
       })
         .overrideComponent(TestComponent, {
-          set: { providers: [{ provide: ValueService, useValue: {} }] },
+          set: {providers: [{provide: ValueService, useValue: {}}]},
         })
         .overrideComponent(TestProvidersComponent, {
-          set: { providers: [{ provide: ValueService, useClass: FakeValueService }] },
+          set: {providers: [{provide: ValueService, useClass: FakeValueService}]},
         })
         .createComponent(TestComponent);
 
@@ -546,7 +546,7 @@ describe('demo (with TestBed):', () => {
       TestBed.configureTestingModule({
         imports: [ParentComponent, FakeChildComponent],
       }).overrideComponent(ParentComponent, {
-        set: { imports: [FakeChildComponent] },
+        set: {imports: [FakeChildComponent]},
       });
     });
 
@@ -562,7 +562,7 @@ describe('demo (with TestBed):', () => {
       TestBed.configureTestingModule({
         imports: [ParentComponent, FakeChildWithGrandchildComponent, FakeGrandchildComponent],
       }).overrideComponent(ParentComponent, {
-        set: { imports: [FakeChildWithGrandchildComponent, FakeGrandchildComponent] },
+        set: {imports: [FakeChildWithGrandchildComponent, FakeGrandchildComponent]},
       });
     });
 

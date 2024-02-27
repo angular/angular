@@ -1,6 +1,6 @@
 // #docplaster
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router'; // CLI imports router
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router'; // CLI imports router
 
 // #docregion child-routes
 const routes: Routes = [
@@ -21,11 +21,8 @@ const routes: Routes = [
 ];
 // #enddocregion child-routes
 
-
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
-
-
+export class AppRoutingModule {}

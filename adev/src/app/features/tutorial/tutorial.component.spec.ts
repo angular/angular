@@ -18,12 +18,12 @@ import {
   EMBEDDED_EDITOR_SELECTOR,
   EmbeddedEditor,
   EmbeddedTutorialManager,
-  NodeRuntimeSandbox
+  NodeRuntimeSandbox,
 } from '../../editor';
 
 import {mockAsyncProvider} from '../../core/services/inject-async';
 import Tutorial from './tutorial.component';
-import {TutorialConfig, TutorialType} from '@angular/docs'
+import {TutorialConfig, TutorialType} from '@angular/docs';
 
 @Component({
   selector: EMBEDDED_EDITOR_SELECTOR,

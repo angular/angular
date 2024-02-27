@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import { HighlightDirective } from './highlight.directive';
+import {HighlightDirective} from './highlight.directive';
 
 @Component({
   standalone: true,

@@ -1,4 +1,4 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Displaying Data Tests', () => {
   const title = 'Tour of Heroes';

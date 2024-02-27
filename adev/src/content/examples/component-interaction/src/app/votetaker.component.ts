@@ -1,5 +1,5 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-vote-taker',
@@ -12,7 +12,7 @@ import { Component } from '@angular/core';
       [name]="voter"
       (voted)="onVoted($event)">
     </app-voter>
-  `
+  `,
 })
 export class VoteTakerComponent {
   agreed = 0;

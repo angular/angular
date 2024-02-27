@@ -1,5 +1,4 @@
-
-import { Injectable, Optional } from '@angular/core';
+import {Injectable, Optional} from '@angular/core';
 
 let nextId = 1;
 
@@ -8,14 +7,16 @@ export class UserServiceConfig {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   id = nextId++;
 
   // #docregion ctor
   constructor(@Optional() config?: UserServiceConfig) {
-    if (config) { this._userName = config.userName; }
+    if (config) {
+      this._userName = config.userName;
+    }
   }
   // #enddocregion ctor
 

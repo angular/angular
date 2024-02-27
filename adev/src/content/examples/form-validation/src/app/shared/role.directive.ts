@@ -1,25 +1,23 @@
-import { Directive, forwardRef, Injectable } from '@angular/core';
+import {Directive, forwardRef, Injectable} from '@angular/core';
 import {
   AsyncValidator,
   AbstractControl,
   NG_ASYNC_VALIDATORS,
-  ValidationErrors
+  ValidationErrors,
 } from '@angular/forms';
-import { catchError, map } from 'rxjs/operators';
-import { ActorsService } from './actors.service';
-import { Observable, of } from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
+import {ActorsService} from './actors.service';
+import {Observable, of} from 'rxjs';
 
 // #docregion async-validator
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class UniqueRoleValidator implements AsyncValidator {
   constructor(private actorsService: ActorsService) {}
 
-  validate(
-    control: AbstractControl
-  ): Observable<ValidationErrors | null> {
+  validate(control: AbstractControl): Observable<ValidationErrors | null> {
     return this.actorsService.isRoleTaken(control.value).pipe(
-      map(isTaken => (isTaken ? { uniqueRole: true } : null)),
-      catchError(() => of(null))
+      map((isTaken) => (isTaken ? {uniqueRole: true} : null)),
+      catchError(() => of(null)),
     );
   }
 }
@@ -32,16 +30,14 @@ export class UniqueRoleValidator implements AsyncValidator {
     {
       provide: NG_ASYNC_VALIDATORS,
       useExisting: forwardRef(() => UniqueRoleValidatorDirective),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class UniqueRoleValidatorDirective implements AsyncValidator {
   constructor(private validator: UniqueRoleValidator) {}
 
-  validate(
-    control: AbstractControl
-  ): Observable<ValidationErrors | null> {
+  validate(control: AbstractControl): Observable<ValidationErrors | null> {
     return this.validator.validate(control);
   }
 }

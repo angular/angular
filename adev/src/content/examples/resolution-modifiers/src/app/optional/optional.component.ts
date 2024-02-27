@@ -1,11 +1,11 @@
-import { Component, Optional } from '@angular/core';
-import { OptionalService } from '../optional.service';
+import {Component, Optional} from '@angular/core';
+import {OptionalService} from '../optional.service';
 
 @Component({
   standalone: true,
   selector: 'app-optional',
   templateUrl: './optional.component.html',
-  styleUrls: ['./optional.component.css']
+  styleUrls: ['./optional.component.css'],
 })
 
 // #docregion optional-component
@@ -17,6 +17,3 @@ export class OptionalComponent {
 // The OptionalService isn't provided here, in the @Injectable()
 // providers array, or in the NgModule. If you remove @Optional()
 // from the constructor, you'll get an error.
-
-
-

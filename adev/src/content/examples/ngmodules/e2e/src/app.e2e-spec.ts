@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('NgModule-example', () => {
-
   // helpers
   const lightgray = 'rgba(239, 238, 237, 1)';
   const white = 'rgba(0, 0, 0, 0)';
@@ -14,7 +13,7 @@ describe('NgModule-example', () => {
       subtitle: element.all(by.css('app-root p i')).get(0),
       contactButton: buttons.get(0),
       itemButton: buttons.get(1),
-      customersButton: buttons.get(2)
+      customersButton: buttons.get(2),
     };
   }
 
@@ -29,7 +28,7 @@ describe('NgModule-example', () => {
       validationError: element.all(by.css('app-contact form .alert')).get(0),
       saveButton: buttons.get(0), // can't be tested
       nextContactButton: buttons.get(1),
-      newContactButton: buttons.get(2)
+      newContactButton: buttons.get(2),
     };
   }
 
@@ -162,5 +161,4 @@ describe('NgModule-example', () => {
       });
     });
   });
-
 });

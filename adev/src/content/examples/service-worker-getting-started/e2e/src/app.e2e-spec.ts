@@ -1,6 +1,5 @@
-import { AppPage } from './app.po';
-import { element, by } from 'protractor';
-
+import {AppPage} from './app.po';
+import {element, by} from 'protractor';
 
 describe('sw-example App', () => {
   let page: AppPage;

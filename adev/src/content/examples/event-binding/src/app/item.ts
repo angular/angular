@@ -1,4 +1,3 @@
 export class Item {
   name = '';
 }
-

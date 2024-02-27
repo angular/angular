@@ -1,13 +1,12 @@
 // #docregion
-import { OnInit } from '@angular/core';
+import {OnInit} from '@angular/core';
 // #docregion example
 /* avoid */
 
 export class ToastComponent implements OnInit {
-
   private defaults = {
     title: '',
-    message: 'May the Force be with you'
+    message: 'May the Force be with you',
   };
   message: string;
   title: string;
@@ -20,7 +19,7 @@ export class ToastComponent implements OnInit {
   // private methods
   private hide() {
     this.toastElement.style.opacity = 0;
-    setTimeout(() => this.toastElement.style.zIndex = 0, 400);
+    setTimeout(() => (this.toastElement.style.zIndex = 0), 400);
   }
 
   activate(message = this.defaults.message, title = this.defaults.title) {

@@ -1,13 +1,12 @@
 // #docplaster
 // #docregion
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import {Directive, ElementRef, HostListener, Input} from '@angular/core';
 
 @Directive({
   standalone: true,
-  selector: '[appHighlight]'
+  selector: '[appHighlight]',
 })
 export class HighlightDirective {
-
   @Input('appHighlight') highlightColor = '';
 
   private el: HTMLElement;

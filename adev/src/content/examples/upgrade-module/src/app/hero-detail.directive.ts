@@ -5,7 +5,7 @@ export function heroDetailDirective() {
     scope: {},
     bindToController: {
       hero: '=',
-      deleted: '&'
+      deleted: '&',
     },
     template: `
       <h2>{{$ctrl.hero.name}} details!</h2>
@@ -17,6 +17,6 @@ export function heroDetailDirective() {
         this.deleted({hero: this.hero});
       };
     },
-    controllerAs: '$ctrl'
+    controllerAs: '$ctrl',
   };
 }

@@ -18,5 +18,4 @@ import {Type} from '@angular/core';
  * Map of the previews components, values are functions which returns the promise of the component type, which will be displayed as preview in the ExampleViewer component.
  * Keys has to be equal to paths written down in the docs markdown files.
  */
-export const PREVIEWS_COMPONENTS_MAP: Record<string, () => Promise<Type<unknown>>> = {
-};
+export const PREVIEWS_COMPONENTS_MAP: Record<string, () => Promise<Type<unknown>>> = {};

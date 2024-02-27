@@ -1,19 +1,19 @@
 /* eslint-disable @angular-eslint/no-output-native */
 // #docregion
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { HeroTaxReturn } from './hero';
-import { HeroTaxReturnService } from './hero-tax-return.service';
-import { FormsModule } from '@angular/forms';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {HeroTaxReturn} from './hero';
+import {HeroTaxReturnService} from './hero-tax-return.service';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   standalone: true,
   selector: 'app-hero-tax-return',
   templateUrl: './hero-tax-return.component.html',
-  styleUrls: [ './hero-tax-return.component.css' ],
+  styleUrls: ['./hero-tax-return.component.css'],
   // #docregion providers
-  providers: [ HeroTaxReturnService ],
+  providers: [HeroTaxReturnService],
   // #enddocregion providers,
-  imports: [FormsModule]
+  imports: [FormsModule],
 })
 export class HeroTaxReturnComponent {
   message = '';
@@ -29,14 +29,16 @@ export class HeroTaxReturnComponent {
     this.heroTaxReturnService.taxReturn = htr;
   }
 
-  constructor(private heroTaxReturnService: HeroTaxReturnService) { }
+  constructor(private heroTaxReturnService: HeroTaxReturnService) {}
 
-  onCanceled()  {
+  onCanceled() {
     this.flashMessage('Canceled');
     this.heroTaxReturnService.restoreTaxReturn();
   }
 
-  onClose() { this.close.emit(); }
+  onClose() {
+    this.close.emit();
+  }
 
   onSaved() {
     this.flashMessage('Saved');
@@ -45,6 +47,6 @@ export class HeroTaxReturnComponent {
 
   flashMessage(msg: string) {
     this.message = msg;
-    setTimeout(() => this.message = '', 500);
+    setTimeout(() => (this.message = ''), 500);
   }
 }

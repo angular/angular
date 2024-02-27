@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
+import {Component} from '@angular/core';
+import {SwUpdate} from '@angular/service-worker';
 
 @Component({
   standalone: true,
   selector: 'app-root',
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
 })
 export class AppComponent {
   title = 'Service Workers';
@@ -14,8 +14,8 @@ export class AppComponent {
 
   updateCheck(): void {
     this.update
-        .checkForUpdate()
-        .then(() => this.updateCheckText = 'resolved')
-        .catch(err => this.updateCheckText = `rejected: ${err.message}`);
+      .checkForUpdate()
+      .then(() => (this.updateCheckText = 'resolved'))
+      .catch((err) => (this.updateCheckText = `rejected: ${err.message}`));
   }
 }

@@ -1,10 +1,10 @@
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
-import { DashboardComponent } from './dashboard.component';
-import { Hero } from '../model/hero';
+import {DashboardComponent} from './dashboard.component';
+import {Hero} from '../model/hero';
 
-import { addMatchers } from '../../testing';
-import { TestHeroService } from '../model/testing/test-hero.service';
+import {addMatchers} from '../../testing';
+import {TestHeroService} from '../model/testing/test-hero.service';
 
 class FakeRouter {
   navigateByUrl(url: string) {
@@ -51,7 +51,7 @@ describe('DashboardComponent class only', () => {
   });
 
   it('should tell ROUTER to navigate by hero id', () => {
-    const hero: Hero = { id: 42, name: 'Abbracadabra' };
+    const hero: Hero = {id: 42, name: 'Abbracadabra'};
     const spy = spyOn(router, 'navigateByUrl');
 
     comp.gotoDetail(hero);

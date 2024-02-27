@@ -1,8 +1,8 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { HighlightDirective } from '../shared/highlight.directive';
-import { TwainComponent } from '../twain/twain.component';
+import {HighlightDirective} from '../shared/highlight.directive';
+import {TwainComponent} from '../twain/twain.component';
 
 @Component({
   standalone: true,

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
 // import { Item } from '../item';
 // import { ITEMS } from '../mock-items';
 

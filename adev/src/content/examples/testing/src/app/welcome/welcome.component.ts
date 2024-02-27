@@ -1,6 +1,6 @@
 // #docregion
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../model/user.service';
+import {Component, OnInit} from '@angular/core';
+import {UserService} from '../model/user.service';
 
 @Component({
   standalone: true,

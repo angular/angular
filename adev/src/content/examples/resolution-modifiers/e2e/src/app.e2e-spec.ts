@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Resolution-modifiers-example', () => {
-
   beforeAll(() => browser.get(''));
 
   it('shows basic flower emoji', async () => {
@@ -15,5 +14,4 @@ describe('Resolution-modifiers-example', () => {
   it('shows tulip in host child', async () => {
     expect(await element.all(by.css('p')).get(9).getText()).toContain('🌷');
   });
-
 });

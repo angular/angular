@@ -4,4 +4,3 @@ export interface Item {
   name: string;
 }
 // #enddocregion item-class
-

@@ -1,6 +1,6 @@
 // #docregion
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Hero } from '../hero';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Hero} from '../hero';
 
 @Component({
   selector: 'hero-detail',
@@ -8,7 +8,7 @@ import { Hero } from '../hero';
     <h2>{{hero.name}} details!</h2>
     <div>id: {{hero.id}}</div>
     <button type="button" (click)="onDelete()">Delete</button>
-  `
+  `,
 })
 export class HeroDetailComponent {
   @Input() hero!: Hero;

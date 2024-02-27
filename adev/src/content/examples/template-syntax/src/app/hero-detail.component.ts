@@ -1,8 +1,8 @@
 /* eslint-disable @angular-eslint/no-inputs-metadata-property, @angular-eslint/no-outputs-metadata-property */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {CurrencyPipe, DatePipe} from '@angular/common';
 
-import { Hero } from './hero';
+import {Hero} from './hero';
 
 @Component({
   standalone: true,
@@ -17,7 +17,7 @@ import { Hero } from './hero';
       {{prefix}} {{hero.name}}
     </span>
     <button type="button" (click)="delete()">Delete</button>
-  </div>`
+  </div>`,
 })
 export class HeroDetailComponent {
   hero = new Hero(-1, '', 'Zzzzzzzz'); // default sleeping hero
@@ -53,13 +53,14 @@ export class HeroDetailComponent {
   </div>
   `,
   imports: [CurrencyPipe, DatePipe],
-  styles: [`
+  styles: [
+    `
     .detail { border: 1px solid black; padding: 4px; max-width: 450px; }
     img     { float: left; margin-right: 8px; height: 100px; }
-  `]
+  `,
+  ],
 })
 export class BigHeroDetailComponent extends HeroDetailComponent {
-
   @Input() override hero!: Hero;
   @Output() override deleteRequest = new EventEmitter<Hero>();
 

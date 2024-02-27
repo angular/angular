@@ -1,17 +1,17 @@
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
+import {By} from '@angular/platform-browser';
+import {DebugElement} from '@angular/core';
 
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
-import { addMatchers } from '../../testing';
-import { HeroService } from '../model/hero.service';
-import { getTestHeroes, TestHeroService } from '../model/testing/test-hero.service';
+import {addMatchers} from '../../testing';
+import {HeroService} from '../model/hero.service';
+import {getTestHeroes, TestHeroService} from '../model/testing/test-hero.service';
 
-import { HeroListComponent } from './hero-list.component';
-import { HighlightDirective } from '../shared/highlight.directive';
-import { appConfig } from '../app.config';
+import {HeroListComponent} from './hero-list.component';
+import {HighlightDirective} from '../shared/highlight.directive';
+import {appConfig} from '../app.config';
 
 const HEROES = getTestHeroes();
 
@@ -29,8 +29,8 @@ describe('HeroListComponent', () => {
     TestBed.configureTestingModule(
       Object.assign({}, appConfig, {
         providers: [
-          { provide: HeroService, useClass: TestHeroService },
-          { provide: Router, useValue: routerSpy },
+          {provide: HeroService, useClass: TestHeroService},
+          {provide: Router, useValue: routerSpy},
         ],
       }),
     )

@@ -11,7 +11,6 @@ import {ActorFormComponent} from './actor-form/actor-form.component';
   imports: [BrowserModule, CommonModule, FormsModule],
   declarations: [AppComponent, ActorFormComponent],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

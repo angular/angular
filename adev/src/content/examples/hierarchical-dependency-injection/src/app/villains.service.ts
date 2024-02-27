@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-import { of } from 'rxjs';
+import {of} from 'rxjs';
 
 export interface Villain {
   id: number;
@@ -9,9 +9,9 @@ export interface Villain {
 
 @Injectable()
 export class VillainsService {
- villains: Villain[] = [
-    { id: 1, name: 'Dr. Evil'},
-    { id: 2, name: 'Moriarty'}
+  villains: Villain[] = [
+    {id: 1, name: 'Dr. Evil'},
+    {id: 2, name: 'Moriarty'},
   ];
 
   getVillains() {

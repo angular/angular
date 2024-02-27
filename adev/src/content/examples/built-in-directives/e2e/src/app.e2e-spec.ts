@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Built-in Directives', () => {
-
   beforeAll(() => browser.get(''));
 
   it('should have title Built-in Directives', async () => {
@@ -17,7 +16,6 @@ describe('Built-in Directives', () => {
     await firstInput.sendKeys('abc');
     expect(await firstLabel.getText()).toEqual('Current item name: Teapotabc');
   });
-
 
   it('should modify sentence when modified checkbox checked', async () => {
     const modifiedChkbxLabel = element.all(by.css('input[type="checkbox"]')).get(1);
@@ -68,6 +66,4 @@ describe('Built-in Directives', () => {
     await fishbowlRadioButton.click();
     expect(await fishbowlDiv.getText()).toContain('mysterious');
   });
-
 });
-

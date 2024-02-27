@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { JsonPipe } from '@angular/common';
+import {Component} from '@angular/core';
+import {JsonPipe} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -14,6 +14,6 @@ export class JsonPipeComponent {
     address: {
       street: '123 Main St',
       city: 'Anytown',
-    }
+    },
   };
 }

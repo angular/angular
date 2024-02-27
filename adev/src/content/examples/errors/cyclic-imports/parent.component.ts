@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import { ChildComponent } from './child.component';
+import {ChildComponent} from './child.component';
 
 @Component({
   standalone: true,

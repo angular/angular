@@ -1,12 +1,13 @@
-import { browser, element, By } from 'protractor';
+import {browser, element, By} from 'protractor';
 
 describe('Security E2E Tests', () => {
   beforeAll(() => browser.get(''));
 
   it('sanitizes innerHTML', async () => {
     const interpolated = element(By.className('e2e-inner-html-interpolated'));
-    expect(await interpolated.getText())
-        .toContain('Template <script>alert("0wned")</script> <b>Syntax</b>');
+    expect(await interpolated.getText()).toContain(
+      'Template <script>alert("0wned")</script> <b>Syntax</b>',
+    );
     const bound = element(By.className('e2e-inner-html-bound'));
     expect(await bound.getText()).toContain('Template Syntax');
     const bold = element(By.css('.e2e-inner-html-bound b'));

@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 // #docregion example
 @Component({
@@ -10,5 +10,5 @@ import { Component } from '@angular/core';
   standalone: true,
   selector: 'toh-hero',
 })
-export class HeroComponent { }
+export class HeroComponent {}
 // #enddocregion example

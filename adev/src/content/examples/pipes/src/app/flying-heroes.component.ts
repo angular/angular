@@ -1,22 +1,24 @@
 // #docplaster
 // #docregion
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { FlyingHeroesPipe, FlyingHeroesImpurePipe, } from './flying-heroes.pipe';
-import { HEROES } from './heroes';
+import {FlyingHeroesPipe, FlyingHeroesImpurePipe} from './flying-heroes.pipe';
+import {HEROES} from './heroes';
 
 @Component({
   standalone: true,
   selector: 'app-flying-heroes',
   templateUrl: './flying-heroes.component.html',
   imports: [CommonModule, FormsModule, FlyingHeroesPipe],
-  styles: [`
+  styles: [
+    `
     #flyers, #all {font-style: italic}
     button {display: block}
     input {margin: .25rem .25rem .5rem 0;}
-  `]
+  `,
+  ],
 })
 // #docregion v1
 export class FlyingHeroesComponent {
@@ -27,12 +29,16 @@ export class FlyingHeroesComponent {
   title = 'Flying Heroes (pure pipe)';
 
   // #docregion v1
-  constructor() { this.reset(); }
+  constructor() {
+    this.reset();
+  }
 
   addHero(name: string) {
     name = name.trim();
-    if (!name) { return; }
-    const hero = { name, canFly: this.canFly };
+    if (!name) {
+      return;
+    }
+    const hero = {name, canFly: this.canFly};
     // #enddocregion v1
     if (this.mutate) {
       // Pure pipe won't update display because heroes array reference is unchanged
@@ -49,7 +55,9 @@ export class FlyingHeroesComponent {
     // #docregion v1
   }
 
-  reset() { this.heroes = HEROES.slice(); }
+  reset() {
+    this.heroes = HEROES.slice();
+  }
 }
 // #enddocregion v1
 
@@ -59,7 +67,11 @@ export class FlyingHeroesComponent {
   selector: 'app-flying-heroes-impure',
   templateUrl: './flying-heroes-impure.component.html',
   imports: [CommonModule, FormsModule, FlyingHeroesImpurePipe],
-  styles: ['#flyers, #all {font-style: italic}', 'button {display: block}', 'input {margin: .25rem .25rem .5rem 0;}'],
+  styles: [
+    '#flyers, #all {font-style: italic}',
+    'button {display: block}',
+    'input {margin: .25rem .25rem .5rem 0;}',
+  ],
 })
 export class FlyingHeroesImpureComponent extends FlyingHeroesComponent {
   override title = 'Flying Heroes (impure pipe)';

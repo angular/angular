@@ -1,10 +1,10 @@
-import { Component, Input } from '@angular/core';
-import { Hero } from './hero';
+import {Component, Input} from '@angular/core';
+import {Hero} from './hero';
 
 @Component({
   standalone: true,
   selector: 'app-happy-hero',
-  template: 'Wow. You like {{hero.name}}. What a happy hero ... just like you.'
+  template: 'Wow. You like {{hero.name}}. What a happy hero ... just like you.',
 })
 export class HappyHeroComponent {
   @Input() hero!: Hero;
@@ -13,7 +13,7 @@ export class HappyHeroComponent {
 @Component({
   standalone: true,
   selector: 'app-sad-hero',
-  template: 'You like {{hero.name}}? Such a sad hero. Are you sad too?'
+  template: 'You like {{hero.name}}? Such a sad hero. Are you sad too?',
 })
 export class SadHeroComponent {
   @Input() hero!: Hero;
@@ -22,7 +22,7 @@ export class SadHeroComponent {
 @Component({
   standalone: true,
   selector: 'app-confused-hero',
-  template: 'Are you as confused as {{hero.name}}?'
+  template: 'Are you as confused as {{hero.name}}?',
 })
 export class ConfusedHeroComponent {
   @Input() hero!: Hero;
@@ -31,16 +31,20 @@ export class ConfusedHeroComponent {
 @Component({
   standalone: true,
   selector: 'app-unknown-hero',
-  template: '{{message}}'
+  template: '{{message}}',
 })
 export class UnknownHeroComponent {
   @Input() hero!: Hero;
   get message() {
-    return this.hero && this.hero.name ?
-      `${this.hero.name} is strange and mysterious.` :
-      'Are you feeling indecisive?';
+    return this.hero && this.hero.name
+      ? `${this.hero.name} is strange and mysterious.`
+      : 'Are you feeling indecisive?';
   }
 }
 
-export const heroSwitchComponents =
-  [ HappyHeroComponent, SadHeroComponent, ConfusedHeroComponent, UnknownHeroComponent ];
+export const heroSwitchComponents = [
+  HappyHeroComponent,
+  SadHeroComponent,
+  ConfusedHeroComponent,
+  UnknownHeroComponent,
+];

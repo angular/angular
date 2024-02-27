@@ -5,18 +5,17 @@ export const heroDetail = {
     <h2>Windstorm details!</h2>
     <div><label>id: </label>1</div>
   `,
-  controller: function HeroDetailController() {
-  }
+  controller: function HeroDetailController() {},
 };
 // #enddocregion hero-detail
 
 // #docregion hero-detail-upgrade
-import { Directive, ElementRef, Injector, SimpleChanges } from '@angular/core';
-import { UpgradeComponent } from '@angular/upgrade/static';
+import {Directive, ElementRef, Injector, SimpleChanges} from '@angular/core';
+import {UpgradeComponent} from '@angular/upgrade/static';
 
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: 'hero-detail'
+  selector: 'hero-detail',
 })
 export class HeroDetailDirective extends UpgradeComponent {
   constructor(elementRef: ElementRef, injector: Injector) {

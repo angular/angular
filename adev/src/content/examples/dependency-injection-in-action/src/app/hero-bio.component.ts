@@ -1,8 +1,8 @@
 // #docregion
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
-import { HeroCacheService } from './hero-cache.service';
-import { FormsModule, NgModel } from '@angular/forms';
+import {HeroCacheService} from './hero-cache.service';
+import {FormsModule, NgModel} from '@angular/forms';
 
 // #docregion component
 @Component({
@@ -15,16 +15,19 @@ import { FormsModule, NgModel } from '@angular/forms';
     <textarea cols="25" [(ngModel)]="hero.description"></textarea>`,
   // #enddocregion template
   providers: [HeroCacheService],
-  imports: [FormsModule]
+  imports: [FormsModule],
 })
-
-export class HeroBioComponent implements OnInit  {
+export class HeroBioComponent implements OnInit {
   @Input() heroId = 0;
 
-  constructor(private heroCache: HeroCacheService) { }
+  constructor(private heroCache: HeroCacheService) {}
 
-  ngOnInit() { this.heroCache.fetchCachedHero(this.heroId); }
+  ngOnInit() {
+    this.heroCache.fetchCachedHero(this.heroId);
+  }
 
-  get hero() { return this.heroCache.hero; }
+  get hero() {
+    return this.heroCache.hero;
+  }
 }
 // #enddocregion component

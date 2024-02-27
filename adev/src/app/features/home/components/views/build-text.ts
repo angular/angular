@@ -31,7 +31,10 @@ export class BuildText extends View {
   /**
    * Create the build text.
    */
-  constructor(private readonly gl: OGLRenderingContext, private readonly document: Document) {
+  constructor(
+    private readonly gl: OGLRenderingContext,
+    private readonly document: Document,
+  ) {
     super();
 
     this.userData['x'] = 0;

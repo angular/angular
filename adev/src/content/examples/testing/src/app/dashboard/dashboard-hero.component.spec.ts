@@ -1,14 +1,14 @@
 // #docplaster
-import { DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { first } from 'rxjs/operators';
+import {DebugElement} from '@angular/core';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {first} from 'rxjs/operators';
 
-import { addMatchers, click } from '../../testing';
-import { appProviders } from '../app.config';
-import { Hero } from '../model/hero';
+import {addMatchers, click} from '../../testing';
+import {appProviders} from '../app.config';
+import {Hero} from '../model/hero';
 
-import { DashboardHeroComponent } from './dashboard-hero.component';
+import {DashboardHeroComponent} from './dashboard-hero.component';
 
 beforeEach(addMatchers);
 
@@ -16,7 +16,7 @@ describe('DashboardHeroComponent class only', () => {
   // #docregion class-only
   it('raises the selected event when clicked', () => {
     const comp = new DashboardHeroComponent();
-    const hero: Hero = { id: 42, name: 'Test' };
+    const hero: Hero = {id: 42, name: 'Test'};
     comp.hero = hero;
 
     comp.selected.pipe(first()).subscribe((selectedHero: Hero) => expect(selectedHero).toBe(hero));
@@ -52,7 +52,7 @@ describe('DashboardHeroComponent when tested directly', () => {
     heroEl = heroDe.nativeElement;
 
     // mock the hero supplied by the parent component
-    expectedHero = { id: 42, name: 'Test Name' };
+    expectedHero = {id: 42, name: 'Test Name'};
 
     // simulate the parent setting the input property with that hero
     comp.hero = expectedHero;
@@ -154,7 +154,7 @@ describe('DashboardHeroComponent when inside a test host', () => {
 });
 
 ////// Test Host Component //////
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 // #docregion test-host
 @Component({
@@ -163,7 +163,7 @@ import { Component } from '@angular/core';
   template: ` <dashboard-hero [hero]="hero" (selected)="onSelected($event)"> </dashboard-hero>`,
 })
 class TestHostComponent {
-  hero: Hero = { id: 42, name: 'Test Name' };
+  hero: Hero = {id: 42, name: 'Test Name'};
   selectedHero: Hero | undefined;
   onSelected(hero: Hero) {
     this.selectedHero = hero;

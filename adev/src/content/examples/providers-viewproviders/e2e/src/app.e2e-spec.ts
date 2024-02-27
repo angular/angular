@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Providers and ViewProviders', () => {
-
   beforeEach(() => browser.get(''));
 
   it('shows basic flower emoji', async () => {
@@ -15,5 +14,4 @@ describe('Providers and ViewProviders', () => {
   it('shows sunflower from FlowerService', async () => {
     expect(await element.all(by.css('p')).get(8).getText()).toContain('🌻');
   });
-
 });

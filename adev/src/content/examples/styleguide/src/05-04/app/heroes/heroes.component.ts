@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import {Component} from '@angular/core';
+import {Observable} from 'rxjs';
 
-import { Hero, HeroService } from './shared';
-import { AsyncPipe, NgFor, NgIf, UpperCasePipe } from '@angular/common';
+import {Hero, HeroService} from './shared';
+import {AsyncPipe, NgFor, NgIf, UpperCasePipe} from '@angular/common';
 
 // #docregion example
 @Component({

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +10,6 @@ import { Component } from '@angular/core';
       <a routerLink="customers" routerLinkActive="active" ariaCurrentWhenActive="page">Customers</a>
     </nav>
     <router-outlet></router-outlet>
-  `
+  `,
 })
-export class AppComponent {
-}
+export class AppComponent {}

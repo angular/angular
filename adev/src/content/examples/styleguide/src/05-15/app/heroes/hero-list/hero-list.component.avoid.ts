@@ -1,20 +1,20 @@
 // #docregion
 /* avoid */
 
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Component, OnInit} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
-import { Observable } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {catchError, finalize} from 'rxjs/operators';
 
-import { Hero } from '../shared/hero.model';
+import {Hero} from '../shared/hero.model';
 
 const heroesUrl = 'http://angular.io';
 
 @Component({
   standalone: true,
   selector: 'toh-hero-list',
-  template: `...`
+  template: `...`,
 })
 export class HeroListComponent implements OnInit {
   heroes: Hero[];
@@ -25,10 +25,13 @@ export class HeroListComponent implements OnInit {
 
   getHeroes() {
     this.heroes = [];
-    this.http.get(heroesUrl).pipe(
-      catchError(this.catchBadResponse),
-      finalize(() => this.hideSpinner())
-    ).subscribe((heroes: Hero[]) => this.heroes = heroes);
+    this.http
+      .get(heroesUrl)
+      .pipe(
+        catchError(this.catchBadResponse),
+        finalize(() => this.hideSpinner()),
+      )
+      .subscribe((heroes: Hero[]) => (this.heroes = heroes));
   }
   ngOnInit() {
     this.getHeroes();

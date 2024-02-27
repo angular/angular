@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('i18n E2E Tests', () => {
-
   beforeEach(() => browser.get(''));
 
   it('should display i18n translated welcome: Bonjour !', async () => {
@@ -39,5 +38,4 @@ describe('i18n E2E Tests', () => {
     await element.all(by.css('button')).get(4).click();
     expect(await nestedExp.getText()).toBe(`Mis à jour: il y a 3 minutes par autre`);
   });
-
 });

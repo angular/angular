@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import { TitleCasePipe } from './title-case.pipe';
+import {TitleCasePipe} from './title-case.pipe';
 
 // #docregion excerpt
 describe('TitleCasePipe', () => {

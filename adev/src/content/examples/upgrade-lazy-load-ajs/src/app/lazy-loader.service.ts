@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import * as angular from 'angular';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LazyLoaderService {
   private app: angular.auto.IInjectorService | undefined;
 
   load(el: HTMLElement): void {
-    import('./angularjs-app').then(app => {
+    import('./angularjs-app').then((app) => {
       try {
         this.app = app.bootstrap(el);
       } catch (e) {

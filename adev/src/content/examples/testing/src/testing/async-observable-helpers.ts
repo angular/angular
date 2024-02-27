@@ -10,7 +10,7 @@
  *
  * Using `asap` scheduler - as in `of(value, asap)` - doesn't work either.
  */
-import { defer } from 'rxjs';
+import {defer} from 'rxjs';
 
 // #docregion async-data
 /**

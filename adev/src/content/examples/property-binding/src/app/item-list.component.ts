@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
-import { NgFor } from '@angular/common';
-import { ITEMS } from './mock-items';
-import { Item } from './item';
+import {Component, Input} from '@angular/core';
+import {NgFor} from '@angular/common';
+import {ITEMS} from './mock-items';
+import {Item} from './item';
 
 @Component({
   standalone: true,
@@ -28,5 +28,4 @@ export class ItemListComponent {
   // #docregion item-input
   @Input() items: Item[] = [];
   // #enddocregion item-input
-
 }

@@ -1,4 +1,4 @@
-import { Quote } from './quote';
+import {Quote} from './quote';
 
 export const QUOTES: Quote[] = [
   'Always do right. This will gratify some people and astonish the rest.',
@@ -11,4 +11,4 @@ export const QUOTES: Quote[] = [
   "Truth is stranger than fiction, but it is because Fiction is obliged to stick to possibilities; Truth isn't.",
   'The man who does not read good books has no advantage over the man who cannot read them.',
   'Get your facts first, and then you can distort them as much as you please.',
-].map((q, i) => ({ id: i + 1, quote: q }));
+].map((q, i) => ({id: i + 1, quote: q}));

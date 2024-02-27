@@ -1,30 +1,24 @@
 // #docplaster
 import {Injectable, NgModule} from '@angular/core';
 import {Title} from '@angular/platform-browser';
-import {
-  ResolveFn,
-  RouterModule,
-  RouterStateSnapshot,
-  Routes,
-  TitleStrategy,
-} from '@angular/router';  // CLI imports router
+import {ResolveFn, RouterModule, RouterStateSnapshot, Routes, TitleStrategy} from '@angular/router'; // CLI imports router
 
 // #docregion page-title
 const routes: Routes = [
   {
     path: 'first-component',
     title: 'First component',
-    component: FirstComponent,  // this is the component with the <router-outlet> in the template
+    component: FirstComponent, // this is the component with the <router-outlet> in the template
     children: [
       {
-        path: 'child-a',  // child route path
+        path: 'child-a', // child route path
         title: resolvedChildATitle,
-        component: ChildAComponent,  // child route component that the router renders
+        component: ChildAComponent, // child route component that the router renders
       },
       {
         path: 'child-b',
         title: 'child b',
-        component: ChildBComponent,  // another child route component that the router renders
+        component: ChildBComponent, // another child route component that the router renders
       },
     ],
   },
@@ -32,7 +26,6 @@ const routes: Routes = [
 
 const resolvedChildATitle: ResolveFn<string> = () => Promise.resolve('child a');
 // #enddocregion page-title
-
 
 // #docregion custom-page-title
 @Injectable({providedIn: 'root'})
@@ -52,10 +45,7 @@ export class TemplatePageTitleStrategy extends TitleStrategy {
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [
-    {provide: TitleStrategy, useClass: TemplatePageTitleStrategy},
-  ]
+  providers: [{provide: TitleStrategy, useClass: TemplatePageTitleStrategy}],
 })
-export class AppRoutingModule {
-}
+export class AppRoutingModule {}
 // #enddocregion custom-page-title

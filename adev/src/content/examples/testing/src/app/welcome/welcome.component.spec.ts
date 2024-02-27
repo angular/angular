@@ -1,13 +1,13 @@
 // #docplaster
-import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
+import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 
-import { UserService } from '../model/user.service';
-import { WelcomeComponent } from './welcome.component';
+import {UserService} from '../model/user.service';
+import {WelcomeComponent} from './welcome.component';
 
 // #docregion mock-user-service
 class MockUserService {
   isLoggedIn = true;
-  user = { name: 'Test User' };
+  user = {name: 'Test User'};
 }
 // #enddocregion mock-user-service
 
@@ -19,7 +19,7 @@ describe('WelcomeComponent (class only)', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       // provide the component-under-test and dependent service
-      providers: [WelcomeComponent, { provide: UserService, useClass: MockUserService }],
+      providers: [WelcomeComponent, {provide: UserService, useClass: MockUserService}],
     });
     // inject both the component and the dependent service.
     comp = TestBed.inject(WelcomeComponent);
@@ -62,7 +62,7 @@ describe('WelcomeComponent', () => {
     // #docregion user-service-stub
     userServiceStub = {
       isLoggedIn: true,
-      user: { name: 'Test User' },
+      user: {name: 'Test User'},
     };
     // #enddocregion user-service-stub
 
@@ -73,7 +73,7 @@ describe('WelcomeComponent', () => {
       // providers: [ UserService ],  // NO! Don't provide the real service!
       // Provide a test-double instead
       // #docregion setup
-      providers: [{ provide: UserService, useValue: userServiceStub }],
+      providers: [{provide: UserService, useValue: userServiceStub}],
     });
     // #enddocregion config-test-module
 

@@ -1,6 +1,6 @@
 // Examples with car and engine variations
 
-import { Car, Engine, Tires } from './car';
+import {Car, Engine, Tires} from './car';
 
 ///////// example 1 ////////////
 export function simpleCar() {
@@ -10,10 +10,9 @@ export function simpleCar() {
   return car;
 }
 
-
 ///////// example 2 ////////////
 class Engine2 {
-  constructor(public cylinders: number) { }
+  constructor(public cylinders: number) {}
 }
 
 export function superCar() {
@@ -25,8 +24,12 @@ export function superCar() {
 }
 
 /////////// example 3 //////////
-class MockEngine extends Engine { override cylinders = 8; }
-class MockTires  extends Tires  { override make = 'YokoGoodStone'; }
+class MockEngine extends Engine {
+  override cylinders = 8;
+}
+class MockTires extends Tires {
+  override make = 'YokoGoodStone';
+}
 
 export function testCar() {
   // Test car with 8 cylinders and YokoGoodStone tires.

@@ -21,7 +21,7 @@ module.exports = function (config) {
       '/dummy/image': 'src/assets/images/logos/angular/angular.png',
     },
     client: {
-      clearContext: false,  // leave Jasmine Spec Runner output visible in browser
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
       jasmine: {
         // you can add configuration options for Jasmine here
         // the possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
@@ -32,15 +32,12 @@ module.exports = function (config) {
       },
     },
     jasmineHtmlReporter: {
-      suppressAll: true // removes the duplicated traces
+      suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage/site'),
       subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'text-summary' }
-      ],
+      reporters: [{type: 'html'}, {type: 'text-summary'}],
     },
     reporters: ['progress', 'kjhtml', 'jasmine-seed'],
     port: 9876,
@@ -51,7 +48,14 @@ module.exports = function (config) {
       ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
         // See /integration/README.md#browser-tests for more info on these args
-        flags: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--mute-audio'],
+        flags: [
+          '--no-sandbox',
+          '--headless',
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--hide-scrollbars',
+          '--mute-audio',
+        ],
       },
     },
     browsers: ['ChromeHeadlessNoSandbox'],

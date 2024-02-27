@@ -1,4 +1,4 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Built Template Functions Example', () => {
   beforeAll(() => browser.get(''));
@@ -12,5 +12,4 @@ describe('Built Template Functions Example', () => {
     const header = element(by.css('h2'));
     expect(await header.getText()).toContain('$any( )');
   });
-
 });

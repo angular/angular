@@ -1,11 +1,11 @@
 // #docplaster
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 // #docregion
 @Component({
   selector: 'app-quest-summary',
   templateUrl: './quest-summary.component.html',
-  styleUrls:  ['./quest-summary.component.css']
+  styleUrls: ['./quest-summary.component.css'],
 })
-export class QuestSummaryComponent { }
+export class QuestSummaryComponent {}
 // #enddocregion

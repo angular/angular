@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-actor-form-template',
@@ -6,9 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./actor-form-template.component.css'],
 })
 export class ActorFormTemplateComponent {
-
   skills = ['Method Acting', 'Singing', 'Dancing', 'Swordfighting'];
 
   actor = {name: 'Tom Cruise', role: 'Romeo', skill: this.skills[3]};
-
 }

@@ -1,17 +1,17 @@
 // #docregion downgrade-component
 declare const angular: angular.IAngularStatic;
-import { downgradeComponent } from '@angular/upgrade/static';
+import {downgradeComponent} from '@angular/upgrade/static';
 
 // #enddocregion downgrade-component
 
 // #docregion initialclass
-import { Component } from '@angular/core';
-import { Phone, PhoneData } from '../core/phone/phone.service';
+import {Component} from '@angular/core';
+import {Phone, PhoneData} from '../core/phone/phone.service';
 
 // #docregion downgrade-component
 @Component({
   selector: 'phone-list',
-  templateUrl: './phone-list.template.html'
+  templateUrl: './phone-list.template.html',
 })
 export class PhoneListComponent {
   // #enddocregion downgrade-component
@@ -20,7 +20,7 @@ export class PhoneListComponent {
   orderProp: string;
 
   constructor(phone: Phone) {
-    phone.query().subscribe(phones => {
+    phone.query().subscribe((phones) => {
       this.phones = phones;
     });
     this.orderProp = 'age';
@@ -34,7 +34,7 @@ export class PhoneListComponent {
 
   private filterPhones(phones: PhoneData[]) {
     if (phones && this.query) {
-      return phones.filter(phone => {
+      return phones.filter((phone) => {
         const name = phone.name.toLowerCase();
         const snippet = phone.snippet.toLowerCase();
         return name.indexOf(this.query) >= 0 || snippet.indexOf(this.query) >= 0;
@@ -64,9 +64,10 @@ export class PhoneListComponent {
 }
 // #enddocregion initialclass
 
-angular.module('phoneList')
+angular
+  .module('phoneList')
   .directive(
     'phoneList',
-    downgradeComponent({component: PhoneListComponent}) as angular.IDirectiveFactory
+    downgradeComponent({component: PhoneListComponent}) as angular.IDirectiveFactory,
   );
 // #enddocregion downgrade-component

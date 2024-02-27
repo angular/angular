@@ -1,30 +1,32 @@
 /* eslint-disable space-before-function-paren */
 // #docplaster
 // #docregion
-import { Component, forwardRef, Optional, SkipSelf } from '@angular/core';
+import {Component, forwardRef, Optional, SkipSelf} from '@angular/core';
 
 // A component base class (see AlexComponent)
-export abstract class Base { name = 'Count Basie'; }
+export abstract class Base {
+  name = 'Count Basie';
+}
 
 // Marker class, used as an interface
 // #docregion parent
-export abstract class Parent { abstract name: string; }
+export abstract class Parent {
+  abstract name: string;
+}
 // #enddocregion parent
 
 const DifferentParent = Parent;
 
 // Helper method to provide the current component instance in the name of a `parentType`.
 // The `parentType` defaults to `Parent` when omitting the second parameter.
-export function provideParent
-  (component: any, parentType?: any) {
-    return { provide: parentType || Parent, useExisting: forwardRef(() => component) };
-  }
+export function provideParent(component: any, parentType?: any) {
+  return {provide: parentType || Parent, useExisting: forwardRef(() => component)};
+}
 
 // Simpler syntax version that always provides the component in the name of `Parent`.
-export function provideTheParent
-  (component: any) {
-    return { provide: Parent, useExisting: forwardRef(() => component) };
-  }
+export function provideTheParent(component: any) {
+  return {provide: Parent, useExisting: forwardRef(() => component)};
+}
 
 ///////// C - Child //////////
 const templateC = `
@@ -36,13 +38,13 @@ const templateC = `
 @Component({
   standalone: true,
   selector: 'carol',
-  template: templateC
+  template: templateC,
 })
 // #docregion carol-class
 export class CarolComponent {
   name = 'Carol';
   // #docregion carol-ctor
-  constructor( @Optional() public parent?: Parent ) { }
+  constructor(@Optional() public parent?: Parent) {}
   // #enddocregion carol-ctor
 }
 // #enddocregion carol-class
@@ -50,11 +52,11 @@ export class CarolComponent {
 @Component({
   standalone: true,
   selector: 'chris',
-  template: templateC
+  template: templateC,
 })
 export class ChrisComponent {
   name = 'Chris';
-  constructor( @Optional() public parent?: Parent ) { }
+  constructor(@Optional() public parent?: Parent) {}
 }
 
 //////  Craig ///////////
@@ -69,10 +71,10 @@ export class ChrisComponent {
   <div class="c">
     <h3>Craig</h3>
     {{alex ? 'Found' : 'Did not find'}} Alex via the base class.
-  </div>`
+  </div>`,
 })
 export class CraigComponent {
-  constructor( @Optional() public alex?: Base ) { }
+  constructor(@Optional() public alex?: Base) {}
 }
 // #enddocregion craig
 
@@ -90,41 +92,41 @@ const templateB = `
 
 @Component({
   standalone: true,
-  selector:   'barry',
-  template:   templateB,
-  providers:  [{ provide: Parent, useExisting: forwardRef(() => BarryComponent) }],
-  imports: [CarolComponent, ChrisComponent]
+  selector: 'barry',
+  template: templateB,
+  providers: [{provide: Parent, useExisting: forwardRef(() => BarryComponent)}],
+  imports: [CarolComponent, ChrisComponent],
 })
 export class BarryComponent implements Parent {
   name = 'Barry';
-// #docregion barry-ctor
-  constructor( @SkipSelf() @Optional() public parent?: Parent ) { }
-// #enddocregion barry-ctor
+  // #docregion barry-ctor
+  constructor(@SkipSelf() @Optional() public parent?: Parent) {}
+  // #enddocregion barry-ctor
 }
 // #enddocregion barry
 
 @Component({
   standalone: true,
-  selector:   'bob',
-  template:   templateB,
-  providers:  [ provideParent(BobComponent) ],
-  imports: [CarolComponent, ChrisComponent]
+  selector: 'bob',
+  template: templateB,
+  providers: [provideParent(BobComponent)],
+  imports: [CarolComponent, ChrisComponent],
 })
 export class BobComponent implements Parent {
   name = 'Bob';
-  constructor( @SkipSelf() @Optional() public parent?: Parent ) { }
+  constructor(@SkipSelf() @Optional() public parent?: Parent) {}
 }
 
 @Component({
   standalone: true,
-  selector:   'beth',
-  template:   templateB,
-  providers:  [ provideParent(BethComponent, DifferentParent) ],
-  imports: [CarolComponent, ChrisComponent]
+  selector: 'beth',
+  template: templateB,
+  providers: [provideParent(BethComponent, DifferentParent)],
+  imports: [CarolComponent, ChrisComponent],
 })
 export class BethComponent implements Parent {
   name = 'Beth';
-  constructor( @SkipSelf() @Optional() public parent?: Parent ) { }
+  constructor(@SkipSelf() @Optional() public parent?: Parent) {}
 }
 
 //////  Cathy ///////////
@@ -139,10 +141,10 @@ export class BethComponent implements Parent {
   <div class="c">
     <h3>Cathy</h3>
     {{alex ? 'Found' : 'Did not find'}} Alex via the component class.<br>
-  </div>`
+  </div>`,
 })
 export class CathyComponent {
-  constructor( @Optional() public alex?: AlexComponent ) { }
+  constructor(@Optional() public alex?: AlexComponent) {}
 }
 // #enddocregion cathy
 
@@ -159,20 +161,19 @@ export class CathyComponent {
       <craig></craig>
       <carol></carol>
     </div>`,
-// #enddocregion alex-1
-// #docregion alex-providers
-  providers: [{ provide: Parent, useExisting: forwardRef(() => AlexComponent) }],
-// #enddocregion alex-providers
-// #docregion alex-1
-  imports: [CathyComponent, CraigComponent, CarolComponent]
+  // #enddocregion alex-1
+  // #docregion alex-providers
+  providers: [{provide: Parent, useExisting: forwardRef(() => AlexComponent)}],
+  // #enddocregion alex-providers
+  // #docregion alex-1
+  imports: [CathyComponent, CraigComponent, CarolComponent],
 })
 // #enddocregion alex-1
 // TODO: Add `... implements Parent` to class signature
 // #docregion alex-1
 // #docregion alex-class-signature
-export class AlexComponent extends Base
 // #enddocregion alex-class-signature
-{
+export class AlexComponent extends Base {
   override name = 'Alex';
 }
 // #enddocregion alex-1
@@ -190,13 +191,12 @@ export class AlexComponent extends Base
       <bob></bob>
       <carol></carol>
     </div> `,
-  providers:  [ provideParent(AliceComponent) ],
-  imports: [BarryComponent, BethComponent, BobComponent, CarolComponent]
+  providers: [provideParent(AliceComponent)],
+  imports: [BarryComponent, BethComponent, BobComponent, CarolComponent],
 })
 // #docregion alice-class-signature
-export class AliceComponent implements Parent
 // #enddocregion alice-class-signature
-{
+export class AliceComponent implements Parent {
   name = 'Alice';
 }
 
@@ -208,6 +208,6 @@ export class AliceComponent implements Parent
     <h2>Parent Finder</h2>
     <alex></alex>
     <alice></alice>`,
-    imports: [AlexComponent, AliceComponent]
+  imports: [AlexComponent, AliceComponent],
 })
-export class ParentFinderComponent { }
+export class ParentFinderComponent {}

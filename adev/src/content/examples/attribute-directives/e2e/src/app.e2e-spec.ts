@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Attribute directives', () => {
-
   const title = 'My First Attribute Directive';
 
   beforeAll(() => browser.get(''));
@@ -23,6 +22,6 @@ describe('Attribute directives', () => {
 
     // Wait for up to 4s for the background color to be updated,
     // to account for slow environments (e.g. CI).
-    await browser.wait(async () => await getBgColor() === lightGreen, 4000);
+    await browser.wait(async () => (await getBgColor()) === lightGreen, 4000);
   });
 });

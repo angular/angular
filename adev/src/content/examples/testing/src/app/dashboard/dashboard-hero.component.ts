@@ -1,8 +1,8 @@
 // #docregion
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { UpperCasePipe } from '@angular/common';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {UpperCasePipe} from '@angular/common';
 
-import { Hero } from '../model/hero';
+import {Hero} from '../model/hero';
 
 // #docregion component
 @Component({

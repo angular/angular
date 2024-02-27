@@ -1,18 +1,18 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-import { Observable } from 'rxjs';
-import { asyncData } from '../../../testing';
+import {Observable} from 'rxjs';
+import {asyncData} from '../../../testing';
 
-import { map } from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 // re-export for tester convenience
-export { Hero } from '../hero';
-export { HeroService } from '../hero.service';
-export { getTestHeroes } from './test-heroes';
+export {Hero} from '../hero';
+export {HeroService} from '../hero.service';
+export {getTestHeroes} from './test-heroes';
 
-import { Hero } from '../hero';
-import { HeroService } from '../hero.service';
-import { getTestHeroes } from './test-heroes';
+import {Hero} from '../hero';
+import {HeroService} from '../hero.service';
+import {getTestHeroes} from './test-heroes';
 
 @Injectable()
 /**

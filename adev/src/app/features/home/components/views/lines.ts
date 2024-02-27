@@ -34,7 +34,10 @@ export class Lines extends View {
   /**
    * Create the container view.
    */
-  constructor(private readonly gl: OGLRenderingContext, private readonly divisions: number) {
+  constructor(
+    private readonly gl: OGLRenderingContext,
+    private readonly divisions: number,
+  ) {
     super();
 
     this.userData['x'] = 0;

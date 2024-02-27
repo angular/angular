@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { HeroButtonComponent } from './heroes/shared/hero-button/hero-button.component';
+import {Component} from '@angular/core';
+import {HeroButtonComponent} from './heroes/shared/hero-button/hero-button.component';
 
 @Component({
   standalone: true,
@@ -7,4 +7,4 @@ import { HeroButtonComponent } from './heroes/shared/hero-button/hero-button.com
   template: '<toh-hero-button label="OK"></toh-hero-button>',
   imports: [HeroButtonComponent],
 })
-export class AppComponent { }
+export class AppComponent {}

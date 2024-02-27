@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { Router } from '@angular/router';
+import {Component} from '@angular/core';
+import {AsyncPipe} from '@angular/common';
+import {Router} from '@angular/router';
 
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 
-import { Hero } from '../model/hero';
-import { HeroService } from '../model/hero.service';
-import { sharedImports } from '../shared/shared';
+import {Hero} from '../model/hero';
+import {HeroService} from '../model/hero.service';
+import {sharedImports} from '../shared/shared';
 
 @Component({
   standalone: true,
