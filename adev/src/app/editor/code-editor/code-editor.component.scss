@@ -69,7 +69,9 @@
   display: flex;
   background: var(--octonary-contrast);
   border-block-end: 1px solid var(--senary-contrast);
-  transition: background 0.3s ease, border 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border 0.3s ease;
 }
 
 .adev-tabs-and-plus {
@@ -178,6 +180,13 @@
     color: var(--gray-400);
     transition: color 0.3s ease;
     font-size: 1.3rem;
+  }
+
+  .adev-editor-download-button-tooltip {
+    background: var(--octonary-contrast);
+    color: var(--primary-contrast);
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.25rem;
   }
 
   &:hover {
