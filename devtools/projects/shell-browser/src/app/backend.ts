@@ -14,8 +14,8 @@ import {initializeExtendedWindowOperations} from './chrome-window-extensions';
 import {SamePageMessageBus} from './same-page-message-bus';
 
 const messageBus = new SamePageMessageBus(
-  `angular-devtools-backend-${location.href}`,
-  `angular-devtools-content-script-${location.href}`,
+  'angular-devtools-backend',
+  'angular-devtools-content-script',
 );
 
 let initialized = false;
@@ -47,6 +47,4 @@ messageBus.on('handshake', () => {
     },
     false,
   );
-
-  messageBus.emit('backendReady');
 });
