@@ -2050,7 +2050,7 @@ describe('integration tests', function () {
 
       TestBed.configureTestingModule({declarations: [MainComp]});
       expect(() => TestBed.createComponent(MainComp)).toThrowError(
-        /^NG01001: Orphan component found\! Trying to render the component MainComp \(at test\.ts:11\) without first loading the NgModule that declares it/,
+        /^NG0981: Orphan component found\! Trying to render the component MainComp \(at test\.ts:11\) without first loading the NgModule that declares it/,
       );
     });
 
