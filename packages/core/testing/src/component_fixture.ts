@@ -8,7 +8,7 @@
 
 import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, EventEmitter, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵisG3 as isG3, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks,} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {first, take} from 'rxjs/operators';
+import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
 import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone,} from './test_bed_common';
@@ -354,13 +354,11 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
           );
         } catch (e: unknown) {
           // If an error ocurred during change detection, remove the test view from the application
-          // ref tracking until the tick completes so that it doesn't interfere with regular views
-          // there. After the tick is done, we add ourselves back so we change detect in subsequent
-          // runs.
+          // ref tracking. Note that this isn't exactly desirable but done this way because of how
+          // things used to work with `autoDetect` and uncaught errors. Ideally we would surface
+          // this error to the error handler instead and continue refreshing the view like
+          // what would happen in the application.
           this.unsubscribeFromAppRefEvents();
-          this.afterTickSubscription = this._testAppRef.afterTick.pipe(take(1)).subscribe(() => {
-            this.subscribeToAppRefEvents();
-          });
 
           throw e;
         }

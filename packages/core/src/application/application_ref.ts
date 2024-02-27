@@ -20,10 +20,7 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
-<<<<<<< HEAD
-=======
 import {EventEmitter} from '../event_emitter';
->>>>>>> 3558a9db6b (refactor(core): ComponentFixture autodetect should detect changes within ApplicationRef.tick)
 import {Type} from '../interface/type';
 import {isG3} from '../is_internal';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';

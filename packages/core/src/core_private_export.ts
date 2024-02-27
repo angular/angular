@@ -9,7 +9,6 @@
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
 export {detectChangesInViewIfRequired as ɵdetectChangesInViewIfRequired, whenStable as ɵwhenStable} from './application/application_ref';
 export {IMAGE_CONFIG as ɵIMAGE_CONFIG, IMAGE_CONFIG_DEFAULTS as ɵIMAGE_CONFIG_DEFAULTS, ImageConfig as ɵImageConfig} from './application/application_tokens';
-export {queueStateUpdate as ɵqueueStateUpdate} from './render3/queue_state_update';
 export {internalCreateApplication as ɵinternalCreateApplication} from './application/create_application';
 export {defaultIterableDiffers as ɵdefaultIterableDiffers, defaultKeyValueDiffers as ɵdefaultKeyValueDiffers} from './change_detection/change_detection';
 export {getEnsureDirtyViewsAreAlwaysReachable as ɵgetEnsureDirtyViewsAreAlwaysReachable, setEnsureDirtyViewsAreAlwaysReachable as ɵsetEnsureDirtyViewsAreAlwaysReachable} from './change_detection/flags';
@@ -40,6 +39,7 @@ export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS} from './platform
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {AnimationRendererType as ɵAnimationRendererType} from './render/api';
 export {InjectorProfilerContext as ɵInjectorProfilerContext, ProviderRecord as ɵProviderRecord, setInjectorProfilerContext as ɵsetInjectorProfilerContext} from './render3/debug/injector_profiler';
+export {queueStateUpdate as ɵqueueStateUpdate} from './render3/queue_state_update';
 export {allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow, BypassType as ɵBypassType, getSanitizationBypassType as ɵgetSanitizationBypassType, SafeHtml as ɵSafeHtml, SafeResourceUrl as ɵSafeResourceUrl, SafeScript as ɵSafeScript, SafeStyle as ɵSafeStyle, SafeUrl as ɵSafeUrl, SafeValue as ɵSafeValue, unwrapSafeValue as ɵunwrapSafeValue} from './sanitization/bypass';
 export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
