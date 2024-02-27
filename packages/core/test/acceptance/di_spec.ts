@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {assertInInjectionContext, Attribute, ChangeDetectorRef, Component, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostBinding, ImportedNgModuleProviders, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
+import {assertInInjectionContext, Attribute, ChangeDetectorRef, Component, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostAttributeToken, HostBinding, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
 import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
@@ -4212,6 +4212,298 @@ describe('di', () => {
 
       expect(fixture.componentInstance.directiveInstance.attrValue).toBeNull();
       expect(fixture.nativeElement.querySelector('div').getAttribute('title')).toBe('title value');
+    });
+  });
+
+  describe('HostAttributeToken', () => {
+    it('should inject an attribute on an element node', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(new HostAttributeToken('some-attr'));
+      }
+
+      @Component({
+        standalone: true,
+        template: '<div dir some-attr="foo" other="ignore"></div>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.dir.value).toBe('foo');
+    });
+
+    it('should inject an attribute on <ng-template>', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(new HostAttributeToken('some-attr'));
+      }
+
+      @Component({
+        standalone: true,
+        template: '<ng-template dir some-attr="foo" other="ignore"></ng-template>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.dir.value).toBe('foo');
+    });
+
+    it('should inject an attribute on <ng-container>', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(new HostAttributeToken('some-attr'));
+      }
+
+      @Component({
+        standalone: true,
+        template: '<ng-container dir some-attr="foo" other="ignore"></ng-container>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.dir.value).toBe('foo');
+    });
+
+    it('should be able to inject different kinds of attributes', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        className = inject(new HostAttributeToken('class'));
+        inlineStyles = inject(new HostAttributeToken('style'));
+        value = inject(new HostAttributeToken('some-attr'));
+      }
+
+      @Component({
+        standalone: true,
+        template: `
+          <div
+            dir
+            style="margin: 1px; color: red;"
+            class="hello there"
+            some-attr="foo"
+            other="ignore"></div>
+        `,
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.dir;
+      expect(directive.className).toBe('hello there');
+      expect(directive.inlineStyles).toMatch(/color:\s*red/);
+      expect(directive.inlineStyles).toMatch(/margin:\s*1px/);
+      expect(directive.value).toBe('foo');
+    });
+
+    it('should throw a DI error when injecting a non-existent attribute', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(new HostAttributeToken('some-attr'));
+      }
+
+      @Component({
+        standalone: true,
+        template: '<div dir other="ignore"></div>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      expect(() => TestBed.createComponent(TestCmp))
+          .toThrowError(/No provider for HostAttributeToken some-attr found/);
+    });
+
+    it('should not throw a DI error when injecting a non-existent attribute with optional: true',
+       () => {
+         @Directive({selector: '[dir]', standalone: true})
+         class Dir {
+           value = inject(new HostAttributeToken('some-attr'), {optional: true});
+         }
+
+         @Component({
+           standalone: true,
+           template: '<div dir other="ignore"></div>',
+           imports: [Dir],
+         })
+         class TestCmp {
+           @ViewChild(Dir) dir!: Dir;
+         }
+
+         const fixture = TestBed.createComponent(TestCmp);
+         fixture.detectChanges();
+         expect(fixture.componentInstance.dir.value).toBe(null);
+       });
+
+    it('should not inject attributes with namespace', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(new HostAttributeToken('some-attr'), {optional: true});
+        namespaceExists = inject(new HostAttributeToken('svg:exist'), {optional: true});
+        other = inject(new HostAttributeToken('other'), {optional: true});
+      }
+
+      @Component({
+        standalone: true,
+        template: `
+          <div dir some-attr="foo" svg:exists="testExistValue" other="otherValue"></div>
+        `,
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.dir;
+      expect(directive.value).toBe('foo');
+      expect(directive.namespaceExists).toBe(null);
+      expect(directive.other).toBe('otherValue');
+    });
+
+    it('should not inject attributes representing bindings and outputs', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        @Input() binding!: string;
+        @Output() output = new EventEmitter();
+
+        exists = inject(new HostAttributeToken('exists'));
+        bindingAttr = inject(new HostAttributeToken('binding'), {optional: true});
+        outputAttr = inject(new HostAttributeToken('output'), {optional: true});
+        other = inject(new HostAttributeToken('other'));
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Dir],
+        template: `
+          <div
+            dir
+            exists="existsValue"
+            [binding]="bindingValue"
+            (output)="noop()"
+            other="otherValue"
+            ignore="ignoreValue"></div>`
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+        bindingValue = 'hello';
+        noop() {}
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.dir;
+      expect(directive.exists).toBe('existsValue');
+      expect(directive.bindingAttr).toBe(null);
+      expect(directive.outputAttr).toBe(null);
+      expect(directive.other).toBe('otherValue');
+    });
+
+    it('should not inject data-bound attributes', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(new HostAttributeToken('title'), {optional: true});
+      }
+
+      @Component({
+        standalone: true,
+        template: '<div dir title="foo {{value}}" other="ignore"></div>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+        value = 123;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe(null);
+      expect(fixture.nativeElement.querySelector('[dir]').getAttribute('title')).toBe('foo 123');
+    });
+
+    it('should inject an attribute using @Inject', () => {
+      const TOKEN = new HostAttributeToken('some-attr');
+
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        constructor(@Inject(TOKEN) readonly value: string) {}
+      }
+
+      @Component({
+        standalone: true,
+        template: '<div dir some-attr="foo" other="ignore"></div>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.dir.value).toBe('foo');
+    });
+
+    it('should throw when injecting a non-existent attribute using @Inject', () => {
+      const TOKEN = new HostAttributeToken('some-attr');
+
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        constructor(@Inject(TOKEN) readonly value: string) {}
+      }
+
+      @Component({
+        standalone: true,
+        template: '<div dir other="ignore"></div>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      expect(() => TestBed.createComponent(TestCmp))
+          .toThrowError(/No provider for HostAttributeToken some-attr found/);
+    });
+
+    it('should not throw when injecting a non-existent attribute using @Inject @Optional', () => {
+      const TOKEN = new HostAttributeToken('some-attr');
+
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        constructor(@Inject(TOKEN) @Optional() readonly value: string|null) {}
+      }
+
+      @Component({
+        standalone: true,
+        template: '<div dir other="ignore"></div>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.dir.value).toBe(null);
     });
   });
 

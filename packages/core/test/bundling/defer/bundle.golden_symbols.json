@@ -1368,6 +1368,9 @@
     "name": "init_hooks"
   },
   {
+    "name": "init_host_attribute_token"
+  },
+  {
     "name": "init_host_directives_feature"
   },
   {

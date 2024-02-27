@@ -721,6 +721,13 @@ export interface Host {
 export const Host: HostDecorator;
 
 // @public
+export class HostAttributeToken {
+    constructor(attributeName: string);
+    // (undocumented)
+    toString(): string;
+}
+
+// @public
 export interface HostBinding {
     hostPropertyName?: string;
 }
@@ -788,6 +795,19 @@ export function inject<T>(token: ProviderToken<T>, options: InjectOptions & {
 
 // @public (undocumented)
 export function inject<T>(token: ProviderToken<T>, options: InjectOptions): T | null;
+
+// @public (undocumented)
+export function inject(token: HostAttributeToken): string;
+
+// @public (undocumented)
+export function inject(token: HostAttributeToken, options: {
+    optional: true;
+}): string | null;
+
+// @public (undocumented)
+export function inject(token: HostAttributeToken, options: {
+    optional: false;
+}): string;
 
 // @public
 export interface Injectable {
