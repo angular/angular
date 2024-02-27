@@ -11,13 +11,11 @@ import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
 
 import {IFrameMessageBus} from '../../../../../src/iframe-message-bus';
 import {DevToolsComponent} from 'ng-devtools';
-import {FrameManager} from '../../../../../projects/ng-devtools/src/lib/frame_manager';
 
 @Component({
   standalone: true,
   imports: [DevToolsComponent],
   providers: [
-    {provide: FrameManager, useFactory: () => FrameManager.initialize(null)},
     {
       provide: MessageBus,
       useFactory(): MessageBus<Events> {

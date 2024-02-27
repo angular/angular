@@ -16,14 +16,12 @@ import {ChromeApplicationEnvironment} from './chrome-application-environment';
 import {ChromeApplicationOperations} from './chrome-application-operations';
 import {ZoneAwareChromeMessageBus} from './zone-aware-chrome-message-bus';
 import {Events, MessageBus, PriorityAwareMessageBus} from 'protocol';
-import {FrameManager} from '../../../../projects/ng-devtools/src/lib/frame_manager';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserAnimationsModule, DevToolsComponent, MatSelect],
   bootstrap: [AppComponent],
   providers: [
-    {provide: FrameManager, useFactory: () => FrameManager.initialize()},
     {
       provide: ApplicationOperations,
       useClass: ChromeApplicationOperations,
