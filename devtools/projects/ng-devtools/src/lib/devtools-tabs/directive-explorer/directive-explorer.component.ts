@@ -11,7 +11,6 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  inject,
   Input,
   NgZone,
   OnDestroy,
@@ -33,7 +32,6 @@ import {
 
 import {SplitComponent} from '../../../lib/vendor/angular-split/public_api';
 import {ApplicationOperations} from '../../application-operations/index';
-import {FrameManager} from '../../frame_manager';
 
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {FlatNode} from './directive-forest/component-data-source';
@@ -124,12 +122,11 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
 
   constructor(
-    private readonly _appOperations: ApplicationOperations,
-    private readonly _messageBus: MessageBus<Events>,
-    private readonly _propResolver: ElementPropertyResolver,
-    private readonly _cdr: ChangeDetectorRef,
-    private readonly _ngZone: NgZone,
-    private readonly _frameManager: FrameManager,
+    private _appOperations: ApplicationOperations,
+    private _messageBus: MessageBus<Events>,
+    private _propResolver: ElementPropertyResolver,
+    private _cdr: ChangeDetectorRef,
+    private _ngZone: NgZone,
   ) {}
 
   ngOnInit(): void {
@@ -201,37 +198,18 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
       (directive) => directive.name === directiveName,
     );
 
-    const selectedFrame = this._frameManager.selectedFrame;
-    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot view source.`,
-        },
-      ]);
+    if (directiveIndex === -1) {
+      // view the component definition
+      this._appOperations.viewSource(this.currentSelectedElement.position);
       return;
     }
 
-    this._appOperations.viewSource(
-      this.currentSelectedElement.position,
-      directiveIndex !== -1 ? directiveIndex : undefined,
-      new URL(selectedFrame!.url),
-    );
+    // view the directive definition
+    this._appOperations.viewSource(this.currentSelectedElement.position, directiveIndex);
   }
 
   handleSelectDomElement(node: IndexedNode): void {
-    const selectedFrame = this._frameManager.selectedFrame;
-    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot select DOM element.`,
-        },
-      ]);
-      return;
-    }
-
-    this._appOperations.selectDomElement(node.position, new URL(selectedFrame!.url));
+    this._appOperations.selectDomElement(node.position);
   }
 
   highlight(node: FlatNode): void {
@@ -300,19 +278,7 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
     directivePosition: DirectivePosition;
   }): void {
     const objectPath = constructPathOfKeysToPropertyValue(node.prop);
-
-    const selectedFrame = this._frameManager.selectedFrame;
-    if (!this._frameManager.frameHasUniqueUrl(selectedFrame)) {
-      this._messageBus.emit('log', [
-        {
-          level: 'warn',
-          message: `The currently inspected frame does not have a unique url on this page. Cannot inspect object.`,
-        },
-      ]);
-      return;
-    }
-
-    this._appOperations.inspect(directivePosition, objectPath, new URL(selectedFrame!.url));
+    this._appOperations.inspect(directivePosition, objectPath);
   }
 
   hightlightHydrationNodes() {
