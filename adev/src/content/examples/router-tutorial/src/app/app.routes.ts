@@ -8,5 +8,5 @@ export const routes: Routes = [
   {path: 'crisis-list', component: CrisisListComponent},
   {path: 'heroes-list', component: HeroesListComponent},
   {path: '', redirectTo: '/heroes-list', pathMatch: 'full'},
-  {path: '**', component: PageNotFoundComponent}
+  {path: '**', component: PageNotFoundComponent},
 ];

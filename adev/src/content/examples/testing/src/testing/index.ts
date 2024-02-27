@@ -1,5 +1,5 @@
-import { DebugElement } from '@angular/core';
-import { ComponentFixture, tick } from '@angular/core/testing';
+import {DebugElement} from '@angular/core';
+import {ComponentFixture, tick} from '@angular/core/testing';
 
 export * from './async-observable-helpers';
 export * from './jasmine-matchers';
@@ -16,8 +16,8 @@ export function advance(f: ComponentFixture<any>): void {
 // #docregion click-event
 /** Button events to pass to `DebugElement.triggerEventHandler` for RouterLink event handler */
 export const ButtonClickEvents = {
-  left: { button: 0 },
-  right: { button: 2 },
+  left: {button: 0},
+  right: {button: 2},
 };
 
 /** Simulate element click. Defaults to mouse left-button click event. */

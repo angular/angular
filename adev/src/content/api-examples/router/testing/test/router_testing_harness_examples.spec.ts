@@ -70,7 +70,10 @@ describe('navigate for test examples', () => {
       `,
     })
     class SearchCmp {
-      constructor(readonly route: ActivatedRoute, readonly router: Router) {}
+      constructor(
+        readonly route: ActivatedRoute,
+        readonly router: Router,
+      ) {}
 
       async searchFor(thing: string) {
         await this.router.navigate([], {queryParams: {query: thing}});

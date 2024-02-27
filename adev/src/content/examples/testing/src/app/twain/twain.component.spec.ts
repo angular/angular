@@ -1,13 +1,13 @@
 // #docplaster
-import { fakeAsync, ComponentFixture, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import {fakeAsync, ComponentFixture, TestBed, tick, waitForAsync} from '@angular/core/testing';
 
-import { asyncData, asyncError } from '../../testing';
+import {asyncData, asyncError} from '../../testing';
 
-import { of, throwError } from 'rxjs';
-import { last } from 'rxjs/operators';
+import {of, throwError} from 'rxjs';
+import {last} from 'rxjs/operators';
 
-import { TwainComponent } from './twain.component';
-import { TwainService } from './twain.service';
+import {TwainComponent} from './twain.component';
+import {TwainService} from './twain.service';
 
 describe('TwainComponent', () => {
   let component: TwainComponent;
@@ -36,7 +36,7 @@ describe('TwainComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [TwainComponent],
-      providers: [{ provide: TwainService, useValue: twainService }],
+      providers: [{provide: TwainService, useValue: twainService}],
     });
 
     fixture = TestBed.createComponent(TwainComponent);

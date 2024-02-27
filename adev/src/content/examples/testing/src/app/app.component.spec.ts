@@ -1,21 +1,21 @@
 // #docplaster
-import { Component, DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { provideRouter, Router, RouterLink } from '@angular/router';
+import {Component, DebugElement, NO_ERRORS_SCHEMA} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {provideRouter, Router, RouterLink} from '@angular/router';
 
-import { AppComponent } from './app.component';
-import { appConfig } from './app.config';
-import { UserService } from './model';
+import {AppComponent} from './app.component';
+import {appConfig} from './app.config';
+import {UserService} from './model';
 
 // #docregion component-stubs
-@Component({ standalone: true, selector: 'app-banner', template: '' })
+@Component({standalone: true, selector: 'app-banner', template: ''})
 class BannerStubComponent {}
 
-@Component({ standalone: true, selector: 'router-outlet', template: '' })
+@Component({standalone: true, selector: 'router-outlet', template: ''})
 class RouterOutletStubComponent {}
 
-@Component({ standalone: true, selector: 'app-welcome', template: '' })
+@Component({standalone: true, selector: 'app-welcome', template: ''})
 class WelcomeStubComponent {}
 // #enddocregion component-stubs
 
@@ -106,8 +106,8 @@ function tests() {
   it('can click Heroes link in template', fakeAsync(() => {
     const heroesLinkDe = linkDes[1]; // heroes link DebugElement
 
-    TestBed.inject(Router).resetConfig([{ path: '**', children: [] }]);
-    heroesLinkDe.triggerEventHandler('click', { button: 0 });
+    TestBed.inject(Router).resetConfig([{path: '**', children: []}]);
+    heroesLinkDe.triggerEventHandler('click', {button: 0});
     tick();
     fixture.detectChanges();
 

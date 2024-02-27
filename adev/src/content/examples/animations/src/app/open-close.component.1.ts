@@ -1,36 +1,53 @@
-import { Component, Input } from '@angular/core';
-import { trigger, transition, state, animate, style, keyframes, AnimationEvent } from '@angular/animations';
+import {Component, Input} from '@angular/core';
+import {
+  trigger,
+  transition,
+  state,
+  animate,
+  style,
+  keyframes,
+  AnimationEvent,
+} from '@angular/animations';
 
 @Component({
   standalone: true,
   selector: 'app-open-close',
   animations: [
-// #docregion trigger
+    // #docregion trigger
     trigger('openClose', [
-      state('open', style({
-        height: '200px',
-        opacity: 1,
-        backgroundColor: 'yellow'
-      })),
-      state('close', style({
-        height: '100px',
-        opacity: 0.5,
-        backgroundColor: 'green'
-      })),
+      state(
+        'open',
+        style({
+          height: '200px',
+          opacity: 1,
+          backgroundColor: 'yellow',
+        }),
+      ),
+      state(
+        'close',
+        style({
+          height: '100px',
+          opacity: 0.5,
+          backgroundColor: 'green',
+        }),
+      ),
       // ...
       transition('* => *', [
-        animate('1s', keyframes ( [
-          style({ opacity: 0.1, offset: 0.1 }),
-          style({ opacity: 0.6, offset: 0.2 }),
-          style({ opacity: 1,   offset: 0.5 }),
-          style({ opacity: 0.2, offset: 0.7 })
-        ]))
-      ])
-    ])
-// #enddocregion trigger
+        animate(
+          '1s',
+          keyframes([
+            style({opacity: 0.1, offset: 0.1}),
+            style({opacity: 0.6, offset: 0.2}),
+            style({opacity: 1, offset: 0.5}),
+            style({opacity: 0.2, offset: 0.7}),
+          ]),
+        ),
+      ]),
+    ]),
+    // #enddocregion trigger
   ],
   templateUrl: 'open-close.component.html',
-  styleUrls: ['open-close.component.css']
+  styleUrls: ['open-close.component.css'],
 })
 export class OpenCloseKeyframeComponent {
   isOpen = false;

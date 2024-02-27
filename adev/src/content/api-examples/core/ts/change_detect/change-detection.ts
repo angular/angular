@@ -51,7 +51,10 @@ class DataListProvider {
   `,
 })
 class GiantList {
-  constructor(private ref: ChangeDetectorRef, public dataProvider: DataListProvider) {
+  constructor(
+    private ref: ChangeDetectorRef,
+    public dataProvider: DataListProvider,
+  ) {
     ref.detach();
     setInterval(() => {
       this.ref.detectChanges();
@@ -81,7 +84,10 @@ class DataProvider {
 
 @Component({selector: 'live-data', inputs: ['live'], template: 'Data: {{dataProvider.data}}'})
 class LiveData {
-  constructor(private ref: ChangeDetectorRef, public dataProvider: DataProvider) {}
+  constructor(
+    private ref: ChangeDetectorRef,
+    public dataProvider: DataProvider,
+  ) {}
 
   @Input()
   set live(value: boolean) {

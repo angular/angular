@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 // #docregion child-view
 @Component({
@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   template: `
     <label for="hero-name">Hero name: </label>
     <input type="text" id="hero-name" [(ngModel)]="hero">
-  `
+  `,
 })
 export class ChildViewComponent {
   hero = 'Magneta';

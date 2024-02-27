@@ -1,34 +1,30 @@
 // #docplaster
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 // #docregion imports
-import { ReactiveFormsModule } from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 
 // #enddocregion imports
-import { AppComponent } from './app.component';
-import { NameEditorComponent } from './name-editor/name-editor.component';
-import { ProfileEditorComponent } from './profile-editor/profile-editor.component';
+import {AppComponent} from './app.component';
+import {NameEditorComponent} from './name-editor/name-editor.component';
+import {ProfileEditorComponent} from './profile-editor/profile-editor.component';
 
 // #docregion imports
 @NgModule({
-// #enddocregion imports
-  declarations: [
-    AppComponent,
-    NameEditorComponent,
-    ProfileEditorComponent
-  ],
-// #docregion imports
+  // #enddocregion imports
+  declarations: [AppComponent, NameEditorComponent, ProfileEditorComponent],
+  // #docregion imports
   imports: [
-// #enddocregion imports
+    // #enddocregion imports
     BrowserModule,
-// #docregion imports
+    // #docregion imports
     // other imports ...
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
-// #enddocregion imports
+  // #enddocregion imports
   providers: [],
-  bootstrap: [AppComponent]
-// #docregion imports
+  bootstrap: [AppComponent],
+  // #docregion imports
 })
-export class AppModule { }
+export class AppModule {}
 // #enddocregion imports

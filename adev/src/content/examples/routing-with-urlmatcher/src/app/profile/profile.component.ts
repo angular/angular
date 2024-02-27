@@ -4,7 +4,7 @@ import {Component, Input} from '@angular/core';
   selector: 'app-profile',
   standalone: true,
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent {
   @Input() username!: string;

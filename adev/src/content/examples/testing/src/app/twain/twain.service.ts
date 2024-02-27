@@ -1,11 +1,11 @@
 // Mark Twain Quote service gets quotes from server
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 
-import { Observable, of, throwError, Observer } from 'rxjs';
-import { concat, map, retryWhen, switchMap, take, tap } from 'rxjs/operators';
+import {Observable, of, throwError, Observer} from 'rxjs';
+import {concat, map, retryWhen, switchMap, take, tap} from 'rxjs/operators';
 
-import { Quote } from './quote';
+import {Quote} from './quote';
 
 @Injectable()
 export class TwainService {

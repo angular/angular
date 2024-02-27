@@ -1,19 +1,18 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { LoggerService } from './logger.service';
+import {LoggerService} from './logger.service';
 
 @Component({
   selector: 'spy-parent',
   templateUrl: './spy.component.html',
-  providers:  [LoggerService]
+  providers: [LoggerService],
 })
 export class SpyParentComponent {
   newName = 'Herbie';
   heroes: string[] = ['Windstorm', 'Magneta'];
 
-  constructor(public logger: LoggerService) {
-  }
+  constructor(public logger: LoggerService) {}
 
   addHero() {
     if (this.newName.trim()) {

@@ -1,8 +1,6 @@
-import { browser, element, by, logging } from 'protractor';
-
+import {browser, element, by, logging} from 'protractor';
 
 describe('What is Angular', () => {
-
   const paragraphs = element.all(by.css('p'));
   const buttons = element.all(by.css('button'));
   const templateButton = buttons.get(1);
@@ -18,7 +16,7 @@ describe('What is Angular', () => {
   // helper function to test what's logged to the console
   async function logChecker(contents: string) {
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-    const messages = logs.filter(({ message }) => message.indexOf(contents) !== -1 ? true : false);
+    const messages = logs.filter(({message}) => (message.indexOf(contents) !== -1 ? true : false));
     expect(messages.length).toBeGreaterThan(0);
   }
 
@@ -57,5 +55,4 @@ describe('What is Angular', () => {
     await diButton.click();
     await logChecker('0');
   });
-
 });

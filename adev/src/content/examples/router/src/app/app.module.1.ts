@@ -21,25 +21,28 @@ const appRoutes: Routes = [
 
   {path: '', redirectTo: '/heroes', pathMatch: 'full'},
   // #docregion wildcard
-  {path: '**', component: PageNotFoundComponent}  // #enddocregion wildcard
-                                                  // #docregion first-config
+  {path: '**', component: PageNotFoundComponent}, // #enddocregion wildcard
+  // #docregion first-config
 ];
 
 @NgModule({
   imports: [
-    BrowserModule, FormsModule,
+    BrowserModule,
+    FormsModule,
     RouterModule.forRoot(
-        appRoutes, {enableTracing: true}  // <-- debugging purposes only
-        )
+      appRoutes,
+      {enableTracing: true}, // <-- debugging purposes only
+    ),
   ],
   declarations: [
-    AppComponent, HeroListComponent, CrisisListComponent,
+    AppComponent,
+    HeroListComponent,
+    CrisisListComponent,
     // #enddocregion first-config
-    PageNotFoundComponent
+    PageNotFoundComponent,
     // #docregion first-config
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}
 // #enddocregion

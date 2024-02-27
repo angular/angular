@@ -2,7 +2,7 @@
                   @angular-eslint/no-inputs-metadata-property,
                   @angular-eslint/no-output-rename,
                   @angular-eslint/no-outputs-metadata-property */
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   standalone: true,
@@ -15,16 +15,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     <button type="button" (click)="wishForIt()"> Add to wishlist</button>
   `,
   inputs: ['input1: saveForLaterItem'], // propertyName:alias
-  outputs: ['outputEvent1: saveForLaterEvent']
+  outputs: ['outputEvent1: saveForLaterEvent'],
 })
 export class AliasingComponent {
-
   input1 = '';
   outputEvent1: EventEmitter<string> = new EventEmitter<string>();
 
   @Input('wishListItem') input2 = ''; //  @Input(alias)
   @Output('wishEvent') outputEvent2 = new EventEmitter<string>(); //  @Output(alias) propertyName = ...
-
 
   saveIt() {
     console.warn('Child says: emitting outputEvent1 with', this.input1);
@@ -35,5 +33,4 @@ export class AliasingComponent {
     console.warn('Child says: emitting outputEvent2', this.input2);
     this.outputEvent2.emit(this.input2);
   }
-
 }

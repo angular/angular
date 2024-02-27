@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Attribute binding example', () => {
-
   beforeEach(() => browser.get(''));
 
   it('should display Property Binding with Angular', async () => {
@@ -13,7 +12,9 @@ describe('Attribute binding example', () => {
   });
 
   it('should display an Aria button', async () => {
-    expect(await element.all(by.css('button')).get(0).getText()).toBe('Create and set an attribute with Aria');
+    expect(await element.all(by.css('button')).get(0).getText()).toBe(
+      'Create and set an attribute with Aria',
+    );
   });
 
   it('should display a black background on div', async () => {
@@ -31,5 +32,4 @@ describe('Attribute binding example', () => {
     expect(await div.getAttribute('class')).toContain('special');
     expect(await div.getAttribute('class')).toContain('clearance');
   });
-
 });

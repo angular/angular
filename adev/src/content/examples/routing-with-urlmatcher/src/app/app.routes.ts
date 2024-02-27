@@ -12,7 +12,7 @@ export const routes: Routes = [
 
       return null;
     },
-    component: ProfileComponent
+    component: ProfileComponent,
   },
- // #enddocregion matcher
+  // #enddocregion matcher
 ];

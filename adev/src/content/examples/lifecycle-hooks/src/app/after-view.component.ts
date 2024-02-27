@@ -1,27 +1,28 @@
 // #docplaster
 // #docregion
-import { AfterViewChecked, AfterViewInit, Component, ViewChild } from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, ViewChild} from '@angular/core';
 
-import { ChildViewComponent } from './child-view.component';
-import { LoggerService } from './logger.service';
+import {ChildViewComponent} from './child-view.component';
+import {LoggerService} from './logger.service';
 
 @Component({
   selector: 'after-view',
-// #docregion template
-  template: `
+  // #docregion template
+  template:
+    `
     <div>child view begins</div>
       <app-child-view></app-child-view>
     <div>child view ends</div>
-  `
-// #enddocregion template
-   + `
+  ` +
+    // #enddocregion template
+    `
     <p *ngIf="comment" class="comment">
       {{comment}}
     </p>
-  `
+  `,
 })
 // #docregion hooks
-export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
+export class AfterViewComponent implements AfterViewChecked, AfterViewInit {
   // #enddocregion hooks
   comment = '';
   // #docregion hooks
@@ -60,7 +61,7 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
     const c = this.viewChild.hero.length > 10 ? "That's a long name" : '';
     if (c !== this.comment) {
       // Wait a tick because the component's view has already been checked
-      this.logger.tick_then(() => this.comment = c);
+      this.logger.tick_then(() => (this.comment = c));
     }
   }
   // #enddocregion do-something

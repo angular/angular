@@ -27,7 +27,10 @@ export class BuildView extends View {
   /**
    * Create the build view.
    */
-  constructor(private readonly gl: OGLRenderingContext, private readonly document: Document) {
+  constructor(
+    private readonly gl: OGLRenderingContext,
+    private readonly document: Document,
+  ) {
     super();
 
     this.visible = false;

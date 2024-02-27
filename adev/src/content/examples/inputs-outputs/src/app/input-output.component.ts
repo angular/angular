@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 
 @Component({
   standalone: true,
@@ -9,7 +9,6 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   `,
 })
 export class InputOutputComponent {
-
   @Input() item = '';
   @Output() deleteRequest = new EventEmitter<string>();
 

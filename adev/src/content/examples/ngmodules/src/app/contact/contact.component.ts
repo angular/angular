@@ -9,7 +9,7 @@ import {Contact, ContactService} from './contact.service';
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.css']
+  styleUrls: ['./contact.component.css'],
 })
 export class ContactComponent implements OnInit {
   contact!: Contact;
@@ -21,7 +21,10 @@ export class ContactComponent implements OnInit {
   contactForm: FormGroup;
 
   constructor(
-      private contactService: ContactService, userService: UserService, private formBuilder: FormBuilder) {
+    private contactService: ContactService,
+    userService: UserService,
+    private formBuilder: FormBuilder,
+  ) {
     this.contactForm = this.formBuilder.group({name: ['', Validators.required]});
     this.userName = userService.userName;
   }
@@ -31,7 +34,7 @@ export class ContactComponent implements OnInit {
   }
 
   setupForm() {
-    this.contactService.getContacts().subscribe(contacts => {
+    this.contactService.getContacts().subscribe((contacts) => {
       this.msg = '';
       this.contacts = contacts;
       this.contact = contacts[0];
@@ -64,6 +67,6 @@ export class ContactComponent implements OnInit {
   /** Display a message briefly, then remove it. */
   displayMessage(msg: string) {
     this.msg = msg;
-    setTimeout(() => this.msg = '', 1500);
+    setTimeout(() => (this.msg = ''), 1500);
   }
 }

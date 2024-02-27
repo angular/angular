@@ -1,5 +1,4 @@
 describe('phoneList', () => {
-
   // Load the module that contains the `phoneList` component before each test
   beforeEach(angular.mock.module('phoneList'));
 
@@ -10,8 +9,9 @@ describe('phoneList', () => {
 
     beforeEach(inject(($componentController: any, _$httpBackend_: angular.IHttpBackendService) => {
       $httpBackend = _$httpBackend_;
-      $httpBackend.expectGET('phones/phones.json')
-                  .respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
+      $httpBackend
+        .expectGET('phones/phones.json')
+        .respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
 
       ctrl = $componentController('phoneList');
     }));
@@ -28,7 +28,5 @@ describe('phoneList', () => {
     it('should set a default value for the `orderProp` property', () => {
       expect(ctrl.orderProp).toBe('age');
     });
-
   });
-
 });

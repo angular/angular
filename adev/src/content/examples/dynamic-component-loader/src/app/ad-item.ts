@@ -1,6 +1,9 @@
 // #docregion
-import { Type } from '@angular/core';
+import {Type} from '@angular/core';
 
 export class AdItem {
-  constructor(public component: Type<any>, public data: any) {}
+  constructor(
+    public component: Type<any>,
+    public data: any,
+  ) {}
 }

@@ -1,12 +1,12 @@
 // #docregion
-import { Component, OnInit } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { sharedImports } from '../shared/shared';
+import {Component, OnInit} from '@angular/core';
+import {AsyncPipe} from '@angular/common';
+import {sharedImports} from '../shared/shared';
 
-import { Observable, of } from 'rxjs';
-import { catchError, startWith } from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {catchError, startWith} from 'rxjs/operators';
 
-import { TwainService } from './twain.service';
+import {TwainService} from './twain.service';
 
 @Component({
   standalone: true,

@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'sg-app',
-  template: '<toh-hero-list></toh-hero-list>'
+  template: '<toh-hero-list></toh-hero-list>',
 })
-export class AppComponent { }
+export class AppComponent {}

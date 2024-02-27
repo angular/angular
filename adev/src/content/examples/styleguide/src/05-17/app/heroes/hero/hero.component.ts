@@ -1,14 +1,12 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
-import { Hero } from '../shared/hero.model';
+import {Hero} from '../shared/hero.model';
 
 @Component({
   standalone: true,
   selector: 'toh-hero',
-  template: `...`
+  template: `...`,
 })
 export class HeroComponent {
   @Input() hero!: Hero;
 }
-
-

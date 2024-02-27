@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 // #docregion
 @Injectable({
@@ -6,6 +6,5 @@ import { Injectable } from '@angular/core';
   useFactory: () => new Service('dependency'),
 })
 export class Service {
-  constructor(private dep: string) {
-  }
+  constructor(private dep: string) {}
 }

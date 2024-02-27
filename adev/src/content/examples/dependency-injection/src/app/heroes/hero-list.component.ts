@@ -1,8 +1,8 @@
 // #docregion
-import { Component } from '@angular/core';
-import { Hero } from './hero';
-import { HeroService } from './hero.service';
-import { NgFor } from '@angular/common';
+import {Component} from '@angular/core';
+import {Hero} from './hero';
+import {HeroService} from './hero.service';
+import {NgFor} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -15,15 +15,15 @@ import { NgFor } from '@angular/common';
       </div>
     }
   `,
-  imports: [NgFor]
+  imports: [NgFor],
 })
 export class HeroListComponent {
   heroes: Hero[];
 
   // #docregion ctor-signature
-  constructor(heroService: HeroService)
-  // #enddocregion ctor-signature
-  {
+  constructor(
+    heroService: HeroService, // #enddocregion ctor-signature
+  ) {
     this.heroes = heroService.getHeroes();
   }
 }

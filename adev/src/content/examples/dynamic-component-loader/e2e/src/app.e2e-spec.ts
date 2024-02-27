@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Dynamic Component Loader', () => {
-
   // The tests trigger periodic asynchronous operations (via `setInterval()`), which will prevent
   // the app from stabilizing. See https://angular.dev/api/core/ApplicationRef#is-stable-examples
   // for more details.

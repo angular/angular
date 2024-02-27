@@ -245,7 +245,7 @@ describe('EmbeddedTutorialManager', () => {
           },
         },
       };
-      
+
       const metadata: TutorialMetadata = {
         tutorialFiles: {'app.js': ''},
         openFiles: ['app.js'],
@@ -295,7 +295,6 @@ describe('EmbeddedTutorialManager', () => {
       );
     });
 
-
     it('should not set shouldReinstallDependencies if project did not change', async () => {
       const fetchMock = spyOn(window, 'fetch');
 
@@ -324,7 +323,6 @@ describe('EmbeddedTutorialManager', () => {
 
     it('should trigger shouldReInstallDependencies if new metadata has different dependencies', async () => {
       const fetchMock = spyOn(window, 'fetch');
-
 
       fetchMock
         .withArgs(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`)

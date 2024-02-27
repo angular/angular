@@ -1,6 +1,6 @@
 // #docplaster
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import {Component} from '@angular/core';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +28,7 @@ import { Router } from '@angular/router';
   <a [routerLink]="['/crisis-center', { foo: 'foo' }]">Crisis Center</a>
   // #enddocregion cc-query-params
   */
-// #docregion template
+  // #docregion template
   template: `
     <h1 class="title">Angular Router</h1>
     <nav>
@@ -37,7 +37,7 @@ import { Router } from '@angular/router';
       <a [routerLink]="['/crisis-center/2']">Shark Crisis</a>
     </nav>
     <router-outlet></router-outlet>
-  `
-// #enddocregion template
+  `,
+  // #enddocregion template
 })
-export class AppComponent { }
+export class AppComponent {}

@@ -1,7 +1,6 @@
-import { browser, element, by, protractor } from 'protractor';
+import {browser, element, by, protractor} from 'protractor';
 
 describe('User Input Tests', () => {
-
   beforeAll(() => browser.get(''));
 
   it('should support the click event', async () => {
@@ -86,4 +85,3 @@ describe('User Input Tests', () => {
     expect(await heroEles.get(numHeroes).getText()).toContain('abc');
   });
 });
-

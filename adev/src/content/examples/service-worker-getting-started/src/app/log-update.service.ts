@@ -1,12 +1,11 @@
-import { Injectable } from '@angular/core';
-import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
+import {Injectable} from '@angular/core';
+import {SwUpdate, VersionReadyEvent} from '@angular/service-worker';
 
 // #docregion sw-update
 @Injectable({providedIn: 'root'})
 export class LogUpdateService {
-
   constructor(updates: SwUpdate) {
-    updates.versionUpdates.subscribe(evt => {
+    updates.versionUpdates.subscribe((evt) => {
       switch (evt.type) {
         case 'VERSION_DETECTED':
           console.log(`Downloading new app version: ${evt.version.hash}`);

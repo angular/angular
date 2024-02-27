@@ -1,16 +1,12 @@
-import { browser, element, by, logging, ExpectedConditions as EC } from 'protractor';
+import {browser, element, by, logging, ExpectedConditions as EC} from 'protractor';
 
 describe('Inputs and Outputs', () => {
-
   beforeEach(() => browser.get(''));
 
-   // helper function used to test what's logged to the console
+  // helper function used to test what's logged to the console
   async function logChecker(contents: string) {
-    const logs = await browser
-      .manage()
-      .logs()
-      .get(logging.Type.BROWSER);
-    const messages = logs.filter(({ message }) => message.indexOf(contents) !== -1);
+    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+    const messages = logs.filter(({message}) => message.indexOf(contents) !== -1);
     expect(messages.length).toBeGreaterThan(0);
   }
 
@@ -59,5 +55,4 @@ describe('Inputs and Outputs', () => {
     await addToParentButton.click();
     expect(await addedItem.getText()).toEqual('Television');
   });
-
 });

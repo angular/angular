@@ -1,20 +1,8 @@
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter
-} from '@angular/core';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-  group
-} from '@angular/animations';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {trigger, state, style, animate, transition, group} from '@angular/animations';
 
-import { Hero } from './hero';
-import { NgFor } from '@angular/common';
+import {Hero} from './hero';
+import {NgFor} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -36,43 +24,59 @@ import { NgFor } from '@angular/common';
   // #docregion animationdef
   animations: [
     trigger('flyInOut', [
-      state('in', style({
-        width: '*',
-        transform: 'translateX(0)', opacity: 1
-      })),
+      state(
+        'in',
+        style({
+          width: '*',
+          transform: 'translateX(0)',
+          opacity: 1,
+        }),
+      ),
       transition(':enter', [
-        style({ width: 10, transform: 'translateX(50px)', opacity: 0 }),
+        style({width: 10, transform: 'translateX(50px)', opacity: 0}),
         group([
-          animate('0.3s 0.1s ease', style({
-            transform: 'translateX(0)',
-            width: '*'
-          })),
-          animate('0.3s ease', style({
-            opacity: 1
-          }))
-        ])
+          animate(
+            '0.3s 0.1s ease',
+            style({
+              transform: 'translateX(0)',
+              width: '*',
+            }),
+          ),
+          animate(
+            '0.3s ease',
+            style({
+              opacity: 1,
+            }),
+          ),
+        ]),
       ]),
       transition(':leave', [
         group([
-          animate('0.3s ease', style({
-            transform: 'translateX(50px)',
-            width: 10
-          })),
-          animate('0.3s 0.2s ease', style({
-            opacity: 0
-          }))
-        ])
-      ])
-    ])
-  ]
+          animate(
+            '0.3s ease',
+            style({
+              transform: 'translateX(50px)',
+              width: 10,
+            }),
+          ),
+          animate(
+            '0.3s 0.2s ease',
+            style({
+              opacity: 0,
+            }),
+          ),
+        ]),
+      ]),
+    ]),
+  ],
   // #enddocregion animationdef
 })
 export class HeroListGroupsComponent {
-   @Input() heroes: Hero[] = [];
+  @Input() heroes: Hero[] = [];
 
-   @Output() remove = new EventEmitter<number>();
+  @Output() remove = new EventEmitter<number>();
 
-   removeHero(id: number) {
-     this.remove.emit(id);
-   }
+  removeHero(id: number) {
+    this.remove.emit(id);
+  }
 }

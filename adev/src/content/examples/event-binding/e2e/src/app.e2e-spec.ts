@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Event binding example', () => {
-
   beforeEach(() => browser.get(''));
 
   const saveButton = element.all(by.css('button')).get(0);
@@ -10,7 +9,6 @@ describe('Event binding example', () => {
   const deleteButton = element.all(by.css('button')).get(3);
   const saveNoProp = element.all(by.css('button')).get(4);
   const saveProp = element.all(by.css('button')).get(5);
-
 
   it('should display Event Binding with Angular', async () => {
     expect(await element(by.css('h1')).getText()).toEqual('Event Binding');
@@ -46,13 +44,17 @@ describe('Event binding example', () => {
     await browser.switchTo().alert().accept();
     expect(await childDiv.getText()).toEqual('Click me too! (child)');
     await childDiv.click();
-    expect(await browser.switchTo().alert().getText()).toEqual('Click me. Event target class is child-div');
+    expect(await browser.switchTo().alert().getText()).toEqual(
+      'Click me. Event target class is child-div',
+    );
     await browser.switchTo().alert().accept();
   });
 
   it('should show 1 alert from Save, no prop, button', async () => {
     await saveNoProp.click();
-    expect(await browser.switchTo().alert().getText()).toEqual('Saved. Event target is Save, no propagation');
+    expect(await browser.switchTo().alert().getText()).toEqual(
+      'Saved. Event target is Save, no propagation',
+    );
     await browser.switchTo().alert().accept();
   });
 

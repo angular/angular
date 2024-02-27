@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion imports
-import { Component, HostBinding } from '@angular/core';
+import {Component, HostBinding} from '@angular/core';
 import {
   trigger,
   state,
@@ -11,8 +11,8 @@ import {
 } from '@angular/animations';
 
 // #enddocregion imports
-import { ChildrenOutletContexts, RouterLink, RouterOutlet } from '@angular/router';
-import { slideInAnimation } from './animations';
+import {ChildrenOutletContexts, RouterLink, RouterOutlet} from '@angular/router';
+import {slideInAnimation} from './animations';
 
 // #docregion decorator, toggle-app-animations, define
 @Component({
@@ -22,31 +22,31 @@ import { slideInAnimation } from './animations';
   styleUrls: ['app.component.css'],
   imports: [RouterLink, RouterOutlet],
   animations: [
-// #enddocregion decorator
-    slideInAnimation
-// #docregion decorator
-// #enddocregion toggle-app-animations, define
+    // #enddocregion decorator
+    slideInAnimation,
+    // #docregion decorator
+    // #enddocregion toggle-app-animations, define
     // animation triggers go here
-// #docregion toggle-app-animations, define
-  ]
+    // #docregion toggle-app-animations, define
+  ],
 })
 // #enddocregion decorator, define
 export class AppComponent {
   @HostBinding('@.disabled')
   public animationsDisabled = false;
-// #enddocregion toggle-app-animations
+  // #enddocregion toggle-app-animations
 
-// #docregion get-route-animations-data
+  // #docregion get-route-animations-data
   constructor(private contexts: ChildrenOutletContexts) {}
 
   getRouteAnimationData() {
     return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];
   }
-// #enddocregion get-route-animations-data
+  // #enddocregion get-route-animations-data
 
   toggleAnimations() {
     this.animationsDisabled = !this.animationsDisabled;
   }
-// #docregion toggle-app-animations
+  // #docregion toggle-app-animations
 }
 // #enddocregion toggle-app-animations

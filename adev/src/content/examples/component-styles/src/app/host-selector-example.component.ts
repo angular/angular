@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 // #docregion
 @Component({
@@ -8,9 +8,7 @@ import { Component } from '@angular/core';
       <div>
         Start editing to see some magic happen :)
       </div>
-  `
+  `,
 })
-export class HostSelectorExampleComponent {
-
-}
+export class HostSelectorExampleComponent {}
 // #enddocregion

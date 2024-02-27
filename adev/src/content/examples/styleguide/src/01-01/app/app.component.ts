@@ -1,7 +1,7 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { HeroService } from './heroes';
+import {HeroService} from './heroes';
 
 @Component({
   selector: 'toh-app',
@@ -9,6 +9,6 @@ import { HeroService } from './heroes';
       <toh-heroes></toh-heroes>
     `,
   styleUrls: ['./app.component.css'],
-  providers: [HeroService]
+  providers: [HeroService],
 })
 export class AppComponent {}

@@ -23,7 +23,7 @@ import {RouterLink} from '@angular/router';
 import {PlaygroundTemplate} from '@angular/docs';
 import {ClickOutside, NavigationList} from '@angular/docs';
 import {injectAsync} from '../../core/services/inject-async';
-import {EmbeddedTutorialManager} from  '../../editor/index';
+import {EmbeddedTutorialManager} from '../../editor/index';
 
 import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
@@ -69,9 +69,7 @@ export default class PlaygroundComponent implements AfterViewInit {
       const [embeddedEditorComponent, nodeRuntimeSandbox] = await Promise.all([
         import('../../editor/index').then((c) => c.EmbeddedEditor),
         injectAsync(this.environmentInjector, () =>
-          import('../../editor/index').then(
-            (c) => c.NodeRuntimeSandbox,
-          ),
+          import('../../editor/index').then((c) => c.NodeRuntimeSandbox),
         ),
       ]);
 

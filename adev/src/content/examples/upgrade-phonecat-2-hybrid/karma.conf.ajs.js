@@ -1,7 +1,6 @@
 //jshint strict: false
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
-
     // #docregion basepath
     basePath: './',
     // #enddocregion basepath
@@ -25,15 +24,15 @@ module.exports = function(config) {
       'node_modules/zone.js/bundles/zone-testing.umd.js',
 
       // RxJs.
-      { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },
-      { pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false },
+      {pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false},
+      {pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false},
 
       // Angular itself and the testing library
-      { pattern: 'node_modules/@angular/**/*.mjs', included: false, watched: false },
-      { pattern: 'node_modules/@angular/**/*.mjs.map', included: false, watched: false },
+      {pattern: 'node_modules/@angular/**/*.mjs', included: false, watched: false},
+      {pattern: 'node_modules/@angular/**/*.mjs.map', included: false, watched: false},
 
-      { pattern: 'node_modules/tslib/tslib.js', included: false, watched: false },
-      { pattern: 'node_modules/systemjs-plugin-babel/**/*.js', included: false, watched: false },
+      {pattern: 'node_modules/tslib/tslib.js', included: false, watched: false},
+      {pattern: 'node_modules/systemjs-plugin-babel/**/*.js', included: false, watched: false},
 
       {pattern: 'systemjs.config.js', included: false, watched: false},
       'karma-test-shim.js',
@@ -61,7 +60,7 @@ module.exports = function(config) {
     proxies: {
       // required for component assets fetched by Angular's compiler
       '/phone-detail': '/base/app/phone-detail',
-      '/phone-list': '/base/app/phone-list'
+      '/phone-list': '/base/app/phone-list',
     },
     // #enddocregion html
 
@@ -71,10 +70,6 @@ module.exports = function(config) {
 
     browsers: ['Chrome'],
 
-    plugins: [
-      'karma-chrome-launcher',
-      'karma-jasmine'
-    ]
-
+    plugins: ['karma-chrome-launcher', 'karma-jasmine'],
   });
 };

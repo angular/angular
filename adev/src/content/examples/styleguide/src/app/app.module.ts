@@ -1,16 +1,15 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { HttpClientModule } from '@angular/common/http';
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import {HttpClientModule} from '@angular/common/http';
+import {InMemoryWebApiModule} from 'angular-in-memory-web-api';
 
-import { RouterModule } from '@angular/router';
+import {RouterModule} from '@angular/router';
 
-import { HashLocationStrategy,
-         LocationStrategy } from '@angular/common';
+import {HashLocationStrategy, LocationStrategy} from '@angular/common';
 
-import { HeroData } from '../app/hero-data';
-import { AppComponent } from '../app/app.component';
+import {HeroData} from '../app/hero-data';
+import {AppComponent} from '../app/app.component';
 
 import * as s0101 from '../01-01/app/app.module';
 import * as s0205 from '../02-05/app/app.module';
@@ -60,14 +59,12 @@ import * as s0901 from '../09-01/app/app.module';
     s0704.AppModule,
     s0901.AppModule,
 
-    RouterModule.forRoot([
-      { path: '', redirectTo: '/01-01', pathMatch: 'full' }
-    ], {/* enableTracing: true */}),
+    RouterModule.forRoot([{path: '', redirectTo: '/01-01', pathMatch: 'full'}], {
+      /* enableTracing: true */
+    }),
   ],
-  providers: [
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
-  ],
-  declarations: [ AppComponent ],
-  bootstrap:    [ AppComponent ]
+  providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],
+  declarations: [AppComponent],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

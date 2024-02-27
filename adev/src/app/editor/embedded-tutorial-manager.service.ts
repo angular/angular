@@ -11,10 +11,7 @@ import {FileSystemTree} from '@webcontainer/api';
 import {BehaviorSubject} from 'rxjs';
 
 import {TutorialMetadata} from '@angular/docs';
-import {
-  TUTORIALS_COMMON_DIRECTORY,
-  TUTORIALS_ASSETS_WEB_PATH
-} from './constants';
+import {TUTORIALS_COMMON_DIRECTORY, TUTORIALS_ASSETS_WEB_PATH} from './constants';
 
 /**
  * A service responsible for the current tutorial, retrieving and providing
@@ -140,7 +137,9 @@ export class EmbeddedTutorialManager {
   }
 
   private async fetchTutorialSourceCode(tutorial: string): Promise<FileSystemTree> {
-    const tutorialSourceCode = await fetch(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`);
+    const tutorialSourceCode = await fetch(
+      `${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/source-code.json`,
+    );
 
     if (!tutorialSourceCode.ok) throw new Error(`Missing source code for tutorial ${tutorial}`);
 
@@ -148,7 +147,9 @@ export class EmbeddedTutorialManager {
   }
 
   private async fetchTutorialMetadata(tutorial: string): Promise<TutorialMetadata> {
-    const tutorialSourceCode = await fetch(`${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`);
+    const tutorialSourceCode = await fetch(
+      `${TUTORIALS_ASSETS_WEB_PATH}/${tutorial}/metadata.json`,
+    );
 
     if (!tutorialSourceCode.ok) throw new Error(`Missing metadata for ${tutorial}`);
 

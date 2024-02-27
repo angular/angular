@@ -1,10 +1,12 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Reactive forms', () => {
   const nameEditor = element(by.css('app-name-editor'));
   const profileEditor = element(by.css('app-profile-editor'));
   const nameEditorButton = element(by.cssContainingText('app-root > nav > button', 'Name Editor'));
-  const profileEditorButton = element(by.cssContainingText('app-root > nav > button', 'Profile Editor'));
+  const profileEditorButton = element(
+    by.cssContainingText('app-root > nav > button', 'Profile Editor'),
+  );
 
   beforeAll(() => browser.get(''));
 
@@ -45,7 +47,7 @@ describe('Reactive forms', () => {
       await nameInput.sendKeys(nameText);
       const valueElement = nameEditor.element(by.cssContainingText('p', 'Value:'));
       const nameValueElement = await valueElement.getText();
-      const nameValue = nameValueElement.toString().replace('Value: ',  '');
+      const nameValue = nameValueElement.toString().replace('Value: ', '');
 
       expect(nameValue).toBe(nameText);
     });
@@ -62,7 +64,7 @@ describe('Reactive forms', () => {
       street: '345 South Lane',
       city: 'Northtown',
       state: 'XX',
-      zip: 12345
+      zip: 12345,
     };
 
     beforeAll(async () => {
@@ -115,10 +117,7 @@ describe('Reactive forms', () => {
     it('should update the displayed form value when form inputs are updated', async () => {
       const aliasText = 'Johnny';
       await Promise.all(
-        Object.keys(profile)
-          .map(key =>
-            getInput(key).sendKeys(`${profile[key]}`)
-          )
+        Object.keys(profile).map((key) => getInput(key).sendKeys(`${profile[key]}`)),
       );
 
       const aliasInput = profileEditor.all(by.css('#alias-0'));

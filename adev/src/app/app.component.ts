@@ -7,7 +7,15 @@
  */
 
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {Component, inject, NgZone, OnInit, PLATFORM_ID, signal, WritableSignal} from '@angular/core';
+import {
+  Component,
+  inject,
+  NgZone,
+  OnInit,
+  PLATFORM_ID,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {NavigationEnd, NavigationSkipped, Router, RouterLink, RouterOutlet} from '@angular/router';
 import {filter, map, skip} from 'rxjs/operators';
 import {

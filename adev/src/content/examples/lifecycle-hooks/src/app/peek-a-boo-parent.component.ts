@@ -1,7 +1,7 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { LoggerService } from './logger.service';
+import {LoggerService} from './logger.service';
 
 @Component({
   selector: 'peek-a-boo-parent',
@@ -23,10 +23,9 @@ import { LoggerService } from './logger.service';
     </div>
   </div>
   `,
-  providers:  [ LoggerService ]
+  providers: [LoggerService],
 })
 export class PeekABooParentComponent {
-
   hasChild = false;
   hookLog: string[] = [];
 

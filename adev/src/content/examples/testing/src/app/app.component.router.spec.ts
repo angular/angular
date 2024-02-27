@@ -1,20 +1,20 @@
 // For more examples:
 //   https://github.com/angular/angular/blob/main/packages/router/test/integration.spec.ts
 
-import { Location } from '@angular/common';
-import { provideLocationMocks, SpyLocation } from '@angular/common/testing';
-import { DebugElement, Type } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { provideRouter, Router, RouterLink } from '@angular/router';
+import {Location} from '@angular/common';
+import {provideLocationMocks, SpyLocation} from '@angular/common/testing';
+import {DebugElement, Type} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {provideRouter, Router, RouterLink} from '@angular/router';
 
-import { asyncData, click } from '../testing';
+import {asyncData, click} from '../testing';
 
-import { AboutComponent } from './about/about.component';
-import { AppComponent } from './app.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { HeroService, TestHeroService } from './model/testing/test-hero.service';
-import { TwainService } from './twain/twain.service';
+import {AboutComponent} from './about/about.component';
+import {AppComponent} from './app.component';
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {HeroService, TestHeroService} from './model/testing/test-hero.service';
+import {TwainService} from './twain/twain.service';
 
 let comp: AppComponent;
 let fixture: ComponentFixture<AppComponent>;
@@ -27,15 +27,15 @@ describe('AppComponent & router testing', () => {
     TestBed.configureTestingModule(
       Object.assign({}, appConfig, {
         providers: [
-          { provide: HeroService, useClass: TestHeroService },
+          {provide: HeroService, useClass: TestHeroService},
           UserService,
           TwainService,
           provideHttpClient(),
           provideLocationMocks(),
           provideRouter([
-            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-            { path: 'about', component: AboutComponent },
-            { path: 'dashboard', component: DashboardComponent },
+            {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+            {path: 'about', component: AboutComponent},
+            {path: 'dashboard', component: DashboardComponent},
           ]),
         ],
       }),
@@ -78,11 +78,11 @@ describe('AppComponent & router testing', () => {
 
 ///////////////
 
-import { HeroListComponent } from './hero/hero-list.component';
-import { appConfig } from './app.config';
+import {HeroListComponent} from './hero/hero-list.component';
+import {appConfig} from './app.config';
 import heroRoutes from './hero/hero.routes';
-import { UserService } from './model';
-import { provideHttpClient } from '@angular/common/http';
+import {UserService} from './model';
+import {provideHttpClient} from '@angular/common/http';
 
 ///////// Can't get lazy loaded Heroes to work yet
 xdescribe('AppComponent & Lazy Loading (not working yet)', () => {
@@ -92,7 +92,7 @@ xdescribe('AppComponent & Lazy Loading (not working yet)', () => {
 
   beforeEach(fakeAsync(() => {
     createComponent();
-    router.resetConfig([{ path: 'heroes', loadChildren: () => heroRoutes }]);
+    router.resetConfig([{path: 'heroes', loadChildren: () => heroRoutes}]);
   }));
 
   it('should navigate to "Heroes" on click', waitForAsync(() => {

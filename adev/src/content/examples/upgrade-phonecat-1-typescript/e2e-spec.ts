@@ -1,10 +1,9 @@
-import { browser, element, by, ElementArrayFinder, ElementFinder } from 'protractor';
+import {browser, element, by, ElementArrayFinder, ElementFinder} from 'protractor';
 
 // Angular E2E Testing Guide:
 // https://docs.angularjs.org/guide/e2e-testing
 
 describe('PhoneCat Application', () => {
-
   beforeAll(() => {
     browser.baseUrl = `${browser.baseUrl}/app/`;
 
@@ -18,11 +17,10 @@ describe('PhoneCat Application', () => {
   });
 
   describe('View: Phone list', () => {
-
     // Helpers
     const waitForCount = async (elems: ElementArrayFinder, count: number) => {
       // Wait for the list to stabilize, which may take a while (e.g. due to animations).
-      await browser.wait(async () => await elems.count() === count, 5000);
+      await browser.wait(async () => (await elems.count()) === count, 5000);
     };
 
     beforeEach(() => browser.get('index.html#!/phones'));
@@ -48,26 +46,22 @@ describe('PhoneCat Application', () => {
       const queryField = element(by.model('$ctrl.query'));
       const orderSelect = element(by.model('$ctrl.orderProp'));
       const nameOption = orderSelect.element(by.css('option[value="name"]'));
-      const phoneNameColumn = element.all(by.repeater('phone in $ctrl.phones').column('phone.name'));
+      const phoneNameColumn = element.all(
+        by.repeater('phone in $ctrl.phones').column('phone.name'),
+      );
 
       function getNames() {
         return phoneNameColumn.map((elem: ElementFinder) => elem.getText());
       }
 
-      await queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
+      await queryField.sendKeys('tablet'); // Let's narrow the dataset to make the assertions shorter
       await waitForCount(phoneNameColumn, 2);
 
-      expect(await getNames()).toEqual([
-        'Motorola XOOM\u2122 with Wi-Fi',
-        'MOTOROLA XOOM\u2122'
-      ]);
+      expect(await getNames()).toEqual(['Motorola XOOM\u2122 with Wi-Fi', 'MOTOROLA XOOM\u2122']);
 
       await nameOption.click();
 
-      expect(await getNames()).toEqual([
-        'MOTOROLA XOOM\u2122',
-        'Motorola XOOM\u2122 with Wi-Fi'
-      ]);
+      expect(await getNames()).toEqual(['MOTOROLA XOOM\u2122', 'Motorola XOOM\u2122 with Wi-Fi']);
     });
 
     it('should render phone specific links', async () => {
@@ -83,11 +77,9 @@ describe('PhoneCat Application', () => {
       await detailLink.click();
       expect(await browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
     });
-
   });
 
   describe('View: Phone detail', () => {
-
     beforeEach(() => browser.get('index.html#!/phones/nexus-s'));
 
     it('should display the `nexus-s` page', async () => {
@@ -110,7 +102,5 @@ describe('PhoneCat Application', () => {
       await thumbnails.get(0).click();
       expect(await mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
-
   });
-
 });

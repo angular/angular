@@ -1,11 +1,11 @@
 // #docregion
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import {Component} from '@angular/core';
+import {Observable} from 'rxjs';
 
-import { Hero, HeroTaxReturn } from './hero';
-import { HeroesService } from './heroes.service';
-import { HeroTaxReturnComponent } from './hero-tax-return.component';
-import { AsyncPipe, NgFor } from '@angular/common';
+import {Hero, HeroTaxReturn} from './hero';
+import {HeroesService} from './heroes.service';
+import {HeroTaxReturnComponent} from './hero-tax-return.component';
+import {AsyncPipe, NgFor} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -28,14 +28,16 @@ import { AsyncPipe, NgFor } from '@angular/common';
       }
     </div>
     `,
-  styles: [`
+  styles: [
+    `
     li button {
       font-size: inherit;
       margin: 0.3rem;
       padding: 0.5rem;
     }
-  `],
-  imports: [HeroTaxReturnComponent, NgFor, AsyncPipe]
+  `,
+  ],
+  imports: [HeroTaxReturnComponent, NgFor, AsyncPipe],
 })
 export class HeroesListComponent {
   heroes: Observable<Hero[]>;
@@ -46,10 +48,9 @@ export class HeroesListComponent {
   }
 
   showTaxReturn(hero: Hero) {
-    this.heroesService.getTaxReturn(hero)
-    .subscribe(htr => {
+    this.heroesService.getTaxReturn(hero).subscribe((htr) => {
       // show if not currently shown
-      if (!this.selectedTaxReturns.find(tr => tr.id === htr.id)) {
+      if (!this.selectedTaxReturns.find((tr) => tr.id === htr.id)) {
         this.selectedTaxReturns.push(htr);
       }
     });

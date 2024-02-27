@@ -1,8 +1,7 @@
-import { browser, element, by, protractor, ElementFinder, ElementArrayFinder } from 'protractor';
+import {browser, element, by, protractor, ElementFinder, ElementArrayFinder} from 'protractor';
 
 // THESE TESTS ARE INCOMPLETE
 describe('Form Validation Tests', () => {
-
   beforeAll(() => browser.get(''));
 
   describe('Template-driven form', () => {
@@ -68,7 +67,6 @@ function getPage(sectionTag: string) {
 }
 
 function tests(title: string) {
-
   it('should display correct title', async () => {
     expect(await page.title.getText()).toContain(title);
   });
@@ -142,8 +140,10 @@ function tests(title: string) {
   it('clicking edit button should reveal form again', async () => {
     const newFormBtn = page.actorSubmitted.element(by.css('button'));
     await newFormBtn.click();
-    expect(await page.actorSubmitted.isElementPresent(by.css('p')))
-      .toBe(false, 'submitted hidden again');
+    expect(await page.actorSubmitted.isElementPresent(by.css('p'))).toBe(
+      false,
+      'submitted hidden again',
+    );
     expect(await page.title.isDisplayed()).toBe(true, 'can see form title');
   });
 }

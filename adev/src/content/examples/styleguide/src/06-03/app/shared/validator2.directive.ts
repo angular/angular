@@ -1,14 +1,14 @@
 /* eslint-disable @angular-eslint/no-host-metadata-property */
 // #docregion
-import { Directive } from '@angular/core';
+import {Directive} from '@angular/core';
 
 @Directive({
   standalone: true,
   selector: '[tohValidator2]',
   host: {
     '[attr.role]': 'role',
-    '(mouseenter)': 'onMouseEnter()'
-  }
+    '(mouseenter)': 'onMouseEnter()',
+  },
 })
 export class Validator2Directive {
   role = 'button';

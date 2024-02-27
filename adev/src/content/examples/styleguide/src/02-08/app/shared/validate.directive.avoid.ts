@@ -1,5 +1,5 @@
 // #docregion
-import { Directive } from '@angular/core';
+import {Directive} from '@angular/core';
 // #docregion example
 /* avoid */
 
@@ -7,5 +7,5 @@ import { Directive } from '@angular/core';
   standalone: true,
   selector: '[validate]',
 })
-export class ValidateDirective { }
+export class ValidateDirective {}
 // #enddocregion example

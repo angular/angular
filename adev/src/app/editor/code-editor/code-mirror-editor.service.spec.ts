@@ -16,10 +16,7 @@ import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 
 import {CodeMirrorEditor, EDITOR_CONTENT_CHANGE_DELAY_MILLIES} from './code-mirror-editor.service';
-import {
-  TutorialConfig,
-  TutorialMetadata,
-} from '@angular/docs';
+import {TutorialConfig, TutorialMetadata} from '@angular/docs';
 
 class FakeNodeRuntimeSandbox {
   async writeFile(path: string, content: string) {}

@@ -10,5 +10,5 @@ export function routeParamsFactory(i: any) {
 export const routeParamsProvider = {
   provide: RouteParams,
   useFactory: routeParamsFactory,
-  deps: ['$injector']
+  deps: ['$injector'],
 };

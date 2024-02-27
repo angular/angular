@@ -12,12 +12,15 @@ export const crisisDetailResolver: ResolveFn<Crisis> = (route: ActivatedRouteSna
   const cs = inject(CrisisService);
   const id = route.paramMap.get('id')!;
 
-  return cs.getCrisis(id).pipe(mergeMap(crisis => {
-    if (crisis) {
-      return of(crisis);
-    } else {  // id not found
-      router.navigate(['/crisis-center']);
-      return EMPTY;
-    }
-  }));
+  return cs.getCrisis(id).pipe(
+    mergeMap((crisis) => {
+      if (crisis) {
+        return of(crisis);
+      } else {
+        // id not found
+        router.navigate(['/crisis-center']);
+        return EMPTY;
+      }
+    }),
+  );
 };

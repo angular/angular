@@ -17,9 +17,9 @@ var resources = [
   'app/core/core.module.js',
   'app/core/phone/phone.module.js',
   'app/phone-list/phone-list.module.js',
-  'app/phone-detail/phone-detail.module.js'
+  'app/phone-detail/phone-detail.module.js',
 ];
-resources.map(function(sourcePath) {
+resources.map(function (sourcePath) {
   // Need to rename zone.umd.min.js to zone.min.js
   var destPath = `aot/${sourcePath}`.replace('.umd.min.js', '.min.js');
   fsExtra.copySync(sourcePath, destPath);

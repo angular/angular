@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,7 @@ import { Component } from '@angular/core';
         {{ hero }}
       </li>
     </ul>
-  `
+  `,
 })
 export class AppComponent {
   title = 'Tour of Heroes';

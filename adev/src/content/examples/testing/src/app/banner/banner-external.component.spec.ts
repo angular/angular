@@ -1,7 +1,7 @@
 // #docplaster
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BannerComponent } from './banner-external.component';
+import {BannerComponent} from './banner-external.component';
 
 describe('BannerComponent (external files)', () => {
   let component: BannerComponent;

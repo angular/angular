@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'toh-heroes',
-  templateUrl: './heroes.component.html'
+  templateUrl: './heroes.component.html',
 })
 export class HeroesComponent {}

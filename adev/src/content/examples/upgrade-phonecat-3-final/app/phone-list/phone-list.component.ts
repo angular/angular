@@ -1,7 +1,7 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { Phone, PhoneData } from '../core/phone/phone.service';
+import {Phone, PhoneData} from '../core/phone/phone.service';
 
 @Component({
   selector: 'phone-list',
@@ -13,7 +13,7 @@ export class PhoneListComponent {
   orderProp: string;
 
   constructor(phone: Phone) {
-    phone.query().subscribe(phones => {
+    phone.query().subscribe((phones) => {
       this.phones = phones;
     });
     this.orderProp = 'age';
@@ -25,7 +25,7 @@ export class PhoneListComponent {
 
   private filterPhones(phones: PhoneData[]) {
     if (phones && this.query) {
-      return phones.filter(phone => {
+      return phones.filter((phone) => {
         const name = phone.name.toLowerCase();
         const snippet = phone.snippet.toLowerCase();
         return name.indexOf(this.query) >= 0 || snippet.indexOf(this.query) >= 0;

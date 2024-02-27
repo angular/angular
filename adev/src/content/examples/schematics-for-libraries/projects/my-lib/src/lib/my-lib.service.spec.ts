@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { MyLibService } from './my-lib.service';
+import {MyLibService} from './my-lib.service';
 
 describe('MyLibService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

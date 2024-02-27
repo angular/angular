@@ -1,9 +1,9 @@
 // #docregion
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'toh-toast',
-  template: `...`
+  template: `...`,
 })
 // #docregion example
 export class ToastComponent implements OnInit {
@@ -14,7 +14,7 @@ export class ToastComponent implements OnInit {
   // private fields
   private defaults = {
     title: '',
-    message: 'May the Force be with you'
+    message: 'May the Force be with you',
   };
   private toastElement: any;
 
@@ -32,7 +32,7 @@ export class ToastComponent implements OnInit {
   // private methods
   private hide() {
     this.toastElement.style.opacity = 0;
-    setTimeout(() => this.toastElement.style.zIndex = 0, 400);
+    setTimeout(() => (this.toastElement.style.zIndex = 0), 400);
   }
 
   private show() {

@@ -1,6 +1,6 @@
-import { NgFor } from '@angular/common';
-import { Component } from '@angular/core';
-import { HEROES } from './mock-heroes';
+import {NgFor} from '@angular/common';
+import {Component} from '@angular/core';
+import {HEROES} from './mock-heroes';
 
 @Component({
   standalone: true,
@@ -10,7 +10,7 @@ import { HEROES } from './mock-heroes';
       <div>{{hero.id}} - {{hero.name}}</div>
     }
   `,
-  imports: [NgFor]
+  imports: [NgFor],
 })
 export class HeroListComponent {
   heroes = HEROES;

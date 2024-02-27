@@ -1,6 +1,6 @@
 /* eslint-disable guard-for-in */
 // #docregion
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 
 @Component({
   selector: 'app-version-child',
@@ -10,7 +10,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
     <ul>
       <li *ngFor="let change of changeLog">{{change}}</li>
     </ul>
-  `
+  `,
 })
 export class VersionChildComponent implements OnChanges {
   @Input() major = 0;

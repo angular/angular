@@ -1,7 +1,7 @@
 // #docregion
-import { Directive, OnInit, OnDestroy } from '@angular/core';
+import {Directive, OnInit, OnDestroy} from '@angular/core';
 
-import { LoggerService } from './logger.service';
+import {LoggerService} from './logger.service';
 
 // #docregion spy-directive
 let nextId = 1;
@@ -12,7 +12,7 @@ let nextId = 1;
 export class SpyDirective implements OnInit, OnDestroy {
   private id = nextId++;
 
-  constructor(private logger: LoggerService) { }
+  constructor(private logger: LoggerService) {}
 
   ngOnInit() {
     this.logger.log(`Spy #${this.id} onInit`);

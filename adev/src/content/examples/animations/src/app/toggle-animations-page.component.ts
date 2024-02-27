@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { OpenCloseChildComponent } from './open-close.component.4';
+import {Component} from '@angular/core';
+import {OpenCloseChildComponent} from './open-close.component.4';
 
 @Component({
   standalone: true,
@@ -11,6 +11,6 @@ import { OpenCloseChildComponent } from './open-close.component.4';
       <app-open-close-toggle></app-open-close-toggle>
     </section>
   `,
-  imports: [OpenCloseChildComponent]
+  imports: [OpenCloseChildComponent],
 })
 export class ToggleAnimationsPageComponent {}

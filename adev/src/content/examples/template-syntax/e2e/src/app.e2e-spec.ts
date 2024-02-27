@@ -1,8 +1,7 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 // TODO Not yet complete
 describe('Template Syntax', () => {
-
   beforeAll(() => browser.get(''));
 
   it('should be able to use interpolation with a hero', async () => {

@@ -1,6 +1,6 @@
 // #docregion
-import { Injectable } from '@angular/core';
-import { HEROES } from './mock-heroes';
+import {Injectable} from '@angular/core';
+import {HEROES} from './mock-heroes';
 
 @Injectable({
   // declares that this service should be created
@@ -8,5 +8,7 @@ import { HEROES } from './mock-heroes';
   providedIn: 'root',
 })
 export class HeroService {
-  getHeroes() { return HEROES; }
+  getHeroes() {
+    return HEROES;
+  }
 }

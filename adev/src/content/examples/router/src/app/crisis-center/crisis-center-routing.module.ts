@@ -1,15 +1,15 @@
 // #docplaster
 // #docregion
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 
-import { CrisisCenterHomeComponent } from './crisis-center-home/crisis-center-home.component';
-import { CrisisListComponent } from './crisis-list/crisis-list.component';
-import { CrisisCenterComponent } from './crisis-center/crisis-center.component';
-import { CrisisDetailComponent } from './crisis-detail/crisis-detail.component';
+import {CrisisCenterHomeComponent} from './crisis-center-home/crisis-center-home.component';
+import {CrisisListComponent} from './crisis-list/crisis-list.component';
+import {CrisisCenterComponent} from './crisis-center/crisis-center.component';
+import {CrisisDetailComponent} from './crisis-detail/crisis-detail.component';
 
-import { canDeactivateGuard } from '../can-deactivate.guard';
-import { crisisDetailResolver } from './crisis-detail-resolver';
+import {canDeactivateGuard} from '../can-deactivate.guard';
+import {crisisDetailResolver} from './crisis-detail-resolver';
 
 const crisisCenterRoutes: Routes = [
   {
@@ -25,26 +25,22 @@ const crisisCenterRoutes: Routes = [
             component: CrisisDetailComponent,
             canDeactivate: [canDeactivateGuard],
             resolve: {
-              crisis: crisisDetailResolver
-            }
+              crisis: crisisDetailResolver,
+            },
           },
           {
             path: '',
-            component: CrisisCenterHomeComponent
-          }
-        ]
-      }
-    ]
-  }
+            component: CrisisCenterHomeComponent,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(crisisCenterRoutes)
-  ],
-  exports: [
-    RouterModule
-  ]
+  imports: [RouterModule.forChild(crisisCenterRoutes)],
+  exports: [RouterModule],
 })
-export class CrisisCenterRoutingModule { }
+export class CrisisCenterRoutingModule {}
 // #enddocregion

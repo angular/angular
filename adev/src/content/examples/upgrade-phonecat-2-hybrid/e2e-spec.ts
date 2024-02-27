@@ -1,10 +1,9 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 // Angular E2E Testing Guide:
 // https://docs.angularjs.org/guide/e2e-testing
 
 describe('PhoneCat Application', () => {
-
   it('should redirect `index.html` to `index.html#!/phones', async () => {
     await browser.get('index.html');
     await browser.sleep(1000); // Not sure why this is needed but it is. The route change works fine.
@@ -12,7 +11,6 @@ describe('PhoneCat Application', () => {
   });
 
   describe('View: Phone list', () => {
-
     beforeEach(() => browser.get('index.html#!/phones'));
 
     it('should filter the phone list as a user types into the search box', async () => {
@@ -39,19 +37,13 @@ describe('PhoneCat Application', () => {
         return phoneNameColumn.map((elem) => elem.getText());
       }
 
-      await queryField.sendKeys('tablet');   // Let's narrow the dataset to make the assertions shorter
+      await queryField.sendKeys('tablet'); // Let's narrow the dataset to make the assertions shorter
 
-      expect(await getNames()).toEqual([
-        'Motorola XOOM\u2122 with Wi-Fi',
-        'MOTOROLA XOOM\u2122'
-      ]);
+      expect(await getNames()).toEqual(['Motorola XOOM\u2122 with Wi-Fi', 'MOTOROLA XOOM\u2122']);
 
       await nameOption.click();
 
-      expect(await getNames()).toEqual([
-        'MOTOROLA XOOM\u2122',
-        'Motorola XOOM\u2122 with Wi-Fi'
-      ]);
+      expect(await getNames()).toEqual(['MOTOROLA XOOM\u2122', 'Motorola XOOM\u2122 with Wi-Fi']);
     });
 
     it('should render phone specific links', async () => {
@@ -62,11 +54,9 @@ describe('PhoneCat Application', () => {
       await browser.sleep(1000); // Not sure why this is needed but it is. The route change works fine.
       expect(await browser.getCurrentUrl()).toMatch(/\/phones\/nexus-s$/);
     });
-
   });
 
   describe('View: Phone detail', () => {
-
     beforeEach(() => browser.get('index.html#!/phones/nexus-s'));
 
     it('should display the `nexus-s` page', async () => {
@@ -89,7 +79,5 @@ describe('PhoneCat Application', () => {
       await thumbnails.get(0).click();
       expect(await mainImage.getAttribute('src')).toMatch(/img\/phones\/nexus-s.0.jpg/);
     });
-
   });
-
 });

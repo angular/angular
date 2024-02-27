@@ -1,23 +1,23 @@
-import { browser, by, element, ElementArrayFinder, ElementFinder, logging } from 'protractor';
+import {browser, by, element, ElementArrayFinder, ElementFinder, logging} from 'protractor';
 
 class Hero {
-  constructor(public id: number, public name: string) {}
+  constructor(
+    public id: number,
+    public name: string,
+  ) {}
 
   // Factory methods
 
   // Hero from string formatted as '<id> <name>'.
   static fromString(s: string): Hero {
-    return new Hero(
-      +s.substring(0, s.indexOf(' ')),
-      s.slice(s.indexOf(' ') + 1),
-    );
+    return new Hero(+s.substring(0, s.indexOf(' ')), s.slice(s.indexOf(' ') + 1));
   }
 
   // Hero from hero list <li> element.
   static async fromLi(li: ElementFinder): Promise<Hero> {
     const stringsFromA = await li.all(by.css('a')).getText();
     const strings = stringsFromA[0].split(' ');
-    return { id: +strings[0], name: strings[1] };
+    return {id: +strings[0], name: strings[1]};
   }
 
   // Hero id and name from the given detail element.
@@ -28,7 +28,7 @@ class Hero {
     const name = await detail.element(by.css('h2')).getText();
     return {
       id: +id.slice(id.indexOf(' ') + 1),
-      name: name.substring(0, name.lastIndexOf(' '))
+      name: name.substring(0, name.lastIndexOf(' ')),
     };
   }
 }
@@ -36,7 +36,7 @@ class Hero {
 describe('Universal', () => {
   const expectedH1 = 'Tour of Heroes';
   const expectedTitle = `${expectedH1}`;
-  const targetHero = { id: 15, name: 'Magneta' };
+  const targetHero = {id: 15, name: 'Magneta'};
   const targetHeroDashboardIndex = 2;
   const nameSuffix = 'X';
   const newHeroName = targetHero.name + nameSuffix;
@@ -44,7 +44,7 @@ describe('Universal', () => {
   afterEach(async () => {
     // Assert that there are no errors emitted from the browser
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-    const severeLogs = logs.filter(entry => entry.level === logging.Level.SEVERE);
+    const severeLogs = logs.filter((entry) => entry.level === logging.Level.SEVERE);
     expect(severeLogs).toEqual([]);
   });
 
@@ -61,7 +61,7 @@ describe('Universal', () => {
 
     const expectedViewNames = ['Dashboard', 'Heroes'];
     it(`has views ${expectedViewNames}`, async () => {
-      const viewNames = await getPageElts().navElts.map(el => el!.getText());
+      const viewNames = await getPageElts().navElts.map((el) => el!.getText());
       expect(viewNames).toEqual(expectedViewNames);
     });
 
@@ -143,7 +143,7 @@ describe('Universal', () => {
       expect(await page.allHeroes.count()).toEqual(8, 'number of heroes');
       const heroesAfter = await toHeroArray(page.allHeroes);
       // console.log(await Hero.fromLi(page.allHeroes[0]));
-      const expectedHeroes =  heroesBefore.filter(h => h.name !== newHeroName);
+      const expectedHeroes = heroesBefore.filter((h) => h.name !== newHeroName);
       expect(heroesAfter).toEqual(expectedHeroes);
       // expect(await page.selectedHeroSubview.isPresent()).toBeFalsy();
     });
@@ -247,9 +247,9 @@ describe('Universal', () => {
   }
 
   async function expectHeading(hLevel: number, expectedText: string): Promise<void> {
-      const hTag = `h${hLevel}`;
-      const hText = await element(by.css(hTag)).getText();
-      expect(hText).toEqual(expectedText, hTag);
+    const hTag = `h${hLevel}`;
+    const hText = await element(by.css(hTag)).getText();
+    expect(hText).toEqual(expectedText, hTag);
   }
 
   function getHeroAEltById(id: number): ElementFinder {
@@ -280,12 +280,12 @@ describe('Universal', () => {
       heroDetail: element(by.css('app-root app-hero-detail > div')),
 
       searchBox: element(by.css('#search-box')),
-      searchResults: element.all(by.css('.search-result li'))
+      searchResults: element.all(by.css('.search-result li')),
     };
   }
 
   async function toHeroArray(allHeroes: ElementArrayFinder): Promise<Hero[]> {
-    return await allHeroes.map(hero => Hero.fromLi(hero!));
+    return await allHeroes.map((hero) => Hero.fromLi(hero!));
   }
 
   async function updateHeroNameInDetailView(): Promise<void> {

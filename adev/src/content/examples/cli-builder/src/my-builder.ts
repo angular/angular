@@ -1,9 +1,9 @@
 // #docplaster
 // #docregion builder, builder-skeleton
-import { BuilderContext, BuilderOutput, createBuilder } from '@angular-devkit/architect';
-import { JsonObject } from '@angular-devkit/core';
+import {BuilderContext, BuilderOutput, createBuilder} from '@angular-devkit/architect';
+import {JsonObject} from '@angular-devkit/core';
 // #enddocregion builder-skeleton
-import { promises as fs } from 'fs';
+import {promises as fs} from 'fs';
 // #docregion builder-skeleton
 
 interface Options extends JsonObject {
@@ -13,10 +13,7 @@ interface Options extends JsonObject {
 
 export default createBuilder(copyFileBuilder);
 
-async function copyFileBuilder(
-  options: Options,
-  context: BuilderContext,
-): Promise<BuilderOutput> {
+async function copyFileBuilder(options: Options, context: BuilderContext): Promise<BuilderOutput> {
   // #enddocregion builder, builder-skeleton
   // #docregion progress-reporting
   context.reportStatus(`Copying ${options.source} to ${options.destination}.`);
@@ -38,7 +35,7 @@ async function copyFileBuilder(
 
   context.reportStatus('Done.');
   // #docregion builder
-  return { success: true };
+  return {success: true};
   // #enddocregion progress-reporting
   // #docregion builder-skeleton
 }

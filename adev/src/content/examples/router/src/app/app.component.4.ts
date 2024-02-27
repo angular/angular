@@ -1,15 +1,14 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.css']
+  styleUrls: ['app.component.css'],
 })
 export class AppComponent {
-// #docregion relative-to
+  // #docregion relative-to
   goToItems() {
-    this.router.navigate(['items'], { relativeTo: this.route });
+    this.router.navigate(['items'], {relativeTo: this.route});
   }
-// #enddocregion relative-to
-
+  // #enddocregion relative-to
 }

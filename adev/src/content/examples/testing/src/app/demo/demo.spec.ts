@@ -1,5 +1,5 @@
 // #docplaster
-import { LightswitchComponent, MasterService, ValueService, ReversePipe } from './demo';
+import {LightswitchComponent, MasterService, ValueService, ReversePipe} from './demo';
 
 ///////// Fakes /////////
 export class FakeValueService extends ValueService {
@@ -51,7 +51,7 @@ describe('demo (no TestBed):', () => {
     });
 
     it('#getValue should return faked value from a fake object', () => {
-      const fake = { getValue: () => 'fake value' };
+      const fake = {getValue: () => 'fake value'};
       masterService = new MasterService(fake as ValueService);
       expect(masterService.getValue()).toBe('fake value');
     });
@@ -79,7 +79,7 @@ describe('demo (no TestBed):', () => {
     // #docregion no-before-each-test
     it('#getValue should return stubbed value from a spy', () => {
       // #docregion no-before-each-setup-call
-      const { masterService, stubValue, valueServiceSpy } = setup();
+      const {masterService, stubValue, valueServiceSpy} = setup();
       // #enddocregion no-before-each-setup-call
       expect(masterService.getValue()).withContext('service returned stub value').toBe(stubValue);
       expect(valueServiceSpy.getValue.calls.count())
@@ -96,7 +96,7 @@ describe('demo (no TestBed):', () => {
       const masterService = new MasterService(valueServiceSpy);
 
       valueServiceSpy.getValue.and.returnValue(stubValue);
-      return { masterService, stubValue, valueServiceSpy };
+      return {masterService, stubValue, valueServiceSpy};
     }
     // #enddocregion no-before-each-setup
   });

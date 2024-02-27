@@ -11,27 +11,30 @@ import {AdminComponent} from './admin/admin.component';
 import {ManageCrisesComponent} from './manage-crises/manage-crises.component';
 import {ManageHeroesComponent} from './manage-heroes/manage-heroes.component';
 
-const adminRoutes: Routes = [{
-  path: 'admin',
-  component: AdminComponent,
-  canActivate: [authGuard],
+const adminRoutes: Routes = [
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [authGuard],
 
-  // #enddocregion admin-route
-  // #docregion admin-route
-  children: [{
-    path: '',
-    children: [
-      {path: 'crises', component: ManageCrisesComponent},
-      {path: 'heroes', component: ManageHeroesComponent},
-      {path: '', component: AdminDashboardComponent}
-    ],
     // #enddocregion admin-route
-    canActivateChild: [authGuard]
     // #docregion admin-route
-  }]
-}];
+    children: [
+      {
+        path: '',
+        children: [
+          {path: 'crises', component: ManageCrisesComponent},
+          {path: 'heroes', component: ManageHeroesComponent},
+          {path: '', component: AdminDashboardComponent},
+        ],
+        // #enddocregion admin-route
+        canActivateChild: [authGuard],
+        // #docregion admin-route
+      },
+    ],
+  },
+];
 
 @NgModule({imports: [RouterModule.forChild(adminRoutes)], exports: [RouterModule]})
-export class AdminRoutingModule {
-}
+export class AdminRoutingModule {}
 // #enddocregion

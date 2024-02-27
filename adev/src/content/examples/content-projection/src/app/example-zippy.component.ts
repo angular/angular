@@ -1,4 +1,12 @@
-import { Component, Directive, Input, TemplateRef, ContentChild, HostBinding, HostListener } from '@angular/core';
+import {
+  Component,
+  Directive,
+  Input,
+  TemplateRef,
+  ContentChild,
+  HostBinding,
+  HostListener,
+} from '@angular/core';
 
 @Directive({
   selector: 'button[appExampleZippyToggle]',
@@ -16,7 +24,7 @@ let nextId = 0;
 
 // #docregion zippycontentdirective
 @Directive({
-  selector: '[appExampleZippyContent]'
+  selector: '[appExampleZippyContent]',
 })
 export class ZippyContentDirective {
   constructor(public templateRef: TemplateRef<unknown>) {}

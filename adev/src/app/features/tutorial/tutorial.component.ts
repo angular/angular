@@ -38,11 +38,11 @@ import {
   EmbeddedTutorialManager,
   LoadingStep,
   NodeRuntimeState,
-  EmbeddedEditor
+  EmbeddedEditor,
 } from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
-import { TutorialType } from '@angular/docs';
-import { TutorialNavigationData, TutorialNavigationItem, } from '@angular/docs'
+import {TutorialType} from '@angular/docs';
+import {TutorialNavigationData, TutorialNavigationItem} from '@angular/docs';
 
 const INTRODUCTION_LABEL = 'Introduction';
 
@@ -138,9 +138,7 @@ export default class Tutorial implements AfterViewInit {
     this.embeddedTutorialManager.revealAnswer();
 
     const nodeRuntimeSandbox = await injectAsync(this.environmentInjector, () =>
-      import('../../editor/index').then(
-        (s) => s.NodeRuntimeSandbox,
-      ),
+      import('../../editor/index').then((s) => s.NodeRuntimeSandbox),
     );
 
     await Promise.all(
@@ -213,16 +211,10 @@ export default class Tutorial implements AfterViewInit {
 
     this.shouldRenderContent.set(routeData.type !== TutorialType.EDITOR_ONLY);
 
-    this.nextStepPath = routeData.nextStep
-      ? `/${routeData.nextStep}`
-      : undefined;
-    this.previousStepPath = routeData.previousStep
-      ? `/${routeData.previousStep}`
-      : undefined;
+    this.nextStepPath = routeData.nextStep ? `/${routeData.nextStep}` : undefined;
+    this.previousStepPath = routeData.previousStep ? `/${routeData.previousStep}` : undefined;
 
-    this.nextTutorialPath.set(
-      routeData.nextTutorial ? `/${routeData.nextTutorial}` : null,
-    );
+    this.nextTutorialPath.set(routeData.nextTutorial ? `/${routeData.nextTutorial}` : null);
   }
 
   /**

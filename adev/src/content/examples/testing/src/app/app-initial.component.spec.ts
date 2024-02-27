@@ -1,8 +1,8 @@
 // #docplaster
 // #docregion
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 // #enddocregion
-import { AppComponent } from './app-initial.component';
+import {AppComponent} from './app-initial.component';
 /*
 // #docregion
 import { AppComponent } from './app.component';
@@ -37,8 +37,8 @@ describe('AppComponent (initial CLI version)', () => {
 // #enddocregion
 
 /// As it should be
-import { DebugElement } from '@angular/core';
-import { ComponentFixture } from '@angular/core/testing';
+import {DebugElement} from '@angular/core';
+import {ComponentFixture} from '@angular/core/testing';
 
 describe('AppComponent (initial CLI version - as it should be)', () => {
   let app: AppComponent;

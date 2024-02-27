@@ -1,7 +1,6 @@
 //jshint strict: false
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
-
     basePath: './app',
 
     files: [
@@ -13,7 +12,7 @@ module.exports = function(config) {
       '**/*.module.js',
       '*!(.module|.spec).js',
       '!(bower_components)/**/*!(.module|.spec).js',
-      '**/*.spec.js'
+      '**/*.spec.js',
     ],
 
     // This is needed, because the AngularJS files are loaded from `https://code.angularjs.org/`.
@@ -31,11 +30,6 @@ module.exports = function(config) {
 
     browsers: ['Chrome', 'Firefox'],
 
-    plugins: [
-      'karma-chrome-launcher',
-      'karma-firefox-launcher',
-      'karma-jasmine'
-    ]
-
+    plugins: ['karma-chrome-launcher', 'karma-firefox-launcher', 'karma-jasmine'],
   });
 };

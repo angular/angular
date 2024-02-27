@@ -1,11 +1,11 @@
 // #docplaster
 // #docregion
 // #docregion import-ComponentFixtureAutoDetect
-import { ComponentFixtureAutoDetect } from '@angular/core/testing';
+import {ComponentFixtureAutoDetect} from '@angular/core/testing';
 // #enddocregion import-ComponentFixtureAutoDetect
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BannerComponent } from './banner.component';
+import {BannerComponent} from './banner.component';
 
 describe('BannerComponent (AutoChangeDetect)', () => {
   let comp: BannerComponent;
@@ -16,7 +16,7 @@ describe('BannerComponent (AutoChangeDetect)', () => {
     // #docregion auto-detect
     TestBed.configureTestingModule({
       imports: [BannerComponent],
-      providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }],
+      providers: [{provide: ComponentFixtureAutoDetect, useValue: true}],
     });
     // #enddocregion auto-detect
     fixture = TestBed.createComponent(BannerComponent);

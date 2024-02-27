@@ -1,17 +1,20 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-import { LoggerService } from './logger.service';
-import { UserService } from './user.service';
+import {LoggerService} from './logger.service';
+import {UserService} from './user.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserContextService {
   name = '';
   role = '';
   loggedInSince: Date;
 
-  constructor(private userService: UserService, private loggerService: LoggerService) {
+  constructor(
+    private userService: UserService,
+    private loggerService: LoggerService,
+  ) {
     this.loggedInSince = new Date();
   }
 

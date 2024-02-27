@@ -1,12 +1,12 @@
 // #docplaster
 // #docregion
-import { Component, Injector } from '@angular/core';
+import {Component, Injector} from '@angular/core';
 
-import { Car, Engine, Tires } from './car/car';
-import { Hero } from './heroes/hero';
-import { HeroService } from './heroes/hero.service';
-import { heroServiceProvider } from './heroes/hero.service.provider';
-import { Logger } from './logger.service';
+import {Car, Engine, Tires} from './car/car';
+import {Hero} from './heroes/hero';
+import {HeroService} from './heroes/hero.service';
+import {heroServiceProvider} from './heroes/hero.service.provider';
+import {Logger} from './logger.service';
 
 @Component({
   standalone: true,
@@ -17,7 +17,7 @@ import { Logger } from './logger.service';
   <div id="hero">{{hero.name}}</div>
   <div id="rodent">{{rodent}}</div>
   `,
-  providers: [Car, Engine, Tires, heroServiceProvider, Logger]
+  providers: [Car, Engine, Tires, heroServiceProvider, Logger],
 })
 export class InjectorComponent {
   car: Car;
@@ -41,4 +41,4 @@ export class InjectorComponent {
  * R.O.U.S. - Rodents Of Unusual Size
  * // https://www.youtube.com/watch?v=BOv5ZjAOpC8
  */
-class ROUS { }
+class ROUS {}

@@ -1,12 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import { Hero } from '../model/hero';
-import { HeroService } from '../model/hero.service';
+import {Hero} from '../model/hero';
+import {HeroService} from '../model/hero.service';
 
 // #docregion prototype
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class HeroDetailService {
   constructor(private heroService: HeroService) {}
   // #enddocregion prototype

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
-import { MyLibComponent } from './my-lib.component';
+import {MyLibComponent} from './my-lib.component';
 
 describe('MyLibComponent', () => {
   let component: MyLibComponent;

@@ -1,13 +1,13 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 
 // Other imports
-import { TestBed } from '@angular/core/testing';
-import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import {TestBed} from '@angular/core/testing';
+import {HttpClient, HttpResponse, HttpErrorResponse} from '@angular/common/http';
 
-import { asyncData, asyncError } from '../../testing/async-observable-helpers';
+import {asyncData, asyncError} from '../../testing/async-observable-helpers';
 
-import { Hero } from './hero';
-import { HeroService } from './hero.service';
+import {Hero} from './hero';
+import {HeroService} from './hero.service';
 
 describe('HeroesService (with spies)', () => {
   // #docregion test-with-spies
@@ -22,8 +22,8 @@ describe('HeroesService (with spies)', () => {
 
   it('should return expected heroes (HttpClient called once)', (done: DoneFn) => {
     const expectedHeroes: Hero[] = [
-      { id: 1, name: 'A' },
-      { id: 2, name: 'B' },
+      {id: 1, name: 'A'},
+      {id: 2, name: 'B'},
     ];
 
     httpClientSpy.get.and.returnValue(asyncData(expectedHeroes));
@@ -90,8 +90,8 @@ describe('HeroesService (with mocks)', () => {
     beforeEach(() => {
       heroService = TestBed.inject(HeroService);
       expectedHeroes = [
-        { id: 1, name: 'A' },
-        { id: 2, name: 'B' },
+        {id: 1, name: 'A'},
+        {id: 2, name: 'B'},
       ] as Hero[];
     });
 
@@ -131,7 +131,7 @@ describe('HeroesService (with mocks)', () => {
       const req = httpTestingController.expectOne(heroService.heroesUrl);
 
       // respond with a 404 and the error message in the body
-      req.flush(msg, { status: 404, statusText: 'Not Found' });
+      req.flush(msg, {status: 404, statusText: 'Not Found'});
     });
 
     it('should return expected heroes (called multiple times)', () => {
@@ -148,7 +148,7 @@ describe('HeroesService (with mocks)', () => {
 
       // Respond to each request with different mock hero results
       requests[0].flush([]);
-      requests[1].flush([{ id: 1, name: 'bob' }]);
+      requests[1].flush([{id: 1, name: 'bob'}]);
       requests[2].flush(expectedHeroes);
     });
   });
@@ -158,7 +158,7 @@ describe('HeroesService (with mocks)', () => {
     const makeUrl = (id: number) => `${heroService.heroesUrl}/?id=${id}`;
 
     it('should update a hero and return it', () => {
-      const updateHero: Hero = { id: 1, name: 'A' };
+      const updateHero: Hero = {id: 1, name: 'A'};
 
       heroService.updateHero(updateHero).subscribe({
         next: (data) => expect(data).withContext('should return the hero').toEqual(updateHero),
@@ -181,7 +181,7 @@ describe('HeroesService (with mocks)', () => {
 
     it('should turn 404 error into user-facing error', () => {
       const msg = 'Deliberate 404';
-      const updateHero: Hero = { id: 1, name: 'A' };
+      const updateHero: Hero = {id: 1, name: 'A'};
       heroService.updateHero(updateHero).subscribe({
         next: (heroes) => fail('expected to fail'),
         error: (error) => expect(error.message).toContain(msg),
@@ -190,7 +190,7 @@ describe('HeroesService (with mocks)', () => {
       const req = httpTestingController.expectOne(heroService.heroesUrl);
 
       // respond with a 404 and the error message in the body
-      req.flush(msg, { status: 404, statusText: 'Not Found' });
+      req.flush(msg, {status: 404, statusText: 'Not Found'});
     });
 
     it('should turn network error into user-facing error', (done) => {
@@ -198,7 +198,7 @@ describe('HeroesService (with mocks)', () => {
       // the network level. Connection timeout, DNS error, offline, etc.
       const errorEvent = new ProgressEvent('error');
 
-      const updateHero: Hero = { id: 1, name: 'A' };
+      const updateHero: Hero = {id: 1, name: 'A'};
       heroService.updateHero(updateHero).subscribe({
         next: (heroes) => fail('expected to fail'),
         error: (error) => {

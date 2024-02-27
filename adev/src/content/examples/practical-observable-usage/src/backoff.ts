@@ -1,15 +1,15 @@
 // #docplaster
 // #docregion
-import { timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { retry } from 'rxjs/operators';
+import {timer} from 'rxjs';
+import {ajax} from 'rxjs/ajax';
+import {retry} from 'rxjs/operators';
 
 export function backoff(maxTries: number, initialDelay: number) {
-    return retry({
-        count: maxTries,
-        delay: (error, retryCount) => timer(initialDelay * retryCount ** 2),
-      });
-  }
+  return retry({
+    count: maxTries,
+    delay: (error, retryCount) => timer(initialDelay * retryCount ** 2),
+  });
+}
 
 // #enddocregion
 /*
@@ -19,9 +19,11 @@ export function backoff(maxTries: number, initialDelay: number) {
   the docplaster combines the different regions together.
 */
 function docRegionAjaxCall() {
-// #docregion
-ajax('/api/endpoint')
-  .pipe(backoff(3, 250))
-  .subscribe(function handleData(data) { /* ... */ });
-// #enddocregion
+  // #docregion
+  ajax('/api/endpoint')
+    .pipe(backoff(3, 250))
+    .subscribe(function handleData(data) {
+      /* ... */
+    });
+  // #enddocregion
 }

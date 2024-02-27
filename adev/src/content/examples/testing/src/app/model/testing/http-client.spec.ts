@@ -1,11 +1,11 @@
 // Http testing module and mocking controller
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 
 // Other imports
-import { TestBed } from '@angular/core/testing';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {TestBed} from '@angular/core/testing';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 
-import { HttpHeaders } from '@angular/common/http';
+import {HttpHeaders} from '@angular/common/http';
 
 interface Data {
   name: string;
@@ -34,7 +34,7 @@ describe('HttpClient testing', () => {
 
   /// Tests begin ///
   it('can test HttpClient.get', () => {
-    const testData: Data = { name: 'Test Data' };
+    const testData: Data = {name: 'Test Data'};
 
     // Make an HTTP GET request
     httpClient.get<Data>(testUrl).subscribe((data) =>
@@ -59,12 +59,12 @@ describe('HttpClient testing', () => {
   });
 
   it('can test HttpClient.get with matching header', () => {
-    const testData: Data = { name: 'Test Data' };
+    const testData: Data = {name: 'Test Data'};
 
     // Make an HTTP GET request with specific header
     httpClient
       .get<Data>(testUrl, {
-        headers: new HttpHeaders({ Authorization: 'my-auth-token' }),
+        headers: new HttpHeaders({Authorization: 'my-auth-token'}),
       })
       .subscribe((data) => expect(data).toEqual(testData));
 
@@ -75,12 +75,7 @@ describe('HttpClient testing', () => {
   });
 
   it('can test multiple requests', () => {
-    const testData: Data[] = [
-      { name: 'bob' },
-      { name: 'carol' },
-      { name: 'ted' },
-      { name: 'alice' },
-    ];
+    const testData: Data[] = [{name: 'bob'}, {name: 'carol'}, {name: 'ted'}, {name: 'alice'}];
 
     // Make three requests in a row
     httpClient
@@ -121,7 +116,7 @@ describe('HttpClient testing', () => {
     const req = httpTestingController.expectOne(testUrl);
 
     // Respond with mock error
-    req.flush(emsg, { status: 404, statusText: 'Not Found' });
+    req.flush(emsg, {status: 404, statusText: 'Not Found'});
   });
 
   it('can test for network error', (done) => {

@@ -1,5 +1,5 @@
 // #docregion
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 @Injectable()
 export class FilterTextService {
@@ -11,7 +11,7 @@ export class FilterTextService {
     let filteredList: any[];
     if (data && props && originalList) {
       data = data.toLowerCase();
-      const filtered = originalList.filter(item => {
+      const filtered = originalList.filter((item) => {
         let match = false;
         for (const prop of props) {
           if (item[prop].toString().toLowerCase().indexOf(data) > -1) {

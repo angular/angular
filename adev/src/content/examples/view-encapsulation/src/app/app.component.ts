@@ -24,7 +24,7 @@ import {EmulatedEncapsulationComponent} from './emulated-encapsulation.component
       app-no-encapsulation { border: solid 2px red; }
       app-emulated-encapsulation { border: solid 2px green; }
       app-shadow-dom-encapsulation { border: solid 2px blue; }
-    `
+    `,
   ],
   encapsulation: ViewEncapsulation.None,
   imports: [

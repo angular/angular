@@ -1,5 +1,5 @@
-import { by } from 'protractor';
-import { locate } from './util';
+import {by} from 'protractor';
+import {locate} from './util';
 
 export function getComponent() {
   return by.css('app-querying');

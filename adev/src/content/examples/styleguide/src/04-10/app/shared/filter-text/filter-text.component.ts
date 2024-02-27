@@ -1,9 +1,10 @@
 // #docregion
-import { Component, EventEmitter, Output } from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 
 @Component({
   selector: 'toh-filter-text',
-  template: '<input type="text" id="filterText" [(ngModel)]="filter" (keyup)="filterChanged($event)" />'
+  template:
+    '<input type="text" id="filterText" [(ngModel)]="filter" (keyup)="filterChanged($event)" />',
 })
 export class FilterTextComponent {
   @Output() changed: EventEmitter<string>;

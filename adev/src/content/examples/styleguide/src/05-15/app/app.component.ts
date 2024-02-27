@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { HeroService } from './heroes';
+import {HeroService} from './heroes';
 
 @Component({
   selector: 'sg-app',
   template: '<toh-hero-list></toh-hero-list>',
-  providers: [HeroService]
+  providers: [HeroService],
 })
-export class AppComponent { }
+export class AppComponent {}

@@ -3,7 +3,7 @@
 export const heroDetail = {
   bindings: {
     hero: '<',
-    deleted: '&'
+    deleted: '&',
   },
   template: `
     <h2>{{$ctrl.hero.name}} details!</h2>
@@ -14,18 +14,18 @@ export const heroDetail = {
     this.onDelete = () => {
       this.deleted(this.hero);
     };
-  }
+  },
 };
 // #enddocregion hero-detail-io
 
 // #docregion hero-detail-io-upgrade
-import { Directive, ElementRef, Injector, Input, Output, EventEmitter } from '@angular/core';
-import { UpgradeComponent } from '@angular/upgrade/static';
-import { Hero } from '../hero';
+import {Directive, ElementRef, Injector, Input, Output, EventEmitter} from '@angular/core';
+import {UpgradeComponent} from '@angular/upgrade/static';
+import {Hero} from '../hero';
 
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
-  selector: 'hero-detail'
+  selector: 'hero-detail',
 })
 export class HeroDetailDirective extends UpgradeComponent {
   @Input() hero: Hero;

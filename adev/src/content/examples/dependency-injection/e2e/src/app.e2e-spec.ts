@@ -1,14 +1,12 @@
-import { browser, element, by, ElementFinder } from 'protractor';
+import {browser, element, by, ElementFinder} from 'protractor';
 
 describe('Dependency Injection Tests', () => {
-
   let expectedMsg: string;
   let expectedMsgRx: RegExp;
 
   beforeAll(() => browser.get(''));
 
   describe('Cars:', () => {
-
     it('DI car displays as expected', async () => {
       expectedMsg = 'DI car with 4 cylinders and Flintstone tires.';
       expect(await element(by.css('#di')).getText()).toEqual(expectedMsg);
@@ -57,22 +55,19 @@ describe('Dependency Injection Tests', () => {
     });
 
     it('Optional injection displays as expected', async () => {
-      expectedMsg = "R.O.U.S.'s? I don't think they exist!";;
+      expectedMsg = "R.O.U.S.'s? I don't think they exist!";
       expect(await element(by.css('#rodent')).getText()).toEqual(expectedMsg);
     });
   });
 
   describe('Tests:', () => {
-
     it('Tests display as expected', async () => {
       expectedMsgRx = /Tests passed/;
       expect(await element(by.css('#tests')).getText()).toMatch(expectedMsgRx);
     });
-
   });
 
   describe('Provider variations:', () => {
-
     it('P1 (class) displays as expected', async () => {
       expectedMsg = 'Hello from logger provided with Logger class';
       expect(await element(by.css('#p1')).getText()).toEqual(expectedMsg);
@@ -131,8 +126,9 @@ describe('Dependency Injection Tests', () => {
     });
 
     it('should have button', async () => {
-      expect(await element.all(by.cssContainingText('button', 'Next User'))
-        .get(0).isDisplayed()).toBe(true, "'Next User' button should be displayed");
+      expect(
+        await element.all(by.cssContainingText('button', 'Next User')).get(0).isDisplayed(),
+      ).toBe(true, "'Next User' button should be displayed");
     });
 
     it('unauthorized user should have multiple unauthorized heroes', async () => {
@@ -144,7 +140,7 @@ describe('Dependency Injection Tests', () => {
       const heroes = element.all(by.css('#unauthorized app-hero-list div'));
       expect(await heroes.count()).toBeGreaterThan(0);
 
-      const filteredHeroes = heroes.filter(async elem => /secret/.test(await elem.getText()));
+      const filteredHeroes = heroes.filter(async (elem) => /secret/.test(await elem.getText()));
       expect(await filteredHeroes.count()).toEqual(0);
     });
 
@@ -153,7 +149,6 @@ describe('Dependency Injection Tests', () => {
     });
 
     describe('after button click', () => {
-
       beforeAll(async () => {
         const buttonEle = element.all(by.cssContainingText('button', 'Next User')).get(0);
         await buttonEle.click();
@@ -178,7 +173,7 @@ describe('Dependency Injection Tests', () => {
         const heroes = element.all(by.css('#authorized app-hero-list div'));
         expect(await heroes.count()).toBeGreaterThan(0);
 
-        const filteredHeroes = heroes.filter(async elem => /secret/.test(await elem.getText()));
+        const filteredHeroes = heroes.filter(async (elem) => /secret/.test(await elem.getText()));
         expect(await filteredHeroes.count()).toBeGreaterThan(0);
       });
 

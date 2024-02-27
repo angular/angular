@@ -19,7 +19,7 @@ function toHaveText(): jasmine.CustomMatcher {
       const actualText = elementText(actual);
       const pass = actualText.indexOf(expectedText) > -1;
       const message = pass ? '' : composeMessage();
-      return { pass, message };
+      return {pass, message};
 
       function composeMessage() {
         const a = actualText.length < 100 ? actualText : actualText.slice(0, 100) + '...';

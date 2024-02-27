@@ -1,6 +1,5 @@
-import { element, by, ExpectedConditions, browser } from 'protractor';
-import { AppPage } from './app.po';
-
+import {element, by, ExpectedConditions, browser} from 'protractor';
+import {AppPage} from './app.po';
 
 describe('providers App', () => {
   let page: AppPage;
@@ -25,7 +24,6 @@ describe('providers App', () => {
       await browser.wait(ExpectedConditions.visibilityOf(customersMessage));
       expect(await customersMessage.getText()).toBe('customers works!');
     });
-
   });
 
   describe('Orders', () => {
@@ -36,7 +34,5 @@ describe('providers App', () => {
       await browser.wait(ExpectedConditions.visibilityOf(ordersMessage));
       expect(await ordersMessage.getText()).toBe('orders works!');
     });
-
   });
-
 });

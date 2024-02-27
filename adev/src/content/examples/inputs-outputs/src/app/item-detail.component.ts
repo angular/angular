@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion use-input
-import { Component, Input } from '@angular/core'; // First, import Input
+import {Component, Input} from '@angular/core'; // First, import Input
 // #enddocregion use-input
 
 @Component({

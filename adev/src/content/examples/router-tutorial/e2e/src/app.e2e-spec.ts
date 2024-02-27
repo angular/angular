@@ -1,7 +1,6 @@
-import { browser, element, by } from 'protractor';
+import {browser, element, by} from 'protractor';
 
 describe('Router basic tutorial e2e tests', () => {
-
   beforeEach(() => browser.get(''));
 
   it('should display Angular Router Sample', async () => {

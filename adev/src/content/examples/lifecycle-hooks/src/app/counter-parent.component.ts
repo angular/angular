@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
-import { LoggerService } from './logger.service';
+import {LoggerService} from './logger.service';
 
 @Component({
   selector: 'counter-parent',
@@ -17,7 +17,7 @@ import { LoggerService } from './logger.service';
     <div *ngFor="let msg of spyLog" class="log">{{msg}}</div>
   </div>
   `,
-  providers: [LoggerService]
+  providers: [LoggerService],
 })
 export class CounterParentComponent {
   value = 0;

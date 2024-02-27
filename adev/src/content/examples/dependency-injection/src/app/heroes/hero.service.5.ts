@@ -1,12 +1,10 @@
 // #docregion
-import { EnvironmentInjector, inject, Injectable, runInInjectionContext } from '@angular/core';
+import {EnvironmentInjector, inject, Injectable, runInInjectionContext} from '@angular/core';
 
-@Injectable({providedIn:
-  'root'
-})
+@Injectable({providedIn: 'root'})
 export class SomeService {}
 
-  // #docregion run-in-context
+// #docregion run-in-context
 @Injectable({
   providedIn: 'root',
 })

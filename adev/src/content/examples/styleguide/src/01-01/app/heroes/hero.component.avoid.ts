@@ -1,8 +1,8 @@
 // #docregion
 /* avoid */
-import { Component, NgModule, OnInit } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import {Component, NgModule, OnInit} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 interface Hero {
   id: number;
@@ -15,7 +15,7 @@ interface Hero {
       <h1>{{title}}</h1>
       <pre>{{heroes | json}}</pre>
     `,
-  styleUrls: ['../app.component.css']
+  styleUrls: ['../app.component.css'],
 })
 export class AppComponent implements OnInit {
   title = 'Tour of Heroes';
@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
   heroes: Hero[] = [];
 
   ngOnInit() {
-    getHeroes().then(heroes => (this.heroes = heroes));
+    getHeroes().then((heroes) => (this.heroes = heroes));
   }
 }
 
@@ -31,16 +31,16 @@ export class AppComponent implements OnInit {
   imports: [BrowserModule],
   declarations: [AppComponent],
   exports: [AppComponent],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}
 
 platformBrowserDynamic().bootstrapModule(AppModule);
 
 const HEROES: Hero[] = [
-  { id: 1, name: 'Bombasto' },
-  { id: 2, name: 'Tornado' },
-  { id: 3, name: 'Magneta' }
+  {id: 1, name: 'Bombasto'},
+  {id: 2, name: 'Tornado'},
+  {id: 3, name: 'Magneta'},
 ];
 
 function getHeroes(): Promise<Hero[]> {

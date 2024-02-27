@@ -7,6 +7,7 @@ export const format: FormatConfig = {
   'prettier': {
     'matchers': [
       '**/*.{yaml,yml}',
+      'adev/**/*.{js,ts}',
       'devtools/**/*.{js,ts}',
       'tools/**/*.{js,ts}',
       'modules/**/*.{js,ts}',

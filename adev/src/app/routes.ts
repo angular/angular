@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  contentResolver,
-  flatNavigationData,
-  mapNavigationItemsToRoutes,
-} from '@angular/docs';
+import {contentResolver, flatNavigationData, mapNavigationItemsToRoutes} from '@angular/docs';
 import {Route} from '@angular/router';
 
 import {DefaultPage, PagePrefix} from './core/enums/pages';
@@ -125,7 +121,7 @@ export const routes: Route[] = [
       {
         path: '',
         loadComponent: () => import('./features/home/home.component'),
-        data: {label: 'Home'}
+        data: {label: 'Home'},
       },
       {
         path: PagePrefix.DOCS,

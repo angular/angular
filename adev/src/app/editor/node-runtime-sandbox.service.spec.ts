@@ -12,10 +12,7 @@ import {BehaviorSubject, of as observableOf} from 'rxjs';
 import {signal} from '@angular/core';
 import {WebContainer} from '@webcontainer/api';
 import {TutorialType} from '@angular/docs';
-import {
-  FakeWebContainer,
-  FakeWebContainerProcess,
-} from '@angular/docs/testing';
+import {FakeWebContainer, FakeWebContainerProcess} from '@angular/docs/testing';
 import {AlertManager} from './alert-manager.service';
 import {EmbeddedTutorialManager} from './embedded-tutorial-manager.service';
 import {LoadingStep} from './enums/loading-steps';

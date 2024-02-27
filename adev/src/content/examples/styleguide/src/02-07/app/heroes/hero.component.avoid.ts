@@ -1,5 +1,5 @@
 // #docregion
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 // #docregion example
 /* avoid */
 
@@ -9,5 +9,5 @@ import { Component } from '@angular/core';
   selector: 'hero',
   template: '',
 })
-export class HeroComponent { }
+export class HeroComponent {}
 // #enddocregion example

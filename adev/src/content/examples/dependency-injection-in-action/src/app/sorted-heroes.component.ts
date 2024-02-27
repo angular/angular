@@ -1,10 +1,10 @@
 // #docplaster
 // #docregion
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import { Hero } from './hero';
-import { HeroService } from './hero.service';
-import { NgFor } from '@angular/common';
+import {Hero} from './hero';
+import {HeroService} from './hero.service';
+import {NgFor} from '@angular/common';
 
 /////// HeroesBaseComponent /////
 // #docregion heroes-base
@@ -13,10 +13,10 @@ import { NgFor } from '@angular/common';
   selector: 'app-unsorted-heroes',
   template: '@for (hero of heroes; track hero) {<div>{{hero.name}}</div>}',
   providers: [HeroService],
-  imports: [NgFor]
+  imports: [NgFor],
 })
 export class HeroesBaseComponent implements OnInit {
-  constructor(private heroService: HeroService) { }
+  constructor(private heroService: HeroService) {}
 
   heroes: Hero[] = [];
 
@@ -27,7 +27,6 @@ export class HeroesBaseComponent implements OnInit {
 
   // Post-process heroes in derived class override.
   protected afterGetHeroes() {}
-
 }
 // #enddocregion heroes-base
 
@@ -38,7 +37,7 @@ export class HeroesBaseComponent implements OnInit {
   selector: 'app-sorted-heroes',
   template: '@for (hero of heroes; track hero) {<div>{{hero.name}}</div>}',
   providers: [HeroService],
-  imports: [NgFor]
+  imports: [NgFor],
 })
 export class SortedHeroesComponent extends HeroesBaseComponent {
   constructor(heroService: HeroService) {
@@ -46,8 +45,9 @@ export class SortedHeroesComponent extends HeroesBaseComponent {
   }
 
   protected override afterGetHeroes() {
-    this.heroes = this.heroes.sort((h1, h2) => h1.name < h2.name ? -1 :
-            (h1.name > h2.name ? 1 : 0));
+    this.heroes = this.heroes.sort((h1, h2) =>
+      h1.name < h2.name ? -1 : h1.name > h2.name ? 1 : 0,
+    );
   }
 }
 // #enddocregion sorted-heroes

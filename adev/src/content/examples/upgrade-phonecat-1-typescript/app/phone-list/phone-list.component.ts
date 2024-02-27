@@ -9,12 +9,9 @@ class PhoneListController {
     this.phones = Phone.query();
     this.orderProp = 'age';
   }
-
 }
 
-angular.
-  module('phoneList').
-  component('phoneList', {
-    templateUrl: 'phone-list/phone-list.template.html',
-    controller: PhoneListController
-  });
+angular.module('phoneList').component('phoneList', {
+  templateUrl: 'phone-list/phone-list.template.html',
+  controller: PhoneListController,
+});
