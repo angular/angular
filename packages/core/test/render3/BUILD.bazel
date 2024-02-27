@@ -25,6 +25,7 @@ ts_library(
         "//packages/common",
         "//packages/compiler",
         "//packages/core",
+        "//packages/core/primitives/signals",
         "//packages/core/rxjs-interop",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",

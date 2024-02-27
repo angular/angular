@@ -84,6 +84,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "activeConsumer"
+  },
+  {
     "name": "createInjector"
   },
   {
@@ -148,6 +151,9 @@
   },
   {
     "name": "resolveForwardRef"
+  },
+  {
+    "name": "setActiveConsumer"
   },
   {
     "name": "setCurrentInjector"
