@@ -7,7 +7,7 @@
  */
 
 import {retrieveHydrationInfo} from '../../hydration/utils';
-import {assertEqual} from '../../util/assert';
+import {assertEqual, assertNotReactive} from '../../util/assert';
 import {RenderFlags} from '../interfaces/definition';
 import {CONTEXT, FLAGS, HOST, HYDRATION, INJECTOR, LView, LViewFlags, QUERIES, TVIEW, TView} from '../interfaces/view';
 import {enterView, leaveView} from '../state';
@@ -72,6 +72,7 @@ export function syncViewWithBlueprint(tView: TView, lView: LView) {
  */
 export function renderView<T>(tView: TView, lView: LView<T>, context: T): void {
   ngDevMode && assertEqual(isCreationMode(lView), true, 'Should be run in creation mode');
+  ngDevMode && assertNotReactive(renderView.name);
   enterView(lView);
   try {
     const viewQuery = tView.viewQuery;
