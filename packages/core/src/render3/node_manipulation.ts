@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {consumerDestroy} from '@angular/core/primitives/signals';
+import {consumerDestroy, getActiveConsumer, setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererStyleFlags2} from '../render/api_flags';
 import {addToArray, removeFromArray} from '../util/array_utils';
-import {assertDefined, assertEqual, assertFunction, assertNumber, assertString} from '../util/assert';
+import {assertDefined, assertEqual, assertFunction, assertNotReactive, assertNumber, assertString} from '../util/assert';
 import {escapeCommentText} from '../util/dom';
 
 import {assertLContainer, assertLView, assertParentView, assertProjectionSlots, assertTNodeForLView} from './assert';
@@ -388,7 +388,12 @@ export function destroyLView(tView: TView, lView: LView) {
  * @param lView The LView to clean up
  */
 function cleanUpView(tView: TView, lView: LView): void {
-  if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
+  if (lView[FLAGS] & LViewFlags.Destroyed) {
+    return;
+  }
+
+  const prevConsumer = setActiveConsumer(null);
+  try {
     // Usually the Attached flag is removed when the view is detached from its parent, however
     // if it's a root view, the flag won't be unset hence why we're also removing on destroy.
     lView[FLAGS] &= ~LViewFlags.Attached;
@@ -427,11 +432,14 @@ function cleanUpView(tView: TView, lView: LView): void {
 
     // Unregister the view once everything else has been cleaned up.
     unregisterLView(lView);
+  } finally {
+    setActiveConsumer(prevConsumer);
   }
 }
 
 /** Removes listeners and unsubscribes from output subscriptions */
 function processCleanups(tView: TView, lView: LView): void {
+  ngDevMode && assertNotReactive(processCleanups.name);
   const tCleanup = tView.cleanup;
   const lCleanup = lView[CLEANUP]!;
   if (tCleanup !== null) {
@@ -474,6 +482,7 @@ function processCleanups(tView: TView, lView: LView): void {
 
 /** Calls onDestroy hooks for this view */
 function executeOnDestroys(tView: TView, lView: LView): void {
+  ngDevMode && assertNotReactive(executeOnDestroys.name);
   let destroyHooks: DestroyHookData|null;
 
   if (tView != null && (destroyHooks = tView.destroyHooks) != null) {

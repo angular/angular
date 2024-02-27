@@ -34,6 +34,7 @@ import {NullInjector} from './null_injector';
 import {isExistingProvider, isFactoryProvider, isTypeProvider, isValueProvider, SingleProvider} from './provider_collection';
 import {ProviderToken} from './provider_token';
 import {INJECTOR_SCOPE, InjectorScope} from './scope';
+import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 /**
  * Marker which indicates that a value has not yet been created from the factory function.
@@ -194,6 +195,7 @@ export class R3Injector extends EnvironmentInjector {
 
     // Set destroyed = true first, in case lifecycle hooks re-enter destroy().
     this._destroyed = true;
+    const prevConsumer = setActiveConsumer(null);
     try {
       // Call all the lifecycle hooks.
       for (const service of this._ngOnDestroyHooks) {
@@ -211,6 +213,7 @@ export class R3Injector extends EnvironmentInjector {
       this.records.clear();
       this._ngOnDestroyHooks.clear();
       this.injectorDefTypes.clear();
+      setActiveConsumer(prevConsumer);
     }
   }
 
@@ -322,6 +325,7 @@ export class R3Injector extends EnvironmentInjector {
 
   /** @internal */
   resolveInjectorInitializers() {
+    const prevConsumer = setActiveConsumer(null);
     const previousInjector = setCurrentInjector(this);
     const previousInjectImplementation = setInjectImplementation(undefined);
     let prevInjectContext: InjectorProfilerContext|undefined;
@@ -346,6 +350,7 @@ export class R3Injector extends EnvironmentInjector {
       setCurrentInjector(previousInjector);
       setInjectImplementation(previousInjectImplementation);
       ngDevMode && setInjectorProfilerContext(prevInjectContext!);
+      setActiveConsumer(prevConsumer);
     }
   }
 
@@ -419,24 +424,29 @@ export class R3Injector extends EnvironmentInjector {
   }
 
   private hydrate<T>(token: ProviderToken<T>, record: Record<T>): T {
-    if (ngDevMode && record.value === CIRCULAR) {
-      throwCyclicDependencyError(stringify(token));
-    } else if (record.value === NOT_YET) {
-      record.value = CIRCULAR;
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      if (ngDevMode && record.value === CIRCULAR) {
+        throwCyclicDependencyError(stringify(token));
+      } else if (record.value === NOT_YET) {
+        record.value = CIRCULAR;
 
-      if (ngDevMode) {
-        runInInjectorProfilerContext(this, token as Type<T>, () => {
+        if (ngDevMode) {
+          runInInjectorProfilerContext(this, token as Type<T>, () => {
+            record.value = record.factory!();
+            emitInstanceCreatedByInjectorEvent(record.value);
+          });
+        } else {
           record.value = record.factory!();
-          emitInstanceCreatedByInjectorEvent(record.value);
-        });
-      } else {
-        record.value = record.factory!();
+        }
       }
+      if (typeof record.value === 'object' && record.value && hasOnDestroy(record.value)) {
+        this._ngOnDestroyHooks.add(record.value);
+      }
+      return record.value as T;
+    } finally {
+      setActiveConsumer(prevConsumer);
     }
-    if (typeof record.value === 'object' && record.value && hasOnDestroy(record.value)) {
-      this._ngOnDestroyHooks.add(record.value);
-    }
-    return record.value as T;
   }
 
   private injectableDefInScope(def: ɵɵInjectableDeclaration<any>): boolean {

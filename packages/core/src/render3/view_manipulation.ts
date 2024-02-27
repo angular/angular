@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {setActiveConsumer} from '@angular/core/primitives/signals';
+
 import {Injector} from '../di/injector';
 import {DehydratedContainerView} from '../hydration/interfaces';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
@@ -23,30 +25,35 @@ import {addViewToDOM, destroyLView, detachView, getBeforeNodeForView, insertView
 export function createAndRenderEmbeddedLView<T>(
     declarationLView: LView<unknown>, templateTNode: TNode, context: T,
     options?: {injector?: Injector, dehydratedView?: DehydratedContainerView|null}): LView<T> {
-  const embeddedTView = templateTNode.tView!;
-  ngDevMode && assertDefined(embeddedTView, 'TView must be defined for a template node.');
-  ngDevMode && assertTNodeForLView(templateTNode, declarationLView);
+  const prevConsumer = setActiveConsumer(null);
+  try {
+    const embeddedTView = templateTNode.tView!;
+    ngDevMode && assertDefined(embeddedTView, 'TView must be defined for a template node.');
+    ngDevMode && assertTNodeForLView(templateTNode, declarationLView);
 
-  // Embedded views follow the change detection strategy of the view they're declared in.
-  const isSignalView = declarationLView[FLAGS] & LViewFlags.SignalView;
-  const viewFlags = isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways;
-  const embeddedLView = createLView<T>(
-      declarationLView, embeddedTView, context, viewFlags, null, templateTNode, null, null, null,
-      options?.injector ?? null, options?.dehydratedView ?? null);
+    // Embedded views follow the change detection strategy of the view they're declared in.
+    const isSignalView = declarationLView[FLAGS] & LViewFlags.SignalView;
+    const viewFlags = isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways;
+    const embeddedLView = createLView<T>(
+        declarationLView, embeddedTView, context, viewFlags, null, templateTNode, null, null, null,
+        options?.injector ?? null, options?.dehydratedView ?? null);
 
-  const declarationLContainer = declarationLView[templateTNode.index];
-  ngDevMode && assertLContainer(declarationLContainer);
-  embeddedLView[DECLARATION_LCONTAINER] = declarationLContainer;
+    const declarationLContainer = declarationLView[templateTNode.index];
+    ngDevMode && assertLContainer(declarationLContainer);
+    embeddedLView[DECLARATION_LCONTAINER] = declarationLContainer;
 
-  const declarationViewLQueries = declarationLView[QUERIES];
-  if (declarationViewLQueries !== null) {
-    embeddedLView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
+    const declarationViewLQueries = declarationLView[QUERIES];
+    if (declarationViewLQueries !== null) {
+      embeddedLView[QUERIES] = declarationViewLQueries.createEmbeddedView(embeddedTView);
+    }
+
+    // execute creation mode of a view
+    renderView(embeddedTView, embeddedLView, context);
+
+    return embeddedLView;
+  } finally {
+    setActiveConsumer(prevConsumer);
   }
-
-  // execute creation mode of a view
-  renderView(embeddedTView, embeddedLView, context);
-
-  return embeddedLView;
 }
 
 export function getLViewFromLContainer<T>(lContainer: LContainer, index: number): LView<T>|

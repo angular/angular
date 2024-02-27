@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {PartialObserver, Subject, Subscription} from 'rxjs';
 
 /**
@@ -109,7 +110,12 @@ class EventEmitter_ extends Subject<any> {
   }
 
   emit(value?: any) {
-    super.next(value);
+    const prevConsumer = setActiveConsumer(null);
+    try {
+      super.next(value);
+    } finally {
+      setActiveConsumer(prevConsumer);
+    }
   }
 
   override subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription {

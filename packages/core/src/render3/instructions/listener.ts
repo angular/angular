@@ -7,6 +7,8 @@
  */
 
 
+import {setActiveConsumer} from '@angular/core/primitives/signals';
+
 import {assertIndexInRange} from '../../util/assert';
 import {NodeOutputBindings, TNode, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
@@ -224,6 +226,7 @@ export function listenerInternal(
 
 function executeListenerWithErrorHandling(
     lView: LView, context: {}|null, listenerFn: (e?: any) => any, e: any): boolean {
+  const prevConsumer = setActiveConsumer(null);
   try {
     profiler(ProfilerEvent.OutputStart, context, listenerFn);
     // Only explicitly returning false from a listener should preventDefault
@@ -233,6 +236,7 @@ function executeListenerWithErrorHandling(
     return false;
   } finally {
     profiler(ProfilerEvent.OutputEnd, context, listenerFn);
+    setActiveConsumer(prevConsumer);
   }
 }
 

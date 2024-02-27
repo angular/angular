@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {setActiveConsumer} from '@angular/core/primitives/signals';
+
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {Injector} from '../di/injector';
@@ -174,140 +176,148 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       environmentInjector?: NgModuleRef<any>|EnvironmentInjector|
       undefined): AbstractComponentRef<T> {
-    // Check if the component is orphan
-    if (ngDevMode && (typeof ngJitMode === 'undefined' || ngJitMode) &&
-        this.componentDef.debugInfo?.forbidOrphanRendering) {
-      if (depsTracker.isOrphanComponent(this.componentType)) {
-        throw new RuntimeError(
-            RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
-            `Orphan component found! Trying to render the component ${
-                debugStringifyTypeForError(
-                    this.componentType)} without first loading the NgModule that declares it. It is recommended to make this component standalone in order to avoid this error. If this is not possible now, import the component's NgModule in the appropriate NgModule, or the standalone component in which you are trying to render this component. If this is a lazy import, load the NgModule lazily as well and use its module injector.`);
-      }
-    }
-
-    environmentInjector = environmentInjector || this.ngModule;
-
-    let realEnvironmentInjector = environmentInjector instanceof EnvironmentInjector ?
-        environmentInjector :
-        environmentInjector?.injector;
-
-    if (realEnvironmentInjector && this.componentDef.getStandaloneInjector !== null) {
-      realEnvironmentInjector = this.componentDef.getStandaloneInjector(realEnvironmentInjector) ||
-          realEnvironmentInjector;
-    }
-
-    const rootViewInjector =
-        realEnvironmentInjector ? new ChainedInjector(injector, realEnvironmentInjector) : injector;
-
-    const rendererFactory = rootViewInjector.get(RendererFactory2, null);
-    if (rendererFactory === null) {
-      throw new RuntimeError(
-          RuntimeErrorCode.RENDERER_NOT_FOUND,
-          ngDevMode &&
-              'Angular was not able to inject a renderer (RendererFactory2). ' +
-                  'Likely this is due to a broken DI hierarchy. ' +
-                  'Make sure that any injector used to create this component has a correct parent.');
-    }
-    const sanitizer = rootViewInjector.get(Sanitizer, null);
-
-    const afterRenderEventManager = rootViewInjector.get(AfterRenderEventManager, null);
-    const changeDetectionScheduler = rootViewInjector.get(ChangeDetectionScheduler, null);
-
-    const environment: LViewEnvironment = {
-      rendererFactory,
-      sanitizer,
-      // We don't use inline effects (yet).
-      inlineEffectRunner: null,
-      afterRenderEventManager,
-      changeDetectionScheduler,
-    };
-
-    const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
-    // Determine a tag name used for creating host elements when this component is created
-    // dynamically. Default to 'div' if this component did not specify any tag name in its selector.
-    const elementName = this.componentDef.selectors[0][0] as string || 'div';
-    const hostRNode = rootSelectorOrNode ?
-        locateHostElement(
-            hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation, rootViewInjector) :
-        createElementNode(hostRenderer, elementName, getNamespace(elementName));
-
-    let rootFlags = LViewFlags.IsRoot;
-    if (this.componentDef.signals) {
-      rootFlags |= LViewFlags.SignalView;
-    } else if (!this.componentDef.onPush) {
-      rootFlags |= LViewFlags.CheckAlways;
-    }
-
-    let hydrationInfo: DehydratedView|null = null;
-    if (hostRNode !== null) {
-      hydrationInfo = retrieveHydrationInfo(hostRNode, rootViewInjector, true /* isRootView */);
-    }
-
-    // Create the root view. Uses empty TView and ContentTemplate.
-    const rootTView =
-        createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null, null);
-    const rootLView = createLView(
-        null, rootTView, null, rootFlags, null, null, environment, hostRenderer, rootViewInjector,
-        null, hydrationInfo);
-
-    // rootView is the parent when bootstrapping
-    // TODO(misko): it looks like we are entering view here but we don't really need to as
-    // `renderView` does that. However as the code is written it is needed because
-    // `createRootComponentView` and `createRootComponent` both read global state. Fixing those
-    // issues would allow us to drop this.
-    enterView(rootLView);
-
-    let component: T;
-    let tElementNode: TElementNode;
-
+    const prevConsumer = setActiveConsumer(null);
     try {
-      const rootComponentDef = this.componentDef;
-      let rootDirectives: DirectiveDef<unknown>[];
-      let hostDirectiveDefs: HostDirectiveDefs|null = null;
-
-      if (rootComponentDef.findHostDirectiveDefs) {
-        rootDirectives = [];
-        hostDirectiveDefs = new Map();
-        rootComponentDef.findHostDirectiveDefs(rootComponentDef, rootDirectives, hostDirectiveDefs);
-        rootDirectives.push(rootComponentDef);
-        ngDevMode && assertNoDuplicateDirectives(rootDirectives);
-      } else {
-        rootDirectives = [rootComponentDef];
+      // Check if the component is orphan
+      if (ngDevMode && (typeof ngJitMode === 'undefined' || ngJitMode) &&
+          this.componentDef.debugInfo?.forbidOrphanRendering) {
+        if (depsTracker.isOrphanComponent(this.componentType)) {
+          throw new RuntimeError(
+              RuntimeErrorCode.RUNTIME_DEPS_ORPHAN_COMPONENT,
+              `Orphan component found! Trying to render the component ${
+                  debugStringifyTypeForError(
+                      this.componentType)} without first loading the NgModule that declares it. It is recommended to make this component standalone in order to avoid this error. If this is not possible now, import the component's NgModule in the appropriate NgModule, or the standalone component in which you are trying to render this component. If this is a lazy import, load the NgModule lazily as well and use its module injector.`);
+        }
       }
 
-      const hostTNode = createRootComponentTNode(rootLView, hostRNode);
-      const componentView = createRootComponentView(
-          hostTNode, hostRNode, rootComponentDef, rootDirectives, rootLView, environment,
-          hostRenderer);
+      environmentInjector = environmentInjector || this.ngModule;
 
-      tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
+      let realEnvironmentInjector = environmentInjector instanceof EnvironmentInjector ?
+          environmentInjector :
+          environmentInjector?.injector;
 
-      // TODO(crisbeto): in practice `hostRNode` should always be defined, but there are some tests
-      // where the renderer is mocked out and `undefined` is returned. We should update the tests so
-      // that this check can be removed.
-      if (hostRNode) {
-        setRootNodeAttributes(hostRenderer, rootComponentDef, hostRNode, rootSelectorOrNode);
+      if (realEnvironmentInjector && this.componentDef.getStandaloneInjector !== null) {
+        realEnvironmentInjector =
+            this.componentDef.getStandaloneInjector(realEnvironmentInjector) ||
+            realEnvironmentInjector;
       }
 
-      if (projectableNodes !== undefined) {
-        projectNodes(tElementNode, this.ngContentSelectors, projectableNodes);
+      const rootViewInjector = realEnvironmentInjector ?
+          new ChainedInjector(injector, realEnvironmentInjector) :
+          injector;
+
+      const rendererFactory = rootViewInjector.get(RendererFactory2, null);
+      if (rendererFactory === null) {
+        throw new RuntimeError(
+            RuntimeErrorCode.RENDERER_NOT_FOUND,
+            ngDevMode &&
+                'Angular was not able to inject a renderer (RendererFactory2). ' +
+                    'Likely this is due to a broken DI hierarchy. ' +
+                    'Make sure that any injector used to create this component has a correct parent.');
+      }
+      const sanitizer = rootViewInjector.get(Sanitizer, null);
+
+      const afterRenderEventManager = rootViewInjector.get(AfterRenderEventManager, null);
+      const changeDetectionScheduler = rootViewInjector.get(ChangeDetectionScheduler, null);
+
+      const environment: LViewEnvironment = {
+        rendererFactory,
+        sanitizer,
+        // We don't use inline effects (yet).
+        inlineEffectRunner: null,
+        afterRenderEventManager,
+        changeDetectionScheduler,
+      };
+
+      const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);
+      // Determine a tag name used for creating host elements when this component is created
+      // dynamically. Default to 'div' if this component did not specify any tag name in its
+      // selector.
+      const elementName = this.componentDef.selectors[0][0] as string || 'div';
+      const hostRNode = rootSelectorOrNode ?
+          locateHostElement(
+              hostRenderer, rootSelectorOrNode, this.componentDef.encapsulation, rootViewInjector) :
+          createElementNode(hostRenderer, elementName, getNamespace(elementName));
+
+      let rootFlags = LViewFlags.IsRoot;
+      if (this.componentDef.signals) {
+        rootFlags |= LViewFlags.SignalView;
+      } else if (!this.componentDef.onPush) {
+        rootFlags |= LViewFlags.CheckAlways;
       }
 
-      // TODO: should LifecycleHooksFeature and other host features be generated by the compiler and
-      // executed here?
-      // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
-      component = createRootComponent(
-          componentView, rootComponentDef, rootDirectives, hostDirectiveDefs, rootLView,
-          [LifecycleHooksFeature]);
-      renderView(rootTView, rootLView, null);
+      let hydrationInfo: DehydratedView|null = null;
+      if (hostRNode !== null) {
+        hydrationInfo = retrieveHydrationInfo(hostRNode, rootViewInjector, true /* isRootView */);
+      }
+
+      // Create the root view. Uses empty TView and ContentTemplate.
+      const rootTView =
+          createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null, null);
+      const rootLView = createLView(
+          null, rootTView, null, rootFlags, null, null, environment, hostRenderer, rootViewInjector,
+          null, hydrationInfo);
+
+      // rootView is the parent when bootstrapping
+      // TODO(misko): it looks like we are entering view here but we don't really need to as
+      // `renderView` does that. However as the code is written it is needed because
+      // `createRootComponentView` and `createRootComponent` both read global state. Fixing those
+      // issues would allow us to drop this.
+      enterView(rootLView);
+
+      let component: T;
+      let tElementNode: TElementNode;
+
+      try {
+        const rootComponentDef = this.componentDef;
+        let rootDirectives: DirectiveDef<unknown>[];
+        let hostDirectiveDefs: HostDirectiveDefs|null = null;
+
+        if (rootComponentDef.findHostDirectiveDefs) {
+          rootDirectives = [];
+          hostDirectiveDefs = new Map();
+          rootComponentDef.findHostDirectiveDefs(
+              rootComponentDef, rootDirectives, hostDirectiveDefs);
+          rootDirectives.push(rootComponentDef);
+          ngDevMode && assertNoDuplicateDirectives(rootDirectives);
+        } else {
+          rootDirectives = [rootComponentDef];
+        }
+
+        const hostTNode = createRootComponentTNode(rootLView, hostRNode);
+        const componentView = createRootComponentView(
+            hostTNode, hostRNode, rootComponentDef, rootDirectives, rootLView, environment,
+            hostRenderer);
+
+        tElementNode = getTNode(rootTView, HEADER_OFFSET) as TElementNode;
+
+        // TODO(crisbeto): in practice `hostRNode` should always be defined, but there are some
+        // tests where the renderer is mocked out and `undefined` is returned. We should update the
+        // tests so that this check can be removed.
+        if (hostRNode) {
+          setRootNodeAttributes(hostRenderer, rootComponentDef, hostRNode, rootSelectorOrNode);
+        }
+
+        if (projectableNodes !== undefined) {
+          projectNodes(tElementNode, this.ngContentSelectors, projectableNodes);
+        }
+
+        // TODO: should LifecycleHooksFeature and other host features be generated by the compiler
+        // and executed here? Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
+        component = createRootComponent(
+            componentView, rootComponentDef, rootDirectives, hostDirectiveDefs, rootLView,
+            [LifecycleHooksFeature]);
+        renderView(rootTView, rootLView, null);
+      } finally {
+        leaveView();
+      }
+
+      return new ComponentRef(
+          this.componentType, component, createElementRef(tElementNode, rootLView), rootLView,
+          tElementNode);
     } finally {
-      leaveView();
+      setActiveConsumer(prevConsumer);
     }
-
-    return new ComponentRef(
-        this.componentType, component, createElementRef(tElementNode, rootLView), rootLView,
-        tElementNode);
   }
 }
 

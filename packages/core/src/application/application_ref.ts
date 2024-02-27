@@ -8,7 +8,7 @@
 
 import '../util/ng_jit_mode';
 
-import {setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
+import {setActiveConsumer, setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
 import {Observable} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
@@ -492,6 +492,7 @@ export class ApplicationRef {
           ngDevMode && 'ApplicationRef.tick is called recursively');
     }
 
+    const prevConsumer = setActiveConsumer(null);
     try {
       this._runningTick = true;
 
@@ -507,6 +508,7 @@ export class ApplicationRef {
       this.internalErrorHandler(e);
     } finally {
       this._runningTick = false;
+      setActiveConsumer(prevConsumer);
     }
   }
 
