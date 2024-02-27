@@ -242,15 +242,18 @@ export class UserService {
 }
 </docs-code>
 
-Within a component, you can combine `NgIf` with the `async` pipe to render the UI for the data only after it's finished loading:
+Within a component, you can combine `@if` with the `async` pipe to render the UI for the data only after it's finished loading:
 
 <docs-code language="ts">
+import { AsyncPipe } from '@angular/common';
 @Component({
+  standalone: true,
+  imports: [AsyncPipe],
   template: `
-    <ng-container *ngIf="user$ | async as user">
+    @if (user$ | async; as user) {
       <p>Name: {{ user.name }}</p>
       <p>Biography: {{ user.biography }}</p>
-    </ng-container>
+    }
   `,
 })
 export class UserProfileComponent {
