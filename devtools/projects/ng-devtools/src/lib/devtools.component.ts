@@ -9,36 +9,13 @@
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
 
-import {FrameManager} from './frame_manager';
 import {ThemeService} from './theme-service';
-import {MatTooltip, MatTooltipModule} from '@angular/material/tooltip';
+import {MatTooltip} from '@angular/material/tooltip';
 import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {Frame} from './application-environment';
-
-const DETECT_ANGULAR_ATTEMPTS = 10;
-
-enum AngularStatus {
-  /**
-   * This page may have Angular but we don't know yet. We're still trying to detect it.
-   */
-  UNKNOWN,
-
-  /**
-   * We've given up on trying to detect Angular. We tried ${DETECT_ANGULAR_ATTEMPTS} times and
-   * failed.
-   */
-  DOES_NOT_EXIST,
-
-  /**
-   * Angular was detected somewhere on the page.
-   */
-  EXISTS,
-}
 
 @Component({
   selector: 'ng-devtools',
@@ -51,11 +28,10 @@ enum AngularStatus {
     ]),
   ],
   standalone: true,
-  imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
+  imports: [DevToolsTabsComponent, MatTooltip],
 })
 export class DevToolsComponent implements OnInit, OnDestroy {
-  AngularStatus = AngularStatus;
-  angularStatus: AngularStatus = AngularStatus.UNKNOWN;
+  angularExists: boolean | null = null;
   angularVersion: string | boolean | undefined = undefined;
   angularIsInDevMode = true;
   hydration: boolean = false;
@@ -63,28 +39,26 @@ export class DevToolsComponent implements OnInit, OnDestroy {
 
   private readonly _firefoxStyleName = 'firefox_styles.css';
   private readonly _chromeStyleName = 'chrome_styles.css';
-  private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly _themeService = inject(ThemeService);
-  private readonly _platform = inject(Platform);
-  private readonly _document = inject(DOCUMENT);
-  private readonly _frameManager = inject(FrameManager);
+
+  constructor(
+    private _messageBus: MessageBus<Events>,
+    private _themeService: ThemeService,
+    private _platform: Platform,
+    @Inject(DOCUMENT) private _document: Document,
+  ) {}
 
   private _interval$ = interval(500).subscribe((attempt) => {
-    if (attempt === DETECT_ANGULAR_ATTEMPTS) {
-      this.angularStatus = AngularStatus.DOES_NOT_EXIST;
+    if (attempt === 10) {
+      this.angularExists = false;
     }
     this._messageBus.emit('queryNgAvailability');
   });
-
-  inspectFrame(frame: Frame) {
-    this._frameManager.inspectFrame(frame);
-  }
 
   ngOnInit(): void {
     this._themeService.initializeThemeWatcher();
 
     this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration}) => {
-      this.angularStatus = version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST;
+      this.angularExists = !!version;
       this.angularVersion = version;
       this.angularIsInDevMode = devMode;
       this.ivy = ivy;

@@ -86,10 +86,6 @@ export const subscribeToClientEvents = (
 
   messageBus.on('logProvider', logProvider);
 
-  messageBus.on('log', ({message, level}) => {
-    console[level](`[Angular DevTools]: ${message}`);
-  });
-
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     setupInspector(messageBus);
     // Often websites have `scroll` event listener which triggers
@@ -220,8 +216,8 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
 const checkForAngular = (messageBus: MessageBus<Events>): void => {
   const ngVersion = getAngularVersion();
   const appIsIvy = appIsAngularIvy();
-
   if (!ngVersion) {
+    setTimeout(() => checkForAngular(messageBus), 500);
     return;
   }
 

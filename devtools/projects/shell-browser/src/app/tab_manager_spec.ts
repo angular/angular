@@ -36,18 +36,18 @@ class MockPort {
     this.sender = properties.sender;
   }
 
-  postMessage(message: any): void {
+  postMessage(message: any) {
     this.messagesPosted.push(message);
   }
 
   onMessage = {
-    addListener: (listener: Function): void => {
+    addListener: (listener: Function) => {
       this.onMessageListeners.push(listener);
     },
   };
 
   onDisconnect = {
-    addListener: (listener: Function): void => {
+    addListener: (listener: Function) => {
       this.onDisconnectListeners.push(listener);
     },
   };
@@ -72,27 +72,22 @@ function mockSpyProperty(obj: any, property: string, value: any) {
 describe('Tab Manager - ', () => {
   let tabs: Tabs;
   const tabId = 12345;
+  // let devtoolsPort: MockPort;
   let chromeRuntime: jasmine.SpyObj<typeof chrome.runtime>;
   let tabManager: TabManager;
   let tab: DevToolsConnection;
   let chromeRuntimeOnConnectListeners: ((port: MockPort) => void)[] = [];
 
-  function connectToChromeRuntime(port: MockPort): void {
-    for (const listener of chromeRuntimeOnConnectListeners) {
-      listener(port);
-    }
+  function connectToChromeRuntime(port: MockPort) {
+    chromeRuntimeOnConnectListeners.forEach((listener) => listener(port));
   }
 
-  function emitMessageToPort(port: MockPort, message: any): void {
-    for (const listener of port.onMessageListeners) {
-      listener(message);
-    }
+  function emitMessageToPort(port: MockPort, message: any) {
+    port.onMessageListeners.forEach((listener) => listener(message));
   }
 
   function emitDisconnectToPort(port: MockPort) {
-    for (const listener of port.onDisconnectListeners) {
-      listener();
-    }
+    port.onDisconnectListeners.forEach((listener) => listener());
   }
 
   function createDevToolsPort() {
@@ -136,7 +131,6 @@ describe('Tab Manager - ', () => {
         },
       });
       connectToChromeRuntime(port);
-      emitMessageToPort(port, {topic: 'backendReady'});
       return port;
     }
 
@@ -158,7 +152,7 @@ describe('Tab Manager - ', () => {
     });
 
     it('should set frame connection as enabled when an enableFrameConnection message is recieved', () => {
-      const contentScriptPort = createContentScriptPort();
+      createContentScriptPort();
       const devtoolsPort = createDevToolsPort();
       tab = tabs[tabId]!;
 
@@ -198,27 +192,24 @@ describe('Tab Manager - ', () => {
     it('should not pipe messages from the content script and devtools script to each other when the content script frame is disabled', () => {
       const contentScriptPort = createContentScriptPort();
       const devtoolsPort = createDevToolsPort();
-      tab = tabs[tabId]!;
 
       expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(false);
-
       emitMessageToPort(contentScriptPort, TEST_MESSAGE_ONE);
-      assertArrayDoesNotHaveObj(contentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
+      expect(contentScriptPort.messagesPosted.length).toBe(0);
 
       emitMessageToPort(devtoolsPort, TEST_MESSAGE_TWO);
-      assertArrayDoesNotHaveObj(devtoolsPort.messagesPosted, TEST_MESSAGE_TWO);
+      expect(devtoolsPort.messagesPosted.length).toBe(0);
     });
 
     it('should set backendReady when the contentPort recieves the backendReady message', () => {
       const contentScriptPort = createContentScriptPort();
       const devtoolsPort = createDevToolsPort();
-      tab = tabs[tabId]!;
 
       emitMessageToPort(devtoolsPort, {
         topic: 'enableFrameConnection',
         args: [contentScriptFrameId, tabId],
       });
-
+      emitMessageToPort(contentScriptPort, {topic: 'backendReady'});
       expect(tab?.contentScripts[contentScriptFrameId]?.backendReady).toBe(true);
       assertArrayHasObj(devtoolsPort.messagesPosted, {
         topic: 'contentScriptConnected',
@@ -229,7 +220,6 @@ describe('Tab Manager - ', () => {
     it('should set tab.devtools to null when the devtoolsPort disconnects', () => {
       const contentScriptPort = createContentScriptPort();
       const devtoolsPort = createDevToolsPort();
-      tab = tabs[tabId]!;
 
       emitMessageToPort(devtoolsPort, {
         topic: 'enableFrameConnection',
@@ -321,7 +311,6 @@ describe('Tab Manager - ', () => {
       const devtoolsPort = createDevToolsPort();
       createTopLevelContentScriptPort();
       createChildContentScriptPort();
-      tab = tabs[tabId]!;
 
       expect(tab?.contentScripts[topLevelFrameId]?.enabled).toBe(false);
       expect(tab?.contentScripts[childFrameId]?.enabled).toBe(false);
