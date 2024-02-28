@@ -49,7 +49,9 @@ export const ViewChildren = callablePropDecorator();
 export type ModuleWithProviders<T = any> = any;
 
 export class ChangeDetectorRef {}
-export class ElementRef {}
+export class ElementRef<T = any> {
+  nativeElement!: T;
+}
 export class Injector {}
 export class TemplateRef<T = any> {}
 export class ViewContainerRef {}
