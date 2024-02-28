@@ -16,7 +16,7 @@ runInEachFileSystem(() => {
     const testCases: TestCase[] = [
       {
         id: 'basic output',
-        outputs: {'evt': {type: 'OutputEmitter<string>'}},
+        outputs: {'evt': {type: 'OutputEmitterRef<string>'}},
         template: `<div dir (evt)="$event.bla">`,
         expected: [
           `TestComponent.html(1, 24): Property 'bla' does not exist on type 'string'.`,
@@ -24,7 +24,7 @@ runInEachFileSystem(() => {
       },
       {
         id: 'output with void type',
-        outputs: {'evt': {type: 'OutputEmitter<void>'}},
+        outputs: {'evt': {type: 'OutputEmitterRef<void>'}},
         template: `<div dir (evt)="$event.x">`,
         expected: [
           `TestComponent.html(1, 24): Property 'x' does not exist on type 'void'.`,
@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
       {
         id: 'two way data binding, invalid',
         inputs: {'value': {type: 'InputSignal<string>', isSignal: true}},
-        outputs: {'valueChange': {type: 'OutputEmitter<string>'}},
+        outputs: {'valueChange': {type: 'OutputEmitterRef<string>'}},
         template: `<div dir [(value)]="bla">`,
         component: `bla = true;`,
         expected: [
@@ -43,14 +43,14 @@ runInEachFileSystem(() => {
       {
         id: 'two way data binding, valid',
         inputs: {'value': {type: 'InputSignal<string>', isSignal: true}},
-        outputs: {'valueChange': {type: 'OutputEmitter<string>'}},
+        outputs: {'valueChange': {type: 'OutputEmitterRef<string>'}},
         template: `<div dir [(value)]="bla">`,
         component: `bla: string = ''`,
         expected: [],
       },
       {
         id: 'complex output object',
-        outputs: {'evt': {type: 'OutputEmitter<{works: boolean}>'}},
+        outputs: {'evt': {type: 'OutputEmitterRef<{works: boolean}>'}},
         template: `<div dir (evt)="x = $event.works">`,
         component: `x: never = null!`,  // to raise a diagnostic to check the type.
         expected: [
@@ -62,7 +62,7 @@ runInEachFileSystem(() => {
         id: 'mixing decorator-based and initializer-based outputs',
         outputs: {
           evt1: {type: 'EventEmitter<string>'},
-          evt2: {type: 'OutputEmitter<string>'},
+          evt2: {type: 'OutputEmitterRef<string>'},
         },
         template: `<div dir (evt1)="x1 = $event" (evt2)="x2 = $event">`,
         component: `
@@ -77,13 +77,13 @@ runInEachFileSystem(() => {
       // restricted fields
       {
         id: 'allows access to private output',
-        outputs: {evt: {type: 'OutputEmitter<string>', restrictionModifier: 'private'}},
+        outputs: {evt: {type: 'OutputEmitterRef<string>', restrictionModifier: 'private'}},
         template: `<div dir (evt)="true">`,
         expected: [],
       },
       {
         id: 'allows access to protected output',
-        outputs: {evt: {type: 'OutputEmitter<string>', restrictionModifier: 'protected'}},
+        outputs: {evt: {type: 'OutputEmitterRef<string>', restrictionModifier: 'protected'}},
         template: `<div dir (evt)="true">`,
         expected: [],
       },

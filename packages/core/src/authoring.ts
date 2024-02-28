@@ -14,5 +14,7 @@ export {InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, I
 export {ɵUnwrapDirectiveSignalInputs} from './authoring/input/input_type_checking';
 export {ModelFunction} from './authoring/model/model';
 export {ModelOptions, ModelSignal} from './authoring/model/model_signal';
-export {output as ɵoutput, OutputEmitter as ɵOutputEmitter, OutputOptions as ɵOutputOptions} from './authoring/output';
+export {output, OutputOptions} from './authoring/output/output';
+export {getOutputDestroyRef as ɵgetOutputDestroyRef, OutputEmitterRef} from './authoring/output/output_emitter_ref';
+export {OutputRef, OutputRefSubscription} from './authoring/output/output_ref';
 export {ContentChildFunction, ViewChildFunction} from './authoring/queries';
