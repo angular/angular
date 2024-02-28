@@ -71,7 +71,7 @@ export function typeCheckDiagnose(c: TestCase, compilerOptions?: ts.CompilerOpti
       import {
         InputSignal,
         EventEmitter,
-        OutputEmitter,
+        OutputEmitterRef,
         InputSignalWithTransform,
         ModelSignal,
         WritableSignal,

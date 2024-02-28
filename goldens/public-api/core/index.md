@@ -1267,10 +1267,38 @@ export interface Output {
 export const Output: OutputDecorator;
 
 // @public
+export function output<T = void>(opts?: OutputOptions): OutputEmitterRef<T>;
+
+// @public
 export interface OutputDecorator {
     (alias?: string): any;
     // (undocumented)
     new (alias?: string): any;
+}
+
+// @public
+export class OutputEmitterRef<T> implements OutputRef<T> {
+    constructor();
+    emit(value: T): void;
+    // (undocumented)
+    subscribe(callback: (value: T) => void): OutputRefSubscription;
+}
+
+// @public
+export interface OutputOptions {
+    // (undocumented)
+    alias?: string;
+}
+
+// @public
+export interface OutputRef<T> {
+    subscribe(callback: (value: T) => void): OutputRefSubscription;
+}
+
+// @public
+export interface OutputRefSubscription {
+    // (undocumented)
+    unsubscribe(): void;
 }
 
 // @public @deprecated

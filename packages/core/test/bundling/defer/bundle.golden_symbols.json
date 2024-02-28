@@ -1671,6 +1671,9 @@
     "name": "init_output"
   },
   {
+    "name": "init_output_emitter_ref"
+  },
+  {
     "name": "init_partial"
   },
   {

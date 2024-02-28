@@ -105,6 +105,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     NO_SUPPORTING_DIFFER_FACTORY = 901,
     // (undocumented)
+    OUTPUT_REF_DESTROYED = 953,
+    // (undocumented)
     PIPE_NOT_FOUND = -302,
     // (undocumented)
     PLATFORM_ALREADY_DESTROYED = 404,
