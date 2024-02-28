@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertInInjectionContext} from '../../di';
+
 import {OutputEmitterRef} from './output_emitter_ref';
 
 /**
@@ -39,5 +41,6 @@ export interface OutputOptions {
  * @developerPreview
  */
 export function output<T = void>(opts?: OutputOptions): OutputEmitterRef<T> {
+  ngDevMode && assertInInjectionContext(output);
   return new OutputEmitterRef<T>();
 }

@@ -6,15 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertInInjectionContext} from '../../di';
 import {REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
 
 import {createModelSignal, ModelOptions, ModelSignal} from './model_signal';
 
 export function modelFunction<T>(initialValue?: T): ModelSignal<T|undefined> {
+  ngDevMode && assertInInjectionContext(model);
+
   return createModelSignal(initialValue);
 }
 
 export function modelRequiredFunction<T>(): ModelSignal<T> {
+  ngDevMode && assertInInjectionContext(model);
+
   return createModelSignal(REQUIRED_UNSET_VALUE as T);
 }
 
