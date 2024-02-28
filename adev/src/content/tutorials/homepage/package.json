@@ -23,10 +23,5 @@
     "@angular/cli": "^17.2.0-next",
     "@angular/compiler-cli": "^17.2.0-next",
     "typescript": "~5.2.0"
-  },
-  "overrides": {
-    "@angular-devkit/build-angular": {
-      "piscina": "4.3.2"
-    }
   }
 }
