@@ -178,6 +178,15 @@ describe('definitions', () => {
        export class MyDir3 {
          someEvent = output();
        }`,
+      'dir4.ts': `
+         import {Directive, EventEmitter} from '@angular/core';
+         import {outputFromObservable} from '@angular/core/rxjs-interop';
+
+         @Directive({selector: '[dir]'})
+         export class MyDir4 {
+           someEvent = outputFromObservable(new EventEmitter<void>);
+         }
+       `,
       'app.ts': `
          import {Component, NgModule} from '@angular/core';
          import {CommonModule} from '@angular/common';
@@ -197,15 +206,17 @@ describe('definitions', () => {
     expect(template.contents.slice(textSpan.start, textSpan.start + textSpan.length))
         .toEqual('someEvent');
 
-    expect(definitions.length).toEqual(3);
-    const [def3, def2, def] = definitions;
+    expect(definitions.length).toEqual(4);
+    const [def4, def3, def2, def] = definitions;
     expect(def.textSpan).toContain('someEvent');
     expect(def2.textSpan).toContain('someEvent');
     expect(def3.textSpan).toContain('someEvent');
     expect(def3.contextSpan!).toBe('someEvent = output();');
+    expect(def4.textSpan).toContain('someEvent');
+    expect(def4.contextSpan!).toBe(`someEvent = outputFromObservable(new EventEmitter<void>);`);
     // TODO(atscott): investigate why the text span includes more than just 'someEvent'
     // assertTextSpans([def, def2], ['someEvent']);
-    assertFileNames([def3, def2, def], ['dir3.ts', 'dir2.ts', 'dir.ts']);
+    assertFileNames([def4, def3, def2, def], ['dir4.ts', 'dir3.ts', 'dir2.ts', 'dir.ts']);
   });
 
   it('gets definitions for all model inputs when attribute matches more than one in a static attribute',
