@@ -25,6 +25,7 @@ jasmine_node_test(
         "//packages/core:npm_package",
         "@npm//rxjs",
     ],
+    shard_count = 4,
     deps = [
         ":test_lib",
     ],
