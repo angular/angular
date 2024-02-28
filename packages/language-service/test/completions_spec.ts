@@ -388,6 +388,52 @@ describe('completions', () => {
        });
   });
 
+  describe('initializer-based outputFromObservable() API', () => {
+    const initializerOutputDirectiveWithUnionType = {
+      'Dir': `
+         @Directive({
+           selector: '[dir]',
+         })
+         export class Dir {
+           bla = outputFromObservable(new Subject<string>());
+         }
+    `
+    };
+
+    it('should return event completion', () => {
+      const {templateFile} =
+          setup(`<button dir ></button>`, ``, initializerOutputDirectiveWithUnionType);
+      templateFile.moveCursorToText(`<button dir ¦>`);
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(completions, DisplayInfoKind.EVENT, ['(bla)']);
+    });
+
+    it('should return property access completions', () => {
+      const {templateFile} =
+          setup(`<input dir (bla)="'foo'.">`, '', initializerOutputDirectiveWithUnionType);
+      templateFile.moveCursorToText(`dir (bla)="'foo'.¦">`);
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, ts.ScriptElementKind.memberFunctionElement,
+          [`charAt`, 'toLowerCase', /* etc. */]);
+    });
+
+    it('should return completions of string literals, number literals, `true`, ' +
+           '`false`, `null` and `undefined`',
+       () => {
+         const {templateFile} =
+             setup(`<input dir (bla)="$event.">`, '', initializerOutputDirectiveWithUnionType);
+         templateFile.moveCursorToText('dir (bla)="$event.¦">');
+
+         const completions = templateFile.getCompletionsAtPosition();
+
+         expectContain(
+             completions, ts.ScriptElementKind.memberFunctionElement,
+             [`charAt`, 'toLowerCase', /* etc. */]);
+       });
+  });
+
   describe('model inputs', () => {
     const directiveWithModel = {
       'Dir': `
@@ -1757,6 +1803,8 @@ function setup(
           Pipe,
           TemplateRef,
         } from '@angular/core';
+        import {outputFromObservable} from '@angular/core/rxjs-interop';
+        import {Subject} from 'rxjs';
 
          ${functionDeclarations}
 

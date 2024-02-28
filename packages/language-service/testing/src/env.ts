@@ -26,6 +26,7 @@ export class LanguageServiceTestEnv {
     }
     fs.init(loadStandardTestFiles({
       fakeCommon: true,
+      rxjs: true,
     }));
 
     const host = new MockServerHost(fs);
