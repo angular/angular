@@ -565,7 +565,6 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
 function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
   if (icu.i18n instanceof i18n.Message && isSingleI18nIcu(icu.i18n)) {
     const xref = unit.job.allocateXrefId();
-    const icuNode = icu.i18n.nodes[0];
     unit.create.push(ir.createIcuStartOp(xref, icu.i18n, icuFromI18nMessage(icu.i18n).name, null!));
     for (const [placeholder, text] of Object.entries({...icu.vars, ...icu.placeholders})) {
       if (text instanceof t.BoundText) {

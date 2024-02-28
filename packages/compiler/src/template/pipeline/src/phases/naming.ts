@@ -89,8 +89,8 @@ function addNamesToView(
           const emptyView = unit.job.views.get(op.emptyView)!;
           // Repeater empty view function is at slot +2 (metadata is in the first slot).
           addNamesToView(
-              emptyView, `${baseName}_${`${op.functionNameSuffix}Empty`}_${op.handle.slot + 2}`,
-              state, compatibility);
+              emptyView, `${baseName}_${op.functionNameSuffix}Empty_${op.handle.slot + 2}`, state,
+              compatibility);
         }
         // Repeater primary view function is at slot +1 (metadata is in the first slot).
         addNamesToView(

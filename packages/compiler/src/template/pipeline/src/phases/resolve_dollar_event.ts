@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {CompilationJob, CompilationUnit} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 /**
  * Any variable inside a listener with the name `$event` will be transformed into a output lexical
@@ -16,13 +16,12 @@ import type {CompilationJob, CompilationUnit} from '../compilation';
  */
 export function resolveDollarEvent(job: CompilationJob): void {
   for (const unit of job.units) {
-    transformDollarEvent(unit, unit.create);
-    transformDollarEvent(unit, unit.update);
+    transformDollarEvent(unit.create);
+    transformDollarEvent(unit.update);
   }
 }
 
-function transformDollarEvent(
-    unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
+function transformDollarEvent(ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
       ir.transformExpressionsInOp(op, (expr) => {

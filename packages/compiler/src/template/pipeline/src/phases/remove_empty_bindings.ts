@@ -10,7 +10,7 @@ import * as ir from '../../ir';
 import type {CompilationJob} from '../compilation';
 
 /**
- * Bidningd with no content can be safely deleted.
+ * Binding with no content can be safely deleted.
  */
 export function removeEmptyBindings(job: CompilationJob): void {
   for (const unit of job.units) {

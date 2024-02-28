@@ -38,7 +38,7 @@ export function extractAttributes(job: CompilationJob): void {
             }
 
             ir.OpList.insertBefore<ir.CreateOp>(
-                // Deliberaly null i18nMessage value
+                // Deliberately null i18nMessage value
                 ir.createExtractedAttributeOp(
                     op.target, bindingKind, null, op.name, /* expression */ null,
                     /* i18nContext */ null,

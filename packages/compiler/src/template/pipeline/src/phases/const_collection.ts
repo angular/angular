@@ -133,7 +133,7 @@ class ElementAttributes {
 
   constructor(private compatibility: ir.CompatibilityMode) {}
 
-  private isKnown(kind: ir.BindingKind, name: string, value: o.Expression|null) {
+  private isKnown(kind: ir.BindingKind, name: string) {
     const nameToValue = this.known.get(kind) ?? new Set<string>();
     this.known.set(kind, nameToValue);
     if (nameToValue.has(name)) {
@@ -151,7 +151,7 @@ class ElementAttributes {
     const allowDuplicates = this.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
         (kind === ir.BindingKind.Attribute || kind === ir.BindingKind.ClassName ||
          kind === ir.BindingKind.StyleProperty);
-    if (!allowDuplicates && this.isKnown(kind, name, value)) {
+    if (!allowDuplicates && this.isKnown(kind, name)) {
       return;
     }
 

@@ -268,7 +268,7 @@ function recordTemplateClose(
     job: ComponentCompilationJob, view: ViewCompilationUnit, slot: number,
     i18nPlaceholder: i18n.TagPlaceholder|i18n.BlockPlaceholder, i18nContext: ir.I18nContextOp,
     i18nBlock: ir.I18nStartOp, structuralDirective?: ir.TemplateOp) {
-  const {startName, closeName} = i18nPlaceholder;
+  const {closeName} = i18nPlaceholder;
   const flags = ir.I18nParamValueFlags.TemplateTag | ir.I18nParamValueFlags.CloseTag;
   // Self-closing tags don't have a closing tag placeholder, instead the template's closing is
   // recorded via an additional flag on the template start value.
