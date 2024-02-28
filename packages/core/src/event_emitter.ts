@@ -9,6 +9,10 @@
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {PartialObserver, Subject, Subscription} from 'rxjs';
 
+import {OutputRef} from './authoring/output/output_ref';
+import {inject} from './di/injector_compatibility';
+import {DestroyRef} from './linker/destroy_ref';
+
 /**
  * Use in components with the `@Output` directive to emit custom events
  * synchronously or asynchronously, and register handlers for those events
@@ -60,7 +64,7 @@ import {PartialObserver, Subject, Subscription} from 'rxjs';
  * @see [Observables in Angular](guide/observables-in-angular)
  * @publicApi
  */
-export interface EventEmitter<T> extends Subject<T> {
+export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
   /**
    * @internal
    */
@@ -101,12 +105,21 @@ export interface EventEmitter<T> extends Subject<T> {
   subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription;
 }
 
-class EventEmitter_ extends Subject<any> {
+class EventEmitter_ extends Subject<any> implements OutputRef<any> {
   __isAsync: boolean;  // tslint:disable-line
+  destroyRef: DestroyRef|undefined;
 
   constructor(isAsync: boolean = false) {
     super();
     this.__isAsync = isAsync;
+
+    // Attempt to retrieve a `DestroyRef` optionally.
+    // For backwards compatibility reasons, this cannot be required.
+    try {
+      this.destroyRef = inject(DestroyRef);
+    } catch {
+      this.destroyRef = undefined;
+    }
   }
 
   emit(value?: any) {

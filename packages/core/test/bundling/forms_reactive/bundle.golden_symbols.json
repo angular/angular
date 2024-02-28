@@ -159,6 +159,9 @@
     "name": "DefaultValueAccessor"
   },
   {
+    "name": "DestroyRef"
+  },
+  {
     "name": "DomAdapter"
   },
   {
@@ -415,6 +418,9 @@
   },
   {
     "name": "NodeInjector"
+  },
+  {
+    "name": "NodeInjectorDestroyRef"
   },
   {
     "name": "NodeInjectorFactory"
@@ -1215,6 +1221,9 @@
     "name": "injectArgs"
   },
   {
+    "name": "injectDestroyRef"
+  },
+  {
     "name": "injectElementRef"
   },
   {
@@ -1675,6 +1684,9 @@
   },
   {
     "name": "shouldSearchParent"
+  },
+  {
+    "name": "storeLViewOnDestroy"
   },
   {
     "name": "stringify"

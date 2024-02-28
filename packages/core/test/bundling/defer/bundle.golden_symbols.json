@@ -141,6 +141,9 @@
     "name": "DeferDependenciesLoadingState"
   },
   {
+    "name": "DestroyRef"
+  },
+  {
     "name": "DomAdapter"
   },
   {
@@ -349,6 +352,9 @@
   },
   {
     "name": "NodeInjector"
+  },
+  {
+    "name": "NodeInjectorDestroyRef"
   },
   {
     "name": "NodeInjectorFactory"
@@ -1989,6 +1995,9 @@
     "name": "injectArgs"
   },
   {
+    "name": "injectDestroyRef"
+  },
+  {
     "name": "injectElementRef"
   },
   {
@@ -2215,6 +2224,9 @@
   },
   {
     "name": "removeFromArray"
+  },
+  {
+    "name": "removeLViewOnDestroy"
   },
   {
     "name": "renderComponent"
