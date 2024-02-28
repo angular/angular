@@ -9,8 +9,10 @@ TEST_FILES = glob(
 
 TEST_DEPS = [
     "//packages/core",
+    "//packages/core/rxjs-interop",
     "//packages/core/testing",
     "//packages/platform-browser",
+    "@npm//rxjs",
 ]
 
 ts_library(
