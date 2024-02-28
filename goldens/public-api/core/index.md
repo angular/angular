@@ -647,7 +647,7 @@ export class ErrorHandler {
 }
 
 // @public
-export interface EventEmitter<T> extends Subject<T> {
+export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
     new (isAsync?: boolean): EventEmitter<T>;
     emit(value?: T): void;
     subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): Subscription;

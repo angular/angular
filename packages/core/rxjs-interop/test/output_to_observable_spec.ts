@@ -89,5 +89,33 @@ describe('outputToObservable()', () => {
       expect(subscription.closed).toBe(true);
       expect(subject.observed).toBe(false);
     });
+
+    it('may not complete the observable with an improperly ' +
+           'configured `OutputRef` without a destroy ref as source',
+       () => {
+         const outputRef = new EventEmitter<number>();
+         const observable = outputToObservable(outputRef);
+
+         let completed = false;
+         const subscription = observable.subscribe({
+           complete: () => completed = true,
+         });
+
+         outputRef.next(1);
+         outputRef.next(2);
+
+         expect(completed).toBe(false);
+         expect(subscription.closed).toBe(false);
+         expect(outputRef.observed).toBe(true);
+
+         // destroy `EnvironmentInjector`.
+         TestBed.resetTestingModule();
+
+         expect(completed)
+             .withContext('Should not be completed as there is no known time when to destroy')
+             .toBe(false);
+         expect(subscription.closed).toBe(false);
+         expect(outputRef.observed).toBe(true);
+       });
   });
 });
