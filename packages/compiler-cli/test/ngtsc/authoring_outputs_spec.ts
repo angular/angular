@@ -40,6 +40,25 @@ runInEachFileSystem(() => {
       expect(dts).toContain('{ "click": "click"; ');
     });
 
+    it('should handle outputFromObservable()', () => {
+      env.write('test.ts', `
+        import {Component, EventEmitter} from '@angular/core';
+        import {outputFromObservable} from '@angular/core/rxjs-interop';
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          click = outputFromObservable(new EventEmitter<void>());
+        }
+      `);
+      env.driveMain();
+
+      const js = env.getContents('test.js');
+      const dts = env.getContents('test.d.ts');
+
+      expect(js).toContain(`outputs: { click: "click" }`);
+      expect(dts).toContain('{ "click": "click"; ');
+    });
+
     it('should handle an aliased output()', () => {
       env.write('test.ts', `
         import {Component, output} from '@angular/core';
@@ -58,14 +77,52 @@ runInEachFileSystem(() => {
       expect(dts).toContain('{ "click": "publicClick"; ');
     });
 
+    it('should handle an aliased outputFromObservable()', () => {
+      env.write('test.ts', `
+        import {Component, EventEmitter} from '@angular/core';
+        import {outputFromObservable} from '@angular/core/rxjs-interop';
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          source$ = new EventEmitter<void>();
+          click = outputFromObservable(this.source$, {alias: 'publicClick'});
+        }
+      `);
+      env.driveMain();
+
+      const js = env.getContents('test.js');
+      const dts = env.getContents('test.d.ts');
+
+      expect(js).toContain(`outputs: { click: "publicClick" }`);
+      expect(dts).toContain('{ "click": "publicClick"; ');
+    });
+
     describe('diagnostics', () => {
-      it('should fail if used with @Output decorator', () => {
+      it('should fail when output() is used with @Output decorator', () => {
         env.write('test.ts', `
           import {Component, Output, output} from '@angular/core';
 
           @Component({selector: 'test', template: ''})
           export class TestDir {
             @Output() click = output({alias: 'publicClick'});
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining(
+              {messageText: 'Using "@Output" with "output()" is not allowed.'}),
+        ]);
+      });
+
+      it('should fail when outputFromObservable() is used with @Output decorator', () => {
+        env.write('test.ts', `
+          import {Component, Output, EventEmitter} from '@angular/core';
+          import {outputFromObservable} from '@angular/core/rxjs-interop';
+
+          @Component({selector: 'test', template: ''})
+          export class TestDir {
+            @Output() click = outputFromObservable(new EventEmitter());
           }
         `);
         const diagnostics = env.driveDiagnostics();
