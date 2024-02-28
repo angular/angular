@@ -16575,10 +16575,10 @@ typescript@5.3.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.3.tgz#b3ce6ba258e72e6305ba66f5c9b452aaee3ffe37"
   integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
 
-typescript@5.4.0-beta:
-  version "5.4.0-beta"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.0-beta.tgz#1bdc20b0930652459175acd8878a80d3fa11cd25"
-  integrity sha512-KgekV5JS7TQ7Bb8eO64QGxdM7MSBUUXOXq28OWX23d2MA8SiVtNYoo4s33tCTEGV8+6AGBRD2+KiXNNnexRRYw==
+typescript@5.4.1-rc:
+  version "5.4.1-rc"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.1-rc.tgz#1ecdd897df1d9ef5bd1f844bad64691ecc23314d"
+  integrity sha512-gInURzaO0bbfzfQAc3mfcHxh8qev+No4QOFUZHajo9vBgOLaljELJ3wuzyoGo/zHIzMSezdhtrsRdqL6E9SvNA==
 
 typescript@^3.9.10, typescript@^3.9.7:
   version "3.9.10"
