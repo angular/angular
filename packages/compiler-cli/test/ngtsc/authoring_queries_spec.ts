@@ -60,6 +60,54 @@ runInEachFileSystem(() => {
       expect(js).toContain(`i0.ɵɵqueryAdvance(2);`);
     });
 
+    it('should support viewChild with `read` pointing to an expression with a generic', () => {
+      env.write('test.ts', `
+        import {Component, viewChild, ElementRef} from '@angular/core';
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          el = viewChild('myLocator', {read: ElementRef<HTMLElement>});
+        }
+      `);
+      env.driveMain();
+
+      const js = env.getContents('test.js');
+      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 5, ElementRef);`);
+      expect(js).toContain(`i0.ɵɵqueryAdvance();`);
+    });
+
+    it('should support viewChild with `read` pointing to a parenthesized expression', () => {
+      env.write('test.ts', `
+        import {Component, viewChild, ElementRef} from '@angular/core';
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          el = viewChild('myLocator', {read: ((((ElementRef))))});
+        }
+      `);
+      env.driveMain();
+
+      const js = env.getContents('test.js');
+      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 5, ElementRef);`);
+      expect(js).toContain(`i0.ɵɵqueryAdvance();`);
+    });
+
+    it('should support viewChild with `read` pointing to an `as` expression', () => {
+      env.write('test.ts', `
+        import {Component, viewChild, ElementRef} from '@angular/core';
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          el = viewChild('myLocator', {read: ElementRef as any});
+        }
+      `);
+      env.driveMain();
+
+      const js = env.getContents('test.js');
+      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 5, ElementRef);`);
+      expect(js).toContain(`i0.ɵɵqueryAdvance();`);
+    });
+
     it('should handle a basic viewChildren', () => {
       env.write('test.ts', `
         import {Component, viewChildren} from '@angular/core';
