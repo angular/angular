@@ -249,7 +249,7 @@ Angular now automatically removes styles of destroyed components, which may impa
 ## Deprecations highlights in Angular v17
 
 These APIs remain available in v17, but may be removed in future versions as described by Angular's
-[deprecation practices](/guide/releases#deprecation-practices).
+[deprecation policy](/guide/releases#deprecation-policy).
 
 To maintain the reliability of your Angular application, always update your application as soon as
 practicable.
