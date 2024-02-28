@@ -7,6 +7,7 @@
  */
 
 export {outputFromObservable} from './output_from_observable';
+export {outputToObservable} from './output_to_observable';
 export {takeUntilDestroyed} from './take_until_destroyed';
 export {toObservable, ToObservableOptions} from './to_observable';
 export {toSignal, ToSignalOptions} from './to_signal';
