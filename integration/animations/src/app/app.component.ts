@@ -6,5 +6,4 @@ import {RouterModule} from '@angular/router';
   imports: [RouterModule],
   standalone: true,
 })
-export class AppComponent {
-}
+export class AppComponent {}

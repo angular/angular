@@ -12,7 +12,9 @@ describe('cli-hello-world-ivy App', () => {
     expect(page.getHeading()).toEqual('Hallo cli-hello-world-ivy-i18n!');
   });
 
-  it('should display the locale', () => { expect(page.getParagraph('locale')).toEqual('de'); });
+  it('should display the locale', () => {
+    expect(page.getParagraph('locale')).toEqual('de');
+  });
 
   it('the date pipe should show the localized month', () => {
     page.navigateTo();
@@ -22,8 +24,10 @@ describe('cli-hello-world-ivy App', () => {
   afterEach(async () => {
     // Assert that there are no errors emitted from the browser
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);
-    expect(logs).not.toContain(jasmine.objectContaining({
-      level: logging.Level.SEVERE,
-    } as logging.Entry));
+    expect(logs).not.toContain(
+      jasmine.objectContaining({
+        level: logging.Level.SEVERE,
+      } as logging.Entry),
+    );
   });
 });

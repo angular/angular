@@ -13,8 +13,8 @@ const contents = fs.readFileSync(filePath, 'utf8');
 fs.writeFileSync(filePath + '.bak', contents, 'utf8');
 
 // Write translated file
-const updated =
-    contents.replace(/source>/g, 'target>')
-        .replace(/Hello/g, 'Bonjour')
-        .replace(/source-language="([^"]+)"/g, 'source-language="$1" target-language="legacy"');
+const updated = contents
+  .replace(/source>/g, 'target>')
+  .replace(/Hello/g, 'Bonjour')
+  .replace(/source-language="([^"]+)"/g, 'source-language="$1" target-language="legacy"');
 fs.writeFileSync(filePath, updated, 'utf8');

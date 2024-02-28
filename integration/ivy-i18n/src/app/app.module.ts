@@ -9,5 +9,4 @@ import {AppComponent} from './app.component';
 registerLocaleData(localeFr);
 
 @NgModule({declarations: [AppComponent], imports: [BrowserModule], bootstrap: [AppComponent]})
-export class AppModule {
-}
+export class AppModule {}

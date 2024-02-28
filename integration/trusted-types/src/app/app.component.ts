@@ -4,7 +4,7 @@ import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   title = 'trusted-types';
@@ -16,8 +16,10 @@ export class AppComponent {
 
   constructor(sanitizer: DomSanitizer) {
     this.safeHtml = sanitizer.bypassSecurityTrustHtml(
-        `<span>Hello from bound SafeHtml</span><iframe id="bound-safehtml-iframe"></iframe>`);
+      `<span>Hello from bound SafeHtml</span><iframe id="bound-safehtml-iframe"></iframe>`,
+    );
     this.safeResourceUrl = sanitizer.bypassSecurityTrustResourceUrl(
-        `data:text/html,<body><h1>Hello from object</h1></body>`);
+      `data:text/html,<body><h1>Hello from object</h1></body>`,
+    );
   }
 }
