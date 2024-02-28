@@ -47,8 +47,8 @@ function propagateI18nBlocksToTemplates(
       case ir.OpKind.RepeaterCreate:
         // Propagate i18n blocks to the @for template.
         const forView = unit.job.views.get(op.xref)!;
-        subTemplateIndex = propagateI18nBlocksForView(
-            unit.job.views.get(op.xref)!, i18nBlock, op.i18nPlaceholder, subTemplateIndex);
+        subTemplateIndex =
+            propagateI18nBlocksForView(forView, i18nBlock, op.i18nPlaceholder, subTemplateIndex);
         // Then if there's an @empty template, propagate the i18n blocks for it as well.
         if (op.emptyView !== null) {
           subTemplateIndex = propagateI18nBlocksForView(

@@ -143,7 +143,7 @@ function createI18nMessage(
  */
 function formatIcuPlaceholder(op: ir.IcuPlaceholderOp) {
   if (op.strings.length !== op.expressionPlaceholders.length + 1) {
-    throw Error(`AsserionError: Invalid ICU placeholder with ${op.strings.length} strings and ${
+    throw Error(`AssertionError: Invalid ICU placeholder with ${op.strings.length} strings and ${
         op.expressionPlaceholders.length} expressions`);
   }
   const values = op.expressionPlaceholders.map(formatValue);

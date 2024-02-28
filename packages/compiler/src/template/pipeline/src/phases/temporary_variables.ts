@@ -8,7 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import type {CompilationJob, CompilationUnit} from '../compilation';
+import type {CompilationJob} from '../compilation';
 
 /**
  * Find all assignments and usages of temporary variables, which are linked to each other with cross

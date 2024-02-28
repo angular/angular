@@ -123,15 +123,6 @@ export const TRAIT_CONSUMES_VARS: ConsumesVarsTrait = {
 } as const;
 
 /**
- * Default values for `UsesVarOffset` fields (used with the spread operator to initialize
- * implementors of this trait).
- */
-export const TRAIT_USES_VAR_OFFSET: UsesVarOffsetTrait = {
-  [UsesVarOffset]: true,
-  varOffset: null,
-} as const;
-
-/**
  * Test whether an operation implements `ConsumesSlotOpTrait`.
  */
 export function hasConsumesSlotTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&ConsumesSlotOpTrait {
