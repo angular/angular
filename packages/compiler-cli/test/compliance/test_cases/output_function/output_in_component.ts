@@ -1,4 +1,5 @@
-import {Component, output} from '@angular/core';
+import {Component, EventEmitter, output} from '@angular/core';
+import {outputFromObservable} from '@angular/core/rxjs-interop';
 
 @Component({
   standalone: true,
@@ -8,4 +9,6 @@ export class TestComp {
   a = output();
   b = output<string>({});
   c = output<void>({alias: 'cPublic'});
+  d = outputFromObservable(new EventEmitter<string>());
+  e = outputFromObservable(new EventEmitter<number>());
 }
