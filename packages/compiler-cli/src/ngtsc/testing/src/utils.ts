@@ -14,6 +14,8 @@ import {AbsoluteFsPath, dirname, getFileSystem, getSourceFileOrError, NgtscCompi
 import {DeclarationNode} from '../../reflection';
 import {getTokenAtPosition} from '../../util/src/typescript';
 
+import {NgtscTestCompilerHost} from './compiler_host';
+
 export function makeProgram(
     files: {name: AbsoluteFsPath, contents: string, isRoot?: boolean}[],
     options?: ts.CompilerOptions, host?: ts.CompilerHost, checkForErrors: boolean = true):
@@ -30,7 +32,7 @@ export function makeProgram(
     moduleResolution: ts.ModuleResolutionKind.Node10,
     ...options
   };
-  const compilerHost = new NgtscCompilerHost(fs, compilerOptions);
+  const compilerHost = new NgtscTestCompilerHost(fs, compilerOptions);
   const rootNames = files.filter(file => file.isRoot !== false)
                         .map(file => compilerHost.getCanonicalFileName(file.name));
   const program = ts.createProgram(rootNames, compilerOptions, compilerHost);
@@ -110,7 +112,7 @@ export function walkForDeclarations(name: string, rootNode: ts.Node): Declaratio
   return chosenDecls;
 }
 
-export function isNamedDeclaration(node: ts.Node): node is ts.Declaration&{name: ts.Identifier} {
+export function isNamedDeclaration(node: ts.Node): node is(ts.Declaration & {name: ts.Identifier}) {
   const namedNode = node as {name?: ts.Identifier};
   return namedNode.name !== undefined && ts.isIdentifier(namedNode.name);
 }

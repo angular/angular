@@ -437,7 +437,13 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
   const config = overrides.config ?? {};
 
   const {program, host, options} = makeProgram(
-      files, {strictNullChecks: true, noImplicitAny: true, ...opts}, /* host */ undefined,
+      files, {
+        strictNullChecks: true,
+        skipLibCheck: true,
+        noImplicitAny: true,
+        ...opts,
+      },
+      /* host */ undefined,
       /* checkForErrors */ false);
   const checker = program.getTypeChecker();
   const logicalFs = new LogicalFileSystem(getRootDirs(host, options), host);
