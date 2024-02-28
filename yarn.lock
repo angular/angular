@@ -14999,7 +14999,7 @@ select-hose@^2.0.0:
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
-"selenium-webdriver4@npm:selenium-webdriver@4.18.1":
+"selenium-webdriver4@npm:selenium-webdriver@4.18.1", selenium-webdriver@^4.18.1:
   version "4.18.1"
   resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.18.1.tgz#bcd19048b4aba5411edb7b5266d9390578fc7fed"
   integrity sha512-uP4OJ5wR4+VjdTi5oi/k8oieV2fIhVdVuaOPrklKghgS59w7Zz3nGa5gcG73VcU9EBRv5IZEBRhPr7qFJAj5mQ==
@@ -15027,15 +15027,6 @@ selenium-webdriver@3.6.0, selenium-webdriver@^3.0.1:
     rimraf "^2.5.4"
     tmp "0.0.30"
     xml2js "^0.4.17"
-
-selenium-webdriver@^4.18.1:
-  version "4.18.1"
-  resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.18.1.tgz#bcd19048b4aba5411edb7b5266d9390578fc7fed"
-  integrity sha512-uP4OJ5wR4+VjdTi5oi/k8oieV2fIhVdVuaOPrklKghgS59w7Zz3nGa5gcG73VcU9EBRv5IZEBRhPr7qFJAj5mQ==
-  dependencies:
-    jszip "^3.10.1"
-    tmp "^0.2.1"
-    ws ">=8.14.2"
 
 selfsigned@^2.1.1:
   version "2.1.1"
@@ -16513,10 +16504,10 @@ typescript@5.3.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.3.3.tgz#b3ce6ba258e72e6305ba66f5c9b452aaee3ffe37"
   integrity sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==
 
-typescript@5.4.0-beta:
-  version "5.4.0-beta"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.0-beta.tgz#1bdc20b0930652459175acd8878a80d3fa11cd25"
-  integrity sha512-KgekV5JS7TQ7Bb8eO64QGxdM7MSBUUXOXq28OWX23d2MA8SiVtNYoo4s33tCTEGV8+6AGBRD2+KiXNNnexRRYw==
+typescript@5.4.1-rc:
+  version "5.4.1-rc"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.1-rc.tgz#1ecdd897df1d9ef5bd1f844bad64691ecc23314d"
+  integrity sha512-gInURzaO0bbfzfQAc3mfcHxh8qev+No4QOFUZHajo9vBgOLaljELJ3wuzyoGo/zHIzMSezdhtrsRdqL6E9SvNA==
 
 typescript@^3.9.10, typescript@^3.9.7:
   version "3.9.10"
