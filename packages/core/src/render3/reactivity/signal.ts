@@ -13,13 +13,13 @@ import {performanceMarkFeature} from '../../util/performance';
 import {isSignal, Signal, ValueEqualityFn} from './api';
 
 /** Symbol used distinguish `WritableSignal` from other non-writable signals and functions. */
-const WRITABLE_SIGNAL = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
+export const ɵWRITABLE_SIGNAL = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
 
 /**
  * A `Signal` with a value that can be mutated via a setter interface.
  */
 export interface WritableSignal<T> extends Signal<T> {
-  [WRITABLE_SIGNAL]: T;
+  [ɵWRITABLE_SIGNAL]: T;
 
   /**
    * Directly set the signal to a new value, and notify any dependents.
@@ -44,7 +44,7 @@ export interface WritableSignal<T> extends Signal<T> {
  * Utility function used during template type checking to extract the value from a `WritableSignal`.
  * @codeGenApi
  */
-export function ɵunwrapWritableSignal<T>(value: T|{[WRITABLE_SIGNAL]: T}): T {
+export function ɵunwrapWritableSignal<T>(value: T|{[ɵWRITABLE_SIGNAL]: T}): T {
   // Note: the function uses `WRITABLE_SIGNAL` as a brand instead of `WritableSignal<T>`,
   // because the latter incorrectly unwraps non-signal getter functions.
   return null!;

@@ -432,7 +432,7 @@ describe('model inputs', () => {
     expect(emittedEvents).toBe(1);
 
     fixture.destroy();
-    modelRef.set(2);
+    expect(() => modelRef.set(2)).toThrowError(/Unexpected emit for destroyed `OutputRef`/);
     expect(emittedEvents).toBe(1);
   });
 

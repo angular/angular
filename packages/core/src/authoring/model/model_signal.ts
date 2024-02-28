@@ -10,9 +10,11 @@ import {producerAccessed, SIGNAL, signalSetFn} from '@angular/core/primitives/si
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Signal} from '../../render3/reactivity/api';
-import {WritableSignal} from '../../render3/reactivity/signal';
+import {WritableSignal, ɵWRITABLE_SIGNAL} from '../../render3/reactivity/signal';
 import {ɵINPUT_SIGNAL_BRAND_READ_TYPE, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE} from '../input/input_signal';
 import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
+import {OutputEmitterRef} from '../output/output_emitter_ref';
+import {OutputRef} from '../output/output_ref';
 
 /**
  * @developerPreview
@@ -35,14 +37,10 @@ export interface ModelOptions {
  *
  * @developerPreview
  */
-export interface ModelSignal<T> extends WritableSignal<T> {
+export interface ModelSignal<T> extends WritableSignal<T>, OutputRef<T> {
   [SIGNAL]: InputSignalNode<T, T>;
   [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
   [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
-
-  // TODO(crisbeto): either make this a public API or mark as internal pending discussion.
-  /** @deprecated Do not use, will be removed. */
-  subscribe(callback: (value: T) => void): () => void;
 }
 
 /**
@@ -53,8 +51,8 @@ export interface ModelSignal<T> extends WritableSignal<T> {
  * @param options Additional options for the model.
  */
 export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
-  const subscriptions: ((value: T) => void)[] = [];
   const node: InputSignalNode<T, T> = Object.create(INPUT_SIGNAL_NODE);
+  const emitterRef = new OutputEmitterRef<T>();
 
   node.value = initialValue;
 
@@ -64,19 +62,14 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
     return node.value;
   }
 
-  function notifySubscribers(value: T): void {
-    for (let i = 0; i < subscriptions.length; i++) {
-      subscriptions[i](value);
-    }
-  }
+  getter[SIGNAL] = node;
+  getter.asReadonly = (() => getter()) as () => Signal<T>;
 
-  (getter as any)[SIGNAL] = node;
-  (getter as any).asReadonly = (() => getter()) as Signal<T>;
-
+  // TODO: Should we throw an error when updating a destroyed model?
   getter.set = (newValue: T) => {
     if (!node.equal(node.value, newValue)) {
       signalSetFn(node, newValue);
-      notifySubscribers(newValue);
+      emitterRef.emit(newValue);
     }
   };
 
@@ -85,23 +78,17 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
     getter.set(updateFn(node.value));
   };
 
-  getter.subscribe = (callback: (value: T) => void) => {
-    subscriptions.push(callback);
-
-    return () => {
-      const index = subscriptions.indexOf(callback);
-
-      if (index > -1) {
-        subscriptions.splice(index, 1);
-      }
-    };
-  };
+  getter.subscribe = emitterRef.subscribe.bind(emitterRef);
+  getter.destroyRef = emitterRef.destroyRef;
 
   if (ngDevMode) {
     getter.toString = () => `[Model Signal: ${getter()}]`;
   }
 
-  return getter as ModelSignal<T>;
+  return getter as (typeof getter&Pick<
+                    ModelSignal<T>,
+                    typeof ɵINPUT_SIGNAL_BRAND_READ_TYPE|typeof ɵINPUT_SIGNAL_BRAND_WRITE_TYPE|
+                    typeof ɵWRITABLE_SIGNAL>);
 }
 
 /** Asserts that a model's value is set. */
