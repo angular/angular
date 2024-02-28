@@ -99,6 +99,8 @@
     display: flex;
     gap: 1.81rem;
     align-items: flex-start;
+    margin-bottom: 1px;
+
     @include mq.for-desktop-down {
       flex-direction: column;
     }
