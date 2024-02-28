@@ -1112,15 +1112,13 @@ export interface ModelOptions {
 }
 
 // @public
-export interface ModelSignal<T> extends WritableSignal<T> {
+export interface ModelSignal<T> extends WritableSignal<T>, OutputRef<T> {
     // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
     // (undocumented)
     [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: T;
     // (undocumented)
     [SIGNAL]: InputSignalNode<T, T>;
-    // @deprecated (undocumented)
-    subscribe(callback: (value: T) => void): () => void;
 }
 
 // @public @deprecated
@@ -1817,7 +1815,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
 // @public
 export interface WritableSignal<T> extends Signal<T> {
     // (undocumented)
-    [WRITABLE_SIGNAL]: T;
+    [ɵWRITABLE_SIGNAL]: T;
     asReadonly(): Signal<T>;
     set(value: T): void;
     update(updateFn: (value: T) => T): void;
