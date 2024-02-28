@@ -33,9 +33,7 @@ import {$EXCEPTION_HANDLER, $ROOT_SCOPE} from '../../common/src/constants';
 import {html, multiTrim, withEachNg1Version} from '../../common/test/helpers/common_test_helpers';
 import {UpgradeAdapter, UpgradeAdapterRef} from '../src/upgrade_adapter';
 
-declare global {
-  export var inject: Function;
-}
+declare var inject: Function;
 
 withEachNg1Version(() => {
   describe('adapter: ng1 to ng2', () => {
