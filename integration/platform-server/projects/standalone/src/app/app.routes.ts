@@ -15,14 +15,14 @@ export const routes: Routes = [
     path: 'http-transferstate-lazy',
     loadComponent: () =>
       import('./http-transferstate-lazy/http-transfer-state.component').then(
-        (c) => c.TransferStateComponent
+        (c) => c.TransferStateComponent,
       ),
   },
   {
     path: 'http-transferstate-lazy-on-init',
     loadComponent: () =>
       import('./http-transferstate-lazy-on-init/http-transfer-state-on-init.component').then(
-        (c) => c.TransferStateOnInitComponent
+        (c) => c.TransferStateOnInitComponent,
       ),
   },
   {

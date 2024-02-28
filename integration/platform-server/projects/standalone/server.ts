@@ -10,8 +10,8 @@ import {APP_BASE_HREF} from '@angular/common';
 import {renderApplication} from '@angular/platform-server';
 import express from 'express';
 import bootstrap from './src/main.server';
-import { fileURLToPath } from 'node:url';
-import { dirname, join, resolve } from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {dirname, join, resolve} from 'node:path';
 import {readFileSync} from 'node:fs';
 import './prerender';
 
@@ -25,7 +25,7 @@ app.get(
   '*.*',
   express.static(browserDistFolder, {
     maxAge: '1y',
-  })
+  }),
 );
 
 // Mock API
@@ -39,7 +39,7 @@ app.get('/api-2', (req, res) => {
 
 // All regular routes use the Universal engine
 app.get('*', (req, res) => {
-  const { protocol, originalUrl, baseUrl, headers } = req;
+  const {protocol, originalUrl, baseUrl, headers} = req;
 
   renderApplication(bootstrap, {
     document: indexHtml,
@@ -49,7 +49,6 @@ app.get('*', (req, res) => {
     res.send(response);
   });
 });
-
 
 app.listen(4206, () => {
   console.log('Server listening on port 4206!');

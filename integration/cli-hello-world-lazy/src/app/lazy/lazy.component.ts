@@ -5,5 +5,4 @@ import {Component} from '@angular/core';
   selector: 'app-lazy',
   template: '<p>lazy works!</p>',
 })
-export class LazyComponent {
-}
+export class LazyComponent {}

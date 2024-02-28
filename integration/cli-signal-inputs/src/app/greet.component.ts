@@ -13,7 +13,7 @@ import {ChangeDetectionStrategy, Component, Input, input, ɵoutput} from '@angul
 export class GreetComponent {
   firstName = input.required<string>();
   lastName = input(undefined, {
-    transform: (v?: string) => v === undefined ? 'transformed-fallback' : `ng-${v}`,
+    transform: (v?: string) => (v === undefined ? 'transformed-fallback' : `ng-${v}`),
   });
 
   @Input() decoratorInput = 0;

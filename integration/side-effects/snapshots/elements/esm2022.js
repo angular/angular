@@ -1,5 +1,5 @@
-import "@angular/core";
+import '@angular/core';
 
-import "rxjs";
+import 'rxjs';
 
-import "rxjs/operators";
+import 'rxjs/operators';

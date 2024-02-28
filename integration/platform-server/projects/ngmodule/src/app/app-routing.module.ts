@@ -16,14 +16,14 @@ const routes: Routes = [
     path: 'http-transferstate-lazy',
     loadChildren: () =>
       import('./http-transferstate-lazy/http-transfer-state.module').then(
-        (m) => m.HttpTransferStateModule
+        (m) => m.HttpTransferStateModule,
       ),
   },
   {
     path: 'http-transferstate-lazy-on-init',
     loadChildren: () =>
       import('./http-transferstate-lazy-on-init/http-transferstate-lazy-on-init.module').then(
-        (m) => m.HttpTransferStateOnInitModule
+        (m) => m.HttpTransferStateOnInitModule,
       ),
   },
   {

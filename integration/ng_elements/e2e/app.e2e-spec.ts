@@ -51,7 +51,10 @@ describe('Element E2E Tests', function () {
         input.sendKeys('Foo');
 
         // Make tests less flaky on CI by waiting up to 5s for the element text to be updated.
-        browser.wait(async () => await getShadowDomText(helloWorldShadowEl) === 'Hello Foo!', 5000);
+        browser.wait(
+          async () => (await getShadowDomText(helloWorldShadowEl)) === 'Hello Foo!',
+          5000,
+        );
       });
     });
   });

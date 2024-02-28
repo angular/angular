@@ -2,8 +2,12 @@ import {Injector, NgModule} from '@angular/core';
 import {createCustomElement} from '@angular/elements';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {HelloWorldComponent, HelloWorldOnpushComponent, HelloWorldShadowComponent, TestCardComponent} from './elements';
-
+import {
+  HelloWorldComponent,
+  HelloWorldOnpushComponent,
+  HelloWorldShadowComponent,
+  TestCardComponent,
+} from './elements';
 
 @NgModule({
   declarations: [
@@ -18,9 +22,13 @@ export class AppModule {
   constructor(injector: Injector) {
     customElements.define('hello-world-el', createCustomElement(HelloWorldComponent, {injector}));
     customElements.define(
-        'hello-world-onpush-el', createCustomElement(HelloWorldOnpushComponent, {injector}));
+      'hello-world-onpush-el',
+      createCustomElement(HelloWorldOnpushComponent, {injector}),
+    );
     customElements.define(
-        'hello-world-shadow-el', createCustomElement(HelloWorldShadowComponent, {injector}));
+      'hello-world-shadow-el',
+      createCustomElement(HelloWorldShadowComponent, {injector}),
+    );
     customElements.define('test-card', createCustomElement(TestCardComponent, {injector}));
   }
   ngDoBootstrap() {}
