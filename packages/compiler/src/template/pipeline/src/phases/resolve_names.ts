@@ -76,7 +76,7 @@ function processLexicalScope(
       // Listeners were already processed above with their own scopes.
       continue;
     }
-    ir.transformExpressionsInOp(op, (expr, flags) => {
+    ir.transformExpressionsInOp(op, (expr) => {
       if (expr instanceof ir.LexicalReadExpr) {
         // `expr` is a read of a name within the lexical scope of this view.
         // Either that name is defined within the current view, or it represents a property from the

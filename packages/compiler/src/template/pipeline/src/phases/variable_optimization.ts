@@ -211,7 +211,6 @@ function optimizeVariablesInOpList(
   const toInline: ir.XrefId[] = [];
   for (const [id, count] of varUsages) {
     const decl = varDecls.get(id)!;
-    const varInfo = opMap.get(decl as ir.CreateOp | ir.UpdateOp)!;
     // We can inline variables that:
     //  - are used exactly once, and
     //  - are not used remotely

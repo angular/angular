@@ -14,14 +14,14 @@ import {ComponentCompilationJob} from '../compilation';
  */
 export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) {
   // Record all of the i18n context ops, and the sub-template index for each i18n op.
-  const subTemplateIndicies = new Map<ir.XrefId, number|null>();
+  const subTemplateIndices = new Map<ir.XrefId, number|null>();
   const i18nContexts = new Map<ir.XrefId, ir.I18nContextOp>();
   const icuPlaceholders = new Map<ir.XrefId, ir.IcuPlaceholderOp>();
   for (const unit of job.units) {
     for (const op of unit.create) {
       switch (op.kind) {
         case ir.OpKind.I18nStart:
-          subTemplateIndicies.set(op.xref, op.subTemplateIndex);
+          subTemplateIndices.set(op.xref, op.subTemplateIndex);
           break;
         case ir.OpKind.I18nContext:
           i18nContexts.set(op.xref, op);
@@ -47,7 +47,7 @@ export function resolveI18nExpressionPlaceholders(job: ComponentCompilationJob) 
     for (const op of unit.update) {
       if (op.kind === ir.OpKind.I18nExpression) {
         const index = expressionIndices.get(referenceIndex(op)) || 0;
-        const subTemplateIndex = subTemplateIndicies.get(op.i18nOwner) ?? null;
+        const subTemplateIndex = subTemplateIndices.get(op.i18nOwner) ?? null;
         const value: ir.I18nParamValue = {
           value: index,
           subTemplateIndex: subTemplateIndex,

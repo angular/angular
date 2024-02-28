@@ -1387,10 +1387,3 @@ export function createI18nAttributesOp(
  * component.
  */
 export type ConstIndex = number&{__brand: 'ConstIndex'};
-
-export function literalOrArrayLiteral(value: any): o.Expression {
-  if (Array.isArray(value)) {
-    return o.literalArr(value.map(literalOrArrayLiteral));
-  }
-  return o.literal(value, o.INFERRED_TYPE);
-}

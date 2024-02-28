@@ -53,7 +53,7 @@ export function countVariables(job: CompilationJob): void {
       });
     }
 
-    // Compatiblity mode pass for pure function offsets (as explained above).
+    // Compatibility mode pass for pure function offsets (as explained above).
     if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
       for (const op of unit.ops()) {
         ir.visitExpressionsInOp(op, expr => {
