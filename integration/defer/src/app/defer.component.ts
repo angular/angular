@@ -7,5 +7,4 @@ import {Component} from '@angular/core';
     <h2>Defer-loaded component</h2>
   `,
 })
-export class DeferComponent {
-}
+export class DeferComponent {}

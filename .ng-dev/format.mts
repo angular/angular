@@ -9,6 +9,7 @@ export const format: FormatConfig = {
       '**/*.{yaml,yml}',
       'adev/**/*.{js,ts}',
       'devtools/**/*.{js,ts}',
+      'integration/**/*.{js,ts}',
       'tools/**/*.{js,ts}',
       'modules/**/*.{js,ts}',
       'scripts/**/*.{js,ts}',

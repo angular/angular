@@ -22,7 +22,7 @@ import {GreetComponent} from './greet.component';
 })
 export class AppComponent {
   firstName = 'John';
-  lastName: string|undefined = undefined;
+  lastName: string | undefined = undefined;
 
   greets = viewChildren(GreetComponent);
 }

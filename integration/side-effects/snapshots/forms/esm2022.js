@@ -1,7 +1,7 @@
-import "@angular/core";
+import '@angular/core';
 
-import "@angular/common";
+import '@angular/common';
 
-import "rxjs";
+import 'rxjs';
 
-import "rxjs/operators";
+import 'rxjs/operators';

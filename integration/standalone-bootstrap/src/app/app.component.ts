@@ -8,5 +8,4 @@ import {Component} from '@angular/core';
     Hello Bootstrapped Standalone Component!
   `,
 })
-export class AppComponent {
-}
+export class AppComponent {}
