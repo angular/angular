@@ -1,3 +1,27 @@
+<a name="17.2.3"></a>
+# 17.2.3 (2024-02-27)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1a526f2881](https://github.com/angular/angular/commit/1a526f28814429c05b003edbe40500b7069e1404) | perf | `AsyncPipe` should not call `markForCheck` on subscription ([#54554](https://github.com/angular/angular/pull/54554)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2aefed8763](https://github.com/angular/angular/commit/2aefed87632293c5570e17653a7d270162ea35c3) | fix | catch function instance properties in interpolated signal diagnostic ([#54325](https://github.com/angular/angular/pull/54325)) |
+| [48aec63ee4](https://github.com/angular/angular/commit/48aec63ee48fe9d20c1f1565b044ec359100736d) | fix | identify aliased initializer functions ([#54480](https://github.com/angular/angular/pull/54480)) |
+| [daf7c611b2](https://github.com/angular/angular/commit/daf7c611b23797ba2dba24e20e26c344902e7bc7) | fix | identify aliased initializer functions ([#54609](https://github.com/angular/angular/pull/54609)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [57123524a2](https://github.com/angular/angular/commit/57123524a2e1481987eaf239d2ae7f1216291864) | fix | collect providers from NgModules while rendering `@defer` block ([#52881](https://github.com/angular/angular/pull/52881)) |
+| [79a32816dc](https://github.com/angular/angular/commit/79a32816dcb57e9b02ba6e18261c6dccd14b0b23) | fix | fix typo in injectors.svg file ([#54596](https://github.com/angular/angular/pull/54596)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dbe673b027](https://github.com/angular/angular/commit/dbe673b02751b8bf12f6f6f79b843dd268d965e1) | fix | resolve infinite loop for a single line element with a long tag name and angle bracket on a new line ([#54588](https://github.com/angular/angular/pull/54588)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.0-next.1"></a>
 # 17.3.0-next.1 (2024-02-27)
 ### common
