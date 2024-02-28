@@ -108,6 +108,11 @@ function parseLocator(expression: ts.Expression, reflector: ReflectionHost): str
  * live outside of the class in the static class definition.
  */
 function parseReadOption(value: ts.Expression): o.Expression {
+  if (ts.isExpressionWithTypeArguments(value) || ts.isParenthesizedExpression(value) ||
+      ts.isAsExpression(value)) {
+    return parseReadOption(value.expression);
+  }
+
   if (ts.isPropertyAccessExpression(value) && ts.isIdentifier(value.expression) ||
       ts.isIdentifier(value)) {
     return new o.WrappedNodeExpr(value);
