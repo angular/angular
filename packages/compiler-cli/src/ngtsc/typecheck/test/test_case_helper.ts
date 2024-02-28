@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import ts from 'typescript';
+
 import {TypeCheckingConfig} from '../api';
 import {diagnose} from '../testing';
 
@@ -54,7 +56,7 @@ export interface TestCase {
  * Diagnoses the given test case, by constructing the test TypeScript file
  * and running the type checker on it.
  */
-export function typeCheckDiagnose(c: TestCase) {
+export function typeCheckDiagnose(c: TestCase, compilerOptions?: ts.CompilerOptions) {
   const inputs = c.inputs ?? {};
   const outputs = c.outputs ?? {};
 
@@ -124,7 +126,7 @@ export function typeCheckDiagnose(c: TestCase) {
                                      .map(([name]) => name),
         },
       ],
-      undefined, c.options);
+      undefined, c.options, compilerOptions);
 
   expect(messages).toEqual(c.expected);
 }
@@ -136,4 +138,12 @@ export function generateDiagnoseJasmineSpecs(cases: TestCase[]): void {
       typeCheckDiagnose(c);
     });
   }
+
+  describe('with `--strict`', () => {
+    for (const c of cases) {
+      (c.focus ? fit : it)(c.id, () => {
+        typeCheckDiagnose(c, {strict: true});
+      });
+    }
+  });
 }
