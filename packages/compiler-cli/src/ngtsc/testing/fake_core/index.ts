@@ -189,7 +189,7 @@ export interface InputFunction {
 export const input: InputFunction = null!;
 
 export type ɵUnwrapInputSignalWriteType<Field> =
-    Field extends InputSignalWithTransform<unknown, infer WriteT>? WriteT : never;
+    Field extends InputSignalWithTransform<any, infer WriteT>? WriteT : never;
 export type ɵUnwrapDirectiveSignalInputs<Dir, Fields extends keyof Dir> = {
   [P in Fields]: ɵUnwrapInputSignalWriteType<Dir[P]>
 };
