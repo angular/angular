@@ -1,5 +1,12 @@
 {
-  "syncedFilePatterns": ["LICENSE", "modules/benchmarks/**", "packages/**"],
+  "syncedFilePatterns": [
+    "LICENSE",
+    "modules/benchmarks/**",
+    "packages/**"
+  ],
+  "separateFilePatterns": [
+    "packages/core/primitives/**"
+  ],
   "alwaysExternalFilePatterns": [
     "packages/*",
     "packages/bazel/*",
