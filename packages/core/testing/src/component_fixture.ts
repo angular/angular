@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, EventEmitter, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵisG3 as isG3, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks,} from '@angular/core';
-import {Subscription} from 'rxjs';
+import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵisG3 as isG3, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks,} from '@angular/core';
+import {Subject, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
@@ -206,8 +206,8 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
 
 interface TestAppRef {
   externalTestViews: Set<ViewRef>;
-  beforeRender: EventEmitter<{isFirstPass: boolean}>;
-  afterTick: EventEmitter<void>;
+  beforeRender: Subject<boolean>;
+  afterTick: Subject<void>;
 }
 
 /**
@@ -345,11 +345,11 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
       this.afterTickSubscription = this._testAppRef.afterTick.subscribe(() => {
         this.checkNoChanges();
       });
-      this.beforeRenderSubscription = this._testAppRef.beforeRender.subscribe(({isFirstPass}) => {
+      this.beforeRenderSubscription = this._testAppRef.beforeRender.subscribe((isFirstPass) => {
         try {
           ɵdetectChangesInViewIfRequired(
-              isFirstPass,
               (this.componentRef.hostView as any)._lView,
+              isFirstPass,
               (this.componentRef.hostView as any).notifyErrorHandler,
           );
         } catch (e: unknown) {

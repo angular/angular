@@ -9,7 +9,7 @@
 import '../util/ng_jit_mode';
 
 import {setActiveConsumer, setThrowInvalidWriteToSignalError} from '@angular/core/primitives/signals';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
 import {Console} from '../console';
@@ -20,7 +20,6 @@ import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
-import {EventEmitter} from '../event_emitter';
 import {Type} from '../interface/type';
 import {isG3} from '../is_internal';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
@@ -280,8 +279,8 @@ export class ApplicationRef {
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
-  private beforeRender = new EventEmitter<{isFirstPass: boolean}>();
-  private afterTick = new EventEmitter<void>();
+  private beforeRender = new Subject<boolean>();
+  private afterTick = new Subject<void>();
 
   /**
    * Indicates whether this instance was destroyed.
@@ -515,7 +514,7 @@ export class ApplicationRef {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
       this.internalErrorHandler(e);
     } finally {
-      this.afterTick.emit();
+      this.afterTick.next();
       this._runningTick = false;
       setActiveConsumer(prevConsumer);
     }
@@ -534,9 +533,9 @@ export class ApplicationRef {
       }
 
       const isFirstPass = runs === 0;
-      this.beforeRender.emit({isFirstPass});
+      this.beforeRender.next(isFirstPass);
       for (let {_lView, notifyErrorHandler} of this._views) {
-        detectChangesInViewIfRequired(isFirstPass, _lView, notifyErrorHandler);
+        detectChangesInViewIfRequired(_lView, isFirstPass, notifyErrorHandler);
       }
       runs++;
 
@@ -704,7 +703,7 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
 
 
 export function detectChangesInViewIfRequired(
-    isFirstPass: boolean, lView: LView, notifyErrorHandler: boolean) {
+    lView: LView, isFirstPass: boolean, notifyErrorHandler: boolean) {
   // When re-checking, only check views which actually need it.
   if (!isFirstPass && !shouldRecheckView(lView)) {
     return;
