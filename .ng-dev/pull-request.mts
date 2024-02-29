@@ -17,4 +17,9 @@ export const pullRequest: PullRequestConfig = {
   // the `bazel` package is not considered part of the public API so that features
   // can land in patch branches.
   targetLabelExemptScopes: ['dev-infra', 'docs-infra', 'bazel'],
+  // enables specific validations during the pull request merge process
+  validators: {
+    assertEnforceTested: true,
+    assertIsolatedSeparateFiles: true,
+  },
 };
