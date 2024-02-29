@@ -1,3 +1,0 @@
-consts: [["foo", "1", "bar", "2"]]
-…
-$r3$.ɵɵtemplate(0, MyApp_Conditional_0_Template, 1, 0, null, 0);

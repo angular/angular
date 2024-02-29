@@ -1,1 +1,0 @@
-Provides infrastructure for testing of the Animations browser subsystem.

@@ -1,9 +1,0 @@
-load("@npm//@angular/docs:index.bzl", "generate_guides")
-
-generate_guides(
-    name = "migrations",
-    srcs = glob([
-        "*.md",
-    ]),
-    visibility = ["//adev:__subpackages__"],
-)

@@ -1,6 +1,0 @@
-{
-  "title": "Integrate Angular forms",
-  "type": "local",
-  "answerSrc": "../13-search/src",
-  "openFiles": ["src/app/housing.service.ts", "src/app/details/details.component.ts"]
-}

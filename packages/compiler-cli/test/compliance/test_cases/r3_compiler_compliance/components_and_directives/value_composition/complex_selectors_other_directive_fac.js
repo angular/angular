@@ -1,1 +1,0 @@
-OtherDirective.ɵfac = function OtherDirective_Factory(t) {return new (t || OtherDirective)(); };

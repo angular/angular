@@ -1,8 +1,0 @@
-{
-  "description": "Hello World!",
-  "file": "src/app/app.component.html",
-  "ignore": [
-    "**/*-old.ts"
-  ],
-  "tags": ["example"]
-}

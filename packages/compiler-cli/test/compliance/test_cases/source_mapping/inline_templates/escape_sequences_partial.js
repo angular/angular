@@ -1,3 +1,0 @@
-consts: [[1, "some-class"]]
-…
-.ɵɵelementStart(0, "div", 0) // SOURCE: "/escape_sequences.ts" "<div class=\\"some-class\\">"

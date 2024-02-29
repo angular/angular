@@ -1,7 +1,0 @@
-{
-  "locale": "fr",
-  "translations": {
-    "1638894134994447485": " Bonjour, {$INTERPOLATION}! (inline)",
-    "6762263703087737643": "Bienvenue sur l'application i18n. (inline)"
-  }
-}

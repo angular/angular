@@ -1,8 +1,0 @@
-load("//tools:defaults.bzl", "http_server")
-
-package(default_visibility = ["//modules/playground:__subpackages__"])
-
-http_server(
-    name = "devserver",
-    srcs = ["index.html"],
-)

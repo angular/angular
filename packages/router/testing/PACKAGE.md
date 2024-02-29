@@ -1,1 +1,0 @@
-Supplies a testing module for the Angular `Router` subsystem.

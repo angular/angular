@@ -1,0 +1,23 @@
+<div class="position-relative">
+    <img style="float: right;" src="https://www.isax.com/files/2020/02/LogoiSAX4c-01.pngf" alt="ISax Logo" width="10%" height="10%">
+</div>
+<div style="padding-top: 5dvh;">
+  <div class="text-center" style="float:left; display:inline; width: 25%; padding-left: 5dvw;">
+    <div id="list-example" class="list-group">
+      <a class="list-group-item list-group-item-action" (click)="onChangeSystem('System 1')">System 1</a>
+      <a class="list-group-item list-group-item-action" (click)="onChangeSystem('System 2')">System 2</a>
+      <a class="list-group-item list-group-item-action" (click)="onChangeSystem('System 3')">System 3</a>
+      <a class="list-group-item list-group-item-action" (click)="onChangeSystem('System 4')">System 4</a>
+    </div>
+  </div>
+  <div class="text-center" style="float:left; display:inline; width: 75%; padding-left: 5dvw;">
+    <h2>{{ systemName }}</h2>
+    <div style="margin: 1rem;
+    padding: 2rem 2rem;
+    text-align: center;">
+      <app-gauge-chart style="width: 40%;" class="left-item" [cname]="'Temperatur'"></app-gauge-chart>
+      <app-gauge-chart style="width: 40%;" class="left-item" [cname]="'Luftfeuchtigkeit'"></app-gauge-chart>
+      <app-graph-chart [lineNames]="lines" class="left-item"></app-graph-chart>
+    </div>
+  </div>
+</div>
