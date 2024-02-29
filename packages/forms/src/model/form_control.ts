@@ -433,7 +433,6 @@ export const FormControl: ɵFormControlCtor =
             pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
         this._applyFormState(formState);
         this._setUpdateStrategy(validatorOrOpts);
-        this._initObservables();
         this.updateValueAndValidity({
           onlySelf: true,
           // If `asyncValidator` is present, it will trigger control status change from `PENDING` to

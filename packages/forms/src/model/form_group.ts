@@ -179,7 +179,6 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
     (typeof ngDevMode === 'undefined' || ngDevMode) && validateFormGroupControls(controls);
     this.controls = controls;
-    this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({
