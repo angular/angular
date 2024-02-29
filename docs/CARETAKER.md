@@ -21,6 +21,29 @@ To merge a PR run:
 $ yarn ng-dev pr merge <pr number>
 ```
 
+## Primitives and Blocked merges
+
+The caretaker may encounter PRs that will fail to merge due to primitives files. Code inside some
+paths must be merged and synced separately. For example, anything under `//packages/core/primitives`
+has to be merged and synced separately from other changes. Once the latest sync has fully landed,
+merging can continue. This is to reduce the risk of challenging rollbacks in the event of a breakage.
+
+## PRs that require TGPs
+
+If a PR is risky or otherwise requires more thorough testing, add the `requires: TGP` label to the PR.
+The merge tooling will enforce that a TGP has been run, or alternatively you can add a review comment
+that starts with `TESTED=` and then put a reason why the PR is sufficiently tested. This will allow
+the PR to be merged. The `requires: TGP` label will be automatically added to PRs that affect files
+matching `separateFilePatterns` in [`.ng-dev/google-sync-config.json`](https://github.com/angular/angular/blob/main/.ng-dev/google-sync-config.json).
+
+For example:
+
+```
+TESTED=docs only update and does not need a TGP
+```
+
+**Note:** the review comment _must_ be made by a googler.
+
 ### Recovering from failed `merge-pr` due to conflicts
 
 The `ng-dev pr merge` tool will automatically restore to the previous git state when a merge fails.
