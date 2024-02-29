@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 import {EventEmitter} from '../event_emitter';
 import {Writable} from '../interface/type';
@@ -48,7 +48,7 @@ export class QueryList<T> implements Iterable<T> {
   private _onDirty?: () => void = undefined;
   private _results: Array<T> = [];
   private _changesDetected: boolean = false;
-  private _changes: EventEmitter<QueryList<T>> | undefined = undefined;
+  private _changes: Subject<QueryList<T>> | undefined = undefined;
 
   readonly length: number = 0;
   readonly first: T = undefined!;
@@ -58,7 +58,7 @@ export class QueryList<T> implements Iterable<T> {
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
    */
   get changes(): Observable<any> {
-    return (this._changes ??= new EventEmitter());
+    return (this._changes ??= new Subject());
   }
 
   /**
@@ -171,7 +171,7 @@ export class QueryList<T> implements Iterable<T> {
    */
   notifyOnChanges(): void {
     if (this._changes !== undefined && (this._changesDetected || !this._emitDistinctChangesOnly))
-      this._changes.emit(this);
+      this._changes.next(this);
   }
 
   /** @internal */
