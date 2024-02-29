@@ -9,10 +9,11 @@
 import {
   Location,
   LocationStrategy,
+  PopStateEvent,
   ɵnormalizeQueryParams as normalizeQueryParams,
 } from '@angular/common';
-import {EventEmitter, Injectable} from '@angular/core';
-import {SubscriptionLike} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {Subject, SubscriptionLike} from 'rxjs';
 
 /**
  * A spy for {@link Location} that allows tests to fire simulated location events.
@@ -25,7 +26,7 @@ export class SpyLocation implements Location {
   private _history: LocationState[] = [new LocationState('', '', null)];
   private _historyIndex: number = 0;
   /** @internal */
-  _subject: EventEmitter<any> = new EventEmitter();
+  _subject = new Subject<PopStateEvent>();
   /** @internal */
   _basePath: string = '';
   /** @internal */
@@ -67,7 +68,7 @@ export class SpyLocation implements Location {
   }
 
   simulateUrlPop(pathname: string) {
-    this._subject.emit({'url': pathname, 'pop': true, 'type': 'popstate'});
+    this._subject.next({'url': pathname, 'pop': true, 'type': 'popstate'});
   }
 
   simulateHashChange(pathname: string) {
@@ -77,8 +78,8 @@ export class SpyLocation implements Location {
     this.urlChanges.push('hash: ' + pathname);
     // the browser will automatically fire popstate event before each `hashchange` event, so we need
     // to simulate it.
-    this._subject.emit({'url': pathname, 'pop': true, 'type': 'popstate'});
-    this._subject.emit({'url': pathname, 'pop': true, 'type': 'hashchange'});
+    this._subject.next({'url': pathname, 'pop': true, 'type': 'popstate'});
+    this._subject.next({'url': pathname, 'pop': true, 'type': 'hashchange'});
   }
 
   prepareExternalUrl(url: string): string {
@@ -125,7 +126,7 @@ export class SpyLocation implements Location {
   forward() {
     if (this._historyIndex < this._history.length - 1) {
       this._historyIndex++;
-      this._subject.emit({
+      this._subject.next({
         'url': this.path(),
         'state': this.getState(),
         'pop': true,
@@ -137,7 +138,7 @@ export class SpyLocation implements Location {
   back() {
     if (this._historyIndex > 0) {
       this._historyIndex--;
-      this._subject.emit({
+      this._subject.next({
         'url': this.path(),
         'state': this.getState(),
         'pop': true,
@@ -150,7 +151,7 @@ export class SpyLocation implements Location {
     const nextPageIndex = this._historyIndex + relativePosition;
     if (nextPageIndex >= 0 && nextPageIndex < this._history.length) {
       this._historyIndex = nextPageIndex;
-      this._subject.emit({
+      this._subject.next({
         'url': this.path(),
         'state': this.getState(),
         'pop': true,
@@ -187,7 +188,11 @@ export class SpyLocation implements Location {
     onThrow?: ((error: any) => void) | null,
     onReturn?: (() => void) | null,
   ): SubscriptionLike {
-    return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
+    return this._subject.subscribe({
+      next: onNext,
+      error: onThrow ?? undefined,
+      complete: onReturn ?? undefined,
+    });
   }
 
   normalize(url: string): string {

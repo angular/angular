@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, Injectable, OnDestroy, ɵɵinject} from '@angular/core';
-import {SubscriptionLike} from 'rxjs';
+import {Injectable, OnDestroy, ɵɵinject} from '@angular/core';
+import {Subject, SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
 import {joinWithSlash, normalizeQueryParams, stripTrailingSlash} from './util';
@@ -55,7 +55,7 @@ export interface PopStateEvent {
 })
 export class Location implements OnDestroy {
   /** @internal */
-  _subject: EventEmitter<any> = new EventEmitter();
+  _subject = new Subject<PopStateEvent>();
   /** @internal */
   _basePath: string;
   /** @internal */
@@ -76,7 +76,7 @@ export class Location implements OnDestroy {
     // https://developer.mozilla.org/en-US/docs/Web/API/URL/URL#parameters
     this._basePath = _stripOrigin(stripTrailingSlash(_stripIndexHtml(baseHref)));
     this._locationStrategy.onPopState((ev) => {
-      this._subject.emit({
+      this._subject.next({
         'url': this.path(true),
         'pop': true,
         'state': ev.state,
@@ -265,7 +265,11 @@ export class Location implements OnDestroy {
     onThrow?: ((exception: any) => void) | null,
     onReturn?: (() => void) | null,
   ): SubscriptionLike {
-    return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
+    return this._subject.subscribe({
+      next: onNext,
+      error: onThrow ?? undefined,
+      complete: onReturn ?? undefined,
+    });
   }
 
   /**
