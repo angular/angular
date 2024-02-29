@@ -546,9 +546,9 @@
     "@material/typography" "15.0.0-canary.7f224ddd4.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#c21f93acb618bcaeda52a8065e7b6c9242def182":
-  version "0.0.0-c83e99a12397014162531ca125c94549db55dd84"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#c21f93acb618bcaeda52a8065e7b6c9242def182"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#0126481d9074759b2d1c5be77f8a3c87e5c3c1e4":
+  version "0.0.0-b18378deb8556573a8dc7f841415260bccfba878"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#0126481d9074759b2d1c5be77f8a3c87e5c3c1e4"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -15071,6 +15071,7 @@ select-hose@^2.0.0:
   integrity sha512-mEugaLK+YfkijB4fx0e6kImuJdCIt2LxCRcbEYPqRGCs4F2ogyfZU5IAZRdjCP8JPq2AtdNoC/Dux63d9Kiryg==
 
 "selenium-webdriver4@npm:selenium-webdriver@4.18.1", selenium-webdriver@^4.18.1:
+  name selenium-webdriver4
   version "4.18.1"
   resolved "https://registry.yarnpkg.com/selenium-webdriver/-/selenium-webdriver-4.18.1.tgz#bcd19048b4aba5411edb7b5266d9390578fc7fed"
   integrity sha512-uP4OJ5wR4+VjdTi5oi/k8oieV2fIhVdVuaOPrklKghgS59w7Zz3nGa5gcG73VcU9EBRv5IZEBRhPr7qFJAj5mQ==
