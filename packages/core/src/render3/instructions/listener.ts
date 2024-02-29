@@ -209,16 +209,10 @@ export function listenerInternal(
               directiveInstance.constructor.name}'.`);
         }
 
-        const subscriptionOrCallback =
-            (output as SubscribableOutput<unknown>).subscribe(listenerFn);
+        const subscription = (output as SubscribableOutput<unknown>).subscribe(listenerFn);
         const idx = lCleanup.length;
-        lCleanup.push(listenerFn, subscriptionOrCallback);
-        if (tCleanup) {
-          // The cleanup function expects negative indexes to be
-          // of type Subscription while positive are cleanup functions.
-          const cleanupIdx = typeof subscriptionOrCallback === 'function' ? idx + 1 : -(idx + 1);
-          tCleanup.push(eventName, tNode.index, idx, cleanupIdx);
-        }
+        lCleanup.push(listenerFn, subscription);
+        tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
       }
     }
   }
@@ -288,7 +282,7 @@ function wrapListener(
 
 /** Describes a subscribable output field value. */
 interface SubscribableOutput<T> {
-  subscribe(listener: (v: T) => void): {unsubscribe: () => void;}|(() => void);
+  subscribe(listener: (v: T) => void): {unsubscribe: () => void;};
 }
 
 /**
