@@ -106,6 +106,11 @@ function verifyClientAndSSRContentsMatch(ssrContents: string, clientAppRootEleme
   expect(getAppContents(clientContents)).toBe(ssrContents, 'Client and server contents mismatch');
 }
 
+function verifyNodeHasMismatchInfo(doc: Document, selector = 'app'): void {
+  expect(readHydrationInfo(doc.querySelector(selector)!)?.status).toBe(HydrationStatus.Mismatched);
+}
+
+
 /** Checks whether a given element is a <script> that contains transfer state data. */
 function isTransferStateScript(el: HTMLElement): boolean {
   return el.nodeType === Node.ELEMENT_NODE && el.tagName.toLowerCase() === 'script' &&
@@ -5625,6 +5630,8 @@ describe('platform-server hydration integration', () => {
               'During hydration Angular expected a text node but found <span>');
           expect(message).toContain('#text(This is an original content)  <-- AT THIS LOCATION');
           expect(message).toContain('<span title="Hi!">…</span>  <-- AT THIS LOCATION');
+
+          verifyNodeHasMismatchInfo(doc);
         });
       });
 
@@ -5660,6 +5667,7 @@ describe('platform-server hydration integration', () => {
           expect(message).toContain(
               'During hydration Angular expected <div> but the node was not found');
           expect(message).toContain('<div id="abc">…</div>  <-- AT THIS LOCATION');
+          verifyNodeHasMismatchInfo(doc);
         });
       });
 
@@ -5697,6 +5705,7 @@ describe('platform-server hydration integration', () => {
           expect(message).toContain('During hydration Angular expected <b> but found <span>');
           expect(message).toContain('<b>…</b>  <-- AT THIS LOCATION');
           expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+          verifyNodeHasMismatchInfo(doc);
         });
       });
 
@@ -5811,6 +5820,7 @@ describe('platform-server hydration integration', () => {
               'During hydration Angular expected a comment node but found <span>');
           expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
           expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+          verifyNodeHasMismatchInfo(doc);
         });
       });
 
@@ -5858,6 +5868,7 @@ describe('platform-server hydration integration', () => {
           expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
           expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
           expect(message).toContain('check the "NestedComponent" component');
+          verifyNodeHasMismatchInfo(doc, 'nested-cmp');
         });
       });
 
@@ -5894,6 +5905,7 @@ describe('platform-server hydration integration', () => {
           expect(message).toContain(
               'During hydration Angular expected more sibling nodes to be present');
           expect(message).toContain('<main>…</main>  <-- AT THIS LOCATION');
+          verifyNodeHasMismatchInfo(doc);
         });
       });
 
@@ -5938,6 +5950,7 @@ describe('platform-server hydration integration', () => {
               'During hydration Angular expected a comment node but found <span>');
           expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
           expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+          verifyNodeHasMismatchInfo(doc);
         });
       });
 
@@ -5983,6 +5996,7 @@ describe('platform-server hydration integration', () => {
                  'During hydration Angular expected a comment node but found <span>');
              expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
              expect(message).toContain('<span>…</span>  <-- AT THIS LOCATION');
+             verifyNodeHasMismatchInfo(doc);
            });
          });
 
@@ -6019,6 +6033,7 @@ describe('platform-server hydration integration', () => {
           expect(message).toContain(
               'During serialization, Angular was unable to find an element in the DOM');
           expect(message).toContain('<b>…</b>  <-- AT THIS LOCATION');
+          verifyNodeHasMismatchInfo(doc, 'projector-cmp');
         });
       });
 
@@ -6064,6 +6079,7 @@ describe('platform-server hydration integration', () => {
           expect(message).toContain(
               'During hydration Angular was unable to locate a node using the "firstChild" path, ' +
               'starting from the <projector-cmp>…</projector-cmp> node');
+          verifyNodeHasMismatchInfo(doc, 'projector-cmp');
         });
       });
 
@@ -6104,6 +6120,7 @@ describe('platform-server hydration integration', () => {
               'During hydration, Angular expected an element to be present at this location.');
           expect(message).toContain('<!-- container -->  <-- AT THIS LOCATION');
           expect(message).toContain('check to see if your template has valid HTML structure');
+          verifyNodeHasMismatchInfo(doc);
         }
       });
 

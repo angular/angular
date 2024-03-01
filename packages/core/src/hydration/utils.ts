@@ -8,6 +8,7 @@
 
 import {Injector} from '../di/injector';
 import type {ViewRef} from '../linker/view_ref';
+import {getComponent} from '../render3/util/discovery_utils';
 import {LContainer} from '../render3/interfaces/container';
 import {getDocument} from '../render3/interfaces/document';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
@@ -318,10 +319,10 @@ export function markRNodeAsHavingHydrationMismatch(
     );
   }
 
-  // The RNode can be a standard HTMLElement
+  // The RNode can be a standard HTMLElement (not an Angular component or directive)
   // The devtools component tree only displays Angular components & directives
-  // Therefore we attach the debug info to the closest a claimed node.
-  while (node && readHydrationInfo(node)?.status !== HydrationStatus.Hydrated) {
+  // Therefore we attach the debug info to the closest component/directive
+  while (node && !getComponent(node as Element)) {
     node = node?.parentNode as RNode;
   }
 
