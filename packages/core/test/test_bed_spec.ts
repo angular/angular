@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
+import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
+import {APP_INITIALIZER, ChangeDetectorRef, Compiler, Component, Directive, ElementRef, ErrorHandler, getNgModuleById, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, Injector, Input, LOCALE_ID, ModuleWithProviders, NgModule, Optional, Pipe, PLATFORM_ID, Type, ViewChild, ɵsetClassMetadata as setClassMetadata, ɵɵdefineComponent as defineComponent, ɵɵdefineInjector as defineInjector, ɵɵdefineNgModule as defineNgModule, ɵɵelementEnd as elementEnd, ɵɵelementStart as elementStart, ɵɵsetNgModuleScope as setNgModuleScope, ɵɵtext as text} from '@angular/core';
 import {DeferBlockBehavior} from '@angular/core/testing';
 import {TestBed, TestBedImpl} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
@@ -1655,15 +1656,90 @@ describe('TestBed', () => {
           .toBe('Override of a root template! Override of a nested template! CmpA!');
     });
 
-    it('should allow import overrides on components with async metadata', async () => {
-      @Component({
-        standalone: true,
-        selector: 'cmp-a',
-        template: 'CmpA!',
-      })
-      class CmpA {
+    it('should override providers on dependencies of dynamically loaded components', async () => {
+      function timer(delay: number): Promise<void> {
+        return new Promise<void>((resolve) => {
+          setTimeout(() => resolve(), delay);
+        });
       }
 
+      @Injectable({providedIn: 'root'})
+      class ImportantService {
+        value = 'original';
+      }
+
+      @NgModule({
+        providers: [ImportantService],
+      })
+      class ThisModuleProvidesService {
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'child',
+        imports: [ThisModuleProvidesService],
+        template: '<h1>{{value}}</h1>',
+      })
+      class ChildCmp {
+        service = inject(ImportantService);
+        value = this.service.value;
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'parent',
+        imports: [ChildCmp],
+        template: `
+          @defer (when true) {
+            <child />
+          }
+        `,
+      })
+      class ParentCmp {
+      }
+
+      const deferrableDependencies = [ChildCmp];
+      setClassMetadataAsync(
+          ParentCmp,
+          function() {
+            const promises: Array<Promise<Type<unknown>>> = deferrableDependencies.map(
+                // Emulates a dynamic import, e.g. `import('./cmp-a').then(m => m.CmpA)`
+                dep => new Promise((resolve) => setTimeout(() => resolve(dep))));
+            return promises;
+          },
+          function(...deferrableSymbols) {
+            setClassMetadata(
+                ParentCmp, [{
+                  type: Component,
+                  args: [{
+                    selector: 'parent',
+                    standalone: true,
+                    imports: [...deferrableSymbols],
+                    template: `<div>root cmp!</div>`,
+                  }]
+                }],
+                null, null);
+          });
+
+      // Set `PLATFORM_ID` to a browser platform value to trigger defer loading
+      // while running tests in Node.
+      const COMMON_PROVIDERS = [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}];
+
+      TestBed.configureTestingModule({imports: [ParentCmp], providers: [COMMON_PROVIDERS]});
+      TestBed.overrideProvider(ImportantService, {useValue: {value: 'overridden'}});
+
+      await TestBed.compileComponents();
+
+      const fixture = TestBed.createComponent(ParentCmp);
+      fixture.detectChanges();
+
+      await timer(10);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('overridden');
+    });
+
+    it('should allow import overrides on components with async metadata', async () => {
       const NestedAotComponent = getAOTCompiledComponent('nested-cmp', [], []);
       const RootAotComponent = getAOTCompiledComponent('root', [], []);
 
