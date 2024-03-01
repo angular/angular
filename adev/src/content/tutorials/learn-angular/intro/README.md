@@ -29,4 +29,4 @@ If you get stuck, click "Reveal answer" at the top.
   </docs-card>
 </docs-card-container>
 
-Alright, let's [get started](/tutorials/learn-angular/components-in-angular).
+Alright, let's [get started](/tutorials/learn-angular/1-components-in-angular).
