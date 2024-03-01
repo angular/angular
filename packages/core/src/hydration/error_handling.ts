@@ -67,12 +67,13 @@ export function validateMatchingNode(
     const expected = `Angular expected this DOM:\n\n${expectedDom}\n\n`;
 
     let actual = '';
+    const componentHostElement = unwrapRNode(lView[HOST]!);
     if (!node) {
       // No node found during hydration.
       header += `the node was not found.\n\n`;
 
       // Since the node is missing, we use the closest node to attach the error to
-      markRNodeAsHavingHydrationMismatch(unwrapRNode(lView[HOST]!), expectedDom);
+      markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom);
     } else {
       const actualNode = shortRNodeDescription(
           (node as Node).nodeType, (node as HTMLElement).tagName ?? null,
@@ -81,7 +82,10 @@ export function validateMatchingNode(
       header += `found ${actualNode}.\n\n`;
       const actualDom = describeDomFromNode(node);
       actual = `Actual DOM is:\n\n${actualDom}\n\n`;
-      markRNodeAsHavingHydrationMismatch(node, expectedDom, actualDom);
+
+      // DevTools only report hydration issues on the component level, so we attach extra debug
+      // info to a component host element to make it available to DevTools.
+      markRNodeAsHavingHydrationMismatch(componentHostElement, expectedDom, actualDom);
     }
 
     const footer = getHydrationErrorFooter(componentClassName);
