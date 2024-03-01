@@ -65,6 +65,10 @@ export class TestBedCompiler {
   private pendingDirectives = new Set<Type<any>>();
   private pendingPipes = new Set<Type<any>>();
 
+  // Set of components with async metadata, i.e. components with `@defer` blocks
+  // in their templates.
+  private componentsWithAsyncMetadata = new Set<Type<unknown>>();
+
   // Keep track of all components and directives, so we can patch Providers onto defs later.
   private seenComponents = new Set<Type<any>>();
   private seenDirectives = new Set<Type<any>>();
@@ -177,6 +181,10 @@ export class TestBedCompiler {
     this.verifyNoStandaloneFlagOverrides(component, override);
     this.resolvers.component.addOverride(component, override);
     this.pendingComponents.add(component);
+
+    // If this is a component with async metadata (i.e. a component with a `@defer` block
+    // in a template) - store it for future processing.
+    this.maybeRegisterComponentWithAsyncMetadata(component);
   }
 
   overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void {
@@ -265,18 +273,26 @@ export class TestBedCompiler {
   }
 
   private async resolvePendingComponentsWithAsyncMetadata() {
-    if (this.pendingComponents.size === 0) return;
+    if (this.componentsWithAsyncMetadata.size === 0) return;
 
     const promises = [];
-    for (const component of this.pendingComponents) {
+    for (const component of this.componentsWithAsyncMetadata) {
       const asyncMetadataFn = getAsyncClassMetadataFn(component);
       if (asyncMetadataFn) {
         promises.push(asyncMetadataFn());
       }
     }
+    this.componentsWithAsyncMetadata.clear();
 
     const resolvedDeps = await Promise.all(promises);
-    this.queueTypesFromModulesArray(resolvedDeps.flat(2));
+    const flatResolvedDeps = resolvedDeps.flat(2);
+    this.queueTypesFromModulesArray(flatResolvedDeps);
+
+    // Loaded standalone components might contain imports of NgModules
+    // with providers, make sure we override providers there too.
+    for (const component of flatResolvedDeps) {
+      this.applyProviderOverridesInScope(component);
+    }
   }
 
   async compileComponents(): Promise<void> {
@@ -590,7 +606,18 @@ export class TestBedCompiler {
     compileNgModuleDefs(ngModule as NgModuleType<any>, metadata);
   }
 
+  private maybeRegisterComponentWithAsyncMetadata(type: Type<unknown>) {
+    const asyncMetadataFn = getAsyncClassMetadataFn(type);
+    if (asyncMetadataFn) {
+      this.componentsWithAsyncMetadata.add(type);
+    }
+  }
+
   private queueType(type: Type<any>, moduleType: Type<any>|TestingModuleOverride|null): void {
+    // If this is a component with async metadata (i.e. a component with a `@defer` block
+    // in a template) - store it for future processing.
+    this.maybeRegisterComponentWithAsyncMetadata(type);
+
     const component = this.resolvers.component.resolve(type);
     if (component) {
       // Check whether a give Type has respective NG def (ɵcmp) and compile if def is
