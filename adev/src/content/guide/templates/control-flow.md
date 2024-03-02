@@ -93,7 +93,7 @@ You can optionally include an `@empty` section immediately after the `@for` bloc
 @for (item of items; track item.name) {
   <li> {{ item.name }}</li>
 } @empty {
-  <li> There are no items.</li>
+  <li aria-hidden="true"> There are no items. </li>
 }
 ```
 
