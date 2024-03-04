@@ -9,11 +9,11 @@ type CustomLauncher = {
 }
 
 type CustomLaunchers = {
-  [string]: CustomLauncher;
+  [key: string]: CustomLauncher;
 };
 
 type SauceAliases = {
-  [string]: string[];
+  [key: string]: string[];
 };
 
 export const customLaunchers: CustomLaunchers;
