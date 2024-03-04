@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, Call, ImplicitReceiver, ParseSourceSpan, PropertyRead, ThisReceiver, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstNode} from '@angular/compiler';
-import {BlockNode, DeferredTrigger, ForLoopBlock, ForLoopBlockEmpty} from '@angular/compiler/src/render3/r3_ast';
+import {AST, Call, ImplicitReceiver, ParseSourceSpan, PropertyRead, ThisReceiver, TmplAstBlockNode, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_TEXT} from './display_parts';
@@ -50,9 +49,10 @@ export function createNgTemplateQuickInfo(node: TmplAstNode|AST): ts.QuickInfo {
 }
 
 export function createQuickInfoForBuiltIn(
-    node: DeferredTrigger|BlockNode, cursorPositionInTemplate: number): ts.QuickInfo|undefined {
+    node: TmplAstDeferredTrigger|TmplAstBlockNode, cursorPositionInTemplate: number): ts.QuickInfo|
+    undefined {
   let partSpan: ParseSourceSpan;
-  if (node instanceof DeferredTrigger) {
+  if (node instanceof TmplAstDeferredTrigger) {
     if (node.prefetchSpan !== null && isWithin(cursorPositionInTemplate, node.prefetchSpan)) {
       partSpan = node.prefetchSpan;
     } else if (
@@ -68,10 +68,12 @@ export function createQuickInfoForBuiltIn(
     if (node instanceof TmplAstDeferredBlock || node instanceof TmplAstDeferredBlockError ||
         node instanceof TmplAstDeferredBlockLoading ||
         node instanceof TmplAstDeferredBlockPlaceholder ||
-        node instanceof ForLoopBlockEmpty && isWithin(cursorPositionInTemplate, node.nameSpan)) {
+        node instanceof TmplAstForLoopBlockEmpty &&
+            isWithin(cursorPositionInTemplate, node.nameSpan)) {
       partSpan = node.nameSpan;
     } else if (
-        node instanceof ForLoopBlock && isWithin(cursorPositionInTemplate, node.trackKeywordSpan)) {
+        node instanceof TmplAstForLoopBlock &&
+        isWithin(cursorPositionInTemplate, node.trackKeywordSpan)) {
       partSpan = node.trackKeywordSpan;
     } else {
       return undefined;

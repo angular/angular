@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseLocation, ParseSourceSpan} from '@angular/compiler';
+import {ParseLocation, ParseSourceSpan, TmplAstBlockNode, TmplAstDeferredBlock, TmplAstForLoopBlock, TmplAstIfBlock, TmplAstNode, TmplAstRecursiveVisitor, tmplAstVisitAll} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import * as t from '@angular/compiler/src/render3/r3_ast';  // t for template AST
 import ts from 'typescript';
 
 import {getFirstComponentForTemplateFile, isTypeScriptFile, toTextSpan} from './utils';
@@ -22,7 +21,7 @@ export function getOutliningSpans(compiler: NgCompiler, fileName: string): ts.Ou
       return [];
     }
 
-    const templatesInFile: Array<t.Node[]> = [];
+    const templatesInFile: Array<TmplAstNode[]> = [];
     for (const stmt of sf.statements) {
       if (isNamedClassDeclaration(stmt)) {
         const resources = compiler.getComponentResources(stmt);
@@ -47,19 +46,19 @@ export function getOutliningSpans(compiler: NgCompiler, fileName: string): ts.Ou
   }
 }
 
-class BlockVisitor extends t.RecursiveVisitor {
-  readonly blocks = [] as Array<t.BlockNode>;
+class BlockVisitor extends TmplAstRecursiveVisitor {
+  readonly blocks = [] as Array<TmplAstBlockNode>;
 
-  static getBlockSpans(templateNodes: t.Node[]): ts.OutliningSpan[] {
+  static getBlockSpans(templateNodes: TmplAstNode[]): ts.OutliningSpan[] {
     const visitor = new BlockVisitor();
-    t.visitAll(visitor, templateNodes);
+    tmplAstVisitAll(visitor, templateNodes);
     const {blocks} = visitor;
     return blocks.map(block => {
       let mainBlockSpan = block.sourceSpan;
       // The source span of for loops and deferred blocks contain all parts (ForLoopBlockEmpty,
       // DeferredBlockLoading, etc.). The folding range should only include the main block span for
       // these.
-      if (block instanceof t.ForLoopBlock || block instanceof t.DeferredBlock) {
+      if (block instanceof TmplAstForLoopBlock || block instanceof TmplAstDeferredBlock) {
         mainBlockSpan = block.mainBlockSpan;
       }
       return {
@@ -75,10 +74,10 @@ class BlockVisitor extends t.RecursiveVisitor {
     });
   }
 
-  visit(node: t.Node) {
-    if (node instanceof t.BlockNode
+  visit(node: TmplAstNode) {
+    if (node instanceof TmplAstBlockNode
         // Omit `IfBlock` because we include the branches individually
-        && !(node instanceof t.IfBlock)) {
+        && !(node instanceof TmplAstIfBlock)) {
       this.blocks.push(node);
     }
   }
