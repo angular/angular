@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, BindingPipe, BindingType, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, BindingPipe, BindingType, Call, EmptyExpr, ImplicitReceiver, LiteralPrimitive, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundEvent as BoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstSwitchBlock as SwitchBlock, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstTextAttribute as TextAttribute, TmplAstUnknownBlock as UnknownBlock, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, PotentialDirective, SymbolKind, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {BoundEvent, DeferredBlock, SwitchBlock, TextAttribute, UnknownBlock} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
 import {addAttributeCompletionEntries, AsciiSortPriority, AttributeCompletionKind, buildAnimationCompletionEntries, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';

@@ -5,25 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher, TmplAstBoundEvent} from '@angular/compiler';
+import {AbsoluteSourceSpan, AST, ASTWithSource, BindingPipe, CssSelector, ImplicitReceiver, LiteralPrimitive, ParseSourceSpan, ParseSpan, PropertyRead, PropertyWrite, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
-import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import ts from 'typescript';
 
 import {ALIAS_NAME, createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 
-export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
+export function getTextSpanOfNode(node: TmplAstNode|AST): ts.TextSpan {
   if (isTemplateNodeWithKeyAndValue(node)) {
     return toTextSpan(node.keySpan);
   } else if (
-      node instanceof e.PropertyWrite || node instanceof e.BindingPipe ||
-      node instanceof e.PropertyRead) {
+      node instanceof PropertyWrite || node instanceof BindingPipe ||
+      node instanceof PropertyRead) {
     // The `name` part of a `PropertyWrite` and `BindingPipe` does not have its own AST
     // so there is no way to retrieve a `Symbol` for just the `name` via a specific node.
     return toTextSpan(node.nameSpan);
@@ -32,9 +30,9 @@ export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   }
 }
 
-export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|e.ParseSpan): ts.TextSpan {
+export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|ParseSpan): ts.TextSpan {
   let start: number, end: number;
-  if (span instanceof AbsoluteSourceSpan || span instanceof e.ParseSpan) {
+  if (span instanceof AbsoluteSourceSpan || span instanceof ParseSpan) {
     start = span.start;
     end = span.end;
   } else {
@@ -44,12 +42,12 @@ export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|e.ParseSpan)
   return {start, length: end - start};
 }
 
-interface NodeWithKeyAndValue extends t.Node {
+interface NodeWithKeyAndValue extends TmplAstNode {
   keySpan: ParseSourceSpan;
   valueSpan?: ParseSourceSpan;
 }
 
-export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeWithKeyAndValue {
+export function isTemplateNodeWithKeyAndValue(node: TmplAstNode|AST): node is NodeWithKeyAndValue {
   return isTemplateNode(node) && node.hasOwnProperty('keySpan');
 }
 
@@ -73,17 +71,17 @@ export function isWithinKeyValue(position: number, node: NodeWithKeyAndValue): b
   return isWithinKeyValue;
 }
 
-export function isTemplateNode(node: t.Node|e.AST): node is t.Node {
+export function isTemplateNode(node: TmplAstNode|AST): node is TmplAstNode {
   // Template node implements the Node interface so we cannot use instanceof.
   return node.sourceSpan instanceof ParseSourceSpan;
 }
 
-export function isExpressionNode(node: t.Node|e.AST): node is e.AST {
-  return node instanceof e.AST;
+export function isExpressionNode(node: TmplAstNode|AST): node is AST {
+  return node instanceof AST;
 }
 
 export interface TemplateInfo {
-  template: t.Node[];
+  template: TmplAstNode[];
   component: ts.ClassDeclaration;
 }
 
@@ -169,9 +167,10 @@ export function getFirstComponentForTemplateFile(
 /**
  * Given an attribute node, converts it to string form for use as a CSS selector.
  */
-function toAttributeCssSelector(attribute: t.TextAttribute|t.BoundAttribute|t.BoundEvent): string {
+function toAttributeCssSelector(attribute: TmplAstTextAttribute|TmplAstBoundAttribute|
+                                TmplAstBoundEvent): string {
   let selector: string;
-  if (attribute instanceof t.BoundEvent || attribute instanceof t.BoundAttribute) {
+  if (attribute instanceof TmplAstBoundEvent || attribute instanceof TmplAstBoundAttribute) {
     selector = `[${attribute.name}]`;
   } else {
     selector = `[${attribute.name}=${attribute.valueSpan?.toString() ?? ''}]`;
@@ -182,18 +181,18 @@ function toAttributeCssSelector(attribute: t.TextAttribute|t.BoundAttribute|t.Bo
   return selector.replace(/\$/g, '\\$');
 }
 
-function getNodeName(node: t.Template|t.Element): string {
-  return node instanceof t.Template ? (node.tagName ?? 'ng-template') : node.name;
+function getNodeName(node: TmplAstTemplate|TmplAstElement): string {
+  return node instanceof TmplAstTemplate ? (node.tagName ?? 'ng-template') : node.name;
 }
 
 /**
  * Given a template or element node, returns all attributes on the node.
  */
-function getAttributes(node: t.Template|
-                       t.Element): Array<t.TextAttribute|t.BoundAttribute|t.BoundEvent> {
-  const attributes: Array<t.TextAttribute|t.BoundAttribute|t.BoundEvent> =
+function getAttributes(node: TmplAstTemplate|TmplAstElement):
+    Array<TmplAstTextAttribute|TmplAstBoundAttribute|TmplAstBoundEvent> {
+  const attributes: Array<TmplAstTextAttribute|TmplAstBoundAttribute|TmplAstBoundEvent> =
       [...node.attributes, ...node.inputs, ...node.outputs];
-  if (node instanceof t.Template) {
+  if (node instanceof TmplAstTemplate) {
     attributes.push(...node.templateAttrs);
   }
   return attributes;
@@ -225,7 +224,7 @@ function difference<T>(left: Set<T>, right: Set<T>): Set<T> {
  */
 // TODO(atscott): Add unit tests for this and the one for attributes
 export function getDirectiveMatchesForElementTag<T extends {selector: string | null}>(
-    element: t.Template|t.Element, directives: T[]): Set<T> {
+    element: TmplAstTemplate|TmplAstElement, directives: T[]): Set<T> {
   const attributes = getAttributes(element);
   const allAttrs = attributes.map(toAttributeCssSelector);
   const allDirectiveMatches =
@@ -235,7 +234,7 @@ export function getDirectiveMatchesForElementTag<T extends {selector: string | n
 }
 
 
-export function makeElementSelector(element: t.Element|t.Template): string {
+export function makeElementSelector(element: TmplAstElement|TmplAstTemplate): string {
   const attributes = getAttributes(element);
   const allAttrs = attributes.map(toAttributeCssSelector);
   return getNodeName(element) + allAttrs.join('');
@@ -253,7 +252,7 @@ export function makeElementSelector(element: t.Element|t.Template): string {
  * @returns The list of directives matching the tag name via the strategy described above.
  */
 export function getDirectiveMatchesForAttribute(
-    name: string, hostNode: t.Template|t.Element,
+    name: string, hostNode: TmplAstTemplate|TmplAstElement,
     directives: DirectiveSymbol[]): Set<DirectiveSymbol> {
   const attributes = getAttributes(hostNode);
   const allAttrs = attributes.map(toAttributeCssSelector);
@@ -319,9 +318,9 @@ export function filterAliasImports(displayParts: ts.SymbolDisplayPart[]): ts.Sym
   });
 }
 
-export function isDollarEvent(n: t.Node|e.AST): n is e.PropertyRead {
-  return n instanceof e.PropertyRead && n.name === '$event' &&
-      n.receiver instanceof e.ImplicitReceiver && !(n.receiver instanceof e.ThisReceiver);
+export function isDollarEvent(n: TmplAstNode|AST): n is PropertyRead {
+  return n instanceof PropertyRead && n.name === '$event' &&
+      n.receiver instanceof ImplicitReceiver && !(n.receiver instanceof ThisReceiver);
 }
 
 /**
@@ -386,18 +385,18 @@ export function getTemplateLocationFromTcbLocation(
   return {templateUrl, span};
 }
 
-export function isBoundEventWithSyntheticHandler(event: t.BoundEvent): boolean {
+export function isBoundEventWithSyntheticHandler(event: TmplAstBoundEvent): boolean {
   // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
   // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
   // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
   // parser, and is not suitable to use for Language Service analysis. Skip it.
   //
   // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
-  let handler: e.AST = event.handler;
-  if (handler instanceof e.ASTWithSource) {
+  let handler: AST = event.handler;
+  if (handler instanceof ASTWithSource) {
     handler = handler.ast;
   }
-  if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
+  if (handler instanceof LiteralPrimitive && handler.value === 'ERROR') {
     return true;
   }
   return false;

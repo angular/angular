@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithName} from '@angular/compiler';
+import {ASTWithName, TmplAstElement} from '@angular/compiler';
 import {ErrorCode as NgCompilerErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics/index';
 import {PotentialDirective, PotentialImportMode, PotentialPipe} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import * as t from '@angular/compiler/src/render3/r3_ast';  // t for template AST
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
@@ -52,7 +51,7 @@ function getCodeActions(
 
   let matches: Set<PotentialDirective>|Set<PotentialPipe>;
   if (target.context.kind === TargetNodeKind.ElementInTagContext &&
-      target.context.node instanceof t.Element) {
+      target.context.node instanceof TmplAstElement) {
     const allPossibleDirectives = checker.getPotentialTemplateDirectives(templateInfo.component);
     matches = getDirectiveMatchesForElementTag(target.context.node, allPossibleDirectives);
   } else if (

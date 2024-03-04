@@ -5,10 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, TmplAstBoundAttribute, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
+import {AST, TmplAstBlockNode, TmplAstBoundAttribute, TmplAstDeferredTrigger, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {BlockNode, DeferredTrigger} from '@angular/compiler/src/render3/r3_ast';
 import ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './display_parts';
@@ -26,7 +25,7 @@ export class QuickInfoBuilder {
       private readonly positionDetails: TemplateTarget) {}
 
   get(): ts.QuickInfo|undefined {
-    if (this.node instanceof DeferredTrigger || this.node instanceof BlockNode) {
+    if (this.node instanceof TmplAstDeferredTrigger || this.node instanceof TmplAstBlockNode) {
       return createQuickInfoForBuiltIn(this.node, this.positionDetails.position);
     }
 
