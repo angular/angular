@@ -9,14 +9,14 @@
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {getInjectorDef, InjectorType} from '../../di/interface/defs';
-import {InjectFlags, InternalInjectFlags} from '../../di/interface/injector';
+import {InternalInjectFlags} from '../../di/interface/injector';
 import {NullInjector} from '../../di/null_injector';
 import {SingleProvider, walkProviderTree} from '../../di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
 import {deepForEach} from '../../util/array_utils';
-import {assertDefined, throwError} from '../../util/assert';
+import {throwError} from '../../util/assert';
 import type {ChainedInjector} from '../component_ref';
 import {getComponentDef} from '../definition';
 import {getNodeInjectorLView, getNodeInjectorTNode, getParentInjectorLocation, NodeInjector} from '../di';
