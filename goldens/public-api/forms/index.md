@@ -70,6 +70,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     abstract patchValue(value: TValue, options?: Object): void;
     get pending(): boolean;
     readonly pristine: boolean;
+    readonly pristineChanges: Observable<boolean>;
     removeAsyncValidators(validators: AsyncValidatorFn | AsyncValidatorFn[]): void;
     removeValidators(validators: ValidatorFn | ValidatorFn[]): void;
     abstract reset(value?: TValue, options?: Object): void;
@@ -84,6 +85,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     readonly status: FormControlStatus;
     readonly statusChanges: Observable<FormControlStatus>;
     readonly touched: boolean;
+    readonly touchedChanges: Observable<boolean>;
     get untouched(): boolean;
     get updateOn(): FormHooks;
     updateValueAndValidity(opts?: {

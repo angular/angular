@@ -191,6 +191,7 @@ describe('FormArray', () => {
   });
 
   describe('markAllAsTouched', () => {
+    let logger: string[] = [];
     it('should mark all descendants as touched', () => {
       const formArray: FormArray = new FormArray([
         new FormControl('v1') as AbstractControl, new FormControl('v2'),
@@ -239,6 +240,27 @@ describe('FormArray', () => {
       expect(innerFormArrayGroup.touched).toBe(true);
 
       expect(innerFormArrayGroupControl1.touched).toBe(true);
+    });
+
+    it('should emit one touchedChanges event per control', () => {
+      const formArray: FormArray = new FormArray([
+        new FormControl('v1') as AbstractControl, new FormControl('v2'),
+        new FormGroup({'c1': new FormControl('v1')}),
+        new FormArray([new FormGroup({'c2': new FormControl('v2')})])
+      ]);
+      formArray.touchedChanges.subscribe(() => logger.push('array'));
+      (formArray.at(0) as FormControl).touchedChanges.subscribe(() => logger.push('v1'));
+      (formArray.at(1) as FormControl).touchedChanges.subscribe(() => logger.push('v2'));
+      (formArray.at(2) as FormGroup).touchedChanges.subscribe(() => logger.push('group'));
+      ((formArray.at(2) as FormGroup).get('c1') as FormControl)
+          .touchedChanges.subscribe(() => logger.push('groupc1'));
+      (formArray.at(3) as FormArray).touchedChanges.subscribe(() => logger.push('arrayarray'));
+      (((formArray.at(3) as FormArray).at(0) as FormGroup).get('c2') as FormControl)
+          .touchedChanges.subscribe(() => logger.push('arrayarray0c2'));
+
+      formArray.markAllAsTouched();
+      expect(logger).toEqual(
+          ['array', 'v1', 'v2', 'group', 'groupc1', 'arrayarray', 'arrayarray0c2']);
     });
   });
 

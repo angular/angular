@@ -65,6 +65,7 @@ describe('FormGroup', () => {
   });
 
   describe('markAllAsTouched', () => {
+    let logger: string[] = [];
     it('should mark all descendants as touched', () => {
       const formGroup: FormGroup = new FormGroup({
         'c1': new FormControl('v1'),
@@ -122,6 +123,40 @@ describe('FormGroup', () => {
       const arrayFirstChildGroupFirstChildCtrl = arrayFirstChildGroup.get('c4') as FormControl;
 
       expect(arrayFirstChildGroupFirstChildCtrl.touched).toBe(true);
+    });
+
+    it('should emit one touchedChanges event per control', () => {
+      const formGroup: FormGroup = new FormGroup({
+        'c1': new FormControl('v1'),
+        'group': new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
+        'array': new FormArray([
+          new FormControl('v4') as any, new FormControl('v5'),
+          new FormGroup({'c4': new FormControl('v4')})
+        ])
+      });
+
+      (formGroup.get('c1') as FormControl).touchedChanges.subscribe(() => logger.push('c1'));
+      (formGroup.get('group') as FormGroup).touchedChanges.subscribe(() => logger.push('group'));
+      ((formGroup.get('group') as FormGroup).get('c2') as FormControl)
+          .touchedChanges.subscribe(() => logger.push('groupc2'));
+      ((formGroup.get('group') as FormGroup).get('c3') as FormControl)
+          .touchedChanges.subscribe(() => logger.push('groupc3'));
+      (formGroup.get('array') as FormArray).touchedChanges.subscribe(() => logger.push('array'));
+      (formGroup.get('array') as FormArray)
+          .at(0)
+          .touchedChanges.subscribe(() => logger.push('array0'));
+      (formGroup.get('array') as FormArray)
+          .at(1)
+          .touchedChanges.subscribe(() => logger.push('array1'));
+      (formGroup.get('array') as FormArray)
+          .at(2)
+          .touchedChanges.subscribe(() => logger.push('array2'));
+      (((formGroup.get('array') as FormArray).at(2) as FormGroup).get('c4') as FormControl)
+          .touchedChanges.subscribe(() => logger.push('array0c4'));
+      formGroup.markAllAsTouched();
+
+      expect(logger).toEqual(
+          ['c1', 'group', 'groupc2', 'groupc3', 'array', 'array0', 'array1', 'array2', 'array0c4']);
     });
   });
 

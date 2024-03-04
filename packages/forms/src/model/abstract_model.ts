@@ -606,6 +606,17 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   public readonly statusChanges!: Observable<FormControlStatus>;
 
   /**
+   * A multicasting observable that emits an event every time the control is touched or untouched.
+   */
+  public readonly touchedChanges!: Observable<boolean>;
+
+  /**
+   * A multicasting observable that emits an event every time the control is pristine or not
+   * pristine.
+   */
+  public readonly pristineChanges!: Observable<boolean>;
+
+  /**
    * Reports the update strategy of the `AbstractControl` (meaning
    * the event on which the control updates itself).
    * Possible values: `'change'` | `'blur'` | `'submit'`
@@ -798,6 +809,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    */
   markAsTouched(opts: {onlySelf?: boolean} = {}): void {
     (this as Writable<this>).touched = true;
+    (this.touchedChanges as EventEmitter<boolean>).emit(this.touched);
 
     if (this._parent && !opts.onlySelf) {
       this._parent.markAsTouched(opts);
@@ -831,6 +843,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    */
   markAsUntouched(opts: {onlySelf?: boolean} = {}): void {
     (this as Writable<this>).touched = false;
+    (this.touchedChanges as EventEmitter<boolean>).emit(this.touched);
     this._pendingTouched = false;
 
     this._forEachChild((control: AbstractControl) => {
@@ -857,6 +870,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    */
   markAsDirty(opts: {onlySelf?: boolean} = {}): void {
     (this as Writable<this>).pristine = false;
+    (this.pristineChanges as EventEmitter<boolean>).emit(this.pristine);
 
     if (this._parent && !opts.onlySelf) {
       this._parent.markAsDirty(opts);
@@ -881,6 +895,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    */
   markAsPristine(opts: {onlySelf?: boolean} = {}): void {
     (this as Writable<this>).pristine = true;
+    (this.pristineChanges as EventEmitter<boolean>).emit(this.pristine);
+
     this._pendingDirty = false;
 
     this._forEachChild((control: AbstractControl) => {
@@ -1294,6 +1310,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   _initObservables() {
     (this as Writable<this>).valueChanges = new EventEmitter();
     (this as Writable<this>).statusChanges = new EventEmitter();
+    (this as Writable<this>).touchedChanges = new EventEmitter();
+    (this as Writable<this>).pristineChanges = new EventEmitter();
   }
 
 
@@ -1338,6 +1356,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   /** @internal */
   _updatePristine(opts: {onlySelf?: boolean} = {}): void {
     (this as Writable<this>).pristine = !this._anyControlsDirty();
+    (this.pristineChanges as EventEmitter<boolean>).emit(this.pristine);
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updatePristine(opts);
@@ -1347,6 +1366,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   /** @internal */
   _updateTouched(opts: {onlySelf?: boolean} = {}): void {
     (this as Writable<this>).touched = this._anyControlsTouched();
+    (this.touchedChanges as EventEmitter<boolean>).emit(this.touched);
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updateTouched(opts);

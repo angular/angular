@@ -32,6 +32,7 @@ describe('FormControl', () => {
       expect(control.touched).toBe(false);
       control.markAllAsTouched();
       expect(control.touched).toBe(true);
+      control.touchedChanges.subscribe((touched) => expect(touched).toBe(true));
     });
   });
 
@@ -671,6 +672,7 @@ describe('FormControl', () => {
       const c = new FormControl('value');
       c.markAsDirty();
       expect(c.dirty).toEqual(true);
+      c.pristineChanges.subscribe((pristine) => expect(pristine).toBe(false));
     });
   });
 
@@ -678,12 +680,14 @@ describe('FormControl', () => {
     it('should be false after creating a control', () => {
       const c = new FormControl('value');
       expect(c.touched).toEqual(false);
+      c.touchedChanges.subscribe((touched) => expect(touched).toBe(false));
     });
 
     it('should be true after markAsTouched runs', () => {
       const c = new FormControl('value');
       c.markAsTouched();
       expect(c.touched).toEqual(true);
+      c.touchedChanges.subscribe((touched) => expect(touched).toBe(true));
     });
   });
 
@@ -825,9 +829,11 @@ describe('FormControl', () => {
 
   describe('reset()', () => {
     let c: FormControl;
+    let logger: boolean[] = [];
 
     beforeEach(() => {
       c = new FormControl('initial value');
+      logger = [];
     });
 
     it('should reset to a specific value if passed', () => {
@@ -935,30 +941,38 @@ describe('FormControl', () => {
     });
 
     it('should mark the control as pristine', () => {
+      c.pristineChanges.subscribe((pristine) => logger.push(pristine));
+
       c.markAsDirty();
       expect(c.pristine).toBe(false);
 
       c.reset();
       expect(c.pristine).toBe(true);
+      expect(logger).toEqual([false, true]);
     });
 
     it('should set the parent pristine state if all pristine', () => {
       const g = new FormGroup({'one': c});
+      g.pristineChanges.subscribe((pristine) => logger.push(pristine));
+
       c.markAsDirty();
       expect(g.pristine).toBe(false);
 
       c.reset();
       expect(g.pristine).toBe(true);
+      expect(logger).toEqual([false, true]);
     });
 
     it('should not set the parent pristine state if it has other dirty controls', () => {
       const c2 = new FormControl('two');
       const g = new FormGroup({'one': c, 'two': c2});
+      g.pristineChanges.subscribe((pristine) => logger.push(pristine));
       c.markAsDirty();
       c2.markAsDirty();
 
       c.reset();
       expect(g.pristine).toBe(false);
+      expect(logger).toEqual([false, false, false]);
     });
 
     it('should mark the control as untouched', () => {
@@ -1206,6 +1220,12 @@ describe('FormControl', () => {
   });
 
   describe('disable() & enable()', () => {
+    let logger: {[key: string]: boolean}[];
+
+    beforeEach(() => {
+      logger = [];
+    });
+
     it('should mark the control as disabled', () => {
       const c = new FormControl(null);
       expect(c.disabled).toBe(false);
@@ -1322,6 +1342,9 @@ describe('FormControl', () => {
       const c = new FormControl('one');
       const c2 = new FormControl('two');
       const a = new FormArray([c, c2]);
+      a.pristineChanges.subscribe((pristine) => logger.push({a: pristine}));
+      c.pristineChanges.subscribe((pristine) => logger.push({c: pristine}));
+
       c.markAsDirty();
       expect(a.dirty).toBe(true);
 
@@ -1331,12 +1354,15 @@ describe('FormControl', () => {
 
       c.enable();
       expect(a.dirty).toBe(true);
+      expect(logger).toEqual([{c: false}, {a: false}, {a: true}, {a: false}]);
     });
 
     it('should not make a dirty array not dirty when disabling controls', () => {
       const c = new FormControl('one');
       const c2 = new FormControl('two');
       const a = new FormArray([c, c2]);
+      a.pristineChanges.subscribe((pristine) => logger.push({a: pristine}));
+      c.pristineChanges.subscribe((pristine) => logger.push({c: pristine}));
 
       a.markAsDirty();
       expect(a.dirty).toBe(true);
@@ -1347,6 +1373,8 @@ describe('FormControl', () => {
 
       c.enable();
       expect(a.dirty).toBe(true);
+
+      expect(logger).toEqual([{a: false}]);
     });
 
     it('should ignore disabled controls in validation', () => {
@@ -1392,6 +1420,9 @@ describe('FormControl', () => {
       const c = new FormControl('one');
       const c2 = new FormControl('two');
       const g = new FormGroup({one: c, two: c2});
+      g.pristineChanges.subscribe((pristine) => logger.push({g: pristine}));
+      c.pristineChanges.subscribe((pristine) => logger.push({c: pristine}));
+
       c.markAsDirty();
       expect(g.dirty).toBe(true);
 
@@ -1401,12 +1432,15 @@ describe('FormControl', () => {
 
       c.enable();
       expect(g.dirty).toBe(true);
+      expect(logger).toEqual([{c: false}, {g: false}, {g: true}, {g: false}]);
     });
 
     it('should not make a dirty group not dirty when disabling controls', () => {
       const c = new FormControl('one');
       const c2 = new FormControl('two');
       const g = new FormGroup({one: c, two: c2});
+      g.pristineChanges.subscribe((pristine) => logger.push({g: pristine}));
+      c.pristineChanges.subscribe((pristine) => logger.push({c: pristine}));
 
       g.markAsDirty();
       expect(g.dirty).toBe(true);
@@ -1417,12 +1451,16 @@ describe('FormControl', () => {
 
       c.enable();
       expect(g.dirty).toBe(true);
+      expect(logger).toEqual([{g: false}]);
     });
 
     it('should ignore disabled controls when determining touched state', () => {
       const c = new FormControl('one');
       const c2 = new FormControl('two');
       const g = new FormGroup({one: c, two: c2});
+      c.touchedChanges.subscribe((touched) => logger.push({g: touched}));
+      g.touchedChanges.subscribe((touched) => logger.push({c: touched}));
+
       c.markAsTouched();
       expect(g.touched).toBe(true);
 
@@ -1432,6 +1470,7 @@ describe('FormControl', () => {
 
       c.enable();
       expect(g.touched).toBe(true);
+      expect(logger).toEqual([{g: true}, {c: true}, {c: false}, {c: true}]);
     });
 
     it('should not run validators on disabled controls', () => {
