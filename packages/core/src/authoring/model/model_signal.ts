@@ -10,7 +10,7 @@ import {producerAccessed, SIGNAL, signalSetFn} from '@angular/core/primitives/si
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Signal} from '../../render3/reactivity/api';
-import {WritableSignal, ɵWRITABLE_SIGNAL} from '../../render3/reactivity/signal';
+import {signalAsReadonlyFn, WritableSignal, ɵWRITABLE_SIGNAL} from '../../render3/reactivity/signal';
 import {ɵINPUT_SIGNAL_BRAND_READ_TYPE, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE} from '../input/input_signal';
 import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
 import {OutputEmitterRef} from '../output/output_emitter_ref';
@@ -63,7 +63,7 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
   }
 
   getter[SIGNAL] = node;
-  getter.asReadonly = (() => getter()) as () => Signal<T>;
+  getter.asReadonly = signalAsReadonlyFn.bind(getter as any) as () => Signal<T>;
 
   // TODO: Should we throw an error when updating a destroyed model?
   getter.set = (newValue: T) => {

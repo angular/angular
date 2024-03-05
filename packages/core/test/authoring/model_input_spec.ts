@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {computed, model} from '@angular/core';
+import {computed, isSignal, model, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('model signal', () => {
@@ -33,6 +33,16 @@ describe('model signal', () => {
 
     signal.update(value => value * 3);
     expect(signal()).toBe(18);
+  });
+
+  it('should return readonly signal', () => {
+    const signal = TestBed.runInInjectionContext(() => model(2));
+    const readOnly = signal.asReadonly();
+
+    expect(isSignal(readOnly)).toBeTrue();
+    expect(readOnly()).toBe(2);
+    expect((readOnly as WritableSignal<unknown>).set).toBeUndefined();
+    expect((readOnly as WritableSignal<unknown>).update).toBeUndefined();
   });
 
   it('should emit when the value changes', () => {
