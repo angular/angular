@@ -10,7 +10,7 @@ import {producerAccessed, SIGNAL, signalSetFn} from '@angular/core/primitives/si
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {Signal} from '../../render3/reactivity/api';
-import {WritableSignal} from '../../render3/reactivity/signal';
+import {signalAsReadonlyFn, WritableSignal} from '../../render3/reactivity/signal';
 import {ɵINPUT_SIGNAL_BRAND_READ_TYPE, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE} from '../input/input_signal';
 import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from '../input/input_signal_node';
 
@@ -71,7 +71,7 @@ export function createModelSignal<T>(initialValue: T): ModelSignal<T> {
   }
 
   (getter as any)[SIGNAL] = node;
-  (getter as any).asReadonly = (() => getter()) as Signal<T>;
+  (getter as any).asReadonly = signalAsReadonlyFn.bind(getter as any) as () => Signal<T>;
 
   getter.set = (newValue: T) => {
     if (!node.equal(node.value, newValue)) {
