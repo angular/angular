@@ -23,6 +23,8 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {
   ChildrenOutletContexts,
   DefaultUrlSerializer,
+  NavigationCancel,
+  NavigationError,
   Router,
   RouterModule,
   RouterOutlet,
@@ -30,9 +32,10 @@ import {
   UrlTree,
 } from '@angular/router';
 import {of} from 'rxjs';
-import {delay, mapTo} from 'rxjs/operators';
+import {delay, filter, mapTo, take} from 'rxjs/operators';
 
-import {provideRouter} from '../src/provide_router';
+import {provideRouter, withRouterConfig} from '../src/provide_router';
+import {afterNextNavigation} from '../src/utils/navigations';
 
 describe('Integration', () => {
   describe('routerLinkActive', () => {
@@ -417,6 +420,48 @@ describe('Integration', () => {
     await router.navigateByUrl(tree);
 
     expect(router.url).toEqual(`/?q=${SPECIAL_SERIALIZATION}`);
+  });
+
+  it('navigation works when a redirecting NavigationCancel event causes another synchronous navigation', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {path: 'a', children: []},
+            {path: 'b', children: []},
+            {path: 'c', children: []},
+          ],
+          withRouterConfig({resolveNavigationPromiseOnError: true}),
+        ),
+      ],
+    });
+
+    let errors: NavigationError[] = [];
+    let cancellations: NavigationCancel[] = [];
+    const router = TestBed.inject(Router);
+    router.events
+      .pipe(filter((e): e is NavigationError => e instanceof NavigationError))
+      .subscribe((e) => errors.push(e));
+    router.events
+      .pipe(filter((e): e is NavigationCancel => e instanceof NavigationCancel))
+      .subscribe((e) => cancellations.push(e));
+
+    router.events
+      .pipe(
+        filter((e) => e instanceof NavigationCancel),
+        take(1),
+      )
+      .subscribe(() => {
+        router.navigateByUrl('/c');
+      });
+    router.navigateByUrl('/a');
+    router.navigateByUrl('/b');
+    await new Promise<void>((resolve) => afterNextNavigation(router, resolve));
+
+    expect(router.url).toEqual('/c');
+    expect(errors).toEqual([]);
+    // navigations to a and b were both cancelled.
+    expect(cancellations.length).toEqual(2);
   });
 });
 
