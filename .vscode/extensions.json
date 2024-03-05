@@ -5,12 +5,7 @@
   // List of extensions which should be recommended for users of this workspace.
   "recommendations": [
     "BazelBuild.vscode-bazel",
-    "gkalpak.aio-docs-utils",
     "ms-vscode.vscode-typescript-tslint-plugin",
     "xaver.clang-format",
-    // The following extensions are useful when working on angular.io (i.e. inside the `aio/` directory).
-    //"angular.ng-template",
-    //"dbaeumer.vscode-eslint",
-    //"errata-ai.vale-server",
   ],
 }
