@@ -19,6 +19,7 @@ import {Theme, ThemeService} from '../theme-service';
 import {DevToolsTabsComponent} from './devtools-tabs.component';
 import {TabUpdate} from './tab-update/index';
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
+import {FrameManager} from '../frame_manager';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -36,6 +37,7 @@ describe('DevtoolsTabsComponent', () => {
   beforeEach(() => {
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     applicationEnvironmentMock = jasmine.createSpyObj('applicationEnvironment', ['environment']);
+
     TestBed.configureTestingModule({
       imports: [MatTooltip, MatMenuModule, DevToolsTabsComponent],
       providers: [
@@ -43,6 +45,7 @@ describe('DevtoolsTabsComponent', () => {
         {provide: ThemeService, useFactory: () => ({currentTheme: new Subject<Theme>()})},
         {provide: MessageBus, useValue: messageBusMock},
         {provide: ApplicationEnvironment, useValue: applicationEnvironmentMock},
+        {provide: FrameManager, useFactory: () => FrameManager.initialize(123)},
       ],
     }).overrideComponent(DevToolsTabsComponent, {
       remove: {imports: [DirectiveExplorerComponent]},
@@ -73,5 +76,25 @@ describe('DevtoolsTabsComponent', () => {
     expect(messageBusMock.emit).toHaveBeenCalledTimes(3);
     expect(messageBusMock.emit).toHaveBeenCalledWith('inspectorEnd');
     expect(messageBusMock.emit).toHaveBeenCalledWith('removeHighlightOverlay');
+  });
+
+  it('should emit a selectedFrame when emitSelectedFrame is called', () => {
+    let contentScriptConnected: Function = () => {};
+
+    // mock message bus on method with jasmine fake call in order to pick out callback
+    // and call it with frame
+    (messageBusMock.on as any).and.callFake((topic: string, cb: Function) => {
+      if (topic === 'contentScriptConnected') {
+        contentScriptConnected = cb;
+      }
+    });
+
+    const frameId = 1;
+    expect(contentScriptConnected).toEqual(jasmine.any(Function));
+    contentScriptConnected(frameId, 'name', 'http://localhost:4200/url');
+    spyOn(comp.frameSelected, 'emit');
+    comp.emitSelectedFrame('1');
+
+    expect(comp.frameSelected.emit).toHaveBeenCalledWith(comp.frameManager.frames[0]);
   });
 });

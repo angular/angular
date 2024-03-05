@@ -11,6 +11,7 @@ import {ApplicationEnvironment, Environment} from 'ng-devtools';
 import {environment} from './environments/environment';
 
 export class DemoApplicationEnvironment extends ApplicationEnvironment {
+  frameSelectorEnabled = false;
   override get environment(): Environment {
     return environment;
   }
