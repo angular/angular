@@ -10,6 +10,21 @@
       <mat-icon> info </mat-icon>
     </button>
   </div>
+
+  <select matTooltip="Select a frame to inspect with Angular Devtools" class="frame-selector" (change)="emitSelectedFrame($event.target.value)">
+    @for (frame of frameManager.frames; track frame.id) {
+      <option [value]="frame.id" [selected]="frameManager.isSelectedFrame(frame)">
+        @if (frame.id === TOP_LEVEL_FRAME_ID) {
+          top
+        } @else {
+          {{ frame.name }} ({{ frame.id }})
+        }
+      </option>
+    } @empty {
+      <option value="0" selected>top</option>
+    }
+  </select>
+
   @for (tab of tabs; track $index) {
     <a class="mat-tab-link" mat-tab-link (click)="changeTab(tab)" [active]="activeTab === tab">
       {{ tab }}
@@ -27,19 +42,23 @@
     </section>
   }
 </nav>
+
 <mat-tab-nav-panel #tabPanel>
-<div class="tab-content">
-  <ng-directive-explorer
-    [showCommentNodes]="showCommentNodes"
-    [isHydrationEnabled]="isHydrationEnabled"
-    [class.hidden]="activeTab !== 'Components'"
-    (toggleInspector)="toggleInspector()"
-  />
-  <ng-profiler [class.hidden]="activeTab !== 'Profiler'"/>
-  <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"/>
-  <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'"/>
-</div>
+  @if (!applicationEnvironment.frameSelectorEnabled || frameManager.selectedFrame !== null) {
+    <div class="tab-content">
+      <ng-directive-explorer
+        [showCommentNodes]="showCommentNodes"
+        [isHydrationEnabled]="isHydrationEnabled"
+        [class.hidden]="activeTab !== 'Components'"
+        (toggleInspector)="toggleInspector()"
+      />
+      <ng-profiler [class.hidden]="activeTab !== 'Profiler'"/>
+      <ng-router-tree [routes]="routes" [class.hidden]="activeTab !== 'Router Tree'"/>
+      <ng-injector-tree [class.hidden]="activeTab !== 'Injector Tree'"/>
+    </div>
+  }
 </mat-tab-nav-panel>
+
 <mat-menu #menu="matMenu">
   <div mat-menu-item disableRipple (click)="$event.stopPropagation(); toggleTimingAPI()">
     <mat-slide-toggle [checked]="timingAPIEnabled">
@@ -57,6 +76,7 @@
     </mat-slide-toggle>
   </div>
 </mat-menu>
+
 <mat-menu #info="matMenu">
   <a mat-menu-item href="https://angular.io/devtools" target="_blank">
     <mat-icon>library_books</mat-icon>
