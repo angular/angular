@@ -8,10 +8,11 @@
 
 
 import {CommonModule} from '@angular/common';
-import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, inject, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ɵgetEnsureDirtyViewsAreAlwaysReachable, ɵsetEnsureDirtyViewsAreAlwaysReachable} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef,NgZone, Component, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, inject, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ɵgetEnsureDirtyViewsAreAlwaysReachable, ɵsetEnsureDirtyViewsAreAlwaysReachable} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
+import {take} from 'rxjs/operators';
 
 describe('change detection', () => {
   describe('embedded views', () => {
@@ -1529,4 +1530,26 @@ describe('change detection', () => {
     //       .not.toThrowError();
     // });
   });
+
+       it('can update state in onStable', () => {
+        @Component({
+          template: '{{state}}'
+        })
+        class App {
+          state = 'initial';
+          private readonly ngZone = inject(NgZone);
+
+          ngOnInit(){
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+              this.ngZone.run(() => {
+                this.state = 'updated';
+              });
+            })
+          }
+        }
+
+        const fixture = TestBed.createComponent(App);
+        fixture.autoDetectChanges();
+        expect(fixture.nativeElement.innerText).toEqual('updated');
+       });
 });
