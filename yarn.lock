@@ -546,9 +546,9 @@
     "@material/typography" "15.0.0-canary.7f224ddd4.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#0126481d9074759b2d1c5be77f8a3c87e5c3c1e4":
-  version "0.0.0-b18378deb8556573a8dc7f841415260bccfba878"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#0126481d9074759b2d1c5be77f8a3c87e5c3c1e4"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#262c6ede0815bb2ba6fbe6f1790eaaa77ce84c9c":
+  version "0.0.0-96a8277d21eb61a2370061717ffa8dee5668caa0"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#262c6ede0815bb2ba6fbe6f1790eaaa77ce84c9c"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
