@@ -11,6 +11,8 @@ import {ApplicationEnvironment, Environment} from 'ng-devtools';
 import {environment} from '../environments/environment';
 
 export class ChromeApplicationEnvironment extends ApplicationEnvironment {
+  frameSelectorEnabled = true;
+
   override get environment(): Environment {
     return environment;
   }
