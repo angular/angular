@@ -1,10 +1,10 @@
 import {execSync} from 'node:child_process';
-import {readFile, writeFile, mkdtemp, realpath, rm, rename} from 'node:fs/promises';
-import {tmpdir} from 'os';
+import {readFile, writeFile, readdir, mkdtemp, realpath, copyFile, unlink} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
 import {get} from 'node:https';
 import {dirname, resolve as resolvePath, posix, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {existsSync} from 'node:fs';
+import {existsSync, constants as fsConstants} from 'node:fs';
 
 const GITHUB_API = 'https://api.github.com/repos/';
 const CLI_BUILDS_REPO = 'angular/cli-builds';
@@ -35,7 +35,7 @@ async function main() {
 
   console.log(
     `The below help files changed between ${currentSha} and ${latestSha}:\n` +
-      changedHelpFiles.map((f) => '* ' + f).join('\n')
+      changedHelpFiles.map((f) => '* ' + f).join('\n'),
   );
 
   const temporaryDir = await realpath(await mkdtemp(join(tmpdir(), 'cli-src-')));
@@ -53,11 +53,23 @@ async function main() {
     stdio: ['ignore', 'pipe', 'ignore'],
   }).trim();
 
-  // Delete current contents
-  await rm(CLI_HELP_CONTENT_PATH, {recursive: true, force: true});
+  // Delete existing JSON help files.
+  const helpFilesUnlink = (await readdir(CLI_HELP_CONTENT_PATH))
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => unlink(join(CLI_HELP_CONTENT_PATH, f)));
 
-  // Move Help contents
-  await rename(join(temporaryDir, 'help'), CLI_HELP_CONTENT_PATH);
+  await Promise.allSettled(helpFilesUnlink);
+
+  // Copy new help files
+  const tempHelpDir = join(temporaryDir, 'help');
+  const helpFilesCopy = (await readdir(tempHelpDir)).map((f) => {
+    const src = join(tempHelpDir, f);
+    const dest = join(CLI_HELP_CONTENT_PATH, f);
+
+    return copyFile(src, dest, fsConstants.COPYFILE_FICLONE);
+  });
+
+  await Promise.allSettled(helpFilesCopy);
 
   // Write SHA to file.
   await writeFile(
@@ -68,8 +80,8 @@ async function main() {
         sha: shaWhenFilesChanged,
       },
       undefined,
-      2
-    )
+      2,
+    ),
   );
 
   console.log('\nChanges: ');
@@ -106,7 +118,7 @@ async function getShaFromCliBuilds(branch) {
  */
 async function getAffectedFiles(baseSha, headSha) {
   const {files} = JSON.parse(
-    await httpGet(`${GITHUB_API_CLI_BUILDS}/compare/${baseSha}...${headSha}`)
+    await httpGet(`${GITHUB_API_CLI_BUILDS}/compare/${baseSha}...${headSha}`),
   );
   return files.map((f) => f.filename);
 }
