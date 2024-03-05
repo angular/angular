@@ -81,7 +81,7 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
   return signalFn as WritableSignal<T>;
 }
 
-function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
+export function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
   const node = this[SIGNAL] as SignalNode<T>& {readonlyFn?: Signal<T>};
   if (node.readonlyFn === undefined) {
     const readonlyFn = () => this();
