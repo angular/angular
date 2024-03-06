@@ -8,7 +8,7 @@
 
 
 import {CommonModule} from '@angular/common';
-import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, inject, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ɵgetEnsureDirtyViewsAreAlwaysReachable, ɵsetEnsureDirtyViewsAreAlwaysReachable} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, Directive, DoCheck, EmbeddedViewRef, ErrorHandler, EventEmitter, inject, Input, NgModule, OnInit, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BehaviorSubject} from 'rxjs';
@@ -184,8 +184,6 @@ describe('change detection', () => {
 
   describe('markForCheck', () => {
     it('should mark OnPush ancestor of dynamically created component views as dirty', () => {
-      const previous = ɵgetEnsureDirtyViewsAreAlwaysReachable();
-      ɵsetEnsureDirtyViewsAreAlwaysReachable(true);
       @Component({
         selector: `test-cmpt`,
         template: `{{counter}}|<ng-template #vc></ng-template>`,
@@ -245,7 +243,6 @@ describe('change detection', () => {
       dynamicCmptRef.changeDetectorRef.reattach();
       fixture.detectChanges(false);
       expect(fixture.nativeElement).toHaveText('1|dynamic|updatedBinding');
-      ɵsetEnsureDirtyViewsAreAlwaysReachable(previous);
     });
 
     it('should support re-enterant change detection', () => {
