@@ -14,7 +14,7 @@ import {AbsoluteFsPath, FileStats, PathSegment, PathString} from '@angular/compi
 import {isShim} from '@angular/compiler-cli/src/ngtsc/shims';
 import {getRootDirs} from '@angular/compiler-cli/src/ngtsc/util/src/typescript';
 import * as p from 'path';
-import ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript';
 
 import {isTypeScriptFile} from './utils';
 

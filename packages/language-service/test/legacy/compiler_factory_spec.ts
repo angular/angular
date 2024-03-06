@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript';
 
 import {APP_COMPONENT, MockService, setup, TEST_TEMPLATE} from './mock_host';
 

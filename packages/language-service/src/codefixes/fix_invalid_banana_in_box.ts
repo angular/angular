@@ -8,7 +8,7 @@
 
 import {TmplAstBoundEvent} from '@angular/compiler';
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import tss from 'typescript/lib/tsserverlibrary';
+import tss from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
 import {getTemplateInfoAtPosition, TemplateInfo} from '../utils';
