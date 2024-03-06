@@ -341,6 +341,12 @@ export interface TI18n {
    * DOM are required.
    */
   update: I18nUpdateOpCodes;
+
+  /**
+   * An AST representing the translated message. This is used for hydration (and serialization),
+   * while the Update and Create OpCodes are used at runtime.
+   */
+  ast: Array<I18nNode>;
 }
 
 /**
@@ -407,4 +413,80 @@ export interface IcuExpression {
   mainBinding: number;
   cases: string[];
   values: (string|IcuExpression)[][];
+}
+
+// A parsed I18n AST Node
+export type I18nNode = I18nTextNode|I18nElementNode|I18nICUNode|I18nPlaceholderNode;
+
+/**
+ * Represents a block of text in a translation, such as `Hello, {{ name }}!`.
+ */
+export interface I18nTextNode {
+  /** The AST node kind */
+  kind: I18nNodeKind.TEXT;
+
+  /** The LView index */
+  index: number;
+}
+
+/**
+ * Represents a simple DOM element in a translation, such as `<div>...</div>`
+ */
+export interface I18nElementNode {
+  /** The AST node kind */
+  kind: I18nNodeKind.ELEMENT;
+
+  /** The LView index */
+  index: number;
+
+  /** The child nodes */
+  children: Array<I18nNode>;
+}
+
+/**
+ * Represents an ICU in a translation.
+ */
+export interface I18nICUNode {
+  /** The AST node kind */
+  kind: I18nNodeKind.ICU;
+
+  /** The LView index */
+  index: number;
+
+  /** The branching cases */
+  cases: Array<Array<I18nNode>>;
+
+  /** The LView index that stores the active case */
+  currentCaseLViewIndex: number;
+}
+
+/**
+ * Represents special content that is embedded into the translation. This can
+ * either be a special built-in element, such as <ng-container> and <ng-content>,
+ * or it can be a sub-template, for example, from a structural directive.
+ */
+export interface I18nPlaceholderNode {
+  /** The AST node kind */
+  kind: I18nNodeKind.PLACEHOLDER;
+
+  /** The LView index */
+  index: number;
+
+  /** The child nodes */
+  children: Array<I18nNode>;
+
+  /** The placeholder type */
+  type: I18nPlaceholderType;
+}
+
+export const enum I18nPlaceholderType {
+  ELEMENT,
+  SUBTEMPLATE,
+}
+
+export const enum I18nNodeKind {
+  TEXT,
+  ELEMENT,
+  PLACEHOLDER,
+  ICU,
 }
