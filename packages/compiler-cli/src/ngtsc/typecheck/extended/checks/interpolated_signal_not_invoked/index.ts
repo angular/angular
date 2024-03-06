@@ -10,7 +10,7 @@ import {AST, Interpolation, PropertyRead, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
-import {NgTemplateDiagnostic} from '../../../api';
+import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
 import {isSignalReference} from '../../../src/symbol_util';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
@@ -57,7 +57,7 @@ function buildDiagnosticForSignal(
     Array<NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>> {
   // check for `{{ mySignal }}`
   const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
-  if (symbol !== null && isSignalReference(symbol)) {
+  if (symbol !== null && symbol.kind === SymbolKind.Expression && isSignalReference(symbol)) {
     const templateMapping =
         ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation)!;
     const errorString = `${node.name} is a function and should be invoked: ${node.name}()`;
@@ -72,7 +72,8 @@ function buildDiagnosticForSignal(
   // `{{ mySignal.asReadonly }}` as these are the names of instance properties of Signal
   const symbolOfReceiver = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
   if ((isFunctionInstanceProperty(node.name) || isSignalInstanceProperty(node.name)) &&
-      symbolOfReceiver !== null && isSignalReference(symbolOfReceiver)) {
+      symbolOfReceiver !== null && symbolOfReceiver.kind === SymbolKind.Expression &&
+      isSignalReference(symbolOfReceiver)) {
     const templateMapping =
         ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbolOfReceiver.tcbLocation)!;
 

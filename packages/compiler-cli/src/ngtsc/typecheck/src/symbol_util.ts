@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ExpressionSymbol, Symbol, SymbolKind} from '../api';
+import {Symbol, SymbolKind} from '../api';
 
 /** Names of known signal functions. */
 const SIGNAL_FNS = new Set([
@@ -20,8 +20,8 @@ const SIGNAL_FNS = new Set([
 ]);
 
 /** Returns whether a symbol is a reference to a signal. */
-export function isSignalReference(symbol: Symbol): symbol is ExpressionSymbol {
-  return symbol.kind === SymbolKind.Expression &&
+export function isSignalReference(symbol: Symbol): boolean {
+  return (symbol.kind === SymbolKind.Expression || symbol.kind === SymbolKind.Variable) &&
       // Note that `tsType.symbol` isn't optional in the typings,
       // but it appears that it can be undefined at runtime.
       (symbol.tsType.symbol !== undefined && isSignalSymbol(symbol.tsType.symbol) ||

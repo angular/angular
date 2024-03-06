@@ -4868,6 +4868,70 @@ suppress
         ]);
       });
 
+      it('should not be able to write to loop template variables in a two-way binding', () => {
+        env.write('test.ts', `
+          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+
+          @Directive({
+            selector: '[twoWayDir]',
+            standalone: true
+          })
+          export class TwoWayDir {
+            @Input() value: number = 0;
+            @Output() valueChanges: EventEmitter<number> = new EventEmitter();
+          }
+
+          @Component({
+            template: \`
+              @for (item of items; track item) {
+                <button twoWayDir [(value)]="$index"></button>
+              }
+            \`,
+            standalone: true,
+            imports: [TwoWayDir]
+          })
+          export class Main {
+            items = [];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+          `Cannot use a non-signal variable '$index' in a two-way binding expression. Template variables are read-only.`,
+        ]);
+      });
+
+      it('should allow writes to signal-based template variables in two-way bindings', () => {
+        env.write('test.ts', `
+          import {Component, Directive, Input, Output, EventEmitter, signal} from '@angular/core';
+
+          @Directive({
+            selector: '[twoWayDir]',
+            standalone: true
+          })
+          export class TwoWayDir {
+            @Input() value: number = 0;
+            @Output() valueChanges: EventEmitter<number> = new EventEmitter();
+          }
+
+          @Component({
+            template: \`
+              @for (current of signals; track current) {
+                <button twoWayDir [(value)]="current"></button>
+              }
+            \`,
+            standalone: true,
+            imports: [TwoWayDir]
+          })
+          export class Main {
+            signals = [signal(1)];
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags).toEqual([]);
+      });
+
       it('should check the track expression of a for loop block', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';
