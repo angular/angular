@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, R3ClassDebugInfo, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependencyMetadata, SchemaMetadata} from '@angular/compiler';
+import {AnimationTriggerNames, DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ClassDebugInfo, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependencyMetadata, SchemaMetadata, TmplAstDeferredBlock} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
@@ -24,8 +24,7 @@ import {ParsedTemplateWithSource, StyleUrlMeta} from './resources';
  */
 export type ComponentMetadataResolvedFields = SubsetOfKeys<
     R3ComponentMetadata<R3TemplateDependencyMetadata>,
-    'declarations'|'declarationListEmitMode'|'deferBlocks'|'deferrableDeclToImportDecl'|
-    'deferrableTypes'|'deferBlockDepsEmitMode'>;
+    'declarations'|'declarationListEmitMode'|'defer'>;
 
 export interface ComponentAnalysisData {
   /**
@@ -90,5 +89,61 @@ export interface ComponentAnalysisData {
   rawHostDirectives: ts.Expression|null;
 }
 
-export type ComponentResolutionData =
-    Pick<R3ComponentMetadata<R3TemplateDependencyMetadata>, ComponentMetadataResolvedFields>;
+export interface ComponentResolutionData {
+  declarations: R3TemplateDependencyMetadata[];
+  declarationListEmitMode: DeclarationListEmitMode;
+
+  /**
+   * Map of all types that can be defer loaded (ts.ClassDeclaration) ->
+   * corresponding import declaration (ts.ImportDeclaration) within
+   * the current source file.
+   */
+  deferrableDeclToImportDecl: Map<ClassDeclaration, ts.ImportDeclaration>;
+
+  /**
+   * Map of `@defer` blocks -> their corresponding metadata.
+   */
+  deferBlockDependencies: Map<TmplAstDeferredBlock, DeferredComponentDependency[]>;
+
+  /**
+   * Defines how dynamic imports for deferred dependencies should be grouped:
+   *  - either in a function on per-component basis (in case of local compilation)
+   *  - or in a function on per-block basis (in full compilation mode)
+   */
+  deferBlockDepsEmitMode: DeferBlockDepsEmitMode;
+
+  /**
+   * Map of deferrable symbol names -> corresponding import paths.
+   */
+  deferrableTypes: Map<string, {importPath: string, isDefaultImport: boolean}>;
+}
+
+/**
+ * Describes a dependency used within a `@defer` block.
+ */
+export interface DeferredComponentDependency {
+  /**
+   * Reference to a dependency.
+   */
+  type: Reference<ClassDeclaration>;
+
+  /**
+   * Dependency class name.
+   */
+  symbolName: string;
+
+  /**
+   * Whether this dependency can be defer-loaded.
+   */
+  isDeferrable: boolean;
+
+  /**
+   * Import path where this dependency is located.
+   */
+  importPath: string|null;
+
+  /**
+   * Whether the symbol is the default export.
+   */
+  isDefaultImport: boolean;
+}

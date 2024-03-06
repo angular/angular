@@ -10,7 +10,6 @@ import {SecurityContext} from '../../../../../core';
 import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
-import {R3DeferBlockMetadata} from '../../../../../render3/view/api';
 import {BindingKind, DeferTriggerKind, I18nContextKind, I18nParamValueFlags, Namespace, OpKind, TemplateKind} from '../enums';
 import {SlotHandle} from '../handle';
 import {Op, OpList, XrefId} from '../operations';
@@ -838,9 +837,11 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   loadingConfig: o.Expression|null;
 
   /**
-   * Metadata about this defer block, provided by the parser.
+   * Depending on the compilation mode, there can be either one dependency resolution function
+   * per deferred block or one for the entire template. This field contains the function that
+   * belongs specifically to the current deferred block.
    */
-  metadata: R3DeferBlockMetadata;
+  ownResolverFn: o.ArrowFunctionExpr|null;
 
   /**
    * After processing, the resolver function for the defer deps will be extracted to the constant
@@ -852,7 +853,7 @@ export interface DeferOp extends Op<CreateOp>, ConsumesSlotOpTrait {
 }
 
 export function createDeferOp(
-    xref: XrefId, main: XrefId, mainSlot: SlotHandle, metadata: R3DeferBlockMetadata,
+    xref: XrefId, main: XrefId, mainSlot: SlotHandle, ownResolverFn: o.ArrowFunctionExpr|null,
     resolverFn: o.Expression|null, sourceSpan: ParseSourceSpan): DeferOp {
   return {
     kind: OpKind.Defer,
@@ -871,7 +872,7 @@ export function createDeferOp(
     placeholderMinimumTime: null,
     errorView: null,
     errorSlot: null,
-    metadata,
+    ownResolverFn,
     resolverFn,
     sourceSpan,
     ...NEW_OP,

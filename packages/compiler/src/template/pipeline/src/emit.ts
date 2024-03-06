@@ -23,7 +23,7 @@ import {collapseSingletonInterpolations} from './phases/collapse_singleton_inter
 import {generateConditionalExpressions} from './phases/conditionals';
 import {collectElementConsts} from './phases/const_collection';
 import {convertI18nBindings} from './phases/convert_i18n_bindings';
-import {createDeferDepsFns} from './phases/create_defer_deps_fns';
+import {resolveDeferDepsFns} from './phases/resolve_defer_deps_fns';
 import {createI18nContexts} from './phases/create_i18n_contexts';
 import {deduplicateTextBindings} from './phases/deduplicate_text_bindings';
 import {configureDeferInstructions} from './phases/defer_configs';
@@ -140,7 +140,7 @@ const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: generateAdvance},
   {kind: Kind.Both, fn: optimizeVariables},
   {kind: Kind.Both, fn: nameFunctionsAndVariables},
-  {kind: Kind.Tmpl, fn: createDeferDepsFns},
+  {kind: Kind.Tmpl, fn: resolveDeferDepsFns},
   {kind: Kind.Tmpl, fn: mergeNextContextExpressions},
   {kind: Kind.Tmpl, fn: generateNgContainerOps},
   {kind: Kind.Tmpl, fn: collapseEmptyInstructions},
