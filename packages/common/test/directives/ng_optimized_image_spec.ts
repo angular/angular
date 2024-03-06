@@ -1948,6 +1948,36 @@ describe('Image directive', () => {
       }),
     );
 
+    it('should pass height to custom image loaders', () => {
+      @Component({
+        selector: 'test-cmp',
+        template: `<img [ngSrc]="ngSrc" width="300" height="150" sizes="100vw" />`,
+      })
+      class TestComponent {
+        ngSrc = `img.png`;
+      }
+      const imageLoader = (config: ImageLoaderConfig) => {
+        const params: string[] = [];
+        if (config.width) {
+          params.push(`w=${config.width}`);
+        }
+        if (config.height) {
+          params.push(`h=${config.height}`);
+        }
+        const query = params.length ? `?${params.join('&')}` : '';
+        return `${IMG_BASE_URL}/${config.src}${query}`;
+      };
+      setupTestingModule({imageLoader, component: TestComponent});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      let nativeElement = fixture.nativeElement as HTMLElement;
+      let imgs = nativeElement.querySelectorAll('img')!;
+      expect(imgs[0].getAttribute('srcset')).toBe(
+        `${IMG_BASE_URL}/img.png?w=640&h=320 640w, ${IMG_BASE_URL}/img.png?w=750&h=375 750w, ${IMG_BASE_URL}/img.png?w=828&h=414 828w, ${IMG_BASE_URL}/img.png?w=1080&h=540 1080w, ${IMG_BASE_URL}/img.png?w=1200&h=600 1200w, ${IMG_BASE_URL}/img.png?w=1920&h=960 1920w, ${IMG_BASE_URL}/img.png?w=2048&h=1024 2048w, ${IMG_BASE_URL}/img.png?w=3840&h=1920 3840w`,
+      );
+    });
+
     describe('`ngSrcset` values', () => {
       let imageLoader!: ImageLoader;
 
