@@ -1,3 +1,28 @@
+<a name="17.3.0-rc.0"></a>
+# 17.3.0-rc.0 (2024-03-06)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5afa4f0ec1](https://github.com/angular/angular/commit/5afa4f0ec1b64b88ef875d48bd143e0f36e0a955) | fix | support `ModuleWithProviders` literal detection with `typeof` ([#54650](https://github.com/angular/angular/pull/54650)) |
+| [ae7dbe42de](https://github.com/angular/angular/commit/ae7dbe42de5779e578fb636938699b8ba85b33f6) | fix | unwrap expressions with type parameters in query read property ([#54647](https://github.com/angular/angular/pull/54647)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fb540e169a](https://github.com/angular/angular/commit/fb540e169a78a61f38d611f538eea8fdb0971f1d) | feat | add migration for invalid two-way bindings ([#54630](https://github.com/angular/angular/pull/54630)) |
+| [c687b8f453](https://github.com/angular/angular/commit/c687b8f4531252cd1c3dfbb9a7bd42bdbe666a36) | feat | expose new `output()` API ([#54650](https://github.com/angular/angular/pull/54650)) |
+| [c809069f21](https://github.com/angular/angular/commit/c809069f213244afd0e2d803a6a43510b218e6f5) | feat | introduce `outputFromObservable()` interop function ([#54650](https://github.com/angular/angular/pull/54650)) |
+| [aff65fd1f4](https://github.com/angular/angular/commit/aff65fd1f4a61ed76a6f9b623852f197eb3500e4) | feat | introduce `outputToObservable` interop helper ([#54650](https://github.com/angular/angular/pull/54650)) |
+| [33a6fab094](https://github.com/angular/angular/commit/33a6fab094205cc74aceb916e45c8afa22293cf4) | fix | apply TestBed provider overrides to `@defer` dependencies ([#54667](https://github.com/angular/angular/pull/54667)) |
+| [78e69117f0](https://github.com/angular/angular/commit/78e69117f07e8ae11aab3abe0343df815b3649be) | fix | generic inference for signal inputs may break with `--strictFunctionTypes` ([#54652](https://github.com/angular/angular/pull/54652)) |
+| [7243c704cf](https://github.com/angular/angular/commit/7243c704cf8a4986fae419793027458e142658f0) | fix | return a readonly signal on `asReadonly`. ([#54706](https://github.com/angular/angular/pull/54706)) |
+| [ffad7b8ea9](https://github.com/angular/angular/commit/ffad7b8ea9d1286ddb3ee7a2dac7dd33fd76b3aa) | fix | untrack various core operations ([#54614](https://github.com/angular/angular/pull/54614)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c1c7384e02](https://github.com/angular/angular/commit/c1c7384e02becc623c6a42985f7178ca98137264) | feat | Add reusable types for router guards ([#54580](https://github.com/angular/angular/pull/54580)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.2.4"></a>
 # 17.2.4 (2024-03-06)
 ### compiler-cli
