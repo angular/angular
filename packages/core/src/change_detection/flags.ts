@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// TODO(atscott): flip default internally ASAP and externally for v18 (#52928)
-let _ensureDirtyViewsAreAlwaysReachable = false;
+// TODO(atscott): Remove prior to v18 release. Keeping this around in case anyone internally needs
+// to opt out temporarily.
+let _ensureDirtyViewsAreAlwaysReachable = true;
 
 export function getEnsureDirtyViewsAreAlwaysReachable() {
   return _ensureDirtyViewsAreAlwaysReachable;
