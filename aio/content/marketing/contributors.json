@@ -292,6 +292,14 @@
     "groups": ["Angular"],
     "lead": "jelbourn"
   },
+  "damiansire": {
+    "name": "Damian Sire",
+    "picture": "damiansire.png",
+    "twitter": "damiansire",
+    "website": "https://damiansire.com",
+    "bio": "Damian Sire is a multifaceted tech professional with a passion for both software development and fostering online communities. As a Google Developer Expert (GDE), his expertise in Google technologies is widely recognized.  At Ingenious, he leads the maintenance team, ensuring the smooth operation and continued development of their software solutions.  Beyond his technical prowess, Damian actively contributes to the developer community by organizing the AngularMVD meetup group. He also connects with a vast audience through his YouTube channel, boasting over 30,000 subscribers.  Fueled by a thirst for adventure, Damian explores the rich tapestry of South America whenever his busy schedule allows. Follow Damian on Twitter @damiansire.",
+    "groups": ["GDE"]
+  },
   "danwahlin": {
     "name": "Dan Wahlin",
     "picture": "danwahlin.jpg",
