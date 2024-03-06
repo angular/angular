@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
+import {AST, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
@@ -212,6 +212,12 @@ export interface TemplateTypeChecker {
    * the next request.
    */
   invalidateClass(clazz: ts.ClassDeclaration): void;
+
+  /**
+   * Gets the target of a template expression, if possible.
+   */
+  getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TmplAstReference|TmplAstVariable
+      |null;
 
   /**
    * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
