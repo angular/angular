@@ -846,7 +846,7 @@ export enum ParsedPropertyType {
   TWO_WAY,
 }
 
-export const enum ParsedEventType {
+export enum ParsedEventType {
   // DOM or Directive event
   Regular,
   // Animation specific event
@@ -883,7 +883,7 @@ export class ParsedVariable {
       public readonly valueSpan?: ParseSourceSpan) {}
 }
 
-export const enum BindingType {
+export enum BindingType {
   // A regular binding to a property (e.g. `[property]="expression"`).
   Property,
   // A binding to an element attribute (e.g. `[attr.name]="expression"`).

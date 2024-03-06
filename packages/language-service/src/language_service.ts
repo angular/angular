@@ -516,14 +516,14 @@ function parseNgCompilerOptions(
 
   // If `forceStrictTemplates` is true, always enable `strictTemplates`
   // regardless of its value in tsconfig.json.
-  if (config.forceStrictTemplates === true) {
+  if (config['forceStrictTemplates'] === true) {
     options.strictTemplates = true;
   }
-  if (config.enableBlockSyntax === false) {
+  if (config['enableBlockSyntax'] === false) {
     options['_enableBlockSyntax'] = false;
   }
 
-  options['_angularCoreVersion'] = config.angularCoreVersion;
+  options['_angularCoreVersion'] = config['angularCoreVersion'];
 
   return options;
 }
