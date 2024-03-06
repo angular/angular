@@ -1336,5 +1336,11 @@
       "start": "2024-06-13"
     },
     "name": "JSNation"
+  },
+  {
+    "date": {
+      "start": "2024-06-27"
+    },
+    "name": "dotJS"
   }
 ]
