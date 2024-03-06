@@ -15,7 +15,7 @@ import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
 import {FileUpdate, ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript';
 
 import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, PluginConfig} from '../api';
 

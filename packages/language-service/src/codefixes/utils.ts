@@ -8,7 +8,7 @@
 
 import {absoluteFrom} from '@angular/compiler-cli';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import tss from 'typescript/lib/tsserverlibrary';
+import tss from 'typescript';
 
 import {TemplateInfo} from '../utils';
 

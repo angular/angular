@@ -34,7 +34,7 @@ module.exports = function(provided) {
     if (m === 'exports') {
       return results;
     }
-    if (m === 'typescript' || m === 'typescript/lib/tsserverlibrary') {
+    if (m === 'typescript') {
       return ts;
     }
     return require(m);
@@ -49,7 +49,6 @@ const external = [
   'fs',
   'path',
   'typescript',
-  'typescript/lib/tsserverlibrary',
 ];
 
 const config = {

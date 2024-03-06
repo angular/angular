@@ -7,7 +7,7 @@
  */
 
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import ts from 'typescript/lib/tsserverlibrary';
+import ts from 'typescript';
 
 import {LanguageService} from '../../src/language_service';
 
