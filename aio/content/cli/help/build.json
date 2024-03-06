@@ -68,6 +68,11 @@
       "description": "Delete the output path before building."
     },
     {
+      "name": "deploy-url",
+      "type": "string",
+      "description": "Customize the base path for the URLs of resources in 'index.html' and component stylesheets. This option is only necessary for specific deployment scenarios, such as with Angular Elements or when utilizing different CDN locations."
+    },
+    {
       "name": "external-dependencies",
       "type": "array",
       "description": "Exclude the listed external dependencies from being bundled into the bundle. Instead, the created bundle relies on these dependencies to be available during runtime."
