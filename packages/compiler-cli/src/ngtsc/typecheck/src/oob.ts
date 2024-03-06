@@ -70,9 +70,6 @@ export interface OutOfBandDiagnosticRecorder {
    */
   deferredComponentUsedEagerly(templateId: TemplateId, element: TmplAstElement): void;
 
-  illegalAssignmentToTemplateVar(
-      templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void;
-
   /**
    * Reports a duplicate declaration of a template variable.
    *
@@ -215,27 +212,6 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, mapping, sourceSpan, ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.DEFERRED_DIRECTIVE_USED_EAGERLY), errorMsg));
-  }
-
-  illegalAssignmentToTemplateVar(
-      templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void {
-    const mapping = this.resolver.getSourceMapping(templateId);
-    const errorMsg = `Cannot use variable '${
-        assignment
-            .name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
-
-    const sourceSpan = this.resolver.toParseSourceSpan(templateId, assignment.sourceSpan);
-    if (sourceSpan === null) {
-      throw new Error(`Assertion failure: no SourceLocation found for property binding.`);
-    }
-    this._diagnostics.push(makeTemplateDiagnostic(
-        templateId, mapping, sourceSpan, ts.DiagnosticCategory.Error,
-        ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMsg, [{
-          text: `The variable ${assignment.name} is declared here.`,
-          start: target.valueSpan?.start.offset || target.sourceSpan.start.offset,
-          end: target.valueSpan?.end.offset || target.sourceSpan.end.offset,
-          sourceFile: mapping.node.getSourceFile(),
-        }]));
   }
 
   duplicateTemplateVar(
