@@ -7,14 +7,14 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {bootstrapApplication} from '@angular/platform-browser';
-import {withBody} from '@angular/private/testing';
-import {afterNextRender,untracked, afterRender, ɵqueueStateUpdate as queueStateUpdate, AfterRenderPhase, AfterRenderRef, ApplicationRef, ChangeDetectorRef, Component, computed, createComponent, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, signal, Type, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender} from '@angular/core';
+import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ApplicationRef, ChangeDetectorRef, Component, computed, createComponent, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, signal, Type, untracked, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender, ɵqueueStateUpdate as queueStateUpdate} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {withBody} from '@angular/private/testing';
 
+import {destroyPlatform} from '../../src/core';
 import {EnvironmentInjector} from '../../src/di';
-import { destroyPlatform } from '../../src/core';
 
 function createAndAttachComponent<T>(component: Type<T>) {
   const componentRef =
@@ -137,32 +137,34 @@ describe('after render hooks', () => {
         expect(stateInAfterNextRender!).toEqual(2);
         expect(stateInAfterRender!).toEqual(2);
       });
-      
-      it('does not execute queueStateUpdate if application is destroyed', withBody('<app></app>', async () => {
-        destroyPlatform();
-        let executedCallback = false;
-        TestBed.configureTestingModule({
-          ...COMMON_CONFIGURATION,
-        });
-        @Component({
-          template: '',
-          selector: 'app',
-          standalone: true,
-        })
-        class App {
-        }
 
-        const app = await bootstrapApplication(App);
-        queueStateUpdate(() => {
-          executedCallback = true;
-        }, {injector: app.injector});
-        app.destroy();
+      it('does not execute queueStateUpdate if application is destroyed',
+         withBody('<app></app>', async () => {
+           destroyPlatform();
+           let executedCallback = false;
+           TestBed.configureTestingModule({
+             ...COMMON_CONFIGURATION,
+           });
+           @Component({
+             template: '',
+             selector: 'app',
+             standalone: true,
+           })
+           class App {
+           }
 
-        // wait a macrotask - at this point the Promise in queueStateUpdate will have been resolved
-        await new Promise(resolve => setTimeout(resolve));
-        expect(executedCallback).toBeFalse();
-        destroyPlatform();
-      }));
+           const app = await bootstrapApplication(App);
+           queueStateUpdate(() => {
+             executedCallback = true;
+           }, {injector: app.injector});
+           app.destroy();
+
+           // wait a macrotask - at this point the Promise in queueStateUpdate will have been
+           // resolved
+           await new Promise(resolve => setTimeout(resolve));
+           expect(executedCallback).toBeFalse();
+           destroyPlatform();
+         }));
     });
 
     describe('afterRender', () => {
@@ -1009,8 +1011,7 @@ describe('after render hooks', () => {
       const appRef = TestBed.inject(ApplicationRef);
       appRef.attachView(fixture.componentRef.hostView);
       appRef.tick();
-      // TODO(atscott): We need to support this for zoneless to succeed
-      expect(fixture.nativeElement.innerText).toBe('0');
+      expect(fixture.nativeElement.innerText).toBe('1');
     });
 
     it('throws error when causing infinite updates', () => {

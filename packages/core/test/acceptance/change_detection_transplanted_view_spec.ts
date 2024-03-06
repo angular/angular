@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, NgTemplateOutlet} from '@angular/common';
+import {AsyncPipe, CommonModule, NgTemplateOutlet} from '@angular/common';
 import {AfterViewChecked, ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, createComponent, Directive, DoCheck, EmbeddedViewRef, EnvironmentInjector, ErrorHandler, inject, Input, signal, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {of} from 'rxjs';
 
 describe('change detection for transplanted views', () => {
   describe('when declaration appears before insertion', () => {
@@ -1013,62 +1014,58 @@ describe('change detection for transplanted views', () => {
     });
   });
 
-  it('can call markForCheck inside insertion tree when inserted as backwards reference', () => {
-    @Component({selector: 'markForCheck', template: '', standalone: true})
-    class MarkForCheck {
-      cdr = inject(ChangeDetectorRef);
-      ngDoCheck() {
-        this.cdr.markForCheck();
-      }
-    }
+  it('can use AsyncPipe on new Observable in insertion tree when used as backwards reference',
+     () => {
+       @Component({
+         selector: 'insertion',
+         imports: [NgTemplateOutlet],
+         standalone: true,
+         template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container>`,
+       })
+       class Insertion {
+         @Input() template!: TemplateRef<{}>;
+         constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
+       }
 
-    @Component({
-      selector: 'insertion',
-      imports: [NgTemplateOutlet],
-      standalone: true,
-      template: ` <ng-container [ngTemplateOutlet]="template"> </ng-container>`,
-    })
-    class Insertion {
-      @Input() template!: TemplateRef<{}>;
-      constructor(readonly changeDetectorRef: ChangeDetectorRef) {}
-    }
+       @Component({
+         imports: [Insertion, AsyncPipe],
+         template: `<ng-template #myTmpl> {{newObservable() | async}} </ng-template>`,
+         standalone: true,
+         selector: 'declaration'
+       })
+       class Declaration {
+         @ViewChild('myTmpl', {static: true}) template!: TemplateRef<{}>;
+         newObservable() {
+           return of('');
+         }
+       }
+       @Component({
+         standalone: true,
+         imports: [Declaration, Insertion],
+         template: '<insertion [template]="declaration.template"/><declaration #declaration/>'
+       })
+       class App {
+       }
 
-    @Component({
-      imports: [MarkForCheck, Insertion],
-      template: `<ng-template #myTmpl> <markForCheck/> </ng-template>`,
-      standalone: true,
-      selector: 'declaration'
-    })
-    class Declaration {
-      @ViewChild('myTmpl', {static: true}) template!: TemplateRef<{}>;
-    }
-    @Component({
-      standalone: true,
-      imports: [Declaration, Insertion],
-      template: '<insertion [template]="declaration.template"/><declaration #declaration/>'
-    })
-    class App {
-    }
+       TestBed.configureTestingModule({
+         providers: [{
+           provide: ErrorHandler, useClass: class extends ErrorHandler {
+             override handleError(e: any) {
+               throw e;
+             }
+           }
+         }]
+       });
 
-    TestBed.configureTestingModule({
-      providers: [{
-        provide: ErrorHandler, useClass: class extends ErrorHandler {
-          override handleError(e: any) {
-            throw e;
-          }
-        }
-      }]
-    });
-
-    const app = createComponent(App, {environmentInjector: TestBed.inject(EnvironmentInjector)});
-    const appRef = TestBed.inject(ApplicationRef);
-    appRef.attachView(app.hostView);
-    // ApplicationRef has a loop to continue refreshing dirty views. If done incorrectly, refreshing
-    // the backwards reference transplanted view can cause an infinite loop because it goes and
-    // marks the root view dirty, which then starts the process all over again by checking the
-    // declaration.
-    expect(() => appRef.tick()).not.toThrow();
-  });
+       const app = createComponent(App, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+       const appRef = TestBed.inject(ApplicationRef);
+       appRef.attachView(app.hostView);
+       // ApplicationRef has a loop to continue refreshing dirty views. If done incorrectly,
+       // refreshing the backwards reference transplanted view can cause an infinite loop because it
+       // goes and marks the root view dirty, which then starts the process all over again by
+       // checking the declaration.
+       expect(() => appRef.tick()).not.toThrow();
+     });
 });
 
 function trim(text: string|null): string {
