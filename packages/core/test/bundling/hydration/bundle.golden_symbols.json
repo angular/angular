@@ -966,6 +966,9 @@
     "name": "isComponentHost"
   },
   {
+    "name": "isDetachedByI18n"
+  },
+  {
     "name": "isDisconnectedNode"
   },
   {
