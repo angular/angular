@@ -1,3 +1,19 @@
+<a name="17.2.4"></a>
+# 17.2.4 (2024-03-06)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [917b9bdd2e](https://github.com/angular/angular/commit/917b9bdd2eec9cd6395adb0cbde979490bcc3a88) | fix | unwrap expressions with type parameters in query read property ([#54647](https://github.com/angular/angular/pull/54647)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [586cc24a10](https://github.com/angular/angular/commit/586cc24a102d51e7c42ecc839124353afe459073) | fix | apply TestBed provider overrides to `@defer` dependencies ([#54667](https://github.com/angular/angular/pull/54667)) |
+| [b558a01c84](https://github.com/angular/angular/commit/b558a01c84a1fe4f9e047e92d99d69f02f2ccc4f) | fix | generic inference for signal inputs may break with `--strictFunctionTypes` ([#54652](https://github.com/angular/angular/pull/54652)) |
+| [443e5f1591](https://github.com/angular/angular/commit/443e5f1591896909eab6ad157bb4b5db50a49f26) | fix | return a readonly signal on `asReadonly`. ([#54719](https://github.com/angular/angular/pull/54719)) |
+| [ffbafc7d4a](https://github.com/angular/angular/commit/ffbafc7d4a3c61226cb5c524b3ff42ed4f9f1d76) | fix | untrack various core operations ([#54614](https://github.com/angular/angular/pull/54614)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.2.3"></a>
 # 17.2.3 (2024-02-27)
 ### common
