@@ -17,7 +17,6 @@ import {IndexingContext} from '../../indexer';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
-import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {getSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 
@@ -522,8 +521,12 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
   }
 
-  extendedTemplateCheck(sf: ts.SourceFile, extendedTemplateChecker: ExtendedTemplateChecker):
-      ts.Diagnostic[] {
+  runAdditionalChecks(
+      sf: ts.SourceFile,
+      check:
+          (clazz: ts.ClassDeclaration,
+           handler: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>) =>
+              ts.Diagnostic[] | null): ts.Diagnostic[] {
     if (this.compilationMode === CompilationMode.LOCAL) {
       return [];
     }
@@ -539,10 +542,10 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       }
       const record = this.classes.get(clazz)!;
       for (const trait of record.traits) {
-        if (trait.handler.extendedTemplateCheck === undefined) {
-          continue;
+        const result = check(clazz, trait.handler);
+        if (result !== null) {
+          diagnostics.push(...result);
         }
-        diagnostics.push(...trait.handler.extendedTemplateCheck(clazz, extendedTemplateChecker));
       }
     }
     return diagnostics;

@@ -25,6 +25,7 @@ import {getDiagnosticNode, makeUnknownComponentDeferredImportDiagnostic} from '.
 import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
 import {TypeCheckableDirectiveMeta, TypeCheckContext} from '../../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../../typecheck/extended/api';
+import {TemplateSemanticsChecker} from '../../../typecheck/template_semantics/api/api';
 import {getSourceFile} from '../../../util/src/typescript';
 import {Xi18nContext} from '../../../xi18n';
 import {combineResolvers, compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassDebugInfo, extractClassMetadata, extractSchemas, findAngularDecorator, forwardRefResolver, getDirectiveDiagnostics, getProviderDiagnostics, InjectableClassRegistry, isExpressionForwardReference, readBaseClass, ReferencesRegistry, removeIdentifierReferences, resolveEncapsulationEnumValueLocally, resolveEnumValue, resolveImportedFile, resolveLiteral, resolveProvidersRequiringFactory, ResourceLoader, toFactoryMetadata, tryUnwrapForwardRef, validateHostDirectives, wrapFunctionExpressionsInParens} from '../../common';
@@ -669,6 +670,12 @@ export class ComponentDecoratorHandler implements
       component: ts.ClassDeclaration,
       extendedTemplateChecker: ExtendedTemplateChecker): ts.Diagnostic[] {
     return extendedTemplateChecker.getDiagnosticsForComponent(component);
+  }
+
+  templateSemanticsCheck(
+      component: ts.ClassDeclaration,
+      templateSemanticsChecker: TemplateSemanticsChecker): ts.Diagnostic[] {
+    return templateSemanticsChecker.getDiagnosticsForComponent(component);
   }
 
   resolve(
