@@ -147,34 +147,6 @@ export function compileDirectiveFromMetadata(
 }
 
 /**
- * Creates an AST for a function that contains dynamic imports representing
- * deferrable dependencies.
- */
-function createDeferredDepsFunction(
-    constantPool: ConstantPool, name: string,
-    deps: Map<string, {importPath: string, isDefaultImport: boolean}>) {
-  // This defer block has deps for which we need to generate dynamic imports.
-  const dependencyExp: o.Expression[] = [];
-
-  for (const [symbolName, {importPath, isDefaultImport}] of deps) {
-    // Callback function, e.g. `m () => m.MyCmp;`.
-    const innerFn = o.arrowFn(
-        [new o.FnParam('m', o.DYNAMIC_TYPE)],
-        o.variable('m').prop(isDefaultImport ? 'default' : symbolName));
-
-    // Dynamic import, e.g. `import('./a').then(...)`.
-    const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);
-    dependencyExp.push(importExpr);
-  }
-
-  const depsFnExpr = o.arrowFn([], o.literalArr(dependencyExp));
-
-  constantPool.statements.push(depsFnExpr.toDeclStmt(name, o.StmtModifier.Final));
-
-  return o.variable(name);
-}
-
-/**
  * Compile a component for the render3 runtime as defined by the `R3ComponentMetadata`.
  */
 export function compileComponentFromMetadata(
@@ -204,16 +176,18 @@ export function compileComponentFromMetadata(
   const templateTypeName = meta.name;
 
   let allDeferrableDepsFn: o.ReadVarExpr|null = null;
-  if (meta.deferBlocks.size > 0 && meta.deferrableTypes.size > 0 &&
-      meta.deferBlockDepsEmitMode === DeferBlockDepsEmitMode.PerComponent) {
+  if (meta.defer.mode === DeferBlockDepsEmitMode.PerComponent &&
+      meta.defer.dependenciesFn !== null) {
     const fnName = `${templateTypeName}_DeferFn`;
-    allDeferrableDepsFn = createDeferredDepsFunction(constantPool, fnName, meta.deferrableTypes);
+    constantPool.statements.push(
+        meta.defer.dependenciesFn.toDeclStmt(fnName, o.StmtModifier.Final));
+    allDeferrableDepsFn = o.variable(fnName);
   }
 
   // First the template is ingested into IR:
   const tpl = ingestComponent(
       meta.name, meta.template.nodes, constantPool, meta.relativeContextFilePath,
-      meta.i18nUseExternalIds, meta.deferBlocks, allDeferrableDepsFn);
+      meta.i18nUseExternalIds, meta.defer, allDeferrableDepsFn);
 
   // Then the IR is transformed to prepare it for cod egeneration.
   transform(tpl, CompilationJobKind.Tmpl);
