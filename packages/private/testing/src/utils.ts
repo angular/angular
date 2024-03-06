@@ -153,10 +153,10 @@ export async function ensureDocument(): Promise<void> {
   savedDocument = (global as any).document;
   (global as any).window = window;
   (global as any).document = window.document;
-  (global as any).Event = domino.impl.Event;
   savedNode = (global as any).Node;
   // Domino types do not type `impl`, but it's a documented field.
   // See: https://www.npmjs.com/package/domino#usage.
+  (global as any).Event = (domino as typeof domino & {impl: any}).impl.Event;
   (global as any).Node = (domino as typeof domino & {impl: any}).impl.Node;
 
   savedRequestAnimationFrame = (global as any).requestAnimationFrame;
