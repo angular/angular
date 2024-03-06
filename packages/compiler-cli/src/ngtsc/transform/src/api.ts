@@ -16,6 +16,7 @@ import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
+import {TemplateSemanticsChecker} from '../../typecheck/template_semantics/api/api';
 import {Xi18nContext} from '../../xi18n';
 
 /**
@@ -173,6 +174,10 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
 
   extendedTemplateCheck?
       (component: ts.ClassDeclaration, extendedTemplateChecker: ExtendedTemplateChecker):
+          ts.Diagnostic[];
+
+  templateSemanticsCheck?
+      (component: ts.ClassDeclaration, templateSemanticsChecker: TemplateSemanticsChecker):
           ts.Diagnostic[];
 
   /**
