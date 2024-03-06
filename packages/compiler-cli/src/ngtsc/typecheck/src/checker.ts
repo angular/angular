@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, CssSelector, DomElementSchemaRegistry, ExternalExpr, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute, WrappedNodeExpr} from '@angular/compiler';
+import {AST, CssSelector, DomElementSchemaRegistry, ExternalExpr, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
@@ -343,6 +343,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     fileData.isComplete = false;
 
     this.isComplete = false;
+  }
+
+  getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TmplAstReference|TmplAstVariable
+      |null {
+    return this.getLatestComponentState(clazz).data?.boundTarget.getExpressionTarget(expression) ||
+        null;
   }
 
   makeTemplateDiagnostic<T extends ErrorCode>(

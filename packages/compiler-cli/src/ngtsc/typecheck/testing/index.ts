@@ -859,7 +859,6 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   missingPipe(): void {}
   deferredPipeUsedEagerly(templateId: TemplateId, ast: BindingPipe): void {}
   deferredComponentUsedEagerly(templateId: TemplateId, element: TmplAstElement): void {}
-  illegalAssignmentToTemplateVar(): void {}
   duplicateTemplateVar(): void {}
   requiresInlineTcb(): void {}
   requiresInlineTypeConstructors(): void {}
