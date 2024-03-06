@@ -76,6 +76,7 @@ export function isTI18n(obj: any): obj is TI18n {
 const ShapeOfTI18n: ShapeOf<TI18n> = {
   create: true,
   update: true,
+  ast: true,
 };
 
 
