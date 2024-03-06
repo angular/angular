@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ImplicitReceiver, PropertyWrite, RecursiveAstVisitor, TmplAstBoundEvent, TmplAstNode, TmplAstRecursiveVisitor, TmplAstVariable} from '@angular/compiler';
+import {AST, ASTWithSource, ImplicitReceiver, ParsedEventType, PropertyRead, PropertyWrite, RecursiveAstVisitor, TmplAstBoundEvent, TmplAstNode, TmplAstRecursiveVisitor, TmplAstVariable} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../../diagnostics';
 import {TemplateDiagnostic, TemplateTypeChecker} from '../../api';
+import {isSignalReference} from '../../src/symbol_util';
 import {TemplateSemanticsChecker} from '../api/api';
 
 export class TemplateSemanticsCheckerImpl implements TemplateSemanticsChecker {
@@ -57,7 +58,15 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
 
   override visitPropertyWrite(ast: PropertyWrite, context: TmplAstNode): void {
     super.visitPropertyWrite(ast, context);
+    this.checkForIllegalWriteInEventBinding(ast, context);
+  }
 
+  override visitPropertyRead(ast: PropertyRead, context: TmplAstNode) {
+    super.visitPropertyRead(ast, context);
+    this.checkForIllegalWriteInTwoWayBinding(ast, context);
+  }
+
+  private checkForIllegalWriteInEventBinding(ast: PropertyWrite, context: TmplAstNode) {
     if (!(context instanceof TmplAstBoundEvent) || !(ast.receiver instanceof ImplicitReceiver)) {
       return;
     }
@@ -71,11 +80,33 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
     }
   }
 
+  private checkForIllegalWriteInTwoWayBinding(ast: PropertyRead, context: TmplAstNode) {
+    // Only check top-level property reads inside two-way bindings for illegal assignments.
+    if (!(context instanceof TmplAstBoundEvent) || context.type !== ParsedEventType.TwoWay ||
+        !(ast.receiver instanceof ImplicitReceiver) ||
+        ast !== unwrapAstWithSource(context.handler)) {
+      return;
+    }
+
+    const target = this.templateTypeChecker.getExpressionTarget(ast, this.component);
+    if (!(target instanceof TmplAstVariable)) {
+      return;
+    }
+
+    // Two-way bindings to template variables are only allowed if the variables are signals.
+    const symbol = this.templateTypeChecker.getSymbolOfNode(target, this.component);
+    if (symbol !== null && !isSignalReference(symbol)) {
+      const errorMessage = `Cannot use a non-signal variable '${
+          target.name}' in a two-way binding expression. Template variables are read-only.`;
+      this.diagnostics.push(this.makeIllegalTemplateVarDiagnostic(target, context, errorMessage));
+    }
+  }
+
   private makeIllegalTemplateVarDiagnostic(
-      target: TmplAstVariable, expressionNode: TmplAstNode,
+      target: TmplAstVariable, expressionNode: TmplAstBoundEvent,
       errorMessage: string): TemplateDiagnostic {
     return this.templateTypeChecker.makeTemplateDiagnostic(
-        this.component, expressionNode.sourceSpan, ts.DiagnosticCategory.Error,
+        this.component, expressionNode.handlerSpan, ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.WRITE_TO_READ_ONLY_VARIABLE), errorMessage, [{
           text: `The variable ${target.name} is declared here.`,
           start: target.valueSpan?.start.offset || target.sourceSpan.start.offset,
@@ -83,4 +114,8 @@ class ExpressionsSemanticsVisitor extends RecursiveAstVisitor {
           sourceFile: this.component.getSourceFile(),
         }]);
   }
+}
+
+function unwrapAstWithSource(ast: AST): AST {
+  return ast instanceof ASTWithSource ? ast.ast : ast;
 }
