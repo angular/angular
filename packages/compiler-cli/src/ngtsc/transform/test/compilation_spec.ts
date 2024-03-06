@@ -15,7 +15,6 @@ import {NOOP_PERF_RECORDER} from '../../perf';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {CompilationMode, DetectResult, DtsTransformRegistry, TraitCompiler} from '../../transform';
-import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerPrecedence, ResolveResult} from '../src/api';
 
 const fakeSfTypeIdentifier = {
@@ -309,10 +308,6 @@ runInEachFileSystem(() => {
 
         register(): void {}
 
-        extendedTemplateCheck() {
-          return [];
-        }
-
         updateResources() {}
 
         symbol(): null {
@@ -366,21 +361,6 @@ runInEachFileSystem(() => {
         compiler.resolve();
 
         expect(handler.register).toHaveBeenCalled();
-      });
-
-      it('should not call extendedTemplateCheck', () => {
-        const contents = `
-          export class Test {}
-        `;
-        const handler = new TestDecoratorHandler();
-        spyOn(handler, 'extendedTemplateCheck');
-        const {compiler, sourceFile} = setup(contents, [handler], CompilationMode.LOCAL);
-
-        compiler.analyzeSync(sourceFile);
-        compiler.resolve();
-        compiler.extendedTemplateCheck(sourceFile, {} as ExtendedTemplateChecker);
-
-        expect(handler.extendedTemplateCheck).not.toHaveBeenCalled();
       });
 
       it('should not call updateResources', () => {

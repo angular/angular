@@ -39,6 +39,8 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/diagnostics",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
+        "//packages/compiler-cli/src/ngtsc/typecheck/template_semantics",
+        "//packages/compiler-cli/src/ngtsc/typecheck/template_semantics/api",
         "//packages/compiler-cli/src/ngtsc/util",
         "//packages/compiler-cli/src/ngtsc/xi18n",
         "@npm//@types/semver",

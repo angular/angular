@@ -33,6 +33,8 @@ import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
 import {ALL_DIAGNOSTIC_FACTORIES, ExtendedTemplateCheckerImpl, SUPPORTED_DIAGNOSTIC_NAMES} from '../../typecheck/extended';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
+import {TemplateSemanticsChecker} from '../../typecheck/template_semantics/api/api';
+import {TemplateSemanticsCheckerImpl} from '../../typecheck/template_semantics/src/template_semantics_checker';
 import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
@@ -59,6 +61,7 @@ interface LazyCompilationState {
   templateTypeChecker: TemplateTypeChecker;
   resourceRegistry: ResourceRegistry;
   extendedTemplateChecker: ExtendedTemplateChecker|null;
+  templateSemanticsChecker: TemplateSemanticsChecker|null;
 
   /**
    * Only available in local compilation mode when option `generateExtraImportsInLocalMode` is set.
@@ -442,11 +445,7 @@ export class NgCompiler {
     // by running the extended template checking code, which will attempt to
     // generate the same TCB.
     try {
-      diagnostics.push(...this.getTemplateDiagnostics());
-
-      if (this.options.strictTemplates) {
-        diagnostics.push(...this.getExtendedTemplateDiagnostics());
-      }
+      diagnostics.push(...this.getTemplateDiagnostics(), ...this.runAdditionalChecks());
     } catch (err: unknown) {
       if (!isFatalDiagnosticError(err)) {
         throw err;
@@ -472,11 +471,9 @@ export class NgCompiler {
     // by running the extended template checking code, which will attempt to
     // generate the same TCB.
     try {
-      diagnostics.push(...this.getTemplateDiagnosticsForFile(file, optimizeFor));
-
-      if (this.options.strictTemplates) {
-        diagnostics.push(...this.getExtendedTemplateDiagnostics(file));
-      }
+      diagnostics.push(
+          ...this.getTemplateDiagnosticsForFile(file, optimizeFor),
+          ...this.runAdditionalChecks(file));
     } catch (err: unknown) {
       if (!isFatalDiagnosticError(err)) {
         throw err;
@@ -503,8 +500,12 @@ export class NgCompiler {
     try {
       diagnostics.push(...ttc.getDiagnosticsForComponent(component));
 
-      const extendedTemplateChecker = compilation.extendedTemplateChecker;
-      if (this.options.strictTemplates && extendedTemplateChecker) {
+      const {extendedTemplateChecker, templateSemanticsChecker} = compilation;
+
+      if (templateSemanticsChecker !== null) {
+        diagnostics.push(...templateSemanticsChecker.getDiagnosticsForComponent(component));
+      }
+      if (this.options.strictTemplates && extendedTemplateChecker !== null) {
         diagnostics.push(...extendedTemplateChecker.getDiagnosticsForComponent(component));
       }
     } catch (err: unknown) {
@@ -968,26 +969,23 @@ export class NgCompiler {
     return this.nonTemplateDiagnostics;
   }
 
-  /**
-   * Calls the `extendedTemplateCheck` phase of the trait compiler
-   * @param sf optional parameter to get diagnostics for a certain file
-   *     or all files in the program if `sf` is undefined
-   * @returns generated extended template diagnostics
-   */
-  private getExtendedTemplateDiagnostics(sf?: ts.SourceFile): ts.Diagnostic[] {
+  private runAdditionalChecks(sf?: ts.SourceFile): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
     const compilation = this.ensureAnalyzed();
-    const extendedTemplateChecker = compilation.extendedTemplateChecker;
-    if (!extendedTemplateChecker) {
-      return [];
-    }
+    const {extendedTemplateChecker, templateSemanticsChecker} = compilation;
+    const files = sf ? [sf] : this.inputProgram.getSourceFiles();
 
-    if (sf !== undefined) {
-      return compilation.traitCompiler.extendedTemplateCheck(sf, extendedTemplateChecker);
-    }
-    for (const sf of this.inputProgram.getSourceFiles()) {
-      diagnostics.push(
-          ...compilation.traitCompiler.extendedTemplateCheck(sf, extendedTemplateChecker));
+    for (const sf of files) {
+      if (templateSemanticsChecker !== null) {
+        diagnostics.push(...compilation.traitCompiler.runAdditionalChecks(sf, (clazz, handler) => {
+          return handler.templateSemanticsCheck?.(clazz, templateSemanticsChecker) || null;
+        }));
+      }
+      if (this.options.strictTemplates && extendedTemplateChecker !== null) {
+        diagnostics.push(...compilation.traitCompiler.runAdditionalChecks(sf, (clazz, handler) => {
+          return handler.extendedTemplateCheck?.(clazz, extendedTemplateChecker) || null;
+        }));
+      }
     }
 
     return diagnostics;
@@ -1233,6 +1231,10 @@ export class NgCompiler {
             templateTypeChecker, checker, ALL_DIAGNOSTIC_FACTORIES, this.options) :
         null;
 
+    const templateSemanticsChecker = this.constructionDiagnostics.length === 0 ?
+        new TemplateSemanticsCheckerImpl(templateTypeChecker) :
+        null;
+
     return {
       isCore,
       traitCompiler,
@@ -1248,6 +1250,7 @@ export class NgCompiler {
       resourceRegistry,
       extendedTemplateChecker,
       localCompilationExtraImportsTracker,
+      templateSemanticsChecker,
     };
   }
 }
