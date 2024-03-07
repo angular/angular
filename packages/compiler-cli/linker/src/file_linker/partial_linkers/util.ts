@@ -12,8 +12,6 @@ import {FatalLinkerError} from '../../fatal_linker_error';
 
 export const PLACEHOLDER_VERSION = '0.0.0-PLACEHOLDER';
 
-export const SHOULD_USE_TEMPLATE_PIPELINE_FOR_LINKER = true;
-
 export function wrapReference<TExpression>(wrapped: o.WrappedNodeExpr<TExpression>): R3Reference {
   return {value: wrapped, type: wrapped};
 }

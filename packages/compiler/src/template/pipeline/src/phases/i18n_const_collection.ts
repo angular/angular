@@ -14,7 +14,7 @@ import {sanitizeIdentifier} from '../../../../parse_util';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import {createGoogleGetMsgStatements} from '../../../../render3/view/i18n/get_msg_utils';
 import {createLocalizeStatements} from '../../../../render3/view/i18n/localize_utils';
-import {declareI18nVariable, formatI18nPlaceholderNamesInMap, getTranslationConstPrefix} from '../../../../render3/view/i18n/util';
+import {formatI18nPlaceholderNamesInMap} from '../../../../render3/view/i18n/util';
 import * as ir from '../../ir';
 import {ComponentCompilationJob} from '../compilation';
 
@@ -35,6 +35,29 @@ export const I18N_ICU_MAPPING_PREFIX = 'I18N_EXP_';
  * The escape sequence used for message param values.
  */
 const ESCAPE = '\uFFFD';
+
+/* Closure variables holding messages must be named `MSG_[A-Z0-9]+` */
+const CLOSURE_TRANSLATION_VAR_PREFIX = 'MSG_';
+
+/**
+ * Generates a prefix for translation const name.
+ *
+ * @param extra Additional local prefix that should be injected into translation var name
+ * @returns Complete translation const prefix
+ */
+export function getTranslationConstPrefix(extra: string): string {
+  return `${CLOSURE_TRANSLATION_VAR_PREFIX}${extra}`.toUpperCase();
+}
+
+/**
+ * Generate AST to declare a variable. E.g. `var I18N_1;`.
+ * @param variable the name of the variable to declare.
+ */
+export function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
+  return new o.DeclareVarStmt(
+      variable.name!, undefined, o.INFERRED_TYPE, undefined, variable.sourceSpan);
+}
+
 
 /**
  * Lifts i18n properties into the consts array.

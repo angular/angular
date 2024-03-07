@@ -58,7 +58,6 @@ export interface MiscOptions {
     compileNonExportedClasses?: boolean;
     disableTypeScriptVersionCheck?: boolean;
     forbidOrphanComponents?: boolean;
-    useTemplatePipeline?: boolean;
 }
 
 // @public

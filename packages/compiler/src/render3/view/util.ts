@@ -7,16 +7,14 @@
  */
 
 import {InputFlags} from '../../core';
-import {BindingType, Interpolation} from '../../expression_parser/ast';
+import {BindingType} from '../../expression_parser/ast';
 import {splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
-import {ParseSourceSpan} from '../../parse_util';
 import {CssSelector} from '../../selector';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 
 import {isI18nAttribute} from './i18n/util';
-
 
 /**
  * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
@@ -36,108 +34,6 @@ export const CONTEXT_NAME = 'ctx';
 
 /** Name of the RenderFlag passed into a template function */
 export const RENDER_FLAGS = 'rf';
-
-/** The prefix reference variables */
-export const REFERENCE_PREFIX = '_r';
-
-/** The name of the implicit context reference */
-export const IMPLICIT_REFERENCE = '$implicit';
-
-/** Non bindable attribute name **/
-export const NON_BINDABLE_ATTR = 'ngNonBindable';
-
-/** Name for the variable keeping track of the context returned by `ɵɵrestoreView`. */
-export const RESTORED_VIEW_CONTEXT_NAME = 'restoredCtx';
-
-/** Special value representing a direct access to a template's context. */
-export const DIRECT_CONTEXT_REFERENCE = '#context';
-
-/**
- * Maximum length of a single instruction chain. Because our output AST uses recursion, we're
- * limited in how many expressions we can nest before we reach the call stack limit. This
- * length is set very conservatively in order to reduce the chance of problems.
- */
-const MAX_CHAIN_LENGTH = 500;
-
-/** Instructions that support chaining. */
-const CHAINABLE_INSTRUCTIONS = new Set([
-  R3.element,
-  R3.elementStart,
-  R3.elementEnd,
-  R3.elementContainer,
-  R3.elementContainerStart,
-  R3.elementContainerEnd,
-  R3.i18nExp,
-  R3.listener,
-  R3.classProp,
-  R3.syntheticHostListener,
-  R3.hostProperty,
-  R3.syntheticHostProperty,
-  R3.property,
-  R3.propertyInterpolate1,
-  R3.propertyInterpolate2,
-  R3.propertyInterpolate3,
-  R3.propertyInterpolate4,
-  R3.propertyInterpolate5,
-  R3.propertyInterpolate6,
-  R3.propertyInterpolate7,
-  R3.propertyInterpolate8,
-  R3.propertyInterpolateV,
-  R3.attribute,
-  R3.attributeInterpolate1,
-  R3.attributeInterpolate2,
-  R3.attributeInterpolate3,
-  R3.attributeInterpolate4,
-  R3.attributeInterpolate5,
-  R3.attributeInterpolate6,
-  R3.attributeInterpolate7,
-  R3.attributeInterpolate8,
-  R3.attributeInterpolateV,
-  R3.styleProp,
-  R3.stylePropInterpolate1,
-  R3.stylePropInterpolate2,
-  R3.stylePropInterpolate3,
-  R3.stylePropInterpolate4,
-  R3.stylePropInterpolate5,
-  R3.stylePropInterpolate6,
-  R3.stylePropInterpolate7,
-  R3.stylePropInterpolate8,
-  R3.stylePropInterpolateV,
-  R3.textInterpolate,
-  R3.textInterpolate1,
-  R3.textInterpolate2,
-  R3.textInterpolate3,
-  R3.textInterpolate4,
-  R3.textInterpolate5,
-  R3.textInterpolate6,
-  R3.textInterpolate7,
-  R3.textInterpolate8,
-  R3.textInterpolateV,
-  R3.templateCreate,
-  R3.twoWayProperty,
-  R3.twoWayListener,
-]);
-
-/**
- * Possible types that can be used to generate the parameters of an instruction call.
- * If the parameters are a function, the function will be invoked at the time the instruction
- * is generated.
- */
-export type InstructionParams = (o.Expression|o.Expression[])|(() => (o.Expression|o.Expression[]));
-
-/** Necessary information to generate a call to an instruction function. */
-export interface Instruction {
-  span: ParseSourceSpan|null;
-  reference: o.ExternalReference;
-  paramsOrFn?: InstructionParams;
-}
-
-/** Generates a call to a single instruction. */
-export function invokeInstruction(
-    span: ParseSourceSpan|null, reference: o.ExternalReference,
-    params: o.Expression[]): o.Expression {
-  return o.importExpr(reference, null, span).callFn(params, span);
-}
 
 /**
  * Creates an allocator for a temporary variable.
@@ -353,63 +249,4 @@ function getAttrsForDirectiveMatching(elOrTpl: t.Element|t.Template): {[name: st
   }
 
   return attributesMap;
-}
-
-/**
- * Gets the number of arguments expected to be passed to a generated instruction in the case of
- * interpolation instructions.
- * @param interpolation An interpolation ast
- */
-export function getInterpolationArgsLength(interpolation: Interpolation) {
-  const {expressions, strings} = interpolation;
-  if (expressions.length === 1 && strings.length === 2 && strings[0] === '' && strings[1] === '') {
-    // If the interpolation has one interpolated value, but the prefix and suffix are both empty
-    // strings, we only pass one argument, to a special instruction like `propertyInterpolate` or
-    // `textInterpolate`.
-    return 1;
-  } else {
-    return expressions.length + strings.length;
-  }
-}
-
-/**
- * Generates the final instruction call statements based on the passed in configuration.
- * Will try to chain instructions as much as possible, if chaining is supported.
- */
-export function getInstructionStatements(instructions: Instruction[]): o.Statement[] {
-  const statements: o.Statement[] = [];
-  let pendingExpression: o.Expression|null = null;
-  let pendingExpressionType: o.ExternalReference|null = null;
-  let chainLength = 0;
-
-  for (const current of instructions) {
-    const resolvedParams =
-        (typeof current.paramsOrFn === 'function' ? current.paramsOrFn() : current.paramsOrFn) ??
-        [];
-    const params = Array.isArray(resolvedParams) ? resolvedParams : [resolvedParams];
-
-    // If the current instruction is the same as the previous one
-    // and it can be chained, add another call to the chain.
-    if (chainLength < MAX_CHAIN_LENGTH && pendingExpressionType === current.reference &&
-        CHAINABLE_INSTRUCTIONS.has(pendingExpressionType)) {
-      // We'll always have a pending expression when there's a pending expression type.
-      pendingExpression = pendingExpression!.callFn(params, pendingExpression!.sourceSpan);
-      chainLength++;
-    } else {
-      if (pendingExpression !== null) {
-        statements.push(pendingExpression.toStmt());
-      }
-      pendingExpression = invokeInstruction(current.span, current.reference, params);
-      pendingExpressionType = current.reference;
-      chainLength = 0;
-    }
-  }
-
-  // Since the current instruction adds the previous one to the statements,
-  // we may be left with the final one at the end that is still pending.
-  if (pendingExpression !== null) {
-    statements.push(pendingExpression.toStmt());
-  }
-
-  return statements;
 }

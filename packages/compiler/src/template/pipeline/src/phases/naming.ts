@@ -7,8 +7,10 @@
  */
 
 import {sanitizeIdentifier} from '../../../../parse_util';
-import {hyphenate} from '../../../../render3/view/style_parser';
 import * as ir from '../../ir';
+
+import {hyphenate} from './parse_extracted_styles';
+
 import {type CompilationJob, type CompilationUnit, ViewCompilationUnit} from '../compilation';
 
 /**

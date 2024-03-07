@@ -106,7 +106,6 @@ function setup(
       new DeferredSymbolTracker(checker, /* onlyExplicitDeferDependencyImports */ false),
       /* forbidOrphanRenderering */ false,
       /* enableBlockSyntax */ true,
-      /* useTemplatePipeline */ true,
       /* localCompilationExtraImportsTracker */ null,
   );
   return {reflectionHost, handler, resourceLoader, metaRegistry};

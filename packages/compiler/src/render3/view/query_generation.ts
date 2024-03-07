@@ -13,8 +13,12 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {ForwardRefHandling} from '../util';
 
 import {R3QueryMetadata} from './api';
-import {renderFlagCheckIfStmt} from './template';
 import {CONTEXT_NAME, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
+
+//  if (rf & flags) { .. }
+function renderFlagCheckIfStmt(flags: core.RenderFlags, statements: o.Statement[]): o.IfStmt {
+  return o.ifStmt(o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(flags), null, false), statements);
+}
 
 /**
  * A set of flags to be used with Queries.

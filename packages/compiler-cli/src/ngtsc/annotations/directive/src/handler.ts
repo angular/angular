@@ -65,7 +65,6 @@ export class DirectiveDecoratorHandler implements
       private importTracker: ImportedSymbolsTracker,
       private includeClassMetadata: boolean,
       private readonly compilationMode: CompilationMode,
-      private readonly useTemplatePipeline: boolean,
       private readonly generateExtraImportsInLocalMode: boolean,
   ) {}
 
@@ -107,7 +106,7 @@ export class DirectiveDecoratorHandler implements
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.importTracker, this.evaluator, this.refEmitter,
         this.referencesRegistry, this.isCore, this.annotateForClosureCompiler, this.compilationMode,
-        /* defaultSelector */ null, this.useTemplatePipeline);
+        /* defaultSelector */ null);
     if (directiveResult === undefined) {
       return {};
     }

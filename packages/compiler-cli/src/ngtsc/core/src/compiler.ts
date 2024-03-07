@@ -39,8 +39,6 @@ import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../
 
 import {coreVersionSupportsFeature} from './feature_detection';
 
-const SHOULD_USE_TEMPLATE_PIPELINE = true;
-
 /**
  * State information about a compilation which is only generated once some data is requested from
  * the `NgCompiler` (for example, by calling `getDiagnostics`).
@@ -1175,7 +1173,6 @@ export class NgCompiler {
           this.closureCompilerEnabled, this.delegatingPerfRecorder, hostDirectivesResolver,
           importTracker, supportTestBed, compilationMode, deferredSymbolsTracker,
           !!this.options.forbidOrphanComponents, this.enableBlockSyntax,
-          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE,
           localCompilationExtraImportsTracker),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
@@ -1188,7 +1185,6 @@ export class NgCompiler {
           this.delegatingPerfRecorder,
           importTracker,
           supportTestBed, compilationMode,
-          this.options.useTemplatePipeline ?? SHOULD_USE_TEMPLATE_PIPELINE,
           !!this.options.generateExtraImportsInLocalMode,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on

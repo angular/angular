@@ -7,36 +7,23 @@
  */
 
 
-import {convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
-import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util';
-import {isIframeSecuritySensitiveAttr} from '../../schema/dom_security_schema';
+import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {CssSelector} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {CompilationJobKind} from '../../template/pipeline/src/compilation';
 import {emitHostBindingFunction, emitTemplateFn, transform} from '../../template/pipeline/src/emit';
 import {ingestComponent, ingestHostBinding} from '../../template/pipeline/src/ingest';
-import {USE_TEMPLATE_PIPELINE} from '../../template/pipeline/switch';
 import {BindingParser} from '../../template_parser/binding_parser';
-import {error} from '../../util';
-import {BoundEvent} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
+import {R3CompiledExpression, typeWithParameters} from '../util';
 
 import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3TemplateDependency} from './api';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
-import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
-import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
-import {asLiteral, conditionallyCreateDirectiveBindingLiteral, CONTEXT_NAME, DefinitionMap, getInstructionStatements, Instruction, RENDER_FLAGS} from './util';
-
-
-// This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
-// If there is a match, the first matching group will contain the attribute name to bind.
-const ATTR_REGEX = /attr\.([^\]]+)/;
-
+import {makeBindingParser} from './template';
+import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
 
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
@@ -215,8 +202,6 @@ export function compileComponentFromMetadata(
 
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
   const templateTypeName = meta.name;
-  const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
-
 
   let allDeferrableDepsFn: o.ReadVarExpr|null = null;
   if (meta.deferBlocks.size > 0 && meta.deferrableTypes.size > 0 &&
@@ -225,82 +210,33 @@ export function compileComponentFromMetadata(
     allDeferrableDepsFn = createDeferredDepsFunction(constantPool, fnName, meta.deferrableTypes);
   }
 
-  // Template compilation is currently conditional as we're in the process of rewriting it.
-  if (!USE_TEMPLATE_PIPELINE && !meta.useTemplatePipeline) {
-    // This is the main path currently used in compilation, which compiles the template with the
-    // legacy `TemplateDefinitionBuilder`.
+  // First the template is ingested into IR:
+  const tpl = ingestComponent(
+      meta.name, meta.template.nodes, constantPool, meta.relativeContextFilePath,
+      meta.i18nUseExternalIds, meta.deferBlocks, allDeferrableDepsFn);
 
-    const template = meta.template;
-    const templateBuilder = new TemplateDefinitionBuilder(
-        constantPool, BindingScope.createRootScope(), 0, templateTypeName, null, null, templateName,
-        R3.namespaceHTML, meta.relativeContextFilePath, meta.i18nUseExternalIds, meta.deferBlocks,
-        new Map(), allDeferrableDepsFn);
+  // Then the IR is transformed to prepare it for cod egeneration.
+  transform(tpl, CompilationJobKind.Tmpl);
 
-    const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
+  // Finally we emit the template function:
+  const templateFn = emitTemplateFn(tpl, constantPool);
 
-    // We need to provide this so that dynamically generated components know what
-    // projected content blocks to pass through to the component when it is
-    //     instantiated.
-    const ngContentSelectors = templateBuilder.getNgContentSelectors();
-    if (ngContentSelectors) {
-      definitionMap.set('ngContentSelectors', ngContentSelectors);
-    }
-
-    // e.g. `decls: 2`
-    // definitionMap.set('decls', o.literal(tpl.root.decls!));
-    definitionMap.set('decls', o.literal(templateBuilder.getConstCount()));
-
-    // e.g. `vars: 2`
-    // definitionMap.set('vars', o.literal(tpl.root.vars!));
-    definitionMap.set('vars', o.literal(templateBuilder.getVarCount()));
-
-    // Generate `consts` section of ComponentDef:
-    // - either as an array:
-    //   `consts: [['one', 'two'], ['three', 'four']]`
-    // - or as a factory function in case additional statements are present (to support i18n):
-    //   `consts: () => { var i18n_0; if (ngI18nClosureMode) {...} else {...} return [i18n_0];
-    //   }`
-    const {constExpressions, prepareStatements} = templateBuilder.getConsts();
-    if (constExpressions.length > 0) {
-      let constsExpr: o.LiteralArrayExpr|o.ArrowFunctionExpr = o.literalArr(constExpressions);
-      // Prepare statements are present - turn `consts` into a function.
-      if (prepareStatements.length > 0) {
-        constsExpr = o.arrowFn([], [...prepareStatements, new o.ReturnStatement(constsExpr)]);
-      }
-      definitionMap.set('consts', constsExpr);
-    }
-
-    definitionMap.set('template', templateFunctionExpression);
-  } else {
-    // This path compiles the template using the prototype template pipeline. First the template is
-    // ingested into IR:
-    const tpl = ingestComponent(
-        meta.name, meta.template.nodes, constantPool, meta.relativeContextFilePath,
-        meta.i18nUseExternalIds, meta.deferBlocks, allDeferrableDepsFn);
-
-    // Then the IR is transformed to prepare it for cod egeneration.
-    transform(tpl, CompilationJobKind.Tmpl);
-
-    // Finally we emit the template function:
-    const templateFn = emitTemplateFn(tpl, constantPool);
-
-    if (tpl.contentSelectors !== null) {
-      definitionMap.set('ngContentSelectors', tpl.contentSelectors);
-    }
-
-    definitionMap.set('decls', o.literal(tpl.root.decls as number));
-    definitionMap.set('vars', o.literal(tpl.root.vars as number));
-    if (tpl.consts.length > 0) {
-      if (tpl.constsInitializers.length > 0) {
-        definitionMap.set('consts', o.arrowFn([], [
-          ...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))
-        ]));
-      } else {
-        definitionMap.set('consts', o.literalArr(tpl.consts));
-      }
-    }
-    definitionMap.set('template', templateFn);
+  if (tpl.contentSelectors !== null) {
+    definitionMap.set('ngContentSelectors', tpl.contentSelectors);
   }
+
+  definitionMap.set('decls', o.literal(tpl.root.decls as number));
+  definitionMap.set('vars', o.literal(tpl.root.vars as number));
+  if (tpl.consts.length > 0) {
+    if (tpl.constsInitializers.length > 0) {
+      definitionMap.set('consts', o.arrowFn([], [
+        ...tpl.constsInitializers, new o.ReturnStatement(o.literalArr(tpl.consts))
+      ]));
+    } else {
+      definitionMap.set('consts', o.literalArr(tpl.consts));
+    }
+  }
+  definitionMap.set('template', templateFn);
 
   if (meta.declarationListEmitMode !== DeclarationListEmitMode.RuntimeResolved &&
       meta.declarations.length > 0) {
@@ -411,16 +347,6 @@ function compileDeclarationList(
   }
 }
 
-function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):
-    o.Expression[] {
-  const values: o.Expression[] = [];
-  for (let key of Object.getOwnPropertyNames(attributes)) {
-    const value = attributes[key];
-    values.push(o.literal(key), value);
-  }
-  return values;
-}
-
 function stringAsType(str: string): o.Type {
   return o.expressionType(o.literal(str));
 }
@@ -508,304 +434,39 @@ function createHostBindingsFunction(
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(hostBindingsMetadata.listeners, typeSourceSpan);
 
-  if (USE_TEMPLATE_PIPELINE || hostBindingsMetadata.useTemplatePipeline) {
-    // The parser for host bindings treats class and style attributes specially -- they are
-    // extracted into these separate fields. This is not the case for templates, so the compiler can
-    // actually already handle these special attributes internally. Therefore, we just drop them
-    // into the attributes map.
-    if (hostBindingsMetadata.specialAttributes.styleAttr) {
-      hostBindingsMetadata.attributes['style'] =
-          o.literal(hostBindingsMetadata.specialAttributes.styleAttr);
-    }
-    if (hostBindingsMetadata.specialAttributes.classAttr) {
-      hostBindingsMetadata.attributes['class'] =
-          o.literal(hostBindingsMetadata.specialAttributes.classAttr);
-    }
-
-    const hostJob = ingestHostBinding(
-        {
-          componentName: name,
-          componentSelector: selector,
-          properties: bindings,
-          events: eventBindings,
-          attributes: hostBindingsMetadata.attributes,
-        },
-        bindingParser, constantPool);
-    transform(hostJob, CompilationJobKind.Host);
-
-    definitionMap.set('hostAttrs', hostJob.root.attributes);
-
-    const varCount = hostJob.root.vars;
-    if (varCount !== null && varCount > 0) {
-      definitionMap.set('hostVars', o.literal(varCount));
-    }
-
-    return emitHostBindingFunction(hostJob);
+  // The parser for host bindings treats class and style attributes specially -- they are
+  // extracted into these separate fields. This is not the case for templates, so the compiler can
+  // actually already handle these special attributes internally. Therefore, we just drop them
+  // into the attributes map.
+  if (hostBindingsMetadata.specialAttributes.styleAttr) {
+    hostBindingsMetadata.attributes['style'] =
+        o.literal(hostBindingsMetadata.specialAttributes.styleAttr);
+  }
+  if (hostBindingsMetadata.specialAttributes.classAttr) {
+    hostBindingsMetadata.attributes['class'] =
+        o.literal(hostBindingsMetadata.specialAttributes.classAttr);
   }
 
-  let bindingId = 0;
-  const getNextBindingId = () => `${bindingId++}`;
+  const hostJob = ingestHostBinding(
+      {
+        componentName: name,
+        componentSelector: selector,
+        properties: bindings,
+        events: eventBindings,
+        attributes: hostBindingsMetadata.attributes,
+      },
+      bindingParser, constantPool);
+  transform(hostJob, CompilationJobKind.Host);
 
-  const bindingContext = o.variable(CONTEXT_NAME);
-  const styleBuilder = new StylingBuilder(bindingContext);
+  definitionMap.set('hostAttrs', hostJob.root.attributes);
 
-  const {styleAttr, classAttr} = hostBindingsMetadata.specialAttributes;
-  if (styleAttr !== undefined) {
-    styleBuilder.registerStyleAttr(styleAttr);
-  }
-  if (classAttr !== undefined) {
-    styleBuilder.registerClassAttr(classAttr);
-  }
-
-  const createInstructions: Instruction[] = [];
-  const updateInstructions: Instruction[] = [];
-  const updateVariables: o.Statement[] = [];
-
-  const hostBindingSourceSpan = typeSourceSpan;
-  if (eventBindings && eventBindings.length) {
-    createInstructions.push(...createHostListeners(eventBindings, name));
+  const varCount = hostJob.root.vars;
+  if (varCount !== null && varCount > 0) {
+    definitionMap.set('hostVars', o.literal(varCount));
   }
 
-  // Calculate the host property bindings
-  const allOtherBindings: ParsedProperty[] = [];
-
-  // We need to calculate the total amount of binding slots required by
-  // all the instructions together before any value conversions happen.
-  // Value conversions may require additional slots for interpolation and
-  // bindings with pipes. These calculates happen after this block.
-  let totalHostVarsCount = 0;
-  bindings && bindings.forEach((binding: ParsedProperty) => {
-    const stylingInputWasSet = styleBuilder.registerInputBasedOnName(
-        binding.name, binding.expression, hostBindingSourceSpan);
-    if (stylingInputWasSet) {
-      totalHostVarsCount += MIN_STYLING_BINDING_SLOTS_REQUIRED;
-    } else {
-      allOtherBindings.push(binding);
-      totalHostVarsCount++;
-    }
-  });
-
-  let valueConverter: ValueConverter;
-  const getValueConverter = () => {
-    if (!valueConverter) {
-      const hostVarsCountFn = (numSlots: number): number => {
-        const originalVarsCount = totalHostVarsCount;
-        totalHostVarsCount += numSlots;
-        return originalVarsCount;
-      };
-      valueConverter = new ValueConverter(
-          constantPool,
-          () => error('Unexpected node'),  // new nodes are illegal here
-          hostVarsCountFn,
-          () => error('Unexpected pipe'));  // pipes are illegal here
-    }
-    return valueConverter;
-  };
-
-  const propertyBindings: o.Expression[][] = [];
-  const attributeBindings: o.Expression[][] = [];
-  const syntheticHostBindings: o.Expression[][] = [];
-
-  for (const binding of allOtherBindings) {
-    // resolve literal arrays and literal objects
-    const value = binding.expression.visit(getValueConverter());
-    const bindingExpr = bindingFn(bindingContext, value, getNextBindingId);
-
-    const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
-
-    const securityContexts =
-        bindingParser.calcPossibleSecurityContexts(selector, bindingName, isAttribute)
-            .filter(context => context !== core.SecurityContext.NONE);
-
-    let sanitizerFn: o.ExternalExpr|null = null;
-    if (securityContexts.length) {
-      if (securityContexts.length === 2 &&
-          securityContexts.indexOf(core.SecurityContext.URL) > -1 &&
-          securityContexts.indexOf(core.SecurityContext.RESOURCE_URL) > -1) {
-        // Special case for some URL attributes (such as "src" and "href") that may be a part
-        // of different security contexts. In this case we use special sanitization function and
-        // select the actual sanitizer at runtime based on a tag name that is provided while
-        // invoking sanitization function.
-        sanitizerFn = o.importExpr(R3.sanitizeUrlOrResourceUrl);
-      } else {
-        sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
-      }
-    }
-    const instructionParams = [o.literal(bindingName), bindingExpr.currValExpr];
-    if (sanitizerFn) {
-      instructionParams.push(sanitizerFn);
-    } else {
-      // If there was no sanitization function found based on the security context
-      // of an attribute/property binding - check whether this attribute/property is
-      // one of the security-sensitive <iframe> attributes.
-      // Note: for host bindings defined on a directive, we do not try to find all
-      // possible places where it can be matched, so we can not determine whether
-      // the host element is an <iframe>. In this case, if an attribute/binding
-      // name is in the `IFRAME_SECURITY_SENSITIVE_ATTRS` set - append a validation
-      // function, which would be invoked at runtime and would have access to the
-      // underlying DOM element, check if it's an <iframe> and if so - runs extra checks.
-      if (isIframeSecuritySensitiveAttr(bindingName)) {
-        instructionParams.push(o.importExpr(R3.validateIframeAttribute));
-      }
-    }
-
-    updateVariables.push(...bindingExpr.stmts);
-
-    if (instruction === R3.hostProperty) {
-      propertyBindings.push(instructionParams);
-    } else if (instruction === R3.attribute) {
-      attributeBindings.push(instructionParams);
-    } else if (instruction === R3.syntheticHostProperty) {
-      syntheticHostBindings.push(instructionParams);
-    } else {
-      updateInstructions.push({reference: instruction, paramsOrFn: instructionParams, span: null});
-    }
-  }
-
-  for (const bindingParams of propertyBindings) {
-    updateInstructions.push({reference: R3.hostProperty, paramsOrFn: bindingParams, span: null});
-  }
-
-  for (const bindingParams of attributeBindings) {
-    updateInstructions.push({reference: R3.attribute, paramsOrFn: bindingParams, span: null});
-  }
-
-  for (const bindingParams of syntheticHostBindings) {
-    updateInstructions.push(
-        {reference: R3.syntheticHostProperty, paramsOrFn: bindingParams, span: null});
-  }
-
-  // since we're dealing with directives/components and both have hostBinding
-  // functions, we need to generate a special hostAttrs instruction that deals
-  // with both the assignment of styling as well as static attributes to the host
-  // element. The instruction below will instruct all initial styling (styling
-  // that is inside of a host binding within a directive/component) to be attached
-  // to the host element alongside any of the provided host attributes that were
-  // collected earlier.
-  const hostAttrs = convertAttributesToExpressions(hostBindingsMetadata.attributes);
-  styleBuilder.assignHostAttrs(hostAttrs, definitionMap);
-
-  if (styleBuilder.hasBindings) {
-    // finally each binding that was registered in the statement above will need to be added to
-    // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
-    // are evaluated and updated for the element.
-    styleBuilder.buildUpdateLevelInstructions(getValueConverter()).forEach(instruction => {
-      for (const call of instruction.calls) {
-        // we subtract a value of `1` here because the binding slot was already allocated
-        // at the top of this method when all the input bindings were counted.
-        totalHostVarsCount +=
-            Math.max(call.allocateBindingSlots - MIN_STYLING_BINDING_SLOTS_REQUIRED, 0);
-
-        const {params, stmts} =
-            convertStylingCall(call, bindingContext, bindingFn, getNextBindingId);
-        updateVariables.push(...stmts);
-        updateInstructions.push({
-          reference: instruction.reference,
-          paramsOrFn: params,
-          span: null,
-        });
-      }
-    });
-  }
-
-  if (totalHostVarsCount) {
-    definitionMap.set('hostVars', o.literal(totalHostVarsCount));
-  }
-
-  if (createInstructions.length > 0 || updateInstructions.length > 0) {
-    const hostBindingsFnName = name ? `${name}_HostBindings` : null;
-    const statements: o.Statement[] = [];
-    if (createInstructions.length > 0) {
-      statements.push(renderFlagCheckIfStmt(
-          core.RenderFlags.Create, getInstructionStatements(createInstructions)));
-    }
-    if (updateInstructions.length > 0) {
-      statements.push(renderFlagCheckIfStmt(
-          core.RenderFlags.Update,
-          updateVariables.concat(getInstructionStatements(updateInstructions))));
-    }
-    return o.fn(
-        [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)], statements,
-        o.INFERRED_TYPE, null, hostBindingsFnName);
-  }
-
-  return null;
+  return emitHostBindingFunction(hostJob);
 }
-
-function bindingFn(implicit: any, value: AST, getNextBindingIdFn: () => string) {
-  return convertPropertyBinding(null, implicit, value, getNextBindingIdFn());
-}
-
-function convertStylingCall(
-    call: StylingInstructionCall, bindingContext: any, bindingFn: Function,
-    getNextBindingIdFn: () => string) {
-  const stmts: o.Statement[] = [];
-  const params = call.params(value => {
-    const result = bindingFn(bindingContext, value, getNextBindingIdFn);
-    if (Array.isArray(result.stmts) && result.stmts.length > 0) {
-      stmts.push(...result.stmts);
-    }
-    return result.currValExpr;
-  });
-  return {params, stmts};
-}
-
-function getBindingNameAndInstruction(binding: ParsedProperty):
-    {bindingName: string, instruction: o.ExternalReference, isAttribute: boolean} {
-  let bindingName = binding.name;
-  let instruction!: o.ExternalReference;
-
-  // Check to see if this is an attr binding or a property binding
-  const attrMatches = bindingName.match(ATTR_REGEX);
-  if (attrMatches) {
-    bindingName = attrMatches[1];
-    instruction = R3.attribute;
-  } else {
-    if (binding.isAnimation) {
-      bindingName = prepareSyntheticPropertyName(bindingName);
-      // host bindings that have a synthetic property (e.g. @foo) should always be rendered
-      // in the context of the component and not the parent. Therefore there is a special
-      // compatibility instruction available for this purpose.
-      instruction = R3.syntheticHostProperty;
-    } else {
-      instruction = R3.hostProperty;
-    }
-  }
-
-  return {bindingName, instruction, isAttribute: !!attrMatches};
-}
-
-function createHostListeners(eventBindings: ParsedEvent[], name?: string): Instruction[] {
-  const listenerParams: o.Expression[][] = [];
-  const syntheticListenerParams: o.Expression[][] = [];
-  const instructions: Instruction[] = [];
-
-  for (const binding of eventBindings) {
-    let bindingName = binding.name && sanitizeIdentifier(binding.name);
-    const bindingFnName = binding.type === ParsedEventType.Animation ?
-        prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase) :
-        bindingName;
-    const handlerName = name && bindingName ? `${name}_${bindingFnName}_HostBindingHandler` : null;
-    const params = prepareEventListenerParameters(BoundEvent.fromParsedEvent(binding), handlerName);
-
-    if (binding.type == ParsedEventType.Animation) {
-      syntheticListenerParams.push(params);
-    } else {
-      listenerParams.push(params);
-    }
-  }
-
-  for (const params of syntheticListenerParams) {
-    instructions.push({reference: R3.syntheticHostListener, paramsOrFn: params, span: null});
-  }
-
-  for (const params of listenerParams) {
-    instructions.push({reference: R3.listener, paramsOrFn: params, span: null});
-  }
-
-  return instructions;
-}
-
 
 const HOST_REG_EXP = /^(?:\[([^\]]+)\])|(?:\(([^\)]+)\))$/;
 // Represents the groups in the above regex.

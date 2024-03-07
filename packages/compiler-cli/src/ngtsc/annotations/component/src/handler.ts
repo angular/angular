@@ -88,7 +88,6 @@ export class ComponentDecoratorHandler implements
       private readonly compilationMode: CompilationMode,
       private readonly deferredSymbolTracker: DeferredSymbolTracker,
       private readonly forbidOrphanRendering: boolean, private readonly enableBlockSyntax: boolean,
-      private readonly useTemplatePipeline: boolean,
       private readonly localCompilationExtraImportsTracker: LocalCompilationExtraImportsTracker|
       null) {
     this.extractTemplateOptions = {
@@ -228,7 +227,7 @@ export class ComponentDecoratorHandler implements
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.importTracker, this.evaluator, this.refEmitter,
         this.referencesRegistry, this.isCore, this.annotateForClosureCompiler, this.compilationMode,
-        this.elementSchemaRegistry.getDefaultComponentElementName(), this.useTemplatePipeline);
+        this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
@@ -521,7 +520,6 @@ export class ComponentDecoratorHandler implements
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
           rawImports: rawImports !== null ? new WrappedNodeExpr(rawImports) : undefined,
-          useTemplatePipeline: this.useTemplatePipeline,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
         classMetadata: this.includeClassMetadata ?
@@ -1141,12 +1139,10 @@ export class ComponentDecoratorHandler implements
 
     const deferrableTypes = this.collectDeferredSymbols(resolution);
 
-    const useTemplatePipeline = this.useTemplatePipeline;
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
       deferrableTypes,
-      useTemplatePipeline,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
@@ -1180,11 +1176,9 @@ export class ComponentDecoratorHandler implements
           null,
     };
 
-    const useTemplatePipeline = this.useTemplatePipeline;
     const meta: R3ComponentMetadata<R3TemplateDependencyMetadata> = {
       ...analysis.meta,
       ...resolution,
-      useTemplatePipeline
     };
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
@@ -1209,12 +1203,10 @@ export class ComponentDecoratorHandler implements
     // doesn't have information on which dependencies belong to which defer blocks.
     const deferrableTypes = analysis.explicitlyDeferredTypes;
 
-    const useTemplatePipeline = this.useTemplatePipeline;
     const meta = {
       ...analysis.meta,
       ...resolution,
       deferrableTypes: deferrableTypes ?? new Map(),
-      useTemplatePipeline,
     } as R3ComponentMetadata<R3TemplateDependency>;
 
     if (analysis.explicitlyDeferredTypes !== null) {

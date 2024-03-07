@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {USE_TEMPLATE_PIPELINE} from '../../../../compiler/src/template/pipeline/switch';
 import {FileSystem} from '../../../src/ngtsc/file_system';
 
 import {checkErrors, checkNoUnexpectedErrors} from './check_errors';
@@ -51,9 +50,6 @@ export function runTests(
         continue;
       }
       if (test.skipForTemplatePipeline) {
-        continue;
-      }
-      if (!USE_TEMPLATE_PIPELINE && test.onlyForTemplatePipeline) {
         continue;
       }
 

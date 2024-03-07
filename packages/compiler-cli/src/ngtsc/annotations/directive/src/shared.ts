@@ -41,7 +41,7 @@ export function extractDirectiveMetadata(
     importTracker: ImportedSymbolsTracker, evaluator: PartialEvaluator,
     refEmitter: ReferenceEmitter, referencesRegistry: ReferencesRegistry, isCore: boolean,
     annotateForClosureCompiler: boolean, compilationMode: CompilationMode,
-    defaultSelector: string|null, useTemplatePipeline: boolean): {
+    defaultSelector: string|null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   inputs: ClassPropertyMapping<InputMapping>,
@@ -243,7 +243,6 @@ export function extractDirectiveMetadata(
     deps: ctorDeps,
     host: {
       ...host,
-      useTemplatePipeline,
     },
     lifecycle: {
       usesOnChanges,
