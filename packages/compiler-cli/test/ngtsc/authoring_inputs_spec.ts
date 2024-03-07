@@ -199,7 +199,6 @@ runInEachFileSystem(() => {
           .toContain(`inputs: { data: [i0.ɵɵInputFlags.SignalBased, "data"] }`);
     });
 
-    // TODO(crisbeto): we may not want to support this combination. Will discuss with the team.
     it('should report mixed two-way binding with a signal input', () => {
       env.write('test.ts', `
         import {Component, Directive, input, Output, EventEmitter} from '@angular/core';
