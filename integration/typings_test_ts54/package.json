@@ -20,7 +20,7 @@
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "5.4.1-rc",
+    "typescript": "5.4.2",
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "scripts": {

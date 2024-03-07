@@ -232,7 +232,6 @@ describe('signal inputs', () => {
     expect(fixture.nativeElement.textContent).toBe('input:2');
   });
 
-  // TODO(crisbeto): we may not want to support this combination. Will discuss with the team.
   it('should support two-way binding to signal input and @Output decorated member', () => {
     @Directive({selector: '[dir]', standalone: true})
     class Dir {
