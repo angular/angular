@@ -318,6 +318,16 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/signals/rxjs-interop',
           },
           {
+            label: 'Inputs as signals',
+            path: 'guide/signals/inputs',
+            contentPath: 'guide/signals/inputs',
+          },
+          {
+            label: 'Model inputs',
+            path: 'guide/signals/model',
+            contentPath: 'guide/signals/model',
+          },
+          {
             label: 'Queries as signals',
             path: 'guide/signals/queries',
             contentPath: 'guide/signals/queries',
