@@ -102,6 +102,7 @@ export function transferCacheInterceptorFn(
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
     // Do not cache request that require authorization
     req.headers.has('authorization') ||
+    req.headers.has('proxy-authorization') ||
     requestOptions === false ||
     globalOptions.filter?.(req) === false
   ) {

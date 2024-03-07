@@ -256,6 +256,14 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/test-auth', 'foo');
     });
 
+    it('should not cache request that requires proxy authorization', async () => {
+      makeRequestAndExpectOne('/test-auth', 'foo', {
+        headers: {'Proxy-Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
+      });
+
+      makeRequestAndExpectOne('/test-auth', 'foo');
+    });
+
     describe('caching with global setting', () => {
       beforeEach(
         withBody('<test-app-http></test-app-http>', () => {
