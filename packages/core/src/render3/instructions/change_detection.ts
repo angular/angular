@@ -107,7 +107,8 @@ export const enum ChangeDetectionMode {
    */
   Global,
   /**
-   * In `Targeted` mode, only views with the `RefreshView` flag or updated signals are refreshed.
+   * In `Targeted` mode, `CheckAlways` views are ignored. Views have to be specifically
+   * marked for check to be refreshed (dirty signal, LViewFlags.Dirty, LViewFlags.RefreshView).
    */
   Targeted,
 }
@@ -362,33 +363,23 @@ function detectChangesInViewIfAttached(lView: LView, mode: ChangeDetectionMode) 
  * Visits a view as part of change detection traversal.
  *
  * The view is refreshed if:
- * - If the view is CheckAlways or Dirty and ChangeDetectionMode is `Global`
- * - If the view has the `RefreshView` flag
+ * - If the view is CheckAlways and ChangeDetectionMode is `Global`
+ * - If the view has the `RefreshView` or `Dirty` flags or has a signal that changed.
  *
  * The view is not refreshed, but descendants are traversed in `ChangeDetectionMode.Targeted` if the
  * view HasChildViewsToRefresh flag is set.
  */
 function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
-  const isInCheckNoChangesPass = ngDevMode && isInCheckNoChangesMode();
   const tView = lView[TVIEW];
   const flags = lView[FLAGS];
   const consumer = lView[REACTIVE_TEMPLATE_CONSUMER];
 
-  // Refresh CheckAlways views in Global mode.
+  // Refresh CheckAlways views only in Global mode.
   let shouldRefreshView: boolean =
       !!(mode === ChangeDetectionMode.Global && flags & LViewFlags.CheckAlways);
 
-  // Refresh Dirty views in Global mode, as long as we're not in checkNoChanges.
-  // CheckNoChanges never worked with `OnPush` components because the `Dirty` flag was
-  // cleared before checkNoChanges ran. Because there is now a loop for to check for
-  // backwards views, it gives an opportunity for `OnPush` components to be marked `Dirty`
-  // before the CheckNoChanges pass. We don't want existing errors that are hidden by the
-  // current CheckNoChanges bug to surface when making unrelated changes.
-  shouldRefreshView ||= !!(
-      flags & LViewFlags.Dirty && mode === ChangeDetectionMode.Global && !isInCheckNoChangesPass);
-
-  // Always refresh views marked for refresh, regardless of mode.
-  shouldRefreshView ||= !!(flags & LViewFlags.RefreshView);
+  // Always refresh views marked for refresh.
+  shouldRefreshView ||= !!(flags & (LViewFlags.RefreshView | LViewFlags.Dirty));
 
   // Refresh views when they have a dirty reactive consumer, regardless of mode.
   shouldRefreshView ||= !!(consumer?.dirty && consumerPollProducersForChange(consumer));

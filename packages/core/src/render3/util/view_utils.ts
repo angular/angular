@@ -220,7 +220,6 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
     markAncestorsForTraversal(lView);
   } else if (lView[FLAGS] & LViewFlags.Dirty) {
     if (getEnsureDirtyViewsAreAlwaysReachable()) {
-      lView[FLAGS] |= LViewFlags.RefreshView;
       markAncestorsForTraversal(lView);
     } else {
       lView[ENVIRONMENT].changeDetectionScheduler?.notify();
