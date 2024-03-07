@@ -100,7 +100,10 @@ export function transferCacheInterceptorFn(
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !globalOptions.includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
-    requestOptions === false || //
+    // Do not cache request that require authorization
+    req.headers.has('authorization') ||
+    req.headers.has('proxy-authorization') ||
+    requestOptions === false ||
     globalOptions.filter?.(req) === false
   ) {
     return next(req);
