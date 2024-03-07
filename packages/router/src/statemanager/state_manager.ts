@@ -178,7 +178,7 @@ export class HistoryStateManager extends StateManager {
             currentTransition.finalUrl!,
             currentTransition.initialUrl,
           );
-          this.setBrowserUrl(rawUrl, currentTransition);
+          this.setBrowserUrl(currentTransition.targetBrowserUrl ?? rawUrl, currentTransition);
         }
       }
     } else if (e instanceof BeforeActivateRoutes) {
@@ -188,10 +188,11 @@ export class HistoryStateManager extends StateManager {
         currentTransition.initialUrl,
       );
       this.routerState = currentTransition.targetRouterState!;
-      if (this.urlUpdateStrategy === 'deferred') {
-        if (!currentTransition.extras.skipLocationChange) {
-          this.setBrowserUrl(this.rawUrlTree, currentTransition);
-        }
+      if (this.urlUpdateStrategy === 'deferred' && !currentTransition.extras.skipLocationChange) {
+        this.setBrowserUrl(
+          currentTransition.targetBrowserUrl ?? this.rawUrlTree,
+          currentTransition,
+        );
       }
     } else if (
       e instanceof NavigationCancel &&
@@ -207,8 +208,8 @@ export class HistoryStateManager extends StateManager {
     }
   }
 
-  private setBrowserUrl(url: UrlTree, transition: Navigation) {
-    const path = this.urlSerializer.serialize(url);
+  private setBrowserUrl(url: UrlTree | string, transition: Navigation) {
+    const path = url instanceof UrlTree ? this.urlSerializer.serialize(url) : url;
     if (this.location.isCurrentPathEqualTo(path) || !!transition.extras.replaceUrl) {
       // replacements do not update the target page
       const currentBrowserPageId = this.browserPageId;
