@@ -1315,6 +1315,12 @@
   },
   {
     "date": {
+      "start": "2024-01-30"
+    },
+    "name": "THAT Conf TX"
+  },
+  {
+    "date": {
       "start": "2024-02-29"
     },
     "name": "DevWorld"
@@ -1327,9 +1333,27 @@
   },
   {
     "date": {
+      "start": "2024-04-10"
+    },
+    "name": "Cloud Next"
+  },
+  {
+    "date": {
       "start": "2024-05-24"
     },
     "name": "NG Belgrade Conf"
+  },
+  {
+    "date": {
+      "start": "2024-05-30"
+    },
+    "name": "Craft"
+  },
+  {
+    "date": {
+      "start": "2024-06-12"
+    },
+    "name": "RenderATL"
   },
   {
     "date": {
@@ -1342,5 +1366,17 @@
       "start": "2024-06-27"
     },
     "name": "dotJS"
+  },
+  {
+    "date": {
+      "start": "2024-07-29"
+    },
+    "name": "THAT Conf WI"
+  },
+  {
+    "date": {
+      "start": "2024-10-10"
+    },
+    "name": "NG-DE"
   }
 ]
