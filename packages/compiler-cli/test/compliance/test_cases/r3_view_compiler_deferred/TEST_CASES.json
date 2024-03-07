@@ -142,8 +142,7 @@
         {
           "files": [
             {
-              "expected": "deferred_when_with_pipe_template.js",
-              "templatePipelineExpected": "deferred_when_with_pipe_template.pipeline.js",
+              "expected": "deferred_when_with_pipe_template.pipeline.js",
               "generated": "deferred_when_with_pipe.js"
             }
           ],

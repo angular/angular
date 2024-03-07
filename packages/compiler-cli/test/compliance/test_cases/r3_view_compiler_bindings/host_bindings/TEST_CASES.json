@@ -379,8 +379,7 @@
           "files": [
             {
               "generated": "deceptive_attrs.js",
-              "expected": "deceptive_attrs.template.js",
-              "templatePipelineExpected": "deceptive_attrs.pipeline.js"
+              "expected": "deceptive_attrs.pipeline.js"
             }
           ]
         }
