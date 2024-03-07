@@ -17,7 +17,7 @@
     "uncompressed": {
       "runtime": 2734,
       "main": 231349,
-      "polyfills": 33810,
+      "polyfills": 34169,
       "src_app_lazy_lazy_routes_ts": 487
     }
   },
