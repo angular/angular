@@ -1515,9 +1515,6 @@
     "name": "init_is_dev_mode"
   },
   {
-    "name": "init_is_internal"
-  },
-  {
     "name": "init_iterable"
   },
   {
