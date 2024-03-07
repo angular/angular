@@ -416,6 +416,7 @@ export interface Navigation {
 
 // @public
 export interface NavigationBehaviorOptions {
+    readonly browserUrl?: UrlTree | string;
     readonly info?: unknown;
     onSameUrlNavigation?: OnSameUrlNavigation;
     replaceUrl?: boolean;
