@@ -14,13 +14,14 @@ import {isNgTemplate} from '../ml_parser/tags';
 import {InterpolatedAttributeToken, InterpolatedTextToken} from '../ml_parser/tokens';
 import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
+import {isI18nRootNode} from '../template/pipeline/src/ingest';
 import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
 import {createForLoop, createIfBlock, createSwitchBlock, isConnectedForLoopBlock, isConnectedIfLoopBlock} from './r3_control_flow';
 import {createDeferredBlock, isConnectedDeferLoopBlock} from './r3_deferred_blocks';
-import {I18N_ICU_VAR_PREFIX, isI18nRootNode} from './view/i18n/util';
+import {I18N_ICU_VAR_PREFIX} from './view/i18n/util';
 
 const BIND_NAME_REGEXP = /^(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.*)$/;
 

@@ -128,10 +128,6 @@
             "title": "Set to true to skip this test when running with use_template_pipeline",
             "type": "boolean"
           },
-          "onlyForTemplatePipeline": {
-            "title": "If set to `true`, this test will only execute when the template pipeline is used",
-            "type": "boolean"
-          },
           "focusTest": {
             "title": "Set to true to focus on this test - equivalent to jasmine's `fit()` function",
             "type": "boolean"

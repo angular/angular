@@ -14,7 +14,6 @@ import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
 import {MaybeForwardRefExpression, R3Reference} from '../util';
 
-
 /**
  * Information needed to compile a directive for the render3 runtime.
  */
@@ -352,8 +351,6 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
    * not be set. If component has empty array imports then this field is not set.
    */
   rawImports?: o.Expression;
-
-  useTemplatePipeline: boolean;
 }
 
 /**
@@ -526,8 +523,6 @@ export interface R3HostMetadata {
   properties: {[key: string]: string};
 
   specialAttributes: {styleAttr?: string; classAttr?: string;};
-
-  useTemplatePipeline: boolean;
 }
 
 /**

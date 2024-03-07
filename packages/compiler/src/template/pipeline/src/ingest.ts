@@ -15,7 +15,7 @@ import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
 import {R3DeferBlockMetadata} from '../../../render3/view/api';
-import {icuFromI18nMessage, isSingleI18nIcu} from '../../../render3/view/i18n/util';
+import {icuFromI18nMessage} from '../../../render3/view/i18n/util';
 import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
 import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
@@ -30,6 +30,14 @@ const domSchema = new DomElementSchemaRegistry();
 
 // Tag name of the `ng-template` element.
 const NG_TEMPLATE_TAG_NAME = 'ng-template';
+
+export function isI18nRootNode(meta?: i18n.I18nMeta): meta is i18n.Message {
+  return meta instanceof i18n.Message;
+}
+
+export function isSingleI18nIcu(meta?: i18n.I18nMeta): meta is i18n.I18nMeta&{nodes: [i18n.Icu]} {
+  return isI18nRootNode(meta) && meta.nodes.length === 1 && meta.nodes[0] instanceof i18n.Icu;
+}
 
 /**
  * Process a template AST and convert it into a `ComponentCompilation` in the intermediate
