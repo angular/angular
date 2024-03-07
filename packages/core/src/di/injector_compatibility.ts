@@ -19,6 +19,7 @@ import type {Injector} from './injector';
 import {DecoratorFlags, InjectFlags, InjectOptions, InternalInjectFlags} from './interface/injector';
 import {ProviderToken} from './provider_token';
 import type {HostAttributeToken} from './host_attribute_token';
+import type {HostTagNameToken} from './host_tag_name_token';
 
 
 const _THROW_IF_NOT_FOUND = {};
@@ -88,10 +89,13 @@ export function ɵɵinject<T>(token: ProviderToken<T>): T;
 export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
 export function ɵɵinject(token: HostAttributeToken): string;
 export function ɵɵinject(token: HostAttributeToken, flags?: InjectFlags): string|null;
+export function ɵɵinject(token: HostTagNameToken): string;
+export function ɵɵinject(token: HostTagNameToken, flags?: InjectFlags): string|null;
 export function ɵɵinject<T>(
-    token: ProviderToken<T>|HostAttributeToken, flags?: InjectFlags): string|null;
+    token: ProviderToken<T>|HostAttributeToken|HostTagNameToken, flags?: InjectFlags): string|null;
 export function ɵɵinject<T>(
-    token: ProviderToken<T>|HostAttributeToken, flags = InjectFlags.Default): T|null {
+    token: ProviderToken<T>|HostAttributeToken|HostTagNameToken, flags = InjectFlags.Default): T|
+    null {
   return (getInjectImplementation() || injectInjectorOnly)(
       resolveForwardRef(token as Type<T>), flags);
 }
@@ -185,6 +189,30 @@ export function inject(token: HostAttributeToken, options: {optional: true}): st
  */
 export function inject(token: HostAttributeToken, options: {optional: false}): string;
 /**
+ * @param token A token that represents the tag name of a host node that should be injected.
+ * @returns Value of the tag name if it exists
+ * @throws If called outside of a supported context or a tag name does not exist
+ *
+ * @publicApi
+ */
+export function inject(token: HostTagNameToken): string;
+/**
+ * @param token A token that represents the tag name of a host node that should be injected.
+ * @returns Value of the tag name if it exists, otherwise `null`
+ * @throws If called outside of a supported context.
+ *
+ * @publicApi
+ */
+export function inject(token: HostTagNameToken, options: {optional: true}): string|null;
+/**
+ * @param token A token that represents the tag name of a host node that should be injected.
+ * @returns Value of the tag name if it exists
+ * @throws If called outside of a supported context or a tag name does not exist
+ *
+ * @publicApi
+ */
+export function inject(token: HostTagNameToken, options: {optional: false}): string;
+/**
  * Injects a token from the currently active injector.
  * `inject` is only supported in an [injection context](/guide/dependency-injection-context). It can
  * be used during:
@@ -250,7 +278,7 @@ export function inject(token: HostAttributeToken, options: {optional: false}): s
  * @publicApi
  */
 export function inject<T>(
-    token: ProviderToken<T>|HostAttributeToken,
+    token: ProviderToken<T>|HostAttributeToken|HostTagNameToken,
     flags: InjectFlags|InjectOptions = InjectFlags.Default) {
   // The `as any` here _shouldn't_ be necessary, but without it JSCompiler
   // throws a disambiguation  error due to the multiple signatures.
