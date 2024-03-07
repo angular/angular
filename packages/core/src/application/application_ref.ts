@@ -21,7 +21,6 @@ import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {isG3} from '../is_internal';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleRef} from '../linker/ng_module_factory';
