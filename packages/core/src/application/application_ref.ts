@@ -30,7 +30,7 @@ import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
 import {ChangeDetectionMode, detectChangesInternal, MAXIMUM_REFRESH_RERUNS} from '../render3/instructions/change_detection';
-import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
+import {LView} from '../render3/interfaces/view';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
 import {ViewRef as InternalViewRef} from '../render3/view_ref';
@@ -719,11 +719,10 @@ export function detectChangesInViewIfRequired(
 
 
 function detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
-  const mode = isFirstPass || lView[FLAGS] & LViewFlags.Dirty ?
+  const mode = isFirstPass ?
       // The first pass is always in Global mode, which includes `CheckAlways` views.
-      // If the root view has been explicitly marked for check, we also need Global mode.
       ChangeDetectionMode.Global :
-      // Only refresh views with the `RefreshView` flag or views is a changed signal
+      // Only refresh views specifically marked for check after the first pass.
       ChangeDetectionMode.Targeted;
   detectChangesInternal(lView, notifyErrorHandler, mode);
 }

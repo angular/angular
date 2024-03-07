@@ -15,7 +15,7 @@ import {LContainer, TYPE} from '../interfaces/container';
 import {TConstants, TNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
-import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView,} from '../interfaces/view';
+import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView} from '../interfaces/view';
 
 /**
  * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`)
@@ -148,14 +148,8 @@ export function viewAttachedToContainer(view: LView): boolean {
 /** Returns a constant from `TConstants` instance. */
 export function getConstant<T>(consts: TConstants|null, index: null|undefined): null;
 export function getConstant<T>(consts: TConstants, index: number): T|null;
-export function getConstant<T>(
-    consts: TConstants|null,
-    index: number|null|undefined,
-    ): T|null;
-export function getConstant<T>(
-    consts: TConstants|null,
-    index: number|null|undefined,
-    ): T|null {
+export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null;
+export function getConstant<T>(consts: TConstants|null, index: number|null|undefined): T|null {
   if (index === null || index === undefined) return null;
   ngDevMode && assertIndexInRange(consts!, index);
   return consts![index] as unknown as T;
@@ -193,8 +187,7 @@ export function walkUpViews(nestingLevel: number, currentView: LView): LView {
     ngDevMode &&
         assertDefined(
             currentView[DECLARATION_VIEW],
-            'Declaration view should be defined if nesting level is greater than 0.',
-        );
+            'Declaration view should be defined if nesting level is greater than 0.');
     currentView = currentView[DECLARATION_VIEW]!;
     nestingLevel--;
   }
@@ -222,7 +215,6 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
     markAncestorsForTraversal(lView);
   } else if (lView[FLAGS] & LViewFlags.Dirty) {
     if (getEnsureDirtyViewsAreAlwaysReachable()) {
-      lView[FLAGS] |= LViewFlags.RefreshView;
       markAncestorsForTraversal(lView);
     } else {
       lView[ENVIRONMENT].changeDetectionScheduler?.notify();
