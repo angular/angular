@@ -17,8 +17,6 @@ import {RNode} from '../interfaces/renderer_dom';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {DECLARATION_VIEW, ENVIRONMENT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, ON_DESTROY_HOOKS, PARENT, PREORDER_HOOK_FLAGS, PreOrderHookFlags, REACTIVE_TEMPLATE_CONSUMER, TData, TView} from '../interfaces/view';
 
-
-
 /**
  * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`)
  * in same location in `LView`. This is because we don't want to pre-allocate space for it
@@ -217,7 +215,6 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
     markAncestorsForTraversal(lView);
   } else if (lView[FLAGS] & LViewFlags.Dirty) {
     if (getEnsureDirtyViewsAreAlwaysReachable()) {
-      lView[FLAGS] |= LViewFlags.RefreshView;
       markAncestorsForTraversal(lView);
     } else {
       lView[ENVIRONMENT].changeDetectionScheduler?.notify();

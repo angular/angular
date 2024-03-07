@@ -107,7 +107,8 @@ export const enum ChangeDetectionMode {
    */
   Global,
   /**
-   * In `Targeted` mode, only views with the `RefreshView` flag or updated signals are refreshed.
+   * In `Targeted` mode, `CheckAlways` views are ignored. Views have to be specifically
+   * marked for check to be refreshed (dirty signal, LViewFlags.Dirty, LViewFlags.RefreshView).
    */
   Targeted,
 }
@@ -125,7 +126,10 @@ export function refreshView<T>(
     tView: TView, lView: LView, templateFn: ComponentTemplate<{}>|null, context: T) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
   const flags = lView[FLAGS];
-  if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
+  if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
+    lView[FLAGS] &= ~LViewFlags.Dirty;
+    return;
+  }
 
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to execute lifecycle hooks in that mode.
@@ -254,15 +258,10 @@ export function refreshView<T>(
       lView[EFFECTS_TO_SCHEDULE] = null;
     }
 
-    // Do not reset the dirty state when running in check no changes mode. We don't want components
-    // to behave differently depending on whether check no changes is enabled or not. For example:
-    // Marking an OnPush component as dirty from within the `ngAfterViewInit` hook in order to
-    // refresh a `NgClass` binding should work. If we would reset the dirty state in the check
-    // no changes cycle, the component would be not be dirty for the next update pass. This would
-    // be different in production mode where the component dirty state is not reset.
     if (!isInCheckNoChangesPass) {
-      lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+      lView[FLAGS] &= ~(LViewFlags.FirstLViewPass);
     }
+    lView[FLAGS] &= ~LViewFlags.Dirty;
   } catch (e) {
     // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
     // because the error might have caused a situation where views below the current location are
@@ -362,8 +361,8 @@ function detectChangesInViewIfAttached(lView: LView, mode: ChangeDetectionMode) 
  * Visits a view as part of change detection traversal.
  *
  * The view is refreshed if:
- * - If the view is CheckAlways or Dirty and ChangeDetectionMode is `Global`
- * - If the view has the `RefreshView` flag
+ * - If the view is CheckAlways and ChangeDetectionMode is `Global`
+ * - If the view has the `RefreshView` or `Dirty` flags or has a signal that changed.
  *
  * The view is not refreshed, but descendants are traversed in `ChangeDetectionMode.Targeted` if the
  * view HasChildViewsToRefresh flag is set.
@@ -374,18 +373,17 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   const flags = lView[FLAGS];
   const consumer = lView[REACTIVE_TEMPLATE_CONSUMER];
 
-  // Refresh CheckAlways views in Global mode.
+  // Refresh CheckAlways views only in Global mode.
   let shouldRefreshView: boolean =
       !!(mode === ChangeDetectionMode.Global && flags & LViewFlags.CheckAlways);
 
-  // Refresh Dirty views in Global mode, as long as we're not in checkNoChanges.
+  // Refresh Dirty views as long as we're not in checkNoChanges.
   // CheckNoChanges never worked with `OnPush` components because the `Dirty` flag was
   // cleared before checkNoChanges ran. Because there is now a loop for to check for
   // backwards views, it gives an opportunity for `OnPush` components to be marked `Dirty`
   // before the CheckNoChanges pass. We don't want existing errors that are hidden by the
   // current CheckNoChanges bug to surface when making unrelated changes.
-  shouldRefreshView ||= !!(
-      flags & LViewFlags.Dirty && mode === ChangeDetectionMode.Global && !isInCheckNoChangesPass);
+  shouldRefreshView ||= !!(flags & LViewFlags.Dirty && !isInCheckNoChangesPass);
 
   // Always refresh views marked for refresh, regardless of mode.
   shouldRefreshView ||= !!(flags & LViewFlags.RefreshView);
@@ -409,6 +407,7 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
       detectChangesInChildComponents(lView, components, ChangeDetectionMode.Targeted);
     }
   }
+  lView[FLAGS] &= ~(LViewFlags.Dirty);
 }
 
 /** Refreshes child components in the current view (update mode). */

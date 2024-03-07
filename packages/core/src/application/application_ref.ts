@@ -722,11 +722,10 @@ function shouldRecheckView(view: LView): boolean {
 }
 
 function detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
-  const mode = isFirstPass || lView[FLAGS] & LViewFlags.Dirty ?
+  const mode = isFirstPass ?
       // The first pass is always in Global mode, which includes `CheckAlways` views.
-      // If the root view has been explicitly marked for check, we also need Global mode.
       ChangeDetectionMode.Global :
-      // Only refresh views with the `RefreshView` flag or views is a changed signal
+      // Only refresh views specifically marked for check after the first pass.
       ChangeDetectionMode.Targeted;
   detectChangesInternal(lView, notifyErrorHandler, mode);
 }
