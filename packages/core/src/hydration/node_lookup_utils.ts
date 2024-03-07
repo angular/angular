@@ -51,16 +51,16 @@ export function isDisconnectedNode(tNode: TNode, lView: LView) {
  * @returns an RNode that corresponds to the instruction index
  */
 export function locateI18nRNodeByIndex<T extends RNode>(
-    hydrationInfo: DehydratedView, noOffsetIndex: number): T|null {
+    hydrationInfo: DehydratedView, noOffsetIndex: number): T|null|undefined {
   const i18nNodes = hydrationInfo.i18nNodes;
   if (i18nNodes) {
     const native = i18nNodes.get(noOffsetIndex);
-    if (native) {
+    if (native !== undefined) {
       i18nNodes.delete(noOffsetIndex);
+      return native as T;
     }
-    return native as T;
   }
-  return null;
+  return undefined;
 }
 
 /**
@@ -75,9 +75,9 @@ export function locateI18nRNodeByIndex<T extends RNode>(
 export function locateNextRNode<T extends RNode>(
     hydrationInfo: DehydratedView, tView: TView, lView: LView<unknown>, tNode: TNode): T|null {
   const noOffsetIndex = getNoOffsetIndex(tNode);
-  let native: RNode|null = locateI18nRNodeByIndex(hydrationInfo, noOffsetIndex);
+  let native = locateI18nRNodeByIndex(hydrationInfo, noOffsetIndex);
 
-  if (!native) {
+  if (native === undefined) {
     const nodes = hydrationInfo.data[NODES];
     if (nodes?.[noOffsetIndex]) {
       // We know the exact location of the node.

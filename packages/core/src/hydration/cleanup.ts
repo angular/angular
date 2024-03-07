@@ -78,7 +78,9 @@ function cleanupDehydratedI18nNodes(lView: LView) {
   if (i18nNodes) {
     const renderer = lView[RENDERER];
     for (const node of i18nNodes.values()) {
-      nativeRemoveNode(renderer, node, false);
+      if (node) {
+        nativeRemoveNode(renderer, node, false);
+      }
     }
     lView[HYDRATION]!.i18nNodes = undefined;
   }
