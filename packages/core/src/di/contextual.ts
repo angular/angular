@@ -8,9 +8,10 @@
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {InjectorProfilerContext, setInjectorProfilerContext} from '../render3/debug/injector_profiler';
+
+import {getInjectImplementation, setInjectImplementation} from './inject_switch';
 import type {Injector} from './injector';
 import {getCurrentInjector, setCurrentInjector} from './injector_compatibility';
-import {getInjectImplementation, setInjectImplementation} from './inject_switch';
 import {R3Injector} from './r3_injector';
 
 /**
@@ -48,6 +49,12 @@ export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => Ret
 }
 
 /**
+ * Whether the current stack frame is inside an injection context.
+ */
+export function isInInjectionContext(): boolean {
+  return getInjectImplementation() !== undefined || getCurrentInjector() != null;
+}
+/**
  * Asserts that the current stack frame is within an [injection
  * context](guide/dependency-injection-context) and has access to `inject`.
  *
@@ -58,7 +65,7 @@ export function runInInjectionContext<ReturnT>(injector: Injector, fn: () => Ret
 export function assertInInjectionContext(debugFn: Function): void {
   // Taking a `Function` instead of a string name here prevents the unminified name of the function
   // from being retained in the bundle regardless of minification.
-  if (!getInjectImplementation() && !getCurrentInjector()) {
+  if (!isInInjectionContext()) {
     throw new RuntimeError(
         RuntimeErrorCode.MISSING_INJECTION_CONTEXT,
         ngDevMode &&

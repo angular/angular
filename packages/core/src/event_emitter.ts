@@ -10,6 +10,7 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {PartialObserver, Subject, Subscription} from 'rxjs';
 
 import {OutputRef} from './authoring/output/output_ref';
+import {isInInjectionContext} from './di/contextual';
 import {inject} from './di/injector_compatibility';
 import {DestroyRef} from './linker/destroy_ref';
 
@@ -107,18 +108,16 @@ export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {
 
 class EventEmitter_ extends Subject<any> implements OutputRef<any> {
   __isAsync: boolean;  // tslint:disable-line
-  destroyRef: DestroyRef|undefined;
+  destroyRef: DestroyRef|undefined = undefined;
 
   constructor(isAsync: boolean = false) {
     super();
     this.__isAsync = isAsync;
 
     // Attempt to retrieve a `DestroyRef` optionally.
-    // For backwards compatibility reasons, this cannot be required.
-    try {
-      this.destroyRef = inject(DestroyRef);
-    } catch {
-      this.destroyRef = undefined;
+    // For backwards compatibility reasons, this cannot be required
+    if (isInInjectionContext()) {
+      this.destroyRef = inject(DestroyRef, {optional: true}) ?? undefined;
     }
   }
 

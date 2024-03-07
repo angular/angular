@@ -1284,6 +1284,9 @@
     "name": "getInherited"
   },
   {
+    "name": "getInjectImplementation"
+  },
+  {
     "name": "getInjectableDef"
   },
   {

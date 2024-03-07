@@ -816,6 +816,9 @@
     "name": "getFirstLContainer"
   },
   {
+    "name": "getInjectImplementation"
+  },
+  {
     "name": "getInjectableDef"
   },
   {

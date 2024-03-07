@@ -897,6 +897,9 @@
     "name": "getFirstNativeNode"
   },
   {
+    "name": "getInjectImplementation"
+  },
+  {
     "name": "getInjectableDef"
   },
   {
