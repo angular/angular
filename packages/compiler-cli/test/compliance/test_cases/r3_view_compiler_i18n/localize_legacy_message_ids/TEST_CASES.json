@@ -17,8 +17,7 @@
           "files": [
             {
               "generated": "legacy_enabled.js",
-              "expected": "legacy_enabled.template.js",
-              "templatePipelineExpected": "legacy_enabled.pipeline.js"
+              "expected": "legacy_enabled.pipeline.js"
             }
           ],
           "extraChecks": [

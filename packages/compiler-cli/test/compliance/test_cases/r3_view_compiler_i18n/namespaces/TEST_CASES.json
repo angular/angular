@@ -11,8 +11,7 @@
           "files": [
             {
               "generated": "foreign_object.js",
-              "expected": "foreign_object.template.js",
-              "templatePipelineExpected": "foreign_object.pipeline.js"
+              "expected": "foreign_object.pipeline.js"
             }
           ],
           "extraChecks": [
@@ -32,8 +31,7 @@
           "files": [
             {
               "generated": "namespaced_div.js",
-              "expected": "namespaced_div.template.js",
-              "templatePipelineExpected": "namespaced_div.pipeline.js"
+              "expected": "namespaced_div.pipeline.js"
             }
           ],
           "extraChecks": [

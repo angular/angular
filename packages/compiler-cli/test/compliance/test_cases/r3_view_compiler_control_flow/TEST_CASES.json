@@ -53,9 +53,8 @@
         {
           "files": [
             {
-              "expected": "switch_with_pipe_template.js",
               "generated": "switch_with_pipe.js",
-              "templatePipelineExpected": "switch_with_pipe_template.pipeline.js"
+              "expected": "switch_with_pipe_template.pipeline.js"
             }
           ],
           "failureMessage": "Incorrect template"
@@ -144,9 +143,8 @@
         {
           "files": [
             {
-              "expected": "if_with_pipe_template.js",
               "generated": "if_with_pipe.js",
-              "templatePipelineExpected": "if_with_pipe_template.pipeline.js"
+              "expected": "if_with_pipe_template.pipeline.js"
             }
           ],
           "failureMessage": "Incorrect template"
@@ -190,8 +188,7 @@
         {
           "files": [
             {
-              "expected": "if_nested_alias_listeners_template.js",
-              "templatePipelineExpected": "if_nested_alias_listeners_template.pipeline.js",
+              "expected": "if_nested_alias_listeners_template.pipeline.js",
               "generated": "if_nested_alias_listeners.js"
             }
           ],
@@ -281,8 +278,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_template.js",
-              "templatePipelineExpected": "for_template_variables_template.pipeline.js",
+              "expected": "for_template_variables_template.pipeline.js",
               "generated": "for_template_variables.js"
             }
           ],
@@ -297,8 +293,7 @@
         {
           "files": [
             {
-              "expected": "for_aliased_template_variables_template.js",
-              "templatePipelineExpected": "for_aliased_template_variables_template.pipeline.js",
+              "expected": "for_aliased_template_variables_template.pipeline.js",
               "generated": "for_aliased_template_variables.js"
             }
           ],
@@ -328,8 +323,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_listener_template.js",
-              "templatePipelineExpected": "for_template_variables_listener_template.pipeline.js",
+              "expected": "for_template_variables_listener_template.pipeline.js",
               "generated": "for_template_variables_listener.js"
             }
           ],
@@ -374,8 +368,7 @@
         {
           "files": [
             {
-              "expected": "for_template_variables_scope_template.js",
-              "templatePipelineExpected": "for_template_variables_scope_template.pipeline.js",
+              "expected": "for_template_variables_scope_template.pipeline.js",
               "generated": "for_template_variables_scope.js"
             }
           ],

@@ -61,8 +61,7 @@
         {
           "files": [
             {
-              "expected": "local_ref_before_listener_template.js",
-              "templatePipelineExpected": "local_ref_before_listener.pipeline.js",
+              "expected": "local_ref_before_listener.pipeline.js",
               "generated": "local_ref_before_listener.js"
             }
           ],
@@ -291,8 +290,7 @@
         {
           "files": [
             {
-              "expected": "embedded_view_listener_context_template.js",
-              "templatePipelineExpected": "embedded_view_listener_context_template.pipeline.js",
+              "expected": "embedded_view_listener_context_template.pipeline.js",
               "generated": "embedded_view_listener_context.js"
             }
           ],

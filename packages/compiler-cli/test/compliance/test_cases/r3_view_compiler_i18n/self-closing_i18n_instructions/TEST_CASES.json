@@ -53,8 +53,7 @@
           "files": [
             {
               "generated": "styles.js",
-              "expected": "styles.template.js",
-              "templatePipelineExpected": "styles.pipeline.js"
+              "expected": "styles.pipeline.js"
             }
           ],
           "extraChecks": [

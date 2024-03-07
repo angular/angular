@@ -47,8 +47,7 @@
           "failureMessage": "Invalid MyApp definition",
           "files": [
             {
-              "expected": "pipes_my_app_def.js",
-              "templatePipelineExpected": "pipes_my_app_def.pipeline.js",
+              "expected": "pipes_my_app_def.pipeline.js",
               "generated": "pipes.js"
             }
           ]

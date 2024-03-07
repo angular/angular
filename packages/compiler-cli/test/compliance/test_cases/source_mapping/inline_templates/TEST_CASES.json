@@ -794,8 +794,7 @@
           "files": [
             {
               "generated": "i18n_message_interpolation_whitespace.js",
-              "expected": "i18n_message_interpolation_whitespace_template.js",
-              "templatePipelineExpected": "i18n_message_interpolation_whitespace_template.pipeline.js"
+              "expected": "i18n_message_interpolation_whitespace_template.pipeline.js"
             }
           ]
         }
@@ -818,8 +817,7 @@
           "files": [
             {
               "generated": "i18n_message_interpolation_whitespace.js",
-              "expected": "i18n_message_interpolation_whitespace_partial_template.js",
-              "templatePipelineExpected": "i18n_message_interpolation_whitespace_partial_template.pipeline.js"
+              "expected": "i18n_message_interpolation_whitespace_partial_template.pipeline.js"
             }
           ]
         }
