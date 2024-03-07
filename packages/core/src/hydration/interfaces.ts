@@ -36,6 +36,7 @@ export const NUM_ROOT_NODES = 'r';
 export const TEMPLATE_ID = 'i';  // as it's also an "id"
 export const NODES = 'n';
 export const DISCONNECTED_NODES = 'd';
+export const I18N_DATA = 'l';
 
 /**
  * Represents element containers within this view, stored as key-value pairs
@@ -92,6 +93,14 @@ export interface SerializedView {
    * logic for such nodes and instead use a regular "creation mode".
    */
   [DISCONNECTED_NODES]?: number[];
+
+  /**
+   * Serialized information about i18n blocks in a template.
+   * Key-value pairs where a key is an index of the corresponding
+   * i18n entry within an LView, and the value is a list of
+   * active ICU cases.
+   */
+  [I18N_DATA]?: Record<number, number[]>;
 }
 
 /**
@@ -174,7 +183,7 @@ export interface DehydratedView {
    * the node is removed from the map. The remaining entries indicate
    * dehydrated nodes that need to be cleaned up.
    */
-  i18nNodes?: Map<number, RNode>;
+  i18nNodes?: Map<number, RNode|null>;
 }
 
 /**
