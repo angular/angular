@@ -38,6 +38,6 @@ export function applyChanges(component: {}): void {
  */
 function detectChanges(component: {}): void {
   const view = getComponentViewByInstance(component);
-  view[FLAGS] |= LViewFlags.RefreshView;
+  view[FLAGS] |= LViewFlags.Dirty;
   detectChangesInternal(view);
 }

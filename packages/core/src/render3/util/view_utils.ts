@@ -169,14 +169,11 @@ export function resetPreOrderHookFlags(lView: LView) {
 }
 
 /**
- * Adds the `RefreshView` flag from the lView and updates HAS_CHILD_VIEWS_TO_REFRESH flag of
- * parents.
+ * Adds the `Dirty` flag from the lView and updates HAS_CHILD_VIEWS_TO_REFRESH flag of
+ * parents. Does not mark ancestors `Dirty`.
  */
 export function markViewForRefresh(lView: LView) {
-  if (lView[FLAGS] & LViewFlags.RefreshView) {
-    return;
-  }
-  lView[FLAGS] |= LViewFlags.RefreshView;
+  lView[FLAGS] |= LViewFlags.Dirty;
   if (viewAttachedToChangeDetector(lView)) {
     markAncestorsForTraversal(lView);
   }
@@ -202,8 +199,7 @@ export function walkUpViews(nestingLevel: number, currentView: LView): LView {
 
 export function requiresRefreshOrTraversal(lView: LView) {
   return !!(
-      lView[FLAGS] &
-          (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh | LViewFlags.Dirty) ||
+      lView[FLAGS] & (LViewFlags.HasChildViewsToRefresh | LViewFlags.Dirty) ||
       lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty);
 }
 
@@ -215,7 +211,7 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
   // TODO(atscott): Simplify if...else cases once getEnsureDirtyViewsAreAlwaysReachable is always
   // `true`. When we attach a view that's marked `Dirty`, we should ensure that it is reached during
   // the next CD traversal so we add the `RefreshView` flag and mark ancestors accordingly.
-  if (lView[FLAGS] & (LViewFlags.RefreshView | LViewFlags.HasChildViewsToRefresh) ||
+  if (lView[FLAGS] & (LViewFlags.HasChildViewsToRefresh) ||
       lView[REACTIVE_TEMPLATE_CONSUMER]?.dirty) {
     markAncestorsForTraversal(lView);
   } else if (lView[FLAGS] & LViewFlags.Dirty) {

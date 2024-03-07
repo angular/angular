@@ -126,7 +126,10 @@ export function refreshView<T>(
     tView: TView, lView: LView, templateFn: ComponentTemplate<{}>|null, context: T) {
   ngDevMode && assertEqual(isCreationMode(lView), false, 'Should be run in update mode');
   const flags = lView[FLAGS];
-  if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) return;
+  if ((flags & LViewFlags.Destroyed) === LViewFlags.Destroyed) {
+    lView[FLAGS] &= ~LViewFlags.Dirty;
+    return;
+  }
 
   // Check no changes mode is a dev only mode used to verify that bindings have not changed
   // since they were assigned. We do not want to execute lifecycle hooks in that mode.
@@ -255,15 +258,10 @@ export function refreshView<T>(
       lView[EFFECTS_TO_SCHEDULE] = null;
     }
 
-    // Do not reset the dirty state when running in check no changes mode. We don't want components
-    // to behave differently depending on whether check no changes is enabled or not. For example:
-    // Marking an OnPush component as dirty from within the `ngAfterViewInit` hook in order to
-    // refresh a `NgClass` binding should work. If we would reset the dirty state in the check
-    // no changes cycle, the component would be not be dirty for the next update pass. This would
-    // be different in production mode where the component dirty state is not reset.
     if (!isInCheckNoChangesPass) {
-      lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+      lView[FLAGS] &= ~(LViewFlags.FirstLViewPass);
     }
+    lView[FLAGS] &= ~LViewFlags.Dirty;
   } catch (e) {
     // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
     // because the error might have caused a situation where views below the current location are
@@ -379,7 +377,7 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
       !!(mode === ChangeDetectionMode.Global && flags & LViewFlags.CheckAlways);
 
   // Always refresh views marked for refresh.
-  shouldRefreshView ||= !!(flags & (LViewFlags.RefreshView | LViewFlags.Dirty));
+  shouldRefreshView ||= !!(flags & LViewFlags.Dirty);
 
   // Refresh views when they have a dirty reactive consumer, regardless of mode.
   shouldRefreshView ||= !!(consumer?.dirty && consumerPollProducersForChange(consumer));
@@ -389,7 +387,7 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   if (consumer) {
     consumer.dirty = false;
   }
-  lView[FLAGS] &= ~(LViewFlags.HasChildViewsToRefresh | LViewFlags.RefreshView);
+  lView[FLAGS] &= ~(LViewFlags.HasChildViewsToRefresh);
 
   if (shouldRefreshView) {
     refreshView(tView, lView, tView.template, lView[CONTEXT]);
