@@ -1499,4 +1499,39 @@ export interface NavigationBehaviorOptions {
    * when the transition has finished animating.
    */
   readonly info?: unknown;
+
+  /**
+   * When set, the Router will update the browser's address bar to match the given `UrlTree` instead
+   * of the one used for route matching.
+   *
+   *
+   * @usageNotes
+   *
+   * This feature is useful for redirects, such as redirecting to an error page, without changing
+   * the value that will be displayed in the browser's address bar.
+   *
+   * ```
+   * const canActivate: CanActivateFn = (route: ActivatedRouteSnapshot) => {
+   *   const userService = inject(UserService);
+   *   const router = inject(Router);
+   *   if (!userService.isLoggedIn()) {
+   *     const targetOfCurrentNavigation = router.getCurrentNavigation()?.finalUrl;
+   *     const redirect = router.parseUrl('/404');
+   *     return new RedirectCommand(redirect, {browserUrl: targetOfCurrentNavigation});
+   *   }
+   *   return true;
+   * };
+   * ```
+   *
+   * This value is used directly, without considering any `UrlHandingStrategy`. In this way,
+   * `browserUrl` can also be used to use a different value for the browser URL than what would have
+   * been produced by from the navigation due to `UrlHandlingStrategy.merge`.
+   *
+   * This value only affects the path presented in the browser's address bar. It does not apply to
+   * the internal `Router` state. Information such as `params` and `data` will match the internal
+   * state used to match routes which will be different from the browser URL when using this feature
+   * The same is true when using other APIs that cause the browser URL the differ from the Router
+   * state, such as `skipLocationChange`.
+   */
+  readonly browserUrl?: UrlTree | string;
 }
