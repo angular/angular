@@ -12,6 +12,7 @@ import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, Injector, makeEnvironment
 import {inject} from '../di/injector_compatibility';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
+import {enableLocateOrCreateI18nNodeImpl} from '../render3/i18n/i18n_apply';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';
 import {enableLocateOrCreateElementContainerNodeImpl} from '../render3/instructions/element_container';
 import {enableApplyRootElementTransformImpl} from '../render3/instructions/shared';
@@ -24,7 +25,7 @@ import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 
 import {cleanupDehydratedViews} from './cleanup';
-import {IS_HYDRATION_DOM_REUSE_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
+import {IS_HYDRATION_DOM_REUSE_ENABLED, IS_I18N_HYDRATION_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
 
@@ -33,6 +34,11 @@ import {enableFindMatchingDehydratedViewImpl} from './views';
  * prevents adding it multiple times.
  */
 let isHydrationSupportEnabled = false;
+
+/**
+ * Indicates whether support for hydrating i18n blocks is enabled.
+ */
+let _isI18nHydrationSupportEnabled = false;
 
 /**
  * Defines a period of time that Angular waits for the `ApplicationRef.isStable` to emit `true`.
@@ -62,6 +68,7 @@ function enableHydrationRuntimeSupport() {
     enableLocateOrCreateContainerRefImpl();
     enableFindMatchingDehydratedViewImpl();
     enableApplyRootElementTransformImpl();
+    enableLocateOrCreateI18nNodeImpl();
   }
 }
 
@@ -145,6 +152,8 @@ export function withDomHydration(): EnvironmentProviders {
     {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
+        _isI18nHydrationSupportEnabled = !!inject(IS_I18N_HYDRATION_ENABLED, {optional: true});
+
         // Since this function is used across both server and client,
         // make sure that the runtime code is only added when invoked
         // on the client. Moving forward, the `isPlatformBrowser` check should
@@ -196,6 +205,26 @@ export function withDomHydration(): EnvironmentProviders {
       multi: true,
     }
   ]);
+}
+
+/**
+ * Returns a set of providers required to setup support for i18n hydration.
+ * Requires hydration to be enabled separately.
+ */
+export function withI18nHydration(): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: IS_I18N_HYDRATION_ENABLED,
+      useValue: true,
+    },
+  ]);
+}
+
+/**
+ * Returns whether i18n hydration support is enabled.
+ */
+export function isI18nHydrationSupportEnabled(): boolean {
+  return _isI18nHydrationSupportEnabled;
 }
 
 /**
