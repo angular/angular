@@ -1520,6 +1520,11 @@ describe('R3 template transform', () => {
             @case {case}
           }
         `)).toThrowError(/@case block must have exactly one parameter/);
+        expect(() => parse(`
+          @switch (cond) {
+            @case (            ) {case}
+          }
+        `)).toThrowError(/@case block must have exactly one parameter/);
       });
 
       it('should report if a case has more than one parameter', () => {
@@ -1710,6 +1715,8 @@ describe('R3 template transform', () => {
 
       it('should report if for loop does not have a tracking expression', () => {
         expect(() => parse(`@for (a of b) {hello}`))
+            .toThrowError(/@for loop must have a "track" expression/);
+        expect(() => parse(`@for (a of b; track      ) {hello}`))
             .toThrowError(/@for loop must have a "track" expression/);
       });
 
@@ -1931,6 +1938,9 @@ describe('R3 template transform', () => {
       it('should report an if block without a condition', () => {
         expect(() => parse(`
           @if {hello}
+        `)).toThrowError(/Conditional block does not have an expression/);
+        expect(() => parse(`
+          @if (      ) {hello}
         `)).toThrowError(/Conditional block does not have an expression/);
       });
 
