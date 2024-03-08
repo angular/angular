@@ -353,6 +353,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should generate a two-way binding to a @for loop variable that is a signal",
+      "inputFiles": [
+        "two_way_binding_to_signal_loop_variable.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "two_way_binding_to_signal_loop_variable_template.js",
+              "generated": "two_way_binding_to_signal_loop_variable.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }
