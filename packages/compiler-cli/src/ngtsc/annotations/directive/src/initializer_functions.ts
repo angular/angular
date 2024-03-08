@@ -25,8 +25,8 @@ import {ClassMember, ReflectionHost} from '../../../reflection';
 
 export interface InitializerApiFunction {
   owningModule: '@angular/core'|'@angular/core/rxjs-interop';
-  functionName: ('input'|'model'|'ɵoutput'|'output'|'outputFromObservable'|'viewChild'|
-                 'viewChildren'|'contentChild'|'contentChildren');
+  functionName: ('input'|'model'|'output'|'outputFromObservable'|'viewChild'|'viewChildren'|
+                 'contentChild'|'contentChildren');
 }
 
 /**
