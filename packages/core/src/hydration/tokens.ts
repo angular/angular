@@ -28,3 +28,10 @@ export const PRESERVE_HOST_CONTENT = new InjectionToken<boolean>(
       providedIn: 'root',
       factory: () => PRESERVE_HOST_CONTENT_DEFAULT,
     });
+
+/**
+ * Internal token that indicates whether hydration support for i18n
+ * is enabled.
+ */
+export const IS_I18N_HYDRATION_ENABLED = new InjectionToken<boolean>(
+    (typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_I18N_HYDRATION_ENABLED' : ''));
