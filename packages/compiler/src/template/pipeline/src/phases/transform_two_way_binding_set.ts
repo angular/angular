@@ -32,12 +32,24 @@ export function transformTwoWayBindingSet(job: CompilationJob): void {
   }
 }
 
-function wrapSetOperation(target: o.ReadPropExpr|o.ReadKeyExpr, value: o.Expression): o.Expression {
+function wrapSetOperation(
+    target: o.ReadPropExpr|o.ReadKeyExpr|ir.ReadVariableExpr, value: o.Expression): o.Expression {
+  // ASSUMPTION: here we're assuming that `ReadVariableExpr` will be a reference
+  // to a local template variable. This appears to be the case at the time of writing.
+  // If the expression is targeting a variable read, we only emit the `twoWayBindingSet` since
+  // the fallback would be attempting to write into a constant. Invalid usages will be flagged
+  // during template type checking.
+  if (target instanceof ir.ReadVariableExpr) {
+    return ng.twoWayBindingSet(target, value);
+  }
+
   return ng.twoWayBindingSet(target, value).or(target.set(value));
 }
 
-function isReadExpression(value: unknown): value is o.ReadPropExpr|o.ReadKeyExpr {
-  return value instanceof o.ReadPropExpr || value instanceof o.ReadKeyExpr;
+function isReadExpression(value: unknown): value is o.ReadPropExpr|o.ReadKeyExpr|
+    ir.ReadVariableExpr {
+  return value instanceof o.ReadPropExpr || value instanceof o.ReadKeyExpr ||
+      value instanceof ir.ReadVariableExpr;
 }
 
 function wrapAction(target: o.Expression, value: o.Expression): o.Expression {

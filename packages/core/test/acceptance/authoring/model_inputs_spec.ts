@@ -589,4 +589,44 @@ describe('model inputs', () => {
     fixture.detectChanges();
     expect(() => fixture.destroy()).not.toThrow();
   });
+
+  it('should support two-way binding to a signal @for loop variable', () => {
+    @Directive({selector: '[dir]', standalone: true})
+    class Dir {
+      value = model(0);
+    }
+
+    @Component({
+      template: `
+        @for (value of values; track $index) {
+          <div [(value)]="value" dir></div>
+        }
+      `,
+      standalone: true,
+      imports: [Dir],
+    })
+    class App {
+      @ViewChild(Dir) dir!: Dir;
+      values = [signal(1)];
+    }
+
+    const fixture = TestBed.createComponent(App);
+    const host = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // Initial value.
+    expect(host.values[0]()).toBe(1);
+    expect(host.dir.value()).toBe(1);
+
+    // Changing the value from within the directive.
+    host.dir.value.set(2);
+    expect(host.values[0]()).toBe(2);
+    expect(host.dir.value()).toBe(2);
+
+    // Changing the value from the outside.
+    host.values[0].set(3);
+    fixture.detectChanges();
+    expect(host.values[0]()).toBe(3);
+    expect(host.dir.value()).toBe(3);
+  });
 });
