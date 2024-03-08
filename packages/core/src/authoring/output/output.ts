@@ -20,7 +20,7 @@ export interface OutputOptions {
 }
 
 /**
- * The `outputs` function allows declaration of outputs in directives and
+ * The `output` function allows declaration of outputs in directives and
  * components.
  *
  * Initializes an output that can emit values to consumers of your
