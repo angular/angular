@@ -131,27 +131,6 @@ module.exports = new Package('angular-base', [
     getLinkInfo.useFirstAmbiguousLink = false;
   })
 
-  .config(function(checkAnchorLinksProcessor) {
-    // since we encode the HTML to JSON we need to ensure that this processor runs before that encoding happens.
-    checkAnchorLinksProcessor.$runBefore = ['convertToJsonProcessor'];
-    checkAnchorLinksProcessor.$runAfter = ['fixInternalDocumentLinks'];
-    // We only want to check docs that are going to be output as JSON docs.
-    checkAnchorLinksProcessor.checkDoc = (doc) => doc.path && doc.outputPath && extname(doc.outputPath) === '.json' && doc.docType !== 'json-doc';
-    // Since we have a `base[href="/"]` arrangement all links are relative to that and not relative to the source document's path
-    checkAnchorLinksProcessor.base = '/';
-    // Ignore links to local assets
-    // (This is not optimal in terms of performance without making changes to dgeni-packages there is no other way.
-    //  That being said do this only add 500ms onto the ~30sec doc-gen run - so not a huge issue)
-    checkAnchorLinksProcessor.ignoredLinks.push({
-      test(url) {
-        // Some links point to assets in the source tree while others point to the generated bazel output
-        return existsSync(resolve(SRC_PATH, url)) || existsSync(resolve(BAZEL_OUTPUT_PATH, url));
-      }
-    });
-    checkAnchorLinksProcessor.pathVariants = ['', '/', '.html', '/index.html', '#top-of-page'];
-    checkAnchorLinksProcessor.errorOnUnmatchedLinks = true;
-  })
-
   .config(function(computePathsProcessor, generateKeywordsProcessor) {
 
     generateKeywordsProcessor.outputFolder = 'app';

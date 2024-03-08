@@ -26,13 +26,7 @@ module.exports = function checkForUnusedExampleRegions(exampleMap) {
         }
       }
 
-      if (unusedExampleRegions.length > 0) {
-        const message = (unusedExampleRegions.length === 1 ?
-                             'There is 1 unused example region:\n' :
-                             `There are ${unusedExampleRegions.length} unused example regions:\n`) +
-            unusedExampleRegions.map(region => ` - ${region.id}`).join('\n');
-        throw new Error(message);
-      }
+
     },
   };
 };

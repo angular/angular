@@ -16,7 +16,6 @@ js_library(
         "//aio/tools/transforms/angular-api-package",
         "//aio/tools/transforms/angular-base-package",
         "//aio/tools/transforms/angular-content-package",
-        "//aio/tools/transforms/angular-errors-package",
         "//aio/tools/transforms/angular-extended-diagnostics-package",
         "@aio_npm//dgeni",
     ],

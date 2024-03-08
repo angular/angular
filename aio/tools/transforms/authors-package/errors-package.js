@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 const Package = require('dgeni').Package;
-const errorsPackage = require('../angular-errors-package');
 const {CONTENTS_PATH} = require('../config');
 const baseAuthoringPackage = require('./base-authoring-package');
 
 function createPackage() {
-  return new Package('author-errors', [baseAuthoringPackage, errorsPackage])
+  return new Package('author-errors', [baseAuthoringPackage])
     .config(function(readFilesProcessor) {
       readFilesProcessor.sourceFiles = [
         {

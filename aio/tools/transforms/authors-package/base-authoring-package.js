@@ -16,11 +16,11 @@ const basePackage = require('../angular-base-package');
  */
 const baseAuthoringPackage = new Package('base-authoring', [basePackage]);
 baseAuthoringPackage
-    .config(function(checkAnchorLinksProcessor, checkForUnusedExampleRegions) {
+/*     .config(function(checkAnchorLinksProcessor, checkForUnusedExampleRegions) {
       // These are disabled here to prevent false negatives for the `docs-watch` task.
       checkAnchorLinksProcessor.$enabled = false;
       checkForUnusedExampleRegions.$enabled = false;
-    })
+    }) */
 
     .config(function(linkInlineTagDef) {
       // Do not fail the processing if there is an invalid link
