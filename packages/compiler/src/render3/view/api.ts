@@ -224,7 +224,7 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   declarations: DeclarationT[];
 
   /** Metadata related to the deferred blocks in the component's template. */
-  defer: R3DeferMetadata;
+  defer: R3ComponentDeferMetadata;
 
   /**
    * Specifies how the 'directives' and/or `pipes` array, if generated, need to be emitted.
@@ -294,7 +294,7 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
 /**
  * Information about the deferred blocks in a component's template.
  */
-export type R3DeferMetadata = {
+export type R3ComponentDeferMetadata = {
   mode: DeferBlockDepsEmitMode.PerBlock,
   blocks: Map<t.DeferredBlock, o.ArrowFunctionExpr|null>,
 }|{
@@ -489,4 +489,65 @@ export interface R3HostDirectiveMetadata {
 
   /** Outputs from the host directive that will be exposed on the host. */
   outputs: {[publicName: string]: string}|null;
+}
+
+/**
+ * Information needed to compile the defer block resolver function.
+ */
+export type R3DeferResolverFunctionMetadata = {
+  mode: DeferBlockDepsEmitMode.PerBlock,
+  dependencies: R3DeferPerBlockDependency[],
+}|{
+  mode: DeferBlockDepsEmitMode.PerComponent,
+  dependencies: R3DeferPerComponentDependency[],
+};
+
+/**
+ * Information about a single dependency of a defer block in `PerBlock` mode.
+ */
+export interface R3DeferPerBlockDependency {
+  /**
+   * Reference to a dependency.
+   */
+  typeReference: o.Expression;
+
+  /**
+   * Dependency class name.
+   */
+  symbolName: string;
+
+  /**
+   * Whether this dependency can be defer-loaded.
+   */
+  isDeferrable: boolean;
+
+  /**
+   * Import path where this dependency is located.
+   */
+  importPath: string|null;
+
+  /**
+   * Whether the symbol is the default export.
+   */
+  isDefaultImport: boolean;
+}
+
+/**
+ * Information about a single dependency of a defer block in `PerComponent` mode.
+ */
+export interface R3DeferPerComponentDependency {
+  /**
+   * Dependency class name.
+   */
+  symbolName: string;
+
+  /**
+   * Import path where this dependency is located.
+   */
+  importPath: string;
+
+  /**
+   * Whether the symbol is the default export.
+   */
+  isDefaultImport: boolean;
 }

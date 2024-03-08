@@ -20,7 +20,7 @@ import {BindingParser} from '../../template_parser/binding_parser';
 import {Identifiers as R3} from '../r3_identifiers';
 import {R3CompiledExpression, typeWithParameters} from '../util';
 
-import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3TemplateDependency} from './api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DeferPerBlockDependency, R3DeferPerComponentDependency, R3DeferResolverFunctionMetadata, R3DirectiveMetadata, R3HostMetadata, R3TemplateDependency} from './api';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
@@ -626,4 +626,47 @@ export function createHostDirectivesMappingArray(mapping: Record<string, string>
   }
 
   return elements.length > 0 ? o.literalArr(elements) : null;
+}
+
+/**
+ * Compiles the dependency resolver function for a defer block.
+ */
+export function compileDeferResolverFunction(meta: R3DeferResolverFunctionMetadata):
+    o.ArrowFunctionExpr {
+  const depExpressions: o.Expression[] = [];
+
+  if (meta.mode === DeferBlockDepsEmitMode.PerBlock) {
+    for (const dep of meta.dependencies) {
+      if (dep.isDeferrable) {
+        // Callback function, e.g. `m () => m.MyCmp;`.
+        const innerFn = o.arrowFn(
+            // Default imports are always accessed through the `default` property.
+            [new o.FnParam('m', o.DYNAMIC_TYPE)],
+            o.variable('m').prop(dep.isDefaultImport ? 'default' : dep.symbolName));
+
+        // Dynamic import, e.g. `import('./a').then(...)`.
+        const importExpr =
+            (new o.DynamicImportExpr(dep.importPath!)).prop('then').callFn([innerFn]);
+        depExpressions.push(importExpr);
+      } else {
+        // Non-deferrable symbol, just use a reference to the type. Note that it's important to
+        // go through `typeReference`, rather than `symbolName` in order to preserve the
+        // original reference within the source file.
+        depExpressions.push(dep.typeReference);
+      }
+    }
+  } else {
+    for (const {symbolName, importPath, isDefaultImport} of meta.dependencies) {
+      // Callback function, e.g. `m () => m.MyCmp;`.
+      const innerFn = o.arrowFn(
+          [new o.FnParam('m', o.DYNAMIC_TYPE)],
+          o.variable('m').prop(isDefaultImport ? 'default' : symbolName));
+
+      // Dynamic import, e.g. `import('./a').then(...)`.
+      const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);
+      depExpressions.push(importExpr);
+    }
+  }
+
+  return o.arrowFn([], o.literalArr(depExpressions));
 }
