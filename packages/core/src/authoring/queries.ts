@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertInInjectionContext} from '../di';
 import {ProviderToken} from '../di/provider_token';
 import {createMultiResultQuerySignalFn, createSingleResultOptionalQuerySignalFn, createSingleResultRequiredQuerySignalFn} from '../render3/query_reactive';
 import {Signal} from '../render3/reactivity/api';
@@ -13,11 +14,13 @@ import {Signal} from '../render3/reactivity/api';
 function viewChildFn<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {read?: ProviderToken<ReadT>}): Signal<ReadT|undefined> {
+  ngDevMode && assertInInjectionContext(viewChild);
   return createSingleResultOptionalQuerySignalFn<ReadT>();
 }
 
 function viewChildRequiredFn<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string, opts?: {read?: ProviderToken<ReadT>}): Signal<ReadT> {
+  ngDevMode && assertInInjectionContext(viewChild);
   return createSingleResultRequiredQuerySignalFn<ReadT>();
 }
 
@@ -108,18 +111,21 @@ export function viewChildren<LocatorT, ReadT>(
 export function viewChildren<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {read?: ProviderToken<ReadT>}): Signal<ReadonlyArray<ReadT>> {
+  ngDevMode && assertInInjectionContext(viewChildren);
   return createMultiResultQuerySignalFn<ReadT>();
 }
 
 export function contentChildFn<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {descendants?: boolean, read?: ProviderToken<ReadT>}): Signal<ReadT|undefined> {
+  ngDevMode && assertInInjectionContext(contentChild);
   return createSingleResultOptionalQuerySignalFn<ReadT>();
 }
 
 function contentChildRequiredFn<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
     opts?: {descendants?: boolean, read?: ProviderToken<ReadT>}): Signal<ReadT> {
+  ngDevMode && assertInInjectionContext(contentChildren);
   return createSingleResultRequiredQuerySignalFn<ReadT>();
 }
 
