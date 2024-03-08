@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithSource} from '../expression_parser/ast';
+import {ASTWithSource, EmptyExpr} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
@@ -256,6 +256,9 @@ function parseForLoopParameters(
             new ParseError(param.sourceSpan, '@for loop can only have one "track" expression'));
       } else {
         const expression = parseBlockParameterToBinding(param, bindingParser, trackMatch[1]);
+        if (expression.ast instanceof EmptyExpr) {
+          errors.push(new ParseError(param.sourceSpan, '@for loop must have a "track" expression'));
+        }
         const keywordSpan = new ParseSourceSpan(
             param.sourceSpan.start, param.sourceSpan.start.moveBy('track'.length));
         result.trackBy = {expression, keywordSpan};
