@@ -13,7 +13,6 @@ js_library(
         "//aio/content",
         "//aio/content/cli",
         "//aio/content/examples",
-        "//aio/src/assets",
         "//aio/tools/transforms",
         "//aio/tools/transforms/angular-base-package",
         "//aio/tools/transforms/content-package",

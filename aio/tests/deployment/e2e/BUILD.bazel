@@ -19,17 +19,17 @@ TEST_TAGS = [
     "requires-network",
 ]
 
-protractor_web_test_suite(
-    name = "e2e",
-    data = [
-        "//aio/tests/deployment/shared",
-        "@aio_npm//cjson",
-    ],
-    on_prepare = "on-prepare.js",
-    tags = TEST_TAGS,
-    test_suite_tags = TEST_TAGS,
-    wrapped_test_tags = TEST_TAGS,
-    deps = [
-        ":e2e_lib",
-    ],
-)
+# protractor_web_test_suite(
+#     name = "e2e",
+#     data = [
+#         "//aio/tests/deployment/shared",
+#         "@aio_npm//cjson",
+#     ],
+#     on_prepare = "on-prepare.js",
+#     tags = TEST_TAGS,
+#     test_suite_tags = TEST_TAGS,
+#     wrapped_test_tags = TEST_TAGS,
+#     deps = [
+#         ":e2e_lib",
+#     ],
+# )

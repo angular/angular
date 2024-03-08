@@ -120,12 +120,6 @@ module.exports = new Package('angular-base', [
     };
   })
 
-  .config(function(copyContentAssetsProcessor) {
-    copyContentAssetsProcessor.assetMappings.push(
-      { from: path.resolve(CONTENTS_PATH, 'images'), to: path.resolve(OUTPUT_PATH, 'images') }
-    );
-  })
-
   // We are not going to be relaxed about ambiguous links
   .config(function(getLinkInfo) {
     getLinkInfo.useFirstAmbiguousLink = false;

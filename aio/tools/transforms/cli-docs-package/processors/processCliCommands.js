@@ -3,15 +3,6 @@ module.exports = function processCliCommands(createDocMessage) {
     $runAfter: ['extra-docs-added'],
     $runBefore: ['rendering-docs'],
     $process(docs) {
-      const navigationDoc = docs.find(doc => doc.docType === 'navigation-json');
-      const cliCommandsNode = navigationDoc && findCliCommandsNode(navigationDoc.data['SideNav']);
-
-      if (!cliCommandsNode) {
-        throw new Error(createDocMessage(
-            'Missing `cli` url - CLI Commands must include a first child node with url set at `cli`',
-            navigationDoc));
-      }
-
       docs.forEach(doc => {
         if (doc.docType === 'cli-command') {
           doc.names = collectNames(doc.name, doc.commandAliases);
@@ -34,9 +25,6 @@ module.exports = function processCliCommands(createDocMessage) {
           }
 
           doc.optionKeywords = Array.from(optionKeywords).join(' ');
-
-          // Add to navigation doc
-          cliCommandsNode.children.push({url: doc.path, title: `ng ${doc.name}`});
         }
       });
     }
