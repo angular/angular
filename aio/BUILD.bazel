@@ -6,7 +6,6 @@ load(":local_packages_util.bzl", "link_local_packages", "substitute_local_packag
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load("//aio/scripts:local_server_test.bzl", "local_server_test")
 load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
-load(":aio_targets.bzl", "aio_test")
 load("@bazel_skylib//lib:collections.bzl", "collections")
 
 exports_files([
@@ -129,8 +128,6 @@ APPLICATION_FILES = [
     "tsconfig.json",
     "tsconfig.worker.json",
     "security-exemptions.json",
-    "//aio/src/assets",
-    "//aio/src/assets/js",
 ] + glob(
     ["src/**/*"],
     exclude = [
@@ -147,7 +144,6 @@ APPLICATION_DEPS = [
     ":dgeni",
     ":stackblitz",
     ":example-zips",
-    "//aio/src/generated:ngsw-config",
     "@aio_npm//@angular-devkit/build-angular",
     "@aio_npm//@angular-eslint/builder",
     "@aio_npm//@angular/animations",
@@ -271,34 +267,6 @@ copy_to_directory(
         "build-app": "",
     },
     visibility = ["//aio/scripts/deploy-to-firebase:__pkg__"],
-)
-
-TEST_DATA = TEST_FILES + select({
-    ":aio_local_deps": substitute_local_package_deps(TEST_DEPS),
-    "//conditions:default": TEST_DEPS,
-})
-
-aio_test(
-    name = "test",
-    args = [
-        "site:test",
-        "--no-watch",
-    ],
-    data = TEST_DATA,
-)
-
-aio_test(
-    name = "test-and-watch",
-    args = [
-        "site:test",
-        "--watch",
-        "--poll=%d" % ARCHITECT_POLL_MS,
-    ],
-    data = TEST_DATA,
-    tags = [
-        "ibazel_notify_changes",
-        "manual",
-    ],
 )
 
 architect_test(
