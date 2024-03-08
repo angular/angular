@@ -8,7 +8,8 @@
 
 import {ConstantPool} from '../../../constant_pool';
 import * as o from '../../../output/output_ast';
-import {R3DeferMetadata} from '../../../render3/view/api';
+import * as t from '../../../render3/r3_ast';
+import {R3DeferBlockMetadata} from '../../../render3/view/api';
 import * as ir from '../ir';
 
 export enum CompilationJobKind {
@@ -66,7 +67,8 @@ export class ComponentCompilationJob extends CompilationJob {
   constructor(
       componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode,
       readonly relativeContextFilePath: string, readonly i18nUseExternalIds: boolean,
-      readonly deferMeta: R3DeferMetadata, readonly allDeferrableDepsFn: o.ReadVarExpr|null) {
+      readonly deferBlocksMeta: Map<t.DeferredBlock, R3DeferBlockMetadata>,
+      readonly allDeferrableDepsFn: o.ReadVarExpr|null) {
     super(componentName, pool, compatibility);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);

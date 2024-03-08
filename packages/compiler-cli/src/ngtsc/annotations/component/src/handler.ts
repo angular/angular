@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, BoundTarget, compileClassDebugInfo, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DeferBlockDepsEmitMode, DomElementSchemaRegistry, ExternalExpr, FactoryTarget, makeBindingParser, outputAst as o, R3ComponentMetadata, R3DeferMetadata, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, ViewEncapsulation} from '@angular/compiler';
+import {AnimationTriggerNames, BoundTarget, compileClassDebugInfo, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DeferBlockDepsEmitMode, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, makeBindingParser, R3ComponentMetadata, R3DeferBlockMetadata, R3DeferBlockTemplateDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstDeferredTrigger, TmplAstElement, ViewEncapsulation, WrappedNodeExpr} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -32,7 +32,7 @@ import {extractDirectiveMetadata, parseDirectiveStyles} from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
 
 import {checkCustomElementSelectorForErrors, makeCyclicImportInfo} from './diagnostics';
-import {ComponentAnalysisData, ComponentResolutionData, DeferredComponentDependency} from './metadata';
+import {ComponentAnalysisData, ComponentResolutionData} from './metadata';
 import {_extractTemplateStyleUrls, extractComponentStyleUrls, extractStyleResources, extractTemplate, makeResourceNotFoundError, ParsedTemplateWithSource, parseTemplateDeclaration, preloadAndParseTemplate, ResourceTypeForDiagnostics, StyleUrlMeta, transformDecoratorResources} from './resources';
 import {ComponentSymbol} from './symbol';
 import {animationTriggerResolver, collectAnimationNames, validateAndFlattenComponentImports} from './util';
@@ -245,19 +245,19 @@ export class ComponentDecoratorHandler implements
              resolveEncapsulationEnumValueLocally(component.get('encapsulation'))) ??
         ViewEncapsulation.Emulated;
 
-    let changeDetection: number|o.Expression|null = null;
+    let changeDetection: number|Expression|null = null;
     if (this.compilationMode !== CompilationMode.LOCAL) {
       changeDetection =
           resolveEnumValue(this.evaluator, component, 'changeDetection', 'ChangeDetectionStrategy');
     } else if (component.has('changeDetection')) {
-      changeDetection = new o.WrappedNodeExpr(component.get('changeDetection')!);
+      changeDetection = new WrappedNodeExpr(component.get('changeDetection')!);
     }
 
-    let animations: o.Expression|null = null;
+    let animations: Expression|null = null;
     let animationTriggerNames: AnimationTriggerNames|null = null;
     if (component.has('animations')) {
       const animationExpression = component.get('animations')!;
-      animations = new o.WrappedNodeExpr(animationExpression);
+      animations = new WrappedNodeExpr(animationExpression);
       const animationsValue =
           this.evaluator.evaluate(animationExpression, animationTriggerResolver);
       animationTriggerNames = {includesDynamicAnimations: false, staticTriggerNames: []};
@@ -281,13 +281,13 @@ export class ComponentDecoratorHandler implements
     // we can distinguish where an error is coming from when logging the diagnostics in `resolve`.
     let viewProvidersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
     let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
-    let wrappedViewProviders: o.Expression|null = null;
+    let wrappedViewProviders: Expression|null = null;
 
     if (component.has('viewProviders')) {
       const viewProviders = component.get('viewProviders')!;
       viewProvidersRequiringFactory =
           resolveProvidersRequiringFactory(viewProviders, this.reflector, this.evaluator);
-      wrappedViewProviders = new o.WrappedNodeExpr(
+      wrappedViewProviders = new WrappedNodeExpr(
           this.annotateForClosureCompiler ? wrapFunctionExpressionsInParens(viewProviders) :
                                             viewProviders);
     }
@@ -520,7 +520,7 @@ export class ComponentDecoratorHandler implements
           viewProviders: wrappedViewProviders,
           i18nUseExternalIds: this.i18nUseExternalIds,
           relativeContextFilePath,
-          rawImports: rawImports !== null ? new o.WrappedNodeExpr(rawImports) : undefined,
+          rawImports: rawImports !== null ? new WrappedNodeExpr(rawImports) : undefined,
           useTemplatePipeline: this.useTemplatePipeline,
         },
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, inputs, this.reflector),
@@ -710,10 +710,10 @@ export class ComponentDecoratorHandler implements
         declarationListEmitMode: (!analysis.meta.isStandalone || analysis.rawImports !== null) ?
             DeclarationListEmitMode.RuntimeResolved :
             DeclarationListEmitMode.Direct,
-        deferBlockDependencies: this.locateDeferBlocksWithoutScope(analysis.template),
+        deferBlocks: this.locateDeferBlocksWithoutScope(analysis.template),
         deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerComponent,
         deferrableDeclToImportDecl: new Map(),
-        deferrableTypes: analysis.explicitlyDeferredTypes ?? new Map(),
+        deferrableTypes: new Map(),
       };
 
       if (this.localCompilationExtraImportsTracker === null) {
@@ -726,7 +726,7 @@ export class ComponentDecoratorHandler implements
       data = {
         declarations: EMPTY_ARRAY,
         declarationListEmitMode: DeclarationListEmitMode.Direct,
-        deferBlockDependencies: new Map(),
+        deferBlocks: new Map(),
         deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
         deferrableDeclToImportDecl: new Map(),
         deferrableTypes: new Map(),
@@ -910,7 +910,8 @@ export class ComponentDecoratorHandler implements
 
       // Process information related to defer blocks
       if (this.compilationMode !== CompilationMode.LOCAL) {
-        this.resolveDeferBlocks(node, deferBlocks, declarations, data, analysis, eagerlyUsed);
+        this.resolveDeferBlocks(
+            node, deferBlocks, declarations, data, analysis, eagerlyUsed, bound);
       }
 
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
@@ -1027,7 +1028,7 @@ export class ComponentDecoratorHandler implements
     } else {
       // If there is no scope, we can still use the binder to retrieve *some* information about the
       // deferred blocks.
-      data.deferBlockDependencies = this.locateDeferBlocksWithoutScope(metadata.template);
+      data.deferBlocks = this.locateDeferBlocksWithoutScope(metadata.template);
     }
 
     // Run diagnostics only in global mode.
@@ -1047,7 +1048,7 @@ export class ComponentDecoratorHandler implements
       }
 
       if (analysis.providersRequiringFactory !== null &&
-          analysis.meta.providers instanceof o.WrappedNodeExpr) {
+          analysis.meta.providers instanceof WrappedNodeExpr) {
         const providerDiagnostics = getProviderDiagnostics(
             analysis.providersRequiringFactory, analysis.meta.providers!.node,
             this.injectableRegistry);
@@ -1055,7 +1056,7 @@ export class ComponentDecoratorHandler implements
       }
 
       if (analysis.viewProvidersRequiringFactory !== null &&
-          analysis.meta.viewProviders instanceof o.WrappedNodeExpr) {
+          analysis.meta.viewProviders instanceof WrappedNodeExpr) {
         const viewProviderDiagnostics = getProviderDiagnostics(
             analysis.viewProvidersRequiringFactory, analysis.meta.viewProviders!.node,
             this.injectableRegistry);
@@ -1144,7 +1145,7 @@ export class ComponentDecoratorHandler implements
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      deferrableTypes,
       useTemplatePipeline,
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
@@ -1175,7 +1176,7 @@ export class ComponentDecoratorHandler implements
       sourceUrl: analysis.template.declaration.resolvedTemplateUrl,
       isInline: analysis.template.declaration.isInline,
       inlineTemplateLiteralExpression: analysis.template.sourceMapping.type === 'direct' ?
-          new o.WrappedNodeExpr(analysis.template.sourceMapping.node) :
+          new WrappedNodeExpr(analysis.template.sourceMapping.node) :
           null,
     };
 
@@ -1183,7 +1184,6 @@ export class ComponentDecoratorHandler implements
     const meta: R3ComponentMetadata<R3TemplateDependencyMetadata> = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
       useTemplatePipeline
     };
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
@@ -1213,7 +1213,7 @@ export class ComponentDecoratorHandler implements
     const meta = {
       ...analysis.meta,
       ...resolution,
-      defer: this.compileDeferBlocks(resolution),
+      deferrableTypes: deferrableTypes ?? new Map(),
       useTemplatePipeline,
     } as R3ComponentMetadata<R3TemplateDependency>;
 
@@ -1240,15 +1240,18 @@ export class ComponentDecoratorHandler implements
    * For example, this happens in the local compilation mode.
    */
   private locateDeferBlocksWithoutScope(template: ComponentTemplate):
-      Map<TmplAstDeferredBlock, DeferredComponentDependency[]> {
-    const deferBlocks = new Map<TmplAstDeferredBlock, DeferredComponentDependency[]>();
+      Map<TmplAstDeferredBlock, R3DeferBlockMetadata> {
+    const deferBlocks = new Map<TmplAstDeferredBlock, R3DeferBlockMetadata>();
     const directivelessBinder = new R3TargetBinder<DirectiveMeta>(new SelectorMatcher());
     const bound = directivelessBinder.bind({template: template.nodes});
     const deferredBlocks = bound.getDeferBlocks();
+    const triggerElements = new Map<TmplAstDeferredTrigger, TmplAstElement|null>();
 
     for (const block of deferredBlocks) {
+      this.resolveDeferTriggers(block, block.triggers, bound, triggerElements);
+      this.resolveDeferTriggers(block, block.prefetchTriggers, bound, triggerElements);
       // We can't determine the dependencies without a scope so we leave them empty.
-      deferBlocks.set(block, []);
+      deferBlocks.set(block, {deps: [], triggerElements});
     }
     return deferBlocks;
   }
@@ -1262,10 +1265,14 @@ export class ComponentDecoratorHandler implements
     // Go over all dependencies of all defer blocks and update the value of
     // the `isDeferrable` flag and the `importPath` to reflect the current
     // state after visiting all components during the `resolve` phase.
-    for (const [_, deps] of resolution.deferBlockDependencies) {
-      for (const deferBlockDep of deps) {
-        const importDecl =
-            resolution.deferrableDeclToImportDecl.get(deferBlockDep.type.node) ?? null;
+    for (const [_, metadata] of resolution.deferBlocks) {
+      for (const deferBlockDep of metadata.deps) {
+        const dep = deferBlockDep as unknown as {
+          classDeclaration: ts.ClassDeclaration;
+        };
+        const classDecl = dep.classDeclaration as unknown as Expression;
+        const importDecl = (resolution.deferrableDeclToImportDecl.get(classDecl) ??
+                            null) as (ts.ImportDeclaration | null);
         if (importDecl !== null && this.deferredSymbolTracker.canDefer(importDecl)) {
           deferBlockDep.isDeferrable = true;
           deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
@@ -1313,7 +1320,7 @@ export class ComponentDecoratorHandler implements
    * @returns a `Cycle` object if a cycle would be created, otherwise `null`.
    */
   private _checkForCyclicImport(
-      importedFile: ImportedFile, expr: o.Expression, origin: ts.SourceFile): Cycle|null {
+      importedFile: ImportedFile, expr: Expression, origin: ts.SourceFile): Cycle|null {
     const imported = resolveImportedFile(this.moduleResolver, importedFile, expr, origin);
     if (imported === null) {
       return null;
@@ -1323,7 +1330,7 @@ export class ComponentDecoratorHandler implements
   }
 
   private maybeRecordSyntheticImport(
-      importedFile: ImportedFile, expr: o.Expression, origin: ts.SourceFile): void {
+      importedFile: ImportedFile, expr: Expression, origin: ts.SourceFile): void {
     const imported = resolveImportedFile(this.moduleResolver, importedFile, expr, origin);
     if (imported === null) {
       return;
@@ -1343,6 +1350,7 @@ export class ComponentDecoratorHandler implements
       resolutionData: ComponentResolutionData,
       analysisData: Readonly<ComponentAnalysisData>,
       eagerlyUsedDecls: Set<ClassDeclaration>,
+      componentBoundTarget: BoundTarget<DirectiveMeta>,
   ) {
     // Collect all deferred decls from all defer blocks from the entire template
     // to intersect with the information from the `imports` field of a particular
@@ -1352,14 +1360,9 @@ export class ComponentDecoratorHandler implements
     for (const [deferBlock, bound] of deferBlocks) {
       const usedDirectives = new Set(bound.getEagerlyUsedDirectives().map(d => d.ref.node));
       const usedPipes = new Set(bound.getEagerlyUsedPipes());
-      let deps: DeferredComponentDependency[];
-
-      if (resolutionData.deferBlockDependencies.has(deferBlock)) {
-        deps = resolutionData.deferBlockDependencies.get(deferBlock)!;
-      } else {
-        deps = [];
-        resolutionData.deferBlockDependencies.set(deferBlock, deps);
-      }
+      const deps: Array<R3DeferBlockTemplateDependency&{classDeclaration: ts.ClassDeclaration}> =
+          [];
+      const triggerElements = new Map<TmplAstDeferredTrigger, TmplAstElement|null>();
 
       for (const decl of Array.from(deferrableDecls.values())) {
         if (decl.kind === R3TemplateDependencyKind.NgModule) {
@@ -1376,14 +1379,23 @@ export class ComponentDecoratorHandler implements
         // `isDeferrable`, `importPath` and `isDefaultImport` will be
         // added later during the `compile` step.
         deps.push({
-          type: decl.ref,
-          symbolName: decl.ref.node.name.text,
+          type: decl.type as WrappedNodeExpr<ts.Identifier>,
+          symbolName: decl.ref.node.name.escapedText as string,
           isDeferrable: false,
           importPath: null,
           isDefaultImport: false,
+          // Extra info to match corresponding import during the `compile` phase.
+          classDeclaration: decl.ref.node as ts.ClassDeclaration,
         });
         allDeferredDecls.add(decl.ref.node);
       }
+
+      this.resolveDeferTriggers(
+          deferBlock, deferBlock.triggers, componentBoundTarget, triggerElements);
+      this.resolveDeferTriggers(
+          deferBlock, deferBlock.prefetchTriggers, componentBoundTarget, triggerElements);
+
+      resolutionData.deferBlocks.set(deferBlock, {deps, triggerElements});
     }
 
     // For standalone components with the `imports` and `deferredImports` fields -
@@ -1471,78 +1483,23 @@ export class ComponentDecoratorHandler implements
 
       // Keep track of how this class made it into the current source file
       // (which ts.ImportDeclaration was used for this symbol).
-      resolutionData.deferrableDeclToImportDecl.set(decl.node, imp.node);
+      resolutionData.deferrableDeclToImportDecl.set(
+          decl.node as unknown as Expression, imp.node as unknown as Expression);
 
       this.deferredSymbolTracker.markAsDeferrableCandidate(
           node, imp.node, componentClassDecl, isDeferredImport);
     }
   }
 
-  private compileDeferBlocks(resolution: Readonly<Partial<ComponentResolutionData>>):
-      R3DeferMetadata {
-    if (resolution.deferBlockDepsEmitMode === DeferBlockDepsEmitMode.PerBlock) {
-      if (!resolution.deferBlockDependencies) {
-        throw new Error(
-            'Internal error: deferBlockDependencies must be present when compiling in PerBlock mode');
-      }
-
-      const blocks = new Map<TmplAstDeferredBlock, o.ArrowFunctionExpr|null>();
-
-      for (const [block, dependencies] of resolution.deferBlockDependencies) {
-        const depExpressions: o.Expression[] = [];
-        for (const dep of dependencies) {
-          if (dep.isDeferrable) {
-            // Callback function, e.g. `m () => m.MyCmp;`.
-            const innerFn = o.arrowFn(
-                // Default imports are always accessed through the `default` property.
-                [new o.FnParam('m', o.DYNAMIC_TYPE)],
-                o.variable('m').prop(dep.isDefaultImport ? 'default' : dep.symbolName));
-
-            // Dynamic import, e.g. `import('./a').then(...)`.
-            const importExpr =
-                (new o.DynamicImportExpr(dep.importPath!)).prop('then').callFn([innerFn]);
-            depExpressions.push(importExpr);
-          } else {
-            // Non-deferrable symbol, just use a reference to the type.
-            depExpressions.push(o.variable(dep.symbolName));
-          }
-        }
-        blocks.set(
-            block,
-            depExpressions.length === 0 ? null : o.arrowFn([], o.literalArr(depExpressions)));
-      }
-
-      return {mode: DeferBlockDepsEmitMode.PerBlock, blocks};
-    }
-
-    if (resolution.deferBlockDepsEmitMode === DeferBlockDepsEmitMode.PerComponent) {
-      if (!resolution.deferBlockDependencies || !resolution.deferrableTypes) {
-        throw new Error(
-            'Internal error: deferBlockDependencies and deferrableTypes must be present in PerComponent mode');
-      }
-
-      // This defer block has deps for which we need to generate dynamic imports.
-      const depExpressions: o.Expression[] = [];
-
-      for (const [symbolName, {importPath, isDefaultImport}] of resolution.deferrableTypes) {
-        // Callback function, e.g. `m () => m.MyCmp;`.
-        const innerFn = o.arrowFn(
-            [new o.FnParam('m', o.DYNAMIC_TYPE)],
-            o.variable('m').prop(isDefaultImport ? 'default' : symbolName));
-
-        // Dynamic import, e.g. `import('./a').then(...)`.
-        const importExpr = (new o.DynamicImportExpr(importPath)).prop('then').callFn([innerFn]);
-        depExpressions.push(importExpr);
-      }
-
-      return {
-        mode: DeferBlockDepsEmitMode.PerComponent,
-        dependenciesFn: depExpressions.length === 0 ? null :
-                                                      o.arrowFn([], o.literalArr(depExpressions))
-      };
-    }
-
-    throw new Error(`Invalid deferBlockDepsEmitMode. Cannot compile deferred block metadata.`);
+  /** Resolves the triggers of the defer block to the elements that they're pointing to. */
+  private resolveDeferTriggers(
+      block: TmplAstDeferredBlock, triggers: TmplAstDeferredBlockTriggers,
+      componentBoundTarget: BoundTarget<DirectiveMeta>,
+      triggerElements: Map<TmplAstDeferredTrigger, TmplAstElement|null>): void {
+    Object.keys(triggers).forEach(key => {
+      const trigger = triggers[key as keyof TmplAstDeferredBlockTriggers]!;
+      triggerElements.set(trigger, componentBoundTarget.getDeferredTriggerTarget(block, trigger));
+    });
   }
 }
 
@@ -1589,8 +1546,8 @@ function removeDeferrableTypesFromComponentDecorator(
   if (analysis.classMetadata) {
     const deferrableSymbols = new Set(deferrableTypes.keys());
     const rewrittenDecoratorsNode = removeIdentifierReferences(
-        (analysis.classMetadata.decorators as o.WrappedNodeExpr<ts.Node>).node, deferrableSymbols);
-    analysis.classMetadata.decorators = new o.WrappedNodeExpr(rewrittenDecoratorsNode);
+        (analysis.classMetadata.decorators as WrappedNodeExpr<ts.Node>).node, deferrableSymbols);
+    analysis.classMetadata.decorators = new WrappedNodeExpr(rewrittenDecoratorsNode);
   }
 }
 
