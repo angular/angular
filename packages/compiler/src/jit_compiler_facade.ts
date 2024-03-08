@@ -11,17 +11,17 @@ import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/defaults';
-import {ArrowFunctionExpr, DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
+import {DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
-import {DeferredBlock} from './render3/r3_ast';
+import {DeferredBlock, DeferredBlockTriggers, DeferredTrigger, Element} from './render3/r3_ast';
 import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata} from './render3/r3_factory';
 import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3NgModuleMetadataKind, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DeferMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DeferBlockMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import type {BoundTarget} from './render3/view/t2_api';
 import {R3TargetBinder} from './render3/view/t2_binder';
@@ -182,7 +182,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       facade: R3ComponentMetadataFacade): any {
     // Parse the template and check for errors.
-    const {template, interpolation, defer} = parseJitTemplate(
+    const {template, interpolation, deferBlocks} = parseJitTemplate(
         facade.template, facade.name, sourceMapUrl, facade.preserveWhitespaces,
         facade.interpolation);
 
@@ -194,7 +194,10 @@ export class CompilerFacadeImpl implements CompilerFacade {
       template,
       declarations: facade.declarations.map(convertDeclarationFacadeToMetadata),
       declarationListEmitMode: DeclarationListEmitMode.Direct,
-      defer,
+      deferBlocks,
+      deferrableTypes: new Map(),
+      deferrableDeclToImportDecl: new Map(),
+      deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
 
       styles: [...facade.styles, ...template.styles],
       encapsulation: facade.encapsulation,
@@ -444,7 +447,7 @@ function convertOpaqueValuesToExpressions(obj: {[key: string]: OpaqueValue}):
 function convertDeclareComponentFacadeToMetadata(
     decl: R3DeclareComponentFacade, typeSourceSpan: ParseSourceSpan,
     sourceMapUrl: string): R3ComponentMetadata<R3TemplateDependencyMetadata> {
-  const {template, interpolation, defer} = parseJitTemplate(
+  const {template, interpolation, deferBlocks} = parseJitTemplate(
       decl.template, decl.type.name, sourceMapUrl, decl.preserveWhitespaces ?? false,
       decl.interpolation);
 
@@ -481,7 +484,10 @@ function convertDeclareComponentFacadeToMetadata(
     viewProviders: decl.viewProviders !== undefined ? new WrappedNodeExpr(decl.viewProviders) :
                                                       null,
     animations: decl.animations !== undefined ? new WrappedNodeExpr(decl.animations) : null,
-    defer,
+    deferBlocks,
+    deferrableTypes: new Map(),
+    deferrableDeclToImportDecl: new Map(),
+    deferBlockDepsEmitMode: DeferBlockDepsEmitMode.PerBlock,
 
     changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
@@ -556,7 +562,7 @@ function parseJitTemplate(
   return {
     template: parsed,
     interpolation: interpolationConfig,
-    defer: createR3DeferMetadata(boundTarget)
+    deferBlocks: createR3DeferredMetadata(boundTarget)
   };
 }
 
@@ -627,17 +633,31 @@ function createR3DependencyMetadata(
   return {token, attributeNameType, host, optional, self, skipSelf};
 }
 
-function createR3DeferMetadata(boundTarget: BoundTarget<any>): R3DeferMetadata {
+function createR3DeferredMetadata(boundTarget: BoundTarget<any>):
+    Map<DeferredBlock, R3DeferBlockMetadata> {
   const deferredBlocks = boundTarget.getDeferBlocks();
-  const blocks = new Map<DeferredBlock, ArrowFunctionExpr|null>();
+  const meta = new Map<DeferredBlock, R3DeferBlockMetadata>();
 
   for (const block of deferredBlocks) {
-    // TODO: leaving dependency function empty in JIT mode for now,
-    // to be implemented as one of the next steps.
-    blocks.set(block, null);
+    const triggerElements = new Map<DeferredTrigger, Element>();
+
+    resolveDeferTriggers(block, block.triggers, boundTarget, triggerElements);
+    resolveDeferTriggers(block, block.prefetchTriggers, boundTarget, triggerElements);
+
+    // TODO: leaving `deps` empty in JIT mode for now, to be implemented as one of the next steps.
+    meta.set(block, {deps: [], triggerElements});
   }
 
-  return {mode: DeferBlockDepsEmitMode.PerBlock, blocks};
+  return meta;
+}
+
+function resolveDeferTriggers(
+    block: DeferredBlock, triggers: DeferredBlockTriggers, boundTarget: BoundTarget<any>,
+    triggerElements: Map<DeferredTrigger, Element|null>): void {
+  Object.keys(triggers).forEach(key => {
+    const trigger = triggers[key as keyof DeferredBlockTriggers]!;
+    triggerElements.set(trigger, boundTarget.getDeferredTriggerTarget(block, trigger));
+  });
 }
 
 function extractHostBindings(

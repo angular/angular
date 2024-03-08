@@ -14,7 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
-import {DeferBlockDepsEmitMode, R3DeferMetadata} from '../../../render3/view/api';
+import {R3DeferBlockMetadata} from '../../../render3/view/api';
 import {icuFromI18nMessage, isSingleI18nIcu} from '../../../render3/view/i18n/util';
 import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
 import {BindingParser} from '../../../template_parser/binding_parser';
@@ -38,11 +38,12 @@ const NG_TEMPLATE_TAG_NAME = 'ng-template';
  */
 export function ingestComponent(
     componentName: string, template: t.Node[], constantPool: ConstantPool,
-    relativeContextFilePath: string, i18nUseExternalIds: boolean, deferMeta: R3DeferMetadata,
+    relativeContextFilePath: string, i18nUseExternalIds: boolean,
+    deferBlocksMeta: Map<t.DeferredBlock, R3DeferBlockMetadata>,
     allDeferrableDepsFn: o.ReadVarExpr|null): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
       componentName, constantPool, compatibilityMode, relativeContextFilePath, i18nUseExternalIds,
-      deferMeta, allDeferrableDepsFn);
+      deferBlocksMeta, allDeferrableDepsFn);
   ingestNodes(job.root, template);
   return job;
 }
@@ -442,14 +443,9 @@ function ingestDeferView(
 }
 
 function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock): void {
-  let ownResolverFn: o.ArrowFunctionExpr|null = null;
-
-  if (unit.job.deferMeta.mode === DeferBlockDepsEmitMode.PerBlock) {
-    if (!unit.job.deferMeta.blocks.has(deferBlock)) {
-      throw new Error(
-          `AssertionError: unable to find a dependency function for this deferred block`);
-    }
-    ownResolverFn = unit.job.deferMeta.blocks.get(deferBlock) ?? null;
+  const blockMeta = unit.job.deferBlocksMeta.get(deferBlock);
+  if (blockMeta === undefined) {
+    throw new Error(`AssertionError: unable to find metadata for deferred block`);
   }
 
   // Generate the defer main view and all secondary views.
@@ -468,7 +464,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
   // Create the main defer op, and ops for all secondary views.
   const deferXref = unit.job.allocateXrefId();
   const deferOp = ir.createDeferOp(
-      deferXref, main.xref, main.handle, ownResolverFn, unit.job.allDeferrableDepsFn,
+      deferXref, main.xref, main.handle, blockMeta, unit.job.allDeferrableDepsFn,
       deferBlock.sourceSpan);
   deferOp.placeholderView = placeholder?.xref ?? null;
   deferOp.placeholderSlot = placeholder?.handle ?? null;

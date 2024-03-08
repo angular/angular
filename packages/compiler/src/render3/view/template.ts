@@ -25,6 +25,7 @@ import {ParseError, ParseSourceSpan, sanitizeIdentifier} from '../../parse_util'
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {isIframeSecuritySensitiveAttr} from '../../schema/dom_security_schema';
 import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
+import {CssSelector} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error, partitionArray} from '../../util';
 import * as t from '../r3_ast';
@@ -32,6 +33,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
+import {R3DeferBlockMetadata} from './api';
 import {I18nContext} from './i18n/context';
 import {createGoogleGetMsgStatements} from './i18n/get_msg_utils';
 import {createLocalizeStatements} from './i18n/localize_utils';
@@ -248,7 +250,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private templateIndex: number|null, private templateName: string|null,
       private _namespace: o.ExternalReference, relativeContextFilePath: string,
       private i18nUseExternalIds: boolean,
+      private deferBlocks: Map<t.DeferredBlock, R3DeferBlockMetadata>,
       private elementLocations: Map<t.Element, {index: number, level: number}>,
+      private allDeferrableDepsFn: o.ReadVarExpr|null,
       private _constants: ComponentDefConsts = createComponentDefConsts()) {
     this._bindingScope = parentBindingScope.nestedScope(level);
 
@@ -968,8 +972,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Create the template function
     const visitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n, index, name,
-        this._namespace, this.fileBasedI18nSuffix, this.i18nUseExternalIds, this.elementLocations,
-        this._constants);
+        this._namespace, this.fileBasedI18nSuffix, this.i18nUseExternalIds, this.deferBlocks,
+        this.elementLocations, this.allDeferrableDepsFn, this._constants);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -1323,9 +1327,192 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
-    throw new Error(
-        'Deferred blocks are no longer supported by the obsolete TemplateDefinitionBuilder, ' +
-        'Please enable the new template compilation pipeline for your application.');
+    const {loading, placeholder, error, triggers, prefetchTriggers} = deferred;
+    const metadata = this.deferBlocks.get(deferred);
+
+    if (!metadata) {
+      throw new Error('Could not resolve `defer` block metadata. Block may need to be analyzed.');
+    }
+
+    const primaryTemplateIndex = this.createEmbeddedTemplateFn(
+        null, deferred.children, '_Defer', deferred.sourceSpan, undefined, undefined, undefined,
+        deferred.i18n);
+    const loadingIndex = loading ? this.createEmbeddedTemplateFn(
+                                       null, loading.children, '_DeferLoading', loading.sourceSpan,
+                                       undefined, undefined, undefined, loading.i18n) :
+                                   null;
+    const loadingConsts = loading ?
+        trimTrailingNulls([o.literal(loading.minimumTime), o.literal(loading.afterTime)]) :
+        null;
+
+    const placeholderIndex = placeholder ?
+        this.createEmbeddedTemplateFn(
+            null, placeholder.children, '_DeferPlaceholder', placeholder.sourceSpan, undefined,
+            undefined, undefined, placeholder.i18n) :
+        null;
+    const placeholderConsts = placeholder && placeholder.minimumTime !== null ?
+        // TODO(crisbeto): potentially pass the time directly instead of storing it in the `consts`
+        // since the placeholder block can only have one parameter?
+        o.literalArr([o.literal(placeholder.minimumTime)]) :
+        null;
+
+    const errorIndex = error ? this.createEmbeddedTemplateFn(
+                                   null, error.children, '_DeferError', error.sourceSpan, undefined,
+                                   undefined, undefined, error.i18n) :
+                               null;
+
+    // Note: we generate this last so the index matches the instruction order.
+    const deferredIndex = this.allocateDataSlot();
+    const depsFnName = `${this.contextName}_Defer_${deferredIndex}_DepsFn`;
+
+    // e.g. `defer(1, 0, MyComp_Defer_1_DepsFn, ...)`
+    this.creationInstruction(
+        deferred.sourceSpan, R3.defer, trimTrailingNulls([
+          o.literal(deferredIndex),
+          o.literal(primaryTemplateIndex),
+          this.allDeferrableDepsFn ?? this.createDeferredDepsFunction(depsFnName, metadata),
+          o.literal(loadingIndex),
+          o.literal(placeholderIndex),
+          o.literal(errorIndex),
+          loadingConsts?.length ? this.addToConsts(o.literalArr(loadingConsts)) : o.TYPED_NULL_EXPR,
+          placeholderConsts ? this.addToConsts(placeholderConsts) : o.TYPED_NULL_EXPR,
+          (loadingConsts?.length || placeholderConsts) ?
+              o.importExpr(R3.deferEnableTimerScheduling) :
+              o.TYPED_NULL_EXPR,
+        ]));
+
+    // Allocate an extra data slot right after a defer block slot to store
+    // instance-specific state of that defer block at runtime.
+    this.allocateDataSlot();
+
+    // Note: the triggers need to be processed *after* the various templates,
+    // otherwise pipes injecting some symbols won't work (see #52102).
+    this.createDeferTriggerInstructions(deferredIndex, triggers, metadata, false);
+    this.createDeferTriggerInstructions(deferredIndex, prefetchTriggers, metadata, true);
+  }
+
+  private createDeferredDepsFunction(name: string, metadata: R3DeferBlockMetadata) {
+    if (metadata.deps.length === 0) {
+      return o.TYPED_NULL_EXPR;
+    }
+
+    // This defer block has deps for which we need to generate dynamic imports.
+    const dependencyExp: o.Expression[] = [];
+
+    for (const deferredDep of metadata.deps) {
+      if (deferredDep.isDeferrable) {
+        // Callback function, e.g. `m () => m.MyCmp;`.
+        const innerFn = o.arrowFn(
+            [new o.FnParam('m', o.DYNAMIC_TYPE)],
+            // Default imports are always accessed through the `default` property.
+            o.variable('m').prop(deferredDep.isDefaultImport ? 'default' : deferredDep.symbolName));
+
+        // Dynamic import, e.g. `import('./a').then(...)`.
+        const importExpr =
+            (new o.DynamicImportExpr(deferredDep.importPath!)).prop('then').callFn([innerFn]);
+        dependencyExp.push(importExpr);
+      } else {
+        // Non-deferrable symbol, just use a reference to the type.
+        dependencyExp.push(deferredDep.type);
+      }
+    }
+
+    const depsFnExpr = o.arrowFn([], o.literalArr(dependencyExp));
+
+    this.constantPool.statements.push(depsFnExpr.toDeclStmt(name, o.StmtModifier.Final));
+
+    return o.variable(name);
+  }
+
+  private createDeferTriggerInstructions(
+      deferredIndex: number, triggers: t.DeferredBlockTriggers, metadata: R3DeferBlockMetadata,
+      prefetch: boolean) {
+    const {when, idle, immediate, timer, hover, interaction, viewport} = triggers;
+
+    // `deferWhen(ctx.someValue)`
+    if (when) {
+      const value = when.value.visit(this._valueConverter);
+      this.allocateBindingSlots(value);
+      this.updateInstructionWithAdvance(
+          deferredIndex, when.sourceSpan, prefetch ? R3.deferPrefetchWhen : R3.deferWhen,
+          () => this.convertPropertyBinding(value));
+    }
+
+    // Note that we generate an implicit `on idle` if the `deferred` block has no triggers.
+    // `deferOnIdle()`
+    if (idle || (!prefetch && Object.keys(triggers).length === 0)) {
+      this.creationInstruction(
+          idle?.sourceSpan || null, prefetch ? R3.deferPrefetchOnIdle : R3.deferOnIdle);
+    }
+
+    // `deferOnImmediate()`
+    if (immediate) {
+      this.creationInstruction(
+          immediate.sourceSpan, prefetch ? R3.deferPrefetchOnImmediate : R3.deferOnImmediate);
+    }
+
+    // `deferOnTimer(1337)`
+    if (timer) {
+      this.creationInstruction(
+          timer.sourceSpan, prefetch ? R3.deferPrefetchOnTimer : R3.deferOnTimer,
+          [o.literal(timer.delay)]);
+    }
+
+    // `deferOnHover(index, walkUpTimes)`
+    if (hover) {
+      this.domNodeBasedTrigger(
+          'hover', hover, metadata, prefetch ? R3.deferPrefetchOnHover : R3.deferOnHover);
+    }
+
+    // `deferOnInteraction(index, walkUpTimes)`
+    if (interaction) {
+      this.domNodeBasedTrigger(
+          'interaction', interaction, metadata,
+          prefetch ? R3.deferPrefetchOnInteraction : R3.deferOnInteraction);
+    }
+
+    // `deferOnViewport(index, walkUpTimes)`
+    if (viewport) {
+      this.domNodeBasedTrigger(
+          'viewport', viewport, metadata,
+          prefetch ? R3.deferPrefetchOnViewport : R3.deferOnViewport);
+    }
+  }
+
+  private domNodeBasedTrigger(
+      name: string,
+      trigger: t.InteractionDeferredTrigger|t.HoverDeferredTrigger|t.ViewportDeferredTrigger,
+      metadata: R3DeferBlockMetadata, instructionRef: o.ExternalReference) {
+    const triggerEl = metadata.triggerElements.get(trigger);
+
+    // Don't generate anything if a trigger cannot be resolved.
+    // We'll have template diagnostics to surface these to users.
+    if (!triggerEl) {
+      return;
+    }
+
+    this.creationInstruction(trigger.sourceSpan, instructionRef, () => {
+      const location = this.elementLocations.get(triggerEl);
+
+      if (!location) {
+        throw new Error(
+            `Could not determine location of reference passed into ` +
+            `'${name}' trigger. Template may not have been fully analyzed.`);
+      }
+
+      // A negative depth means that the trigger is inside the placeholder.
+      // Cap it at -1 since we only care whether or not it's negative.
+      const depth = Math.max(this.level - location.level, -1);
+      const params = [o.literal(location.index)];
+
+      // The most common case should be a trigger within the view so we can omit a depth of
+      // zero. For triggers in parent views and in the placeholder we need to pass it in.
+      if (depth !== 0) {
+        params.push(o.literal(depth));
+      }
+
+      return params;
+    });
   }
 
   /**
