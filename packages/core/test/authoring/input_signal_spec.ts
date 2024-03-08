@@ -37,51 +37,61 @@ describe('input signal', () => {
   });
 
   it('should work with computed expressions', () => {
-    const signal = input(0);
-    let computedCount = 0;
-    const derived = computed(() => (computedCount++, signal() + 1000));
+    TestBed.runInInjectionContext(() => {
+      const signal = input(0);
+      let computedCount = 0;
+      const derived = computed(() => (computedCount++, signal() + 1000));
 
-    const node = signal[SIGNAL];
-    expect(derived()).toBe(1000);
-    expect(computedCount).toBe(1);
+      const node = signal[SIGNAL];
+      expect(derived()).toBe(1000);
+      expect(computedCount).toBe(1);
 
-    node.applyValueToInputSignal(node, 1);
-    expect(computedCount).toBe(1);
+      node.applyValueToInputSignal(node, 1);
+      expect(computedCount).toBe(1);
 
-    expect(derived()).toBe(1001);
-    expect(computedCount).toBe(2);
+      expect(derived()).toBe(1001);
+      expect(computedCount).toBe(2);
+    });
   });
 
   it('should capture transform for later use in framework', () => {
-    const signal = input(0, {transform: (v: number) => v + 1000});
-    const node = signal[SIGNAL];
+    TestBed.runInInjectionContext(() => {
+      const signal = input(0, {transform: (v: number) => v + 1000});
+      const node = signal[SIGNAL];
 
-    expect(node.transformFn?.(1)).toBe(1001);
+      expect(node.transformFn?.(1)).toBe(1001);
+    });
   });
 
   it('should throw if there is no value for required inputs', () => {
-    const signal = input.required();
-    const node = signal[SIGNAL];
+    TestBed.runInInjectionContext(() => {
+      const signal = input.required();
+      const node = signal[SIGNAL];
 
-    expect(() => signal()).toThrowError(/Input is required but no value is available yet\./);
+      expect(() => signal()).toThrowError(/Input is required but no value is available yet\./);
 
-    node.applyValueToInputSignal(node, 1);
-    expect(signal()).toBe(1);
+      node.applyValueToInputSignal(node, 1);
+      expect(signal()).toBe(1);
+    });
   });
 
   it('should throw if a `computed` depends on an uninitialized required input', () => {
-    const signal = input.required<number>();
-    const expr = computed(() => signal() + 1000);
-    const node = signal[SIGNAL];
+    TestBed.runInInjectionContext(() => {
+      const signal = input.required<number>();
+      const expr = computed(() => signal() + 1000);
+      const node = signal[SIGNAL];
 
-    expect(() => expr()).toThrowError(/Input is required but no value is available yet\./);
+      expect(() => expr()).toThrowError(/Input is required but no value is available yet\./);
 
-    node.applyValueToInputSignal(node, 1);
-    expect(expr()).toBe(1001);
+      node.applyValueToInputSignal(node, 1);
+      expect(expr()).toBe(1001);
+    });
   });
 
   it('should have a toString implementation', () => {
-    const signal = input(0);
-    expect(signal + '').toBe('[Input Signal: 0]');
+    TestBed.runInInjectionContext(() => {
+      const signal = input(0);
+      expect(signal + '').toBe('[Input Signal: 0]');
+    });
   });
 });

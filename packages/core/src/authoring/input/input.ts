@@ -6,17 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertInInjectionContext} from '../../di';
+
 import {createInputSignal, InputOptions, InputOptionsWithoutTransform, InputOptionsWithTransform, InputSignal, InputSignalWithTransform} from './input_signal';
 import {REQUIRED_UNSET_VALUE} from './input_signal_node';
 
 export function inputFunction<ReadT, WriteT>(
     initialValue?: ReadT,
     opts?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT|undefined, WriteT> {
+  ngDevMode && assertInInjectionContext(input);
   return createInputSignal(initialValue, opts);
 }
 
 export function inputRequiredFunction<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>):
     InputSignalWithTransform<ReadT, WriteT> {
+  ngDevMode && assertInInjectionContext(input);
   return createInputSignal(REQUIRED_UNSET_VALUE as never, opts);
 }
 

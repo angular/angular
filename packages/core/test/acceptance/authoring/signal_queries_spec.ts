@@ -31,10 +31,25 @@ describe('queries as signals', () => {
 
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBeTrue();
+    });
 
-      // non-required query results are undefined before we run creation mode on the view queries
-      const appCmpt = new AppComponent();
-      expect(appCmpt.divEl()).toBeUndefined();
+    it('should return undefined if optional query is read in the constructor', () => {
+      let result: {}|undefined = {};
+
+      @Component({
+        standalone: true,
+        template: `<div #el></div>`,
+      })
+      class AppComponent {
+        divEl = viewChild<ElementRef<HTMLDivElement>>('el');
+
+        constructor() {
+          result = this.divEl();
+        }
+      }
+
+      TestBed.createComponent(AppComponent);
+      expect(result).toBeUndefined();
     });
 
     it('should query for a required element in a template', () => {
@@ -55,11 +70,24 @@ describe('queries as signals', () => {
 
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBeTrue();
+    });
+
+    it('should throw if required query is read in the constructor', () => {
+      @Component({
+        standalone: true,
+        template: `<div #el></div>`,
+      })
+      class AppComponent {
+        divEl = viewChild.required<ElementRef<HTMLDivElement>>('el');
+
+        constructor() {
+          this.divEl();
+        }
+      }
 
       // non-required query results are undefined before we run creation mode on the view queries
-      const appCmpt = new AppComponent();
       expect(() => {
-        appCmpt.divEl();
+        TestBed.createComponent(AppComponent);
       }).toThrowError(/NG0951: Child query result is required but no value is available/);
     });
 
@@ -96,10 +124,25 @@ describe('queries as signals', () => {
       fixture.componentInstance.show = false;
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBe(1);
+    });
 
-      // non-required query results are undefined before we run creation mode on the view queries
-      const appCmpt = new AppComponent();
-      expect(appCmpt.divEls().length).toBe(0);
+    it('should return an empty array when reading children query in the constructor', () => {
+      let result: readonly ElementRef[]|undefined;
+
+      @Component({
+        standalone: true,
+        template: `<div #el></div>`,
+      })
+      class AppComponent {
+        divEls = viewChildren<ElementRef<HTMLDivElement>>('el');
+
+        constructor() {
+          result = this.divEls();
+        }
+      }
+
+      TestBed.createComponent(AppComponent);
+      expect(result).toEqual([]);
     });
 
     it('should return the same array instance when there were no changes in results', () => {
