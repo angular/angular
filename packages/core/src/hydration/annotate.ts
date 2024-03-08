@@ -19,6 +19,7 @@ import {CONTEXT, HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TView, TVIEW, TVi
 import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
+import {isI18nHydrationSupportEnabled} from './api';
 import {unsupportedProjectionOfDomNodes} from './error_handling';
 import {CONTAINERS, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
@@ -526,7 +527,8 @@ function componentUsesShadowDomEncapsulation(lView: LView): boolean {
 function annotateHostElementForHydration(
     element: RElement, lView: LView, context: HydrationContext): number|null {
   const renderer = lView[RENDERER];
-  if (hasI18n(lView) || componentUsesShadowDomEncapsulation(lView)) {
+  if ((hasI18n(lView) && !isI18nHydrationSupportEnabled()) ||
+      componentUsesShadowDomEncapsulation(lView)) {
     // Attach the skip hydration attribute if this component:
     // - either has i18n blocks, since hydrating such blocks is not yet supported
     // - or uses ShadowDom view encapsulation, since Domino doesn't support

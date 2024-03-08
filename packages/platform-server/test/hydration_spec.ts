@@ -10,7 +10,7 @@ import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, isPlatformServer, NgComponentOutlet, NgFor, NgIf, NgTemplateOutlet, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
-import {afterRender, ApplicationRef, Component, ComponentRef, ContentChildren, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument, ɵwhenStable as whenStable} from '@angular/core';
+import {afterRender, ApplicationRef, Component, ComponentRef, ContentChildren, createComponent, destroyPlatform, Directive, ElementRef, EnvironmentInjector, ErrorHandler, getPlatform, inject, Injectable, Input, NgZone, PLATFORM_ID, Provider, QueryList, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ɵsetDocument, ɵwhenStable as whenStable, ɵwithI18nHydration as withI18nHydration} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {HydrationStatus, readHydrationInfo, SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {getComponentDef} from '@angular/core/src/render3/definition';
@@ -1996,254 +1996,333 @@ describe('platform-server hydration integration', () => {
       });
     });
 
-    // Note: hydration for i18n blocks is not *yet* supported, so the tests
-    // below verify that components that use i18n are excluded from the hydration
-    // by adding the `ngSkipHydration` flag onto the component host element.
     describe('i18n', () => {
-      it('should append skip hydration flag if component uses i18n blocks', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `
+      describe('support is enabled', () => {
+        it('should not append skip hydration flag if component uses i18n blocks', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
             <div i18n>Hi!</div>
           `,
-        })
-        class SimpleComponent {
-        }
+          })
+          class SimpleComponent {
+          }
 
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
-        expect(ssrContents).toContain('<app ngskiphydration="">');
+          const providers = [withI18nHydration()] as unknown as Provider[];
+          const html = await ssr(SimpleComponent, undefined, providers);
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+        });
 
-        resetTViewsFor(SimpleComponent);
-
-        const appRef = await hydrate(html, SimpleComponent);
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
-        const clientRootNode = compRef.location.nativeElement;
-        verifyNoNodesWereClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-      });
-
-      it('should keep the skip hydration flag if component uses i18n blocks', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          host: {ngSkipHydration: 'true'},
-          template: `
-            <div i18n>Hi!</div>
-          `,
-        })
-        class SimpleComponent {
-        }
-
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
-        expect(ssrContents).toContain('<app ngskiphydration="true">');
-
-        resetTViewsFor(SimpleComponent);
-
-        const appRef = await hydrate(html, SimpleComponent);
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
-        const clientRootNode = compRef.location.nativeElement;
-        verifyNoNodesWereClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-      });
-
-      it('should append skip hydration flag if component uses i18n blocks inside embedded views',
-         async () => {
-           @Component({
-             standalone: true,
-             imports: [NgIf],
-             selector: 'app',
-             template: `
+        it('should not append skip hydration flag if component uses i18n blocks inside embedded views',
+           async () => {
+             @Component({
+               standalone: true,
+               imports: [NgIf],
+               selector: 'app',
+               template: `
                <main *ngIf="true">
                  <div *ngIf="true" i18n>Hi!</div>
                </main>
               `,
-           })
-           class SimpleComponent {
-           }
+             })
+             class SimpleComponent {
+             }
 
-           const html = await ssr(SimpleComponent);
-           const ssrContents = getAppContents(html);
-           expect(ssrContents).toContain('<app ngskiphydration="">');
+             const providers = [withI18nHydration()] as unknown as Provider[];
+             const html = await ssr(SimpleComponent, undefined, providers);
+             const ssrContents = getAppContents(html);
+             expect(ssrContents).toContain('<app ngh');
+           });
 
-           resetTViewsFor(SimpleComponent);
-
-           const appRef = await hydrate(html, SimpleComponent);
-           const compRef = getComponentRef<SimpleComponent>(appRef);
-           appRef.tick();
-
-           const clientRootNode = compRef.location.nativeElement;
-           verifyNoNodesWereClaimedForHydration(clientRootNode);
-           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-         });
-
-      it('should append skip hydration flag if component uses i18n blocks on <ng-container>s',
-         async () => {
-           @Component({
-             standalone: true,
-             selector: 'app',
-             template: `
+        it('should not append skip hydration flag if component uses i18n blocks on <ng-container>s',
+           async () => {
+             @Component({
+               standalone: true,
+               selector: 'app',
+               template: `
               <ng-container i18n>Hi!</ng-container>
             `,
-           })
-           class SimpleComponent {
-           }
+             })
+             class SimpleComponent {
+             }
 
-           const html = await ssr(SimpleComponent);
-           const ssrContents = getAppContents(html);
-           expect(ssrContents).toContain('<app ngskiphydration="">');
+             const providers = [withI18nHydration()] as unknown as Provider[];
+             const html = await ssr(SimpleComponent, undefined, providers);
+             const ssrContents = getAppContents(html);
+             expect(ssrContents).toContain('<app ngh');
+           });
 
-           resetTViewsFor(SimpleComponent);
-
-           const appRef = await hydrate(html, SimpleComponent);
-           const compRef = getComponentRef<SimpleComponent>(appRef);
-           appRef.tick();
-
-           const clientRootNode = compRef.location.nativeElement;
-           verifyNoNodesWereClaimedForHydration(clientRootNode);
-           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-         });
-
-      it('should append skip hydration flag if component uses i18n blocks (with *ngIfs on <ng-container>s)',
-         async () => {
-           @Component({
-             standalone: true,
-             imports: [CommonModule],
-             selector: 'app',
-             template: `
+        it('should not append skip hydration flag if component uses i18n blocks (with *ngIfs on <ng-container>s)',
+           async () => {
+             @Component({
+               standalone: true,
+               imports: [CommonModule],
+               selector: 'app',
+               template: `
               <ng-container *ngIf="true" i18n>Hi!</ng-container>
             `,
-           })
-           class SimpleComponent {
-           }
+             })
+             class SimpleComponent {
+             }
 
-           const html = await ssr(SimpleComponent);
-           const ssrContents = getAppContents(html);
-           expect(ssrContents).toContain('<app ngskiphydration="">');
-
-           resetTViewsFor(SimpleComponent);
-
-           const appRef = await hydrate(html, SimpleComponent);
-           const compRef = getComponentRef<SimpleComponent>(appRef);
-           appRef.tick();
-
-           const clientRootNode = compRef.location.nativeElement;
-           verifyNoNodesWereClaimedForHydration(clientRootNode);
-           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-         });
-
-      it('should *not* throw when i18n attributes are used', async () => {
-        @Component({
-          standalone: true,
-          selector: 'app',
-          template: `
-              <div i18n-title title="Hello world">Hi!</div>
-            `,
-        })
-        class SimpleComponent {
-        }
-
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
-
-        expect(ssrContents).toContain('<app ngh');
-
-        resetTViewsFor(SimpleComponent);
-
-        const appRef = await hydrate(html, SimpleComponent);
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
-
-        const clientRootNode = compRef.location.nativeElement;
-        verifyAllNodesClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+             const providers = [withI18nHydration()] as unknown as Provider[];
+             const html = await ssr(SimpleComponent, undefined, providers);
+             const ssrContents = getAppContents(html);
+             expect(ssrContents).toContain('<app ngh');
+           });
       });
 
-      it('should *not* throw when i18n is used in nested component ' +
-             'excluded using `ngSkipHydration`',
-         async () => {
-           @Component({
-             standalone: true,
-             selector: 'nested',
-             template: `
+      // Note: hydration for i18n blocks is not *yet* fully supported, so the tests
+      // below verify that components that use i18n are excluded from the hydration
+      // by adding the `ngSkipHydration` flag onto the component host element.
+      describe('support is disabled', () => {
+        it('should append skip hydration flag if component uses i18n blocks', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+            <div i18n>Hi!</div>
+          `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngskiphydration="">');
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyNoNodesWereClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should keep the skip hydration flag if component uses i18n blocks', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            host: {ngSkipHydration: 'true'},
+            template: `
+            <div i18n>Hi!</div>
+          `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngskiphydration="true">');
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyNoNodesWereClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should append skip hydration flag if component uses i18n blocks inside embedded views',
+           async () => {
+             @Component({
+               standalone: true,
+               imports: [NgIf],
+               selector: 'app',
+               template: `
+               <main *ngIf="true">
+                 <div *ngIf="true" i18n>Hi!</div>
+               </main>
+              `,
+             })
+             class SimpleComponent {
+             }
+
+             const html = await ssr(SimpleComponent);
+             const ssrContents = getAppContents(html);
+             expect(ssrContents).toContain('<app ngskiphydration="">');
+
+             resetTViewsFor(SimpleComponent);
+
+             const appRef = await hydrate(html, SimpleComponent);
+             const compRef = getComponentRef<SimpleComponent>(appRef);
+             appRef.tick();
+
+             const clientRootNode = compRef.location.nativeElement;
+             verifyNoNodesWereClaimedForHydration(clientRootNode);
+             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+           });
+
+        it('should append skip hydration flag if component uses i18n blocks on <ng-container>s',
+           async () => {
+             @Component({
+               standalone: true,
+               selector: 'app',
+               template: `
+              <ng-container i18n>Hi!</ng-container>
+            `,
+             })
+             class SimpleComponent {
+             }
+
+             const html = await ssr(SimpleComponent);
+             const ssrContents = getAppContents(html);
+             expect(ssrContents).toContain('<app ngskiphydration="">');
+
+             resetTViewsFor(SimpleComponent);
+
+             const appRef = await hydrate(html, SimpleComponent);
+             const compRef = getComponentRef<SimpleComponent>(appRef);
+             appRef.tick();
+
+             const clientRootNode = compRef.location.nativeElement;
+             verifyNoNodesWereClaimedForHydration(clientRootNode);
+             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+           });
+
+        it('should append skip hydration flag if component uses i18n blocks (with *ngIfs on <ng-container>s)',
+           async () => {
+             @Component({
+               standalone: true,
+               imports: [CommonModule],
+               selector: 'app',
+               template: `
+              <ng-container *ngIf="true" i18n>Hi!</ng-container>
+            `,
+             })
+             class SimpleComponent {
+             }
+
+             const html = await ssr(SimpleComponent);
+             const ssrContents = getAppContents(html);
+             expect(ssrContents).toContain('<app ngskiphydration="">');
+
+             resetTViewsFor(SimpleComponent);
+
+             const appRef = await hydrate(html, SimpleComponent);
+             const compRef = getComponentRef<SimpleComponent>(appRef);
+             appRef.tick();
+
+             const clientRootNode = compRef.location.nativeElement;
+             verifyNoNodesWereClaimedForHydration(clientRootNode);
+             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+           });
+
+        it('should *not* throw when i18n attributes are used', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `
+              <div i18n-title title="Hello world">Hi!</div>
+            `,
+          })
+          class SimpleComponent {
+          }
+
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
+
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent);
+
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
+
+        it('should *not* throw when i18n is used in nested component ' +
+               'excluded using `ngSkipHydration`',
+           async () => {
+             @Component({
+               standalone: true,
+               selector: 'nested',
+               template: `
                 <div i18n>Hi!</div>
               `,
-           })
-           class NestedComponent {
-           }
+             })
+             class NestedComponent {
+             }
 
-           @Component({
-             standalone: true,
-             imports: [NestedComponent],
-             selector: 'app',
-             template: `
+             @Component({
+               standalone: true,
+               imports: [NestedComponent],
+               selector: 'app',
+               template: `
                Nested component with i18n inside:
                <nested ngSkipHydration />
              `,
-           })
-           class SimpleComponent {
-           }
+             })
+             class SimpleComponent {
+             }
 
-           const html = await ssr(SimpleComponent);
-           const ssrContents = getAppContents(html);
+             const html = await ssr(SimpleComponent);
+             const ssrContents = getAppContents(html);
 
-           expect(ssrContents).toContain('<app ngh');
+             expect(ssrContents).toContain('<app ngh');
 
-           resetTViewsFor(SimpleComponent);
+             resetTViewsFor(SimpleComponent);
 
-           const appRef = await hydrate(html, SimpleComponent);
-           const compRef = getComponentRef<SimpleComponent>(appRef);
-           appRef.tick();
+             const appRef = await hydrate(html, SimpleComponent);
+             const compRef = getComponentRef<SimpleComponent>(appRef);
+             appRef.tick();
 
-           const clientRootNode = compRef.location.nativeElement;
-           verifyAllNodesClaimedForHydration(clientRootNode);
-           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
-         });
+             const clientRootNode = compRef.location.nativeElement;
+             verifyAllNodesClaimedForHydration(clientRootNode);
+             verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+           });
 
-      it('should exclude components with i18n from hydration automatically', async () => {
-        @Component({
-          standalone: true,
-          selector: 'nested',
-          template: `
+        it('should exclude components with i18n from hydration automatically', async () => {
+          @Component({
+            standalone: true,
+            selector: 'nested',
+            template: `
             <div i18n>Hi!</div>
           `,
-        })
-        class NestedComponent {
-        }
+          })
+          class NestedComponent {
+          }
 
-        @Component({
-          standalone: true,
-          imports: [NestedComponent],
-          selector: 'app',
-          template: `
+          @Component({
+            standalone: true,
+            imports: [NestedComponent],
+            selector: 'app',
+            template: `
             Nested component with i18n inside
             (the content of this component would be excluded from hydration):
             <nested />
           `,
-        })
-        class SimpleComponent {
-        }
+          })
+          class SimpleComponent {
+          }
 
-        const html = await ssr(SimpleComponent);
-        const ssrContents = getAppContents(html);
+          const html = await ssr(SimpleComponent);
+          const ssrContents = getAppContents(html);
 
-        expect(ssrContents).toContain('<app ngh');
+          expect(ssrContents).toContain('<app ngh');
 
-        resetTViewsFor(SimpleComponent);
+          resetTViewsFor(SimpleComponent);
 
-        const appRef = await hydrate(html, SimpleComponent);
-        const compRef = getComponentRef<SimpleComponent>(appRef);
-        appRef.tick();
+          const appRef = await hydrate(html, SimpleComponent);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
 
-        const clientRootNode = compRef.location.nativeElement;
-        verifyAllNodesClaimedForHydration(clientRootNode);
-        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        });
       });
     });
 
