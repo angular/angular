@@ -35,8 +35,6 @@ jobs:
         run: yarn install --frozen-lockfile --cwd aio
       - name: Check code lint
         run: yarn -s tslint
-      - name: Check code lint in aio
-        run: yarn -s --cwd aio lint
       - name: Check for circular dependencies
         run: yarn -s ts-circular-deps:check
       - name: Validate pull approve configuration
@@ -90,26 +88,6 @@ jobs:
       - name: Run CI tests for framework
         run: yarn test:ci
 
-  aio:
-    runs-on: ubuntu-latest-4core
-    steps:
-      - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@c83e99a12397014162531ca125c94549db55dd84
-        with:
-          cache-node-modules: true
-          node-module-directories: |
-            ./aio/node_modules
-      - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@c83e99a12397014162531ca125c94549db55dd84
-      - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@c83e99a12397014162531ca125c94549db55dd84
-      - name: Install node modules for aio
-        run: yarn install --cwd aio --frozen-lockfile
-      - name: Run AIO tests with upstream packages
-        run: yarn --cwd aio test:ci
-      - name: Check generated bundle sizes
-        run: yarn --cwd aio payload-size
-
   adev:
     runs-on:
       labels: ubuntu-latest-4core
@@ -124,72 +102,6 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Build adev to ensure it continues to work
         run: yarn bazel test --config=aio_local_deps //adev:test
-
-  aio-local:
-    runs-on:
-      labels: ubuntu-latest-4core
-    steps:
-      - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@c83e99a12397014162531ca125c94549db55dd84
-        with:
-          cache-node-modules: true
-          node-module-directories: |
-            ./aio/node_modules
-      - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@c83e99a12397014162531ca125c94549db55dd84
-      - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@c83e99a12397014162531ca125c94549db55dd84
-      - name: Install node modules
-        run: yarn install --cwd aio --frozen-lockfile
-      - name: Run AIO tests with local packages
-        run: yarn --cwd aio test-local:ci
-      - name: Check generated bundle sizes
-        run: yarn --cwd aio payload-size aio-local
-
-  aio-deploy:
-    needs: [aio]
-    if: needs.aio.result == 'success' && github.event_name == 'push'
-    runs-on:
-      labels: ubuntu-latest
-    steps:
-      - name: Initialize environment
-        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@c83e99a12397014162531ca125c94549db55dd84
-        with:
-          cache-node-modules: true
-          node-module-directories: |
-            ./aio/node_modules
-      - name: Setup Bazel
-        uses: angular/dev-infra/github-actions/bazel/setup@c83e99a12397014162531ca125c94549db55dd84
-      - name: Setup Bazel RBE
-        uses: angular/dev-infra/github-actions/bazel/configure-remote@c83e99a12397014162531ca125c94549db55dd84
-      - name: Install node modules for aio
-        run: yarn install --cwd aio --frozen-lockfile
-      - name: Set the stable branch environment variable
-        id: latest_version
-        run: |
-          echo "CI_STABLE_BRANCH=$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')" >> $GITHUB_OUTPUT
-          echo "CI_BRANCH=$(echo ${{ github.event.ref }} | cut -d '/' -f 3)" >> $GITHUB_OUTPUT
-      - name: Deploy aio to production
-        env:
-          CI_AIO_MIN_PWA_SCORE: '95'
-          CI_COMMIT: ${{ github.event.after }}
-          CI_REPO_NAME: 'angular'
-          CI_PULL_REQUEST: 'false'
-          CI_REPO_OWNER: 'angular'
-          CI_BUILD_URL: '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          CI_STABLE_BRANCH: ${{ steps.latest_version.outputs.CI_STABLE_BRANCH }}
-          CI_BRANCH: ${{ steps.latest_version.outputs.CI_BRANCH }}
-          CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN: ${{ secrets.AIO_DEPLOY_TOKEN }}
-          CI_SECRET_PAYLOAD_FIREBASE_TOKEN: ${{ secrets.AIO_PAYLOAD_TOKEN }}
-        run: yarn --cwd aio deploy-production
-      - name: Notify about failed deployment
-        if: ${{ failure() }}
-        uses: slackapi/slack-github-action@2a8087d4af6f83146a87539a70defe909fe6dbe6 # v=v1.24.0
-        with:
-          channel-id: 'C07DT5M6V,CKV1F72BG'
-          slack-message: 'Deploy to aio job failed for ${{ github.base_ref }} branch failed on build ${{ github.event.after }}: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.ANGULAR_ROBOT_SLACK_TOKEN }}
 
   publish-snapshots:
     if: github.event_name == 'push'
