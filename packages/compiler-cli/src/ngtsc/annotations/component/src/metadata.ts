@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ClassDebugInfo, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependencyMetadata, SchemaMetadata, TmplAstDeferredBlock} from '@angular/compiler';
+import {AnimationTriggerNames, DeclarationListEmitMode, DeferBlockDepsEmitMode, Expression, R3ClassDebugInfo, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependencyMetadata, SchemaMetadata, TmplAstDeferredBlock} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
@@ -125,7 +125,7 @@ export interface DeferredComponentDependency {
   /**
    * Reference to a dependency.
    */
-  type: Reference<ClassDeclaration>;
+  typeReference: Expression;
 
   /**
    * Dependency class name.
@@ -146,4 +146,7 @@ export interface DeferredComponentDependency {
    * Whether the symbol is the default export.
    */
   isDefaultImport: boolean;
+
+  /** Reference to the declaration that defines the dependency. */
+  declaration: Reference<ClassDeclaration>;
 }
