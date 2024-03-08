@@ -14,7 +14,7 @@ import {splitNsName} from '../../../ml_parser/tags';
 import * as o from '../../../output/output_ast';
 import {ParseSourceSpan} from '../../../parse_util';
 import * as t from '../../../render3/r3_ast';
-import {DeferBlockDepsEmitMode, R3DeferMetadata} from '../../../render3/view/api';
+import {DeferBlockDepsEmitMode, R3ComponentDeferMetadata} from '../../../render3/view/api';
 import {icuFromI18nMessage} from '../../../render3/view/i18n/util';
 import {DomElementSchemaRegistry} from '../../../schema/dom_element_schema_registry';
 import {BindingParser} from '../../../template_parser/binding_parser';
@@ -46,7 +46,8 @@ export function isSingleI18nIcu(meta?: i18n.I18nMeta): meta is i18n.I18nMeta&{no
  */
 export function ingestComponent(
     componentName: string, template: t.Node[], constantPool: ConstantPool,
-    relativeContextFilePath: string, i18nUseExternalIds: boolean, deferMeta: R3DeferMetadata,
+    relativeContextFilePath: string, i18nUseExternalIds: boolean,
+    deferMeta: R3ComponentDeferMetadata,
     allDeferrableDepsFn: o.ReadVarExpr|null): ComponentCompilationJob {
   const job = new ComponentCompilationJob(
       componentName, constantPool, compatibilityMode, relativeContextFilePath, i18nUseExternalIds,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, DeclarationListEmitMode, DeferBlockDepsEmitMode, Expression, R3ClassDebugInfo, R3ClassMetadata, R3ComponentMetadata, R3TemplateDependencyMetadata, SchemaMetadata, TmplAstDeferredBlock} from '@angular/compiler';
+import {AnimationTriggerNames, DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ClassDebugInfo, R3ClassMetadata, R3ComponentMetadata, R3DeferPerBlockDependency, R3DeferPerComponentDependency, R3TemplateDependencyMetadata, SchemaMetadata, TmplAstDeferredBlock} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../../imports';
@@ -76,7 +76,7 @@ export interface ComponentAnalysisData {
   /**
    * Map of symbol name -> import path for types from `@Component.deferredImports` field.
    */
-  explicitlyDeferredTypes: Map<string, {importPath: string, isDefaultImport: boolean}>|null;
+  explicitlyDeferredTypes: R3DeferPerComponentDependency[]|null;
 
   schemas: SchemaMetadata[]|null;
 
@@ -101,9 +101,10 @@ export interface ComponentResolutionData {
   deferrableDeclToImportDecl: Map<ClassDeclaration, ts.ImportDeclaration>;
 
   /**
-   * Map of `@defer` blocks -> their corresponding metadata.
+   * Map of `@defer` blocks -> their corresponding dependencies.
+   * Required to compile the defer resolver function in `PerBlock` mode.
    */
-  deferBlockDependencies: Map<TmplAstDeferredBlock, DeferredComponentDependency[]>;
+  deferPerBlockDependencies: Map<TmplAstDeferredBlock, DeferredComponentDependency[]>;
 
   /**
    * Defines how dynamic imports for deferred dependencies should be grouped:
@@ -113,40 +114,16 @@ export interface ComponentResolutionData {
   deferBlockDepsEmitMode: DeferBlockDepsEmitMode;
 
   /**
-   * Map of deferrable symbol names -> corresponding import paths.
+   * List of deferrable dependencies in the entire component. Used to compile the
+   * defer resolver function in `PerComponent` mode.
    */
-  deferrableTypes: Map<string, {importPath: string, isDefaultImport: boolean}>;
+  deferPerComponentDependencies: R3DeferPerComponentDependency[];
 }
 
 /**
  * Describes a dependency used within a `@defer` block.
  */
-export interface DeferredComponentDependency {
-  /**
-   * Reference to a dependency.
-   */
-  typeReference: Expression;
-
-  /**
-   * Dependency class name.
-   */
-  symbolName: string;
-
-  /**
-   * Whether this dependency can be defer-loaded.
-   */
-  isDeferrable: boolean;
-
-  /**
-   * Import path where this dependency is located.
-   */
-  importPath: string|null;
-
-  /**
-   * Whether the symbol is the default export.
-   */
-  isDefaultImport: boolean;
-
+export type DeferredComponentDependency = R3DeferPerBlockDependency&{
   /** Reference to the declaration that defines the dependency. */
   declaration: Reference<ClassDeclaration>;
-}
+};

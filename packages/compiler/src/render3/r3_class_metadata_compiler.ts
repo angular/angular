@@ -9,6 +9,7 @@ import * as o from '../output/output_ast';
 
 import {Identifiers as R3} from './r3_identifiers';
 import {devOnlyGuardedExpression} from './util';
+import {R3DeferPerComponentDependency} from './view/api';
 
 export type CompileClassMetadataFn = (metadata: R3ClassMetadata) => o.Expression;
 
@@ -73,16 +74,15 @@ export function compileClassMetadata(metadata: R3ClassMetadata): o.Expression {
  */
 export function compileComponentClassMetadata(
     metadata: R3ClassMetadata,
-    deferrableTypes: Map<string, {importPath: string, isDefaultImport: boolean}>|
-    null): o.Expression {
-  if (deferrableTypes === null || deferrableTypes.size === 0) {
+    deferrableTypes: R3DeferPerComponentDependency[]|null): o.Expression {
+  if (deferrableTypes === null || deferrableTypes.length === 0) {
     // If there are no deferrable symbols - just generate a regular `setClassMetadata` call.
     return compileClassMetadata(metadata);
   }
 
   const dynamicImports: o.Expression[] = [];
   const importedSymbols: o.FnParam[] = [];
-  for (const [symbolName, {importPath, isDefaultImport}] of deferrableTypes) {
+  for (const {symbolName, importPath, isDefaultImport} of deferrableTypes) {
     // e.g. `(m) => m.CmpA`
     const innerFn =
         // Default imports are always accessed through the `default` property.

@@ -21,8 +21,9 @@ import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata, R3NgModuleMetadataKind, R3SelectorScopeMode} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {createMayBeForwardRefExpression, ForwardRefHandling, getSafePropertyAccessString, MaybeForwardRefExpression, wrapReference} from './render3/util';
-import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3DeferMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentDeferMetadata, R3ComponentMetadata, R3DirectiveDependencyMetadata, R3DirectiveMetadata, R3HostDirectiveMetadata, R3HostMetadata, R3InputMetadata, R3PipeDependencyMetadata, R3QueryMetadata, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
+
 import type {BoundTarget} from './render3/view/t2_api';
 import {R3TargetBinder} from './render3/view/t2_binder';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
@@ -550,7 +551,7 @@ function parseJitTemplate(
   return {
     template: parsed,
     interpolation: interpolationConfig,
-    defer: createR3DeferMetadata(boundTarget)
+    defer: createR3ComponentDeferMetadata(boundTarget)
   };
 }
 
@@ -621,7 +622,7 @@ function createR3DependencyMetadata(
   return {token, attributeNameType, host, optional, self, skipSelf};
 }
 
-function createR3DeferMetadata(boundTarget: BoundTarget<any>): R3DeferMetadata {
+function createR3ComponentDeferMetadata(boundTarget: BoundTarget<any>): R3ComponentDeferMetadata {
   const deferredBlocks = boundTarget.getDeferBlocks();
   const blocks = new Map<DeferredBlock, ArrowFunctionExpr|null>();
 
