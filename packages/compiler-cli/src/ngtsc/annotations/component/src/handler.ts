@@ -1264,7 +1264,7 @@ export class ComponentDecoratorHandler implements
     for (const [_, deps] of resolution.deferBlockDependencies) {
       for (const deferBlockDep of deps) {
         const importDecl =
-            resolution.deferrableDeclToImportDecl.get(deferBlockDep.type.node) ?? null;
+            resolution.deferrableDeclToImportDecl.get(deferBlockDep.declaration.node) ?? null;
         if (importDecl !== null && this.deferredSymbolTracker.canDefer(importDecl)) {
           deferBlockDep.isDeferrable = true;
           deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
@@ -1375,11 +1375,12 @@ export class ComponentDecoratorHandler implements
         // `isDeferrable`, `importPath` and `isDefaultImport` will be
         // added later during the `compile` step.
         deps.push({
-          type: decl.ref,
+          typeReference: decl.type,
           symbolName: decl.ref.node.name.text,
           isDeferrable: false,
           importPath: null,
           isDefaultImport: false,
+          declaration: decl.ref,
         });
         allDeferredDecls.add(decl.ref.node);
       }
@@ -1502,8 +1503,10 @@ export class ComponentDecoratorHandler implements
                 (new o.DynamicImportExpr(dep.importPath!)).prop('then').callFn([innerFn]);
             depExpressions.push(importExpr);
           } else {
-            // Non-deferrable symbol, just use a reference to the type.
-            depExpressions.push(o.variable(dep.symbolName));
+            // Non-deferrable symbol, just use a reference to the type. Note that it's important to
+            // go through `typeReference`, rather than `symbolName` in order to preserve the
+            // original reference within the source file.
+            depExpressions.push(dep.typeReference);
           }
         }
         blocks.set(
