@@ -215,6 +215,7 @@ export interface TemplateTypeChecker {
 
   /**
    * Gets the target of a template expression, if possible.
+   * See `BoundTarget.getExpressionTarget` for more information.
    */
   getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TmplAstReference|TmplAstVariable
       |null;
