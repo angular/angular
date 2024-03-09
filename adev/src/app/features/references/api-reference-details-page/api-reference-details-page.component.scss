@@ -152,10 +152,10 @@
       overflow-x: auto;
       margin: 0;
     }
+  }
 
-    .docs-reference-cli-toc {
-      margin-bottom: 1rem;
-    }
+  .docs-reference-cli-toc {
+    margin-bottom: 1rem;
   }
 
   .adev-reference-tab {
@@ -416,6 +416,11 @@
 
     &:not(:first-child) {
       border-block-start: 1px solid var(--senary-contrast);
+    }
+
+    .docs-param-keyword {
+      display: block;
+      margin: 0 0 0.5rem 0;
     }
   }
 }
