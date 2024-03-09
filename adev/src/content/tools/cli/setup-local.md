@@ -30,7 +30,7 @@ To install Angular CLI on your local system, you need to install [Node.js](https
 Angular CLI uses Node and its associated package manager, npm, to install and run JavaScript tools outside the browser.
 
 [Download and install Node.js](https://nodejs.org/en/download), which will include the `npm` CLI as well.
-Angular requires an [active LTS or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
+Angular requires an [active LTS or maintenance LTS](https://nodejs.org/en/about/previous-releases) version of Node.js.
 See [Angular's version compatibility](reference/versions) guide for more information.
 
 ## Install the Angular CLI
