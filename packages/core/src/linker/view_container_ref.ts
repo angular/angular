@@ -18,13 +18,13 @@ import {assertNodeInjector} from '../render3/assert';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {getComponentDef} from '../render3/definition';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
-import {addToViewTree, createLContainer} from '../render3/instructions/shared';
+import {addToViewTree, allocExpando, createLContainer} from '../render3/instructions/shared';
 import {CONTAINER_HEADER_OFFSET, DEHYDRATED_VIEWS, LContainer, NATIVE, VIEW_REFS} from '../render3/interfaces/container';
 import {NodeInjectorOffset} from '../render3/interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNode, TNodeType} from '../render3/interfaces/node';
 import {RComment, RNode} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
-import {HEADER_OFFSET, HYDRATION, LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
+import {HEADER_OFFSET, HookFn, HYDRATION, ID, LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
 import {destroyLView, detachView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
@@ -279,11 +279,41 @@ const VE_ViewContainerRef = ViewContainerRef;
 // TODO(alxhub): cleaning up this indirection triggers a subtle bug in Closure in g3. Once the fix
 // for that lands, this can be cleaned up.
 const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
+  private _detachedViews: ViewRef[] = [];
   constructor(
       private _lContainer: LContainer,
       private _hostTNode: TElementNode|TContainerNode|TElementContainerNode,
       private _hostLView: LView) {
     super();
+    this._registerDestroyHookInHost(_hostLView, this._destroyDetatchedViews, this);
+  }
+
+  private _registerDestroyHookInHost(hostLView: LView, hook: HookFn, context: any) {
+    const hookFnName = hook.name;
+    const destroyHooks = (hostLView[TVIEW].destroyHooks ??= []);
+    let hookIdx = -1;
+    for (let i = 1; i < destroyHooks.length; i += 2) {
+      if ((destroyHooks[i] as HookFn).name === hookFnName) {
+        hookIdx = i;
+        break;
+      }
+    }
+    if (hookIdx !== -1) {
+      const contextIdx = destroyHooks[hookIdx - 1];
+      hostLView[contextIdx as number] ??= context;
+    } else {
+      const emptySlot = hostLView.length;
+      hostLView[TVIEW].firstCreatePass && allocExpando(hostLView[TVIEW], hostLView, 1, null);
+      hostLView[emptySlot] = this;
+      destroyHooks.push(emptySlot, this._destroyDetatchedViews);
+    }
+  }
+
+  private _destroyDetatchedViews() {
+    while (this._detachedViews.length > 0) {
+      const viewRef = this._detachedViews.pop()!;
+      !viewAttachedToContainer((viewRef as R3ViewRef<any>)._lView) && viewRef.destroy();
+    }
   }
 
   override get element(): ElementRef {
@@ -470,6 +500,13 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   }
 
   override insert(viewRef: ViewRef, index?: number): ViewRef {
+    const detachedViewIdx = this._detachedViews.findIndex(
+        detachedView =>
+            (detachedView as R3ViewRef<any>)._lView[ID] === (viewRef as R3ViewRef<any>)._lView[ID]);
+    if (detachedViewIdx !== -1) {
+      // if view that will be inserted is among detached views, remove it from there
+      removeFromArray(this._detachedViews, detachedViewIdx);
+    }
     return this.insertImpl(viewRef, index, true);
   }
 
@@ -551,10 +588,11 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   override detach(index?: number): ViewRef|null {
     const adjustedIdx = this._adjustIndex(index, -1);
     const view = detachView(this._lContainer, adjustedIdx);
-
     const wasDetached =
         view && removeFromArray(getOrCreateViewRefs(this._lContainer), adjustedIdx) != null;
-    return wasDetached ? new R3ViewRef(view!) : null;
+    const detachedView = wasDetached ? new R3ViewRef(view!) : null;
+    detachedView && this._detachedViews.push(detachedView!);
+    return detachedView;
   }
 
   private _adjustIndex(index?: number, shift: number = 0) {
