@@ -76,16 +76,9 @@ function wrapTestFn<T extends Function>(
   html: string,
   blockFn: T,
 ): T {
-  return function (done: DoneFn) {
-    if (typeof blockFn === 'function') {
-      elementGetter().innerHTML = html;
-      const blockReturn = blockFn();
-      if (blockReturn instanceof Promise) {
-        blockReturn.then(done, done.fail);
-      } else {
-        done();
-      }
-    }
+  return function () {
+    elementGetter().innerHTML = html;
+    return blockFn();
   } as any;
 }
 
