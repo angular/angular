@@ -40,7 +40,5 @@ export function queueStateUpdate(callback: VoidFunction, options?: {injector?: I
   };
 
   internalAfterNextRender(runCallbackOnce, {injector, runOnServer: true});
-  queueMicrotask(() => {
-    runCallbackOnce();
-  });
+  queueMicrotask(runCallbackOnce);
 }
