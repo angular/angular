@@ -659,5 +659,52 @@ describe('control flow - if', () => {
       expect(directiveCount).toBe(1);
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
     });
+
+    it('should not match a directive with a class-based selector only meant for content projection',
+       () => {
+         let directiveCount = 0;
+
+         @Component({
+           standalone: true,
+           selector: 'test',
+           template: 'Main: <ng-content/> Slot: <ng-content select=".foo"/>',
+         })
+         class TestComponent {
+         }
+
+         @Directive({
+           selector: '.foo',
+           standalone: true,
+         })
+         class TemplateDirective {
+           constructor() {
+             directiveCount++;
+           }
+         }
+
+         @Component({
+           standalone: true,
+           imports: [TestComponent, TemplateDirective],
+           template: `<test>Before @if (condition) {
+          <div class="foo">foo</div>
+      } After</test>
+      `
+         })
+         class App {
+           condition = false;
+         }
+
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(directiveCount).toBe(0);
+         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: ');
+
+         fixture.componentInstance.condition = true;
+         fixture.detectChanges();
+
+         expect(directiveCount).toBe(1);
+         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+       });
   });
 });
