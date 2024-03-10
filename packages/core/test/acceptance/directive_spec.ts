@@ -186,6 +186,40 @@ describe('directives', () => {
       expect(nodesWithDirective.length).toBe(1);
     });
 
+    it('should match class selectors on ng-template', () => {
+      @Directive({selector: '.titleDir'})
+      class TitleClassDirective {
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleClassDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <ng-template class="titleDir"></ng-template>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective =
+          fixture.debugElement.queryAllNodes(By.directive(TitleClassDirective));
+
+      expect(nodesWithDirective.length).toBe(1);
+    });
+
+    it('should NOT match class selectors on ng-template created by * syntax', () => {
+      @Directive({selector: '.titleDir'})
+      class TitleClassDirective {
+      }
+
+      TestBed.configureTestingModule({declarations: [TestComponent, TitleClassDirective]});
+      TestBed.overrideTemplate(TestComponent, `
+        <div *ngIf="false" class="titleDir"></div>
+      `);
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const nodesWithDirective =
+          fixture.debugElement.queryAllNodes(By.directive(TitleClassDirective));
+
+      expect(nodesWithDirective.length).toBe(0);
+    });
+
     it('should NOT match classes to directive selectors', () => {
       TestBed.configureTestingModule({declarations: [TestComponent, TitleDirective]});
       TestBed.overrideTemplate(TestComponent, `
