@@ -80,7 +80,11 @@ function wrapTestFn<T extends Function>(
     if (typeof blockFn === 'function') {
       elementGetter().innerHTML = html;
       const blockReturn = blockFn();
-      if (blockReturn instanceof Promise) {
+      if (
+        typeof blockReturn === 'object' &&
+        blockReturn !== null &&
+        typeof blockReturn.then === 'function'
+      ) {
         blockReturn.then(done, done.fail);
       } else {
         done();
