@@ -285,7 +285,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       private _hostTNode: TElementNode|TContainerNode|TElementContainerNode,
       private _hostLView: LView) {
     super();
-    this._registerDestroyHookInHost(_hostLView, this._destroyDetatchedViews, this);
+    this._registerDestroyHookInHost(_hostLView, this._destroyDetachedViews, this);
   }
 
   private _registerDestroyHookInHost(hostLView: LView, hook: HookFn, context: any) {
@@ -305,11 +305,11 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       const emptySlot = hostLView.length;
       hostLView[TVIEW].firstCreatePass && allocExpando(hostLView[TVIEW], hostLView, 1, null);
       hostLView[emptySlot] = this;
-      destroyHooks.push(emptySlot, this._destroyDetatchedViews);
+      destroyHooks.push(emptySlot, this._destroyDetachedViews);
     }
   }
 
-  private _destroyDetatchedViews() {
+  private _destroyDetachedViews() {
     while (this._detachedViews.length > 0) {
       const viewRef = this._detachedViews.pop()!;
       !viewAttachedToContainer((viewRef as R3ViewRef<any>)._lView) && viewRef.destroy();
