@@ -10,13 +10,13 @@ import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../../../ngtsc/imports';
 import {Decorator, ReflectionHost} from '../../../ngtsc/reflection';
-import {ImportManagerV2} from '../../../ngtsc/translator';
+import {ImportManager} from '../../../ngtsc/translator';
 
 /** Function that can be used to transform class properties. */
 export type PropertyTransform =
     (node: ts.PropertyDeclaration&{name: ts.Identifier | ts.StringLiteralLike},
      host: ReflectionHost, factory: ts.NodeFactory, importTracker: ImportedSymbolsTracker,
-     importManager: ImportManagerV2, classDecorator: Decorator, isCore: boolean) =>
+     importManager: ImportManager, classDecorator: Decorator, isCore: boolean) =>
         ts.PropertyDeclaration;
 
 /**
@@ -26,7 +26,7 @@ export type PropertyTransform =
  * decorator downlevel transform.
  */
 export function createSyntheticAngularCoreDecoratorAccess(
-    factory: ts.NodeFactory, importManager: ImportManagerV2, ngClassDecorator: Decorator,
+    factory: ts.NodeFactory, importManager: ImportManager, ngClassDecorator: Decorator,
     sourceFile: ts.SourceFile, decoratorName: string): ts.PropertyAccessExpression {
   const classDecoratorIdentifier = ts.isIdentifier(ngClassDecorator.identifier) ?
       ngClassDecorator.identifier :

@@ -12,7 +12,7 @@ import {absoluteFrom, getSourceFileOrError} from '../../../file_system';
 import {runInEachFileSystem, TestFile} from '../../../file_system/testing';
 import {TypeScriptReflectionHost} from '../../../reflection';
 import {getDeclaration, makeProgram} from '../../../testing';
-import {ImportManagerV2, presetImportManagerForceNamespaceImports, translateStatement} from '../../../translator';
+import {ImportManager, presetImportManagerForceNamespaceImports, translateStatement} from '../../../translator';
 import {extractClassMetadata} from '../src/metadata';
 
 runInEachFileSystem(() => {
@@ -132,7 +132,7 @@ runInEachFileSystem(() => {
       return '';
     }
     const sf = getSourceFileOrError(program, _('/index.ts'));
-    const im = new ImportManagerV2(presetImportManagerForceNamespaceImports);
+    const im = new ImportManager(presetImportManagerForceNamespaceImports);
     const stmt = compileClassMetadata(call).toStmt();
     const tsStatement = translateStatement(sf, stmt, im);
     const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
