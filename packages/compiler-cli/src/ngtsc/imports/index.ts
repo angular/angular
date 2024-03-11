@@ -13,7 +13,7 @@ export {DeferredSymbolTracker} from './src/deferred_symbol_tracker';
 export {AbsoluteModuleStrategy, assertSuccessfulReferenceEmit, EmittedReference, FailedEmitResult, ImportedFile, ImportFlags, LocalIdentifierStrategy, LogicalProjectStrategy, ReferenceEmitKind, ReferenceEmitResult, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesStrategy} from './src/emitter';
 export {ImportedSymbolsTracker} from './src/imported_symbols_tracker';
 export {LocalCompilationExtraImportsTracker} from './src/local_compilation_extra_imports_tracker';
-export {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './src/patch_alias_reference_resolution';
+export {AliasImportDeclaration, isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './src/patch_alias_reference_resolution';
 export {Reexport} from './src/reexport';
 export {OwningModule, Reference} from './src/references';
 export {ModuleResolver} from './src/resolver';
