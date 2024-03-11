@@ -118,6 +118,10 @@ class IvyTransformationVisitor extends Visitor {
     const statements: ts.Statement[] = [];
     const members = [...node.members];
 
+    // Note: Class may be already transformed by e.g. Tsickle and
+    // not have a direct reference to the source file.
+    const sourceFile = ts.getOriginalNode(node).getSourceFile();
+
     for (const field of this.classCompilationMap.get(node)!) {
       // Type-only member.
       if (field.initializer === null) {
@@ -125,7 +129,8 @@ class IvyTransformationVisitor extends Visitor {
       }
 
       // Translate the initializer for the field into TS nodes.
-      const exprNode = translateExpression(field.initializer, this.importManager, translateOptions);
+      const exprNode =
+          translateExpression(sourceFile, field.initializer, this.importManager, translateOptions);
 
       // Create a static property declaration for the new field.
       const property = ts.factory.createPropertyDeclaration(
@@ -142,7 +147,8 @@ class IvyTransformationVisitor extends Visitor {
             /* hasTrailingNewLine */ false);
       }
 
-      field.statements.map(stmt => translateStatement(stmt, this.importManager, translateOptions))
+      field.statements
+          .map(stmt => translateStatement(sourceFile, stmt, this.importManager, translateOptions))
           .forEach(stmt => statements.push(stmt));
 
       members.push(property);
@@ -313,7 +319,7 @@ function transformIvySourceFile(
   // to the ImportManager.
   const downlevelTranslatedCode = getLocalizeCompileTarget(context) < ts.ScriptTarget.ES2015;
   const constants =
-      constantPool.statements.map(stmt => translateStatement(stmt, importManager, {
+      constantPool.statements.map(stmt => translateStatement(file, stmt, importManager, {
                                     recordWrappedNode,
                                     downlevelTaggedTemplates: downlevelTranslatedCode,
                                     downlevelVariableDeclarations: downlevelTranslatedCode,
