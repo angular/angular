@@ -8,7 +8,7 @@ In this activity you will learn to use constructor-based dependency injection.
 
 <hr>
 
-To inject a service or some other injectable resource into your componenet use the following syntax:
+To inject a service or some other injectable resource into your component use the following syntax:
 
 <docs-code language="ts" highlight="[3]">
 @Component({...})
