@@ -118,7 +118,7 @@
     "karma-jasmine": "^5.0.0",
     "karma-requirejs": "^1.1.0",
     "karma-sourcemap-loader": "^0.4.0",
-    "magic-string": "0.30.7",
+    "magic-string": "^0.30.8",
     "memo-decorator": "^2.0.1",
     "ngx-flamegraph": "0.0.12",
     "ngx-progressbar": "^11.1.0",

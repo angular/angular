@@ -386,7 +386,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#65d002a534a74daa3c9bd26bdea5a092cbd519df":
   version "0.0.0-5774b71c01a55c4c998f858ee37d3b77ae704c31"
-  uid "65d002a534a74daa3c9bd26bdea5a092cbd519df"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#65d002a534a74daa3c9bd26bdea5a092cbd519df"
   dependencies:
     "@angular-devkit/build-angular" "17.2.0-rc.0"
@@ -495,7 +494,6 @@
 
 "@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#82c4573f5c9d4fb864271a1c74259fc251457e2f":
   version "0.0.0-5774b71c01a55c4c998f858ee37d3b77ae704c31"
-  uid "82c4573f5c9d4fb864271a1c74259fc251457e2f"
   resolved "https://github.com/angular/dev-infra-private-docs-builds.git#82c4573f5c9d4fb864271a1c74259fc251457e2f"
   dependencies:
     "@angular/cdk" "17.3.0-next.0"
@@ -4876,8 +4874,7 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.21", "@types/selenium-webdriver@^4.1.21":
-  name "@types/selenium-webdriver4"
+"@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.21":
   version "4.1.21"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.21.tgz#79fe31faf9953a4143c3e32944d98d5146bbe185"
   integrity sha512-QGURnImvxYlIQz5DVhvHdqpYNLBjhJ2Vm+cnQI2G9QZzkWlZm0LkLcvDcHp+qE6N2KBz4CeuvXgPO7W3XQ0Tyw==
@@ -4893,6 +4890,14 @@
   version "3.0.25"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.25.tgz#7982bf5add9539b4e953512354055545e8508cff"
   integrity sha512-gkb8rx0kjHuaVUzIfKa1tVVjnEmjYLufDmoOHKPsaoRraTcNjV9W9ruFWi3Xv821c7M5gZVmrGOT8BJYsY/acQ==
+
+"@types/selenium-webdriver@^4.1.21":
+  name "@types/selenium-webdriver4"
+  version "4.1.22"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.22.tgz#344519b90727eb713e1ce6d2e0198eb0b4f8f316"
+  integrity sha512-MCL4l7q8dwxejr2Q2NXLyNwHWMPdlWE0Kpn6fFwJtvkJF7PTkG5jkvbH/X1IAAQxgt/L1dA8u2GtDeekvSKvOA==
+  dependencies:
+    "@types/ws" "*"
 
 "@types/semver@^7.3.4":
   version "7.5.4"
@@ -12480,7 +12485,7 @@ magic-string@0.30.7:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.15"
 
-magic-string@0.30.8:
+magic-string@0.30.8, magic-string@^0.30.8:
   version "0.30.8"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.8.tgz#14e8624246d2bedba70d5462aa99ac9681844613"
   integrity sha512-ISQTe55T2ao7XtlAStud6qwYPZjE4GK1S/BeVPus4jrq6JuOnQ00YKQC581RWhR122W7msZV263KzVeLoqidyQ==
