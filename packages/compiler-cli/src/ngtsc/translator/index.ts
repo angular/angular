@@ -9,7 +9,7 @@
 export {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapLocation, SourceMapRange, TemplateElement, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './src/api/ast_factory';
 export {ImportGenerator, ImportRequest} from './src/api/import_generator';
 export {Context} from './src/context';
-export {ImportManagerConfig, ImportManagerV2, presetImportManagerForceNamespaceImports} from './src/import_manager/import_manager';
+export {ImportManager, ImportManagerConfig, presetImportManagerForceNamespaceImports} from './src/import_manager/import_manager';
 export {ExpressionTranslatorVisitor, RecordWrappedNodeFn, TranslatorOptions} from './src/translator';
 export {canEmitType, TypeEmitter, TypeReferenceTranslator} from './src/type_emitter';
 export {translateType} from './src/type_translator';

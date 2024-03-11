@@ -10,7 +10,7 @@ import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 
 import {isAngularDecorator, tryParseSignalModelMapping} from '../../../ngtsc/annotations';
-import {ImportManagerV2} from '../../../ngtsc/translator';
+import {ImportManager} from '../../../ngtsc/translator';
 
 import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
 
@@ -78,7 +78,7 @@ export const signalModelTransform: PropertyTransform = (
 
 function createDecorator(
     name: string, config: ts.Expression, classDecorator: Decorator, factory: ts.NodeFactory,
-    sourceFile: ts.SourceFile, importManager: ImportManagerV2): ts.Decorator {
+    sourceFile: ts.SourceFile, importManager: ImportManager): ts.Decorator {
   const callTarget = createSyntheticAngularCoreDecoratorAccess(
       factory, importManager, classDecorator, sourceFile, name);
 
