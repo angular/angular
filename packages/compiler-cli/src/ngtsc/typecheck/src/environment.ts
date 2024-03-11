@@ -123,7 +123,7 @@ export class Environment extends ReferenceEmitEnvironment {
     assertSuccessfulReferenceEmit(ngExpr, this.contextFile, 'class');
 
     // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
-    return translateExpression(ngExpr.expression, this.importManager);
+    return translateExpression(this.contextFile, ngExpr.expression, this.importManager);
   }
 
   private emitTypeParameters(declaration: ClassDeclaration<ts.ClassDeclaration>):
