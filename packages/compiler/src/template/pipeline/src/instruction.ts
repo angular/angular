@@ -245,12 +245,19 @@ export function projectionDef(def: o.Expression|null): ir.CreateOp {
 
 export function projection(
     slot: number, projectionSlotIndex: number, attributes: o.LiteralArrayExpr|null,
+    fallbackFnName: string|null, fallbackDecls: number|null, fallbackVars: number|null,
     sourceSpan: ParseSourceSpan): ir.CreateOp {
   const args: o.Expression[] = [o.literal(slot)];
-  if (projectionSlotIndex !== 0 || attributes !== null) {
+  if (projectionSlotIndex !== 0 || attributes !== null || fallbackFnName !== null) {
     args.push(o.literal(projectionSlotIndex));
     if (attributes !== null) {
       args.push(attributes);
+    }
+    if (fallbackFnName !== null) {
+      if (attributes === null) {
+        args.push(o.literal(null));
+      }
+      args.push(o.variable(fallbackFnName), o.literal(fallbackDecls), o.literal(fallbackVars));
     }
   }
   return call(Identifiers.projection, args, sourceSpan);

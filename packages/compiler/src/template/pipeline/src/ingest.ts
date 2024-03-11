@@ -277,8 +277,20 @@ function ingestContent(unit: ViewCompilationUnit, content: t.Content): void {
   if (content.i18n !== undefined && !(content.i18n instanceof i18n.TagPlaceholder)) {
     throw Error(`Unhandled i18n metadata type for element: ${content.i18n.constructor.name}`);
   }
+
+  const id = unit.job.allocateXrefId();
+  let fallbackView: ViewCompilationUnit|null = null;
+
+  // Don't capture default content that's only made up of empty text nodes and comments.
+  if (content.children.some(
+          child => !(child instanceof t.Comment) &&
+              (!(child instanceof t.Text) || child.value.trim().length > 0))) {
+    fallbackView = unit.job.allocateView(unit.xref);
+    ingestNodes(fallbackView, content.children);
+  }
+
   const op = ir.createProjectionOp(
-      unit.job.allocateXrefId(), content.selector, content.i18n, content.sourceSpan);
+      id, content.selector, content.i18n, fallbackView?.xref ?? null, content.sourceSpan);
   for (const attr of content.attributes) {
     const securityContext = domSchema.securityContext(content.name, attr.name, true);
     unit.update.push(ir.createBindingOp(

@@ -431,3 +431,74 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 export {};
 
+/****************************************************************************************************
+ * PARTIAL FILE: ng_content_fallback.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class TestComponent {
+    constructor() {
+        this.type = 'complex';
+        this.hasFooter = false;
+        this.hasStructural = false;
+    }
+}
+TestComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: TestComponent, isStandalone: true, selector: "test", ngImport: i0, template: `
+    <ng-content select="basic">Basic fallback</ng-content>
+
+    <div>
+      <ng-content>
+        <h1>This is {{type}} <strong>content</strong>!</h1>
+      </ng-content>
+    </div>
+
+    @if (hasFooter) {
+      <ng-content select="footer">
+        Inside control flow
+      </ng-content>
+    }
+
+    <ng-content select="structural" *ngIf="hasStructural">
+      <h2>With a structural directive</h2>
+    </ng-content>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'test',
+                    standalone: true,
+                    template: `
+    <ng-content select="basic">Basic fallback</ng-content>
+
+    <div>
+      <ng-content>
+        <h1>This is {{type}} <strong>content</strong>!</h1>
+      </ng-content>
+    </div>
+
+    @if (hasFooter) {
+      <ng-content select="footer">
+        Inside control flow
+      </ng-content>
+    }
+
+    <ng-content select="structural" *ngIf="hasStructural">
+      <h2>With a structural directive</h2>
+    </ng-content>
+  `
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: ng_content_fallback.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestComponent {
+    type: string;
+    hasFooter: boolean;
+    hasStructural: boolean;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComponent, "test", never, {}, {}, never, ["basic", "*", "footer", "structural"], true, never>;
+}
+

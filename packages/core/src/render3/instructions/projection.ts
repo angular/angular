@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {newArray} from '../../util/array_utils';
+import {ComponentTemplate} from '../interfaces/definition';
 import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
 import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HYDRATION, T_HOST} from '../interfaces/view';
@@ -117,7 +118,9 @@ export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
  * @codeGenApi
  */
 export function ɵɵprojection(
-    nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
+    nodeIndex: number, selectorIndex: number = 0, attrs?: TAttributes,
+    fallbackTemplateFn?: ComponentTemplate<unknown>, fallbackDecls?: number,
+    fallbackVars?: number): void {
   const lView = getLView();
   const tView = getTView();
   const tProjectionNode =

@@ -46,6 +46,11 @@ function recursivelyProcessView(view: ViewCompilationUnit, parentScope: Scope|nu
         // Descend into child embedded views.
         recursivelyProcessView(view.job.views.get(op.xref)!, scope);
         break;
+      case ir.OpKind.Projection:
+        if (op.fallbackView !== null) {
+          recursivelyProcessView(view.job.views.get(op.fallbackView)!, scope);
+        }
+        break;
       case ir.OpKind.RepeaterCreate:
         // Descend into child embedded views.
         recursivelyProcessView(view.job.views.get(op.xref)!, scope);

@@ -237,9 +237,32 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         if (op.handle.slot === null) {
           throw new Error('No slot was assigned for project instruction');
         }
+        let fallbackViewFnName: string|null = null;
+        let fallbackDecls: number|null = null;
+        let fallbackVars: number|null = null;
+        if (op.fallbackView !== null) {
+          if (!(unit instanceof ViewCompilationUnit)) {
+            throw new Error(`AssertionError: must be compiling a component`);
+          }
+          const fallbackView = unit.job.views.get(op.fallbackView);
+          if (fallbackView === undefined) {
+            throw new Error(
+                'AssertionError: projection had fallback view xref, but fallback view was not found');
+          }
+          if (fallbackView.fnName === null || fallbackView.decls === null ||
+              fallbackView.vars === null) {
+            throw new Error(
+                `AssertionError: expected projection fallback view to have been named and counted`);
+          }
+          fallbackViewFnName = fallbackView.fnName;
+          fallbackDecls = fallbackView.decls;
+          fallbackVars = fallbackView.vars;
+        }
         ir.OpList.replace<ir.CreateOp>(
             op,
-            ng.projection(op.handle.slot!, op.projectionSlotIndex, op.attributes, op.sourceSpan));
+            ng.projection(
+                op.handle.slot!, op.projectionSlotIndex, op.attributes, fallbackViewFnName,
+                fallbackDecls, fallbackVars, op.sourceSpan));
         break;
       case ir.OpKind.RepeaterCreate:
         if (op.handle.slot === null) {
