@@ -328,19 +328,11 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
       });
       this.beforeRenderSubscription = this._testAppRef.beforeRender.subscribe((isFirstPass) => {
         try {
-          if (isFirstPass) {
-            // TODO(atscott): This matches old behavior where change detection was forced on every
-            // microtask empty, ignoring OnPush. This is incorrect and should be fixed in a major
-            // version if possible.
-            this.changeDetectorRef.detectChanges();
-          } else {
-            ɵdetectChangesInViewIfRequired(
-                (this.componentRef.hostView as any)._lView,
-                isFirstPass,
-                (this.componentRef.hostView as any).notifyErrorHandler,
-            );
-          }
-
+          ɵdetectChangesInViewIfRequired(
+              (this.componentRef.hostView as any)._lView,
+              isFirstPass,
+              (this.componentRef.hostView as any).notifyErrorHandler,
+          );
         } catch (e: unknown) {
           // If an error ocurred during change detection, remove the test view from the application
           // ref tracking. Note that this isn't exactly desirable but done this way because of how
