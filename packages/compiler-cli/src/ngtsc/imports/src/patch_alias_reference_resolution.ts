@@ -8,6 +8,9 @@
 
 import ts from 'typescript';
 
+/** Possible alias import declarations */
+export type AliasImportDeclaration = ts.ImportSpecifier|ts.NamespaceImport|ts.ImportClause;
+
 /**
  * Describes a TypeScript transformation context with the internal emit
  * resolver exposed. There are requests upstream in TypeScript to expose
@@ -22,7 +25,7 @@ const patchedReferencedAliasesSymbol = Symbol('patchedReferencedAliases');
 /** Describes a subset of the TypeScript internal emit resolver. */
 interface EmitResolver {
   isReferencedAliasDeclaration?(node: ts.Node, ...args: unknown[]): void;
-  [patchedReferencedAliasesSymbol]?: Set<ts.Declaration>;
+  [patchedReferencedAliasesSymbol]?: Set<AliasImportDeclaration>;
 }
 
 /**
@@ -95,9 +98,9 @@ export function loadIsReferencedAliasDeclarationPatch(context: ts.Transformation
     throwIncompatibleTransformationContextError();
   }
 
-  const referencedAliases = new Set<ts.Declaration>();
+  const referencedAliases = new Set<AliasImportDeclaration>();
   emitResolver.isReferencedAliasDeclaration = function(node, ...args) {
-    if (isAliasImportDeclaration(node) && referencedAliases.has(node)) {
+    if (isAliasImportDeclaration(node) && (referencedAliases as Set<ts.Node>).has(node)) {
       return true;
     }
     return originalIsReferencedAliasDeclaration.call(emitResolver, node, ...args);
@@ -110,8 +113,7 @@ export function loadIsReferencedAliasDeclarationPatch(context: ts.Transformation
  * declarations can be import specifiers, namespace imports or import clauses
  * as these do not declare an actual symbol but just point to a target declaration.
  */
-export function isAliasImportDeclaration(node: ts.Node): node is ts.ImportSpecifier|
-    ts.NamespaceImport|ts.ImportClause {
+export function isAliasImportDeclaration(node: ts.Node): node is AliasImportDeclaration {
   return ts.isImportSpecifier(node) || ts.isNamespaceImport(node) || ts.isImportClause(node);
 }
 
