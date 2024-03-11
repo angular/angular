@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {loadIsReferencedAliasDeclarationPatch} from '../../../imports';
 
-import type {ImportManagerV2} from './import_manager';
+import type {ImportManager} from './import_manager';
 
 /**
  * Creates a TypeScript transform for the given import manager.
@@ -20,7 +20,7 @@ import type {ImportManagerV2} from './import_manager';
  *  - The transform inserts additional optional statements after imports.
  */
 export function createTsTransformForImportManager(
-    manager: ImportManagerV2,
+    manager: ImportManager,
     extraStatementsForFiles?: Map<string, ts.Statement[]>): ts.TransformerFactory<ts.SourceFile> {
   return (ctx) => {
     const {affectedFiles, newImports, updatedImports, reusedOriginalAliasDeclarations} =

@@ -13,7 +13,7 @@ import {DefaultImportTracker, ImportRewriter, LocalCompilationExtraImportsTracke
 import {getDefaultImportDeclaration} from '../../imports/src/default';
 import {PerfPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
-import {ImportManagerV2, presetImportManagerForceNamespaceImports, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
+import {ImportManager, presetImportManagerForceNamespaceImports, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
 import {CompileResult} from './api';
@@ -93,7 +93,7 @@ class IvyTransformationVisitor extends Visitor {
   constructor(
       private compilation: TraitCompiler,
       private classCompilationMap: Map<ts.ClassDeclaration, CompileResult[]>,
-      private reflector: ReflectionHost, private importManager: ImportManagerV2,
+      private reflector: ReflectionHost, private importManager: ImportManager,
       private recordWrappedNodeExpr: RecordWrappedNodeFn<ts.Expression>,
       private isClosureCompilerEnabled: boolean, private isCore: boolean,
       private deferrableImports: Set<ts.ImportDeclaration>) {
@@ -292,7 +292,7 @@ function transformIvySourceFile(
     recordWrappedNode: RecordWrappedNodeFn<ts.Expression>): ts.SourceFile {
   const constantPool = new ConstantPool(isClosureCompilerEnabled);
   const importManager =
-      new ImportManagerV2({...presetImportManagerForceNamespaceImports, rewriter: importRewriter});
+      new ImportManager({...presetImportManagerForceNamespaceImports, rewriter: importRewriter});
 
   // The transformation process consists of 2 steps:
   //

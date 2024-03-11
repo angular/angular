@@ -11,12 +11,12 @@ import ts from 'typescript';
 import {absoluteFrom} from '../../file_system';
 import {initMockFileSystem} from '../../file_system/testing';
 import {NgtscTestCompilerHost} from '../../testing';
-import {ImportManagerV2} from '../src/import_manager/import_manager';
+import {ImportManager} from '../src/import_manager/import_manager';
 
 describe('import manager', () => {
   it('should be possible to import a symbol', () => {
     const {testFile, emit} = createTestProgram('');
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
     const ref = manager.addImport({
       exportModuleSpecifier: '@angular/core',
       exportSymbolName: 'input',
@@ -35,7 +35,7 @@ describe('import manager', () => {
 
   it('should be possible to import a namespace', () => {
     const {testFile, emit} = createTestProgram('');
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const ref = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -55,7 +55,7 @@ describe('import manager', () => {
 
   it('should be possible to import multiple symbols', () => {
     const {testFile, emit} = createTestProgram('');
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -83,7 +83,7 @@ describe('import manager', () => {
 
   it('should be possible to import multiple namespaces', () => {
     const {testFile, emit} = createTestProgram('');
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const coreNamespace = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -112,7 +112,7 @@ describe('import manager', () => {
 
   it('should be possible to generate a namespace import and re-use it for future symbols', () => {
     const {testFile, emit} = createTestProgram('');
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const coreNamespace = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -140,7 +140,7 @@ describe('import manager', () => {
 
   it('should always generate a new namespace import if there is only a named import', () => {
     const {testFile, emit} = createTestProgram('');
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -171,7 +171,7 @@ describe('import manager', () => {
     const {testFile, emit} = createTestProgram(`
       import * as existingImport from '@angular/core';
     `);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -193,7 +193,7 @@ describe('import manager', () => {
     const {testFile, emit} = createTestProgram(`
       import * as existingImport from '@angular/core';
     `);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const coreRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -215,7 +215,7 @@ describe('import manager', () => {
     const {testFile, emit} = createTestProgram(`
       import {input} from '@angular/core';
     `);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -239,7 +239,7 @@ describe('import manager', () => {
 
       const x = input();
     `);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const outputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -264,7 +264,7 @@ describe('import manager', () => {
        const {testFile, emit} = createTestProgram(`
         import {input} from '@angular/core';
       `);
-       const manager = new ImportManagerV2();
+       const manager = new ImportManager();
 
        const outputRef = manager.addImport({
          exportModuleSpecifier: '@angular/core',
@@ -286,7 +286,7 @@ describe('import manager', () => {
     const {testFile, emit} = createTestProgram(`
       import {input} from '@angular/core';
     `);
-    const manager = new ImportManagerV2({
+    const manager = new ImportManager({
       disableOriginalSourceFileReuse: true,
     });
 
@@ -310,7 +310,7 @@ describe('import manager', () => {
     const {testFile, emit} = createTestProgram(`
       import * as existingCore from '@angular/core';
     `);
-    const manager = new ImportManagerV2({
+    const manager = new ImportManager({
       disableOriginalSourceFileReuse: true,
     });
 
@@ -332,7 +332,7 @@ describe('import manager', () => {
 
   it('should be able to always prefer namespace imports for new imports', () => {
     const {testFile, emit} = createTestProgram(``);
-    const manager = new ImportManagerV2({
+    const manager = new ImportManager({
       forceGenerateNamespacesForNewImports: true,
     });
 
@@ -366,7 +366,7 @@ describe('import manager', () => {
        const {testFile, emit} = createTestProgram(`
         import * as existingNamespace from '@angular/core';
        `);
-       const manager = new ImportManagerV2({
+       const manager = new ImportManager({
          forceGenerateNamespacesForNewImports: true,
        });
 
@@ -402,7 +402,7 @@ describe('import manager', () => {
 
         const x = new Dir();
        `);
-       const manager = new ImportManagerV2({
+       const manager = new ImportManager({
          forceGenerateNamespacesForNewImports: true,
        });
 
@@ -429,7 +429,7 @@ describe('import manager', () => {
 
       console.log(MyComp);
     `);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -451,7 +451,7 @@ describe('import manager', () => {
 
   it('should be able to add a side effect import', () => {
     const {testFile, emit} = createTestProgram(``);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     manager.addSideEffectImport(testFile, '@angular/core');
 
@@ -466,7 +466,7 @@ describe('import manager', () => {
     const {testFile, emit} = createTestProgram(`
       const input = 1;
     `);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -493,7 +493,7 @@ describe('import manager', () => {
         };
       }
     `);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -518,7 +518,7 @@ describe('import manager', () => {
 
   it('should avoid an import alias specifier if identifier is free to use', () => {
     const {testFile, emit} = createTestProgram(``);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -538,7 +538,7 @@ describe('import manager', () => {
 
   it('should avoid collisions with generated identifiers', () => {
     const {testFile, emit} = createTestProgram(``);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -567,7 +567,7 @@ describe('import manager', () => {
 
   it('should avoid collisions with generated identifiers', () => {
     const {testFile, emit} = createTestProgram(``);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -596,7 +596,7 @@ describe('import manager', () => {
 
   it('should re-use previous similar generated imports', () => {
     const {testFile, emit} = createTestProgram(``);
-    const manager = new ImportManagerV2();
+    const manager = new ImportManager();
 
     const inputRef = manager.addImport({
       exportModuleSpecifier: '@angular/core',
@@ -668,7 +668,7 @@ describe('import manager', () => {
 
 function createTestProgram(text: string): {
   testFile: ts.SourceFile,
-  emit: (manager: ImportManagerV2, extraStatements: ts.Statement[]) => string,
+  emit: (manager: ImportManager, extraStatements: ts.Statement[]) => string,
 } {
   const fs = initMockFileSystem('Native');
   const options: ts.CompilerOptions = {
@@ -693,7 +693,7 @@ function createTestProgram(text: string): {
     throw new Error('Could not get test source file from program.');
   }
 
-  const emit = (manager: ImportManagerV2, newStatements: ts.Statement[]) => {
+  const emit = (manager: ImportManager, newStatements: ts.Statement[]) => {
     const transformer = manager.toTsTransform(new Map([[testFile.fileName, newStatements]]));
 
     let emitResult: string|null = null;

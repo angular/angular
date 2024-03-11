@@ -17,7 +17,7 @@ import {PipeMeta} from '../../metadata';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManagerV2} from '../../translator';
+import {ImportManager} from '../../translator';
 import {TemplateDiagnostic, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
@@ -363,7 +363,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
     // Imports may need to be added to the file to support type-checking of directives
     // used in the template within it.
-    const importManager = new ImportManagerV2({
+    const importManager = new ImportManager({
       // This minimizes noticeable changes with older versions of `ImportManager`.
       forceGenerateNamespacesForNewImports: true,
       // Type check block code affects code completion and fix suggestions.
@@ -537,9 +537,8 @@ interface Op {
   /**
    * Execute the operation and return the generated code as text.
    */
-  execute(
-      im: ImportManagerV2, sf: ts.SourceFile, refEmitter: ReferenceEmitter,
-      printer: ts.Printer): string;
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
+      string;
 }
 
 /**
@@ -559,9 +558,8 @@ class InlineTcbOp implements Op {
     return this.ref.node.end + 1;
   }
 
-  execute(
-      im: ImportManagerV2, sf: ts.SourceFile, refEmitter: ReferenceEmitter,
-      printer: ts.Printer): string {
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
+      string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = ts.factory.createIdentifier(`_tcb_${this.ref.node.pos}`);
 
@@ -590,9 +588,8 @@ class TypeCtorOp implements Op {
     return this.ref.node.end - 1;
   }
 
-  execute(
-      im: ImportManagerV2, sf: ts.SourceFile, refEmitter: ReferenceEmitter,
-      printer: ts.Printer): string {
+  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
+      string {
     const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, this.reflector, sf);
     const tcb = generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);

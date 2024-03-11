@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
 import {ReflectionHost} from '../../reflection';
-import {ImportManagerV2, translateExpression, translateType} from '../../translator';
+import {ImportManager, translateExpression, translateType} from '../../translator';
 
 /**
  * An environment for a given source file that can be used to emit references.
@@ -21,7 +21,7 @@ import {ImportManagerV2, translateExpression, translateType} from '../../transla
  */
 export class ReferenceEmitEnvironment {
   constructor(
-      readonly importManager: ImportManagerV2, protected refEmitter: ReferenceEmitter,
+      readonly importManager: ImportManager, protected refEmitter: ReferenceEmitter,
       readonly reflector: ReflectionHost, public contextFile: ts.SourceFile) {}
 
   canReferenceType(
