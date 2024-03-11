@@ -9,8 +9,6 @@ import ts from 'typescript';
 
 import {ImportRewriter, NoopImportRewriter} from '../../imports';
 
-import {ImportGenerator, NamedImport} from './api/import_generator';
-
 /**
  * Information about a namespace import that has been added to a module.
  */
@@ -41,7 +39,7 @@ export interface SideEffectImport {
  */
 export type Import = NamespaceImport|SideEffectImport;
 
-export class ImportManager implements ImportGenerator<ts.Identifier> {
+export class ImportManager {
   private specifierToIdentifier = new Map<string, ts.Identifier|null>();
   private nextIndex = 0;
 
@@ -60,7 +58,7 @@ export class ImportManager implements ImportGenerator<ts.Identifier> {
     return this.specifierToIdentifier.get(moduleName)!;
   }
 
-  generateNamedImport(moduleName: string, originalSymbol: string): NamedImport<ts.Identifier> {
+  generateNamedImport(moduleName: string, originalSymbol: string): any {
     // First, rewrite the symbol name.
     const symbol = this.rewriter.rewriteSymbol(originalSymbol, moduleName);
 

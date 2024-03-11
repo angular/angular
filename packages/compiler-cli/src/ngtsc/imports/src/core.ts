@@ -13,14 +13,6 @@ import {relativePathBetween} from '../../util/src/path';
  */
 export interface ImportRewriter {
   /**
-   * Should the given symbol be imported at all?
-   *
-   * If `true`, the symbol should be imported from the given specifier. If `false`, the symbol
-   * should be referenced directly, without an import.
-   */
-  shouldImportSymbol(symbol: string, specifier: string): boolean;
-
-  /**
    * Optionally rewrite a reference to an imported symbol, changing either the binding prefix or the
    * symbol name itself.
    */
@@ -36,10 +28,6 @@ export interface ImportRewriter {
  * `ImportRewriter` that does no rewriting.
  */
 export class NoopImportRewriter implements ImportRewriter {
-  shouldImportSymbol(symbol: string, specifier: string): boolean {
-    return true;
-  }
-
   rewriteSymbol(symbol: string, specifier: string): string {
     return symbol;
   }
@@ -77,10 +65,6 @@ const CORE_MODULE = '@angular/core';
  */
 export class R3SymbolsImportRewriter implements ImportRewriter {
   constructor(private r3SymbolsPath: string) {}
-
-  shouldImportSymbol(symbol: string, specifier: string): boolean {
-    return true;
-  }
 
   rewriteSymbol(symbol: string, specifier: string): string {
     if (specifier !== CORE_MODULE) {
