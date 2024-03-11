@@ -10,10 +10,9 @@ import ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../../file_system';
 import {runInEachFileSystem, TestFile} from '../../../file_system/testing';
-import {NoopImportRewriter} from '../../../imports';
 import {TypeScriptReflectionHost} from '../../../reflection';
 import {getDeclaration, makeProgram} from '../../../testing';
-import {ImportManager, translateStatement} from '../../../translator';
+import {ImportManagerV2, presetImportManagerForceNamespaceImports, translateStatement} from '../../../translator';
 import {extractClassMetadata} from '../src/metadata';
 
 runInEachFileSystem(() => {
@@ -133,7 +132,7 @@ runInEachFileSystem(() => {
       return '';
     }
     const sf = getSourceFileOrError(program, _('/index.ts'));
-    const im = new ImportManager(new NoopImportRewriter(), 'i');
+    const im = new ImportManagerV2(presetImportManagerForceNamespaceImports);
     const stmt = compileClassMetadata(call).toStmt();
     const tsStatement = translateStatement(sf, stmt, im);
     const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
