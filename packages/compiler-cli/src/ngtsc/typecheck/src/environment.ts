@@ -10,7 +10,7 @@ import ts from 'typescript';
 
 import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManagerV2, translateExpression} from '../../translator';
+import {ImportManager, translateExpression} from '../../translator';
 import {TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 
 import {ReferenceEmitEnvironment} from './reference_emit_environment';
@@ -42,7 +42,7 @@ export class Environment extends ReferenceEmitEnvironment {
   protected pipeInstStatements: ts.Statement[] = [];
 
   constructor(
-      readonly config: TypeCheckingConfig, importManager: ImportManagerV2,
+      readonly config: TypeCheckingConfig, importManager: ImportManager,
       refEmitter: ReferenceEmitter, reflector: ReflectionHost, contextFile: ts.SourceFile) {
     super(importManager, refEmitter, reflector, contextFile);
   }

@@ -11,7 +11,7 @@ import ts from 'typescript';
 
 import {ImportRewriter, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManagerV2, presetImportManagerForceNamespaceImports, translateType} from '../../translator';
+import {ImportManager, presetImportManagerForceNamespaceImports, translateType} from '../../translator';
 
 import {DtsTransform} from './api';
 
@@ -84,7 +84,7 @@ class DtsTransformer {
    * Transform the declaration file and add any declarations which were recorded.
    */
   transform(sf: ts.SourceFile, transforms: DtsTransform[]): ts.SourceFile {
-    const imports = new ImportManagerV2(
+    const imports = new ImportManager(
         {...presetImportManagerForceNamespaceImports, rewriter: this.importRewriter});
 
     const visitor: ts.Visitor = (node: ts.Node): ts.VisitResult<ts.Node> => {
@@ -107,7 +107,7 @@ class DtsTransformer {
 
   private transformClassDeclaration(
       clazz: ts.ClassDeclaration, transforms: DtsTransform[],
-      imports: ImportManagerV2): ts.ClassDeclaration {
+      imports: ImportManager): ts.ClassDeclaration {
     let elements: ts.ClassElement[]|ReadonlyArray<ts.ClassElement> = clazz.members;
     let elementsChanged = false;
 
@@ -156,7 +156,7 @@ class DtsTransformer {
 
   private transformFunctionDeclaration(
       declaration: ts.FunctionDeclaration, transforms: DtsTransform[],
-      imports: ImportManagerV2): ts.FunctionDeclaration {
+      imports: ImportManager): ts.FunctionDeclaration {
     let newDecl = declaration;
 
     for (const transform of transforms) {
@@ -184,7 +184,7 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
   transformClass(
       clazz: ts.ClassDeclaration, members: ReadonlyArray<ts.ClassElement>,
       reflector: ReflectionHost, refEmitter: ReferenceEmitter,
-      imports: ImportManagerV2): ts.ClassDeclaration {
+      imports: ImportManager): ts.ClassDeclaration {
     const original = ts.getOriginalNode(clazz) as ClassDeclaration;
 
     if (!this.declarationFields.has(original)) {

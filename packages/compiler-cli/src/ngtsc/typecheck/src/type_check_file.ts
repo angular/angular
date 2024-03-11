@@ -10,7 +10,7 @@ import ts from 'typescript';
 import {AbsoluteFsPath, join} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManagerV2} from '../../translator';
+import {ImportManager} from '../../translator';
 import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
 
 import {DomSchemaChecker} from './dom';
@@ -37,7 +37,7 @@ export class TypeCheckFile extends Environment {
       readonly fileName: AbsoluteFsPath, config: TypeCheckingConfig, refEmitter: ReferenceEmitter,
       reflector: ReflectionHost, compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>) {
     super(
-        config, new ImportManagerV2({
+        config, new ImportManager({
           // This minimizes noticeable changes with older versions of `ImportManager`.
           forceGenerateNamespacesForNewImports: true,
           // Type check block code affects code completion and fix suggestions.
