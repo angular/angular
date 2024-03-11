@@ -363,6 +363,15 @@ describe('getTargetAtPosition for template AST', () => {
     expect(node).toBeInstanceOf(t.TextAttribute);
   });
 
+  it('should locate element inside ng-content', () => {
+    const {errors, nodes, position} = parse(`<ng-content><¦div></div></ng-content>`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isTemplateNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(t.Element);
+  });
+
   it('should not locate implicit receiver', () => {
     const {errors, nodes, position} = parse(`<div [foo]="¦bar"></div>`);
     expect(errors).toBe(null);

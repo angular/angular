@@ -123,7 +123,7 @@ class Scope implements Visitor {
         nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof ForLoopBlockEmpty ||
         nodeOrNodes instanceof DeferredBlock || nodeOrNodes instanceof DeferredBlockError ||
         nodeOrNodes instanceof DeferredBlockPlaceholder ||
-        nodeOrNodes instanceof DeferredBlockLoading) {
+        nodeOrNodes instanceof DeferredBlockLoading || nodeOrNodes instanceof Content) {
       nodeOrNodes.children.forEach(node => node.visit(this));
     } else {
       // No overarching `Template` instance, so process the nodes directly.
@@ -204,8 +204,11 @@ class Scope implements Visitor {
     this.ingestScopedNode(block);
   }
 
+  visitContent(content: Content) {
+    this.ingestScopedNode(content);
+  }
+
   // Unused visitors.
-  visitContent(content: Content) {}
   visitBoundAttribute(attr: BoundAttribute) {}
   visitBoundEvent(event: BoundEvent) {}
   visitBoundText(text: BoundText) {}
@@ -442,8 +445,11 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
     block.children.forEach(node => node.visit(this));
   }
 
+  visitContent(content: Content): void {
+    content.children.forEach(child => child.visit(this));
+  }
+
   // Unused visitors.
-  visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}
   visitTextAttribute(attribute: TextAttribute): void {}
@@ -559,7 +565,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
         nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof ForLoopBlockEmpty ||
         nodeOrNodes instanceof DeferredBlockError ||
         nodeOrNodes instanceof DeferredBlockPlaceholder ||
-        nodeOrNodes instanceof DeferredBlockLoading) {
+        nodeOrNodes instanceof DeferredBlockLoading || nodeOrNodes instanceof Content) {
       nodeOrNodes.children.forEach(node => node.visit(this));
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else {
@@ -602,9 +608,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   // Unused template visitors
-
   visitText(text: Text) {}
-  visitContent(content: Content) {}
   visitTextAttribute(attribute: TextAttribute) {}
   visitUnknownBlock(block: UnknownBlock) {}
   visitDeferredTrigger(): void {}
@@ -671,6 +675,10 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   visitIfBlockBranch(block: IfBlockBranch) {
     block.expression?.visit(this);
     this.ingestScopedNode(block);
+  }
+
+  visitContent(content: Content) {
+    this.ingestScopedNode(content);
   }
 
   visitBoundText(text: BoundText) {

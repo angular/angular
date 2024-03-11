@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, BoundTarget, Call, createCssSelectorFromNode, CssSelector, DYNAMIC_TYPE, ImplicitReceiver, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, R3Identifiers, SafeCall, SafePropertyRead, SchemaMetadata, SelectorMatcher, ThisReceiver, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockTriggers, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstViewportDeferredTrigger, TransplantedType} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -2034,6 +2034,8 @@ class Scope {
       this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.value));
     } else if (node instanceof TmplAstIcu) {
       this.appendIcuExpressions(node);
+    } else if (node instanceof TmplAstContent) {
+      this.appendChildren(node);
     }
   }
 
