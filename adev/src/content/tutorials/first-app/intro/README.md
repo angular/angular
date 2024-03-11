@@ -32,7 +32,7 @@ Note: Look for alerts like this one, which call out steps that may only be for y
 The lessons in this tutorial create an Angular app that lists houses for rent and shows the details of individual houses.
 This app uses features that are common to many Angular apps.
 
-<img alt="Output of heroes dashboard" src="assets/images/tutorials/first-app/homes-app-landing-page.png">
+<img alt="Output of homes landing page" src="assets/images/tutorials/first-app/homes-app-landing-page.png">
 
 ## Local development environment
 
