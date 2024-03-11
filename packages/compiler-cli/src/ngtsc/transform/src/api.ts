@@ -13,7 +13,7 @@ import {Reexport, ReferenceEmitter} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
 import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
-import {ImportManager} from '../../translator';
+import {ImportManagerV2} from '../../translator';
 import {TypeCheckContext} from '../../typecheck/api';
 import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../typecheck/template_semantics/api/api';
@@ -264,11 +264,11 @@ export interface ResolveResult<R> {
 }
 
 export interface DtsTransform {
-  transformClassElement?(element: ts.ClassElement, imports: ImportManager): ts.ClassElement;
+  transformClassElement?(element: ts.ClassElement, imports: ImportManagerV2): ts.ClassElement;
   transformFunctionDeclaration?
-      (element: ts.FunctionDeclaration, imports: ImportManager): ts.FunctionDeclaration;
+      (element: ts.FunctionDeclaration, imports: ImportManagerV2): ts.FunctionDeclaration;
   transformClass?
       (clazz: ts.ClassDeclaration, elements: ReadonlyArray<ts.ClassElement>,
        reflector: ReflectionHost, refEmitter: ReferenceEmitter,
-       imports: ImportManager): ts.ClassDeclaration;
+       imports: ImportManagerV2): ts.ClassDeclaration;
 }

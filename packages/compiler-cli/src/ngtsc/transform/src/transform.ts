@@ -13,12 +13,11 @@ import {DefaultImportTracker, ImportRewriter, LocalCompilationExtraImportsTracke
 import {getDefaultImportDeclaration} from '../../imports/src/default';
 import {PerfPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
-import {ImportManager, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
+import {ImportManagerV2, presetImportManagerForceNamespaceImports, RecordWrappedNodeFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
 
 import {CompileResult} from './api';
 import {TraitCompiler} from './compilation';
-import {addImports} from './utils';
 
 const NO_DECORATORS = new Set<ts.Decorator>();
 
@@ -94,7 +93,7 @@ class IvyTransformationVisitor extends Visitor {
   constructor(
       private compilation: TraitCompiler,
       private classCompilationMap: Map<ts.ClassDeclaration, CompileResult[]>,
-      private reflector: ReflectionHost, private importManager: ImportManager,
+      private reflector: ReflectionHost, private importManager: ImportManagerV2,
       private recordWrappedNodeExpr: RecordWrappedNodeFn<ts.Expression>,
       private isClosureCompilerEnabled: boolean, private isCore: boolean,
       private deferrableImports: Set<ts.ImportDeclaration>) {
@@ -292,7 +291,8 @@ function transformIvySourceFile(
     file: ts.SourceFile, isCore: boolean, isClosureCompilerEnabled: boolean,
     recordWrappedNode: RecordWrappedNodeFn<ts.Expression>): ts.SourceFile {
   const constantPool = new ConstantPool(isClosureCompilerEnabled);
-  const importManager = new ImportManager(importRewriter);
+  const importManager =
+      new ImportManagerV2({...presetImportManagerForceNamespaceImports, rewriter: importRewriter});
 
   // The transformation process consists of 2 steps:
   //
@@ -333,12 +333,12 @@ function transformIvySourceFile(
   // Add extra imports.
   if (localCompilationExtraImportsTracker !== null) {
     for (const moduleName of localCompilationExtraImportsTracker.getImportsForFile(sf)) {
-      importManager.generateSideEffectImport(moduleName);
+      importManager.addSideEffectImport(sf, moduleName);
     }
   }
 
   // Add new imports for this file.
-  sf = addImports(context.factory, importManager, sf, constants);
+  sf = importManager.transformTsFile(context, sf, constants);
 
   if (fileOverviewMeta !== null) {
     setFileOverviewComment(sf, fileOverviewMeta);
