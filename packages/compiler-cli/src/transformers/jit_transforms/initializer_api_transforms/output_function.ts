@@ -43,10 +43,11 @@ export const initializerApiOutputTransform: PropertyTransform = (
     return member;
   }
 
+  const sourceFile = member.getSourceFile();
   const newDecorator = factory.createDecorator(
       factory.createCallExpression(
           createSyntheticAngularCoreDecoratorAccess(
-              factory, importManager, classDecorator, 'Output'),
+              factory, importManager, classDecorator, sourceFile, 'Output'),
           undefined, [factory.createStringLiteral(output.metadata.bindingPropertyName)]),
   );
 
