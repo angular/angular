@@ -56,11 +56,12 @@ export const queryFunctionsTransforms: PropertyTransform = (
     return member;
   }
 
+  const sourceFile = member.getSourceFile();
   const callArgs = queryDefinition.call.arguments;
   const newDecorator = factory.createDecorator(
       factory.createCallExpression(
           createSyntheticAngularCoreDecoratorAccess(
-              factory, importManager, classDecorator,
+              factory, importManager, classDecorator, sourceFile,
               queryFunctionToDecorator[queryDefinition.name]),
           undefined,
           // All positional arguments of the query functions can be mostly re-used as is
