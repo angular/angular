@@ -43,7 +43,7 @@ class R3AstHumanizer implements t.Visitor<void> {
 
   visitContent(content: t.Content) {
     this.result.push(['Content', content.selector]);
-    t.visitAll(this, content.attributes);
+    this.visitAll([content.attributes, content.children]);
   }
 
   visitVariable(variable: t.Variable) {
@@ -711,6 +711,20 @@ describe('R3 template transform', () => {
       expectFromR3Nodes(res.nodes).toEqual([
         ['Content', '*'],
         ['TextAttribute', 'ngProjectAs', 'a'],
+      ]);
+    });
+
+    it('should parse ngContent with children', () => {
+      const res = parse(
+          '<ng-content><section>Root <div>Parent <span>Child</span></div></section></ng-content>');
+      expectFromR3Nodes(res.nodes).toEqual([
+        ['Content', '*'],
+        ['Element', 'section'],
+        ['Text', 'Root '],
+        ['Element', 'div'],
+        ['Text', 'Parent '],
+        ['Element', 'span'],
+        ['Text', 'Child'],
       ]);
     });
   });
