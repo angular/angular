@@ -11,7 +11,7 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {TrackByFunction} from '../../change_detection';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {findMatchingDehydratedView} from '../../hydration/views';
-import {assertDefined} from '../../util/assert';
+import {assertDefined, assertFunction} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
 import {assertLContainer, assertLView, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
@@ -150,6 +150,11 @@ export function ɵɵrepeaterCreate(
     emptyDecls?: number, emptyVars?: number, emptyTagName?: string|null,
     emptyAttrsIndex?: number|null): void {
   performanceMarkFeature('NgControlFlow');
+
+  ngDevMode &&
+      assertFunction(
+          trackByFn, `A track expression must be a function, was ${typeof trackByFn} instead.`);
+
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
   const boundTrackBy = trackByUsesComponentInstance ?
