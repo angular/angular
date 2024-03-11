@@ -696,23 +696,27 @@ export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   i18nPlaceholder?: i18n.TagPlaceholder;
 
   sourceSpan: ParseSourceSpan;
+
+  fallbackView: XrefId|null;
 }
 
 export function createProjectionOp(
     xref: XrefId, selector: string, i18nPlaceholder: i18n.TagPlaceholder|undefined,
-    sourceSpan: ParseSourceSpan): ProjectionOp {
+    fallbackView: XrefId|null, sourceSpan: ParseSourceSpan): ProjectionOp {
   return {
     kind: OpKind.Projection,
     xref,
     handle: new SlotHandle(),
     selector,
     i18nPlaceholder,
+    fallbackView,
     projectionSlotIndex: 0,
     attributes: null,
     localRefs: [],
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_CONSUMES_SLOT,
+    numSlotsUsed: fallbackView === null ? 1 : 2,
   };
 }
 

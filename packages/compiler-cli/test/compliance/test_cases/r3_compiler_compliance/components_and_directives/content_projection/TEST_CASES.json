@@ -156,6 +156,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support fallback content in ng-content",
+      "inputFiles": [
+        "ng_content_fallback.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect projection",
+          "files": [
+            "ng_content_fallback.js"
+          ]
+        }
+      ]
     }
   ]
 }
