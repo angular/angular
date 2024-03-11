@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵisG3 as isG3, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks,} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks,} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -223,12 +223,6 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private beforeRenderSubscription: Subscription|undefined = undefined;
 
   initialize(): void {
-    if (this._autoDetect) {
-      this.subscribeToAppRefEvents();
-    }
-    this.componentRef.hostView.onDestroy(() => {
-      this.unsubscribeFromAppRefEvents();
-    });
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
@@ -239,20 +233,17 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
             },
           }),
       );
-      // TODO(atscott): Remove and make this a breaking change externally in v18
-      if (!isG3) {
-        this._subscriptions.add(
-            this._ngZone.onMicrotaskEmpty.subscribe({
-              next: () => {
-                if (this._autoDetect) {
-                  // Do a change detection run with checkNoChanges set to true to check
-                  // there are no changes on the second run.
-                  this.detectChanges(true);
-                }
-              },
-            }),
-        );
-      }
+      this._subscriptions.add(
+          this._ngZone.onMicrotaskEmpty.subscribe({
+            next: () => {
+              if (this._autoDetect) {
+                // Do a change detection run with checkNoChanges set to true to check
+                // there are no changes on the second run.
+                this.detectChanges(true);
+              }
+            },
+          }),
+      );
       this._subscriptions.add(
           this._ngZone.onStable.subscribe({
             next: () => {
@@ -323,65 +314,11 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
     }
 
-    if (autoDetect !== this._autoDetect) {
-      if (autoDetect) {
-        this.subscribeToAppRefEvents();
-      } else {
-        this.unsubscribeFromAppRefEvents();
-      }
-    }
-
     this._autoDetect = autoDetect;
     this.detectChanges();
   }
 
-  private subscribeToAppRefEvents() {
-    // TODO(atscott): Remove and make this a breaking change externally in v18
-    if (!isG3) {
-      return;
-    }
-
-    this._ngZone.runOutsideAngular(() => {
-      this.afterTickSubscription = this._testAppRef.afterTick.subscribe(() => {
-        this.checkNoChanges();
-      });
-      this.beforeRenderSubscription = this._testAppRef.beforeRender.subscribe((isFirstPass) => {
-        try {
-          ɵdetectChangesInViewIfRequired(
-              (this.componentRef.hostView as any)._lView,
-              isFirstPass,
-              (this.componentRef.hostView as any).notifyErrorHandler,
-          );
-        } catch (e: unknown) {
-          // If an error ocurred during change detection, remove the test view from the application
-          // ref tracking. Note that this isn't exactly desirable but done this way because of how
-          // things used to work with `autoDetect` and uncaught errors. Ideally we would surface
-          // this error to the error handler instead and continue refreshing the view like
-          // what would happen in the application.
-          this.unsubscribeFromAppRefEvents();
-
-          throw e;
-        }
-      });
-      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
-    });
-  }
-
-  private unsubscribeFromAppRefEvents() {
-    // TODO(atscott): Remove and make this a breaking change externally in v18
-    if (!isG3) {
-      return;
-    }
-
-    this.afterTickSubscription?.unsubscribe();
-    this.beforeRenderSubscription?.unsubscribe();
-    this.afterTickSubscription = undefined;
-    this.beforeRenderSubscription = undefined;
-    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-  }
-
   override destroy(): void {
-    this.unsubscribeFromAppRefEvents();
     this._subscriptions.unsubscribe();
     super.destroy();
   }
