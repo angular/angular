@@ -8,10 +8,11 @@
 
 import ts from 'typescript';
 
+import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {initMockFileSystem} from '../../file_system/testing';
 import {Reference} from '../../imports';
-import {TypeCheckingConfig} from '../api';
-import {ALL_ENABLED_CONFIG, tcb, TestDeclaration, TestDirective} from '../testing';
+import {OptimizeFor, TypeCheckingConfig} from '../api';
+import {ALL_ENABLED_CONFIG, setup, tcb, TestDeclaration, TestDirective} from '../testing';
 
 
 describe('type check blocks', () => {
@@ -1742,6 +1743,57 @@ describe('type check blocks', () => {
       const result = tcb(`@for (item of items; track trackingFn($index, item, prop)) {}`);
       expect(result).toContain('for (const _t1 of ((this).items)!) { var _t2 = null! as number;');
       expect(result).toContain('(this).trackingFn(_t2, _t1, ((this).prop));');
+    });
+  });
+
+  describe('import generation', () => {
+    const TEMPLATE = `<div dir [test]="null"></div>`;
+    const DIRECTIVE: TestDeclaration = {
+      type: 'directive',
+      name: 'Dir',
+      selector: '[dir]',
+      inputs: {
+        test: {
+          isSignal: true,
+          bindingPropertyName: 'test',
+          classPropertyName: 'test',
+          required: true,
+          transform: null,
+        }
+      }
+    };
+
+    it('should prefer namespace imports in type check files for new imports', () => {
+      const result = tcb(TEMPLATE, [DIRECTIVE]);
+
+      expect(result).toContain(`import * as i1 from '@angular/core';`);
+      expect(result).toContain(`[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`);
+    });
+
+    it('should re-use existing imports from original source files', () => {
+      // This is especially important for inline type check blocks.
+      // See: https://github.com/angular/angular/pull/53521#pullrequestreview-1778130879.
+      const {templateTypeChecker, program, programStrategy} = setup([{
+        fileName: absoluteFrom('/test.ts'),
+        templates: {'AppComponent': TEMPLATE},
+        declarations: [DIRECTIVE],
+        source: `
+          import {Component} from '@angular/core'; // should be re-used
+
+          class AppComponent {}
+          export class Dir {}
+        `,
+      }]);
+
+      // Trigger type check block generation.
+      templateTypeChecker.getDiagnosticsForFile(
+          getSourceFileOrError(program, absoluteFrom('/test.ts')), OptimizeFor.SingleFile);
+
+      const testSf = getSourceFileOrError(programStrategy.getProgram(), absoluteFrom('/test.ts'));
+      expect(testSf.text)
+          .toContain(
+              `import { Component, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE } from '@angular/core'; // should be re-used`);
+      expect(testSf.text).toContain(`[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`);
     });
   });
 });
