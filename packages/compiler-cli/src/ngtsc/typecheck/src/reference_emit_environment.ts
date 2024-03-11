@@ -22,7 +22,7 @@ import {ImportManager, translateExpression, translateType} from '../../translato
 export class ReferenceEmitEnvironment {
   constructor(
       readonly importManager: ImportManager, protected refEmitter: ReferenceEmitter,
-      readonly reflector: ReflectionHost, protected contextFile: ts.SourceFile) {}
+      readonly reflector: ReflectionHost, public contextFile: ts.SourceFile) {}
 
   canReferenceType(
       ref: Reference,
@@ -57,7 +57,7 @@ export class ReferenceEmitEnvironment {
    */
   referenceExternalSymbol(moduleName: string, name: string): ts.Expression {
     const external = new ExternalExpr({moduleName, name});
-    return translateExpression(external, this.importManager);
+    return translateExpression(this.contextFile, external, this.importManager);
   }
 
   /**

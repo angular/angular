@@ -6,21 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '@angular/compiler';
-import {ImportGenerator, NamedImport, TypeScriptAstFactory} from '@angular/compiler-cli/src/ngtsc/translator';
+import {TypeScriptAstFactory} from '@angular/compiler-cli/src/ngtsc/translator';
 import ts from 'typescript';
 
 import {Translator} from '../../src/file_linker/translator';
+import {LinkerImportGenerator} from '../../src/linker_import_generator';
+
 import {generate} from './helpers';
+
+const ngImport = ts.factory.createIdentifier('ngImport');
 
 describe('Translator', () => {
   let factory: TypeScriptAstFactory;
-  beforeEach(() => factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false));
+  let importGenerator: LinkerImportGenerator<ts.Statement, ts.Expression>;
+
+  beforeEach(() => {
+    factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
+    importGenerator = new LinkerImportGenerator<ts.Statement, ts.Expression>(factory, ngImport);
+  });
 
   describe('translateExpression()', () => {
     it('should generate expression specific output', () => {
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const outputAst = new o.WriteVarExpr('foo', new o.LiteralExpr(42));
-      const translated = translator.translateExpression(outputAst, new MockImportGenerator());
+      const translated = translator.translateExpression(outputAst, importGenerator);
       expect(generate(translated)).toEqual('(foo = 42)');
     });
   });
@@ -29,19 +38,8 @@ describe('Translator', () => {
     it('should generate statement specific output', () => {
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const outputAst = new o.ExpressionStatement(new o.WriteVarExpr('foo', new o.LiteralExpr(42)));
-      const translated = translator.translateStatement(outputAst, new MockImportGenerator());
+      const translated = translator.translateStatement(outputAst, importGenerator);
       expect(generate(translated)).toEqual('foo = 42;');
     });
   });
-  class MockImportGenerator implements ImportGenerator<ts.Expression> {
-    generateNamespaceImport(moduleName: string): ts.Expression {
-      return factory.createLiteral(moduleName);
-    }
-    generateNamedImport(moduleName: string, originalSymbol: string): NamedImport<ts.Expression> {
-      return {
-        moduleImport: factory.createLiteral(moduleName),
-        symbol: originalSymbol,
-      };
-    }
-  }
 });

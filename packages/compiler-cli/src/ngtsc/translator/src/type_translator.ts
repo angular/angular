@@ -13,21 +13,21 @@ import {assertSuccessfulReferenceEmit, ImportFlags, OwningModule, Reference, Ref
 import {AmbientImport, ReflectionHost} from '../../reflection';
 
 import {Context} from './context';
-import {ImportManager} from './import_manager';
+import {ImportManagerV2} from './import_manager/import_manager';
 import {tsNumericExpression} from './ts_util';
 import {TypeEmitter} from './type_emitter';
 
 
 export function translateType(
     type: o.Type, contextFile: ts.SourceFile, reflector: ReflectionHost,
-    refEmitter: ReferenceEmitter, imports: ImportManager): ts.TypeNode {
+    refEmitter: ReferenceEmitter, imports: ImportManagerV2): ts.TypeNode {
   return type.visitType(
       new TypeTranslatorVisitor(imports, contextFile, reflector, refEmitter), new Context(false));
 }
 
 class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
   constructor(
-      private imports: ImportManager, private contextFile: ts.SourceFile,
+      private imports: ImportManagerV2, private contextFile: ts.SourceFile,
       private reflector: ReflectionHost, private refEmitter: ReferenceEmitter) {}
 
   visitBuiltinType(type: o.BuiltinType, context: Context): ts.KeywordTypeNode {
@@ -148,12 +148,12 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol`);
     }
-    const {moduleImport, symbol} =
-        this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
-    const symbolIdentifier = ts.factory.createIdentifier(symbol);
-
-    const typeName = moduleImport ? ts.factory.createQualifiedName(moduleImport, symbolIdentifier) :
-                                    symbolIdentifier;
+    const typeName = this.imports.addImport({
+      exportModuleSpecifier: ast.value.moduleName,
+      exportSymbolName: ast.value.name,
+      requestedFile: this.contextFile,
+      asTypeReference: true
+    });
 
     const typeArguments = ast.typeParams !== null ?
         ast.typeParams.map(type => this.translateType(type, context)) :
