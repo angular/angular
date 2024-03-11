@@ -7,16 +7,17 @@
  */
 
 import {BoundTarget, ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
+import MagicString from 'magic-string';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
-import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
+import {Reference, ReferenceEmitter} from '../../imports';
 import {PipeMeta} from '../../metadata';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {FileUpdate} from '../../program_driver';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
-import {ImportManager} from '../../translator';
+import {ImportManagerV2} from '../../translator';
 import {TemplateDiagnostic, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 import {makeTemplateDiagnostic} from '../diagnostics';
 
@@ -27,7 +28,6 @@ import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
-import {getImportString} from './ts_util';
 import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
@@ -358,34 +358,61 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       return null;
     }
 
-    // Imports may need to be added to the file to support type-checking of directives used in the
-    // template within it.
-    const importManager = new ImportManager(new NoopImportRewriter(), '_i');
-
-    // Each Op has a splitPoint index into the text where it needs to be inserted. Split the
-    // original source text into chunks at these split points, where code will be inserted between
-    // the chunks.
-    const ops = this.opMap.get(sf)!.sort(orderOps);
-    const textParts = splitStringAtPoints(sf.text, ops.map(op => op.splitPoint));
-
     // Use a `ts.Printer` to generate source code.
     const printer = ts.createPrinter({omitTrailingSemicolon: true});
 
-    // Begin with the initial section of the code text.
-    let code = textParts[0];
-
-    // Process each operation and use the printer to generate source code for it, inserting it into
-    // the source code in between the original chunks.
-    ops.forEach((op, idx) => {
-      const text = op.execute(importManager, sf, this.refEmitter, printer);
-      code += '\n\n' + text + textParts[idx + 1];
+    // Imports may need to be added to the file to support type-checking of directives
+    // used in the template within it.
+    const importManager = new ImportManagerV2({
+      // This minimizes noticeable changes with older versions of `ImportManager`.
+      forceGenerateNamespacesForNewImports: true,
+      // Type check block code affects code completion and fix suggestions.
+      // We want to encourage single quotes for now, like we always did.
+      shouldUseSingleQuotes: () => true,
     });
 
-    // Write out the imports that need to be added to the beginning of the file.
-    let imports = importManager.getAllImports(sf.fileName).map(getImportString).join('\n');
-    code = imports + '\n' + code;
+    // Execute ops.
+    // Each Op has a splitPoint index into the text where it needs to be inserted.
+    const updates: {pos: number, deletePos?: number, text: string}[] =
+        this.opMap.get(sf)!.map(op => {
+          return {
+            pos: op.splitPoint,
+            text: op.execute(importManager, sf, this.refEmitter, printer),
+          };
+        });
 
-    return code;
+    const {newImports, updatedImports} = importManager.finalize();
+
+    // Capture new imports
+    if (newImports.has(sf.fileName)) {
+      newImports.get(sf.fileName)!.forEach(newImport => {
+        updates.push({
+          pos: 0,
+          text: printer.printNode(ts.EmitHint.Unspecified, newImport, sf),
+        });
+      });
+    }
+
+    // Capture updated imports
+    for (const [oldBindings, newBindings] of updatedImports.entries()) {
+      if (oldBindings.getSourceFile() !== sf) {
+        throw new Error('Unexpected updates to unrelated source files.');
+      }
+      updates.push({
+        pos: oldBindings.getStart(),
+        deletePos: oldBindings.getEnd(),
+        text: printer.printNode(ts.EmitHint.Unspecified, newBindings, sf),
+      });
+    }
+
+    const result = new MagicString(sf.text, {filename: sf.fileName});
+    for (const update of updates) {
+      if (update.deletePos !== undefined) {
+        result.remove(update.pos, update.deletePos);
+      }
+      result.appendLeft(update.pos, update.text);
+    }
+    return result.toString();
   }
 
   finalize(): Map<AbsoluteFsPath, FileUpdate> {
@@ -510,8 +537,9 @@ interface Op {
   /**
    * Execute the operation and return the generated code as text.
    */
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string;
+  execute(
+      im: ImportManagerV2, sf: ts.SourceFile, refEmitter: ReferenceEmitter,
+      printer: ts.Printer): string;
 }
 
 /**
@@ -531,16 +559,18 @@ class InlineTcbOp implements Op {
     return this.ref.node.end + 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string {
+  execute(
+      im: ImportManagerV2, sf: ts.SourceFile, refEmitter: ReferenceEmitter,
+      printer: ts.Printer): string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = ts.factory.createIdentifier(`_tcb_${this.ref.node.pos}`);
 
-    // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is inlined
-    // into the class in a context where that will always be legal.
+    // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is
+    // inlined into the class in a context where that will always be legal.
     const fn = generateTypeCheckBlock(
         env, this.ref, fnName, this.meta, this.domSchemaChecker, this.oobRecorder,
         TcbGenericContextBehavior.CopyClassNodes);
+
     return printer.printNode(ts.EmitHint.Unspecified, fn, sf);
   }
 }
@@ -560,8 +590,9 @@ class TypeCtorOp implements Op {
     return this.ref.node.end - 1;
   }
 
-  execute(im: ImportManager, sf: ts.SourceFile, refEmitter: ReferenceEmitter, printer: ts.Printer):
-      string {
+  execute(
+      im: ImportManagerV2, sf: ts.SourceFile, refEmitter: ReferenceEmitter,
+      printer: ts.Printer): string {
     const emitEnv = new ReferenceEmitEnvironment(im, refEmitter, this.reflector, sf);
     const tcb = generateInlineTypeCtor(emitEnv, this.ref.node, this.meta);
     return printer.printNode(ts.EmitHint.Unspecified, tcb, sf);

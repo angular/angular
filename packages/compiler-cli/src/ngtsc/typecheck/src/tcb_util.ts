@@ -19,17 +19,21 @@ import {ReferenceEmitEnvironment} from './reference_emit_environment';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 
 /**
- * External modules that always should exist for type check blocks and
- * file hosting inline type constructors.
+ * External modules/identifiers that always should exist for type check
+ * block files.
  *
  * Importing the modules in preparation helps ensuring a stable import graph
  * that would not degrade TypeScript's incremental program structure re-use.
+ *
+ * Note: For inline type check blocks, or type constructors, we cannot add preparation
+ * imports, but ideally the required modules are already imported and can be re-used
+ * to not incur a structural TypeScript program re-use discarding.
  */
-const TCB_FILE_IMPORT_GRAPH_PREPARE_MODULES = [
+const TCB_FILE_IMPORT_GRAPH_PREPARE_IDENTIFIERS = [
   // Imports may be added for signal input checking. We wouldn't want to change the
   // import graph for incremental compilations when suddenly a signal input is used,
   // or removed.
-  R3Identifiers.InputSignalBrandWriteType.moduleName,
+  R3Identifiers.InputSignalBrandWriteType,
 ];
 
 /**
@@ -194,8 +198,12 @@ function getTemplateId(
  * import graph changes whenever e.g. a signal input is introduced in user code.
  */
 export function ensureTypeCheckFilePreparationImports(env: ReferenceEmitEnvironment): void {
-  for (const moduleName of TCB_FILE_IMPORT_GRAPH_PREPARE_MODULES) {
-    env.importManager.generateNamespaceImport(moduleName);
+  for (const identifier of TCB_FILE_IMPORT_GRAPH_PREPARE_IDENTIFIERS) {
+    env.importManager.addImport({
+      exportModuleSpecifier: identifier.moduleName,
+      exportSymbolName: identifier.name,
+      requestedFile: env.contextFile,
+    });
   }
 }
 
