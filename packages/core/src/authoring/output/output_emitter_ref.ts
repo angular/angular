@@ -9,6 +9,7 @@
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {inject} from '../../di/injector_compatibility';
+import {ErrorHandler} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DestroyRef} from '../../linker/destroy_ref';
 
@@ -30,6 +31,7 @@ import {OutputRef, OutputRefSubscription} from './output_ref';
 export class OutputEmitterRef<T> implements OutputRef<T> {
   private destroyed = false;
   private listeners: Array<(value: T) => void>|null = null;
+  private errorHandler = inject(ErrorHandler, {optional: true});
 
   /** @internal */
   destroyRef: DestroyRef = inject(DestroyRef);
@@ -73,10 +75,19 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
                   'The owning directive/component is destroyed.');
     }
 
+    if (this.listeners === null) {
+      return;
+    }
+
     const previousConsumer = setActiveConsumer(null);
     try {
-      // TODO: Run every listener using `try/catch`.
-      this.listeners?.forEach(fn => fn(value));
+      for (const listenerFn of this.listeners) {
+        try {
+          listenerFn(value);
+        } catch (err: unknown) {
+          this.errorHandler?.handleError(err);
+        }
+      }
     } finally {
       setActiveConsumer(previousConsumer);
     }
