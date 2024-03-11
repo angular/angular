@@ -13,6 +13,8 @@ import {
   queryDirectiveForest,
 } from '../../../ng-devtools-backend/src/lib/component-tree';
 
+import {ElementPosition} from 'protocol';
+
 export const initializeExtendedWindowOperations = () => {
   extendWindowOperations(globalThis, {inspectedApplication: chromeWindowExtensions});
 };
@@ -63,7 +65,10 @@ const chromeWindowExtensions = {
     return node.nativeElement;
   },
   findPropertyByPosition: (args: any): any => {
-    const {directivePosition, objectPath} = JSON.parse(args);
+    const {directivePosition, objectPath} = JSON.parse(args) as {
+      directivePosition: {element: ElementPosition; directive: number};
+      objectPath: string[];
+    };
     const node = queryDirectiveForest(directivePosition.element, buildDirectiveForest());
     if (node === null) {
       console.error(`Cannot find element associated with node ${directivePosition}`);

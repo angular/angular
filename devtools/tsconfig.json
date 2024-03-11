@@ -1,14 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "plugins": [
-      {
-        "name": "@bazel/tsetse",
-        "disabledRules": [
-          "must-type-assert-json-parse"
-        ]
-      }
-    ],
     "baseUrl": "../",
     "outDir": "bazel-out/darwin-fastbuild/bin",
     "sourceMap": true,

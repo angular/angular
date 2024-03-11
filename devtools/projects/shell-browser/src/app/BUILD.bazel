@@ -58,6 +58,7 @@ ts_library(
     deps = [
         "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+        "//devtools/projects/protocol",
         "@npm//@types",
     ],
 )

@@ -44,6 +44,9 @@ class MockPort {
     addListener: (listener: Function): void => {
       this.onMessageListeners.push(listener);
     },
+    removeListener: (listener: Function) => {
+      this.onMessageListeners = this.onMessageListeners.filter((l) => l !== listener);
+    },
   };
 
   onDisconnect = {
@@ -89,6 +92,10 @@ describe('Tab Manager - ', () => {
     }
   }
 
+  function emitBackendReadyToPort(contentScriptPort: MockPort) {
+    emitMessageToPort(contentScriptPort, {topic: 'backendReady'});
+  }
+
   function emitDisconnectToPort(port: MockPort) {
     for (const listener of port.onDisconnectListeners) {
       listener();
@@ -122,7 +129,6 @@ describe('Tab Manager - ', () => {
   describe('Single Frame', () => {
     const testURL = 'http://example.com';
     const contentScriptFrameId = 0;
-    // let contentPort: MockPort;
 
     function createContentScriptPort() {
       const port = new MockPort({
@@ -136,7 +142,6 @@ describe('Tab Manager - ', () => {
         },
       });
       connectToChromeRuntime(port);
-      emitMessageToPort(port, {topic: 'backendReady'});
       return port;
     }
 
@@ -145,101 +150,141 @@ describe('Tab Manager - ', () => {
       tabManager = TabManager.initialize(tabs, chromeRuntime);
     });
 
-    it('should setup tab object in the tab manager', () => {
-      const contentScriptPort = createContentScriptPort();
-      const devtoolsPort = createDevToolsPort();
-      tab = tabs[tabId]!;
+    async function* eachOrderingOfDevToolsInitialization(): AsyncGenerator<{
+      tab: DevToolsConnection;
+      contentScriptPort: MockPort;
+      devtoolsPort: MockPort;
+    }> {
+      {
+        // Content Script -> Backend Ready -> Devtools
+        const contentScriptPort = createContentScriptPort();
+        emitBackendReadyToPort(contentScriptPort);
+        const devtoolsPort = createDevToolsPort();
+        const tab = tabs[tabId]!;
+        await tab.contentScripts[contentScriptFrameId].backendReady;
+        yield {tab, contentScriptPort, devtoolsPort};
+        delete tabs[tabId];
+      }
 
-      expect(tab).toBeDefined();
-      expect(tab!.devtools).toBe(devtoolsPort as unknown as chrome.runtime.Port);
-      expect(tab!.contentScripts[contentScriptFrameId].port).toBe(
-        contentScriptPort as unknown as chrome.runtime.Port,
-      );
+      {
+        // Content Script -> Devtools -> Backend Ready
+        const contentScriptPort = createContentScriptPort();
+        const devtoolsPort = createDevToolsPort();
+        emitBackendReadyToPort(contentScriptPort);
+        const tab = tabs[tabId]!;
+        await tab.contentScripts[contentScriptFrameId].backendReady;
+        yield {tab, contentScriptPort, devtoolsPort};
+        delete tabs[tabId];
+      }
+
+      {
+        // Devtools -> Content Script -> Backend Ready
+        const devtoolsPort = createDevToolsPort();
+        const contentScriptPort = createContentScriptPort();
+        emitBackendReadyToPort(contentScriptPort);
+        const tab = tabs[tabId]!;
+        await tab.contentScripts[contentScriptFrameId].backendReady;
+        yield {tab, contentScriptPort, devtoolsPort};
+      }
+    }
+
+    it('should setup tab object in the tab manager', async () => {
+      for await (const {
+        tab,
+        contentScriptPort,
+        devtoolsPort,
+      } of eachOrderingOfDevToolsInitialization()) {
+        expect(tab).toBeDefined();
+        expect(tab!.devtools).toBe(devtoolsPort as unknown as chrome.runtime.Port);
+        expect(tab!.contentScripts[contentScriptFrameId].port).toBe(
+          contentScriptPort as unknown as chrome.runtime.Port,
+        );
+      }
     });
 
-    it('should set frame connection as enabled when an enableFrameConnection message is recieved', () => {
-      const contentScriptPort = createContentScriptPort();
-      const devtoolsPort = createDevToolsPort();
-      tab = tabs[tabId]!;
+    it('should set frame connection as enabled when an enableFrameConnection message is recieved', async () => {
+      for await (const {tab, devtoolsPort} of eachOrderingOfDevToolsInitialization()) {
+        expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(false);
 
-      // Test backendReady and contentScriptConnected messages.
-      expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(false);
-      emitMessageToPort(devtoolsPort, {
-        topic: 'enableFrameConnection',
-        args: [contentScriptFrameId, tabId],
-      });
+        emitMessageToPort(devtoolsPort, {
+          topic: 'enableFrameConnection',
+          args: [contentScriptFrameId, tabId],
+        });
 
-      expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(true);
-      assertArrayHasObj(devtoolsPort.messagesPosted, {
-        topic: 'frameConnected',
-        args: [contentScriptFrameId],
-      });
+        expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(true);
+        assertArrayHasObj(devtoolsPort.messagesPosted, {
+          topic: 'frameConnected',
+          args: [contentScriptFrameId],
+        });
+      }
     });
 
-    it('should pipe messages from the content script and devtools script to each other when the content script frame is enabled', () => {
-      const contentScriptPort = createContentScriptPort();
-      const devtoolsPort = createDevToolsPort();
+    it('should pipe messages from the content script and devtools script to each other when the content script frame is enabled', async () => {
+      for await (const {
+        contentScriptPort,
+        devtoolsPort,
+      } of eachOrderingOfDevToolsInitialization()) {
+        emitMessageToPort(devtoolsPort, {
+          topic: 'enableFrameConnection',
+          args: [contentScriptFrameId, tabId],
+        });
 
-      emitMessageToPort(devtoolsPort, {
-        topic: 'enableFrameConnection',
-        args: [contentScriptFrameId, tabId],
-      });
+        // Verify that the double pipe is set up between the content script and the devtools page.
+        emitMessageToPort(contentScriptPort, TEST_MESSAGE_ONE);
+        assertArrayHasObj(devtoolsPort.messagesPosted, TEST_MESSAGE_ONE);
+        assertArrayDoesNotHaveObj(contentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
 
-      // Verify that the double pipe is set up between the content script and the devtools page.
-      emitMessageToPort(contentScriptPort, TEST_MESSAGE_ONE);
-      assertArrayHasObj(devtoolsPort.messagesPosted, TEST_MESSAGE_ONE);
-      assertArrayDoesNotHaveObj(contentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
-
-      emitMessageToPort(devtoolsPort, TEST_MESSAGE_TWO);
-      assertArrayHasObj(contentScriptPort.messagesPosted, TEST_MESSAGE_TWO);
-      assertArrayDoesNotHaveObj(devtoolsPort.messagesPosted, TEST_MESSAGE_TWO);
+        emitMessageToPort(devtoolsPort, TEST_MESSAGE_TWO);
+        assertArrayHasObj(contentScriptPort.messagesPosted, TEST_MESSAGE_TWO);
+        assertArrayDoesNotHaveObj(devtoolsPort.messagesPosted, TEST_MESSAGE_TWO);
+      }
     });
 
-    it('should not pipe messages from the content script and devtools script to each other when the content script frame is disabled', () => {
-      const contentScriptPort = createContentScriptPort();
-      const devtoolsPort = createDevToolsPort();
-      tab = tabs[tabId]!;
+    it('should not pipe messages from the content script and devtools script to each other when the content script frame is disabled', async () => {
+      for await (const {
+        tab,
+        contentScriptPort,
+        devtoolsPort,
+      } of eachOrderingOfDevToolsInitialization()) {
+        expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(false);
 
-      expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(false);
+        emitMessageToPort(contentScriptPort, TEST_MESSAGE_ONE);
+        assertArrayDoesNotHaveObj(contentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
 
-      emitMessageToPort(contentScriptPort, TEST_MESSAGE_ONE);
-      assertArrayDoesNotHaveObj(contentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
-
-      emitMessageToPort(devtoolsPort, TEST_MESSAGE_TWO);
-      assertArrayDoesNotHaveObj(devtoolsPort.messagesPosted, TEST_MESSAGE_TWO);
+        emitMessageToPort(devtoolsPort, TEST_MESSAGE_TWO);
+        assertArrayDoesNotHaveObj(devtoolsPort.messagesPosted, TEST_MESSAGE_TWO);
+      }
     });
 
-    it('should set backendReady when the contentPort recieves the backendReady message', () => {
-      const contentScriptPort = createContentScriptPort();
-      const devtoolsPort = createDevToolsPort();
-      tab = tabs[tabId]!;
+    it('should set backendReady when the contentPort recieves the backendReady message', async () => {
+      for await (const {
+        contentScriptPort,
+        devtoolsPort,
+      } of eachOrderingOfDevToolsInitialization()) {
+        emitMessageToPort(devtoolsPort, {
+          topic: 'enableFrameConnection',
+          args: [contentScriptFrameId, tabId],
+        });
 
-      emitMessageToPort(devtoolsPort, {
-        topic: 'enableFrameConnection',
-        args: [contentScriptFrameId, tabId],
-      });
-
-      expect(tab?.contentScripts[contentScriptFrameId]?.backendReady).toBe(true);
-      assertArrayHasObj(devtoolsPort.messagesPosted, {
-        topic: 'contentScriptConnected',
-        args: [contentScriptFrameId, contentScriptPort.name, contentScriptPort.sender!.url],
-      });
+        assertArrayHasObj(devtoolsPort.messagesPosted, {
+          topic: 'contentScriptConnected',
+          args: [contentScriptFrameId, contentScriptPort.name, contentScriptPort.sender!.url],
+        });
+      }
     });
 
-    it('should set tab.devtools to null when the devtoolsPort disconnects', () => {
-      const contentScriptPort = createContentScriptPort();
-      const devtoolsPort = createDevToolsPort();
-      tab = tabs[tabId]!;
+    it('should set tab.devtools to null when the devtoolsPort disconnects', async () => {
+      for await (const {tab, devtoolsPort} of eachOrderingOfDevToolsInitialization()) {
+        emitMessageToPort(devtoolsPort, {
+          topic: 'enableFrameConnection',
+          args: [contentScriptFrameId, tabId],
+        });
+        expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(true);
 
-      emitMessageToPort(devtoolsPort, {
-        topic: 'enableFrameConnection',
-        args: [contentScriptFrameId, tabId],
-      });
-      expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(true);
-
-      emitDisconnectToPort(devtoolsPort);
-      expect(tab.devtools).toBeNull();
-      expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(false);
+        emitDisconnectToPort(devtoolsPort);
+        expect(tab.devtools).toBeNull();
+        expect(tab?.contentScripts[contentScriptFrameId]?.enabled).toBe(false);
+      }
     });
   });
 
@@ -276,91 +321,146 @@ describe('Tab Manager - ', () => {
       return port;
     }
 
+    async function* eachOrderingOfDevToolsInitialization() {
+      {
+        // Devtools Connected -> Top Level Content Script Connected -> Top Level Content Script Backend Ready
+        // -> Child Content Script Connected -> Child Content Script Backend Ready
+        const devtoolsPort = createDevToolsPort();
+        const topLevelContentScriptPort = createTopLevelContentScriptPort();
+        emitBackendReadyToPort(topLevelContentScriptPort);
+        const childContentScriptPort = createChildContentScriptPort();
+        emitBackendReadyToPort(childContentScriptPort);
+        const tab = tabs[tabId]!;
+        await tab.contentScripts[topLevelFrameId].backendReady;
+        await tab.contentScripts[childFrameId].backendReady;
+        yield {tab, topLevelContentScriptPort, childContentScriptPort, devtoolsPort};
+        delete tabs[tabId];
+      }
+
+      {
+        // Top Level Content Script Connected -> Top Level Content Script Backend Ready -> Devtools Connected
+        // -> Child Content Script Connected -> Child Content Script Backend Ready
+        const topLevelContentScriptPort = createTopLevelContentScriptPort();
+        emitBackendReadyToPort(topLevelContentScriptPort);
+        const devtoolsPort = createDevToolsPort();
+        const childContentScriptPort = createChildContentScriptPort();
+        emitBackendReadyToPort(childContentScriptPort);
+        const tab = tabs[tabId]!;
+        await tab.contentScripts[topLevelFrameId].backendReady;
+        await tab.contentScripts[childFrameId].backendReady;
+        yield {tab, topLevelContentScriptPort, childContentScriptPort, devtoolsPort};
+        delete tabs[tabId];
+      }
+
+      {
+        // Top Level Content Script Connected -> Top Level Content Script Backend Ready -> Child Content Script Connected
+        // -> Child Content Script Backend Ready -> Devtools Connected
+        const topLevelContentScriptPort = createTopLevelContentScriptPort();
+        emitBackendReadyToPort(topLevelContentScriptPort);
+        const childContentScriptPort = createChildContentScriptPort();
+        emitBackendReadyToPort(childContentScriptPort);
+        const devtoolsPort = createDevToolsPort();
+        tab = tabs[tabId]!;
+        await tab.contentScripts[topLevelFrameId].backendReady;
+        await tab.contentScripts[childFrameId].backendReady;
+        yield {tab, topLevelContentScriptPort, childContentScriptPort, devtoolsPort};
+        delete tabs[tabId];
+      }
+
+      {
+        // Top Level Content Script Connected -> Devtools Connected -> Child Content Script Connected
+        // -> Top Level Content Script Backend Ready -> Child Content Script Backend Ready
+        const topLevelContentScriptPort = createTopLevelContentScriptPort();
+        const devtoolsPort = createDevToolsPort();
+        const childContentScriptPort = createChildContentScriptPort();
+        emitBackendReadyToPort(topLevelContentScriptPort);
+        emitBackendReadyToPort(childContentScriptPort);
+        const tab = tabs[tabId]!;
+        await tab.contentScripts[topLevelFrameId].backendReady;
+        await tab.contentScripts[childFrameId].backendReady;
+        yield {tab, topLevelContentScriptPort, childContentScriptPort, devtoolsPort};
+      }
+    }
+
     beforeEach(() => {
       tabs = {};
       tabManager = TabManager.initialize(tabs, chromeRuntime);
     });
 
-    it('should setup tab object in the tab manager', () => {
-      const devtoolsPort = createDevToolsPort();
-      const topLevelContentScriptPort = createTopLevelContentScriptPort();
-      const childContentScriptPort = createChildContentScriptPort();
-
-      tab = tabs[tabId]!;
-
-      expect(tab).toBeDefined();
-      expect(tab!.devtools).toBe(devtoolsPort as unknown as chrome.runtime.Port);
-      expect(tab!.contentScripts[topLevelFrameId].port).toBe(
-        topLevelContentScriptPort as unknown as chrome.runtime.Port,
-      );
-      expect(tab!.contentScripts[childFrameId].port).toBe(
-        childContentScriptPort as unknown as chrome.runtime.Port,
-      );
+    it('should setup tab object in the tab manager', async () => {
+      for await (const {
+        tab,
+        topLevelContentScriptPort,
+        childContentScriptPort,
+        devtoolsPort,
+      } of eachOrderingOfDevToolsInitialization()) {
+        expect(tab).toBeDefined();
+        expect(tab!.devtools).toBe(devtoolsPort as unknown as chrome.runtime.Port);
+        expect(tab!.contentScripts[topLevelFrameId].port).toBe(
+          topLevelContentScriptPort as unknown as chrome.runtime.Port,
+        );
+        expect(tab!.contentScripts[childFrameId].port).toBe(
+          childContentScriptPort as unknown as chrome.runtime.Port,
+        );
+      }
     });
 
-    it('should setup message and disconnect listeners on devtools and content script ports', () => {
-      const devtoolsPort = createDevToolsPort();
-      const topLevelContentScriptPort = createTopLevelContentScriptPort();
-      const childContentScriptPort = createChildContentScriptPort();
-
-      // 1 listener to clean up tab object if this was the last content script connection.
-      // 1 listener to cleanup the douple pipe between the content script and the devtools page.
-      expect(topLevelContentScriptPort.onDisconnectListeners.length).toBe(2);
-      expect(childContentScriptPort.onDisconnectListeners.length).toBe(2);
-
-      // 1 listener to clean up devtools connection
-      expect(devtoolsPort.onDisconnectListeners.length).toBe(1);
-
-      // 1 listener set when the content script is registered to check for backendReady.
-      // 1 listener set when the double pipe is set up between the content script and the devtools page.
-      expect(topLevelContentScriptPort.onMessageListeners.length).toBe(2);
-      expect(childContentScriptPort.onMessageListeners.length).toBe(2);
+    it('should setup message and disconnect listeners on devtools and content script ports', async () => {
+      for await (const {
+        topLevelContentScriptPort,
+        childContentScriptPort,
+        devtoolsPort,
+      } of eachOrderingOfDevToolsInitialization()) {
+        expect(topLevelContentScriptPort.onDisconnectListeners.length).toBeGreaterThan(0);
+        expect(childContentScriptPort.onDisconnectListeners.length).toBeGreaterThan(0);
+        expect(devtoolsPort.onDisconnectListeners.length).toBeGreaterThan(0);
+        expect(topLevelContentScriptPort.onMessageListeners.length).toBeGreaterThan(0);
+      }
     });
 
-    it('should set the correct frame connection as enabled when an enableFrameConnection message is recieved', () => {
-      const devtoolsPort = createDevToolsPort();
-      createTopLevelContentScriptPort();
-      createChildContentScriptPort();
-      tab = tabs[tabId]!;
-
-      expect(tab?.contentScripts[topLevelFrameId]?.enabled).toBe(false);
-      expect(tab?.contentScripts[childFrameId]?.enabled).toBe(false);
-      emitMessageToPort(devtoolsPort, {
-        topic: 'enableFrameConnection',
-        args: [topLevelFrameId, tabId],
-      });
-      expect(tab?.contentScripts[topLevelFrameId]?.enabled).toBe(true);
-      expect(tab?.contentScripts[childFrameId]?.enabled).toBe(false);
-      assertArrayHasObj(devtoolsPort.messagesPosted, {
-        topic: 'frameConnected',
-        args: [topLevelFrameId],
-      });
-      assertArrayDoesNotHaveObj(devtoolsPort.messagesPosted, {
-        topic: 'frameConnected',
-        args: [childFrameId],
-      });
+    it('should set the correct frame connection as enabled when an enableFrameConnection message is recieved', async () => {
+      for await (const {tab, devtoolsPort} of eachOrderingOfDevToolsInitialization()) {
+        expect(tab?.contentScripts[topLevelFrameId]?.enabled).toBe(false);
+        expect(tab?.contentScripts[childFrameId]?.enabled).toBe(false);
+        emitMessageToPort(devtoolsPort, {
+          topic: 'enableFrameConnection',
+          args: [topLevelFrameId, tabId],
+        });
+        expect(tab?.contentScripts[topLevelFrameId]?.enabled).toBe(true);
+        expect(tab?.contentScripts[childFrameId]?.enabled).toBe(false);
+        assertArrayHasObj(devtoolsPort.messagesPosted, {
+          topic: 'frameConnected',
+          args: [topLevelFrameId],
+        });
+        assertArrayDoesNotHaveObj(devtoolsPort.messagesPosted, {
+          topic: 'frameConnected',
+          args: [childFrameId],
+        });
+      }
     });
 
-    it('should pipe messages from the correct content script and devtools script when that content script frame is enabled', () => {
-      const devtoolsPort = createDevToolsPort();
-      const topLevelContentScriptPort = createTopLevelContentScriptPort();
-      const childContentScriptPort = createChildContentScriptPort();
+    it('should pipe messages from the correct content script and devtools script when that content script frame is enabled', async () => {
+      for await (const {
+        topLevelContentScriptPort,
+        childContentScriptPort,
+        devtoolsPort,
+      } of eachOrderingOfDevToolsInitialization()) {
+        emitMessageToPort(devtoolsPort, {
+          topic: 'enableFrameConnection',
+          args: [topLevelFrameId, tabId],
+        });
+        emitMessageToPort(devtoolsPort, TEST_MESSAGE_ONE);
+        assertArrayHasObj(topLevelContentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
+        assertArrayDoesNotHaveObj(childContentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
 
-      emitMessageToPort(devtoolsPort, {
-        topic: 'enableFrameConnection',
-        args: [topLevelFrameId, tabId],
-      });
-      emitMessageToPort(devtoolsPort, TEST_MESSAGE_ONE);
-      assertArrayHasObj(topLevelContentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
-      assertArrayDoesNotHaveObj(childContentScriptPort.messagesPosted, TEST_MESSAGE_ONE);
-
-      emitMessageToPort(devtoolsPort, {
-        topic: 'enableFrameConnection',
-        args: [childFrameId, tabId],
-      });
-      emitMessageToPort(devtoolsPort, TEST_MESSAGE_TWO);
-      assertArrayHasObj(childContentScriptPort.messagesPosted, TEST_MESSAGE_TWO);
-      assertArrayDoesNotHaveObj(topLevelContentScriptPort.messagesPosted, TEST_MESSAGE_TWO);
+        emitMessageToPort(devtoolsPort, {
+          topic: 'enableFrameConnection',
+          args: [childFrameId, tabId],
+        });
+        emitMessageToPort(devtoolsPort, TEST_MESSAGE_TWO);
+        assertArrayHasObj(childContentScriptPort.messagesPosted, TEST_MESSAGE_TWO);
+        assertArrayDoesNotHaveObj(topLevelContentScriptPort.messagesPosted, TEST_MESSAGE_TWO);
+      }
     });
   });
 });

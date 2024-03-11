@@ -56,7 +56,7 @@ export const mergeFrames = (frames: ProfilerFrame[]): ProfilerFrame | null => {
   if (!frames || !frames.length) {
     return null;
   }
-  const first = JSON.parse(JSON.stringify(frames[0]));
+  const first = JSON.parse(JSON.stringify(frames[0])) as ProfilerFrame;
   for (let i = 1; i < frames.length; i++) {
     mergeFrame(first, frames[i]);
   }
