@@ -390,7 +390,7 @@ export class Content implements Node {
   readonly name = 'ng-content';
 
   constructor(
-      public selector: string, public attributes: TextAttribute[],
+      public selector: string, public attributes: TextAttribute[], public children: Node[],
       public sourceSpan: ParseSourceSpan, public i18n?: I18nMeta) {}
   visit<Result>(visitor: Visitor<Result>): Result {
     return visitor.visitContent(this);
@@ -505,7 +505,9 @@ export class RecursiveVisitor implements Visitor<void> {
     block.expressionAlias && blockItems.push(block.expressionAlias);
     visitAll(this, blockItems);
   }
-  visitContent(content: Content): void {}
+  visitContent(content: Content): void {
+    visitAll(this, content.children);
+  }
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}
   visitTextAttribute(attribute: TextAttribute): void {}

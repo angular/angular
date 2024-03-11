@@ -47,7 +47,7 @@ class R3AstSourceSpans implements t.Visitor<void> {
 
   visitContent(content: t.Content) {
     this.result.push(['Content', humanizeSpan(content.sourceSpan)]);
-    t.visitAll(this, content.attributes);
+    this.visitAll([content.attributes, content.children]);
   }
 
   visitVariable(variable: t.Variable) {

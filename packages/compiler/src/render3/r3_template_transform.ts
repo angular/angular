@@ -206,16 +206,9 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     let parsedElement: t.Content|t.Template|t.Element|undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
-      // `<ng-content>`
-      if (element.children &&
-          !element.children.every(
-              (node: html.Node) => isEmptyTextNode(node) || isCommentNode(node))) {
-        this.reportError(`<ng-content> element cannot have content.`, element.sourceSpan);
-      }
       const selector = preparsedElement.selectAttr;
       const attrs: t.TextAttribute[] = element.attrs.map(attr => this.visitAttribute(attr));
-      parsedElement = new t.Content(selector, attrs, element.sourceSpan, element.i18n);
-
+      parsedElement = new t.Content(selector, attrs, children, element.sourceSpan, element.i18n);
       this.ngContentSelectors.push(selector);
     } else if (isTemplateElement) {
       // `<ng-template>`
@@ -687,14 +680,6 @@ function normalizeAttributeName(attrName: string): string {
 
 function addEvents(events: ParsedEvent[], boundEvents: t.BoundEvent[]) {
   boundEvents.push(...events.map(e => t.BoundEvent.fromParsedEvent(e)));
-}
-
-function isEmptyTextNode(node: html.Node): boolean {
-  return node instanceof html.Text && node.value.trim().length == 0;
-}
-
-function isCommentNode(node: html.Node): boolean {
-  return node instanceof html.Comment;
 }
 
 function textContents(node: html.Element): string|null {
