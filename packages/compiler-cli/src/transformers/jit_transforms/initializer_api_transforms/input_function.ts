@@ -54,10 +54,11 @@ export const signalInputsTransform: PropertyTransform = (
     'transform': factory.createIdentifier('undefined'),
   };
 
+  const sourceFile = member.getSourceFile();
   const newDecorator = factory.createDecorator(
       factory.createCallExpression(
           createSyntheticAngularCoreDecoratorAccess(
-              factory, importManager, classDecorator, 'Input'),
+              factory, importManager, classDecorator, sourceFile, 'Input'),
           undefined,
           [
             // Cast to `any` because `isSignal` will be private, and in case this

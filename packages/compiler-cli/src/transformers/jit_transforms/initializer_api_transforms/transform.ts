@@ -11,8 +11,7 @@ import ts from 'typescript';
 import {isAngularDecorator} from '../../../ngtsc/annotations';
 import {ImportedSymbolsTracker} from '../../../ngtsc/imports';
 import {ReflectionHost} from '../../../ngtsc/reflection';
-import {addImports} from '../../../ngtsc/transform';
-import {ImportManager} from '../../../ngtsc/translator';
+import {ImportManagerV2} from '../../../ngtsc/translator';
 
 import {signalInputsTransform} from './input_function';
 import {signalModelTransform} from './model_function';
@@ -48,7 +47,7 @@ export function getInitializerApiJitTransform(
     ): ts.TransformerFactory<ts.SourceFile> {
   return ctx => {
     return sourceFile => {
-      const importManager = new ImportManager(undefined, undefined, ctx.factory);
+      const importManager = new ImportManagerV2();
 
       sourceFile = ts.visitNode(
           sourceFile,
@@ -56,12 +55,7 @@ export function getInitializerApiJitTransform(
           ts.isSourceFile,
       );
 
-      const newImports = importManager.getAllImports(sourceFile.fileName);
-      if (newImports.length > 0) {
-        sourceFile = addImports(ctx.factory, importManager, sourceFile);
-      }
-
-      return sourceFile;
+      return importManager.transformTsFile(ctx, sourceFile);
     };
   };
 }
@@ -69,7 +63,7 @@ export function getInitializerApiJitTransform(
 function createTransformVisitor(
     ctx: ts.TransformationContext,
     host: ReflectionHost,
-    importManager: ImportManager,
+    importManager: ImportManagerV2,
     importTracker: ImportedSymbolsTracker,
     isCore: boolean,
     ): ts.Visitor<ts.Node, ts.Node> {

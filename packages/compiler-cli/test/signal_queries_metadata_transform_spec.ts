@@ -137,12 +137,12 @@ describe('signal queries metadata transform', () => {
 
     expect(result).toContain(omitLeadingWhitespace(`
       __decorate([
-        i0.ViewChild('el', { ...{ read: SomeToken }, isSignal: true })
+        bla.ViewChild('el', { ...{ read: SomeToken }, isSignal: true })
         ], MyDir.prototype, "el", void 0);
     `));
     expect(result).toContain(omitLeadingWhitespace(`
       __decorate([
-        i0.ViewChild('el', { ...{ read: bla.Component }, isSignal: true })
+        bla.ViewChild('el', { ...{ read: bla.Component }, isSignal: true })
         ], MyDir.prototype, "el2", void 0);
   `));
   });
