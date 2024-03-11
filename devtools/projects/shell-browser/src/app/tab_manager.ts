@@ -14,7 +14,7 @@ export interface ContentScriptConnection {
   port: chrome.runtime.Port | null;
   enabled: boolean;
   frameId: 'devtools' | number;
-  backendReady?: boolean;
+  backendReady?: Promise<void>;
 }
 
 export interface DevToolsConnection {
@@ -90,15 +90,18 @@ export class TabManager {
     // we need to set up the double pipe between the devtools and each content script, and send
     // the contentScriptConnected message to the devtools page to inform it of all frames on the page.
     for (const [frameId, connection] of Object.entries(tab.contentScripts)) {
-      if (connection.port === null || connection.backendReady !== true) {
-        continue;
-      }
-
-      tab.devtools!.postMessage({
-        topic: 'contentScriptConnected',
-        args: [parseInt(frameId, 10), connection.port.name, connection.port.sender!.url],
+      connection.backendReady!.then(() => {
+        if (connection.port === null) {
+          throw new Error(
+            'Expected Content to have already connected before the backendReady event on the same page.',
+          );
+        }
+        this.doublePipe(tab.devtools, connection);
+        tab.devtools!.postMessage({
+          topic: 'contentScriptConnected',
+          args: [parseInt(frameId, 10), connection.port.name, connection.port.sender!.url],
+        });
       });
-      this.doublePipe(tab.devtools, connection);
     }
   }
 
@@ -126,7 +129,7 @@ export class TabManager {
 
     // When the content script disconnects, clean up the connection state we're storing in the
     // background page.
-    contentScript.port.onDisconnect.addListener(() => {
+    port.onDisconnect.addListener(() => {
       delete tab.contentScripts[frameId];
 
       if (Object.keys(tab.contentScripts).length === 0) {
@@ -134,20 +137,33 @@ export class TabManager {
       }
     });
 
-    // Listen for the backendReady message from the content script. This message is sent when the
-    // content script has loaded the backend bundle and is ready to receive messages from the
-    // backend.
-    contentScript.port!.onMessage.addListener((message) => {
-      if (message.topic === 'backendReady') {
-        contentScript.backendReady = true;
-      }
-    });
+    contentScript.backendReady = new Promise((resolveBackendReady) => {
+      const onBackendReady = (message: {topic: string}) => {
+        if (message.topic === 'backendReady') {
+          // If DevTools is not yet connected, this resolve will enable devtools to eventually connect to this
+          // content script (even though the content script connected first)
+          resolveBackendReady();
 
-    // If the devtools connection is already established, set up the double pipe between the
-    // devtools and the content script.
-    if (tab.devtools) {
-      this.doublePipe(tab.devtools, tab.contentScripts[frameId]);
-    }
+          // If the devtools connection is already established, set up the double pipe between the
+          // devtools and the content script.
+          if (tab.devtools) {
+            this.doublePipe(tab.devtools, contentScript);
+
+            tab.devtools.postMessage({
+              topic: 'contentScriptConnected',
+              args: [frameId, contentScript.port!.name, contentScript.port!.sender!.url],
+            });
+          }
+
+          port.onMessage.removeListener(onBackendReady);
+        }
+      };
+
+      port.onMessage.addListener(onBackendReady);
+      port.onDisconnect.addListener(() => {
+        port.onMessage.removeListener(onBackendReady);
+      });
+    });
   }
 
   private doublePipe(
@@ -206,18 +222,6 @@ export class TabManager {
     devtoolsPort.onMessage.addListener(onDevToolsMessage);
 
     const onContentScriptMessage = (message: {topic: Topic; args: Parameters<Events[Topic]>}) => {
-      if (message.topic === 'backendReady') {
-        devtoolsPort.postMessage({
-          topic: 'contentScriptConnected',
-          args: [
-            contentScriptConnection.frameId,
-            contentScriptConnection.port!.name,
-            contentScriptConnection.port!.sender!.url,
-          ],
-        });
-        return;
-      }
-
       // Do not allow any message to be sent if a content script is not enabled. This is the
       // mechanism that lets us select which content script connection Angular Devtools is connected
       // to.
@@ -237,9 +241,7 @@ export class TabManager {
       });
 
       contentScriptPort.onMessage.removeListener(onContentScriptMessage);
-      contentScriptPort.disconnect();
     };
-
     contentScriptPort.onDisconnect.addListener(() => shutdownContentScript());
   }
 }
