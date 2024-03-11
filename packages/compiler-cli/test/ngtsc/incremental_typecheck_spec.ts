@@ -1601,11 +1601,10 @@ runInEachFileSystem(() => {
         expectCompleteReuse(env.getReuseTsProgram());
       });
 
-      // TODO(devversion): look into fixing this for inline TCB and inline type ctors.
-      xit('should completely re-use structure when an inline constructor generic directive starts using input signals',
-          () => {
-            env.tsconfig({strictTemplates: true});
-            env.write('dir.ts', `
+      it('should completely re-use structure when an inline constructor generic directive starts using input signals',
+         () => {
+           env.tsconfig({strictTemplates: true});
+           env.write('dir.ts', `
             import {Directive, Input} from '@angular/core';
 
             class SomeNonExportedClass {}
@@ -1617,7 +1616,7 @@ runInEachFileSystem(() => {
               @Input() dir: T|undefined;
             }
           `);
-            env.write('cmp.ts', `
+           env.write('cmp.ts', `
             import {Component} from '@angular/core';
 
             @Component({
@@ -1628,7 +1627,7 @@ runInEachFileSystem(() => {
               foo = 'foo';
             }
           `);
-            env.write('mod.ts', `
+           env.write('mod.ts', `
             import {NgModule} from '@angular/core';
             import {Cmp} from './cmp';
             import {Dir} from './dir';
@@ -1638,10 +1637,10 @@ runInEachFileSystem(() => {
             })
             export class Mod {}
           `);
-            env.driveMain();
+           env.driveMain();
 
-            // turn the input into a signal input- causing a new import.
-            env.write('dir.ts', `
+           // turn the input into a signal input- causing a new import.
+           env.write('dir.ts', `
             import {Directive, input} from '@angular/core';
 
             class SomeNonExportedClass {}
@@ -1653,11 +1652,11 @@ runInEachFileSystem(() => {
               dir = input.required<T>();
             }
           `);
-            env.driveMain();
+           env.driveMain();
 
-            expectCompleteReuse(env.getTsProgram());
-            expectCompleteReuse(env.getReuseTsProgram());
-          });
+           expectCompleteReuse(env.getTsProgram());
+           expectCompleteReuse(env.getReuseTsProgram());
+         });
     });
   });
 });
