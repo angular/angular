@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, effect, EventEmitter, output, signal} from '@angular/core';
+import {Component, Directive, effect, ErrorHandler, EventEmitter, output, signal} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {BehaviorSubject, Observable, share, Subject} from 'rxjs';
@@ -320,6 +320,55 @@ describe('output() function', () => {
 
       expect(dir.streamStarted).toBe(false);
       expect(dir2.streamStarted).toBe(true);
+    });
+
+    it('should report subscription listener errors to `ErrorHandler` and continue', () => {
+      @Directive({
+        selector: '[dir]',
+        standalone: true,
+      })
+      class Dir {
+        onBla = output();
+      }
+
+      @Component({
+        template: `
+          <div dir (onBla)="true"></div>
+        `,
+        standalone: true,
+        imports: [Dir],
+      })
+      class App {
+      }
+
+      let handledErrors: unknown[] = [];
+      TestBed.configureTestingModule({
+        providers: [{
+          provide: ErrorHandler, useClass: class Handler extends ErrorHandler {
+            override handleError(error: unknown): void {
+              handledErrors.push(error);
+            }
+          }
+        }],
+      });
+
+      const fixture = TestBed.createComponent(App);
+      const dir = fixture.debugElement.children[0].injector.get(Dir);
+      fixture.detectChanges();
+
+      let triggered = 0;
+      dir.onBla.subscribe(() => {
+        throw new Error('first programmatic listener failure');
+      });
+      dir.onBla.subscribe(() => {
+        triggered++;
+      });
+
+      dir.onBla.emit();
+
+      expect(handledErrors.length).toBe(1);
+      expect((handledErrors[0] as Error).message).toBe('first programmatic listener failure');
+      expect(triggered).toBe(1);
     });
   });
 });
