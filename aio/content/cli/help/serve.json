@@ -10,7 +10,7 @@
     {
       "name": "allowed-hosts",
       "type": "array",
-      "description": "List of hosts that are allowed to access the dev server."
+      "description": "List of hosts that are allowed to access the dev server. This option has no effect when using the 'application' or other esbuild-based builders."
     },
     {
       "name": "browser-target",
@@ -35,7 +35,7 @@
       "name": "disable-host-check",
       "type": "boolean",
       "default": false,
-      "description": "Don't verify connected clients are part of allowed hosts."
+      "description": "Don't verify connected clients are part of allowed hosts. This option has no effect when using the 'application' or other esbuild-based builders."
     },
     {
       "name": "force-esbuild",
@@ -105,7 +105,7 @@
     {
       "name": "public-host",
       "type": "string",
-      "description": "The URL that the browser client (or live-reload client, if enabled) should use to connect to the development server. Use for a complex dev server setup, such as one with reverse proxies."
+      "description": "The URL that the browser client (or live-reload client, if enabled) should use to connect to the development server. Use for a complex dev server setup, such as one with reverse proxies. This option has no effect when using the 'application' or other esbuild-based builders."
     },
     {
       "name": "serve-path",
