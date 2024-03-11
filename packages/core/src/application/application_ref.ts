@@ -718,9 +718,7 @@ export function detectChangesInViewIfRequired(
 }
 
 function shouldRecheckView(view: LView): boolean {
-  return requiresRefreshOrTraversal(view) ||
-      // TODO(atscott): Remove isG3 check and make this a breaking change for v18
-      (isG3 && !!(view[FLAGS] & LViewFlags.Dirty));
+  return requiresRefreshOrTraversal(view);
 }
 
 function detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
