@@ -35,19 +35,19 @@ runInEachFileSystem(() => {
 
     it('should check a simple component', () => {
       env.write('test.ts', `
-    import {Component, NgModule} from '@angular/core';
+        import {Component, NgModule} from '@angular/core';
 
-    @Component({
-      selector: 'test',
-      template: 'I am a simple template with no type info',
-    })
-    class TestCmp {}
+        @Component({
+          selector: 'test',
+          template: 'I am a simple template with no type info',
+        })
+        class TestCmp {}
 
-    @NgModule({
-      declarations: [TestCmp],
-    })
-    class Module {}
-    `);
+        @NgModule({
+          declarations: [TestCmp],
+        })
+        class Module {}
+      `);
 
       env.driveMain();
     });
@@ -535,6 +535,52 @@ runInEachFileSystem(() => {
       expect(diags[0].messageText).toEqual(jasmine.objectContaining({
         messageText: `Type '(val: string) => number' is not assignable to type 'TestFn'.`,
       }));
+    });
+
+    it('should check the fallback content of ng-content', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          template: \`
+            <ng-content>
+              <button (click)="acceptsNumber('hello')"></button>
+            </ng-content>
+          \`,
+        })
+        class TestCmp {
+          acceptsNumber(value: number) {}
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText)
+          .toContain(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
+    });
+
+    it('should not allow references to the default content of ng-content', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          standalone: true,
+          template: \`
+            <ng-content>
+              <input #input/>
+            </ng-content>
+
+            {{input.value}}
+          \`,
+        })
+        class TestCmp {
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toContain(`Property 'input' does not exist on type 'TestCmp'.`);
     });
 
     describe('strictInputTypes', () => {

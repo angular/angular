@@ -441,6 +441,7 @@ class TemplateTargetVisitor implements TmplAstVisitor {
 
   visitContent(content: TmplAstContent) {
     tmplAstVisitAll(this, content.attributes);
+    this.visitAll(content.children);
   }
 
   visitVariable(variable: TmplAstVariable) {
