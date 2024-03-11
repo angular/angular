@@ -26,6 +26,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/typecheck/diagnostics",
         "//packages/compiler-cli/src/ngtsc/util",
         "@npm//@types/node",
+        "@npm//magic-string",
         "@npm//typescript",
     ],
 )
