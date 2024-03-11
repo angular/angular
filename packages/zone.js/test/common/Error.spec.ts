@@ -287,6 +287,47 @@ describe('ZoneAwareError', () => {
     }
   });
 
+  it('should not access the `stack` property immediately when the policy is `lazy`', () => {
+    if (policy !== 'lazy' || !(Error as any)['stackRewrite']) {
+      return;
+    }
+
+    class LazyStackError extends Error {
+      /** @internal **/
+      _nativeError: Error;
+
+      stackHasBeenRead = false;
+
+      constructor(message: string) {
+        super();
+        const nativeError = new Error(message) as any as Error;
+        this._nativeError = nativeError;
+      }
+
+      override get stack() {
+        this.stackHasBeenRead = true;
+        return this._nativeError.stack;
+      }
+    }
+
+    const rootZone = Zone.root;
+    rootZone.run(testFn);
+
+    function testFn() {
+      let lazyStackError: LazyStackError;
+      try {
+        throw new LazyStackError('lazy stack');
+      } catch (error: unknown) {
+        lazyStackError = (error as LazyStackError);
+      }
+
+      expect(lazyStackError.stackHasBeenRead).toEqual(false);
+      const {zoneAwareStack} = lazyStackError;
+      expect(lazyStackError.stackHasBeenRead).toEqual(true);
+      expect(zoneAwareStack).toMatch(/Error: lazy stack/);
+    }
+  });
+
   const zoneAwareFrames = [
     'Zone.run', 'Zone.runGuarded', 'Zone.scheduleEventTask', 'Zone.scheduleMicroTask',
     'Zone.scheduleMacroTask', 'Zone.runTask', 'ZoneDelegate.scheduleTask',
