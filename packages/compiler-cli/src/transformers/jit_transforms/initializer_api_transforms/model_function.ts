@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 
 import {isAngularDecorator, tryParseSignalModelMapping} from '../../../ngtsc/annotations';
-import {ImportManager} from '../../../ngtsc/translator';
+import {ImportManagerV2} from '../../../ngtsc/translator';
 
-import {PropertyTransform} from './transform_api';
+import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './transform_api';
 
 /**
  * Transform that automatically adds `@Input` and `@Output` to members initialized as `model()`.
@@ -23,7 +24,7 @@ export const signalModelTransform: PropertyTransform = (
     factory,
     importTracker,
     importManager,
-    decorator,
+    classDecorator,
     isCore,
     ) => {
   if (host.getDecoratorsOfDeclaration(member)?.some(d => {
@@ -42,10 +43,6 @@ export const signalModelTransform: PropertyTransform = (
     return member;
   }
 
-  const classDecoratorIdentifier = ts.isIdentifier(decorator.identifier) ?
-      decorator.identifier :
-      decorator.identifier.expression;
-
   const inputConfig = factory.createObjectLiteralExpression([
     factory.createPropertyAssignment(
         'isSignal', modelMapping.input.isSignal ? factory.createTrue() : factory.createFalse()),
@@ -55,6 +52,7 @@ export const signalModelTransform: PropertyTransform = (
         'required', modelMapping.input.required ? factory.createTrue() : factory.createFalse()),
   ]);
 
+  const sourceFile = member.getSourceFile();
   const inputDecorator = createDecorator(
       'Input',
       // Config is cast to `any` because `isSignal` will be private, and in case this
@@ -62,11 +60,11 @@ export const signalModelTransform: PropertyTransform = (
       // not fail. It is already validated now due to us parsing the input metadata.
       factory.createAsExpression(
           inputConfig, factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
-      classDecoratorIdentifier, factory, importManager);
+      classDecorator, factory, sourceFile, importManager);
 
   const outputDecorator = createDecorator(
       'Output', factory.createStringLiteral(modelMapping.output.bindingPropertyName),
-      classDecoratorIdentifier, factory, importManager);
+      classDecorator, factory, sourceFile, importManager);
 
   return factory.updatePropertyDeclaration(
       member,
@@ -79,14 +77,10 @@ export const signalModelTransform: PropertyTransform = (
 };
 
 function createDecorator(
-    name: string, config: ts.Expression, classDecoratorIdentifier: ts.Identifier,
-    factory: ts.NodeFactory, importManager: ImportManager): ts.Decorator {
-  const callTarget = factory.createPropertyAccessExpression(
-      importManager.generateNamespaceImport('@angular/core'),
-      // The synthetic identifier may be checked later by the downlevel decorators
-      // transform to resolve to an Angular import using `getSymbolAtLocation`. We trick
-      // the transform to think it's not synthetic and comes from Angular core.
-      ts.setOriginalNode(factory.createIdentifier(name), classDecoratorIdentifier));
+    name: string, config: ts.Expression, classDecorator: Decorator, factory: ts.NodeFactory,
+    sourceFile: ts.SourceFile, importManager: ImportManagerV2): ts.Decorator {
+  const callTarget = createSyntheticAngularCoreDecoratorAccess(
+      factory, importManager, classDecorator, sourceFile, name);
 
   return factory.createDecorator(factory.createCallExpression(callTarget, undefined, [config]));
 }
