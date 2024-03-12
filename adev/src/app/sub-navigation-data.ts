@@ -766,8 +766,8 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Security',
-        path: 'guide/security', // Have not refactored due to build issues
-        contentPath: 'best-practices/security',
+        path: 'best-practices/security',
+        contentPath: 'guide/security', // Have not refactored due to build issues
       },
       {
         label: 'Accessibility',
