@@ -277,7 +277,7 @@ export class NgCompiler {
    * `NgCompiler` use a `DelegatingPerfRecorder` so the `PerfRecorder` they write to can be updated
    * with each fresh compilation.
    */
-  private delegatingPerfRecorder = new DelegatingPerfRecorder(this.perfRecorder);
+  private delegatingPerfRecorder: DelegatingPerfRecorder;
 
   /**
    * Convert a `CompilationTicket` into an `NgCompiler` instance for the requested compilation.
@@ -332,6 +332,7 @@ export class NgCompiler {
       readonly usePoisonedData: boolean,
       private livePerfRecorder: ActivePerfRecorder,
   ) {
+    this.delegatingPerfRecorder = new DelegatingPerfRecorder(this.perfRecorder);
     this.enableTemplateTypeChecker =
         enableTemplateTypeChecker || (options['_enableTemplateTypeChecker'] ?? false);
     // TODO(crisbeto): remove this flag and base `enableBlockSyntax` on the `angularCoreVersion`.
