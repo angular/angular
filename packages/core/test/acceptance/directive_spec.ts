@@ -208,16 +208,25 @@ describe('directives', () => {
       class TitleClassDirective {
       }
 
-      TestBed.configureTestingModule({declarations: [TestComponent, TitleClassDirective]});
-      TestBed.overrideTemplate(TestComponent, `
-        <div *ngIf="false" class="titleDir"></div>
-      `);
+      @Component({selector: 'test-cmp', template: `<div *ngIf="condition" class="titleDir"></div>`})
+      class TestCmp {
+        condition = false;
+      }
 
-      const fixture = TestBed.createComponent(TestComponent);
-      const nodesWithDirective =
+      TestBed.configureTestingModule({declarations: [TestCmp, TitleClassDirective]});
+
+      const fixture = TestBed.createComponent(TestCmp);
+
+      const initialNodesWithDirective =
           fixture.debugElement.queryAllNodes(By.directive(TitleClassDirective));
+      expect(initialNodesWithDirective.length).toBe(0);
 
-      expect(nodesWithDirective.length).toBe(0);
+      fixture.componentInstance.condition = true;
+      fixture.detectChanges();
+
+      const changedNodesWithDirective =
+          fixture.debugElement.queryAllNodes(By.directive(TitleClassDirective));
+      expect(changedNodesWithDirective.length).toBe(1);
     });
 
     it('should NOT match classes to directive selectors', () => {
