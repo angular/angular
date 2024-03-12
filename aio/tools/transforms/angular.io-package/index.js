@@ -7,14 +7,10 @@
  */
 const Package = require('dgeni').Package;
 const gitPackage = require('dgeni-packages/git');
-const apiPackage = require('../angular-api-package');
-const contentPackage = require('../angular-content-package');
-const extendedDiagnosticsPackage = require('../angular-extended-diagnostics-package');
-const cliDocsPackage = require('../cli-docs-package');
 
 module.exports = new Package(
     'angular.io',
-    [gitPackage, apiPackage, contentPackage, cliDocsPackage, extendedDiagnosticsPackage])
+    [gitPackage])
 
   // This processor relies upon the versionInfo. See below...
   .processor(require('./processors/createOverviewDump'))

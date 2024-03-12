@@ -161,21 +161,6 @@ def docs_example(name, test = True, test_tags = [], test_exec_properties = {}, f
     )
 
     stackblitz_configs = native.glob(["*stackblitz.json"])
-
-    if EXAMPLES[name]["stackblitz"] and len(stackblitz_configs) > 0:
-        # Generate stackblitz live example(s)
-        outs = [file_name.replace(".json", ".html") for file_name in stackblitz_configs]
-        npm_package_bin(
-            name = "stackblitz",
-            args = [
-                "$(execpath :%s)" % name,
-                "$(RULEDIR)",
-            ],
-            data = [":%s" % name],
-            outs = outs,
-            tool = "//aio/tools/stackblitz-builder:generate-stackblitz",
-        )
-
     zip_configs = stackblitz_configs + native.glob(["zipper.json"])
 
     if EXAMPLES[name]["zip"] and len(zip_configs) > 0:
