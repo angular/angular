@@ -2,7 +2,7 @@ workspace(
     name = "angular",
     managed_directories = {
         "@npm": ["node_modules"],
-        "@aio_npm": ["aio/node_modules"],
+"@aio_npm": ["aio/node_modules"],
     },
 )
 

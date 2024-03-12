@@ -1,6 +1,6 @@
 load("//tools:defaults.bzl", "nodejs_binary")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 load("//:packages.bzl", "AIO_EXAMPLE_PACKAGES", "to_package_label")
 
 package(default_visibility = ["//visibility:public"])
@@ -18,11 +18,11 @@ js_library(
     ],
     deps = [
         "//aio/tools/examples/shared",
-        "@aio_npm//canonical-path",
-        "@aio_npm//fs-extra",
-        "@aio_npm//ignore",
-        "@aio_npm//shelljs",
-        "@aio_npm//yargs",
+        "@npm//canonical-path",
+        "@npm//fs-extra",
+        "@npm//ignore",
+        "@npm//shelljs",
+        "@npm//yargs",
     ],
 )
 
@@ -35,7 +35,10 @@ nodejs_binary(
 jasmine_node_test(
     name = "example-boilerplate-test",
     srcs = ["example-boilerplate.spec.mjs"],
-    deps = [":example-boilerplate-lib"],
+    deps = [
+      ":example-boilerplate-lib",
+      "@npm//glob"
+    ],
 )
 
 js_library(
@@ -46,12 +49,12 @@ js_library(
         "constants.mjs",
     ] + glob(["shared/**"]),
     deps = [
-        "@aio_npm//@bazel/buildozer",
-        "@aio_npm//canonical-path",
-        "@aio_npm//fs-extra",
-        "@aio_npm//ignore",
-        "@aio_npm//shelljs",
-        "@aio_npm//yargs",
+        "@npm//@bazel/buildozer",
+        "@npm//canonical-path",
+        "@npm//fs-extra",
+        "@npm//ignore",
+        "@npm//shelljs",
+        "@npm//yargs",
     ],
 )
 
@@ -64,16 +67,19 @@ nodejs_binary(
 jasmine_node_test(
     name = "create-example-test",
     srcs = ["create-example.spec.mjs"],
-    deps = [":create-example-lib"],
+    deps = [
+      ":create-example-lib",
+      "@npm//glob"
+  ],
 )
 
 js_library(
     name = "example-sandbox",
     srcs = ["example-sandbox.mjs"],
     deps = [
-        "@aio_npm//cjson",
-        "@aio_npm//fs-extra",
-        "@aio_npm//globby",
+        "@npm//cjson",
+        "@npm//fs-extra",
+        "@npm//globby",
     ],
 )
 
@@ -84,15 +90,15 @@ js_library(
     ],
     deps = [
         ":example-sandbox",
-        "@aio_npm//@bazel/runfiles",
-        "@aio_npm//canonical-path",
-        "@aio_npm//cross-spawn",
-        "@aio_npm//fs-extra",
-        "@aio_npm//get-port",
-        "@aio_npm//globby",
-        "@aio_npm//shelljs",
-        "@aio_npm//tree-kill",
-        "@aio_npm//yargs",
+        "@npm//@bazel/runfiles",
+        "@npm//canonical-path",
+        "@npm//cross-spawn",
+        "@npm//fs-extra",
+        "@npm//get-port",
+        "@npm//globby",
+        "@npm//shelljs",
+        "@npm//tree-kill",
+        "@npm//yargs",
     ],
 )
 
