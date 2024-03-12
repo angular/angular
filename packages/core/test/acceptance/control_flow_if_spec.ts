@@ -685,15 +685,22 @@ describe('control flow - if', () => {
          @Component({
            standalone: true,
            imports: [TestComponent, TemplateDirective],
-           template: `<test>Before @if (true) {
+           template: `<test>Before @if (condition) {
           <div class="foo">foo</div>
       } After</test>
       `
          })
          class App {
+           condition = false;
          }
 
          const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+
+         expect(directiveCount).toBe(0);
+         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: ');
+
+         fixture.componentInstance.condition = true;
          fixture.detectChanges();
 
          expect(directiveCount).toBe(1);
