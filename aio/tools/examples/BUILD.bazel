@@ -1,7 +1,6 @@
 load("//tools:defaults.bzl", "nodejs_binary")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
-load("//aio/content/examples:examples.bzl", "EXAMPLES")
 load("//:packages.bzl", "AIO_EXAMPLE_PACKAGES", "to_package_label")
 
 package(default_visibility = ["//visibility:public"])
@@ -103,23 +102,3 @@ LOCAL_PACKAGE_ARGS = ["--localPackage=%s#$(rootpath %s)" % (
     dep,
     to_package_label(dep),
 ) for dep in AIO_EXAMPLE_PACKAGES]
-
-[nodejs_binary(
-    name = "create-example-playground-%s" % example,
-    args = select({
-        # Hardcode package names/paths in args
-        "//aio:aio_local_deps": LOCAL_PACKAGE_ARGS,
-        "//conditions:default": [],
-    }) + ["--example=%s" % example],
-    data = [
-        ":example-sandbox",
-        "@aio_example_deps//:node_modules_files",
-        "@aio_npm//yargs",
-        "//aio/content/examples/%s" % example,
-    ] + select({
-        "//aio:aio_local_deps": LOCAL_PACKAGE_DEPS,
-        "//conditions:default": [],
-    }),
-    entry_point = "create-example-playground.mjs",
-    tags = ["manual"],
-) for example in EXAMPLES]

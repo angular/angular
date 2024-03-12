@@ -1,5 +1,3 @@
-load("//aio/content/examples:examples.bzl", "EXAMPLES")
-
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
