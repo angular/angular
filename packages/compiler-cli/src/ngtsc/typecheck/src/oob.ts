@@ -406,8 +406,10 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       `Node matches the "${slotSelector}" slot of the "${
           componentName}" component, but will not be projected into the specific slot because the surrounding ${
           blockName} has more than one node at its root. To project the node in the right slot, you can:\n`,
-      `1. Wrap the content of the ${blockName} block in an <ng-container/> that matches the "${
-          slotSelector}" selector.`,
+      `1. Wrap the content of the ${
+          blockName} block in an <ng-container/> with the "ngProjectAs" attribute that matches the "${
+          slotSelector}" selector (ex.: <ng-container ngProjectAs="${slotSelector}">${
+          blockName}}{ ... }</ng-container>).`,
       `2. Split the content of the ${blockName} block across multiple ${
           blockName} blocks such that each one only has a single projectable node at its root.`,
       `3. Remove all content from the ${blockName} block, except for the node being projected.`
@@ -415,8 +417,9 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
     if (preservesWhitespaces) {
       lines.push(
-          'Note: the host component has `preserveWhitespaces: true` which may ' +
-          'cause whitespace to affect content projection.');
+          '4. The host component has `preserveWhitespaces: true` which may ',
+          'cause whitespace to affect content projection as each whitespace counts as a separate node. ',
+          'Try deleting all the whitespace characters surrounding the node to project.');
     }
 
     lines.push(
