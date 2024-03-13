@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgtscProgram} from '@angular/compiler-cli/src/ngtsc/program';
+import {CompilerOptions} from '@angular/compiler-cli/src/transformers/api';
+import {createCompilerHost} from '@angular/compiler-cli/src/transformers/compiler_host';
 import {platform} from 'os';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';
-import {absoluteFrom} from '../../src/ngtsc/file_system';
+import {absoluteFrom, NgtscCompilerHost} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {restoreTypeScriptVersionForTesting, setTypeScriptVersionForTesting} from '../../src/typescript_support';
@@ -9293,6 +9296,60 @@ function allTests(os: string) {
         expect(jsContents)
             .toContain(
                 '{ i0.ɵɵtwoWayBindingSet(ctx.a, $event) || (ctx.a = $event); return $event; }');
+      });
+
+      describe('tsickle compatibility', () => {
+        it('should preserve fileoverview comments', () => {
+          env.write('test.ts', `
+            // type-only import that will be elided.
+            import {SimpleChanges} from '@angular/core';
+
+            export class X {
+              p: SimpleChanges = null!;
+            }
+          `);
+
+          const options: CompilerOptions = {
+            strict: true,
+            strictTemplates: true,
+            target: ts.ScriptTarget.Latest,
+            module: ts.ModuleKind.ESNext,
+            annotateForClosureCompiler: true,
+          };
+
+          const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
+          const transformers = program.compiler.prepareEmit().transformers;
+
+          // Add a "fake tsickle" transform before Angular's transform.
+          transformers.before!.unshift(ctx => (sf: ts.SourceFile) => {
+            const tsickleFileOverview = ctx.factory.createNotEmittedStatement(sf);
+            ts.setSyntheticLeadingComments(tsickleFileOverview, [
+              {
+                kind: ts.SyntaxKind.MultiLineCommentTrivia,
+                text: `*
+                    * @fileoverview Closure comment
+                    * @supress bla1
+                    * @supress bla2
+                  `,
+                pos: -1,
+                end: -1,
+                hasTrailingNewLine: true,
+              },
+            ]);
+            return ctx.factory.updateSourceFile(
+                sf, [tsickleFileOverview, ...sf.statements], sf.isDeclarationFile,
+                sf.referencedFiles, sf.typeReferenceDirectives, sf.hasNoDefaultLib,
+                sf.libReferenceDirectives);
+          });
+
+          const {diagnostics, emitSkipped} =
+              program.getTsProgram().emit(undefined, undefined, undefined, undefined, transformers);
+
+          expect(diagnostics.length).toBe(0);
+          expect(emitSkipped).toBe(false);
+
+          expect(env.getContents('/test.js')).toContain(`* @fileoverview Closure comment`);
+        });
       });
     });
   });
