@@ -102,25 +102,12 @@ export class Recognizer {
   recognize(): Observable<{state: RouterStateSnapshot; tree: UrlTree}> {
     const rootSegmentGroup = split(this.urlTree.root, [], [], this.config).segmentGroup;
 
-    // Use Object.freeze to prevent readers of the Router state from modifying it outside
-    // of a navigation, resulting in the router being out of sync with the browser.
-    const root = new ActivatedRouteSnapshot(
-      [],
-      Object.freeze({}),
-      Object.freeze({...this.urlTree.queryParams}),
-      this.urlTree.fragment,
-      Object.freeze({}),
-      PRIMARY_OUTLET,
-      this.rootComponentType,
-      null,
-      {},
-    );
-    return this.match(rootSegmentGroup, root).pipe(
-      map((children) => {
-        const rootNode = new TreeNode(root, children);
+    return this.match(rootSegmentGroup).pipe(
+      map(({children, rootSnapshot}) => {
+        const rootNode = new TreeNode(rootSnapshot, children);
         const routeState = new RouterStateSnapshot('', rootNode);
         const tree = createUrlTreeFromSnapshot(
-          root,
+          rootSnapshot,
           [],
           this.urlTree.queryParams,
           this.urlTree.fragment,
@@ -135,22 +122,37 @@ export class Recognizer {
     );
   }
 
-  private match(
-    rootSegmentGroup: UrlSegmentGroup,
-    parentRoute: ActivatedRouteSnapshot,
-  ): Observable<TreeNode<ActivatedRouteSnapshot>[]> {
-    const expanded$ = this.processSegmentGroup(
+  private match(rootSegmentGroup: UrlSegmentGroup): Observable<{
+    children: TreeNode<ActivatedRouteSnapshot>[];
+    rootSnapshot: ActivatedRouteSnapshot;
+  }> {
+    // Use Object.freeze to prevent readers of the Router state from modifying it outside
+    // of a navigation, resulting in the router being out of sync with the browser.
+    const rootSnapshot = new ActivatedRouteSnapshot(
+      [],
+      Object.freeze({}),
+      Object.freeze({...this.urlTree.queryParams}),
+      this.urlTree.fragment,
+      Object.freeze({}),
+      PRIMARY_OUTLET,
+      this.rootComponentType,
+      null,
+      {},
+    );
+    return this.processSegmentGroup(
       this.injector,
       this.config,
       rootSegmentGroup,
       PRIMARY_OUTLET,
-      parentRoute,
-    );
-    return expanded$.pipe(
+      rootSnapshot,
+    ).pipe(
+      map((children) => {
+        return {children, rootSnapshot};
+      }),
       catchError((e: any) => {
         if (e instanceof AbsoluteRedirect) {
           this.urlTree = e.urlTree;
-          return this.match(e.urlTree.root, parentRoute);
+          return this.match(e.urlTree.root);
         }
         if (e instanceof NoMatch) {
           throw this.noMatchError(e);

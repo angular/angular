@@ -9,14 +9,14 @@
 import {EnvironmentInjector, inject, Injectable, NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {provideRouter, withRouterConfig} from '@angular/router';
-import {Observable, of} from 'rxjs';
+import {firstValueFrom, Observable, of} from 'rxjs';
 import {delay, map, tap} from 'rxjs/operators';
 
 import {Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
 import {Router} from '../src/router';
 import {RouterConfigLoader} from '../src/router_config_loader';
-import {ParamsInheritanceStrategy} from '../src/router_state';
+import {ParamsInheritanceStrategy, RouterStateSnapshot} from '../src/router_state';
 import {
   DefaultUrlSerializer,
   equalSegments,
@@ -65,7 +65,10 @@ describe('redirects', () => {
       {path: '**', component: ComponentA},
     ];
 
-    checkRedirect(config, 'single_value', (t: UrlTree) => expectTreeToBe(t, '/dst?k=v1'));
+    checkRedirect(config, 'single_value', (t: UrlTree, state: RouterStateSnapshot) => {
+      expectTreeToBe(t, '/dst?k=v1');
+      expect(state.root.queryParams).toEqual({k: 'v1'});
+    });
     checkRedirect(config, 'multiple_values', (t: UrlTree) => expectTreeToBe(t, '/dst?k=v1&k=v2'));
   });
 
@@ -1807,7 +1810,7 @@ describe('redirects', () => {
 function checkRedirect(
   config: Routes,
   url: string,
-  callback: any,
+  callback: (t: UrlTree, state: RouterStateSnapshot) => void,
   paramsInheritanceStrategy?: ParamsInheritanceStrategy,
 ): void {
   recognize(
@@ -1818,14 +1821,12 @@ function checkRedirect(
     tree(url),
     new DefaultUrlSerializer(),
     paramsInheritanceStrategy,
-  )
-    .pipe(map((result) => result.tree))
-    .subscribe({
-      next: callback,
-      error: (e) => {
-        throw e;
-      },
-    });
+  ).subscribe({
+    next: (v) => callback(v.tree, v.state),
+    error: (e) => {
+      throw e;
+    },
+  });
 }
 
 function tree(url: string): UrlTree {
