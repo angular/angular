@@ -472,7 +472,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   private constructor(
       private bindings: Map<AST, Reference|Variable>,
       private symbols: Map<Reference|Variable, ScopedNode>, private usedPipes: Set<string>,
-      private eagerPipes: Set<string>, private deferBlocks: Map<DeferredBlock, Scope>,
+      private eagerPipes: Set<string>, private deferBlocks: [DeferredBlock, Scope][],
       private nestingLevel: Map<ScopedNode, number>, private scope: Scope,
       private rootNode: ScopedNode|null, private level: number) {
     super();
@@ -510,7 +510,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     nestingLevel: Map<ScopedNode, number>,
     usedPipes: Set<string>,
     eagerPipes: Set<string>,
-    deferBlocks: Map<DeferredBlock, Scope>,
+    deferBlocks: [DeferredBlock, Scope][],
   } {
     const expressions = new Map<AST, Reference|Variable>();
     const symbols = new Map<Variable|Reference, Template>();
@@ -518,7 +518,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
     const usedPipes = new Set<string>();
     const eagerPipes = new Set<string>();
     const template = nodes instanceof Template ? nodes : null;
-    const deferBlocks = new Map<DeferredBlock, Scope>();
+    const deferBlocks: [DeferredBlock, Scope][] = [];
     // The top-level template has nesting level 0.
     const binder = new TemplateBinder(
         expressions, symbols, usedPipes, eagerPipes, deferBlocks, nestingLevel, scope, template, 0);
@@ -552,7 +552,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
         throw new Error(
             `Assertion error: resolved incorrect scope for deferred block ${nodeOrNodes}`);
       }
-      this.deferBlocks.set(nodeOrNodes, this.scope);
+      this.deferBlocks.push([nodeOrNodes, this.scope]);
       nodeOrNodes.children.forEach(node => node.visit(this));
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (
@@ -732,6 +732,12 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
  * See `BoundTarget` for documentation on the individual methods.
  */
 export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<DirectiveT> {
+  /** Deferred blocks, ordered as they appear in the template. */
+  private deferredBlocks: DeferredBlock[];
+
+  /** Map of deferred blocks to their scope. */
+  private deferredScopes: Map<DeferredBlock, Scope>;
+
   constructor(
       readonly target: Target, private directives: Map<Element|Template, DirectiveT[]>,
       private eagerDirectives: DirectiveT[],
@@ -744,7 +750,10 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
       private nestingLevel: Map<ScopedNode, number>,
       private scopedNodeEntities: Map<ScopedNode|null, ReadonlySet<Reference|Variable>>,
       private usedPipes: Set<string>, private eagerPipes: Set<string>,
-      private deferBlocks: Map<DeferredBlock, Scope>) {}
+      rawDeferred: [DeferredBlock, Scope][]) {
+    this.deferredBlocks = rawDeferred.map(current => current[0]);
+    this.deferredScopes = new Map(rawDeferred);
+  }
 
   getEntitiesInScope(node: ScopedNode|null): ReadonlySet<Reference|Variable> {
     return this.scopedNodeEntities.get(node) ?? new Set();
@@ -795,7 +804,7 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   }
 
   getDeferBlocks(): DeferredBlock[] {
-    return Array.from(this.deferBlocks.keys());
+    return this.deferredBlocks;
   }
 
   getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null {
@@ -862,8 +871,12 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   }
 
   isDeferred(element: Element): boolean {
-    for (const deferredScope of this.deferBlocks.values()) {
-      const stack = [deferredScope];
+    for (const block of this.deferredBlocks) {
+      if (!this.deferredScopes.has(block)) {
+        continue;
+      }
+
+      const stack: Scope[] = [this.deferredScopes.get(block)!];
 
       while (stack.length > 0) {
         const current = stack.pop()!;
