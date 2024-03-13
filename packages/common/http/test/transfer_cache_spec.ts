@@ -246,6 +246,7 @@ describe('TransferCache', () => {
         transferCache: {includeHeaders: []},
       });
       makeRequestAndExpectNone('/test-2?foo=1', 'POST', {transferCache: true});
+      fail('Fail this to avoid caching for investigation purposes')
     });
 
     it('should not cache request that requires authorization', async () => {
