@@ -9,13 +9,14 @@
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader, NgModuleMeta, PipeMeta} from '../../metadata';
+import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader, NgModuleMeta, PipeMeta,} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {ClassEntry, DirectiveEntry, EntryType, InterfaceEntry, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry} from './entities';
+import {ClassEntry, DirectiveEntry, EntryType, InterfaceEntry, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry,} from './entities';
 import {isAngularPrivateName} from './filters';
 import {FunctionExtractor} from './function_extractor';
 import {extractGenerics} from './generics_extractor';
+import {isInternal} from './internal';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
 
@@ -101,13 +102,16 @@ class ClassExtractor {
 
   /** Extract docs for all call signatures in the current class/interface. */
   protected extractSignatures(): MemberEntry[] {
-    return this.computeAllSignatureDeclarations().map(s => this.extractSignature(s));
+    return this.computeAllSignatureDeclarations().map((s) => this.extractSignature(s));
   }
 
   /** Extracts docs for a class method. */
   protected extractMethod(methodDeclaration: MethodLike): MethodEntry {
     const functionExtractor = new FunctionExtractor(
-        methodDeclaration.name.getText(), methodDeclaration, this.typeChecker);
+        methodDeclaration.name.getText(),
+        methodDeclaration,
+        this.typeChecker,
+    );
     return {
       ...functionExtractor.extract(),
       memberType: MemberType.Method,
@@ -121,7 +125,10 @@ class ClassExtractor {
     // For construct signatures we are using `new` as the name of the function for now.
     // TODO: Consider exposing a new entry type for signature types.
     const functionExtractor = new FunctionExtractor(
-        ts.isConstructSignatureDeclaration(signature) ? 'new' : '', signature, this.typeChecker);
+        ts.isConstructSignatureDeclaration(signature) ? 'new' : '',
+        signature,
+        this.typeChecker,
+    );
     return {
       ...functionExtractor.extract(),
       memberType: MemberType.Method,
@@ -167,10 +174,7 @@ class ClassExtractor {
   /** Computes all signature declarations of the class/interface. */
   private computeAllSignatureDeclarations(): SignatureElement[] {
     const type = this.typeChecker.getTypeAtLocation(this.declaration);
-    const signatures = [
-      ...type.getCallSignatures(),
-      ...type.getConstructSignatures(),
-    ];
+    const signatures = [...type.getCallSignatures(), ...type.getConstructSignatures()];
 
     const result: SignatureElement[] = [];
     for (const signature of signatures) {
@@ -243,11 +247,14 @@ class ClassExtractor {
    *  - The member is neither a method nor property
    *  - The member is private
    *  - The member has a name that marks it as Angular-internal.
+   *  - The member is marked as internal via JSDoc.
    */
   private isMemberExcluded(member: MemberElement): boolean {
-    return !member.name || !this.isDocumentableMember(member) ||
-        !!member.modifiers?.some(mod => mod.kind === ts.SyntaxKind.PrivateKeyword) ||
-        member.name.getText() === 'prototype' || isAngularPrivateName(member.name.getText());
+    return (
+        !member.name || !this.isDocumentableMember(member) ||
+        !!member.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.PrivateKeyword) ||
+        member.name.getText() === 'prototype' || isAngularPrivateName(member.name.getText()) ||
+        isInternal(member));
   }
 
   /** Gets whether a class member is a method, property, or accessor. */
@@ -270,14 +277,14 @@ class ClassExtractor {
   /** Gets whether the given signature declaration is documentable. */
   private isDocumentableSignature(signature: ts.SignatureDeclaration):
       signature is SignatureElement {
-    return ts.isConstructSignatureDeclaration(signature) ||
-        ts.isCallSignatureDeclaration(signature);
+    return (
+        ts.isConstructSignatureDeclaration(signature) || ts.isCallSignatureDeclaration(signature));
   }
 
   /** Gets whether the declaration for this extractor is abstract. */
   private isAbstract(): boolean {
     const modifiers = this.declaration.modifiers ?? [];
-    return modifiers.some(mod => mod.kind === ts.SyntaxKind.AbstractKeyword);
+    return modifiers.some((mod) => mod.kind === ts.SyntaxKind.AbstractKeyword);
   }
 
   /** Gets whether a method is the concrete implementation for an overloaded function. */
@@ -286,9 +293,10 @@ class ClassExtractor {
     if (method.kind === ts.SyntaxKind.MethodSignature) return false;
 
     const signature = this.typeChecker.getSignatureFromDeclaration(method);
-    return signature &&
+    return (
+        signature &&
         this.typeChecker.isImplementationOfOverload(
-            signature.declaration as ts.SignatureDeclaration);
+            signature.declaration as ts.SignatureDeclaration));
   }
 }
 

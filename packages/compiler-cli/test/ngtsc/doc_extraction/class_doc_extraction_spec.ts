@@ -234,6 +234,37 @@ runInEachFileSystem(() => {
       expect(getBirthdayMember.memberTags).toContain(MemberTags.Optional);
     });
 
+    it('should extract member tags', () => {
+      // Test both properties and methods with zero, one, and multiple tags.
+      env.write('index.ts', `
+        export class UserProfile {
+            eyeColor = 'brown';
+
+            /** @internal */
+            uuid: string;     
+            
+            // @internal
+            foreignId: string;
+
+            /** @internal */
+            _doSomething() {}
+
+            // @internal 
+            _doSomethingElse() {}
+        }
+      `);
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+
+      const classEntry = docs[0] as ClassEntry;
+      expect(classEntry.members.length).toBe(1);
+
+      const [eyeColorMember] = classEntry.members;
+
+      // Properties
+      expect(eyeColorMember.memberTags.length).toBe(0);
+    });
+
     it('should extract getters and setters', () => {
       // Test getter-only, a getter + setter, and setter-only.
       env.write('index.ts', `
