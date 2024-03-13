@@ -198,9 +198,8 @@ export class ConstantPool {
 
   // TODO: useUniqueName(false) is necessary for naming compatibility with
   // TemplateDefinitionBuilder, but should be removed once Template Pipeline is the default.
-  getSharedFunctionReference(
-      fn: o.FunctionExpr|o.ArrowFunctionExpr, prefix: string,
-      useUniqueName: boolean = true): o.Expression {
+  getSharedFunctionReference(fn: o.Expression, prefix: string, useUniqueName: boolean = true):
+      o.Expression {
     const isArrow = fn instanceof o.ArrowFunctionExpr;
 
     for (const current of this.statements) {
@@ -212,14 +211,18 @@ export class ConstantPool {
 
       // Function declarations are saved as function statements
       // so we compare them directly to the passed-in function.
-      if (!isArrow && current instanceof o.DeclareFunctionStmt && fn.isEquivalent(current)) {
+      if (!isArrow && current instanceof o.DeclareFunctionStmt && fn instanceof o.FunctionExpr &&
+          fn.isEquivalent(current)) {
         return o.variable(current.name);
       }
     }
 
     // Otherwise declare the function.
     const name = useUniqueName ? this.uniqueName(prefix) : prefix;
-    this.statements.push(fn.toDeclStmt(name, o.StmtModifier.Final));
+    this.statements.push(
+        fn instanceof o.FunctionExpr ?
+            fn.toDeclStmt(name, o.StmtModifier.Final) :
+            new o.DeclareVarStmt(name, fn, o.INFERRED_TYPE, o.StmtModifier.Final, fn.sourceSpan));
     return o.variable(name);
   }
 

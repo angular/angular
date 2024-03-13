@@ -1489,7 +1489,7 @@ export class ComponentDecoratorHandler implements
             'Internal error: deferPerBlockDependencies must be present when compiling in PerBlock mode');
       }
 
-      const blocks = new Map<TmplAstDeferredBlock, o.ArrowFunctionExpr|null>();
+      const blocks = new Map<TmplAstDeferredBlock, o.Expression|null>();
       for (const [block, dependencies] of perBlockDeps) {
         blocks.set(
             block,
