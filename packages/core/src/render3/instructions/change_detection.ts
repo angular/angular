@@ -254,14 +254,8 @@ export function refreshView<T>(
       lView[EFFECTS_TO_SCHEDULE] = null;
     }
 
-    // Do not reset the dirty state when running in check no changes mode. We don't want components
-    // to behave differently depending on whether check no changes is enabled or not. For example:
-    // Marking an OnPush component as dirty from within the `ngAfterViewInit` hook in order to
-    // refresh a `NgClass` binding should work. If we would reset the dirty state in the check
-    // no changes cycle, the component would be not be dirty for the next update pass. This would
-    // be different in production mode where the component dirty state is not reset.
     if (!isInCheckNoChangesPass) {
-      lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+      lView[FLAGS] &= ~LViewFlags.FirstLViewPass;
     }
   } catch (e) {
     // If refreshing a view causes an error, we need to remark the ancestors as needing traversal
@@ -384,6 +378,8 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   // backwards views, it gives an opportunity for `OnPush` components to be marked `Dirty`
   // before the CheckNoChanges pass. We don't want existing errors that are hidden by the
   // current CheckNoChanges bug to surface when making unrelated changes.
+  // TODO(atscott): Evaluate whether we truly need to do this or if we can/should
+  // just throw ExpressionChanged...Error
   shouldRefreshView ||= !!(
       flags & LViewFlags.Dirty && mode === ChangeDetectionMode.Global && !isInCheckNoChangesPass);
 
@@ -409,6 +405,8 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
       detectChangesInChildComponents(lView, components, ChangeDetectionMode.Targeted);
     }
   }
+
+  lView[FLAGS] &= ~LViewFlags.Dirty;
 }
 
 /** Refreshes child components in the current view (update mode). */
