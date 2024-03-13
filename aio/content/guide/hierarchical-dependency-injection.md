@@ -36,7 +36,7 @@ Angular has two injector hierarchies:
 
 | Injector hierarchies        | Details |
 |:---                         |:---     |
-| `EnvironmentInjector` hierarchy | Configure an `ElementInjector` in this hierarchy using `@Injectable()` or `providers` array in `ApplicationConfig`. |
+| `EnvironmentInjector` hierarchy | Configure an `EnvironmentInjector` in this hierarchy using `@Injectable()` or `providers` array in `ApplicationConfig`. |
 | `ElementInjector` hierarchy | Created implicitly at each DOM element. An `ElementInjector` is empty by default unless you configure it in the `providers` property on `@Directive()` or `@Component()`. |
 
 <div class="callout is-helpful">
@@ -76,7 +76,7 @@ Provide services with the `providedIn` property of `@Injectable()` as follows:
 import { Injectable } from '&commat;angular/core';
 
 &commat;Injectable({
-  providedIn: 'root'  // &lt;--provides this service in the root ElementInjector
+  providedIn: 'root'  // &lt;--provides this service in the root EnvironmentInjector
 })
 export class ItemService {
   name = 'telephone';
