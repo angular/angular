@@ -718,7 +718,10 @@ export function detectChangesInViewIfRequired(
 }
 
 function shouldRecheckView(view: LView): boolean {
-  return requiresRefreshOrTraversal(view) || !!(view[FLAGS] & LViewFlags.Dirty);
+  return requiresRefreshOrTraversal(view)
+      // TODO(atscott): Try to enable this again but also do the same for the loop in
+      // `detectChangesInternal` to ensure all potential errors are surfaced.
+      /*|| !!(view[FLAGS] & LViewFlags.Dirty)*/;
 }
 
 function detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
