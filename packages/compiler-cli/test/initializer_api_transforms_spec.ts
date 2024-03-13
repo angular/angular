@@ -375,6 +375,61 @@ describe('initializer API metadata transform', () => {
       `));
     });
   });
+
+  describe('output()', () => {
+    it('should insert an `@Output` decorator', () => {
+      const result = transform(`
+        import {output, Directive} from '@angular/core';
+
+        @Directive({})
+        class MyDir {
+          someInput = output();
+        }
+      `);
+
+      expect(result).toContain(omitLeadingWhitespace(`
+        __decorate([
+          i0.Output("someInput")
+          ], MyDir.prototype, "someInput", void 0);
+      `));
+    });
+
+    it('should insert an `@Output` decorator with aliases', () => {
+      const result = transform(`
+        import {output, Directive} from '@angular/core';
+
+        @Directive({})
+        class MyDir {
+          someInput = output({alias: 'someAlias'});
+        }
+      `);
+
+      expect(result).toContain(omitLeadingWhitespace(`
+        __decorate([
+          i0.Output("someAlias")
+          ], MyDir.prototype, "someInput", void 0);
+      `));
+    });
+
+    it('should not change an existing `@Output` decorator', () => {
+      const result = transform(`
+        import {output, Output, Directive} from '@angular/core';
+
+        const bla = 'some string';
+
+        @Directive({})
+        class MyDir {
+          @Output(bla) someInput = output({});
+        }
+      `);
+
+      expect(result).toContain(omitLeadingWhitespace(`
+        __decorate([
+          Output(bla)
+          ], MyDir.prototype, "someInput", void 0);
+      `));
+    });
+  });
 });
 
 /** Omits the leading whitespace for each line of the given text. */
