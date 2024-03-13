@@ -29,7 +29,7 @@ import {PendingTasks} from '../pending_tasks';
 import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
 import {isStandalone} from '../render3/definition';
-import {ChangeDetectionMode, detectChangesInternal, MAXIMUM_REFRESH_RERUNS} from '../render3/instructions/change_detection';
+import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
 import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
 import {publishDefaultGlobalUtils as _publishDefaultGlobalUtils} from '../render3/util/global_utils';
 import {requiresRefreshOrTraversal} from '../render3/util/view_utils';
@@ -143,6 +143,9 @@ export interface BootstrapOptions {
    */
   ngZoneRunCoalescing?: boolean;
 }
+
+/** Maximum number of times ApplicationRef will refresh all attached views in a single tick. */
+const MAXIMUM_REFRESH_RERUNS = 10;
 
 export function _callAndReportToErrorHandler(
     errorHandler: ErrorHandler, ngZone: NgZone, callback: () => any): any {
@@ -527,15 +530,7 @@ export class ApplicationRef {
   private detectChangesInAttachedViews(refreshViews: boolean) {
     let runs = 0;
     const afterRenderEffectManager = this.afterRenderEffectManager;
-    while (true) {
-      if (runs === MAXIMUM_REFRESH_RERUNS) {
-        throw new RuntimeError(
-            RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
-            ngDevMode &&
-                'Infinite change detection while refreshing application views. ' +
-                    'Ensure afterRender or queueStateUpdate hooks are not continuously causing updates.');
-      }
-
+    while (runs < MAXIMUM_REFRESH_RERUNS) {
       if (refreshViews) {
         const isFirstPass = runs === 0;
         this.beforeRender.next(isFirstPass);
@@ -561,8 +556,17 @@ export class ApplicationRef {
         break;
       }
     }
-  }
 
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {
+      throw new RuntimeError(
+          RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+          ngDevMode &&
+              'Infinite change detection while refreshing application views. ' +
+                  'Ensure views are not calling `markForCheck` on every template execution or ' +
+                  'that afterRender hooks always mark views for check.',
+      );
+    }
+  }
 
   /**
    * Attaches a view so that it will be dirty checked.

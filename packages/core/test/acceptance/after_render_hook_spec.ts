@@ -1049,7 +1049,7 @@ describe('after render hooks', () => {
       appRef.attachView(fixture.componentRef.hostView);
       expect(() => {
         appRef.tick();
-      }).toThrowError(/NG0103.*(afterRender|afterNextRender)/);
+      }).toThrowError(/NG0103.*(Infinite change detection while refreshing application views)/);
     });
   });
 
