@@ -259,7 +259,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
 
   private createR3ComponentDeferMetadata(boundTarget: BoundTarget<any>): R3ComponentDeferMetadata {
     const deferredBlocks = boundTarget.getDeferBlocks();
-    const blocks = new Map<TmplAstDeferredBlock, o.ArrowFunctionExpr|null>();
+    const blocks = new Map<TmplAstDeferredBlock, o.Expression|null>();
 
     for (const block of deferredBlocks) {
       // TODO: leaving `deps` empty for now, to be implemented as one of the next steps.

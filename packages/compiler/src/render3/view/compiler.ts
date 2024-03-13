@@ -180,7 +180,7 @@ export function compileComponentFromMetadata(
       meta.defer.dependenciesFn !== null) {
     const fnName = `${templateTypeName}_DeferFn`;
     constantPool.statements.push(
-        meta.defer.dependenciesFn.toDeclStmt(fnName, o.StmtModifier.Final));
+        new o.DeclareVarStmt(fnName, meta.defer.dependenciesFn, undefined, o.StmtModifier.Final));
     allDeferrableDepsFn = o.variable(fnName);
   }
 

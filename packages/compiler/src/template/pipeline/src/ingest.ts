@@ -447,7 +447,7 @@ function ingestDeferView(
 }
 
 function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock): void {
-  let ownResolverFn: o.ArrowFunctionExpr|null = null;
+  let ownResolverFn: o.Expression|null = null;
 
   if (unit.job.deferMeta.mode === DeferBlockDepsEmitMode.PerBlock) {
     if (!unit.job.deferMeta.blocks.has(deferBlock)) {

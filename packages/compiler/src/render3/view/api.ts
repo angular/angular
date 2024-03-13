@@ -296,10 +296,10 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
  */
 export type R3ComponentDeferMetadata = {
   mode: DeferBlockDepsEmitMode.PerBlock,
-  blocks: Map<t.DeferredBlock, o.ArrowFunctionExpr|null>,
+  blocks: Map<t.DeferredBlock, o.Expression|null>,
 }|{
   mode: DeferBlockDepsEmitMode.PerComponent,
-  dependenciesFn: o.ArrowFunctionExpr | null,
+  dependenciesFn: o.Expression | null,
 };
 
 /**

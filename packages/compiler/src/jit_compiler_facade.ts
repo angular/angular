@@ -11,7 +11,7 @@ import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/defaults';
-import {ArrowFunctionExpr, DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
+import {DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {DeferredBlock} from './render3/r3_ast';
@@ -624,7 +624,7 @@ function createR3DependencyMetadata(
 
 function createR3ComponentDeferMetadata(boundTarget: BoundTarget<any>): R3ComponentDeferMetadata {
   const deferredBlocks = boundTarget.getDeferBlocks();
-  const blocks = new Map<DeferredBlock, ArrowFunctionExpr|null>();
+  const blocks = new Map<DeferredBlock, Expression|null>();
 
   for (const block of deferredBlocks) {
     // TODO: leaving dependency function empty in JIT mode for now,
