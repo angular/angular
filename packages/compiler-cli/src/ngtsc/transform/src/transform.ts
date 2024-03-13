@@ -341,7 +341,7 @@ function transformIvySourceFile(
   sf = importManager.transformTsFile(context, sf, constants);
 
   if (fileOverviewMeta !== null) {
-    setFileOverviewComment(sf, fileOverviewMeta);
+    sf = insertFileOverviewComment(sf, fileOverviewMeta);
   }
 
   return sf;
@@ -382,7 +382,8 @@ function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>): FileOve
   return null;
 }
 
-function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMeta): void {
+function insertFileOverviewComment(
+    sf: ts.SourceFile, fileoverview: FileOverviewMeta): ts.SourceFile {
   const {comments, host, trailing} = fileoverview;
   // If host statement is no longer the first one, it means that extra statements were added at the
   // very beginning, so we need to relocate @fileoverview comment and cleanup the original statement
@@ -393,8 +394,17 @@ function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMet
     } else {
       ts.setSyntheticLeadingComments(host, undefined);
     }
-    ts.setSyntheticLeadingComments(sf.statements[0], comments);
+
+    // Note: Do not use the first statement as it may be elided at runtime.
+    // E.g. an import declaration that is type only.
+    const commentNode = ts.factory.createNotEmittedStatement(sf);
+    ts.setSyntheticLeadingComments(commentNode, comments);
+
+    return ts.factory.updateSourceFile(
+        sf, [commentNode, ...sf.statements], sf.isDeclarationFile, sf.referencedFiles,
+        sf.typeReferenceDirectives, sf.hasNoDefaultLib, sf.libReferenceDirectives);
   }
+  return sf;
 }
 
 function maybeFilterDecorator(
