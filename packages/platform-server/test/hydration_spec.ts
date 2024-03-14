@@ -5526,6 +5526,108 @@ describe('platform-server hydration integration', () => {
         expect(h2).not.toBeDefined();
         expect(span.textContent).toBe('no');
       });
+
+      it('should support slots with fallback content', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <div>
+              Header slot: <ng-content select="header">Header fallback</ng-content>
+              Main slot: <ng-content select="main"><main>Main fallback</main></ng-content>
+              Footer slot: <ng-content select="footer">Footer fallback {{expr}}</ng-content>
+              <ng-content>Wildcard fallback</ng-content>
+            </div>
+          `
+        })
+        class ProjectorCmp {
+          expr = 123;
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `<projector-cmp></projector-cmp>`,
+        })
+        class SimpleComponent {
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        const content = clientRootNode.innerHTML;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(content).toContain('Header slot: Header fallback');
+        expect(content).toContain('Main slot: <main>Main fallback</main>');
+        expect(content).toContain('Footer slot: Footer fallback 123');
+        expect(content).toContain('Wildcard fallback');
+      });
+
+      it('should support mixed slots with and without fallback content', async () => {
+        @Component({
+          standalone: true,
+          selector: 'projector-cmp',
+          template: `
+            <div>
+              Header slot: <ng-content select="header">Header fallback</ng-content>
+              Main slot: <ng-content select="main"><main>Main fallback</main></ng-content>
+              Footer slot: <ng-content select="footer">Footer fallback {{expr}}</ng-content>
+              <ng-content>Wildcard fallback</ng-content>
+            </div>
+          `
+        })
+        class ProjectorCmp {
+          expr = 123;
+        }
+
+        @Component({
+          standalone: true,
+          imports: [ProjectorCmp],
+          selector: 'app',
+          template: `
+            <projector-cmp>
+              <header>Header override</header>
+              <footer>
+                <h1>Footer override {{expr}}</h1>
+              </footer>
+            </projector-cmp>
+          `,
+        })
+        class SimpleComponent {
+          expr = 321;
+        }
+
+        const html = await ssr(SimpleComponent);
+        const ssrContents = getAppContents(html);
+
+        expect(ssrContents).toContain('<app ngh');
+
+        resetTViewsFor(SimpleComponent, ProjectorCmp);
+
+        const appRef = await hydrate(html, SimpleComponent);
+        const compRef = getComponentRef<SimpleComponent>(appRef);
+        appRef.tick();
+
+        const clientRootNode = compRef.location.nativeElement;
+        const content = clientRootNode.innerHTML;
+        verifyAllNodesClaimedForHydration(clientRootNode);
+        verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+        expect(content).toContain('Header slot: <header>Header override</header>');
+        expect(content).toContain('Main slot: <main>Main fallback</main>');
+        expect(content).toContain('Footer slot: <footer><h1>Footer override 321</h1></footer>');
+        expect(content).toContain('Wildcard fallback');
+      });
     });
 
     describe('unsupported Zone.js config', () => {
