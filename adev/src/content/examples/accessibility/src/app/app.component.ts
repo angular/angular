@@ -8,7 +8,7 @@ import {ExampleProgressbarComponent} from './progress-bar.component';
   styleUrls: ['./app.component.css'],
   imports: [ExampleProgressbarComponent],
 })
-export class AppComponent {
+export class AppComponent2 {
   progress = 0;
 
   setProgress($event: Event) {
