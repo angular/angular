@@ -21,6 +21,7 @@ import {getFirstLContainer, getNextLContainer} from '../util/view_traversal_util
 import {getComponentLViewByIndex, isCreationMode, markAncestorsForTraversal, markViewForRefresh, requiresRefreshOrTraversal, resetPreOrderHookFlags, viewAttachedToChangeDetector} from '../util/view_utils';
 
 import {executeTemplate, executeViewQueryFn, handleError, processHostBindingOpCodes, refreshContentQueries} from './shared';
+import {throwTemplateExecutionError} from '../errors';
 
 /**
  * The maximum number of times the change detection traversal will rerun before throwing an error.
@@ -150,7 +151,8 @@ export function refreshView<T>(
 
     setBindingIndex(tView.bindingStartIndex);
     if (templateFn !== null) {
-      executeTemplate(tView, lView, templateFn, RenderFlags.Update, context);
+      try { executeTemplate(tView, lView, templateFn, RenderFlags.Update, context); }
+      catch (e) { throwTemplateExecutionError(e); }
     }
 
     const hooksInitPhaseCompleted =
@@ -270,7 +272,6 @@ export function refreshView<T>(
     // cleared during change detection and we failed to run to completion.
 
     markAncestorsForTraversal(lView);
-    throw e;
   } finally {
     if (currentConsumer !== null) {
       consumerAfterComputation(currentConsumer, prevConsumer);

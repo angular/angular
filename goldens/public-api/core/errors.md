@@ -137,6 +137,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     TEMPLATE_STRUCTURE_ERROR = 305,
     // (undocumented)
+    TEMPLATE_EXECUTION_ERROR = 314,
+    // (undocumented)
     TYPE_IS_NOT_STANDALONE = 907,
     // (undocumented)
     UNEXPECTED_ZONE_STATE = 909,

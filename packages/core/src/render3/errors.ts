@@ -56,6 +56,13 @@ export function throwMultipleComponentError(
           `${stringifyForError(second)}`);
 }
 
+/** Called when `executeTemplate()` fails */
+export function throwTemplateExecutionError(error: any): never {
+throw new RuntimeError(
+    RuntimeErrorCode.TEMPLATE_EXECUTION_ERROR,
+    `Error executing template: ${error instanceof Error ? error.message : error}`);
+}
+
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
 export function throwErrorIfNoChangesMode(
     creationMode: boolean, oldValue: any, currValue: any, propName: string|undefined,
