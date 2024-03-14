@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, Directive, Input, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, Component, createComponent, Directive, EnvironmentInjector, inject, Input, OnDestroy, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -384,12 +384,12 @@ describe('projection', () => {
     @Component({
       selector: 'child',
       template:
-          `<div *ngFor="let item of [1, 2]; let i = index">({{i}}):<ng-content></ng-content></div>`
+          '<div *ngFor="let item of [1, 2]; let i = index">({{i}}):<ng-content></ng-content></div>'
     })
     class Child {
     }
 
-    @Component({selector: 'parent', template: `<child>content</child>`})
+    @Component({selector: 'parent', template: '<child>content</child>'})
     class Parent {
     }
 
@@ -1366,6 +1366,402 @@ describe('projection', () => {
       // confuse it as 'class=title' attribute. <ng-content select=".title"> should not match the
       // child.
       expect(fixture.nativeElement.innerHTML).toBe('<child-comp></child-comp>');
+    });
+  });
+
+  describe('fallback content', () => {
+    it('should render the fallback content if nothing is projected into a slot', () => {
+      @Component({
+        selector: 'projection',
+        template: `
+          <ng-content select="[one]">One fallback</ng-content>|` +
+            `<ng-content>Catch-all fallback</ng-content>|` +
+            `<ng-content select="[two]">Two fallback</ng-content>` +
+            `<ng-content select="[three]">Three fallback</ng-content>
+        `,
+        standalone: true,
+      })
+      class Projection {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `
+          <projection>
+            <span one>One</span>
+            <div three>Three</div>
+          </projection>
+        `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      expect(getElementHtml(fixture.nativeElement))
+          .toContain(
+              `<projection><span one="">One</span>|` +
+              `Catch-all fallback|Two fallback<div three="">Three</div></projection>`);
+    });
+
+    it('should render the catch-all slots fallback content if the element only contains comments',
+       () => {
+         @Component({
+           selector: 'projection',
+           template: `<ng-content>Fallback content</ng-content>`,
+           standalone: true,
+         })
+         class Projection {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [Projection],
+           template: `
+            <projection>
+              <!-- One -->
+
+
+              <!-- Two -->
+            </projection>
+          `
+         })
+         class App {
+         }
+
+         const fixture = TestBed.createComponent(App);
+         expect(getElementHtml(fixture.nativeElement))
+             .toContain(`<projection>Fallback content</projection>`);
+       });
+
+    it('should account for ngProjectAs when rendering fallback content', () => {
+      @Component({
+        selector: 'projection',
+        template:
+            `<ng-content select="div">I have no divs</ng-content>|<ng-content select="span">I have no spans</ng-content>`,
+        standalone: true,
+      })
+      class Projection {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `
+          <projection>
+            <div ngProjectAs="span">div pretending to be a span</div>
+          </projection>
+        `,
+      })
+      class App {
+        @ViewChild(Projection) projection!: Projection;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      expect(getElementHtml(fixture.nativeElement))
+          .toContain(
+              `<projection>I have no divs|` +
+              `<div ngprojectas="span">div pretending to be a span</div></projection>`);
+    });
+
+    it('should not render the fallback content if there is a control flow expression', () => {
+      @Component({
+        selector: 'projection',
+        template:
+            `<ng-content>Wildcard fallback</ng-content>|<ng-content select="span">Span fallback</ng-content>`,
+        standalone: true,
+      })
+      class Projection {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `
+          <projection>
+            @if (showSpan) {
+              <span>Span override</span>
+            }
+          </projection>
+        `
+      })
+      class App {
+        showSpan = false;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement))
+          .toContain(`<projection>Wildcard fallback|</projection>`);
+
+      fixture.componentInstance.showSpan = true;
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement))
+          .toContain(`<projection>Wildcard fallback|<span>Span override</span></projection>`);
+
+      fixture.componentInstance.showSpan = false;
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement))
+          .toContain(`<projection>Wildcard fallback|</projection>`);
+    });
+
+    it('should not render the fallback content if there is an ng-container', () => {
+      @Component({
+        selector: 'projection',
+        template: `<ng-content>Fallback</ng-content>`,
+        standalone: true,
+      })
+      class Projection {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `
+          <projection><ng-container/></projection>
+        `
+      })
+      class App {
+        showSpan = false;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      expect(getElementHtml(fixture.nativeElement)).toContain(`<projection></projection>`);
+    });
+
+    it('should be able to use data bindings in the fallback content', () => {
+      @Component({
+        selector: 'projection',
+        template: `<ng-content>Value: {{value}}</ng-content>`,
+        standalone: true,
+      })
+      class Projection {
+        value = 0;
+      }
+
+      @Component({standalone: true, imports: [Projection], template: `<projection/>`})
+      class App {
+        @ViewChild(Projection) projection!: Projection;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toContain(`<projection>Value: 0</projection>`);
+
+      fixture.componentInstance.projection.value = 1;
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toContain(`<projection>Value: 1</projection>`);
+    });
+
+    it('should be able to use event listeners in the fallback content', () => {
+      @Component({
+        selector: 'projection',
+        template: `
+          <ng-content>
+            <button (click)="callback()">Click me</button>
+          </ng-content>
+
+          Value: {{value}}
+        `,
+        standalone: true,
+      })
+      class Projection {
+        value = 0;
+
+        callback() {
+          this.value++;
+        }
+      }
+
+      @Component({standalone: true, imports: [Projection], template: `<projection/>`})
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toContain(`Value: 0`);
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toContain(`Value: 1`);
+    });
+
+    it('should create and destroy directives in the fallback content', () => {
+      let directiveCount = 0;
+
+      @Directive({
+        selector: 'fallback-dir',
+        standalone: true,
+      })
+      class FallbackDir implements OnDestroy {
+        constructor() {
+          directiveCount++;
+        }
+
+        ngOnDestroy(): void {
+          directiveCount--;
+        }
+      }
+
+      @Component({
+        selector: 'projection',
+        template: `<ng-content><fallback-dir/></ng-content>`,
+        standalone: true,
+        imports: [FallbackDir],
+      })
+      class Projection {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `
+          @if (hasProjection) {
+            <projection/>
+          }
+        `
+      })
+      class App {
+        hasProjection = true;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(directiveCount).toBe(1);
+
+      fixture.componentInstance.hasProjection = false;
+      fixture.detectChanges();
+      expect(directiveCount).toBe(0);
+    });
+
+    it('should be able to query inside the fallback content', () => {
+      let directiveInstance: FallbackDir|undefined;
+
+      @Directive({
+        selector: 'fallback-dir',
+        standalone: true,
+      })
+      class FallbackDir {
+        constructor() {
+          directiveInstance = this;
+        }
+      }
+
+      @Component({
+        selector: 'projection',
+        template: `<ng-content><fallback-dir/></ng-content>`,
+        standalone: true,
+        imports: [FallbackDir],
+      })
+      class Projection {
+        @ViewChild(FallbackDir) fallback!: FallbackDir;
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `<projection/>`,
+      })
+      class App {
+        @ViewChild(Projection) projection!: Projection;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(directiveInstance).toBeTruthy();
+      expect(fixture.componentInstance.projection.fallback).toBe(directiveInstance!);
+    });
+
+    it('should be able to inject the host component from inside the fallback content', () => {
+      @Directive({
+        selector: 'fallback-dir',
+        standalone: true,
+      })
+      class FallbackDir {
+        host = inject(Projection);
+      }
+
+      @Component({
+        selector: 'projection',
+        template: `<ng-content><fallback-dir/></ng-content>`,
+        standalone: true,
+        imports: [FallbackDir],
+      })
+      class Projection {
+        @ViewChild(FallbackDir) fallback!: FallbackDir;
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `<projection/>`,
+      })
+      class App {
+        @ViewChild(Projection) projection!: Projection;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const instance = fixture.componentInstance;
+      expect(instance.projection.fallback.host).toBe(instance.projection);
+    });
+
+    it('should render the fallback content if content is not provided through projectableNodes',
+       () => {
+         @Component({
+           standalone: true,
+           template: `<ng-content>One fallback</ng-content>|` +
+               `<ng-content>Two fallback</ng-content>|<ng-content>Three fallback</ng-content>`,
+         })
+         class Projection {
+         }
+
+         const hostElement = document.createElement('div');
+         const environmentInjector = TestBed.inject(EnvironmentInjector);
+         const paragraph = document.createElement('p');
+         paragraph.textContent = 'override';
+         const projectableNodes = [[paragraph]];
+         const componentRef =
+             createComponent(Projection, {hostElement, environmentInjector, projectableNodes});
+         componentRef.changeDetectorRef.detectChanges();
+
+         expect(getElementHtml(hostElement))
+             .toContain('<p>override</p>|Two fallback|Three fallback');
+       });
+
+    it('should render fallback content when ng-content is inside an ng-template', () => {
+      @Component({
+        selector: 'projection',
+        template:
+            `<ng-container #ref/><ng-template #template><ng-content>Fallback</ng-content></ng-template>`,
+        standalone: true,
+      })
+      class Projection {
+        @ViewChild('template') template!: TemplateRef<unknown>;
+        @ViewChild('ref', {read: ViewContainerRef}) viewContainerRef!: ViewContainerRef;
+
+        createContent() {
+          this.viewContainerRef.createEmbeddedView(this.template);
+        }
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `<projection/>`,
+      })
+      class App {
+        @ViewChild(Projection) projection!: Projection;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toContain(`<projection></projection>`);
+
+      fixture.componentInstance.projection.createContent();
+      fixture.detectChanges();
+      expect(getElementHtml(fixture.nativeElement)).toContain(`<projection>Fallback</projection>`);
     });
   });
 });
