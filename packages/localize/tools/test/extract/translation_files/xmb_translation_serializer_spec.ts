@@ -67,7 +67,7 @@ runInEachFileSystem(() => {
               new XmbTranslationSerializer(absoluteFrom('/project'), useLegacyIds, fs);
           const output = serializer.serialize(messages);
           expect(output).toContain([
-            `<messagebundle>`,
+            `<messagebundle handler="angular">`,
             `  <msg id="${
                 useLegacyIds ?
                     '615790887472569365' :
@@ -126,7 +126,7 @@ runInEachFileSystem(() => {
         '',
         '<!ELEMENT ex (#PCDATA)>',
         ']>',
-        '<messagebundle>',
+        '<messagebundle handler="angular">',
         '  <msg id="1"><source>a-1.ts:5</source>message-1</msg>',
         '  <msg id="2"><source>a-2.ts:5</source>message-1</msg>',
         '</messagebundle>',

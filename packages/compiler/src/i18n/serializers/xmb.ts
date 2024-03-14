@@ -42,7 +42,8 @@ export class Xmb extends Serializer {
   override write(messages: i18n.Message[], locale: string|null): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
-    let rootNode = new xml.Tag(_MESSAGES_TAG);
+    const rootNode = new xml.Tag(_MESSAGES_TAG);
+    rootNode.attrs['handler'] = 'angular';
 
     messages.forEach(message => {
       const attrs: {[k: string]: string} = {id: message.id};

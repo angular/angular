@@ -47,7 +47,7 @@ lines</p>
 
 <!ELEMENT ex (#PCDATA)>
 ]>
-<messagebundle>
+<messagebundle handler="angular">
   <msg id="7056919470098446707"><source>file.ts:3</source>translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph> <ph name="INTERPOLATION"><ex>{{ interpolation}}</ex>{{ interpolation}}</ph></msg>
   <msg id="2981514368455622387"><source>file.ts:4</source>{VAR_PLURAL, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex>&lt;p&gt;</ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex>&lt;/p&gt;</ph>} }</msg>
   <msg id="7999024498831672133" desc="d" meaning="m"><source>file.ts:5</source>foo</msg>
