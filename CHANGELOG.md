@@ -1,3 +1,76 @@
+<a name="18.0.0-next.0"></a>
+# 18.0.0-next.0 (2024-03-14)
+## Breaking Changes
+### core
+- `OnPush` views at the root of the application need to
+  be marked dirty for their host bindings to refresh. Previously, the host
+  bindings were refreshed for all root views without respecting the
+  `OnPush` change detection strategy.
+- The `ComponentFixture` `autoDetect` feature will no
+  longer refresh the component's host view when the component is `OnPush`
+  and not marked dirty. This exposes existing issues in components which
+  claim to be `OnPush` but do not correctly call `markForCheck` when they
+  need to be refreshed. If this change causes test failures, the easiest
+  fix is to change the component to `ChangeDetectionStrategy.Default`.
+- When Angular runs change detection, it will continue to
+  refresh any views attached to `ApplicationRef` that are still marked for
+  check after one round completes. In rare cases, this can result in infinite
+  loops when certain patterns continue to mark views for check using
+  `ChangeDetectorRef.detectChanges`. This will be surfaced as a runtime
+  error with the `NG0103` code.
+- The `ComponentFixture.autoDetect` feature now executes
+  change detection for the fixture within `ApplicationRef.tick`. This more
+  closely matches the behavior of how a component would refresh in
+  production. The order of component refresh in tests may be slightly
+  affected as a result, especially when dealing with additional components
+  attached to the application, such as dialogs. Tests sensitive to this
+  type of change (such as screenshot tests) may need to be updated.
+  Concretely, this change means that the component will refresh _before_
+  additional views attached to `ApplicationRef` (i.e. dialog components).
+  Prior to this change, the fixture component would refresh _after_ other
+  views attached to the application.
+- The exact timing of change detection execution when
+  using event or run coalescing with `NgZone` is now the first of either
+  `setTimeout` or `requestAnimationFrame`. Code which relies on this
+  timing (usually by accident) will need to be adjusted. If a callback
+  needs to execute after change detection, we recommend `afterNextRender`
+  instead of something like `setTimeout`.
+- Newly created and views marked for check and reattached
+  during change detection are now guaranteed to be refreshed in that same
+  change detection cycle. Previously, if they were attached at a location
+  in the view tree that was already checked, they would either throw
+  `ExpressionChangedAfterItHasBeenCheckedError` or not be refreshed until
+  some future round of change detection. In rare circumstances, this
+  correction can cause issues. We identified one instance that relied on
+  the previous behavior by reading a value on initialization which was
+  queued to be updated in a microtask instead of being available in the
+  current change detection round. The component only read this value during
+  initialization and did not read it again after the microtask updated it.
+### router
+- Guards can now return `RedirectCommand` for redirects
+  in addition to `UrlTree`. Code which expects only `boolean` or `UrlTree`
+  values in `Route` types will need to be adjusted.
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9b424d7224](https://github.com/angular/angular/commit/9b424d7224db46edb16c81979c7e231d5e3db5e9) | fix | preserve original reference to non-deferrable dependency ([#54759](https://github.com/angular/angular/pull/54759)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [64f870c12b](https://github.com/angular/angular/commit/64f870c12bae1ad66509f0d65f8d3e051aae6eaa) | fix | `ApplicationRef.tick` should respect OnPush for host bindings ([#53718](https://github.com/angular/angular/pull/53718)) ([#53718](https://github.com/angular/angular/pull/53718)) |
+| [8cad4e8cbe](https://github.com/angular/angular/commit/8cad4e8cbe2baf20dae7b7ef1f4253a4940cbba0) | fix | `ComponentFixture` `autoDetect` respects `OnPush` flag of host view ([#54824](https://github.com/angular/angular/pull/54824)) |
+| [ba8e465974](https://github.com/angular/angular/commit/ba8e46597435a827670f10b971b2c58f7033b180) | fix | Change Detection will continue to refresh views while marked for check ([#54734](https://github.com/angular/angular/pull/54734)) |
+| [24bc0ed4f2](https://github.com/angular/angular/commit/24bc0ed4f2de47bd998338d73cba394fb45dd497) | fix | ComponentFixture autodetect should detect changes within ApplicationRef.tick ([#54733](https://github.com/angular/angular/pull/54733)) |
+| [10c5cdb49c](https://github.com/angular/angular/commit/10c5cdb49c51c95086febd37f4d88a9b944d7e1c) | fix | ensure change detection runs in a reasonable timeframe with zone coalescing ([#54578](https://github.com/angular/angular/pull/54578)) |
+| [ad045efd4b](https://github.com/angular/angular/commit/ad045efd4b1565e01c14399998143538ebfbfd99) | fix | Ensure views marked for check are refreshed during change detection ([#54735](https://github.com/angular/angular/pull/54735)) |
+| [700c0520bb](https://github.com/angular/angular/commit/700c0520bb638952ba41a8d8260cf12afb078c0e) | fix | Update ApplicationRef.tick loop to only throw in dev mode ([#54848](https://github.com/angular/angular/pull/54848)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8735af08b9](https://github.com/angular/angular/commit/8735af08b976b30cf236a83f9e8b64b5ff62e9f3) | feat | Add ability to return `UrlTree` with `NavigationBehaviorOptions` from guards ([#45023](https://github.com/angular/angular/pull/45023)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.0"></a>
 # 17.3.0 (2024-03-13)
 ### compiler
