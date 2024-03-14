@@ -218,7 +218,7 @@ runInNativeFileSystem(() => {
               ``,
               `<!ELEMENT ex (#PCDATA)>`,
               `]>`,
-              `<messagebundle>`,
+              `<messagebundle handler="angular">`,
               `  <msg id="3291030485717846467"><source>test_files/test.js:1</source>Hello, <ph name="PH"/>!</msg>`,
               `  <msg id="8669027859022295761"><source>test_files/test.js:2</source>try<ph name="PH"/>me</msg>`,
               `  <msg id="custom-id"><source>test_files/test.js:3</source>Custom id message</msg>`,

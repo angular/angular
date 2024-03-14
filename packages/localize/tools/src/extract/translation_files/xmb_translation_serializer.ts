@@ -18,6 +18,14 @@ import {consolidateMessages} from './utils';
 import {XmlFile} from './xml_file';
 
 /**
+ * Defines the `handler` value on the serialized XMB, indicating that Angular
+ * generated the bundle. This is useful for analytics in Translation Console.
+ *
+ * NOTE: Keep in sync with packages/compiler/src/i18n/serializers/xmb.ts.
+ */
+const XMB_HANDLER = 'angular';
+
+/**
  * A translation serializer that can write files in XMB format.
  *
  * http://cldr.unicode.org/development/development-process/design-proposals/xmb
@@ -58,7 +66,9 @@ export class XmbTranslationSerializer implements TranslationSerializer {
         `<!ELEMENT ex (#PCDATA)>\n` +
         `]>\n`,
     );
-    xml.startTag('messagebundle');
+    xml.startTag('messagebundle', {
+      'handler': XMB_HANDLER,
+    });
     for (const duplicateMessages of messageGroups) {
       const message = duplicateMessages[0];
       const id = this.getMessageId(message);

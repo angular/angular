@@ -79,7 +79,7 @@ runInEachFileSystem(() => {
           const output = serializer.serialize(messages);
           expect(output).toContain(
             [
-              `<messagebundle>`,
+              `<messagebundle handler="angular">`,
               `  <msg id="${
                 useLegacyIds ? '615790887472569365' : '12345'
               }" meaning="some meaning">a<ph name="PH"/>b<ph name="PH_1"/>c</msg>`,
@@ -139,7 +139,7 @@ runInEachFileSystem(() => {
         '',
         '<!ELEMENT ex (#PCDATA)>',
         ']>',
-        '<messagebundle>',
+        '<messagebundle handler="angular">',
         '  <msg id="1"><source>a-1.ts:5</source>message-1</msg>',
         '  <msg id="2"><source>a-2.ts:5</source>message-1</msg>',
         '</messagebundle>',
