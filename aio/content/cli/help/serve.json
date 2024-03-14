@@ -3,6 +3,7 @@
   "command": "ng serve [project]",
   "shortDescription": "Builds and serves your application, rebuilding on file changes.",
   "aliases": [
+    "dev",
     "s"
   ],
   "deprecated": false,
