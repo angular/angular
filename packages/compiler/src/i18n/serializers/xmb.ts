@@ -12,6 +12,15 @@ import * as i18n from '../i18n_ast';
 import {PlaceholderMapper, Serializer, SimplePlaceholderMapper} from './serializer';
 import * as xml from './xml_helper';
 
+/**
+ * Defines the `handler` value on the serialized XMB, indicating that Angular
+ * generated the bundle. This is useful for analytics in Translation Console.
+ *
+ * NOTE: Keep in sync with
+ * packages/localize/tools/src/extract/translation_files/xmb_translation_serializer.ts.
+ */
+const _XMB_HANDLER = 'angular';
+
 const _MESSAGES_TAG = 'messagebundle';
 const _MESSAGE_TAG = 'msg';
 const _PLACEHOLDER_TAG = 'ph';
@@ -42,7 +51,8 @@ export class Xmb extends Serializer {
   override write(messages: i18n.Message[], locale: string | null): string {
     const exampleVisitor = new ExampleVisitor();
     const visitor = new _Visitor();
-    let rootNode = new xml.Tag(_MESSAGES_TAG);
+    const rootNode = new xml.Tag(_MESSAGES_TAG);
+    rootNode.attrs['handler'] = _XMB_HANDLER;
 
     messages.forEach((message) => {
       const attrs: {[k: string]: string} = {id: message.id};
