@@ -84,13 +84,3 @@ function _document(injector: Injector) {
  */
 export const platformServer: (extraProviders?: StaticProvider[]|undefined) => PlatformRef =
     createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
-
-/**
- * The server platform that supports the runtime compiler.
- *
- * @see {@link platformServer}
- * @deprecated add an `import @angular/compiler` and replace the usage with `platformServer`
- *     instead.
- * @publicApi
- */
-export const platformDynamicServer = platformServer;
