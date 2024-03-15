@@ -203,6 +203,13 @@ const instructionState: InstructionState = {
 let _isInCheckNoChangesMode = false;
 
 /**
+ * Flag used to indicate that we are in the middle running change detection on a view
+ *
+ * @see detectChangesInViewWhileDirty
+ */
+let _isRefreshingViews = false;
+
+/**
  * Returns true if the instruction state stack is empty.
  *
  * Intended to be called from tests only (tree shaken otherwise).
@@ -397,6 +404,14 @@ export function isInCheckNoChangesMode(): boolean {
 export function setIsInCheckNoChangesMode(mode: boolean): void {
   !ngDevMode && throwError('Must never be called in production mode');
   _isInCheckNoChangesMode = mode;
+}
+
+export function isRefreshingViews(): boolean {
+  return _isRefreshingViews;
+}
+
+export function setIsRefreshingViews(mode: boolean): void {
+  _isRefreshingViews = mode;
 }
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)

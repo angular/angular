@@ -525,6 +525,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "_isRefreshingViews"
+  },
+  {
     "name": "_keyMap"
   },
   {
@@ -1038,6 +1041,9 @@
     "name": "isReadableStreamLike"
   },
   {
+    "name": "isRefreshingViews"
+  },
+  {
     "name": "isRootView"
   },
   {
@@ -1264,6 +1270,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setIsRefreshingViews"
   },
   {
     "name": "setSegmentHead"
