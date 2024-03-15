@@ -75,6 +75,13 @@ describe('Built-in image directive loaders', () => {
       const loader = createImgixLoader(path);
       expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
     });
+
+    it('should load a low quality image when a placeholder is requested', () => {
+      const path = 'https://somesite.imgix.net';
+      const loader = createImgixLoader(path);
+      const config = {src: 'img.png', isPlaceholder: true};
+      expect(loader(config)).toBe(`${path}/img.png?auto=format&q=20`);
+    });
   });
 
   describe('Cloudinary loader', () => {
@@ -95,6 +102,13 @@ describe('Built-in image directive loaders', () => {
           src: 'marketing/img-2.png',
         }),
       ).toBe(`${path}/image/upload/f_auto,q_auto/marketing/img-2.png`);
+    });
+
+    it('should load a low quality image when a placeholder is requested', () => {
+      const path = 'https://res.cloudinary.com/mysite';
+      const loader = createCloudinaryLoader(path);
+      const config = {src: 'img.png', isPlaceholder: true};
+      expect(loader(config)).toBe(`${path}/image/upload/f_auto,q_auto:low/img.png`);
     });
 
     describe('input validation', () => {
@@ -154,6 +168,13 @@ describe('Built-in image directive loaders', () => {
       );
     });
 
+    it('should load a low quality image when a placeholder is requested', () => {
+      const path = 'https://ik.imageengine.io/imagetest';
+      const loader = createImageKitLoader(path);
+      const config = {src: 'img.png', isPlaceholder: true};
+      expect(loader(config)).toBe(`${path}/img.png?q=20`);
+    });
+
     describe('input validation', () => {
       it('should throw if an absolute URL is provided as a loader input', () => {
         const path = 'https://ik.imageengine.io/imagetest';
@@ -210,6 +231,15 @@ describe('Built-in image directive loaders', () => {
       const loader = createCloudflareLoader(path);
       expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
     });
+
+    it('should load a low quality image when a placeholder is requested', () => {
+      const path = 'https://mysite.com';
+      const loader = createCloudflareLoader(path);
+      const config = {src: 'img.png', isPlaceholder: true};
+      expect(loader(config)).toBe(
+        'https://mysite.com/cdn-cgi/image/format=auto,quality=20/img.png',
+      );
+    });
   });
 
   describe('Netlify loader', () => {
@@ -260,6 +290,20 @@ describe('Built-in image directive loaders', () => {
       expect(console.warn).toHaveBeenCalledWith(
         `NG0${RuntimeErrorCode.INVALID_LOADER_ARGUMENTS}: The Netlify image loader has detected an \`<img>\` tag with the unsupported attribute "\`unknown\`".`,
       );
+    });
+
+    it('should load a low quality image when a placeholder is requested', () => {
+      const path = 'https://mysite.com';
+      const loader = createNetlifyLoader(path);
+      const config = {src: 'img.png', isPlaceholder: true};
+      expect(loader(config)).toBe('https://mysite.com/.netlify/images?url=%2Fimg.png&q=20');
+    });
+
+    it('should not load a low quality image when a placeholder is requested with a quality param', () => {
+      const path = 'https://mysite.com';
+      const loader = createNetlifyLoader(path);
+      const config = {src: 'img.png', isPlaceholder: true, loaderParams: {quality: 50}};
+      expect(loader(config)).toBe('https://mysite.com/.netlify/images?url=%2Fimg.png&q=50');
     });
   });
 
