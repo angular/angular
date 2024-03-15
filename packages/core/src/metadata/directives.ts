@@ -400,7 +400,7 @@ export interface ComponentDecorator {
    * Note that, in addition to these options for configuring a directive,
    * you can control a component's runtime behavior by implementing
    * life-cycle hooks. For more information, see the
-   * [Lifecycle Hooks](guide/lifecycle-hooks) guide.
+   * [Lifecycle Hooks](guide/components/lifecycle) guide.
    *
    * @usageNotes
    *
