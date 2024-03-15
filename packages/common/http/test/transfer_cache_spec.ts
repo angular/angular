@@ -39,17 +39,24 @@ describe('TransferCache', () => {
   describe('withHttpTransferCache', () => {
     let isStable: BehaviorSubject<boolean>;
 
-    function makeRequestAndExpectOne(url: string, body: string, params?: RequestParams): string;
-    function makeRequestAndExpectOne(
+    async function makeRequestAndExpectOne(
+      url: string,
+      body: string,
+      params?: RequestParams,
+    ): Promise<string>;
+    async function makeRequestAndExpectOne(
       url: string,
       body: string,
       params?: RequestParams & {observe: 'response'},
-    ): HttpResponse<string>;
-    function makeRequestAndExpectOne(url: string, body: string, params?: RequestParams): any {
-      let response!: any;
-      TestBed.inject(HttpClient)
+    ): Promise<HttpResponse<string>>;
+    async function makeRequestAndExpectOne(
+      url: string,
+      body: string,
+      params?: RequestParams,
+    ): Promise<string | HttpResponse<string>> {
+      const response: string | HttpResponse<string> = await TestBed.inject(HttpClient)
         .request(params?.method ?? 'GET', url, params)
-        .subscribe((r) => (response = r));
+        .toPromise();
       TestBed.inject(HttpTestingController)
         .expectOne(url)
         .flush(body, {headers: params?.headers});
@@ -169,7 +176,7 @@ describe('TransferCache', () => {
       makeRequestAndExpectNone('/test-1?foo=1');
     });
 
-    it('should not cache a POST even with filter true specified', () => {
+    it('should not cache a POST even with filter true specified', async () => {
       makeRequestAndExpectOne('/test-1?foo=1', 'post-body', {method: 'POST'});
 
       // Previous POST request wasn't cached
@@ -178,7 +185,7 @@ describe('TransferCache', () => {
       // filter => true won't cache neither
       makeRequestAndExpectOne('/test-1?foo=1', 'post-body', {method: 'POST', transferCache: true});
 
-      const response = makeRequestAndExpectOne('/test-1?foo=1', 'body2', {method: 'POST'});
+      const response = await makeRequestAndExpectOne('/test-1?foo=1', 'body2', {method: 'POST'});
       expect(response).toBe('body2');
     });
 
@@ -237,8 +244,8 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST'});
     });
 
-    it('should cache POST with the transferCache option', () => {
-      makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST', transferCache: true});
+    it('should cache POST with the transferCache option', async () => {
+      await makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST', transferCache: true});
       makeRequestAndExpectNone('/test-1?foo=1', 'POST', {transferCache: true});
 
       makeRequestAndExpectOne('/test-2?foo=1', 'foo', {
