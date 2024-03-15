@@ -120,7 +120,8 @@ const R3TemplateRef = class TemplateRef<T> extends ViewEngineTemplateRef<T> {
       context: T, injector?: Injector,
       dehydratedView?: DehydratedContainerView): EmbeddedViewRef<T> {
     const embeddedLView = createAndRenderEmbeddedLView(
-        this._declarationLView, this._declarationTContainer, context, {injector, dehydratedView});
+        this._declarationLView, this._declarationTContainer, context,
+        {embeddedViewInjector: injector, dehydratedView});
     return new R3_ViewRef<T>(embeddedLView);
   }
 };

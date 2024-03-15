@@ -542,8 +542,8 @@ function applyDeferBlockState(
       }
     }
     const dehydratedView = findMatchingDehydratedView(lContainer, activeBlockTNode.tView!.ssrId);
-    const embeddedLView =
-        createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {dehydratedView, injector});
+    const embeddedLView = createAndRenderEmbeddedLView(
+        hostLView, activeBlockTNode, null, {dehydratedView, embeddedViewInjector: injector});
     addLViewToLContainer(
         lContainer, embeddedLView, viewIndex, shouldAddViewToDom(activeBlockTNode, dehydratedView));
     markViewDirty(embeddedLView);
