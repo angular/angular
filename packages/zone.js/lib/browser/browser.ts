@@ -267,20 +267,25 @@ Zone.__load_patch('geolocation', (global: any) => {
   }
 });
 
-Zone.__load_patch('PromiseRejectionEvent', (global: any, Zone: ZoneType) => {
+Zone.__load_patch('PromiseRejectionEvent', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // handle unhandled promise rejection
   function findPromiseRejectionHandler(evtName: string) {
     return function(e: any) {
       const eventTasks = findEventTasks(global, evtName);
+      let found = false;
       eventTasks.forEach(eventTask => {
         // windows has added unhandledrejection event listener
         // trigger the event listener
         const PromiseRejectionEvent = global['PromiseRejectionEvent'];
         if (PromiseRejectionEvent) {
-          const evt = new PromiseRejectionEvent(evtName, {promise: e.promise, reason: e.rejection});
-          eventTask.invoke(evt);
+          found = true;
+          const evt = new PromiseRejectionEvent(evtName, e);
+          eventTask.invoke(eventTask, global, [evt]);
         }
       });
+      if (!found && evtName === 'unhandledrejection') {
+        api.onUnhandledError(e);
+      }
     };
   }
 

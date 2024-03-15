@@ -74,7 +74,7 @@ describe('process related test', () => {
       (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
       Zone.current.fork({name: 'promise'}).run(function() {
         const listener = function(reason: any, promise: any) {
-          hookSpy(promise, reason.message);
+          hookSpy(promise, reason?.rejection?.message);
           process.removeListener('unhandledRejection', listener);
         };
         process.on('unhandledRejection', listener);
@@ -124,11 +124,11 @@ describe('process related test', () => {
       let p: any = null;
       Zone.current.fork({name: 'promise'}).run(function() {
         const listener1 = function(reason: any, promise: any) {
-          hookSpy(promise, reason.message);
+          hookSpy(promise, reason.rejection.message);
           process.removeListener('unhandledRejection', listener1);
         };
         const listener2 = function(reason: any, promise: any) {
-          hookSpy(promise, reason.message);
+          hookSpy(promise, reason.rejection.message);
           process.removeListener('unhandledRejection', listener2);
         };
         process.on('unhandledRejection', listener1);
