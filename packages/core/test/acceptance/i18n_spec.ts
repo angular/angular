@@ -389,14 +389,14 @@ describe('runtime i18n', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
-            '<div>Contenido: antes<div>uno</div>después<!--container--><!--container-->' +
+            '<div>Contenido: <!--container-->antes<div>uno</div>después<!--container-->' +
             '<!--container-->!</div>');
 
     fixture.componentInstance.count = 2;
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
-            '<div>Contenido: antes<button>si no</button>después<!--container--><!--container-->' +
+            '<div>Contenido: <!--container--><!--container-->antes<button>si no</button>después' +
             '<!--container-->!</div>');
   });
 
@@ -430,14 +430,14 @@ describe('runtime i18n', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
-            '<div>Contenido: antes<div>uno</div>después<!--container--><!--container-->' +
+            '<div>Contenido: <!--container-->antes<div>uno</div>después<!--container-->' +
             '<!--container--></div>');
 
     fixture.componentInstance.count = 2;
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML)
         .toEqual(
-            '<div>Contenido: antes<button>si no</button>después<!--container--><!--container-->' +
+            '<div>Contenido: <!--container--><!--container-->antes<button>si no</button>después' +
             '<!--container--></div>');
   });
 

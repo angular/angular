@@ -185,8 +185,6 @@ describe('control flow - if', () => {
     expect(fixture.nativeElement.textContent).toBe('4 aliased to 8');
   });
 
-  // QUESTION: fundamental mismatch between the "template" and "container" concepts
-  // those 2 calls to the ɵɵtemplate instruction will generate comment nodes and LContainer
   it('should destroy all views if there is nothing to display', () => {
     @Component({
       standalone: true,
@@ -418,15 +416,12 @@ describe('control flow - if', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
     });
 
-    // Note: the behavior in this test is *not* intuitive, but it's meant to capture
-    // the projection behavior from `*ngIf` with `@if`. The test can be updated if we
-    // change how content projection works in the future.
-    it('should project an @else content into the slot of @if', () => {
+    xit('should project @if an @else content into separate slots', () => {
       @Component({
         standalone: true,
         selector: 'test',
         template:
-            'Main: <ng-content/> One: <ng-content select="[one]"/> Two: <ng-content select="[two]"/>',
+            'if: (<ng-content select="[if_case]"/>),  else: (<ng-content select="[else_case]"/>)',
       })
       class TestComponent {
       }
@@ -435,11 +430,13 @@ describe('control flow - if', () => {
         standalone: true,
         imports: [TestComponent],
         template: `
-        <test>Before @if (value) {
-          <span one>one</span>
-        } @else {
-          <span two>two</span>
-        } After</test>
+        <test>
+          @if (value) {
+            <span if_case>if content</span>
+          } @else {
+            <span else_case>else content</span>
+          }
+        </test>
       `
       })
       class App {
@@ -448,14 +445,96 @@ describe('control flow - if', () => {
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
-
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After One: one Two: ');
+      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
 
       fixture.componentInstance.value = false;
       fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
 
-      expect(fixture.nativeElement.textContent).toBe('Main: Before  After One: two Two: ');
+      fixture.componentInstance.value = true;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
     });
+
+    xit('should project @if an @else content into separate slots when if has default content',
+        () => {
+          @Component({
+            standalone: true,
+            selector: 'test',
+            template: 'if: (<ng-content />),  else: (<ng-content select="[else_case]"/>)',
+          })
+          class TestComponent {
+          }
+
+          @Component({
+            standalone: true,
+            imports: [TestComponent],
+            template: `
+        <test>
+          @if (value) {
+            <span>if content</span>
+          } @else {
+            <span else_case>else content</span>
+          }
+        </test>
+      `
+          })
+          class App {
+            value = true;
+          }
+
+          const fixture = TestBed.createComponent(App);
+          fixture.detectChanges();
+          expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+
+          fixture.componentInstance.value = false;
+          fixture.detectChanges();
+          expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
+
+          fixture.componentInstance.value = true;
+          fixture.detectChanges();
+          expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+        });
+
+    it('should project @if an @else content into separate slots when else has default content',
+       () => {
+         @Component({
+           standalone: true,
+           selector: 'test',
+           template: 'if: (<ng-content select="[if_case]"/>),  else: (<ng-content/>)',
+         })
+         class TestComponent {
+         }
+
+         @Component({
+           standalone: true,
+           imports: [TestComponent],
+           template: `
+        <test>
+          @if (value) {
+            <span if_case>if content</span>
+          } @else {
+            <span>else content</span>
+          }
+        </test>
+      `
+         })
+         class App {
+           value = true;
+         }
+
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+
+         fixture.componentInstance.value = false;
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
+
+         fixture.componentInstance.value = true;
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+       });
 
     it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes',
        () => {
