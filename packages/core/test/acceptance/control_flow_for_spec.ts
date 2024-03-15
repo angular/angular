@@ -8,7 +8,7 @@
 
 
 import {NgIf} from '@angular/common';
-import {ChangeDetectorRef, Component, Directive, inject, OnInit, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, Component, Directive, inject, Input, OnInit, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('control flow - for', () => {
@@ -480,6 +480,46 @@ describe('control flow - for', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Main: Before one1two1one2two2 After Slot: ');
+    });
+
+    it('should project an @for with a single root node with a data binding', () => {
+      let directiveCount = 0;
+
+      @Directive({standalone: true, selector: '[foo]'})
+      class Foo {
+        @Input('foo') value: any;
+
+        constructor() {
+          directiveCount++;
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, Foo],
+        template: `
+        <test>Before @for (item of items; track $index) {
+          <span [foo]="item">{{item}}</span>
+        } After</test>
+      `
+      })
+      class App {
+        items = [1, 2, 3];
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 123');
+      expect(directiveCount).toBe(3);
     });
 
     it('should project an @for with an ng-container root node', () => {

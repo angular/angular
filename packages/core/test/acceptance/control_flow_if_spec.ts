@@ -8,7 +8,7 @@
 
 
 import {NgFor} from '@angular/common';
-import {ChangeDetectorRef, Component, Directive, inject, OnInit, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, Component, Directive, inject, Input, OnInit, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 // Basic shared pipe used during testing.
@@ -287,6 +287,46 @@ describe('control flow - if', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+    });
+
+    it('should project an @if with a single root node with a data binding', () => {
+      let directiveCount = 0;
+
+      @Directive({standalone: true, selector: '[foo]'})
+      class Foo {
+        @Input('foo') value: any;
+
+        constructor() {
+          directiveCount++;
+        }
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [TestComponent, Foo],
+        template: `
+        <test>Before @if (true) {
+          <span [foo]="value">foo</span>
+        } After</test>
+      `
+      })
+      class App {
+        value = 1;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+      expect(directiveCount).toBe(1);
     });
 
     it('should project an @if with multiple root nodes into the catch-all slot', () => {

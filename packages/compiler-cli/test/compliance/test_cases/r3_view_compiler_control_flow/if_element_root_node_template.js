@@ -1,3 +1,3 @@
-consts: [["foo", "1", "bar", "2"]]
+consts: [["foo", "1", "bar", "2", 3, "binding"]]
 …
-$r3$.ɵɵtemplate(0, MyApp_Conditional_0_Template, 2, 1, "div", 0);
+$r3$.ɵɵtemplate(0, MyApp_Conditional_0_Template, 2, 2, "div", 0);
