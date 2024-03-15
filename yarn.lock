@@ -3842,10 +3842,10 @@
     "@types/node" "*"
     "@types/responselike" "^1.0.0"
 
-"@types/chrome@^0.0.261":
-  version "0.0.261"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.261.tgz#4b8541e9a33fa8e101e03fff423011740d11503e"
-  integrity sha512-u8Nhu54/qP32fM2Ni5sdln6Evvzy2V9TJjWnFrab2GcKDpcBpJ3ZtsBUqCwaoTxada+k5Vj8Zn5g8AsdbRDqKg==
+"@types/chrome@^0.0.263":
+  version "0.0.263"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.263.tgz#b629fb3ae67d55eb722decbef656f685cf23d5c8"
+  integrity sha512-As0vzv99ov3M6ZR7R6VzhMWFZXkPMrFrCEXXVrMN576Cm70fTkj7Df2CF+qEo170JepX50pd11cX6O4DSAtl2Q==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -4455,11 +4455,10 @@
     "@types/glob" "*"
     "@types/node" "*"
 
-"@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.21", "@types/selenium-webdriver@^4.1.21":
-  name "@types/selenium-webdriver4"
-  version "4.1.21"
-  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.21.tgz#79fe31faf9953a4143c3e32944d98d5146bbe185"
-  integrity sha512-QGURnImvxYlIQz5DVhvHdqpYNLBjhJ2Vm+cnQI2G9QZzkWlZm0LkLcvDcHp+qE6N2KBz4CeuvXgPO7W3XQ0Tyw==
+"@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.22":
+  version "4.1.22"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.22.tgz#344519b90727eb713e1ce6d2e0198eb0b4f8f316"
+  integrity sha512-MCL4l7q8dwxejr2Q2NXLyNwHWMPdlWE0Kpn6fFwJtvkJF7PTkG5jkvbH/X1IAAQxgt/L1dA8u2GtDeekvSKvOA==
   dependencies:
     "@types/ws" "*"
 
@@ -4472,6 +4471,14 @@
   version "3.0.25"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.25.tgz#7982bf5add9539b4e953512354055545e8508cff"
   integrity sha512-gkb8rx0kjHuaVUzIfKa1tVVjnEmjYLufDmoOHKPsaoRraTcNjV9W9ruFWi3Xv821c7M5gZVmrGOT8BJYsY/acQ==
+
+"@types/selenium-webdriver@^4.1.21":
+  name "@types/selenium-webdriver4"
+  version "4.1.21"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.21.tgz#79fe31faf9953a4143c3e32944d98d5146bbe185"
+  integrity sha512-QGURnImvxYlIQz5DVhvHdqpYNLBjhJ2Vm+cnQI2G9QZzkWlZm0LkLcvDcHp+qE6N2KBz4CeuvXgPO7W3XQ0Tyw==
+  dependencies:
+    "@types/ws" "*"
 
 "@types/semver@^7.3.4":
   version "7.5.4"
@@ -11951,6 +11958,13 @@ magic-string@0.30.7:
   version "0.30.7"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.7.tgz#0cecd0527d473298679da95a2d7aeb8c64048505"
   integrity sha512-8vBuFF/I/+OSLRmdf2wwFCJCz+nSn0m6DPvGH1fS/KiQoSaR+sETbov0eIk9KhEKy8CYqIkIAnbohxT/4H0kuA==
+  dependencies:
+    "@jridgewell/sourcemap-codec" "^1.4.15"
+
+magic-string@0.30.8:
+  version "0.30.8"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.8.tgz#14e8624246d2bedba70d5462aa99ac9681844613"
+  integrity sha512-ISQTe55T2ao7XtlAStud6qwYPZjE4GK1S/BeVPus4jrq6JuOnQ00YKQC581RWhR122W7msZV263KzVeLoqidyQ==
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.15"
 
