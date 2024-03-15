@@ -82,15 +82,6 @@ export class ServerPlatformLocation implements PlatformLocation {
       this.hash = url.hash;
       this.href = _doc.location.href;
     }
-    if (config.useAbsoluteUrl) {
-      if (!config.baseUrl) {
-        throw new Error(`"PlatformConfig.baseUrl" must be set if "useAbsoluteUrl" is true`);
-      }
-      const url = parseUrl(config.baseUrl);
-      this.protocol = url.protocol;
-      this.hostname = url.hostname;
-      this.port = url.port;
-    }
   }
 
   getBaseHrefFromDOM(): string {
