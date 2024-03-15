@@ -217,7 +217,7 @@ Each request method on `HttpClient` constructs and returns an `Observable` of th
 
 `HttpClient` produces what RxJS calls "cold" `Observable`s, meaning that no actual request happens until the `Observable` is subscribed. Only then is the request actually dispatched to the server. Subscribing to the same `Observable` multiple times will trigger multiple backend requests. Each subscription is independent.
 
-TIP: You can think of `HttpClient` `Observable`s as _blueprints_ for actual server requests.
+Tip: You can think of `HttpClient` `Observable`s as _blueprints_ for actual server requests.
 
 Once subscribed, unsubscribing will abort the in-progress request. This is very useful if the `Observable` is subscribed via the `async` pipe, as it will automatically cancel the request if the user navigates away from the current page. Additionally, if you use the `Observable` with an RxJS combinator like `switchMap`, this cancellation will clean up any stale requests.
 
@@ -225,7 +225,7 @@ Once the response returns, `Observable`s from `HttpClient` usually complete (alt
 
 Because of the automatic completion, there is usually no risk of memory leaks if `HttpClient` subscriptions are not cleaned up. However, as with any async operation, we strongly recommend that you clean up subscriptions when the component using them is destroyed, as the subscription callback may otherwise run and encounter errors when it attempts to interact with the destroyed component.
 
-TIP: Using the `async` pipe or the `toSignal` operation to subscribe to `Observable`s ensures that subscriptions are disposed properly.
+Tip: Using the `async` pipe or the `toSignal` operation to subscribe to `Observable`s ensures that subscriptions are disposed properly.
 
 ## Best practices
 
