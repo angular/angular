@@ -8,7 +8,6 @@ import { Compiler } from '@angular/core';
 import { CompilerFactory } from '@angular/core';
 import { CompilerOptions } from '@angular/core';
 import { PlatformRef } from '@angular/core';
-import { Provider } from '@angular/core';
 import { StaticProvider } from '@angular/core';
 import { Version } from '@angular/core';
 
@@ -20,9 +19,6 @@ export class JitCompilerFactory implements CompilerFactory {
 
 // @public (undocumented)
 export const platformBrowserDynamic: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
-
-// @public @deprecated (undocumented)
-export const RESOURCE_CACHE_PROVIDER: Provider[];
 
 // @public (undocumented)
 export const VERSION: Version;
