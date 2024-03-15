@@ -26,28 +26,6 @@ export interface PlatformConfig {
    * @default none
    */
   url?: string;
-  /**
-   * Note: this option has no effect and can be removed from the config.
-   *
-   * Whether to append the absolute URL to any relative HTTP requests. If set to
-   * true, this logic executes prior to any HTTP interceptors that may run later
-   * on in the request. `baseUrl` must be supplied if this flag is enabled.
-   *
-   * @deprecated This option is a noop.
-   * @default false
-   */
-  useAbsoluteUrl?: boolean;
-  /**
-   * Note: this option has no effect and can be removed from the config.
-   *
-   * The base URL for resolving absolute URL for HTTP requests. It must be set
-   * if `useAbsoluteUrl` is true, and must consist of protocol, hostname,
-   * and optional port. This option has no effect if `useAbsoluteUrl` is not
-   * enabled.
-   *
-   * @deprecated This option is a noop.
-   */
-  baseUrl?: string;
 }
 
 /**
