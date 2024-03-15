@@ -789,6 +789,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "_isRefreshingViews"
+  },
+  {
     "name": "_keyMap"
   },
   {
@@ -1596,6 +1599,9 @@
     "name": "isReadableStreamLike"
   },
   {
+    "name": "isRefreshingViews"
+  },
+  {
     "name": "isSubscription"
   },
   {
@@ -1936,6 +1942,9 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setIsRefreshingViews"
   },
   {
     "name": "setRouterState"

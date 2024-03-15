@@ -630,6 +630,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "_isRefreshingViews"
+  },
+  {
     "name": "_keyMap"
   },
   {
@@ -1311,6 +1314,9 @@
     "name": "isReadableStreamLike"
   },
   {
+    "name": "isRefreshingViews"
+  },
+  {
     "name": "isStylingMatch"
   },
   {
@@ -1636,6 +1642,9 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setIsRefreshingViews"
   },
   {
     "name": "setSelectedIndex"

@@ -642,6 +642,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "_isRefreshingViews"
+  },
+  {
     "name": "_keyMap"
   },
   {
@@ -1191,6 +1194,9 @@
     "name": "isPromise"
   },
   {
+    "name": "isRefreshingViews"
+  },
+  {
     "name": "isSubscription"
   },
   {
@@ -1429,6 +1435,9 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setIsRefreshingViews"
   },
   {
     "name": "setSelectedIndex"

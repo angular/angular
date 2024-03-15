@@ -8,6 +8,7 @@
 
 import {isRootView} from '../interfaces/type_checks';
 import {ENVIRONMENT, FLAGS, LView, LViewFlags} from '../interfaces/view';
+import {isRefreshingViews} from '../state';
 import {getLViewParent} from '../util/view_utils';
 
 /**
@@ -22,9 +23,22 @@ import {getLViewParent} from '../util/view_utils';
  * @returns the root LView
  */
 export function markViewDirty(lView: LView): LView|null {
+  const dirtyBitsToUse = isRefreshingViews() ?
+      // When we are actively refreshing views, we only use the `Dirty` bit to mark a view
+      // for check. This bit is ignored in ChangeDetectionMode.Targeted, which is used to
+      // synchronously rerun change detection on a specific set of views (those which have
+      // the `RefreshView` flag and those with dirty signal consumers). `LViewFlags.Dirty`
+      // does not support re-entrant change detection on its own.
+      LViewFlags.Dirty :
+      // When we are not actively refreshing a view tree, it is absolutely
+      // valid to update state and mark views dirty. We use the `RefreshView` flag in this
+      // case to allow synchronously rerunning change detection. This applies today to
+      // afterRender hooks as well as animation listeners which execute after detecting
+      // changes in a view when the render factory flushes.
+      LViewFlags.RefreshView | LViewFlags.Dirty;
   lView[ENVIRONMENT].changeDetectionScheduler?.notify();
   while (lView) {
-    lView[FLAGS] |= LViewFlags.Dirty;
+    lView[FLAGS] |= dirtyBitsToUse;
     const parent = getLViewParent(lView);
     // Stop traversing up as soon as you find a root view that wasn't attached to any container
     if (isRootView(lView) && !parent) {
