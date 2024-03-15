@@ -19,9 +19,9 @@ import {ActivatedRoute} from './router_state';
 export class OutletContext {
   outlet: RouterOutletContract | null = null;
   route: ActivatedRoute | null = null;
-  children = new ChildrenOutletContexts(this.injector);
+  injector: EnvironmentInjector | null = null;
+  children = new ChildrenOutletContexts();
   attachRef: ComponentRef<any> | null = null;
-  constructor(public injector: EnvironmentInjector) {}
 }
 
 /**
@@ -33,9 +33,6 @@ export class OutletContext {
 export class ChildrenOutletContexts {
   // contexts for child outlets, by name.
   private contexts = new Map<string, OutletContext>();
-
-  /** @nodoc */
-  constructor(private parentInjector: EnvironmentInjector) {}
 
   /** Called when a `RouterOutlet` directive is instantiated */
   onChildOutletCreated(childName: string, outlet: RouterOutletContract): void {
@@ -75,7 +72,7 @@ export class ChildrenOutletContexts {
     let context = this.getContext(childName);
 
     if (!context) {
-      context = new OutletContext(this.parentInjector);
+      context = new OutletContext();
       this.contexts.set(childName, context);
     }
 
