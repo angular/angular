@@ -73,7 +73,7 @@ APPLICATION_DEPS = link_packages([
     "@npm//@lezer/highlight",
     "@npm//@lezer/javascript",
     "@npm//@lezer/common",
-    "@npm//xterm",
+    "@npm//@xterm/xterm",
     "@npm//xterm-addon-fit",
     "@npm//angular-split",
 ])

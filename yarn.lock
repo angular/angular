@@ -5001,6 +5001,11 @@
   resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.10.tgz#a1337ca426aa61cef9fe15b5b28e340a72f6fa99"
   integrity sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==
 
+"@xterm/xterm@^5.4.0":
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/@xterm/xterm/-/xterm-5.4.0.tgz#a35b585750ca492cbf2a4c99472c480d8c122840"
+  integrity sha512-GlyzcZZ7LJjhFevthHtikhiDIl8lnTSgol6eTM4aoSNLcuXu3OEhnbqdCVIjtIil3jjabf3gDtb1S8FGahsuEw==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"

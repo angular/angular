@@ -218,7 +218,7 @@
     "typed-graphqlify": "^3.1.1",
     "vrsource-tslint-rules": "6.0.0",
     "xregexp": "^5.1.1",
-    "xterm": "^5.3.0",
+    "@xterm/xterm": "^5.4.0",
     "xterm-addon-fit": "^0.8.0"
   },
   "// 3": "Ensure that transitive dependencies on `https-proxy-agent` are at minimum v5 as older versions patch NodeJS directly, breaking tools like webdriver which is used by the karma-sauce-launcher as an example.",
