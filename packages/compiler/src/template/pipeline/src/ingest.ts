@@ -359,7 +359,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
       cView.contextVariables.set(ifCase.expressionAlias.name, ir.CTX_REF);
     }
 
-    let ifCaseI18nMeta = undefined;
+    let ifCaseI18nMeta: i18n.BlockPlaceholder|undefined = undefined;
     if (ifCase.i18n !== undefined) {
       if (!(ifCase.i18n instanceof i18n.BlockPlaceholder)) {
         throw Error(`Unhandled i18n metadata type for if block: ${ifCase.i18n?.constructor.name}`);
@@ -402,7 +402,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
-    let switchCaseI18nMeta = undefined;
+    let switchCaseI18nMeta: i18n.BlockPlaceholder|undefined = undefined;
     if (switchCase.i18n !== undefined) {
       if (!(switchCase.i18n instanceof i18n.BlockPlaceholder)) {
         throw Error(
@@ -1269,16 +1269,26 @@ function ingestControlFlowInsertionPoint(
     }
   }
 
-  // If we've found a single root node, its tag name and *static* attributes can be copied
-  // to the surrounding template to be used for content projection. Note that it's important
-  // that we don't copy any bound attributes since they don't participate in content projection
-  // and they can be used in directive matching (in the case of `Template.templateAttrs`).
+  // If we've found a single root node, its tag name and attributes can be
+  // copied to the surrounding template to be used for content projection.
   if (root !== null) {
+    // Collect the static attributes for content projection purposes.
     for (const attr of root.attributes) {
       const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, attr.name, true);
       unit.update.push(ir.createBindingOp(
           xref, ir.BindingKind.Attribute, attr.name, o.literal(attr.value), null, securityContext,
           true, false, null, asMessage(attr.i18n), attr.sourceSpan));
+    }
+
+    // Also collect the inputs since they participate in content projection as well.
+    // Note that TDB used to collect the outputs as well, but it wasn't passing them into
+    // the template instruction. Here we just don't collect them.
+    for (const attr of root.inputs) {
+      if (attr.type !== e.BindingType.Animation && attr.type !== e.BindingType.Attribute) {
+        const securityContext = domSchema.securityContext(NG_TEMPLATE_TAG_NAME, attr.name, true);
+        unit.create.push(ir.createExtractedAttributeOp(
+            xref, ir.BindingKind.Property, null, attr.name, null, null, null, securityContext));
+      }
     }
 
     const tagName = root instanceof t.Element ? root.name : root.tagName;
