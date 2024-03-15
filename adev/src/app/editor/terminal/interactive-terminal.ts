@@ -8,7 +8,7 @@
 
 import {inject} from '@angular/core';
 import {Subject} from 'rxjs';
-import {Terminal} from 'xterm';
+import {Terminal} from '@xterm/xterm';
 
 import {WINDOW} from '@angular/docs';
 
