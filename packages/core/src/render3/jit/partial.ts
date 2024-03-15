@@ -8,7 +8,8 @@
 
 import {FactoryTarget, getCompilerFacade, JitCompilerUsage, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
-import {setClassMetadata} from '../metadata';
+import {setClassMetadata, setClassMetadataAsync} from '../metadata';
+
 import {angularCoreEnv} from './environment';
 
 /**
@@ -35,6 +36,26 @@ export function ɵɵngDeclareClassMetadata(decl: {
 }): void {
   setClassMetadata(
       decl.type, decl.decorators, decl.ctorParameters ?? null, decl.propDecorators ?? null);
+}
+
+/**
+ * Evaluates the class metadata of a component that contains deferred blocks.
+ *
+ * @codeGenApi
+ */
+export function ɵɵngDeclareClassMetadataAsync(decl: {
+  type: Type<any>,
+  resolveDeferredDeps: () => Promise<Type<unknown>>[],
+  resolveMetadata: (...types: Type<unknown>[]) => {
+    decorators: any[];
+    ctorParameters: (() => any[])|null;
+    propDecorators: ({[field: string]: any})|null;
+  },
+}): void {
+  setClassMetadataAsync(decl.type, decl.resolveDeferredDeps, (...types: Type<unknown>[]) => {
+    const meta = decl.resolveMetadata(...types);
+    setClassMetadata(decl.type, meta.decorators, meta.ctorParameters, meta.propDecorators);
+  });
 }
 
 /**

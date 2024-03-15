@@ -191,6 +191,12 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   dependencies?: R3DeclareTemplateDependencyMetadata[];
 
   /**
+   * List of defer block dependency functions, ordered by the appearance
+   * of the corresponding deferred block in the template.
+   */
+  deferBlockDependencies?: o.Expression[];
+
+  /**
    * A map of pipe names to an expression referencing the pipe type (possibly a forward reference
    * wrapped in a `forwardRef` invocation) which are used in the template.
    */
@@ -555,6 +561,23 @@ export interface R3DeclareClassMetadata extends R3PartialDeclaration {
    * omitted if no properties have any decorators.
    */
   propDecorators?: o.Expression;
+}
+
+/**
+ * Describes the shape of the object that the `ɵɵngDeclareClassMetadataAsync()` function accepts.
+ *
+ * This interface serves primarily as documentation, as conformance to this interface is not
+ * enforced during linking.
+ */
+export interface R3DeclareClassMetadataAsync extends R3PartialDeclaration {
+  /** Function that loads the deferred dependencies associated with the component. */
+  resolveDeferredDeps: o.Expression;
+
+  /**
+   * Function that, when invoked with the resolved deferred
+   * dependencies, will return the class metadata.
+   */
+  resolveMetadata: o.Expression;
 }
 
 /**

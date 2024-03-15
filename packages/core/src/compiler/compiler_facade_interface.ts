@@ -230,6 +230,7 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   pipes?: {[pipeName: string]: OpaqueValue|(() => OpaqueValue)};
 
 
+  deferBlockDependencies?: (() => Promise<Type>)[];
   viewProviders?: OpaqueValue;
   animations?: OpaqueValue;
   changeDetection?: ChangeDetectionStrategy;
