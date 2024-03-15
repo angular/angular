@@ -2412,7 +2412,7 @@ describe('di', () => {
   });
 
   describe('Tree shakable injectors', () => {
-    it('should support tree shakable injectors scopes', () => {
+    it('`Injector.create` should support tree shakable injectors scopes', () => {
       @Injectable({providedIn: 'any'})
       class AnyService {
         constructor(public injector: Injector) {}
@@ -2430,6 +2430,35 @@ describe('di', () => {
 
       const testBedInjector: Injector = TestBed.get(Injector);
       const childInjector = Injector.create({providers: [], parent: testBedInjector});
+
+      const anyService = childInjector.get(AnyService);
+      expect(anyService.injector).toBe(childInjector);
+
+      const rootService = childInjector.get(RootService);
+      expect(rootService.injector.get(ɵINJECTOR_SCOPE)).toBe('root');
+
+      const platformService = childInjector.get(PlatformService);
+      expect(platformService.injector.get(ɵINJECTOR_SCOPE)).toBe('platform');
+    });
+
+    it('`createEnvironmentInjector` should support tree shakable injectors scopes', () => {
+      @Injectable({providedIn: 'any'})
+      class AnyService {
+        constructor(public injector: Injector) {}
+      }
+
+      @Injectable({providedIn: 'root'})
+      class RootService {
+        constructor(public injector: Injector) {}
+      }
+
+      @Injectable({providedIn: 'platform'})
+      class PlatformService {
+        constructor(public injector: Injector) {}
+      }
+
+      const testBedInjector: Injector = TestBed.get(Injector);
+      const childInjector = createEnvironmentInjector([], testBedInjector as EnvironmentInjector);
 
       const anyService = childInjector.get(AnyService);
       expect(anyService.injector).toBe(childInjector);

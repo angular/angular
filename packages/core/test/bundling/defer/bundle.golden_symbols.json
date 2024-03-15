@@ -843,6 +843,9 @@
     "name": "getDeclarationTNode"
   },
   {
+    "name": "getDefaultEnvironmentScope"
+  },
+  {
     "name": "getDeferBlockDataIndex"
   },
   {

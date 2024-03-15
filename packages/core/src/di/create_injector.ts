@@ -21,8 +21,8 @@ import {InjectorScope} from './scope';
 export function createInjector(
     defType: /* InjectorType<any> */ any, parent: Injector|null = null,
     additionalProviders: Array<Provider|StaticProvider>|null = null, name?: string): Injector {
-  const injector =
-      createInjectorWithoutInjectorInstances(defType, parent, additionalProviders, name);
+  const injector = createInjectorWithoutInjectorInstances(
+      defType, parent, additionalProviders, new Set(['any']), name);
   injector.resolveInjectorInitializers();
   return injector;
 }
@@ -34,8 +34,8 @@ export function createInjector(
  */
 export function createInjectorWithoutInjectorInstances(
     defType: /* InjectorType<any> */ any, parent: Injector|null = null,
-    additionalProviders: Array<Provider|StaticProvider>|null = null, name?: string,
-    scopes = new Set<InjectorScope>()): R3Injector {
+    additionalProviders: Array<Provider|StaticProvider>|null = null, scopes: Set<InjectorScope>,
+    name?: string): R3Injector {
   const providers = [
     additionalProviders || EMPTY_ARRAY,
     importProvidersFrom(defType),

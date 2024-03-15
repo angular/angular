@@ -21,7 +21,7 @@ import {createOrReusePlatformInjector} from '../platform/platform';
 import {PLATFORM_DESTROY_LISTENERS} from '../platform/platform_ref';
 import {assertStandaloneComponentType} from '../render3/errors';
 import {setLocaleId} from '../render3/i18n/i18n_locale_id';
-import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
+import {EnvironmentNgModuleRefAdapter, getDefaultEnvironmentScope} from '../render3/ng_module_ref';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
@@ -66,6 +66,7 @@ export function internalCreateApplication(config: {
       // We skip environment initializers because we need to run them inside the NgZone, which
       // happens after we get the NgZone instance from the Injector.
       runEnvironmentInitializers: false,
+      scopes: getDefaultEnvironmentScope(),
     });
     const envInjector = adapter.injector;
     const ngZone = envInjector.get(NgZone);

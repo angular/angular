@@ -9,7 +9,7 @@
 import {InjectionToken} from './injection_token';
 
 
-export type InjectorScope = 'root'|'platform'|'environment';
+export type InjectorScope = 'root'|'platform'|'environment'|'any';
 
 /**
  * An internal token whose presence in an injector indicates that the injector should treat itself

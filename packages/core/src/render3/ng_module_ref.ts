@@ -10,6 +10,7 @@ import {createInjectorWithoutInjectorInstances} from '../di/create_injector';
 import {Injector} from '../di/injector';
 import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
 import {EnvironmentInjector, getNullInjector, R3Injector} from '../di/r3_injector';
+import {InjectorScope} from '../di/scope';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -78,7 +79,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
                              },
                              ...additionalProviders
                            ],
-                           stringify(ngModuleType), new Set(['environment'])) as R3Injector;
+                           getDefaultEnvironmentScope(), stringify(ngModuleType)) as R3Injector;
 
     // We need to resolve the injector types separately from the injector creation, because
     // the module might be trying to use this ref in its constructor for DI which will cause a
@@ -120,6 +121,10 @@ export function createNgModuleRefWithProviders<T>(
   return new NgModuleRef(moduleType, parentInjector, additionalProviders);
 }
 
+export function getDefaultEnvironmentScope() {
+  return new Set<InjectorScope>(['environment', 'any']);
+}
+
 export class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> {
   override readonly injector: R3Injector;
   override readonly componentFactoryResolver: ComponentFactoryResolver =
@@ -130,7 +135,8 @@ export class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> 
     providers: Array<Provider|EnvironmentProviders>,
     parent: EnvironmentInjector|null,
     debugName: string|null,
-    runEnvironmentInitializers: boolean
+    runEnvironmentInitializers: boolean,
+    scopes: Set<InjectorScope>,
   }) {
     super();
     const injector = new R3Injector(
@@ -139,7 +145,7 @@ export class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> 
           {provide: viewEngine_NgModuleRef, useValue: this},
           {provide: viewEngine_ComponentFactoryResolver, useValue: this.componentFactoryResolver},
         ],
-        config.parent || getNullInjector(), config.debugName, new Set(['environment']));
+        config.parent || getNullInjector(), config.debugName, config.scopes);
     this.injector = injector;
     if (config.runEnvironmentInitializers) {
       injector.resolveInjectorInitializers();
@@ -171,7 +177,15 @@ export class EnvironmentNgModuleRefAdapter extends viewEngine_NgModuleRef<null> 
 export function createEnvironmentInjector(
     providers: Array<Provider|EnvironmentProviders>, parent: EnvironmentInjector,
     debugName: string|null = null): EnvironmentInjector {
+  const scopes = getDefaultEnvironmentScope();
+  return createEnvironmentInjectorWithScope(providers, parent, scopes, debugName);
+}
+
+/** Internal function to create an environment injector with specified scopes. */
+export function createEnvironmentInjectorWithScope(
+    providers: Array<Provider|EnvironmentProviders>, parent: EnvironmentInjector,
+    scopes: Set<InjectorScope>, debugName: string|null = null): EnvironmentInjector {
   const adapter = new EnvironmentNgModuleRefAdapter(
-      {providers, parent, debugName, runEnvironmentInitializers: true});
+      {providers, parent, debugName, scopes, runEnvironmentInitializers: true});
   return adapter.injector;
 }
