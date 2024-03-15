@@ -25,16 +25,9 @@ export const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 // @public
 export interface PlatformConfig {
-    // @deprecated
-    baseUrl?: string;
     document?: string;
     url?: string;
-    // @deprecated
-    useAbsoluteUrl?: boolean;
 }
-
-// @public @deprecated
-export const platformDynamicServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 // @public (undocumented)
 export const platformServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
@@ -75,16 +68,6 @@ export class ServerModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<ServerModule>;
     // (undocumented)
     static ɵmod: i0.ɵɵNgModuleDeclaration<ServerModule, never, [typeof i1.HttpClientModule, typeof i2.NoopAnimationsModule], [typeof i3.BrowserModule]>;
-}
-
-// @public @deprecated
-export class ServerTransferStateModule {
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<ServerTransferStateModule, never>;
-    // (undocumented)
-    static ɵinj: i0.ɵɵInjectorDeclaration<ServerTransferStateModule>;
-    // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<ServerTransferStateModule, never, never, never>;
 }
 
 // @public (undocumented)
