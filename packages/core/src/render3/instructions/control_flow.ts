@@ -22,6 +22,7 @@ import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HYDRATION, LView, TV
 import {LiveCollection, reconcile} from '../list_reconciliation';
 import {destroyLView, detachView} from '../node_manipulation';
 import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
+import {NO_CHANGE} from '../tokens';
 import {getTNode} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContainer, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
@@ -32,18 +33,21 @@ import {ɵɵtemplate} from './template';
  * built-in "if" and "switch". On the high level this instruction is responsible for adding and
  * removing views selected by a conditional expression.
  *
- * @param containerIndex index of a container in a host view (indexed from HEADER_OFFSET) where
- *     conditional views should be inserted.
  * @param matchingTemplateIndex index of a template TNode representing a conditional view to be
  *     inserted; -1 represents a special case when there is no view to insert.
  * @codeGenApi
  */
 export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex: number, value?: T) {
+  // TODO: we could remove the containerIndex argument to this instruction now (!)
   performanceMarkFeature('NgControlFlow');
 
   const hostLView = getLView();
   const bindingIndex = nextBindingIndex();
-  const lContainer = getLContainer(hostLView, HEADER_OFFSET + containerIndex);
+  const prevMatchingTemplateIndex: number =
+      hostLView[bindingIndex] !== NO_CHANGE ? hostLView[bindingIndex] : -1;
+  const prevContainer = prevMatchingTemplateIndex !== -1 ?
+      getLContainer(hostLView, HEADER_OFFSET + prevMatchingTemplateIndex) :
+      undefined;
   const viewInContainerIdx = 0;
 
   if (bindingUpdated(hostLView, bindingIndex, matchingTemplateIndex)) {
@@ -51,29 +55,33 @@ export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex
     try {
       // The index of the view to show changed - remove the previously displayed one
       // (it is a noop if there are no active views in a container).
-      removeLViewFromLContainer(lContainer, viewInContainerIdx);
+      if (prevContainer !== undefined) {
+        removeLViewFromLContainer(prevContainer, viewInContainerIdx);
+      }
 
       // Index -1 is a special case where none of the conditions evaluates to
       // a truthy value and as the consequence we've got no view to show.
       if (matchingTemplateIndex !== -1) {
-        const templateTNode =
-            getExistingTNode(hostLView[TVIEW], HEADER_OFFSET + matchingTemplateIndex);
+        const nextLContainerIndex = HEADER_OFFSET + matchingTemplateIndex;
+        const nextContainer = getLContainer(hostLView, nextLContainerIndex);
+        const templateTNode = getExistingTNode(hostLView[TVIEW], nextLContainerIndex);
 
-        const dehydratedView = findMatchingDehydratedView(lContainer, templateTNode.tView!.ssrId);
+        const dehydratedView =
+            findMatchingDehydratedView(nextContainer, templateTNode.tView!.ssrId);
         const embeddedLView =
             createAndRenderEmbeddedLView(hostLView, templateTNode, value, {dehydratedView});
 
         addLViewToLContainer(
-            lContainer, embeddedLView, viewInContainerIdx,
+            nextContainer, embeddedLView, viewInContainerIdx,
             shouldAddViewToDom(templateTNode, dehydratedView));
       }
     } finally {
       setActiveConsumer(prevConsumer);
     }
-  } else {
+  } else if (prevContainer !== undefined) {
     // We might keep displaying the same template but the actual value of the expression could have
     // changed - re-bind in context.
-    const lView = getLViewFromLContainer<T|undefined>(lContainer, viewInContainerIdx);
+    const lView = getLViewFromLContainer<T|undefined>(prevContainer, viewInContainerIdx);
     if (lView !== undefined) {
       lView[CONTEXT] = value;
     }
