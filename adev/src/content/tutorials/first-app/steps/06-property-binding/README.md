@@ -40,7 +40,7 @@ In the code editor:
 
 </docs-workflow>
 
-Summary: In this lesson, you added a new property binding and passed in a reference to a class property. Now, the `HousingLocationComponent` has access to data that it can use to customize the component's display.
+SUMMARY: In this lesson, you added a new property binding and passed in a reference to a class property. Now, the `HousingLocationComponent` has access to data that it can use to customize the component's display.
 
 For more information about the topics covered in this lesson, visit:
 

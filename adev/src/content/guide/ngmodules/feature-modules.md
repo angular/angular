@@ -45,7 +45,7 @@ export class CustomerDashboardModule { }
 The structure of an NgModule is the same whether it is a root module or a feature module.
 In the CLI generated feature module, there are two JavaScript import statements at the top of the file: the first imports `NgModule`, which, like the root module, lets you use the `@NgModule` decorator; the second imports `CommonModule`, which contributes many common directives such as `ngIf` and `ngFor`.
 
-Note: Feature modules import `CommonModule` instead of `BrowserModule`, which is only imported once in the root module.
+NOTE: Feature modules import `CommonModule` instead of `BrowserModule`, which is only imported once in the root module.
 `CommonModule` only contains information for common directives such as `ngIf` and `ngFor` which are needed in most templates, whereas `BrowserModule` configures the Angular application for the browser which needs to be done only once.
 
 The `declarations` array is available for you to add declarables, which are components, directives, and pipes that belong exclusively to this particular module.

@@ -58,7 +58,7 @@ Update the input to use the `ngModel` directive, specifically with the following
 
 After you've made changes, try entering a value in the input field. Notice how it updates on the screen (yes, very cool).
 
-Note: The syntax `[()]` is known as "banana in a box" but it represents two-way binding: property binding and event binding. Learn more in the [Angular docs about two-way data binding](guide/templates/two-way-binding).
+NOTE: The syntax `[()]` is known as "banana in a box" but it represents two-way binding: property binding and event binding. Learn more in the [Angular docs about two-way data binding](guide/templates/two-way-binding).
 
 </docs-step>
 

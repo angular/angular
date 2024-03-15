@@ -94,7 +94,7 @@ It would rarely have providers.
 Put commonly used directives, pipes, and components into one NgModule, typically named `SharedModule`, and then import just that NgModule wherever you need it in other parts of your application.
 You can import the shared NgModule in your domain NgModules, including [lazy-loaded NgModules](/guide/ngmodules/lazy-loading "Lazy-loading an NgModule").
 
-Note: Shared NgModules should not include providers, nor should any of its imported or re-exported NgModules include providers.
+NOTE: Shared NgModules should not include providers, nor should any of its imported or re-exported NgModules include providers.
 
 To learn how to use shared modules to organize and streamline your code, see [Sharing NgModules in an app](/guide/ngmodules/sharing "Sharing NgModules in an app").
 

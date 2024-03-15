@@ -1,6 +1,6 @@
 # Custom events with outputs
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular components can define custom events by assigning a property to a new `EventEmitter` and adding the `@Output` decorator:
 

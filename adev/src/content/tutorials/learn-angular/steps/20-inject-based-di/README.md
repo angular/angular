@@ -2,7 +2,7 @@
 
 Creating an injectable service is the first part of the dependency injection (DI) system in Angular. How do you inject a service into a component? Angular has a convenient function called `inject()` that can be used in the proper context.
 
-Note: Injection contexts are beyond the scope of this tutorial, but you can find more information in the [Angular Docs](guide/di/dependency-injection-context) if you would like to learn more.
+NOTE: Injection contexts are beyond the scope of this tutorial, but you can find more information in the [Angular Docs](guide/di/dependency-injection-context) if you would like to learn more.
 
 In this activity you'll learn how to inject a service and use it in a component.
 
@@ -23,7 +23,7 @@ class PetCareDashboardComponent {
 
 In `app.component.ts`, using the `inject()` function inject the `CarService` and assign it to a property called `carService`
 
-Note: Notice the difference between the property `carService` and the class `CarService`.
+NOTE: Notice the difference between the property `carService` and the class `CarService`.
 
 </docs-step>
 

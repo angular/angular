@@ -1,6 +1,6 @@
 # Programmatically rendering components
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 In addition to using a component directly in a template, you can also dynamically render components.
 There are two main ways to dynamically render a component: in a template with `NgComponentOutlet`,

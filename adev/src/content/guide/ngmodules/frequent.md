@@ -50,4 +50,4 @@ These directives are available to any module that imports the browser module, gi
 
 For applications that run in the browser, import `BrowserModule` in the root `AppModule` because it provides services that are essential to launch and render your application in browsers.
 
-Note: `BrowserModule`'s providers are for the whole application so it should only be in the root module, not in feature modules. Feature modules only need the common directives in `CommonModule`; they don't need to re-install app-wide providers.
+NOTE: `BrowserModule`'s providers are for the whole application so it should only be in the root module, not in feature modules. Feature modules only need the common directives in `CommonModule`; they don't need to re-install app-wide providers.

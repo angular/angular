@@ -63,7 +63,7 @@ In situations where you can't or don't want to specify a static `height` and `wi
 </div>
 ```
 
-Note: For the `fill` image to render properly, its parent element must be styled with `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
+NOTE: For the `fill` image to render properly, its parent element must be styled with `position: "relative"`, `position: "fixed"`, or `position: "absolute"`.
 
 </docs-step>
 

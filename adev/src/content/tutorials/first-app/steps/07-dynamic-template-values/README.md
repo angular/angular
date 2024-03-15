@@ -42,7 +42,7 @@ In the code editor:
 
 </docs-workflow>
 
-Summary: In this lesson, you added a new HTML structure and used Angular template syntax to render values in the `HousingLocation` template.
+SUMMARY: In this lesson, you added a new HTML structure and used Angular template syntax to render values in the `HousingLocation` template.
 
 Now, you have two important skills:
 

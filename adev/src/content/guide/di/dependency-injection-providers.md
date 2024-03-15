@@ -90,7 +90,7 @@ In this way, `OldLogger` is an alias for `NewLogger`.
 ]
 </docs-code>
 
-Note: Ensure you do not alias `OldLogger` to `NewLogger` with `useClass`, as this creates two different `NewLogger` instances.
+NOTE: Ensure you do not alias `OldLogger` to `NewLogger` with `useClass`, as this creates two different `NewLogger` instances.
 
 ### Factory providers: useFactory
 

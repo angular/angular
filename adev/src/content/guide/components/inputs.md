@@ -1,8 +1,8 @@
 # Accepting data with input properties
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
-Tip: If you're familiar with other web frameworks, input properties are similar to _props_.
+TIP: If you're familiar with other web frameworks, input properties are similar to _props_.
 
 When creating a component, you can mark specific class properties as **bindable** by adding the `@Input` decorator on the property:
 

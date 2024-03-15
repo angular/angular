@@ -2,7 +2,7 @@
 Angular Signals is a system that granularly tracks how and where your state is used throughout an application, allowing the framework to optimize rendering updates.
 </docs-decorative-header>
 
-Tip: Check out Angular's [Essentials](essentials/managing-dynamic-data) before diving into this comprehensive guide.
+TIP: Check out Angular's [Essentials](essentials/managing-dynamic-data) before diving into this comprehensive guide.
 
 ## What are signals?
 

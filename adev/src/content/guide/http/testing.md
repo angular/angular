@@ -62,7 +62,7 @@ expect(await configPromise).toEqual(DEFAULT_CONFIG);
 httpTesting.verify();
 </docs-code>
 
-Note: `expectOne` will fail if the test has made more than one request which matches the given criteria.
+NOTE: `expectOne` will fail if the test has made more than one request which matches the given criteria.
 
 As an alternative to asserting on `req.method`, you could instead use an expanded form of `expectOne` to also match the request method:
 

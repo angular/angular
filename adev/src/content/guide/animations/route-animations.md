@@ -37,7 +37,7 @@ bootstrapApplication(AppComponent, {
 });
 ```
 
-Note: For `NgModule` based applications:
+NOTE: For `NgModule` based applications:
 Use the `RouterModule.forRoot` method to define a set of routes.
 Also, add `RouterModule` to the `imports` array of the main module, `AppModule`.
 

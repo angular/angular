@@ -1,6 +1,6 @@
 # Importing and using components
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular supports two ways of making a component available to other components: as a standalone component or in an `NgModule`.
 

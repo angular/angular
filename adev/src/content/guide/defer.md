@@ -16,7 +16,7 @@ Deferrable views support a series of [triggers](guide/defer#triggers), [prefetch
 
 Deferrable views, also known as `@defer` blocks, are a powerful tool that can be used to reduce the initial bundle size of your application or defer heavy components that may not ever be loaded until a later time. This should result in a faster initial load and an improvement in your Core Web Vitals (CWV) results. Deferring some of your components until later should specifically improve Largest Contentful Paint (LCP) and Time to First Byte (TTFB).
 
-Note: It is highly recommended that any defer loaded component that might result in layout shift once the dependencies have loaded be below the fold or otherwise not yet visible to the user.
+NOTE: It is highly recommended that any defer loaded component that might result in layout shift once the dependencies have loaded be below the fold or otherwise not yet visible to the user.
 
 ## Which dependencies are defer-loadable?
 
@@ -40,7 +40,7 @@ The content of the main `@defer` block is the section of content that is lazily 
 
 By default, defer blocks do not render any content before they are triggered. The `@placeholder` is an optional block that declares content to show before the defer block is triggered. This placeholder content is replaced with the main content once the loading is complete. You can use any content in the placeholder section including plain HTML, components, directives, and pipes; however keep in mind the dependencies of the placeholder block are eagerly loaded.
 
-Note: For the best user experience, you should always specify a `@placeholder` block.
+NOTE: For the best user experience, you should always specify a `@placeholder` block.
 
 The `@placeholder` block accepts an optional parameter to specify the `minimum` amount of time that this placeholder should be shown. This `minimum` parameter is specified in time increments of milliseconds (ms) or seconds (s). This parameter exists to prevent fast flickering of placeholder content in the case that the deferred dependencies are fetched quickly. The `minimum` timer for the `@placeholder` block begins after the initial render of this `@placeholder` block completes.
 
@@ -52,7 +52,7 @@ The `@placeholder` block accepts an optional parameter to specify the `minimum` 
 }
 ```
 
-Note: Certain triggers may require the presence of either a `@placeholder` or a [template reference variable](guide/templates/reference-variables) to function. See the [Triggers](guide/defer#triggers) section for more details.
+NOTE: Certain triggers may require the presence of either a `@placeholder` or a [template reference variable](guide/templates/reference-variables) to function. See the [Triggers](guide/defer#triggers) section for more details.
 
 ### `@loading`
 
@@ -89,7 +89,7 @@ When a `@defer` block is triggered, it replaces placeholder content with lazily 
 
 Multiple event triggers can be defined at once. For example: `on interaction; on timer(5s)` means that the defer block will be triggered if the user interacts with the placeholder, or after 5 seconds.
 
-Note: Multiple `on` triggers are always OR conditions. Similarly, `on` mixed with `when` conditions are also OR conditions.
+NOTE: Multiple `on` triggers are always OR conditions. Similarly, `on` mixed with `when` conditions are also OR conditions.
 
 ```html
 @defer (on viewport; on timer(5s)) {
@@ -102,7 +102,7 @@ Note: Multiple `on` triggers are always OR conditions. Similarly, `on` mixed wit
 <a id="when"></a>
 `when` specifies a condition as an expression that returns a boolean. When this expression becomes truthy, the placeholder is swapped with the lazily loaded content (which may be an asynchronous operation if the dependencies need to be fetched).
 
-Note: if the `when` condition switches back to `false`, the defer block is not reverted back to the placeholder. The swap is a one-time operation. If the content within the block should be conditionally rendered, an `if` condition can be used within the block itself.
+NOTE: if the `when` condition switches back to `false`, the defer block is not reverted back to the placeholder. The swap is a one-time operation. If the content within the block should be conditionally rendered, an `if` condition can be used within the block itself.
 
 ```html
 @defer (when cond) {

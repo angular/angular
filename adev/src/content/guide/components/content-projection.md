@@ -1,6 +1,6 @@
 # Content projection with ng-content
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 You often need to create components that act as containers for different types of content. For
 example, you may want to create a custom card component:
@@ -23,7 +23,7 @@ export class CustomCard {/* ... */}
 export class CustomCard {/* ... */}
 ```
 
-Tip: `<ng-content>` works similarly
+TIP: `<ng-content>` works similarly
 to [the native `<slot>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot),
 but with some Angular-specific functionality.
 

@@ -65,7 +65,7 @@ export function loggingInterceptor(req: HttpRequest<unknown>, next: HttpHandlerF
 }
 </docs-code>
 
-Tip: Interceptors naturally associate responses with their outgoing requests, because they transform the response stream in a closure that captures the request object.
+TIP: Interceptors naturally associate responses with their outgoing requests, because they transform the response stream in a closure that captures the request object.
 
 ## Modifying requests
 

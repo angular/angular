@@ -101,15 +101,15 @@ Alerts are just special paragraphs. They are helpful to call out (not to be conf
 
 Style alerts starting on a new line in Markdown using the format `SEVERITY_LEVEL` + `:` + `ALERT_TEXT`.
 
-Note: Use Note for ancillary/additional information that's not _essential_ to the main text.
+NOTE: Use Note for ancillary/additional information that's not _essential_ to the main text.
 
-Tip: Use Tip to call out a specific task/action users can perform, or a fact that plays directly into a task/action.
+TIP: Use Tip to call out a specific task/action users can perform, or a fact that plays directly into a task/action.
 
 TODO: Use TODO for incomplete documentation that you plan to expand soon. You can also assign the TODO, e.g. TODO(emmatwersky): Text.
 
 QUESTION: Use Question to pose a question to the reader, kind of like a mini-quiz that they should be able to answer.
 
-Summary: Use Summary to provide a two- or three-sentence synopsis of the page or section content, so readers can figure out whether this is the right place for them.
+SUMMARY: Use Summary to provide a two- or three-sentence synopsis of the page or section content, so readers can figure out whether this is the right place for them.
 
 TLDR: Use TL;DR (or TLDR) if you can provide the essential information about a page or section in a sentence or two. For example, TLDR: Rhubarb is a cat.
 
@@ -119,7 +119,7 @@ IMPORTANT: Use Important for information that's crucial to comprehending the tex
 
 HELPFUL: Use Best practice to call out practices that are known to be successful or better than alternatives.
 
-Note: Heads up `developers`! Alerts _can_ have a [link](#alerts) and other nested styles (but try to **use this sparingly**)!.
+NOTE: Heads up `developers`! Alerts _can_ have a [link](#alerts) and other nested styles (but try to **use this sparingly**)!.
 
 ## Code
 
@@ -209,7 +209,7 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
 
 Adding the `preview` flag builds a running example of the code below the code snippet. This also automatically adds a button to open the running example in Stackblitz.
 
-Note: `preview` only works with standalone.
+NOTE: `preview` only works with standalone.
 
 #### built-in-template-functions
 

@@ -3,7 +3,7 @@ In Angular, a *template* is a chunk of HTML.
 Use special syntax within a template to build on many of Angular's features.
 </docs-decorative-header>
 
-Tip: Check out Angular's [Essentials](essentials/rendering-dynamic-templates) before diving into this comprehensive guide.
+TIP: Check out Angular's [Essentials](essentials/rendering-dynamic-templates) before diving into this comprehensive guide.
 
 <!--todo: Do we still need the following section? It seems more relevant to those coming from AngularJS, which is now 7 versions ago. -->
 <!-- You may be familiar with the component/template duality from your experience with model-view-controller (MVC) or model-view-viewmodel (MVVM).

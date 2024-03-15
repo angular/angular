@@ -1,6 +1,6 @@
 # Using DOM APIs
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular handles most DOM creation, updates, and removals for you. However, you might rarely need to
 directly interact with a component's DOM. Components can inject ElementRef to get a reference to the

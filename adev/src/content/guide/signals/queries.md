@@ -155,7 +155,7 @@ Angular computes signal-based query results lazily, on demand. This means that q
 
 Query results can change over time due to the view manipulation - either through the Angular's control flow (`@if`, `@for` etc.) or by the direct calls to the `ViewContainerRef` API. When you read the value from the query result signal, you can receive different values over time. 
 
-Note: to avoid returning incomplete query results while a template is rendered, Angular delays query resolution until it finishes rendering a given template.
+NOTE: to avoid returning incomplete query results while a template is rendered, Angular delays query resolution until it finishes rendering a given template.
 
 ## Query declarations functions and the associated rules
 

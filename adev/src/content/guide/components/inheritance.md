@@ -1,6 +1,6 @@
 # Inheritance
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 Angular components are TypeScript classes and participate in standard JavaScript inheritance
 semantics.

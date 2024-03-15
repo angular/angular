@@ -44,7 +44,7 @@ using an example application.
 With the server running on port `8080`, point your browser at `http://localhost:8080`.
 Your application should load normally.
 
-Tip: When testing Angular service workers, it's a good idea to use an incognito or private window in your browser to ensure the service worker doesn't end up reading from a previous leftover state, which can cause unexpected behavior.
+TIP: When testing Angular service workers, it's a good idea to use an incognito or private window in your browser to ensure the service worker doesn't end up reading from a previous leftover state, which can cause unexpected behavior.
 
 HELPFUL: If you are not using HTTPS, the service worker will only be registered when accessing the application on `localhost`.
 

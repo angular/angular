@@ -62,7 +62,7 @@ class HeroListComponent {}
 
 When you register a provider at the component level, you get a new instance of the service with each new instance of that component.
 
-Note: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
+NOTE: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
 
 ### At application root level using `ApplicationConfig`
 
@@ -84,7 +84,7 @@ Then, in `main.ts`:
 bootstrapApplication(AppComponent, appConfig)
 </docs-code>
 
-Note: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
+NOTE: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
 
 ### `NgModule` based applications
 
@@ -93,7 +93,7 @@ Note: Declaring a service like this causes `HeroService` to always be included i
 A service provided in a module is available to all declarations of the module, or to any other modules which share the same `ModuleInjector`.
 To understand all edge-cases, see [Hierarchical injectors](/guide/di/hierarchical-dependency-injection).
 
-Note: Declaring a service using `providers` causes the service to be included in your application— even if the service is unused.
+NOTE: Declaring a service using `providers` causes the service to be included in your application— even if the service is unused.
 
 ## Injecting/consuming a dependency
 

@@ -78,7 +78,7 @@ Do not import `BrowserModule` in any other module.
 They need the common directives.
 They don't need to re-install the app-wide providers.
 
-Note: Importing `CommonModule` also frees feature modules for use on *any* target platform, not just browsers.
+NOTE: Importing `CommonModule` also frees feature modules for use on *any* target platform, not just browsers.
 
 ## What if I import the same module twice?
 

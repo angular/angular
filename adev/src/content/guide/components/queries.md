@@ -1,6 +1,6 @@
 # Referencing component children with queries
 
-Tip: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
+TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
 A component can define **queries** that find child elements and read values from their injectors.
 
@@ -184,7 +184,7 @@ Angular does not support CSS selectors as query locators.
 
 ### Queries and the injector tree
 
-Tip: See [Dependency Injection](guide/di) for background on providers and Angular's injection tree.
+TIP: See [Dependency Injection](guide/di) for background on providers and Angular's injection tree.
 
 For more advanced cases, you can use any `ProviderToken` as a locator. This lets you locate elements based on component and directive providers.
 
