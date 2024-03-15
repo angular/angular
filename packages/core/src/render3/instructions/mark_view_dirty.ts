@@ -8,7 +8,8 @@
 
 import {isRootView} from '../interfaces/type_checks';
 import {ENVIRONMENT, FLAGS, LView, LViewFlags} from '../interfaces/view';
-import {getLViewParent} from '../util/view_utils';
+import {isRunningRenderHooks} from '../state';
+import {getLViewParent, markAncestorsForTraversal} from '../util/view_utils';
 
 /**
  * Marks current view and all ancestors dirty.
@@ -23,15 +24,26 @@ import {getLViewParent} from '../util/view_utils';
  */
 export function markViewDirty(lView: LView): LView|null {
   lView[ENVIRONMENT].changeDetectionScheduler?.notify();
-  while (lView) {
-    lView[FLAGS] |= LViewFlags.Dirty;
+  if (isRunningRenderHooks()) {
+    lView[FLAGS] |= LViewFlags.RefreshView | LViewFlags.Dirty;
     const parent = getLViewParent(lView);
-    // Stop traversing up as soon as you find a root view that wasn't attached to any container
-    if (isRootView(lView) && !parent) {
-      return lView;
+    if (!parent) {
+      return null;
     }
-    // continue otherwise
-    lView = parent!;
+    parent[FLAGS] |= LViewFlags.RefreshView | LViewFlags.Dirty;
+    markAncestorsForTraversal(parent);
+  } else {
+    while (lView) {
+      lView[FLAGS] |= LViewFlags.Dirty;
+      const parent = getLViewParent(lView);
+      // Stop traversing up as soon as you find a root view that wasn't attached to any container
+      if (isRootView(lView) && !parent) {
+        return lView;
+      }
+      // continue otherwise
+      lView = parent!;
+    }
   }
+
   return null;
 }

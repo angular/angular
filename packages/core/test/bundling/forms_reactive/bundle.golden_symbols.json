@@ -642,6 +642,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "_isRunningRenderHooks"
+  },
+  {
     "name": "_keyMap"
   },
   {
@@ -1651,6 +1654,9 @@
   },
   {
     "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setIsRunningRenderHooks"
   },
   {
     "name": "setSelectedIndex"

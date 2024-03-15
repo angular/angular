@@ -420,6 +420,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "_isRunningRenderHooks"
+  },
+  {
     "name": "_keyMap"
   },
   {
@@ -994,6 +997,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setIsRunningRenderHooks"
   },
   {
     "name": "setSelectedIndex"

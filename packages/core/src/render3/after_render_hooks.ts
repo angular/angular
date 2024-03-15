@@ -15,6 +15,7 @@ import {assertNotInReactiveContext} from '../render3/reactivity/asserts';
 import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone/ng_zone';
 
+import {setIsRunningRenderHooks} from './state';
 import {isPlatformBrowser} from './util/misc_utils';
 
 /**
@@ -439,7 +440,12 @@ export class AfterRenderEventManager {
    */
   execute(): void {
     this.executeInternalCallbacks();
-    this.handler?.execute();
+    try {
+      setIsRunningRenderHooks(true);
+      this.handler?.execute();
+    } finally {
+      setIsRunningRenderHooks(false);
+    }
   }
 
   executeInternalCallbacks() {
@@ -448,8 +454,13 @@ export class AfterRenderEventManager {
     // can still be tree-shaken unless used by the application.
     const callbacks = [...this.internalCallbacks];
     this.internalCallbacks.length = 0;
-    for (const callback of callbacks) {
-      callback();
+    try {
+      setIsRunningRenderHooks(true);
+      for (const callback of callbacks) {
+        callback();
+      }
+    } finally {
+      setIsRunningRenderHooks(false);
     }
   }
 

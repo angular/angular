@@ -360,6 +360,9 @@
     "name": "_injectImplementation"
   },
   {
+    "name": "_isRunningRenderHooks"
+  },
+  {
     "name": "_platformInjector"
   },
   {
@@ -895,6 +898,9 @@
   },
   {
     "name": "setInjectImplementation"
+  },
+  {
+    "name": "setIsRunningRenderHooks"
   },
   {
     "name": "setSelectedIndex"

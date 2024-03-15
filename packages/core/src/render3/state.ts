@@ -202,6 +202,8 @@ const instructionState: InstructionState = {
  */
 let _isInCheckNoChangesMode = false;
 
+let _isRunningRenderHooks = false;
+
 /**
  * Returns true if the instruction state stack is empty.
  *
@@ -397,6 +399,14 @@ export function isInCheckNoChangesMode(): boolean {
 export function setIsInCheckNoChangesMode(mode: boolean): void {
   !ngDevMode && throwError('Must never be called in production mode');
   _isInCheckNoChangesMode = mode;
+}
+
+export function isRunningRenderHooks(): boolean {
+  return _isRunningRenderHooks;
+}
+
+export function setIsRunningRenderHooks(mode: boolean): void {
+  _isRunningRenderHooks = mode;
 }
 
 // top level variables should not be exported for performance reasons (PERF_NOTES.md)
