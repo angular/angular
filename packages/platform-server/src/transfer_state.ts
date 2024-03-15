@@ -7,16 +7,18 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {APP_ID, NgModule, Provider, TransferState} from '@angular/core';
+import {APP_ID, Provider, TransferState} from '@angular/core';
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
-export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [{
-  provide: BEFORE_APP_SERIALIZED,
-  useFactory: serializeTransferStateFactory,
-  deps: [DOCUMENT, APP_ID, TransferState],
-  multi: true,
-}];
+export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [
+  {
+    provide: BEFORE_APP_SERIALIZED,
+    useFactory: serializeTransferStateFactory,
+    deps: [DOCUMENT, APP_ID, TransferState],
+    multi: true,
+  },
+];
 
 function serializeTransferStateFactory(doc: Document, appId: string, transferStore: TransferState) {
   return () => {
@@ -40,19 +42,4 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
     // transfer data to be queried only after the browser has finished parsing the DOM.
     doc.body.appendChild(script);
   };
-}
-
-/**
- * NgModule to install on the server side while using the `TransferState` to transfer state from
- * server to client.
- *
- * Note: this module is not needed if the `renderApplication` function is used.
- * The `renderApplication` makes all providers from this module available in the application.
- *
- * @publicApi
- * @deprecated no longer needed, you can inject the `TransferState` in an app without providing
- *     this module.
- */
-@NgModule({})
-export class ServerTransferStateModule {
 }
