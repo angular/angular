@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PLACEHOLDER_QUALITY} from './constants';
 import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
 
 /**
@@ -44,6 +45,11 @@ function createImgixUrl(path: string, config: ImageLoaderConfig) {
   url.searchParams.set('auto', 'format');
   if (config.width) {
     url.searchParams.set('w', config.width.toString());
+  }
+
+  // When requesting a placeholder image we ask a low quality image to reduce the load time.
+  if (config.isPlaceholder) {
+    url.searchParams.set('q', PLACEHOLDER_QUALITY);
   }
   return url.href;
 }

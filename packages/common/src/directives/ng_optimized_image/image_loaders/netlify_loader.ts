@@ -16,6 +16,7 @@ import {RuntimeErrorCode} from '../../../errors';
 import {isAbsoluteUrl, isValidPath} from '../url';
 
 import {IMAGE_LOADER, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
+import {PLACEHOLDER_QUALITY} from './constants';
 
 /**
  * Name and URL tester for Netlify.
@@ -88,6 +89,13 @@ function createNetlifyUrl(config: ImageLoaderConfig, path?: string) {
 
   if (config.width) {
     url.searchParams.set('w', config.width.toString());
+  }
+
+  // When requesting a placeholder image we ask for a low quality image to reduce the load time.
+  // If the quality is specified in the loader config - always use provided value.
+  const configQuality = config.loaderParams?.['quality'] ?? config.loaderParams?.['q'];
+  if (config.isPlaceholder && !configQuality) {
+    url.searchParams.set('q', PLACEHOLDER_QUALITY);
   }
 
   for (const [param, value] of Object.entries(config.loaderParams ?? {})) {

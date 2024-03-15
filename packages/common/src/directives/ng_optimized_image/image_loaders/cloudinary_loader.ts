@@ -52,9 +52,15 @@ function createCloudinaryUrl(path: string, config: ImageLoaderConfig) {
   // https://cloudinary.com/documentation/image_transformations#transformation_url_structure
   // Example of a Cloudinary image URL:
   // https://res.cloudinary.com/mysite/image/upload/c_scale,f_auto,q_auto,w_600/marketing/tile-topics-m.png
-  let params = `f_auto,q_auto`; // sets image format and quality to "auto"
+
+  // For a placeholder image, we use the lowest image setting available to reduce the load time
+  // else we use the auto size
+  const quality = config.isPlaceholder ? 'q_auto:low' : 'q_auto';
+
+  let params = `f_auto,${quality}`;
   if (config.width) {
     params += `,w_${config.width}`;
   }
+
   return `${path}/image/upload/${params}/${config.src}`;
 }
