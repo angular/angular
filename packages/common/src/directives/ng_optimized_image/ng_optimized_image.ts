@@ -353,7 +353,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   /**
    * A URL or data URL for an image to be used as a placeholder while this image loads.
    */
-  @Input({transform: booleanOrDataUrlAttribute}) placeholder?: string | boolean;
+  @Input({transform: booleanOrUrlAttribute}) placeholder?: string | boolean;
 
   /**
    * Configuration object for placeholder settings. Options:
@@ -632,7 +632,8 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
         width: placeholderResolution,
         isPlaceholder: true,
       })})`;
-    } else if (typeof placeholderInput === 'string' && placeholderInput.startsWith('data:')) {
+    } else if (typeof placeholderInput === 'string') {
+      ngDevMode && assertValidPlaceholderdUrl(placeholderInput);
       return `url(${placeholderInput})`;
     }
     return null;
@@ -968,6 +969,20 @@ function assertGreaterThanZero(dir: NgOptimizedImage, inputValue: unknown, input
 }
 
 /**
+ * Verifies that url of the placeholder is valid.
+ * This includes `data:` URI as well as regular URLs (htts://, //localhost, etc.)
+ */
+function assertValidPlaceholderdUrl(url: string) {
+  // TODO: Choose a way to validate URLs.
+  return;
+
+  throw new RuntimeError(
+    RuntimeErrorCode.INVALID_PLACEHOLDER_URL,
+    `${url} is an invalid placeholder URL`,
+  );
+}
+
+/**
  * Verifies that the rendered image is not visually distorted. Effectively this is checking:
  * - Whether the "width" and "height" attributes reflect the actual dimensions of the image.
  * - Whether image styling is "correct" (see below for a longer explanation).
@@ -1261,8 +1276,8 @@ function unwrapSafeUrl(value: string | SafeValue): string {
 
 // Transform function to handle inputs which may be booleans, strings, or string representations
 // of boolean values. Used for the placeholder attribute.
-export function booleanOrDataUrlAttribute(value: boolean | string): boolean | string {
-  if (typeof value === 'string' && value.startsWith(`data:`)) {
+export function booleanOrUrlAttribute(value: boolean | string): boolean | string {
+  if (typeof value === 'string' && value !== 'true' && value !== 'false' && value !== '') {
     return value;
   }
   return booleanAttribute(value);
