@@ -86,6 +86,11 @@ export interface AstHost<TExpression> {
   parseReturnValue(fn: TExpression): TExpression;
 
   /**
+   * Returns the parameter expressions for the function, or throw if it is not a function.
+   */
+  parseParameters(fn: TExpression): TExpression[];
+
+  /**
    * Return true if the given expression is a call expression, or false otherwise.
    */
   isCallExpression(node: TExpression): boolean;

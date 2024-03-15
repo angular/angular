@@ -359,6 +359,21 @@ describe('AstValue', () => {
        });
   });
 
+  describe('getFunctionParameters', () => {
+    it('should return the parameters of a function expression', () => {
+      const funcExpr = factory.createFunctionExpression('foo', ['a', 'b'], factory.createBlock([]));
+      expect(createAstValue<Function>(funcExpr).getFunctionParameters()).toEqual([
+        'a', 'b'
+      ].map(name => createAstValue(factory.createIdentifier(name))));
+    });
+
+    it('should throw an error if the property is not a function declaration', () => {
+      // @ts-expect-error
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getFunctionParameters())
+          .toThrowError('Unsupported syntax, expected a function.');
+    });
+  });
+
   describe('isCallExpression', () => {
     it('should return true if the value represents a call expression', () => {
       const callExpr = factory.createCallExpression(factory.createIdentifier('foo'), [], false);

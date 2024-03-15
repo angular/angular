@@ -274,6 +274,23 @@ describe('BabelAstHost', () => {
     });
   });
 
+  describe('parseParameters()', () => {
+    it('should return the parameters as an array of expressions', () => {
+      expect(host.parseParameters(rhs('x = function(a, b) {}'))).toEqual([expr('a'), expr('b')]);
+      expect(host.parseParameters(rhs('x = (a, b) => {}'))).toEqual([expr('a'), expr('b')]);
+    });
+
+    it('should error if the node is not a function declaration or arrow function', () => {
+      expect(() => host.parseParameters(expr('[]')))
+          .toThrowError('Unsupported syntax, expected a function.');
+    });
+
+    it('should error if a parameter uses spread syntax', () => {
+      expect(() => host.parseParameters(rhs('x = function(a, ...other) {}')))
+          .toThrowError('Unsupported syntax, expected an identifier.');
+    });
+  });
+
   describe('isCallExpression()', () => {
     it('should return true if the expression is a call expression', () => {
       expect(host.isCallExpression(expr('foo()'))).toBe(true);

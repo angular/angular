@@ -303,6 +303,14 @@ export class AstValue<T, TExpression> {
     return new AstValue(this.host.parseReturnValue(this.expression), this.host);
   }
 
+  /**
+   * Extract the parameters from this value as a function expression, or error if it is not a
+   * function expression.
+   */
+  getFunctionParameters<R>(this: ConformsTo<this, T, Function>): AstValue<R, TExpression>[] {
+    return this.host.parseParameters(this.expression).map(param => new AstValue(param, this.host));
+  }
+
   isCallExpression(): boolean {
     return this.host.isCallExpression(this.expression);
   }

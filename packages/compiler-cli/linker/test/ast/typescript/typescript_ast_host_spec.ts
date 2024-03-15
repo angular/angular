@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import ts from 'typescript';
+
 import {TypeScriptAstHost} from '../../../src/ast/typescript/typescript_ast_host';
 
 describe('TypeScriptAstHost', () => {
@@ -266,6 +267,25 @@ describe('TypeScriptAstHost', () => {
       expect(() => host.parseReturnValue(rhs('x = () => { const x = 10; }')))
           .toThrowError(
               'Unsupported syntax, expected a function body with a single return statement.');
+    });
+  });
+
+  describe('parseParameters()', () => {
+    it('should return the parameters as an array of expressions', () => {
+      const arg1 = jasmine.objectContaining({text: 'a', kind: ts.SyntaxKind.Identifier});
+      const arg2 = jasmine.objectContaining({text: 'b', kind: ts.SyntaxKind.Identifier});
+      expect(host.parseParameters(rhs('x = function (a, b) {}'))).toEqual([arg1, arg2]);
+      expect(host.parseParameters(rhs('x = (a, b) => {}'))).toEqual([arg1, arg2]);
+    });
+
+    it('should error if the node is not a function declaration or arrow function', () => {
+      expect(() => host.parseParameters(expr('[]')))
+          .toThrowError('Unsupported syntax, expected a function.');
+    });
+
+    it('should error if a parameter uses spread syntax', () => {
+      expect(() => host.parseParameters(rhs('x = function(a, ...other) {}')))
+          .toThrowError('Unsupported syntax, expected an identifier.');
     });
   });
 
