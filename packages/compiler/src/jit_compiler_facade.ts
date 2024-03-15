@@ -183,7 +183,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     // Parse the template and check for errors.
     const {template, interpolation, defer} = parseJitTemplate(
         facade.template, facade.name, sourceMapUrl, facade.preserveWhitespaces,
-        facade.interpolation);
+        facade.interpolation, undefined);
 
     // Compile the component metadata, including template, into an expression.
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
@@ -442,7 +442,7 @@ function convertDeclareComponentFacadeToMetadata(
     sourceMapUrl: string): R3ComponentMetadata<R3TemplateDependencyMetadata> {
   const {template, interpolation, defer} = parseJitTemplate(
       decl.template, decl.type.name, sourceMapUrl, decl.preserveWhitespaces ?? false,
-      decl.interpolation);
+      decl.interpolation, decl.deferBlockDependencies);
 
   const declarations: R3TemplateDependencyMetadata[] = [];
   if (decl.dependencies) {
@@ -536,7 +536,8 @@ function convertPipeDeclarationToMetadata(pipe: R3DeclarePipeDependencyFacade):
 
 function parseJitTemplate(
     template: string, typeName: string, sourceMapUrl: string, preserveWhitespaces: boolean,
-    interpolation: [string, string]|undefined) {
+    interpolation: [string, string]|undefined,
+    deferBlockDependencies: (() => Promise<unknown>)[]|undefined) {
   const interpolationConfig =
       interpolation ? InterpolationConfig.fromArray(interpolation) : DEFAULT_INTERPOLATION_CONFIG;
   // Parse the template and check for errors.
@@ -551,7 +552,7 @@ function parseJitTemplate(
   return {
     template: parsed,
     interpolation: interpolationConfig,
-    defer: createR3ComponentDeferMetadata(boundTarget)
+    defer: createR3ComponentDeferMetadata(boundTarget, deferBlockDependencies)
   };
 }
 
@@ -622,14 +623,15 @@ function createR3DependencyMetadata(
   return {token, attributeNameType, host, optional, self, skipSelf};
 }
 
-function createR3ComponentDeferMetadata(boundTarget: BoundTarget<any>): R3ComponentDeferMetadata {
+function createR3ComponentDeferMetadata(
+    boundTarget: BoundTarget<any>,
+    deferBlockDependencies: (() => Promise<unknown>)[]|undefined): R3ComponentDeferMetadata {
   const deferredBlocks = boundTarget.getDeferBlocks();
   const blocks = new Map<DeferredBlock, Expression|null>();
 
-  for (const block of deferredBlocks) {
-    // TODO: leaving dependency function empty in JIT mode for now,
-    // to be implemented as one of the next steps.
-    blocks.set(block, null);
+  for (let i = 0; i < deferredBlocks.length; i++) {
+    const dependencyFn = deferBlockDependencies?.[i];
+    blocks.set(deferredBlocks[i], dependencyFn ? new WrappedNodeExpr(dependencyFn) : null);
   }
 
   return {mode: DeferBlockDepsEmitMode.PerBlock, blocks};

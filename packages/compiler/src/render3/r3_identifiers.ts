@@ -341,6 +341,8 @@ export class Identifiers {
 
   static declareClassMetadata:
       o.ExternalReference = {name: 'ɵɵngDeclareClassMetadata', moduleName: CORE};
+  static declareClassMetadataAsync:
+      o.ExternalReference = {name: 'ɵɵngDeclareClassMetadataAsync', moduleName: CORE};
   static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
   static setClassMetadataAsync:
       o.ExternalReference = {name: 'ɵsetClassMetadataAsync', moduleName: CORE};

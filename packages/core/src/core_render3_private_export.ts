@@ -278,6 +278,7 @@ export {
 export {
   FactoryTarget as ɵɵFactoryTarget,
   ɵɵngDeclareClassMetadata,
+  ɵɵngDeclareClassMetadataAsync,
   ɵɵngDeclareComponent,
   ɵɵngDeclareDirective,
   ɵɵngDeclareFactory,
