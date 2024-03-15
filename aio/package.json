@@ -100,7 +100,7 @@
     "@types/trusted-types": "^2.0.2",
     "@typescript-eslint/eslint-plugin": "7.2.0",
     "@typescript-eslint/parser": "7.2.0",
-    "archiver": "^6.0.0",
+    "archiver": "^7.0.0",
     "assert": "^2.0.0",
     "canonical-path": "1.0.0",
     "chalk": "^4.1.0",
