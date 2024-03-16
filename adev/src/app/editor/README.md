@@ -200,7 +200,7 @@ Responsible for handling the download button in the embedded editor, fetching th
 
 #### [`AlertManager`](./alert-manager.service.ts)
 
-Manage the alerts displayed in the embedded editor, being the out of memory alert when multiple tabs are opened, and unsupported enviroments alerts.
+Manage the alerts displayed in the embedded editor, being the out of memory alert when multiple tabs are opened, and unsupported environments alerts.
 
 #### [`TypingsLoader`](./typings-loader.service.ts)
 
