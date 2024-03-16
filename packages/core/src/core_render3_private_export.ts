@@ -323,5 +323,6 @@ export {depsTracker as ɵdepsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT as ɵUSE_
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
 export {InputFlags as ɵɵInputFlags} from './render3/interfaces/input_flags';
+export {createEnvironmentInjectorWithScope as ɵcreateEnvironmentInjectorWithScope} from './render3/ng_module_ref';
 
 // clang-format on

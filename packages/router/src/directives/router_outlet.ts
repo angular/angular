@@ -15,7 +15,6 @@ import {
   inject,
   Injectable,
   InjectionToken,
-  Injector,
   Input,
   OnDestroy,
   OnInit,
@@ -23,6 +22,7 @@ import {
   reflectComponentType,
   SimpleChanges,
   ViewContainerRef,
+  ɵcreateEnvironmentInjectorWithScope as createEnvironmentInjectorWithScope,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {combineLatest, of, Subscription} from 'rxjs';
@@ -363,38 +363,28 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const snapshot = activatedRoute.snapshot;
     const component = snapshot.component!;
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
-    const injector = new OutletInjector(activatedRoute, childContexts, location.injector);
+    const providers = [
+      {provide: ActivatedRoute, useValue: activatedRoute},
+      {provide: ChildrenOutletContexts, useValue: childContexts},
+    ];
 
+    // TODO: add a comment on why we do not have `any` scope here.
+    const scopes = new Set<any>(['environment']);
     this.activated = location.createComponent(component, {
       index: location.length,
-      injector,
-      environmentInjector: environmentInjector ?? this.environmentInjector,
+      injector: location.injector,
+      environmentInjector: createEnvironmentInjectorWithScope(
+        providers,
+        environmentInjector ?? this.environmentInjector,
+        scopes,
+      ),
     });
+
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
     this.inputBinder?.bindActivatedRouteToOutletComponent(this);
     this.activateEvents.emit(this.activated.instance);
-  }
-}
-
-class OutletInjector implements Injector {
-  constructor(
-    private route: ActivatedRoute,
-    private childContexts: ChildrenOutletContexts,
-    private parent: Injector,
-  ) {}
-
-  get(token: any, notFoundValue?: any): any {
-    if (token === ActivatedRoute) {
-      return this.route;
-    }
-
-    if (token === ChildrenOutletContexts) {
-      return this.childContexts;
-    }
-
-    return this.parent.get(token, notFoundValue);
   }
 }
 
@@ -438,8 +428,9 @@ export class RoutedComponentInputBinder {
       .pipe(
         switchMap(([queryParams, params, data], index) => {
           data = {...queryParams, ...params, ...data};
-          // Get the first result from the data subscription synchronously so it's available to
-          // the component as soon as possible (and doesn't require a second change detection).
+          // Get the first result from the data subscription synchronously so it's available
+          // to the component as soon as possible (and doesn't require a second change
+          // detection).
           if (index === 0) {
             return of(data);
           }
