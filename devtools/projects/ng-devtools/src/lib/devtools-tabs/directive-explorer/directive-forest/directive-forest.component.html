@@ -37,39 +37,41 @@
         }
         <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
 
-      @if (node.directives) {
-        <span class="dir-names">[{{ node.directives }}]</span>
-      }
-      @if (isSelected(node)) {
-        <span class="console-reference"> == $ng0 </span>
-      }
+        @if (node.directives) {
+          <span class="dir-names">[{{ node.directives }}]</span>
+        }
+        @if (isSelected(node)) {
+          <span class="console-reference"> == $ng0 </span>
+        }
 
-      @switch(node.hydration?.status) {
-        @case('hydrated') {
-          <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
-        }
-        @case('skipped') {
-          <mat-icon matTooltip="Skipped" class="hydration skipped">invert_colors_off</mat-icon>
-        }
-        @case('mismatched') {
-          <mat-icon matTooltip="Mismatch" class="hydration mismatched">error_outline</mat-icon>
-        }
-      }
-    </div>
-    @if(node.hydration?.status === 'mismatched' && (node.hydration.expectedNodeDetails || node.hydration.actualNodeDetails)) {
-      <div class="hydration-error">
-        @if(node.hydration.expectedNodeDetails) {
-          <div>Expected Dom:</div>
-          <pre>{{node.hydration.expectedNodeDetails}}</pre>
-        }
-        @if(node.hydration.actualNodeDetails) {
-          <div>Actual Dom:</div>
-          <pre>{{node.hydration.actualNodeDetails}}</pre>
+        @switch (node.hydration?.status) {
+          @case ('hydrated') {
+            <mat-icon matTooltip="Hydrated" class="hydration">water_drop</mat-icon>
+          }
+          @case ('skipped') {
+            <mat-icon matTooltip="Hydration skipped" class="hydration skipped">invert_colors_off</mat-icon>
+          }
+          @case ('mismatched') {
+            <mat-icon matTooltip="Hydration mismatch" class="hydration mismatched">error_outline</mat-icon>
+          }
         }
       </div>
-    }
+      @if (
+        treeControl.isExpanded(node) && 
+        node.hydration?.status === 'mismatched' && 
+        (node.hydration.expectedNodeDetails || node.hydration.actualNodeDetails)
+      ) {
+        <div class="hydration-error">
+          @if (node.hydration.expectedNodeDetails) {
+            <div>Expected Dom:</div>
+            <pre>{{node.hydration.expectedNodeDetails}}</pre>
+          }
+          @if (node.hydration.actualNodeDetails) {
+            <div>Actual Dom:</div>
+            <pre>{{node.hydration.actualNodeDetails}}</pre>
+          }
+        </div>
+      }
     </div>
-
   </ng-container>
-
 </cdk-virtual-scroll-viewport>
