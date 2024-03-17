@@ -325,11 +325,11 @@ function getLevelDescriptorValue(
   const isReadonly = isSignal(prop);
   switch (type) {
     case PropType.Array:
-      return prop.map((_: any, idx: number) =>
+      return value.map((_: any, idx: number) =>
         continuation(value, idx, isReadonly, currentLevel + 1, level),
       );
     case PropType.Object:
-      return getKeys(prop).reduce(
+      return getKeys(value).reduce(
         (accumulator, propName) => {
           if (!ignoreList.has(propName)) {
             accumulator[propName] = continuation(
