@@ -344,6 +344,10 @@ export class DirectiveForestComponent {
     }
   }
 
+  stopPropagation(event: Event): void {
+    event.stopPropagation();
+  }
+
   private _findMatchedNodes(): number[] {
     const indexesOfMatchedNodes: number[] = [];
     for (let i = 0; i < this.dataSource.data.length; i++) {

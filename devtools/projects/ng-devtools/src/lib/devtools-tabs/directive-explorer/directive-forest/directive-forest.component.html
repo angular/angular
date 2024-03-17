@@ -21,19 +21,21 @@
       (mouseleave)="removeHighlight()"
       [style.padding-left]="15 + 15 * node.level + 'px'"
     >
-    <div class="tree-node-info">
-      @if (node.expandable) {
-        <button
-          [style.left]="15 * node.level + 'px'"
-          (click)="treeControl.toggle(node)"
-          [attr.aria-label]="'toggle ' + node.name"
-        >
-          <mat-icon class="mat-icon-rtl-mirror">
-            {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
-          </mat-icon>
-        </button>
-      }
-      <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
+      <div class="tree-node-info">
+        @if (node.expandable) {
+          <!-- We stop propagration on dblClick to prevent to show the element panel -->
+          <button
+            [style.left]="15 * node.level + 'px'"
+            (click)="treeControl.toggle(node)"
+            (dblclick)="stopPropagation($event)"
+            [attr.aria-label]="'toggle ' + node.name"
+          >
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+            </mat-icon>
+          </button>
+        }
+        <span class="element-name" [class.angular-element]="isElement(node)">{{ node.name }}</span>
 
       @if (node.directives) {
         <span class="dir-names">[{{ node.directives }}]</span>
