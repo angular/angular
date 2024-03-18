@@ -22,22 +22,23 @@
     </div>
     <ul class="adev-reference-list-legend">
       @for (itemType of itemTypes; track itemType) {
-      <li
-        class="adev-reference-list-legend-item"
-        [class.adev-reference-list-legend-item-active]="type() === itemType"
-        (click)="filterByItemType(itemType)"
-      >
-        <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />
-        <span>{{ itemType | adevApiLabel : 'full' }}</span>
-      </li>
+        <li
+          class="adev-reference-list-legend-item"
+          [class.adev-reference-list-legend-item-active]="type() === itemType"
+          (click)="filterByItemType(itemType)"
+        >
+          <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />
+          <span class="docs-api-item-label-full">{{ itemType | adevApiLabel : 'full' }}</span>
+        </li>
       }
     </ul>
   </form>
 
   @if (featuredGroup().items.length) {
-  <adev-api-items-section [group]="featuredGroup()" class="adev-featured-list" />
-  } @for (group of filteredGroups(); track group) {
-  <adev-api-items-section [group]="group" />
+    <adev-api-items-section [group]="featuredGroup()" class="adev-featured-list" />
+  }
+  @for (group of filteredGroups(); track group) {
+    <adev-api-items-section [group]="group" />
   }
 
   <span id="deprecated-description" class="docs-deprecated-description">Deprecated</span>

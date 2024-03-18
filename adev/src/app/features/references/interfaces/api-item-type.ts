@@ -19,4 +19,5 @@ export enum ApiItemType {
   PIPE = 'pipe',
   NG_MODULE = 'ng_module',
   TYPE_ALIAS = 'type_alias',
+  INITIALIZER_API_FUNCTION = 'initializer_api_function',
 }
