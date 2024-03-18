@@ -18,6 +18,7 @@ import {DocEntry} from './entities';
 import {extractEnum} from './enum_extractor';
 import {isAngularPrivateName} from './filters';
 import {FunctionExtractor} from './function_extractor';
+import {extractInitializerApiFunction, isInitializerApiFunction} from './initializer_api_function_extractor';
 import {extractTypeAlias} from './type_alias_extractor';
 
 type DeclarationWithExportName = readonly[string, ts.Declaration];
@@ -61,6 +62,10 @@ export class DocsExtractor {
       return extractClass(node, this.metadataReader, this.typeChecker);
     }
 
+    if (isInitializerApiFunction(node, this.typeChecker)) {
+      return extractInitializerApiFunction(node, this.typeChecker);
+    }
+
     if (ts.isInterfaceDeclaration(node) && !isIgnoredInterface(node)) {
       return extractInterface(node, this.typeChecker);
     }
@@ -72,8 +77,10 @@ export class DocsExtractor {
     }
 
     if (ts.isVariableDeclaration(node) && !isSyntheticAngularConstant(node)) {
-      return isDecoratorDeclaration(node) ? extractorDecorator(node, this.typeChecker) :
-                                            extractConstant(node, this.typeChecker);
+      if (isDecoratorDeclaration(node)) {
+        return extractorDecorator(node, this.typeChecker);
+      }
+      return extractConstant(node, this.typeChecker);
     }
 
     if (ts.isTypeAliasDeclaration(node)) {
