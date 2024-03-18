@@ -1035,23 +1035,26 @@ class TcbControlFlowContentProjectionOp extends TcbOp {
       return false;
     }
 
-    // Count the number of root nodes while skipping empty text where relevant.
-    const rootNodeCount = node.children.reduce((count, node) => {
+    let hasSeenRootNode = false;
+
+    // Check the number of root nodes while skipping empty text where relevant.
+    for (const child of node.children) {
       // Normally `preserveWhitspaces` would have been accounted for during parsing, however
       // in `ngtsc/annotations/component/src/resources.ts#parseExtractedTemplate` we enable
       // `preserveWhitespaces` to preserve the accuracy of source maps diagnostics. This means
       // that we have to account for it here since the presence of text nodes affects the
       // content projection behavior.
-      if (!(node instanceof TmplAstText) || this.tcb.hostPreserveWhitespaces ||
-          node.value.trim().length > 0) {
-        count++;
+      if (!(child instanceof TmplAstText) || this.tcb.hostPreserveWhitespaces ||
+          child.value.trim().length > 0) {
+        // Content projection will be affected if there's more than one root node.
+        if (hasSeenRootNode) {
+          return true;
+        }
+        hasSeenRootNode = true;
       }
+    }
 
-      return count;
-    }, 0);
-
-    // Content projection can only be affected if there is more than one root node.
-    return rootNodeCount > 1;
+    return false;
   }
 }
 
