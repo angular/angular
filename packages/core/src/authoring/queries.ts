@@ -31,6 +31,7 @@ function viewChildRequiredFn<LocatorT, ReadT>(
  * property.
  *
  * @developerPreview
+ * @docsPrivate Ignored because `viewChild` is the canonical API entry.
  */
 export interface ViewChildFunction {
   /**
@@ -140,6 +141,7 @@ function contentChildRequiredFn<LocatorT, ReadT>(
  * provides access to required query results via the `.required` property.
  *
  * @developerPreview
+ * @docsPrivate Ignored because `contentChild` is the canonical API entry.
  */
 export interface ContentChildFunction {
   /**

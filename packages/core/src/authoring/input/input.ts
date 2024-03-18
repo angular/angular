@@ -32,6 +32,7 @@ export function inputRequiredFunction<ReadT, WriteT = ReadT>(opts?: InputOptions
  * `input.required` function.
  *
  * @developerPreview
+ * @docsPrivate Ignored because `input` is the canonical API entry.
  */
 export interface InputFunction {
   /**
