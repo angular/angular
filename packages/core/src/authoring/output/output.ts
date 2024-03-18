@@ -20,25 +20,47 @@ export interface OutputOptions {
 }
 
 /**
- * The `output` function allows declaration of outputs in directives and
- * components.
+ * The `output` function allows declaration of Angular outputs in
+ * directives and components.
  *
- * Initializes an output that can emit values to consumers of your
- * directive/component.
+ * You can use outputs to emit values to parent directives and component.
+ * Parents can subscribe to changes via:
+ *
+ * - template event bindings. For example, `(myOutput)="doSomething($event)"`
+ * - programmatic subscription by using `OutputRef#subscribe`.
  *
  * @usageNotes
- * Initialize an output in your directive by declaring a
- * class field and initializing it with the `output()` function.
+ *
+ * To use `output()`, import the function from `@angular/core`.
+ *
+ * ```
+ * import {output} from '@angular/core`;
+ * ```
+ *
+ * Inside your component, introduce a new class member and initialize
+ * it with a call to `output`.
  *
  * ```ts
- * @Directive({..})
+ * @Directive({
+ *   ...
+ * })
  * export class MyDir {
- *   nameChange = output<string>();     // OutputEmitterRef<string>
- *   onClick = output();                // OutputEmitterRef<void>
+ *   nameChange = output<string>();    // OutputEmitterRef<string>
+ *   onClick    = output();            // OutputEmitterRef<void>
+ * }
+ * ```
+ *
+ * You can emit values to consumers of your directive, by using
+ * the `emit` method from `OutputEmitterRef`.
+ *
+ * ```ts
+ * updateName(newName: string): void {
+ *   this.nameChange.emit(newName);
  * }
  * ```
  *
  * @developerPreview
+ * @initializerApiFunction {"showTypesInSignaturePreview": true}
  */
 export function output<T = void>(opts?: OutputOptions): OutputEmitterRef<T> {
   ngDevMode && assertInInjectionContext(output);
