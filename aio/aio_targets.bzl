@@ -1,4 +1,4 @@
-load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect_test")
+load("@npm//@angular-devkit/architect-cli:index.bzl", "architect_test")
 
 def aio_test(name, data, args, **kwargs):
     architect_test(
@@ -10,7 +10,7 @@ def aio_test(name, data, args, **kwargs):
             "CHROME_BIN": "../$(CHROMIUM)",
         },
         toolchains = [
-            "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+            "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
         ],
         **kwargs
     )

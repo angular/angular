@@ -17,8 +17,8 @@ js_library(
         "//aio/tools/transforms",
         "//aio/tools/transforms/angular-base-package",
         "//aio/tools/transforms/content-package",
-        "@aio_npm//canonical-path",
-        "@aio_npm//dgeni",
-        "@aio_npm//ignore",
+        "@npm//canonical-path",
+        "@npm//dgeni",
+        "@npm//ignore",
     ],
 )

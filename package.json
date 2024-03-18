@@ -27,7 +27,7 @@
     "ng-dev": "ts-node --esm --project .ng-dev/tsconfig.json --transpile-only node_modules/@angular/ng-dev/bundles/cli.mjs",
     "build": "ts-node --esm --project scripts/tsconfig.json scripts/build/build-packages-dist.mts",
     "test": "bazelisk test",
-    "test:ci": "bazelisk test -- //... -//adev/... -//devtools/... -//aio/...",
+    "test:ci": "bazelisk test -- //... -//integration/... -//adev/... -//devtools/... -//aio/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
     "lint": "yarn -s tslint && yarn -s ng-dev format changed --check",
     "tslint": "tslint -c tslint.json --project tsconfig-tslint.json",

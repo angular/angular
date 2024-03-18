@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 js_library(
     name = "angular-api-package",
@@ -12,7 +12,7 @@ js_library(
         "//aio/tools/transforms",
         "//aio/tools/transforms/angular-base-package",
         "//packages:files_for_docgen",
-        "@aio_npm//css-selector-parser",
+        "@npm//css-selector-parser",
     ],
 )
 
@@ -29,6 +29,6 @@ jasmine_node_test(
     deps = [
         ":angular-api-package",
         "//aio/tools/transforms/helpers",
-        "@aio_npm//dgeni",
+        "@npm//dgeni",
     ] + glob(["mocks/*.ts"]),
 )

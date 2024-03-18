@@ -411,7 +411,7 @@ def nodejs_test(name, templated_args = [], enable_linker = False, **kwargs):
     )
 
 def _node_modules_workspace_name():
-    return "npm" if not native.package_name().startswith("aio") else "aio_npm"
+    return "npm"
 
 def npm_package_bin(args = [], **kwargs):
     _npm_package_bin(
