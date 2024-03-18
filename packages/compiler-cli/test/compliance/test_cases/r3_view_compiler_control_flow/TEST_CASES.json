@@ -542,6 +542,36 @@
       ]
     },
     {
+      "description": "should generate a switch block with cases that have element root nodes",
+      "inputFiles": ["switch_element_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_element_root_node_template.js",
+              "generated": "switch_element_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a switch block with cases that have ng-template root nodes",
+      "inputFiles": ["switch_template_root_node.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "switch_template_root_node_template.js",
+              "generated": "switch_template_root_node.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
       "description": "should generate computed for loop variables that depend on shadowed $index and $count",
       "inputFiles": ["nested_for_computed_template_variables.ts"],
       "expectations": [

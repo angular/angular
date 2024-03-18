@@ -397,6 +397,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
+    const tagName = ingestControlFlowInsertionPoint(unit, cView.xref, switchCase);
     let switchCaseI18nMeta: i18n.BlockPlaceholder|undefined = undefined;
     if (switchCase.i18n !== undefined) {
       if (!(switchCase.i18n instanceof i18n.BlockPlaceholder)) {
@@ -406,7 +407,7 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
       switchCaseI18nMeta = switchCase.i18n;
     }
     const templateOp = ir.createTemplateOp(
-        cView.xref, ir.TemplateKind.Block, null, 'Case', ir.Namespace.HTML, switchCaseI18nMeta,
+        cView.xref, ir.TemplateKind.Block, tagName, 'Case', ir.Namespace.HTML, switchCaseI18nMeta,
         switchCase.startSourceSpan, switchCase.sourceSpan);
     unit.create.push(templateOp);
     if (firstXref === null) {
@@ -1259,7 +1260,7 @@ function convertSourceSpan(
  */
 function ingestControlFlowInsertionPoint(
     unit: ViewCompilationUnit, xref: ir.XrefId,
-    node: t.IfBlockBranch|t.ForLoopBlock|t.ForLoopBlockEmpty): string|null {
+    node: t.IfBlockBranch|t.SwitchBlockCase|t.ForLoopBlock|t.ForLoopBlockEmpty): string|null {
   let root: t.Element|t.Template|null = null;
 
   for (const child of node.children) {

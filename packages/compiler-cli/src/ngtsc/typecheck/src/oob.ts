@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, BindingPipe, PropertyRead, PropertyWrite, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstReference, TmplAstTemplate, TmplAstVariable, TmplAstViewportDeferredTrigger} from '@angular/compiler';
+import {AbsoluteSourceSpan, BindingPipe, PropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstHoverDeferredTrigger, TmplAstIfBlockBranch, TmplAstInteractionDeferredTrigger, TmplAstReference, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstVariable, TmplAstViewportDeferredTrigger} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
@@ -124,7 +124,8 @@ export interface OutOfBandDiagnosticRecorder {
   controlFlowPreventingContentProjection(
       templateId: TemplateId, category: ts.DiagnosticCategory,
       projectionNode: TmplAstElement|TmplAstTemplate, componentName: string, slotSelector: string,
-      controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock|TmplAstForLoopBlockEmpty,
+      controlFlowNode: TmplAstIfBlockBranch|TmplAstSwitchBlockCase|TmplAstForLoopBlock|
+      TmplAstForLoopBlockEmpty,
       preservesWhitespaces: boolean): void;
 }
 
@@ -393,7 +394,8 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
   controlFlowPreventingContentProjection(
       templateId: TemplateId, category: ts.DiagnosticCategory,
       projectionNode: TmplAstElement|TmplAstTemplate, componentName: string, slotSelector: string,
-      controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock|TmplAstForLoopBlockEmpty,
+      controlFlowNode: TmplAstIfBlockBranch|TmplAstSwitchBlockCase|TmplAstForLoopBlock|
+      TmplAstForLoopBlockEmpty,
       preservesWhitespaces: boolean): void {
     const blockName = controlFlowNode.nameSpan.toString().trim();
     const lines = [

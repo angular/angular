@@ -5790,6 +5790,85 @@ suppress
            const diags = env.driveDiagnostics();
            expect(diags.length).toBe(0);
          });
+
+      it('should report when an @case block prevents an element from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content/> <ng-content select="bar, [foo]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @switch (expr) {
+                  @case (1) {
+                    <div foo></div>
+                    breaks projection
+                  }
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {
+            expr = 1;
+          }
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "bar, [foo]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @case has more than one node at its root.`);
+      });
+
+      it('should report when an @default block prevents an element from being projected', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'comp',
+            template: '<ng-content select="[foo]"/> <ng-content select="[bar]"/>',
+            standalone: true,
+          })
+          class Comp {}
+
+          @Component({
+            standalone: true,
+            imports: [Comp],
+            template: \`
+              <comp>
+                @switch (expr) {
+                  @case (1) {
+                    <div foo></div>
+                  }
+                  @default {
+                    <div bar></div>
+                    breaks projection
+                  }
+                }
+              </comp>
+            \`,
+          })
+          class TestCmp {
+            expr = 2;
+          }
+        `);
+
+        const diags =
+            env.driveDiagnostics().map(d => ts.flattenDiagnosticMessageText(d.messageText, ''));
+        expect(diags.length).toBe(1);
+        expect(diags[0]).toContain(
+            `Node matches the "[bar]" slot of the "Comp" component, but will ` +
+            `not be projected into the specific slot because the surrounding @default has more than one node at its root.`);
+      });
     });
   });
 });
