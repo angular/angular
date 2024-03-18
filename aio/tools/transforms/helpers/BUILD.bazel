@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 js_library(
     name = "helpers",
@@ -7,8 +7,8 @@ js_library(
     visibility = ["//aio/tools:__subpackages__"],
     deps = [
         "//:package_json",
-        "@aio_npm//canonical-path",
-        "@aio_npm//dgeni",
+        "@npm//canonical-path",
+        "@npm//dgeni",
     ],
 )
 

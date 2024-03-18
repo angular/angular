@@ -56,11 +56,6 @@ build --enable_runfiles
 build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=release"
 build:release --stamp
 
-# Building AIO against local Angular deps requires stamping
-# versions in Angular packages due to CLI version checks.
-build:aio_local_deps --stamp
-build:aio_local_deps --workspace_status_command="yarn -s --cwd aio local-workspace-status"
-
 # Snapshots should also be stamped with version control information.
 build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
@@ -73,14 +68,6 @@ build:snapshot-build --stamp
 # Default config is `stable``.                           #
 ##########################################################
 build --flag_alias=aio_build_config=//aio:flag_aio_build_config
-
-####################################
-# AIO first party dep substitution #
-# Turn on with                     #
-#  --config=aio_local_deps         #
-####################################
-
-build:aio_local_deps --//aio:flag_aio_local_deps
 
 ###############################
 # Output                      #
@@ -117,10 +104,6 @@ build:remote --remote_timeout=600
 common:remote --jobs=200
 
 build:remote --google_default_credentials
-
-# Limit the number of test jobs for on an AIO local deps build. The example tests running
-# concurrently pushes the circleci executor RAM usage to its limits.
-test:aio_local_deps --jobs=24
 
 # Force remote exeuctions to consider the entire run as linux
 build:remote --cpu=k8

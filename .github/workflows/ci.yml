@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - '[0-9]+.[0-9]+.x'
+      - 'remove-aio-stuff'
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -101,7 +102,7 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Build adev to ensure it continues to work
-        run: yarn bazel test --config=aio_local_deps //adev:test
+        run: yarn bazel test //adev:test
 
   publish-snapshots:
     if: github.event_name == 'push'
@@ -261,7 +262,7 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Build adev to ensure it continues to work
-        run: yarn bazel build --config=aio_local_deps //adev:build
+        run: yarn bazel build //adev:build
       - name: Move generated project files into deployment directory
         run: cp -r dist/bin/adev/build adev/build
       - name: Setup firebase context
