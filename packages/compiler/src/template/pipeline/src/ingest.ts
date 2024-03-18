@@ -348,13 +348,8 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
   for (let i = 0; i < ifBlock.branches.length; i++) {
     const ifCase = ifBlock.branches[i];
     const cView = unit.job.allocateView(unit.xref);
-    let tagName: string|null = null;
+    const tagName = ingestControlFlowInsertionPoint(unit, cView.xref, ifCase);
 
-    // Only the first branch can be used for projection, because the conditional
-    // uses the container of the first branch as the insertion point for all branches.
-    if (i === 0) {
-      tagName = ingestControlFlowInsertionPoint(unit, cView.xref, ifCase);
-    }
     if (ifCase.expressionAlias !== null) {
       cView.contextVariables.set(ifCase.expressionAlias.name, ir.CTX_REF);
     }

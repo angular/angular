@@ -393,15 +393,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       projectionNode: TmplAstElement|TmplAstTemplate, componentName: string, slotSelector: string,
       controlFlowNode: TmplAstIfBlockBranch|TmplAstForLoopBlock|TmplAstForLoopBlockEmpty,
       preservesWhitespaces: boolean): void {
-    let blockName: string;
-    if (controlFlowNode instanceof TmplAstForLoopBlockEmpty) {
-      blockName = '@empty';
-    } else if (controlFlowNode instanceof TmplAstForLoopBlock) {
-      blockName = '@for';
-    } else {
-      blockName = '@if';
-    }
-
+    const blockName = controlFlowNode.nameSpan.toString().trim();
     const lines = [
       `Node matches the "${slotSelector}" slot of the "${
           componentName}" component, but will not be projected into the specific slot because the surrounding ${
