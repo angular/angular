@@ -8,7 +8,7 @@
 
 import {InputSignalWithTransform} from './input_signal';
 
-/** Retrieves the `WriteT` of an `InputSignal` and `InputSignalWithTransform`. */
+/** Retrieves the write type of an `InputSignal` and `InputSignalWithTransform`. */
 export type ɵUnwrapInputSignalWriteType<Field> =
     Field extends InputSignalWithTransform<any, infer WriteT>? WriteT : never;
 
