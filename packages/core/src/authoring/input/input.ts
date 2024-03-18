@@ -18,7 +18,7 @@ export function inputFunction<ReadT, WriteT>(
   return createInputSignal(initialValue, opts);
 }
 
-export function inputRequiredFunction<ReadT, WriteT>(opts?: InputOptions<ReadT, WriteT>):
+export function inputRequiredFunction<ReadT, WriteT = ReadT>(opts?: InputOptions<ReadT, WriteT>):
     InputSignalWithTransform<ReadT, WriteT> {
   ngDevMode && assertInInjectionContext(input);
   return createInputSignal(REQUIRED_UNSET_VALUE as never, opts);
@@ -31,77 +31,95 @@ export function inputRequiredFunction<ReadT, WriteT>(opts?: InputOptions<ReadT, 
  * The function exposes an API for also declaring required inputs via the
  * `input.required` function.
  *
- * @usageNotes
- * Initialize an input in your directive or component by declaring a
- * class field and initializing it with the `input()` or `input.required()`
- * function.
- *
- * ```ts
- * @Directive({..})
- * export class MyDir {
- *   firstName = input<string>();            // string|undefined
- *   lastName = input.required<string>();    // string
- *   age = input(0);                         // number
- * }
- * ```
- *
  * @developerPreview
  */
 export interface InputFunction {
   /**
-   * Initializes an input with an initial value. If no explicit value
-   * is specified, Angular will use `undefined`.
-   *
-   * Consider using `input.required` for inputs that don't need an
-   * initial value.
-   *
-   * @developerPreview
+   * Initializes an input of type `T` with an initial value of `undefined`.
+   * Angular will implicitly use `undefined` as initial value.
    */
-  <ReadT>(): InputSignal<ReadT|undefined>;
-  <ReadT>(initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-  <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>):
-      InputSignalWithTransform<ReadT, WriteT>;
+  <T>(): InputSignal<T|undefined>;
+  /** Declares an input of type `T` with an explicit initial value. */
+  <T>(initialValue: T, opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
+  /**
+   * Declares an input of type `T` with an initial value and a transform
+   * function.
+   *
+   * The input accepts values of type `TransformT` and the given
+   * transform function will transform the value to type `T`.
+   */
+  <T, TransformT>(initialValue: T, opts: InputOptionsWithTransform<T, TransformT>):
+      InputSignalWithTransform<T, TransformT>;
 
   /**
    * Initializes a required input.
    *
-   * Users of your directive/component need to bind to this
+   * Consumers of your directive/component need to bind to this
    * input. If unset, a compile time error will be reported.
    *
    * @developerPreview
    */
   required: {
-    <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-
-    <ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>):
-        InputSignalWithTransform<ReadT, WriteT>;
+    /** Declares a required input of type `T`. */
+    <T>(opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
+    /**
+     * Declares a required input of type `T` with a transform function.
+     *
+     * The input accepts values of type `TransformT` and the given
+     * transform function will transform the value to type `T`.
+     */
+    <T, TransformT>(opts: InputOptionsWithTransform<T, TransformT>):
+        InputSignalWithTransform<T, TransformT>;
   };
 }
 
 /**
- * The `input` function allows declaration of inputs in directives and
- * components.
+ * The `input` function allows declaration of Angular inputs in directives
+ * and components.
  *
- * Initializes an input with an initial value. If no explicit value
- * is specified, Angular will use `undefined`.
+ * There are two variants of inputs that can be declared:
  *
- * Consider using `input.required` for inputs that don't need an
- * initial value.
+ *   1. **Optional inputs** with an initial value.
+ *   2. **Required inputs** that consumers need to set.
+ *
+ * By default, the `input` function will declare optional inputs that
+ * always have an initial value. Required inputs can be declared
+ * using the `input.required()` function.
+ *
+ * Inputs are signals. The values of an input are exposed as a `Signal`.
+ * The signal always holds the latest value of the input that is bound
+ * from the parent.
  *
  * @usageNotes
- * Initialize an input in your directive or component by declaring a
- * class field and initializing it with the `input()` function.
+ * To use signal-based inputs, import `input` from `@angular/core`.
+ *
+ * ```
+ * import {input} from '@angular/core`;
+ * ```
+ *
+ * Inside your component, introduce a new class member and initialize
+ * it with a call to `input` or `input.required`.
  *
  * ```ts
- * @Directive({..})
- * export class MyDir {
- *   firstName = input<string>();            // string|undefined
- *   lastName = input.required<string>();    // string
- *   age = input(0);                         // number
+ * @Component({
+ *   ...
+ * })
+ * export class UserProfileComponent {
+ *   firstName = input<string>();             // Signal<string|undefined>
+ *   lastName  = input.required<string>();    // Signal<string>
+ *   age       = input(0)                     // Signal<number>
  * }
  * ```
  *
+ * Inside your component template, you can display values of the inputs
+ * by calling the signal.
+ *
+ * ```html
+ * <span>{{firstName()}}</span>
+ * ```
+ *
  * @developerPreview
+ * @initializerApiFunction
  */
 export const input: InputFunction = (() => {
   // Note: This may be considered a side-effect, but nothing will depend on

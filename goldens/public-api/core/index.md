@@ -937,43 +937,41 @@ export interface InputDecorator {
 
 // @public
 export interface InputFunction {
-    <ReadT>(): InputSignal<ReadT | undefined>;
-    // (undocumented)
-    <ReadT>(initialValue: ReadT, opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-    // (undocumented)
-    <ReadT, WriteT>(initialValue: ReadT, opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
+    <T>(): InputSignal<T | undefined>;
+    <T>(initialValue: T, opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
+    <T, TransformT>(initialValue: T, opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
     required: {
-        <ReadT>(opts?: InputOptionsWithoutTransform<ReadT>): InputSignal<ReadT>;
-        <ReadT, WriteT>(opts: InputOptionsWithTransform<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT>;
+        <T>(opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
+        <T, TransformT>(opts: InputOptionsWithTransform<T, TransformT>): InputSignalWithTransform<T, TransformT>;
     };
 }
 
 // @public
-export interface InputOptions<ReadT, WriteT> {
+export interface InputOptions<T, TransformT> {
     alias?: string;
-    transform?: (v: WriteT) => ReadT;
+    transform?: (v: TransformT) => T;
 }
 
 // @public
-export type InputOptionsWithoutTransform<ReadT> = Omit<InputOptions<ReadT, ReadT>, 'transform'> & {
+export type InputOptionsWithoutTransform<T> = Omit<InputOptions<T, T>, 'transform'> & {
     transform?: undefined;
 };
 
 // @public
-export type InputOptionsWithTransform<ReadT, WriteT> = Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>> & InputOptions<ReadT, WriteT>;
+export type InputOptionsWithTransform<T, TransformT> = Required<Pick<InputOptions<T, TransformT>, 'transform'>> & InputOptions<T, TransformT>;
 
 // @public
-export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {
+export interface InputSignal<T> extends InputSignalWithTransform<T, T> {
 }
 
 // @public
-export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
+export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
     // (undocumented)
-    [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
+    [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
     // (undocumented)
-    [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+    [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: TransformT;
     // (undocumented)
-    [SIGNAL]: InputSignalNode<ReadT, WriteT>;
+    [SIGNAL]: InputSignalNode<T, TransformT>;
 }
 
 // @public
@@ -1101,9 +1099,11 @@ export const model: ModelFunction;
 // @public
 export interface ModelFunction {
     <T>(): ModelSignal<T | undefined>;
-    // (undocumented)
     <T>(initialValue: T, opts?: ModelOptions): ModelSignal<T>;
-    required<T>(opts?: ModelOptions): ModelSignal<T>;
+    // (undocumented)
+    required: {
+        <T>(opts?: ModelOptions): ModelSignal<T>;
+    };
 }
 
 // @public
