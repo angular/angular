@@ -30,7 +30,7 @@ export class FunctionExtractor {
         'unknown';
 
     return {
-      params: this.extractAllParams(this.declaration.parameters),
+      params: extractAllParams(this.declaration.parameters, this.typeChecker),
       name: this.name,
       isNewType: ts.isConstructSignatureDeclaration(this.declaration),
       returnType,
@@ -40,16 +40,6 @@ export class FunctionExtractor {
       jsdocTags: extractJsDocTags(this.declaration),
       rawComment: extractRawJsDoc(this.declaration),
     };
-  }
-
-  private extractAllParams(params: ts.NodeArray<ts.ParameterDeclaration>): ParameterEntry[] {
-    return params.map(param => ({
-                        name: param.name.getText(),
-                        description: extractJsDocDescription(param),
-                        type: extractResolvedTypeString(param, this.typeChecker),
-                        isOptional: !!(param.questionToken || param.initializer),
-                        isRestParam: !!param.dotDotDotToken,
-                      }));
   }
 
   /** Gets all overloads for the function (excluding this extractor's FunctionDeclaration). */
@@ -83,4 +73,16 @@ export class FunctionExtractor {
     return this.typeChecker.getSymbolsInScope(this.declaration, ts.SymbolFlags.Function)
         .find(s => s.name === this.declaration.name?.getText());
   }
+}
+
+/** Extracts parameters of the given parameter declaration AST nodes. */
+export function extractAllParams(
+    params: ts.NodeArray<ts.ParameterDeclaration>, typeChecker: ts.TypeChecker): ParameterEntry[] {
+  return params.map(param => ({
+                      name: param.name.getText(),
+                      description: extractJsDocDescription(param),
+                      type: extractResolvedTypeString(param, typeChecker),
+                      isOptional: !!(param.questionToken || param.initializer),
+                      isRestParam: !!param.dotDotDotToken,
+                    }));
 }
