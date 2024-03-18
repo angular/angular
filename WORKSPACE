@@ -2,7 +2,6 @@ workspace(
     name = "angular",
     managed_directories = {
         "@npm": ["node_modules"],
-        "@aio_npm": ["aio/node_modules"],
     },
 )
 
@@ -107,30 +106,6 @@ yarn_install(
     symlink_node_modules = True,
     yarn = YARN_LABEL,
     yarn_lock = "//:yarn.lock",
-)
-
-yarn_install(
-    name = "aio_npm",
-    # Note that we add the postinstall scripts here so that the dependencies are re-installed
-    # when the postinstall patches are modified.
-    data = [
-        YARN_LABEL,
-        "//:.yarnrc",
-        "//:tools/npm-patches/@bazel+jasmine+5.8.1.patch",
-        "//aio:tools/cli-patches/bazel-architect-output.patch",
-        "//aio:tools/cli-patches/patch.js",
-    ],
-    # Currently disabled due to:
-    #  1. Missing Windows support currently.
-    #  2. Incompatibilites with the `ts_library` rule.
-    exports_directories_only = False,
-    manual_build_file_contents = npm_package_archives(),
-    package_json = "//aio:package.json",
-    # We prefer to symlink the `node_modules` to only maintain a single install.
-    # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
-    symlink_node_modules = True,
-    yarn = YARN_LABEL,
-    yarn_lock = "//aio:yarn.lock",
 )
 
 yarn_install(

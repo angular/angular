@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 js_library(
     name = "angular-base-package",
@@ -17,17 +17,17 @@ js_library(
         "//aio/tools/transforms/links-package",
         "//aio/tools/transforms/remark-package",
         "//aio/tools/transforms/target-package",
-        "@aio_npm//canonical-path",
-        "@aio_npm//dgeni",
-        "@aio_npm//dgeni-packages",
-        "@aio_npm//fs-extra",
-        "@aio_npm//hast-util-has-property",
-        "@aio_npm//image-size",
-        "@aio_npm//rehype-slug",
-        "@aio_npm//semver",
-        "@aio_npm//stemmer",
-        "@aio_npm//unist-util-filter",
-        "@aio_npm//unist-util-source",
+        "@npm//canonical-path",
+        "@npm//dgeni",
+        "@npm//dgeni-packages",
+        "@npm//fs-extra",
+        "@npm//hast-util-has-property",
+        "@npm//image-size",
+        "@npm//rehype-slug",
+        "@npm//semver",
+        "@npm//stemmer",
+        "@npm//unist-util-filter",
+        "@npm//unist-util-source",
     ],
 )
 
@@ -46,6 +46,6 @@ jasmine_node_test(
         "//aio/tools/transforms/angular-api-package",
         "//aio/tools/transforms/angular-content-package",
         "//aio/tools/transforms/helpers",
-        "@aio_npm//semver",
+        "@npm//semver",
     ],
 )
