@@ -470,7 +470,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         return undefined;
       }
 
-      const {kind, displayParts, documentation} =
+      const {kind, displayParts, documentation, tags} =
           getSymbolDisplayInfo(this.tsLS, this.typeChecker, symbol);
       return {
         kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
@@ -478,6 +478,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         kindModifiers: ts.ScriptElementKindModifier.none,
         displayParts,
         documentation,
+        tags,
       };
     } else {
       return this.tsLS.getCompletionEntryDetails(
@@ -579,12 +580,14 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     const directive = tagMap.get(entryName)!;
     let displayParts: ts.SymbolDisplayPart[];
     let documentation: ts.SymbolDisplayPart[]|undefined = undefined;
+    let tags: ts.JSDocTagInfo[]|undefined = undefined;
     if (directive === null) {
       displayParts = [];
     } else {
       const displayInfo = getDirectiveDisplayInfo(this.tsLS, directive);
       displayParts = displayInfo.displayParts;
       documentation = displayInfo.documentation;
+      tags = displayInfo.tags;
     }
 
     return {
@@ -593,6 +596,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       kindModifiers: ts.ScriptElementKindModifier.none,
       displayParts,
       documentation,
+      tags,
     };
   }
 
@@ -832,6 +836,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     const completion = attrTable.get(name)!;
     let displayParts: ts.SymbolDisplayPart[];
     let documentation: ts.SymbolDisplayPart[]|undefined = undefined;
+    let tags: ts.JSDocTagInfo[]|undefined = undefined;
     let info: DisplayInfo|null;
     switch (completion.kind) {
       case AttributeCompletionKind.DomEvent:
@@ -846,6 +851,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         info = getDirectiveDisplayInfo(this.tsLS, completion.directive);
         displayParts = info.displayParts;
         documentation = info.documentation;
+        tags = info.tags;
         break;
       case AttributeCompletionKind.StructuralDirectiveAttribute:
       case AttributeCompletionKind.DirectiveInput:
@@ -871,6 +877,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         }
         displayParts = info.displayParts;
         documentation = info.documentation;
+        tags = info.tags;
     }
 
     return {
@@ -879,6 +886,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       kindModifiers: ts.ScriptElementKindModifier.none,
       displayParts,
       documentation,
+      tags,
     };
   }
 
