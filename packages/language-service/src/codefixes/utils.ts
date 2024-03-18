@@ -135,4 +135,5 @@ export enum FixIdForCodeFixesAll {
   FIX_MISSING_MEMBER = 'fixMissingMember',
   FIX_INVALID_BANANA_IN_BOX = 'fixInvalidBananaInBox',
   FIX_MISSING_IMPORT = 'fixMissingImport',
+  FIX_MISSING_REQUIRED_INPUTS = 'fixMissingRequiredInputs',
 }
