@@ -187,16 +187,62 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/setup@5774b71c01a55c4c998f858ee37d3b77ae704c31
       - name: Setup Bazel Remote Caching
         uses: angular/dev-infra/github-actions/bazel/configure-remote@5774b71c01a55c4c998f858ee37d3b77ae704c31
+      - name: Setup Saucelabs Variables
+        uses: angular/dev-infra/github-actions/saucelabs@50bb71e51d3372ca2e359adb9069f89beeac4ae7
       - name: Set up Sauce Tunnel Daemon
         run: yarn bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
         env:
           SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
-          SAUCE_USERNAME: ${{ vars.SAUCE_USERNAME }}
-          SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
       - name: Run all saucelabs bazel tests
         run: |
           TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
           yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}
+
+  saucelabs:
+    runs-on: ubuntu-latest-4core
+    env:
+      SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@5774b71c01a55c4c998f858ee37d3b77ae704c31
+        with:
+          cache-node-modules: true
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@5774b71c01a55c4c998f858ee37d3b77ae704c31
+      - name: Setup Saucelabs Variables
+        uses: angular/dev-infra/github-actions/saucelabs@50bb71e51d3372ca2e359adb9069f89beeac4ae7
+      - name: Starting Saucelabs tunnel service
+        run: ./tools/saucelabs/sauce-service.sh run &
+      # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
+      # specific tests which are reliant on such generated fixtures is not an option as SystemJS
+      # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
+      # guarded by an check to skip in the Saucelabs legacy job. We should be good running such
+      # test in all supported browsers on Saucelabs anyway until this job can be removed.
+      - name: Preparing Bazel-generated fixtures required in legacy tests
+        run: |
+          yarn bazel build //packages/core/test:downleveled_es5_fixture //packages/common/locales
+          # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
+          mkdir -p dist/legacy-test-out/core/test/reflection/
+          cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
+            dist/legacy-test-out/core/test/reflection/es5_downleveled_inheritance_fixture.js
+          # Locale files are needed for i18n tests running within Saucelabs. These are added
+          # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
+          # can succeed. Note that the base locale and currencies files are checked-in, so
+          # we do not need to re-generate those through Bazel.
+          mkdir -p packages/common/locales/extra
+          cp dist/bin/packages/common/locales/*.ts packages/common/locales
+          cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
+      - name: Build bundle of tests to run on Saucelabs
+        run: node tools/legacy-saucelabs/build-saucelabs-test-bundle.mjs
+      - name: Wait and confirm Saucelabs tunnel has connected
+        run: ./tools/saucelabs/sauce-service.sh ready-wait
+        timeout-minutes: 3
+      - name: Running tests on Saucelabs.
+        run: KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
+      - name: Stop Saucelabs tunnel service
+        run: ./tools/saucelabs/sauce-service.sh stop
 
   adev-deploy:
     needs: [adev]
