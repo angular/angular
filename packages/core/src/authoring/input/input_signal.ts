@@ -18,7 +18,7 @@ import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from './input_
  *
  * Options for signal inputs.
  */
-export interface InputOptions<ReadT, WriteT> {
+export interface InputOptions<T, TransformT> {
   /** Optional public name for the input. By default, the class field name is used. */
   alias?: string;
   /**
@@ -31,7 +31,7 @@ export interface InputOptions<ReadT, WriteT> {
    * attribute form to bind to the input via `<my-dir input>`. A transform can then
    * handle such string values and convert them to `boolean`. See: {@link booleanAttribute}.
    */
-  transform?: (v: WriteT) => ReadT;
+  transform?: (v: TransformT) => T;
 }
 
 /**
@@ -39,16 +39,16 @@ export interface InputOptions<ReadT, WriteT> {
  *
  * @developerPreview
  */
-export type InputOptionsWithoutTransform<ReadT> =
+export type InputOptionsWithoutTransform<T> =
     // Note: We still keep a notion of `transform` for auto-completion.
-    Omit<InputOptions<ReadT, ReadT>, 'transform'>&{transform?: undefined};
+    Omit<InputOptions<T, T>, 'transform'>&{transform?: undefined};
 /**
  * Signal input options with the transform option required.
  *
  * @developerPreview
  */
-export type InputOptionsWithTransform<ReadT, WriteT> =
-    Required<Pick<InputOptions<ReadT, WriteT>, 'transform'>>&InputOptions<ReadT, WriteT>;
+export type InputOptionsWithTransform<T, TransformT> =
+    Required<Pick<InputOptions<T, TransformT>, 'transform'>>&InputOptions<T, TransformT>;
 
 export const ɵINPUT_SIGNAL_BRAND_READ_TYPE = /* @__PURE__ */ Symbol();
 export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
@@ -77,10 +77,10 @@ export const ɵINPUT_SIGNAL_BRAND_WRITE_TYPE = /* @__PURE__ */ Symbol();
  *
  * @developerPreview
  */
-export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
-  [SIGNAL]: InputSignalNode<ReadT, WriteT>;
-  [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: ReadT;
-  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: WriteT;
+export interface InputSignalWithTransform<T, TransformT> extends Signal<T> {
+  [SIGNAL]: InputSignalNode<T, TransformT>;
+  [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: T;
+  [ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]: TransformT;
 }
 
 /**
@@ -94,7 +94,7 @@ export interface InputSignalWithTransform<ReadT, WriteT> extends Signal<ReadT> {
  *
  * @developerPreview
  */
-export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, ReadT> {}
+export interface InputSignal<T> extends InputSignalWithTransform<T, T> {}
 
 /**
  * Creates an input signal.
@@ -103,10 +103,10 @@ export interface InputSignal<ReadT> extends InputSignalWithTransform<ReadT, Read
  *   Can be set to {@link REQUIRED_UNSET_VALUE} for required inputs.
  * @param options Additional options for the input. e.g. a transform, or an alias.
  */
-export function createInputSignal<ReadT, WriteT>(
-    initialValue: ReadT,
-    options?: InputOptions<ReadT, WriteT>): InputSignalWithTransform<ReadT, WriteT> {
-  const node: InputSignalNode<ReadT, WriteT> = Object.create(INPUT_SIGNAL_NODE);
+export function createInputSignal<T, TransformT>(
+    initialValue: T,
+    options?: InputOptions<T, TransformT>): InputSignalWithTransform<T, TransformT> {
+  const node: InputSignalNode<T, TransformT> = Object.create(INPUT_SIGNAL_NODE);
 
   node.value = initialValue;
 
@@ -133,5 +133,5 @@ export function createInputSignal<ReadT, WriteT>(
     inputValueFn.toString = () => `[Input Signal: ${inputValueFn()}]`;
   }
 
-  return inputValueFn as InputSignalWithTransform<ReadT, WriteT>;
+  return inputValueFn as InputSignalWithTransform<T, TransformT>;
 }

@@ -722,7 +722,7 @@ class TcbDirectiveInputsOp extends TcbOp {
         // For signal inputs, a `transformType` will never be set as we do not capture
         // the transform in the compiler metadata. Signal inputs incorporate their
         // transform write type into their member type, and we extract it below when
-        // unwrapping the `InputSignal<ReadT, WriteT>`.
+        // setting the `WriteT` of such `InputSignalWithTransform<_, WriteT>`.
 
         if (this.dir.coercedInputFields.has(fieldName)) {
           let type: ts.TypeNode;

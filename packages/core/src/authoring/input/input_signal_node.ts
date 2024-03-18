@@ -14,12 +14,12 @@ export const REQUIRED_UNSET_VALUE = /* @__PURE__ */ Symbol('InputSignalNode#UNSE
  * Reactive node type for an input signal. An input signal extends a signal.
  * There are special properties to enable transforms and required inputs.
  */
-export interface InputSignalNode<ReadT, WriteT> extends SignalNode<ReadT> {
+export interface InputSignalNode<T, TransformT> extends SignalNode<T> {
   /**
    * User-configured transform that will run whenever a new value is applied
    * to the input signal node.
    */
-  transformFn: ((value: WriteT) => ReadT)|undefined;
+  transformFn: ((value: TransformT) => T)|undefined;
 
   /**
    * Applies a new value to the input signal. Expects transforms to be run
@@ -27,9 +27,9 @@ export interface InputSignalNode<ReadT, WriteT> extends SignalNode<ReadT> {
    *
    * This function is called by the framework runtime code whenever a binding
    * changes. The value can in practice be anything at runtime, but for typing
-   * purposes we assume it's a valid `ReadT` value. Type-checking will enforce that.
+   * purposes we assume it's a valid `T` value. Type-checking will enforce that.
    */
-  applyValueToInputSignal<ReadT, WriteT>(node: InputSignalNode<ReadT, WriteT>, value: ReadT): void;
+  applyValueToInputSignal<T, TransformT>(node: InputSignalNode<T, TransformT>, value: T): void;
 }
 
 // Note: Using an IIFE here to ensure that the spread assignment is not considered
@@ -40,7 +40,7 @@ export const INPUT_SIGNAL_NODE: InputSignalNode<unknown, unknown> = /* @__PURE__
     ...SIGNAL_NODE,
     transformFn: undefined,
 
-    applyValueToInputSignal<ReadT, WriteT>(node: InputSignalNode<ReadT, WriteT>, value: ReadT) {
+    applyValueToInputSignal<T, TransformT>(node: InputSignalNode<T, TransformT>, value: T) {
       signalSetFn(node, value);
     }
   };
