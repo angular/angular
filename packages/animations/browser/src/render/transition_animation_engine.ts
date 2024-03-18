@@ -751,6 +751,7 @@ export class TransitionAnimationEngine {
   }
 
   trigger(namespaceId: string, element: any, name: string, value: any): boolean {
+    this.scheduler?.notify();
     if (isElementNode(element)) {
       const ns = this._fetchNamespace(namespaceId);
       if (ns) {
