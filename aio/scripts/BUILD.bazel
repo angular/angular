@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("@aio_npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_first_output")
+load("@npm//@angular/build-tooling/bazel:filter_outputs.bzl", "filter_first_output")
 load("//tools:defaults.bzl", "nodejs_binary", "nodejs_test")
 
 package(default_visibility = ["//visibility:public"])
@@ -13,8 +13,8 @@ nodejs_binary(
     data = [
         "//aio:firebase.json",
         "//aio:ngsw-config.template.json",
-        "@aio_npm//canonical-path",
-        "@aio_npm//json5",
+        "@npm//canonical-path",
+        "@npm//json5",
     ],
     entry_point = "build-ngsw-config.js",
 )
@@ -26,7 +26,7 @@ js_library(
     ],
     deps = [
         "//aio/tools/transforms/authors-package:watchdocs",
-        "@aio_npm//@angular-devkit/architect-cli",
+        "@npm//@angular-devkit/architect-cli",
     ],
 )
 
@@ -40,17 +40,17 @@ nodejs_binary(
     testonly = True,
     data = [
         "//aio/tools:windows-chromium-path",
-        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
-        "@aio_npm//lighthouse",
-        "@aio_npm//lighthouse-logger",
-        "@aio_npm//puppeteer-core",
+        "@npm//@angular/build-tooling/bazel/browsers/chromium",
+        "@npm//lighthouse",
+        "@npm//lighthouse-logger",
+        "@npm//puppeteer-core",
     ],
     entry_point = "audit-web-app.mjs",
     env = {
         "CHROME_BIN": "$(CHROMIUM)",
     },
     toolchains = [
-        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
     ],
 )
 
@@ -85,7 +85,7 @@ nodejs_test(
     data = [
         ":audit-web-app",
         ":audit-web-app-script",
-        "@aio_npm//shelljs",
+        "@npm//shelljs",
     ],
     entry_point = "test-aio-a11y.mjs",
     env = {

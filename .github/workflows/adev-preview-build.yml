@@ -29,7 +29,7 @@ jobs:
       - name: Install node modules
         run: yarn install --frozen-lockfile
       - name: Build adev to ensure it continues to work
-        run: yarn bazel build --config=aio_local_deps //adev:build
+        run: yarn bazel build //adev:build
       - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@5774b71c01a55c4c998f858ee37d3b77ae704c31
         with:
           workflow-artifact-name: 'adev-preview'
