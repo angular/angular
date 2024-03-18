@@ -7,6 +7,7 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
+
 import {ApiItemType} from '../interfaces/api-item-type';
 
 @Pipe({
@@ -27,6 +28,7 @@ export class ApiLabel implements PipeTransform {
     [ApiItemType.PIPE]: 'P',
     [ApiItemType.NG_MODULE]: 'M',
     [ApiItemType.TYPE_ALIAS]: 'T',
+    [ApiItemType.INITIALIZER_API_FUNCTION]: 'IA',
   };
 
   private readonly fullLabelsMap: Record<ApiItemType, string> = {
@@ -42,6 +44,7 @@ export class ApiLabel implements PipeTransform {
     [ApiItemType.PIPE]: 'Pipe',
     [ApiItemType.NG_MODULE]: 'Module',
     [ApiItemType.TYPE_ALIAS]: 'Type Alias',
+    [ApiItemType.INITIALIZER_API_FUNCTION]: 'Initializer API',
   };
 
   transform(value: ApiItemType, labelType: 'short' | 'full'): string {
