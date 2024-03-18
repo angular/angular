@@ -944,7 +944,7 @@ class TcbDomSchemaCheckerOp extends TcbOp {
  * A `TcbOp` that finds and flags control flow nodes that interfere with content projection.
  *
  * Context:
- * `@if` and `@for` try to emulate the content projection behavior of `*ngIf` and `*ngFor`
+ * Control flow blocks try to emulate the content projection behavior of `*ngIf` and `*ngFor`
  * in order to reduce breakages when moving from one syntax to the other (see #52414), however the
  * approach only works if there's only one element at the root of the control flow expression.
  * This means that a stray sibling node (e.g. text) can prevent an element from being projected
@@ -999,7 +999,8 @@ class TcbControlFlowContentProjectionOp extends TcbOp {
   }
 
   private findPotentialControlFlowNodes() {
-    const result: Array<TmplAstIfBlockBranch|TmplAstForLoopBlock|TmplAstForLoopBlockEmpty> = [];
+    const result: Array<TmplAstIfBlockBranch|TmplAstSwitchBlockCase|TmplAstForLoopBlock|
+                        TmplAstForLoopBlockEmpty> = [];
 
     for (const child of this.element.children) {
       if (child instanceof TmplAstForLoopBlock) {
@@ -1013,6 +1014,12 @@ class TcbControlFlowContentProjectionOp extends TcbOp {
         for (const branch of child.branches) {
           if (this.shouldCheck(branch)) {
             result.push(branch);
+          }
+        }
+      } else if (child instanceof TmplAstSwitchBlock) {
+        for (const current of child.cases) {
+          if (this.shouldCheck(current)) {
+            result.push(current);
           }
         }
       }
