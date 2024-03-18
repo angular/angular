@@ -76,6 +76,7 @@ export interface ViewChildFunction {
  * ```
  *
  * @developerPreview
+ * @initializerApiFunction
  */
 export const viewChild: ViewChildFunction = (() => {
   // Note: This may be considered a side-effect, but nothing will depend on
@@ -107,6 +108,9 @@ export function viewChildren<LocatorT, ReadT>(
  *   divEls = viewChildren<ElementRef>('el');   // Signal<ReadonlyArray<ElementRef>>
  * }
  * ```
+ *
+ * @initializerApiFunction
+ * @developerPreview
  */
 export function viewChildren<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
@@ -155,8 +159,6 @@ export interface ContentChildFunction {
 
   /**
    * Initializes a content child query that is always expected to match.
-   *
-   * @developerPreview
    */
   required: {
     <LocatorT>(locator: ProviderToken<LocatorT>|string, opts?: {
@@ -187,6 +189,9 @@ export interface ContentChildFunction {
  *   headerRequired = contentChild.required(MyHeader);            // Signal<MyHeader>
  * }
  * ```
+ *
+ * @initializerApiFunction
+ * @developerPreview
  */
 export const contentChild: ContentChildFunction = (() => {
   // Note: This may be considered a side-effect, but nothing will depend on
@@ -220,6 +225,9 @@ export function contentChildren<LocatorT, ReadT>(
  *   headerEl = contentChildren<ElementRef>('h');   // Signal<ReadonlyArray<ElementRef>>
  * }
  * ```
+ *
+ * @initializerApiFunction
+ * @developerPreview
  */
 export function contentChildren<LocatorT, ReadT>(
     locator: ProviderToken<LocatorT>|string,
