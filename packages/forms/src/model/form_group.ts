@@ -209,7 +209,7 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
       control: AbstractControl<any>): AbstractControl<any>;
 
   registerControl<K extends string&keyof TControl>(name: K, control: TControl[K]): TControl[K] {
-    if (this.controls[name]) return (this.controls as any)[name];
+    if (this.controls.hasOwnProperty(name)) return (this.controls as any)[name];
     this.controls[name] = control;
     control.setParent(this as FormGroup);
     control._registerOnCollectionChange(this._onCollectionChange);
@@ -268,7 +268,7 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
    * removed. When false, no events are emitted.
    */
   removeControl(name: string, options: {emitEvent?: boolean;} = {}): void {
-    if ((this.controls as any)[name])
+    if ((this.controls as any).hasOwnProperty(name))
       (this.controls as any)[name]._registerOnCollectionChange(() => {});
     delete ((this.controls as any)[name]);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
@@ -299,7 +299,8 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
   setControl<K extends string&keyof TControl>(name: K, control: TControl[K], options: {
     emitEvent?: boolean
   } = {}): void {
-    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
+    if (this.controls.hasOwnProperty(name))
+      this.controls[name]._registerOnCollectionChange(() => {});
     delete (this.controls[name]);
     if (control) this.registerControl(name, control);
     this.updateValueAndValidity({emitEvent: options.emitEvent});
