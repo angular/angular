@@ -32,6 +32,7 @@ export function modelRequiredFunction<T>(): ModelSignal<T> {
  * `model.required` function.
  *
  * @developerPreview
+ * @docsPrivate Ignored because `model` is the canonical API entry.
  */
 export interface ModelFunction {
   /**
