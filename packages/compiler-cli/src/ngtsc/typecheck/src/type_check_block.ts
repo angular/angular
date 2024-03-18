@@ -1002,9 +1002,6 @@ class TcbControlFlowContentProjectionOp extends TcbOp {
     const result: Array<TmplAstIfBlockBranch|TmplAstForLoopBlock|TmplAstForLoopBlockEmpty> = [];
 
     for (const child of this.element.children) {
-      let eligibleNode: TmplAstForLoopBlock|TmplAstIfBlockBranch|null = null;
-
-      // Only `@for` blocks and the first branch of `@if` blocks participate in content projection.
       if (child instanceof TmplAstForLoopBlock) {
         if (this.shouldCheck(child)) {
           result.push(child);
@@ -1013,33 +1010,11 @@ class TcbControlFlowContentProjectionOp extends TcbOp {
           result.push(child.empty);
         }
       } else if (child instanceof TmplAstIfBlock) {
-        eligibleNode = child.branches[0];  // @if blocks are guaranteed to have at least one branch.
-      }
-
-      // Skip nodes with less than two children since it's impossible
-      // for them to run into the issue that we're checking for.
-      if (eligibleNode === null || eligibleNode.children.length < 2) {
-        continue;
-      }
-
-      // Count the number of root nodes while skipping empty text where relevant.
-      const rootNodeCount = eligibleNode.children.reduce((count, node) => {
-        // Normally `preserveWhitspaces` would have been accounted for during parsing, however
-        // in `ngtsc/annotations/component/src/resources.ts#parseExtractedTemplate` we enable
-        // `preserveWhitespaces` to preserve the accuracy of source maps diagnostics. This means
-        // that we have to account for it here since the presence of text nodes affects the
-        // content projection behavior.
-        if (!(node instanceof TmplAstText) || this.tcb.hostPreserveWhitespaces ||
-            node.value.trim().length > 0) {
-          count++;
+        for (const branch of child.branches) {
+          if (this.shouldCheck(branch)) {
+            result.push(branch);
+          }
         }
-
-        return count;
-      }, 0);
-
-      // Content projection can only be affected if there is more than one root node.
-      if (rootNodeCount > 1) {
-        result.push(eligibleNode);
       }
     }
 

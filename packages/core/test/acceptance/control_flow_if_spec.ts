@@ -416,7 +416,7 @@ describe('control flow - if', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
     });
 
-    xit('should project @if an @else content into separate slots', () => {
+    it('should project @if an @else content into separate slots', () => {
       @Component({
         standalone: true,
         selector: 'test',
@@ -456,45 +456,45 @@ describe('control flow - if', () => {
       expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
     });
 
-    xit('should project @if an @else content into separate slots when if has default content',
-        () => {
-          @Component({
-            standalone: true,
-            selector: 'test',
-            template: 'if: (<ng-content />),  else: (<ng-content select="[else_case]"/>)',
-          })
-          class TestComponent {
-          }
+    it('should project @if an @else content into separate slots when if has default content',
+       () => {
+         @Component({
+           standalone: true,
+           selector: 'test',
+           template: 'if: (<ng-content />),  else: (<ng-content select="[else_case]"/>)',
+         })
+         class TestComponent {
+         }
 
-          @Component({
-            standalone: true,
-            imports: [TestComponent],
-            template: `
-        <test>
-          @if (value) {
-            <span>if content</span>
-          } @else {
-            <span else_case>else content</span>
-          }
-        </test>
-      `
-          })
-          class App {
-            value = true;
-          }
+         @Component({
+           standalone: true,
+           imports: [TestComponent],
+           template: `
+              <test>
+                @if (value) {
+                  <span>if content</span>
+                } @else {
+                  <span else_case>else content</span>
+                }
+              </test>
+            `
+         })
+         class App {
+           value = true;
+         }
 
-          const fixture = TestBed.createComponent(App);
-          fixture.detectChanges();
-          expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+         const fixture = TestBed.createComponent(App);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
 
-          fixture.componentInstance.value = false;
-          fixture.detectChanges();
-          expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
+         fixture.componentInstance.value = false;
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
 
-          fixture.componentInstance.value = true;
-          fixture.detectChanges();
-          expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
-        });
+         fixture.componentInstance.value = true;
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+       });
 
     it('should project @if an @else content into separate slots when else has default content',
        () => {
