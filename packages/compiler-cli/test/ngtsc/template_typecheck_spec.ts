@@ -4828,23 +4828,25 @@ suppress
         ]);
       });
 
-      it('should not expose variables under their implicit name if they are aliased', () => {
-        env.write('test.ts', `
-          import {Component} from '@angular/core';
+      it('should continue exposing implicit loop variables under their old names when they are aliased',
+         () => {
+           env.write('test.ts', `
+            import {Component} from '@angular/core';
 
-          @Component({
-            template: '@for (item of items; track item; let alias = $index) { {{$index}} {{$count}} }',
-          })
-          export class Main {
-            items = [];
-          }
-        `);
+            @Component({
+              template: '@for (item of items; track item; let alias = $index) { {{acceptsString($index)}} }',
+            })
+            export class Main {
+              items = [];
+              acceptsString(str: string) {}
+            }
+          `);
 
-        const diags = env.driveDiagnostics();
-        expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
-          `Property '$index' does not exist on type 'Main'.`,
-        ]);
-      });
+           const diags = env.driveDiagnostics();
+           expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
+             `Argument of type 'number' is not assignable to parameter of type 'string'.`,
+           ]);
+         });
 
       it('should not be able to write to loop template variables', () => {
         env.write('test.ts', `

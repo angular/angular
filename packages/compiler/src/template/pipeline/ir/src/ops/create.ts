@@ -305,12 +305,7 @@ export interface RepeaterCreateOp extends ElementOpBase, ConsumesVarsTrait {
 
 // TODO: add source spans?
 export interface RepeaterVarNames {
-  $index: string;
-  $count: string;
-  $first: string;
-  $last: string;
-  $even: string;
-  $odd: string;
+  $index: Set<string>;
   $implicit: string;
 }
 

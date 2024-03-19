@@ -598,48 +598,35 @@ function ingestIcu(unit: ViewCompilationUnit, icu: t.Icu) {
 function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): void {
   const repeaterView = unit.job.allocateView(unit.xref);
 
+  // We copy TemplateDefinitionBuilder's scheme of creating names for `$count` and `$index`
+  // that are suffixed with special information, to disambiguate which level of nested loop
+  // the below aliases refer to.
+  // TODO: We should refactor Template Pipeline's variable phases to gracefully handle
+  // shadowing, and arbitrarily many levels of variables depending on each other.
+  const indexName = `ɵ$index_${repeaterView.xref}`;
+  const countName = `ɵ$count_${repeaterView.xref}`;
+  const indexVarNames = new Set<string>();
+
   // Set all the context variables and aliases available in the repeater.
   repeaterView.contextVariables.set(forBlock.item.name, forBlock.item.value);
-  repeaterView.contextVariables.set(
-      forBlock.contextVariables.$index.name, forBlock.contextVariables.$index.value);
-  repeaterView.contextVariables.set(
-      forBlock.contextVariables.$count.name, forBlock.contextVariables.$count.value);
 
-  // We copy TemplateDefinitionBuilder's scheme of creating names for `$count` and `$index` that are
-  // suffixed with special information, to disambiguate which level of nested loop the below aliases
-  // refer to.
-  // TODO: We should refactor Template Pipeline's variable phases to gracefully handle shadowing,
-  // and arbitrarily many levels of variables depending on each other.
-  const indexName = `ɵ${forBlock.contextVariables.$index.name}_${repeaterView.xref}`;
-  const countName = `ɵ${forBlock.contextVariables.$count.name}_${repeaterView.xref}`;
-  repeaterView.contextVariables.set(indexName, forBlock.contextVariables.$index.value);
-  repeaterView.contextVariables.set(countName, forBlock.contextVariables.$count.value);
-
-  repeaterView.aliases.add({
-    kind: ir.SemanticVariableKind.Alias,
-    name: null,
-    identifier: forBlock.contextVariables.$first.name,
-    expression: new ir.LexicalReadExpr(indexName).identical(o.literal(0))
-  });
-  repeaterView.aliases.add({
-    kind: ir.SemanticVariableKind.Alias,
-    name: null,
-    identifier: forBlock.contextVariables.$last.name,
-    expression: new ir.LexicalReadExpr(indexName).identical(
-        new ir.LexicalReadExpr(countName).minus(o.literal(1)))
-  });
-  repeaterView.aliases.add({
-    kind: ir.SemanticVariableKind.Alias,
-    name: null,
-    identifier: forBlock.contextVariables.$even.name,
-    expression: new ir.LexicalReadExpr(indexName).modulo(o.literal(2)).identical(o.literal(0))
-  });
-  repeaterView.aliases.add({
-    kind: ir.SemanticVariableKind.Alias,
-    name: null,
-    identifier: forBlock.contextVariables.$odd.name,
-    expression: new ir.LexicalReadExpr(indexName).modulo(o.literal(2)).notIdentical(o.literal(0))
-  });
+  for (const variable of forBlock.contextVariables) {
+    if (variable.value === '$index') {
+      indexVarNames.add(variable.name);
+    }
+    if (variable.name === '$index') {
+      repeaterView.contextVariables.set('$index', variable.value).set(indexName, variable.value);
+    } else if (variable.name === '$count') {
+      repeaterView.contextVariables.set('$count', variable.value).set(countName, variable.value);
+    } else {
+      repeaterView.aliases.add({
+        kind: ir.SemanticVariableKind.Alias,
+        name: null,
+        identifier: variable.name,
+        expression: getComputedForLoopVariableExpression(variable, indexName, countName)
+      });
+    }
+  }
 
   const sourceSpan = convertSourceSpan(forBlock.trackBy.span, forBlock.sourceSpan);
   const track = convertAst(forBlock.trackBy, unit.job, sourceSpan);
@@ -655,12 +642,7 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
   }
 
   const varNames: ir.RepeaterVarNames = {
-    $index: forBlock.contextVariables.$index.name,
-    $count: forBlock.contextVariables.$count.name,
-    $first: forBlock.contextVariables.$first.name,
-    $last: forBlock.contextVariables.$last.name,
-    $even: forBlock.contextVariables.$even.name,
-    $odd: forBlock.contextVariables.$odd.name,
+    $index: indexVarNames,
     $implicit: forBlock.item.name,
   };
 
@@ -686,6 +668,39 @@ function ingestForBlock(unit: ViewCompilationUnit, forBlock: t.ForLoopBlock): vo
   const repeater = ir.createRepeaterOp(
       repeaterCreate.xref, repeaterCreate.handle, expression, forBlock.sourceSpan);
   unit.update.push(repeater);
+}
+
+/**
+ * Gets an expression that represents a variable in an `@for` loop.
+ * @param variable AST representing the variable.
+ * @param indexName Loop-specific name for `$index`.
+ * @param countName Loop-specific name for `$count`.
+ */
+function getComputedForLoopVariableExpression(
+    variable: t.Variable, indexName: string, countName: string): o.Expression {
+  switch (variable.value) {
+    case '$index':
+      return new ir.LexicalReadExpr(indexName);
+
+    case '$count':
+      return new ir.LexicalReadExpr(countName);
+
+    case '$first':
+      return new ir.LexicalReadExpr(indexName).identical(o.literal(0));
+
+    case '$last':
+      return new ir.LexicalReadExpr(indexName).identical(
+          new ir.LexicalReadExpr(countName).minus(o.literal(1)));
+
+    case '$even':
+      return new ir.LexicalReadExpr(indexName).modulo(o.literal(2)).identical(o.literal(0));
+
+    case '$odd':
+      return new ir.LexicalReadExpr(indexName).modulo(o.literal(2)).notIdentical(o.literal(0));
+
+    default:
+      throw new Error(`AssertionError: unknown @for loop variable ${variable.value}`);
+  }
 }
 
 /**

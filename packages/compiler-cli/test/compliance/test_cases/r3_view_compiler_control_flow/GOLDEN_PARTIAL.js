@@ -1144,6 +1144,75 @@ export declare class MyApp {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: for_both_aliased_and_original_variables.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+        this.items = [];
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      {{message}}
+      @for (item of items; track item; let idx = $index, f = $first; let l = $last, ev = $even, o = $odd; let co = $count) {
+        Original index: {{$index}}
+        Original first: {{$first}}
+        Original last: {{$last}}
+        Original even: {{$even}}
+        Original odd: {{$odd}}
+        Original count: {{$count}}
+        <hr>
+        Aliased index: {{idx}}
+        Aliased first: {{f}}
+        Aliased last: {{l}}
+        Aliased even: {{ev}}
+        Aliased odd: {{o}}
+        Aliased count: {{co}}
+      }
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div>
+      {{message}}
+      @for (item of items; track item; let idx = $index, f = $first; let l = $last, ev = $even, o = $odd; let co = $count) {
+        Original index: {{$index}}
+        Original first: {{$first}}
+        Original last: {{$last}}
+        Original even: {{$even}}
+        Original odd: {{$odd}}
+        Original count: {{$count}}
+        <hr>
+        Aliased index: {{idx}}
+        Aliased first: {{f}}
+        Aliased last: {{l}}
+        Aliased even: {{ev}}
+        Aliased odd: {{o}}
+        Aliased count: {{co}}
+      }
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: for_both_aliased_and_original_variables.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    items: never[];
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, false, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: nested_for_template_variables.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';

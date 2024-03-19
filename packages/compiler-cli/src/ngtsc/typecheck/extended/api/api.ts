@@ -195,7 +195,7 @@ class TemplateVisitor<Code extends ErrorCode> extends RecursiveAstVisitor implem
 
   visitForLoopBlock(block: TmplAstForLoopBlock): void {
     block.item.visit(this);
-    this.visitAllNodes(Object.values(block.contextVariables));
+    this.visitAllNodes(block.contextVariables);
     this.visitAst(block.expression);
     this.visitAllNodes(block.children);
     block.empty?.visit(this);

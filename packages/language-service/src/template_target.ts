@@ -519,7 +519,7 @@ class TemplateTargetVisitor implements TmplAstVisitor {
 
   visitForLoopBlock(block: TmplAstForLoopBlock) {
     this.visit(block.item);
-    this.visitAll(Object.values(block.contextVariables));
+    this.visitAll(block.contextVariables);
     this.visitBinding(block.expression);
     this.visitBinding(block.trackBy);
     this.visitAll(block.children);

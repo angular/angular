@@ -25,7 +25,7 @@ export function generateTrackVariables(job: CompilationJob): void {
 
       op.track = ir.transformExpressionsInExpression(op.track, expr => {
         if (expr instanceof ir.LexicalReadExpr) {
-          if (expr.name === op.varNames.$index) {
+          if (op.varNames.$index.has(expr.name)) {
             return o.variable('$index');
           } else if (expr.name === op.varNames.$implicit) {
             return o.variable('$item');

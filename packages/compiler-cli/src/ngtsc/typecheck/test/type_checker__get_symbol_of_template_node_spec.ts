@@ -477,9 +477,10 @@ runInEachFileSystem(() => {
         });
 
         it('finds symbols for $index variable', () => {
-          const iVar = forLoopNode.contextVariables.$index;
+          const iVar = forLoopNode.contextVariables.find(v => v.name === '$index')!;
           const iSymbol = templateTypeChecker.getSymbolOfNode(iVar, cmp)!;
-          expectIndexSymbol(iSymbol);
+          expect(iVar).toBeTruthy();
+          expectIndexSymbol(iSymbol, '$index');
         });
 
         it('finds symbol when using the index in the body', () => {
@@ -487,7 +488,7 @@ runInEachFileSystem(() => {
               onlyAstElements((forLoopNode.children[0] as TmplAstElement).children);
           const indexSymbol =
               templateTypeChecker.getSymbolOfNode(innerElementNodes[0].inputs[0].value, cmp)!;
-          expectIndexSymbol(indexSymbol);
+          expectIndexSymbol(indexSymbol, 'i');
         });
 
         function expectUserSymbol(userSymbol: Symbol) {
@@ -497,12 +498,15 @@ runInEachFileSystem(() => {
           expect((userSymbol).declaration).toEqual(forLoopNode.item);
         }
 
-        function expectIndexSymbol(indexSymbol: Symbol) {
+        function expectIndexSymbol(indexSymbol: Symbol, localName: string) {
+          const indexVar =
+              forLoopNode.contextVariables.find(v => v.value === '$index' && v.name === localName)!;
           assertVariableSymbol(indexSymbol);
+          expect(indexVar).toBeTruthy();
           expect(indexSymbol.tsSymbol)
               .toBeNull();  // implicit variable doesn't have a TS definition location
           expect(program.getTypeChecker().typeToString(indexSymbol.tsType!)).toEqual('number');
-          expect((indexSymbol).declaration).toEqual(forLoopNode.contextVariables.$index);
+          expect((indexSymbol).declaration).toEqual(indexVar);
         }
       });
     });

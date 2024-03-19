@@ -353,11 +353,13 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       throw new Error(`Assertion failure: no SourceLocation found for property read.`);
     }
 
+    const messageVars = [block.item, ...block.contextVariables.filter(v => v.value === '$index')]
+                            .map(v => `'${v.name}'`)
+                            .join(', ');
     const message =
         `Cannot access '${access.name}' inside of a track expression. ` +
-        `Only '${block.item.name}', '${
-            block.contextVariables.$index
-                .name}' and properties on the containing component are available to this expression.`;
+        `Only ${
+            messageVars} and properties on the containing component are available to this expression.`;
 
     this._diagnostics.push(makeTemplateDiagnostic(
         templateId, this.resolver.getSourceMapping(templateId), sourceSpan,
