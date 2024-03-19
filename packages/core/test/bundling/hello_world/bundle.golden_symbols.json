@@ -48,6 +48,9 @@
     "name": "ChangeDetectionScheduler"
   },
   {
+    "name": "ChangeDetectionSchedulerImpl"
+  },
+  {
     "name": "ComponentFactory"
   },
   {
@@ -330,6 +333,12 @@
     "name": "ViewRef"
   },
   {
+    "name": "ZONELESS_ENABLED"
+  },
+  {
+    "name": "ZONELESS_SCHEDULER_DISABLED"
+  },
+  {
     "name": "ZoneStablePendingTask"
   },
   {
@@ -565,6 +574,9 @@
   },
   {
     "name": "generateInitialInputs"
+  },
+  {
+    "name": "getCallbackScheduler"
   },
   {
     "name": "getClosureSafeProperty"
