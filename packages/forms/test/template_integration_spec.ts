@@ -267,7 +267,7 @@ describe('template-driven forms integration tests', () => {
          });
        }));
 
-    it('should set status classes involving nested FormGroups', () => {
+    it('should set status classes involving nested FormGroups', async () => {
       const fixture = initTest(NgModelNestedForm);
       fixture.componentInstance.first = '';
       fixture.componentInstance.other = '';
@@ -277,29 +277,28 @@ describe('template-driven forms integration tests', () => {
       const modelGroup = fixture.debugElement.query(By.css('[ngModelGroup]')).nativeElement;
       const input = fixture.debugElement.query(By.css('input')).nativeElement;
 
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+      await fixture.whenStable();
+      fixture.detectChanges();
+      expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
 
-        expect(sortedClassList(form)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+      expect(sortedClassList(form)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
 
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-        dispatchEvent(formEl, 'submit');
-        fixture.detectChanges();
+      const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+      dispatchEvent(formEl, 'submit');
+      fixture.detectChanges();
 
-        expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-        expect(sortedClassList(form)).toEqual([
-          'ng-pristine', 'ng-submitted', 'ng-untouched', 'ng-valid'
-        ]);
-        expect(sortedClassList(input)).not.toContain('ng-submitted');
+      expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+      expect(sortedClassList(form)).toEqual([
+        'ng-pristine', 'ng-submitted', 'ng-untouched', 'ng-valid'
+      ]);
+      expect(sortedClassList(input)).not.toContain('ng-submitted');
 
-        dispatchEvent(formEl, 'reset');
-        fixture.detectChanges();
+      dispatchEvent(formEl, 'reset');
+      fixture.detectChanges();
 
-        expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-        expect(sortedClassList(form)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
-        expect(sortedClassList(input)).not.toContain('ng-submitted');
-      });
+      expect(sortedClassList(modelGroup)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+      expect(sortedClassList(form)).toEqual(['ng-pristine', 'ng-untouched', 'ng-valid']);
+      expect(sortedClassList(input)).not.toContain('ng-submitted');
     });
 
     it('should not create a template-driven form when ngNoForm is used', () => {

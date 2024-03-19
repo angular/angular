@@ -44,12 +44,12 @@ export abstract class ComponentFixture<T> {
     abstract detectChanges(checkNoChanges?: boolean): void;
     elementRef: ElementRef;
     getDeferBlocks(): Promise<DeferBlockFixture[]>;
-    abstract isStable(): boolean;
+    isStable(): boolean;
     nativeElement: any;
     // (undocumented)
     ngZone: NgZone | null;
     whenRenderingDone(): Promise<any>;
-    abstract whenStable(): Promise<any>;
+    whenStable(): Promise<any>;
 }
 
 // @public (undocumented)
