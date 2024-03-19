@@ -158,7 +158,7 @@ export function defaultUrlMatcher(
   for (let index = 0; index < parts.length; index++) {
     const part = parts[index];
     const segment = segments[index];
-    const isParameter = part.startsWith(':');
+    const isParameter = part[0] === ':';
     if (isParameter) {
       posParams[part.substring(1)] = segment;
     } else if (part !== segment.path) {
