@@ -118,6 +118,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/components/outputs',
           },
           {
+            label: 'output() function',
+            path: 'guide/components/output-fn',
+            contentPath: 'guide/components/output-function',
+          },
+          {
             label: 'Content projection with ng-content',
             path: 'guide/components/content-projection',
             contentPath: 'guide/components/content-projection',
