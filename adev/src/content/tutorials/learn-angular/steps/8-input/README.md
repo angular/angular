@@ -26,6 +26,15 @@ When you are ready to pass in a value through an `Input`, values can be set in t
 class AppComponent {}
 </docs-code>
 
+Make sure you bind the property `occupation` in your `UserComponent`.
+
+<docs-code header="user.component.ts" language="ts">
+@Component({
+  ...
+  template: `<p>The user's name is {{occupation}}</p>`
+})
+</docs-code>
+
 <docs-workflow>
 
 <docs-step title="Define an `@Input` property">
