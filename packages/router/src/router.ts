@@ -476,7 +476,7 @@ export class Router {
       // Note: the difference between having this fallback for invalid `ActivatedRoute` setups and
       // just throwing is ~500 test failures. Fixing all of those tests by hand is not feasible at
       // the moment.
-      if (typeof commands[0] !== 'string' || !commands[0].startsWith('/')) {
+      if (typeof commands[0] !== 'string' || commands[0][0] !== '/') {
         // Navigations that were absolute in the old way of creating UrlTrees
         // would still work because they wouldn't attempt to match the
         // segments in the `ActivatedRoute` to the `currentUrlTree` but

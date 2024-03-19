@@ -336,7 +336,7 @@ export class Recognizer {
 
     // TODO(atscott): Move all of this under an if(ngDevMode) as a breaking change and allow stack
     // size exceeded in production
-    if (typeof route.redirectTo === 'string' && route.redirectTo.startsWith('/')) {
+    if (typeof route.redirectTo === 'string' && route.redirectTo[0] === '/') {
       this.absoluteRedirectCount++;
       if (this.absoluteRedirectCount > MAX_ALLOWED_REDIRECTS) {
         if (ngDevMode) {
