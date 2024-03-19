@@ -14,7 +14,7 @@
   "prHourlyLimit": 3,
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {"enabled": true},
-  "labels": ["target: patch", "area: build & ci", "action: review"],
+  "labels": ["target: patch", "area: build & ci", "action: merge"],
   "ignorePaths": ["aio/content/demos/first-app/package.json"],
   "ignoreDeps": [
     "@types/node",
