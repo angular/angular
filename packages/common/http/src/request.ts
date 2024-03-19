@@ -494,10 +494,8 @@ export class HttpRequest<T> {
 
     // Carefully handle the boolean options to differentiate between
     // `false` and `undefined` in the update args.
-    const withCredentials =
-      update.withCredentials !== undefined ? update.withCredentials : this.withCredentials;
-    const reportProgress =
-      update.reportProgress !== undefined ? update.reportProgress : this.reportProgress;
+    const withCredentials = update.withCredentials ?? this.withCredentials;
+    const reportProgress = update.reportProgress ?? this.reportProgress;
 
     // Headers and params may be appended to if `setHeaders` or
     // `setParams` are used.
