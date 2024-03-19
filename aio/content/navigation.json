@@ -803,6 +803,11 @@
               "tooltip": "Signal queries exposing results as a reactive signal primitive."
             },
             {
+              "url": "guide/output-function",
+              "title": "output() function",
+              "tooltip": "New API for declaring outputs in directives or components."
+            },
+            {
               "url": "guide/rxjs-interop",
               "title": "RxJS Interop for Signals",
               "tooltip": "Angular signals and Observable interop"
