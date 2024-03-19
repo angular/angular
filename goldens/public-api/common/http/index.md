@@ -2099,6 +2099,9 @@ export class HttpRequest<T> {
         params?: HttpParams;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
+        transferCache?: {
+            includeHeaders?: string[];
+        } | boolean;
         body?: T | null;
         method?: string;
         url?: string;
@@ -2117,6 +2120,9 @@ export class HttpRequest<T> {
         params?: HttpParams;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
+        transferCache?: {
+            includeHeaders?: string[];
+        } | boolean;
         body?: V | null;
         method?: string;
         url?: string;

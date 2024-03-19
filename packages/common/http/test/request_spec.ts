@@ -76,6 +76,7 @@ describe('HttpRequest', () => {
       reportProgress: true,
       responseType: 'text',
       withCredentials: true,
+      transferCache: true,
     });
     it('in the base case', () => {
       const clone = req.clone();
@@ -87,6 +88,7 @@ describe('HttpRequest', () => {
       expect(clone.headers.get('Test')).toBe('Test header');
 
       expect(clone.context).toBe(context);
+      expect(clone.transferCache).toBe(true);
     });
     it('and updates the url', () => {
       expect(req.clone({url: '/changed'}).url).toBe('/changed');
@@ -100,6 +102,9 @@ describe('HttpRequest', () => {
     it('and updates the context', () => {
       const newContext = new HttpContext();
       expect(req.clone({context: newContext}).context).toBe(newContext);
+    });
+    it('and updates the transferCache', () => {
+      expect(req.clone({transferCache: false}).transferCache).toBe(false);
     });
   });
   describe('content type detection', () => {
