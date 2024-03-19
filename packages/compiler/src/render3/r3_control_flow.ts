@@ -36,7 +36,7 @@ const CHARACTERS_IN_SURROUNDING_WHITESPACE_PATTERN = /(\s*)(\S+)(\s*)/;
 
 /** Names of variables that are allowed to be used in the `let` expression of a `for` loop. */
 const ALLOWED_FOR_LOOP_LET_VARIABLES =
-    new Set<keyof t.ForLoopBlockContext>(['$index', '$first', '$last', '$even', '$odd', '$count']);
+    new Set(['$index', '$first', '$last', '$even', '$odd', '$count']);
 
 /**
  * Predicate function that determines if a block with
@@ -234,7 +234,16 @@ function parseForLoopParameters(
     itemName: new t.Variable(itemName, '$implicit', variableSpan, variableSpan),
     trackBy: null as {expression: ASTWithSource, keywordSpan: ParseSourceSpan} | null,
     expression: parseBlockParameterToBinding(expressionParam, bindingParser, rawExpression),
-    context: {} as t.ForLoopBlockContext,
+    context: Array.from(
+        ALLOWED_FOR_LOOP_LET_VARIABLES,
+        variableName => {
+          // Give ambiently-available context variables empty spans at the end of
+          // the start of the `for` block, since they are not explicitly defined.
+          const emptySpanAfterForBlockStart =
+              new ParseSourceSpan(block.startSourceSpan.end, block.startSourceSpan.end);
+          return new t.Variable(
+              variableName, variableName, emptySpanAfterForBlockStart, emptySpanAfterForBlockStart);
+        }),
   };
 
   for (const param of secondaryParams) {
@@ -270,32 +279,19 @@ function parseForLoopParameters(
         new ParseError(param.sourceSpan, `Unrecognized @for loop paramater "${param.expression}"`));
   }
 
-  // Fill out any variables that haven't been defined explicitly.
-  for (const variableName of ALLOWED_FOR_LOOP_LET_VARIABLES) {
-    if (!result.context.hasOwnProperty(variableName)) {
-      // Give ambiently-available context variables empty spans at the end of the start of the `for`
-      // block, since they are not explicitly defined.
-      const emptySpanAfterForBlockStart =
-          new ParseSourceSpan(block.startSourceSpan.end, block.startSourceSpan.end);
-      result.context[variableName] = new t.Variable(
-          variableName, variableName, emptySpanAfterForBlockStart, emptySpanAfterForBlockStart);
-    }
-  }
-
   return result;
 }
 
 /** Parses the `let` parameter of a `for` loop block. */
 function parseLetParameter(
-    sourceSpan: ParseSourceSpan, expression: string, span: ParseSourceSpan,
-    context: t.ForLoopBlockContext, errors: ParseError[]): void {
+    sourceSpan: ParseSourceSpan, expression: string, span: ParseSourceSpan, context: t.Variable[],
+    errors: ParseError[]): void {
   const parts = expression.split(',');
   let startSpan = span.start;
   for (const part of parts) {
     const expressionParts = part.split('=');
     const name = expressionParts.length === 2 ? expressionParts[0].trim() : '';
-    const variableName = (expressionParts.length === 2 ? expressionParts[1].trim() : '') as
-        keyof t.ForLoopBlockContext;
+    const variableName = expressionParts.length === 2 ? expressionParts[1].trim() : '';
 
     if (name.length === 0 || variableName.length === 0) {
       errors.push(new ParseError(
@@ -306,7 +302,7 @@ function parseLetParameter(
           sourceSpan,
           `Unknown "let" parameter variable "${variableName}". The allowed variables are: ${
               Array.from(ALLOWED_FOR_LOOP_LET_VARIABLES).join(', ')}`));
-    } else if (context.hasOwnProperty(variableName)) {
+    } else if (context.some(v => v.name === name)) {
       errors.push(
           new ParseError(sourceSpan, `Duplicate "let" parameter variable "${variableName}"`));
     } else {
@@ -333,7 +329,7 @@ function parseLetParameter(
             undefined;
       }
       const sourceSpan = new ParseSourceSpan(keySpan.start, valueSpan?.end ?? keySpan.end);
-      context[variableName] = new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan);
+      context.push(new t.Variable(name, variableName, sourceSpan, keySpan, valueSpan));
     }
     startSpan = startSpan.moveBy(part.length + 1 /* add 1 to move past the comma */);
   }

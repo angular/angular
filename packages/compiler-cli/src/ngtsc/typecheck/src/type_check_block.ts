@@ -1816,12 +1816,13 @@ class Scope {
       addParseSpanInfo(loopInitializer, scopedNode.item.sourceSpan);
       scope.varMap.set(scopedNode.item, loopInitializer);
 
-      for (const [name, variable] of Object.entries(scopedNode.contextVariables)) {
-        if (!this.forLoopContextVariableTypes.has(name)) {
-          throw new Error(`Unrecognized for loop context variable ${name}`);
+      for (const variable of scopedNode.contextVariables) {
+        if (!this.forLoopContextVariableTypes.has(variable.value)) {
+          throw new Error(`Unrecognized for loop context variable ${variable.name}`);
         }
 
-        const type = ts.factory.createKeywordTypeNode(this.forLoopContextVariableTypes.get(name)!);
+        const type =
+            ts.factory.createKeywordTypeNode(this.forLoopContextVariableTypes.get(variable.value)!);
         this.registerVariable(
             scope, variable, new TcbBlockImplicitVariableOp(tcb, scope, type, variable));
       }
@@ -2761,18 +2762,26 @@ class TcbEventHandlerTranslator extends TcbExpressionTranslator {
 }
 
 class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
+  private allowedVariables: Set<TmplAstVariable>;
+
   constructor(tcb: Context, scope: Scope, private block: TmplAstForLoopBlock) {
     super(tcb, scope);
+
+    // Tracking expressions are only allowed to read the `$index`,
+    // the item and properties off the component instance.
+    this.allowedVariables = new Set([block.item]);
+    for (const variable of block.contextVariables) {
+      if (variable.value === '$index') {
+        this.allowedVariables.add(variable);
+      }
+    }
   }
 
   protected override resolve(ast: AST): ts.Expression|null {
     if (ast instanceof PropertyRead && ast.receiver instanceof ImplicitReceiver) {
       const target = this.tcb.boundTarget.getExpressionTarget(ast);
 
-      // Tracking expressions are only allowed to read the `$index`,
-      // the item and properties off the component instance.
-      if (target !== null && target !== this.block.item &&
-          target !== this.block.contextVariables.$index) {
+      if (target !== null && !this.allowedVariables.has(target)) {
         this.tcb.oobRecorder.illegalForLoopTrackAccess(this.tcb.id, this.block, ast);
       }
     }

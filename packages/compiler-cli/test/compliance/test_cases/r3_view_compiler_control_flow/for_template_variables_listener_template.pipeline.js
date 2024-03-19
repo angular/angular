@@ -5,8 +5,8 @@ function MyApp_For_3_Template(rf, ctx) {
 	  $r3$.ɵɵlistener("click", function MyApp_For_3_Template_div_click_0_listener() {
 		const $restoredCtx$ = $r3$.ɵɵrestoreView($_r5$);
 		const $index_r2$ = $restoredCtx$.$index;
-		const $count_r3$ = $restoredCtx$.$count;
 		const $index_2_r2$ = $restoredCtx$.$index;
+		const $count_r3$ = $restoredCtx$.$count;
 		const $ctx_r4$ = $r3$.ɵɵnextContext();
 		return $r3$.ɵɵresetView($ctx_r4$.log($index_r2$, $index_2_r2$ % 2 === 0, $index_2_r2$ === 0, $count_r3$));
 	  });

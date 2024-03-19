@@ -1710,7 +1710,7 @@ describe('type check blocks', () => {
       expect(result).toContain('"" + (_t2) + (_t3) + (_t4) + (_t5) + (_t6) + (_t7)');
     });
 
-    it('should read an implicit variable from the component scope if it is aliased', () => {
+    it('should read both implicit variables and their alias at the same time', () => {
       const TEMPLATE = `
         @for (item of items; track item; let i = $index) { {{$index}} {{i}} }
       `;
@@ -1718,7 +1718,8 @@ describe('type check blocks', () => {
       const result = tcb(TEMPLATE);
       expect(result).toContain('for (const _t1 of ((this).items)!) {');
       expect(result).toContain('var _t2 = null! as number;');
-      expect(result).toContain('"" + (((this).$index)) + (_t2)');
+      expect(result).toContain('var _t3 = null! as number;');
+      expect(result).toContain('"" + (_t2) + (_t3)');
     });
 
     it('should read variable from a parent for loop', () => {

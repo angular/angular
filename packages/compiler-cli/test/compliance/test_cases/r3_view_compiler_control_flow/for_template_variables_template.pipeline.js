@@ -4,8 +4,8 @@ function MyApp_For_3_Template(rf, ctx) {
 	}
 	if (rf & 2) {
 	  const $index_r2$ = ctx.$index;
-	  const $count_r3$ = ctx.$count;
 	  const $index_4_r2$ = ctx.$index;
+	  const $count_r3$ = ctx.$count;
 	  const $count_4_r2$ = ctx.$count;
 	  $r3$.ɵɵtextInterpolate6(" Index: ", $index_r2$, " First: ", $index_4_r2$ === 0, " Last: ", $index_4_r2$ === $count_4_r2$ - 1, " Even: ", $index_4_r2$ % 2 === 0, " Odd: ", $index_4_r2$ % 2 !== 0, " Count: ", $count_r3$, " ");
 	}

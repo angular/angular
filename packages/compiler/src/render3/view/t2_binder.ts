@@ -117,7 +117,7 @@ class Scope implements Visitor {
       nodeOrNodes.children.forEach(node => node.visit(this));
     } else if (nodeOrNodes instanceof ForLoopBlock) {
       this.visitVariable(nodeOrNodes.item);
-      Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitVariable(v));
+      nodeOrNodes.contextVariables.forEach(v => this.visitVariable(v));
       nodeOrNodes.children.forEach(node => node.visit(this));
     } else if (
         nodeOrNodes instanceof SwitchBlockCase || nodeOrNodes instanceof ForLoopBlockEmpty ||
@@ -424,7 +424,7 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
 
   visitForLoopBlock(block: ForLoopBlock) {
     block.item.visit(this);
-    Object.values(block.contextVariables).forEach(v => v.visit(this));
+    block.contextVariables.forEach(v => v.visit(this));
     block.children.forEach(node => node.visit(this));
     block.empty?.visit(this);
   }
@@ -543,7 +543,7 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
       this.nestingLevel.set(nodeOrNodes, this.level);
     } else if (nodeOrNodes instanceof ForLoopBlock) {
       this.visitNode(nodeOrNodes.item);
-      Object.values(nodeOrNodes.contextVariables).forEach(v => this.visitNode(v));
+      nodeOrNodes.contextVariables.forEach(v => this.visitNode(v));
       nodeOrNodes.trackBy.visit(this);
       nodeOrNodes.children.forEach(this.visitNode);
       this.nestingLevel.set(nodeOrNodes, this.level);

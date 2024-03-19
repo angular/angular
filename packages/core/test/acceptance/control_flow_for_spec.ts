@@ -155,6 +155,24 @@ describe('control flow - for', () => {
     expect(fixture.nativeElement.textContent.trim()).toBe('2');
   });
 
+  it('should expose variables both under their real names and aliases', () => {
+    @Component({
+      template:
+          '@for ((item of items); track item; let idx = $index) {{{item}}({{$index}}/{{idx}})|}',
+    })
+    class TestComponent {
+      items = [1, 2, 3];
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('1(0/0)|2(1/1)|3(2/2)|');
+
+    fixture.componentInstance.items.splice(1, 1);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('1(0/0)|3(1/1)|');
+  });
+
   describe('trackBy', () => {
     it('should have access to the host context in the track function', () => {
       let offsetReads = 0;
@@ -212,14 +230,14 @@ describe('control flow - for', () => {
 
          @Component({
            template: `
-                    @if (true) {
-                      @if (true) {
-                        @if (true) {
-                          @for ((item of items); track trackingFn(item, compProp)) {{{item}}}
-                        }
-                      }
-                    }
-                   `,
+            @if (true) {
+              @if (true) {
+                @if (true) {
+                  @for ((item of items); track trackingFn(item, compProp)) {{{item}}}
+                }
+              }
+            }
+          `,
          })
          class TestComponent {
            items = ['a', 'b'];

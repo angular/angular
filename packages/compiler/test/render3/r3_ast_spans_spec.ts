@@ -133,7 +133,7 @@ class R3AstSourceSpans implements t.Visitor<void> {
       humanizeSpan(block.endSourceSpan)
     ]);
     this.visitVariable(block.item);
-    this.visitAll([Object.values(block.contextVariables)]);
+    this.visitAll([block.contextVariables]);
     this.visitAll([block.children]);
     block.empty?.visit(this);
   }
@@ -702,12 +702,14 @@ describe('R3 AST source spans', () => {
           '@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {', '}'
         ],
         ['Variable', 'item', 'item', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
+        ['Variable', '', '', '<empty>'],
         ['Variable', 'i = $index', 'i', '$index'],
         ['Variable', '_o_d_d_ = $odd', '_o_d_d_', '$odd'],
-        ['Variable', '', '', '<empty>'],
-        ['Variable', '', '', '<empty>'],
-        ['Variable', '', '', '<empty>'],
-        ['Variable', '', '', '<empty>'],
         ['Element', '<h1>{{ item }}</h1>', '<h1>', '</h1>'],
         ['BoundText', '{{ item }}'],
         ['ForLoopBlockEmpty', '@empty {There were no items in the list.}', '@empty {'],
