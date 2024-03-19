@@ -102,3 +102,29 @@ mySignal.set(3);
 ```
 
 Here, only the last value (3) will be logged.
+
+### `outputFromObservable`
+
+`outputFromObservable(...)` declares an Angular output that emits values based on an RxJS observable.
+
+```ts
+class MyDir {
+  nameChange$ = new Observable<string>(/* ... */);
+  nameChange = outputFromObservable(this.nameChange$); // OutputRef<string>
+}
+```
+
+See more details in the [output() API guide](/guide/output-function).
+
+### `outputToObservable`
+
+`outputToObservable(...)` converts an Angular output to an observable.
+This allows you use integrate Angular outputs conveniently into RxJS streams.
+
+```ts
+outputToObservable(myComp.instance.onNameChange)
+  .pipe(...)
+  .subscribe(...)
+```
+
+See more details in the [output() API guide](/guide/output-function).
