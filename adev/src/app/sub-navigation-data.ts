@@ -462,6 +462,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/http/testing',
             contentPath: 'guide/http/testing',
           },
+          {
+            label: 'Security',
+            path: 'guide/http/security',
+            contentPath: 'guide/http/security',
+          },
         ],
       },
       {
