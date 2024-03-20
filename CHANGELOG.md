@@ -1,3 +1,52 @@
+<a name="18.0.0-next.1"></a>
+# 18.0.0-next.1 (2024-03-20)
+## Breaking Changes
+### platform-browser-dynamic
+- No longer used `RESOURCE_CACHE_PROVIDER` APIs have been removed.
+### platform-server
+- deprecated `platformDynamicServer` has been removed. Add an `import @angular/compiler` and replace the usage with `platformServer`
+- deprecated `ServerTransferStateModule` has been removed. `TransferState` can be use without providing this module.
+- deprecated `useAbsoluteUrl` and `baseUrl` been removed from `PlatformConfig`. Provide and absolute `url` instead.
+- Legacy handling or Node.js URL parsing has been removed from `ServerPlatformLocation`.
+  
+  The main differences are;
+    - `pathname` is always suffixed with a `/`.
+    - `port` is empty when `http:` protocol and port in url is `80`
+   - `port` is empty when `https:` protocol and port in url is `443`
+### router
+- This change allows `Route.redirectTo` to be a function
+  in addition to the previous string. Code which expects `redirectTo` to
+  only be a string on `Route` objects will need to be adjusted.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [879bd80b57](https://github.com/angular/angular/commit/879bd80b571368bdc6e65c5415d98ad0f546267a) | fix | capture data bindings for content projection purposes in blocks ([#54876](https://github.com/angular/angular/pull/54876)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6aff144232](https://github.com/angular/angular/commit/6aff14423238f8995da8104e60c0baca26df2020) | fix | symbol feature detection for the compiler ([#54711](https://github.com/angular/angular/pull/54711)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [314112de99](https://github.com/angular/angular/commit/314112de99bb97475a0d8bdbddf84a3b3ce4a8fb) | fix | Prevent `markForCheck` during change detection from causing infinite loops ([#54900](https://github.com/angular/angular/pull/54900)) |
+### platform-browser-dynamic
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eb20c1a8b1](https://github.com/angular/angular/commit/eb20c1a8b18e2e080c856e3e1bf7bcd02f3bfd28) | refactor | unused `RESOURCE_CACHE_PROVIDER` API has been removed ([#54875](https://github.com/angular/angular/pull/54875)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [07ac017731](https://github.com/angular/angular/commit/07ac017731f0e08ea3736f1f212093a28648a304) | refactor | remove deprecated `platformDynamicServer` API ([#54874](https://github.com/angular/angular/pull/54874)) |
+| [e8b588d8b7](https://github.com/angular/angular/commit/e8b588d8b7fc014aaef99d4b0c1e4567b4aa195d) | refactor | remove deprecated `ServerTransferStateModule` API ([#54874](https://github.com/angular/angular/pull/54874)) |
+| [3b1967ca64](https://github.com/angular/angular/commit/3b1967ca64479df9137b3ad7a0d04dbaff6496f4) | refactor | remove deprecated `useAbsoluteUrl` and `baseUrl` from `PlatformConfig` ([#54874](https://github.com/angular/angular/pull/54874)) |
+| [2357d3566c](https://github.com/angular/angular/commit/2357d3566c4d18dc40cbda6644ed459ef7703893) | refactor | remove legacy URL handling logic ([#54874](https://github.com/angular/angular/pull/54874)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b802587f2](https://github.com/angular/angular/commit/2b802587f27186baa493c1dd01f42d568b652f38) | feat | Allow Route.redirectTo to be a function which returns a string or UrlTree ([#52606](https://github.com/angular/angular/pull/52606)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.1"></a>
 # 17.3.1 (2024-03-20)
 ### compiler
