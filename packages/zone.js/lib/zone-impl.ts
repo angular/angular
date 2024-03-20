@@ -133,7 +133,7 @@
  * zones are children of the root zone.
  *
  */
-export interface Zone {
+export declare interface Zone {
   /**
    *
    * @returns {Zone} The parent Zone.
@@ -287,7 +287,7 @@ export interface Zone {
   cancelTask(task: Task): any;
 }
 
-export interface ZoneType {
+export declare interface ZoneType {
   /**
    * @returns {Zone} Returns the current [Zone]. The only way to change
    * the current zone is by invoking a run() method, which will update the current zone for the
@@ -331,7 +331,7 @@ export type PatchFn = (global: Window, Zone: ZoneType, api: ZonePrivate) => void
  * ZonePrivate interface to provide helper method to help user implement
  * their own monkey patch module.
  */
-export interface ZonePrivate {
+export declare interface ZonePrivate {
   currentZoneFrame: () => ZoneFrame;
   symbol: (name: string) => string;
   scheduleMicroTask: (task?: MicroTask) => void;
@@ -375,12 +375,12 @@ export interface ZonePrivate {
 /**
  * ZoneFrame represents zone stack frame information
  */
-export interface ZoneFrame {
+export declare interface ZoneFrame {
   parent: ZoneFrame|null;
   zone: Zone;
 }
 
-export interface UncaughtPromiseError extends Error {
+export declare interface UncaughtPromiseError extends Error {
   zone: Zone;
   task: Task;
   promise: Promise<any>;
@@ -393,7 +393,7 @@ export interface UncaughtPromiseError extends Error {
  *
  * Only the `name` property is required (all other are optional).
  */
-export interface ZoneSpec {
+export declare interface ZoneSpec {
   /**
    * The name of the zone. Useful when debugging Zones.
    */
@@ -529,7 +529,7 @@ export interface ZoneSpec {
  *  Note: The ZoneDelegate treats ZoneSpec as class. This allows the ZoneSpec to use its `this` to
  *  store internal state.
  */
-export interface ZoneDelegate {
+export declare interface ZoneDelegate {
   zone: Zone;
   fork(targetZone: Zone, zoneSpec: ZoneSpec): Zone;
   intercept(targetZone: Zone, callback: Function, source: string): Function;
@@ -559,7 +559,7 @@ export type TaskState = 'notScheduled'|'scheduling'|'scheduled'|'running'|'cance
 
 /**
  */
-export interface TaskData {
+export declare interface TaskData {
   /**
    * A periodic [MacroTask] is such which get automatically rescheduled after it is executed.
    */
@@ -593,7 +593,7 @@ export interface TaskData {
  *   queue. This happens when the event fires.
  *
  */
-export interface Task {
+export declare interface Task {
   /**
    * Task type: `microTask`, `macroTask`, `eventTask`.
    */
@@ -660,15 +660,15 @@ export interface Task {
   cancelScheduleRequest(): void;
 }
 
-export interface MicroTask extends Task {
+export declare interface MicroTask extends Task {
   type: 'microTask';
 }
 
-export interface MacroTask extends Task {
+export declare interface MacroTask extends Task {
   type: 'macroTask';
 }
 
-export interface EventTask extends Task {
+export declare interface EventTask extends Task {
   type: 'eventTask';
 }
 
