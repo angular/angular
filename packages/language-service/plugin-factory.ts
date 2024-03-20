@@ -24,9 +24,7 @@ export const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule =
       return plugin.create(info);
     },
     getExternalFiles(project: ts.server.Project): string[] {
-      // TODO(crisbeto): hardcoded value `2` to be replaced with `ts.ProgramUpdateLevel.Full`
-      // after we drop support for TS 5.2.
-      return plugin?.getExternalFiles?.(project, 2) ?? [];
+      return plugin?.getExternalFiles?.(project, ts.ProgramUpdateLevel.Full) ?? [];
     },
     onConfigurationChanged(config: PluginConfig): void {
       plugin?.onConfigurationChanged?.(config);

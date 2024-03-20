@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=5.2 <5.5"
+    "typescript": ">=5.4 <5.5"
   },
   "repository": {
     "type": "git",

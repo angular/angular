@@ -35,7 +35,7 @@
     "rollup": "^2.56.3",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "terser": "^5.9.0",
-    "typescript": ">=5.2 <5.5"
+    "typescript": ">=5.4 <5.5"
   },
   "peerDependenciesMeta": {
     "terser": {
