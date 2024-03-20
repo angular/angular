@@ -15,3 +15,6 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   dependencies: [EagerDep, LoadingDep],
   …
 });
+
+…
+$r3$.ɵsetClassMetadata(MyApp, …);

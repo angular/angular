@@ -31,3 +31,18 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   dependencies: [EagerDep, LoadingDep],
   …
 });
+
+…
+
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && $r3$.ɵsetClassMetadataAsync(MyApp, () => [import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)], LazyDep => {
+    $r3$.ɵsetClassMetadata(MyApp, [{
+      type: Component,
+      args: [{
+        template: …,
+        standalone: true,
+        imports: [EagerDep, LazyDep, LoadingDep]…
+      }]
+    }], null, null);
+  });
+})();

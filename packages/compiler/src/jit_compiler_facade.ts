@@ -537,7 +537,7 @@ function convertPipeDeclarationToMetadata(pipe: R3DeclarePipeDependencyFacade):
 function parseJitTemplate(
     template: string, typeName: string, sourceMapUrl: string, preserveWhitespaces: boolean,
     interpolation: [string, string]|undefined,
-    deferBlockDependencies: (() => Promise<unknown>)[]|undefined) {
+    deferBlockDependencies: (() => Promise<unknown>| null)[]|undefined) {
   const interpolationConfig =
       interpolation ? InterpolationConfig.fromArray(interpolation) : DEFAULT_INTERPOLATION_CONFIG;
   // Parse the template and check for errors.
@@ -625,7 +625,7 @@ function createR3DependencyMetadata(
 
 function createR3ComponentDeferMetadata(
     boundTarget: BoundTarget<any>,
-    deferBlockDependencies: (() => Promise<unknown>)[]|undefined): R3ComponentDeferMetadata {
+    deferBlockDependencies: (() => Promise<unknown>| null)[]|undefined): R3ComponentDeferMetadata {
   const deferredBlocks = boundTarget.getDeferBlocks();
   const blocks = new Map<DeferredBlock, Expression|null>();
 

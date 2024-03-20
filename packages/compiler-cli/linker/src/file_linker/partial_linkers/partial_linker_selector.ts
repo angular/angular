@@ -12,6 +12,7 @@ import {Logger} from '../../../../src/ngtsc/logging';
 import {createGetSourceFile} from '../get_source_file';
 import {LinkerEnvironment} from '../linker_environment';
 
+import {PartialClassMetadataAsyncLinkerVersion1} from './partial_class_metadata_async_linker_1';
 import {PartialClassMetadataLinkerVersion1} from './partial_class_metadata_linker_1';
 import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
@@ -31,9 +32,11 @@ export const ɵɵngDeclareInjectable = 'ɵɵngDeclareInjectable';
 export const ɵɵngDeclareInjector = 'ɵɵngDeclareInjector';
 export const ɵɵngDeclareNgModule = 'ɵɵngDeclareNgModule';
 export const ɵɵngDeclarePipe = 'ɵɵngDeclarePipe';
+export const ɵɵngDeclareClassMetadataAsync = 'ɵɵngDeclareClassMetadataAsync';
 export const declarationFunctions = [
   ɵɵngDeclareDirective, ɵɵngDeclareClassMetadata, ɵɵngDeclareComponent, ɵɵngDeclareFactory,
-  ɵɵngDeclareInjectable, ɵɵngDeclareInjector, ɵɵngDeclareNgModule, ɵɵngDeclarePipe
+  ɵɵngDeclareInjectable, ɵɵngDeclareInjector, ɵɵngDeclareNgModule, ɵɵngDeclarePipe,
+  ɵɵngDeclareClassMetadataAsync
 ];
 
 export interface LinkerRange<TExpression> {
@@ -73,6 +76,9 @@ export function createLinkerMap<TStatement, TExpression>(
 
   linkers.set(ɵɵngDeclareDirective, [
     {range: LATEST_VERSION_RANGE, linker: new PartialDirectiveLinkerVersion1(sourceUrl, code)},
+  ]);
+  linkers.set(ɵɵngDeclareClassMetadataAsync, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialClassMetadataAsyncLinkerVersion1()},
   ]);
   linkers.set(ɵɵngDeclareClassMetadata, [
     {range: LATEST_VERSION_RANGE, linker: new PartialClassMetadataLinkerVersion1()},

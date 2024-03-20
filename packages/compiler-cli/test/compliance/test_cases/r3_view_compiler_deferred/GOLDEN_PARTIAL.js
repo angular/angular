@@ -211,7 +211,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-
         <loading-dep/>
       }
     </div>
-  `, isInline: true, dependencies: [{ kind: "directive", type: EagerDep, selector: "eager-dep" }, { kind: "directive", type: LoadingDep, selector: "loading-dep" }] });
+  `, isInline: true, dependencies: [{ kind: "directive", type: EagerDep, selector: "eager-dep" }, { kind: "directive", type: LoadingDep, selector: "loading-dep" }], deferBlockDependencies: [() => [LazyDep]] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
             args: [{
@@ -245,6 +245,66 @@ export declare class LazyDep {
 export declare class LoadingDep {
     static ɵfac: i0.ɵɵFactoryDeclaration<LoadingDep, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<LoadingDep, "loading-dep", never, {}, {}, never, never, true, never>;
+}
+export declare class MyApp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_without_deps_followed_by_one_with.js
+ ****************************************************************************************************/
+import { Component, Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class LazyDep {
+}
+LazyDep.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LazyDep, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+LazyDep.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: LazyDep, isStandalone: true, selector: "lazy-dep", ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: LazyDep, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'lazy-dep',
+                    standalone: true,
+                }]
+        }] });
+export class MyApp {
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      @defer {
+        I'm so independent!
+      }
+      @defer {
+        <lazy-dep/>
+      }
+    </div>
+  `, isInline: true, deferBlockDependencies: [null, () => [LazyDep]] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div>
+      @defer {
+        I'm so independent!
+      }
+      @defer {
+        <lazy-dep/>
+      }
+    </div>
+  `,
+                    standalone: true,
+                    imports: [LazyDep],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: deferred_without_deps_followed_by_one_with.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class LazyDep {
+    static ɵfac: i0.ɵɵFactoryDeclaration<LazyDep, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<LazyDep, "lazy-dep", never, {}, {}, never, never, true, never>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
@@ -325,7 +385,6 @@ export declare class LoadingDep {
  ****************************************************************************************************/
 import { Component } from '@angular/core';
 import { EagerDep } from './deferred_with_external_deps_eager';
-import { LazyDep } from './deferred_with_external_deps_lazy';
 import { LoadingDep } from './deferred_with_external_deps_loading';
 import * as i0 from "@angular/core";
 export class MyApp {
@@ -340,11 +399,11 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-
         <loading-dep/>
       }
     </div>
-  `, isInline: true, dependencies: [{ kind: "directive", type: EagerDep, selector: "eager-dep" }, { kind: "directive", type: LoadingDep, selector: "loading-dep" }] });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
-            type: Component,
-            args: [{
-                    template: `
+  `, isInline: true, dependencies: [{ kind: "directive", type: EagerDep, selector: "eager-dep" }, { kind: "directive", type: LoadingDep, selector: "loading-dep" }], deferBlockDependencies: [() => [import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)]] });
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, resolveDeferredDeps: () => [import("./deferred_with_external_deps_lazy").then(m => m.LazyDep)], resolveMetadata: LazyDep => ({ decorators: [{
+                type: Component,
+                args: [{
+                        template: `
     <div>
       <eager-dep/>
       @defer {
@@ -354,10 +413,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
       }
     </div>
   `,
-                    standalone: true,
-                    imports: [EagerDep, LazyDep, LoadingDep],
-                }]
-        }] });
+                        standalone: true,
+                        imports: [EagerDep, LazyDep, LoadingDep],
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
 
 /****************************************************************************************************
  * PARTIAL FILE: deferred_with_external_deps.d.ts
@@ -770,7 +829,6 @@ export declare class CmpA {
  * PARTIAL FILE: defer_deps.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
-import { CmpA } from './defer_deps_ext';
 import * as i0 from "@angular/core";
 export class LocalDep {
 }
@@ -792,21 +850,21 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.
 	<cmp-a />
 	<local-dep />
 	}
-`, isInline: true });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
-            type: Component,
-            args: [{
-                    selector: 'test-cmp',
-                    standalone: true,
-                    imports: [CmpA, LocalDep],
-                    template: `
+`, isInline: true, deferBlockDependencies: [() => [import("./defer_deps_ext").then(m => m.CmpA), LocalDep]] });
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, resolveDeferredDeps: () => [import("./defer_deps_ext").then(m => m.CmpA)], resolveMetadata: CmpA => ({ decorators: [{
+                type: Component,
+                args: [{
+                        selector: 'test-cmp',
+                        standalone: true,
+                        imports: [CmpA, LocalDep],
+                        template: `
 	@defer {
 	<cmp-a />
 	<local-dep />
 	}
 `,
-                }]
-        }] });
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
 
 /****************************************************************************************************
  * PARTIAL FILE: defer_deps.d.ts
@@ -849,7 +907,6 @@ export default class CmpA {
  * PARTIAL FILE: defer_default_deps.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';
-import CmpA from './defer_default_deps_ext';
 import * as i0 from "@angular/core";
 export class LocalDep {
 }
@@ -871,21 +928,21 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.
 	<cmp-a />
 	<local-dep />
 	}
-`, isInline: true });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
-            type: Component,
-            args: [{
-                    selector: 'test-cmp',
-                    standalone: true,
-                    imports: [CmpA, LocalDep],
-                    template: `
+`, isInline: true, deferBlockDependencies: [() => [import("./defer_default_deps_ext").then(m => m.default), LocalDep]] });
+i0.ɵɵngDeclareClassMetadataAsync({ minVersion: "18.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, resolveDeferredDeps: () => [import("./defer_default_deps_ext").then(m => m.default)], resolveMetadata: CmpA => ({ decorators: [{
+                type: Component,
+                args: [{
+                        selector: 'test-cmp',
+                        standalone: true,
+                        imports: [CmpA, LocalDep],
+                        template: `
 	@defer {
 	<cmp-a />
 	<local-dep />
 	}
 `,
-                }]
-        }] });
+                    }]
+            }], ctorParameters: null, propDecorators: null }) });
 
 /****************************************************************************************************
  * PARTIAL FILE: defer_default_deps.d.ts
@@ -942,7 +999,7 @@ SimpleComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", versio
 		} @error {
 			Failed to load dependencies :(
 		}
-	`, isInline: true });
+	`, isInline: true, deferBlockDependencies: [() => [MyLazyCmp]] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: SimpleComponent, decorators: [{
             type: Component,
             args: [{

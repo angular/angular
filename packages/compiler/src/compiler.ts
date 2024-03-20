@@ -68,7 +68,7 @@ export * from './render3/view/t2_api';
 export * from './render3/view/t2_binder';
 export {createCssSelectorFromNode} from './render3/view/util';
 export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
-export {R3ClassMetadata, CompileClassMetadataFn, compileClassMetadata, compileComponentClassMetadata} from './render3/r3_class_metadata_compiler';
+export {R3ClassMetadata, CompileClassMetadataFn, compileClassMetadata, compileComponentClassMetadata, compileOpaqueAsyncClassMetadata} from './render3/r3_class_metadata_compiler';
 export {compileClassDebugInfo, R3ClassDebugInfo} from './render3/r3_class_debug_info_compiler';
 export {compileFactoryFunction, R3DependencyMetadata, R3FactoryMetadata, FactoryTarget} from './render3/r3_factory';
 export {compileNgModule, R3NgModuleMetadata, R3SelectorScopeMode, R3NgModuleMetadataKind, R3NgModuleMetadataGlobal} from './render3/r3_module_compiler';
@@ -77,7 +77,7 @@ export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compile
 export {makeBindingParser, ParsedTemplate, parseTemplate, ParseTemplateOptions} from './render3/view/template';
 export {ForwardRefHandling, MaybeForwardRefExpression, R3CompiledExpression, R3Reference, createMayBeForwardRefExpression, devOnlyGuardedExpression, getSafePropertyAccessString} from './render3/util';
 export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings, encapsulateStyle, compileDeferResolverFunction} from './render3/view/compiler';
-export {compileDeclareClassMetadata} from './render3/partial/class_metadata';
+export {compileDeclareClassMetadata, compileComponentDeclareClassMetadata} from './render3/partial/class_metadata';
 export {compileDeclareComponentFromMetadata, DeclareComponentTemplateInfo} from './render3/partial/component';
 export {compileDeclareDirectiveFromMetadata} from './render3/partial/directive';
 export {compileDeclareFactoryFunction} from './render3/partial/factory';

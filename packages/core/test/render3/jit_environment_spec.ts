@@ -44,6 +44,7 @@ const AOT_ONLY = new Set<string>([
 const PARTIAL_ONLY = new Set<string>([
   'ɵɵngDeclareDirective',
   'ɵɵngDeclareClassMetadata',
+  'ɵɵngDeclareClassMetadataAsync',
   'ɵɵngDeclareComponent',
   'ɵɵngDeclareFactory',
   'ɵɵngDeclareInjectable',
