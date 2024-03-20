@@ -28,9 +28,13 @@ import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
 import {DownloadManager} from '../download-manager.service';
-import {IconComponent} from '@angular/docs';
+import {ClickOutside, IconComponent} from '@angular/docs';
 
-export const REQUIRED_FILES = new Set(['src/main.ts', 'src/index.html']);
+export const REQUIRED_FILES = new Set([
+  'src/main.ts',
+  'src/index.html',
+  'src/app/app.component.ts',
+]);
 
 @Component({
   selector: 'docs-tutorial-code-editor',
@@ -38,7 +42,7 @@ export const REQUIRED_FILES = new Set(['src/main.ts', 'src/index.html']);
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, NgFor, MatTabsModule, IconComponent],
+  imports: [NgIf, NgFor, MatTabsModule, IconComponent, ClickOutside],
 })
 export class CodeEditor implements AfterViewInit, OnDestroy {
   @ViewChild('codeEditorWrapper') private codeEditorWrapperRef!: ElementRef<HTMLDivElement>;
@@ -51,6 +55,16 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
     if (element) {
       element.nativeElement.focus();
       this.createFileInputRef = element;
+    }
+  }
+
+  private renameFileInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('renameFileInput') protected set setRenameFileInputRef(
+    element: ElementRef<HTMLInputElement>,
+  ) {
+    if (element) {
+      element.nativeElement.focus();
+      this.renameFileInputRef = element;
     }
   }
 
@@ -82,6 +96,7 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   readonly errors = signal<DiagnosticWithLocation[]>([]);
   readonly files = this.codeMirrorEditor.openFiles;
   readonly isCreatingFile = signal<boolean>(false);
+  readonly isRenamingFile = signal<boolean>(false);
 
   ngAfterViewInit() {
     this.codeMirrorEditor.init(this.codeEditorWrapperRef.nativeElement);
@@ -104,6 +119,12 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
     this.displayErrorsBox.set(false);
   }
 
+  closeRenameFile(): void {
+    this.isRenamingFile.set(false);
+  }
+
+  canRenameFile = (filename: string) => this.canDeleteFile(filename);
+
   canDeleteFile(filename: string) {
     return !REQUIRED_FILES.has(filename);
   }
@@ -116,6 +137,37 @@ export class CodeEditor implements AfterViewInit, OnDestroy {
   onAddButtonClick() {
     this.isCreatingFile.set(true);
     this.matTabGroup.selectedIndex = this.files().length;
+  }
+
+  onRenameButtonClick() {
+    this.isRenamingFile.set(true);
+  }
+
+  async renameFile(event: SubmitEvent, oldPath: string) {
+    if (!this.renameFileInputRef) return;
+
+    event.preventDefault();
+
+    const renameFileInputValue = this.renameFileInputRef.nativeElement.value;
+
+    if (renameFileInputValue) {
+      if (renameFileInputValue.includes('..')) {
+        alert('File name can not contain ".."');
+        return;
+      }
+
+      // src is hidden from users, here we manually add it to the new filename
+      const newFile = 'src/' + renameFileInputValue;
+
+      if (this.files().find(({filename}) => filename.includes(newFile))) {
+        alert('File name already exists');
+        return;
+      }
+
+      await this.codeMirrorEditor.renameFile(oldPath, newFile);
+    }
+
+    this.isRenamingFile.set(false);
   }
 
   async createFile(event: SubmitEvent) {

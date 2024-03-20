@@ -107,7 +107,7 @@ describe('CodeEditor', () => {
     const tabs = await matTabGroup.getTabs();
     const expectedLabels = files.map((file, index) => {
       const label = file.filename.replace('src/', '');
-      if (index === 0) return `${label} delete`;
+      if (index === 0) return `${label} editdelete`;
       return label;
     });
 
