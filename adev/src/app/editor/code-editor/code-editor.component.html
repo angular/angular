@@ -10,7 +10,29 @@
       @for (file of files(); track file) {
       <mat-tab #tab>
         <ng-template mat-tab-label>
+          @if (tab.isActive && isRenamingFile()) {
+            <form
+              (submit)="renameFile($event, file.filename)"
+              (docsClickOutside)="closeRenameFile()">
+              <input
+                name="rename-file"
+                class="adev-rename-file-input"
+                #renameFileInput
+                (keydown)="$event.stopPropagation()"
+              />
+            </form>
+          } @else {
           {{ file.filename.replace('src/', '') }}
+          }
+          @if (tab.isActive && canRenameFile(file.filename)) {
+            <button
+              class="docs-rename-file"
+              aria-label="rename file"
+              (click)="onRenameButtonClick()"
+            >
+              <docs-icon>edit</docs-icon>
+            </button>
+            }
           @if (tab.isActive && canDeleteFile(file.filename)) {
           <button
             class="docs-delete-file"

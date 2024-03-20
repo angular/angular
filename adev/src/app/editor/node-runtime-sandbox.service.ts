@@ -270,6 +270,16 @@ export class NodeRuntimeSandbox {
     }
   }
 
+  async renameFile(oldPath: string, newPath: string): Promise<void> {
+    const webContainer = await this.webContainerPromise!;
+
+    try {
+      await webContainer.fs.rename(oldPath, newPath);
+    } catch (err: any) {
+      throw err;
+    }
+  }
+
   async readFile(filePath: string): Promise<string> {
     const webContainer = await this.webContainerPromise!;
 
