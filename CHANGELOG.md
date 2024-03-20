@@ -1,3 +1,16 @@
+<a name="17.3.1"></a>
+# 17.3.1 (2024-03-20)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c0788200e2](https://github.com/angular/angular/commit/c0788200e26406bacb90ee0079ea9753eebd1b32) | fix | capture data bindings for content projection purposes in blocks ([#54876](https://github.com/angular/angular/pull/54876)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [99e9474aa2](https://github.com/angular/angular/commit/99e9474aa2ccccdf4385fbac6b62b1a4585ed4b4) | fix | symbol feature detection for the compiler ([#54711](https://github.com/angular/angular/pull/54711)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-next.0"></a>
 # 18.0.0-next.0 (2024-03-14)
 ## Breaking Changes
