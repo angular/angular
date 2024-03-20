@@ -79,7 +79,8 @@
 }
 
 .adev-add-file,
-.docs-delete-file {
+.docs-delete-file,
+.docs-rename-file {
   docs-icon {
     color: var(--gray-400);
     transition: color 0.3s ease;
@@ -92,7 +93,8 @@
   }
 }
 
-.docs-delete-file {
+.docs-delete-file,
+.docs-rename-file {
   padding-inline-start: 0.1rem;
   padding-inline-end: 0;
   margin-block-start: 0.2rem;
@@ -101,7 +103,8 @@
   }
 }
 
-.adev-new-file-input {
+.adev-new-file-input,
+.adev-rename-file-input {
   color: var(--primary-contrast);
   border: none;
   border-radius: 0;
