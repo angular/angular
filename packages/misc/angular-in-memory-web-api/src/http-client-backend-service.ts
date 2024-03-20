@@ -16,9 +16,17 @@ import {
   HttpResponse,
   HttpXhrBackend,
 } from '@angular/common/http';
-import {Inject, Injectable, Optional} from '@angular/core';
+import {
+  Inject,
+  Injectable,
+  Optional,
+  inject,
+  ɵPendingTasks as PendingTasks,
+  EnvironmentInjector,
+  runInInjectionContext,
+} from '@angular/core';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {finalize, map} from 'rxjs/operators';
 
 import {BackendService} from './backend-service';
 import {STATUS} from './http-status-codes';
@@ -58,6 +66,8 @@ import {
  */
 @Injectable()
 export class HttpClientBackendService extends BackendService implements HttpBackend {
+  private readonly pendingTasks = inject(PendingTasks);
+  private readonly injector = inject(EnvironmentInjector);
   constructor(
     inMemDbService: InMemoryDbService,
     @Inject(InMemoryBackendConfig) @Optional() config: InMemoryBackendConfigArgs,
@@ -67,8 +77,13 @@ export class HttpClientBackendService extends BackendService implements HttpBack
   }
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+    const pendingTask = this.pendingTasks.add();
     try {
-      return this.handleRequest(req);
+      return this.handleRequest(req).pipe(
+        finalize(() => {
+          this.pendingTasks.remove(pendingTask);
+        }),
+      );
     } catch (error) {
       const err = (error as Error).message || error;
       const resOptions = this.createErrorResponseOptions(
@@ -76,7 +91,11 @@ export class HttpClientBackendService extends BackendService implements HttpBack
         STATUS.INTERNAL_SERVER_ERROR,
         `${err}`,
       );
-      return this.createResponse$(() => resOptions);
+      return this.createResponse$(() => resOptions).pipe(
+        finalize(() => {
+          this.pendingTasks.remove(pendingTask);
+        }),
+      );
     }
   }
 
@@ -109,7 +128,7 @@ export class HttpClientBackendService extends BackendService implements HttpBack
 
   protected override createPassThruBackend() {
     try {
-      return new HttpXhrBackend(this.xhrFactory);
+      return runInInjectionContext(this.injector, () => new HttpXhrBackend(this.xhrFactory));
     } catch (ex: any) {
       ex.message = 'Cannot create passThru404 backend; ' + (ex.message || '');
       throw ex;

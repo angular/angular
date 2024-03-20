@@ -7,9 +7,14 @@
  */
 
 import {XhrFactory} from '@angular/common';
-import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  Injectable,
+  ɵRuntimeError as RuntimeError,
+  ɵPendingTasks as PendingTasks,
+  inject,
+} from '@angular/core';
 import {from, Observable, Observer, of} from 'rxjs';
-import {switchMap} from 'rxjs/operators';
+import {finalize, switchMap} from 'rxjs/operators';
 
 import {HttpBackend} from './backend';
 import {RuntimeErrorCode} from './errors';
@@ -52,6 +57,7 @@ function getResponseUrl(xhr: any): string | null {
  */
 @Injectable()
 export class HttpXhrBackend implements HttpBackend {
+  private readonly pendingTasks = inject(PendingTasks);
   constructor(private xhrFactory: XhrFactory) {}
 
   /**
@@ -80,6 +86,7 @@ export class HttpXhrBackend implements HttpBackend {
 
     return source.pipe(
       switchMap(() => {
+        const pendingTask = this.pendingTasks.add();
         // Everything happens on Observable subscription.
         return new Observable((observer: Observer<HttpEvent<any>>) => {
           // Start by setting up the XHR object with request method, URL, and withCredentials
@@ -347,7 +354,11 @@ export class HttpXhrBackend implements HttpBackend {
               xhr.abort();
             }
           };
-        });
+        }).pipe(
+          finalize(() => {
+            this.pendingTasks.remove(pendingTask);
+          }),
+        );
       }),
     );
   }

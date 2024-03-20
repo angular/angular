@@ -26,6 +26,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import {
+  ApplicationRef,
   createEnvironmentInjector,
   EnvironmentInjector,
   inject,
@@ -34,7 +35,7 @@ import {
   Provider,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {EMPTY, Observable} from 'rxjs';
+import {EMPTY, Observable, from} from 'rxjs';
 
 import {HttpInterceptorFn, resetFetchBackendWarningFlag} from '../src/interceptor';
 import {
@@ -74,6 +75,23 @@ describe('provideHttpClient', () => {
 
     TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
     TestBed.inject(HttpTestingController).expectOne('/test').flush('');
+  });
+
+  it('should not contribute to stability', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+
+    let stable = false;
+    TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+      stable = v;
+    });
+
+    expect(stable).toBe(true);
+    TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+    expect(stable).toBe(true);
+    TestBed.inject(HttpTestingController).expectOne('/test').flush('');
+    expect(stable).toBe(true);
   });
 
   it('should not use legacy interceptors by default', () => {

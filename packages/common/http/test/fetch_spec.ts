@@ -8,8 +8,8 @@
 
 import {HttpEvent, HttpEventType, HttpRequest, HttpResponse} from '@angular/common/http';
 import {TestBed} from '@angular/core/testing';
-import {Observable, of, Subject} from 'rxjs';
-import {catchError, retry, scan, skip, take, toArray} from 'rxjs/operators';
+import {firstValueFrom, Observable, of, Subject} from 'rxjs';
+import {catchError, filter, retry, scan, skip, take, toArray} from 'rxjs/operators';
 
 import {
   HttpDownloadProgressEvent,
@@ -19,6 +19,7 @@ import {
   HttpStatusCode,
 } from '../public_api';
 import {FetchBackend, FetchFactory} from '../src/fetch';
+import {ApplicationRef} from '@angular/core';
 
 function trackEvents(obs: Observable<any>): Promise<any[]> {
   return obs
@@ -66,6 +67,72 @@ describe('FetchBackend', async () => {
     fetchMock = TestBed.inject(FetchFactory) as MockFetchFactory;
     fetchSpy = spyOn(fetchMock, 'fetch').and.callThrough();
     backend = TestBed.inject(FetchBackend);
+  });
+
+  describe('stability', () => {
+    const post = TEST_POST.clone({
+      setHeaders: {
+        'Test': 'Test header',
+      },
+    });
+    function whenStable() {
+      return firstValueFrom(TestBed.inject(ApplicationRef).isStable.pipe(filter((s) => !!s)));
+    }
+
+    it('should contribute to stability until backend request completes', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(TEST_POST).subscribe();
+      expect(stable).toBe(false);
+      fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'some response');
+      await expectAsync(whenStable()).toBeResolved();
+    });
+
+    it('should contribute to stability on progress events', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(TEST_POST).subscribe();
+      expect(stable).toBe(false);
+      fetchMock.mockProgressEvent(4);
+      await new Promise<void>((resolve) => setTimeout(resolve));
+      expect(stable).toBe(false);
+      fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'some response');
+      await expectAsync(whenStable()).toBeResolved();
+    });
+
+    it('should contribute to stability until backend request errors', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(TEST_POST).subscribe({error: () => {}});
+      expect(stable).toBe(false);
+      fetchMock.mockErrorEvent(HttpStatusCode.Ok);
+      await expectAsync(whenStable()).toBeResolved();
+    });
+
+    it('should contribute to stability until backend request aborts', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(TEST_POST).subscribe({error: () => {}});
+      expect(stable).toBe(false);
+      fetchMock.mockAbortEvent();
+      await expectAsync(whenStable()).toBeResolved();
+    });
   });
 
   it('emits status immediately', () => {

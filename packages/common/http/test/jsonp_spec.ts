@@ -16,9 +16,12 @@ import {
 } from '@angular/common/http/src/jsonp';
 import {HttpRequest} from '@angular/common/http/src/request';
 import {HttpErrorResponse, HttpEventType} from '@angular/common/http/src/response';
-import {toArray} from 'rxjs/operators';
+import {filter, toArray} from 'rxjs/operators';
 
 import {MockDocument} from './jsonp_mock';
+import {TestBed} from '@angular/core/testing';
+import {firstValueFrom} from 'rxjs';
+import {ApplicationRef} from '@angular/core';
 
 describe('JsonpClientBackend', () => {
   const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
@@ -36,7 +39,40 @@ describe('JsonpClientBackend', () => {
   beforeEach(() => {
     home = {};
     document = new MockDocument();
-    backend = new JsonpClientBackend(home, document);
+    backend = TestBed.runInInjectionContext(() => new JsonpClientBackend(home, document));
+  });
+
+  describe('stability', () => {
+    function whenStable() {
+      return firstValueFrom(TestBed.inject(ApplicationRef).isStable.pipe(filter((s) => !!s)));
+    }
+
+    it('should contribute to stability until backend request completes', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(SAMPLE_REQ).subscribe();
+      expect(stable).toBe(false);
+      runOnlyCallback(home, {data: 'This is a test'});
+      document.mockLoad();
+      await expectAsync(whenStable()).toBeResolved();
+    });
+
+    it('should contribute to stability until backend request errors', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(SAMPLE_REQ).subscribe({error: () => {}});
+      expect(stable).toBe(false);
+      document.mockLoad();
+      await expectAsync(whenStable()).toBeResolved();
+    });
   });
 
   it('handles a basic request', (done) => {

@@ -13,8 +13,9 @@ import {
   inject,
   Injectable,
   runInInjectionContext,
+  ɵPendingTasks as PendingTasks,
 } from '@angular/core';
-import {Observable, Observer} from 'rxjs';
+import {finalize, Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpHandlerFn} from './interceptor';
@@ -92,6 +93,7 @@ export class JsonpClientBackend implements HttpBackend {
    * A resolved promise that can be used to schedule microtasks in the event handlers.
    */
   private readonly resolvedPromise = Promise.resolve();
+  private readonly pendingTasks = inject(PendingTasks);
 
   constructor(
     private callbackMap: JsonpCallbackContext,
@@ -127,6 +129,7 @@ export class JsonpClientBackend implements HttpBackend {
     }
 
     // Everything else happens inside the Observable boundary.
+    const pendingTask = this.pendingTasks.add();
     return new Observable<HttpEvent<any>>((observer: Observer<HttpEvent<any>>) => {
       // The first step to make a request is to generate the callback name, and replace the
       // callback placeholder in the URL with the name. Care has to be taken here to ensure
@@ -251,7 +254,11 @@ export class JsonpClientBackend implements HttpBackend {
         // And finally, clean up the page.
         cleanup();
       };
-    });
+    }).pipe(
+      finalize(() => {
+        this.pendingTasks.remove(pendingTask);
+      }),
+    );
   }
 
   private removeListeners(script: HTMLScriptElement): void {

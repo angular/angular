@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpRequest} from '@angular/common/http/src/request';
+import {HttpRequest, HttpClient} from '@angular/common/http';
 import {
   HttpDownloadProgressEvent,
   HttpErrorResponse,
@@ -19,10 +19,14 @@ import {
   HttpUploadProgressEvent,
 } from '@angular/common/http/src/response';
 import {HttpXhrBackend} from '@angular/common/http/src/xhr';
-import {Observable} from 'rxjs';
-import {toArray} from 'rxjs/operators';
+import {Observable, firstValueFrom} from 'rxjs';
+import {filter, toArray} from 'rxjs/operators';
 
 import {MockXhrFactory} from './xhr_mock';
+import {TestBed} from '@angular/core/testing';
+import {provideHttpClient} from '../src/provider';
+import {HttpBackend} from '../public_api';
+import {ApplicationRef} from '@angular/core';
 
 function trackEvents(obs: Observable<HttpEvent<any>>): HttpEvent<any>[] {
   const events: HttpEvent<any>[] = [];
@@ -53,8 +57,74 @@ describe('XhrBackend', () => {
   let backend: HttpXhrBackend = null!;
   beforeEach(() => {
     factory = new MockXhrFactory();
-    backend = new HttpXhrBackend(factory);
+    backend = TestBed.runInInjectionContext(() => new HttpXhrBackend(factory));
   });
+
+  describe('stability', () => {
+    function whenStable() {
+      return firstValueFrom(TestBed.inject(ApplicationRef).isStable.pipe(filter((s) => !!s)));
+    }
+
+    it('should contribute to stability until backend request completes', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(TEST_POST).subscribe();
+      expect(stable).toBe(false);
+      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'some response');
+      await expectAsync(whenStable()).toBeResolved();
+    });
+
+    it('should contribute to stability on progress events', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(TEST_POST).subscribe();
+      expect(stable).toBe(false);
+      factory.mock.mockDownloadProgressEvent(100, 300);
+      await new Promise<void>((resolve) => setTimeout(resolve));
+      expect(stable).toBe(false);
+      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'some response');
+      await expectAsync(whenStable()).toBeResolved();
+    });
+
+    it('should contribute to stability until backend request errors', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(TEST_POST).subscribe({error: () => {}});
+      expect(stable).toBe(false);
+      factory.mock.mockFlush(
+        HttpStatusCode.InternalServerError,
+        'Error',
+        JSON.stringify({data: 'some data'}),
+      );
+      await expectAsync(whenStable()).toBeResolved();
+    });
+
+    it('should contribute to stability until backend request aborts', async () => {
+      let stable = false;
+      TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+        stable = v;
+      });
+
+      expect(stable).toBe(true);
+      backend.handle(TEST_POST).subscribe({error: () => {}});
+      expect(stable).toBe(false);
+      factory.mock.mockAbortEvent();
+      await expectAsync(whenStable()).toBeResolved();
+    });
+  });
+
   it('emits status immediately', () => {
     const events = trackEvents(backend.handle(TEST_POST));
     expect(events.length).toBe(1);

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, Injectable, NgZone} from '@angular/core';
+import {inject, Injectable, NgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
+import {finalize} from 'rxjs/operators';
 
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
@@ -56,15 +57,21 @@ export class FetchBackend implements HttpBackend {
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? fetch.bind(globalThis);
   private readonly ngZone = inject(NgZone);
+  private readonly pendingTasks = inject(PendingTasks);
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
-    return new Observable((observer) => {
+    const pendingTask = this.pendingTasks.add();
+    return new Observable<HttpEvent<any>>((observer) => {
       const aborter = new AbortController();
       this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
         observer.error(new HttpErrorResponse({error})),
       );
       return () => aborter.abort();
-    });
+    }).pipe(
+      finalize(() => {
+        this.pendingTasks.remove(pendingTask);
+      }),
+    );
   }
 
   private async doRequest(
