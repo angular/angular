@@ -112,6 +112,6 @@ The `output()` function provides numerous benefits over decorator-based `@Output
 
 1. Simpler mental model and API:
   <br/>• No concept of error channel, completion channels, or other APIs from RxJS.
-  <br/>• Outputs are simple emitters in general. You can emit values using the `.emit` function.
-2. More correct types.
+  <br/>• Outputs are simple emitters. You can emit values using the `.emit` function.
+2. More accurate types.
   <br/>• `OutputEmitterRef.emit(value)` is now correctly typed, while `EventEmitter` has broken types and can cause runtime errors.
