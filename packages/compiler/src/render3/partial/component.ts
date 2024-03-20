@@ -12,7 +12,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util'
 import {RecursiveVisitor, visitAll} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {generateForwardRef, R3CompiledExpression} from '../util';
-import {DeclarationListEmitMode, R3ComponentMetadata, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from '../view/api';
+import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from '../view/api';
 import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
 import {DefinitionMap} from '../view/util';
@@ -115,6 +115,29 @@ export function createComponentDefinitionMap(
 
   if (template.preserveWhitespaces === true) {
     definitionMap.set('preserveWhitespaces', o.literal(true));
+  }
+
+  if (meta.defer.mode === DeferBlockDepsEmitMode.PerBlock) {
+    const resolvers: o.Expression[] = [];
+    let hasResolvers = false;
+
+    for (const deps of meta.defer.blocks.values()) {
+      // Note: we need to push a `null` even if there are no dependencies, because matching of
+      // defer resolver functions to defer blocks happens by index and not adding an array
+      // entry for a block can throw off the blocks coming after it.
+      if (deps === null) {
+        resolvers.push(o.literal(null));
+      } else {
+        resolvers.push(deps);
+        hasResolvers = true;
+      }
+    }
+    // If *all* the resolvers are null, we can skip the field.
+    if (hasResolvers) {
+      definitionMap.set('deferBlockDependencies', o.literalArr(resolvers));
+    }
+  } else {
+    throw new Error('Unsupported defer function emit mode in partial compilation');
   }
 
   return definitionMap;

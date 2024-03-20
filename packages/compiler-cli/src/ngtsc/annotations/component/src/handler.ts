@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationTriggerNames, BoundTarget, compileClassDebugInfo, compileComponentClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, compileDeferResolverFunction, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DeferBlockDepsEmitMode, DomElementSchemaRegistry, ExternalExpr, FactoryTarget, makeBindingParser, outputAst as o, R3ComponentDeferMetadata, R3ComponentMetadata, R3DeferPerComponentDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, ViewEncapsulation} from '@angular/compiler';
+import {AnimationTriggerNames, BoundTarget, compileClassDebugInfo, compileComponentClassMetadata, compileComponentDeclareClassMetadata, compileComponentFromMetadata, compileDeclareComponentFromMetadata, compileDeferResolverFunction, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DeferBlockDepsEmitMode, DomElementSchemaRegistry, ExternalExpr, FactoryTarget, makeBindingParser, outputAst as o, R3ComponentDeferMetadata, R3ComponentMetadata, R3DeferPerComponentDependency, R3DirectiveDependencyMetadata, R3NgModuleDependencyMetadata, R3PipeDependencyMetadata, R3TargetBinder, R3TemplateDependency, R3TemplateDependencyKind, R3TemplateDependencyMetadata, SchemaMetadata, SelectorMatcher, TmplAstDeferredBlock, ViewEncapsulation} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../../cycles';
@@ -1143,8 +1143,7 @@ export class ComponentDecoratorHandler implements
       return [];
     }
 
-    const deferrableTypes = this.collectDeferredSymbols(resolution);
-
+    const perComponentDeferredDeps = this.resolveAllDeferredDependencies(resolution);
     const meta: R3ComponentMetadata<R3TemplateDependency> = {
       ...analysis.meta,
       ...resolution,
@@ -1152,12 +1151,12 @@ export class ComponentDecoratorHandler implements
     };
     const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
 
-    removeDeferrableTypesFromComponentDecorator(analysis, deferrableTypes);
+    removeDeferrableTypesFromComponentDecorator(analysis, perComponentDeferredDeps);
 
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const classMetadata = analysis.classMetadata !== null ?
-        compileComponentClassMetadata(analysis.classMetadata, deferrableTypes).toStmt() :
+        compileComponentClassMetadata(analysis.classMetadata, perComponentDeferredDeps).toStmt() :
         null;
     const debugInfo = analysis.classDebugInfo !== null ?
         compileClassDebugInfo(analysis.classDebugInfo).toStmt() :
@@ -1182,6 +1181,7 @@ export class ComponentDecoratorHandler implements
           null,
     };
 
+    const perComponentDeferredDeps = this.resolveAllDeferredDependencies(resolution);
     const meta: R3ComponentMetadata<R3TemplateDependencyMetadata> = {
       ...analysis.meta,
       ...resolution,
@@ -1191,11 +1191,11 @@ export class ComponentDecoratorHandler implements
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
     const def = compileDeclareComponentFromMetadata(meta, analysis.template, templateInfo);
     const classMetadata = analysis.classMetadata !== null ?
-        compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
+        compileComponentDeclareClassMetadata(analysis.classMetadata, perComponentDeferredDeps)
+            .toStmt() :
         null;
-
-    return compileResults(
-        fac, def, classMetadata, 'ɵcmp', inputTransformFields, null /* deferrableImports */);
+    const deferrableImports = this.deferredSymbolTracker.getDeferrableImportDecls();
+    return compileResults(fac, def, classMetadata, 'ɵcmp', inputTransformFields, deferrableImports);
   }
 
   compileLocal(
@@ -1256,7 +1256,8 @@ export class ComponentDecoratorHandler implements
    * Computes a list of deferrable symbols based on dependencies from
    * the `@Component.imports` field and their usage in `@defer` blocks.
    */
-  private collectDeferredSymbols(resolution: Readonly<ComponentResolutionData>) {
+  private resolveAllDeferredDependencies(resolution: Readonly<ComponentResolutionData>):
+      R3DeferPerComponentDependency[] {
     const deferrableTypes: R3DeferPerComponentDependency[] = [];
     // Go over all dependencies of all defer blocks and update the value of
     // the `isDeferrable` flag and the `importPath` to reflect the current
@@ -1505,7 +1506,7 @@ export class ComponentDecoratorHandler implements
             'Internal error: deferPerComponentDependencies must be present in PerComponent mode');
       }
       return {
-        mode: DeferBlockDepsEmitMode.PerComponent,
+        mode,
         dependenciesFn: perComponentDeps.length === 0 ?
             null :
             compileDeferResolverFunction({mode, dependencies: perComponentDeps})

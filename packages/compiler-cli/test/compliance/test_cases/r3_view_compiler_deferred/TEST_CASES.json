@@ -4,7 +4,6 @@
     {
       "description": "should generate a basic deferred block",
       "inputFiles": ["basic_deferred.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -20,7 +19,6 @@
     {
       "description": "should generate a deferred block with secondary blocks",
       "inputFiles": ["deferred_secondary_blocks.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -36,7 +34,6 @@
     {
       "description": "should generate a deferred block with placeholder block parameters",
       "inputFiles": ["deferred_with_placeholder_params.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -52,7 +49,6 @@
     {
       "description": "should generate a deferred block with loading block parameters",
       "inputFiles": ["deferred_with_loading_params.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -68,13 +64,27 @@
     {
       "description": "should generate a deferred block with local dependencies",
       "inputFiles": ["deferred_with_local_deps.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
             {
               "expected": "deferred_with_local_deps_template.js",
               "generated": "deferred_with_local_deps.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a deferred block with no dependencies followed by one that has dependencies",
+      "inputFiles": ["deferred_without_deps_followed_by_one_with.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_without_deps_followed_by_one_with_template.js",
+              "generated": "deferred_without_deps_followed_by_one_with.js"
             }
           ],
           "failureMessage": "Incorrect template"
@@ -89,7 +99,6 @@
         "deferred_with_external_deps_lazy.ts",
         "deferred_with_external_deps_loading.ts"
       ],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -105,7 +114,6 @@
     {
       "description": "should generate a deferred block with triggers",
       "inputFiles": ["deferred_with_triggers.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -121,7 +129,6 @@
     {
       "description": "should generate a deferred block with prefetch triggers",
       "inputFiles": ["deferred_with_prefetch_triggers.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -137,7 +144,6 @@
     {
       "description": "should generate a deferred block with a `when` trigger that has a pipe",
       "inputFiles": ["deferred_when_with_pipe.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -153,7 +159,6 @@
     {
       "description": "should generate a deferred block with an interaction trigger in the same view",
       "inputFiles": ["deferred_interaction_same_view_trigger.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -169,7 +174,6 @@
     {
       "description": "should generate a deferred block with an interaction trigger in a parent view",
       "inputFiles": ["deferred_interaction_parent_view_trigger.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -185,7 +189,6 @@
     {
       "description": "should generate a deferred block with an interaction trigger inside the placeholder",
       "inputFiles": ["deferred_interaction_placeholder_trigger.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -201,7 +204,6 @@
     {
       "description": "should generate a deferred block with implicit trigger references",
       "inputFiles": ["deferred_with_implicit_triggers.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -217,7 +219,6 @@
     {
       "description": "should generate a deferred block with implicit trigger references",
       "inputFiles": ["defer_deps.ts", "defer_deps_ext.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -233,7 +234,6 @@
     {
       "description": "should generate a deferred block with default imports",
       "inputFiles": ["defer_default_deps.ts", "defer_default_deps_ext.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [
@@ -249,7 +249,6 @@
     {
       "description": "should generate a lazy deferred block with empty and placeholder",
       "inputFiles": ["lazy_with_blocks.ts"],
-      "compilationModeFilter": ["full compile"],
       "expectations": [
         {
           "files": [

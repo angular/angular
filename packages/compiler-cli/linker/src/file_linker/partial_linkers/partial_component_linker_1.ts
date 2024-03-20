@@ -178,7 +178,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
       declarationListEmitMode,
       styles: metaObj.has('styles') ? metaObj.getArray('styles').map(entry => entry.getString()) :
                                       [],
-      defer: this.createR3ComponentDeferMetadata(boundTarget),
+      defer: this.createR3ComponentDeferMetadata(metaObj, boundTarget),
       encapsulation: metaObj.has('encapsulation') ?
           parseEncapsulation(metaObj.getValue('encapsulation')) :
           ViewEncapsulation.Emulated,
@@ -257,13 +257,24 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     };
   }
 
-  private createR3ComponentDeferMetadata(boundTarget: BoundTarget<any>): R3ComponentDeferMetadata {
+  private createR3ComponentDeferMetadata(
+      metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
+      boundTarget: BoundTarget<any>): R3ComponentDeferMetadata {
     const deferredBlocks = boundTarget.getDeferBlocks();
     const blocks = new Map<TmplAstDeferredBlock, o.Expression|null>();
+    const dependencies =
+        metaObj.has('deferBlockDependencies') ? metaObj.getArray('deferBlockDependencies') : null;
 
-    for (const block of deferredBlocks) {
-      // TODO: leaving `deps` empty for now, to be implemented as one of the next steps.
-      blocks.set(block, null);
+    for (let i = 0; i < deferredBlocks.length; i++) {
+      const matchingDependencyFn = dependencies?.[i];
+
+      if (matchingDependencyFn == null) {
+        blocks.set(deferredBlocks[i], null);
+      } else {
+        blocks.set(
+            deferredBlocks[i],
+            matchingDependencyFn.isNull() ? null : matchingDependencyFn.getOpaque());
+      }
     }
 
     return {mode: DeferBlockDepsEmitMode.PerBlock, blocks};
