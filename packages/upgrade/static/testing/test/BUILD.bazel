@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+package(default_visibility = ["//visibility:public"])
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/upgrade/static/testing/index.mjs",
+    deps = ["//packages/upgrade/static/testing"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/upgrade/src/common",
+        "//packages/upgrade/src/common/test/helpers",
+        "//packages/upgrade/static",
+        "//packages/upgrade/static/testing",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    static_files = [
+        "//:angularjs_scripts",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

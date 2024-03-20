@@ -1,0 +1,51 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+
+package(default_visibility = ["//visibility:public"])
+
+js_library(
+    name = "authors-package",
+    srcs = glob(
+        ["**/*.js"],
+        exclude = [
+            "**/*/spec.js",
+            "watchr.mjs",
+        ],
+    ),
+    deps = [
+        "//aio/tools/transforms/angular-api-package",
+        "//aio/tools/transforms/angular-base-package",
+        "//aio/tools/transforms/angular-content-package",
+        "//aio/tools/transforms/angular-errors-package",
+        "//aio/tools/transforms/angular-extended-diagnostics-package",
+        "@aio_npm//dgeni",
+    ],
+)
+
+js_library(
+    name = "watchdocs",
+    srcs = [
+        "watchr.mjs",
+    ],
+    deps = [
+        ":authors-package",
+        "@aio_npm//watchr",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["**/*.spec.js"]),
+    env = {
+        "GIT_BIN": "$(GIT_BIN_PATH)",
+    },
+    shard_count = 8,
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
+    ],
+    deps = [
+        ":authors-package",
+        "//aio/tools/transforms",
+        "@aio_npm//canonical-path",
+    ],
+)

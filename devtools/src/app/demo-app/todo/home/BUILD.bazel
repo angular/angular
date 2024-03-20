@@ -1,0 +1,33 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sass_binary(
+    name = "home_styles",
+    src = "todo.component.scss",
+)
+
+ng_module(
+    name = "home",
+    srcs = [
+        "home.module.ts",
+        "sample.pipe.ts",
+        "todo.component.ts",
+        "todo.ts",
+        "todos.component.ts",
+        "todos.pipe.ts",
+        "todos.service.ts",
+        "tooltip.directive.ts",
+    ],
+    angular_assets = [
+        "todos.component.html",
+        "todo.component.html",
+        ":home_styles",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/router",
+    ],
+)

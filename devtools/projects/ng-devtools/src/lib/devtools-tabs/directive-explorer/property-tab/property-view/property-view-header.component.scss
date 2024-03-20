@@ -1,0 +1,39 @@
+mat-toolbar {
+  padding-left: 10px;
+  justify-content: space-between;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 25px;
+  font-size: 11px;
+  font-weight: 500;
+  height: auto;
+}
+
+.mat-icon-button {
+  font-size:16px;
+  line-height: 10px;
+}
+
+button {
+  padding: 0;
+  background: none;
+  border: none;
+  height: 24px;
+  width: 24px;
+  cursor: pointer;
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  &:active {
+    opacity: 1;
+  }
+}
+
+:host-context(.dark-theme) {
+  button {
+    color: #fff;
+  }
+}

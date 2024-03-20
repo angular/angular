@@ -1,0 +1,11 @@
+load("//integration:index.bzl", "ng_integration_test")
+
+ng_integration_test(
+    name = "test",
+    setup_chromium = True,
+    track_payload_paths = [
+        "/standalone/browser",
+        "/ngmodule/browser",
+    ],
+    track_payload_size = "platform-server",
+)

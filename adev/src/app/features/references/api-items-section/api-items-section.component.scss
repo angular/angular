@@ -1,0 +1,102 @@
+.adev-api-items-section-header {
+  display: flex;
+  gap: 0.75em;
+  align-items: center;
+
+  svg {
+    fill: var(--primary-contrast);
+  }
+
+  h3 {
+    flex: 1;
+    margin-top: 1.43rem;
+    font-size: 1.25rem;
+  }
+
+  .adev-link-icon {
+    color: var(--quinary-contrast);
+    cursor: pointer;
+    &:hover {
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-api-items-section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0;
+
+  @container api-ref-page (max-width: 798px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  @container api-ref-page (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    border-inline-start: 1px solid var(--senary-contrast);
+    padding: 0.3rem;
+    padding-inline-start: 0.75rem;
+    font-size: 0.875rem;
+
+    a {
+      color: var(--quaternary-contrast);
+      display: flex;
+      align-items: center;
+    }
+
+    .adev-item-title {
+      margin-block-start: 3px;
+    }
+
+    // star icon
+    .adev-api-items-section-item-featured {
+      opacity: 0;
+      border: none;
+      background-color: transparent;
+      color: var(--quinary-contrast);
+      cursor: pointer;
+      margin-top: -2px;
+      transition: color 0.3s ease;
+
+      &-active {
+        opacity: 1;
+        color: var(--quinary-contrast);
+      }
+    }
+
+    &:hover {
+      border-inline-start: 1px solid var(--quaternary-contrast);
+      background-color: var(--septenary-contrast);
+      a {
+        color: var(--primary-contrast);
+      }
+      .adev-api-items-section-item-featured-active {
+        color: var(--tertiary-contrast);
+      }
+    }
+  }
+}
+
+.adev-api-item-in-featured-section {
+  display: none;
+}
+
+.adev-api-items-section-item {
+  display: flex;
+  flex: 1;
+  gap: 1em;
+}
+
+.docs-deprecated {
+  font-family: var(--code-font);
+  background-color: var(--senary-contrast);
+  color: var(--tertiary-contrast);
+  width: max-content;
+  border-radius: 0.25rem;
+  padding: 0.001rem 0.2rem 0.005rem;
+  margin-inline-start: 0.5rem;
+}

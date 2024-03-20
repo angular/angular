@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "size-tracking/integration-payloads.json",
+])
+
+filegroup(
+    name = "public-api",
+    srcs = glob([
+        "public-api/**/*.md",
+    ]),
+)

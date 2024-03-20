@@ -1,0 +1,21 @@
+@startuml
+[*] --> notScheduled: initialize
+notScheduled --> scheduling: addEventListener
+
+scheduling: zoneSpec.onScheduleTask
+scheduling: zoneSpec.onHasTask
+
+scheduling --> scheduled
+scheduled --> running: event\n triggered
+running: zoneSpec:onInvokeTask
+
+scheduled --> canceling: removeEventListener
+canceling: zoneSpec.onCancelTask
+canceling --> notScheduled
+canceling: zoneSpec.onHasTask
+
+running --> scheduled: callback\n finished
+running: zoneSpec.onHasTask
+running --> canceling: removeEventListener
+
+@enduml

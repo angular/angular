@@ -1,0 +1,7 @@
+extends: existence
+message: "'%s' - There's a lexical illusion here."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+tokens:
+  - the\sthe
+  - am\sam
+  - has\shas

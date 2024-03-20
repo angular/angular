@@ -1,0 +1,8 @@
+# tests for TODO in HTML comments in the markdown
+extends: existence
+message: 'ToDo comments make the docs look unfinished. Consider removing them before you publish.'
+link: https://angular.io/guide/docs-style-guide#when-to-use-code-font
+level: suggestion
+scope: raw
+raw:
+  - '\<\!\-\-[\s]*[Tt][Oo][Dd][Oo][^>]*\-\-\>'

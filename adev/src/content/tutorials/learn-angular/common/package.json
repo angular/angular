@@ -1,0 +1,28 @@
+{
+  "name": "angular.dev",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "NG_BUILD_PARALLEL_TS=0 ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "^17.3.0-rc",
+    "@angular/compiler": "^17.3.0-rc",
+    "@angular/core": "^17.3.0-rc",
+    "@angular/forms": "^17.3.0-rc",
+    "@angular/platform-browser": "^17.3.0-rc",
+    "@angular/router": "^17.3.0-rc",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^17.3.0-rc",
+    "@angular/cli": "^17.3.0-rc",
+    "@angular/compiler-cli": "^17.3.0-rc",
+    "typescript": "~5.2.0"
+  }
+}

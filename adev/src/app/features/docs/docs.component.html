@@ -1,0 +1,7 @@
+@if (documentContent()) {
+  <docs-viewer
+    class="docs-viewer"
+    [docContent]="documentContent()!.contents"
+    [hasToc]="true"
+  />
+}

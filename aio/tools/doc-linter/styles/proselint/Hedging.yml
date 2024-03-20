@@ -1,0 +1,9 @@
+extends: existence
+message: "'%s' is hedging."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+level: error
+tokens:
+  - I would argue that
+  - ', so to speak'
+  - to a certain degree

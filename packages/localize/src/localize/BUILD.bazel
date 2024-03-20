@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "localize",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/localize/src/utils",
+        "@npm//@types/node",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+)

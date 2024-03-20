@@ -1,0 +1,30 @@
+@use 'sass:map';
+@use '../../constants';
+@use '@angular/material' as mat;
+
+@mixin theme($theme) {
+  $background: map.get($theme, background);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  .presskit-container {
+    .presskit-section {
+      &:not(:first-child) {
+        border-top: 1px solid constants.$lightgray;
+      }
+
+      .presskit-icon-group {
+        .presskit-icon-item {
+          .presskit-image-container {
+            .transparent-img {
+              background-color: constants.$white;
+
+              &-inverse {
+                background-color: if($is-dark-theme, mat.get-color-from-palette($background, background), constants.$deepgray);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

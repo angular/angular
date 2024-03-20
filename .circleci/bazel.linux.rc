@@ -1,0 +1,23 @@
+# These options are enabled when running on CI
+# We do this by copying this file to /etc/bazel.bazelrc at the start of the build.
+# See documentation in /docs/BAZEL.md
+
+# Import config items common to both Linux and Windows setups.
+# https://docs.bazel.build/versions/master/guide.html#bazelrc-syntax-and-semantics
+try-import %workspace%/.circleci/bazel.common.rc
+
+# Save downloaded repositories in a location that can be cached by CircleCI. This helps us
+# speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
+build --repository_cache=/home/circleci/bazel_repository_cache
+
+# Workaround https://github.com/bazelbuild/bazel/issues/3645
+# Bazel doesn't calculate the memory ceiling correctly when running under Docker.
+# Limit Bazel to consuming resources that fit in CircleCI "2xlarge+" class
+# https://circleci.com/docs/2.0/configuration-reference/#resource_class
+build --local_cpu_resources=20
+build --local_ram_resources=40960
+
+# All build executed remotely should be done using our RBE configuration.
+build:remote --google_default_credentials
+
+build --config=remote

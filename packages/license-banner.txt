@@ -1,0 +1,5 @@
+/**
+ * @license Angular v0.0.0-PLACEHOLDER
+ * (c) 2010-2022 Google LLC. https://angular.io/
+ * License: MIT
+ */

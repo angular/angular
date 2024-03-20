@@ -1,0 +1,16 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "devtools-app",
+    srcs = ["devtools-app.component.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
+        "//devtools/src:iframe_message_bus",
+        "//packages/common",
+        "//packages/core",
+        "//packages/router",
+    ],
+)

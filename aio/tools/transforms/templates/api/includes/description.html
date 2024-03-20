@@ -1,0 +1,10 @@
+{%- if doc.description %}
+<section class="description">
+  <h2>Description</h2>
+  {$ doc.description | trimBlankLines | marked | trim $}
+
+  {%- if doc.usageNotes %}
+  <p>Further information is available in the <a href="#usage-notes">Usage Notes...</a></p>
+  {%- endif %}
+</section>
+{%- endif -%}

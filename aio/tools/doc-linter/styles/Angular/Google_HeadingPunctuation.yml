@@ -1,0 +1,14 @@
+# adapted from Google style library
+extends: existence
+message: "You don't need to put a period at the end of a heading."
+link: 'https://developers.google.com/style/capitalization#capitalization-in-titles-and-headings'
+nonword: true
+level: error
+scope: heading
+action:
+  name: edit
+  params:
+    - remove
+    - '.'
+tokens:
+  - '[a-z0-9][.]\s*$'

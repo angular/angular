@@ -1,0 +1,8 @@
+<div>
+  <h3>Villains</h3>
+  <ul>
+    @for (villain of villains | async; track villain) {
+      <li>{{ villain.name }}</li>
+    }
+  </ul>
+</div>

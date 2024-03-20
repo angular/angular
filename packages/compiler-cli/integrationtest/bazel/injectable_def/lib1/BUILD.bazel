@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "lib1",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    module_name = "lib1_built",
+    deps = [
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)

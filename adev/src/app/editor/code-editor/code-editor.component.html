@@ -1,0 +1,69 @@
+<!-- Code Editor Tabs -->
+<div class="docs-code-editor-tabs">
+  <div class="adev-tabs-and-plus">
+    <mat-tab-group animationDuration="0ms" mat-stretch-tabs="false">
+      <!--
+        Hint: we would like to keep only one instance of #codeEditorWrapper,
+        that's why we're not placing this element as content of mat-tab, just to
+        not call another time init method from CodeMirrorEditor service.
+      -->
+      @for (file of files(); track file) {
+      <mat-tab #tab>
+        <ng-template mat-tab-label>
+          {{ file.filename.replace('src/', '') }}
+          @if (tab.isActive && canDeleteFile(file.filename)) {
+          <button
+            class="docs-delete-file"
+            aria-label="Delete file"
+            (click)="deleteFile(file.filename)"
+          >
+            <docs-icon>delete</docs-icon>
+          </button>
+          }
+        </ng-template>
+      </mat-tab>
+      } @if (isCreatingFile()) {
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <form (submit)="createFile($event)">
+            <input
+              name="new-file"
+              class="adev-new-file-input"
+              #createFileInput
+              (keydown)="$event.stopPropagation()"
+            />
+          </form>
+        </ng-template>
+      </mat-tab>
+      }
+    </mat-tab-group>
+
+    <button class="adev-add-file" (click)="onAddButtonClick()" aria-label="Add a new file">
+      <docs-icon>add</docs-icon>
+    </button>
+  </div>
+
+  <button
+    class="adev-editor-download-button"
+    type="button"
+    (click)="downloadCurrentCodeEditorState()"
+    aria-label="Download current code in editor"
+  >
+    <docs-icon>download</docs-icon>
+  </button>
+</div>
+<!-- Code Editor -->
+<div #codeEditorWrapper class="adev-code-editor-wrapper"></div>
+
+@if (displayErrorsBox()) {
+<div class="adev-inline-errors-box">
+  <button type="button" (click)="closeErrorsBox()">
+    <docs-icon class="docs-icon_high-contrast">close</docs-icon>
+  </button>
+  <ul>
+    @for (error of errors(); track error) {
+    <li>(line: {{ error.lineNumber }}:{{ error.characterPosition }}) {{ error.message }}</li>
+    }
+  </ul>
+</div>
+}

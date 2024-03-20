@@ -1,0 +1,83 @@
+@use '../../constants';
+@use '../../mixins';
+
+/* Button Styles */
+
+button {
+  font-family: inherit;
+}
+
+// This rule overrides some Angular Material styles defined for `.mat-button`
+// (hence we include `.mat-button` in the selector).
+a.button.mat-button,
+.button {
+  color: inherit;
+  display: inline-block;
+  @include mixins.line-height(32);
+  padding: 0px 16px;
+  @include mixins.font-size(14);
+  font-weight: 400;
+  border-radius: 3px;
+  text-decoration: none;
+  text-transform: uppercase;
+  overflow: hidden;
+  border: none;
+
+  // SIZES
+  &.button-small {
+    @include mixins.font-size(12);
+    @include mixins.line-height(24);
+    padding: 0px 8px;
+  }
+
+  &.button-large {
+    @include mixins.font-size(15);
+    @include mixins.line-height(48);
+    padding: 0px 24px;
+  }
+
+  &.button-x-large {
+    @include mixins.font-size(16);
+    @include mixins.line-height(56);
+    padding: 0px 24px;
+  }
+}
+
+.cta-bar {
+  text-align: center;
+
+  .button {
+    margin: 0px 8px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
+    transition: all .2s ease-in-out;
+    &:hover {
+        transform: scale(1.1);
+    }
+  }
+}
+
+
+.group-buttons {
+  margin: 16px auto 32px;
+
+  // This rule overrides some Angular Material styles defined for `.mat-button`
+  // (hence we include `.mat-button` in the selector).
+  button.button.mat-button.filter-button {
+    border-radius: 4px;
+    @include mixins.font-size(16);
+    @include mixins.line-height(48);
+    margin: 8px;
+    padding: 0px 16px;
+    width: 16.8rem;
+    min-width: max-content;
+
+    @media (max-width: 480px) {
+      @include mixins.font-size(14);
+      width: auto;
+    }
+  }
+}
+
+[mat-button], [mat-raised-button], [mat-button], [mat-raised-button] {
+  text-transform: uppercase;
+}

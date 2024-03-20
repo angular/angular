@@ -1,0 +1,4 @@
+exports_files([
+    "index.html",
+    "tsconfig-e2e.json",
+])

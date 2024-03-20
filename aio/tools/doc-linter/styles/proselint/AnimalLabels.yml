@@ -1,0 +1,47 @@
+extends: substitution
+message: Consider using '%s' instead of '%s'.
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+level: error
+swap:
+  (?:bull|ox)-like: taurine
+  (?:calf|veal)-like: vituline
+  (?:crow|raven)-like: corvine
+  (?:leopard|panther)-like: pardine
+  bird-like: avine
+  centipede-like: scolopendrine
+  crab-like: cancrine
+  crocodile-like: crocodiline
+  deer-like: damine
+  eagle-like: aquiline
+  earthworm-like: lumbricine
+  falcon-like: falconine
+  ferine: wild animal-like
+  fish-like: piscine
+  fox-like: vulpine
+  frog-like: ranine
+  goat-like: hircine
+  goose-like: anserine
+  gull-like: laridine
+  hare-like: leporine
+  hawk-like: accipitrine
+  hippopotamus-like: hippopotamine
+  lizard-like: lacertine
+  mongoose-like: viverrine
+  mouse-like: murine
+  ostrich-like: struthionine
+  peacock-like: pavonine
+  porcupine-like: hystricine
+  rattlesnake-like: crotaline
+  sable-like: zibeline
+  sheep-like: ovine
+  shrew-like: soricine
+  sparrow-like: passerine
+  swallow-like: hirundine
+  swine-like: suilline
+  tiger-like: tigrine
+  viper-like: viperine
+  vulture-like: vulturine
+  wasp-like: vespine
+  wolf-like: lupine
+  woodpecker-like: picine
+  zebra-like: zebrine

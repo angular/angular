@@ -1,0 +1,32 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+
+js_library(
+    name = "examples-package",
+    srcs = [":files"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//aio/tools/transforms/helpers",
+        "@aio_npm//dgeni",
+        "@aio_npm//dgeni-packages",
+        "@aio_npm//entities",
+    ],
+)
+
+filegroup(
+    name = "files",
+    srcs = glob(
+        ["**/*.js"],
+        exclude = ["**/*.spec.js"],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["**/*.spec.js"]),
+    deps = [
+        ":examples-package",
+        "//aio/tools/transforms/helpers",
+    ],
+)

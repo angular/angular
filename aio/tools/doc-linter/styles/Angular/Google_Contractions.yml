@@ -1,0 +1,27 @@
+# adapted from Google style library
+extends: substitution
+message: "You can use '%s' instead of '%s'."
+link: 'https://developers.google.com/style/contractions'
+level: suggestion
+ignorecase: true
+action:
+  name: replace
+swap:
+  are not: aren't
+  cannot: can't
+  could not: couldn't
+  did not: didn't
+  do not: don't
+  does not: doesn't
+  has not: hasn't
+  have not: haven't
+  how is: how's
+  is not: isn't
+  should not: shouldn't
+  that is: that's
+  was not: wasn't
+  we have: we've
+  what is: what's
+  when is: when's
+  where is: where's
+  will not: won't

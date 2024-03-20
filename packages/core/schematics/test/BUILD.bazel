@@ -1,0 +1,42 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/core/schematics/utils",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
+        "@npm//@types/shelljs",
+        "@npm//tslint",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        "//packages/core/schematics:collection.json",
+        "//packages/core/schematics:migrations.json",
+        "//packages/core/schematics/migrations/block-template-entities",
+        "//packages/core/schematics/migrations/block-template-entities:bundle",
+        "//packages/core/schematics/migrations/compiler-options",
+        "//packages/core/schematics/migrations/compiler-options:bundle",
+        "//packages/core/schematics/migrations/invalid-two-way-bindings",
+        "//packages/core/schematics/migrations/invalid-two-way-bindings:bundle",
+        "//packages/core/schematics/migrations/transfer-state",
+        "//packages/core/schematics/migrations/transfer-state:bundle",
+        "//packages/core/schematics/ng-generate/control-flow-migration",
+        "//packages/core/schematics/ng-generate/control-flow-migration:bundle",
+        "//packages/core/schematics/ng-generate/control-flow-migration:static_files",
+        "//packages/core/schematics/ng-generate/standalone-migration",
+        "//packages/core/schematics/ng-generate/standalone-migration:bundle",
+        "//packages/core/schematics/ng-generate/standalone-migration:static_files",
+    ],
+    templated_args = ["--nobazel_run_linker"],
+    deps = [
+        ":test_lib",
+        "@npm//shelljs",
+    ],
+)

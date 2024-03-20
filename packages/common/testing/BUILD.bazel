@@ -1,0 +1,33 @@
+load("//tools:defaults.bzl", "generate_api_docs", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_module(
+    name = "testing",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+)
+
+generate_api_docs(
+    name = "common_testing_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/common/testing",
+)

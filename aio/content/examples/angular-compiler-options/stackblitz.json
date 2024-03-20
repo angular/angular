@@ -1,0 +1,18 @@
+{
+  "description": "Angular Compiler Options",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*",
+    "!doc-files/**/*",
+    "!tsconfig.json",
+    "!tsconfig.app.json"
+  ],
+  "tags": [
+    [
+      "angular",
+      "compiler",
+      "options"
+    ]
+  ]
+}

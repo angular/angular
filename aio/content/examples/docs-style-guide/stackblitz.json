@@ -1,0 +1,9 @@
+{
+  "description": "Authors style guide",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2,3].*"
+  ],
+  "tags": ["author", "style guide"]
+}

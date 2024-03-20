@@ -1,0 +1,27 @@
+{% extends 'content.template.html' -%}
+
+{% block content %}
+<div class="content">
+{$ doc.description | marked $}
+</div>
+
+<h2>Command Overview</h2>
+<table class="is-full-width list-table property-table">
+  <thead>
+    <tr>
+      <th>Command</th>
+      <th>Alias</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for command in doc.commands %}
+  <tr>
+    <td><a class="code-anchor" href="{$ command.path $}"><code class="no-auto-link">{$ command.name $}</code></a></td>
+    <td>{% for alias in command.commandAliases %}<code class="no-auto-link">{$ alias $} </code>{% endfor %}</td>
+    <td>{$ command.shortDescription | marked $}</td>
+  </tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}

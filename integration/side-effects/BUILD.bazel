@@ -1,0 +1,10 @@
+load("//integration:index.bzl", "ng_integration_test")
+
+ng_integration_test(
+    name = "test",
+    # The `side-effects` test is currently disabled as it does not run the
+    # Angular linker plugin and therefore partial declarations are retained
+    # as side-effects. To make this test helpful again, we need to run the linker.
+    # TODO(devversion): replace this with a solution we maintain that runs the Babel linker plugin.
+    tags = ["manual"],
+)

@@ -1,0 +1,44 @@
+<div class="adev-reference-list-page">
+  <header>
+    <h6>Getting Started</h6>
+    <h1 tabindex="-1">API Reference</h1>
+  </header>
+  <form class="adev-reference-list-form">
+    <docs-text-field
+      name="query"
+      placeholder="Filter"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+    />
+
+    <div class="adev-reference-list-form-part-two">
+      <docs-slide-toggle
+        buttonId="includeDeprecated"
+        label="Show @deprecated"
+        name="includeDeprecated"
+        [ngModel]="includeDeprecated()"
+        (ngModelChange)="includeDeprecated.set($event)"
+      />
+    </div>
+    <ul class="adev-reference-list-legend">
+      @for (itemType of itemTypes; track itemType) {
+      <li
+        class="adev-reference-list-legend-item"
+        [class.adev-reference-list-legend-item-active]="type() === itemType"
+        (click)="filterByItemType(itemType)"
+      >
+        <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />
+        <span>{{ itemType | adevApiLabel : 'full' }}</span>
+      </li>
+      }
+    </ul>
+  </form>
+
+  @if (featuredGroup().items.length) {
+  <adev-api-items-section [group]="featuredGroup()" class="adev-featured-list" />
+  } @for (group of filteredGroups(); track group) {
+  <adev-api-items-section [group]="group" />
+  }
+
+  <span id="deprecated-description" class="docs-deprecated-description">Deprecated</span>
+</div>

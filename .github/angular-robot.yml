@@ -1,0 +1,131 @@
+# Configuration for angular-robot
+
+# options for the size plugin
+size:
+  disabled: true
+  maxSizeIncrease: 2000
+  circleCiStatusName: 'ci/circleci: test'
+
+# options for the merge plugin
+merge:
+  # the status will be added to your pull requests
+  status:
+    # set to true to disable
+    disabled: false
+    # the name of the status
+    context: 'ci/angular: merge status'
+    # text to show when all checks pass
+    successText: 'All checks passed!'
+    # text to show when some checks are failing
+    failureText: 'The following checks are failing:'
+
+  # the g3 status will be added to your pull requests if they include files that match the patterns
+  g3Status:
+    # set to true to disable
+    disabled: true
+    # the name of the status
+    context: 'google3'
+    # text to show when the status is pending, {{PRNumber}} will be replaced by the PR number
+    pendingDesc: 'Googler: run g3sync presubmit {{PRNumber}}'
+    # text to show when the status is success
+    successDesc: 'Does not affect google3'
+    # link to use for the details
+    url: 'http://go/angular/g3sync'
+    # list of patterns to check for the files changed by the PR
+    include:
+    exclude:
+
+  # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
+  mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.\nPlease help to unblock it by resolving these conflicts. Thanks!"
+
+  # label to monitor
+  mergeLabel: 'action: merge'
+
+  # adding any of these labels will also add the merge label
+  mergeLinkedLabels:
+    - 'action: merge-assistance'
+
+  # list of checks that will determine if the merge label can be added
+  checks:
+    # require that the PR has reviews from all requested reviewers
+    #
+    # This enables us to request reviews from both eng and tech writers, or multiple eng folks, and prevents accidental merges.
+    # Rather than merging PRs with pending reviews, if all approvals are obtained and additional reviews are not needed, any pending reviewers should be removed via GitHub UI (this also leaves an audit trail behind these decisions).
+    requireReviews: true,
+
+    # whether the PR shouldn't have a conflict with the base branch
+    noConflict: true
+    # list of labels that a PR needs to have, checked with a regexp.
+    requiredLabels:
+      - 'target: *'
+
+    # list of labels that a PR shouldn't have, checked after the required labels with a regexp
+    forbiddenLabels:
+      - 'target: TBD'
+      - 'action: cleanup'
+      - 'action: review'
+      - 'state: blocked'
+
+    # list of PR statuses that need to be successful
+    requiredStatuses:
+      - 'google-internal-tests'
+      - 'pullapprove'
+
+  # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
+  # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
+  # {{PLACEHOLDER}} will be replaced by the list of failing checks
+  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:\n{{PLACEHOLDER}}\n\n**If you want your PR to be merged, it has to pass all the CI checks.**\n\nIf you can't get the PR to a green state due to flakes or broken `main`, please try rebasing to `main` and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
+
+# options for the triage plugin
+triage:
+  # number of the milestone to apply when the issue has not been triaged yet
+  needsTriageMilestone: 83,
+  # number of the milestone to apply when the issue is triaged
+  defaultMilestone: 82,
+  # arrays of labels that determine if an issue has been triaged by the caretaker
+  l1TriageLabels:
+    - - 'area: *'
+  # arrays of labels that determine if an issue has been fully triaged
+  l2TriageLabels:
+    - - 'P0'
+      - 'area: *'
+    - - 'P1'
+      - 'area: *'
+    - - 'P2'
+      - 'area: *'
+    - - 'P3'
+      - 'area: *'
+    - - 'P4'
+      - 'area: *'
+    - - 'P5'
+      - 'area: *'
+    - - 'feature'
+      - 'area: *'
+    - - 'discussion'
+      - 'area: *'
+    - - 'needs clarification'
+      - 'area: *'
+    - - 'needs reproduction'
+      - 'area: *'
+
+# options for the triage PR plugin
+triagePR:
+  # set to true to disable
+  disabled: false
+  # number of the milestone to apply when the PR has not been triaged yet
+  needsTriageMilestone: 83,
+  # number of the milestone to apply when the PR is triaged
+  defaultMilestone: 82,
+  # arrays of labels that determine if a PR has been triaged by the caretaker
+  l1TriageLabels:
+    - - 'area: *'
+  # arrays of labels that determine if a PR has been fully triaged
+  l2TriageLabels:
+    - - 'area: *'
+
+# options for rerunning CI
+rerunCircleCI:
+  # set to true to disable
+  disabled: false
+  # the label which when added triggers a rerun of the default CircleCI workflow
+  triggerRerunLabel: 'action: rerun CI at HEAD'

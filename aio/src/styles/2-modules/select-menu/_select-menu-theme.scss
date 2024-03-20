@@ -1,0 +1,42 @@
+@use 'sass:map';
+@use '../../constants';
+@use '@angular/material' as mat;
+
+@mixin theme($theme) {
+  $background: map.get($theme, background);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  aio-select {
+    .form-select-button {
+      background: if($is-dark-theme, constants.$darkgray, constants.$white);
+      box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
+      border: 1px solid if($is-dark-theme, constants.$darkgray, constants.$white);
+      color: if($is-dark-theme, constants.$blue-grey-200, constants.$blue-grey-600);
+
+      &:focus {
+        border: 1px solid constants.$blue-400;
+        box-shadow: 0 2px 2px rgba(constants.$blue-400, 0.24), 0 0 2px rgba(constants.$blue-400, 0.12);
+      }
+
+      &.disabled {
+        color: lightgrey;
+      }
+    }
+
+    .form-select-dropdown {
+      background: mat.get-color-from-palette($background, background);
+      box-shadow: 0 16px 16px rgba(constants.$black, 0.24), 0 0 16px rgba(constants.$black, 0.12);
+
+      li {
+        &:hover, &.current {
+          background-color: if($is-dark-theme, constants.$darkgray, constants.$blue-grey-50);
+          color: f($is-dark-theme, constants.$blue-grey-400, constants.$blue-grey-500);
+        }
+
+        &.selected {
+          background-color: if($is-dark-theme, constants.$darkgray, constants.$blue-grey-100);
+        }
+      }
+    }
+  }
+}

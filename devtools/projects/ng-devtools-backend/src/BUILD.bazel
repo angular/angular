@@ -1,0 +1,12 @@
+load("//devtools/tools:typescript.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "src",
+    srcs = ["public-api.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools-backend/src/lib",
+        "//devtools/projects/ng-devtools-backend/src/lib:component_tree",
+    ],
+)

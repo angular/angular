@@ -1,0 +1,52 @@
+@use 'sass:map';
+@use '../constants';
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  body {
+    color: if($is-dark-theme, constants.$offwhite, constants.$darkgray);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: if($is-dark-theme, constants.$offwhite, constants.$deepgray);
+  }
+
+  h2 {
+    border-top: 1px solid if($is-dark-theme, constants.$mediumgray, constants.$lightgray);
+  }
+
+  h6 {
+    color: if($is-dark-theme, constants.$offwhite, constants.$mediumgray);
+  }
+
+  p,
+  ol,
+  ul,
+  li,
+  input,
+  a {
+    color: if($is-dark-theme, constants.$white, constants.$darkgray);
+  }
+
+  .app-toolbar a {
+    color: constants.$white;
+  }
+
+  code {
+    color: if($is-dark-theme, constants.$white, constants.$darkgray);
+  }
+
+  .sidenav-content a {
+    color: if($is-dark-theme, constants.$lightblue, constants.$blue);
+  }
+
+  .error-text {
+    color: constants.$brightred;
+  }
+}

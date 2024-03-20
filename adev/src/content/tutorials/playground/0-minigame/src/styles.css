@@ -1,0 +1,28 @@
+/* You can add global styles to this file, and also import other style files */
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+:root {
+  --bright-blue: oklch(51.01% 0.274 263.83);
+  --indigo-blue: oklch(51.64% 0.229 281.65);
+  --electric-violet: oklch(53.18% 0.28 296.97);
+  --french-violet: oklch(47.66% 0.246 305.88);
+  --vivid-pink: oklch(69.02% 0.277 332.77);
+  --hot-pink: oklch(59.91% 0.239 8.14);
+  --hot-red: oklch(61.42% 0.238 15.34);
+  --orange-red: oklch(63.32% 0.24 31.68);
+  --light-pink: color-mix(in srgb, var(--vivid-pink) 10%, white 80%);
+}

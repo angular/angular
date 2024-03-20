@@ -1,0 +1,17 @@
+# Inclusive language tested by Angular CI/CD
+# tests for strings that must be replaced before the content is published
+extends: substitution
+message: "Use '%s' instead of '%s'."
+link: 'https://developers.google.com/style/word-list'
+level: error
+ignorecase: true
+action:
+  name: replace
+swap:
+  master: primary|main|leader|active|writer
+  slave: secondary|node|worker|replica|passive
+  'white[\s_-]*list': include list|allow list
+  'black[\s_-]*list': exclude list|deny list
+  grandfathered: legacied|exempted
+  'sanity[\s_-]*check': confidence check
+  'man[\s_-]*hours': person-hours|human-hours

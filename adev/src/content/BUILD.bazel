@@ -1,0 +1,10 @@
+load("@npm//@angular/docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "content",
+    srcs = [
+        "error.md",
+    ],
+    data = [],
+    visibility = ["//adev:__subpackages__"],
+)

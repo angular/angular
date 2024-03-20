@@ -1,0 +1,55 @@
+name: Monitoring
+
+on:
+  schedule:
+    # Run at 10:00AM every day.
+    - cron: '0 10 * * *'
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check_aio:
+    runs-on: ubuntu-latest
+    env:
+      MINIMUM_PWA_SCORE: 95
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['https://next.angular.io/', 'https://angular.io/']
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@5774b71c01a55c4c998f858ee37d3b77ae704c31
+        with:
+          cache-node-modules: true
+          node-module-directories: |
+            ./aio/node_modules
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@5774b71c01a55c4c998f858ee37d3b77ae704c31
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@5774b71c01a55c4c998f858ee37d3b77ae704c31
+      - name: Install node modules in aio
+        run: yarn install --frozen-lockfile --cwd aio
+      - name: Run basic e2e and deployment config tests.
+        run: yarn --cwd aio test-production-url --test_env=TARGET_URL="${{ matrix.version }}"
+      - name: Run PWA-score tests.
+        run: yarn --cwd aio test-pwa-score "${{ matrix.version }}" "${{ env.MINIMUM_PWA_SCORE }}"
+      - name: Run a11y tests.
+        run: yarn --cwd aio test-a11y-score "${{ matrix.version }}"
+
+  check_contributor_links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@5774b71c01a55c4c998f858ee37d3b77ae704c31
+        with:
+          cache-node-modules: true
+          node-module-directories: |
+            ./aio/node_modules
+      - name: Install node modules in aio
+        run: yarn install --frozen-lockfile --cwd aio
+      - name: Check website provided in contributors.json file
+        run: node aio/scripts/test-external-urls.js

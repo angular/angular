@@ -1,0 +1,16 @@
+extends: existence
+message: "Consider replacing '%s'."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+level: error
+ignorecase: true
+tokens:
+  - shit
+  - piss
+  - fuck
+  - cunt
+  - cocksucker
+  - motherfucker
+  - tits
+  - fart
+  - turd
+  - twat

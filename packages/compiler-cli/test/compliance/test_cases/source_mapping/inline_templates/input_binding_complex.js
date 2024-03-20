@@ -1,0 +1,3 @@
+i0.ɵɵelement(0, "div", 0) // SOURCE: "/input_binding_complex.ts" "<div "
+…
+i0.ɵɵproperty("title", ctx.greeting + ctx.name) // SOURCE: "/input_binding_complex.ts" "[title]=\"greeting + name\""

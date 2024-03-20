@@ -1,0 +1,11 @@
+// import directories
+@use './0-base' as base;
+@use './1-layouts' as layouts;
+@use './2-modules' as modules;
+
+// import print styles
+@use './print';
+
+@use '@angular/material' as mat;
+
+@include mat.core();

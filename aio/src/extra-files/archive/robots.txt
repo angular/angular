@@ -1,0 +1,3 @@
+# Disallow all URLs (see https://www.robotstxt.org/robotstxt.html)
+User-agent: *
+Disallow: /

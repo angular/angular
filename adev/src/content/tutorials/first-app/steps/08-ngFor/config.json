@@ -1,0 +1,6 @@
+{
+  "title": "Use *ngFor in templates",
+  "type": "editor",
+  "answerSrc": "../09-services/src",
+  "openFiles": ["src/app/home/home.component.ts"]
+}

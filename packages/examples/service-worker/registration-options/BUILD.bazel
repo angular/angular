@@ -1,0 +1,64 @@
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "sw_registration_options_examples",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/service-worker",
+        "//packages/zone.js/lib",
+    ],
+)
+
+ts_library(
+    name = "sw_registration_options_e2e_tests_lib",
+    testonly = True,
+    srcs = glob(["**/e2e_test/*_spec.ts"]),
+    tsconfig = "//packages/examples:tsconfig-e2e.json",
+    deps = [
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
+        "@npm//@types/jasminewd2",
+        "@npm//protractor",
+    ],
+)
+
+esbuild(
+    name = "app_bundle",
+    entry_point = ":main.ts",
+    deps = [":sw_registration_options_examples"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = [
+        "ngsw-worker.js",
+        "//packages/examples:index.html",
+    ],
+    additional_root_paths = ["angular/packages/examples"],
+    deps = [":app_bundle"],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    on_prepare = "start-server.js",
+    server = ":devserver",
+    deps = [
+        ":sw_registration_options_e2e_tests_lib",
+        "@npm//selenium-webdriver",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)

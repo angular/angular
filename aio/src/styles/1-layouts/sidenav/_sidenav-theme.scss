@@ -1,0 +1,43 @@
+@use 'sass:map';
+@use '../../constants';
+@use '@angular/material' as mat;
+
+@mixin theme($theme) {
+  $background: map.get($theme, background);
+  $is-dark-theme: map.get($theme, is-dark);
+
+  mat-sidenav-container.sidenav-container {
+    background-color: if($is-dark-theme, mat.get-color-from-palette($background, background), constants.$white);
+
+    mat-sidenav.sidenav {
+      background-color: if($is-dark-theme, constants.$deepgray, constants.$superlightgray);
+      border-right: 1px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+
+      .doc-version {
+        border-top: 1px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+      }
+    }
+  }
+
+  aio-nav-menu {
+    aio-nav-item {
+      .vertical-menu-item {
+        color: if($is-dark-theme, constants.$offwhite, constants.$darkgray);
+
+        &:hover {
+          background-color: if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+          color: if($is-dark-theme, constants.$powderblue, constants.$blue);
+          text-shadow: 0 0 5px if($is-dark-theme, constants.$black, constants.$white);
+
+          &.selected {
+            color: if($is-dark-theme, constants.$powderblue, constants.$darkblue);
+          }
+        }
+
+        &.selected {
+          color: if($is-dark-theme, constants.$lightblue, constants.$darkblue);
+        }
+      }
+    }
+  }
+}

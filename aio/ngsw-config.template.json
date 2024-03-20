@@ -1,0 +1,81 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app-shell",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/index.html",
+          "/pwa-manifest.json",
+          "/assets/images/favicons/favicon.ico",
+          "/assets/js/*.js",
+          "/*.css",
+          "/*.js"
+        ],
+        "urls": [
+          "https://fonts.googleapis.com/**",
+          "https://fonts.gstatic.com/s/**"
+        ]
+      }
+    },
+    {
+      "name": "assets-eager",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/images/**",
+          "/generated/images/marketing/**",
+          "!/assets/images/favicons/**",
+          "!/**/_unused/**"
+        ]
+      }
+    },
+    {
+      "name": "assets-lazy",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/images/favicons/**",
+          "!/**/_unused/**"
+        ]
+      }
+    },
+    {
+      "name": "docs-index",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/generated/*.json",
+          "/generated/docs/*.json",
+          "/generated/docs/api/api-list.json",
+          "/generated/docs/app/search-data.json"
+        ]
+      }
+    },
+    {
+      "name": "docs-lazy",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": [
+          "/generated/docs/**/*.json",
+          "/generated/images/**",
+          "!/**/_unused/**"
+        ]
+      }
+    }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**",
+    "!/**/stackblitz/{0,1}"
+  ]
+}

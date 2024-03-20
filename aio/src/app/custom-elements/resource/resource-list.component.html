@@ -1,0 +1,21 @@
+<div class="center-layout">
+  <div class="flex-center group-buttons">
+    <button *ngFor="let category of categories"
+      class="button mat-button filter-button"
+      [class.selected]="category.id == selectedCategory.id"
+      (click)="selectCategory(category.id)">{{category.title}}</button>
+  </div>
+  <div class="showcase">
+    <div *ngFor="let subCategory of selectedCategory?.subCategories">
+      <h2 class="subcategory-title" id="{{subCategory.id}}">{{subCategory.title}}</h2>
+      <div *ngFor="let resource of subCategory.resources">
+        <div class="resource-item">
+          <a class="resource-row-link" rel="noopener" target="_blank" [href]="resource.url">
+            <h3 class="resource-name">{{resource.title}}</h3>
+            <p class="resource-description">{{resource.desc || 'No Description'}}</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

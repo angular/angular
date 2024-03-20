@@ -1,0 +1,18 @@
+@use 'sass:map';
+@use '../../constants';
+@use '@angular/material' as mat;
+
+@mixin theme($theme) {
+  $is-dark-theme: map.get($theme, is-dark);
+
+  aio-contributor {
+    .contributor-card {
+      background: if($is-dark-theme, constants.$deepgray, constants.$offwhite);
+      box-shadow: 0px 1px 6px 1px constants.$mediumgray;
+    }
+
+    .contributor-image-wrapper {
+      background-color: if($is-dark-theme, constants.$lightgray, constants.$deepgray);
+    }
+  }
+}

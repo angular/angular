@@ -1,0 +1,23 @@
+@use '../app-theme';
+@use '@angular/material' as mat;
+
+$ng-io-primary: mat.define-palette(mat.$blue-palette, 700, 600, 800);
+$ng-io-accent: mat.define-palette(mat.$red-palette, 700, 600, 800);
+$ng-io-warn: mat.define-palette(mat.$red-palette);
+$ng-io-theme: mat.define-light-theme((
+  color: (
+    primary: $ng-io-primary,
+    accent: $ng-io-accent,
+    warn: $ng-io-warn
+  ),
+));
+
+@include mat.progress-bar-theme($ng-io-theme);
+@include mat.sidenav-theme($ng-io-theme);
+@include mat.button-theme($ng-io-theme);
+@include mat.icon-theme($ng-io-theme);
+@include mat.toolbar-theme($ng-io-theme);
+@include mat.card-theme($ng-io-theme);
+@include mat.tabs-theme($ng-io-theme);
+@include mat.snack-bar-theme($ng-io-theme);
+@include app-theme.theme($ng-io-theme);

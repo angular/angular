@@ -1,0 +1,66 @@
+<html>
+
+<head>
+  <link href="../third_party/github.com/google/material-design-icons/material-icons.css" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    
+    .header-text {
+      margin: 0px;
+      text-align: center;
+      padding-bottom: 8px;
+    }
+    
+    .modal-content {
+      min-width: 300px;
+      padding: 10px;
+    }
+    
+    .icon {
+      width: 20px;
+      margin-right: 16px;
+    }
+    
+    .message {
+      display: flex;
+      align-items: center;
+      padding: 5px;
+    }
+    
+    code {
+      font-size: 1em;
+      font-family: monospace;
+    }
+    
+    p:not(:last-child) {
+      margin-bottom: 10px;
+    }
+    
+    .material-icons {
+      color: rgb(107, 107, 107);
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="modal-content">
+    <h4 class="header-text">Angular DevTools</h4>
+    <div class="message">
+      <span class="material-icons md-48">settings</span>
+      <section>
+        <p>
+          Angular application running in <a href="https://angular.io/api/core/enableProdMode">production
+            mode</a>.
+        </p>
+        <p>We recommend using DevTools with apps in dev mode, running
+          <code>ng serve</code>.</p>
+      </section>
+    </div>
+  </div>
+</body>
+
+</html>

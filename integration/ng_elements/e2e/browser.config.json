@@ -1,0 +1,15 @@
+{
+  "open": false,
+  "logLevel": "silent",
+  "port": 4205,
+  "server": {
+    "baseDir": "src",
+    "routes": {
+      "/dist": "dist",
+      "/node_modules": "node_modules"
+    },
+    "middleware": {
+      "0": null
+    }
+  }
+}

@@ -1,0 +1,121 @@
+:host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.hidden {
+  display: none;
+}
+
+ng-injector-tree.hidden {
+  display: block;
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+}
+
+.tab-content {
+  position: relative;
+  height: calc(100% - 31px);
+}
+
+#nav-buttons {
+  display: flex;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+
+    &:active {
+      opacity: 1
+    }
+  }
+}
+
+:host-context(.dark-theme) {
+  #nav-buttons {
+    button {
+      color: #fff;
+    }
+  }
+}
+
+.inspector-active {
+  color: #1a73e8 !important;
+}
+
+#app-angular-version {
+  align-self: center;
+  margin-left: auto;
+  margin-right: 8px;
+  font-size: 0.8em;
+  font-weight: bold;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+#version-number {
+  color: #1b1aa5;
+  cursor: text;
+  -moz-user-select: text;
+  -khtml-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+mat-icon {
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mat-mdc-tab-link {
+  min-width: unset;
+  line-height: 30px;
+  height: 30px;
+  font-size: 13px;
+  padding: 0px 10px;
+  opacity: 1;
+  font-weight: 400;
+}
+
+:host-context(.dark-theme) {
+  #version-number {
+    color: #5caace;
+  }
+
+  .inspector-active {
+    color: #4688f1 !important;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  #app-angular-version {
+    max-width: 135px;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  #app-angular-version {
+    display: none;
+  }
+}
+
+.mat-mdc-tab-header {
+  --mdc-secondary-navigation-tab-container-height: 30px;
+}
+
+.mat-mdc-menu-item.mdc-list-item {
+  ::ng-deep {
+    label {
+      cursor: pointer;
+    }
+  }
+}

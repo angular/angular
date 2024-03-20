@@ -1,0 +1,101 @@
+.adev-reference-list-page {
+  padding: var(--layout-padding);
+  max-width: var(--page-width);
+
+  container: api-ref-page / inline-size;
+
+  header {
+    margin-block-end: 2.75rem;
+
+    // small page label: "Getting Started"
+    h6 {
+      color: var(--quaternary-contrast);
+      font-weight: 500;
+      font-size: 0.875rem;
+      margin: 0;
+    }
+
+    p {
+      max-width: 78ch;
+      color: var(--secondary-contrast);
+    }
+  }
+}
+
+.adev-reference-list-legend {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  padding-block-end: 0.5rem;
+  margin-block-start: 0;
+  padding-inline: 0;
+  cursor: pointer;
+  width: 100%;
+
+  @container api-ref-page (max-width: 775px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  @container api-ref-page (max-width: 600px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @container api-ref-page (max-width: 500px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @container api-ref-page (max-width: 350px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  li {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.3rem;
+    font-size: 0.875rem;
+    color: var(--quaternary-contrast);
+    font-weight: 500;
+    text-transform: capitalize;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    margin-inline-end: 0.5rem;
+    margin-block-end: 0.5rem;
+    transition: color 0.3s ease, background 0.3s ease, border 0.3s ease;
+
+    &:hover {
+      color: var(--primary-contrast);
+      border: 1px solid var(--senary-contrast);
+    }
+
+    &.adev-reference-list-legend-item-active {
+      background: var(--septenary-contrast);
+      border: 1px solid var(--quinary-contrast);
+      color: var(--primary-contrast);
+    }
+  }
+}
+
+.adev-reference-list-form {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap-reverse;
+  gap: 1.5rem;
+  padding-block-start: 0;
+  padding-block-end: 2rem;
+}
+
+.adev-reference-list-form-part-two {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.adev-featured-list {
+  display: block;
+  padding-block-end: 2rem;
+  padding-block-start: 1.5rem;
+  margin-block: 1rem;
+  border-block: 1px solid var(--senary-contrast);
+}
+
+
+.docs-deprecated-description {
+  display: none;
+}
