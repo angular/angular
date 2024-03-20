@@ -65,28 +65,31 @@ export class ImportManager implements
   }> = new Map();
 
   private nextUniqueIndex = 0;
-  private config: ImportManagerConfig = {
-    shouldUseSingleQuotes: () => false,
-    rewriter: null,
-    disableOriginalSourceFileReuse: false,
-    forceGenerateNamespacesForNewImports: false,
-    namespaceImportPrefix: 'i',
-    generateUniqueIdentifier: this._config.generateUniqueIdentifier ??
-        createGenerateUniqueIdentifierHelper(),
-    ...this._config,
-  };
+  private config: ImportManagerConfig;
 
-  private reuseSourceFileImportsTracker: ReuseExistingSourceFileImportsTracker = {
-    generateUniqueIdentifier: this.config.generateUniqueIdentifier,
-    reusedAliasDeclarations: new Set(),
-    updatedImports: new Map(),
-  };
+  private reuseSourceFileImportsTracker: ReuseExistingSourceFileImportsTracker;
   private reuseGeneratedImportsTracker: ReuseGeneratedImportsTracker = {
     directReuseCache: new Map(),
     namespaceImportReuseCache: new Map(),
   };
 
-  constructor(private _config: Partial<ImportManagerConfig> = {}) {}
+  constructor(private _config: Partial<ImportManagerConfig> = {}) {
+    this.config = {
+      shouldUseSingleQuotes: () => false,
+      rewriter: null,
+      disableOriginalSourceFileReuse: false,
+      forceGenerateNamespacesForNewImports: false,
+      namespaceImportPrefix: 'i',
+      generateUniqueIdentifier:
+          this._config.generateUniqueIdentifier ?? createGenerateUniqueIdentifierHelper(),
+      ...this._config,
+    };
+    this.reuseSourceFileImportsTracker = {
+      generateUniqueIdentifier: this.config.generateUniqueIdentifier,
+      reusedAliasDeclarations: new Set(),
+      updatedImports: new Map(),
+    };
+  }
 
   /** Adds a side-effect import for the given module. */
   addSideEffectImport(requestedFile: ts.SourceFile, moduleSpecifier: string) {
