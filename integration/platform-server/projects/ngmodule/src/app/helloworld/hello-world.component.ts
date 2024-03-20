@@ -13,11 +13,13 @@ import {Component} from '@angular/core';
   template: `
     <div>Hello {{ name }}!</div>
   `,
-  styles: [`
+  styles: [
+    `
     div {
       font-weight: bold;
     }
-  `]
+  `,
+  ],
 })
 export class HelloWorldComponent {
   name: string = 'world';
