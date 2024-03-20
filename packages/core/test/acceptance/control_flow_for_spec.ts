@@ -235,6 +235,26 @@ describe('control flow - for', () => {
          fixture.detectChanges();
          expect([...calls].sort()).toEqual(['a:hello', 'b:hello']);
        });
+
+    it('should invoke method tracking function with the correct context', () => {
+      let context = null as TestComponent | null;
+
+      @Component({
+        template: `@for (item of items; track trackingFn($index, item)) {{{item}}}`,
+      })
+      class TestComponent {
+        items = ['a', 'b'];
+
+        trackingFn(_index: number, item: string) {
+          context = this;
+          return item;
+        }
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(context).toBe(fixture.componentInstance);
+    });
   });
 
   describe('list diffing and view operations', () => {
