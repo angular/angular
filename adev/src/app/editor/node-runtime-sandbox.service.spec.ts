@@ -177,6 +177,20 @@ describe('NodeRuntimeSandbox', () => {
     expect(writeFileSpy).toHaveBeenCalledOnceWith(path, content);
   });
 
+  it('should call renameFile with proper parameters', async () => {
+    setValuesToInitializeProject();
+
+    const fakeWebContainer = new FakeWebContainer();
+    service['webContainerPromise'] = Promise.resolve(fakeWebContainer);
+    const renameFileSpy = spyOn(fakeWebContainer.fs, 'rename');
+
+    const oldPath = 'oldPath';
+    const newPath = 'newPath';
+
+    await service.renameFile(oldPath, newPath);
+    expect(renameFileSpy).toHaveBeenCalledOnceWith(oldPath, newPath);
+  });
+
   it('should initialize the Angular CLI based on the tutorial config', async () => {
     setValuesToInitializeAngularCLI();
 
