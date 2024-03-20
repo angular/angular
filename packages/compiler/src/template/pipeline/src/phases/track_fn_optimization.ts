@@ -31,6 +31,10 @@ export function optimizeTrackFns(job: CompilationJob): void {
         // Top-level access of the item uses the built in `repeaterTrackByIdentity`.
         op.trackByFn = o.importExpr(Identifiers.repeaterTrackByIdentity);
       } else if (isTrackByFunctionCall(job.root.xref, op.track)) {
+        // Mark the function as using the component instance to play it safe
+        // since the method might be using `this` internally (see #53628).
+        op.usesComponentInstance = true;
+
         // Top-level method calls in the form of `fn($index, item)` can be passed in directly.
         if (op.track.receiver.receiver.view === unit.xref) {
           // TODO: this may be wrong
