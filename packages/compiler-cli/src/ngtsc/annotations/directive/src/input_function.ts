@@ -12,7 +12,7 @@ import {ImportedSymbolsTracker} from '../../../imports';
 import {InputMapping} from '../../../metadata';
 import {ClassMember, ReflectionHost} from '../../../reflection';
 
-import {tryParseInitializerApiMember} from './initializer_functions';
+import {tryParseInitializerApi} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
 
 /**
@@ -22,8 +22,12 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
 export function tryParseSignalInputMapping(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): InputMapping|null {
-  const signalInput = tryParseInitializerApiMember(
-      [{functionName: 'input', owningModule: '@angular/core'}], member, reflector, importTracker);
+  const signalInput = member.value === null ?
+      null :
+      tryParseInitializerApi(
+          [{functionName: 'input', owningModule: '@angular/core'}], member.value, reflector,
+          importTracker);
+
   if (signalInput === null) {
     return null;
   }
