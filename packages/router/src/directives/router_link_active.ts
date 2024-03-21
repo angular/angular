@@ -210,28 +210,30 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
   private update(): void {
     if (!this.links || !this.router.navigated) return;
+
     queueMicrotask(() => {
       const hasActiveLinks = this.hasActiveLinks();
+      this.classes.forEach((c) => {
+        if (hasActiveLinks) {
+          this.renderer.addClass(this.element.nativeElement, c);
+        } else {
+          this.renderer.removeClass(this.element.nativeElement, c);
+        }
+      });
+      if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
+        this.renderer.setAttribute(
+          this.element.nativeElement,
+          'aria-current',
+          this.ariaCurrentWhenActive.toString(),
+        );
+      } else {
+        this.renderer.removeAttribute(this.element.nativeElement, 'aria-current');
+      }
+
+      // Only emit change if the active state changed.
       if (this._isActive !== hasActiveLinks) {
         this._isActive = hasActiveLinks;
         this.cdr.markForCheck();
-        this.classes.forEach((c) => {
-          if (hasActiveLinks) {
-            this.renderer.addClass(this.element.nativeElement, c);
-          } else {
-            this.renderer.removeClass(this.element.nativeElement, c);
-          }
-        });
-        if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
-          this.renderer.setAttribute(
-            this.element.nativeElement,
-            'aria-current',
-            this.ariaCurrentWhenActive.toString(),
-          );
-        } else {
-          this.renderer.removeAttribute(this.element.nativeElement, 'aria-current');
-        }
-
         // Emit on isActiveChange after classes are updated
         this.isActiveChange.emit(hasActiveLinks);
       }
