@@ -8,11 +8,14 @@
 
 import ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {absoluteFrom} from '../../../file_system';
 import {runInEachFileSystem} from '../../../file_system/testing';
 import {ImportedSymbolsTracker} from '../../../imports';
-import {ClassMember, TypeScriptReflectionHost} from '../../../reflection';
+import {ClassMember, ClassMemberAccessLevel, TypeScriptReflectionHost} from '../../../reflection';
+import {reflectClassMember} from '../../../reflection/src/typescript';
 import {makeProgram} from '../../../testing';
+import {validateAccessOfInitializerApiMember} from '../src/initializer_function_access';
 import {InitializerApiFunction, tryParseInitializerApi} from '../src/initializer_functions';
 
 
@@ -20,6 +23,7 @@ runInEachFileSystem(() => {
   const modelApi: InitializerApiFunction = {
     functionName: 'model',
     owningModule: '@angular/core',
+    allowedAccessLevels: [ClassMemberAccessLevel.PublicWritable],
   };
 
   describe('initializer function detection', () => {
@@ -54,7 +58,11 @@ runInEachFileSystem(() => {
 
       const result = tryParseInitializerApi(
           [
-            {functionName: 'input', owningModule: '@angular/core'},
+            {
+              functionName: 'input',
+              owningModule: '@angular/core',
+              allowedAccessLevels: [ClassMemberAccessLevel.PublicWritable],
+            },
             modelApi,
           ],
           member.value!, reflector, importTracker);
@@ -80,7 +88,11 @@ runInEachFileSystem(() => {
       const result = tryParseInitializerApi(
           [
             modelApi,
-            {functionName: 'outputFromObservable', owningModule: '@angular/core/rxjs-interop'},
+            {
+              functionName: 'outputFromObservable',
+              owningModule: '@angular/core/rxjs-interop',
+              allowedAccessLevels: [ClassMemberAccessLevel.PublicWritable],
+            },
           ],
           member.value!, reflector, importTracker);
 
@@ -88,6 +100,7 @@ runInEachFileSystem(() => {
         api: {
           functionName: 'outputFromObservable',
           owningModule: '@angular/core/rxjs-interop',
+          allowedAccessLevels: [ClassMemberAccessLevel.PublicWritable],
         },
         isRequired: false,
         call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
@@ -286,40 +299,142 @@ runInEachFileSystem(() => {
          call: jasmine.objectContaining({kind: ts.SyntaxKind.CallExpression}),
        });
      });
+
+  describe('`validateAccessOfInitializerApiMember`', () => {
+    it('should report errors if a private field is used, but not allowed', () => {
+      const {member, reflector, importTracker} = setup(`
+        import {Directive, model} from '@angular/core';
+
+        @Directive()
+        class Dir {
+          private test = model(1);
+        }
+      `);
+
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
+
+      expect(result).not.toBeNull();
+      expect(() => validateAccessOfInitializerApiMember(result!, member))
+          .toThrowMatching(
+              err => err instanceof FatalDiagnosticError &&
+                  err.code === ErrorCode.INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY);
+    });
+
+    it('should report errors if a protected field is used, but not allowed', () => {
+      const {member, reflector, importTracker} = setup(`
+        import {Directive, model} from '@angular/core';
+
+        @Directive()
+        class Dir {
+          protected test = model(1);
+        }
+      `);
+
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
+
+      expect(result).not.toBeNull();
+      expect(() => validateAccessOfInitializerApiMember(result!, member))
+          .toThrowMatching(
+              err => err instanceof FatalDiagnosticError &&
+                  err.code === ErrorCode.INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY);
+    });
+
+    it('should report errors if an ECMAScript private field is used, but not allowed', () => {
+      const {member, reflector, importTracker} = setup(`
+        import {Directive, model} from '@angular/core';
+
+        @Directive()
+        class Dir {
+          #test = model(1);
+        }
+      `);
+
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
+
+      expect(result).not.toBeNull();
+      expect(() => validateAccessOfInitializerApiMember(result!, member))
+          .toThrowMatching(
+              err => err instanceof FatalDiagnosticError &&
+                  err.code === ErrorCode.INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY);
+    });
+
+    it('should report errors if a readonly public field is used, but not allowed', () => {
+      const {member, reflector, importTracker} = setup(`
+        import {Directive, model} from '@angular/core';
+
+        @Directive()
+        class Dir {
+          // test model initializer API definition doesn't even allow readonly!
+          readonly test = model(1);
+        }
+      `);
+
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
+
+      expect(result).not.toBeNull();
+      expect(() => validateAccessOfInitializerApiMember(result!, member))
+          .toThrowMatching(
+              err => err instanceof FatalDiagnosticError &&
+                  err.code === ErrorCode.INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY);
+    });
+
+    it('should allow private field if API explicitly allows it', () => {
+      const {member, reflector, importTracker} = setup(`
+        import {Directive, model} from '@angular/core';
+
+        @Directive()
+        class Dir {
+          // test model initializer API definition doesn't even allow readonly!
+          private test = model(1);
+        }
+      `);
+
+      const result = tryParseInitializerApi(
+          [{...modelApi, allowedAccessLevels: [ClassMemberAccessLevel.Private]}], member.value!,
+          reflector, importTracker);
+
+      expect(result?.api).toEqual(jasmine.objectContaining<InitializerApiFunction>({
+        functionName: 'model'
+      }));
+      expect(() => validateAccessOfInitializerApiMember(result!, member)).not.toThrow();
+    });
+  });
 });
 
 
 function setup(contents: string) {
   const fileName = absoluteFrom('/test.ts');
-  const {program} = makeProgram([
-    {
-      name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
-      contents: `
+  const {program} = makeProgram(
+      [
+        {
+          name: absoluteFrom('/node_modules/@angular/core/index.d.ts'),
+          contents: `
         export const Directive: any;
         export const input: any;
         export const model: any;
       `,
-    },
-    {
-      name: absoluteFrom('/node_modules/@angular/core/rxjs-interop/index.d.ts'),
-      contents: `
+        },
+        {
+          name: absoluteFrom('/node_modules/@angular/core/rxjs-interop/index.d.ts'),
+          contents: `
         export const outputFromObservable: any;
       `,
-    },
-    {
-      name: absoluteFrom('/node_modules/@unknown/utils/index.d.ts'),
-      contents: `
+        },
+        {
+          name: absoluteFrom('/node_modules/@unknown/utils/index.d.ts'),
+          contents: `
         export declare function toString(value: any): string;
       `,
-    },
-    {
-      name: absoluteFrom('/node_modules/@not-angular/core/index.d.ts'),
-      contents: `
+        },
+        {
+          name: absoluteFrom('/node_modules/@not-angular/core/index.d.ts'),
+          contents: `
         export const model: any;
       `,
-    },
-    {name: fileName, contents}
-  ]);
+        },
+        {name: fileName, contents}
+      ],
+      {target: ts.ScriptTarget.ESNext});
   const sourceFile = program.getSourceFile(fileName);
   const importTracker = new ImportedSymbolsTracker();
   const reflector = new TypeScriptReflectionHost(program.getTypeChecker());
@@ -328,11 +443,13 @@ function setup(contents: string) {
     throw new Error(`Cannot resolve test file ${fileName}`);
   }
 
-  let member: Pick<ClassMember, 'value'>|null = null;
+  let member: Pick<ClassMember, 'value'|'accessLevel'>|null = null;
 
   (function walk(node: ts.Node) {
-    if (ts.isPropertyDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === 'test') {
-      member = {value: node.initializer ?? null};
+    if (ts.isPropertyDeclaration(node) &&
+        (ts.isIdentifier(node.name) && node.name.text === 'test' ||
+         ts.isPrivateIdentifier(node.name) && node.name.text === '#test')) {
+      member = reflectClassMember(node);
     } else {
       ts.forEachChild(node, walk);
     }
