@@ -2420,5 +2420,34 @@ describe('FormGroup', () => {
     });
     expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
   });
+
+  describe('impact of `onlySelf` flag on form group methods', () => {
+    let nestedGroup: FormGroup;
+    let parentGroup: FormGroup;
+
+    beforeEach(() => {
+      nestedGroup = new FormGroup({one: new FormControl('new!', Validators.required)});
+      parentGroup = new FormGroup(
+          {otherControl: new FormControl('Hello', Validators.required), nested: nestedGroup});
+    });
+
+    it('set a control', () => {
+      nestedGroup.setControl('one', new FormControl('', Validators.required), {onlySelf: true});
+
+      expect(parentGroup.valid).toBe(true);
+    });
+
+    it('remove a control', () => {
+      nestedGroup.addControl('two', new FormControl('', Validators.required));
+
+      expect(nestedGroup.valid).toBe(false);
+      expect(parentGroup.valid).toBe(false);
+
+      nestedGroup.removeControl('two', {emitEvent: false, onlySelf: true});
+
+      expect(nestedGroup.valid).toBe(true);
+      expect(parentGroup.valid).toBe(false);
+    });
+  });
 });
 })();

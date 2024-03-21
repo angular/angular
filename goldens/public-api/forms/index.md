@@ -237,6 +237,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     getRawValue(): ɵFormArrayRawValue<TControl>;
     insert(index: number, control: TControl, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     get length(): number;
     patchValue(value: ɵFormArrayValue<TControl>, options?: {
@@ -245,9 +246,11 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     }): void;
     push(control: TControl, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     removeAt(index: number, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     reset(value?: ɵTypedOrUntyped<TControl, ɵFormArrayValue<TControl>, any>, options?: {
         onlySelf?: boolean;
@@ -255,6 +258,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     }): void;
     setControl(index: number, control: TControl, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     setValue(value: ɵFormArrayRawValue<TControl>, options?: {
         onlySelf?: boolean;
@@ -440,10 +444,12 @@ export class FormGroup<TControl extends {
         [key: string]: AbstractControl<any>;
     }>, name: string, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     // (undocumented)
     removeControl<S extends string>(name: ɵOptionalKeys<TControl> & S, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     reset(value?: ɵTypedOrUntyped<TControl, ɵFormGroupValue<TControl>, any>, options?: {
         onlySelf?: boolean;
@@ -451,12 +457,14 @@ export class FormGroup<TControl extends {
     }): void;
     setControl<K extends string & keyof TControl>(name: K, control: TControl[K], options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     // (undocumented)
     setControl(this: FormGroup<{
         [key: string]: AbstractControl<any>;
     }>, name: string, control: AbstractControl, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     setValue(value: ɵFormGroupRawValue<TControl>, options?: {
         onlySelf?: boolean;
@@ -531,6 +539,7 @@ export interface FormRecord<TControl> {
     registerControl(name: string, control: TControl): TControl;
     removeControl(name: string, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     reset(value?: {
         [key: string]: ɵValue<TControl>;
@@ -540,6 +549,7 @@ export interface FormRecord<TControl> {
     }): void;
     setControl(name: string, control: TControl, options?: {
         emitEvent?: boolean;
+        onlySelf?: boolean;
     }): void;
     setValue(value: {
         [key: string]: ɵValue<TControl>;

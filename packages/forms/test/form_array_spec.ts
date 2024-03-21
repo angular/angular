@@ -1540,6 +1540,55 @@ describe('FormArray', () => {
           }
         });
       });
+
+      describe('impact of `onlySelf` flag on form array methods', () => {
+        let nestedArray: FormArray;
+        let parentGroup: FormGroup;
+
+        beforeEach(() => {
+          nestedArray = new FormArray([new FormControl('1', Validators.required)]);
+          parentGroup = new FormGroup({
+            'nested': nestedArray,
+            'otherControl': new FormControl('parent', Validators.required)
+          });
+        });
+
+        it('insert a control', () => {
+          const newControl = new FormControl('', Validators.required);
+          nestedArray.insert(0, newControl, {emitEvent: false, onlySelf: true});
+
+          expect(nestedArray.valid).toBe(false);
+          expect(parentGroup.valid).toBe(true);
+        });
+
+        it('remove a control', () => {
+          nestedArray.push(new FormControl('', Validators.required), {emitEvent: false});
+
+          expect(nestedArray.valid).toBe(false);
+          expect(parentGroup.valid).toBe(false);
+
+          nestedArray.removeAt(1, {emitEvent: false, onlySelf: true});
+
+          expect(nestedArray.valid).toBe(true);
+          expect(parentGroup.valid).toBe(false);
+        });
+
+        it('set a control', () => {
+          nestedArray.setControl(
+              0, new FormControl('', Validators.required), {emitEvent: false, onlySelf: true});
+
+          expect(nestedArray.valid).toBe(false);
+          expect(parentGroup.valid).toBe(true);
+        });
+
+        it('push a control', () => {
+          nestedArray.push(
+              new FormControl('', Validators.required), {emitEvent: false, onlySelf: true});
+
+          expect(nestedArray.valid).toBe(false);
+          expect(parentGroup.valid).toBe(true);
+        });
+      });
     });
   });
 });
