@@ -1287,6 +1287,9 @@
     "name": "siblingAfter"
   },
   {
+    "name": "sortAndConcatParams"
+  },
+  {
     "name": "storeLViewOnDestroy"
   },
   {
