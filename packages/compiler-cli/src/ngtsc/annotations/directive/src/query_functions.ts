@@ -15,7 +15,7 @@ import {ImportedSymbolsTracker} from '../../../imports';
 import {ClassMember, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {tryUnwrapForwardRef} from '../../common';
 
-import {InitializerApiFunction, tryParseInitializerApiMember} from './initializer_functions';
+import {tryParseInitializerApi} from './initializer_functions';
 
 /** Possible query initializer API functions. */
 export type QueryFunctionName = 'viewChild'|'contentChild'|'viewChildren'|'contentChildren';
@@ -41,7 +41,9 @@ export function tryParseSignalQueryFromInitializer(
     {name: QueryFunctionName, metadata: R3QueryMetadata, call: ts.CallExpression}|null {
   const initializerFns = queryFunctionNames.map(
       fnName => ({functionName: fnName, owningModule: '@angular/core' as const}));
-  const query = tryParseInitializerApiMember(initializerFns, member, reflector, importTracker);
+  const query = member.value === null ?
+      null :
+      tryParseInitializerApi(initializerFns, member.value, reflector, importTracker);
   if (query === null) {
     return null;
   }
