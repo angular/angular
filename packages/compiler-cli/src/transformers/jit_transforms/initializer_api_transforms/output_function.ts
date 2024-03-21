@@ -30,20 +30,21 @@ export const initializerApiOutputTransform: PropertyTransform = (
     isCore,
     ) => {
   // If the field already is decorated, we handle this gracefully and skip it.
-  if (host.getDecoratorsOfDeclaration(member)?.some(d => isAngularDecorator(d, 'Output', isCore))) {
-    return member;
+  if (host.getDecoratorsOfDeclaration(member.node)
+          ?.some(d => isAngularDecorator(d, 'Output', isCore))) {
+    return member.node;
   }
 
   const output = tryParseInitializerBasedOutput(
-      {name: member.name.text, value: member.initializer ?? null},
+      member,
       host,
       importTracker,
   );
   if (output === null) {
-    return member;
+    return member.node;
   }
 
-  const sourceFile = member.getSourceFile();
+  const sourceFile = member.node.getSourceFile();
   const newDecorator = factory.createDecorator(
       factory.createCallExpression(
           createSyntheticAngularCoreDecoratorAccess(
@@ -52,11 +53,11 @@ export const initializerApiOutputTransform: PropertyTransform = (
   );
 
   return factory.updatePropertyDeclaration(
-      member,
-      [newDecorator, ...(member.modifiers ?? [])],
-      member.name,
-      member.questionToken,
-      member.type,
-      member.initializer,
+      member.node,
+      [newDecorator, ...(member.node.modifiers ?? [])],
+      member.node.name,
+      member.node.questionToken,
+      member.node.type,
+      member.node.initializer,
   );
 };
