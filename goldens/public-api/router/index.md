@@ -750,6 +750,7 @@ export const ROUTER_INITIALIZER: InjectionToken<(compRef: ComponentRef<any>) => 
 // @public
 export interface RouterConfigOptions {
     canceledNavigationResolution?: 'replace' | 'computed';
+    enableTransientRouteProviders?: boolean;
     onSameUrlNavigation?: OnSameUrlNavigation;
     paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     resolveNavigationPromiseOnError?: boolean;

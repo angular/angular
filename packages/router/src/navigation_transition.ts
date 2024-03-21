@@ -342,6 +342,8 @@ export class NavigationTransitions {
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly paramsInheritanceStrategy =
     this.options.paramsInheritanceStrategy || 'emptyOnly';
+  private readonly transientRouteProvidersEnabled =
+    this.options.enableTransientRouteProviders === true;
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
 
@@ -739,6 +741,7 @@ export class NavigationTransitions {
             router.routeReuseStrategy,
             (evt: Event) => this.events.next(evt),
             this.inputBindingEnabled,
+            this.transientRouteProvidersEnabled,
           ),
 
           // Ensure that if some observable used to drive the transition doesn't

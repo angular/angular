@@ -24,6 +24,7 @@ export const activateRoutes = (
   routeReuseStrategy: RouteReuseStrategy,
   forwardEvent: (evt: Event) => void,
   inputBindingEnabled: boolean,
+  transientRouteProvidersEnabled: boolean,
 ): MonoTypeOperatorFunction<NavigationTransition> =>
   map((t) => {
     new ActivateRoutes(
@@ -32,6 +33,7 @@ export const activateRoutes = (
       t.currentRouterState,
       forwardEvent,
       inputBindingEnabled,
+      transientRouteProvidersEnabled,
     ).activate(rootContexts);
     return t;
   });
@@ -43,6 +45,7 @@ export class ActivateRoutes {
     private currState: RouterState,
     private forwardEvent: (evt: Event) => void,
     private inputBindingEnabled: boolean,
+    private transientRouteProvidersEnabled: boolean,
   ) {}
 
   activate(parentContexts: ChildrenOutletContexts): void {
@@ -113,6 +116,11 @@ export class ActivateRoutes {
       this.detachAndStoreRouteSubtree(route, parentContexts);
     } else {
       this.deactivateRouteAndOutlet(route, parentContexts);
+    }
+
+    if (this.transientRouteProvidersEnabled && route.value.routeConfig?._injector) {
+      route.value.routeConfig._injector.destroy();
+      delete route.value.routeConfig._injector;
     }
   }
 

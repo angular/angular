@@ -1702,6 +1702,54 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       }),
     ));
 
+    it('should destroy and unset the route injector when deactivating a route with transient route providers enabled', fakeAsync(() => {
+      @Injectable()
+      class Service {}
+
+      TestBed.configureTestingModule({
+        providers: [provideRouter([], withRouterConfig({enableTransientRouteProviders: true}))],
+      });
+      const router = TestBed.inject(Router);
+
+      router.resetConfig([
+        {
+          path: 'foo',
+          providers: [Service],
+          component: WrapperCmp,
+          children: [
+            {
+              path: 'foo_child1',
+              component: BlankCmp,
+            },
+            {
+              path: 'foo_child2',
+              component: BlankCmp,
+            },
+          ],
+        },
+        {
+          path: 'bar',
+          component: BlankCmp,
+        },
+      ]);
+
+      router.navigateByUrl('/foo/foo_child1');
+      tick();
+      expect((router.config[0] as any)._injector).toBeDefined();
+
+      const spy = spyOn((router.config[0] as any)._injector as EnvironmentInjector, 'destroy');
+
+      router.navigateByUrl('/foo/foo_child2');
+      tick();
+      expect(spy).not.toHaveBeenCalled();
+      expect((router.config[0] as any)._injector).toBeDefined();
+
+      router.navigateByUrl('/bar');
+      tick();
+      expect(spy).toHaveBeenCalled();
+      expect((router.config[0] as any)._injector).not.toBeDefined();
+    }));
+
     it('should set query params and fragment', fakeAsync(
       inject([Router], (router: Router) => {
         const fixture = createRoot(router, RootCmp);

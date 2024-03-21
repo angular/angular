@@ -77,6 +77,11 @@ export interface RouterConfigOptions {
   canceledNavigationResolution?: 'replace' | 'computed';
 
   /**
+   * When `true`, route scoped providers are destroyed, when the declaring route is deactivated.
+   */
+  enableTransientRouteProviders?: boolean;
+
+  /**
    * Configures the default for handling a navigation request to the current URL.
    *
    * If unset, the `Router` will use `'ignore'`.
