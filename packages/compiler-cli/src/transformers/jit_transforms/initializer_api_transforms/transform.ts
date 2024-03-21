@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {reflectClassMember} from '@angular/compiler-cli/src/ngtsc/reflection/src/typescript';
 import ts from 'typescript';
 
 import {isAngularDecorator} from '../../../ngtsc/annotations';
@@ -75,27 +76,28 @@ function createTransformVisitor(
       if (angularDecorator !== undefined) {
         let hasChanged = false;
 
-        const members = node.members.map(member => {
-          if (!ts.isPropertyDeclaration(member)) {
-            return member;
+        const members = node.members.map(memberNode => {
+          if (!ts.isPropertyDeclaration(memberNode)) {
+            return memberNode;
           }
-          if (!ts.isIdentifier(member.name) && !ts.isStringLiteralLike(member.name)) {
-            return member;
+          const member = reflectClassMember(memberNode);
+          if (member === null) {
+            return memberNode;
           }
 
           // Find the first matching transform and update the class member.
           for (const transform of propertyTransforms) {
             const newNode = transform(
-                member as ts.PropertyDeclaration & {name: ts.Identifier | ts.StringLiteralLike},
-                host, ctx.factory, importTracker, importManager, angularDecorator, isCore);
+                {...member, node: memberNode}, host, ctx.factory, importTracker, importManager,
+                angularDecorator, isCore);
 
-            if (newNode !== member) {
+            if (newNode !== member.node) {
               hasChanged = true;
               return newNode;
             }
           }
 
-          return member;
+          return memberNode;
         });
 
         if (hasChanged) {
