@@ -64,18 +64,17 @@ interface StaticInitializerData {
  * Note that multiple possible initializer API function names can be specified,
  * allowing for checking multiple types in one pass.
  */
-export function tryParseInitializerApiMember<Functions extends InitializerApiFunction[]>(
-    functions: Functions, member: Pick<ClassMember, 'value'>, reflector: ReflectionHost,
+export function tryParseInitializerApi<Functions extends InitializerApiFunction[]>(
+    functions: Functions, expression: ts.Expression, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): (InitializerFunctionMetadata&{api: Functions[number]}|
                                              null) {
-  if (member.value === null || !ts.isCallExpression(member.value)) {
+  if (!ts.isCallExpression(expression)) {
     return null;
   }
 
-  const call = member.value;
-  const staticResult = parseTopLevelCall(call, functions, importTracker) ||
-      parseTopLevelRequiredCall(call, functions, importTracker) ||
-      parseTopLevelCallFromNamespace(call, functions, importTracker);
+  const staticResult = parseTopLevelCall(expression, functions, importTracker) ||
+      parseTopLevelRequiredCall(expression, functions, importTracker) ||
+      parseTopLevelCallFromNamespace(expression, functions, importTracker);
 
   if (staticResult === null) {
     return null;
@@ -92,7 +91,7 @@ export function tryParseInitializerApiMember<Functions extends InitializerApiFun
 
   return {
     api: staticResult.api,
-    call,
+    call: expression,
     isRequired: staticResult.isRequired,
   };
 }
