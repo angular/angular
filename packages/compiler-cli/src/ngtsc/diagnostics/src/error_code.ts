@@ -45,6 +45,12 @@ export enum ErrorCode {
   INITIALIZER_API_NO_REQUIRED_FUNCTION = 1052,
 
   /**
+   * Raised whenever an initializer API is used on a class member
+   * and the given access modifiers (e.g. `private`) are not allowed.
+   */
+  INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY = 1053,
+
+  /**
    * An Angular feature, like inputs, outputs or queries is incorrectly
    * declared on a static member.
    */
