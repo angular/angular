@@ -12,7 +12,7 @@ import {ImportedSymbolsTracker} from '../../../imports';
 import {ModelMapping} from '../../../metadata';
 import {ClassMember, ReflectionHost} from '../../../reflection';
 
-import {tryParseInitializerApiMember} from './initializer_functions';
+import {tryParseInitializerApi} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
 
 /**
@@ -21,8 +21,12 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
 export function tryParseSignalModelMapping(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): ModelMapping|null {
-  const model = tryParseInitializerApiMember(
-      [{functionName: 'model', owningModule: '@angular/core'}], member, reflector, importTracker);
+  const model = member.value === null ?
+      null :
+      tryParseInitializerApi(
+          [{functionName: 'model', owningModule: '@angular/core'}], member.value, reflector,
+          importTracker);
+
   if (model === null) {
     return null;
   }

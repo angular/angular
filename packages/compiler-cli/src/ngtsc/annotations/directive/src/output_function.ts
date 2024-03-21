@@ -13,7 +13,7 @@ import {ImportedSymbolsTracker} from '../../../imports';
 import {InputOrOutput} from '../../../metadata';
 import {ClassMember, ReflectionHost} from '../../../reflection';
 
-import {tryParseInitializerApiMember} from './initializer_functions';
+import {tryParseInitializerApi} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
 
 /**
@@ -24,12 +24,14 @@ export function tryParseInitializerBasedOutput(
     member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): {call: ts.CallExpression, metadata: InputOrOutput}|
     null {
-  const output = tryParseInitializerApiMember(
-      [
-        {functionName: 'output', owningModule: '@angular/core'},
-        {functionName: 'outputFromObservable', owningModule: '@angular/core/rxjs-interop'},
-      ],
-      member, reflector, importTracker);
+  const output = member.value === null ?
+      null :
+      tryParseInitializerApi(
+          [
+            {functionName: 'output', owningModule: '@angular/core'},
+            {functionName: 'outputFromObservable', owningModule: '@angular/core/rxjs-interop'},
+          ],
+          member.value, reflector, importTracker);
   if (output === null) {
     return null;
   }
