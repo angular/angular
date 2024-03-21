@@ -89,6 +89,15 @@ export enum ClassMemberKind {
   Method,
 }
 
+/** Possible access levels of a class member. */
+export enum ClassMemberAccessLevel {
+  PublicWritable,
+  PublicReadonly,
+  Protected,
+  Private,
+  EcmaScriptPrivate,
+}
+
 /**
  * A member of a class, such as a property, method, or constructor.
  */
@@ -103,6 +112,9 @@ export interface ClassMember {
    */
   kind: ClassMemberKind;
 
+  /** Access level describing the class member modifiers. */
+  accessLevel: ClassMemberAccessLevel;
+
   /**
    * TypeScript `ts.TypeNode` representing the type of the member, or `null` if not present or
    * applicable.
@@ -115,13 +127,13 @@ export interface ClassMember {
   name: string;
 
   /**
-   * TypeScript `ts.Identifier` or `ts.StringLiteral` representing the name of the member, or `null`
-   * if no such node is present.
+   * TypeScript `ts.Identifier`, `ts.PrivateIdentifier`, or `ts.StringLiteral` representing the
+   * name of the member, or `null` if no such node is present.
    *
    * The `nameNode` is useful in writing references to this member that will be correctly source-
    * mapped back to the original file.
    */
-  nameNode: ts.Identifier|ts.StringLiteral|null;
+  nameNode: ts.Identifier|ts.PrivateIdentifier|ts.StringLiteral|null;
 
   /**
    * TypeScript `ts.Expression` which represents the value of the member.
