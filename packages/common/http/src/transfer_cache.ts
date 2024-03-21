@@ -28,6 +28,7 @@ import {HttpHeaders} from './headers';
 import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
+import {HttpParams} from './params';
 
 /**
  * Options to configure how TransferCache should be used to cache requests made via HttpClient.
@@ -198,17 +199,26 @@ function getFilteredHeaders(
   return headersMap;
 }
 
-function makeCacheKey(request: HttpRequest<any>): StateKey<TransferHttpResponse> {
-  // make the params encoded same as a url so it's easy to identify
-  const {params, method, responseType, url, body} = request;
-  const encodedParams = params
-    .keys()
+function sortAndConcatParams(params: HttpParams | URLSearchParams): string {
+  return [...params.keys()]
     .sort()
     .map((k) => `${k}=${params.getAll(k)}`)
     .join('&');
-  const strBody = typeof body === 'string' ? body : '';
-  const key = [method, responseType, url, strBody, encodedParams].join('|');
+}
 
+function makeCacheKey(request: HttpRequest<any>): StateKey<TransferHttpResponse> {
+  // make the params encoded same as a url so it's easy to identify
+  const {params, method, responseType, url} = request;
+  const encodedParams = sortAndConcatParams(params);
+
+  let serializedBody = request.serializeBody();
+  if (serializedBody instanceof URLSearchParams) {
+    serializedBody = sortAndConcatParams(serializedBody);
+  } else if (typeof serializedBody !== 'string') {
+    serializedBody = '';
+  }
+
+  const key = [method, responseType, url, serializedBody, encodedParams].join('|');
   const hash = generateHash(key);
 
   return makeStateKey(hash);

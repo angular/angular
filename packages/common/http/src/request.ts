@@ -362,11 +362,11 @@ export class HttpRequest<T> {
     // Check whether the body is already in a serialized form. If so,
     // it can just be returned directly.
     if (
+      typeof this.body === 'string' ||
       isArrayBuffer(this.body) ||
       isBlob(this.body) ||
       isFormData(this.body) ||
-      isUrlSearchParams(this.body) ||
-      typeof this.body === 'string'
+      isUrlSearchParams(this.body)
     ) {
       return this.body;
     }
