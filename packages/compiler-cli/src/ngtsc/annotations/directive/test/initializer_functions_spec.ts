@@ -13,7 +13,7 @@ import {runInEachFileSystem} from '../../../file_system/testing';
 import {ImportedSymbolsTracker} from '../../../imports';
 import {ClassMember, TypeScriptReflectionHost} from '../../../reflection';
 import {makeProgram} from '../../../testing';
-import {InitializerApiFunction, tryParseInitializerApiMember} from '../src/initializer_functions';
+import {InitializerApiFunction, tryParseInitializerApi} from '../src/initializer_functions';
 
 
 runInEachFileSystem(() => {
@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
 
       expect(result).toEqual({
         api: modelApi,
@@ -52,12 +52,12 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(
+      const result = tryParseInitializerApi(
           [
             {functionName: 'input', owningModule: '@angular/core'},
             modelApi,
           ],
-          member, reflector, importTracker);
+          member.value!, reflector, importTracker);
 
       expect(result).toEqual({
         api: modelApi,
@@ -77,12 +77,12 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember(
+      const result = tryParseInitializerApi(
           [
             modelApi,
             {functionName: 'outputFromObservable', owningModule: '@angular/core/rxjs-interop'},
           ],
-          member, reflector, importTracker);
+          member.value!, reflector, importTracker);
 
       expect(result).toEqual({
         api: {
@@ -104,7 +104,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
 
       expect(result).toEqual({
         api: modelApi,
@@ -123,7 +123,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
 
       expect(result).toEqual({
         api: modelApi,
@@ -142,7 +142,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
 
       expect(result).toEqual({
         api: modelApi,
@@ -161,7 +161,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
 
       expect(result).toEqual({
         api: modelApi,
@@ -180,7 +180,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
 
       expect(result).toEqual({
         api: modelApi,
@@ -199,7 +199,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
       expect(result).toBe(null);
     });
 
@@ -214,7 +214,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
       expect(result).toBe(null);
     });
 
@@ -228,7 +228,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
       expect(result).toBe(null);
     });
 
@@ -243,7 +243,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
       expect(result).toBe(null);
     });
 
@@ -261,7 +261,7 @@ runInEachFileSystem(() => {
         }
       `);
 
-      const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+      const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
       expect(result).toBe(null);
     });
   });
@@ -278,7 +278,7 @@ runInEachFileSystem(() => {
           }
         `);
 
-       const result = tryParseInitializerApiMember([modelApi], member, reflector, importTracker);
+       const result = tryParseInitializerApi([modelApi], member.value!, reflector, importTracker);
 
        expect(result).toEqual({
          api: modelApi,
