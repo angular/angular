@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../../../imports';
-import {ClassMember, ReflectionHost} from '../../../reflection';
+import {ClassMemberAccessLevel, ReflectionHost} from '../../../reflection';
 
 /**
  * @fileoverview
@@ -24,16 +24,20 @@ import {ClassMember, ReflectionHost} from '../../../reflection';
  */
 
 export interface InitializerApiFunction {
+  /** Module name where the initializer function is imported from. */
   owningModule: '@angular/core'|'@angular/core/rxjs-interop';
+  /** Export name of the initializer function. */
   functionName: ('input'|'model'|'output'|'outputFromObservable'|'viewChild'|'viewChildren'|
                  'contentChild'|'contentChildren');
+  /** Class member access levels compatible with the API. */
+  allowedAccessLevels: ClassMemberAccessLevel[];
 }
 
 /**
  * Metadata describing an Angular class member that was recognized through
  * a function initializer. Like `input`, `input.required` or `viewChild`.
  */
-interface InitializerFunctionMetadata {
+export interface InitializerFunctionMetadata {
   /** Initializer API function that was recognized. */
   api: InitializerApiFunction;
   /** Node referring to the call expression. */
@@ -58,11 +62,12 @@ interface StaticInitializerData {
 }
 
 /**
- * Attempts to identify an Angular class member that is declared via
- * its initializer referring to a given initializer API function.
+ * Attempts to identify an Angular initializer function call.
  *
  * Note that multiple possible initializer API function names can be specified,
  * allowing for checking multiple types in one pass.
+ *
+ * @returns The parsed initializer API, or null if none was found.
  */
 export function tryParseInitializerApi<Functions extends InitializerApiFunction[]>(
     functions: Functions, expression: ts.Expression, reflector: ReflectionHost,
@@ -80,19 +85,21 @@ export function tryParseInitializerApi<Functions extends InitializerApiFunction[
     return null;
   }
 
+  const {api, apiReference, isRequired} = staticResult;
+
   // Once we've statically determined that the initializer is one of the APIs we're looking for, we
   // need to verify it using the type checker which accounts for things like shadowed variables.
   // This should be done as the absolute last step since using the type check can be expensive.
-  const resolvedImport = reflector.getImportOfIdentifier(staticResult.apiReference);
-  if (resolvedImport === null || staticResult.api.functionName !== resolvedImport.name ||
-      staticResult.api.owningModule !== resolvedImport.from) {
+  const resolvedImport = reflector.getImportOfIdentifier(apiReference);
+  if (resolvedImport === null || api.functionName !== resolvedImport.name ||
+      api.owningModule !== resolvedImport.from) {
     return null;
   }
 
   return {
-    api: staticResult.api,
+    api,
     call: expression,
-    isRequired: staticResult.isRequired,
+    isRequired,
   };
 }
 
