@@ -18,16 +18,31 @@ import {AbstractControl} from './model/abstract_model';
 function isEmptyInputValue(value: any): boolean {
   /**
    * Check if the object is a string or array before evaluating the length attribute.
-   * This avoids falsely rejecting objects that contain a custom length attribute.
+   * Check if the object is a set before evaluating the size attribute.
+   * This avoids falsely rejecting objects that contain a custom length or size attribute.
    * For example, the object {id: 1, length: 0, width: 0} should not be returned as empty.
    */
   return value == null ||
-      ((typeof value === 'string' || Array.isArray(value)) && value.length === 0);
+      ((typeof value === 'string' || Array.isArray(value)) && value.length === 0) ||
+      value instanceof Set && value.size === 0;
 }
 
-function hasValidLength(value: any): boolean {
+/**
+ * Extract the length property in case it's an array.
+ * Extract the size property in case it's a set.
+ * Return null else.
+ * @param value Either an array set or undefined.
+ */
+function lengthOrSize(value: any): number|null {
   // non-strict comparison is intentional, to check for both `null` and `undefined` values
-  return value != null && typeof value.length === 'number';
+  if (value == null) {
+    return null;
+  } else if (typeof value.length === 'number') {
+    return value.length;
+  } else if (typeof value.size === 'number') {
+    return value.size;
+  }
+  return null;
 }
 
 /**
@@ -278,12 +293,13 @@ export class Validators {
   /**
    * @description
    * Validator that requires the length of the control's value to be greater than or equal
-   * to the provided minimum length. This validator is also provided by default if you use the
+   * to the provided minimum length. This validator is also provided by default if you use
    * the HTML5 `minlength` attribute. Note that the `minLength` validator is intended to be used
-   * only for types that have a numeric `length` property, such as strings or arrays. The
-   * `minLength` validator logic is also not invoked for values when their `length` property is 0
-   * (for example in case of an empty string or an empty array), to support optional controls. You
-   * can use the standard `required` validator if empty values should not be considered valid.
+   * only for types that have a numeric `length` or `size` property, such as strings, arrays or
+   * sets. The `minLength` validator logic is also not invoked for values when their `length` or
+   * `size` property is 0 (for example in case of an empty string or an empty array), to support
+   * optional controls. You can use the standard `required` validator if empty values should not be
+   * considered valid.
    *
    * @usageNotes
    *
@@ -312,9 +328,10 @@ export class Validators {
   /**
    * @description
    * Validator that requires the length of the control's value to be less than or equal
-   * to the provided maximum length. This validator is also provided by default if you use the
+   * to the provided maximum length. This validator is also provided by default if you use
    * the HTML5 `maxlength` attribute. Note that the `maxLength` validator is intended to be used
-   * only for types that have a numeric `length` property, such as strings or arrays.
+   * only for types that have a numeric `length` or `size` property, such as strings, arrays or
+   * sets.
    *
    * @usageNotes
    *
@@ -503,14 +520,15 @@ export function emailValidator(control: AbstractControl): ValidationErrors|null 
  */
 export function minLengthValidator(minLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {
-    if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
+    const _length = lengthOrSize(control.value);
+    if (isEmptyInputValue(control.value) || !_length) {
       // don't validate empty values to allow optional controls
-      // don't validate values without `length` property
+      // don't validate values without `length` or `size` property
       return null;
     }
 
-    return control.value.length < minLength ?
-        {'minlength': {'requiredLength': minLength, 'actualLength': control.value.length}} :
+    return _length < minLength ?
+        {'minlength': {'requiredLength': minLength, 'actualLength': _length}} :
         null;
   };
 }
@@ -521,9 +539,11 @@ export function minLengthValidator(minLength: number): ValidatorFn {
  */
 export function maxLengthValidator(maxLength: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors|null => {
-    return hasValidLength(control.value) && control.value.length > maxLength ?
-        {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value.length}} :
-        null;
+    const _length = lengthOrSize(control.value);
+    if (_length !== null && _length > maxLength) {
+      return {'maxlength': {'requiredLength': maxLength, 'actualLength': _length}};
+    }
+    return null;
   };
 }
 
