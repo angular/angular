@@ -186,14 +186,14 @@ export function refreshView<T>(
     markTransplantedViewsForRefresh(lView);
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Global);
 
-    // Content query results must be refreshed before content hooks are called.
-    if (tView.contentQueries !== null) {
-      refreshContentQueries(tView, lView);
-    }
-
-    // execute content hooks (AfterContentInit, AfterContentChecked)
-    // PERF WARNING: do NOT extract this to a separate function without running benchmarks
     if (!isInCheckNoChangesPass) {
+      // Content query results must be refreshed before content hooks are called.
+      if (tView.contentQueries !== null) {
+        refreshContentQueries(tView, lView);
+      }
+
+      // execute content hooks (AfterContentInit, AfterContentChecked)
+      // PERF WARNING: do NOT extract this to a separate function without running benchmarks
       if (hooksInitPhaseCompleted) {
         const contentCheckHooks = tView.contentCheckHooks;
         if (contentCheckHooks !== null) {
@@ -217,17 +217,17 @@ export function refreshView<T>(
       detectChangesInChildComponents(lView, components, ChangeDetectionMode.Global);
     }
 
-    // View queries must execute after refreshing child components because a template in this view
-    // could be inserted in a child component. If the view query executes before child component
-    // refresh, the template might not yet be inserted.
-    const viewQuery = tView.viewQuery;
-    if (viewQuery !== null) {
-      executeViewQueryFn<T>(RenderFlags.Update, viewQuery, context);
-    }
-
-    // execute view hooks (AfterViewInit, AfterViewChecked)
-    // PERF WARNING: do NOT extract this to a separate function without running benchmarks
     if (!isInCheckNoChangesPass) {
+      // View queries must execute after refreshing child components because a template in this view
+      // could be inserted in a child component. If the view query executes before child component
+      // refresh, the template might not yet be inserted.
+      const viewQuery = tView.viewQuery;
+      if (viewQuery !== null) {
+        executeViewQueryFn<T>(RenderFlags.Update, viewQuery, context);
+      }
+
+      // execute view hooks (AfterViewInit, AfterViewChecked)
+      // PERF WARNING: do NOT extract this to a separate function without running benchmarks
       if (hooksInitPhaseCompleted) {
         const viewCheckHooks = tView.viewCheckHooks;
         if (viewCheckHooks !== null) {
@@ -240,34 +240,33 @@ export function refreshView<T>(
         }
         incrementInitPhaseFlags(lView, InitPhaseState.AfterViewInitHooksToBeRun);
       }
-    }
-    if (tView.firstUpdatePass === true) {
-      // We need to make sure that we only flip the flag on successful `refreshView` only
-      // Don't do this in `finally` block.
-      // If we did this in `finally` block then an exception could block the execution of styling
-      // instructions which in turn would be unable to insert themselves into the styling linked
-      // list. The result of this would be that if the exception would not be throw on subsequent CD
-      // the styling would be unable to process it data and reflect to the DOM.
-      tView.firstUpdatePass = false;
-    }
 
-    // Schedule any effects that are waiting on the update pass of this view.
-    if (lView[EFFECTS_TO_SCHEDULE]) {
-      for (const notifyEffect of lView[EFFECTS_TO_SCHEDULE]) {
-        notifyEffect();
+      // Schedule any effects that are waiting on the update pass of this view.
+      if (lView[EFFECTS_TO_SCHEDULE]) {
+        for (const notifyEffect of lView[EFFECTS_TO_SCHEDULE]) {
+          notifyEffect();
+        }
+
+        // Once they've been run, we can drop the array.
+        lView[EFFECTS_TO_SCHEDULE] = null;
       }
 
-      // Once they've been run, we can drop the array.
-      lView[EFFECTS_TO_SCHEDULE] = null;
-    }
+      if (tView.firstUpdatePass === true) {
+        // We need to make sure that we only flip the flag on successful `refreshView` only
+        // Don't do this in `finally` block.
+        // If we did this in `finally` block then an exception could block the execution of styling
+        // instructions which in turn would be unable to insert themselves into the styling linked
+        // list. The result of this would be that if the exception would not be throw on subsequent
+        // CD the styling would be unable to process it data and reflect to the DOM.
+        tView.firstUpdatePass = false;
+      }
 
-    // Do not reset the dirty state when running in check no changes mode. We don't want components
-    // to behave differently depending on whether check no changes is enabled or not. For example:
-    // Marking an OnPush component as dirty from within the `ngAfterViewInit` hook in order to
-    // refresh a `NgClass` binding should work. If we would reset the dirty state in the check
-    // no changes cycle, the component would be not be dirty for the next update pass. This would
-    // be different in production mode where the component dirty state is not reset.
-    if (!isInCheckNoChangesPass) {
+      // Do not reset the dirty state when running in check no changes mode. We don't want
+      // components to behave differently depending on whether check no changes is enabled or not.
+      // For example: Marking an OnPush component as dirty from within the `ngAfterViewInit` hook in
+      // order to refresh a `NgClass` binding should work. If we would reset the dirty state in the
+      // check no changes cycle, the component would be not be dirty for the next update pass. This
+      // would be different in production mode where the component dirty state is not reset.
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
     }
   } catch (e) {
