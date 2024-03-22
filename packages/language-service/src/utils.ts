@@ -336,7 +336,7 @@ export function flatMap<T, R>(items: T[]|readonly T[], f: (item: T) => R[] | rea
 }
 
 export function isTypeScriptFile(fileName: string): boolean {
-  return fileName.endsWith('.ts');
+  return /\.[cm]?tsx?$/i.test(fileName);
 }
 
 export function isExternalTemplate(fileName: string): boolean {
