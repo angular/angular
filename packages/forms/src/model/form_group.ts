@@ -507,6 +507,20 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
     }) as any;
   }
 
+  /**
+   * Recalculates the value and validation status of the control, and it's each descendant.
+   *
+   * @param opts Configuration options determine how the control propagates changes and emits events
+   * after updates and validity checks are applied.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is updated.
+   * When false, no events are emitted.
+   */
+  updateTreeValidity(opts: {emitEvent?: boolean} = {emitEvent: true}): void {
+    this._updateTreeValidity(opts);
+  }
+
   /** @internal */
   override _syncPendingControls(): boolean {
     let subtreeUpdated = this._reduceChildren(false, (updated: boolean, child) => {

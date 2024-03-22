@@ -452,6 +452,20 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
   }
 
   /**
+   * Recalculates the value and validation status of the control, and it's each descendant.
+   *
+   * @param opts Configuration options determine how the control propagates changes and emits events
+   * after updates and validity checks are applied.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is updated.
+   * When false, no events are emitted.
+   */
+  updateTreeValidity(opts: {emitEvent?: boolean} = {emitEvent: true}): void {
+    this._updateTreeValidity(opts);
+  }
+
+  /**
    * Adjusts a negative index by summing it with the length of the array. For very negative
    * indices, the result may remain negative.
    * @internal
