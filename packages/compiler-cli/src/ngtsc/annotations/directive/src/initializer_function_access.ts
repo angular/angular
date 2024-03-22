@@ -21,7 +21,7 @@ import {InitializerFunctionMetadata} from './initializer_functions';
  */
 export function validateAccessOfInitializerApiMember(
     {api, call}: InitializerFunctionMetadata, member: Pick<ClassMember, 'accessLevel'>): void {
-  if (!api.allowedAccessLevels.some(level => level === member.accessLevel)) {
+  if (!api.allowedAccessLevels.includes(member.accessLevel)) {
     throw new FatalDiagnosticError(
         ErrorCode.INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY, call,
         makeDiagnosticChain(
