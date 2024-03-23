@@ -13,6 +13,8 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import {signal} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
+import {ActivatedRoute, ParamMap, convertToParamMap} from '@angular/router';
+import {BehaviorSubject} from 'rxjs';
 
 describe('ApiReferenceList', () => {
   let component: ApiReferenceList;
@@ -49,11 +51,20 @@ describe('ApiReferenceList', () => {
       isFeatured: true,
     }),
   };
+  const activatedRouteQueryParamMap = new BehaviorSubject<ParamMap>(convertToParamMap({}));
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ApiReferenceList, RouterTestingModule],
-      providers: [{provide: ApiReferenceManager, useValue: fakeApiReferenceManager}],
+      providers: [
+        {provide: ApiReferenceManager, useValue: fakeApiReferenceManager},
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {queryParamMap: convertToParamMap({})},
+          },
+        },
+      ],
     });
     fixture = TestBed.createComponent(ApiReferenceList);
     component = fixture.componentInstance;
@@ -90,25 +101,27 @@ describe('ApiReferenceList', () => {
   });
 
   it('should display only class items when user selects Class in the Type select', () => {
-    component.type.set(ApiItemType.CLASS);
+    fixture.componentInstance.type.set(ApiItemType.CLASS);
     fixture.detectChanges();
 
+    expect(component.type()).toEqual(ApiItemType.CLASS);
     expect(component.filteredGroups()![0].items).toEqual([fakeItem2]);
   });
 
   it('should set selected type when provided type is different than selected', () => {
+    expect(component.type()).toBe(ALL_STATUSES_KEY);
     component.filterByItemType(ApiItemType.BLOCK);
-
+    activatedRouteQueryParamMap.next(convertToParamMap({type: ApiItemType.BLOCK}));
     expect(component.type()).toBe(ApiItemType.BLOCK);
   });
 
   it('should reset selected type when provided type is equal to selected', () => {
     component.filterByItemType(ApiItemType.BLOCK);
-
+    activatedRouteQueryParamMap.next(convertToParamMap({type: ApiItemType.BLOCK}));
     expect(component.type()).toBe(ApiItemType.BLOCK);
 
     component.filterByItemType(ApiItemType.BLOCK);
-
+    activatedRouteQueryParamMap.next(convertToParamMap({}));
     expect(component.type()).toBe(ALL_STATUSES_KEY);
   });
 });
