@@ -51,6 +51,7 @@ export {SecurityContext} from './sanitization/security';
 export {Sanitizer} from './sanitization/sanitizer';
 export {createNgModule, createNgModuleRef, createEnvironmentInjector} from './render3/ng_module_ref';
 export {createComponent, reflectComponentType, ComponentMirror} from './render3/component';
+export {reflectDirectiveType, DirectiveMirror} from './render3/directive';
 export {isStandalone} from './render3/definition';
 export {AfterRenderRef, AfterRenderOptions, AfterRenderPhase, afterRender, afterNextRender} from './render3/after_render_hooks';
 export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
