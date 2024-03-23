@@ -17,7 +17,7 @@ import ts from 'typescript';
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromTcbLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
+import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromTcbLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
 
 interface DefinitionMeta {
   node: AST|TmplAstNode;
@@ -140,7 +140,7 @@ export class DefinitionBuilder {
   }
 
   private getDefinitionsForSymbols(...symbols: HasTcbLocation[]): ts.DefinitionInfo[] {
-    return flatMap(symbols, ({tcbLocation}) => {
+    return symbols.flatMap(({tcbLocation}) => {
       const {tcbPath, positionInFile} = tcbLocation;
       const definitionInfos = this.tsLS.getDefinitionAtPosition(tcbPath, positionInFile);
       if (definitionInfos === undefined) {
@@ -283,7 +283,7 @@ export class DefinitionBuilder {
   }
 
   private getTypeDefinitionsForSymbols(...symbols: HasTcbLocation[]): ts.DefinitionInfo[] {
-    return flatMap(symbols, ({tcbLocation}) => {
+    return symbols.flatMap(({tcbLocation}) => {
       const {tcbPath, positionInFile} = tcbLocation;
       return this.tsLS.getTypeDefinitionAtPosition(tcbPath, positionInFile) ?? [];
     });
