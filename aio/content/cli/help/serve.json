@@ -138,7 +138,7 @@
       "name": "watch",
       "type": "boolean",
       "default": true,
-      "description": "Rebuild on change."
+      "description": "Rebuild on change, if set to false the serve will exit with -1 if there is any errors."
     }
   ]
 }
