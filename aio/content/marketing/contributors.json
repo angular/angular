@@ -239,6 +239,14 @@
     "bio": "Chris is a Full Stack Developer at McKinsey. A Google Developer Expert in Web Technologies and Angular. He is also a Nativescript Developer Expert. He is one of the organizers of the Angular conference ngVikings and an author of the book RxJS 5 Ultimate",
     "groups": ["GDE"]
   },
+  "chrisperko": {
+    "name": "Chris Perko",
+    "picture": "chrisperko.jpg",
+    "twitter": "chrisjperko",
+    "website": "https://perko.dev",
+    "bio": "Chris is an Atlanta based senior software engineer at HeroDevs, director of the Angular Community Meetup, and a Google Developer Expert in Angular. Chris has worked in several industries and helped build full-stack web applications, but has a passion for front-end development, with a focus on Angular. Outside of code, he enjoys craft beer, hiking, and camping.",
+    "groups": ["GDE"]
+  },
   "christianliebel": {
     "name": "Christian Liebel",
     "picture": "christianliebel.jpg",
