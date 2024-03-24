@@ -29,7 +29,7 @@ This is one of the most common attacks on the web.
 
 To block XSS attacks, you must prevent malicious code from entering the Document Object Model (DOM).
 For example, if attackers can trick you into inserting a `<script>` tag in the DOM, they can run arbitrary code on your website.
-The attack isn't limited to `<script>` tags &mdash;many elements and properties in the DOM allow code execution, for example, `<img alt="" onerror="...">` and `<a href="javascript:...">`.
+The attack isn't limited to `<script>` tags —many elements and properties in the DOM allow code execution, for example, `<img alt="" onerror="...">` and `<a href="javascript:...">`.
 If attacker-controlled data enters the DOM, expect security vulnerabilities.
 
 ### Angular's cross-site scripting security model
@@ -72,7 +72,7 @@ The following template binds the value of `htmlSnippet`. Once by interpolating i
 
 <docs-code header="src/app/inner-html-binding.component.html" path="adev/src/content/examples/security/src/app/inner-html-binding.component.html"/>
 
-Interpolated content is always escaped &mdash;the HTML isn't interpreted and the browser displays angle brackets in the element's text content.
+Interpolated content is always escaped —the HTML isn't interpreted and the browser displays angle brackets in the element's text content.
 
 For the HTML to be interpreted, bind it to an HTML property such as `innerHTML`.
 Be aware that binding a value that an attacker might control into `innerHTML` normally causes an XSS vulnerability.
@@ -93,7 +93,7 @@ Avoid directly interacting with the DOM and instead use Angular templates where 
 
 For cases where this is unavoidable, use the built-in Angular sanitization functions.
 Sanitize untrusted values with the [DomSanitizer.sanitize](api/platform-browser/DomSanitizer#sanitize) method and the appropriate `SecurityContext`.
-That function also accepts values that were marked as trusted using the `bypassSecurityTrust` &hellip; functions, and does not sanitize them, as [described below](#trusting-safe-values).
+That function also accepts values that were marked as trusted using the `bypassSecurityTrust` … functions, and does not sanitize them, as [described below](#trusting-safe-values).
 
 ### Trusting safe values
 
@@ -155,7 +155,7 @@ You can set the nonce for Angular in one of two ways:
 
 <docs-code language="typescript">
 
-import {bootstrapApplication, CSP_NONCE} from '&commat;angular/core';
+import {bootstrapApplication, CSP_NONCE} from '@angular/core';
 import {AppComponent} from './app/app.component';
 
 bootstrapApplication(AppComponent, {

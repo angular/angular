@@ -30,7 +30,7 @@ The following JavaScript and template expression syntax is not allowed:
 
 ## Statement context
 
-Statements have a context &mdash;a particular part of the application to which the statement belongs.
+Statements have a context —a particular part of the application to which the statement belongs.
 
 Statements can refer only to what's in the statement context, which is typically the component instance.
 For example, `deleteHero()` of `(click)="deleteHero()"` is a method of the component in the following snippet.

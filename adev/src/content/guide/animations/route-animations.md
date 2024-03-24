@@ -113,7 +113,7 @@ Adding these styles to the views animates the containers in place and prevents o
 Use the `query()` method to find and animate elements within the current host component.
 The `query(":enter")` statement returns the view that is being inserted, and `query(":leave")` returns the view that is being removed.
 
-Assume that you are routing from the *Home =&gt; About*.
+Assume that you are routing from the *Home => About*.
 
 <docs-code header="src/app/animations.ts (excerpt)" path="adev/src/content/examples/animations/src/app/animations.ts" visibleRegion="query"/>
 

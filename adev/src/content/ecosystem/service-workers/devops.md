@@ -155,7 +155,7 @@ Clients: 7b79a015-69af-4d3d-9ae6-95ba90c79486, 5bc08295-aaf2-42f3-a4cc-9e4ef9100
 Last update tick: 1s496u
 Last update run: never
 Task queue:
- &ast; init post-load (update, cleanup)
+ * init post-load (update, cleanup)
 
 Debug log:
 
@@ -232,7 +232,7 @@ HELPFUL: This version hash is the "latest manifest hash" listed above. Both clie
 Last update tick: 1s496u
 Last update run: never
 Task queue:
- &ast; init post-load (update, cleanup)
+ * init post-load (update, cleanup)
 
 </docs-code>
 

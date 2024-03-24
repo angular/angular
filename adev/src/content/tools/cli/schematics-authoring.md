@@ -38,12 +38,12 @@ A `RuleFactory` object defines a higher-order function that creates a `Rule`.
 
 <docs-code header="index.ts" language="typescript">
 
-import { Rule, SchematicContext, Tree } from '&commat;angular-devkit/schematics';
+import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 
 // You don't have to export the function as default.
 // You can also have more than one rule factory per file.
 export function helloWorld(_options: any): Rule {
- return (tree: Tree,_context: SchematicContext) =&gt; {
+ return (tree: Tree,_context: SchematicContext) => {
    return tree;
  };
 }
@@ -66,7 +66,7 @@ import {
   normalize,
   parseJsonAst,
   strings,
-} from '&commat;angular-devkit/core';
+} from '@angular-devkit/core';
 
 </docs-code>
 
@@ -154,7 +154,7 @@ In the short form, the type is inferred from the property's type and constraints
 | "type": "string"   | input                                        |
 | "type": "number"   | input \(only valid numbers accepted\)        |
 | "type": "integer"  | input \(only valid numbers accepted\)        |
-| "enum": [&hellip;] | list \(enum members become list selections\) |
+| "enum": […] | list \(enum members become list selections\) |
 
 In the following example, the property takes an enumerated value, so the schematic automatically chooses the list type, and creates a menu from the possible values.
 
@@ -268,7 +268,7 @@ Using Node 6.9 or later, install the Schematics command line tool globally:
 
 <docs-code language="shell">
 
-npm install -g &commat;angular-devkit/schematics-cli
+npm install -g @angular-devkit/schematics-cli
 
 </docs-code>
 
@@ -316,7 +316,7 @@ Provide the path to the project folder, the schematic name, and any mandatory op
 
 <docs-code language="shell">
 
-schematics &lt;path-to-schematics-project&gt;:&lt;schematics-name&gt; --&lt;required-option&gt;=&lt;value&gt;
+schematics <path-to-schematics-project>:<schematics-name> --<required-option>=<value>
 
 </docs-code>
 
@@ -352,8 +352,8 @@ Each schematic is created with a name, description, and factory function.
 <docs-code language="json">
 
 {
-  "&dollar;schema":
-     "../node_modules/&commat;angular-devkit/schematics/collection-schema.json",
+  "$schema":
+     "../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
     "hello-world": {
       "description": "A blank schematic.",

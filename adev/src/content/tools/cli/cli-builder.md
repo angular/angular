@@ -179,17 +179,17 @@ By default, for example, the `ng build` command runs the builder `@angular-devki
 
 <docs-code header="angular.json" language="json">
 
-&hellip;
+…
 
 "myApp": {
-  &hellip;
+  …
   "architect": {
     "build": {
       "builder": "@angular-devkit/build-angular:browser",
       "options": {
         "outputPath": "dist/myApp",
         "index": "src/index.html",
-        &hellip;
+        …
       },
       "configurations": {
         "production": {
@@ -201,15 +201,15 @@ By default, for example, the `ng build` command runs the builder `@angular-devki
           ],
           "optimization": true,
           "outputHashing": "all",
-          &hellip;
+          …
         }
       }
     },
-    &hellip;
+    …
   }
 }
 
-&hellip;
+…
 
 </docs-code>
 
@@ -265,7 +265,7 @@ You can publish the builder to npm (see [Publishing your Library](tools/librarie
 
 <docs-code language="shell">
 
-npm install &commat;example/copy-file
+npm install @example/copy-file
 
 </docs-code>
 

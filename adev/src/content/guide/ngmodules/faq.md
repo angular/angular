@@ -6,14 +6,14 @@ This page answers the questions many developers ask about NgModule design and im
 
 ## What classes should I add to the `declarations` array?
 
-Add [declarable](/guide/ngmodules/bootstrapping#the-declarations-array) classes &mdash;components, directives, and pipes&mdash; to a `declarations` list.
+Add [declarable](/guide/ngmodules/bootstrapping#the-declarations-array) classes —components, directives, and pipes— to a `declarations` list.
 
 Declare these classes in *exactly one* module of the application.
 Declare them in a module if they belong to that particular module.
 
 ## What is a `declarable`?
 
-Declarables are the class types &mdash;components, directives, and pipes&mdash; that you can add to a module's `declarations` list.
+Declarables are the class types —components, directives, and pipes— that you can add to a module's `declarations` list.
 They're the only classes that you can add to `declarations`.
 
 ## What classes should I *not* add to `declarations`?
@@ -97,7 +97,7 @@ Export [declarable](/guide/ngmodules/bootstrapping#the-declarations-array) class
 These are your *public* classes.
 If you don't export a declarable class, it stays *private*, visible only to other components declared in this NgModule.
 
-You *can* export any declarable class &mdash;components, directives, and pipes&mdash; whether
+You *can* export any declarable class —components, directives, and pipes— whether
 it's declared in this NgModule or in an imported NgModule.
 
 You *can* re-export entire imported NgModules, which effectively re-export all of their exported classes.
@@ -389,7 +389,7 @@ In an Angular app, NgModules and JavaScript modules work together.
 In modern JavaScript, every file is a module (see the [Modules](https://exploringjs.com/es6/ch_modules.html) page of the Exploring ES6 website).
 Within each file you write an `export` statement to make parts of the module public.
 
-An Angular NgModule is a class with the `@NgModule` decorator &mdash;JavaScript modules don't have to have the `@NgModule` decorator.
+An Angular NgModule is a class with the `@NgModule` decorator —JavaScript modules don't have to have the `@NgModule` decorator.
 Angular's `NgModule` has `imports` and `exports` and they serve a similar purpose.
 
 You *import* other NgModules so you can use their exported classes in component templates.

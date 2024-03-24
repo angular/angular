@@ -76,10 +76,10 @@ interface User {
 
 <docs-code language="html">
 
-&lt;div *ngFor="let user of users"&gt;
-  &lt;h2&gt;{{config.title}}&lt;/h2&gt;
-  &lt;span&gt;City: {{user.address.city}}&lt;/span&gt;
-&lt;/div&gt;
+<div *ngFor="let user of users">
+  <h2>{{config.title}}</h2>
+  <span>City: {{user.address.city}}</span>
+</div>
 
 </docs-code>
 
@@ -116,7 +116,7 @@ Unless otherwise commented, each following option is set to the value for `stric
 | `strictInputTypes`           | Whether the assignability of a binding expression to the `@Input()` field is checked. Also affects the inference of directive generic types.                                                                                                                                                                                                                                                                                                |
 | `strictInputAccessModifiers` | Whether access modifiers such as `private`/`protected`/`readonly` are honored when assigning a binding expression to an `@Input()`. If disabled, the access modifiers of the `@Input` are ignored; only the type is checked. This option is `false` by default, even with `strictTemplates` set to `true`.                                                                                                                                  |
 | `strictNullInputTypes`       | Whether `strictNullChecks` is honored when checking `@Input()` bindings \(per `strictInputTypes`\). Turning this off can be useful when using a library that was not built with `strictNullChecks` in mind.                                                                                                                                                                                                                                 |
-| `strictAttributeTypes`       | Whether to check `@Input()` bindings that are made using text attributes. For example, <docs-code hideCopy language="html"> &lt;input matInput disabled="true"&gt; </docs-code> \(setting the `disabled` property to the string `'true'`\) vs <docs-code hideCopy language="html"> &lt;input matInput [disabled]="true"&gt; </docs-code> \(setting the `disabled` property to the boolean `true`\). |
+| `strictAttributeTypes`       | Whether to check `@Input()` bindings that are made using text attributes. For example, <docs-code hideCopy language="html"> <input matInput disabled="true"> </docs-code> \(setting the `disabled` property to the string `'true'`\) vs <docs-code hideCopy language="html"> <input matInput [disabled]="true"> </docs-code> \(setting the `disabled` property to the boolean `true`\). |
 | `strictSafeNavigationTypes`  | Whether the return type of safe navigation operations \(for example, `user?.name` will be correctly inferred based on the type of `user`\). If disabled, `user?.name` will be of type `any`.                                                                                                                                                                                                                                                |
 | `strictDomLocalRefTypes`     | Whether local references to DOM elements will have the correct type. If disabled `ref` will be of type `any` for `<input #ref>`.                                                                                                                                                                                                                                                                                                            |
 | `strictOutputEventTypes`     | Whether `$event` will have the correct type for event bindings to component/directive an `@Output()`, or to animation events. If disabled, it will be `any`.                                                                                                                                                                                                                                                                                |
@@ -143,12 +143,12 @@ export interface User {
   name: string;
 }
 
-&commat;Component({
+@Component({
   selector: 'user-detail',
   template: '{{ user.name }}',
 })
 export class UserDetailComponent {
-  &commat;Input() user: User;
+  @Input() user: User;
 }
 
 </docs-code>
@@ -157,12 +157,12 @@ The `AppComponent` template uses this component as follows:
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'app-root',
-  template: '&lt;user-detail [user]="selectedUser"&gt;&lt;/user-detail&gt;',
+  template: '<user-detail [user]="selectedUser"></user-detail>',
 })
 export class AppComponent {
-  selectedUser: User &verbar; null = null;
+  selectedUser: User | null = null;
 }
 
 </docs-code>
@@ -189,7 +189,7 @@ For example:
 * Using the `async` pipe with an Observable which you know will emit synchronously.
 
     The `async` pipe currently assumes that the Observable it subscribes to can be asynchronous, which means that it's possible that there is no value available yet.
-    In that case, it still has to return something &mdash;which is `null`.
+    In that case, it still has to return something —which is `null`.
     In other words, the return type of the `async` pipe includes `null`, which might result in errors in situations where the Observable is known to emit a non-nullable value synchronously.
 
 There are two potential workarounds to the preceding issues:
@@ -198,7 +198,7 @@ There are two potential workarounds to the preceding issues:
 
     <docs-code hideCopy language="html">
 
-    &lt;user-detail [user]="user!"&gt;&lt;/user-detail&gt;
+    <user-detail [user]="user!"></user-detail>
 
     </docs-code>
 
@@ -207,7 +207,7 @@ There are two potential workarounds to the preceding issues:
 
     <docs-code hideCopy language="html">
 
-    &lt;user-detail [user]="(user&dollar; &verbar; async)!"&gt;&lt;/user-detail&gt;
+    <user-detail [user]="(user$ | async)!"></user-detail>
 
     </docs-code>
 
@@ -233,18 +233,18 @@ Consider the following directive:
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'submit-button',
-  template: &grave;
-    &lt;div class="wrapper"&gt;
-      &lt;button [disabled]="disabled"&gt;Submit&lt;/button&gt;
-    &lt;/div&gt;
-  &grave;,
+  template: `
+    <div class="wrapper">
+      <button [disabled]="disabled">Submit</button>
+    </div>
+  `,
 })
 class SubmitButton {
   private _disabled: boolean;
 
-  &commat;Input()
+  @Input()
   get disabled(): boolean {
     return this._disabled;
   }
@@ -262,7 +262,7 @@ But, suppose a consumer uses this input in the template as an attribute:
 
 <docs-code language="html">
 
-&lt;submit-button disabled&gt;&lt;/submit-button&gt;
+<submit-button disabled></submit-button>
 
 </docs-code>
 
@@ -270,7 +270,7 @@ This has the same effect as the binding:
 
 <docs-code language="html">
 
-&lt;submit-button [disabled]="''"&gt;&lt;/submit-button&gt;
+<submit-button [disabled]="''"></submit-button>
 
 </docs-code>
 
@@ -280,7 +280,7 @@ Angular component libraries that deal with this problem often "coerce" the value
 <docs-code language="typescript">
 
 set disabled(value: boolean) {
-  this._disabled = (value === '') &verbar;&verbar; value;
+  this._disabled = (value === '') || value;
 }
 
 </docs-code>
@@ -298,16 +298,16 @@ Enable this by adding a static property with the `ngAcceptInputType_` prefix to 
 class SubmitButton {
   private _disabled: boolean;
 
-  &commat;Input()
+  @Input()
   get disabled(): boolean {
     return this._disabled;
   }
 
   set disabled(value: boolean) {
-    this._disabled = (value === '') &verbar;&verbar; value;
+    this._disabled = (value === '') || value;
   }
 
-  static ngAcceptInputType_disabled: boolean&verbar;'';
+  static ngAcceptInputType_disabled: boolean|'';
 }
 
 </docs-code>
@@ -330,9 +330,9 @@ In the following example, casting `person` to the `any` type suppresses the erro
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'my-component',
-  template: '{{&dollar;any(person).address.street}}'
+  template: '{{$any(person).address.street}}'
 })
 class MyComponent {
   person?: Person;

@@ -7,7 +7,7 @@ This topic describes the properties of the service worker configuration file.
 The `ngsw-config.json` JSON configuration file specifies which files and data URLs the Angular service worker should cache and how it should update the cached files and data.
 The [Angular CLI](tools/cli) processes this configuration file during `ng build`.
 
-All file paths must begin with `/`, which corresponds to the deployment directory &mdash; usually `dist/<project-name>` in CLI projects.
+All file paths must begin with `/`, which corresponds to the deployment directory — usually `dist/<project-name>` in CLI projects.
 
 Unless otherwise commented, patterns use a **limited*** glob format that internally will be converted into regex:
 
@@ -68,10 +68,10 @@ This field contains an array of asset groups, each of which defines a set of ass
 {
   "assetGroups": [
     {
-      &hellip;
+      …
     },
     {
-      &hellip;
+      …
     }
   ]
 }
@@ -169,10 +169,10 @@ This field contains an array of data groups, each of which defines a set of data
 {
   "dataGroups": [
     {
-      &hellip;
+      …
     },
     {
-      &hellip;
+      …
     }
   ]
 }
@@ -197,7 +197,7 @@ export interface DataGroup {
     maxSize: number;
     maxAge: string;
     timeout?: string;
-    strategy?: 'freshness' &verbar; 'performance';
+    strategy?: 'freshness' | 'performance';
   };
   cacheQueryOptions?: {
     ignoreSearch?: boolean;
@@ -226,7 +226,7 @@ Only non-mutating requests (GET and HEAD) are cached.
 Occasionally APIs change formats in a way that is not backward-compatible.
 A new version of the application might not be compatible with the old API format and thus might not be compatible with existing cached resources from that API.
 
-`version` provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries &mdash;those from previous versions&mdash; should be discarded.
+`version` provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries —those from previous versions— should be discarded.
 
 `version` is an integer field and defaults to `1`.
 
@@ -306,7 +306,7 @@ In case you are not familiar, an [opaque response][https://fetch.spec.whatwg.org
 One of the characteristics of an opaque response is that the service worker is not allowed to read its status, meaning it can't check if the request was successful or not.
 See [Introduction to fetch()][https://developers.google.com/web/updates/2015/03/introduction-to-fetch#response_types] for more details.
 
-If you are not able to implement CORS &mdash; for example, if you don't control the origin &mdash; prefer using the `freshness` strategy for resources that result in opaque responses.
+If you are not able to implement CORS — for example, if you don't control the origin — prefer using the `freshness` strategy for resources that result in opaque responses.
 
 </docs-callout>
 

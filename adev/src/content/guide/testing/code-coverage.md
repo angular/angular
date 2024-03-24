@@ -33,7 +33,7 @@ To enable this, open the [Karma](https://karma-runner.github.io) test platform c
 
 <docs-code language="javascript">
 coverageReporter: {
-  dir: require('path').join(__dirname, './coverage/&lt;project-name&gt;'),
+  dir: require('path').join(__dirname, './coverage/<project-name>'),
   subdir: '.',
   reporters: [
     { type: 'html' },

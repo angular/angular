@@ -101,7 +101,7 @@ Starting with TypeScript 2.3, TypeScript has a plug-in model that the language s
 
     <docs-code language="shell">
 
-    npm install --save-dev &commat;angular/language-service
+    npm install --save-dev @angular/language-service
 
     </docs-code>
 
@@ -110,7 +110,7 @@ Starting with TypeScript 2.3, TypeScript has a plug-in model that the language s
     <docs-code header="tsconfig.json" language="json">
 
     "plugins": [
-        {"name": "&commat;angular/language-service"}
+        {"name": "@angular/language-service"}
     ]
 
     </docs-code>
@@ -119,7 +119,7 @@ Starting with TypeScript 2.3, TypeScript has a plug-in model that the language s
 
     <docs-code header="Sublime Text user preferences" language="json">
 
-    "typescript-tsdk": "&lt;path to your folder&gt;/node_modules/typescript/lib"
+    "typescript-tsdk": "<path to your folder>/node_modules/typescript/lib"
 
     </docs-code>
 
@@ -127,7 +127,7 @@ This lets the Angular Language Service provide diagnostics and completions in `.
 
 ### Eclipse IDE
 
-Either directly install the "Eclipse IDE for Web and JavaScript developers" package which comes with the Angular Language Server included, or from other Eclipse IDE packages, use Help &gt; Eclipse Marketplace to find and install [Eclipse Wild Web Developer](https://marketplace.eclipse.org/content/wild-web-developer-html-css-javascript-typescript-nodejs-angular-json-yaml-kubernetes-xml).
+Either directly install the "Eclipse IDE for Web and JavaScript developers" package which comes with the Angular Language Server included, or from other Eclipse IDE packages, use Help > Eclipse Marketplace to find and install [Eclipse Wild Web Developer](https://marketplace.eclipse.org/content/wild-web-developer-html-css-javascript-typescript-nodejs-angular-json-yaml-kubernetes-xml).
 
 ## How the Language Service works
 

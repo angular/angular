@@ -30,7 +30,7 @@ Other notable differences from JavaScript syntax include:
 
 ## Expression context
 
-Interpolated expressions have a context&mdash;a particular part of the application to which the expression belongs.  Typically, this context is the component instance.
+Interpolated expressions have a context—a particular part of the application to which the expression belongs.  Typically, this context is the component instance.
 
 In the following snippet, the expression `recommended` and the expression `itemImageUrl2` refer to properties of the `AppComponent`.
 
@@ -50,7 +50,7 @@ HELPFUL: Template expressions cannot refer to anything in the global namespace, 
 
 ### Preventing name collisions
 
-The context against which an expression evaluates is the union of the template variables, the directive's context object&mdash;if it has one&mdash;and the component's members.
+The context against which an expression evaluates is the union of the template variables, the directive's context object—if it has one—and the component's members.
 If you reference a name that belongs to more than one of these namespaces, Angular applies the following precedence logic to determine the context:
 
 1. The template variable name.

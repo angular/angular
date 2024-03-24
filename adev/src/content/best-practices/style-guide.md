@@ -151,14 +151,14 @@ Consistent conventions make it easy to quickly identify and reference assets of 
 
 | Symbol name                                                                                                                                                                          | File name |
 |:---                                                                                                                                                                                  |:---       |
-| <docs-code hideCopy language="typescript"> &commat;Component({ &hellip; }) &NewLine;export class AppComponent { } </docs-code>                             | app.component.ts |
-| <docs-code hideCopy language="typescript"> &commat;Component({ &hellip; }) &NewLine;export class HeroesComponent { } </docs-code>                          | heroes.component.ts |
-| <docs-code hideCopy language="typescript"> &commat;Component({ &hellip; }) &NewLine;export class HeroListComponent { } </docs-code>                        | hero-list.component.ts |
-| <docs-code hideCopy language="typescript"> &commat;Component({ &hellip; }) &NewLine;export class HeroDetailComponent { } </docs-code>                      | hero-detail.component.ts |
-| <docs-code hideCopy language="typescript"> &commat;Directive({ &hellip; }) &NewLine;export class ValidationDirective { } </docs-code>                      | validation.directive.ts |
-| <docs-code hideCopy language="typescript"> &commat;NgModule({ &hellip; }) &NewLine;export class AppModule </docs-code>                                     | app.module.ts |
-| <docs-code hideCopy language="typescript"> &commat;Pipe({ name: 'initCaps' }) &NewLine;export class InitCapsPipe implements PipeTransform { } </docs-code> | init-caps.pipe.ts |
-| <docs-code hideCopy language="typescript"> &commat;Injectable() &NewLine;export class UserProfileService { } </docs-code>                                  | user-profile.service.ts |
+| <docs-code hideCopy language="typescript"> @Component({ … }) <br>export class AppComponent { } </docs-code>                             | app.component.ts |
+| <docs-code hideCopy language="typescript"> @Component({ … }) <br>export class HeroesComponent { } </docs-code>                          | heroes.component.ts |
+| <docs-code hideCopy language="typescript"> @Component({ … }) <br>export class HeroListComponent { } </docs-code>                        | hero-list.component.ts |
+| <docs-code hideCopy language="typescript"> @Component({ … }) <br>export class HeroDetailComponent { } </docs-code>                      | hero-detail.component.ts |
+| <docs-code hideCopy language="typescript"> @Directive({ … }) <br>export class ValidationDirective { } </docs-code>                      | validation.directive.ts |
+| <docs-code hideCopy language="typescript"> @NgModule({ … }) <br>export class AppModule </docs-code>                                     | app.module.ts |
+| <docs-code hideCopy language="typescript"> @Pipe({ name: 'initCaps' }) <br>export class InitCapsPipe implements PipeTransform { } </docs-code> | init-caps.pipe.ts |
+| <docs-code hideCopy language="typescript"> @Injectable() <br>export class UserProfileService { } </docs-code>                                  | user-profile.service.ts |
 
 ### Service names
 
@@ -186,9 +186,9 @@ Service names such as `Credit` are nouns and require a suffix and should be name
 
 | Symbol name                                                                                                                                      | File name |
 |:---                                                                                                                                              |:---       |
-| <docs-code hideCopy language="typescript"> &commat;Injectable() &NewLine;export class HeroDataService { } </docs-code> | hero-data.service.ts |
-| <docs-code hideCopy language="typescript"> &commat;Injectable() &NewLine;export class CreditService { } </docs-code>   | credit.service.ts    |
-| <docs-code hideCopy language="typescript"> &commat;Injectable() &NewLine;export class Logger { } </docs-code>          | logger.service.ts    |
+| <docs-code hideCopy language="typescript"> @Injectable() <br>export class HeroDataService { } </docs-code> | hero-data.service.ts |
+| <docs-code hideCopy language="typescript"> @Injectable() <br>export class CreditService { } </docs-code>   | credit.service.ts    |
+| <docs-code hideCopy language="typescript"> @Injectable() <br>export class Logger { } </docs-code>          | logger.service.ts    |
 
 ### Bootstrapping
 
@@ -293,8 +293,8 @@ Provides a consistent way to quickly identify and reference pipes.
 
 | Symbol name                                                                                                                                                                          | File name |
 |:---                                                                                                                                                                                  |:---       |
-| <docs-code hideCopy language="typescript"> &commat;Pipe({ standalone: true, name: 'ellipsis' }) &NewLine;export class EllipsisPipe implements PipeTransform { } </docs-code> | ellipsis.pipe.ts  |
-| <docs-code hideCopy language="typescript"> &commat;Pipe({ standalone: true, name: 'initCaps' }) &NewLine;export class InitCapsPipe implements PipeTransform { } </docs-code> | init-caps.pipe.ts |
+| <docs-code hideCopy language="typescript"> @Pipe({ standalone: true, name: 'ellipsis' }) <br>export class EllipsisPipe implements PipeTransform { } </docs-code> | ellipsis.pipe.ts  |
+| <docs-code hideCopy language="typescript"> @Pipe({ standalone: true, name: 'initCaps' }) <br>export class InitCapsPipe implements PipeTransform { } </docs-code> | init-caps.pipe.ts |
 
 ### Unit test file names
 
@@ -354,40 +354,40 @@ project root
 ├── src
 │ ├── app
 │ │ ├── core
-│ │ │ └── exception.service.ts&verbar;spec.ts
-│ │ │ └── user-profile.service.ts&verbar;spec.ts
+│ │ │ └── exception.service.ts|spec.ts
+│ │ │ └── user-profile.service.ts|spec.ts
 │ │ ├── heroes
 │ │ │ ├── hero
-│ │ │ │ └── hero.component.ts&verbar;html&verbar;css&verbar;spec.ts
+│ │ │ │ └── hero.component.ts|html|css|spec.ts
 │ │ │ ├── hero-list
-│ │ │ │ └── hero-list.component.ts&verbar;html&verbar;css&verbar;spec.ts
+│ │ │ │ └── hero-list.component.ts|html|css|spec.ts
 │ │ │ ├── shared
-│ │ │ │ └── hero-button.component.ts&verbar;html&verbar;css&verbar;spec.ts
+│ │ │ │ └── hero-button.component.ts|html|css|spec.ts
 │ │ │ │ └── hero.model.ts
-│ │ │ │ └── hero.service.ts&verbar;spec.ts
-│ │ │ └── heroes.component.ts&verbar;html&verbar;css&verbar;spec.ts
+│ │ │ │ └── hero.service.ts|spec.ts
+│ │ │ └── heroes.component.ts|html|css|spec.ts
 │ │ │ └── heroes.routes.ts
 │ │ ├── shared
-│ │ │ └── init-caps.pipe.ts&verbar;spec.ts
-│ │ │ └── filter-text.component.ts&verbar;spec.ts
-│ │ │ └── filter-text.service.ts&verbar;spec.ts
+│ │ │ └── init-caps.pipe.ts|spec.ts
+│ │ │ └── filter-text.component.ts|spec.ts
+│ │ │ └── filter-text.service.ts|spec.ts
 │ │ ├── villains
 │ │ │ ├── villain
-│ │ │ │ └── &hellip;
+│ │ │ │ └── …
 │ │ │ ├── villain-list
-│ │ │ │ └── &hellip;
+│ │ │ │ └── …
 │ │ │ ├── shared
-│ │ │ │ └── &hellip;
-│ │ │ └── villains.component.ts&verbar;html&verbar;css&verbar;spec.ts
+│ │ │ │ └── …
+│ │ │ └── villains.component.ts|html|css|spec.ts
 │ │ │ └── villains.module.ts
 │ │ │ └── villains-routing.module.ts
-│ │ └── app.component.ts&verbar;html&verbar;css&verbar;spec.ts
+│ │ └── app.component.ts|html|css|spec.ts
 │ │ └── app.routes.ts
 │ └── main.ts
 │ └── index.html
-│ └── &hellip;
-└── node_modules/&hellip;
-└── &hellip;
+│ └── …
+└── node_modules/…
+└── …
 ```
 
 HELPFUL: While components in dedicated folders are widely preferred, another option for small applications is to keep components flat \(not in a dedicated folder\).
@@ -506,15 +506,15 @@ project root
 ├──├──app
 ├──├──├── shared
 ├──├──├──└── shared.module.ts
-├──├──├──└── init-caps.pipe.ts&verbar;spec.ts
-├──├──├──└── filter-text.component.ts&verbar;spec.ts
-├──├──├──└── filter-text.service.ts&verbar;spec.ts
-├──├──└── app.component.ts&verbar;html&verbar;css&verbar;spec.ts
+├──├──├──└── init-caps.pipe.ts|spec.ts
+├──├──├──└── filter-text.component.ts|spec.ts
+├──├──├──└── filter-text.service.ts|spec.ts
+├──├──└── app.component.ts|html|css|spec.ts
 ├──├──└── app.module.ts
 ├──├──└── app-routing.module.ts
 ├──└── main.ts
 ├──└── index.html
-└── &hellip;
+└── …
 ```
 
 <docs-code-multifile>
@@ -761,7 +761,7 @@ An element may have more than one attribute directive applied.
 **Do** be consistent in your choice.
 
 **Why**? <br />
-The property associated with `@HostBinding` or the method associated with `@HostListener` can be modified only in a single place &mdash;in the directive's class.
+The property associated with `@HostBinding` or the method associated with `@HostListener` can be modified only in a single place —in the directive's class.
 If you use the `host` metadata property, you must modify both the property/method declaration in the directive's class and the metadata in the decorator associated with the directive.
 
 <docs-code header="app/shared/validator.directive.ts" path="adev/src/content/examples/styleguide/src/06-03/app/shared/validator.directive.ts"/>
@@ -811,7 +811,7 @@ In this scenario it would be better to provide the service at the component leve
 
 <docs-code header="src/app/treeshaking/service.ts" path="adev/src/content/examples/dependency-injection/src/app/tree-shaking/service.ts"/>
 
-### Use the &commat;Injectable() class decorator
+### Use the @Injectable() class decorator
 
 #### Style 07-04
 

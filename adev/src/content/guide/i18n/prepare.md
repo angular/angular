@@ -11,7 +11,7 @@ To prepare your project for translation, complete the following actions.
 In a component template, the i18n metadata is the value of the `i18n` attribute.
 
 <docs-code language="html">
-&lt;element i18n="{i18n_metadata}"&gt;{string_to_translate}&lt;/element&gt;
+<element i18n="{i18n_metadata}">{string_to_translate}</element>
 </docs-code>
 
 Use the `i18n` attribute to mark a static text message in your component templates for translation.
@@ -44,7 +44,7 @@ The following example shows the `<ng-container>` element transformed into a non-
 In a component template, the i18n metadata is the value of the `i18n-{attribute_name}` attribute.
 
 <docs-code language="html">
-&lt;element i18n-{attribute_name}="{i18n_metadata}" {attribute_name}="{attribute_value}" /&gt;
+<element i18n-{attribute_name}="{i18n_metadata}" {attribute_name}="{attribute_value}" />
 </docs-code>
 
 The attributes of HTML elements include text that should be translated along with the rest of the displayed text in the component template.
@@ -55,7 +55,7 @@ Use the following syntax to assign a meaning, description, and custom ID.
 <!--todo: replace with docs-code -->
 
 <docs-code language="html">
-i18n-{attribute_name}="{meaning}|{description}&commat;&commat;{id}"
+i18n-{attribute_name}="{meaning}|{description}@@{id}"
 </docs-code>
 
 ### `i18n-title` example
@@ -82,7 +82,7 @@ Use the [`$localize`][ApiLocalizeInitLocalize] tagged message string to mark a s
 <!--todo: replace with docs-code -->
 
 <docs-code language="typescript">
-&dollar;localize `string_to_translate`;
+$localize `string_to_translate`;
 </docs-code>
 
 The i18n metadata is surrounded by colon \(`:`\) characters and prepends the translation source text.
@@ -90,7 +90,7 @@ The i18n metadata is surrounded by colon \(`:`\) characters and prepends the tra
 <!--todo: replace with docs-code -->
 
 <docs-code language="typescript">
-&dollar;localize `:{i18n_metadata}:string_to_translate`
+$localize `:{i18n_metadata}:string_to_translate`
 </docs-code>
 
 ### Include interpolated text
@@ -100,13 +100,13 @@ Include [interpolations](guide/templates/interpolation) in a [`$localize`][ApiLo
 <!--todo: replace with docs-code -->
 
 <docs-code language="typescript">
-&dollar;localize `string_to_translate &dollar;{variable_name}`;
+$localize `string_to_translate ${variable_name}`;
 </docs-code>
 
 ### Name the interpolation placeholder
 
 <docs-code language="typescript">
-&dollar;localize `string_to_translate &dollar;{variable_name}:placeholder_name:`;
+$localize `string_to_translate ${variable_name}:placeholder_name:`;
 </docs-code>
 
 ## i18n metadata for translation
@@ -114,7 +114,7 @@ Include [interpolations](guide/templates/interpolation) in a [`$localize`][ApiLo
 <!--todo: replace with docs-code -->
 
 <docs-code language="html">
-{meaning}|{description}&commat;&commat;{custom_id}
+{meaning}|{description}@@{custom_id}
 </docs-code>
 
 The following parameters provide context and additional information to reduce confusion for your translator.
@@ -143,7 +143,7 @@ The following example shows the value of the [`$localize`][ApiLocalizeInitLocali
 
 <docs-code language="typescript">
 
-&dollar;localize `:An introduction header for this sample:Hello i18n!`;
+$localize `:An introduction header for this sample:Hello i18n!`;
 
 </docs-code>
 
@@ -166,7 +166,7 @@ The following code example shows the value of the [`$localize`][ApiLocalizeInitL
 
 <docs-code language="typescript">
 
-&dollar;localize `:site header|An introduction header for this sample:Hello i18n!`;
+$localize `:site header|An introduction header for this sample:Hello i18n!`;
 
 </docs-code>
 
