@@ -1,7 +1,7 @@
 # Guidelines for creating NgModules
 
 This topic provides a conceptual overview of the different categories of NgModules you can create in order to organize your code in a modular structure.
-These categories are not cast in stone &mdash;they are suggestions.
+These categories are not cast in stone —they are suggestions.
 You may want to create NgModules for other purposes, or combine the characteristics of some of these categories.
 
 NgModules are a great way to organize an application and keep code related to a specific functionality or feature separate from other code.

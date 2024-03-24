@@ -27,7 +27,7 @@ For example, suppose you have a library named `d3`:
 <docs-code language="shell">
 
 npm install d3 --save
-npm install &commat;types/d3 --save-dev
+npm install @types/d3 --save-dev
 
 </docs-code>
 
@@ -128,7 +128,7 @@ The following code snippet is an example import statement.
 
 <docs-code language="typescript">
 
-import * as &dollar; from 'jquery';
+import * as $ from 'jquery';
 
 </docs-code>
 
@@ -154,7 +154,7 @@ Some scripts extend other libraries; for instance with JQuery plugins:
 
 <docs-code language="typescript">
 
-&dollar;('.test').myPlugin();
+$('.test').myPlugin();
 
 </docs-code>
 

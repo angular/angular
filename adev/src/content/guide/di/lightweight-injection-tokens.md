@@ -25,7 +25,7 @@ This component contains a body and can contain an optional header.
 <docs-code language="html">
 
 <lib-card>;
-  <lib-header>&hellip;</lib-header>;
+  <lib-header>…</lib-header>;
 </lib-card>;
 
 </docs-code>
@@ -35,13 +35,13 @@ In a likely implementation, the `<lib-card>` component uses `@ContentChild()` or
 <docs-code language="typescript" highlight="[12]">
 @Component({
   selector: 'lib-header',
-  &hellip;,
+  …,
 })
 class LibHeaderComponent {}
 
 @Component({
   selector: 'lib-card',
-  &hellip;,
+  …,
 })
 class LibCardComponent {
   @ContentChild(LibHeaderComponent) header: LibHeaderComponent|null = null;
@@ -108,13 +108,13 @@ abstract class LibHeaderToken {}
   providers: [
     {provide: LibHeaderToken, useExisting: LibHeaderComponent}
   ]
-  &hellip;,
+  …,
 })
 class LibHeaderComponent extends LibHeaderToken {}
 
 @Component({
   selector: 'lib-card',
-  &hellip;,
+  …,
 })
 class LibCardComponent {
   @ContentChild(LibHeaderToken) header: LibHeaderToken|null = null;
@@ -156,7 +156,7 @@ abstract class LibHeaderToken {
   providers: [
     {provide: LibHeaderToken, useExisting: LibHeaderComponent}
   ]
-  &hellip;,
+  …,
 })
 class LibHeaderComponent extends LibHeaderToken {
   doSomething(): void {
@@ -166,7 +166,7 @@ class LibHeaderComponent extends LibHeaderToken {
 
 @Component({
   selector: 'lib-card',
-  &hellip;,
+  …,
 })
 class LibCardComponent implement AfterContentInit {
   @ContentChild(LibHeaderToken) header: LibHeaderToken|null = null;

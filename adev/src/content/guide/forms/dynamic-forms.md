@@ -42,7 +42,7 @@ The following code from the example shows the setup in the root module.
 ## Create a form object model
 
 A dynamic form requires an object model that can describe all scenarios needed by the form functionality.
-The example hero-application form is a set of questions &mdash; that is, each control in the form must ask a question and accept an answer.
+The example hero-application form is a set of questions — that is, each control in the form must ask a question and accept an answer.
 
 The data model for this type of form must represent a question.
 The example includes the `DynamicFormQuestionComponent`, which defines a question as the fundamental object in the model.

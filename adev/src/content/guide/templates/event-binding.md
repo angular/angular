@@ -12,7 +12,7 @@ This syntax consists of a target event name within parentheses to the left of an
 Create the following example; the target event name is `click` and the template statement is `onSave()`.
 
 <docs-code language="html" header="Event binding syntax">
-&lt;button (click)="onSave()"&gt;Save&lt;/button&gt;
+<button (click)="onSave()">Save</button>
 </docs-code>
 
 The event binding listens for the button's click events and calls the component's `onSave()` method whenever a click occurs.

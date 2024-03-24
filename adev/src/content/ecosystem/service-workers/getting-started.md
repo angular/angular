@@ -54,7 +54,7 @@ To simulate a network issue, disable network interaction for your application.
 
 In Chrome:
 
-1. Select **Tools** &gt; **Developer Tools** (from the Chrome menu located in the top right corner).
+1. Select **Tools** > **Developer Tools** (from the Chrome menu located in the top right corner).
 1. Go to the **Network tab**.
 1. Select **Offline** in the **Throttling** dropdown menu.
 
@@ -110,7 +110,7 @@ Make a change to the application, and watch the service worker install the updat
     <docs-code language="shell">
 
     ng build
-    npx http-server -p 8080 -c-1 dist/&lt;project-name&gt;/browser
+    npx http-server -p 8080 -c-1 dist/<project-name>/browser
 
     </docs-code>
 

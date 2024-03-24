@@ -196,7 +196,7 @@ HELPFUL: Some additional notes on using styles within [`state`](api/animations/s
 
     <docs-code language="typescript">
 
-    transition( 'on =&gt; off, off =&gt; void' )
+    transition( 'on => off, off => void' )
 
     </docs-code>
 
@@ -227,7 +227,7 @@ Then, you can bind the trigger to a template expression using standard Angular p
 
 <docs-code language="typescript">
 
-&lt;div [&commat;triggerName]="expression"&gt;&hellip;&lt;/div&gt;;
+<div [@triggerName]="expression">…</div>;
 
 </docs-code>
 

@@ -130,7 +130,7 @@ When you write your own structural directives, use the following syntax:
 
 <docs-code hideCopy language="typescript">
 
-&ast;:prefix="( :let &verbar; :expression ) (';' &verbar; ',')? ( :let &verbar; :as &verbar; :keyExp )&ast;"
+*:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
 
 </docs-code>
 

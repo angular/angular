@@ -1,7 +1,7 @@
 # Lazy-loading feature modules
 
 By default, NgModules are eagerly loaded. This means that as soon as the application loads, so do all the NgModules, whether they are immediately necessary or not.
-For large applications with lots of routes, consider lazy loading &mdash;a design pattern that loads NgModules as needed.
+For large applications with lots of routes, consider lazy loading —a design pattern that loads NgModules as needed.
 Lazy loading helps keep initial bundle sizes smaller, which in turn helps decrease load times.
 
 <!-- For the final sample application with two lazy-loaded modules that this page describes: -->
@@ -363,7 +363,7 @@ In the newly created service, implement the `Resolve` interface provided by the 
 
 import { Resolve } from '@angular/router';
 
-&hellip;
+…
 
 /*An interface that represents your data model*/
 export interface Crisis {
@@ -371,8 +371,8 @@ export interface Crisis {
   name: string;
 }
 
-export class CrisisDetailResolverService implements Resolve&lt;Crisis&gt; {
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable&lt;Crisis&gt; {
+export class CrisisDetailResolverService implements Resolve<Crisis> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Crisis> {
     // your logic goes here
   }
 }
@@ -405,7 +405,7 @@ In the component's constructor, inject an instance of the `ActivatedRoute` class
 <docs-code header="Component's constructor (excerpt)">
 import { ActivatedRoute } from '@angular/router';
 
-@Component({ &hellip; })
+@Component({ … })
 class YourComponent {
   constructor(private route: ActivatedRoute) {}
 }
@@ -417,7 +417,7 @@ Use the injected instance of the `ActivatedRoute` class to access `data` associa
            highlight="[1,5,8]">
 import { ActivatedRoute } from '@angular/router';
 
-@Component({ &hellip; })
+@Component({ … })
 class YourComponent {
   constructor(private route: ActivatedRoute) {}
 
@@ -425,7 +425,7 @@ class YourComponent {
     this.route.data
       .subscribe(data => {
         const crisis: Crisis = data.crisis;
-        // &hellip;
+        // …
       });
   }
 }

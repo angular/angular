@@ -18,7 +18,7 @@ To display the current date in the format for the current locale, use the follow
 
 <docs-code language="typescript">
 
-{{ today &verbar; date }}
+{{ today | date }}
 
 </docs-code>
 
@@ -32,7 +32,7 @@ To force the currency to use American English \(`en-US`\), use the following for
 
 <docs-code language="typescript">
 
-{{ amount &verbar; currency : 'en-US' }}
+{{ amount | currency : 'en-US' }}
 
 </docs-code>
 

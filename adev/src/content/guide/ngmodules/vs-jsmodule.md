@@ -14,7 +14,7 @@ For the module specification, see the [6th Edition of the ECMAScript standard](h
 To make the code in a JavaScript module available to other modules, use an `export` statement at the end of the relevant code in the module, such as the following:
 
 <docs-code language="typescript">
-export class AppComponent { &hellip; }
+export class AppComponent { … }
 </docs-code>
 
 When you need that module's code in another module, use an `import` statement as follows:

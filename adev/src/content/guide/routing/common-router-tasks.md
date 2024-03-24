@@ -380,7 +380,7 @@ The router uses an `id` to show the correct hero's details.
 First, import the following members in the component you want to navigate from.
 
 ```ts
-import { ActivatedRoute } from '&commat;angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 ```

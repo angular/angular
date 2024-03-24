@@ -10,7 +10,7 @@ Then, you set the attribute value with an expression that resolves to a string.
 
 <docs-code language="html">
 
-&lt;p [attr.attribute-you-are-targeting]="expression"&gt;&lt;/p&gt;
+<p [attr.attribute-you-are-targeting]="expression"></p>
 
 </docs-code>
 

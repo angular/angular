@@ -36,10 +36,10 @@ The following properties are a set of options that customize the Angular CLI.
 
 | Property              | Details                                                                                                                                                                    | Value type                                            | Default value |
 |:---                   |:---                                                                                                                                                                        |:---                                                   |:---           |
-| `analytics`           | Share anonymous usage data with the Angular Team. A boolean value indicates whether or not to share data, while a UUID string shares data using a pseudonymous identifier. | `boolean` &verbar;  `string`                          | `false`       |
+| `analytics`           | Share anonymous usage data with the Angular Team. A boolean value indicates whether or not to share data, while a UUID string shares data using a pseudonymous identifier. | `boolean` |  `string`                          | `false`       |
 | `cache`               | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](tools/cli/cli-builder).                                                                          | [Cache options](#cache-options)                       | `{}`          |
 | `schematicCollections`| List schematics collections to use in `ng generate`.                                                                                                                       | `string[]`                                            | `[]`          |
-| `packageManager`      | The preferred package manager tool to use.                                                                                                                                 | `npm` &verbar; `cnpm` &verbar; `pnpm` &verbar; `yarn` | `npm`         |
+| `packageManager`      | The preferred package manager tool to use.                                                                                                                                 | `npm` | `cnpm` | `pnpm` | `yarn` | `npm`         |
 | `warnings`            | Control Angular CLI specific console warnings.                                                                                                                             | [Warnings options](#warnings-options)                 | `{}`          |
 
 ### Cache options
@@ -47,7 +47,7 @@ The following properties are a set of options that customize the Angular CLI.
 | Property      | Details                                                                                                                                                                                                                                      | Value type                           | Default value    |
 |:---           |:---                                                                                                                                                                                                                                          |:---                                  |:---              |
 | `enabled`     | Configure whether disk caching is enabled for builds.                                                                                                                                                                                        | `boolean`                            | `true`           |
-| `environment` | Configure in which environment disk cache is enabled.<br><br>* `ci` enables caching only in continuous integration (CI) environments.<br>* `local` enables caching only *outside* of CI environments.<br>* `all` enables caching everywhere. | `local` &verbar; `ci` &verbar; `all` | `local`          |
+| `environment` | Configure in which environment disk cache is enabled.<br><br>* `ci` enables caching only in continuous integration (CI) environments.<br>* `local` enables caching only *outside* of CI environments.<br>* `all` enables caching everywhere. | `local` | `ci` | `all` | `local`          |
 | `path`        | The directory used to stored cache results.                                                                                                                                                                                                  | `string`                             | `.angular/cache` |
 
 ### Warnings options
@@ -63,7 +63,7 @@ The following top-level configuration properties are available for each project,
 | Property      | Details                                                                                                                                                                              | Value type                                                      | Default value   |
 |:---           |:---                                                                                                                                                                                  |:---                                                             |:---             |
 | `root`        | The root directory for this project's files, relative to the workspace directory. Empty for the initial application, which resides at the top level of the workspace.                | `string`                                                        | None (required) |
-| `projectType` | One of "application" or "library" An application can run independently in a browser, while a library cannot.                                                                         | `application` &verbar; `library`                                | None (required) |
+| `projectType` | One of "application" or "library" An application can run independently in a browser, while a library cannot.                                                                         | `application` | `library`                                | None (required) |
 | `sourceRoot`  | The root directory for this project's source files.                                                                                                                                  | `string`                                                        | `''`            |
 | `prefix`      | A string that Angular prepends to selectors when generating new components, directives, and pipes using `ng generate`. Can be customized to identify an application or feature area. | `string`                                                        | `'app'`         |
 | `schematics`  | A set of schematics that customize the `ng generate` sub-command option defaults for this project. See the [Generation schematics](#schematics) section.                             | See [schematics](#schematics)                                   | `{}`            |
@@ -409,8 +409,8 @@ Several options can be used to fine-tune the optimization of an application.
 | Options   | Details                                                        | Value type                                                                     | Default value |
 |:---       |:---                                                            |:---                                                                            |:---           |
 | `scripts` | Enables optimization of the scripts output.                    | `boolean`                                                                      | `true`        |
-| `styles`  | Enables optimization of the styles output.                     | `boolean` &verbar; [Styles optimization options](#styles-optimization-options) | `true`        |
-| `fonts`   | Enables optimization for fonts. This requires internet access. | `boolean` &verbar; [Fonts optimization options](#fonts-optimization-options)   | `true`        |
+| `styles`  | Enables optimization of the styles output.                     | `boolean` | [Styles optimization options](#styles-optimization-options) | `true`        |
+| `fonts`   | Enables optimization for fonts. This requires internet access. | `boolean` | [Fonts optimization options](#fonts-optimization-options)   | `true`        |
 
 #### Styles optimization options
 

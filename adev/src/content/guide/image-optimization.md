@@ -52,7 +52,7 @@ To activate the `NgOptimizedImage` directive, replace your image's `src` attribu
 
 <docs-code language="typescript">
 
-&lt;img ngSrc="cat.jpg"&gt;
+<img ngSrc="cat.jpg">
 
 </docs-code>
 
@@ -63,7 +63,7 @@ Always mark the [LCP image](https://web.dev/lcp/#what-elements-are-considered) o
 
 <docs-code language="typescript">
 
-&lt;img ngSrc="cat.jpg" width="400" height="200" priority&gt;
+<img ngSrc="cat.jpg" width="400" height="200" priority>
 
 </docs-code>
 
@@ -80,7 +80,7 @@ In order to prevent [image-related layout shifts](https://web.dev/css-web-vitals
 
 <docs-code language="typescript">
 
-&lt;img ngSrc="cat.jpg" width="400" height="200"&gt;
+<img ngSrc="cat.jpg" width="400" height="200">
 
 </docs-code>
 
@@ -100,7 +100,7 @@ When you add the `fill` attribute to your image, you do not need and should not 
 
 <docs-code language="typescript">
 
-&lt;img ngSrc="cat.jpg" fill&gt;
+<img ngSrc="cat.jpg" fill>
 
 </docs-code>
 
@@ -120,7 +120,7 @@ NgOptimizedImage can display an automatic low-resolution placeholder for your im
 
 <code-example format="typescript" language="typescript">
 
-&lt;img ngSrc="cat.jpg" width="400" height="200" placeholder&gt;
+<img ngSrc="cat.jpg" width="400" height="200" placeholder>
 
 </code-example>
 
@@ -147,7 +147,7 @@ You can also specify a placeholder using a base64 [data URL](https://developer.m
 
 <code-example format="typescript" language="typescript">
 
-&lt;img ngSrc="cat.jpg" width="400" height="200" placeholder="data:image/png;base64,iVBORw0K..."&gt;
+<img ngSrc="cat.jpg" width="400" height="200" placeholder="data:image/png;base64,iVBORw0K...">
 
 </code-example>
 
@@ -159,7 +159,7 @@ By default, NgOptimizedImage applies a CSS blur effect to image placeholders. To
 
 <code-example format="typescript" language="typescript">
 
-&lt;img ngSrc="cat.jpg" width="400" height="200" placeholder [placeholderConfig]="{blur: false}"&gt;
+<img ngSrc="cat.jpg" width="400" height="200" placeholder [placeholderConfig]="{blur: false}">
 
 </code-example>
 
@@ -181,7 +181,7 @@ You can add a [`preconnect` resource hint](https://web.dev/preconnect-and-dns-pr
 
 <docs-code language="html">
 
-&lt;link rel="preconnect" href="https://my.cdn.origin" /&gt;
+<link rel="preconnect" href="https://my.cdn.origin" />
 
 </docs-code>
 
@@ -236,7 +236,7 @@ If you would like to manually define a `srcset` attribute, you can provide your 
 
 <docs-code language="html">
 
-&lt;img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w"&gt;
+<img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w">
 
 </docs-code>
 
@@ -244,7 +244,7 @@ If the `ngSrcset` attribute is present, `NgOptimizedImage` generates and sets th
 
 <docs-code language="html">
 
-&lt;img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w" sizes="50vw"&gt;
+<img ngSrc="hero.jpg" ngSrcset="100w, 200w, 300w" sizes="50vw">
 
 </docs-code>
 
@@ -254,7 +254,7 @@ To disable srcset generation for a single image, you can add the `disableOptimiz
 
 <docs-code language="html">
 
-&lt;img ngSrc="about.jpg" disableOptimizedSrcset&gt;
+<img ngSrc="about.jpg" disableOptimizedSrcset>
 
 </docs-code>
 
@@ -264,7 +264,7 @@ By default, `NgOptimizedImage` sets `loading=lazy` for all images that are not m
 
 <docs-code language="html">
 
-&lt;img ngSrc="cat.jpg" width="400" height="200" loading="eager"&gt;
+<img ngSrc="cat.jpg" width="400" height="200" loading="eager">
 
 </docs-code>
 
@@ -274,7 +274,7 @@ You may want to have images displayed at varying widths on differently-sized scr
 
 <docs-code language="html">
 
-&lt;img ngSrc="cat.jpg" width="400" height="200" sizes="(max-width: 768px) 100vw, 50vw"&gt;
+<img ngSrc="cat.jpg" width="400" height="200" sizes="(max-width: 768px) 100vw, 50vw">
 
 </docs-code>
 
@@ -371,7 +371,7 @@ Note that in the above example, we've invented the 'roundedCorners' property nam
 
 <docs-code language="html">
 
-&lt;img ngSrc="profile.jpg" width="300" height="300" [loaderParams]="{roundedCorners: true}"&gt;
+<img ngSrc="profile.jpg" width="300" height="300" [loaderParams]="{roundedCorners: true}">
 
 </docs-code>
 

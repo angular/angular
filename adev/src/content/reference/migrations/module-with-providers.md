@@ -13,7 +13,7 @@ In the example below, the type of the `NgModule` is `SomeModule`, so the schemat
 
 <docs-code language="typescript">
 
-&commat;NgModule({&hellip;})
+@NgModule({…})
 export class MyModule {
   static forRoot(config: SomeConfig): ModuleWithProviders {
     return {
@@ -31,9 +31,9 @@ export class MyModule {
 
 <docs-code language="typescript">
 
-&commat;NgModule({&hellip;})
+@NgModule({…})
 export class MyModule {
-  static forRoot(config: SomeConfig): ModuleWithProviders&lt;SomeModule&gt; {
+  static forRoot(config: SomeConfig): ModuleWithProviders<SomeModule> {
     return {
       ngModule: SomeModule,
       providers: [

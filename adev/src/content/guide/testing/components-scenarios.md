@@ -272,7 +272,7 @@ HELPFUL: The `it()` function receives an argument of the following form.
 
 <docs-code language="javascript">
 
-fakeAsync(() =&gt; { /*test body*/ })
+fakeAsync(() => { /*test body*/ })
 
 </docs-code>
 
@@ -593,7 +593,7 @@ The following test verifies that the hero name is propagated to the template usi
 
 Because the [template](#dashboard-hero-component) passes the hero name through the Angular `UpperCasePipe`, the test must match the element value with the upper-cased name.
 
-HELPFUL: This small test demonstrates how Angular tests can verify a component's visual representation &mdash;something not possible with [component class tests](guide/testing/components-basics#component-class-testing)&mdash; at low cost and without resorting to much slower and more complicated end-to-end tests.
+HELPFUL: This small test demonstrates how Angular tests can verify a component's visual representation —something not possible with [component class tests](guide/testing/components-basics#component-class-testing)— at low cost and without resorting to much slower and more complicated end-to-end tests.
 
 ### Clicking
 
@@ -866,7 +866,7 @@ But there's plenty of template complexity even in this simple form.
 <docs-code
   path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.html" header="app/hero/hero-detail.component.html"/>
 
-Tests that exercise the component need &hellip;
+Tests that exercise the component need …
 
 * To wait until a hero arrives before elements appear in the DOM
 * A reference to the title text
@@ -1089,10 +1089,10 @@ The [override metadata object](guide/testing/utility-apis#metadata-override-obje
 
 <docs-code language="javascript">
 
-type MetadataOverride&lt;T&gt; = {
-  add?: Partial&lt;T&gt;;
-  remove?: Partial&lt;T&gt;;
-  set?: Partial&lt;T&gt;;
+type MetadataOverride<T> = {
+  add?: Partial<T>;
+  remove?: Partial<T>;
+  set?: Partial<T>;
 };
 
 </docs-code>
@@ -1108,7 +1108,7 @@ selector?: string;
 template?: string;
 templateUrl?: string;
 providers?: any[];
-&hellip;
+…
 
 </docs-code>
 

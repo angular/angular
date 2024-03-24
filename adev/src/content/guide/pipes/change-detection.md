@@ -97,7 +97,7 @@ Make a pipe impure by setting its `pure` flag to `false`:
            visibleRegion="pipe-decorator" highlight="[19]"/>
 
 The following code shows the complete implementation of `FlyingHeroesImpurePipe`, which extends `FlyingHeroesPipe` to inherit its characteristics.
-The example shows that you don't have to change anything else&mdash;the only difference is setting the `pure` flag as `false` in the pipe metadata.
+The example shows that you don't have to change anything else—the only difference is setting the `pure` flag as `false` in the pipe metadata.
 
 <docs-code-multifile>
     <docs-code header="src/app/flying-heroes.pipe.ts (FlyingHeroesImpurePipe)" path="adev/src/content/examples/pipes/src/app/flying-heroes.pipe.ts" visibleRegion="impure"/>
