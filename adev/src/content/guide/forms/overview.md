@@ -110,7 +110,7 @@ The view-to-model diagram shows how data flows when an input field's value is ch
 ```mermaid
 flowchart TB
     U{User}
-    I("&lt;input&gt;")
+    I("<input>")
     CVA(ControlValueAccessor)
     FC(FormControl)
     O(Observers)
@@ -130,14 +130,14 @@ The model-to-view diagram shows how a programmatic change to the model is propag
 ```mermaid
 flowchart TB
     U{User}
-    I(&lt;input&gt;)
+    I(<input>)
     CVA(ControlValueAccessor)
     FC(FormControl)
     O(Observers)
     U-->|"Calls setValue() on the FormControl"|FC
     FC-->|Notifies the ControlValueAccessor|CVA
     FC-.->|Fires a 'valueChanges' event to observers|O
-    CVA-->|"Updates the value of the &lt;input&gt;"|I
+    CVA-->|"Updates the value of the <input>"|I
 ```
 
 ### Data flow in template-driven forms
@@ -157,7 +157,7 @@ The view-to-model diagram shows how data flows when an input field's value is ch
 ```mermaid
 flowchart TB
     U{User}
-    I(&lt;input&gt;)
+    I(<input>)
     CVA(ControlValueAccessor)
     FC(FormControl)
     M(NgModel)
@@ -207,7 +207,7 @@ flowchart TB
         FC2(FormControl)
         O(Observers)
         CVA(ControlValueAccessor)
-        I("&lt;input&gt;")
+        I("<input>")
         FC2-.->|Fires a 'valueChanges' event to observers|O
         O-->|ControlValueAccessor receives valueChanges event|CVA
         CVA-->|Sets the value in the control|I

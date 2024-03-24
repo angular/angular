@@ -27,11 +27,11 @@ You can determine which builder is being used for a particular project by lookin
         // `ng build` invokes the Architect target named `build`.
         "build": {
           "builder": "@angular-devkit/build-angular:application",
-          &hellip;
+          …
         },
-        "serve": { &hellip; }
-        "test": { &hellip; }
-        &hellip;
+        "serve": { … }
+        "test": { … }
+        …
       }
     }
   }
@@ -55,10 +55,10 @@ Define your size boundaries in the CLI configuration file, `angular.json`, in a 
 <docs-code language="json">
 
 {
-  &hellip;
+  …
   "configurations": {
     "production": {
-      &hellip;
+      …
       "budgets": [
         {
           "type": "initial",
@@ -120,9 +120,9 @@ If the best option is to use a CommonJS dependency, you can disable these warnin
      "allowedCommonJsDependencies": [
         "lodash"
      ]
-     &hellip;
+     …
    }
-   &hellip;
+   …
 },
 
 </docs-code>

@@ -28,7 +28,7 @@ The `versionUpdates` is an `Observable` property of `SwUpdate` and emits four ev
 ### Checking for updates
 
 It's possible to ask the service worker to check if any updates have been deployed to the server.
-The service worker checks for updates during initialization and on each navigation request &mdash;that is, when the user navigates from a different address to your application.
+The service worker checks for updates during initialization and on each navigation request —that is, when the user navigates from a different address to your application.
 However, you might choose to manually check for updates if you have a site that changes frequently or want updates to happen on a schedule.
 
 Do this with the `checkForUpdate()` method:

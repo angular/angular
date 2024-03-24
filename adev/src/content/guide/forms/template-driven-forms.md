@@ -10,7 +10,7 @@ Angular supports two design approaches for interactive forms. Template-driven fo
 Template-driven forms are a great choice for small or simple forms, while reactive forms are more scalable and suitable for complex forms. For a comparison of the two approaches, see [Choosing an approach](guide/forms#choosing-an-approach)
 </docs-callout>
 
-You can build almost any kind of form with an Angular template &mdash;login forms, contact forms, and pretty much any business form.
+You can build almost any kind of form with an Angular template —login forms, contact forms, and pretty much any business form.
 You can lay out the controls creatively and bind them to the data in your object model.
 You can specify validation rules and display validation errors, conditionally allow input from specific controls, trigger built-in visual feedback, and much more.
 
@@ -339,11 +339,11 @@ You will bind the form property that indicates its overall validity to the **Sub
 </docs-step>
 
 <docs-step title="Run the application">
-Notice that the button is enabled &mdash;although it doesn't do anything useful yet.
+Notice that the button is enabled —although it doesn't do anything useful yet.
 </docs-step>
 
 <docs-step title="Delete the Name value">
-This violates the "required" rule, so it displays the error message &mdash;and notice that it also disables the **Submit** button.
+This violates the "required" rule, so it displays the error message —and notice that it also disables the **Submit** button.
 
 You didn't have to explicitly wire the button's enabled state to the form's validity.
 The `FormsModule` did this automatically when you defined a template reference variable on the enhanced form element, then referred to that variable in the button control.

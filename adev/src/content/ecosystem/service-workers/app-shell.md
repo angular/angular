@@ -33,7 +33,7 @@ After running this command you can see that the `angular.json` configuration fil
 <docs-code language="json">
 
 "server": {
-  "builder": "&commat;angular-devkit/build-angular:server",
+  "builder": "@angular-devkit/build-angular:server",
   "defaultConfiguration": "production",
   "options": {
     "outputPath": "dist/my-app/server",
@@ -58,7 +58,7 @@ After running this command you can see that the `angular.json` configuration fil
   }
 },
 "app-shell": {
-  "builder": "&commat;angular-devkit/build-angular:app-shell",
+  "builder": "@angular-devkit/build-angular:app-shell",
   "defaultConfiguration": "production",
   "options": {
     "route": "shell"

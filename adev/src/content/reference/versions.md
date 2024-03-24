@@ -119,24 +119,24 @@ If you are not using the CLI, add your polyfill scripts directly to the host web
 For example:
 
 <docs-code header="src/index.html" language="html">
-&lt;!-- pre-zone polyfills --&gt;
-&lt;script src="node_modules/core-js/client/shim.min.js"&gt;&lt;/script&gt;
-&lt;script>
+<!-- pre-zone polyfills -->
+<script src="node_modules/core-js/client/shim.min.js"></script>
+<script>
   /**
-   &ast; you can configure some zone flags which can disable zone interception for some
-   &ast; asynchronous activities to improve startup performance - use these options only
-   &ast; if you know what you are doing as it could result in hard to trace down bugs.
+   * you can configure some zone flags which can disable zone interception for some
+   * asynchronous activities to improve startup performance - use these options only
+   * if you know what you are doing as it could result in hard to trace down bugs.
    */
   // &lowbar;&lowbar;Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
   // &lowbar;&lowbar;Zone_disable_on_property = true; // disable patch onProperty such as onclick
   // &lowbar;&lowbar;zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
   /*
-   &ast; in Edge developer tools, the addEventListener will also be wrapped by zone.js
-   &ast; with the following flag, it will bypass `zone.js` patch for Edge.
+   * in Edge developer tools, the addEventListener will also be wrapped by zone.js
+   * with the following flag, it will bypass `zone.js` patch for Edge.
    */
   // &lowbar;&lowbar;Zone_enable_cross_context_check = true;
-&lt;/script&gt;
-&lt;!-- zone.js required by Angular --&gt;
-&lt;script src="node_modules/zone.js/bundles/zone.umd.js"&gt;&lt;/script&gt;
-&lt;!-- application polyfills --&gt;
+</script>
+<!-- zone.js required by Angular -->
+<script src="node_modules/zone.js/bundles/zone.umd.js"></script>
+<!-- application polyfills -->
 </docs-code>

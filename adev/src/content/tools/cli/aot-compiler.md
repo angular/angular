@@ -44,13 +44,13 @@ In the following example, the `@Component()` metadata object and the class const
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'app-typical',
-  template: '&lt;div&gt;A typical component for {{data.name}}&lt;/div&gt;'
+  template: '<div>A typical component for {{data.name}}</div>'
 })
 export class TypicalComponent {
-  &commat;Input() data: TypicalData;
-  constructor(private someService: SomeService) { &hellip; }
+  @Input() data: TypicalData;
+  constructor(private someService: SomeService) { … }
 }
 
 </docs-code>
@@ -104,13 +104,13 @@ Define metadata objects with the following limited syntax:
 |:---                       |:---     |
 | Literal object            | `{cherry: true, apple: true, mincemeat: false}`                        |
 | Literal array             | `['cherries', 'flour', 'sugar']`                                       |
-| Spread in literal array   | `['apples', 'flour', ...]`                                             |
+| Spread in literal array   | `['apples', 'flour', …]`                                               |
 | Calls                     | `bake(ingredients)`                                                    |
 | New                       | `new Oven()`                                                           |
 | Property access           | `pie.slice`                                                            |
 | Array index               | `ingredients[0]`                                                       |
 | Identity reference        | `Component`                                                            |
-| A template string         | <code>&grave;pie is &dollar;{multiplier} times better than cake&grave;</code> |
+| A template string         | <code>`pie is ${multiplier} times better than cake`</code> |
 | Literal string            | `'pi'`                                                                 |
 | Literal number            | `3.14153265`                                                           |
 | Literal boolean           | `true`                                                                 |
@@ -128,7 +128,7 @@ HELPFUL: If you want `ngc` to report syntax errors immediately rather than produ
 <docs-code language="json">
 
 "angularCompilerOptions": {
-  &hellip;
+  …
   "strictMetadataEmit" : true
 }
 
@@ -145,9 +145,9 @@ Consider the following component decorator:
 
 <docs-code language="typescript">
 
-&commat;Component({
-  &hellip;
-  providers: [{provide: server, useFactory: () =&gt; new Server()}]
+@Component({
+  …
+  providers: [{provide: server, useFactory: () => new Server()}]
 })
 
 </docs-code>
@@ -164,8 +164,8 @@ export function serverFactory() {
   return new Server();
 }
 
-&commat;Component({
-  &hellip;
+@Component({
+  …
   providers: [{provide: server, useFactory: serverFactory}]
 })
 
@@ -189,14 +189,14 @@ Consider the following component definition:
 
 <docs-code language="typescript">
 
-const template = '&lt;div&gt;{{hero.name}}&lt;/div&gt;';
+const template = '<div>{{hero.name}}</div>';
 
-&commat;Component({
+@Component({
   selector: 'app-hero',
   template: template
 })
 export class HeroComponent {
-  &commat;Input() hero: Hero;
+  @Input() hero: Hero;
 }
 
 </docs-code>
@@ -207,12 +207,12 @@ The effect is the same as if you had written:
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'app-hero',
-  template: '&lt;div&gt;{{hero.name}}&lt;/div&gt;'
+  template: '<div>{{hero.name}}</div>'
 })
 export class HeroComponent {
-  &commat;Input() hero: Hero;
+  @Input() hero: Hero;
 }
 
 </docs-code>
@@ -223,14 +223,14 @@ You can take this example a step further by including the `template` constant in
 
 <docs-code language="typescript">
 
-const template = '&lt;div&gt;{{hero.name}}&lt;/div&gt;';
+const template = '<div>{{hero.name}}</div>';
 
-&commat;Component({
+@Component({
   selector: 'app-hero',
-  template: template + '&lt;div&gt;{{hero.title}}&lt;/div&gt;'
+  template: template + '<div>{{hero.title}}</div>'
 })
 export class HeroComponent {
-  &commat;Input() hero: Hero;
+  @Input() hero: Hero;
 }
 
 </docs-code>
@@ -239,7 +239,7 @@ The collector reduces this expression to its equivalent *folded* string:
 
 <docs-code language="typescript">
 
-'&lt;div&gt;{{hero.name}}&lt;/div&gt;&lt;div&gt;{{hero.title}}&lt;/div&gt;'
+'<div>{{hero.name}}</div><div>{{hero.title}}</div>'
 
 </docs-code>
 
@@ -309,7 +309,7 @@ For example, consider the following function:
 
 <docs-code language="typescript">
 
-export function wrapInArray&lt;T&gt;(value: T): T[] {
+export function wrapInArray<T>(value: T): T[] {
   return [value];
 }
 
@@ -321,7 +321,7 @@ You might use  `wrapInArray()` like this:
 
 <docs-code language="typescript">
 
-&commat;NgModule({
+@NgModule({
   declarations: wrapInArray(TypicalComponent)
 })
 export class TypicalModule {}
@@ -332,7 +332,7 @@ The compiler treats this usage as if you had written:
 
 <docs-code language="typescript">
 
-&commat;NgModule({
+@NgModule({
   declarations: [TypicalComponent]
 })
 export class TypicalModule {}
@@ -347,7 +347,7 @@ for these methods to see how macros can simplify configuration of complex [NgMod
 
 The compiler treats object literals containing the fields `useClass`, `useValue`, `useFactory`, and `data` specially, converting the expression initializing one of these fields into an exported variable that replaces the expression.
 This process of rewriting these expressions removes all the restrictions on what can be in them because
-the compiler doesn't need to know the expression's value &mdash;it just needs to be able to generate a reference to the value.
+the compiler doesn't need to know the expression's value — it just needs to be able to generate a reference to the value.
 
 You might write something like:
 
@@ -357,8 +357,8 @@ class TypicalServer {
 
 }
 
-&commat;NgModule({
-  providers: [{provide: SERVER, useFactory: () =&gt; TypicalServer}]
+@NgModule({
+  providers: [{provide: SERVER, useFactory: () => TypicalServer}]
 })
 export class TypicalModule {}
 
@@ -373,10 +373,10 @@ class TypicalServer {
 
 }
 
-export const &theta;0 = () =&gt; new TypicalServer();
+export const θ0 = () => new TypicalServer();
 
-&commat;NgModule({
-  providers: [{provide: SERVER, useFactory: &theta;0}]
+@NgModule({
+  providers: [{provide: SERVER, useFactory: θ0}]
 })
 export class TypicalModule {}
 
@@ -404,7 +404,7 @@ For example, consider the following component:
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'my-component',
   template: '{{person.addresss.street}}'
 })
@@ -451,7 +451,7 @@ For example, to avoid `Object is possibly 'undefined'` error in the template abo
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'my-component',
   template: '<span *ngIf="person"> {{person.address.street}} </span>'
 })
@@ -474,9 +474,9 @@ There is no convenient way to describe this constraint to TypeScript and the tem
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'my-component',
-  template: '&lt;span *ngIf="person"&gt; {{person.name}} lives on {{address!.street}} &lt;/span&gt;'
+  template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>'
 })
 class MyComponent {
   person?: Person;
@@ -496,9 +496,9 @@ In this example it is recommended to include the checking of `address` in the `*
 
 <docs-code language="typescript">
 
-&commat;Component({
+@Component({
   selector: 'my-component',
-  template: '&lt;span &ast;ngIf="person &amp;&amp; address"&gt; {{person.name}} lives on {{address.street}} &lt;/span&gt;'
+  template: '<span *ngIf="person &amp;&amp; address"> {{person.name}} lives on {{address.street}} </span>'
 })
 class MyComponent {
   person?: Person;

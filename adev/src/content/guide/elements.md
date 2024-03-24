@@ -31,7 +31,7 @@ After you register your configured class with the browser's custom-element regis
 
 <docs-code language="html">
 
-&lt;my-popup message="Use Angular!"&gt;&lt;/my-popup&gt;
+<my-popup message="Use Angular!"></my-popup>
 
 </docs-code>
 
@@ -73,7 +73,7 @@ For more information, see Web Component documentation for [Creating custom event
 
 Previously, when you wanted to add a component to an application at runtime, you had to define a _dynamic component_, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling.
 
-Using an Angular custom element makes the process simpler and more transparent, by providing all the infrastructure and framework automatically &mdash;all you have to do is define the kind of event handling you want.
+Using an Angular custom element makes the process simpler and more transparent, by providing all the infrastructure and framework automatically —all you have to do is define the kind of event handling you want.
 \(You do still have to exclude the component from compilation, if you are not going to use it in your application.\)
 
 The following Popup Service example application defines a component that you can either load dynamically or convert to a custom element.
@@ -111,9 +111,9 @@ Assume you create a `my-dialog` custom element based on the following component:
 
 <docs-code language="typescript">
 
-&commat;Component(&hellip;)
+@Component(…)
 class MyDialog {
-  &commat;Input() content: string;
+  @Input() content: string;
 }
 
 </docs-code>
@@ -123,10 +123,10 @@ For that, use the `NgElement` and `WithProperties` types \(both exported from `@
 
 <docs-code language="typescript">
 
-const aDialog = document.createElement('my-dialog') as NgElement &amp; WithProperties&lt;{content: string}&gt;;
+const aDialog = document.createElement('my-dialog') as NgElement & WithProperties<{content: string}>;
 aDialog.content = 'Hello, world!';
-aDialog.content = 123;  // &lt;-- ERROR: TypeScript knows this should be a string.
-aDialog.body = 'News';  // &lt;-- ERROR: TypeScript knows there is no `body` property on `aDialog`.
+aDialog.content = 123;  // <-- ERROR: TypeScript knows this should be a string.
+aDialog.body = 'News';  // <-- ERROR: TypeScript knows there is no `body` property on `aDialog`.
 
 </docs-code>
 
@@ -139,9 +139,9 @@ An alternative way, that only requires defining each custom element's type once,
 
 declare global {
   interface HTMLElementTagNameMap {
-    'my-dialog': NgElement &amp; WithProperties&lt;{content: string}&gt;;
-    'my-other-element': NgElement &amp; WithProperties&lt;{foo: 'bar'}&gt;;
-    &hellip;
+    'my-dialog': NgElement & WithProperties<{content: string}>;
+    'my-other-element': NgElement & WithProperties<{foo: 'bar'}>;
+    …
   }
 }
 
@@ -151,9 +151,9 @@ Now, TypeScript can infer the correct type the same way it does for built-in ele
 
 <docs-code language="typescript">
 
-document.createElement('div')               //--&gt; HTMLDivElement (built-in element)
-document.querySelector('foo')               //--&gt; Element        (unknown element)
-document.createElement('my-dialog')         //--&gt; NgElement &amp; WithProperties&lt;{content: string}&gt; (custom element)
-document.querySelector('my-other-element')  //--&gt; NgElement &amp; WithProperties&lt;{foo: 'bar'}&gt;      (custom element)
+document.createElement('div')               //--> HTMLDivElement (built-in element)
+document.querySelector('foo')               //--> Element        (unknown element)
+document.createElement('my-dialog')         //--> NgElement & WithProperties<{content: string}> (custom element)
+document.querySelector('my-other-element')  //--> NgElement & WithProperties<{foo: 'bar'}>      (custom element)
 
 </docs-code>

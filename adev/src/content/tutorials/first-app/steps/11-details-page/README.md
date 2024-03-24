@@ -50,7 +50,7 @@ In this step, you will get the route parameter in the `DetailsComponent`. Curren
 1. Update the `template` property of the `@Component` decorator to display the value `housingLocationId`:
 
     <docs-code language="javascript">
-      template: `&lt;p&gt;details works! {{ housingLocationId }}&lt;/p&gt;`,
+      template: `<p>details works! {{ housingLocationId }}</p>`,
     </docs-code>
 
 1. Update the body of the `DetailsComponent` with the following code:

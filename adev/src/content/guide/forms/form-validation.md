@@ -61,11 +61,11 @@ The same built-in validators that are available as attributes in template-driven
 For a full list of built-in validators, see the [Validators](api/forms/Validators) API reference.
 
 To update the actor form to be a reactive form, use some of the same
-built-in validators &mdash;this time, in function form, as in the following example.
+built-in validators —this time, in function form, as in the following example.
 
 <docs-code header="reactive/actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" visibleRegion="form-group"/>
 
-In this example, the `name` control sets up two built-in validators &mdash;`Validators.required` and `Validators.minLength(4)`&mdash; and one custom validator, `forbiddenNameValidator`.
+In this example, the `name` control sets up two built-in validators —`Validators.required` and `Validators.minLength(4)`— and one custom validator, `forbiddenNameValidator`.
 
 All of these validators are synchronous, so they are passed as the second argument.
 Notice that you can support multiple validators by passing the functions in as an array.
@@ -129,7 +129,7 @@ For example:
 <docs-code header="template/actor-form-template.component.html (forbidden-name-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="name-input"/>
 
 HELPFUL: Notice that the custom validation directive is instantiated with `useExisting` rather than `useClass`.
-The registered validator must be *this instance* of the `ForbiddenValidatorDirective` &mdash;the instance in the form with its `forbiddenName` property bound to "bob".
+The registered validator must be *this instance* of the `ForbiddenValidatorDirective` —the instance in the form with its `forbiddenName` property bound to "bob".
 
 If you were to replace `useExisting` with `useClass`, then you'd be registering a new class instance, one that doesn't have a `forbiddenName`.
 
@@ -253,8 +253,8 @@ The following example shows how to achieve this in a template-driven form.
 
 <docs-code language="html">
 
-&lt;input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator&gt;
-&lt;app-spinner *ngIf="model.pending"&gt;&lt;/app-spinner&gt;
+<input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator>
+<app-spinner *ngIf="model.pending"></app-spinner>
 
 </docs-code>
 

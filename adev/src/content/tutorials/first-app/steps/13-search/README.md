@@ -36,7 +36,7 @@ The `HomeComponent` already contains an input field that you will use to capture
 1. Update the `HomeComponent` template to include a template variable in the `input` element called `#filter`.
 
     <docs-code header="Add a template variable to HomeComponent's template" language="html">
-        &lt;input type="text" placeholder="Filter by city" #filter&gt;
+        <input type="text" placeholder="Filter by city" #filter>
     </docs-code>
 
     This example uses a [template reference variable](/guide/templates) to get access to the `input` element as its value.
@@ -44,7 +44,7 @@ The `HomeComponent` already contains an input field that you will use to capture
 1. Next, update the component template to attach an event handler to the "Search" button.
 
     <docs-code header="Bind the click event" language="html">
-        &lt;button class="primary" type="button" (click)="filterResults(filter.value)"&gt;Search&lt;/button&gt;
+        <button class="primary" type="button" (click)="filterResults(filter.value)">Search</button>
     </docs-code>
 
     By binding to the `click` event on the `button` element, you are able to call the `filterResults` function. The argument to the function is the `value` property of the `filter` template variable. Specifically, the `.value` property from the `input` HTML element.
@@ -52,7 +52,7 @@ The `HomeComponent` already contains an input field that you will use to capture
 1. The last template update is to the `ngFor` directive. Update the `ngFor` value to iterate over values from the `filteredLocationList` array.
 
     <docs-code header="Update the ngFor directive value" language="html">
-        &lt;app-housing-location *ngFor="let housingLocation of filteredLocationList" [housingLocation]="housingLocation"&gt;&lt;/app-housing-location&gt;
+        <app-housing-location *ngFor="let housingLocation of filteredLocationList" [housingLocation]="housingLocation"></app-housing-location>
     </docs-code>
 
 </docs-step>

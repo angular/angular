@@ -32,7 +32,7 @@ type TestModuleMetadata = {
   providers?: any[];
   declarations?: any[];
   imports?: any[];
-  schemas?: Array&lt;SchemaMetadata | any[]&gt;;
+  schemas?: Array<SchemaMetadata | any[]>;
 };
 
 </docs-code>
@@ -41,10 +41,10 @@ Each override method takes a `MetadataOverride<T>` where `T` is the kind of meta
 
 <docs-code language="javascript">
 
-type MetadataOverride&lt;T&gt; = {
-  add?: Partial&lt;T&gt;;
-  remove?: Partial&lt;T&gt;;
-  set?: Partial&lt;T&gt;;
+type MetadataOverride<T> = {
+  add?: Partial<T>;
+  remove?: Partial<T>;
+  set?: Partial<T>;
 };
 
 </docs-code>

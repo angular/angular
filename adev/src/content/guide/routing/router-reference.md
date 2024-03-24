@@ -59,7 +59,7 @@ The data property is accessible within each activated route.
 Use it to store items such as page titles, breadcrumb text, and other read-only, static data.
 Use the resolve guard to retrieve dynamic data.
 
-The empty path in the fourth route represents the default path for the application &mdash;the place to go when the path in the URL is empty, as it typically is at the start.
+The empty path in the fourth route represents the default path for the application —the place to go when the path in the URL is empty, as it typically is at the start.
 This default route redirects to the route for the `/heroes` URL and, therefore, displays the `HeroesListComponent`.
 
 If you need to see what events are happening during the navigation lifecycle, there is the `withDebugTracing` feature.
@@ -74,8 +74,8 @@ It acts as a placeholder that marks the spot in the template where the router sh
 
 <docs-code language="html">
 
-&lt;router-outlet&gt;&lt;/router-outlet&gt;
-&lt;!-- Routed components go here --&gt;
+<router-outlet></router-outlet>
+<!-- Routed components go here -->
 
 </docs-code>
 

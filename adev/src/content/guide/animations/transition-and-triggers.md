@@ -85,8 +85,8 @@ These aliases are used by several animation functions.
 
 <docs-code hideCopy language="typescript">
 
-transition ( ':enter', [ &hellip; ] );  // alias for void =&gt; &ast;
-transition ( ':leave', [ &hellip; ] );  // alias for * =&gt; void
+transition ( ':enter', [ … ] );  // alias for void => *
+transition ( ':leave', [ … ] );  // alias for * => void
 
 </docs-code>
 

@@ -32,7 +32,7 @@ The following example defines the `introductionHeader` custom ID for a variable.
 
 <docs-code language="typescript">
 
-variableText1 = &dollar;localize `:&commat;&commat;introductionHeader:Hello i18n!`;
+variableText1 = $localize `:@@introductionHeader:Hello i18n!`;
 
 </docs-code>
 
@@ -58,7 +58,7 @@ The following example defines the `introductionHeader` custom ID and description
 
 <docs-code language="typescript">
 
-variableText2 = &dollar;localize `:An introduction header for this sample&commat;&commat;introductionHeader:Hello i18n!`;
+variableText2 = $localize `:An introduction header for this sample@@introductionHeader:Hello i18n!`;
 
 </docs-code>
 
@@ -72,7 +72,7 @@ The following example defines the `introductionHeader` custom ID for a variable.
 
 <docs-code language="typescript">
 
-variableText3 = &dollar;localize `:site header|An introduction header for this sample&commat;&commat;introductionHeader:Hello i18n!`;
+variableText3 = $localize `:site header|An introduction header for this sample@@introductionHeader:Hello i18n!`;
 
 </docs-code>
 

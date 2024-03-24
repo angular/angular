@@ -11,7 +11,7 @@ To add a web worker to an existing project, use the Angular CLI `ng generate` co
 
 <docs-code language="shell">
 
-ng generate web-worker &lt;location&gt;
+ng generate web-worker <location>
 
 </docs-code>
 
@@ -31,8 +31,8 @@ The command performs the following actions.
 
     <docs-code language="typescript" header="src/app/app.worker.ts">
 
-    addEventListener('message', ({ data }) =&gt; {
-      const response = `worker response to &dollar;{data}`;
+    addEventListener('message', ({ data }) => {
+      const response = `worker response to ${data}`;
       postMessage(response);
     });
 
@@ -45,8 +45,8 @@ The command performs the following actions.
     if (typeof Worker !== 'undefined') {
       // Create a new
       const worker = new Worker(new URL('./app.worker', import.meta.url));
-      worker.onmessage = ({ data }) =&gt; {
-        console.log(`page got message: &dollar;{data}`);
+      worker.onmessage = ({ data }) => {
+        console.log(`page got message: ${data}`);
       };
       worker.postMessage('hello');
     } else {

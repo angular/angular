@@ -11,13 +11,13 @@ can produce this error, as seen in the following example:
 
 <docs-code language="typescript">
 // ERROR
-export class Fooish { &hellip; }
-&hellip;
+export class Fooish { … }
+…
 const prop = typeof Fooish; // typeof is not valid in metadata
-  &hellip;
+  …
   // bracket notation is not valid in metadata
   { provide: 'token', useValue: { [prop]: 'value' } };
-  &hellip;
+  …
 </docs-code>
 
 You can use `typeof` and bracket notation in normal application code.
@@ -40,9 +40,9 @@ Here's a `provider` example of the problem.
 // ERROR
 let foo: number; // neither exported nor initialized
 
-&commat;Component({
+@Component({
   selector: 'my-component',
-  template: &hellip; ,
+  template: … ,
   providers: [
     { provide: Foo, useValue: foo }
   ]
@@ -73,9 +73,9 @@ Alternatively, you can fix it by exporting `foo` with the expectation that `foo`
 // CORRECTED
 export let foo: number; // exported
 
-&commat;Component({
+@Component({
   selector: 'my-component',
-  template: &hellip; ,
+  template: … ,
   providers: [
     { provide: Foo, useValue: foo }
   ]
@@ -94,7 +94,7 @@ For example, it doesn't work for the `template` property.
 // ERROR
 export let someTemplate: string; // exported but not initialized
 
-&commat;Component({
+@Component({
   selector: 'my-component',
   template: someTemplate
 })
@@ -120,7 +120,7 @@ The following example tries to set the component's `template` property to the va
 // ERROR
 export let someTemplate: string;
 
-&commat;Component({
+@Component({
   selector: 'my-component',
   template: someTemplate
 })
@@ -135,7 +135,7 @@ You'd also get this error if you imported `someTemplate` from some other module 
 // ERROR - not initialized there either
 import { someTemplate } from './config';
 
-&commat;Component({
+@Component({
   selector: 'my-component',
   template: someTemplate
 })
@@ -151,9 +151,9 @@ To correct this error, provide the initial value of the variable in an initializ
 <docs-code language="typescript">
 
 // CORRECTED
-export let someTemplate = '&lt;h1&gt;Greetings from Angular&lt;/h1&gt;';
+export let someTemplate = '<h1>Greetings from Angular</h1>';
 
-&commat;Component({
+@Component({
   selector: 'my-component',
   template: someTemplate
 })
@@ -175,11 +175,11 @@ For example, you may have defined a class and used it as an injection token in a
 // ERROR
 abstract class MyStrategy { }
 
-  &hellip;
+  …
   providers: [
-    { provide: MyStrategy, useValue: &hellip; }
+    { provide: MyStrategy, useValue: … }
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -191,11 +191,11 @@ To correct this error, export the referenced class.
 // CORRECTED
 export abstract class MyStrategy { }
 
-  &hellip;
+  …
   providers: [
-    { provide: MyStrategy, useValue: &hellip; }
+    { provide: MyStrategy, useValue: … }
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -208,13 +208,13 @@ For example, you may have set a providers `useFactory` property to a locally def
 <docs-code language="typescript">
 
 // ERROR
-function myStrategy() { &hellip; }
+function myStrategy() { … }
 
-  &hellip;
+  …
   providers: [
     { provide: MyStrategy, useFactory: myStrategy }
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -224,13 +224,13 @@ To correct this error, export the function.
 <docs-code language="typescript">
 
 // CORRECTED
-export function myStrategy() { &hellip; }
+export function myStrategy() { … }
 
-  &hellip;
+  …
   providers: [
     { provide: MyStrategy, useFactory: myStrategy }
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -244,12 +244,12 @@ For example, you cannot set a provider's `useFactory` to an anonymous function o
 <docs-code language="typescript">
 
 // ERROR
-  &hellip;
+  …
   providers: [
-    { provide: MyStrategy, useFactory: function() { &hellip; } },
-    { provide: OtherStrategy, useFactory: () =&gt; { &hellip; } }
+    { provide: MyStrategy, useFactory: function() { … } },
+    { provide: OtherStrategy, useFactory: () => { … } }
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -260,11 +260,11 @@ You also get this error if you call a function or method in a provider's `useVal
 // ERROR
 import { calculateValue } from './utilities';
 
-  &hellip;
+  …
   providers: [
     { provide: SomeValue, useValue: calculateValue() }
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -275,18 +275,18 @@ To correct this error, export a function from the module and refer to the functi
 // CORRECTED
 import { calculateValue } from './utilities';
 
-export function myStrategy() { &hellip; }
-export function otherStrategy() { &hellip; }
+export function myStrategy() { … }
+export function otherStrategy() { … }
 export function someValueFactory() {
   return calculateValue();
 }
-  &hellip;
+  …
   providers: [
     { provide: MyStrategy, useFactory: myStrategy },
     { provide: OtherStrategy, useFactory: otherStrategy },
     { provide: SomeValue, useFactory: someValueFactory }
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -305,12 +305,12 @@ import { configuration } from './configuration';
 
 // destructured assignment to foo and bar
 const {foo, bar} = configuration;
-  &hellip;
+  …
   providers: [
     {provide: Foo, useValue: foo},
     {provide: Bar, useValue: bar},
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -320,12 +320,12 @@ To correct this error, refer to non-destructured values.
 
 // CORRECTED
 import { configuration } from './configuration';
-  &hellip;
+  …
   providers: [
     {provide: Foo, useValue: configuration.foo},
     {provide: Bar, useValue: configuration.bar},
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -341,9 +341,9 @@ You'll get an error if you reference it in the component constructor, which the 
 <docs-code language="typescript">
 
 // ERROR
-&commat;Component({ })
+@Component({ })
 export class MyComponent {
-  constructor (private win: Window) { &hellip; }
+  constructor (private win: Window) { … }
 }
 
 </docs-code>
@@ -368,19 +368,19 @@ Here's an illustrative example.
 <docs-code language="typescript">
 
 // CORRECTED
-import { Inject } from '&commat;angular/core';
+import { Inject } from '@angular/core';
 
 export const WINDOW = new InjectionToken('Window');
 export function _window() { return window; }
 
-&commat;Component({
-  &hellip;
+@Component({
+  …
   providers: [
     { provide: WINDOW, useFactory: _window }
   ]
 })
 export class MyComponent {
-  constructor (&commat;Inject(WINDOW) private win: Window) { &hellip; }
+  constructor (@Inject(WINDOW) private win: Window) { … }
 }
 
 </docs-code>
@@ -392,12 +392,12 @@ Angular does something similar with the `DOCUMENT` token so you can inject the b
 
 <docs-code language="typescript">
 
-import { Inject }   from '&commat;angular/core';
-import { DOCUMENT } from '&commat;angular/common';
+import { Inject }   from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 
-&commat;Component({ &hellip; })
+@Component({ … })
 export class MyComponent {
-  constructor (&commat;Inject(DOCUMENT) private doc: Document) { &hellip; }
+  constructor (@Inject(DOCUMENT) private doc: Document) { … }
 }
 
 </docs-code>
@@ -439,13 +439,13 @@ enum Colors {
   Blue = "Blue".length // computed
 }
 
-  &hellip;
+  …
   providers: [
     { provide: BaseColor,   useValue: Colors.White } // ok
     { provide: DangerColor, useValue: Colors.Red }   // ok
     { provide: StrongColor, useValue: Colors.Blue }  // bad
   ]
-  &hellip;
+  …
 
 </docs-code>
 
@@ -461,10 +461,10 @@ The compiler encountered a JavaScript ES2015 [tagged template expression](https:
 
 // ERROR
 const expression = 'funky';
-const raw = String.raw`A tagged template &dollar;{expression} string`;
- &hellip;
- template: '&lt;div&gt;' + raw + '&lt;/div&gt;'
- &hellip;
+const raw = String.raw`A tagged template ${expression} string`;
+ …
+ template: '<div>' + raw + '</div>'
+ …
 
 </docs-code>
 

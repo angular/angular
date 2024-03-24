@@ -81,7 +81,7 @@ The following command uses one of these schematics to render an Angular Material
 
 <docs-code language="shell">
 
-ng generate &commat;angular/material:table &lt;component-name&gt;
+ng generate @angular/material:table <component-name>
 
 </docs-code>
 
@@ -97,11 +97,11 @@ We analyzed your package.json, there are some packages to update:
 
     Name                                      Version                     Command to update
     &hyphen;-------------------------------------------------------------------------------
-    &commat;angular/cdk                       7.2.2 -&gt; 7.3.1           ng update &commat;angular/cdk
-    &commat;angular/cli                       7.2.3 -&gt; 7.3.0           ng update &commat;angular/cli
-    &commat;angular/core                      7.2.2 -&gt; 7.2.3           ng update &commat;angular/core
-    &commat;angular/material                  7.2.2 -&gt; 7.3.1           ng update &commat;angular/material
-    rxjs                                      6.3.3 -&gt; 6.4.0           ng update rxjs
+    @angular/cdk                       7.2.2 -> 7.3.1           ng update @angular/cdk
+    @angular/cli                       7.2.3 -> 7.3.0           ng update @angular/cli
+    @angular/core                      7.2.2 -> 7.2.3           ng update @angular/core
+    @angular/material                  7.2.2 -> 7.3.1           ng update @angular/material
+    rxjs                                      6.3.3 -> 6.4.0           ng update rxjs
 
     There might be additional packages that are outdated.
     Run "ng update --all" to try to update all at the same time.
@@ -122,7 +122,7 @@ If you create a new version of your library that introduces potential breaking c
 For example, suppose you want to update the Angular Material library.
 
 <docs-code language="shell">
-ng update &commat;angular/material
+ng update @angular/material
 </docs-code>
 
 This command updates both `@angular/material` and its dependency `@angular/cdk` in your workspace's `package.json`.

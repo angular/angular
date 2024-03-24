@@ -6,7 +6,7 @@ Keeping your Angular application up-to-date enables you to take advantage of lea
 
 This document contains information and resources to help you keep your Angular applications and libraries up-to-date.
 
-For information about our versioning policy and practices &mdash;including support and deprecation practices, as well as the release schedule&mdash; see [Angular versioning and releases](reference/releases "Angular versioning and releases").
+For information about our versioning policy and practices —including support and deprecation practices, as well as the release schedule— see [Angular versioning and releases](reference/releases "Angular versioning and releases").
 
 HELPFUL: If you are currently using AngularJS, see [Upgrading from AngularJS](https://angular.io/guide/upgrade "Upgrading from Angular JS").
 *AngularJS* is the name for all v1.x versions of Angular.
