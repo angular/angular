@@ -334,7 +334,7 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
               (this.componentRef.hostView as any).notifyErrorHandler,
           );
         } catch (e: unknown) {
-          // If an error ocurred during change detection, remove the test view from the application
+          // If an error occurred during change detection, remove the test view from the application
           // ref tracking. Note that this isn't exactly desirable but done this way because of how
           // things used to work with `autoDetect` and uncaught errors. Ideally we would surface
           // this error to the error handler instead and continue refreshing the view like

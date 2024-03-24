@@ -41,7 +41,7 @@ If the `application` builder is difficult for your project to adopt, `browser-es
 
 A builder named `browser-esbuild` is available within the `@angular-devkit/build-angular` package that is present in an Angular CLI generated application. The builder is a drop-in replacement for the existing `browser` builder that provides the preexisting browser application build system.
 
-The compatiblity option was implemented to minimize the amount of changes necessary to initially migrate your applications.
+The compatibility option was implemented to minimize the amount of changes necessary to initially migrate your applications.
 This is provided via an alternate builder (`browser-esbuild`).
 You can update the `build` target for any application target to migrate to the new build system.
 

@@ -162,7 +162,7 @@ function getVariableName(
         break;
       case ir.SemanticVariableKind.Identifier:
         if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
-          // TODO: Prefix increment and `_r` are for compatiblity with the old naming scheme.
+          // TODO: Prefix increment and `_r` are for compatibility with the old naming scheme.
           // This has the potential to cause collisions when `ctx` is the identifier, so we need a
           // special check for that as well.
           const compatPrefix = variable.identifier === 'ctx' ? 'i' : '';
