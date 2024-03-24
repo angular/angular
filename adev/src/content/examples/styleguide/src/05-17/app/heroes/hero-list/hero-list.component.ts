@@ -3,7 +3,6 @@
 import {Component} from '@angular/core';
 import {HeroComponent} from '../hero/hero.component';
 import {Hero} from '../shared/hero.model';
-import {NgFor} from '@angular/common';
 
 // #docregion example
 @Component({
@@ -19,7 +18,7 @@ import {NgFor} from '@angular/common';
       Average power: {{avgPower}}
     </section>
   `,
-  imports: [NgFor, HeroComponent],
+  imports: [HeroComponent],
 })
 export class HeroListComponent {
   heroes: Hero[];

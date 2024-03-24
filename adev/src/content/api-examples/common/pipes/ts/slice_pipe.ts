@@ -32,9 +32,11 @@ export class SlicePipeStringComponent {
   selector: 'slice-list-pipe',
   template: `
     <ul>
-      <li *ngFor="let i of collection | slice : 1 : 3">{{ i }}</li>
+      @for (i of collection | slice : 1 : 3; track i) {
+        <li>{{ i }}</li>
+      }
     </ul>
-  `,
+    `,
 })
 export class SlicePipeListComponent {
   collection: string[] = ['a', 'b', 'c', 'd'];

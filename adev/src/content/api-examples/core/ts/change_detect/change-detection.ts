@@ -47,8 +47,10 @@ class DataListProvider {
 @Component({
   selector: 'giant-list',
   template: `
-    <li *ngFor="let d of dataProvider.data">Data {{ d }}</li>
-  `,
+    @for (d of dataProvider.data; track d) {
+      <li>Data {{ d }}</li>
+    }
+    `,
 })
 class GiantList {
   constructor(

@@ -7,7 +7,7 @@
  */
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {CommonModule, DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
+import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -44,7 +44,6 @@ type MenuType = 'social' | 'theme-picker' | 'version-picker';
   selector: 'div.adev-nav',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     NavigationList,
     ClickOutside,

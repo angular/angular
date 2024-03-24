@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {Hero, HeroService} from './shared';
-import {AsyncPipe, NgFor, NgIf, UpperCasePipe} from '@angular/common';
+import {AsyncPipe, UpperCasePipe} from '@angular/common';
 
 // #docregion example
 /* avoid */
@@ -61,7 +61,7 @@ import {AsyncPipe, NgFor, NgIf, UpperCasePipe} from '@angular/common';
     }
   `,
   ],
-  imports: [NgFor, NgIf, AsyncPipe, UpperCasePipe],
+  imports: [AsyncPipe, UpperCasePipe],
 })
 export class HeroesComponent {
   heroes: Observable<Hero[]>;

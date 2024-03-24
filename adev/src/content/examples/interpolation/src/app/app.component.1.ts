@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {NgFor} from '@angular/common';
 
 // #docregion var-collision
 @Component({

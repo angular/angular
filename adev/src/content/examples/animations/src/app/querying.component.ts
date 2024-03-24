@@ -11,7 +11,6 @@ import {
 } from '@angular/animations';
 
 import {HEROES} from './mock-heroes';
-import {NgIf} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -35,7 +34,7 @@ import {NgIf} from '@angular/common';
     }
   `,
   styleUrls: ['./querying.component.css'],
-  imports: [NgIf],
+  imports: [],
   animations: [
     trigger('query', [
       transition(':enter', [

@@ -5,9 +5,9 @@
 <p>Conditional display of hero</p>
 
 <blockquote>
-<!-- #docregion asterisk -->
-<div *ngIf="hero" class="name">{{hero.name}}</div>
-<!-- #enddocregion asterisk -->
+  <!-- #docregion asterisk -->
+  <div *ngIf="hero" class="name">{{hero.name}}</div>
+  <!-- #enddocregion asterisk -->
 </blockquote>
 
 <p>List of heroes</p>
@@ -16,26 +16,16 @@
   <li *ngFor="let hero of heroes">{{hero.name}}</li>
 </ul>
 
-<hr>
+<hr />
 
 <h2 id="ngIf">NgIf</h2>
 
-<p *ngIf="true">
-  Expression is true and ngIf is true.
-  This paragraph is in the DOM.
-</p>
-<p *ngIf="false">
-  Expression is false and ngIf is false.
-  This paragraph is not in the DOM.
-</p>
+<p *ngIf="true">Expression is true and ngIf is true. This paragraph is in the DOM.</p>
+<p *ngIf="false">Expression is false and ngIf is false. This paragraph is not in the DOM.</p>
 
-<p [style.display]="'block'">
-  Expression sets display to "block".
-  This paragraph is visible.
-</p>
+<p [style.display]="'block'">Expression sets display to "block". This paragraph is visible.</p>
 <p [style.display]="'none'">
-  Expression sets display to "none".
-  This paragraph is hidden but still in the DOM.
+  Expression sets display to "none". This paragraph is hidden but still in the DOM.
 </p>
 
 <h4>NgIf with template</h4>
@@ -46,7 +36,7 @@
 </ng-template>
 <!-- #enddocregion ngif-template -->
 
-<hr>
+<hr />
 
 <h2 id="ng-container">&lt;ng-container&gt;</h2>
 
@@ -57,26 +47,26 @@
 <!-- #docregion ngif-ngcontainer -->
 <p>
   I turned the corner
-  <ng-container *ngIf="hero">
-    and saw {{hero.name}}. I waved
-  </ng-container>
+  <ng-container *ngIf="hero"> and saw {{hero.name}}. I waved </ng-container>
   and continued on my way.
 </p>
 <!-- #enddocregion ngif-ngcontainer -->
 
 <p>
   I turned the corner
-  <span *ngIf="hero">
-    and saw {{hero.name}}. I waved
-  </span>
+  <span *ngIf="hero"> and saw {{hero.name}}. I waved </span>
   and continued on my way.
 </p>
 
-<p><em>&lt;select&gt; with &lt;span&gt;</em></p>
+<p [style.display]="'block'">Expression sets display to "block". This paragraph is visible.</p>
+<p [style.display]="'none'">
+  Expression sets display to "none". This paragraph is hidden but still in the DOM.
+</p>
 
 <div>
-  Pick your favorite hero
-  (<label for="show-sad"><input id="show-sad" type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
+  Pick your favorite hero (<label for="show-sad"
+    ><input id="show-sad" type="checkbox" checked (change)="showSad = !showSad" />show sad</label
+  >)
 </div>
 <select [(ngModel)]="hero">
   <span *ngFor="let h of heroes">
@@ -89,8 +79,9 @@
 <p><em>&lt;select&gt; with &lt;ng-container&gt;</em></p>
 <!-- #docregion select-ngcontainer -->
 <div>
-  Pick your favorite hero
-  (<label for="showSad"><input id="showSad" type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
+  Pick your favorite hero (<label for="showSad"
+    ><input id="showSad" type="checkbox" checked (change)="showSad = !showSad" />show sad</label
+  >)
 </div>
 <select [(ngModel)]="hero">
   <ng-container *ngFor="let h of heroes">
@@ -100,53 +91,62 @@
   </ng-container>
 </select>
 <!-- #enddocregion select-ngcontainer -->
-<br><br>
+<br /><br />
 
-<hr>
+<hr />
 
 <h2 id="ngFor">NgFor</h2>
 
 <div class="box">
-
-<p class="code">&lt;div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd"&gt;</p>
-<!--#docregion inside-ngfor -->
-<div
-  *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById"
-  [class.odd]="odd">
-  ({{i}}) {{hero.name}}
-</div>
-
-<!--#enddocregion inside-ngfor -->
-<p class="code">&lt;ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById"/&gt;</p>
-<!--#docregion inside-ngfor -->
-<ng-template ngFor let-hero [ngForOf]="heroes"
-  let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
-  <div [class.odd]="odd">
+  <p class="code">
+    &lt;div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById"
+    [class.odd]="odd"&gt;
+  </p>
+  <!--#docregion inside-ngfor -->
+  <div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd">
     ({{i}}) {{hero.name}}
   </div>
-</ng-template>
-<!--#enddocregion inside-ngfor -->
 
+  <!--#enddocregion inside-ngfor -->
+  <p class="code">
+    &lt;ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd"
+    [ngForTrackBy]="trackById"/&gt;
+  </p>
+  <!--#docregion inside-ngfor -->
+  <ng-template
+    ngFor
+    let-hero
+    [ngForOf]="heroes"
+    let-i="index"
+    let-odd="odd"
+    [ngForTrackBy]="trackById"
+  >
+    <div [class.odd]="odd">({{i}}) {{hero.name}}</div>
+  </ng-template>
+  <!--#enddocregion inside-ngfor -->
 </div>
-<hr>
+<hr />
 
 <h2 id="ngSwitch">NgSwitch</h2>
 
 <div>Pick your favorite hero</div>
 <p>
   <label for="hero-{{h}}" *ngFor="let h of heroes">
-    <input id="hero-{{h}}" type="radio" name="heroes" [(ngModel)]="hero" [value]="h">{{h.name}}
+    <input id="hero-{{h}}" type="radio" name="heroes" [(ngModel)]="hero" [value]="h" />{{h.name}}
   </label>
-  <label for="none-of-the-above"><input id="none-of-the-above" type="radio" name="heroes" (click)="hero = null">None of the above</label>
+  <label for="none-of-the-above"
+    ><input id="none-of-the-above" type="radio" name="heroes" (click)="hero = null" />None of the
+    above</label
+  >
 </p>
 
 <h4>NgSwitch</h4>
 
 <div [ngSwitch]="hero?.emotion">
-  <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="hero!"></app-happy-hero>
-  <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="hero!"></app-sad-hero>
+  <app-happy-hero *ngSwitchCase="'happy'" [hero]="hero!"></app-happy-hero>
+  <app-sad-hero *ngSwitchCase="'sad'" [hero]="hero!"></app-sad-hero>
   <app-confused-hero *ngSwitchCase="'confused'" [hero]="hero!"></app-confused-hero>
-  <app-unknown-hero  *ngSwitchDefault           [hero]="hero!"></app-unknown-hero>
+  <app-unknown-hero *ngSwitchDefault [hero]="hero!"></app-unknown-hero>
 </div>
 
 <h4>NgSwitch with &lt;ng-template&gt;</h4>
@@ -159,24 +159,25 @@
   </ng-template>
   <ng-template ngSwitchCase="confused">
     <app-confused-hero [hero]="hero!"></app-confused-hero>
-  </ng-template >
+  </ng-template>
   <ng-template ngSwitchDefault>
     <app-unknown-hero [hero]="hero!"></app-unknown-hero>
   </ng-template>
 </div>
 
-<hr>
-
+<hr />
 
 <h2 id="appUnless">UnlessDirective</h2>
 <!-- #docregion toggle-info -->
 <p>
   The condition is currently
-  <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span>.
+  <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span
+  >.
   <button
     type="button"
     (click)="condition = !condition"
-    [ngClass] = "{ 'a': condition, 'b': !condition }" >
+    [ngClass]="{ 'a': condition, 'b': !condition }"
+  >
     Toggle condition to {{condition ? 'false' : 'true'}}
   </button>
 </p>
@@ -188,11 +189,9 @@
 </p>
 
 <p *appUnless="!condition" class="unless b">
-  (B) Although the condition is true,
-  this paragraph is displayed because appUnless is set to false.
+  (B) Although the condition is true, this paragraph is displayed because appUnless is set to false.
 </p>
 <!-- #enddocregion appUnless-->
-
 
 <h4>UnlessDirective with template</h4>
 
@@ -205,9 +204,7 @@
 </p>
 
 <ng-template [appUnless]="condition">
-  <p class="code unless">
-    (A) &lt;ng-template [appUnless]="condition"&gt;
-  </p>
+  <p class="code unless">(A) &lt;ng-template [appUnless]="condition"&gt;</p>
 </ng-template>
 
 <hr />

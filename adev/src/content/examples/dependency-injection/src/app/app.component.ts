@@ -8,7 +8,6 @@ import {ProvidersComponent} from './providers.component';
 import {CarComponent} from './car/car.component';
 import {InjectorComponent} from './injector.component';
 import {TestComponent} from './test.component';
-import {NgIf} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -41,7 +40,6 @@ import {NgIf} from '@angular/common';
     CarComponent,
     InjectorComponent,
     TestComponent,
-    NgIf,
   ],
 })
 export class AppComponent {

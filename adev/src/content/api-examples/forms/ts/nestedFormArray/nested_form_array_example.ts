@@ -16,16 +16,18 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div formArrayName="cities">
-        <div *ngFor="let city of cities.controls; index as i">
-          <input [formControlName]="i" placeholder="City" />
-        </div>
+        @for (city of cities.controls; track city; let i = $index) {
+          <div>
+            <input [formControlName]="i" placeholder="City" />
+          </div>
+        }
       </div>
       <button>Submit</button>
     </form>
-
+    
     <button (click)="addCity()">Add City</button>
     <button (click)="setPreset()">Set preset</button>
-  `,
+    `,
 })
 export class NestedFormArray {
   form = new FormGroup({

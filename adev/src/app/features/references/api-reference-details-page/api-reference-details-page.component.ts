@@ -16,7 +16,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import {DOCUMENT, NgFor, NgIf, ViewportScroller} from '@angular/common';
+import {DOCUMENT, ViewportScroller} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, filter, map, take} from 'rxjs/operators';
@@ -38,7 +38,7 @@ import {
 @Component({
   selector: 'adev-reference-page',
   standalone: true,
-  imports: [DocViewer, NgIf, NgFor, MatTabsModule, RouterLink],
+  imports: [DocViewer, MatTabsModule, RouterLink],
   templateUrl: './api-reference-details-page.component.html',
   styleUrls: ['./api-reference-details-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

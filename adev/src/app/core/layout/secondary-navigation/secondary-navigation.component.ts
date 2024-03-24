@@ -33,7 +33,7 @@ import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators
 import {SUB_NAVIGATION_DATA} from '../../../sub-navigation-data';
 import {PagePrefix} from '../../enums/pages';
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
-import {NgFor, NgIf, isPlatformBrowser} from '@angular/common';
+import {isPlatformBrowser} from '@angular/common';
 import {trigger, transition, style, animate} from '@angular/animations';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 
@@ -42,7 +42,7 @@ export const ANIMATION_DURATION = 500;
 @Component({
   selector: 'adev-secondary-navigation',
   standalone: true,
-  imports: [NavigationList, NgIf, NgFor, ClickOutside],
+  imports: [NavigationList, ClickOutside],
   templateUrl: './secondary-navigation.component.html',
   styleUrls: ['./secondary-navigation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

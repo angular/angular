@@ -1,7 +1,7 @@
 // #docplaster
 // #docregion
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {FormsModule} from '@angular/forms';
 
 import {FlyingHeroesPipe, FlyingHeroesImpurePipe} from './flying-heroes.pipe';
@@ -11,7 +11,7 @@ import {HEROES} from './heroes';
   standalone: true,
   selector: 'app-flying-heroes',
   templateUrl: './flying-heroes.component.html',
-  imports: [CommonModule, FormsModule, FlyingHeroesPipe],
+  imports: [FormsModule, FlyingHeroesPipe],
   styles: [
     `
     #flyers, #all {font-style: italic}
@@ -66,7 +66,7 @@ export class FlyingHeroesComponent {
   standalone: true,
   selector: 'app-flying-heroes-impure',
   templateUrl: './flying-heroes-impure.component.html',
-  imports: [CommonModule, FormsModule, FlyingHeroesImpurePipe],
+  imports: [FormsModule, FlyingHeroesImpurePipe],
   styles: [
     '#flyers, #all {font-style: italic}',
     'button {display: block}',

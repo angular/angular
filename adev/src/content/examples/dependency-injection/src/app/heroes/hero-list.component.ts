@@ -2,7 +2,6 @@
 import {Component} from '@angular/core';
 import {Hero} from './hero';
 import {HeroService} from './hero.service';
-import {NgFor} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -15,7 +14,7 @@ import {NgFor} from '@angular/common';
       </div>
     }
   `,
-  imports: [NgFor],
+  imports: [],
 })
 export class HeroListComponent {
   heroes: Hero[];

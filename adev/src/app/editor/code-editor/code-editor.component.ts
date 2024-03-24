@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgFor, NgIf} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -42,7 +41,7 @@ export const REQUIRED_FILES = new Set([
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, NgFor, MatTabsModule, IconComponent, ClickOutside],
+  imports: [MatTabsModule, IconComponent, ClickOutside],
 })
 export class CodeEditor implements AfterViewInit, OnDestroy {
   @ViewChild('codeEditorWrapper') private codeEditorWrapperRef!: ElementRef<HTMLDivElement>;

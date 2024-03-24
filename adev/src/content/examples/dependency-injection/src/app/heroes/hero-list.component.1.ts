@@ -1,4 +1,3 @@
-import {NgFor} from '@angular/common';
 import {Component} from '@angular/core';
 import {HEROES} from './mock-heroes';
 
@@ -10,7 +9,7 @@ import {HEROES} from './mock-heroes';
       <div>{{hero.id}} - {{hero.name}}</div>
     }
   `,
-  imports: [NgFor],
+  imports: [],
 })
 export class HeroListComponent {
   heroes = HEROES;

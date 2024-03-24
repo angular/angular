@@ -19,12 +19,14 @@ export class Pane {
   template: `
     <pane id="1"></pane>
     <pane id="2"></pane>
-    <pane id="3" *ngIf="shouldShow"></pane>
-
+    @if (shouldShow) {
+      <pane id="3"></pane>
+    }
+    
     <button (click)="show()">Show 3</button>
-
+    
     <div>panes: {{ serializedPanes }}</div>
-  `,
+    `,
 })
 export class ViewChildrenComp implements AfterViewInit {
   @ViewChildren(Pane) panes!: QueryList<Pane>;

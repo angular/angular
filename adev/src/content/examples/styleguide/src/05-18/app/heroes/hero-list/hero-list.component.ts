@@ -7,12 +7,14 @@ import {Hero} from '../shared/hero.model';
   template: `
     <section>
       Our list of heroes:
-      <toh-hero *ngFor="let hero of heroes">
-      </toh-hero>
+      @for (hero of heroes; track hero) {
+        <toh-hero>
+        </toh-hero>
+      }
       Total powers: {{totalPowers}}<br>
       Average power: {{avgPower}}
     </section>
-  `,
+    `,
 })
 export class HeroListComponent {
   heroes: Hero[] = [];

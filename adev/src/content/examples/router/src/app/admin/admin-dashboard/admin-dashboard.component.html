@@ -6,5 +6,7 @@
 
 Preloaded Modules
 <ul>
-  <li *ngFor="let module of modules">{{ module }}</li>
+  @for (module of modules; track module) {
+    <li>{{ module }}</li>
+  }
 </ul>
