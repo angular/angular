@@ -109,9 +109,11 @@ JavaScript [dynamic import](https://developer.mozilla.org/en-US/docs/Web/JavaScr
     </section>
     <section>
       <h2>Advanced settings</h2>
-      <button (click)="loadAdvanced()" *ngIf="!advancedSettings">
-        Load advanced settings
-      </button>
+      @if(!advancedSettings) {
+        <button (click)="loadAdvanced()">
+          Load advanced settings
+        </button>
+      }
       <ng-container *ngComponentOutlet="advancedSettings" />
     </section>`
 })

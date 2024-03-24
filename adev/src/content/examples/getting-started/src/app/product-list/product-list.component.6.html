@@ -1,6 +1,6 @@
 <h2>Products</h2>
 
-<div *ngFor="let product of products">
+@for(product of products; track $index) {
 
   <h3>
     <a [title]="product.name + ' details'">
@@ -8,9 +8,9 @@
     </a>
   </h3>
 
-  <p *ngIf="product.description">
-    Description: {{ product.description }}
-  </p>
+  @if(product.description) {
+    <p>Description: {{ product.description }}</p>
+  }
 
 <!-- #docregion on-notify -->
   <button type="button" (click)="share()">
@@ -23,5 +23,4 @@
   </app-product-alerts>
 <!-- #enddocregion on-notify -->
 
-</div>
-
+}

@@ -2,7 +2,7 @@
 <!-- #docregion ngfor, interpolation -->
 <h2>Products</h2>
 
-<div *ngFor="let product of products">
+@for(product of products; track $index) {
 <!-- #enddocregion ngfor -->
 
   <h3>
@@ -16,5 +16,5 @@
   </h3>
 
 <!-- #docregion ngfor -->
-</div>
+}
 <!-- #enddocregion ngfor, interpolation -->

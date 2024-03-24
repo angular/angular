@@ -23,7 +23,7 @@ The example tabs show the following:
 
 | Files                               | Details |
 |:---                                 |:---     |
-| `flying-heroes.component.html (v1)` | The `*ngFor` repeater displays the hero names.                     |
+| `flying-heroes.component.html (v1)` | The `@for` repeater displays the hero names.                     |
 | `flying-heroes.component.ts (v1)`   | Provides heroes, adds heroes into the array, and resets the array. |
 
 <docs-code-multifile>
@@ -52,7 +52,7 @@ Angular can quickly determine if it can skip executing the pipe and updating the
 However, a pure pipe with an array as input might not work the way you want.
 To demonstrate this issue, change the previous example to filter the list of heroes to just those heroes who can fly.
 
-For this, consider we use the `FlyingHeroesPipe` in the `*ngFor` repeater as shown in the following code.
+For this, consider we use the `FlyingHeroesPipe` in the `@for` repeater as shown in the following code.
 The tabs for the example show the following:
 
 | Files                          | Details |
