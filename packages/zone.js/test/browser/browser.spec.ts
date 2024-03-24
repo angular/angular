@@ -2893,7 +2893,7 @@ describe('Zone', function() {
            button.addEventListener('click', listener4, true);
 
            button.removeAllListeners!('mouseover');
-           const listeners = button.eventListeners!('mouseove');
+           const listeners = button.eventListeners!('mouseover');
            expect(listeners.length).toBe(0);
 
            const mouseEvent = document.createEvent('Event');
