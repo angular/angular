@@ -6,13 +6,17 @@ import {LoggerService} from './logger.service';
   selector: 'after-view-parent',
   template: `
   <h2>AfterView</h2>
-
-  <after-view  *ngIf="show"></after-view>
-
+  
+  @if (show) {
+    <after-view ></after-view>
+  }
+  
   <div class="info">
     <h3>AfterView Logs</h3>
     <button type="button" (click)="reset()">Reset</button>
-    <div *ngFor="let msg of logger.logs" class="log">{{msg}}</div>
+    @for (msg of logger.logs; track msg) {
+      <div class="log">{{msg}}</div>
+    }
   </div>
   `,
   providers: [LoggerService],

@@ -1,12 +1,11 @@
 // #docplaster
 import {Component} from '@angular/core';
-import {NgIf} from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'hello-world-ngif',
   templateUrl: './hello-world-ngif.component.html',
-  imports: [NgIf],
+  imports: [],
 })
 export class HelloWorldNgIfComponent {
   message = "I'm read only!";

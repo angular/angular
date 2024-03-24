@@ -11,15 +11,17 @@ import {LoggerService} from './logger.service';
   template:
     `
     <div>child view begins</div>
-      <app-child-view></app-child-view>
+    <app-child-view></app-child-view>
     <div>child view ends</div>
-  ` +
+    ` +
     // #enddocregion template
     `
-    <p *ngIf="comment" class="comment">
-      {{comment}}
-    </p>
-  `,
+    @if (comment) {
+      <p class="comment">
+        {{comment}}
+      </p>
+    }
+    `,
 })
 // #docregion hooks
 export class AfterViewComponent implements AfterViewChecked, AfterViewInit {

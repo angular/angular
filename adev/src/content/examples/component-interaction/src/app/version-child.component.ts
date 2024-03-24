@@ -8,9 +8,11 @@ import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
     <h3>Version {{major}}.{{minor}}</h3>
     <h4>Change log:</h4>
     <ul>
-      <li *ngFor="let change of changeLog">{{change}}</li>
+      @for (change of changeLog; track change) {
+        <li>{{change}}</li>
+      }
     </ul>
-  `,
+    `,
 })
 export class VersionChildComponent implements OnChanges {
   @Input() major = 0;

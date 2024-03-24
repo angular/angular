@@ -4,7 +4,6 @@ import {Component, OnInit} from '@angular/core';
 
 import {Hero} from './hero';
 import {HeroService} from './hero.service';
-import {NgFor} from '@angular/common';
 
 /////// HeroesBaseComponent /////
 // #docregion heroes-base
@@ -13,7 +12,7 @@ import {NgFor} from '@angular/common';
   selector: 'app-unsorted-heroes',
   template: '@for (hero of heroes; track hero) {<div>{{hero.name}}</div>}',
   providers: [HeroService],
-  imports: [NgFor],
+  imports: [],
 })
 export class HeroesBaseComponent implements OnInit {
   constructor(private heroService: HeroService) {}
@@ -37,7 +36,7 @@ export class HeroesBaseComponent implements OnInit {
   selector: 'app-sorted-heroes',
   template: '@for (hero of heroes; track hero) {<div>{{hero.name}}</div>}',
   providers: [HeroService],
-  imports: [NgFor],
+  imports: [],
 })
 export class SortedHeroesComponent extends HeroesBaseComponent {
   constructor(heroService: HeroService) {

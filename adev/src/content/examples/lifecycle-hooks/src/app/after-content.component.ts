@@ -11,15 +11,17 @@ import {LoggerService} from './logger.service';
   template:
     `
     <div>projected content begins</div>
-      <ng-content></ng-content>
+    <ng-content></ng-content>
     <div>projected content ends</div>
-  ` +
+    ` +
     // #enddocregion template
     `
-    <p *ngIf="comment" class="comment">
-      {{comment}}
-    </p>
-  `,
+    @if (comment) {
+      <p class="comment">
+        {{comment}}
+      </p>
+    }
+    `,
 })
 // #docregion hooks
 export class AfterContentComponent implements AfterContentChecked, AfterContentInit {

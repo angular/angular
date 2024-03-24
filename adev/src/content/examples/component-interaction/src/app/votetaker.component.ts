@@ -6,13 +6,14 @@ import {Component} from '@angular/core';
   template: `
     <h2>Should mankind colonize the Universe?</h2>
     <h3>Agree: {{agreed}}, Disagree: {{disagreed}}</h3>
-
-    <app-voter
-      *ngFor="let voter of voters"
-      [name]="voter"
-      (voted)="onVoted($event)">
-    </app-voter>
-  `,
+    
+    @for (voter of voters; track voter) {
+      <app-voter
+        [name]="voter"
+        (voted)="onVoted($event)">
+      </app-voter>
+    }
+    `,
 })
 export class VoteTakerComponent {
   agreed = 0;

@@ -6,14 +6,16 @@
   <a routerLink="/shipping">Shipping Prices</a>
 </p>
 
-<div class="cart-item" *ngFor="let item of items">
-  <span>{{ item.name }} </span>
-  <span>{{ item.price | currency }}</span>
-</div>
+@for (item of items; track item) {
+  <div class="cart-item">
+    <span>{{ item.name }} </span>
+    <span>{{ item.price | currency }}</span>
+  </div>
+}
 
 <!-- #docregion checkout-form-1 -->
 <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
-<!-- #enddocregion checkout-form-1 -->
+  <!-- #enddocregion checkout-form-1 -->
 
   <div>
     <label for="name">
@@ -31,5 +33,5 @@
 
   <button class="button" type="submit">Purchase</button>
 
-<!-- #docregion checkout-form-1 -->
+  <!-- #docregion checkout-form-1 -->
 </form>

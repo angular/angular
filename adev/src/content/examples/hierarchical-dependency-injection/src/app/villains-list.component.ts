@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {Villain, VillainsService} from './villains.service';
-import {AsyncPipe, NgFor} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 
 // #docregion metadata
 @Component({
@@ -11,7 +11,7 @@ import {AsyncPipe, NgFor} from '@angular/common';
   selector: 'app-villains-list',
   templateUrl: './villains-list.component.html',
   providers: [VillainsService],
-  imports: [NgFor, AsyncPipe],
+  imports: [AsyncPipe],
 })
 // #enddocregion metadata
 export class VillainsListComponent {

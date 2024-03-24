@@ -72,14 +72,16 @@ class HeroesService {
     <div class="ng2-heroes">
       <header><ng-content selector="h1"></ng-content></header>
       <ng-content selector=".extra"></ng-content>
-      <div *ngFor="let hero of this.heroesService.heroes">
-        <ng1-hero [hero]="hero" (onRemove)="onRemoveHero(hero)">
-          <strong>Super Hero</strong>
-        </ng1-hero>
-      </div>
+      @for (hero of this.heroesService.heroes; track hero) {
+        <div>
+          <ng1-hero [hero]="hero" (onRemove)="onRemoveHero(hero)">
+            <strong>Super Hero</strong>
+          </ng1-hero>
+        </div>
+      }
       <button (click)="onAddHero()">Add Hero</button>
     </div>
-  `,
+    `,
 })
 class Ng2HeroesComponent {
   @Output() private addHero = new EventEmitter<Hero>();

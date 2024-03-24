@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgIf, isPlatformBrowser} from '@angular/common';
+import {CommonModule, isPlatformBrowser} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -36,7 +36,6 @@ import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
     DocViewer,
     NavigationList,
     ClickOutside,
-    NgIf,
     RouterLink,
     IconComponent,
     CdkMenu,

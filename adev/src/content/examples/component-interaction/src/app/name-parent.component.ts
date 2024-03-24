@@ -5,9 +5,11 @@ import {Component} from '@angular/core';
   selector: 'app-name-parent',
   template: `
     <h2>Master controls {{names.length}} names</h2>
-
-    <app-name-child *ngFor="let name of names" [name]="name"></app-name-child>
-  `,
+    
+    @for (name of names; track name) {
+      <app-name-child [name]="name"></app-name-child>
+    }
+    `,
 })
 export class NameParentComponent {
   // Displays 'Dr. IQ', '<no name set>', 'Bombasto'

@@ -1,4 +1,7 @@
 <h1>{{ title }}</h1>
-<p *ngIf="user">
+@if (user) {
+  <p>
+    <i>Welcome, {{ user }}</i>
+  }
   <i>Welcome, {{ user }}</i>
-<p>
+  <p>

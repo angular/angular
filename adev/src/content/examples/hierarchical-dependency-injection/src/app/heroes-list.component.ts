@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {Hero, HeroTaxReturn} from './hero';
 import {HeroesService} from './heroes.service';
 import {HeroTaxReturnComponent} from './hero-tax-return.component';
-import {AsyncPipe, NgFor} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -37,7 +37,7 @@ import {AsyncPipe, NgFor} from '@angular/common';
     }
   `,
   ],
-  imports: [HeroTaxReturnComponent, NgFor, AsyncPipe],
+  imports: [HeroTaxReturnComponent, AsyncPipe],
 })
 export class HeroesListComponent {
   heroes: Observable<Hero[]>;

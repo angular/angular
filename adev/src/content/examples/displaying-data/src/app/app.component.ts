@@ -9,12 +9,16 @@ import {Hero} from './hero';
   <h2>My favorite hero is: {{myHero.name}}</h2>
   <p>Heroes:</p>
   <ul>
-    <li *ngFor="let hero of heroes">
-      {{ hero.name }}
+    @for (hero of heroes; track hero) {
+      <li>
+        {{ hero.name }}
       </li>
+    }
   </ul>
-  <p *ngIf="heroes.length > 3">There are many heroes!</p>
-`,
+  @if (heroes.length > 3) {
+    <p>There are many heroes!</p>
+  }
+  `,
 })
 export class AppComponent {
   title = 'Tour of Heroes';

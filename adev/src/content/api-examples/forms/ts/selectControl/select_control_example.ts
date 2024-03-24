@@ -15,15 +15,17 @@ import {Component} from '@angular/core';
     <form #f="ngForm">
       <select name="state" ngModel>
         <option value="" disabled>Choose a state</option>
-        <option *ngFor="let state of states" [ngValue]="state">
-          {{ state.abbrev }}
-        </option>
+        @for (state of states; track state) {
+          <option [ngValue]="state">
+            {{ state.abbrev }}
+          </option>
+        }
       </select>
     </form>
-
+    
     <p>Form value: {{ f.value | json }}</p>
     <!-- example value: {state: {name: 'New York', abbrev: 'NY'} } -->
-  `,
+    `,
 })
 export class SelectControlComp {
   states = [

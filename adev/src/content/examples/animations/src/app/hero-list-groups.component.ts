@@ -2,7 +2,6 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {trigger, state, style, animate, transition, group} from '@angular/animations';
 
 import {Hero} from './hero';
-import {NgFor} from '@angular/common';
 
 @Component({
   standalone: true,
@@ -20,7 +19,7 @@ import {NgFor} from '@angular/common';
     </ul>
   `,
   styleUrls: ['./hero-list-page.component.css'],
-  imports: [NgFor],
+  imports: [],
   // #docregion animationdef
   animations: [
     trigger('flyInOut', [

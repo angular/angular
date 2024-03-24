@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AsyncPipe, NgFor} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
 import {RouterLink} from '@angular/router';
 
 import {Observable, Subject} from 'rxjs';
@@ -13,7 +13,7 @@ import {HeroService} from '../hero.service';
   standalone: true,
   selector: 'app-hero-search',
   templateUrl: './hero-search.component.html',
-  imports: [AsyncPipe, NgFor, RouterLink],
+  imports: [AsyncPipe, RouterLink],
   styleUrls: ['./hero-search.component.css'],
 })
 export class HeroSearchComponent implements OnInit {

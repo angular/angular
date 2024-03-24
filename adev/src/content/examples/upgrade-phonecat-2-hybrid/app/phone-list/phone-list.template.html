@@ -24,14 +24,16 @@
 
       <!-- #docregion list -->
       <ul class="phones">
-        <li *ngFor="let phone of getPhones()"
+        @for (phone of getPhones(); track phone) {
+          <li
             class="thumbnail phone-list-item">
-          <a href="/#!/phones/{{ phone.id }}" class="thumb">
-            <img [src]="phone.imageUrl" [alt]="phone.name" />
-          </a>
-          <a href="/#!/phones/{{ phone.id }}" class="name">{{ phone.name }}</a>
-          <p>{{phone.snippet}}</p>
-        </li>
+            <a href="/#!/phones/{{ phone.id }}" class="thumb">
+              <img [src]="phone.imageUrl" [alt]="phone.name" />
+            </a>
+            <a href="/#!/phones/{{ phone.id }}" class="name">{{ phone.name }}</a>
+            <p>{{phone.snippet}}</p>
+          </li>
+        }
       </ul>
       <!-- #enddocregion list -->
 

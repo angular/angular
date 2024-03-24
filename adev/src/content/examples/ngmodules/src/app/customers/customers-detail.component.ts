@@ -6,15 +6,17 @@ import {Customer, CustomersService} from './customers.service';
 @Component({
   template: `
     <h3 highlight>Customer Detail</h3>
-    <div *ngIf="customer">
-      <div>Id: {{customer.id}}</div><br>
-      <label for="name">Name:
-        <input id="name" [(ngModel)]="customer.name">
-      </label>
-    </div>
+    @if (customer) {
+      <div>
+        <div>Id: {{customer.id}}</div><br>
+        <label for="name">Name:
+          <input id="name" [(ngModel)]="customer.name">
+        </label>
+      </div>
+    }
     <br>
-    <a routerLink="../">Customer List</a>
-  `,
+      <a routerLink="../">Customer List</a>
+    `,
 })
 export class CustomersDetailComponent implements OnInit {
   customer!: Customer;

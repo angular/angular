@@ -5,12 +5,14 @@ import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
   selector: 'app-counter',
   template: `
     <p>Counter = {{counter}}</p>
-
+    
     <div class="info">
       <h3>Counter Change Log</h3>
-      <div *ngFor="let chg of changeLog" appSpy class="log">{{chg}}</div>
+      @for (chg of changeLog; track chg) {
+        <div appSpy class="log">{{chg}}</div>
+      }
     </div>
-  `,
+    `,
 })
 export class MyCounterComponent implements OnChanges {
   @Input() counter = 0;

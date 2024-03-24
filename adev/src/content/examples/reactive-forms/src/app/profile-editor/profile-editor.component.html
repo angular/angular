@@ -1,7 +1,7 @@
 <!-- #docplaster -->
 <!-- #docregion ng-submit -->
 <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-<!-- #enddocregion ng-submit -->
+  <!-- #enddocregion ng-submit -->
   <label for="first-name">First Name: </label>
   <input id="first-name" type="text" formControlName="firstName" required>
 
@@ -29,11 +29,13 @@
     <h2>Aliases</h2>
     <button type="button" (click)="addAlias()">+ Add another alias</button>
 
-    <div *ngFor="let alias of aliases.controls; let i=index">
-      <!-- The repeated alias template -->
-      <label for="alias-{{ i }}">Alias:</label>
-      <input id="alias-{{ i }}" type="text" [formControlName]="i">
-    </div>
+    @for (alias of aliases.controls; track alias; let i = $index) {
+      <div>
+        <!-- The repeated alias template -->
+        <label for="alias-{{ i }}">Alias:</label>
+        <input id="alias-{{ i }}" type="text" [formControlName]="i">
+      </div>
+    }
   </div>
   <!-- #enddocregion formarrayname -->
 
@@ -46,10 +48,10 @@
 
 <hr>
 
-<p>Form Value: {{ profileForm.value | json }}</p>
+  <p>Form Value: {{ profileForm.value | json }}</p>
 
-<!-- #docregion display-status -->
-<p>Form Status: {{ profileForm.status }}</p>
-<!-- #enddocregion display-status -->
+  <!-- #docregion display-status -->
+  <p>Form Status: {{ profileForm.status }}</p>
+  <!-- #enddocregion display-status -->
 
-<button type="button" (click)="updateProfile()">Update Profile</button>
+  <button type="button" (click)="updateProfile()">Update Profile</button>

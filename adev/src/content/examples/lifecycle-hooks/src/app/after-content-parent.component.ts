@@ -8,20 +8,24 @@ import {LoggerService} from './logger.service';
     `
   <div class="parent">
     <h2>AfterContent</h2>
-
-    <div *ngIf="show">` +
+  
+    @if (show) {
+      <div>` +
     // #docregion parent-template
     `<after-content>
         <app-child></app-child>
       </after-content>` +
     // #enddocregion parent-template
     `</div>
-
-    <div class="info">
-      <h3>AfterContent Logs</h3>
-      <button type="button" (click)="reset()">Reset</button>
-      <div *ngFor="let msg of logger.logs" class="log">{{msg}}</div>
-    </div>
+  }
+  
+  <div class="info">
+    <h3>AfterContent Logs</h3>
+    <button type="button" (click)="reset()">Reset</button>
+    @for (msg of logger.logs; track msg) {
+      <div class="log">{{msg}}</div>
+    }
+  </div>
   </div>
   `,
   providers: [LoggerService],

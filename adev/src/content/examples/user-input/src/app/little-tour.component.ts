@@ -1,6 +1,5 @@
 // #docregion
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
 
 // #docregion little-tour
 @Component({
@@ -21,7 +20,7 @@ import {CommonModule} from '@angular/common';
       }
     </ul>
   `,
-  imports: [CommonModule],
+  imports: [],
 })
 export class LittleTourComponent {
   heroes = ['Windstorm', 'Bombasto', 'Magneta', 'Tornado'];

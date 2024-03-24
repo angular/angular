@@ -9,9 +9,11 @@ import {Hero} from './hero';
     <link rel="stylesheet" href="../assets/hero-team.component.css">
     <h3>Team</h3>
     <ul>
-      <li *ngFor="let member of hero.team">
-        {{member}}
-      </li>
+      @for (member of hero.team; track member) {
+        <li>
+          {{member}}
+        </li>
+      }
     </ul>`,
 })
 // #enddocregion stylelink

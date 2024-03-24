@@ -9,17 +9,21 @@ import {LoggerService} from './logger.service';
   <hr />
   <div class="parent">
     <h2>Peek-A-Boo</h2>
-
+  
     <button type="button" (click)="toggleChild()">
       {{hasChild ? 'Destroy' : 'Create'}} PeekABooComponent
     </button>
     <button type="button" (click)="updateHero()" [hidden]="!hasChild">Update Hero</button>
-
+  
     <div class="info">
-      <peek-a-boo *ngIf="hasChild" [name]="heroName"></peek-a-boo>
-
+      @if (hasChild) {
+        <peek-a-boo [name]="heroName"></peek-a-boo>
+      }
+  
       <h3>Lifecycle Hook Log</h3>
-      <div *ngFor="let msg of hookLog" class="log">{{msg}}</div>
+      @for (msg of hookLog; track msg) {
+        <div class="log">{{msg}}</div>
+      }
     </div>
   </div>
   `,

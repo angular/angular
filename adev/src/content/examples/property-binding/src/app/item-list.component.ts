@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {NgFor} from '@angular/common';
+
 import {ITEMS} from './mock-items';
 import {Item} from './item';
 
@@ -21,7 +21,7 @@ import {Item} from './item';
       }
     </ul>
   `,
-  imports: [NgFor],
+  imports: [],
 })
 export class ItemListComponent {
   listItems = ITEMS;
