@@ -56,7 +56,7 @@ If an element is an Angular Component, a reference with no attribute value will 
 
 Just like variables in JavaScript or TypeScript code, template variables are scoped to the template that declares them.
 
-Similarly, [Structural directives](guide/directives) such as `*ngIf` and `*ngFor`, or `<ng-template>` declarations create a new nested template scope, much like JavaScript's control flow statements like `if` and `for` create new lexical scopes. You cannot access template variables within one of these structural directives from outside of its boundaries.
+Similarly, [control flow blocks](guide/templates/control-flow) such as `@if` and `@for`, [Structural directives](guide/directives) such as `*ngIf` and `*ngFor`, or `<ng-template>` declarations create a new nested template scope, much like JavaScript's control flow statements like `if` and `for` create new lexical scopes. You cannot access template variables within one of these structural directives from outside of its boundaries.
 
 HELPFUL: Define a variable only once in the template so the runtime value remains predictable.
 
@@ -68,16 +68,18 @@ In the following example, changing the text in the `<input>` changes the value i
 
 <docs-code path="adev/src/content/examples/template-reference-variables/src/app/app.component.html" visibleRegion="template-ref-vars-scope1" header="src/app/app.component.html"/>
 
-In this case, the `*ngIf` on `<span>` creates a new template scope, which includes the `ref1` variable from its parent scope.
+In this case, the `@if` block around `<span>` creates a new template scope, which includes the `ref1` variable from its parent scope.
 
 However, accessing a template variable from a child scope in the parent template doesn't work:
 
 ```html
-  <input *ngIf="true" #ref2 type="text" [(ngModel)]="secondExample" />
+  @if(true) {
+    <input #ref2 type="text" [(ngModel)]="secondExample" />
+  }
   <span>Value: {{ ref2?.value }}</span> <!-- doesn't work -->
 ```
 
-Here, `ref2` is declared in the child scope created by `*ngIf`, and is not accessible from the parent template.
+Here, `ref2` is declared in the child scope created by the `@if` block, and is not accessible from the parent template.
 
 ## Template input variables
 

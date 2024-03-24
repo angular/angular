@@ -21,7 +21,7 @@
 <h3>Heroes who fly (piped)</h3>
 <div id="flyers">
   <!-- #docregion template-flying-heroes -->
-  @for (hero of (heroes | flyingHeroes); track hero) {
+  @for (hero of (heroes | flyingHeroes); track $index) {
     <div>{{ hero.name }}</div>
   }
   <!-- #enddocregion template-flying-heroes -->
@@ -30,7 +30,7 @@
 <h3>All Heroes (no pipe)</h3>
 <div id="all">
   <!-- #docregion template-1 -->
-  @for (hero of heroes; track hero) {
+  @for (hero of heroes; track $index) {
     <div>{{ hero.name }}</div>
   }
   <!-- #enddocregion template-1 -->

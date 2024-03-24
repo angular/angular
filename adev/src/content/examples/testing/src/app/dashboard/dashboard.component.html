@@ -2,7 +2,7 @@
 
 <div class="grid grid-pad">
   <!-- #docregion dashboard-hero -->
-  @for (hero of heroes; track hero) {
+  @for (hero of heroes; track $index) {
     <dashboard-hero
       class="col-1-4"
       [hero]="hero"

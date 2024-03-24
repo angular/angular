@@ -93,9 +93,9 @@ transition ( ':leave', [ … ] );  // alias for * => void
 It's harder to target an element that is entering a view because it isn't in the DOM yet.
 Use the aliases `:enter` and `:leave` to target HTML elements that are inserted or removed from a view.
 
-### Use `*ngIf` and `*ngFor` with :enter and :leave
+### Use `@if` and `@for` with :enter and :leave
 
-The `:enter` transition runs when any `*ngIf` or `*ngFor` views are placed on the page, and `:leave` runs when those views are removed from the page.
+The `:enter` transition runs when any `@if` or `@for` views are placed on the page, and `:leave` runs when those views are removed from the page.
 
 IMPORTANT: Entering/leaving behaviors can sometime be confusing.
 As a rule of thumb consider that any element being added to the DOM by Angular passes via the `:enter` transition. Only elements being directly removed from the DOM by Angular pass via the `:leave` transition. For example, an element's view is removed from the DOM because its parent is being removed from the DOM.

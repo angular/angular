@@ -241,7 +241,7 @@ In this example, when the `isOpen` expression evaluates to a defined state of `o
 Then it's up to the `openClose` code to handle the state change and kick off a state change animation.
 
 For elements entering or leaving a page \(inserted or removed from the DOM\), you can make the animations conditional.
-For example, use `*ngIf` with the animation trigger in the HTML template.
+For example, use `@if` with the animation trigger in the HTML template.
 
 HELPFUL: In the component file, set the trigger that defines the animations as the value of the `animations:` property in the `@Component()` decorator.
 

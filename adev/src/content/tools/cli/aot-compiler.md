@@ -445,7 +445,7 @@ is reported as well as the above error message.
 
 ### Type narrowing
 
-The expression used in an `ngIf` directive is used to narrow type unions in the Angular
+The expression used in an `@if` block is used to narrow type unions in the Angular
 template compiler, the same way the `if` expression does in TypeScript.
 For example, to avoid `Object is possibly 'undefined'` error in the template above, modify it to only emit the interpolation if the value of `person` is initialized as shown below:
 
@@ -453,7 +453,9 @@ For example, to avoid `Object is possibly 'undefined'` error in the template abo
 
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person"> {{person.address.street}} </span>'
+  template: `@if(person) {
+    <span> {{person.address.street}} </span>
+  }`
 })
 class MyComponent {
   person?: Person;
@@ -461,13 +463,13 @@ class MyComponent {
 
 </docs-code>
 
-Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
+Using `@if` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
 
 For more information about input type narrowing, see [Improving template type checking for custom directives](guide/directives/structural-directives#directive-type-checks).
 
 ### Non-null type assertion operator
 
-Use the non-null type assertion operator to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use `*ngIf` or when some constraint in the component ensures that the expression is always non-null when the binding expression is interpolated.
+Use the non-null type assertion operator to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use `@if` or when some constraint in the component ensures that the expression is always non-null when the binding expression is interpolated.
 
 In the following example, the `person` and `address` properties are always set together, implying that `address` is always non-null if `person` is non-null.
 There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.
@@ -476,7 +478,9 @@ There is no convenient way to describe this constraint to TypeScript and the tem
 
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>'
+  template: `@if(person) {
+    <span> {{person.name}} lives on {{address!.street}} </span>
+  }`
 })
 class MyComponent {
   person?: Person;
@@ -492,13 +496,15 @@ class MyComponent {
 
 The non-null assertion operator should be used sparingly as refactoring of the component might break this constraint.
 
-In this example it is recommended to include the checking of `address` in the `*ngIf` as shown below:
+In this example it is recommended to include the checking of `address` in the `@if` as shown below:
 
 <docs-code language="typescript">
 
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person &amp;&amp; address"> {{person.name}} lives on {{address.street}} </span>'
+  template: `@if(person && address) {
+    <span> {{person.name}} lives on {{address.street}} </span>
+  }`
 })
 class MyComponent {
   person?: Person;

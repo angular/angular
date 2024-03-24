@@ -19,7 +19,7 @@ The compiler does not verify that the value of `user.address.city` is assignable
 
 The compiler also has some major limitations in this mode:
 
-* Importantly, it doesn't check embedded views, such as `*ngIf`, `*ngFor`, other `<ng-template>` embedded view.
+* Importantly, it doesn't check embedded views, such as `@if`, `@for`, `*ngIf`, `*ngFor` other `<ng-template>` embedded view.
 * It doesn't figure out the types of `#refs`, the results of pipes, or the type of `$event` in event bindings.
 
 In many cases, these things end up as type `any`, which can cause subsequent parts of the expression to go unchecked.
@@ -29,7 +29,7 @@ In many cases, these things end up as type `any`, which can cause subsequent par
 If the `fullTemplateTypeCheck` flag is set to `true`, Angular is more aggressive in its type-checking within templates.
 In particular:
 
-* Embedded views \(such as those within an `*ngIf` or `*ngFor`\) are checked
+* Embedded views \(such as those within an `@if` or `@for` block\) are checked
 * Pipes have the correct return type
 * Local references to directives and pipes have the correct type \(except for any generic parameters, which will be `any`\)
 
@@ -53,11 +53,11 @@ In addition to the full mode behavior, Angular does the following:
 * Verifies that component/directive bindings are assignable to their `@Input()`s
 * Obeys TypeScript's `strictNullChecks` flag when validating the preceding mode
 * Infers the correct type of components/directives, including generics
-* Infers template context types where configured \(for example, allowing correct type-checking of `NgFor`\)
+* Infers template context types where configured \(for example, allowing correct type-checking of `@for`\)
 * Infers the correct type of `$event` in component/directive, DOM, and animation event bindings
 * Infers the correct type of local references to DOM elements, based on the tag name \(for example, the type that `document.createElement` would return for that tag\)
 
-## Checking of `*ngFor`
+## Checking of `@for`
 
 The three modes of type-checking treat embedded views differently.
 Consider the following example.
@@ -76,14 +76,14 @@ interface User {
 
 <docs-code language="html">
 
-<div *ngFor="let user of users">
+@for(user of users) {
   <h2>{{config.title}}</h2>
   <span>City: {{user.address.city}}</span>
-</div>
+}
 
 </docs-code>
 
-The `<h2>` and the `<span>` are in the `*ngFor` embedded view.
+The `<h2>` and the `<span>` are in the `@for` embedded view.
 In basic mode, Angular doesn't check either of them.
 However, in full mode, Angular checks that `config` and `user` exist and assumes a type of `any`.
 In strict mode, Angular knows that the `user` in the `<span>` has a type of `User`, and that `address` is an object with a `city` property of type `string`.
