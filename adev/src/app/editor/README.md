@@ -115,7 +115,7 @@ The following steps are executed on project change:
 5. The previous project dependencies are compared with the new project dependencies.
    1. If there are differences, a `npm install` is triggered, hiding the preview and going to the install loading step.
    2. If there are no differences, the project is ready.
-6. Some states are resetted, for example the "reveal answer" state if the previous project was in the "reveal answer" state.
+6. Some states are reset, for example the "reveal answer" state if the previous project was in the "reveal answer" state.
 
 ## Components and services
 
@@ -200,7 +200,7 @@ Responsible for handling the download button in the embedded editor, fetching th
 
 #### [`AlertManager`](./alert-manager.service.ts)
 
-Manage the alerts displayed in the embedded editor, being the out of memory alert when multiple tabs are opened, and unsupported enviroments alerts.
+Manage the alerts displayed in the embedded editor, being the out of memory alert when multiple tabs are opened, and unsupported environments alerts.
 
 #### [`TypingsLoader`](./typings-loader.service.ts)
 
