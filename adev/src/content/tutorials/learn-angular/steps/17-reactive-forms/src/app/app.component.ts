@@ -4,14 +4,10 @@ import {Component} from '@angular/core';
   selector: 'app-root',
   template: `
     <form>
-      <label>
-        Name
-        <input type="text" formControlName="name" />
-      </label>
-      <label>
-        Email
-        <input type="email" formControlName="email" />
-      </label>
+      <label for="name">Name</label>
+      <input id="name" type="text" formControlName="name" />
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" />
       <button type="submit">Submit</button>
     </form>
   `,
