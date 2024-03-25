@@ -6,10 +6,8 @@ import {FormsModule} from '@angular/forms';
   template: `
     <p>Username: {{ username }}</p>
     <p>{{ username }}'s favorite framework: {{ favoriteFramework }}</p>
-    <label for="framework">
-      Favorite Framework:
-      <input id="framework" type="text" [(ngModel)]="favoriteFramework" />
-    </label>
+    <label for="framework">Favorite Framework:</label>
+    <input id="framework" type="text" [(ngModel)]="favoriteFramework" />
   `,
   standalone: true,
   imports: [FormsModule],
