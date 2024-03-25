@@ -7,7 +7,7 @@
  */
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {newArray} from '../../util/array_utils';
-import {assertLContainer, assertTNode} from '../assert';
+import {assertLContainer} from '../assert';
 import {ComponentTemplate} from '../interfaces/definition';
 import {TAttributes, TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {ProjectionSlots} from '../interfaces/projection';
@@ -15,11 +15,10 @@ import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HYDRATION, LView, T_HOST, TVi
 import {applyProjection} from '../node_manipulation';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isSelectorInSelectorList} from '../node_selector_matcher';
 import {getLView, getTView, isInSkipHydrationBlock, setCurrentTNodeAsNotParent} from '../state';
-import {getTNode} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {getOrCreateTNode} from './shared';
-import {ɵɵtemplate} from './template';
+import {declareTemplate} from './template';
 
 
 
@@ -147,12 +146,12 @@ export function ɵɵprojection(
 
   const hydrationInfo = lView[HYDRATION];
   const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock();
-  const componentNode = lView[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
-  const isEmpty = componentNode.projection![tProjectionNode.projection] === null;
+  const componentHostNode = lView[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
+  const isEmpty = componentHostNode.projection![tProjectionNode.projection] === null;
 
   if (isEmpty && fallbackTemplateFn) {
     insertFallbackContent(
-        lView, tView, nodeIndex, fallbackTemplateFn, fallbackDecls!, fallbackVars!);
+        lView, tView, nodeIndex, fallbackTemplateFn, fallbackDecls!, fallbackVars!, attrs);
   } else if (
       isNodeCreationMode &&
       (tProjectionNode.flags & TNodeFlags.isDetached) !== TNodeFlags.isDetached) {
@@ -164,13 +163,12 @@ export function ɵɵprojection(
 /** Inserts the fallback content of a projection slot. Assumes there's no projected content. */
 function insertFallbackContent(
     lView: LView, tView: TView, projectionIndex: number, templateFn: ComponentTemplate<unknown>,
-    decls: number, vars: number) {
+    decls: number, vars: number, attrs: TAttributes|undefined) {
   const fallbackIndex = projectionIndex + 1;
-  ɵɵtemplate(fallbackIndex, templateFn, decls, vars);
+  const fallbackTNode =
+      declareTemplate(lView, tView, fallbackIndex, templateFn, decls, vars, null, attrs);
   const fallbackLContainer = lView[HEADER_OFFSET + fallbackIndex];
   ngDevMode && assertLContainer(fallbackLContainer);
-  const fallbackTNode = getTNode(tView, HEADER_OFFSET + fallbackIndex);
-  ngDevMode && assertTNode(fallbackTNode);
 
   const dehydratedView = findMatchingDehydratedView(fallbackLContainer, fallbackTNode.tView!.ssrId);
   const fallbackLView =

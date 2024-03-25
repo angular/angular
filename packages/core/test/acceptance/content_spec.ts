@@ -1763,5 +1763,50 @@ describe('projection', () => {
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toContain(`<projection>Fallback</projection>`);
     });
+
+    it('should render the fallback content when ng-content is re-projected', () => {
+      @Component({
+        selector: 'inner-projection',
+        template: `
+          <ng-content select="[inner-header]">Inner header fallback</ng-content>
+          <ng-content select="[inner-footer]">Inner footer fallback</ng-content>
+        `,
+        standalone: true,
+      })
+      class InnerProjection {
+      }
+
+      @Component({
+        selector: 'projection',
+        template: `
+          <inner-projection>
+            <ng-content select="[outer-header]" inner-header>Outer header fallback</ng-content>
+            <ng-content select="[outer-footer]" inner-footer>Outer footer fallback</ng-content>
+          </inner-projection>
+        `,
+        standalone: true,
+        imports: [InnerProjection],
+      })
+      class Projection {
+      }
+
+      @Component({
+        standalone: true,
+        imports: [Projection],
+        template: `
+          <projection>
+            <span outer-header>Outer header override</span>
+          </projection>
+        `
+      })
+      class App {
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const content = getElementHtml(fixture.nativeElement);
+
+      expect(content).toContain('Outer header override');
+      expect(content).toContain('Outer footer fallback');
+    });
   });
 });
