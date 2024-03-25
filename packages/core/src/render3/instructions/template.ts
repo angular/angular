@@ -28,16 +28,14 @@ import {addToViewTree, createDirectivesInstances, createLContainer, createTView,
 
 function templateFirstCreatePass(
     index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>|null,
-    decls: number, vars: number, tagName?: string|null, attrsIndex?: number|null,
+    decls: number, vars: number, tagName?: string|null, attrs?: TAttributes|null,
     localRefsIndex?: number|null): TContainerNode {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
   const tViewConsts = tView.consts;
 
   // TODO(pk): refactor getOrCreateTNode to have the "create" only version
-  const tNode = getOrCreateTNode(
-      tView, index, TNodeType.Container, tagName || null,
-      getConstant<TAttributes>(tViewConsts, attrsIndex));
+  const tNode = getOrCreateTNode(tView, index, TNodeType.Container, tagName || null, attrs || null);
 
   resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
   registerPostOrderHooks(tView, tNode);
@@ -49,6 +47,62 @@ function templateFirstCreatePass(
   if (tView.queries !== null) {
     tView.queries.template(tView, tNode);
     embeddedTView.queries = tView.queries.embeddedTView(tNode);
+  }
+
+  return tNode;
+}
+
+/**
+ * Creates an LContainer for an embedded view.
+ *
+ * @param declarationLView LView in which the template was declared.
+ * @param declarationTView TView in which the template wa declared.
+ * @param index The index of the container in the data array
+ * @param templateFn Inline template
+ * @param decls The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
+ * @param tagName The name of the container element, if applicable
+ * @param attrsIndex Index of template attributes in the `consts` array.
+ * @param localRefs Index of the local references in the `consts` array.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
+ */
+export function declareTemplate(
+    declarationLView: LView, declarationTView: TView, index: number,
+    templateFn: ComponentTemplate<any>|null, decls: number, vars: number, tagName?: string|null,
+    attrs?: TAttributes|null, localRefsIndex?: number|null,
+    localRefExtractor?: LocalRefExtractor): TNode {
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = declarationTView.firstCreatePass ?
+      templateFirstCreatePass(
+          adjustedIndex, declarationTView, declarationLView, templateFn, decls, vars, tagName,
+          attrs, localRefsIndex) :
+      declarationTView.data[adjustedIndex] as TContainerNode;
+  setCurrentTNode(tNode, false);
+
+  const comment =
+      _locateOrCreateContainerAnchor(declarationTView, declarationLView, tNode, index) as RComment;
+
+  if (wasLastNodeCreated()) {
+    appendChild(declarationTView, declarationLView, comment, tNode);
+  }
+  attachPatchData(comment, declarationLView);
+
+  const lContainer = createLContainer(comment, declarationLView, comment, tNode);
+  declarationLView[adjustedIndex] = lContainer;
+  addToViewTree(declarationLView, lContainer);
+
+  // If hydration is enabled, looks up dehydrated views in the DOM
+  // using hydration annotation info and stores those views on LContainer.
+  // In client-only mode, this function is a noop.
+  populateDehydratedViewsInLContainer(lContainer, tNode, declarationLView);
+
+  if (isDirectiveHost(tNode)) {
+    createDirectivesInstances(declarationTView, declarationLView, tNode);
+  }
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(declarationLView, tNode, localRefExtractor);
   }
 
   return tNode;
@@ -79,38 +133,10 @@ export function ɵɵtemplate(
     localRefExtractor?: LocalRefExtractor): typeof ɵɵtemplate {
   const lView = getLView();
   const tView = getTView();
-  const adjustedIndex = index + HEADER_OFFSET;
-
-  const tNode = tView.firstCreatePass ? templateFirstCreatePass(
-                                            adjustedIndex, tView, lView, templateFn, decls, vars,
-                                            tagName, attrsIndex, localRefsIndex) :
-                                        tView.data[adjustedIndex] as TContainerNode;
-  setCurrentTNode(tNode, false);
-
-  const comment = _locateOrCreateContainerAnchor(tView, lView, tNode, index) as RComment;
-
-  if (wasLastNodeCreated()) {
-    appendChild(tView, lView, comment, tNode);
-  }
-  attachPatchData(comment, lView);
-
-  const lContainer = createLContainer(comment, lView, comment, tNode);
-  lView[adjustedIndex] = lContainer;
-  addToViewTree(lView, lContainer);
-
-  // If hydration is enabled, looks up dehydrated views in the DOM
-  // using hydration annotation info and stores those views on LContainer.
-  // In client-only mode, this function is a noop.
-  populateDehydratedViewsInLContainer(lContainer, tNode, lView);
-
-  if (isDirectiveHost(tNode)) {
-    createDirectivesInstances(tView, lView, tNode);
-  }
-
-  if (localRefsIndex != null) {
-    saveResolvedLocalsInData(lView, tNode, localRefExtractor);
-  }
-
+  const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
+  declareTemplate(
+      lView, tView, index, templateFn, decls, vars, tagName, attrs, localRefsIndex,
+      localRefExtractor);
   return ɵɵtemplate;
 }
 

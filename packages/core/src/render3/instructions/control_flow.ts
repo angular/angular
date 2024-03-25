@@ -21,12 +21,12 @@ import {TNode} from '../interfaces/node';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HYDRATION, LView, TVIEW, TView} from '../interfaces/view';
 import {LiveCollection, reconcile} from '../list_reconciliation';
 import {destroyLView, detachView} from '../node_manipulation';
-import {getLView, getSelectedIndex, nextBindingIndex} from '../state';
+import {getLView, getSelectedIndex, getTView, nextBindingIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
-import {getTNode} from '../util/view_utils';
+import {getConstant, getTNode} from '../util/view_utils';
 import {addLViewToLContainer, createAndRenderEmbeddedLView, getLViewFromLContainer, removeLViewFromLContainer, shouldAddViewToDom} from '../view_manipulation';
 
-import {ɵɵtemplate} from './template';
+import {declareTemplate} from './template';
 
 /**
  * The conditional instruction represents the basic building block on the runtime side to support
@@ -163,6 +163,8 @@ export function ɵɵrepeaterCreate(
       assertFunction(
           trackByFn, `A track expression must be a function, was ${typeof trackByFn} instead.`);
 
+  const lView = getLView();
+  const tView = getTView();
   const hasEmptyBlock = emptyTemplateFn !== undefined;
   const hostLView = getLView();
   const boundTrackBy = trackByUsesComponentInstance ?
@@ -173,7 +175,9 @@ export function ɵɵrepeaterCreate(
   const metadata = new RepeaterMetadata(hasEmptyBlock, boundTrackBy);
   hostLView[HEADER_OFFSET + index] = metadata;
 
-  ɵɵtemplate(index + 1, templateFn, decls, vars, tagName, attrsIndex);
+  declareTemplate(
+      lView, tView, index + 1, templateFn, decls, vars, tagName,
+      getConstant(tView.consts, attrsIndex));
 
   if (hasEmptyBlock) {
     ngDevMode &&
@@ -181,7 +185,9 @@ export function ɵɵrepeaterCreate(
     ngDevMode &&
         assertDefined(emptyVars, 'Missing number of bindings for the empty repeater block.');
 
-    ɵɵtemplate(index + 2, emptyTemplateFn, emptyDecls!, emptyVars!, emptyTagName, emptyAttrsIndex);
+    declareTemplate(
+        lView, tView, index + 2, emptyTemplateFn, emptyDecls!, emptyVars!, emptyTagName,
+        getConstant(tView.consts, emptyAttrsIndex));
   }
 }
 
