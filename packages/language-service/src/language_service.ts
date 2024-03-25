@@ -40,7 +40,6 @@ export class LanguageService {
   readonly compilerFactory: CompilerFactory;
   private readonly programDriver: ProgramDriver;
   private readonly adapter: LanguageServiceAdapter;
-  private readonly parseConfigHost: LSParseConfigHost;
   private readonly codeFixes: CodeFixes;
 
   constructor(
@@ -48,13 +47,18 @@ export class LanguageService {
       private readonly tsLS: ts.LanguageService,
       private readonly config: Omit<PluginConfig, 'angularOnly'>,
   ) {
-    this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
-    this.options = parseNgCompilerOptions(project, this.parseConfigHost, config);
+    if (project.projectKind === ts.server.ProjectKind.Configured) {
+      const parseConfigHost = new LSParseConfigHost(project.projectService.host);
+      this.options = parseNgCompilerOptions(project, parseConfigHost, config);
+      this.watchConfigFile(project, parseConfigHost);
+    } else {
+      this.options = project.getCompilerOptions();
+    }
     logCompilerOptions(project, this.options);
+
     this.programDriver = createProgramDriver(project);
     this.adapter = new LanguageServiceAdapter(project);
     this.compilerFactory = new CompilerFactory(this.adapter, this.programDriver, this.options);
-    this.watchConfigFile(project);
     this.codeFixes = new CodeFixes(tsLS, ALL_CODE_FIXES_METAS);
   }
 
@@ -465,7 +469,7 @@ export class LanguageService {
     });
   }
 
-  private watchConfigFile(project: ts.server.Project) {
+  private watchConfigFile(project: ts.server.Project, parseConfigHost: LSParseConfigHost) {
     // TODO: Check the case when the project is disposed. An InferredProject
     // could be disposed when a tsconfig.json is added to the workspace,
     // in which case it becomes a ConfiguredProject (or vice-versa).
@@ -478,7 +482,7 @@ export class LanguageService {
         project.getConfigFilePath(), (fileName: string, eventKind: ts.FileWatcherEventKind) => {
           project.log(`Config file changed: ${fileName}`);
           if (eventKind === ts.FileWatcherEventKind.Changed) {
-            this.options = parseNgCompilerOptions(project, this.parseConfigHost, this.config);
+            this.options = parseNgCompilerOptions(project, parseConfigHost, this.config);
             logCompilerOptions(project, this.options);
           }
         });
