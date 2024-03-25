@@ -20,12 +20,10 @@ import { ReactiveFormsModule } from '@angular/forms';
   standalone: true,
   template: `
     <form>
-      <label>Name
-        <input type="text" />
-      </label>
-      <label>Email
-        <input type="email" />
-      </label>
+      <label for="name">Name</label>
+      <input id="name" type="text" />
+      <label for="email">Email</label>
+      <input id="email" type="email" />
       <button type="submit">Submit</button>
     </form>
   `,
@@ -62,14 +60,10 @@ In addition, each `FormControl` can be attached with the `formControlName` direc
 
 ```html
 <form [formGroup]="profileForm">
-  <label>
-    Name
-    <input type="text" formControlName="name" />
-  </label>
-  <label>
-    Email
-    <input type="email" formControlName="email" />
-  </label>
+  <label for="name">Name</label>
+  <input id="name" type="text" formControlName="name" />
+  <label for="email">Email</label>
+  <input id="email" type="email" formControlName="email" />
   <button type="submit">Submit</button>
 </form>
 ```
