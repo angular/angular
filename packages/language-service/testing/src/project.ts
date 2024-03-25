@@ -58,9 +58,12 @@ export class Project {
 
   static initialize(
       projectName: string, projectService: ts.server.ProjectService, files: ProjectFiles,
-      angularCompilerOptions: TestableOptions = {}, tsCompilerOptions = {}): Project {
+      angularCompilerOptions: TestableOptions = {}, tsCompilerOptions = {},
+      entryTsConfigPath: string|undefined = undefined): Project {
     const fs = getFileSystem();
     const tsConfigPath = absoluteFrom(`/${projectName}/tsconfig.json`);
+    const entryTsConfigAbsolutePath =
+        entryTsConfigPath ? absoluteFrom(`/${projectName}/${entryTsConfigPath}`) : undefined;
 
     const entryFiles: AbsoluteFsPath[] = [];
     for (const projectFilePath of Object.keys(files)) {
@@ -80,7 +83,7 @@ export class Project {
     projectService.openClientFile(entryFiles[0]);
     projectService.closeClientFile(entryFiles[0]);
 
-    return new Project(projectName, projectService, tsConfigPath);
+    return new Project(projectName, projectService, entryTsConfigAbsolutePath ?? tsConfigPath);
   }
 
   constructor(
