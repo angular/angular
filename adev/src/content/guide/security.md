@@ -301,8 +301,56 @@ Only code from the website on which cookies are set can read the cookies from th
 That means only your application can read this cookie token and set the custom header.
 The malicious code on `evil.com` can't.
 
-Angular's `HttpClient` has built-in support for the client-side half of this technique.
-Read about it more in the [HttpClient guide](/guide/http/security#xsrf-csrf-protection).
+### `HttpClient` XSRF/CSRF security
+
+`HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-header_token) used to prevent XSRF attacks. When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`. Because only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
+
+By default, an interceptor sends this header on all mutating requests (such as `POST`) to relative URLs, but not on GET/HEAD requests or on requests with an absolute URL.
+
+<docs-callout helpful title="Why not protect GET requests?">
+CSRF protection is only needed for requests that can change state on the backend. By their nature, CSRF attacks cross domain boundaries, and the web's [same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy) will prevent an attacking page from retrieving the results of authenticated GET requests.
+</docs-callout>
+
+To take advantage of this, your server needs to set a token in a JavaScript readable session cookie called `XSRF-TOKEN` on either the page load or the first GET request. On subsequent requests the server can verify that the cookie matches the `X-XSRF-TOKEN` HTTP header, and therefore be sure that only code running on your domain could have sent the request. The token must be unique for each user and must be verifiable by the server; this prevents the client from making up its own tokens. Set the token to a digest of your site's authentication cookie with a salt for added security.
+
+To prevent collisions in environments where multiple Angular apps share the same domain or subdomain, give each application a unique cookie name.
+
+<docs-callout important title="HttpClient supports only the client half of the XSRF protection scheme">
+  Your backend service must be configured to set the cookie for your page, and to verify that the header is present on all eligible requests. Failing to do so renders Angular's default protection ineffective.
+</docs-callout>
+
+### Configure custom cookie/header names
+
+If your backend service uses different names for the XSRF token cookie or header, use `withXsrfConfiguration` to override the defaults.
+
+Add it to the `provideHttpClient` call as follows:
+
+<docs-code language="ts">
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(
+      withXsrfConfiguration({
+        cookieName: 'CUSTOM_XSRF_TOKEN',
+        headerName: 'X-Custom-Xsrf-Header',
+      }),
+    ),
+  ]
+};
+</docs-code>
+
+### Disabling XSRF protection
+
+If the built-in XSRF protection mechanism doesn't work for your application, you can disable it using the `withNoXsrfProtection` feature:
+
+<docs-code language="ts">
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(
+      withNoXsrfProtection(),
+    ),
+  ]
+};
+</docs-code>
 
 For information about CSRF at the Open Web Application Security Project \(OWASP\), see [Cross-Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) and [Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
 The Stanford University paper [Robust Defenses for Cross-Site Request Forgery](https://seclab.stanford.edu/websec/csrf/csrf.pdf) is a rich source of detail.
