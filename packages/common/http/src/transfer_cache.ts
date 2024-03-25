@@ -40,6 +40,8 @@ import {HttpParams} from './params';
  * @param includePostRequests Enables caching for POST requests. By default, only GET and HEAD
  *     requests are cached. This option can be enabled if POST requests are used to retrieve data
  *     (for example using GraphQL).
+ * @param includeAuthorizationRequests Enables caching of requests containing either `Authorization`
+ *     or `Proxy-Authorization` headers. By default, these requests are excluded from caching.
  *
  * @publicApi
  */
@@ -47,6 +49,7 @@ export type HttpTransferCacheOptions = {
   includeHeaders?: string[];
   filter?: (req: HttpRequest<unknown>) => boolean;
   includePostRequests?: boolean;
+  includeAuthorizationRequests?: boolean;
 };
 
 /**
@@ -98,13 +101,13 @@ export function transferCacheInterceptorFn(
   // In the following situations we do not want to cache the request
   if (
     !isCacheActive ||
+    requestOptions === false ||
     // POST requests are allowed either globally or at request level
     (requestMethod === 'POST' && !globalOptions.includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
-    // Do not cache request that require authorization
-    req.headers.has('authorization') ||
-    req.headers.has('proxy-authorization') ||
-    requestOptions === false ||
+    // Do not cache request that require authorization when includeAuthorizationRequests is falsey
+    (!globalOptions.includeAuthorizationRequests &&
+      (req.headers.has('authorization') || req.headers.has('proxy-authorization'))) ||
     globalOptions.filter?.(req) === false
   ) {
     return next(req);

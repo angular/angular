@@ -261,7 +261,7 @@ describe('TransferCache', () => {
       makeRequestAndExpectNone('/test-2?foo=1', 'POST', {transferCache: true});
     });
 
-    it('should not cache request that requires authorization', async () => {
+    it('should not cache request that requires authorization by default', async () => {
       makeRequestAndExpectOne('/test-auth', 'foo', {
         headers: {Authorization: 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
       });
@@ -269,7 +269,7 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/test-auth', 'foo');
     });
 
-    it('should not cache request that requires proxy authorization', async () => {
+    it('should not cache request that requires proxy authorization by default', async () => {
       makeRequestAndExpectOne('/test-auth', 'foo', {
         headers: {'Proxy-Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
       });
@@ -342,6 +342,7 @@ describe('TransferCache', () => {
                 },
                 includeHeaders: ['foo', 'bar'],
                 includePostRequests: true,
+                includeAuthorizationRequests: true,
               }),
               provideHttpClient(),
               provideHttpClientTesting(),
@@ -362,6 +363,22 @@ describe('TransferCache', () => {
       it('should not cache because of global filter', () => {
         makeRequestAndExpectOne('/exclude?foo=1', 'foo');
         makeRequestAndExpectOne('/exclude?foo=1', 'foo');
+      });
+
+      it(`should cache request that requires authorization when 'includeAuthorizationRequests' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          headers: {Authorization: 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
+        });
+
+        makeRequestAndExpectNone('/test-auth');
+      });
+
+      it(`should cache request that requires proxy authorization when 'includeAuthorizationRequests' is 'true'`, async () => {
+        makeRequestAndExpectOne('/test-auth', 'foo', {
+          headers: {'Proxy-Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
+        });
+
+        makeRequestAndExpectNone('/test-auth');
       });
 
       it('should cache a POST request', () => {
