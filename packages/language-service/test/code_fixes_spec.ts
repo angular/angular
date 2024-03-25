@@ -569,6 +569,360 @@ describe('code fixes', () => {
         [``, `, imports: [NewBarComponent]`],
       ]);
     });
+
+    describe('with paths in the tsconfig', () => {
+      it(`for ''@app/*': ['./*.ts']'`, () => {
+        const standaloneFiles = {
+          'foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+          'bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(
+          env,
+          'test',
+          {},
+          {},
+          standaloneFiles,
+          {paths: {'@app/*': ['./*.ts']}},
+        );
+        const diags = project.getDiagnosticsForFile('foo.ts');
+        const fixFile = project.openFile('foo.ts');
+        fixFile.moveCursorToText('<¦bar>');
+
+        const codeActions = project.getCodeFixesAtPosition(
+          'foo.ts',
+          fixFile.cursor,
+          fixFile.cursor,
+          [diags[0].code],
+        );
+        const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+        actionChangesMatch(actionChanges, `Import BarComponent from '@app/bar' on FooComponent`, [
+          [``, `import { BarComponent } from "@app/bar";`],
+          [``, `, imports: [BarComponent]`],
+        ]);
+      });
+
+      it(`for ''@app/*.ts': ['./*.ts']'`, () => {
+        const standaloneFiles = {
+          'foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+          'bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(
+          env,
+          'test',
+          {},
+          {},
+          standaloneFiles,
+          {paths: {'@app/*.ts': ['./*.ts']}},
+        );
+        const diags = project.getDiagnosticsForFile('foo.ts');
+        const fixFile = project.openFile('foo.ts');
+        fixFile.moveCursorToText('<¦bar>');
+
+        const codeActions = project.getCodeFixesAtPosition(
+          'foo.ts',
+          fixFile.cursor,
+          fixFile.cursor,
+          [diags[0].code],
+        );
+        const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+        actionChangesMatch(
+          actionChanges,
+          `Import BarComponent from '@app/bar.ts' on FooComponent`,
+          [
+            [``, `import { BarComponent } from "@app/bar.ts";`],
+            [``, `, imports: [BarComponent]`],
+          ],
+        );
+      });
+
+      it(`for ''@app/*.ts': ['./*']'`, () => {
+        const standaloneFiles = {
+          'foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+          'bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(
+          env,
+          'test',
+          {},
+          {},
+          standaloneFiles,
+          {paths: {'@app/*.ts': ['./*']}},
+        );
+        const diags = project.getDiagnosticsForFile('foo.ts');
+        const fixFile = project.openFile('foo.ts');
+        fixFile.moveCursorToText('<¦bar>');
+
+        const codeActions = project.getCodeFixesAtPosition(
+          'foo.ts',
+          fixFile.cursor,
+          fixFile.cursor,
+          [diags[0].code],
+        );
+        const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+        actionChangesMatch(
+          actionChanges,
+          `Import BarComponent from '@app/bar.ts' on FooComponent`,
+          [
+            [``, `import { BarComponent } from "@app/bar.ts";`],
+            [``, `, imports: [BarComponent]`],
+          ],
+        );
+      });
+
+      it(`for ''@app/*': ['./*']'`, () => {
+        const standaloneFiles = {
+          'foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+          'bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(
+          env,
+          'test',
+          {},
+          {},
+          standaloneFiles,
+          {paths: {'@app/*': ['./*']}},
+        );
+        const diags = project.getDiagnosticsForFile('foo.ts');
+        const fixFile = project.openFile('foo.ts');
+        fixFile.moveCursorToText('<¦bar>');
+
+        const codeActions = project.getCodeFixesAtPosition(
+          'foo.ts',
+          fixFile.cursor,
+          fixFile.cursor,
+          [diags[0].code],
+        );
+        const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+        actionChangesMatch(actionChanges, `Import BarComponent from '@app/bar' on FooComponent`, [
+          [``, `import { BarComponent } from "@app/bar";`],
+          [``, `, imports: [BarComponent]`],
+        ]);
+      });
+
+      it(`for ''@app/*': ['./*']' and the fileName ends with "/index.ts"`, () => {
+        const standaloneFiles = {
+          'foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+          'src/index.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(
+          env,
+          'test',
+          {},
+          {},
+          standaloneFiles,
+          {paths: {'@app/*': ['./*']}},
+        );
+        const diags = project.getDiagnosticsForFile('foo.ts');
+        const fixFile = project.openFile('foo.ts');
+        fixFile.moveCursorToText('<¦bar>');
+
+        debugger;
+        const codeActions = project.getCodeFixesAtPosition(
+          'foo.ts',
+          fixFile.cursor,
+          fixFile.cursor,
+          [diags[0].code],
+        );
+        const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+        actionChangesMatch(actionChanges, `Import BarComponent from '@app/src' on FooComponent`, [
+          [``, `import { BarComponent } from "@app/src";`],
+          [``, `, imports: [BarComponent]`],
+        ]);
+      });
+
+      it(`for ''@app/*': ['./*']' and check if there's a file by the same name as the directory`, () => {
+        const standaloneFiles = {
+          'foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+          'src/index.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+          'src.ts': ``,
+        };
+
+        const project = createModuleAndProjectWithDeclarations(
+          env,
+          'test',
+          {},
+          {},
+          standaloneFiles,
+          {paths: {'@app/*': ['./*']}},
+        );
+        const diags = project.getDiagnosticsForFile('foo.ts');
+        const fixFile = project.openFile('foo.ts');
+        fixFile.moveCursorToText('<¦bar>');
+
+        debugger;
+        const codeActions = project.getCodeFixesAtPosition(
+          'foo.ts',
+          fixFile.cursor,
+          fixFile.cursor,
+          [diags[0].code],
+        );
+        const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+        actionChangesMatch(
+          actionChanges,
+          `Import BarComponent from '@app/src/index' on FooComponent`,
+          [
+            [``, `import { BarComponent } from "@app/src/index";`],
+            [``, `, imports: [BarComponent]`],
+          ],
+        );
+      });
+    });
+
+    it('with paths in the extend tsconfig', () => {
+      const standaloneFiles = {
+        'src/foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+        'src/bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+        'src/tsconfig.json': `
+           {
+              "extends": ["../tsconfig.json"],
+              "compilerOptions": {
+              }
+           }
+          `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(
+        env,
+        'test',
+        {},
+        {},
+        standaloneFiles,
+        {paths: {'@app/*': ['./src/*.ts']}},
+        'src/tsconfig.json',
+      );
+      const diags = project.getDiagnosticsForFile('src/foo.ts');
+      const fixFile = project.openFile('src/foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition(
+        'src/foo.ts',
+        fixFile.cursor,
+        fixFile.cursor,
+        [diags[0].code],
+      );
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import BarComponent from '@app/bar' on FooComponent`, [
+        [``, `import { BarComponent } from "@app/bar";`],
+        [``, `, imports: [BarComponent]`],
+      ]);
+    });
   });
 
   describe('unused standalone imports', () => {

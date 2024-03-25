@@ -12,6 +12,7 @@ import tss from 'typescript';
 import {TypeCheckInfo} from '../utils';
 
 import {CodeActionMeta, FixIdForCodeFixesAll, isFixAllAvailable} from './utils';
+import {ModuleSpecifiers} from '../utils/module_specifiers';
 
 export class CodeFixes {
   private errorCodeToFixes = new Map<number, CodeActionMeta[]>();
@@ -20,6 +21,7 @@ export class CodeFixes {
   constructor(
     private readonly tsLS: tss.LanguageService,
     readonly codeActionMetas: CodeActionMeta[],
+    private readonly moduleSpecifiers: ModuleSpecifiers,
   ) {
     for (const meta of codeActionMetas) {
       for (const err of meta.errorCodes) {
@@ -76,6 +78,7 @@ export class CodeFixes {
           formatOptions,
           preferences,
           tsLs: this.tsLS,
+          moduleSpecifiers: this.moduleSpecifiers,
         });
         const fixAllAvailable = isFixAllAvailable(meta, diagnostics);
         const removeFixIdForCodeActions = codeActionsForMeta.map(

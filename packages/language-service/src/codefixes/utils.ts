@@ -11,6 +11,7 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import tss from 'typescript';
 
 import {TypeCheckInfo} from '../utils';
+import {ModuleSpecifiers} from '../utils/module_specifiers';
 
 /**
  * This context is the info includes the `errorCode` at the given span the user selected in the
@@ -29,6 +30,7 @@ export interface CodeActionContext {
   formatOptions: tss.FormatCodeSettings;
   preferences: tss.UserPreferences;
   tsLs: tss.LanguageService;
+  moduleSpecifiers: ModuleSpecifiers;
 }
 
 /**
