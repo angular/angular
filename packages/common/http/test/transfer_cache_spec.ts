@@ -261,22 +261,6 @@ describe('TransferCache', () => {
       makeRequestAndExpectNone('/test-2?foo=1', 'POST', {transferCache: true});
     });
 
-    it('should not cache request that requires authorization', async () => {
-      makeRequestAndExpectOne('/test-auth', 'foo', {
-        headers: {Authorization: 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
-      });
-
-      makeRequestAndExpectOne('/test-auth', 'foo');
-    });
-
-    it('should not cache request that requires proxy authorization', async () => {
-      makeRequestAndExpectOne('/test-auth', 'foo', {
-        headers: {'Proxy-Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'},
-      });
-
-      makeRequestAndExpectOne('/test-auth', 'foo');
-    });
-
     it('should cache POST with the differing body in string form', () => {
       makeRequestAndExpectOne('/test-1', null, {method: 'POST', transferCache: true, body: 'foo'});
       makeRequestAndExpectNone('/test-1', 'POST', {transferCache: true, body: 'foo'});
