@@ -717,6 +717,9 @@
     "name": "createTView"
   },
   {
+    "name": "declareTemplate"
+  },
+  {
     "name": "deepForEach"
   },
   {

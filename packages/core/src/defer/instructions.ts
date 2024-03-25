@@ -21,7 +21,7 @@ import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/definitio
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {markViewDirty} from '../render3/instructions/mark_view_dirty';
 import {handleError} from '../render3/instructions/shared';
-import {ɵɵtemplate} from '../render3/instructions/template';
+import {declareTemplate} from '../render3/instructions/template';
 import {LContainer} from '../render3/interfaces/container';
 import {DirectiveDefList, PipeDefList} from '../render3/interfaces/definition';
 import {TContainerNode, TNode} from '../render3/interfaces/node';
@@ -131,8 +131,7 @@ export function ɵɵdefer(
   const lView = getLView();
   const tView = getTView();
   const adjustedIndex = index + HEADER_OFFSET;
-
-  ɵɵtemplate(index, null, 0, 0);
+  const tNode = declareTemplate(lView, tView, index, null, 0, 0);
 
   if (tView.firstCreatePass) {
     performanceMarkFeature('NgDefer');
@@ -153,7 +152,6 @@ export function ɵɵdefer(
     setTDeferBlockDetails(tView, adjustedIndex, tDetails);
   }
 
-  const tNode = getCurrentTNode()!;
   const lContainer = lView[adjustedIndex];
 
   // If hydration is enabled, looks up dehydrated views in the DOM
