@@ -8,21 +8,21 @@
 
 import {inject, Injector} from '../di';
 import {I18nNode, I18nNodeKind, I18nPlaceholderType, TI18n} from '../render3/interfaces/i18n';
-import {TNode} from '../render3/interfaces/node';
+import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RNode} from '../render3/interfaces/renderer_dom';
-import {HEADER_OFFSET, HYDRATION, LView, TVIEW} from '../render3/interfaces/view';
+import {HEADER_OFFSET, HYDRATION, LView, TView, TVIEW} from '../render3/interfaces/view';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {assertDefined, assertNotEqual} from '../util/assert';
 
 import type {HydrationContext} from './annotate';
 import {DehydratedView, I18N_DATA} from './interfaces';
-import {locateNextRNode} from './node_lookup_utils';
+import {locateNextRNode, tryLocateRNodeByPath} from './node_lookup_utils';
 import {IS_I18N_HYDRATION_ENABLED} from './tokens';
-import {getNgContainerSize, initDisconnectedNodes, processTextNodeBeforeSerialization} from './utils';
+import {getNgContainerSize, initDisconnectedNodes, isSerializedElementContainer, processTextNodeBeforeSerialization} from './utils';
 
 let _isI18nHydrationSupportEnabled = false;
 
-let _prepareI18nBlockForHydrationImpl: typeof prepareI18nBlockForHydrationImpl = (lView, index) => {
+let _prepareI18nBlockForHydrationImpl: typeof prepareI18nBlockForHydrationImpl = () => {
   // noop unless `enablePrepareI18nBlockForHydrationImpl` is invoked.
 };
 
@@ -40,9 +40,12 @@ export function isI18nHydrationSupportEnabled() {
  *
  * @param lView lView with the i18n block
  * @param index index of the i18n block in the lView
+ * @param parentTNode TNode of the parent of the i18n block
+ * @param subTemplateIndex sub-template index, or -1 for the main template
  */
-export function prepareI18nBlockForHydration(lView: LView, index: number): void {
-  _prepareI18nBlockForHydrationImpl(lView, index);
+export function prepareI18nBlockForHydration(
+    lView: LView, index: number, parentTNode: TNode|null, subTemplateIndex: number): void {
+  _prepareI18nBlockForHydrationImpl(lView, index, parentTNode, subTemplateIndex);
 }
 
 export function enablePrepareI18nBlockForHydrationImpl() {
@@ -52,6 +55,65 @@ export function enablePrepareI18nBlockForHydrationImpl() {
 export function isI18nHydrationEnabled(injector?: Injector) {
   injector = injector ?? inject(Injector);
   return injector.get(IS_I18N_HYDRATION_ENABLED, false);
+}
+
+/**
+ * Collects, if not already cached, all of the indices in the
+ * given TView which are children of an i18n block.
+ *
+ * Since i18n blocks don't introduce a parent TNode, this is necessary
+ * in order to determine which indices in a LView are translated.
+ */
+export function getOrComputeI18nChildren(tView: TView, context: HydrationContext): Set<number>|
+    null {
+  let i18nChildren = context.i18nChildren.get(tView);
+  if (i18nChildren === undefined) {
+    i18nChildren = collectI18nChildren(tView);
+    context.i18nChildren.set(tView, i18nChildren);
+  }
+  return i18nChildren;
+}
+
+function collectI18nChildren(tView: TView): Set<number>|null {
+  const children = new Set<number>();
+
+  function collectI18nViews(node: I18nNode) {
+    children.add(node.index);
+
+    switch (node.kind) {
+      case I18nNodeKind.ELEMENT:
+      case I18nNodeKind.PLACEHOLDER: {
+        for (const childNode of node.children) {
+          collectI18nViews(childNode);
+        }
+        break;
+      }
+
+      case I18nNodeKind.ICU: {
+        for (const caseNodes of node.cases) {
+          for (const caseNode of caseNodes) {
+            collectI18nViews(caseNode);
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  // Traverse through the AST of each i18n block in the LView,
+  // and collect every instruction index.
+  for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+    const tI18n = tView.data[i] as TI18n | undefined;
+    if (!tI18n || !tI18n.ast) {
+      continue;
+    }
+
+    for (const node of tI18n.ast) {
+      collectI18nViews(node);
+    }
+  }
+
+  return children.size === 0 ? null : children;
 }
 
 /**
@@ -111,6 +173,7 @@ function serializeI18nBlock(
  */
 interface I18nHydrationContext {
   hydrationInfo: DehydratedView;
+  lView: LView;
   i18nNodes: Map<number, RNode|null>;
   disconnectedNodes: Set<number>;
   caseQueue: number[];
@@ -185,12 +248,12 @@ function skipSiblingNodes(state: I18nHydrationState, skip: number) {
 /**
  * Fork the given state into a new state for hydrating children.
  */
-function forkChildHydrationState(state: I18nHydrationState) {
-  const currentNode = state.currentNode as Node | null;
-  return {currentNode: currentNode?.firstChild ?? null, isConnected: state.isConnected};
+function forkHydrationState(state: I18nHydrationState, nextNode: Node|null) {
+  return {currentNode: nextNode, isConnected: state.isConnected};
 }
 
-function prepareI18nBlockForHydrationImpl(lView: LView, index: number) {
+function prepareI18nBlockForHydrationImpl(
+    lView: LView, index: number, parentTNode: TNode|null, subTemplateIndex: number) {
   if (!isI18nHydrationSupportEnabled()) {
     return;
   }
@@ -206,40 +269,54 @@ function prepareI18nBlockForHydrationImpl(lView: LView, index: number) {
       assertDefined(
           tI18n, 'Expected i18n data to be present in a given TView slot during hydration');
 
-  const firstAstNode = tI18n.ast[0];
-  if (firstAstNode) {
-    // Hydration for an i18n block begins at the RNode for the first AST node.
-    //
-    // Since the first AST node is a top-level node created by `i18nStartFirstCreatePass`,
-    // it should always have a valid TNode. This means we can use the normal `locateNextRNode`
-    // function to determine where to begin.
-    //
-    // It's OK if nothing is located, as that also means that there is nothing to clean up.
-    // Downstream error handling will detect this and provide proper context.
-    const tNode = tView.data[firstAstNode.index] as TNode;
-    ngDevMode && assertDefined(tNode, 'expected top-level i18n AST node to have TNode');
+  function findHydrationRoot() {
+    if (subTemplateIndex < 0) {
+      // This is the root of an i18n block. In this case, our hydration root will
+      // depend on where our parent TNode (i.e. the block with i18n applied) is
+      // in the DOM.
+      ngDevMode && assertDefined(parentTNode, 'Expected parent TNode while hydrating i18n root');
+      const rootNode = locateNextRNode(hydrationInfo!, tView, lView, parentTNode!) as Node;
 
-    const rootNode = locateNextRNode(hydrationInfo, tView, lView, tNode) as Node | null;
-    const disconnectedNodes = initDisconnectedNodes(hydrationInfo) ?? new Set();
-    const i18nNodes = hydrationInfo.i18nNodes ??= new Map<number, RNode|null>();
-    const caseQueue = hydrationInfo.data[I18N_DATA]?.[index - HEADER_OFFSET] ?? [];
+      // If this i18n block is attached to an <ng-container>, then we want to begin
+      // hydrating directly with the RNode. Otherwise, for a TNode with a physical DOM
+      // element, we want to recurse into the first child and begin there.
+      return (parentTNode!.type & TNodeType.ElementContainer) ? rootNode : rootNode.firstChild;
+    }
 
-    collectI18nNodesFromDom(
-        {hydrationInfo, i18nNodes, disconnectedNodes, caseQueue},
-        {currentNode: rootNode, isConnected: true}, tI18n.ast);
-
-    // Nodes from inactive ICU cases should be considered disconnected. We track them above
-    // because they aren't (and shouldn't be) serialized. Since we may mutate or create a
-    // new set, we need to be sure to write the expected value back to the DehydratedView.
-    hydrationInfo.disconnectedNodes = disconnectedNodes.size === 0 ? null : disconnectedNodes;
+    // This is a nested template in an i18n block. In this case, the entire view
+    // is translated, and part of a dehydrated view in a container. This means that
+    // we can simply begin hydration with the first dehydrated child.
+    return hydrationInfo?.firstChild as Node;
   }
+
+  const currentNode = findHydrationRoot();
+  ngDevMode && assertDefined(currentNode, 'Expected root i18n node during hydration');
+
+  const disconnectedNodes = initDisconnectedNodes(hydrationInfo) ?? new Set();
+  const i18nNodes = hydrationInfo.i18nNodes ??= new Map<number, RNode|null>();
+  const caseQueue = hydrationInfo.data[I18N_DATA]?.[index - HEADER_OFFSET] ?? [];
+
+  collectI18nNodesFromDom(
+      {hydrationInfo, lView, i18nNodes, disconnectedNodes, caseQueue},
+      {currentNode, isConnected: true}, tI18n.ast);
+
+  // Nodes from inactive ICU cases should be considered disconnected. We track them above
+  // because they aren't (and shouldn't be) serialized. Since we may mutate or create a
+  // new set, we need to be sure to write the expected value back to the DehydratedView.
+  hydrationInfo.disconnectedNodes = disconnectedNodes.size === 0 ? null : disconnectedNodes;
 }
 
 function collectI18nNodesFromDom(
     context: I18nHydrationContext, state: I18nHydrationState, nodeOrNodes: I18nNode|I18nNode[]) {
   if (Array.isArray(nodeOrNodes)) {
-    for (let i = 0; i < nodeOrNodes.length; i++) {
-      collectI18nNodesFromDom(context, state, nodeOrNodes[i]);
+    for (const node of nodeOrNodes) {
+      // If the node is being projected elsewhere, we need to temporarily
+      // branch the state to that location to continue hydration.
+      // Otherwise, we continue hydration from the current location.
+      const targetNode =
+          tryLocateRNodeByPath(context.hydrationInfo, context.lView, node.index - HEADER_OFFSET);
+      const nextState = targetNode ? forkHydrationState(state, targetNode as Node) : state;
+      collectI18nNodesFromDom(context, nextState, node);
     }
   } else {
     switch (nodeOrNodes.kind) {
@@ -252,7 +329,9 @@ function collectI18nNodesFromDom(
 
       case I18nNodeKind.ELEMENT: {
         // Recurse into the current element's children...
-        collectI18nNodesFromDom(context, forkChildHydrationState(state), nodeOrNodes.children);
+        collectI18nNodesFromDom(
+            context, forkHydrationState(state, state.currentNode?.firstChild ?? null),
+            nodeOrNodes.children);
 
         // And claim the parent element itself.
         const currentNode = appendI18nNodeToCollection(context, state, nodeOrNodes);
@@ -261,29 +340,41 @@ function collectI18nNodesFromDom(
       }
 
       case I18nNodeKind.PLACEHOLDER: {
-        const containerSize =
-            getNgContainerSize(context.hydrationInfo, nodeOrNodes.index - HEADER_OFFSET);
+        const noOffsetIndex = nodeOrNodes.index - HEADER_OFFSET;
+        const {hydrationInfo} = context;
+        const containerSize = getNgContainerSize(hydrationInfo, noOffsetIndex);
 
         switch (nodeOrNodes.type) {
           case I18nPlaceholderType.ELEMENT: {
             // Hydration expects to find the head of the element.
             const currentNode = appendI18nNodeToCollection(context, state, nodeOrNodes);
 
-            if (containerSize === null) {
-              // Non-container elements represent an actual node in the DOM, so we
-              // need to continue hydration with the children, and claim the node.
-              collectI18nNodesFromDom(
-                  context, forkChildHydrationState(state), nodeOrNodes.children);
-              setCurrentNode(state, currentNode?.nextSibling ?? null);
-            } else {
-              // Containers only have an anchor comment, so we need to continue
-              // hydrating from siblings.
+            // A TNode for the node may not yet if we're hydrating during the first pass,
+            // so use the serialized data to determine if this is an <ng-container>.
+            if (isSerializedElementContainer(hydrationInfo, noOffsetIndex)) {
+              // An <ng-container> doesn't have a physical DOM node, so we need to
+              // continue hydrating from siblings.
               collectI18nNodesFromDom(context, state, nodeOrNodes.children);
 
-              // Skip over the anchor element too. It will be claimed by the
+              // Skip over the anchor element. It will be claimed by the
               // downstream container hydration.
               const nextNode = skipSiblingNodes(state, 1);
               setCurrentNode(state, nextNode);
+            } else {
+              // Non-container elements represent an actual node in the DOM, so we
+              // need to continue hydration with the children, and claim the node.
+              collectI18nNodesFromDom(
+                  context, forkHydrationState(state, state.currentNode?.firstChild ?? null),
+                  nodeOrNodes.children);
+              setCurrentNode(state, currentNode?.nextSibling ?? null);
+
+              // Elements can also be the anchor of a view container, so there may
+              // be elements after this node that we need to skip.
+              if (containerSize !== null) {
+                // `+1` stands for an anchor node after all of the views in the container.
+                const nextNode = skipSiblingNodes(state, containerSize + 1);
+                setCurrentNode(state, nextNode);
+              }
             }
             break;
           }

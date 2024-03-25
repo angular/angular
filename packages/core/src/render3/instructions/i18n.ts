@@ -80,7 +80,7 @@ export function ɵɵi18nStart(
   const insertInFrontOf = parentTNode && (parentTNode.type & TNodeType.ElementContainer) ?
       lView[parentTNode.index] :
       null;
-  prepareI18nBlockForHydration(lView, adjustedIndex);
+  prepareI18nBlockForHydration(lView, adjustedIndex, parentTNode, subTemplateIndex);
   applyCreateOpCodes(lView, tI18n.create, parentRNode, insertInFrontOf);
   setInI18nBlock(true);
 }

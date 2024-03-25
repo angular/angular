@@ -18,7 +18,7 @@ import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
 import type {HydrationContext} from './annotate';
 
-import {CONTAINERS, DehydratedView, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, SerializedView,} from './interfaces';
+import {CONTAINERS, DehydratedView, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, SerializedElementContainers, SerializedView,} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -371,6 +371,11 @@ export function getNgContainerSize(hydrationInfo: DehydratedView, index: number)
     size = calcSerializedContainerSize(hydrationInfo, index);
   }
   return size;
+}
+
+export function isSerializedElementContainer(
+    hydrationInfo: DehydratedView, index: number): boolean {
+  return hydrationInfo.data[ELEMENT_CONTAINERS]?.[index] !== undefined;
 }
 
 export function getSerializedContainerViews(
