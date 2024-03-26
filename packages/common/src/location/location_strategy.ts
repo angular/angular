@@ -47,7 +47,7 @@ export abstract class LocationStrategy {
 }
 
 /**
- * A predefined [DI token](guide/glossary#di-token) for the base href
+ * A predefined DI token for the base href
  * to be used with the `PathLocationStrategy`.
  * The base href is the URL prefix that should be preserved when generating
  * and recognizing URLs.

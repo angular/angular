@@ -148,7 +148,7 @@ const routerIsProvidedDevModeCheck = {
 };
 
 /**
- * Registers a [DI provider](guide/glossary#provider) for a set of routes.
+ * Registers a DI provider for a set of routes.
  * @param routes The route configuration to provide.
  *
  * @usageNotes

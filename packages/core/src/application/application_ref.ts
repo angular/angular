@@ -41,7 +41,7 @@ import {NgZone} from '../zone/ng_zone';
 import {ApplicationInitStatus} from './application_init';
 
 /**
- * A [DI token](guide/glossary#di-token "DI token definition") that provides a set of callbacks to
+ * A DI token that provides a set of callbacks to
  * be called for every component that is bootstrapped.
  *
  * Each callback must take a `ComponentRef` instance and return nothing.
