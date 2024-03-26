@@ -173,8 +173,6 @@ export interface RouterOutletContract {
  *   (detach)='onDetach($event)'></router-outlet>
  * ```
  *
- * @see [Routing tutorial](guide/router-tutorial-toh#named-outlets "Example of a named
- * outlet and secondary route configuration").
  * @see {@link RouterLink}
  * @see {@link Route}
  * @ngModule RouterModule
@@ -196,7 +194,6 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   /**
    * The name of the outlet
    *
-   * @see [named outlets](guide/router-tutorial-toh#displaying-multiple-routes-in-named-outlets)
    */
   @Input() name = PRIMARY_OUTLET;
 

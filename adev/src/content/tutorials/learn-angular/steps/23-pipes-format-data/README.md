@@ -44,7 +44,7 @@ template: `
 `
 </docs-code>
 
-For extra fun, try some different parameters for `date`. More information can be found in the [Angular docs](/guide/pipes).
+For extra fun, try some different parameters for `date`. More information can be found in the [Angular docs](guide/pipes).
 
 </docs-step>
 
@@ -59,7 +59,7 @@ template: `
 `
 </docs-code>
 
-You can also try different parameters for `currency`. More information can be found in the [Angular docs](/guide/pipes).
+You can also try different parameters for `currency`. More information can be found in the [Angular docs](guide/pipes).
 
 </docs-step>
 
@@ -67,6 +67,6 @@ You can also try different parameters for `currency`. More information can be fo
 
 Great work with pipes. You've made some great progress so far.
 
-There are even more built-in pipes that you can use in your applications. You can find the list in the [Angular documentation](/guide/pipes).
+There are even more built-in pipes that you can use in your applications. You can find the list in the [Angular documentation](guide/pipes).
 
 In the case that the built-in pipes don't cover your needs, you can also create a custom pipe. Check out the next lesson to find out more.

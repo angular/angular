@@ -110,9 +110,9 @@ export class DebugNode {
 /**
  * @publicApi
  *
- * @see [Component testing scenarios](guide/testing-components-scenarios)
- * @see [Basics of testing components](guide/testing-components-basics)
- * @see [Testing utility APIs](guide/testing-utility-apis)
+ * @see [Component testing scenarios](guide/testing/components-scenarios)
+ * @see [Basics of testing components](guide/testing/components-basics)
+ * @see [Testing utility APIs](guide/testing/utility-apis)
  */
 export class DebugElement extends DebugNode {
   constructor(nativeNode: Element) {
@@ -331,7 +331,7 @@ export class DebugElement extends DebugNode {
    * @param eventName The name of the event to trigger
    * @param eventObj The _event object_ expected by the handler
    *
-   * @see [Testing components scenarios](guide/testing-components-scenarios#trigger-event-handler)
+   * @see [Testing components scenarios](guide/testing/components-scenarios#trigger-event-handler)
    */
   triggerEventHandler(eventName: string, eventObj?: any): void {
     const node = this.nativeNode as any;

@@ -12,9 +12,9 @@ At the end of this lesson your application will have support for routing.
 
 ## Conceptual preview of routing
 
-This tutorial introduces routing in Angular. Routing is the ability to navigate from one component in the application to another. In [Single Page Applications (SPA)](/guide/routing), only parts of the page are updated to represent the requested view for the user.
+This tutorial introduces routing in Angular. Routing is the ability to navigate from one component in the application to another. In [Single Page Applications (SPA)](guide/routing), only parts of the page are updated to represent the requested view for the user.
 
-The [Angular Router](/guide/routing) enables users to declare routes and specify which component should be displayed on the screen if that route is requested by the application.
+The [Angular Router](guide/routing) enables users to declare routes and specify which component should be displayed on the screen if that route is requested by the application.
 
 In this lesson, you will enable routing in your application to navigate to the details page.
 

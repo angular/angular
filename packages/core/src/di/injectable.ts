@@ -32,8 +32,8 @@ export interface InjectableDecorator {
    * Decorator that marks a class as available to be
    * provided and injected as a dependency.
    *
-   * @see [Introduction to Services and DI](guide/architecture-services)
-   * @see [Dependency Injection Guide](guide/dependency-injection)
+   * @see [Introduction to Services and DI](guide/di)
+   * @see [Dependency Injection Guide](guide/di/dependency-injection
    *
    * @usageNotes
    *

@@ -33,7 +33,7 @@ import {PRIMARY_OUTLET, RouteTitleKey} from './shared';
  * incorporate titles in named outlets.
  *
  * @publicApi
- * @see [Page title guide](guide/router#setting-the-page-title)
+ * @see [Page title guide](guide/routing/common-router-tasks#setting-the-page-title)
  */
 @Injectable({providedIn: 'root', useFactory: () => inject(DefaultTitleStrategy)})
 export abstract class TitleStrategy {
