@@ -96,9 +96,6 @@
     "name": "DefaultDomRenderer2"
   },
   {
-    "name": "DestroyRef"
-  },
-  {
     "name": "DomAdapter"
   },
   {
@@ -139,9 +136,6 @@
   },
   {
     "name": "ErrorHandler"
-  },
-  {
-    "name": "EventEmitter"
   },
   {
     "name": "EventManager"
@@ -274,9 +268,6 @@
   },
   {
     "name": "NodeInjector"
-  },
-  {
-    "name": "NodeInjectorDestroyRef"
   },
   {
     "name": "NodeInjectorFactory"
@@ -439,9 +430,6 @@
   },
   {
     "name": "_wasLastNodeCreated"
-  },
-  {
-    "name": "_wrapInTimeout"
   },
   {
     "name": "activeConsumer"
@@ -672,9 +660,6 @@
     "name": "getFirstLContainer"
   },
   {
-    "name": "getInjectImplementation"
-  },
-  {
     "name": "getInjectableDef"
   },
   {
@@ -769,9 +754,6 @@
   },
   {
     "name": "injectArgs"
-  },
-  {
-    "name": "injectDestroyRef"
   },
   {
     "name": "injectElementRef"
@@ -1018,9 +1000,6 @@
   },
   {
     "name": "shouldSearchParent"
-  },
-  {
-    "name": "storeLViewOnDestroy"
   },
   {
     "name": "stringify"
