@@ -624,9 +624,6 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_ensureDirtyViewsAreAlwaysReachable"
-  },
-  {
     "name": "_getInsertInFrontOfRNodeWithI18n"
   },
   {
