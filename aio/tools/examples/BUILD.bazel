@@ -1,6 +1,6 @@
 load("//tools:defaults.bzl", "nodejs_binary")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 load("//aio/content/examples:examples.bzl", "EXAMPLES")
 load("//:packages.bzl", "AIO_EXAMPLE_PACKAGES", "to_package_label")
 
@@ -19,11 +19,11 @@ js_library(
     ],
     deps = [
         "//aio/tools/examples/shared",
-        "@aio_npm//canonical-path",
-        "@aio_npm//fs-extra",
-        "@aio_npm//ignore",
-        "@aio_npm//shelljs",
-        "@aio_npm//yargs",
+        "@npm//canonical-path",
+        "@npm//fs-extra",
+        "@npm//ignore",
+        "@npm//shelljs",
+        "@npm//yargs",
     ],
 )
 
@@ -42,17 +42,17 @@ jasmine_node_test(
 js_library(
     name = "create-example-lib",
     srcs = [
+        "constants.mjs",
         "create-example.mjs",
         "create-example-cli.mjs",
-        "constants.mjs",
     ] + glob(["shared/**"]),
     deps = [
-        "@aio_npm//@bazel/buildozer",
-        "@aio_npm//canonical-path",
-        "@aio_npm//fs-extra",
-        "@aio_npm//ignore",
-        "@aio_npm//shelljs",
-        "@aio_npm//yargs",
+        "@npm//@bazel/buildozer",
+        "@npm//canonical-path",
+        "@npm//fs-extra",
+        "@npm//ignore",
+        "@npm//shelljs",
+        "@npm//yargs",
     ],
 )
 
@@ -72,9 +72,9 @@ js_library(
     name = "example-sandbox",
     srcs = ["example-sandbox.mjs"],
     deps = [
-        "@aio_npm//cjson",
-        "@aio_npm//fs-extra",
-        "@aio_npm//globby",
+        "@npm//cjson",
+        "@npm//fs-extra",
+        "@npm//globby",
     ],
 )
 
@@ -85,15 +85,15 @@ js_library(
     ],
     deps = [
         ":example-sandbox",
-        "@aio_npm//@bazel/runfiles",
-        "@aio_npm//canonical-path",
-        "@aio_npm//cross-spawn",
-        "@aio_npm//fs-extra",
-        "@aio_npm//get-port",
-        "@aio_npm//globby",
-        "@aio_npm//shelljs",
-        "@aio_npm//tree-kill",
-        "@aio_npm//yargs",
+        "@npm//@bazel/runfiles",
+        "@npm//canonical-path",
+        "@npm//cross-spawn",
+        "@npm//fs-extra",
+        "@npm//get-port",
+        "@npm//globby",
+        "@npm//shelljs",
+        "@npm//tree-kill",
+        "@npm//yargs",
     ],
 )
 
@@ -114,7 +114,7 @@ LOCAL_PACKAGE_ARGS = ["--localPackage=%s#$(rootpath %s)" % (
     data = [
         ":example-sandbox",
         "@aio_example_deps//:node_modules_files",
-        "@aio_npm//yargs",
+        "@npm//yargs",
         "//aio/content/examples/%s" % example,
     ] + select({
         "//aio:aio_local_deps": LOCAL_PACKAGE_DEPS,

@@ -43,7 +43,7 @@ def link_local_packages(all_aio_deps):
 
     # Special case deps that must be testonly
     testonly_deps = [
-        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
+        "@npm//@angular/build-tooling/bazel/browsers/chromium",
     ]
 
     # Stamp a corresponding target for each AIO dep that filters out transitive

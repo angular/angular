@@ -1,5 +1,5 @@
-load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
-load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 
 DEPLOY_TO_FIREBASE_SOURCES = glob(
     ["**/*.mjs"],
@@ -7,7 +7,7 @@ DEPLOY_TO_FIREBASE_SOURCES = glob(
 )
 
 DEPLOY_TO_FIREBASE_DEPS = [
-    "@aio_npm//shelljs",
+    "@npm//shelljs",
     "//aio:build",
     "//:package.json",
 ]
