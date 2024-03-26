@@ -1881,6 +1881,19 @@ describe('R3 template transform', () => {
         expect(() => parse(`@for (item of items.foo.bar; track item.id; let $index = $index) {}`))
             .toThrowError(/Duplicate "let" parameter variable "\$index"/);
       });
+
+      it('should report an item name that conflicts with the implicit context variables', () => {
+        ['$index', '$count', '$first', '$last', '$even', '$odd'].forEach(varName => {
+          expect(() => parse(`@for (${varName} of items; track $index) {}`))
+              .toThrowError(
+                  /@for loop item name cannot be one of \$index, \$first, \$last, \$even, \$odd, \$count/);
+        });
+      });
+
+      it('should report a context variable alias that is the same as the variable name', () => {
+        expect(() => parse(`@for (item of items; let item = $index; track $index) {}`))
+            .toThrowError(/Invalid @for loop "let" parameter. Variable cannot be called "item"/);
+      });
     });
   });
 

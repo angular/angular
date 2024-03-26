@@ -223,6 +223,13 @@ function parseForLoopParameters(
   }
 
   const [, itemName, rawExpression] = match;
+  if (ALLOWED_FOR_LOOP_LET_VARIABLES.has(itemName)) {
+    errors.push(new ParseError(
+        expressionParam.sourceSpan,
+        `@for loop item name cannot be one of ${
+            Array.from(ALLOWED_FOR_LOOP_LET_VARIABLES).join(', ')}.`));
+  }
+
   // `expressionParam.expression` contains the variable declaration and the expression of the
   // for...of statement, i.e. 'user of users' The variable of a ForOfStatement is _only_ the "const
   // user" part and does not include "of x".
@@ -253,7 +260,8 @@ function parseForLoopParameters(
       const variablesSpan = new ParseSourceSpan(
           param.sourceSpan.start.moveBy(letMatch[0].length - letMatch[1].length),
           param.sourceSpan.end);
-      parseLetParameter(param.sourceSpan, letMatch[1], variablesSpan, result.context, errors);
+      parseLetParameter(
+          param.sourceSpan, letMatch[1], variablesSpan, itemName, result.context, errors);
       continue;
     }
 
@@ -284,8 +292,8 @@ function parseForLoopParameters(
 
 /** Parses the `let` parameter of a `for` loop block. */
 function parseLetParameter(
-    sourceSpan: ParseSourceSpan, expression: string, span: ParseSourceSpan, context: t.Variable[],
-    errors: ParseError[]): void {
+    sourceSpan: ParseSourceSpan, expression: string, span: ParseSourceSpan, loopItemName: string,
+    context: t.Variable[], errors: ParseError[]): void {
   const parts = expression.split(',');
   let startSpan = span.start;
   for (const part of parts) {
@@ -302,6 +310,10 @@ function parseLetParameter(
           sourceSpan,
           `Unknown "let" parameter variable "${variableName}". The allowed variables are: ${
               Array.from(ALLOWED_FOR_LOOP_LET_VARIABLES).join(', ')}`));
+    } else if (name === loopItemName) {
+      errors.push(new ParseError(
+          sourceSpan,
+          `Invalid @for loop "let" parameter. Variable cannot be called "${loopItemName}"`));
     } else if (context.some(v => v.name === name)) {
       errors.push(
           new ParseError(sourceSpan, `Duplicate "let" parameter variable "${variableName}"`));
