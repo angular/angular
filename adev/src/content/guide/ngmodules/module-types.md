@@ -10,7 +10,7 @@ Focus each block on a feature or business domain, a workflow or navigation flow,
 
 ## Summary of NgModule categories
 
-All applications start by [bootstrapping a root NgModule](/guide/ngmodules/bootstrapping "Launching an app with a root NgModule").
+All applications start by [bootstrapping a root NgModule](guide/ngmodules/bootstrapping "Launching an app with a root NgModule").
 You can organize your other NgModules any way you want.
 
 This topic provides some guidelines for the following general categories of NgModules:
@@ -52,7 +52,7 @@ If you do, the lifetime of the provided services should be the same as the lifet
 
 Use a routing NgModule to provide the routing configuration for a domain NgModule, thereby separating routing concerns from its companion domain NgModule.
 
-HELPFUL: For an overview and details about routing, see [In-app navigation: routing to views](/guide/routing "In-app navigation: routing to views").
+HELPFUL: For an overview and details about routing, see [In-app navigation: routing to views](guide/routing "In-app navigation: routing to views").
 
 Use a routing NgModule to do the following tasks:
 
@@ -92,16 +92,16 @@ It would rarely have providers.
 ## Shared NgModules
 
 Put commonly used directives, pipes, and components into one NgModule, typically named `SharedModule`, and then import just that NgModule wherever you need it in other parts of your application.
-You can import the shared NgModule in your domain NgModules, including [lazy-loaded NgModules](/guide/ngmodules/lazy-loading "Lazy-loading an NgModule").
+You can import the shared NgModule in your domain NgModules, including [lazy-loaded NgModules](guide/ngmodules/lazy-loading "Lazy-loading an NgModule").
 
 Note: Shared NgModules should not include providers, nor should any of its imported or re-exported NgModules include providers.
 
-To learn how to use shared modules to organize and streamline your code, see [Sharing NgModules in an app](/guide/ngmodules/sharing "Sharing NgModules in an app").
+To learn how to use shared modules to organize and streamline your code, see [Sharing NgModules in an app](guide/ngmodules/sharing "Sharing NgModules in an app").
 
 ## Next steps
 
 If you want to manage NgModule loading and the use of dependencies and services, see the following:
 
-* To learn about loading NgModules eagerly when the application starts, or lazy-loading NgModules asynchronously by the router, see [Lazy-loading feature modules](/guide/ngmodules/lazy-loading)
-* To understand how to provide a service or other dependency for your app, see [Providing Dependencies for an NgModule](/guide/ngmodules/providers "Providing Dependencies for an NgModule")
-* To learn how to create a singleton service to use in NgModules, see [Making a service a singleton](/guide/ngmodules/singleton-services "Making a service a singleton")
+* To learn about loading NgModules eagerly when the application starts, or lazy-loading NgModules asynchronously by the router, see [Lazy-loading feature modules](guide/ngmodules/lazy-loading)
+* To understand how to provide a service or other dependency for your app, see [Providing Dependencies for an NgModule](guide/ngmodules/providers "Providing Dependencies for an NgModule")
+* To learn how to create a singleton service to use in NgModules, see [Making a service a singleton](guide/ngmodules/singleton-services "Making a service a singleton")

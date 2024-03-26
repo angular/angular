@@ -19,10 +19,10 @@ import {ProviderToken} from './provider_token';
 
 /**
  * Concrete injectors implement this interface. Injectors are configured
- * with [providers](guide/dependency-injection-providers) that associate
- * dependencies of various types with [injection tokens](guide/dependency-injection-providers).
+ * with [providers](guide/di/dependency-injection-providers) that associate
+ * dependencies of various types with [injection tokens](guide/di/dependency-injection-providers).
  *
- * @see [DI Providers](guide/dependency-injection-providers).
+ * @see [DI Providers](guide/di/dependency-injection-providers).
  * @see {@link StaticProvider}
  *
  * @usageNotes

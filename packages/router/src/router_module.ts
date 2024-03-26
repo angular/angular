@@ -102,7 +102,7 @@ export const ROUTER_PROVIDERS: Provider[] = [
  * * The `forChild()` method creates an `NgModule` that contains all the directives and the given
  * routes, but does not include the `Router` service.
  *
- * @see [Routing and Navigation guide](guide/router) for an
+ * @see [Routing and Navigation guide](guide/routing/common-router-tasks) for an
  * overview of how the `Router` service should be used.
  *
  * @publicApi

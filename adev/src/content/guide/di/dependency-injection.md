@@ -6,7 +6,7 @@ Two main roles exist in the DI system: dependency consumer and dependency provid
 
 Angular facilitates the interaction between dependency consumers and dependency providers using an abstraction called `Injector`. When a dependency is requested, the injector checks its registry to see if there is an instance already available there. If not, a new instance is created and stored in the registry. Angular creates an application-wide injector (also known as "root" injector) during the application bootstrap process. In most cases you don't need to manually create injectors, but you should know that there is a layer that connects providers and consumers.
 
-This topic covers basic scenarios of how a class can act as a dependency. Angular also allows you to use functions, objects, primitive types such as string or Boolean, or any other types as dependencies. For more information, see [Dependency providers](/guide/di/dependency-injection-providers).
+This topic covers basic scenarios of how a class can act as a dependency. Angular also allows you to use functions, objects, primitive types such as string or Boolean, or any other types as dependencies. For more information, see [Dependency providers](guide/di/dependency-injection-providers).
 
 ## Providing dependency
 
@@ -91,7 +91,7 @@ Note: Declaring a service like this causes `HeroService` to always be included i
 `@NgModule`-based applications use the `providers` field of the `@NgModule` decorator to provide a service or other `Injectable` available at the application level.
 
 A service provided in a module is available to all declarations of the module, or to any other modules which share the same `ModuleInjector`.
-To understand all edge-cases, see [Hierarchical injectors](/guide/di/hierarchical-dependency-injection).
+To understand all edge-cases, see [Hierarchical injectors](guide/di/hierarchical-dependency-injection).
 
 Note: Declaring a service using `providers` causes the service to be included in your application— even if the service is unused.
 

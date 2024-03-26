@@ -81,7 +81,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * header="app.component.ts"></code-example>
  *
  * You can read more on handling notification clicks in the [Service worker notifications
- * guide](guide/service-worker-notifications).
+ * guide](ecosystem/service-workers/push-notifications).
  *
  * @see [Push Notifications](https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
  * @see [Angular Push Notifications](https://blog.angular-university.io/angular-push-notifications/)

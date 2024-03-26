@@ -3,7 +3,7 @@
 Signal inputs allow values to be bound from parent components.
 Those values are exposed using a `Signal` and can change during the lifecycle of your component.
 
-HELPFUL: Signal inputs are currently in [developer preview](/guide/releases#developer-preview).
+HELPFUL: Signal inputs are currently in [developer preview](/reference/releases#developer-preview).
 
 Angular supports two variants of inputs:
 
@@ -56,7 +56,7 @@ As with signals declared via `signal()`, you access the current value of the inp
 
 This access to the value is captured in reactive contexts and can notify active consumers, like Angular itself, whenever the input value changes.
 
-An input signal in practice is a trivial extension of signals that you know from [the signals guide](/guide/signals).
+An input signal in practice is a trivial extension of signals that you know from [the signals guide](guide/signals).
 
 ```typescript
 export class InputSignal<T> extends Signal<T> { ... }`.
@@ -79,7 +79,7 @@ export class MyComp {
 ```
 
 Computed signals memoize values.
-See more details in the [dedicated section for computed](/guide/signals#computed-signals).
+See more details in the [dedicated section for computed](guide/signals#computed-signals).
 
 ## Monitoring changes
 

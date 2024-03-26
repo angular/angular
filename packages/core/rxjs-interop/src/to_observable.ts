@@ -18,7 +18,7 @@ export interface ToObservableOptions {
   /**
    * The `Injector` to use when creating the underlying `effect` which watches the signal.
    *
-   * If this isn't specified, the current [injection context](guide/dependency-injection-context)
+   * If this isn't specified, the current [injection context](guide/di/dependency-injection-context)
    * will be used.
    */
   injector?: Injector;

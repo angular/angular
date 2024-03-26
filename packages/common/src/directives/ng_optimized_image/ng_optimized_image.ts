@@ -164,7 +164,7 @@ export interface ImagePlaceholderConfig {
  * - Warns if the image will be visually distorted when rendered
  *
  * @usageNotes
- * The `NgOptimizedImage` directive is marked as [standalone](guide/standalone-components) and can
+ * The `NgOptimizedImage` directive is marked as [standalone](guide/components/importing) and can
  * be imported directly.
  *
  * Follow the steps below to enable and use the directive:

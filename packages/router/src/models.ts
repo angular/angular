@@ -67,7 +67,7 @@ export type DeprecatedGuard = ProviderToken<any> | any;
 /**
  * The supported types that can be returned from a `Router` guard.
  *
- * @see [Routing tutorial](guide/router-tutorial-toh#milestone-5-route-guards)
+ * @see [Routing guide](guide/routing/common-router-tasks#preventing-unauthorized-access)
  * @publicApi
  */
 export type GuardResult = boolean | UrlTree | RedirectCommand;
@@ -78,7 +78,7 @@ export type GuardResult = boolean | UrlTree | RedirectCommand;
  * navigation should go to and the optional `navigationBehaviorOptions` can provide more information
  * about _how_ to perform the navigation.
  *
- * @see [Routing tutorial](guide/router-tutorial-toh#milestone-5-route-guards)
+ * @see [Routing guide](guide/routing/common-router-tasks#preventing-unauthorized-access)
  * @publicApi
  */
 export class RedirectCommand {
@@ -102,7 +102,7 @@ export type MaybeAsync<T> = T | Observable<T> | Promise<T>;
  *
  * @see {@link Route}
  * @see {@link Router}
- * @see [Router configuration guide](guide/router-reference#configuration)
+ * @see [Router configuration guide](guide/routing/router-reference#configuration)
  * @publicApi
  */
 export type Routes = Route[];
@@ -313,7 +313,7 @@ export type RunGuardsAndResolvers =
  * Supports static, parameterized, redirect, and wildcard routes, as well as
  * custom route data and resolve methods.
  *
- * For detailed usage information, see the [Routing Guide](guide/router).
+ * For detailed usage information, see the [Routing Guide](guide/routing/common-router-tasks).
  *
  * @usageNotes
  *
@@ -1301,7 +1301,7 @@ export type CanLoadFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gua
  *
  * @see {@link Router#navigate}
  * @see {@link Router#navigateByUrl}
- * @see [Routing and Navigation guide](guide/router)
+ * @see [Routing and Navigation guide](guide/routing/common-router-tasks)
  *
  * @publicApi
  */

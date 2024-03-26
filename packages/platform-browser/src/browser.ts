@@ -35,7 +35,7 @@ export {ApplicationConfig};
 /**
  * Bootstraps an instance of an Angular application and renders a standalone component as the
  * application's root component. More information about standalone components can be found in [this
- * guide](guide/standalone-components).
+ * guide](guide/components/importing).
  *
  * @usageNotes
  * The root component passed into this function *must* be a standalone one (should have the

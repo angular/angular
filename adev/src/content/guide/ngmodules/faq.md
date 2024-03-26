@@ -6,7 +6,7 @@ This page answers the questions many developers ask about NgModule design and im
 
 ## What classes should I add to the `declarations` array?
 
-Add [declarable](/guide/ngmodules/bootstrapping#the-declarations-array) classes —components, directives, and pipes— to a `declarations` list.
+Add [declarable](guide/ngmodules/bootstrapping#the-declarations-array) classes —components, directives, and pipes— to a `declarations` list.
 
 Declare these classes in *exactly one* module of the application.
 Declare them in a module if they belong to that particular module.
@@ -18,7 +18,7 @@ They're the only classes that you can add to `declarations`.
 
 ## What classes should I *not* add to `declarations`?
 
-Add only [declarable](/guide/ngmodules/bootstrapping#the-declarations-array) classes to an NgModule's `declarations` list.
+Add only [declarable](guide/ngmodules/bootstrapping#the-declarations-array) classes to an NgModule's `declarations` list.
 
 Do *not* declare the following:
 
@@ -51,7 +51,7 @@ The "x" class isn't visible to other modules until you add it to the `exports` l
 
 ## What should I import?
 
-Import NgModules whose public (exported) [declarable classes](/guide/ngmodules/bootstrapping#the-declarations-array)
+Import NgModules whose public (exported) [declarable classes](guide/ngmodules/bootstrapping#the-declarations-array)
 you need to reference in this module's component templates.
 
 This always means importing `CommonModule` from `@angular/common` for access to
@@ -93,7 +93,7 @@ Angular doesn't like NgModules with circular references, so don't let Module 'A'
 
 ## What should I export?
 
-Export [declarable](/guide/ngmodules/bootstrapping#the-declarations-array) classes that components in *other* NgModules should be able to use in their templates.
+Export [declarable](guide/ngmodules/bootstrapping#the-declarations-array) classes that components in *other* NgModules should be able to use in their templates.
 These are your *public* classes.
 If you don't export a declarable class, it stays *private*, visible only to other components declared in this NgModule.
 
@@ -137,7 +137,7 @@ exports: [CommonModule, ApplicationModule]
 An NgModule can export a combination of its own declarations, selected imported classes, and imported NgModules.
 
 Don't bother re-exporting pure service modules.
-Pure service modules don't export [declarable](/guide/ngmodules/bootstrapping#the-declarations-array) classes that another NgModule could use.
+Pure service modules don't export [declarable](guide/ngmodules/bootstrapping#the-declarations-array) classes that another NgModule could use.
 For example, there's no point in re-exporting `HttpClientModule` because it doesn't export anything.
 Its only purpose is to add http service providers to the application as a whole.
 
@@ -146,7 +146,7 @@ Its only purpose is to add http service providers to the application as a whole.
 The `forRoot()` static method is a convention that makes it easy for developers to configure services and providers that are intended to be singletons.
 A good example of `forRoot()` is the `RouterModule.forRoot()` method.
 
-For more information on `forRoot()` see [the `forRoot()` pattern](/guide/ngmodules/singleton-services#the-forroot()-pattern) section of the [Singleton Services](/guide/ngmodules/singleton-services) guide.
+For more information on `forRoot()` see [the `forRoot()` pattern](guide/ngmodules/singleton-services#the-forroot()-pattern) section of the [Singleton Services](guide/ngmodules/singleton-services) guide.
 
 ## Why is a service provided in a feature module visible everywhere?
 
@@ -380,7 +380,7 @@ They support your application by containing a particular feature, such as routes
 To conceptualize what a feature module might be in your app, consider that if you would put the files related to a certain functionality, like a search, in one folder, that the contents of that folder would be a feature module that you might call your `SearchModule`.
 It would contain all of the components, routing, and templates that would make up the search functionality.
 
-For more information, see [Feature Modules](/guide/ngmodules/feature-modules) and [Module Types](/guide/ngmodules/module-types)
+For more information, see [Feature Modules](guide/ngmodules/feature-modules) and [Module Types](guide/ngmodules/module-types)
 
 ## What's the difference between NgModules and JavaScript Modules?
 

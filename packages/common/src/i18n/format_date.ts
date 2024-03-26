@@ -74,7 +74,7 @@ enum TranslationType {
  * @returns The formatted date string.
  *
  * @see {@link DatePipe}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
