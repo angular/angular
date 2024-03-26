@@ -79,6 +79,19 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
         emitEvent?: boolean;
     }): void;
     setParent(parent: FormGroup | FormArray | null): void;
+    setState(state: {
+        enabled: boolean;
+    }, opts?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
+    // (undocumented)
+    setState(state: {
+        disabled: boolean;
+    }, opts?: {
+        onlySelf?: boolean;
+        emitEvent?: boolean;
+    }): void;
     setValidators(validators: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: TRawValue, options?: Object): void;
     readonly status: FormControlStatus;
