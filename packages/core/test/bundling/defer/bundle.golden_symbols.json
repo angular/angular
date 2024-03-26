@@ -528,9 +528,6 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_ensureDirtyViewsAreAlwaysReachable"
-  },
-  {
     "name": "_findMatchingDehydratedViewImpl"
   },
   {
@@ -1378,9 +1375,6 @@
   },
   {
     "name": "init_fields"
-  },
-  {
-    "name": "init_flags"
   },
   {
     "name": "init_forward_ref"
