@@ -12,7 +12,7 @@ Without hydration enabled, server-side rendered Angular applications will destro
 
 ## How do you enable hydration in Angular
 
-Before you can get started with hydration, you must have a server-side rendered (SSR) application. Follow the [Angular SSR Guide](/guide/ssr) to enable server-side rendering first. Once you have SSR working with your application, you can enable hydration by visiting your main app component or module and importing `provideClientHydration` from `@angular/platform-browser`. You'll then add that provider to your app's bootstrapping providers list.
+Before you can get started with hydration, you must have a server-side rendered (SSR) application. Follow the [Angular SSR Guide](guide/ssr) to enable server-side rendering first. Once you have SSR working with your application, you can enable hydration by visiting your main app component or module and importing `provideClientHydration` from `@angular/platform-browser`. You'll then add that provider to your app's bootstrapping providers list.
 
 ```typescript
 import {

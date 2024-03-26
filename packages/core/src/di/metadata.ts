@@ -32,7 +32,7 @@ export interface InjectDecorator {
    * <code-example path="core/di/ts/metadata_spec.ts" region="InjectWithoutDecorator">
    * </code-example>
    *
-   * @see [Dependency Injection Guide](guide/dependency-injection)
+   * @see [Dependency Injection Guide](guide/di/dependency-injection
    *
    */
   (token: any): any;
@@ -83,7 +83,7 @@ export interface OptionalDecorator {
    * <code-example path="core/di/ts/metadata_spec.ts" region="Optional">
    * </code-example>
    *
-   * @see [Dependency Injection Guide](guide/dependency-injection).
+   * @see [Dependency Injection Guide](guide/di/dependency-injection.
    */
   (): any;
   new(): Optional;
@@ -176,7 +176,7 @@ export interface SkipSelfDecorator {
    * <code-example path="core/di/ts/metadata_spec.ts" region="SkipSelf">
    * </code-example>
    *
-   * @see [Dependency Injection guide](guide/dependency-injection-in-action#skip).
+   * @see [Dependency Injection guide](guide/di/di-in-action#skip).
    * @see {@link Self}
    * @see {@link Optional}
    *
@@ -222,7 +222,7 @@ export interface HostDecorator {
    * </code-example>
    *
    * For an extended example, see ["Dependency Injection
-   * Guide"](guide/dependency-injection-in-action#optional).
+   * Guide"](guide/di/di-in-action#optional).
    */
   (): any;
   new(): Host;

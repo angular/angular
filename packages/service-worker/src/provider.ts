@@ -163,7 +163,7 @@ export abstract class SwRegistrationOptions {
    *     example, use `registerWithDelay:5000` to register the ServiceWorker after 5 seconds. If
    *     `<timeout>` is omitted, is defaults to `0`, which will register the ServiceWorker as soon
    *     as possible but still asynchronously, once all pending micro-tasks are completed.
-   * - An [Observable](guide/observables) factory function: A function that returns an `Observable`.
+   * - An Observable factory function: A function that returns an `Observable`.
    *     The function will be used at runtime to obtain and subscribe to the `Observable` and the
    *     ServiceWorker will be registered as soon as the first value is emitted.
    *

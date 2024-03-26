@@ -396,9 +396,9 @@ export type ɵGetProperty<T, K> =
  * The first type parameter TValue represents the value type of the control (`control.value`).
  * The optional type parameter TRawValue  represents the raw value type (`control.getRawValue()`).
  *
- * @see [Forms Guide](/guide/forms)
- * @see [Reactive Forms Guide](/guide/reactive-forms)
- * @see [Dynamic Forms Guide](/guide/dynamic-form)
+ * @see [Forms Guide](guide/forms)
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
+ * @see [Dynamic Forms Guide](guide/forms/dynamic-forms)
  *
  * @publicApi
  */

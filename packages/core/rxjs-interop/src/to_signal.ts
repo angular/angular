@@ -36,7 +36,7 @@ export interface ToSignalOptions {
    * `Injector` which will provide the `DestroyRef` used to clean up the Observable subscription.
    *
    * If this is not provided, a `DestroyRef` will be retrieved from the current [injection
-   * context](/guide/dependency-injection-context), unless manual cleanup is requested.
+   * context](guide/di/dependency-injection-context), unless manual cleanup is requested.
    */
   injector?: Injector;
 
@@ -92,7 +92,7 @@ export function toSignal<T, const U extends T>(
  * does not include an `undefined` type.
  *
  * By default, the subscription will be automatically cleaned up when the current [injection
- * context](/guide/dependency-injection-context) is destroyed. For example, when `toSignal` is
+ * context](guide/di/dependency-injection-context) is destroyed. For example, when `toSignal` is
  * called during the construction of a component, the subscription will be cleaned up when the
  * component is destroyed. If an injection context is not available, an explicit `Injector` can be
  * passed instead.

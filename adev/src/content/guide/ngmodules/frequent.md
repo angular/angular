@@ -41,7 +41,7 @@ export class AppModule { }
 </docs-code>
 
 The imports at the top of the array are JavaScript import statements while the `imports` array within `@NgModule` is Angular specific.
-For more information on the difference, see [JavaScript Modules vs. NgModules](/guide/ngmodules/vs-jsmodule).
+For more information on the difference, see [JavaScript Modules vs. NgModules](guide/ngmodules/vs-jsmodule).
 
 ## `BrowserModule` and `CommonModule`
 

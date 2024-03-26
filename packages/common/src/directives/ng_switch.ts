@@ -112,7 +112,7 @@ export class SwitchView {
  * @publicApi
  * @see {@link NgSwitchCase}
  * @see {@link NgSwitchDefault}
- * @see [Structural Directives](guide/structural-directives)
+ * @see [Structural Directives](guide/directives/structural-directives)
  *
  */
 @Directive({

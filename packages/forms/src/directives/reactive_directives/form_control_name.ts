@@ -32,7 +32,7 @@ const controlNameBinding: Provider = {
  * Syncs a `FormControl` in an existing `FormGroup` to a form control
  * element by name.
  *
- * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
  * @see {@link FormControl}
  * @see {@link AbstractControl}
  *

@@ -74,7 +74,7 @@ If `LibHeaderComponent` 's code, template, and styles combined becomes too large
 The tree-shaking problem arises when a component is used as an injection token.
 There are two cases when that can happen.
 
-* The token is used in the value position of a [content query](/guide/components/queries#content-queries).
+* The token is used in the value position of a [content query](guide/components/queries#content-queries).
 * The token is used as a type specifier for constructor injection.
 
 In the following example, both uses of the `OtherComponent` token cause retention of `OtherComponent`, preventing it from being tree-shaken when it is not used.
@@ -91,7 +91,7 @@ Although tokens used only as type specifiers are removed when converted to JavaS
 These effectively change `constructor(@Optional() other: OtherComponent)` to `constructor(@Optional() @Inject(OtherComponent) other)`.
 The token is now in a value position, and causes the tree shaker to keep the reference.
 
-HELPFUL: For all services, a library should use [tree-shakable providers](/guide/di/dependency-injection#providing-dependency), providing dependencies at the root level rather than in components or modules.
+HELPFUL: For all services, a library should use [tree-shakable providers](guide/di/dependency-injection#providing-dependency), providing dependencies at the root level rather than in components or modules.
 
 ## Using lightweight injection tokens
 

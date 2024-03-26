@@ -53,13 +53,13 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
 }
 
 /**
- * A [structural directive](guide/structural-directives) that renders
+ * A [structural directive](guide/directives/structural-directives) that renders
  * a template for each item in a collection.
  * The directive is placed on an element, which becomes the parent
  * of the cloned templates.
  *
  * The `ngForOf` directive is generally used in the
- * [shorthand form](guide/structural-directives#asterisk) `*ngFor`.
+ * [shorthand form](guide/directives/structural-directives#asterisk) `*ngFor`.
  * In this form, the template to be rendered for each iteration is the content
  * of an anchor element containing the directive.
  *
@@ -88,11 +88,11 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * context according to its lexical position.
  *
  * When using the shorthand syntax, Angular allows only [one structural directive
- * on an element](guide/structural-directives#one-per-element).
+ * on an element](guide/directives/structural-directives#one-per-element).
  * If you want to iterate conditionally, for example,
  * put the `*ngIf` on a container element that wraps the `*ngFor` element.
  * For further discussion, see
- * [Structural Directives](guide/structural-directives#one-per-element).
+ * [Structural Directives](guide/directives/structural-directives#one-per-element).
  *
  * @usageNotes
  *
@@ -133,7 +133,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * controls that are present, such as `<input>` elements that accept user input. Inserted rows can
  * be animated in, deleted rows can be animated out, and unchanged rows retain any unsaved state
  * such as user input.
- * For more on animations, see [Transitions and Triggers](guide/transition-and-triggers).
+ * For more on animations, see [Transitions and Triggers](guide/animations/transition-and-triggers).
  *
  * The identities of elements in the iterator can change while the data does not.
  * This can happen, for example, if the iterator is produced from an RPC to the server, and that
@@ -146,7 +146,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * `trackBy` takes a function that has two arguments: `index` and `item`.
  * If `trackBy` is given, Angular tracks changes by the return value of the function.
  *
- * @see [Structural Directives](guide/structural-directives)
+ * @see [Structural Directives](guide/directives/structural-directives)
  * @ngModule CommonModule
  * @publicApi
  */
@@ -157,7 +157,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
 export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
   /**
    * The value of the iterable expression, which can be used as a
-   * [template input variable](guide/structural-directives#shorthand).
+   * [template input variable](guide/directives/structural-directives#shorthand).
    */
   @Input()
   set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null) {
@@ -213,7 +213,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 
   /**
    * A reference to the template that is stamped out for each item in the iterable.
-   * @see [template reference variable](guide/template-reference-variables)
+   * @see [template reference variable](guide/templates/reference-variables)
    */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>) {

@@ -137,7 +137,7 @@ let upgradeCount: number = 0;
  * ```
  *
  * @deprecated Deprecated since v5. Use `upgrade/static` instead, which also supports
- * [Ahead-of-Time compilation](guide/aot-compiler).
+ * [Ahead-of-Time compilation](tools/cli/aot-compiler).
  * @publicApi
  */
 export class UpgradeAdapter {
@@ -688,7 +688,7 @@ export class UpgradeAdapter {
  * Use `UpgradeAdapterRef` to control a hybrid AngularJS / Angular application.
  *
  * @deprecated Deprecated since v5. Use `upgrade/static` instead, which also supports
- * [Ahead-of-Time compilation](guide/aot-compiler).
+ * [Ahead-of-Time compilation](tools/cli/aot-compiler).
  * @publicApi
  */
 export class UpgradeAdapterRef {

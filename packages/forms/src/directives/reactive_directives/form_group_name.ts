@@ -38,7 +38,7 @@ const formGroupNameProvider: Provider = {
  * form separately from the rest or to group the values of certain
  * controls into their own nested object.
  *
- * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
  *
  * @usageNotes
  *
@@ -119,7 +119,7 @@ export const formArrayNameProvider: any = {
  * will look for a `FormArray` registered with that name in the parent
  * `FormGroup` instance you passed into `FormGroupDirective`.
  *
- * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
  * @see {@link AbstractControl}
  *
  * @usageNotes

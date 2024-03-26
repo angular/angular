@@ -68,7 +68,7 @@ export enum EventType {
  * ```
  *
  * @see {@link Event}
- * @see [Router events summary](guide/router-reference#router-events)
+ * @see [Router events summary](guide/routing/router-reference#router-events)
  * @publicApi
  */
 export class RouterEvent {
@@ -625,7 +625,7 @@ export type PrivateRouterEvents = BeforeActivateRoutes | RedirectRequest;
  *
  * * [NavigationStart](api/router/NavigationStart): Navigation starts.
  * * [RouteConfigLoadStart](api/router/RouteConfigLoadStart): Before
- * the router [lazy loads](/guide/router#lazy-loading) a route configuration.
+ * the router [lazy loads](guide/routing/common-router-tasks#lazy-loading) a route configuration.
  * * [RouteConfigLoadEnd](api/router/RouteConfigLoadEnd): After a route has been lazy loaded.
  * * [RoutesRecognized](api/router/RoutesRecognized): When the router parses the URL
  * and the routes are recognized.
