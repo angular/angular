@@ -1,0 +1,1 @@
+export const testonlyHtml = (content: string) => content;
