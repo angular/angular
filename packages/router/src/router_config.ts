@@ -258,7 +258,7 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
 }
 
 /**
- * A [DI token](guide/glossary/#di-token) for the router service.
+ * A DI token for the router service.
  *
  * @publicApi
  */

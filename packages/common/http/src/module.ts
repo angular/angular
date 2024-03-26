@@ -82,17 +82,17 @@ export class HttpClientXsrfModule {
 }
 
 /**
- * Configures the [dependency injector](guide/glossary#injector) for `HttpClient`
+ * Configures the dependency injector for `HttpClient`
  * with supporting services for XSRF. Automatically imported by `HttpClientModule`.
  *
  * You can add interceptors to the chain behind `HttpClient` by binding them to the
- * multiprovider for built-in [DI token](guide/glossary#di-token) `HTTP_INTERCEPTORS`.
+ * multiprovider for built-in DI token `HTTP_INTERCEPTORS`.
  *
  * @publicApi
  */
 @NgModule({
   /**
-   * Configures the [dependency injector](guide/glossary#injector) where it is imported
+   * Configures the dependency injector where it is imported
    * with supporting services for HTTP communications.
    */
   providers: [provideHttpClient(withInterceptorsFromDi())],
@@ -100,7 +100,7 @@ export class HttpClientXsrfModule {
 export class HttpClientModule {}
 
 /**
- * Configures the [dependency injector](guide/glossary#injector) for `HttpClient`
+ * Configures the dependency injector for `HttpClient`
  * with supporting services for JSONP.
  * Without this module, Jsonp requests reach the backend
  * with method JSONP, where they are rejected.

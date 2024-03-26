@@ -13,7 +13,7 @@ import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-br
 import {AsyncAnimationRendererFactory} from './async_animation_renderer';
 
 /**
- * Returns the set of [dependency-injection providers](guide/glossary#provider)
+ * Returns the set of dependency-injection providers
  * to enable animations in an application. See [animations guide](guide/animations)
  * to learn more about animations in Angular.
  *
