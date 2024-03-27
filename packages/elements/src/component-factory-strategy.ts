@@ -8,19 +8,19 @@
 
 import {
   ApplicationRef,
-  ChangeDetectorRef,
-  ComponentFactory,
-  ComponentFactoryResolver,
+  ComponentMirror,
   ComponentRef,
+  EnvironmentInjector,
   EventEmitter,
   Injector,
   NgZone,
-  OnChanges,
-  SimpleChange,
-  SimpleChanges,
+  OutputEmitterRef,
   Type,
+  createComponent,
+  isSignal,
+  reflectComponentType,
 } from '@angular/core';
-import {merge, Observable, ReplaySubject} from 'rxjs';
+import {isObservable, merge, Observable, ReplaySubject} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 import {
@@ -29,7 +29,8 @@ import {
   NgElementStrategyFactory,
 } from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
-import {isFunction, scheduler, strictEquals} from './utils';
+import {scheduler, strictEquals} from './utils';
+import {outputToObservable} from '@angular/core/rxjs-interop';
 
 /** Time in milliseconds to wait before destroying the component ref when disconnected. */
 const DESTROY_DELAY = 10;
@@ -39,16 +40,13 @@ const DESTROY_DELAY = 10;
  * constructor's injector's factory resolver and passes that factory to each strategy.
  */
 export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
-  componentFactory: ComponentFactory<any>;
-
-  constructor(component: Type<any>, injector: Injector) {
-    this.componentFactory = injector
-      .get(ComponentFactoryResolver)
-      .resolveComponentFactory(component);
-  }
+  constructor(
+    readonly component: Type<any>,
+    injector?: Injector,
+  ) {}
 
   create(injector: Injector) {
-    return new ComponentNgElementStrategy(this.componentFactory, injector);
+    return new ComponentNgElementStrategy(this.component, injector);
   }
 }
 
@@ -65,21 +63,6 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Reference to the component that was created on connect. */
   private componentRef: ComponentRef<any> | null = null;
-
-  /** Reference to the component view's `ChangeDetectorRef`. */
-  private viewChangeDetectorRef: ChangeDetectorRef | null = null;
-
-  /**
-   * Changes that have been made to component inputs since the last change detection run.
-   * (NOTE: These are only recorded if the component implements the `OnChanges` interface.)
-   */
-  private inputChanges: SimpleChanges | null = null;
-
-  /** Whether changes have been made to component inputs since the last change detection run. */
-  private hasInputChanges = false;
-
-  /** Whether the created component implements the `OnChanges` interface. */
-  private implementsOnChanges = false;
 
   /** Whether a change detection has been scheduled to run on the component. */
   private scheduledChangeDetectionFn: (() => void) | null = null;
@@ -103,12 +86,16 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** The zone the element was created in or `null` if Zone.js is not loaded. */
   private readonly elementZone: Zone | null;
 
+  /** A mirror of the component, for accessing the component’s inputs */
+  private readonly componentMirror: ComponentMirror<any> | null;
+
   constructor(
-    private componentFactory: ComponentFactory<any>,
+    private component: Type<object>,
     private injector: Injector,
   ) {
+    this.componentMirror = reflectComponentType(component);
     this.unchangedInputs = new Set<string>(
-      this.componentFactory.inputs.map(({propName}) => propName),
+      this.componentMirror?.inputs.map(({propName}) => propName),
     );
     this.ngZone = this.injector.get<NgZone>(NgZone);
     this.elementZone = typeof Zone === 'undefined' ? null : this.ngZone.run(() => Zone.current);
@@ -151,7 +138,6 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
         if (this.componentRef !== null) {
           this.componentRef.destroy();
           this.componentRef = null;
-          this.viewChangeDetectorRef = null;
         }
       }, DESTROY_DELAY);
     });
@@ -161,13 +147,15 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * Returns the component property value. If the component has not yet been created, the value is
    * retrieved from the cached initialization values.
    */
-  getInputValue(property: string): any {
+  getInputValue(property: string): unknown {
     return this.runInZone(() => {
       if (this.componentRef === null) {
         return this.initialInputValues.get(property);
       }
 
-      return this.componentRef.instance[property];
+      const value: unknown = (this.componentRef.instance as Record<string, unknown>)[property];
+      if (isSignal(value)) return value();
+      else return value;
     });
   }
 
@@ -196,14 +184,10 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
         return;
       }
 
-      // Record the changed value and update internal state to reflect the fact that this input has
-      // changed.
-      this.recordInputChange(property, value);
       this.unchangedInputs.delete(property);
-      this.hasInputChanges = true;
 
       // Update the component instance and schedule change detection.
-      this.componentRef.instance[property] = value;
+      this.componentRef.setInput(property, value);
       this.scheduleDetectChanges();
     });
   }
@@ -212,16 +196,19 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * Creates a new component through the component factory with the provided element host and
    * sets up its initial inputs, listens for outputs changes, and runs an initial change detection.
    */
-  protected initializeComponent(element: HTMLElement) {
-    const childInjector = Injector.create({providers: [], parent: this.injector});
-    const projectableNodes = extractProjectableNodes(
-      element,
-      this.componentFactory.ngContentSelectors,
-    );
-    this.componentRef = this.componentFactory.create(childInjector, projectableNodes, element);
-    this.viewChangeDetectorRef = this.componentRef.injector.get(ChangeDetectorRef);
+  protected initializeComponent(hostElement: HTMLElement) {
+    const environmentInjector = this.injector.get(EnvironmentInjector);
+    const elementInjector = Injector.create({providers: [], parent: this.injector});
+    const projectableNodes = this.componentMirror
+      ? extractProjectableNodes(hostElement, this.componentMirror.ngContentSelectors)
+      : [];
 
-    this.implementsOnChanges = isFunction((this.componentRef.instance as OnChanges).ngOnChanges);
+    this.componentRef = createComponent(this.component, {
+      environmentInjector,
+      elementInjector,
+      projectableNodes,
+      hostElement,
+    });
 
     this.initializeInputs();
     this.initializeOutputs(this.componentRef);
@@ -234,7 +221,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Set any stored initial inputs on the component's properties. */
   protected initializeInputs(): void {
-    this.componentFactory.inputs.forEach(({propName, transform}) => {
+    this.componentMirror?.inputs.forEach(({propName, transform}) => {
       if (this.initialInputValues.has(propName)) {
         // Call `setInputValue()` now that the component has been instantiated to update its
         // properties and fire `ngOnChanges()`.
@@ -247,38 +234,18 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Sets up listeners for the component's outputs so that the events stream emits the events. */
   protected initializeOutputs(componentRef: ComponentRef<any>): void {
-    const eventEmitters: Observable<NgElementStrategyEvent>[] = this.componentFactory.outputs.map(
-      ({propName, templateName}) => {
-        const emitter: EventEmitter<any> = componentRef.instance[propName];
-        return emitter.pipe(map((value) => ({name: templateName, value})));
-      },
-    );
+    const eventEmitters: Observable<NgElementStrategyEvent>[] = this.componentMirror
+      ? this.componentMirror.outputs.map(({propName, templateName}) => {
+          const emitter: EventEmitter<unknown> | OutputEmitterRef<unknown> =
+            componentRef.instance[propName];
+          const emitterObservable: Observable<unknown> = isObservable(emitter)
+            ? emitter
+            : outputToObservable(emitter);
+          return emitterObservable.pipe(map((value) => ({name: templateName, value})));
+        })
+      : [];
 
     this.eventEmitters.next(eventEmitters);
-  }
-
-  /** Calls ngOnChanges with all the inputs that have changed since the last call. */
-  protected callNgOnChanges(componentRef: ComponentRef<any>): void {
-    if (!this.implementsOnChanges || this.inputChanges === null) {
-      return;
-    }
-
-    // Cache the changes and set inputChanges to null to capture any changes that might occur
-    // during ngOnChanges.
-    const inputChanges = this.inputChanges;
-    this.inputChanges = null;
-    (componentRef.instance as OnChanges).ngOnChanges(inputChanges);
-  }
-
-  /**
-   * Marks the component view for check, if necessary.
-   * (NOTE: This is required when the `ChangeDetectionStrategy` is set to `OnPush`.)
-   */
-  protected markViewForCheck(viewChangeDetectorRef: ChangeDetectorRef): void {
-    if (this.hasInputChanges) {
-      this.hasInputChanges = false;
-      viewChangeDetectorRef.markForCheck();
-    }
   }
 
   /**
@@ -296,40 +263,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     });
   }
 
-  /**
-   * Records input changes so that the component receives SimpleChanges in its onChanges function.
-   */
-  protected recordInputChange(property: string, currentValue: any): void {
-    // Do not record the change if the component does not implement `OnChanges`.
-    if (!this.implementsOnChanges) {
-      return;
-    }
-
-    if (this.inputChanges === null) {
-      this.inputChanges = {};
-    }
-
-    // If there already is a change, modify the current value to match but leave the values for
-    // `previousValue` and `isFirstChange`.
-    const pendingChange = this.inputChanges[property];
-    if (pendingChange) {
-      pendingChange.currentValue = currentValue;
-      return;
-    }
-
-    const isFirstChange = this.unchangedInputs.has(property);
-    const previousValue = isFirstChange ? undefined : this.getInputValue(property);
-    this.inputChanges[property] = new SimpleChange(previousValue, currentValue, isFirstChange);
-  }
-
   /** Runs change detection on the component. */
   protected detectChanges(): void {
     if (this.componentRef === null) {
       return;
     }
 
-    this.callNgOnChanges(this.componentRef);
-    this.markViewForCheck(this.viewChangeDetectorRef!);
     this.componentRef.changeDetectorRef.detectChanges();
   }
 
