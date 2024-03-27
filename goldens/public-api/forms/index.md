@@ -41,6 +41,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     }): void;
     get enabled(): boolean;
     readonly errors: ValidationErrors | null;
+    readonly events: Observable<ControlEvent<TValue>>;
     get<P extends string | (readonly (string | number)[])>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
     get<P extends string | Array<string | number>>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
@@ -49,9 +50,12 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     hasValidator(validator: ValidatorFn): boolean;
     get invalid(): boolean;
-    markAllAsTouched(): void;
+    markAllAsTouched(opts?: {
+        emitEvent?: boolean;
+    }): void;
     markAsDirty(opts?: {
         onlySelf?: boolean;
+        emitEvent?: boolean;
     }): void;
     markAsPending(opts?: {
         onlySelf?: boolean;
@@ -59,12 +63,15 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     }): void;
     markAsPristine(opts?: {
         onlySelf?: boolean;
+        emitEvent?: boolean;
     }): void;
     markAsTouched(opts?: {
         onlySelf?: boolean;
+        emitEvent?: boolean;
     }): void;
     markAsUntouched(opts?: {
         onlySelf?: boolean;
+        emitEvent?: boolean;
     }): void;
     get parent(): FormGroup | FormArray | null;
     abstract patchValue(value: TValue, options?: Object): void;
@@ -183,6 +190,11 @@ export abstract class ControlContainer extends AbstractControlDirective {
     get formDirective(): Form | null;
     name: string | number | null;
     get path(): string[] | null;
+}
+
+// @public
+export abstract class ControlEvent<T = any> {
+    abstract readonly source: AbstractControl<unknown>;
 }
 
 // @public
@@ -770,6 +782,15 @@ export class PatternValidator extends AbstractValidatorDirective {
 }
 
 // @public
+export class PristineEvent extends ControlEvent {
+    constructor(pristine: boolean, source: AbstractControl);
+    // (undocumented)
+    readonly pristine: boolean;
+    // (undocumented)
+    readonly source: AbstractControl;
+}
+
+// @public
 export class RadioControlValueAccessor extends BuiltInControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
     constructor(renderer: Renderer2, elementRef: ElementRef, _registry: RadioControlRegistry, _injector: Injector);
     fireUncheck(value: any): void;
@@ -855,6 +876,24 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
 export type SetDisabledStateOption = 'whenDisabledForLegacyCode' | 'always';
 
 // @public
+export class StatusEvent extends ControlEvent {
+    constructor(status: FormControlStatus, source: AbstractControl);
+    // (undocumented)
+    readonly source: AbstractControl;
+    // (undocumented)
+    readonly status: FormControlStatus;
+}
+
+// @public
+export class TouchedEvent extends ControlEvent {
+    constructor(touched: boolean, source: AbstractControl);
+    // (undocumented)
+    readonly source: AbstractControl;
+    // (undocumented)
+    readonly touched: boolean;
+}
+
+// @public
 export type UntypedFormArray = FormArray<any>;
 
 // @public (undocumented)
@@ -923,6 +962,15 @@ export class Validators {
     static pattern(pattern: string | RegExp): ValidatorFn;
     static required(control: AbstractControl): ValidationErrors | null;
     static requiredTrue(control: AbstractControl): ValidationErrors | null;
+}
+
+// @public
+export class ValueChangeEvent<T> extends ControlEvent<T> {
+    constructor(value: T, source: AbstractControl);
+    // (undocumented)
+    readonly source: AbstractControl;
+    // (undocumented)
+    readonly value: T;
 }
 
 // @public (undocumented)

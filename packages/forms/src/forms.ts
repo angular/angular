@@ -43,7 +43,7 @@ export {SelectMultipleControlValueAccessor, ɵNgSelectMultipleOption} from './di
 export {SetDisabledStateOption} from './directives/shared';
 export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {ControlConfig, FormBuilder, NonNullableFormBuilder, UntypedFormBuilder, ɵElement} from './form_builder';
-export {AbstractControl, AbstractControlOptions, FormControlStatus, ɵCoerceStrArrToNumArr, ɵGetProperty, ɵNavigate, ɵRawValue, ɵTokenize, ɵTypedOrUntyped, ɵValue, ɵWriteable} from './model/abstract_model';
+export {AbstractControl, AbstractControlOptions, ControlEvent, FormControlStatus, PristineChangeEvent as PristineEvent, StatusChangeEvent as StatusEvent, TouchedChangeEvent as TouchedEvent, ValueChangeEvent, ɵCoerceStrArrToNumArr, ɵGetProperty, ɵNavigate, ɵRawValue, ɵTokenize, ɵTypedOrUntyped, ɵValue, ɵWriteable} from './model/abstract_model';
 export {FormArray, isFormArray, UntypedFormArray, ɵFormArrayRawValue, ɵFormArrayValue} from './model/form_array';
 export {FormControl, FormControlOptions, FormControlState, isFormControl, UntypedFormControl, ɵFormControlCtor} from './model/form_control';
 export {FormGroup, FormRecord, isFormGroup, isFormRecord, UntypedFormGroup, ɵFormGroupRawValue, ɵFormGroupValue, ɵOptionalKeys} from './model/form_group';

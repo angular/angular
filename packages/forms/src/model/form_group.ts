@@ -490,8 +490,8 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
       control.reset(
           value ? (value as any)[name] : null, {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this._updatePristine(options);
-    this._updateTouched(options);
+    this._updatePristine(options, this);
+    this._updateTouched(options, this);
     this.updateValueAndValidity(options);
   }
 
