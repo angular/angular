@@ -494,7 +494,7 @@ export class NavigationTransitions {
                   NavigationSkippedCode.IgnoredSameUrlNavigation,
                 ),
               );
-              t.resolve(null!);
+              t.resolve(false);
               return EMPTY;
             }
 
@@ -593,7 +593,7 @@ export class NavigationTransitions {
                   NavigationSkippedCode.IgnoredByUrlHandlingStrategy,
                 ),
               );
-              t.resolve(null!);
+              t.resolve(false);
               return EMPTY;
             }
           }),
