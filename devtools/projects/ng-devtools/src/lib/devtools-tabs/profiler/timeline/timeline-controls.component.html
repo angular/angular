@@ -45,13 +45,14 @@
     @if (visualizationMode == flameGraphMode) {
       <mat-checkbox
         [checked]="changeDetection"
-        (change)="this.toggleChangeDetection.emit(!changeDetection)"
-        >
+        (change)="this.toggleChangeDetection.emit(!changeDetection)">
         Show only change detection
       </mat-checkbox>
     }
   </div>
   @if (!empty) {
-    <button mat-stroked-button (click)="exportProfile.emit()">Save Profile</button>
+    <button mat-stroked-button class="save-profile-btn" (click)="exportProfile.emit()">
+      Save Profile
+    </button>
   }
 </div>
