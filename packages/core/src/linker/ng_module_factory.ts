@@ -64,8 +64,7 @@ export interface InternalNgModuleRef<T> extends NgModuleRef<T> {
  *
  * @deprecated
  * This class was mostly used as a part of ViewEngine-based JIT API and is no longer needed in Ivy
- * JIT mode. See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes)
- * for additional context. Angular provides APIs that accept NgModule classes directly (such as
+ * JIT mode. Angular provides APIs that accept NgModule classes directly (such as
  * [PlatformRef.bootstrapModule](api/core/PlatformRef#bootstrapModule) and
  * [createNgModule](api/core/createNgModule)), consider switching to those APIs instead of
  * using factory-based ones.
