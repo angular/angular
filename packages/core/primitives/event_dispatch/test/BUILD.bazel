@@ -8,8 +8,6 @@ ts_library(
     deps = [
         "//packages/core/primitives/event_dispatch",
         "//packages/private/testing",
-        "//packages/core/primitives/event_dispatch/test/safevalues/dom",
-        "//packages/core/primitives/event_dispatch/test/safevalues/testing",
     ],
 )
 
