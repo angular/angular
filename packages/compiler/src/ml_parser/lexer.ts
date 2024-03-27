@@ -10,7 +10,7 @@ import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
 
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './defaults';
-import {NAMED_ENTITIES} from './entities';
+import {NAMED_ENTITIES, namedEntityMaxLength} from './entities';
 import {TagContentType, TagDefinition} from './tags';
 import {IncompleteTagOpenToken, TagOpenStartToken, Token, TokenType} from './tokens';
 
@@ -439,6 +439,27 @@ class _Tokenizer {
     return true;
   }
 
+  private _attemptNamedEntityMatch() {
+    let text = '';
+    let lastMatchPos;
+
+    while (this._cursor.charsLeft() > 0 && text.length <= namedEntityMaxLength &&
+           isNamedEntityChar(this._cursor.peek())) {
+      const charCode = this._cursor.peek();
+      text += String.fromCharCode(charCode);
+
+      const entity = NAMED_ENTITIES[text];
+      if (entity) {
+        lastMatchPos = this._cursor.clone();
+      }
+      if (charCode === chars.$SEMICOLON) break;
+
+      this._cursor.advance();
+    }
+
+    return lastMatchPos;
+  }
+
   private _attemptStrCaseInsensitive(chars: string): boolean {
     for (let i = 0; i < chars.length; i++) {
       if (!this._attemptCharCodeCaseInsensitive(chars.charCodeAt(i))) {
@@ -513,21 +534,22 @@ class _Tokenizer {
       }
     } else {
       const nameStart = this._cursor.clone();
-      this._attemptCharCodeUntilFn(isNamedEntityEnd);
-      if (this._cursor.peek() != chars.$SEMICOLON) {
-        // No semicolon was found so abort the encoded entity token that was in progress, and treat
-        // this as a text token
+      const pos = this._attemptNamedEntityMatch();
+
+      if (pos) {
+        this._cursor = pos;
+        this._cursor.advance();
+
+        const name = this._cursor.getChars(nameStart);
+        const char = NAMED_ENTITIES[name];
+        this._endToken([char, `&${name}`]);
+      } else if (this._cursor.peek() === chars.$SEMICOLON) {
+        const errorMsg = _unknownEntityErrorMsg(this._cursor.getChars(nameStart));
+        throw this._createError(errorMsg, this._cursor.getSpan(start));
+      } else {
         this._beginToken(textTokenType, start);
         this._cursor = nameStart;
         this._endToken(['&']);
-      } else {
-        const name = this._cursor.getChars(nameStart);
-        this._cursor.advance();
-        const char = NAMED_ENTITIES[name];
-        if (!char) {
-          throw this._createError(_unknownEntityErrorMsg(name), this._cursor.getSpan(start));
-        }
-        this._endToken([char, `&${name};`]);
       }
     }
   }
@@ -999,8 +1021,8 @@ function isDigitEntityEnd(code: number): boolean {
   return code === chars.$SEMICOLON || code === chars.$EOF || !chars.isAsciiHexDigit(code);
 }
 
-function isNamedEntityEnd(code: number): boolean {
-  return code === chars.$SEMICOLON || code === chars.$EOF || !chars.isAsciiLetter(code);
+function isNamedEntityChar(code: number): boolean {
+  return code === chars.$SEMICOLON || chars.isAsciiLetter(code) || chars.isDigit(code);
 }
 
 function isExpansionCaseStart(peek: number): boolean {
