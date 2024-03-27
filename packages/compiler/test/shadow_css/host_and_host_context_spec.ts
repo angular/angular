@@ -9,7 +9,7 @@
 import {shim} from './utils';
 
 describe('ShadowCss, :host and :host-context', () => {
-  describe((':host'), () => {
+  describe(':host', () => {
     it('should handle no context', () => {
       expect(shim(':host {}', 'contenta', 'a-host')).toEqualCss('[a-host] {}');
     });
@@ -93,7 +93,7 @@ describe('ShadowCss, :host and :host-context', () => {
     });
   });
 
-  describe((':host-context'), () => {
+  describe(':host-context', () => {
     it('should handle tag selector', () => {
       expect(shim(':host-context(div) {}', 'contenta', 'a-host'))
           .toEqualCss('div[a-host], div [a-host] {}');
@@ -174,7 +174,27 @@ describe('ShadowCss, :host and :host-context', () => {
     });
   });
 
-  describe((':host-context and :host combination selector'), () => {
+  it('should pseudo class function with multiple arguments', () => {
+    expect(shim('host:is(.foo) {}', 'contenta', 'a-host')).toEqualCss('host[contenta]:is(.foo) {}');
+    expect(shim(':is(.dark :host) {}', 'contenta', 'a-host')).toEqualCss(':is(.dark [a-host]) {}');
+
+    // We noticed some unexpected behaviors that were happening either on dev or on prod builds.
+    // It's important to test with and without is a space before child combinator as the optimizer
+    // removes them.
+    expect(shim(':host:is([foo],[foo-2])>div.example-2 {}', 'contenta', 'a-host'))
+        .toEqualCss('[a-host]:is([foo],[foo-2]) > div.example-2[contenta] {}');
+
+    expect(shim(':host:is([foo], [foo-2]) > div.example-2 {}', 'contenta', 'a-host'))
+        .toEqualCss('[a-host]:is([foo], [foo-2]) > div.example-2[contenta] {}');
+
+    expect(shim(':host:has([foo],[foo-2])>div.example-2 {}', 'contenta', 'a-host'))
+        .toEqualCss('[a-host]:has([foo],[foo-2]) > div.example-2[contenta] {}');
+
+    expect(shim(':host:has([foo], [foo-2]) > div.example-2 {}', 'contenta', 'a-host'))
+        .toEqualCss('[a-host]:has([foo], [foo-2]) > div.example-2[contenta] {}');
+  });
+
+  describe(':host-context and :host combination selector', () => {
     it('should handle selectors on the same element', () => {
       expect(shim(':host-context(div):host(.x) > .y {}', 'contenta', 'a-host'))
           .toEqualCss('div.x[a-host] > .y[contenta] {}');
@@ -195,7 +215,6 @@ describe('ShadowCss, :host and :host-context', () => {
         `;
       expect(shim(input, 'contenta', 'a-host'))
           .toEqualCss(
-
               'outer1 bar[a-host] {} ' +
               'outer2 foo[a-host] {}');
     });
