@@ -107,6 +107,22 @@ export class DecimalPipe implements PipeTransform {
     locale ||= this._locale;
 
     try {
+      // Handle integer and fraction part of decimal fraction string separately
+      // due to javascript floating point limitation.
+      // e.g. '123456789.123456789'
+      if (typeof value === 'string' && value.includes('.')) {
+        if (!isStringNumber(value)) {
+          throw invalidNumber(value);
+        }
+        const parts = value.split('.');
+        const integerPart = parts[0];
+        const fractionPart = `0.${parts[1]}`;
+
+        const integerStr = formatNumber(strToNumber(integerPart), locale, digitsInfo).split('.')[0];
+        const fractionStr = formatNumber(strToNumber(fractionPart), locale, digitsInfo).split('.')[1];
+
+        return fractionStr ? `${integerStr}.${fractionStr}` : integerStr;
+      }
       const num = strToNumber(value);
       return formatNumber(num, locale, digitsInfo);
     } catch (error) {
@@ -313,11 +329,19 @@ function isValue(value: number | string | null | undefined): value is number | s
  */
 function strToNumber(value: number | string): number {
   // Convert strings to numbers
-  if (typeof value === 'string' && !isNaN(Number(value) - parseFloat(value))) {
+  if (isStringNumber(value)) {
     return Number(value);
   }
   if (typeof value !== 'number') {
-    throw new Error(`${value} is not a number`);
+    throw invalidNumber(value);
   }
   return value;
+}
+
+function isStringNumber(value: number|string): boolean {
+  return typeof value === 'string' && !isNaN(Number(value) - parseFloat(value));
+}
+
+function invalidNumber(value: number|string): Error {
+  return new Error(`${value} is not a number`);
 }
