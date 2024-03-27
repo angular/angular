@@ -7,7 +7,7 @@
  */
 
 import {EventEmitter, ɵRuntimeError as RuntimeError, ɵWritable as Writable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 import {asyncValidatorsDroppedWithOptsWarning, missingControlError, missingControlValueError, noControlsError} from '../directives/reactive_errors';
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from '../directives/validators';
@@ -64,6 +64,63 @@ export const DISABLED = 'DISABLED';
  * @publicApi
  */
 export type FormControlStatus = 'VALID'|'INVALID'|'PENDING'|'DISABLED';
+
+
+/**
+ * Base class for every event sent by `AbstractControl.events()`
+ *
+ * @publicApi
+ */
+export abstract class ControlEvent<T = any> {
+  /**
+   * Form control from which this event is originated.
+   */
+  public abstract readonly source: AbstractControl<unknown>;
+}
+
+/**
+ * Event fired when the value of a control changes.
+ *
+ * @publicApi
+ */
+export class ValueChangeEvent<T> extends ControlEvent<T> {
+  constructor(public readonly value: T, public readonly source: AbstractControl) {
+    super();
+  }
+}
+
+/**
+ * Event fired when the control's pristine state changes (pristine <=> dirty).
+ *
+ * @publicApi
+ */
+export class PristineChangeEvent extends ControlEvent {
+  constructor(public readonly pristine: boolean, public readonly source: AbstractControl) {
+    super();
+  }
+}
+
+/**
+ * Event fired when the control's touched status changes (touched <=> untouched).
+ *
+ * @publicApi
+ */
+export class TouchedChangeEvent extends ControlEvent {
+  constructor(public readonly touched: boolean, public readonly source: AbstractControl) {
+    super();
+  }
+}
+
+/**
+ * Event fired when the control's status changes.
+ *
+ * @publicApi
+ */
+export class StatusChangeEvent extends ControlEvent {
+  constructor(public readonly status: FormControlStatus, public readonly source: AbstractControl) {
+    super();
+  }
+}
 
 /**
  * Gets validators from either an options object or given validators.
@@ -583,6 +640,27 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   /**
+   * Exposed as observable, see below.
+   *
+   * @internal
+   */
+  private readonly _events = new Subject<ControlEvent<TValue>>();
+
+  /**
+   * A multicasting observable that emits an event every time the state of the control changes.
+   * It emits for value, status, pristine or touched changes.
+   *
+   * **Note**: On value change, the emit happens right after a value of this control is updated. The
+   * value of a parent control (for example if this FormControl is a part of a FormGroup) is updated
+   * later, so accessing a value of a parent control (using the `value` property) from the callback
+   * of this event might result in getting a value that has not been updated yet. Subscribe to the
+   * `events` of the parent control instead.
+   * For other event types, the events are emitted after the parent control has been updated.
+   *
+   */
+  public readonly events = this._events.asObservable();
+
+  /**
    * A multicasting observable that emits an event every time the value of the control changes, in
    * the UI or programmatically. It also emits an event each time you call enable() or disable()
    * without passing along {emitEvent: false} as a function argument.
@@ -592,6 +670,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * accessing a value of a parent control (using the `value` property) from the callback of this
    * event might result in getting a value that has not been updated yet. Subscribe to the
    * `valueChanges` event of the parent control instead.
+   *
+   * TODO: this should be piped from events() but is breaking in G3
    */
   public readonly valueChanges!: Observable<TValue>;
 
@@ -602,6 +682,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * @see {@link FormControlStatus}
    * @see {@link AbstractControl.status}
    *
+   * TODO: this should be piped from events() but is breaking in G3
    */
   public readonly statusChanges!: Observable<FormControlStatus>;
 
@@ -796,22 +877,18 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
    */
-  markAsTouched(opts: {onlySelf?: boolean} = {}): void {
-    (this as Writable<this>).touched = true;
-
-    if (this._parent && !opts.onlySelf) {
-      this._parent.markAsTouched(opts);
-    }
+  markAsTouched(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    this._markAsTouched(opts, this);
   }
 
   /**
    * Marks the control and all its descendant controls as `touched`.
    * @see {@link markAsTouched()}
    */
-  markAllAsTouched(): void {
-    this.markAsTouched({onlySelf: true});
+  markAllAsTouched(opts: {emitEvent?: boolean} = {}): void {
+    this._markAsTouched({onlySelf: true, emitEvent: opts.emitEvent}, this);
 
-    this._forEachChild((control: AbstractControl) => control.markAllAsTouched());
+    this._forEachChild((control: AbstractControl) => control.markAllAsTouched(opts));
   }
 
   /**
@@ -829,17 +906,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
    */
-  markAsUntouched(opts: {onlySelf?: boolean} = {}): void {
-    (this as Writable<this>).touched = false;
-    this._pendingTouched = false;
-
-    this._forEachChild((control: AbstractControl) => {
-      control.markAsUntouched({onlySelf: true});
-    });
-
-    if (this._parent && !opts.onlySelf) {
-      this._parent._updateTouched(opts);
-    }
+  markAsUntouched(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    this._markAsUntouched(opts, this);
   }
 
   /**
@@ -854,13 +922,12 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * and emits events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), the `events`
+   * observable emits a `PristineChangeEvent` with the `pristine` property being `false`.
+   * When false, no events are emitted.
    */
-  markAsDirty(opts: {onlySelf?: boolean} = {}): void {
-    (this as Writable<this>).pristine = false;
-
-    if (this._parent && !opts.onlySelf) {
-      this._parent.markAsDirty(opts);
-    }
+  markAsDirty(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    this._markAsDirty(opts, this);
   }
 
   /**
@@ -878,18 +945,12 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), the `events`
+   * observable emits a `PristineChangeEvent` with the `pristine` property being `true`.
+   * When false, no events are emitted.
    */
-  markAsPristine(opts: {onlySelf?: boolean} = {}): void {
-    (this as Writable<this>).pristine = true;
-    this._pendingDirty = false;
-
-    this._forEachChild((control: AbstractControl) => {
-      control.markAsPristine({onlySelf: true});
-    });
-
-    if (this._parent && !opts.onlySelf) {
-      this._parent._updatePristine(opts);
-    }
+  markAsPristine(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    this._markAsPristine(opts, this);
   }
 
   /**
@@ -909,15 +970,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    */
   markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    (this as Writable<this>).status = PENDING;
-
-    if (opts.emitEvent !== false) {
-      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
-    }
-
-    if (this._parent && !opts.onlySelf) {
-      this._parent.markAsPending(opts);
-    }
+    this._markAsPending(opts, this);
   }
 
   /**
@@ -938,24 +991,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * When false, no events are emitted.
    */
   disable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    // If parent has been marked artificially dirty we don't want to re-calculate the
-    // parent's dirtiness based on the children.
-    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
-
-    (this as Writable<this>).status = DISABLED;
-    (this as Writable<this>).errors = null;
-    this._forEachChild((control: AbstractControl) => {
-      control.disable({...opts, onlySelf: true});
-    });
-    this._updateValue();
-
-    if (opts.emitEvent !== false) {
-      (this.valueChanges as EventEmitter<TValue>).emit(this.value);
-      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
-    }
-
-    this._updateAncestors({...opts, skipPristineCheck});
-    this._onDisabledChange.forEach((changeFn) => changeFn(true));
+    this._disable(opts, this);
   }
 
   /**
@@ -977,28 +1013,18 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * When false, no events are emitted.
    */
   enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    // If parent has been marked artificially dirty we don't want to re-calculate the
-    // parent's dirtiness based on the children.
-    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
-
-    (this as Writable<this>).status = VALID;
-    this._forEachChild((control: AbstractControl) => {
-      control.enable({...opts, onlySelf: true});
-    });
-    this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
-
-    this._updateAncestors({...opts, skipPristineCheck});
-    this._onDisabledChange.forEach((changeFn) => changeFn(false));
+    this._enable(opts);
   }
 
   private _updateAncestors(
-      opts: {onlySelf?: boolean, emitEvent?: boolean, skipPristineCheck?: boolean}): void {
+      opts: {onlySelf?: boolean, emitEvent?: boolean, skipPristineCheck?: boolean},
+      changedControl: AbstractControl): void {
     if (this._parent && !opts.onlySelf) {
       this._parent.updateValueAndValidity(opts);
       if (!opts.skipPristineCheck) {
-        this._parent._updatePristine();
+        this._parent._updatePristine({}, changedControl);
       }
-      this._parent._updateTouched();
+      this._parent._updateTouched({}, changedControl);
     }
   }
 
@@ -1049,27 +1075,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * When false, no events are emitted.
    */
   updateValueAndValidity(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._setInitialStatus();
-    this._updateValue();
-
-    if (this.enabled) {
-      this._cancelExistingSubscription();
-      (this as Writable<this>).errors = this._runValidator();
-      (this as Writable<this>).status = this._calculateStatus();
-
-      if (this.status === VALID || this.status === PENDING) {
-        this._runAsyncValidator(opts.emitEvent);
-      }
-    }
-
-    if (opts.emitEvent !== false) {
-      (this.valueChanges as EventEmitter<TValue>).emit(this.value);
-      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
-    }
-
-    if (this._parent && !opts.onlySelf) {
-      this._parent.updateValueAndValidity(opts);
-    }
+    this._updateValueAndValidity(opts, this);
   }
 
   /** @internal */
@@ -1138,7 +1144,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    */
   setErrors(errors: ValidationErrors|null, opts: {emitEvent?: boolean} = {}): void {
     (this as Writable<this>).errors = errors;
-    this._updateControlsErrors(opts.emitEvent !== false);
+    this._updateControlsErrors(opts.emitEvent !== false, this);
   }
 
   /**
@@ -1278,15 +1284,16 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   /** @internal */
-  _updateControlsErrors(emitEvent: boolean): void {
+  _updateControlsErrors(emitEvent: boolean, changedControl: AbstractControl): void {
     (this as Writable<this>).status = this._calculateStatus();
 
     if (emitEvent) {
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+      this._events.next(new StatusChangeEvent(this.status, changedControl));
     }
 
     if (this._parent) {
-      this._parent._updateControlsErrors(emitEvent);
+      this._parent._updateControlsErrors(emitEvent, changedControl);
     }
   }
 
@@ -1336,20 +1343,180 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   }
 
   /** @internal */
-  _updatePristine(opts: {onlySelf?: boolean} = {}): void {
-    (this as Writable<this>).pristine = !this._anyControlsDirty();
+  _updateValueAndValidity(
+      opts: {onlySelf?: boolean, emitEvent?: boolean}, changedControl: AbstractControl): void {
+    this._setInitialStatus();
+    this._updateValue();
+
+    if (this.enabled) {
+      this._cancelExistingSubscription();
+      (this as Writable<this>).errors = this._runValidator();
+      (this as Writable<this>).status = this._calculateStatus();
+
+      if (this.status === VALID || this.status === PENDING) {
+        this._runAsyncValidator(opts.emitEvent);
+      }
+    }
+
+    if (opts.emitEvent !== false) {
+      this._events.next(new ValueChangeEvent<TValue>(this.value, changedControl));
+      this._events.next(new StatusChangeEvent(this.status, changedControl));
+      (this.valueChanges as EventEmitter<TValue>).emit(this.value);
+      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+    }
 
     if (this._parent && !opts.onlySelf) {
-      this._parent._updatePristine(opts);
+      this._parent._updateValueAndValidity(opts, changedControl);
     }
   }
 
   /** @internal */
-  _updateTouched(opts: {onlySelf?: boolean} = {}): void {
-    (this as Writable<this>).touched = this._anyControlsTouched();
+  _enable(opts: {onlySelf?: boolean, emitEvent?: boolean}): void {
+    // If parent has been marked artificially dirty we don't want to re-calculate the
+    // parent's dirtiness based on the children.
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+
+    (this as Writable<this>).status = VALID;
+    this._forEachChild((control: AbstractControl) => {
+      control.enable({...opts, onlySelf: true});
+    });
+    this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
+
+    this._updateAncestors({...opts, skipPristineCheck}, this);
+    this._onDisabledChange.forEach((changeFn) => changeFn(false));
+  }
+
+  /** @internal */
+  _disable(opts: {onlySelf?: boolean, emitEvent?: boolean}, changedControl: AbstractControl): void {
+    // If parent has been marked artificially dirty we don't want to re-calculate the
+    // parent's dirtiness based on the children.
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+
+    (this as Writable<this>).status = DISABLED;
+    (this as Writable<this>).errors = null;
+    this._forEachChild((control: AbstractControl) => {
+      control.disable({...opts, onlySelf: true});
+    });
+    this._updateValue();
+
+    if (opts.emitEvent !== false) {
+      this._events.next(new StatusChangeEvent(this.status, changedControl));
+      this._events.next(new ValueChangeEvent(this.value, changedControl));
+      (this.valueChanges as EventEmitter<TValue>).emit(this.value);
+      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+    }
+
+    this._updateAncestors({...opts, skipPristineCheck}, this);
+    this._onDisabledChange.forEach((changeFn) => changeFn(true));
+  }
+
+  /** @internal */
+  _markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean}, changedControl: AbstractControl):
+      void {
+    (this as Writable<this>).status = PENDING;
+
+    if (opts.emitEvent !== false) {
+      this._events.next(new StatusChangeEvent(this.status, changedControl));
+      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
+    }
 
     if (this._parent && !opts.onlySelf) {
-      this._parent._updateTouched(opts);
+      this._parent._markAsPending(opts, changedControl);
+    }
+  }
+
+  /** @internal */
+  _markAsDirty(opts: {onlySelf?: boolean, emitEvent?: boolean}, changedControl: AbstractControl):
+      void {
+    const changed = this.pristine === true;
+    (this as Writable<this>).pristine = false;
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._markAsDirty(opts, changedControl);
+    }
+
+    if (changed && opts.emitEvent !== false) {
+      this._events.next(new PristineChangeEvent(false, changedControl));
+    }
+  }
+
+  /** @internal */
+  _markAsPristine(opts: {onlySelf?: boolean, emitEvent?: boolean}, changedControl: AbstractControl):
+      void {
+    const changed = this.pristine === false;
+    (this as Writable<this>).pristine = true;
+    this._pendingDirty = false;
+
+    this._forEachChild((control: AbstractControl) => {
+      control.markAsPristine({onlySelf: true, emitEvent: opts.emitEvent});
+    });
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updatePristine(opts, this);
+    }
+
+    if (changed && opts.emitEvent !== false) {
+      this._events.next(new PristineChangeEvent(true, changedControl));
+    }
+  }
+
+  /** @internal */
+  _updatePristine(opts: {onlySelf?: boolean}, changedControl: AbstractControl): void {
+    const newPristine = !this._anyControlsDirty();
+    const changed = this.pristine !== newPristine;
+    (this as Writable<this>).pristine = newPristine;
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updatePristine(opts, changedControl);
+    }
+
+    if (changed) {
+      this._events.next(new PristineChangeEvent(this.pristine, changedControl));
+    }
+  }
+
+  /** @internal */
+  _markAsTouched(opts: {onlySelf?: boolean, emitEvent?: boolean}, changedControl: AbstractControl):
+      void {
+    const changed = this.touched === false;
+    (this as Writable<this>).touched = true;
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._markAsTouched(opts, changedControl);
+    }
+
+    if (changed && opts.emitEvent !== false) {
+      this._events.next(new TouchedChangeEvent(true, changedControl));
+    }
+  }
+
+  /** @internal */
+  _markAsUntouched(
+      opts: {onlySelf?: boolean, emitEvent?: boolean}, changedControl: AbstractControl|null): void {
+    const changed = this.touched === true;
+    (this as Writable<this>).touched = false;
+    this._pendingTouched = false;
+
+    this._forEachChild((control: AbstractControl) => {
+      control._markAsUntouched({onlySelf: true, emitEvent: opts.emitEvent}, control);
+    });
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updateTouched(opts, changedControl);
+    }
+    if (changedControl && changed && opts.emitEvent !== false) {
+      this._events.next(new TouchedChangeEvent(false, changedControl));
+    }
+  }
+  /** @internal */
+  _updateTouched(opts: {onlySelf?: boolean} = {}, changedControl: AbstractControl|null): void {
+    (this as Writable<this>).touched = this._anyControlsTouched();
+    if (changedControl) {
+      this._events.next(new TouchedChangeEvent(this.touched, changedControl));
+    }
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updateTouched(opts, changedControl);
     }
   }
 
