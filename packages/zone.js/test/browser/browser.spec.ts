@@ -799,7 +799,7 @@ describe('Zone', function() {
                expect(testFn).not.toThrow();
              }));
 
-          it('window.onerror callback signiture should be (message, source, lineno, colno, error)',
+          it('window.onerror callback signature should be (message, source, lineno, colno, error)',
              ifEnvSupportsWithDone(canPatchOnProperty(window, 'onerror'), function(done: DoneFn) {
                const oriOnError = window.onerror;
                let testError = new Error('testError');
@@ -1320,7 +1320,7 @@ describe('Zone', function() {
          }));
 
 
-      it('should support add multipe listeners with AddEventListenerOptions once setting and same capture after normal listener',
+      it('should support add multiple listeners with AddEventListenerOptions once setting and same capture after normal listener',
          ifEnvSupports(supportEventListenerOptions, function() {
            let logs: string[] = [];
 
@@ -1342,7 +1342,7 @@ describe('Zone', function() {
            expect(logs).toEqual(['click']);
          }));
 
-      it('should support add multipe listeners with AddEventListenerOptions once setting and mixed capture after normal listener',
+      it('should support add multiple listeners with AddEventListenerOptions once setting and mixed capture after normal listener',
          ifEnvSupports(supportEventListenerOptions, function() {
            let logs: string[] = [];
 
@@ -1364,7 +1364,7 @@ describe('Zone', function() {
            expect(logs).toEqual(['click']);
          }));
 
-      it('should support add multipe listeners with AddEventListenerOptions once setting before normal listener',
+      it('should support add multiple listeners with AddEventListenerOptions once setting before normal listener',
          ifEnvSupports(supportEventListenerOptions, function() {
            let logs: string[] = [];
 
@@ -1387,7 +1387,7 @@ describe('Zone', function() {
            expect(logs).toEqual(['click']);
          }));
 
-      it('should support add multipe listeners with AddEventListenerOptions once setting with same capture before normal listener',
+      it('should support add multiple listeners with AddEventListenerOptions once setting with same capture before normal listener',
          ifEnvSupports(supportEventListenerOptions, function() {
            let logs: string[] = [];
 
@@ -1410,7 +1410,7 @@ describe('Zone', function() {
            expect(logs).toEqual(['click']);
          }));
 
-      it('should support add multipe listeners with AddEventListenerOptions once setting with mixed capture before normal listener',
+      it('should support add multiple listeners with AddEventListenerOptions once setting with mixed capture before normal listener',
          ifEnvSupports(supportEventListenerOptions, function() {
            let logs: string[] = [];
 
@@ -2044,6 +2044,41 @@ describe('Zone', function() {
           button.setAttribute('onclick', 'return');
           expect(button.onclick).not.toBe(null);
         });
+      });
+
+      it('should not remove onEventListener when removing capture listener', function() {
+        const button = document.createElement('button');
+        document.body.append(button);
+        const createEvt = () => {
+          const evt = document.createEvent('Event');
+          evt.initEvent('click', true, true);
+          return evt;
+        };
+        let logs: string[] = [];
+        const onClickHandler = () => logs.push('onclick');
+        button.onclick = onClickHandler;
+        let evt = createEvt();
+        button.dispatchEvent(evt);
+        expect(logs).toEqual(['onclick']);
+        logs = [];
+        const listener = () => logs.push('click listener');
+        button.addEventListener('click', listener, {capture: true});
+        evt = createEvt();
+        button.dispatchEvent(evt);
+        expect(logs.sort()).toEqual(['onclick', 'click listener'].sort());
+        logs = [];
+        button.removeEventListener('click', listener, true);
+        evt = createEvt();
+        button.dispatchEvent(evt);
+        expect(logs).toEqual(['onclick']);
+        expect(button.onclick).toBe(onClickHandler);
+        button.onclick = null;
+        logs = [];
+        evt = createEvt();
+        button.dispatchEvent(evt);
+        expect(logs).toEqual([]);
+        expect(button.onclick).toBe(null);
+        document.body.removeChild(button);
       });
 
       describe('should be able to remove eventListener during eventListener callback', function() {

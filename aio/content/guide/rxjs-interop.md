@@ -33,6 +33,10 @@ export class Ticker {
 Like the `async` pipe, `toSignal` subscribes to the Observable immediately, which may trigger side effects. The subscription created by
 `toSignal` automatically unsubscribes from the given Observable upon destruction of the component in which `toSignal` is called.
 
+### Injection context
+
+`toSignal` by default needs to run in an [injection context](/guide/dependency-injection-context), such as during construction of a component or service. If an injection context is not available, an `Injector` can instead be explicitly specified.
+
 ### Initial values
 
 Observables may not produce a value synchronously on subscription, but signals always require a current value. There are several ways to deal with this "initial" value of `toSignal` signals.

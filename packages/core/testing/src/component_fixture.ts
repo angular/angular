@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks,} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -62,6 +62,7 @@ export abstract class ComponentFixture<T> {
   protected readonly _appRef = inject(ApplicationRef);
   /** @internal */
   protected readonly _testAppRef = this._appRef as unknown as TestAppRef;
+  private readonly pendingTasks = inject(PendingTasks);
 
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
@@ -99,7 +100,9 @@ export abstract class ComponentFixture<T> {
    * Return whether the fixture is currently stable or has async tasks that have not been completed
    * yet.
    */
-  abstract isStable(): boolean;
+  isStable(): boolean {
+    return !this.pendingTasks.hasPendingTasks.value;
+  }
 
   /**
    * Get a promise that resolves when the fixture is stable.
@@ -107,7 +110,12 @@ export abstract class ComponentFixture<T> {
    * This can be used to resume testing after events have triggered asynchronous activity or
    * asynchronous change detection.
    */
-  abstract whenStable(): Promise<any>;
+  whenStable(): Promise<any> {
+    if (this.isStable()) {
+      return Promise.resolve(false);
+    }
+    return this._appRef.isStable.pipe(first(stable => stable)).toPromise();
+  }
 
   /**
    * Retrieves all defer block fixtures in the component fixture.
@@ -165,7 +173,6 @@ export abstract class ComponentFixture<T> {
 export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   private readonly disableDetectChangesError =
       inject(AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, {optional: true}) ?? false;
-  private readonly pendingTasks = inject(PendingTasks);
 
   initialize(): void {
     this._appRef.attachView(this.componentRef.hostView);
@@ -188,17 +195,6 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
     this._effectRunner.flush();
   }
 
-  override isStable(): boolean {
-    return !this.pendingTasks.hasPendingTasks.value;
-  }
-
-  override whenStable(): Promise<boolean> {
-    if (this.isStable()) {
-      return Promise.resolve(false);
-    }
-    return this._appRef.isStable.pipe(first((stable) => stable)).toPromise().then(() => true);
-  }
-
   override autoDetectChanges(autoDetect?: boolean|undefined): void {
     throw new Error('Cannot call autoDetectChanges when using change detection scheduling.');
   }
@@ -216,9 +212,6 @@ interface TestAppRef {
 export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private _subscriptions = new Subscription();
   private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
-  private _isStable: boolean = true;
-  private _promise: Promise<boolean>|null = null;
-  private _resolve: ((result: boolean) => void)|null = null;
   private afterTickSubscription: Subscription|undefined = undefined;
   private beforeRenderSubscription: Subscription|undefined = undefined;
 
@@ -232,36 +225,6 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
-      this._subscriptions.add(
-          this._ngZone.onUnstable.subscribe({
-            next: () => {
-              this._isStable = false;
-            },
-          }),
-      );
-      this._subscriptions.add(
-          this._ngZone.onStable.subscribe({
-            next: () => {
-              this._isStable = true;
-              // Check whether there is a pending whenStable() completer to resolve.
-              if (this._promise !== null) {
-                // If so check whether there are no pending macrotasks before resolving.
-                // Do this check in the next tick so that ngZone gets a chance to update the state
-                // of pending macrotasks.
-                queueMicrotask(() => {
-                  if (!this._ngZone.hasPendingMacrotasks) {
-                    if (this._promise !== null) {
-                      this._resolve!(true);
-                      this._resolve = null;
-                      this._promise = null;
-                    }
-                  }
-                });
-              }
-            },
-          }),
-      );
-
       this._subscriptions.add(
           this._ngZone.onError.subscribe({
             next: (error: any) => {
@@ -285,23 +248,6 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
     // Run any effects that were created/dirtied during change detection. Such effects might become
     // dirty in response to input signals changing.
     this._effectRunner.flush();
-  }
-
-  override isStable(): boolean {
-    return this._isStable && !this._ngZone.hasPendingMacrotasks;
-  }
-
-  override whenStable(): Promise<boolean> {
-    if (this.isStable()) {
-      return Promise.resolve(false);
-    } else if (this._promise !== null) {
-      return this._promise;
-    } else {
-      this._promise = new Promise((res) => {
-        this._resolve = res;
-      });
-      return this._promise;
-    }
   }
 
   override autoDetectChanges(autoDetect = true): void {
@@ -334,7 +280,7 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
               (this.componentRef.hostView as any).notifyErrorHandler,
           );
         } catch (e: unknown) {
-          // If an error ocurred during change detection, remove the test view from the application
+          // If an error occurred during change detection, remove the test view from the application
           // ref tracking. Note that this isn't exactly desirable but done this way because of how
           // things used to work with `autoDetect` and uncaught errors. Ideally we would surface
           // this error to the error handler instead and continue refreshing the view like

@@ -323,20 +323,8 @@ export function isDollarEvent(n: TmplAstNode|AST): n is PropertyRead {
       n.receiver instanceof ImplicitReceiver && !(n.receiver instanceof ThisReceiver);
 }
 
-/**
- * Returns a new array formed by applying a given callback function to each element of the array,
- * and then flattening the result by one level.
- */
-export function flatMap<T, R>(items: T[]|readonly T[], f: (item: T) => R[] | readonly R[]): R[] {
-  const results: R[] = [];
-  for (const x of items) {
-    results.push(...f(x));
-  }
-  return results;
-}
-
 export function isTypeScriptFile(fileName: string): boolean {
-  return fileName.endsWith('.ts');
+  return /\.[cm]?tsx?$/i.test(fileName);
 }
 
 export function isExternalTemplate(fileName: string): boolean {

@@ -10,9 +10,10 @@ import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../../../imports';
 import {InputMapping} from '../../../metadata';
-import {ClassMember, ReflectionHost} from '../../../reflection';
+import {ClassMember, ClassMemberAccessLevel, ReflectionHost} from '../../../reflection';
 
-import {tryParseInitializerApiMember} from './initializer_functions';
+import {validateAccessOfInitializerApiMember} from './initializer_function_access';
+import {tryParseInitializerApi} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
 
 /**
@@ -20,13 +21,33 @@ import {parseAndValidateInputAndOutputOptions} from './input_output_parse_option
  * input mapping if possible.
  */
 export function tryParseSignalInputMapping(
-    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
+    member: Pick<ClassMember, 'name'|'value'|'accessLevel'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): InputMapping|null {
-  const signalInput = tryParseInitializerApiMember(
-      [{functionName: 'input', owningModule: '@angular/core'}], member, reflector, importTracker);
+  if (member.value === null) {
+    return null;
+  }
+
+  const signalInput = tryParseInitializerApi(
+      [{
+        functionName: 'input',
+        owningModule: '@angular/core',
+        // Inputs are accessed from parents, via the `property` instruction.
+        // Conceptually, the fields need to be publicly readable, but in practice,
+        // accessing `protected` or `private` members works at runtime, so we can allow
+        // cases where the input is intentionally not part of the public API, programmatically.
+        // Note: `private` is omitted intentionally as this would be a conceptual confusion point.
+        allowedAccessLevels: [
+          ClassMemberAccessLevel.PublicWritable,
+          ClassMemberAccessLevel.PublicReadonly,
+          ClassMemberAccessLevel.Protected,
+        ],
+      }],
+      member.value, reflector, importTracker);
   if (signalInput === null) {
     return null;
   }
+
+  validateAccessOfInitializerApiMember(signalInput, member);
 
   const optionsNode = (signalInput.isRequired ? signalInput.call.arguments[0] :
                                                 signalInput.call.arguments[1]) as ts.Expression |

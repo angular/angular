@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectionToken} from '../../di/injection_token';
+
 export const enum NotificationType {
   RefreshViews,
   AfterRenderHooks,
@@ -16,4 +18,13 @@ export const enum NotificationType {
  */
 export abstract class ChangeDetectionScheduler {
   abstract notify(source?: NotificationType): void;
+  abstract tick(shouldRefreshViews: boolean): void;
 }
+
+/** Token used to indicate if zoneless was enabled via provideZonelessChangeDetection(). */
+export const ZONELESS_ENABLED = new InjectionToken<boolean>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless enabled' : '',
+    {providedIn: 'root', factory: () => false});
+
+export const ZONELESS_SCHEDULER_DISABLED = new InjectionToken<boolean>(
+    typeof ngDevMode === 'undefined' || ngDevMode ? 'scheduler disabled' : '');

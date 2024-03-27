@@ -10,7 +10,7 @@
 
 export {forwardRefResolver, getAngularDecorators, isAngularDecorator, NoopReferencesRegistry, ReferencesRegistry, ResourceLoader, ResourceLoaderContext} from './common';
 export {ComponentDecoratorHandler} from './component';
-export {DirectiveDecoratorHandler, queryDecoratorNames, QueryFunctionName, tryParseInitializerBasedOutput, tryParseSignalInputMapping, tryParseSignalModelMapping, tryParseSignalQueryFromInitializer} from './directive';
+export {DirectiveDecoratorHandler, InitializerApiFunction, queryDecoratorNames, QueryFunctionName, tryParseInitializerApi, tryParseInitializerBasedOutput, tryParseSignalInputMapping, tryParseSignalModelMapping, tryParseSignalQueryFromInitializer} from './directive';
 export {NgModuleDecoratorHandler} from './ng_module';
 export {InjectableDecoratorHandler} from './src/injectable';
 export {PipeDecoratorHandler} from './src/pipe';

@@ -105,6 +105,9 @@
     "name": "ChangeDetectionScheduler"
   },
   {
+    "name": "ChangeDetectionSchedulerImpl"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -471,6 +474,9 @@
     "name": "NoneEncapsulationDomRenderer"
   },
   {
+    "name": "NoopNgZone"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -745,6 +751,12 @@
   },
   {
     "name": "XSS_SECURITY_URL"
+  },
+  {
+    "name": "ZONELESS_ENABLED"
+  },
+  {
+    "name": "ZONELESS_SCHEDULER_DISABLED"
   },
   {
     "name": "ZoneStablePendingTask"
@@ -1231,6 +1243,9 @@
   },
   {
     "name": "getBootstrapListener"
+  },
+  {
+    "name": "getCallbackScheduler"
   },
   {
     "name": "getChildRouteGuards"

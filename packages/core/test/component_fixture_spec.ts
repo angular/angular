@@ -133,7 +133,6 @@ describe('ComponentFixture', () => {
     const element = componentFixture.debugElement.children[0];
     dispatchEvent(element.nativeElement, 'click');
 
-    expect(componentFixture.isStable()).toBe(true);
     expect(componentFixture.nativeElement).toHaveText('11');
   });
 

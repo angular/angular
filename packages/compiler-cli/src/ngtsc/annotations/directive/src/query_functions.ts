@@ -12,10 +12,11 @@ import ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
 import {ImportedSymbolsTracker} from '../../../imports';
-import {ClassMember, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
+import {ClassMember, ClassMemberAccessLevel, ReflectionHost, reflectObjectLiteral} from '../../../reflection';
 import {tryUnwrapForwardRef} from '../../common';
 
-import {InitializerApiFunction, tryParseInitializerApiMember} from './initializer_functions';
+import {validateAccessOfInitializerApiMember} from './initializer_function_access';
+import {tryParseInitializerApi} from './initializer_functions';
 
 /** Possible query initializer API functions. */
 export type QueryFunctionName = 'viewChild'|'contentChild'|'viewChildren'|'contentChildren';
@@ -23,6 +24,23 @@ export type QueryFunctionName = 'viewChild'|'contentChild'|'viewChildren'|'conte
 /** Possible names of query initializer APIs. */
 const queryFunctionNames: QueryFunctionName[] =
     ['viewChild', 'viewChildren', 'contentChild', 'contentChildren'];
+
+/** Possible query initializer API functions. */
+const initializerFns = queryFunctionNames.map(
+    fnName => ({
+      functionName: fnName,
+      owningModule: '@angular/core' as const,
+      // Queries are accessed from within static blocks, via the query definition functions.
+      // Conceptually, the fields could access private members— even ES private fields.
+      // Support for ES private fields requires special caution and complexity when partial
+      // output is linked— hence not supported. TS private members are allowed in static blocks.
+      allowedAccessLevels: [
+        ClassMemberAccessLevel.PublicWritable,
+        ClassMemberAccessLevel.PublicReadonly,
+        ClassMemberAccessLevel.Protected,
+        ClassMemberAccessLevel.Private,
+      ],
+    }));
 
 // The `descendants` option is enabled by default, except for content children.
 const defaultDescendantsValue = (type: QueryFunctionName) => type !== 'contentChildren';
@@ -36,15 +54,19 @@ const defaultDescendantsValue = (type: QueryFunctionName) => type !== 'contentCh
  * @returns Resolved query metadata, or null if no query is declared.
  */
 export function tryParseSignalQueryFromInitializer(
-    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
+    member: Pick<ClassMember, 'name'|'value'|'accessLevel'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker):
     {name: QueryFunctionName, metadata: R3QueryMetadata, call: ts.CallExpression}|null {
-  const initializerFns = queryFunctionNames.map(
-      fnName => ({functionName: fnName, owningModule: '@angular/core' as const}));
-  const query = tryParseInitializerApiMember(initializerFns, member, reflector, importTracker);
+  if (member.value === null) {
+    return null;
+  }
+
+  const query = tryParseInitializerApi(initializerFns, member.value, reflector, importTracker);
   if (query === null) {
     return null;
   }
+
+  validateAccessOfInitializerApiMember(query, member);
 
   const {functionName} = query.api;
   const isSingleQuery = functionName === 'viewChild' || functionName === 'contentChild';

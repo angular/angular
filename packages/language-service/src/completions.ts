@@ -132,11 +132,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
         length: this.node.name.length,
       }
     };
-    let competionKeywords: string[] = [...blocksWithParens, ...blocksWithoutParens];
+    let completionKeywords: string[] = [...blocksWithParens, ...blocksWithoutParens];
     if (this.nodeParent instanceof SwitchBlock) {
-      competionKeywords = ['case', 'default'];
+      completionKeywords = ['case', 'default'];
     }
-    const completionEntries: ts.CompletionEntry[] = competionKeywords.map(
+    const completionEntries: ts.CompletionEntry[] = completionKeywords.map(
         name => ({
           name,
           sortText: `${AsciiSortPriority.First}${name}`,
