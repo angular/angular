@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "ts_library", "tsec_test")
+
+package(default_visibility = ["//visibility:public"])
+
+
+ts_library(
+    name = "event_dispatch",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    module_name = "@angular/core/primitives/event_dispatch"
+)
+
+tsec_test(
+    name = "tsec_test",
+    target = "event_dispatch",
+    tsconfig = "//packages:tsec_config",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]),
+    visibility = ["//visibility:public"],
+)
