@@ -56,8 +56,6 @@ const controlNameBinding: Provider = {
  * form directives has been deprecated in Angular v6 and is scheduled for removal in
  * a future version of Angular.
  *
- * For details, see [Deprecated features](guide/deprecations#ngmodel-with-reactive-forms).
- *
  * @ngModule ReactiveFormsModule
  * @publicApi
  */
