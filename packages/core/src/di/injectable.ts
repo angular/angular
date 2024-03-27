@@ -9,7 +9,7 @@
 import {Type} from '../interface/type';
 import {makeDecorator, TypeDecorator} from '../util/decorators';
 
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider,} from './interface/provider';
 import {compileInjectable} from './jit/injectable';
 
 export {compileInjectable};
@@ -19,7 +19,7 @@ export {compileInjectable};
  *
  * @publicApi
  */
-export type InjectableProvider = ValueSansProvider|ExistingSansProvider|StaticClassSansProvider|
+export type InjectableProvider =|ValueSansProvider|ExistingSansProvider|StaticClassSansProvider|
     ConstructorSansProvider|FactorySansProvider|ClassSansProvider;
 
 /**
@@ -46,13 +46,20 @@ export interface InjectableDecorator {
    *
    * <code-example path="core/di/ts/metadata_spec.ts" region="Injectable"></code-example>
    *
+   * Note: Besides specifying the `providedIn` property, you can set other provider configurations
+   * here, defined by the [InjectableProvider](api/core/InjectableProvider) type. So you can
+   * configure the DI system to use a different class or any other value to associate with this
+   * service.
+   *
    */
   (): TypeDecorator;
-  (options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&
-   InjectableProvider): TypeDecorator;
+  (
+      options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&InjectableProvider,
+      ): TypeDecorator;
   new(): Injectable;
-  new(options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&
-      InjectableProvider): Injectable;
+  new(
+      options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&InjectableProvider,
+      ): Injectable;
 }
 
 /**
@@ -89,5 +96,9 @@ export interface Injectable {
  * @publicApi
  */
 export const Injectable: InjectableDecorator = makeDecorator(
-    'Injectable', undefined, undefined, undefined,
-    (type: Type<any>, meta: Injectable) => compileInjectable(type as any, meta));
+    'Injectable',
+    undefined,
+    undefined,
+    undefined,
+    (type: Type<any>, meta: Injectable) => compileInjectable(type as any, meta),
+);
