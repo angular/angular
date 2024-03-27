@@ -1,4 +1,10 @@
 /**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ * 
  * Records information for later handling of events. This type is
  * shared, and instances of it are passed, between the eventcontract
  * and the dispatcher jsbinary. Therefore, the fields of this type are

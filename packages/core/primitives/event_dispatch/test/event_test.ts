@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as jsactionEvent from '../src/event';
 import {EventType} from '../src/event_type';
 import {KeyCode} from '../src/key_code';

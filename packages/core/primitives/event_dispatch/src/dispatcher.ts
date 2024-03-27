@@ -1,14 +1,21 @@
-import * as jsactionEvent from './/event';
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import * as jsactionEvent from './event';
 import {
   EventInfo,
   EventInfoWrapper,
-} from './/event_info';
-import {EventType} from './/event_type';
-import {replayEvent} from './/replay';
+} from './event_info';
+import {EventType} from './event_type';
+import {replayEvent} from './replay';
 
 import {Attribute as AccessibilityAttribute} from './accessibility';
 import {Char} from './char';
-import * as eventLib from './event';
 import {UnrenamedEventContract} from './eventcontract';
 import {Restriction} from './restriction';
 
@@ -449,7 +456,7 @@ export function registerDispatcher(
  */
 function skipStopPropagation(eventInfoWrapper: EventInfoWrapper) {
   return (
-    eventLib.isGecko &&
+    jsactionEvent.isGecko &&
     (eventInfoWrapper.getTargetElement().tagName === 'INPUT' ||
       eventInfoWrapper.getTargetElement().tagName === 'TEXTAREA') &&
     eventInfoWrapper.getEventType() === EventType.FOCUS

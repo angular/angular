@@ -2,29 +2,9 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 
 ts_library(
-    name = "test_lib",
-    testonly = True,
-    srcs = ["dispatcher_test.ts", "generator_test.ts"],
-    deps = [
-        "//packages/core/primitives/event_dispatch",
-        "//packages/private/testing",
-        "//packages/core/primitives/event_dispatch/test/safevalues/dom",
-        "//packages/core/primitives/event_dispatch/test/safevalues/testing",
-    ],
-)
-
-jasmine_node_test(
-    name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
-    ],
-)
-
-ts_library(
     name = "browser_test_lib",
     testonly = True,
-    srcs = ["event_test.ts", "eventcontract_test.ts"],
+    srcs = ["event_test.ts", "eventcontract_test.ts", "dispatcher_test.ts", "generator_test.ts"],
     deps = [
         "//packages/core/primitives/event_dispatch",
         "//packages/private/testing",

@@ -1,4 +1,10 @@
 /**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ * 
  * @fileoverview Contains the generic interface for iterating over the dom path
  * an event has traveled. These generators are meant to be singletons so you
  * should not construct them yourself. You should use the static factory method

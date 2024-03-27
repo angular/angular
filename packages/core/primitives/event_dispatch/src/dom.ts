@@ -1,7 +1,9 @@
 /**
- * @fileoverview Functions that help jsaction interact with the DOM. We
- * deliberately don't use the closure equivalents here because we want
- * to exercise very tight control over the dependencies.
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 
 /**

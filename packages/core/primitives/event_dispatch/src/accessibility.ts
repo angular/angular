@@ -1,4 +1,12 @@
 /**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * Defines special EventInfo and Event properties used when
  * A11Y_SUPPORT_IN_DISPATCHER is enabled.
  */

@@ -1,7 +1,11 @@
 /**
- * g3-format-changed-lines-during-prettier-version-upgrade
- * All attributes used by jsaction.
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
+
 export enum Attribute {
   /**
    * The jsaction attribute defines a mapping of a DOM event to a

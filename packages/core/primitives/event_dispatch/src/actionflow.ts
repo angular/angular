@@ -1,5 +1,11 @@
 /**
- * @fileoverview An object that represents a user action. Currently
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ * 
+ * An object that represents a user action. Currently
  * used to collect latency statistics for the activity. In order to do
  * this:
  *

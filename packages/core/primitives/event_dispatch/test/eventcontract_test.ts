@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Attribute as AccessibilityAttribute} from '../src/accessibility';
 import * as cache from '../src/cache';
 import {fireCustomEvent} from '../src/custom_events';
@@ -15,9 +23,8 @@ import {
   EventContract,
 } from '../src/eventcontract';
 import {Property} from '../src/property';
-import 'jasmine';
-import {safeElement} from 'safevalues/dom';
-import {testonlyHtml} from 'safevalues/testing/conversions';
+import {safeElement} from './safevalues/dom';
+import {testonlyHtml} from './safevalues/testing';
 import {EventContractMultiContainer} from '../src/event_contract_multi_container';
 import {Restriction} from '../src/restriction';
 

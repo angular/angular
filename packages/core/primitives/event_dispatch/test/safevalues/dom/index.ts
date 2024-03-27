@@ -1,10 +1,13 @@
-import {loadDominoOrNull} from '@angular/private/testing';
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 
 export const safeElement = {
     async setInnerHtml(element: Element, content: string) {
-        // const domino = await loadDominoOrNull();
-        // const window = domino.createWindow(content, '/')!;
-        // element.appendChild(window.document.body);
         element.innerHTML = content;
     }
 };

@@ -1,8 +1,15 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as domGenerator from '../src/generator';
 import {Property} from '../src/property';
-import 'jasmine';
-import {safeElement} from 'safevalues/dom';
-import {testonlyHtml} from 'safevalues/testing/conversions';
+import {safeElement} from './safevalues/dom';
+import {testonlyHtml} from './safevalues/testing';
 
 const domContent = `<div id="container">
 <div id="innercontainer">

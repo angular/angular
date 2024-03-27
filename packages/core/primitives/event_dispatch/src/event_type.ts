@@ -1,4 +1,10 @@
 /**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ * 
  * Names of events that are special to jsaction. These are not all
  * event types that are legal to use in either HTML or the addEvent()
  * API, but these are the ones that are treated specially. All other

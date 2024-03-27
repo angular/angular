@@ -1,6 +1,9 @@
 /**
- * @fileoverview A holding file for high-level configurations of the
- * EventContract implementation.
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
  */
 
 /**
@@ -56,4 +59,3 @@ export const STOP_PROPAGATION = true;
  * native DOM events with an additional type field and an optional payload.
  */
 export const CUSTOM_EVENT_SUPPORT = false;
-
