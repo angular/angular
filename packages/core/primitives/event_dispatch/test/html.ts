@@ -6,4 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export const safeElement = {
+    async setInnerHtml(element: Element, content: string) {
+        element.innerHTML = content;
+    }
+};
+
 export const testonlyHtml = (content: string) => content;

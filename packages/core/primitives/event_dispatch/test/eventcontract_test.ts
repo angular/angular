@@ -28,8 +28,7 @@ import {
   addDeferredA11yClickSupport,
 } from '../src/eventcontract';
 import {Property} from '../src/property';
-import {safeElement} from './safevalues/dom';
-import {testonlyHtml} from './safevalues/testing';
+import {safeElement, testonlyHtml} from './html';
 import {EventContractMultiContainer} from '../src/event_contract_multi_container';
 import {Restriction} from '../src/restriction';
 

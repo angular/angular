@@ -8,8 +8,7 @@
 
 import * as domGenerator from '../src/generator';
 import {Property} from '../src/property';
-import {safeElement} from './safevalues/dom';
-import {testonlyHtml} from './safevalues/testing';
+import {safeElement, testonlyHtml} from './html';
 
 const domContent = `<div id="container">
 <div id="innercontainer">

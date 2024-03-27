@@ -8,7 +8,6 @@
 
 import {Attribute as AccessibilityAttribute} from './accessibility';
 import {Char} from './char';
-import * as eventLib from './event';
 import * as jsactionEvent from './event';
 import {EventInfo, EventInfoWrapper} from './event_info';
 import {EventType} from './event_type';
@@ -453,7 +452,7 @@ export function registerDispatcher(
  */
 function skipStopPropagation(eventInfoWrapper: EventInfoWrapper) {
   return (
-    eventLib.isGecko &&
+    jsactionEvent.isGecko &&
     (eventInfoWrapper.getTargetElement().tagName === 'INPUT' ||
       eventInfoWrapper.getTargetElement().tagName === 'TEXTAREA') &&
     eventInfoWrapper.getEventType() === EventType.FOCUS
