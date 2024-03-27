@@ -9,7 +9,7 @@
 import {DOCUMENT} from '@angular/common';
 import {HttpClient, HttpTransferCacheOptions, provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Component, Injectable, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core';
+import {ApplicationRef, Component, Injectable, PLATFORM_ID, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
@@ -47,6 +47,7 @@ describe('provideClientHydration', () => {
           TestBed.configureTestingModule({
             declarations: [SomeComponent],
             providers: [
+              {provide: PLATFORM_ID, useValue: 'server'},
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
               provideClientHydration(),
@@ -74,6 +75,7 @@ describe('provideClientHydration', () => {
           TestBed.configureTestingModule({
             declarations: [SomeComponent],
             providers: [
+              {provide: PLATFORM_ID, useValue: 'server'},
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
               provideClientHydration(withNoHttpTransferCache()),
@@ -101,6 +103,7 @@ describe('provideClientHydration', () => {
           TestBed.configureTestingModule({
             declarations: [SomeComponent],
             providers: [
+              {provide: PLATFORM_ID, useValue: 'server'},
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
               provideClientHydration(withHttpTransferCacheOptions(

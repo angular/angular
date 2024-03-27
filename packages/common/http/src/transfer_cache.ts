@@ -19,6 +19,7 @@ import {
   ɵperformanceMarkFeature as performanceMarkFeature,
   ɵtruncateMiddle as truncateMiddle,
   ɵwhenStable as whenStable,
+  PLATFORM_ID,
 } from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -29,6 +30,7 @@ import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 import {HttpParams} from './params';
+import {isPlatformServer} from '@angular/common';
 
 /**
  * Options to configure how TransferCache should be used to cache requests made via HttpClient.
@@ -160,10 +162,12 @@ export function transferCacheInterceptorFn(
     );
   }
 
-  // Request not found in cache. Make the request and cache it.
+  const isServer = isPlatformServer(inject(PLATFORM_ID));
+
+  // Request not found in cache. Make the request and cache it if on the server.
   return next(req).pipe(
     tap((event: HttpEvent<unknown>) => {
-      if (event instanceof HttpResponse) {
+      if (event instanceof HttpResponse && isServer) {
         transferState.set<TransferHttpResponse>(storeKey, {
           [BODY]: event.body,
           [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
