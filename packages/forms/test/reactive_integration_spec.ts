@@ -7,13 +7,16 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, ElementRef, forwardRef, Input, NgModule, OnDestroy, Type, ViewChild} from '@angular/core';
+import {Component, Directive, ElementRef, forwardRef, Input, OnDestroy, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormBuilder, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinLengthValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormArray, FormBuilder, FormControl, FormControlDirective, FormControlName, FormControlState, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
-import {merge, NEVER, of, Subscription, timer} from 'rxjs';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {merge, NEVER, Observable, of, Subject, Subscription, timer} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
+
+import {ControlEvent, FormControlStatus, PristineChangeEvent, StatusChangeEvent, TouchedChangeEvent, ValueChangeEvent} from '../src/model/abstract_model';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
@@ -989,6 +992,318 @@ describe('reactive forms integration tests', () => {
 
          form.reset();
        });
+  });
+
+  describe('unified form state change', () => {
+    type UnwrapObservable<T> = T extends Observable<infer U>? U : never;
+    type ControlEvents<T extends AbstractControl> = UnwrapObservable<T['events']>[];
+
+    function expectValueChangeEvent<T>(
+        event: ControlEvent<T>|undefined, value: T, sourceControl: AbstractControl) {
+      const valueEvent = event as ValueChangeEvent<T>;
+      expect(valueEvent).toBeInstanceOf(ValueChangeEvent);
+      expect(valueEvent.source).toBe(sourceControl);
+      expect(valueEvent.value).toEqual(value);
+    }
+
+    function expectPristineChangeEvent<T>(
+        event: ControlEvent<T>|undefined, pristine: boolean, sourceControl: AbstractControl) {
+      const pristineEvent = event as PristineChangeEvent;
+      expect(pristineEvent).toBeInstanceOf(PristineChangeEvent);
+      expect(pristineEvent.source).toBe(sourceControl);
+      expect(pristineEvent.pristine).toBe(pristine);
+    }
+
+    function expectTouchedChangeEvent<T>(
+        event: ControlEvent<T>|undefined, touched: boolean, sourceControl: AbstractControl) {
+      const touchedEvent = event as TouchedChangeEvent;
+      expect(touchedEvent).toBeInstanceOf(TouchedChangeEvent);
+      expect(touchedEvent.source).toBe(sourceControl);
+      expect(touchedEvent.touched).toBe(touched);
+    }
+
+    function expectStatusChangeEvent<T>(
+        event: ControlEvent<T>|undefined, status: FormControlStatus,
+        sourceControl: AbstractControl) {
+      const touchedEvent = event as StatusChangeEvent;
+      expect(touchedEvent).toBeInstanceOf(StatusChangeEvent);
+      expect(touchedEvent.source).toBe(sourceControl);
+      expect(touchedEvent.status).toBe(status);
+    }
+
+    it('Single level Control should emit changes for itself', () => {
+      const fc = new FormControl<string|null>('foo', Validators.required);
+
+      const values: ControlEvent[] = [];
+      fc.events.subscribe(event => values.push(event));
+      expect(values.length).toBe(0);
+
+      fc.markAsTouched();
+      expectTouchedChangeEvent(values.at(-1), true, fc);
+
+      fc.markAsUntouched();
+      expectTouchedChangeEvent(values.at(-1), false, fc);
+
+      fc.markAsDirty();
+      expectPristineChangeEvent(values.at(-1), false, fc);
+
+      fc.markAsPristine();
+      expectPristineChangeEvent(values.at(-1), true, fc);
+
+      fc.disable();
+      expectStatusChangeEvent(values.at(-2), 'DISABLED', fc);
+      expectValueChangeEvent(values.at(-1), 'foo', fc);
+      expect(values.length).toBe(6);
+
+      fc.enable();
+      expectStatusChangeEvent(values.at(-1), 'VALID', fc);
+      expectValueChangeEvent(values.at(-2), 'foo', fc);
+      expect(values.length).toBe(8);
+
+      fc.setValue(null);
+      expectStatusChangeEvent(values.at(-1), 'INVALID', fc);
+      expectValueChangeEvent(values.at(-2), null, fc);
+      expect(values.length).toBe(10);  // setValue doesnt emit dirty or touched
+
+      fc.setValue('bar');
+      expectValueChangeEvent(values.at(-2), 'bar', fc);
+      expectStatusChangeEvent(values.at(-1), 'VALID', fc);
+      expect(values.length).toBe(12);
+
+      const subject = new Subject<string>();
+      const asyncValidator = () => subject.pipe(map(() => null));
+      fc.addAsyncValidators(asyncValidator);
+      fc.updateValueAndValidity();
+
+      // Value is emitted because of updateValueAndValidity
+      expectValueChangeEvent(values.at(-2), 'bar', fc);
+      expectStatusChangeEvent(values.at(-1), 'PENDING', fc);
+
+      subject.next('');
+      subject.complete();
+      expectStatusChangeEvent(values.at(-1), 'VALID', fc);
+      expect(values.length).toBe(15);
+    });
+
+    it('should not emit twice the same value', () => {
+      const fc = new FormControl<string|null>('foo', Validators.required);
+      const fcEvents: ControlEvent<string|null>[] = [];
+      fc.events.subscribe(event => fcEvents.push(event));
+      expect(fcEvents.length).toBe(0);
+
+      fc.markAsDirty();
+      fc.markAsDirty();
+      expect(fcEvents.length).toBe(1);
+
+      fc.markAsPristine();
+      fc.markAsPristine();
+      expect(fcEvents.length).toBe(2);
+
+      fc.markAsTouched();
+      fc.markAsTouched();
+      expect(fcEvents.length).toBe(3);
+
+      fc.markAsUntouched();
+      fc.markAsUntouched();
+      expect(fcEvents.length).toBe(4);
+    });
+
+    it('Nested formControl should emit changes for itself and its parent', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Events: ControlEvent<string|null>[] = [];
+      const fc2Events: ControlEvent<string|null>[] = [];
+      const fgEvents: ControlEvent<Partial<{fc1: string | null; fc2: string | null;}>>[] = [];
+      fc1.events.subscribe(event => fc1Events.push(event));
+      fc2.events.subscribe(event => fc2Events.push(event));
+      fg.events.subscribe(event => fgEvents.push(event));
+
+      fc1.setValue('bar');
+      expectValueChangeEvent(fc1Events.at(-2), 'bar', fc1);
+      expectStatusChangeEvent(fc1Events.at(-1), 'VALID', fc1);
+      expect(fc1Events.length).toBe(2);
+
+      expectValueChangeEvent(fgEvents.at(-2), {fc1: 'bar', fc2: 'bar'}, fc1);
+      expectStatusChangeEvent(fgEvents.at(-1), 'VALID', fc1);
+    });
+
+    it('Nested formControl children should emit pristine', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Event: ControlEvents<typeof fc1> = [];
+      const fc2Event: ControlEvents<typeof fc2> = [];
+      const fgEvent: ControlEvents<typeof fg> = [];
+      fc1.events.subscribe(event => fc1Event.push(event));
+      fc2.events.subscribe(event => fc2Event.push(event));
+      fg.events.subscribe(event => fgEvent.push(event));
+
+      fc1.markAsDirty();
+      expect(fc1Event.length).toBe(1);
+      expect(fc2Event.length).toBe(0);
+      expect(fgEvent.length).toBe(1);
+
+      fg.markAsPristine();
+
+      // Marking children as pristine does not emit an event on the parent
+      // Source control is itself
+      expectPristineChangeEvent(fgEvent.at(-1), true, fg);
+      expect(fgEvent.length).toBe(2);
+
+      // Child that was dirty emits a pristine change
+      // Source control is itself, as even are only bubbled up
+      expectPristineChangeEvent(fc1Event.at(-1), true, fc1);
+      expect(fc1Event.length).toBe(2);
+
+      // This child was already pristine, it doesn't emit a pristine change
+      expect(fc2Event.length).toBe(0);
+    });
+
+    it('Nested formControl should emit dirty', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Events: ControlEvents<typeof fc1> = [];
+      const fc2Events: ControlEvents<typeof fc2> = [];
+      const fgEvents: ControlEvents<typeof fg> = [];
+      fc1.events.subscribe(event => fc1Events.push(event));
+      fc2.events.subscribe(event => fc2Events.push(event));
+      fg.events.subscribe(event => fgEvents.push(event));
+
+      fc1.markAsDirty();
+      expect(fc1Events.length).toBe(1);
+      expect(fgEvents.length).toBe(1);
+      expect(fc2Events.length).toBe(0);
+
+      // sourceControl is the child control
+      expectPristineChangeEvent(fgEvents.at(-1), false, fc1);
+      expectPristineChangeEvent(fc1Events.at(-1), false, fc1);
+    });
+
+    it('Nested formControl should emit touched', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Events: ControlEvent[] = [];
+      const fc2Events: ControlEvent[] = [];
+      const fgEvents: ControlEvent[] = [];
+      fc1.events.subscribe(event => fc1Events.push(event));
+      fc2.events.subscribe(event => fc2Events.push(event));
+      fg.events.subscribe(event => fgEvents.push(event));
+
+      fc1.markAsTouched();
+      expect(fc1Events.length).toBe(1);
+      expect(fgEvents.length).toBe(1);
+      expect(fc2Events.length).toBe(0);
+
+      // sourceControl is the child control
+      expectTouchedChangeEvent(fgEvents.at(-1), true, fc1);
+      expectTouchedChangeEvent(fc1Events.at(-1), true, fc1);
+    });
+
+    it('Nested formControl should emit disabled', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Events: ControlEvent[] = [];
+      const fc2Events: ControlEvent[] = [];
+      const fgEvents: ControlEvent[] = [];
+      fc1.events.subscribe(event => fc1Events.push(event));
+      fc2.events.subscribe(event => fc2Events.push(event));
+      fg.events.subscribe(event => fgEvents.push(event));
+
+      expect(fg.pristine).toBeTrue();
+
+      fc1.disable();
+      expect(fc1Events.length).toBe(2);
+      expect(fgEvents.length).toBe(3);
+      expect(fc2Events.length).toBe(0);
+
+      expectValueChangeEvent(fgEvents.at(-3), {fc2: 'bar'}, fg);
+      expectStatusChangeEvent(fgEvents.at(-2), 'VALID', fg);
+      expectTouchedChangeEvent(fgEvents.at(-1), false, fc1);
+      // Not prisitine event sent as fg was already pristine
+
+      expectStatusChangeEvent(fc1Events.at(-2), 'DISABLED', fc1);
+      expectValueChangeEvent(fc1Events.at(-1), 'foo', fc1);
+    });
+
+    it('Nested formControl should emit PENDING', () => {
+      const fc1 = new FormControl<string|null>('foo', Validators.required);
+      const fc2 = new FormControl<string|null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fc1Events: ControlEvent[] = [];
+      const fc2Events: ControlEvent[] = [];
+      const fgEvents: ControlEvent[] = [];
+      fc1.events.subscribe(event => fc1Events.push(event));
+      fc2.events.subscribe(event => fc2Events.push(event));
+      fg.events.subscribe(event => fgEvents.push(event));
+
+      fc1.markAsPending();
+      expectStatusChangeEvent(fgEvents.at(-1), 'PENDING', fc1);
+      expectStatusChangeEvent(fc1Events.at(-1), 'PENDING', fc1);
+
+      expect(fc1Events.length).toBe(1);
+      expect(fgEvents.length).toBe(1);
+      expect(fc2Events.length).toBe(0);
+
+
+      // Reseting to VALID
+      fc1.updateValueAndValidity();
+      expectValueChangeEvent(fgEvents.at(-2), {fc1: 'foo', fc2: 'bar'}, fc1);
+      expectStatusChangeEvent(fgEvents.at(-1), 'VALID', fc1);
+
+      expectValueChangeEvent(fc1Events.at(-2), 'foo', fc1);
+      expectStatusChangeEvent(fc1Events.at(-1), 'VALID', fc1);
+      expect(fc1Events.length).toBe(3);
+      expect(fgEvents.length).toBe(3);
+      expect(fc2Events.length).toBe(0);
+
+      // Triggering PENDING again with the async validator now
+      const subject = new Subject<string>();
+      const asyncValidator = () => subject.pipe(map(() => null));
+      fc1.addAsyncValidators(asyncValidator);
+      fc1.updateValueAndValidity();
+
+      expect(fc1Events.length).toBe(5);
+      expect(fgEvents.length).toBe(5);
+      expect(fc2Events.length).toBe(0);
+
+      expectValueChangeEvent(fgEvents.at(-2), {fc1: 'foo', fc2: 'bar'}, fc1);
+      expectStatusChangeEvent(fgEvents.at(-1), 'PENDING', fc1);
+      expectValueChangeEvent(fc1Events.at(-2), 'foo', fc1);
+      expectStatusChangeEvent(fc1Events.at(-1), 'PENDING', fc1);
+
+      subject.next('');
+      subject.complete();
+      expectStatusChangeEvent(fgEvents.at(-1), 'VALID', fc1);
+      expectStatusChangeEvent(fc1Events.at(-1), 'VALID', fc1);
+    });
+
+    it('formContorl should not emit when emitEvent is false', () => {
+      const fc = new FormControl<string|null>('foo', Validators.required);
+      const fcEvents: ControlEvent[] = [];
+      fc.events.subscribe(event => fcEvents.push(event));
+
+      expect(fcEvents.length).toBe(0);
+      fc.markAsTouched({emitEvent: false});
+      expect(fcEvents.length).toBe(0);
+      fc.markAllAsTouched({emitEvent: false});
+      expect(fcEvents.length).toBe(0);
+      fc.markAsUntouched({emitEvent: false});
+      expect(fcEvents.length).toBe(0);
+      fc.markAsPristine({emitEvent: false});
+      expect(fcEvents.length).toBe(0);
+      fc.markAsDirty({emitEvent: false});
+      expect(fcEvents.length).toBe(0);
+    });
   });
 
   describe('setting status classes', () => {
