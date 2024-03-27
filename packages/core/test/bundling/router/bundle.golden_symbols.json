@@ -348,6 +348,9 @@
     "name": "NAVIGATION_CANCELING_ERROR"
   },
   {
+    "name": "NAVIGATION_ERROR_HANDLER"
+  },
+  {
     "name": "NEW_LINE"
   },
   {
