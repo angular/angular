@@ -48,7 +48,7 @@ export const main = () => {
 
   if (!backendInitialized) {
     // tslint:disable-next-line:no-console
-    console.log('Attempting initialization', new Date());
+    // console.log('Attempting initialization', new Date());
 
     const retry = () => {
       if (backendInitialized || backgroundDisconnected) {
