@@ -58,7 +58,7 @@ let moduleUid = 0;
  * {@example upgrade/static/ts/lite/module.ts region="basic-how-to"}
  *
  * For more details on how to use `downgradeModule()` see
- * [Upgrading for Performance](guide/upgrade-performance).
+ * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
  * @usageNotes
  *
@@ -96,7 +96,7 @@ let moduleUid = 0;
  * notify each framework as needed.
  *
  * For a more detailed discussion of the differences and their implications, see
- * [Upgrading for Performance](guide/upgrade-performance).
+ * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
  * <div class="alert is-helpful">
  *
@@ -174,7 +174,7 @@ export function downgradeModule<T>(
  * {@example upgrade/static/ts/lite/module.ts region="basic-how-to"}
  *
  * For more details on how to use `downgradeModule()` see
- * [Upgrading for Performance](guide/upgrade-performance).
+ * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
  * @usageNotes
  *
@@ -212,7 +212,7 @@ export function downgradeModule<T>(
  * notify each framework as needed.
  *
  * For a more detailed discussion of the differences and their implications, see
- * [Upgrading for Performance](guide/upgrade-performance).
+ * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
  * <div class="alert is-helpful">
  *
@@ -291,7 +291,7 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  * {@example upgrade/static/ts/lite/module.ts region="basic-how-to"}
  *
  * For more details on how to use `downgradeModule()` see
- * [Upgrading for Performance](guide/upgrade-performance).
+ * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
  * @usageNotes
  *
@@ -329,7 +329,7 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  * notify each framework as needed.
  *
  * For a more detailed discussion of the differences and their implications, see
- * [Upgrading for Performance](guide/upgrade-performance).
+ * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
  * <div class="alert is-helpful">
  *
