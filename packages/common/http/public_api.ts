@@ -56,7 +56,9 @@ export {
 } from './src/response';
 export {
   HttpTransferCacheOptions,
-  withHttpTransferCache as ɵwithHttpTransferCache,
+  provideTransferCacheInterceptor as ɵprovideTransferCacheInterceptor,
+  transferCacheInterceptorFn,
+  withTransferCacheOptions as ɵwithTransferCacheOptions,
 } from './src/transfer_cache';
 export {HttpXhrBackend} from './src/xhr';
 export {HttpXsrfTokenExtractor} from './src/xsrf';
