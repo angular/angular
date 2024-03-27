@@ -83,11 +83,11 @@ HELPFUL: Prefer using [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/C
 
 ### `withXsrfConfiguration(...)`
 
-Including this option allows for customization of `HttpClient`'s built-in XSRF security functionality. See the [security guide](guide/http/security) for more information.
+Including this option allows for customization of `HttpClient`'s built-in XSRF security functionality. See the [security guide](best-practices/security) for more information.
 
 ### `withNoXsrfProtection()`
 
-Including this option disables `HttpClient`'s built-in XSRF security functionality. See the [security guide](guide/http/security) for more information.
+Including this option disables `HttpClient`'s built-in XSRF security functionality. See the [security guide](best-practices/security) for more information.
 
 ## `HttpClientModule`-based configuration
 
