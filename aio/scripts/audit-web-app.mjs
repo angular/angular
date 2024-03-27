@@ -174,7 +174,7 @@ async function processResults(results, minScores, logFile) {
 
 async function runLighthouse(browser, url, flags, config) {
   try {
-    flags.logLevel = 'verbose';
+    flags.logLevel = 'info';
     flags.port = (new URL(browser.wsEndpoint())).port;
     return await lighthouse(url, flags, config);
   } finally {
