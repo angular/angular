@@ -123,6 +123,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
+    this._initSignals();
     this.updateValueAndValidity({
       onlySelf: true,
       // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
@@ -481,6 +482,11 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     (this as Writable<this>).value =
         this.controls.filter((control) => control.enabled || this.disabled)
             .map((control) => control.value);
+
+    this._updateSignals({
+      value: this.value,
+      rawValue: this.getRawValue(),
+    });
   }
 
   /** @internal */

@@ -10,7 +10,7 @@ import {ɵWritable as Writable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 
-import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
+import {AbstractControl, AbstractControlOptions, assertAllValuesPresent, assertControlPresent, isOptionsObj, pickAsyncValidators, pickValidators, ɵRawValue, ɵTypedOrUntyped, ɵValue} from './abstract_model';
 
 /**
  * FormGroupValue extracts the type of `.value` from a FormGroup's inner object type. The untyped
@@ -182,6 +182,7 @@ export class FormGroup<TControl extends {[K in keyof TControl]: AbstractControl<
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
+    this._initSignals();
     this.updateValueAndValidity({
       onlySelf: true,
       // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
