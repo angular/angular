@@ -25,7 +25,7 @@ import {performanceMarkFeature} from '../util/performance';
 import {NgZone} from '../zone';
 
 import {cleanupDehydratedViews} from './cleanup';
-import {enablePrepareI18nBlockForHydrationImpl, isI18nHydrationEnabled, setIsI18nHydrationSupportEnabled} from './i18n';
+import {enableClaimDehydratedIcuCaseImpl, enablePrepareI18nBlockForHydrationImpl, isI18nHydrationEnabled, setIsI18nHydrationSupportEnabled} from './i18n';
 import {IS_HYDRATION_DOM_REUSE_ENABLED, IS_I18N_HYDRATION_ENABLED, PRESERVE_HOST_CONTENT} from './tokens';
 import {enableRetrieveHydrationInfoImpl, NGH_DATA_KEY, SSR_CONTENT_INTEGRITY_MARKER} from './utils';
 import {enableFindMatchingDehydratedViewImpl} from './views';
@@ -87,6 +87,7 @@ function enableI18nHydrationRuntimeSupport() {
     isI18nHydrationRuntimeSupportEnabled = true;
     enableLocateOrCreateI18nNodeImpl();
     enablePrepareI18nBlockForHydrationImpl();
+    enableClaimDehydratedIcuCaseImpl();
   }
 }
 

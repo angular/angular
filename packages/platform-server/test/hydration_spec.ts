@@ -2117,7 +2117,7 @@ describe('platform-server hydration integration', () => {
           expect(div.innerHTML).toBe('Some normal content');
         });
 
-        it('should support content projection', async () => {
+        it('should support projecting translated content', async () => {
           @Component({
             standalone: true,
             selector: 'app-content',
@@ -2155,7 +2155,44 @@ describe('platform-server hydration integration', () => {
           expect(content.innerHTML).toBe('<span>two</span><div>one</div>');
         });
 
-        it('should support using translated nodes as view container anchors', async () => {
+        it('should support hosting projected content', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app-content',
+            template: `<span i18n>Start <ng-content /> End</span>`
+          })
+          class ContentComponent {
+          }
+
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: `<div><app-content>Middle</app-content></div>`,
+            imports: [ContentComponent],
+          })
+          class SimpleComponent {
+          }
+
+          const providers = [withI18nHydration()] as unknown as Provider[];
+          const html = await ssr(SimpleComponent, undefined, providers);
+          const ssrContents = getAppContents(html);
+          expect(ssrContents).toContain('<app ngh');
+
+          resetTViewsFor(SimpleComponent, ContentComponent);
+
+          const appRef = await hydrate(html, SimpleComponent, providers);
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+
+          const clientRootNode = compRef.location.nativeElement;
+          verifyAllNodesClaimedForHydration(clientRootNode);
+          verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
+
+          const div = clientRootNode.querySelector('div');
+          expect(div.innerHTML).toBe('<app-content><span>Start Middle End</span></app-content>');
+        });
+
+        it('should support using translated views as view container anchors', async () => {
           @Component({
             standalone: true,
             selector: 'dynamic-cmp',
@@ -2299,7 +2336,7 @@ describe('platform-server hydration integration', () => {
           expect(div.innerHTML).toMatch(/Bonjour!/);
         });
 
-        it('should cleanup dehydrated nodes', async () => {
+        it('should cleanup dehydrated ICU cases', async () => {
           @Component({
             standalone: true,
             selector: 'app',
