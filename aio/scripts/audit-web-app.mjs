@@ -28,7 +28,7 @@
 
 // Imports
 import lighthouse from 'lighthouse';
-import * as printer from 'lighthouse/cli/printer.js';
+import * as printer from 'lighthouse/lighthouse-cli/printer.js';
 import logger from 'lighthouse-logger';
 import puppeteer from 'puppeteer-core';
 import path from 'path';
@@ -60,6 +60,7 @@ async function _main(args) {
 
   console.log(`Running web-app audits for '${url}'...`);
   console.log(`  Audit categories: ${lhFlags.onlyCategories.join(', ')}`);
+  console.log(process.env.CHROME_BIN);
 
   logger.setLevel(lhFlags.logLevel);
 
@@ -68,9 +69,11 @@ async function _main(args) {
     const startTime = Date.now();
     const browser = await puppeteer.launch({
       executablePath: path.resolve(process.env.CHROME_BIN),
-      args: ['--no-sandbox', '--headless']
+      args: ['--no-sandbox', '--headless'],
     });
+    console.log('launched');
     const browserVersion = await browser.version();
+    console.log(browserVersion);
     const results = await runLighthouse(browser, url, lhFlags, lhConfig);
 
     console.log(
@@ -171,7 +174,7 @@ async function processResults(results, minScores, logFile) {
 
 async function runLighthouse(browser, url, flags, config) {
   try {
-    flags.logLevel = 'silent';
+    flags.logLevel = 'info';
     flags.port = (new URL(browser.wsEndpoint())).port;
     return await lighthouse(url, flags, config);
   } finally {
