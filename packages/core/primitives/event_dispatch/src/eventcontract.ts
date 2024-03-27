@@ -28,14 +28,14 @@
  * possible and thus its dependencies to a minimum.
  */
 
-import * as eventInfoLib from './event_info';
+import * as a11yClickLib from './a11y_click';
 import {Attribute as AccessibilityAttribute} from './accessibility';
 import {Attribute} from './attribute';
 import * as cache from './cache';
 import {Char} from './char';
 import {EarlyJsactionData} from './earlyeventcontract';
 import * as eventLib from './event';
-import {EventContractContainer} from './event_contract_container';
+import {EventContractContainerManager} from './event_contract_container';
 import {
   A11Y_CLICK_SUPPORT,
   A11Y_SUPPORT_IN_DISPATCHER,
@@ -45,7 +45,7 @@ import {
   STOP_PROPAGATION,
   USE_EVENT_PATH,
 } from './event_contract_defines';
-import {EventContractMultiContainer} from './event_contract_multi_container';
+import * as eventInfoLib from './event_info';
 import {EventType} from './event_type';
 import * as domGenerator from './generator';
 import {Property} from './property';
@@ -57,6 +57,12 @@ import {Restriction} from './restriction';
 export declare interface UnrenamedEventContract {
   // Alias for Jsction EventContract registerDispatcher.
   ecrd(dispatcher: Dispatcher, restriction: Restriction): void;
+  // Unrenamed function. Abbreviation for `eventContract.addA11yClickSupport`.
+  ecaacs?: (
+    updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick,
+    preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick,
+    populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction,
+  ) => void;
 }
 
 /** A function that is called to handle events captured by the EventContract. */
@@ -116,6 +122,8 @@ export class EventContract implements UnrenamedEventContract {
   static MOUSE_SPECIAL_SUPPORT = MOUSE_SPECIAL_SUPPORT;
   static JSNAMESPACE_SUPPORT = JSNAMESPACE_SUPPORT;
 
+  private containerManager: EventContractContainerManager | null;
+
   /**
    * The DOM events which this contract covers. Used to prevent double
    * registration of event types. The value of the map is the
@@ -123,9 +131,9 @@ export class EventContract implements UnrenamedEventContract {
    * DOM events. See addEvent().
    *
    */
-  private readonly eventHandlers: {[key: string]: EventHandler} = {};
+  private eventHandlers: {[key: string]: EventHandler} = {};
 
-  private readonly browserEventTypeToExtraEventTypes: {
+  private browserEventTypeToExtraEventTypes: {
     [key: string]: string[];
   } = {};
 
@@ -135,7 +143,6 @@ export class EventContract implements UnrenamedEventContract {
    * done because the function is passed from another jsbinary, so passing the
    * instance and invoking the method here would require to leave the method
    * unobfuscated.
-   *
    */
   private dispatcher: Dispatcher | null = null;
 
@@ -145,12 +152,41 @@ export class EventContract implements UnrenamedEventContract {
    */
   private queuedEventInfos: eventInfoLib.EventInfo[] | null = [];
 
+  /** Whether a11y click support has been loaded or not. */
+  private hasA11yClickSupport = false;
+  /** Whether to add an a11y click listener. */
+  private addA11yClickListener = EventContract.A11Y_SUPPORT_IN_DISPATCHER;
+
+  private updateEventInfoForA11yClick?: (
+    eventInfo: eventInfoLib.EventInfo,
+  ) => void = undefined;
+
+  private preventDefaultForA11yClick?: (
+    eventInfo: eventInfoLib.EventInfo,
+  ) => void = undefined;
+
+  private populateClickOnlyAction?: (
+    eventInfo: eventInfoLib.EventInfo,
+    actionMap: {[key: string]: string},
+  ) => void = undefined;
+
+  ecaacs?: (
+    updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick,
+    preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick,
+    populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction,
+  ) => void;
+
   constructor(
-    private readonly containerManager = new EventContractMultiContainer(),
+    containerManager: EventContractContainerManager,
     private readonly stopPropagation = EventContract.STOP_PROPAGATION,
   ) {
+    this.containerManager = containerManager;
     if (EventContract.CUSTOM_EVENT_SUPPORT) {
       this.addEvent(EventType.CUSTOM);
+    }
+    if (EventContract.A11Y_CLICK_SUPPORT) {
+      // Add a11y click support to the `EventContract`.
+      this.addA11yClickSupport();
     }
   }
 
@@ -314,15 +350,16 @@ export class EventContract implements UnrenamedEventContract {
     //
     // In order to set up the event contract to handle click,
     // addEvent() is necessary for CLICK, KEYDOWN, and KEYPRESS event types.  If
-    // the jsaction.EventContract.A11Y_CLICK_SUPPORT flag is turned on,
-    // addEvent() will set up the appropriate key event handler automatically.
+    // a11y click support is enabled, addEvent() will set up the appropriate key
+    // event handler automatically.
     if (
       eventInfoLib.getEventType(eventInfo) === EventType.CLICK &&
       eventLib.isModifiedClickEvent(eventInfoLib.getEvent(eventInfo))
     ) {
       eventInfoLib.setEventType(eventInfo, EventType.CLICKMOD);
+    } else if (this.hasA11yClickSupport) {
+      this.updateEventInfoForA11yClick!(eventInfo);
     } else if (
-      EventContract.A11Y_CLICK_SUPPORT &&
       EventContract.A11Y_SUPPORT_IN_DISPATCHER &&
       eventInfoLib.getEventType(eventInfo) === EventType.KEYDOWN &&
       !eventInfoLib.getEvent(eventInfo)[AccessibilityAttribute.SKIP_A11Y_CHECK]
@@ -333,15 +370,6 @@ export class EventContract implements UnrenamedEventContract {
         eventInfo,
         AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE,
       );
-    } else if (
-      EventContract.A11Y_CLICK_SUPPORT &&
-      !EventContract.A11Y_SUPPORT_IN_DISPATCHER &&
-      eventLib.isActionKeyEvent(eventInfoLib.getEvent(eventInfo))
-    ) {
-      eventInfoLib.setA11yClickKey(eventInfo, true);
-      // A 'click' triggered by a DOM keypress should be mapped to the 'click'
-      // jsaction.
-      eventInfoLib.setEventType(eventInfo, EventType.CLICK);
     }
 
     // NOTE(jwall): In order to avoid complicating the code that calculates the
@@ -403,18 +431,8 @@ export class EventContract implements UnrenamedEventContract {
       return;
     }
 
-    // Prevent scrolling if the Space key was pressed or prevent the browser's
-    // default action for native HTML controls.
-    if (
-      EventContract.A11Y_CLICK_SUPPORT &&
-      !EventContract.A11Y_SUPPORT_IN_DISPATCHER &&
-      eventInfoLib.getA11yClickKey(eventInfo) &&
-      (eventLib.isSpaceKeyEvent(eventInfoLib.getEvent(eventInfo)) ||
-        eventLib.shouldCallPreventDefaultOnNativeHtmlControl(
-          eventInfoLib.getEvent(eventInfo),
-        ))
-    ) {
-      eventLib.preventDefault(eventInfoLib.getEvent(eventInfo));
+    if (this.hasA11yClickSupport) {
+      this.preventDefaultForA11yClick!(eventInfo);
     }
 
     // We attempt to handle the mouseenter/mouseleave events here by
@@ -489,11 +507,13 @@ export class EventContract implements UnrenamedEventContract {
       actionMap[eventInfoLib.getEventType(eventInfo)] || '',
     );
 
-    if (EventContract.A11Y_CLICK_SUPPORT) {
+    if (this.hasA11yClickSupport) {
+      this.populateClickOnlyAction!(eventInfo, actionMap);
+    }
+    if (EventContract.A11Y_SUPPORT_IN_DISPATCHER) {
       if (
-        EventContract.A11Y_SUPPORT_IN_DISPATCHER &&
         eventInfoLib.getEventType(eventInfo) ===
-          AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE
+        AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE
       ) {
         // We'll take the first CLICK action we find and have the dispatcher
         // check if the keydown event can be used as a CLICK. If not, the
@@ -501,23 +521,12 @@ export class EventContract implements UnrenamedEventContract {
         // event instead.
         // When we get MAYBE_CLICK_EVENT_TYPE as an eventType, we want to
         // retrieve the action corresponding to CLICK, but still keep the
-        // eventInfoLib.getEventType(eventInfo, ) as MAYBE_CLICK_EVENT_TYPE. The dispatcher uses
-        // this event type to determine if it should get the handler for the
-        // action.
+        // eventInfoLib.getEventType(eventInfo, ) as MAYBE_CLICK_EVENT_TYPE. The
+        // dispatcher uses this event type to determine if it should get the
+        // handler for the action.
         eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICK]);
-      } else if (
-        eventInfoLib.getEventType(eventInfo) === EventType.CLICK &&
-        // No a11y clicks should map to 'clickonly'.
-        !eventInfoLib.getA11yClickKey(eventInfo) &&
-        !actionMap[EventType.CLICK] &&
-        actionMap[EventType.CLICKONLY]
-      ) {
-        // A 'click' triggered by a DOM click should be mapped to the 'click'
-        // jsaction, if available, or else fallback to the 'clickonly' jsaction.
-        // If 'click' and 'clickonly' jsactions are used together, 'click' will
-        // prevail.
-        eventInfoLib.setEventType(eventInfo, EventType.CLICKONLY);
-        eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICKONLY]);
+      } else {
+        a11yClickLib.populateClickOnlyAction(eventInfo, actionMap);
       }
     }
 
@@ -576,7 +585,7 @@ export class EventContract implements UnrenamedEventContract {
       this.browserEventTypeToExtraEventTypes[browserEventType] = eventTypes;
     }
 
-    this.containerManager.addEventListener(
+    this.containerManager!.addEventListener(
       browserEventType,
       (element: Element) => {
         return (event: Event) => {
@@ -587,7 +596,7 @@ export class EventContract implements UnrenamedEventContract {
 
     // Automatically install a keypress/keydown event handler if support for
     // accessible clicks is turned on.
-    if (EventContract.A11Y_CLICK_SUPPORT && eventType === EventType.CLICK) {
+    if (this.addA11yClickListener && eventType === EventType.CLICK) {
       this.addEvent(EventType.KEYDOWN);
     }
   }
@@ -658,12 +667,18 @@ export class EventContract implements UnrenamedEventContract {
     return this.eventHandlers[eventType];
   }
 
-  addContainer(element: Element): EventContractContainer {
-    return this.containerManager.addContainer(element);
-  }
-
-  removeContainer(container: EventContractContainer) {
-    this.containerManager.removeContainer(container);
+  /**
+   * Cleans up the event contract. This resets all of the `EventContract`'s
+   * internal state. Users are responsible for not using this `EventContract`
+   * after it has been cleaned up.
+   */
+  cleanUp() {
+    this.containerManager!.cleanUp();
+    this.containerManager = null;
+    this.eventHandlers = {};
+    this.browserEventTypeToExtraEventTypes = {};
+    this.dispatcher = null;
+    this.queuedEventInfos = [];
   }
 
   /**
@@ -694,6 +709,56 @@ export class EventContract implements UnrenamedEventContract {
       this.queuedEventInfos = null;
     }
   }
+
+  /**
+   * Adds a11y click support to the given `EventContract`. Meant to be called in
+   * the same compilation unit as the `EventContract`.
+   */
+  addA11yClickSupport() {
+    this.addA11yClickSupportImpl(
+      a11yClickLib.updateEventInfoForA11yClick,
+      a11yClickLib.preventDefaultForA11yClick,
+      a11yClickLib.populateClickOnlyAction,
+    );
+  }
+
+  /**
+   * Enables a11y click support to be deferred. Meant to be called in the same
+   * compilation unit as the `EventContract`.
+   */
+  exportAddA11yClickSupport() {
+    this.addA11yClickListener = true;
+    this.ecaacs = this.addA11yClickSupportImpl.bind(this);
+  }
+
+  /**
+   * Unrenamed function that loads a11yClickSupport.
+   */
+  private addA11yClickSupportImpl(
+    updateEventInfoForA11yClick: typeof a11yClickLib.updateEventInfoForA11yClick,
+    preventDefaultForA11yClick: typeof a11yClickLib.preventDefaultForA11yClick,
+    populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction,
+  ) {
+    this.addA11yClickListener = true;
+    this.hasA11yClickSupport = true;
+    this.updateEventInfoForA11yClick = updateEventInfoForA11yClick;
+    this.preventDefaultForA11yClick = preventDefaultForA11yClick;
+    this.populateClickOnlyAction = populateClickOnlyAction;
+  }
+}
+
+/**
+ * Adds a11y click support to the given `EventContract`. Meant to be called
+ * in a different compilation unit from the `EventContract`. The `EventContract`
+ * must have called `exportAddA11yClickSupport` in its compilation unit for this
+ * to have any effect.
+ */
+export function addDeferredA11yClickSupport(eventContract: EventContract) {
+  eventContract.ecaacs?.(
+    a11yClickLib.updateEventInfoForA11yClick,
+    a11yClickLib.preventDefaultForA11yClick,
+    a11yClickLib.populateClickOnlyAction,
+  );
 }
 
 /**

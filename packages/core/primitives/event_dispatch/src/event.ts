@@ -9,7 +9,6 @@
 import * as dom from './dom';
 import {EventHandlerInfo} from './event_handler';
 import {EventType} from './event_type';
-
 import {KeyCode} from './key_code';
 
 /**

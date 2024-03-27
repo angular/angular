@@ -14,6 +14,10 @@ import {
   EarlyJsactionData,
 } from '../src/earlyeventcontract';
 import {
+  EventContractContainer,
+  EventContractContainerManager,
+} from '../src/event_contract_container';
+import {
   EventInfo,
   EventInfoWrapper,
 } from '../src/event_info';
@@ -21,6 +25,7 @@ import {EventType} from '../src/event_type';
 import {
   Dispatcher,
   EventContract,
+  addDeferredA11yClickSupport,
 } from '../src/eventcontract';
 import {Property} from '../src/property';
 import {safeElement} from './safevalues/dom';
@@ -189,7 +194,7 @@ function getRequiredElementById(id: string) {
   return element!;
 }
 
-function createEventContractContainerManager(container: Element) {
+function createEventContractMultiContainer(container: Element) {
   const eventContractContainerManager = new EventContractMultiContainer(
     EventContract.STOP_PROPAGATION,
   );
@@ -199,14 +204,19 @@ function createEventContractContainerManager(container: Element) {
 
 function createEventContract({
   eventContractContainerManager,
+  exportAddA11yClickSupport = false,
   eventTypes,
   dispatcher,
 }: {
-  eventContractContainerManager: EventContractMultiContainer;
+  eventContractContainerManager: EventContractContainerManager;
+  exportAddA11yClickSupport?: boolean;
   eventTypes: Array<string | [string, string]>;
   dispatcher?: jasmine.Spy<Dispatcher>;
 }): EventContract {
   const eventContract = new EventContract(eventContractContainerManager);
+  if (exportAddA11yClickSupport) {
+    eventContract.exportAddA11yClickSupport();
+  }
   for (const eventType of eventTypes) {
     if (typeof eventType === 'string') {
       eventContract.addEvent(eventType);
@@ -328,10 +338,10 @@ describe('EventContract', () => {
     safeElement.setInnerHtml(document.body, testonlyHtml(domContent));
     EventContract.USE_EVENT_PATH = false;
     EventContract.A11Y_CLICK_SUPPORT = false;
+    EventContract.A11Y_SUPPORT_IN_DISPATCHER = false;
     EventContract.MOUSE_SPECIAL_SUPPORT = false;
     EventContract.STOP_PROPAGATION = false;
     EventContractMultiContainer.STOP_PROPAGATION = false;
-    EventContract.A11Y_SUPPORT_IN_DISPATCHER = false;
     EventContract.CUSTOM_EVENT_SUPPORT = false;
 
     // Normalize timestamp.
@@ -418,8 +428,7 @@ describe('EventContract', () => {
     const targetElement = getRequiredElementById('click-target-element');
 
     const eventContract = createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
     });
 
@@ -450,8 +459,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -475,8 +483,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -505,8 +512,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -530,8 +536,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -558,8 +563,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: [['animationend', 'webkitanimationend']],
       dispatcher,
     });
@@ -587,8 +591,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -611,8 +614,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -648,8 +650,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -691,8 +692,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -719,8 +719,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -754,8 +753,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -784,8 +782,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -805,6 +802,36 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
   });
 
+  it('cleanUp removes all event listeners and containers', () => {
+    const container = getRequiredElementById('click-container');
+    const removeEventListenerSpy = spyOn(
+      container,
+      'removeEventListener',
+    ).and.callThrough();
+    const actionElement = getRequiredElementById('click-action-element');
+
+    const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+    const eventContractContainerManager = new EventContractContainer(container);
+    const cleanUpSpy = spyOn(
+      eventContractContainerManager,
+      'cleanUp',
+    ).and.callThrough();
+    const eventContract = createEventContract({
+      eventContractContainerManager,
+      eventTypes: ['click'],
+      dispatcher,
+    });
+
+    eventContract.cleanUp();
+
+    actionElement.click();
+
+    expect(dispatcher).toHaveBeenCalledTimes(0);
+    expect(eventContract.handler('click')).toBeUndefined();
+    expect(removeEventListenerSpy).toHaveBeenCalledTimes(1);
+    expect(cleanUpSpy).toHaveBeenCalledTimes(1);
+  });
+
   describe('event path', () => {
     beforeEach(() => {
       EventContract.USE_EVENT_PATH = true;
@@ -816,8 +843,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -846,8 +872,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -875,8 +900,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -903,8 +927,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -932,8 +955,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     const eventContract = createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -960,8 +982,7 @@ describe('EventContract', () => {
     const container = getRequiredElementById('click-container');
 
     const eventContract = createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: [],
     });
 
@@ -984,8 +1005,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['custom-event'],
         dispatcher,
       });
@@ -1017,8 +1037,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['custom-event'],
         dispatcher,
       });
@@ -1045,8 +1064,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -1075,8 +1093,7 @@ describe('EventContract', () => {
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
       dispatcher,
     });
@@ -1099,8 +1116,7 @@ describe('EventContract', () => {
     const targetElement = getRequiredElementById('anchor-click-target-element');
 
     createEventContract({
-      eventContractContainerManager:
-        createEventContractContainerManager(container),
+      eventContractContainerManager: new EventContractContainer(container),
       eventTypes: ['click'],
     });
 
@@ -1121,8 +1137,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -1145,8 +1160,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['keydown'],
         dispatcher,
       });
@@ -1175,8 +1189,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -1205,8 +1218,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -1237,8 +1249,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -1259,7 +1270,6 @@ describe('EventContract', () => {
 
   describe('a11y click in dispatcher', () => {
     beforeEach(() => {
-      EventContract.A11Y_CLICK_SUPPORT = true;
       EventContract.A11Y_SUPPORT_IN_DISPATCHER = true;
     });
 
@@ -1270,8 +1280,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -1300,8 +1309,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click', 'keydown'],
         dispatcher,
       });
@@ -1331,8 +1339,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click', 'keydown'],
         dispatcher,
       });
@@ -1362,8 +1369,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -1381,6 +1387,216 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
 
       expect(keydownEvent.defaultPrevented).toBe(false);
+    });
+
+    it('dispatches clickonly event', () => {
+      const container = getRequiredElementById('a11y-clickonly-container');
+      const actionElement = getRequiredElementById(
+        'a11y-clickonly-action-element',
+      );
+      const targetElement = getRequiredElementById(
+        'a11y-clickonly-target-element',
+      );
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      createEventContract({
+        eventContractContainerManager: new EventContractContainer(container),
+        exportAddA11yClickSupport: true,
+        eventTypes: ['click'],
+        dispatcher,
+      });
+
+      const clickEvent = dispatchMouseEvent(targetElement);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('clickonly');
+      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+      expect(eventInfoWrapper.getAction()).toBe('handleClickOnly');
+      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    });
+
+    it('dispatches click event to click handler rather than clickonly', () => {
+      const container = getRequiredElementById(
+        'a11y-click-clickonly-container',
+      );
+      const actionElement = getRequiredElementById(
+        'a11y-click-clickonly-action-element',
+      );
+      const targetElement = getRequiredElementById(
+        'a11y-click-clickonly-target-element',
+      );
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      createEventContract({
+        eventContractContainerManager: new EventContractContainer(container),
+        eventTypes: ['click'],
+        dispatcher,
+      });
+
+      const clickEvent = dispatchMouseEvent(targetElement);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('click');
+      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+      expect(eventInfoWrapper.getAction()).toBe('handleClick');
+      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    });
+  });
+
+  describe('a11y click support deferred', () => {
+    it('dispatches keydown as click event', () => {
+      const container = getRequiredElementById('a11y-click-container');
+      const actionElement = getRequiredElementById('a11y-click-action-element');
+      const targetElement = getRequiredElementById('a11y-click-target-element');
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      const eventContract = createEventContract({
+        eventContractContainerManager: new EventContractContainer(container),
+        exportAddA11yClickSupport: true,
+        eventTypes: ['click'],
+        dispatcher,
+      });
+      addDeferredA11yClickSupport(eventContract);
+
+      const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('click');
+      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+      expect(eventInfoWrapper.getAction()).toBe('handleClick');
+      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    });
+
+    it('dispatches keydown event', () => {
+      const container = getRequiredElementById('keydown-container');
+      const actionElement = getRequiredElementById('keydown-action-element');
+      const targetElement = getRequiredElementById('keydown-target-element');
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      const eventContract = createEventContract({
+        eventContractContainerManager: new EventContractContainer(container),
+        exportAddA11yClickSupport: true,
+        eventTypes: ['keydown'],
+        dispatcher,
+      });
+      addDeferredA11yClickSupport(eventContract);
+
+      const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'a'});
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('keydown');
+      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+      expect(eventInfoWrapper.getAction()).toBe('handleKeydown');
+      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    });
+
+    it('prevents default for enter key on anchor child', () => {
+      const container = getRequiredElementById('a11y-anchor-click-container');
+      const actionElement = getRequiredElementById(
+        'a11y-anchor-click-action-element',
+      );
+      const targetElement = getRequiredElementById(
+        'a11y-anchor-click-target-element',
+      );
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      const eventContract = createEventContract({
+        eventContractContainerManager: new EventContractContainer(container),
+        exportAddA11yClickSupport: true,
+        eventTypes: ['click'],
+        dispatcher,
+      });
+      addDeferredA11yClickSupport(eventContract);
+
+      const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('click');
+      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+      expect(eventInfoWrapper.getAction()).toBe('handleClick');
+      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+
+      expect(keydownEvent.preventDefault).toHaveBeenCalled();
+    });
+
+    it('dispatches clickonly event', () => {
+      const container = getRequiredElementById('a11y-clickonly-container');
+      const actionElement = getRequiredElementById(
+        'a11y-clickonly-action-element',
+      );
+      const targetElement = getRequiredElementById(
+        'a11y-clickonly-target-element',
+      );
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      const eventContract = createEventContract({
+        eventContractContainerManager: new EventContractContainer(container),
+        exportAddA11yClickSupport: true,
+        eventTypes: ['click'],
+        dispatcher,
+      });
+      addDeferredA11yClickSupport(eventContract);
+
+      const clickEvent = dispatchMouseEvent(targetElement);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('clickonly');
+      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+      expect(eventInfoWrapper.getAction()).toBe('handleClickOnly');
+      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    });
+
+    it('dispatches click event to click handler rather than clickonly', () => {
+      const container = getRequiredElementById(
+        'a11y-click-clickonly-container',
+      );
+      const actionElement = getRequiredElementById(
+        'a11y-click-clickonly-action-element',
+      );
+      const targetElement = getRequiredElementById(
+        'a11y-click-clickonly-target-element',
+      );
+
+      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+      const eventContract = createEventContract({
+        eventContractContainerManager: new EventContractContainer(container),
+        exportAddA11yClickSupport: true,
+        eventTypes: ['click'],
+        dispatcher,
+      });
+      addDeferredA11yClickSupport(eventContract);
+
+      const clickEvent = dispatchMouseEvent(targetElement);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+
+      expect(dispatcher).toHaveBeenCalledTimes(2);
+      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+      expect(eventInfoWrapper.getEventType()).toBe('click');
+      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
+      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+      expect(eventInfoWrapper.getAction()).toBe('handleClick');
+      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
     });
   });
 
@@ -1417,7 +1633,7 @@ describe('EventContract', () => {
       );
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager =
-        createEventContractContainerManager(outerContainer);
+        createEventContractMultiContainer(outerContainer);
       createEventContract({
         eventContractContainerManager,
         eventTypes: ['click'],
@@ -1446,7 +1662,7 @@ describe('EventContract', () => {
       );
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager =
-        createEventContractContainerManager(outerContainer);
+        createEventContractMultiContainer(outerContainer);
       createEventContract({
         eventContractContainerManager,
         eventTypes: ['click'],
@@ -1475,7 +1691,7 @@ describe('EventContract', () => {
       );
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager =
-        createEventContractContainerManager(innerContainer);
+        createEventContractMultiContainer(innerContainer);
       createEventContract({
         eventContractContainerManager,
         eventTypes: ['click'],
@@ -1504,7 +1720,7 @@ describe('EventContract', () => {
       );
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager =
-        createEventContractContainerManager(innerContainer);
+        createEventContractMultiContainer(innerContainer);
       createEventContract({
         eventContractContainerManager,
         eventTypes: ['click'],
@@ -1533,7 +1749,7 @@ describe('EventContract', () => {
       );
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager =
-        createEventContractContainerManager(outerContainer);
+        createEventContractMultiContainer(outerContainer);
       createEventContract({
         eventContractContainerManager,
         eventTypes: ['click'],
@@ -1588,7 +1804,7 @@ describe('EventContract', () => {
         );
         const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
         const eventContractContainerManager =
-          createEventContractContainerManager(outerContainer);
+          createEventContractMultiContainer(outerContainer);
         createEventContract({
           eventContractContainerManager,
           eventTypes: ['click'],
@@ -1617,7 +1833,7 @@ describe('EventContract', () => {
         );
         const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
         const eventContractContainerManager =
-          createEventContractContainerManager(outerContainer);
+          createEventContractMultiContainer(outerContainer);
         createEventContract({
           eventContractContainerManager,
           eventTypes: ['click'],
@@ -1646,7 +1862,7 @@ describe('EventContract', () => {
         );
         const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
         const eventContractContainerManager =
-          createEventContractContainerManager(innerContainer);
+          createEventContractMultiContainer(innerContainer);
         createEventContract({
           eventContractContainerManager,
           eventTypes: ['click'],
@@ -1675,7 +1891,7 @@ describe('EventContract', () => {
         );
         const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
         const eventContractContainerManager =
-          createEventContractContainerManager(innerContainer);
+          createEventContractMultiContainer(innerContainer);
         createEventContract({
           eventContractContainerManager,
           eventTypes: ['click'],
@@ -1710,8 +1926,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['mouseenter'],
         dispatcher,
       });
@@ -1741,8 +1956,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['mouseenter'],
         dispatcher,
       });
@@ -1765,8 +1979,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['mouseleave'],
         dispatcher,
       });
@@ -1796,8 +2009,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['mouseleave'],
         dispatcher,
       });
@@ -1824,8 +2036,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['pointerenter'],
         dispatcher,
       });
@@ -1859,8 +2070,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['pointerenter'],
         dispatcher,
       });
@@ -1887,8 +2097,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['pointerleave'],
         dispatcher,
       });
@@ -1922,8 +2131,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['pointerleave'],
         dispatcher,
       });
@@ -1956,8 +2164,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -1987,8 +2194,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -2031,8 +2237,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -2093,8 +2298,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContract = createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -2132,8 +2336,7 @@ describe('EventContract', () => {
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContract = createEventContract({
-        eventContractContainerManager:
-          createEventContractContainerManager(container),
+        eventContractContainerManager: new EventContractContainer(container),
         eventTypes: ['click'],
         dispatcher,
       });
@@ -2182,8 +2385,7 @@ describe('EventContract', () => {
 
         const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
         const eventContract = createEventContract({
-          eventContractContainerManager:
-            createEventContractContainerManager(container),
+          eventContractContainerManager: new EventContractContainer(container),
           eventTypes: ['mouseout', 'mouseleave'],
           dispatcher,
         });
@@ -2229,8 +2431,7 @@ describe('EventContract', () => {
 
         const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
         const eventContract = createEventContract({
-          eventContractContainerManager:
-            createEventContractContainerManager(container),
+          eventContractContainerManager: new EventContractContainer(container),
           eventTypes: ['mouseleave'],
           dispatcher,
         });

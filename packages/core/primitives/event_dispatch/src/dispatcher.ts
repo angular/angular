@@ -6,17 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as jsactionEvent from './event';
-import {
-  EventInfo,
-  EventInfoWrapper,
-} from './event_info';
-import {EventType} from './event_type';
-import {replayEvent} from './replay';
-
 import {Attribute as AccessibilityAttribute} from './accessibility';
 import {Char} from './char';
+import * as eventLib from './event';
+import * as jsactionEvent from './event';
+import {EventInfo, EventInfoWrapper} from './event_info';
+import {EventType} from './event_type';
 import {UnrenamedEventContract} from './eventcontract';
+import {replayEvent} from './replay';
 import {Restriction} from './restriction';
 
 /**
@@ -456,7 +453,7 @@ export function registerDispatcher(
  */
 function skipStopPropagation(eventInfoWrapper: EventInfoWrapper) {
   return (
-    jsactionEvent.isGecko &&
+    eventLib.isGecko &&
     (eventInfoWrapper.getTargetElement().tagName === 'INPUT' ||
       eventInfoWrapper.getTargetElement().tagName === 'TEXTAREA') &&
     eventInfoWrapper.getEventType() === EventType.FOCUS

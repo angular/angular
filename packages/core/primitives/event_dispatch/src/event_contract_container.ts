@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventHandlerInfo} from './event_handler';
 import * as eventLib from './event';
+import {EventHandlerInfo} from './event_handler';
 
 /**
  * An `EventContractContainerManager` provides the common interface for managing
