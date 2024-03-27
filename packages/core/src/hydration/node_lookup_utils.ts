@@ -54,11 +54,7 @@ export function locateI18nRNodeByIndex<T extends RNode>(
     hydrationInfo: DehydratedView, noOffsetIndex: number): T|null|undefined {
   const i18nNodes = hydrationInfo.i18nNodes;
   if (i18nNodes) {
-    const native = i18nNodes.get(noOffsetIndex);
-    if (native !== undefined) {
-      i18nNodes.delete(noOffsetIndex);
-      return native as T | null;
-    }
+    return i18nNodes.get(noOffsetIndex) as T | null | undefined;
   }
   return undefined;
 }

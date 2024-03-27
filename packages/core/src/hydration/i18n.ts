@@ -7,15 +7,18 @@
  */
 
 import {inject, Injector} from '../di';
+import {isRootTemplateMessage} from '../render3/i18n/i18n_util';
 import {I18nNode, I18nNodeKind, I18nPlaceholderType, TI18n} from '../render3/interfaces/i18n';
 import {TNode, TNodeType} from '../render3/interfaces/node';
-import {RNode} from '../render3/interfaces/renderer_dom';
-import {HEADER_OFFSET, HYDRATION, LView, TView, TVIEW} from '../render3/interfaces/view';
+import type {Renderer} from '../render3/interfaces/renderer';
+import type {RNode} from '../render3/interfaces/renderer_dom';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TVIEW} from '../render3/interfaces/view';
+import {nativeRemoveNode} from '../render3/node_manipulation';
 import {unwrapRNode} from '../render3/util/view_utils';
 import {assertDefined, assertNotEqual} from '../util/assert';
 
 import type {HydrationContext} from './annotate';
-import {DehydratedView, I18N_DATA} from './interfaces';
+import {DehydratedIcuData, DehydratedView, I18N_DATA} from './interfaces';
 import {locateNextRNode, tryLocateRNodeByPath} from './node_lookup_utils';
 import {IS_I18N_HYDRATION_ENABLED} from './tokens';
 import {getNgContainerSize, initDisconnectedNodes, isSerializedElementContainer, processTextNodeBeforeSerialization} from './utils';
@@ -177,6 +180,7 @@ interface I18nHydrationContext {
   i18nNodes: Map<number, RNode|null>;
   disconnectedNodes: Set<number>;
   caseQueue: number[];
+  dehydratedIcuData: Map<number, DehydratedIcuData>;
 }
 
 /**
@@ -270,7 +274,7 @@ function prepareI18nBlockForHydrationImpl(
           tI18n, 'Expected i18n data to be present in a given TView slot during hydration');
 
   function findHydrationRoot() {
-    if (subTemplateIndex < 0) {
+    if (isRootTemplateMessage(subTemplateIndex)) {
       // This is the root of an i18n block. In this case, our hydration root will
       // depend on where our parent TNode (i.e. the block with i18n applied) is
       // in the DOM.
@@ -295,9 +299,11 @@ function prepareI18nBlockForHydrationImpl(
   const disconnectedNodes = initDisconnectedNodes(hydrationInfo) ?? new Set();
   const i18nNodes = hydrationInfo.i18nNodes ??= new Map<number, RNode|null>();
   const caseQueue = hydrationInfo.data[I18N_DATA]?.[index - HEADER_OFFSET] ?? [];
+  const dehydratedIcuData = hydrationInfo.dehydratedIcuData ??=
+      new Map<number, DehydratedIcuData>();
 
   collectI18nNodesFromDom(
-      {hydrationInfo, lView, i18nNodes, disconnectedNodes, caseQueue},
+      {hydrationInfo, lView, i18nNodes, disconnectedNodes, caseQueue, dehydratedIcuData},
       {currentNode, isConnected: true}, tI18n.ast);
 
   // Nodes from inactive ICU cases should be considered disconnected. We track them above
@@ -411,11 +417,75 @@ function collectI18nNodesFromDom(
               context, i === selectedCase ? state : childState, nodeOrNodes.cases[i]);
         }
 
+        if (selectedCase !== null) {
+          // ICUs represent a branching state, and the selected case could be different
+          // than what it was on the server. In that case, we need to be able to clean
+          // up the nodes from the original case. To do that, we store the selected case.
+          context.dehydratedIcuData.set(nodeOrNodes.index, {case: selectedCase, node: nodeOrNodes});
+        }
+
         // Hydration expects to find the ICU anchor element.
         const currentNode = appendI18nNodeToCollection(context, state, nodeOrNodes);
         setCurrentNode(state, currentNode?.nextSibling ?? null);
         break;
       }
+    }
+  }
+}
+
+let _claimDehydratedIcuCaseImpl: typeof claimDehydratedIcuCaseImpl = () => {
+  // noop unless `enableClaimDehydratedIcuCaseImpl` is invoked
+};
+
+/**
+ * Mark the case for the ICU node at the given index in the view as claimed,
+ * allowing its nodes to be hydrated and not cleaned up.
+ */
+export function claimDehydratedIcuCase(lView: LView, icuIndex: number, caseIndex: number) {
+  _claimDehydratedIcuCaseImpl(lView, icuIndex, caseIndex);
+}
+
+export function enableClaimDehydratedIcuCaseImpl() {
+  _claimDehydratedIcuCaseImpl = claimDehydratedIcuCaseImpl;
+}
+
+function claimDehydratedIcuCaseImpl(lView: LView, icuIndex: number, caseIndex: number) {
+  const dehydratedIcuDataMap = lView[HYDRATION]?.dehydratedIcuData;
+  if (dehydratedIcuDataMap) {
+    const dehydratedIcuData = dehydratedIcuDataMap.get(icuIndex);
+    if (dehydratedIcuData?.case === caseIndex) {
+      // If the case we're attempting to claim matches the dehydrated one,
+      // we remove it from the map to mark it as "claimed."
+      dehydratedIcuDataMap.delete(icuIndex);
+    }
+  }
+}
+
+/**
+ * Clean up all i18n hydration data associated with the given view.
+ */
+export function cleanupI18nHydrationData(lView: LView) {
+  const hydrationInfo = lView[HYDRATION];
+  if (hydrationInfo) {
+    const {i18nNodes, dehydratedIcuData: dehydratedIcuDataMap} = hydrationInfo;
+    if (i18nNodes && dehydratedIcuDataMap) {
+      const renderer = lView[RENDERER];
+      for (const dehydratedIcuData of dehydratedIcuDataMap.values()) {
+        cleanupDehydratedIcuData(renderer, i18nNodes, dehydratedIcuData);
+      }
+    }
+
+    hydrationInfo.i18nNodes = undefined;
+    hydrationInfo.dehydratedIcuData = undefined;
+  }
+}
+
+function cleanupDehydratedIcuData(
+    renderer: Renderer, i18nNodes: Map<number, RNode|null>, dehydratedIcuData: DehydratedIcuData) {
+  for (const node of dehydratedIcuData.node.cases[dehydratedIcuData.case]) {
+    const rNode = i18nNodes.get(node.index - HEADER_OFFSET);
+    if (rNode) {
+      nativeRemoveNode(renderer, rNode, false);
     }
   }
 }

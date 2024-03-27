@@ -7,7 +7,7 @@
  */
 
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {isI18nHydrationSupportEnabled} from '../../hydration/i18n';
+import {claimDehydratedIcuCase, isI18nHydrationSupportEnabled} from '../../hydration/i18n';
 import {locateI18nRNodeByIndex} from '../../hydration/node_lookup_utils';
 import {isDisconnectedNode, markRNodeAsClaimedByHydration} from '../../hydration/utils';
 import {getPluralCase} from '../../i18n/localization';
@@ -119,7 +119,17 @@ function locateOrCreateNodeImpl(
   const native = locateI18nRNodeByIndex(hydrationInfo!, noOffsetIndex) as RNode;
 
   // TODO: Improve error handling
+  //
+  // Other hydration paths use validateMatchingNode() in order to provide
+  // detailed information in development mode about the expected DOM.
+  // However, not every node in an i18n block has a TNode. Instead, we
+  // need to be able to use the AST to generate a similar message.
   ngDevMode && assertDefined(native, 'expected native element');
+  ngDevMode && assertEqual((native as Node).nodeType, nodeType, 'expected matching nodeType');
+  ngDevMode && nodeType === Node.ELEMENT_NODE &&
+      assertEqual(
+          (native as HTMLElement).tagName.toLowerCase(), textOrName.toLowerCase(),
+          'expecting matching tagName');
   ngDevMode && markRNodeAsClaimedByHydration(native);
 
   return native;
@@ -433,6 +443,7 @@ function applyIcuSwitchCase(tView: TView, tIcu: TIcu, lView: LView, value: strin
         ngDevMode && assertDomNode(anchorRNode);
         applyMutableOpCodes(tView, tIcu.create[caseIndex], lView, anchorRNode);
       }
+      claimDehydratedIcuCase(lView, tIcu.anchorIdx, caseIndex);
     }
   }
 }
