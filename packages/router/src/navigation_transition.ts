@@ -839,7 +839,8 @@ export class NavigationTransitions {
                 ),
               );
               try {
-                overallTransitionState.resolve(router.errorHandler(e));
+                const errorHandlerResult = router.errorHandler(e);
+                overallTransitionState.resolve(!!errorHandlerResult);
               } catch (ee) {
                 // TODO(atscott): consider flipping the default behavior of
                 // resolveNavigationPromiseOnError to be `resolve(false)` when
