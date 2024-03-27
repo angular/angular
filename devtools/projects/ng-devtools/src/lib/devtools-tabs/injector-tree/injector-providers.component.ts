@@ -19,7 +19,7 @@ import {Events, MessageBus, SerializedInjector, SerializedProviderRecord} from '
 @Component({
   selector: 'ng-injector-providers',
   template: `
-    <h1>Providers for {{ injector?.name }}</h1>
+    <h1>Providers for {{ injector?.name }} ({{ visibleProviders().length }})</h1>
     @if (injector) {
     <div class="injector-providers">
       <mat-form-field appearance="fill" class="form-field-spacer">

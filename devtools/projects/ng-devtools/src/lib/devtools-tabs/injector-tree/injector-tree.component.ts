@@ -8,10 +8,12 @@
 
 import {Component, ElementRef, inject, NgZone, ViewChild} from '@angular/core';
 import {MatButton} from '@angular/material/button';
+
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatExpansionPanel} from '@angular/material/expansion';
 import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
+import {MatInputModule} from '@angular/material/input';
 import {
   ComponentExplorerView,
   DevToolsNode,
@@ -37,6 +39,7 @@ import {
   grabInjectorPathsFromDirectiveForest,
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
+  filterOutInjectorsWithoutCertainToken,
 } from './injector-tree-fns';
 
 @Component({
@@ -52,6 +55,9 @@ import {
     MatIcon,
     MatTooltip,
     MatCheckbox,
+    ResolutionPathComponent,
+    InjectorProvidersComponent,
+    MatInputModule,
   ],
   templateUrl: `./injector-tree.component.html`,
   styleUrls: ['./injector-tree.component.scss'],
@@ -75,8 +81,10 @@ export class InjectorTreeComponent {
   providers: SerializedProviderRecord[] = [];
   elementToEnvironmentPath: Map<string, SerializedInjector[]> = new Map();
 
+  // filters
   hideInjectorsWithNoProviders = false;
   hideFrameworkInjectors = false;
+  tokenFilter = '';
 
   ngAfterViewInit() {
     this.setUpEnvironmentInjectorVisualizer();
@@ -121,6 +129,11 @@ export class InjectorTreeComponent {
     this.refreshVisualizer();
   }
 
+  updateTokenFilter(newToken: string): void {
+    this.tokenFilter = newToken;
+    this.refreshVisualizer();
+  }
+
   private refreshVisualizer(): void {
     this.updateInjectorTreeVisualization(this.rawDirectiveForest);
 
@@ -156,6 +169,10 @@ export class InjectorTreeComponent {
 
       if (this.hideInjectorsWithNoProviders) {
         injectorPaths = filterOutInjectorsWithNoProviders(injectorPaths);
+      }
+
+      if (this.tokenFilter.length > 0) {
+        injectorPaths = filterOutInjectorsWithoutCertainToken(injectorPaths, this.tokenFilter);
       }
 
       // In Angular we have two types of injectors, element injectors and environment injectors.
@@ -233,9 +250,7 @@ export class InjectorTreeComponent {
       }
     }
 
-    this.selectedNode = null;
-    this.snapToRoot(this.injectorTreeGraph);
-    this.snapToRoot(this.elementInjectorTreeGraph);
+    this.clearSelectedNode();
   }
 
   getNodeByComponentId(graph: InjectorTreeVisualizer, id: number): InjectorTreeD3Node | null {
@@ -278,12 +293,26 @@ export class InjectorTreeComponent {
     );
   }
 
-  highlightPathFromSelectedInjector(): void {
+  clearSelectedInjector() {
+    this.unhighlightBothGraphs();
+    this.clearSelectedNode();
+  }
+
+  private clearSelectedNode() {
+    this.selectedNode = null;
+    this.snapToRoot(this.injectorTreeGraph);
+    this.snapToRoot(this.elementInjectorTreeGraph);
+  }
+
+  private unhighlightBothGraphs(): void {
     this.unhighlightAllEdges(this.elementG);
     this.unhighlightAllNodes(this.elementG);
     this.unhighlightAllEdges(this.g);
     this.unhighlightAllNodes(this.g);
+  }
 
+  highlightPathFromSelectedInjector(): void {
+    this.unhighlightBothGraphs();
     this.checkIfSelectedNodeStillExists();
 
     if (this.selectedNode === null) {
