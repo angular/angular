@@ -7,7 +7,7 @@
  */
 
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
-import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, FormRecord, ValidationErrors, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 
 import {asyncValidator, asyncValidatorReturningObservable, currentStateOf, simpleAsyncValidator} from './util';
@@ -1943,6 +1943,41 @@ describe('FormGroup', () => {
       g.setControl('one', c2, {emitEvent: false});
       expect(logger).toEqual([]);
     });
+  });
+
+  describe('clearControls()', () => {
+    let c1: FormControl;
+    let c2: FormControl;
+    let r: FormRecord;
+
+    beforeEach(() => {
+      c1 = new FormControl('one');
+      c2 = new FormControl('two');
+      r = new FormRecord({one: c1, two: c2});
+    });
+
+    it('should remove control if new control is null', () => {
+      r.clearControls();
+      expect(r.controls['one']).not.toBeDefined();
+      expect(r.controls['two']).not.toBeDefined();
+      expect(r.value).toEqual({});
+    });
+
+    it('should only emit value change event once', () => {
+      const logger: string[] = [];
+      r.valueChanges.subscribe(() => logger.push('change!'));
+      r.clearControls();
+      expect(logger).toEqual(['change!']);
+    });
+
+    it('should not emit event when `FormGroup.clearControls` called with `emitEvent: false`',
+       () => {
+         const logger: string[] = [];
+         r.valueChanges.subscribe(() => logger.push('value change'));
+         r.statusChanges.subscribe(() => logger.push('status change'));
+         r.clearControls({emitEvent: false});
+         expect(logger).toEqual([]);
+       });
   });
 
   describe('emit `statusChanges` and `valueChanges` with/without async/sync validators', () => {
