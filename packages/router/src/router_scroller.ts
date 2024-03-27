@@ -7,7 +7,15 @@
  */
 
 import {ViewportScroller} from '@angular/common';
-import {Injectable, InjectionToken, NgZone, OnDestroy} from '@angular/core';
+import {
+  EnvironmentInjector,
+  Injectable,
+  InjectionToken,
+  NgZone,
+  OnDestroy,
+  afterNextRender,
+  inject,
+} from '@angular/core';
 import {Unsubscribable} from 'rxjs';
 
 import {
@@ -31,6 +39,7 @@ export class RouterScroller implements OnDestroy {
   private lastSource: 'imperative' | 'popstate' | 'hashchange' | undefined = 'imperative';
   private restoredId = 0;
   private store: {[key: string]: [number, number]} = {};
+  private readonly environmentInjector = inject(EnvironmentInjector);
 
   /** @nodoc */
   constructor(
@@ -105,21 +114,32 @@ export class RouterScroller implements OnDestroy {
     routerEvent: NavigationEnd | NavigationSkipped,
     anchor: string | null,
   ): void {
-    this.zone.runOutsideAngular(() => {
-      // The scroll event needs to be delayed until after change detection. Otherwise, we may
+    this.zone.runOutsideAngular(async () => {
+      // The scroll event needs to be delayed until after change detection. Otherwise we may
       // attempt to restore the scroll position before the router outlet has fully rendered the
       // component by executing its update block of the template function.
-      setTimeout(() => {
-        this.zone.run(() => {
-          this.transitions.events.next(
-            new Scroll(
-              routerEvent,
-              this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
-              anchor,
-            ),
-          );
+      await new Promise<void>((resolve) => {
+        // TODO(atscott): Attempt to remove the setTimeout in a future PR.
+        setTimeout(() => {
+          resolve();
         });
-      }, 0);
+        afterNextRender(
+          () => {
+            resolve();
+          },
+          {injector: this.environmentInjector},
+        );
+      });
+
+      this.zone.run(() => {
+        this.transitions.events.next(
+          new Scroll(
+            routerEvent,
+            this.lastSource === 'popstate' ? this.store[this.restoredId] : null,
+            anchor,
+          ),
+        );
+      });
     });
   }
 
