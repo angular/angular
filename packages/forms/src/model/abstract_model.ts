@@ -1126,8 +1126,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
     const sourceControl = opts.sourceControl ?? this;
     if (opts.emitEvent !== false) {
-      this._events.next(new StatusChangeEvent(this.status, sourceControl));
       this._events.next(new ValueChangeEvent(this.value, sourceControl));
+      this._events.next(new StatusChangeEvent(this.status, sourceControl));
       (this.valueChanges as EventEmitter<TValue>).emit(this.value);
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
