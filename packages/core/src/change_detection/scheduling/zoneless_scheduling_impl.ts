@@ -125,7 +125,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     // before removing it from the pending tasks (or the tasks service should
     // not synchronously emit stable, similar to how Zone stableness only
     // happens if it's still stable after a microtask).
-    if (this.pendingRenderTaskId) {
+    if (this.pendingRenderTaskId !== null) {
       const taskId = this.pendingRenderTaskId;
       this.pendingRenderTaskId = null;
       this.taskService.remove(taskId);
