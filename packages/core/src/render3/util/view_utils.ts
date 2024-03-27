@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getEnsureDirtyViewsAreAlwaysReachable} from '../../change_detection/flags';
 import {NotificationType} from '../../change_detection/scheduling/zoneless_scheduling';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {assertDefined, assertGreaterThan, assertGreaterThanOrEqual, assertIndexInRange, assertLessThan} from '../../util/assert';
@@ -210,18 +209,11 @@ export function requiresRefreshOrTraversal(lView: LView) {
  */
 export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
   lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationType.AfterRenderHooks);
-  // TODO(atscott): Simplify if...else cases once getEnsureDirtyViewsAreAlwaysReachable is always
-  // `true`. When we attach a view that's marked `Dirty`, we should ensure that it is reached during
-  // the next CD traversal so we add the `RefreshView` flag and mark ancestors accordingly.
+  if (lView[FLAGS] & LViewFlags.Dirty) {
+    lView[FLAGS] |= LViewFlags.RefreshView;
+  }
   if (requiresRefreshOrTraversal(lView)) {
     markAncestorsForTraversal(lView);
-  } else if (lView[FLAGS] & LViewFlags.Dirty) {
-    if (getEnsureDirtyViewsAreAlwaysReachable()) {
-      lView[FLAGS] |= LViewFlags.RefreshView;
-      markAncestorsForTraversal(lView);
-    } else {
-      lView[ENVIRONMENT].changeDetectionScheduler?.notify();
-    }
   }
 }
 
