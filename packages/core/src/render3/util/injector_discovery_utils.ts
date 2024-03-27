@@ -9,18 +9,18 @@
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {getInjectorDef, InjectorType} from '../../di/interface/defs';
-import {InjectFlags, InternalInjectFlags} from '../../di/interface/injector';
+import {InternalInjectFlags} from '../../di/interface/injector';
 import {NullInjector} from '../../di/null_injector';
 import {SingleProvider, walkProviderTree} from '../../di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
 import {deepForEach} from '../../util/array_utils';
-import {assertDefined, throwError} from '../../util/assert';
+import {throwError} from '../../util/assert';
 import type {ChainedInjector} from '../component_ref';
 import {getComponentDef} from '../definition';
 import {getNodeInjectorLView, getNodeInjectorTNode, getParentInjectorLocation, NodeInjector} from '../di';
-import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
+
 import {InjectedService, ProviderRecord} from '../debug/injector_profiler';
 import {NodeInjectorOffset} from '../interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from '../interfaces/node';
@@ -33,6 +33,8 @@ import {getNativeByTNode} from './view_utils';
 import {INJECTOR_DEF_TYPES} from '../../di/internal_tokens';
 import {ENVIRONMENT_INITIALIZER} from '../../di/initializer_token';
 import {ValueProvider} from '../../di/interface/provider';
+
+import {getFrameworkDIDebugData} from '../debug/di_debug_data';
 
 /**
  * Discovers the dependencies of an injectable instance. Provides DI information about each
@@ -129,7 +131,7 @@ export function getDependenciesFromInjectable<T>(
 
 function getDependenciesForTokenInInjector<T>(
     token: Type<T>|InjectionToken<T>, injector: Injector): InjectedService[] {
-  const {resolverToTokenToDependencies} = getFrameworkDIDebugData();
+  const {resolverToTokenToDependencies} = getFrameworkDIDebugData(injector);
 
   if (!(injector instanceof NodeInjector)) {
     return resolverToTokenToDependencies.get(injector)?.get?.(token as Type<T>) ?? [];
@@ -168,7 +170,7 @@ function getDependenciesForTokenInInjector<T>(
  * @returns the constructor where the `imports` array that configures this injector is located
  */
 function getProviderImportsContainer(injector: Injector): Type<unknown>|null {
-  const {standaloneInjectorToComponent} = getFrameworkDIDebugData();
+  const {standaloneInjectorToComponent} = getFrameworkDIDebugData(injector);
 
   // standalone components configure providers through a component def, so we have to
   // use the standalone component associated with this injector if Injector represents
@@ -206,7 +208,7 @@ function getProviderImportsContainer(injector: Injector): Type<unknown>|null {
  */
 function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
   const diResolver = getNodeInjectorTNode(injector);
-  const {resolverToProviders} = getFrameworkDIDebugData();
+  const {resolverToProviders} = getFrameworkDIDebugData(injector);
   return resolverToProviders.get(diResolver as TNode) ?? [];
 }
 
@@ -395,7 +397,7 @@ function walkProviderTreeToDiscoverImportPaths(
  */
 function getEnvironmentInjectorProviders(injector: EnvironmentInjector): ProviderRecord[] {
   const providerRecordsWithoutImportPaths =
-      getFrameworkDIDebugData().resolverToProviders.get(injector) ?? [];
+      getFrameworkDIDebugData(injector).resolverToProviders.get(injector) ?? [];
 
   // platform injector has no provider imports container so can we skip trying to
   // find import paths

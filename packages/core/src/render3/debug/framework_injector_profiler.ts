@@ -10,68 +10,14 @@ import {Injector} from '../../di/injector';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {assertDefined, throwError} from '../../util/assert';
-import {assertTNode, assertTNodeForLView} from '../assert';
+import {assertTNodeForLView} from '../assert';
 import {getComponentDef} from '../definition';
 import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
 import {TNode} from '../interfaces/node';
 import {LView} from '../interfaces/view';
 
+import {getFrameworkDIDebugData} from './di_debug_data';
 import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, InjectorProfilerEvent, InjectorProfilerEventType, ProviderRecord, setInjectorProfiler} from './injector_profiler';
-
-/**
- * These are the data structures that our framework injector profiler will fill with data in order
- * to support DI debugging APIs.
- *
- * resolverToTokenToDependencies: Maps an injector to a Map of tokens to an Array of
- * dependencies. Injector -> Token -> Dependencies This is used to support the
- * getDependenciesFromInjectable API, which takes in an injector and a token and returns it's
- * dependencies.
- *
- * resolverToProviders: Maps a DI resolver (an Injector or a TNode) to the providers configured
- * within it This is used to support the getInjectorProviders API, which takes in an injector and
- * returns the providers that it was configured with. Note that for the element injector case we
- * use the TNode instead of the LView as the DI resolver. This is because the registration of
- * providers happens only once per type of TNode. If an injector is created with an identical TNode,
- * the providers for that injector will not be reconfigured.
- *
- * standaloneInjectorToComponent: Maps the injector of a standalone component to the standalone
- * component that it is associated with. Used in the getInjectorProviders API, specificially in the
- * discovery of import paths for each provider. This is necessary because the imports array of a
- * standalone component is processed and configured in its standalone injector, but exists within
- * the component's definition. Because getInjectorProviders takes in an injector, if that injector
- * is the injector of a standalone component, we need to be able to discover the place where the
- * imports array is located (the component) in order to flatten the imports array within it to
- * discover all of it's providers.
- *
- *
- * All of these data structures are instantiated with WeakMaps. This will ensure that the presence
- * of any object in the keys of these maps does not prevent the garbage collector from collecting
- * those objects. Because of this property of WeakMaps, these data structures will never be the
- * source of a memory leak.
- *
- * An example of this advantage: When components are destroyed, we don't need to do
- * any additional work to remove that component from our mappings.
- *
- */
-class DIDebugData {
-  resolverToTokenToDependencies =
-      new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-  resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
-  standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
-
-  reset() {
-    this.resolverToTokenToDependencies =
-        new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-    this.resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
-    this.standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
-  }
-}
-
-let frameworkDIDebugData = new DIDebugData();
-
-export function getFrameworkDIDebugData(): DIDebugData {
-  return frameworkDIDebugData;
-}
 
 /**
  * Initalize default handling of injector events. This handling parses events
@@ -86,7 +32,6 @@ export function getFrameworkDIDebugData(): DIDebugData {
  *               - getInjectorProviders
  */
 export function setupFrameworkInjectorProfiler(): void {
-  frameworkDIDebugData.reset();
   setInjectorProfiler(
       (injectorProfilerEvent) => handleInjectorProfilerEvent(injectorProfilerEvent));
 }
@@ -118,7 +63,8 @@ function handleInjectEvent(context: InjectorProfilerContext, data: InjectedServi
     throwError('An Inject event must be run within an injection context.');
   }
 
-  const diResolverToInstantiatedToken = frameworkDIDebugData.resolverToTokenToDependencies;
+  const diResolverToInstantiatedToken =
+      getFrameworkDIDebugData(context.injector).resolverToTokenToDependencies;
 
   if (!diResolverToInstantiatedToken.has(diResolver)) {
     diResolverToInstantiatedToken.set(diResolver, new WeakMap<Type<unknown>, InjectedService[]>());
@@ -209,7 +155,7 @@ function handleInstanceCreatedByInjectorEvent(
     return;
   }
 
-  const {standaloneInjectorToComponent} = frameworkDIDebugData;
+  const {standaloneInjectorToComponent} = getFrameworkDIDebugData(context.injector);
 
   // If our injector has already been mapped, as is the case
   // when a standalone component imports another standalone component,
@@ -238,7 +184,7 @@ function isStandaloneComponent(value: Type<unknown>): boolean {
  */
 function handleProviderConfiguredEvent(
     context: InjectorProfilerContext, data: ProviderRecord): void {
-  const {resolverToProviders} = frameworkDIDebugData;
+  const {resolverToProviders} = getFrameworkDIDebugData(context.injector);
 
   let diResolver: Injector|TNode;
   if (context?.injector instanceof NodeInjector) {
