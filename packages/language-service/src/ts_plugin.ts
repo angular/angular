@@ -22,6 +22,16 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
 
   const ngLS = new LanguageService(project, tsLS, config);
 
+  function getSyntacticDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
+    if (!angularOnly && isTypeScriptFile(fileName)) {
+      return tsLS.getSyntacticDiagnostics(fileName);
+    }
+
+    // Template files do not currently produce separate syntactic diagnostics and
+    // are instead produced during the semantic diagnostic analysis.
+    return [];
+  }
+
   function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
     if (!angularOnly && isTypeScriptFile(fileName)) {
@@ -212,6 +222,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
 
   return {
     ...tsLS,
+    getSyntacticDiagnostics,
     getSemanticDiagnostics,
     getTypeDefinitionAtPosition,
     getQuickInfoAtPosition,
