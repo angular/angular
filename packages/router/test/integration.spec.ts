@@ -2432,6 +2432,27 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         }),
       ));
 
+      it('should redirect if a resolver returns RedirectCommand', fakeAsync(() => {
+        const router = TestBed.inject(Router);
+        const fixture = createRoot(router, RootCmpWithTwoOutlets);
+
+        router.resetConfig([
+          {
+            path: 'parent/:id',
+            component: BlankCmp,
+            resolve: {redirectMe: () => new RedirectCommand(router.parseUrl('/login'))},
+          },
+          {
+            path: 'login',
+            component: BlankCmp,
+          },
+        ]);
+
+        router.navigateByUrl('/parent/1');
+        advance(fixture);
+        expect(router.url).toEqual('/login');
+      }));
+
       it('should handle errors', fakeAsync(
         inject([Router], (router: Router) => {
           const fixture = createRoot(router, RootCmp);
