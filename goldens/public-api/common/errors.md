@@ -15,6 +15,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
+    INVALID_PLACEHOLDER_URL = 2966,
+    // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
     LCP_IMG_NGSRC_MODIFIED = 2964,
