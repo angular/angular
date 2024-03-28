@@ -78,7 +78,7 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 
 <!ELEMENT ex (#PCDATA)>
 ]>
-<messagebundle>
+<messagebundle handler="angular">
   <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/basic.html:1</source><source>src/comp2.ts:1</source><source>src/basic.html:1</source>translate me</msg>
   <msg id="9038505069473852515"><source>src/basic.html:3,4</source><source>src/comp2.ts:3,4</source><source>src/comp2.ts:2,3</source><source>src/basic.html:3,4</source>
     Welcome</msg>

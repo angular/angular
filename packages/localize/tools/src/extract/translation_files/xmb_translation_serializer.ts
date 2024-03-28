@@ -51,7 +51,9 @@ export class XmbTranslationSerializer implements TranslationSerializer {
         `\n` +
         `<!ELEMENT ex (#PCDATA)>\n` +
         `]>\n`);
-    xml.startTag('messagebundle');
+    xml.startTag('messagebundle', {
+      'handler': 'angular',
+    });
     for (const duplicateMessages of messageGroups) {
       const message = duplicateMessages[0];
       const id = this.getMessageId(message);
