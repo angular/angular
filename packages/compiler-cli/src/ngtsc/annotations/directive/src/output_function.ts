@@ -14,7 +14,7 @@ import {InputOrOutput} from '../../../metadata';
 import {ClassMember, ClassMemberAccessLevel, ReflectionHost} from '../../../reflection';
 
 import {validateAccessOfInitializerApiMember} from './initializer_function_access';
-import {tryParseInitializerApi} from './initializer_functions';
+import {InitializerApiFunction, tryParseInitializerApi} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
 
 // Outputs are accessed from parents, via the `listener` instruction.
@@ -29,6 +29,20 @@ const allowedAccessLevels = [
   ClassMemberAccessLevel.Protected,
 ];
 
+/** Possible functions that can declare an output. */
+export const OUTPUT_INITIALIZER_FNS: InitializerApiFunction[] = [
+  {
+    functionName: 'output',
+    owningModule: '@angular/core',
+    allowedAccessLevels,
+  },
+  {
+    functionName: 'outputFromObservable',
+    owningModule: '@angular/core/rxjs-interop',
+    allowedAccessLevels
+  },
+];
+
 /**
  * Attempts to parse a signal output class member. Returns the parsed
  * input mapping if possible.
@@ -41,20 +55,8 @@ export function tryParseInitializerBasedOutput(
     return null;
   }
 
-  const output = tryParseInitializerApi(
-      [
-        {
-          functionName: 'output',
-          owningModule: '@angular/core',
-          allowedAccessLevels,
-        },
-        {
-          functionName: 'outputFromObservable',
-          owningModule: '@angular/core/rxjs-interop',
-          allowedAccessLevels
-        },
-      ],
-      member.value, reflector, importTracker);
+  const output =
+      tryParseInitializerApi(OUTPUT_INITIALIZER_FNS, member.value, reflector, importTracker);
   if (output === null) {
     return null;
   }

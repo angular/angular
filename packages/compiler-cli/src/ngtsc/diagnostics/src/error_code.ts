@@ -460,6 +460,21 @@ export enum ErrorCode {
   INTERPOLATED_SIGNAL_NOT_INVOKED = 8109,
 
   /**
+   * Initializer-based APIs can only be invoked from inside of an initializer.
+   *
+   * ```
+   * // Allowed
+   * myInput = input();
+   *
+   * // Not allowed
+   * function myInput() {
+   *   return input();
+   * }
+   * ```
+   */
+  UNSUPPORTED_INITIALIZER_API_USAGE = 8110,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

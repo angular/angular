@@ -26,7 +26,7 @@ const queryFunctionNames: QueryFunctionName[] =
     ['viewChild', 'viewChildren', 'contentChild', 'contentChildren'];
 
 /** Possible query initializer API functions. */
-const initializerFns = queryFunctionNames.map(
+export const QUERY_INITIALIZER_FNS = queryFunctionNames.map(
     fnName => ({
       functionName: fnName,
       owningModule: '@angular/core' as const,
@@ -61,7 +61,8 @@ export function tryParseSignalQueryFromInitializer(
     return null;
   }
 
-  const query = tryParseInitializerApi(initializerFns, member.value, reflector, importTracker);
+  const query =
+      tryParseInitializerApi(QUERY_INITIALIZER_FNS, member.value, reflector, importTracker);
   if (query === null) {
     return null;
   }
