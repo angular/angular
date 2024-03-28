@@ -20,6 +20,16 @@ describe('RuntimeError utils', () => {
   });
 
   it('should correctly format an error with an error message but without an aio guide', () => {
+    const error = new RuntimeError(RuntimeErrorCode.TEMPLATE_EXECUTION_ERROR, 'Some error message');
+    expect(error.toString()).toBe('Error: NG0305: Some error message');
+  });
+
+  it('should correctly format an error without an error message not aio guide', () => {
+    const error = new RuntimeError(RuntimeErrorCode.TEMPLATE_EXECUTION_ERROR, '');
+    expect(error.toString()).toBe('Error: NG0305');
+  });
+
+  it('should correctly format an error with an error message but without an aio guide', () => {
     const error = new RuntimeError(RuntimeErrorCode.TEMPLATE_STRUCTURE_ERROR, 'Some error message');
     expect(error.toString()).toBe('Error: NG0305: Some error message');
   });
