@@ -36,7 +36,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 5);`);
+      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 13);`);
       expect(js).toContain(`i0.ɵɵqueryAdvance();`);
     });
 
@@ -57,8 +57,8 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 5, X);`);
-      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el2, _c0, 5, fromOtherFile.X);`);
+      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el, _c0, 13, X);`);
+      expect(js).toContain(`i0.ɵɵviewQuerySignal(ctx.el2, _c0, 13, fromOtherFile.X);`);
       expect(js).toContain(`i0.ɵɵqueryAdvance(2);`);
     });
 
@@ -138,7 +138,7 @@ runInEachFileSystem(() => {
       env.driveMain();
 
       const js = env.getContents('test.js');
-      expect(js).toContain(`i0.ɵɵcontentQuerySignal(dirIndex, ctx.el, _c0, 5);`);
+      expect(js).toContain(`i0.ɵɵcontentQuerySignal(dirIndex, ctx.el, _c0, 13);`);
       expect(js).toContain(`i0.ɵɵqueryAdvance();`);
     });
 
