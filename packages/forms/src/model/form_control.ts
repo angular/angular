@@ -485,6 +485,10 @@ export const FormControl: ɵFormControlCtor =
         this._pendingChange = false;
       }
 
+      override getRawValue(): TValue {
+        return this.value;
+      }
+
       /**  @internal */
       override _updateValue(): void {}
 
