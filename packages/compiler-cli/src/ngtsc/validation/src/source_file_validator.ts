@@ -52,7 +52,11 @@ export class SourceFileValidator {
         const nodeDiagnostics = rule.checkNode(node);
         if (nodeDiagnostics !== null) {
           fileDiagnostics ??= [];
-          fileDiagnostics.push(...nodeDiagnostics);
+          if (Array.isArray(nodeDiagnostics)) {
+            fileDiagnostics.push(...nodeDiagnostics);
+          } else {
+            fileDiagnostics.push(nodeDiagnostics);
+          }
         }
       }
       node.forEachChild(walk);
