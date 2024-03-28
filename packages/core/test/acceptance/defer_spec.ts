@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
+import {CommonModule, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, Directive, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, InjectionToken, Input, NgModule, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
+import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
 
 /**
  * Clears all associated directive defs from a given component class.
@@ -4149,6 +4150,71 @@ describe('@defer', () => {
       const tokenFromRootComponent = 'TokenA:MyCmp.A';
       expect(fixture.nativeElement.innerHTML)
           .toContain(`<chart>${serviceFromNgModule}|${tokenFromRootComponent}</chart>`);
+    });
+  });
+
+  describe('Router', () => {
+    it('should inject correct `ActivatedRoutes` in components within defer blocks', async () => {
+      @Component({
+        standalone: true,
+        imports: [RouterOutlet],
+        template: '<router-outlet />',
+      })
+      class App {
+      }
+
+      @Component({
+        standalone: true,
+        selector: 'another-child',
+        imports: [CommonModule],
+        template: 'another child: {{route.snapshot.url[0]}}',
+      })
+      class AnotherChild {
+        route = inject(ActivatedRoute);
+      }
+
+      @Component({
+        standalone: true,
+        imports: [CommonModule, AnotherChild],
+        template: `
+          child: {{route.snapshot.url[0]}}
+          @defer (on immediate) {
+            <another-child />
+          }
+        `,
+      })
+      class Child {
+        route = inject(ActivatedRoute);
+      }
+
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            return [dynamicImportOf(AnotherChild, 10)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          provideRouter([
+            {path: 'a', component: Child},
+          ]),
+        ],
+      });
+      clearDirectiveDefs(Child);
+
+      const app = TestBed.createComponent(App);
+      await TestBed.inject(Router).navigateByUrl('/a?x=1');
+      app.detectChanges();
+
+      await allPendingDynamicImports();
+      app.detectChanges();
+
+      expect(app.nativeElement.innerHTML).toContain('child: a');
+      expect(app.nativeElement.innerHTML).toContain('another child: a');
     });
   });
 });
