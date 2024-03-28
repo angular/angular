@@ -156,15 +156,16 @@ export function provideClientHydration(...features: HydrationFeature<HydrationFe
     }
   }
 
-  if (typeof ngDevMode !== 'undefined' && ngDevMode &&
-      featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) && hasHttpTransferCacheOptions) {
+  if ((typeof ngDevMode === 'undefined' ||
+       ngDevMode && featuresKind.has(HydrationFeatureKind.NoHttpTransferCache)) &&
+      hasHttpTransferCacheOptions) {
     // TODO: Make this a runtime error
     throw new Error(
         'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.');
   }
 
   return makeEnvironmentProviders([
-    (typeof ngDevMode !== 'undefined' && ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
+    (typeof ngDevMode === 'undefined' || ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
     withDomHydration(),
     ((featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions) ?
          [] :

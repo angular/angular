@@ -91,7 +91,7 @@ function printHydrationStats(injector: Injector) {
  */
 function whenStableWithTimeout(appRef: ApplicationRef, injector: Injector): Promise<void> {
   const whenStablePromise = whenStable(appRef);
-  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
     const timeoutTime = APPLICATION_IS_STABLE_TIMEOUT;
     const console = injector.get(Console);
     const ngZone = injector.get(NgZone);
@@ -130,7 +130,7 @@ export function withDomHydration(): EnvironmentProviders {
           // hydration annotations. Otherwise, keep hydration disabled.
           const transferState = inject(TransferState, {optional: true});
           isEnabled = !!transferState?.get(NGH_DATA_KEY, null);
-          if (!isEnabled && (typeof ngDevMode !== 'undefined' && ngDevMode)) {
+          if (!isEnabled && (typeof ngDevMode === 'undefined' || ngDevMode)) {
             const console = inject(Console);
             const message = formatRuntimeError(
                 RuntimeErrorCode.MISSING_HYDRATION_ANNOTATIONS,
@@ -194,7 +194,7 @@ export function withDomHydration(): EnvironmentProviders {
               NgZone.assertInAngularZone();
               cleanupDehydratedViews(appRef);
 
-              if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+              if (typeof ngDevMode === 'undefined' || ngDevMode) {
                 printHydrationStats(injector);
               }
             });
@@ -264,10 +264,11 @@ function verifySsrContentsIntegrity(): void {
   if (!hydrationMarker) {
     throw new RuntimeError(
         RuntimeErrorCode.MISSING_SSR_CONTENT_INTEGRITY_MARKER,
-        typeof ngDevMode !== 'undefined' && ngDevMode &&
+        typeof ngDevMode === 'undefined' || ngDevMode ?
             'Angular hydration logic detected that HTML content of this page was modified after it ' +
                 'was produced during server side rendering. Make sure that there are no optimizations ' +
                 'that remove comment nodes from HTML enabled on your CDN. Angular hydration ' +
-                'relies on HTML produced by the server, including whitespaces and comment nodes.');
+                'relies on HTML produced by the server, including whitespaces and comment nodes.' :
+            '');
   }
 }

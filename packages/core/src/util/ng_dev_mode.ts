@@ -133,7 +133,7 @@ export function initNgDevMode(): boolean {
     if (typeof ngDevMode !== 'object' || Object.keys(ngDevMode).length === 0) {
       ngDevModeResetPerfCounters();
     }
-    return typeof ngDevMode !== 'undefined' && !!ngDevMode;
+    return typeof ngDevMode === 'undefined' || !!ngDevMode;
   }
   return false;
 }
