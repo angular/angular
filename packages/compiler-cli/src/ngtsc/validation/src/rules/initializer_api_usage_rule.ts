@@ -38,7 +38,7 @@ export class InitializerApiUsageRule implements SourceFileValidatorRule {
     });
   }
 
-  checkNode(node: ts.Node): ts.Diagnostic[]|null {
+  checkNode(node: ts.Node): ts.Diagnostic|null {
     // We only care about call expressions.
     if (!ts.isCallExpression(node)) {
       return null;
@@ -50,9 +50,7 @@ export class InitializerApiUsageRule implements SourceFileValidatorRule {
       node = node.parent;
     }
 
-    // Initializer functions are allowed to be used in the initializer.
-    if (!node.parent || !ts.isCallExpression(node) ||
-        (ts.isPropertyDeclaration(node.parent) && node.parent.initializer === node)) {
+    if (!node.parent || !ts.isCallExpression(node)) {
       return null;
     }
 
@@ -62,13 +60,36 @@ export class InitializerApiUsageRule implements SourceFileValidatorRule {
       return null;
     }
 
-    return [
-      makeDiagnostic(
-          ErrorCode.UNSUPPORTED_INITIALIZER_API_USAGE, node,
-          `Unsupported call to the ${identifiedInitializer.api.functionName}${
-              identifiedInitializer.isRequired ?
-                  '.required' :
-                  ''} function. This function can only be called in the initializer of a class member.`)
-    ];
+    const functionName = identifiedInitializer.api.functionName +
+        (identifiedInitializer.isRequired ? '.required' : '');
+
+    if (ts.isPropertyDeclaration(node.parent) && node.parent.initializer === node) {
+      let closestClass: ts.Node = node.parent;
+
+      while (closestClass && !ts.isClassDeclaration(closestClass)) {
+        closestClass = closestClass.parent;
+      }
+
+      if (closestClass && ts.isClassDeclaration(closestClass)) {
+        const decorators = this.reflector.getDecoratorsOfDeclaration(closestClass);
+        const isComponentOrDirective = decorators !== null && decorators.some(decorator => {
+          return decorator.import?.from === '@angular/core' &&
+              (decorator.name === 'Component' || decorator.name === 'Directive');
+        });
+
+        return isComponentOrDirective ?
+            null :
+            makeDiagnostic(
+                ErrorCode.UNSUPPORTED_INITIALIZER_API_USAGE, node,
+                `Unsupported call to the ${
+                    functionName} function. This function can only be used as the initializer ` +
+                    `of a property on a @Component or @Directive class.`);
+      }
+    }
+
+    return makeDiagnostic(
+        ErrorCode.UNSUPPORTED_INITIALIZER_API_USAGE, node,
+        `Unsupported call to the ${
+            functionName} function. This function can only be called in the initializer of a class member.`);
   }
 }

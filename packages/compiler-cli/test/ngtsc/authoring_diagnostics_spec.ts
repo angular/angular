@@ -209,5 +209,38 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
     });
+
+    it('should report initializer function being used in an undecorated class', () => {
+      env.write('test.ts', `
+        import {input} from '@angular/core';
+
+        export class Test {
+          inp = input();
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText)
+          .toContain(
+              'Unsupported call to the input function. This function can only be used as the initializer of a property on a @Component or @Directive class.');
+    });
+
+    it('should report initializer function being used in an unsupported Angular class', () => {
+      env.write('test.ts', `
+        import {input, Pipe} from '@angular/core';
+
+        @Pipe({name: 'test'})
+        export class Test {
+          inp = input();
+        }
+      `);
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText)
+          .toContain(
+              'Unsupported call to the input function. This function can only be used as the initializer of a property on a @Component or @Directive class.');
+    });
   });
 });
