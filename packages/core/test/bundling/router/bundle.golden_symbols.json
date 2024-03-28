@@ -1986,9 +1986,6 @@
     "name": "shouldAddViewToDom"
   },
   {
-    "name": "shouldRecheckView"
-  },
-  {
     "name": "shouldSearchParent"
   },
   {

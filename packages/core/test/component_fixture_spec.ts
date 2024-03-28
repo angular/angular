@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, Input} from '@angular/core';
+import {Component, Injectable, Input, signal, ɵprovideZonelessChangeDetection} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+
+import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs} from '../testing/src/test_bed_common';
 
 @Component({selector: 'simple-comp', template: `<span>Original {{simpleBinding}}</span>`})
 @Injectable()
@@ -364,5 +366,32 @@ describe('ComponentFixture', () => {
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
        }));
+  });
+});
+
+describe('ComponentFixture with zoneless', () => {
+  it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        ɵprovideZonelessChangeDetection(),
+        {provide: AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, useValue: true},
+      ]
+    });
+    @Component({standalone: true, template: '{{signalThing()}}|{{regularThing}}'})
+    class CheckAlwaysCmp {
+      regularThing = 'initial';
+      signalThing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(CheckAlwaysCmp);
+    // components are created dirty
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toEqual('initial|initial');
+    fixture.componentInstance.regularThing = 'new';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toEqual('initial|initial');
+    fixture.componentInstance.signalThing.set('new');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toEqual('new|new');
   });
 });
