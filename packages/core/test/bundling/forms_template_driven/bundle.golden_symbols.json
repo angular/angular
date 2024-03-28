@@ -141,6 +141,9 @@
     "name": "ControlContainer"
   },
   {
+    "name": "ControlEvent"
+  },
+  {
     "name": "DEFAULT_APP_ID"
   },
   {
@@ -459,6 +462,9 @@
     "name": "PlatformRef"
   },
   {
+    "name": "PristineChangeEvent"
+  },
+  {
     "name": "R3Injector"
   },
   {
@@ -522,6 +528,9 @@
     "name": "SkipSelf"
   },
   {
+    "name": "StatusChangeEvent"
+  },
+  {
     "name": "Subject"
   },
   {
@@ -564,6 +573,9 @@
     "name": "TestabilityRegistry"
   },
   {
+    "name": "TouchedChangeEvent"
+  },
+  {
     "name": "USE_VALUE"
   },
   {
@@ -571,6 +583,9 @@
   },
   {
     "name": "VE_ViewContainerRef"
+  },
+  {
+    "name": "ValueChangeEvent"
   },
   {
     "name": "ViewContainerRef"
