@@ -4,5 +4,6 @@
     "esModuleInterop": true,
     "module": "ES2020"
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
+  "exclude": []
 }

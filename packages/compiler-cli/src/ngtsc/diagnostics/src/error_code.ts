@@ -45,6 +45,12 @@ export enum ErrorCode {
   INITIALIZER_API_NO_REQUIRED_FUNCTION = 1052,
 
   /**
+   * Raised whenever an initializer API is used on a class member
+   * and the given access modifiers (e.g. `private`) are not allowed.
+   */
+  INITIALIZER_API_DISALLOWED_MEMBER_VISIBILITY = 1053,
+
+  /**
    * An Angular feature, like inputs, outputs or queries is incorrectly
    * declared on a static member.
    */
@@ -452,6 +458,21 @@ export enum ErrorCode {
    * ```
    */
   INTERPOLATED_SIGNAL_NOT_INVOKED = 8109,
+
+  /**
+   * Initializer-based APIs can only be invoked from inside of an initializer.
+   *
+   * ```
+   * // Allowed
+   * myInput = input();
+   *
+   * // Not allowed
+   * function myInput() {
+   *   return input();
+   * }
+   * ```
+   */
+  UNSUPPORTED_INITIALIZER_API_USAGE = 8110,
 
   /**
    * The template type-checking engine would need to generate an inline type check block for a

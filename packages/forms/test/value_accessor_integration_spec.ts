@@ -1070,7 +1070,7 @@ describe('value accessors', () => {
           fixture = initTest(CvaWithDisabledStateForm, CvaWithDisabledState);
         });
 
-        it('sets the disabled state when the control is initally disabled', () => {
+        it('sets the disabled state when the control is initially disabled', () => {
           fixture.componentInstance.form = new FormGroup({
             'login': new FormControl({value: 'aa', disabled: true}),
           });
@@ -1083,7 +1083,7 @@ describe('value accessors', () => {
               .toContain('DISABLED');
         });
 
-        it('sets the enabled state when the control is initally enabled', () => {
+        it('sets the enabled state when the control is initially enabled', () => {
           fixture.componentInstance.form = new FormGroup({
             'login': new FormControl({value: 'aa', disabled: false}),
           });
@@ -1210,7 +1210,7 @@ describe('value accessors in reactive forms with custom options', () => {
       fixture = initTest(CvaWithDisabledStateForm, CvaWithDisabledState);
     });
 
-    it('does not set the enabled state when the control is initally enabled', () => {
+    it('does not set the enabled state when the control is initially enabled', () => {
       fixture.componentInstance.form = new FormGroup({
         'login': new FormControl({value: 'aa', disabled: false}),
       });

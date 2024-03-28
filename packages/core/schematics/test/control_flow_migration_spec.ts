@@ -5442,6 +5442,71 @@ describe('control flow migration', () => {
 
       expect(actual).toBe(expected);
     });
+
+    it('should not modify `imports` initialized to a variable reference', async () => {
+      writeFile('/comp.ts', [
+        `import {Component} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `const IMPORTS = [CommonModule];\n`,
+        `@Component({`,
+        `  imports: IMPORTS,`,
+        `  template: '<span *ngIf="show">Content here</span>',`,
+        `})`,
+        `class Comp {`,
+        `  show = false;`,
+        `}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `const IMPORTS = [CommonModule];\n`,
+        `@Component({`,
+        `  imports: IMPORTS,`,
+        `  template: '@if (show) {<span>Content here</span>}',`,
+        `})`,
+        `class Comp {`,
+        `  show = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
+
+    it('should handle spread elements in the `imports` array', async () => {
+      writeFile('/comp.ts', [
+        `import {Component} from '@angular/core';`,
+        `import {CommonModule} from '@angular/common';\n`,
+        `const BEFORE = [];\n`,
+        `const AFTER = [];\n`,
+        `@Component({`,
+        `  imports: [...BEFORE, CommonModule, ...AFTER],`,
+        `  template: '<span *ngIf="show">Content here</span>',`,
+        `})`,
+        `class Comp {`,
+        `  show = false;`,
+        `}`,
+      ].join('\n'));
+
+      await runMigration();
+      const actual = tree.readContent('/comp.ts');
+      const expected = [
+        `import {Component} from '@angular/core';\n\n`,
+        `const BEFORE = [];\n`,
+        `const AFTER = [];\n`,
+        `@Component({`,
+        `  imports: [...BEFORE, ...AFTER],`,
+        `  template: '@if (show) {<span>Content here</span>}',`,
+        `})`,
+        `class Comp {`,
+        `  show = false;`,
+        `}`,
+      ].join('\n');
+
+      expect(actual).toBe(expected);
+    });
   });
 
   describe('no migration needed', () => {

@@ -58,6 +58,30 @@ export class ImportedSymbolsTracker {
     return namespaces.get(moduleName)?.has(node.text) ?? false;
   }
 
+  /**
+   * Checks if a file has a named imported of a certain symbol.
+   * @param sourceFile File to be checked.
+   * @param exportedName Name of the exported symbol that is being checked.
+   * @param moduleName Module that exports the symbol.
+   */
+  hasNamedImport(sourceFile: ts.SourceFile, exportedName: string, moduleName: string): boolean {
+    this.scanImports(sourceFile);
+    const fileImports = this.fileToNamedImports.get(sourceFile)!;
+    const moduleImports = fileImports.get(moduleName);
+    return moduleImports !== undefined && moduleImports.has(exportedName);
+  }
+
+  /**
+   * Checks if a file has namespace imports of a certain symbol.
+   * @param sourceFile File to be checked.
+   * @param moduleName Module whose namespace import is being searched for.
+   */
+  hasNamespaceImport(sourceFile: ts.SourceFile, moduleName: string): boolean {
+    this.scanImports(sourceFile);
+    const namespaces = this.fileToNamespaceImports.get(sourceFile)!;
+    return namespaces.has(moduleName);
+  }
+
   /** Scans a `SourceFile` for import statements and caches them for later use. */
   private scanImports(sourceFile: ts.SourceFile): void {
     if (this.fileToNamedImports.has(sourceFile) && this.fileToNamespaceImports.has(sourceFile)) {

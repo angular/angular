@@ -9,12 +9,12 @@
 import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../../../ngtsc/imports';
-import {Decorator, ReflectionHost} from '../../../ngtsc/reflection';
+import {ClassMember, Decorator, ReflectionHost} from '../../../ngtsc/reflection';
 import {ImportManager} from '../../../ngtsc/translator';
 
 /** Function that can be used to transform class properties. */
 export type PropertyTransform =
-    (node: ts.PropertyDeclaration&{name: ts.Identifier | ts.StringLiteralLike},
+    (member: Pick<ClassMember, 'name'|'accessLevel'|'value'>&{node: ts.PropertyDeclaration},
      host: ReflectionHost, factory: ts.NodeFactory, importTracker: ImportedSymbolsTracker,
      importManager: ImportManager, classDecorator: Decorator, isCore: boolean) =>
         ts.PropertyDeclaration;

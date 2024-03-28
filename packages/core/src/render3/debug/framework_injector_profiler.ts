@@ -203,7 +203,7 @@ function handleInstanceCreatedByInjectorEvent(
   const environmentInjector: EnvironmentInjector|null =
       context.injector.get(EnvironmentInjector, null, {optional: true});
   // Standalone components should have an environment injector. If one cannot be
-  // found we may be in a test case for low level functionality that did not explictly
+  // found we may be in a test case for low level functionality that did not explicitly
   // setup this injector. In those cases, we simply ignore this event.
   if (environmentInjector === null) {
     return;

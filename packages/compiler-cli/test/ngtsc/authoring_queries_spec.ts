@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import ts from 'typescript';
+
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
@@ -258,21 +260,71 @@ runInEachFileSystem(() => {
 
       it('should report an error when `read` option is complex', () => {
         env.write('test.ts', `
-        import {Directive, ViewChild, viewChild} from '@angular/core';
+          import {Directive, viewChild} from '@angular/core';
 
-        @Directive({
-          selector: 'test',
-        })
-        export class TestDir {
-          something = null!;
-          el = viewChild('myLocator', {read: this.something});
-        }
-      `);
+          @Directive({
+            selector: 'test',
+          })
+          export class TestDir {
+            something = null!;
+            el = viewChild('myLocator', {read: this.something});
+          }
+        `);
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
         expect(diagnostics).toEqual([jasmine.objectContaining({
           messageText: `Query "read" option expected a literal class reference.`,
         })]);
+      });
+
+      it('should error when a query is declared using an ES private field', () => {
+        env.write('test.ts', `
+          import {Directive, viewChild} from '@angular/core';
+
+          @Directive({
+            selector: 'test',
+          })
+          export class TestDir {
+            #el = viewChild('myLocator');
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
+          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+            messageText: `Cannot use "viewChild" on a class member that is declared as ES private.`,
+          }),
+        })]);
+      });
+
+      it('should allow query is declared on a `private` field', () => {
+        env.write('test.ts', `
+          import {Directive, viewChild} from '@angular/core';
+
+          @Directive({
+            selector: 'test',
+          })
+          export class TestDir {
+            private el = viewChild('myLocator');
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(0);
+      });
+
+      it('should allow query is declared on a `protected` field', () => {
+        env.write('test.ts', `
+          import {Directive, viewChild} from '@angular/core';
+
+          @Directive({
+            selector: 'test',
+          })
+          export class TestDir {
+            protected el = viewChild('myLocator');
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(0);
       });
     });
   });

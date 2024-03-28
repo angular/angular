@@ -608,7 +608,7 @@ function getInjectorParent(injector: Injector): Injector|null {
     // todo(aleksanderbodurri): ideally nothing in packages/core should deal
     // directly with router concerns. Refactor this so that we can make the jump from
     // NodeInjector -> OutletInjector -> NodeInjector
-    // without explictly relying on types contracts from packages/router
+    // without explicitly relying on types contracts from packages/router
     const injectorParent = (chainedInjector.injector as any)?.parent as Injector;
 
     if (injectorParent instanceof NodeInjector) {

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import ts from 'typescript';
+
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
@@ -212,6 +214,66 @@ runInEachFileSystem(() => {
         expect(diagnostics).toEqual([
           jasmine.objectContaining({messageText: 'Output does not support ".required()".'}),
         ]);
+      });
+
+      it('should report an error when using an ES private field', () => {
+        env.write('test.ts', `
+          import {Component, output} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '',
+          })
+          export class TestDir {
+            #click = output();
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
+          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+            messageText: `Cannot use "output" on a class member that is declared as ES private.`,
+          }),
+        })]);
+      });
+
+      it('should report an error when using a `private` field', () => {
+        env.write('test.ts', `
+          import {Component, output} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '',
+          })
+          export class TestDir {
+            private click = output();
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
+          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+            messageText: `Cannot use "output" on a class member that is declared as private.`,
+          }),
+        })]);
+      });
+
+      it('should allow an output using a `protected` field', () => {
+        env.write('test.ts', `
+          import {Component, output} from '@angular/core';
+
+          @Component({
+            selector: 'test',
+            template: '',
+          })
+          export class TestDir {
+            protected click = output();
+          }
+        `);
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(0);
       });
     });
   });

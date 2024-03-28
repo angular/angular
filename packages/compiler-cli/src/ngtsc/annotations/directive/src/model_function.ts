@@ -10,22 +10,44 @@ import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../../../imports';
 import {ModelMapping} from '../../../metadata';
-import {ClassMember, ReflectionHost} from '../../../reflection';
+import {ClassMember, ClassMemberAccessLevel, ReflectionHost} from '../../../reflection';
 
-import {tryParseInitializerApiMember} from './initializer_functions';
+import {validateAccessOfInitializerApiMember} from './initializer_function_access';
+import {InitializerApiFunction, tryParseInitializerApi} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
+
+/** Represents a function that can declare a model. */
+export const MODEL_INITIALIZER_FN: InitializerApiFunction = {
+  functionName: 'model',
+  owningModule: '@angular/core',
+  // Inputs are accessed from parents, via the `property` instruction.
+  // Conceptually, the fields need to be publicly readable, but in practice,
+  // accessing `protected` or `private` members works at runtime, so we can allow
+  // cases where the input is intentionally not part of the public API, programmatically.
+  allowedAccessLevels: [
+    ClassMemberAccessLevel.PublicWritable,
+    ClassMemberAccessLevel.PublicReadonly,
+    ClassMemberAccessLevel.Protected,
+  ],
+};
 
 /**
  * Attempts to parse a model class member. Returns the parsed model mapping if possible.
  */
 export function tryParseSignalModelMapping(
-    member: Pick<ClassMember, 'name'|'value'>, reflector: ReflectionHost,
+    member: Pick<ClassMember, 'name'|'value'|'accessLevel'>, reflector: ReflectionHost,
     importTracker: ImportedSymbolsTracker): ModelMapping|null {
-  const model = tryParseInitializerApiMember(
-      [{functionName: 'model', owningModule: '@angular/core'}], member, reflector, importTracker);
+  if (member.value === null) {
+    return null;
+  }
+
+  const model =
+      tryParseInitializerApi([MODEL_INITIALIZER_FN], member.value, reflector, importTracker);
   if (model === null) {
     return null;
   }
+
+  validateAccessOfInitializerApiMember(model, member);
 
   const optionsNode =
       (model.isRequired ? model.call.arguments[0] : model.call.arguments[1]) as ts.Expression |

@@ -16,7 +16,8 @@ export class FatalDiagnosticError extends Error {
       readonly code: ErrorCode, readonly node: ts.Node,
       readonly diagnosticMessage: string|ts.DiagnosticMessageChain,
       readonly relatedInformation?: ts.DiagnosticRelatedInformation[]) {
-    super(`FatalDiagnosticError #${code}: ${diagnosticMessage}`);
+    super(`FatalDiagnosticError: Code: ${code}, Message: ${
+        ts.flattenDiagnosticMessageText(diagnosticMessage, '\n')}`);
 
     // Extending `Error` ends up breaking some internal tests. This appears to be a known issue
     // when extending errors in TS and the workaround is to explicitly set the prototype.
@@ -26,7 +27,7 @@ export class FatalDiagnosticError extends Error {
 
   // Trying to hide `.message` from `Error` to encourage users to look
   // at `diagnosticMessage` instead.
-  override message: never = null!;
+  override message: never = this.message;
 
   /**
    * @internal

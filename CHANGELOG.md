@@ -1,3 +1,108 @@
+<a name="18.0.0-next.2"></a>
+# 18.0.0-next.2 (2024-03-28)
+## Breaking Changes
+### compiler-cli
+- * Angular no longer supports TypeScript versions older than 5.4.
+### core
+- `ComponentFixture.whenStable` now matches the
+  `ApplicationRef.isStable` observable. Prior to this change, stability
+  of the fixture did not include everything that was considered in
+  `ApplicationRef`. `whenStable` of the fixture will now include unfinished
+  router navigations and unfinished `HttpClient` requests. This will cause
+  tests that `await` the `whenStable` promise to time out when there are
+  incomplete requests. To fix this, remove the `whenStable`,
+  instead wait for another condition, or ensure `HttpTestingController`
+  mocks responses for all requests. Try adding `HttpTestingController.verify()`
+  before your `await fixture.whenStable` to identify the open requests.
+  Also, make sure your tests wait for the stability promise. We found many
+  examples of tests that did not, meaning the expectations did not execute
+  within the test body.
+  
+  In addition, `ComponentFixture.isStable` would synchronously switch to
+  true in some scenarios but will now always be asynchronous.
+### router
+- When a a guard returns a `UrlTree` as a redirect, the
+  redirecting navigation will now use `replaceUrl` if the initial
+  navigation was also using the `replaceUrl` option. If this is not
+  desirable, the redirect can configure new `NavigationBehaviorOptions` by
+  returning a `RedirectCommand` with the desired options instead of `UrlTree`.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7fc7f3f05f](https://github.com/angular/angular/commit/7fc7f3f05f0139dd773032fd5ad308f8d2a9fcf5) | fix | capture all control flow branches for content projection in if blocks ([#54921](https://github.com/angular/angular/pull/54921)) |
+| [a369f43fbd](https://github.com/angular/angular/commit/a369f43fbdf45456bbae1caf71ef7becd15d1e90) | fix | capture switch block cases for content projection ([#54921](https://github.com/angular/angular/pull/54921)) |
+| [eb625d3783](https://github.com/angular/angular/commit/eb625d37839c3b9f20a2ffb3af06426f9910c8ac) | fix | declare for loop aliases in addition to new name ([#54942](https://github.com/angular/angular/pull/54942)) |
+| [bfd0bd574e](https://github.com/angular/angular/commit/bfd0bd574e9a2e1489a007393caae266512c0f04) | fix | invoke method-based tracking function with context ([#54960](https://github.com/angular/angular/pull/54960)) |
+| [e1650e3b13](https://github.com/angular/angular/commit/e1650e3b13556ab09c919cfdf97913fa0291622c) | fix | throw error if item name and context variables conflict ([#55045](https://github.com/angular/angular/pull/55045)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5bd188a394](https://github.com/angular/angular/commit/5bd188a394d30053099e2c83fe79136d590e5399) | feat | add partial compilation support for deferred blocks ([#54908](https://github.com/angular/angular/pull/54908)) |
+| [b02b31a915](https://github.com/angular/angular/commit/b02b31a915333e680cf96de5d0f965a6e2639028) | feat | drop support for TypeScript older than 5.4 ([#54961](https://github.com/angular/angular/pull/54961)) |
+| [78188e877a](https://github.com/angular/angular/commit/78188e877a4db8655bdd3dc5012b70b12a7234de) | fix | add diagnostic if initializer API is used outside of an initializer ([#54993](https://github.com/angular/angular/pull/54993)) |
+| [694ba79cbf](https://github.com/angular/angular/commit/694ba79cbf7aaed1079b1fabf53ea446162fc933) | fix | report cases where initializer APIs are used in a non-directive class ([#54993](https://github.com/angular/angular/pull/54993)) |
+| [6219341d26](https://github.com/angular/angular/commit/6219341d267ae7689299835b90f0afa0fe61e213) | fix | report errors when initializer APIs are used on private fields ([#54981](https://github.com/angular/angular/pull/54981)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a600a39d0c](https://github.com/angular/angular/commit/a600a39d0cf9bb8fc2b6786e6f31acb78b7acc6e) | feat | add support for fallback content in ng-content ([#54854](https://github.com/angular/angular/pull/54854)) |
+| [658cf8c384](https://github.com/angular/angular/commit/658cf8c3840b637284a5bb6c9751226d24ccbf9f) | fix | `ComponentFixture` stability should match `ApplicationRef` ([#54949](https://github.com/angular/angular/pull/54949)) |
+| [2fc11eae9e](https://github.com/angular/angular/commit/2fc11eae9ea65160866bf7ba46c10520ae9a141f) | fix | account for re-projected ng-content elements with fallback content ([#54854](https://github.com/angular/angular/pull/54854)) |
+| [1c0ec56c46](https://github.com/angular/angular/commit/1c0ec56c462cf18fb38aae29858165a08b5a2a82) | fix | correctly project single-root content inside control flow ([#54921](https://github.com/angular/angular/pull/54921)) |
+| [86a359b399](https://github.com/angular/angular/commit/86a359b399456e62335a0bcfe7c7fb48b7c2b781) | fix | establish proper injector resolution order for `@defer` blocks ([#55079](https://github.com/angular/angular/pull/55079)) |
+| [e02bcf89cf](https://github.com/angular/angular/commit/e02bcf89cf77c3118c649a7db68e66a78f16155c) | fix | Fix clearing of pending task in zoneless cleanup implementation ([#55074](https://github.com/angular/angular/pull/55074)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cf73983fdc](https://github.com/angular/angular/commit/cf73983fdc5fca955fbe729b231a207fc5cd70fd) | fix | include transferCache when cloning HttpRequest ([#54939](https://github.com/angular/angular/pull/54939)) |
+| [13554f9637](https://github.com/angular/angular/commit/13554f9637c222671253e733114cfbc815c6d33d) | fix | manage different body types for caching POST requests ([#54980](https://github.com/angular/angular/pull/54980)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6d1b82df32](https://github.com/angular/angular/commit/6d1b82df32049cfaba2f6a50b9639b6e3b722170) | fix | allow external projects to use provided compiler options ([#55035](https://github.com/angular/angular/pull/55035)) |
+| [4166dfc1b6](https://github.com/angular/angular/commit/4166dfc1b62a83b60203bfe45a6d4aa7148a0b23) | fix | prevent underlying TS Service from handling template files ([#55003](https://github.com/angular/angular/pull/55003)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [63688714ae](https://github.com/angular/angular/commit/63688714aeb788a24b030f9f9cdcc55e7fb0d758) | fix | account for variables in imports initializer ([#55081](https://github.com/angular/angular/pull/55081)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [60f1d681e0](https://github.com/angular/angular/commit/60f1d681e0ba66d3d94b0819f2c612f095c2d3d3) | fix | preserve replaceUrl when returning a urlTree from CanActivate ([#54042](https://github.com/angular/angular/pull/54042)) |
+| [eae75ff3f9](https://github.com/angular/angular/commit/eae75ff3f9f564b919debe3f9fa41ed1b073a22c) | fix | RouterLinkActive will always remove active classes when links are not active ([#54982](https://github.com/angular/angular/pull/54982)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.3.2"></a>
+# 17.3.2 (2024-03-28)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b7bad5151](https://github.com/angular/angular/commit/2b7bad515100cbfa40b3e8d844bae13d43fd5602) | fix | invoke method-based tracking function with context ([#54960](https://github.com/angular/angular/pull/54960)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b478dfbfda](https://github.com/angular/angular/commit/b478dfbfda3f32fbe723a1e8725e86490422520d) | fix | report errors when initializer APIs are used on private fields ([#55070](https://github.com/angular/angular/pull/55070)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [708ba8115f](https://github.com/angular/angular/commit/708ba8115f7ad05201db5c529aefe4dd48fc64c5) | fix | establish proper injector resolution order for `@defer` blocks ([#55079](https://github.com/angular/angular/pull/55079)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cb433af0e1](https://github.com/angular/angular/commit/cb433af0e1ba61073eb4a02ccd75cf360e9fd409) | fix | include transferCache when cloning HttpRequest ([#54939](https://github.com/angular/angular/pull/54939)) |
+| [64f202cab9](https://github.com/angular/angular/commit/64f202cab9e7a5c873b17bbddd02368006426152) | fix | manage different body types for caching POST requests ([#54980](https://github.com/angular/angular/pull/54980)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2f9d94bc4a](https://github.com/angular/angular/commit/2f9d94bc4ab5a94e620a13404aba4e094f8b2344) | fix | account for variables in imports initializer ([#55081](https://github.com/angular/angular/pull/55081)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [365fd50407](https://github.com/angular/angular/commit/365fd504077d0e7509efc3077ea4ae8bbafb01f7) | fix | RouterLinkActive will always remove active classes when links are not active ([#54982](https://github.com/angular/angular/pull/54982)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-next.1"></a>
 # 18.0.0-next.1 (2024-03-20)
 ## Breaking Changes

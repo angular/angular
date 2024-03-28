@@ -27,7 +27,7 @@ export function wrapI18nIcus(job: CompilationJob): void {
         case ir.OpKind.IcuStart:
           if (currentI18nOp === null) {
             addedI18nId = job.allocateXrefId();
-            // ICU i18n start/end ops should not recieve source spans.
+            // ICU i18n start/end ops should not receive source spans.
             ir.OpList.insertBefore<ir.CreateOp>(
                 ir.createI18nStartOp(addedI18nId, op.message, undefined, null), op);
           }

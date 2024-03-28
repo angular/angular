@@ -233,7 +233,7 @@ describe('FetchBackend', async () => {
 
   it('handles a blob with a mime type', async () => {
     const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'blob'})));
-    const type = 'aplication/pdf';
+    const type = 'application/pdf';
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', new Blob(), {'Content-Type': type});
     const events = await promise;
     expect(events.length).toBe(2);

@@ -275,7 +275,7 @@ export class MockService {
 }
 
 /**
- * Replace at most one occurence that matches `regex` in the specified
+ * Replace at most one occurrence that matches `regex` in the specified
  * `searchText` with the specified `replaceText`. Throw an error if there is
  * more than one occurrence.
  */

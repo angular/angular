@@ -38,25 +38,25 @@ export const queryFunctionsTransforms: PropertyTransform = (
     classDecorator,
     isCore,
     ) => {
-  const decorators = host.getDecoratorsOfDeclaration(member);
+  const decorators = host.getDecoratorsOfDeclaration(member.node);
 
   // If the field already is decorated, we handle this gracefully and skip it.
   const queryDecorators =
       decorators && getAngularDecorators(decorators, queryDecoratorNames, isCore);
   if (queryDecorators !== null && queryDecorators.length > 0) {
-    return member;
+    return member.node;
   }
 
   const queryDefinition = tryParseSignalQueryFromInitializer(
-      {name: member.name.text, value: member.initializer ?? null},
+      member,
       host,
       importTracker,
   );
   if (queryDefinition === null) {
-    return member;
+    return member.node;
   }
 
-  const sourceFile = member.getSourceFile();
+  const sourceFile = member.node.getSourceFile();
   const callArgs = queryDefinition.call.arguments;
   const newDecorator = factory.createDecorator(
       factory.createCallExpression(
@@ -78,11 +78,11 @@ export const queryFunctionsTransforms: PropertyTransform = (
   );
 
   return factory.updatePropertyDeclaration(
-      member,
-      [newDecorator, ...(member.modifiers ?? [])],
-      member.name,
-      member.questionToken,
-      member.type,
-      member.initializer,
+      member.node,
+      [newDecorator, ...(member.node.modifiers ?? [])],
+      member.node.name,
+      member.node.questionToken,
+      member.node.type,
+      member.node.initializer,
   );
 };

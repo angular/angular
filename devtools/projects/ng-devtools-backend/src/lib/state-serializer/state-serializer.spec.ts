@@ -531,6 +531,13 @@ describe('deeplySerializeSelectedProperties', () => {
     expect(getKeys(instance)).toEqual(['baz', 'foo', 'bar']);
   });
 
+  it('getKeys should not throw on empty object without prototype', () => {
+    // creates an object without a prototype
+    const instance = Object.create(null);
+
+    expect(getKeys(instance)).toEqual([]);
+  });
+
   it('getKeys would ignore getters and setters for "__proto__"', () => {
     const instance = {
       baz: 2,

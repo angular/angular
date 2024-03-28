@@ -6,26 +6,29 @@
  * node scripts/audit-web-app.mjs <url> <min-scores> [<log-file>]
  * ```
  *
- * Runs audits against the specified URL on specific categories (accessibility, best practices, performance, PWA, SEO).
- * It fails, if the score in any category is below the score specified in `<min-scores>`. (Only runs audits for the
- * specified categories.)
+ * Runs audits against the specified URL on specific categories (accessibility, best practices,
+ * performance, PWA, SEO). It fails, if the score in any category is below the score specified in
+ * `<min-scores>`. (Only runs audits for the specified categories.)
  *
- * `<min-scores>` is either a number (in which case it is interpreted as `all:<min-score>`) or a list of comma-separated
- * strings of the form `key:value`, where `key` is one of `accessibility`, `best-practices`, `performance`, `pwa`, `seo`
- * or `all` and `value` is a number (between 0 and 100).
+ * `<min-scores>` is either a number (in which case it is interpreted as `all:<min-score>`) or a
+ * list of comma-separated strings of the form `key:value`, where `key` is one of `accessibility`,
+ * `best-practices`, `performance`, `pwa`, `seo` or `all` and `value` is a number (between 0 and
+ * 100).
  *
  * Examples:
  * - `95` _(Same as `all:95`.)_
  * - `all:95` _(Run audits for all categories and require a score of 95 or higher.)_
- * - `all:95,pwa:100` _(Same as `all:95`, except that a scope of 100 is required for the `pwa` category.)_
- * - `performance:90` _(Only run audits for the `performance` category and require a score of 90 or higher.)_
+ * - `all:95,pwa:100` _(Same as `all:95`, except that a scope of 100 is required for the `pwa`
+ * category.)_
+ * - `performance:90` _(Only run audits for the `performance` category and require a score of 90 or
+ * higher.)_
  *
  * If `<log-file>` is defined, the full results will be logged there.
  */
 
 // Imports
 import lighthouse from 'lighthouse';
-import * as printer from 'lighthouse/lighthouse-cli/printer.js';
+import * as printer from 'lighthouse/cli/printer.js';
 import logger from 'lighthouse-logger';
 import puppeteer from 'puppeteer-core';
 import path from 'path';
@@ -33,7 +36,9 @@ import {getAdjustedChromeBinPathForWindows} from '../tools/windows-chromium-path
 
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];
-const LIGHTHOUSE_FLAGS = {logLevel: process.env.CI ? 'error' : 'info'};  // Be less verbose on CI.
+const LIGHTHOUSE_FLAGS = {
+  logLevel: process.env.CI ? 'error' : 'info'
+};  // Be less verbose on CI.
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer';
 const WAIT_FOR_SW_DELAY = 5000;
 
@@ -61,7 +66,10 @@ async function _main(args) {
   try {
     console.log('');
     const startTime = Date.now();
-    const browser = await puppeteer.launch({executablePath: path.resolve(process.env.CHROME_BIN), args: ['--no-sandbox', '--headless']});
+    const browser = await puppeteer.launch({
+      executablePath: path.resolve(process.env.CHROME_BIN),
+      args: ['--no-sandbox', '--headless']
+    });
     const browserVersion = await browser.version();
     const results = await runLighthouse(browser, url, lhFlags, lhConfig);
 
@@ -104,9 +112,11 @@ function parseInput(args) {
   const allValuesValid = Object.values(minScores).every(x => (0 <= x) && (x <= 1));
 
   if (unknownCategories.length > 0) {
-    onError(`Invalid arguments: <min-scores> contains unknown category(-ies): ${unknownCategories.join(', ')}`);
+    onError(`Invalid arguments: <min-scores> contains unknown category(-ies): ${
+        unknownCategories.join(', ')}`);
   } else if (!allValuesValid) {
-    onError(`Invalid arguments: <min-scores> has non-numeric or out-of-range values: ${minScoresRaw}`);
+    onError(
+        `Invalid arguments: <min-scores> has non-numeric or out-of-range values: ${minScoresRaw}`);
   }
 
   return {url, minScores, logFile};
@@ -119,13 +129,11 @@ function parseMinScores(raw) {
     raw = `all:${raw}`;
   }
 
-  raw.
-    split(',').
-    map(x => x.split(':')).
-    forEach(([key, val]) => minScores[key] = Number(val) / 100);
+  raw.split(',').map(x => x.split(':')).forEach(([key, val]) => minScores[key] = Number(val) / 100);
 
   if (minScores.hasOwnProperty('all')) {
-    AUDIT_CATEGORIES.forEach(cat => minScores.hasOwnProperty(cat) || (minScores[cat] = minScores.all));
+    AUDIT_CATEGORIES.forEach(
+        cat => minScores.hasOwnProperty(cat) || (minScores[cat] = minScores.all));
     delete minScores.all;
   }
 
@@ -152,8 +160,8 @@ async function processResults(results, minScores, logFile) {
     const minScore = minScores[cat];
     const passed = !isNaN(score) && (score >= minScore);
 
-    console.log(
-      `    - ${paddedTitle}  ${formatScore(score)}  (Required: ${formatScore(minScore)})  ${passed ? 'OK' : 'FAILED'}`);
+    console.log(`    - ${paddedTitle}  ${formatScore(score)}  (Required: ${
+        formatScore(minScore)})  ${passed ? 'OK' : 'FAILED'}`);
 
     return aggr && passed;
   }, true);

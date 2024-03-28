@@ -120,6 +120,9 @@
     "name": "ChangeDetectionScheduler"
   },
   {
+    "name": "ChangeDetectionSchedulerImpl"
+  },
+  {
     "name": "ChangeDetectionStrategy"
   },
   {
@@ -390,6 +393,9 @@
     "name": "NoopAnimationPlayer"
   },
   {
+    "name": "NoopNgZone"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -532,6 +538,12 @@
   },
   {
     "name": "WebAnimationsStyleNormalizer"
+  },
+  {
+    "name": "ZONELESS_ENABLED"
+  },
+  {
+    "name": "ZONELESS_SCHEDULER_DISABLED"
   },
   {
     "name": "ZoneStablePendingTask"
@@ -883,6 +895,9 @@
   },
   {
     "name": "getBindingsEnabled"
+  },
+  {
+    "name": "getCallbackScheduler"
   },
   {
     "name": "getClosureSafeProperty"

@@ -27,20 +27,20 @@ export const signalModelTransform: PropertyTransform = (
     classDecorator,
     isCore,
     ) => {
-  if (host.getDecoratorsOfDeclaration(member)?.some(d => {
+  if (host.getDecoratorsOfDeclaration(member.node)?.some(d => {
         return isAngularDecorator(d, 'Input', isCore) || isAngularDecorator(d, 'Output', isCore);
       })) {
-    return member;
+    return member.node;
   }
 
   const modelMapping = tryParseSignalModelMapping(
-      {name: member.name.text, value: member.initializer ?? null},
+      member,
       host,
       importTracker,
   );
 
   if (modelMapping === null) {
-    return member;
+    return member.node;
   }
 
   const inputConfig = factory.createObjectLiteralExpression([
@@ -52,7 +52,7 @@ export const signalModelTransform: PropertyTransform = (
         'required', modelMapping.input.required ? factory.createTrue() : factory.createFalse()),
   ]);
 
-  const sourceFile = member.getSourceFile();
+  const sourceFile = member.node.getSourceFile();
   const inputDecorator = createDecorator(
       'Input',
       // Config is cast to `any` because `isSignal` will be private, and in case this
@@ -67,12 +67,12 @@ export const signalModelTransform: PropertyTransform = (
       classDecorator, factory, sourceFile, importManager);
 
   return factory.updatePropertyDeclaration(
-      member,
-      [inputDecorator, outputDecorator, ...(member.modifiers ?? [])],
-      member.name,
-      member.questionToken,
-      member.type,
-      member.initializer,
+      member.node,
+      [inputDecorator, outputDecorator, ...(member.node.modifiers ?? [])],
+      member.node.name,
+      member.node.questionToken,
+      member.node.type,
+      member.node.initializer,
   );
 };
 

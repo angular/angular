@@ -16,9 +16,13 @@ import {PendingTasks} from '../../pending_tasks';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
+import {ChangeDetectionScheduler, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
+import {ChangeDetectionSchedulerImpl} from './zoneless_scheduling_impl';
+
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {
   private readonly zone = inject(NgZone);
+  private readonly changeDetectionScheduler = inject(ChangeDetectionScheduler, {optional: true});
   private readonly applicationRef = inject(ApplicationRef);
 
   private _onMicrotaskEmptySubscription?: Subscription;
@@ -31,7 +35,11 @@ export class NgZoneChangeDetectionScheduler {
     this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
       next: () => {
         this.zone.run(() => {
-          this.applicationRef.tick();
+          if (this.changeDetectionScheduler) {
+            this.changeDetectionScheduler.tick(true /* shouldRefreshViews */);
+          } else {
+            this.applicationRef.tick();
+          }
         });
       }
     });
@@ -50,7 +58,26 @@ export class NgZoneChangeDetectionScheduler {
 export const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
     (typeof ngDevMode === 'undefined' || ngDevMode) ? 'provideZoneChangeDetection token' : '');
 
-export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone): StaticProvider[] {
+/**
+ * Configures change detection scheduling when using ZoneJS.
+ */
+export const enum SchedulingMode {
+  /**
+   * Change detection will run when the `NgZone.onMicrotaskEmpty` observable emits.
+   * Change detection will also be scheduled to run whenever Angular is notified
+   * of a change. This includes calling `ChangeDetectorRef.markForCheck`,
+   * setting a `signal` value, and attaching a view.
+   */
+  Hybrid,
+  /**
+   * Change detection will only run when the `NgZone.onMicrotaskEmpty` observable emits.
+   */
+  NgZoneOnly,
+}
+
+export function internalProvideZoneChangeDetection(
+    {ngZoneFactory, schedulingMode}:
+        {ngZoneFactory: () => NgZone, schedulingMode?: SchedulingMode}): StaticProvider[] {
   return [
     {provide: NgZone, useFactory: ngZoneFactory},
     {
@@ -80,6 +107,14 @@ export function internalProvideZoneChangeDetection(ngZoneFactory: () => NgZone):
       }
     },
     {provide: INTERNAL_APPLICATION_ERROR_HANDLER, useFactory: ngZoneApplicationErrorHandlerFactory},
+    // Always disable scheduler whenever explicitly disabled, even if Hybrid was specified elsewhere
+    schedulingMode === SchedulingMode.NgZoneOnly ?
+        {provide: ZONELESS_SCHEDULER_DISABLED, useValue: true} :
+        [],
+    // Only provide scheduler when explicitly enabled
+    schedulingMode === SchedulingMode.Hybrid ?
+        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl} :
+        [],
   ];
 }
 
@@ -110,8 +145,9 @@ export function ngZoneApplicationErrorHandlerFactory() {
  * @see {@link NgZoneOptions}
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
-  const zoneProviders =
-      internalProvideZoneChangeDetection(() => new NgZone(getNgZoneOptions(options)));
+  const schedulingMode = (options as any)?.schedulingMode;
+  const zoneProviders = internalProvideZoneChangeDetection(
+      {ngZoneFactory: () => new NgZone(getNgZoneOptions(options)), schedulingMode});
   return makeEnvironmentProviders([
     (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: PROVIDED_NG_ZONE, useValue: true} :
                                                       [],

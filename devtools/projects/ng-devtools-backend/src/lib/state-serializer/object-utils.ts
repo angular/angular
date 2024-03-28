@@ -21,7 +21,8 @@ export function getKeys(obj: {}): string[] {
   obj = unwrapSignal(obj);
   const properties = Object.getOwnPropertyNames(obj);
 
-  const prototypeMembers = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(obj));
+  // Object.getPrototypeOf can return null, on empty objectwithout prototype for example
+  const prototypeMembers = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(obj) ?? {});
 
   const ignoreList = ['__proto__'];
   const gettersAndSetters = Object.keys(prototypeMembers).filter((methodName) => {

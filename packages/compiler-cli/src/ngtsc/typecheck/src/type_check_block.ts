@@ -1445,7 +1445,7 @@ class TcbIfOp extends TcbOp {
         expression = expressionScope.resolve(branch.expressionAlias);
       }
 
-      // The expressions of the preceeding branches have to be negated
+      // The expressions of the preceding branches have to be negated
       // (e.g. `expr` becomes `!(expr)`) when comparing in the guard, except
       // for the branch's own expression which is preserved as is.
       const comparisonExpression = i === index ?
@@ -1486,7 +1486,7 @@ class TcbSwitchOp extends TcbOp {
     const comparisonExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
     markIgnoreDiagnostics(comparisonExpression);
 
-    // Wrap the comparisson expression in parentheses so we don't ignore
+    // Wrap the comparison expression in parentheses so we don't ignore
     // diagnostics when comparing incompatible types (see #52315).
     const expression = ts.factory.createParenthesizedExpression(comparisonExpression);
     const root = this.generateCase(0, expression, null);
@@ -2326,13 +2326,13 @@ class TcbExpressionTranslator {
    * context). This method assists in resolving those.
    */
   protected resolve(ast: AST): ts.Expression|null {
-    // TODO: this is actually a bug, because `ImpliticReceiver` extends `ThisReceiver`. Consider a
+    // TODO: this is actually a bug, because `ImplicitReceiver` extends `ThisReceiver`. Consider a
     // case when the explicit `this` read is inside a template with a context that also provides the
     // variable name being read:
     // ```
     // <ng-template let-a>{{this.a}}</ng-template>
     // ```
-    // Clearly, `this.a` should refer to the class property `a`. However, becuase of this code,
+    // Clearly, `this.a` should refer to the class property `a`. However, because of this code,
     // `this.a` will refer to `let-a` on the template context.
     //
     // Note that the generated code is actually consistent with this bug. To fix it, we have to:

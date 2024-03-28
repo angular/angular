@@ -186,7 +186,7 @@ In electron, we patched the following APIs with `zone.js`
 
 1. Browser API
 2. NodeJS
-3. Electorn Native API
+3. Electron Native API
 
 ## Usage.
 

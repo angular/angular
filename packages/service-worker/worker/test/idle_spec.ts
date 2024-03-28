@@ -176,7 +176,7 @@ import {envIsSupported} from '../testing/utils';
       const forthTrigger = idle.trigger();
 
       // Finally, advance the clock beyond `maxDelay` (3000) from the first trigger, but not beyond
-      // the timeout for the forth. This should cause the task to be executed nontheless.
+      // the timeout for the forth. This should cause the task to be executed nonetheless.
       scope.advance(3);
       await Promise.all([thirdTrigger, forthTrigger]);
 

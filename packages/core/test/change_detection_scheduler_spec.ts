@@ -8,13 +8,17 @@
 
 import {AsyncPipe} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, PLATFORM_ID, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
+import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, NgZone, PLATFORM_ID, provideZoneChangeDetection, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {filter, take, tap} from 'rxjs/operators';
+
+function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
+  return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
+}
 
 describe('Angular with NoopNgZone', () => {
   async function createFixture<T>(type: Type<T>): Promise<ComponentFixture<T>> {
@@ -245,9 +249,6 @@ describe('Angular with NoopNgZone', () => {
       return firstValueFrom(applicationRef.isStable.pipe(filter(stable => stable)));
     }
 
-    function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
-      return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
-    }
 
     it('when destroying a view (*no* animations)', withBody('<app></app>', async () => {
          destroyPlatform();
@@ -451,5 +452,57 @@ describe('Angular with NoopNgZone', () => {
     throwError = false;
     await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toEqual('new');
+  });
+});
+
+describe('Angular with scheduler and ZoneJS', () => {
+  // TODO(atscott): Update once option is public
+  const hybridModeSchedulingOptions = {schedulingMode: 0} as any;
+  // TODO(atscott): should be removed in favor of fixture.whenStable once #54949 is merged
+  function whenStable(injector = TestBed.inject(EnvironmentInjector)): Promise<true> {
+    return firstValueFrom(injector.get(ApplicationRef).isStable.pipe(filter((v): v is true => v)));
+  }
+
+  beforeEach(() => {
+    TestBed.configureTestingModule(
+        {providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]});
+  });
+
+  it('current default behavior requires updates inside Angular zone', async () => {
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+
+    TestBed.inject(NgZone).runOutsideAngular(() => {
+      fixture.componentInstance.thing.set('new');
+    });
+    expect(isStable()).toBe(true);
+    await whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+  });
+
+  it('updating signal outside of zone still schedules update when in hybrid mode', async () => {
+    TestBed.configureTestingModule(
+        {providers: [provideZoneChangeDetection(hybridModeSchedulingOptions)]});
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    expect(fixture.nativeElement.innerText).toContain('initial');
+
+    TestBed.inject(NgZone).runOutsideAngular(() => {
+      fixture.componentInstance.thing.set('new');
+    });
+    expect(isStable()).toBe(false);
+    await whenStable();
+    expect(fixture.nativeElement.innerText).toContain('new');
   });
 });

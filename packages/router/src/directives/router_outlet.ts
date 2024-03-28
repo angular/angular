@@ -379,6 +379,14 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 }
 
 class OutletInjector implements Injector {
+  /**
+   * A special flag that allows to identify the `OutletInjector` without
+   * referring to the class itself. This is required as a temporary solution,
+   * to have a special handling for this injector in core. Eventually, this
+   * injector should just become an `EnvironmentInjector` without special logic.
+   */
+  private __ngOutletInjector = true;
+
   constructor(
     private route: ActivatedRoute,
     private childContexts: ChildrenOutletContexts,

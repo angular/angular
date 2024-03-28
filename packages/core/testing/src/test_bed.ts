@@ -26,7 +26,6 @@ import {
   ProviderToken,
   runInInjectionContext,
   Type,
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
   ɵconvertToBitFlags as convertToBitFlags,
   ɵDeferBlockBehavior as DeferBlockBehavior,
   ɵEffectScheduler as EffectScheduler,
@@ -41,6 +40,7 @@ import {
   ɵsetUnknownElementStrictMode as setUnknownElementStrictMode,
   ɵsetUnknownPropertyStrictMode as setUnknownPropertyStrictMode,
   ɵstringify as stringify,
+  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
 } from '@angular/core';
 
 /* clang-format on */
@@ -637,9 +637,9 @@ export class TestBedImpl implements TestBed {
           componentFactory.create(Injector.NULL, [], `#${rootElId}`, this.testModuleRef) as
           ComponentRef<T>;
       return this.runInInjectionContext(() => {
-        const hasScheduler = this.inject(ChangeDetectionScheduler, null) !== null;
-        const fixture = hasScheduler ? new ScheduledComponentFixture(componentRef) :
-                                       new PseudoApplicationComponentFixture(componentRef);
+        const isZoneless = this.inject(ZONELESS_ENABLED);
+        const fixture = isZoneless ? new ScheduledComponentFixture(componentRef) :
+                                     new PseudoApplicationComponentFixture(componentRef);
         fixture.initialize();
         return fixture;
       });

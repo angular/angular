@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import ts from 'typescript';
+
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 
@@ -590,6 +592,69 @@ runInEachFileSystem(() => {
 
         const diags = env.driveDiagnostics();
         expect(diags).withContext(`On version ${version}`).toEqual([]);
+      });
+    });
+
+    describe('diagnostics', () => {
+      it('should error when declared using an ES private field', () => {
+        env.write('test.ts', `
+          import {Directive, model} from '@angular/core';
+
+          @Directive({
+            selector: '[directiveName]',
+            standalone: true,
+          })
+          export class TestDir {
+            #data = model.required<boolean>();
+          }
+        `);
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
+          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+            messageText: `Cannot use "model" on a class member that is declared as ES private.`,
+          }),
+        })]);
+      });
+
+      it('should error when declared using a `private` field', () => {
+        env.write('test.ts', `
+          import {Directive, model} from '@angular/core';
+
+          @Directive({
+            selector: '[directiveName]',
+            standalone: true,
+          })
+          export class TestDir {
+            private data = model.required<boolean>();
+          }
+        `);
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
+          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+            messageText: `Cannot use "model" on a class member that is declared as private.`,
+          }),
+        })]);
+      });
+
+      it('should allow using a `protected` field', () => {
+        env.write('test.ts', `
+          import {Directive, model} from '@angular/core';
+
+          @Directive({
+            selector: '[directiveName]',
+            standalone: true,
+          })
+          export class TestDir {
+            protected data = model.required<boolean>();
+          }
+        `);
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toBe(0);
       });
     });
   });

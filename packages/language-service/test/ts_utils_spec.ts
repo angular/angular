@@ -151,7 +151,7 @@ describe('TS util', () => {
             false);
       });
 
-      it('creates a non-existant property', () => {
+      it('creates a non-existent property', () => {
         const obj = updateObjectValueForKey(oldObj, 'newKey', valueAppenderFn);
         expect(print(obj)).toBe('{ foo: "bar", newKey: "baz" }');
       });

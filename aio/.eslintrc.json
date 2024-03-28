@@ -2,19 +2,16 @@
   "root": true,
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "parserOptions": {
         "project": [
           "tsconfig.json",
+          "tools/firebase-test-utils/tsconfig.json",
           "tests/e2e/tsconfig.json"
         ],
         "createDefaultProgram": true
       },
-      "extends": [
-        "plugin:@angular-eslint/template/process-inline-templates"
-      ],
+      "extends": ["plugin:@angular-eslint/template/process-inline-templates"],
       "plugins": [
         "@typescript-eslint",
         "@angular-eslint",
@@ -84,9 +81,7 @@
         "@typescript-eslint/no-namespace": "error",
         "@typescript-eslint/no-non-null-assertion": "error",
         "@typescript-eslint/no-parameter-properties": "off",
-        "@typescript-eslint/no-shadow": [
-          "error"
-        ],
+        "@typescript-eslint/no-shadow": ["error"],
         "@typescript-eslint/no-unused-expressions": "error",
         "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/no-var-requires": "off",
@@ -100,10 +95,7 @@
             "avoidEscape": true
           }
         ],
-        "@typescript-eslint/semi": [
-          "error",
-          "always"
-        ],
+        "@typescript-eslint/semi": ["error", "always"],
         "@typescript-eslint/triple-slash-reference": [
           "error",
           {
@@ -121,10 +113,7 @@
         "constructor-super": "error",
         "curly": "error",
         "eol-last": "error",
-        "eqeqeq": [
-          "error",
-          "smart"
-        ],
+        "eqeqeq": ["error", "smart"],
         "guard-for-in": "error",
         "id-denylist": [
           "error",
@@ -144,10 +133,7 @@
         "jsdoc/check-alignment": "error",
         "jsdoc/no-types": "error",
         "max-classes-per-file": "off",
-        "max-len": [
-          "error",
-          120
-        ],
+        "max-len": ["error", 120],
         "new-parens": "error",
         "no-bitwise": "error",
         "no-caller": "error",
@@ -155,11 +141,7 @@
         "no-console": [
           "error",
           {
-            "allow": [
-              "log",
-              "warn",
-              "error"
-            ]
+            "allow": ["log", "warn", "error"]
           }
         ],
         "no-debugger": "error",
@@ -196,16 +178,10 @@
         "no-use-before-define": "off",
         "no-var": "error",
         "object-shorthand": "error",
-        "one-var": [
-          "error",
-          "never"
-        ],
+        "one-var": ["error", "never"],
         "prefer-arrow/prefer-arrow-functions": "off",
         "prefer-const": "error",
-        "quote-props": [
-          "error",
-          "as-needed"
-        ],
+        "quote-props": ["error", "as-needed"],
         "quotes": "off",
         "radix": "error",
         "sort-keys": "off",
@@ -222,12 +198,8 @@
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
-      "extends": [
-        "plugin:@angular-eslint/template/recommended"
-      ],
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
       "rules": {
         "@angular-eslint/template/alt-text": "error",
         "@angular-eslint/template/elements-content": "error",

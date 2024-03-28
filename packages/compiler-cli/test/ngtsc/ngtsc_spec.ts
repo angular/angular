@@ -9328,8 +9328,8 @@ function allTests(os: string) {
                 kind: ts.SyntaxKind.MultiLineCommentTrivia,
                 text: `*
                     * @fileoverview Closure comment
-                    * @supress bla1
-                    * @supress bla2
+                    * @suppress bla1
+                    * @suppress bla2
                   `,
                 pos: -1,
                 end: -1,

@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
+import {AmbientImport, ClassDeclaration, ClassMember, ClassMemberAccessLevel, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, isDecoratorIdentifier, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 import {isNamedClassDeclaration} from './util';
 
@@ -31,8 +31,18 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
   getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
     const tsClazz = castDeclarationToClassOrDie(clazz);
-    return tsClazz.members.map(member => this._reflectMember(member))
-        .filter((member): member is ClassMember => member !== null);
+    return tsClazz.members
+        .map(member => {
+          const result = reflectClassMember(member);
+          if (result === null) {
+            return null;
+          }
+          return {
+            ...result,
+            decorators: this.getDecoratorsOfDeclaration(member),
+          };
+        })
+        .filter((member): member is NonNullable<typeof member> => member !== null);
   }
 
   getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
@@ -393,57 +403,6 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     };
   }
 
-  private _reflectMember(node: ts.ClassElement): ClassMember|null {
-    let kind: ClassMemberKind|null = null;
-    let value: ts.Expression|null = null;
-    let name: string|null = null;
-    let nameNode: ts.Identifier|ts.StringLiteral|null = null;
-
-    if (ts.isPropertyDeclaration(node)) {
-      kind = ClassMemberKind.Property;
-      value = node.initializer || null;
-    } else if (ts.isGetAccessorDeclaration(node)) {
-      kind = ClassMemberKind.Getter;
-    } else if (ts.isSetAccessorDeclaration(node)) {
-      kind = ClassMemberKind.Setter;
-    } else if (ts.isMethodDeclaration(node)) {
-      kind = ClassMemberKind.Method;
-    } else if (ts.isConstructorDeclaration(node)) {
-      kind = ClassMemberKind.Constructor;
-    } else {
-      return null;
-    }
-
-    if (ts.isConstructorDeclaration(node)) {
-      name = 'constructor';
-    } else if (ts.isIdentifier(node.name)) {
-      name = node.name.text;
-      nameNode = node.name;
-    } else if (ts.isStringLiteral(node.name)) {
-      name = node.name.text;
-      nameNode = node.name;
-    } else {
-      return null;
-    }
-
-    const decorators = this.getDecoratorsOfDeclaration(node);
-    const modifiers = ts.getModifiers(node);
-    const isStatic =
-        modifiers !== undefined && modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
-
-    return {
-      node,
-      implementation: node,
-      kind,
-      type: node.type || null,
-      name,
-      nameNode,
-      decorators,
-      value,
-      isStatic,
-    };
-  }
-
   /**
    * Get the set of declarations declared in `file` which are exported.
    */
@@ -593,6 +552,100 @@ export function filterToMembersWithDecorator(members: ClassMember[], name: strin
         return {member, decorators};
       })
       .filter((value): value is {member: ClassMember, decorators: Decorator[]} => value !== null);
+}
+
+function extractModifiersOfMember(node: ts.ClassElement&ts.HasModifiers):
+    {accessLevel: ClassMemberAccessLevel, isStatic: boolean} {
+  const modifiers = ts.getModifiers(node);
+  let isStatic = false;
+  let isReadonly = false;
+  let accessLevel = ClassMemberAccessLevel.PublicWritable;
+
+  if (modifiers !== undefined) {
+    for (const modifier of modifiers) {
+      switch (modifier.kind) {
+        case ts.SyntaxKind.StaticKeyword:
+          isStatic = true;
+          break;
+        case ts.SyntaxKind.PrivateKeyword:
+          accessLevel = ClassMemberAccessLevel.Private;
+          break;
+        case ts.SyntaxKind.ProtectedKeyword:
+          accessLevel = ClassMemberAccessLevel.Protected;
+          break;
+        case ts.SyntaxKind.ReadonlyKeyword:
+          isReadonly = true;
+          break;
+      }
+    }
+  }
+
+  if (isReadonly && accessLevel === ClassMemberAccessLevel.PublicWritable) {
+    accessLevel = ClassMemberAccessLevel.PublicReadonly;
+  }
+  if (node.name !== undefined && ts.isPrivateIdentifier(node.name)) {
+    accessLevel = ClassMemberAccessLevel.EcmaScriptPrivate;
+  }
+
+  return {accessLevel, isStatic};
+}
+
+/**
+ * Reflects a class element and returns static information about the
+ * class member.
+ *
+ * Note: Decorator information is not included in this helper as it relies
+ * on type checking to resolve originating import.
+ */
+export function reflectClassMember(node: ts.ClassElement): Omit<ClassMember, 'decorators'>|null {
+  let kind: ClassMemberKind|null = null;
+  let value: ts.Expression|null = null;
+  let name: string|null = null;
+  let nameNode: ts.Identifier|ts.PrivateIdentifier|ts.StringLiteral|null = null;
+
+  if (ts.isPropertyDeclaration(node)) {
+    kind = ClassMemberKind.Property;
+    value = node.initializer || null;
+  } else if (ts.isGetAccessorDeclaration(node)) {
+    kind = ClassMemberKind.Getter;
+  } else if (ts.isSetAccessorDeclaration(node)) {
+    kind = ClassMemberKind.Setter;
+  } else if (ts.isMethodDeclaration(node)) {
+    kind = ClassMemberKind.Method;
+  } else if (ts.isConstructorDeclaration(node)) {
+    kind = ClassMemberKind.Constructor;
+  } else {
+    return null;
+  }
+
+  if (ts.isConstructorDeclaration(node)) {
+    name = 'constructor';
+  } else if (ts.isIdentifier(node.name)) {
+    name = node.name.text;
+    nameNode = node.name;
+  } else if (ts.isStringLiteral(node.name)) {
+    name = node.name.text;
+    nameNode = node.name;
+  } else if (ts.isPrivateIdentifier(node.name)) {
+    name = node.name.text;
+    nameNode = node.name;
+  } else {
+    return null;
+  }
+
+  const {accessLevel, isStatic} = extractModifiersOfMember(node);
+
+  return {
+    node,
+    implementation: node,
+    kind,
+    type: node.type || null,
+    accessLevel,
+    name,
+    nameNode,
+    value,
+    isStatic,
+  };
 }
 
 export function findMember(

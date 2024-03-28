@@ -908,9 +908,9 @@ export class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTar
   private findEntityInScope(rootNode: ScopedNode, name: string): Reference|Variable|null {
     const entities = this.getEntitiesInScope(rootNode);
 
-    for (const entitity of entities) {
-      if (entitity.name === name) {
-        return entitity;
+    for (const entity of entities) {
+      if (entity.name === name) {
+        return entity;
       }
     }
 

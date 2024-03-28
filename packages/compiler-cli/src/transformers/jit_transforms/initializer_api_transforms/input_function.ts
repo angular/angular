@@ -34,14 +34,14 @@ export const signalInputsTransform: PropertyTransform = (
     isCore,
     ) => {
   // If the field already is decorated, we handle this gracefully and skip it.
-  if (host.getDecoratorsOfDeclaration(member)?.some(d => isAngularDecorator(d, 'Input', isCore))) {
-    return member;
+  if (host.getDecoratorsOfDeclaration(member.node)
+          ?.some(d => isAngularDecorator(d, 'Input', isCore))) {
+    return member.node;
   }
 
-  const inputMapping = tryParseSignalInputMapping(
-      {name: member.name.text, value: member.initializer ?? null}, host, importTracker);
+  const inputMapping = tryParseSignalInputMapping(member, host, importTracker);
   if (inputMapping === null) {
-    return member;
+    return member.node;
   }
 
   const fields: Record<keyof Required<core.Input>, ts.Expression> = {
@@ -54,7 +54,7 @@ export const signalInputsTransform: PropertyTransform = (
     'transform': factory.createIdentifier('undefined'),
   };
 
-  const sourceFile = member.getSourceFile();
+  const sourceFile = member.node.getSourceFile();
   const newDecorator = factory.createDecorator(
       factory.createCallExpression(
           createSyntheticAngularCoreDecoratorAccess(
@@ -72,11 +72,11 @@ export const signalInputsTransform: PropertyTransform = (
   );
 
   return factory.updatePropertyDeclaration(
-      member,
-      [newDecorator, ...(member.modifiers ?? [])],
+      member.node,
+      [newDecorator, ...(member.node.modifiers ?? [])],
       member.name,
-      member.questionToken,
-      member.type,
-      member.initializer,
+      member.node.questionToken,
+      member.node.type,
+      member.node.initializer,
   );
 };

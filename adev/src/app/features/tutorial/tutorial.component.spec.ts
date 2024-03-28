@@ -41,7 +41,7 @@ class FakeDocViewer {
   @Input('documentFilePath') documentFilePath: string | undefined;
 }
 
-// TODO: export this class, it's a helpfull mock we could you on other tests.
+// TODO: export this class, it's a helpful mock we could you on other tests.
 class FakeNodeRuntimeSandbox {
   loadingStep = signal(0);
   previewUrl$ = of();

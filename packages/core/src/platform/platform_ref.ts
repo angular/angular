@@ -9,7 +9,7 @@
 import {ApplicationInitStatus} from '../application/application_init';
 import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
 import {_callAndReportToErrorHandler, ApplicationRef, BootstrapOptions, optionsReducer, remove} from '../application/application_ref';
-import {getNgZoneOptions, internalProvideZoneChangeDetection, PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_scheduling';
+import {getNgZoneOptions, internalProvideZoneChangeDetection, PROVIDED_NG_ZONE, SchedulingMode} from '../change_detection/scheduling/ng_zone_scheduling';
 import {Injectable, InjectionToken, Injector} from '../di';
 import {ErrorHandler} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -72,9 +72,12 @@ export class PlatformRef {
     // Do not try to replace ngZone.run with ApplicationRef#run because ApplicationRef would then be
     // created outside of the Angular zone.
     return ngZone.run(() => {
+      const schedulingMode = (options as any)?.schedulingMode;
       const moduleRef = createNgModuleRefWithProviders(
-          moduleFactory.moduleType, this.injector,
-          internalProvideZoneChangeDetection(() => ngZone));
+          moduleFactory.moduleType,
+          this.injector,
+          internalProvideZoneChangeDetection({ngZoneFactory: () => ngZone, schedulingMode}),
+      );
 
       if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
           moduleRef.injector.get(PROVIDED_NG_ZONE, null) !== null) {

@@ -234,6 +234,7 @@ export class Router {
               // button, URL bar, etc). We want to replace that item in history
               // if the navigation is rejected.
               replaceUrl:
+                currentTransition.extras.replaceUrl ||
                 this.urlUpdateStrategy === 'eager' ||
                 isBrowserTriggeredNavigation(currentTransition.source),
               // allow developer to override default options with RedirectCommand

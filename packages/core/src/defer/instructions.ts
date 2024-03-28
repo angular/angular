@@ -17,6 +17,7 @@ import {populateDehydratedViewsInLContainer} from '../linker/view_container_ref'
 import {PendingTasks} from '../pending_tasks';
 import {assertLContainer, assertTNodeForLView} from '../render3/assert';
 import {bindingUpdated} from '../render3/bindings';
+import {ChainedInjector} from '../render3/component_ref';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/definition';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {markViewDirty} from '../render3/instructions/mark_view_dirty';
@@ -501,6 +502,15 @@ export function renderDeferBlockState(
 }
 
 /**
+ * Detects whether an injector is an instance of a `ChainedInjector`,
+ * created based on the `OutletInjector`.
+ */
+function isRouterOutletInjector(currentInjector: Injector): boolean {
+  return (currentInjector instanceof ChainedInjector) &&
+      ((currentInjector.injector as any).__ngOutletInjector);
+}
+
+/**
  * Applies changes to the DOM to reflect a given state.
  */
 function applyDeferBlockState(
@@ -532,16 +542,23 @@ function applyDeferBlockState(
       const providers = tDetails.providers;
       if (providers && providers.length > 0) {
         const parentInjector = hostLView[INJECTOR] as Injector;
-        const parentEnvInjector = parentInjector.get(EnvironmentInjector);
-        injector =
-            parentEnvInjector.get(CachedInjectorService)
-                .getOrCreateInjector(
-                    tDetails, parentEnvInjector, providers, ngDevMode ? 'DeferBlock Injector' : '');
+        // Note: we have a special case for Router's `OutletInjector`,
+        // since it's not an instance of the `EnvironmentInjector`, so
+        // we can't inject it. Once the `OutletInjector` is replaced
+        // with the `EnvironmentInjector` in Router's code, this special
+        // handling can be removed.
+        const parentEnvInjector = isRouterOutletInjector(parentInjector) ?
+            parentInjector :
+            parentInjector.get(EnvironmentInjector);
+        injector = parentEnvInjector.get(CachedInjectorService)
+                       .getOrCreateInjector(
+                           tDetails, parentEnvInjector as EnvironmentInjector, providers,
+                           ngDevMode ? 'DeferBlock Injector' : '');
       }
     }
     const dehydratedView = findMatchingDehydratedView(lContainer, activeBlockTNode.tView!.ssrId);
-    const embeddedLView = createAndRenderEmbeddedLView(
-        hostLView, activeBlockTNode, null, {dehydratedView, embeddedViewInjector: injector});
+    const embeddedLView =
+        createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {dehydratedView, injector});
     addLViewToLContainer(
         lContainer, embeddedLView, viewIndex, shouldAddViewToDom(activeBlockTNode, dehydratedView));
     markViewDirty(embeddedLView);

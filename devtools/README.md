@@ -66,7 +66,7 @@ To publish Angular DevTools as a Firefox Add-on, first build and package the ext
 yarn devtools:build:firefox
 
 # Package the extension.
-(cd dist/bin/devtools/projects/shell-browser/src/prodapp ~/devtools-firefox && zip -r ~/devtools-firefox.zip *)
+(cd dist/bin/devtools/projects/shell-browser/src/prodapp && zip -r ~/devtools-firefox.zip *)
 ```
 
 Then upload it:
