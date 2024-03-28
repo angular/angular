@@ -95,12 +95,12 @@ Some applications may configure `HttpClient` using the older API based on NgModu
 
 This table lists the NgModules available from `@angular/common/http` and how they relate to the provider configuration functions above.
 
-| **NgModule** | `provideHttpClient()` equivalent |
-| - | - |
-| `HttpClientModule` | `provideHttpClient(withInterceptorsFromDi())` |
-| `HttpClientJsonpModule` |  `withJsonpSupport()` |
-| `HttpClientXsrfModule.withOptions(...)` | `withXsrfConfiguration(...)` |
-| `HttpClientXsrfModule.disable()` | `withNoXsrfProtection()` |
+| **NgModule**                            | `provideHttpClient()` equivalent              |
+| --------------------------------------- | --------------------------------------------- |
+| `HttpClientModule`                      | `provideHttpClient(withInterceptorsFromDi())` |
+| `HttpClientJsonpModule`                 | `withJsonpSupport()`                          |
+| `HttpClientXsrfModule.withOptions(...)` | `withXsrfConfiguration(...)`                  |
+| `HttpClientXsrfModule.disable()`        | `withNoXsrfProtection()`                      |
 
 <docs-callout important title="Use caution when using HttpClientModule in multiple injectors">
 When `HttpClientModule` is present in multiple injectors, the behavior of interceptors is poorly defined and depends on the exact options and provider/import ordering.
