@@ -38,8 +38,6 @@ type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 export class LanguageService {
   private options: CompilerOptions;
   readonly compilerFactory: CompilerFactory;
-  private readonly programDriver: ProgramDriver;
-  private readonly adapter: LanguageServiceAdapter;
   private readonly codeFixes: CodeFixes;
 
   constructor(
@@ -56,9 +54,9 @@ export class LanguageService {
     }
     logCompilerOptions(project, this.options);
 
-    this.programDriver = createProgramDriver(project);
-    this.adapter = new LanguageServiceAdapter(project);
-    this.compilerFactory = new CompilerFactory(this.adapter, this.programDriver, this.options);
+    const programDriver = createProgramDriver(project);
+    const adapter = new LanguageServiceAdapter(project);
+    this.compilerFactory = new CompilerFactory(adapter, programDriver, this.options);
     this.codeFixes = new CodeFixes(tsLS, ALL_CODE_FIXES_METAS);
   }
 
@@ -117,7 +115,7 @@ export class LanguageService {
       if (!isInAngularContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
-      return new DefinitionBuilder(this.tsLS, compiler, this.programDriver)
+      return new DefinitionBuilder(this.tsLS, compiler)
           .getDefinitionAndBoundSpan(fileName, position);
     });
   }
@@ -128,7 +126,7 @@ export class LanguageService {
       if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
-      return new DefinitionBuilder(this.tsLS, compiler, this.programDriver)
+      return new DefinitionBuilder(this.tsLS, compiler)
           .getTypeDefinitionsAtPosition(fileName, position);
     });
   }
@@ -169,16 +167,16 @@ export class LanguageService {
 
   getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      const results = new ReferencesBuilder(this.programDriver, this.tsLS, compiler)
-                          .getReferencesAtPosition(fileName, position);
+      const results =
+          new ReferencesBuilder(this.tsLS, compiler).getReferencesAtPosition(fileName, position);
       return results === undefined ? undefined : getUniqueLocations(results);
     });
   }
 
   getRenameInfo(fileName: string, position: number): ts.RenameInfo {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      const renameInfo = new RenameBuilder(this.programDriver, this.tsLS, compiler)
-                             .getRenameInfo(absoluteFrom(fileName), position);
+      const renameInfo =
+          new RenameBuilder(this.tsLS, compiler).getRenameInfo(absoluteFrom(fileName), position);
       if (!renameInfo.canRename) {
         return renameInfo;
       }
@@ -193,8 +191,8 @@ export class LanguageService {
 
   findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      const results = new RenameBuilder(this.programDriver, this.tsLS, compiler)
-                          .findRenameLocations(fileName, position);
+      const results =
+          new RenameBuilder(this.tsLS, compiler).findRenameLocations(fileName, position);
       return results === null ? undefined : getUniqueLocations(results);
     });
   }
@@ -355,7 +353,7 @@ export class LanguageService {
     return this.withCompilerAndPerfTracing<GetTemplateLocationForComponentResponse>(
         PerfPhase.LsComponentLocations, (compiler) => {
           const nearestNode =
-              findTightestNodeAtPosition(this.programDriver.getProgram(), fileName, position);
+              findTightestNodeAtPosition(compiler.getCurrentProgram(), fileName, position);
           if (nearestNode === undefined) {
             return undefined;
           }
