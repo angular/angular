@@ -12,6 +12,7 @@ import {setActiveConsumer, setThrowInvalidWriteToSignalError} from '@angular/cor
 import {Observable, Subject} from 'rxjs';
 import {first, map} from 'rxjs/operators';
 
+import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Console} from '../console';
 import {inject} from '../di';
 import {Injectable} from '../di/injectable';
@@ -277,6 +278,7 @@ export class ApplicationRef {
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly afterRenderEffectManager = inject(AfterRenderEventManager);
+  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
 
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
@@ -535,7 +537,8 @@ export class ApplicationRef {
         const isFirstPass = runs === 0;
         this.beforeRender.next(isFirstPass);
         for (let {_lView, notifyErrorHandler} of this._views) {
-          detectChangesInViewIfRequired(_lView, isFirstPass, notifyErrorHandler);
+          detectChangesInViewIfRequired(
+              _lView, notifyErrorHandler, isFirstPass, this.zonelessEnabled);
         }
       }
       runs++;
@@ -544,7 +547,7 @@ export class ApplicationRef {
       // If we have a newly dirty view after running internal callbacks, recheck the views again
       // before running user-provided callbacks
       if ([...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => shouldRecheckView(_lView))) {
+              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
         continue;
       }
 
@@ -552,7 +555,7 @@ export class ApplicationRef {
       // If after running all afterRender callbacks we have no more views that need to be refreshed,
       // we can break out of the loop
       if (![...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => shouldRecheckView(_lView))) {
+              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
         break;
       }
     }
@@ -713,22 +716,16 @@ export function whenStable(applicationRef: ApplicationRef): Promise<void> {
 
 
 export function detectChangesInViewIfRequired(
-    lView: LView, isFirstPass: boolean, notifyErrorHandler: boolean) {
+    lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean, zonelessEnabled: boolean) {
   // When re-checking, only check views which actually need it.
-  if (!isFirstPass && !shouldRecheckView(lView)) {
+  if (!isFirstPass && !requiresRefreshOrTraversal(lView)) {
     return;
   }
-  detectChangesInView(lView, notifyErrorHandler, isFirstPass);
-}
 
-function shouldRecheckView(view: LView): boolean {
-  return requiresRefreshOrTraversal(view);
-}
-
-function detectChangesInView(lView: LView, notifyErrorHandler: boolean, isFirstPass: boolean) {
-  const mode = isFirstPass || lView[FLAGS] & LViewFlags.Dirty ?
+  const mode = (isFirstPass && !zonelessEnabled) ?
       // The first pass is always in Global mode, which includes `CheckAlways` views.
-      // If the root view has been explicitly marked for check, we also need Global mode.
+      // When using zoneless, all root views must be explicitly marked for refresh, even if they are
+      // `CheckAlways`.
       ChangeDetectionMode.Global :
       // Only refresh views with the `RefreshView` flag or views is a changed signal
       ChangeDetectionMode.Targeted;
