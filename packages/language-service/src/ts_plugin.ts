@@ -23,7 +23,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const ngLS = new LanguageService(project, tsLS, config);
 
   function getSyntacticDiagnostics(fileName: string): ts.DiagnosticWithLocation[] {
-    if (isTypeScriptFile(fileName)) {
+    if (!angularOnly && isTypeScriptFile(fileName)) {
       return tsLS.getSyntacticDiagnostics(fileName);
     }
 
