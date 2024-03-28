@@ -42,7 +42,7 @@ export interface ToSignalOptions {
 
   /**
    * Whether the subscription should be automatically cleaned up (via `DestroyRef`) when
-   * `toObservable`'s creation context is destroyed.
+   * `toSignal`'s creation context is destroyed.
    *
    * If manual cleanup is enabled, then `DestroyRef` is not used, and the subscription will persist
    * until the `Observable` itself completes.
@@ -92,7 +92,7 @@ export function toSignal<T, const U extends T>(
  * does not include an `undefined` type.
  *
  * By default, the subscription will be automatically cleaned up when the current [injection
- * context](/guide/dependency-injection-context) is destroyed. For example, when `toObservable` is
+ * context](/guide/dependency-injection-context) is destroyed. For example, when `toSignal` is
  * called during the construction of a component, the subscription will be cleaned up when the
  * component is destroyed. If an injection context is not available, an explicit `Injector` can be
  * passed instead.
