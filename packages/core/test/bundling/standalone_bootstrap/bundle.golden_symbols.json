@@ -942,6 +942,9 @@
     "name": "parseAndConvertBindingsForDefinition"
   },
   {
+    "name": "performanceMarkFeature"
+  },
+  {
     "name": "processInjectorTypesWithProviders"
   },
   {
