@@ -372,7 +372,7 @@ export class EventContract implements UnrenamedEventContract {
       );
     }
 
-    // NOTE(jwall): In order to avoid complicating the code that calculates the
+    // In order to avoid complicating the code that calculates the
     // event's path, we need a common interface to iterating over event.path or
     // walking the DOM.  We use the generator pattern here, as generating the
     // path array ahead of time for DOM walks will result in degraded
@@ -951,12 +951,12 @@ function getNamespaceFromElement(element: Element): string | null {
  */
 function getAttr(element: Element, attribute: string): string | null {
   let value = null;
-  // NOTE(robsc): Nodes in IE do not always have a getAttribute
+  // NOTE: Nodes in IE do not always have a getAttribute
   // method defined. This is the case where sourceElement has in
   // fact been removed from the DOM before eventContract begins
   // handling - where a parentNode does not have getAttribute
   // defined.
-  // NOTE(ruilopes): We must use the 'in' operator instead of the regular dot
+  // NOTE: We must use the 'in' operator instead of the regular dot
   // notation, since the latter fails in IE8 if the getAttribute method is not
   // defined. See b/7139109.
   if ('getAttribute' in element) {

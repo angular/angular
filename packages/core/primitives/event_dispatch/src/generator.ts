@@ -84,7 +84,7 @@ export class EventPath implements Generator {
   }
 
   next(): Node | null {
-    // TODO(jwall): If we could ban OWNERS for all users of event.path
+    // NOTE: If we could ban OWNERS for all users of event.path
     // then you could greatly simplify the code here.
     if (this.usingAncestors) {
       return ancestors.next();
@@ -93,7 +93,7 @@ export class EventPath implements Generator {
       const curr = this.path[this.idx];
       this.idx++;
       if (curr !== this.container) {
-        // NOTE(jwall): The presence of the OWNER property indicates that
+        // NOTE: The presence of the OWNER property indicates that
         // the user wants to override the browsers expected event path with
         // one of their own. The eventpath generator still needs to respect
         // the OWNER property since this is used by a lot of jsactions

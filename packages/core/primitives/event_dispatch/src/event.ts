@@ -137,8 +137,6 @@ export function getTarget(e: Event): Element {
 
 /**
  * Whether we are on a Mac. Not pulling in useragent just for this.
- * NOTE(izaakr): navigator does not exist in google_js_test, hence the test
- * for its existence.
  */
 let isMac: boolean =
   typeof navigator !== 'undefined' && /Macintosh/.test(navigator.userAgent);
@@ -146,7 +144,7 @@ let isMac: boolean =
 /**
  * Determines and returns whether the given event (which is assumed to be a
  * click event) is a middle click.
- * NOTE(jmpagano): There is not a consistent way to identify middle click
+ * NOTE: There is not a consistent way to identify middle click
  * across all browsers. Some detailed information about this can be found at:
  * http://www.unixpapa.com/js/mouse.html
  * @param e The event.
@@ -557,7 +555,6 @@ export function recreateTouchEventAsClick(event: TouchEvent): MouseEvent {
     click[key as keyof MouseEvent] = value as any;
   }
 
-  // TODO(ruilopes): b/18978823 - refactor constants in a enum
   // Ensure that the event has the most recent timestamp. This timestamp
   // may be used in the future to validate or cancel subsequent click events.
   click['timeStamp'] = Date.now();

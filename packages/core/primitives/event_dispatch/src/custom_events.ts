@@ -71,8 +71,6 @@ export function createCustomEvent<T>(
  * Fires a custom event with an optional payload. Only intended to be consumed
  * by jsaction itself. Supported in Firefox 6+, IE 9+, and all Chrome versions.
  *
- * TODO(masontang): Investigate polyfill options.
- *
  * @param target The target element.
  * @param type The type of the action, e.g., 'submit'.
  * @param data An optional data payload.

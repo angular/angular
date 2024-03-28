@@ -46,7 +46,7 @@ function isKeyboardEvent(eventType: string): boolean {
  * @return Whether it's a mouse event.
  */
 function isMouseEvent(eventType: string): boolean {
-  // TODO(ruilopes): Verify if Drag events should be bound here.
+  // TODO: Verify if Drag events should be bound here.
   return (
     eventType === EventType.CLICK ||
     eventType === EventType.DBLCLICK ||
@@ -404,9 +404,9 @@ function createGenericEvent(original: Event, opt_eventType?: string): Event {
 
 /**
  * Creates an event object for replaying through the DOM.
- * NOTE(ruilopes): This function is visible just for testing.  Please don't use
+ * NOTE: This function is visible just for testing.  Please don't use
  * it outside JsAction internal testing.
- * TODO(ruilopes): Add support for FocusEvent and WheelEvent.
+ * TODO: Add support for FocusEvent and WheelEvent.
  * @param base The event to create a new event from.
  * @param opt_eventType The type this event is being handled as by jsaction.
  *     E.g. a keypress is handled as click in some cases.

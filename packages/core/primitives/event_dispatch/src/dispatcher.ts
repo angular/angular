@@ -191,9 +191,6 @@ export class Dispatcher {
    * Attempts to replay the queued events after registering the handlers.
    *
    * @param namespace The namespace of the jsaction name.
-   *     NOTE(mesch): This is not optional in order to encourage uniform naming
-   *     for all methods registered by a module.
-   *
    * @param instance The object to bind the methods to. If this is null, then
    *     the functions are not bound, but directly added under the public names.
    *
@@ -256,8 +253,6 @@ export class Dispatcher {
    * Checks whether there is an action registered under the given
    * name. This returns true if there is a namespace handler, even
    * if it can not yet handle the event.
-   *
-   * TODO(chrishenry): Remove this when canDispatch is used everywhere.
    *
    * @param name Action name.
    * @return Whether the name is registered.
