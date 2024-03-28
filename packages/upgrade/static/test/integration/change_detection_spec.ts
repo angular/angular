@@ -165,14 +165,14 @@ withEachNg1Version(() => {
         constructor(private zone: NgZone) {}
 
         ngOnChanges(changes: SimpleChanges) {
-          if (changes['value'].isFirstChange()) return;
+          if (changes['value']?.isFirstChange()) return;
 
           this.zone.onMicrotaskEmpty.subscribe(() => {
             expect(element.textContent).toEqual('5');
           });
 
           // Create a micro-task to update the value to be rendered asynchronously.
-          queueMicrotask(() => (this.valueFromPromise = changes['value'].currentValue));
+          queueMicrotask(() => (this.valueFromPromise = changes['value']?.currentValue));
         }
       }
 

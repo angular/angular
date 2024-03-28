@@ -138,7 +138,7 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     if (this.inputName in changes) {
-      const input = this.normalizeInput(changes[this.inputName].currentValue);
+      const input = this.normalizeInput(changes[this.inputName]?.currentValue);
       this._enabled = this.enabled(input);
       this._validator = this._enabled ? this.createValidator(input) : nullValidator;
       if (this._onChange) {

@@ -230,7 +230,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
           // changed. We also can't reset the name temporarily since the logic in `removeControl`
           // is inside a promise and it won't run immediately. We work around it by giving it an
           // object with the same shape instead.
-          const oldName = changes['name'].previousValue;
+          const oldName = changes['name']?.previousValue;
           this.formDirective.removeControl({name: oldName, path: this._getPath(oldName)});
         }
       }
@@ -334,7 +334,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   }
 
   private _updateDisabled(changes: SimpleChanges) {
-    const disabledValue = changes['isDisabled'].currentValue;
+    const disabledValue = changes['isDisabled']?.currentValue;
     // checking for 0 to avoid breaking change
     const isDisabled = disabledValue !== 0 && booleanAttribute(disabledValue);
 

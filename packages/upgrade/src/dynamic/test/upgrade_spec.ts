@@ -355,14 +355,14 @@ withEachNg1Version(() => {
           constructor(private zone: NgZone) {}
 
           ngOnChanges(changes: SimpleChanges) {
-            if (changes['value'].isFirstChange()) return;
+            if (changes['value']?.isFirstChange()) return;
 
             this.zone.onMicrotaskEmpty.subscribe(() => {
               expect(element.textContent).toEqual('5');
               upgradeRef.dispose();
             });
 
-            queueMicrotask(() => (this.valueFromPromise = changes['value'].currentValue));
+            queueMicrotask(() => (this.valueFromPromise = changes['value']?.currentValue));
           }
         }
 
@@ -489,7 +489,7 @@ withEachNg1Version(() => {
               if (!changes[prop]) {
                 throw new Error(`Changes record for '${prop}' not found.`);
               }
-              const actValue = changes[prop].currentValue;
+              const actValue = changes[prop]?.currentValue;
               if (actValue != value) {
                 throw new Error(
                   `Expected changes record for'${prop}' to be '${value}' but was '${actValue}'`,
@@ -576,11 +576,11 @@ withEachNg1Version(() => {
           ngOnChanges(changes: SimpleChanges) {
             switch (this.ngOnChangesCount++) {
               case 0:
-                expect(changes['model'].currentValue).toBe('world');
+                expect(changes['model']?.currentValue).toBe('world');
                 this.modelChange.emit('newC');
                 break;
               case 1:
-                expect(changes['model'].currentValue).toBe('newC');
+                expect(changes['model']?.currentValue).toBe('newC');
                 break;
               default:
                 throw new Error('Called too many times! ' + JSON.stringify(changes));

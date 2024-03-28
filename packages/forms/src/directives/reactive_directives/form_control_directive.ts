@@ -120,7 +120,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges): void {
     if (this._isControlChanged(changes)) {
-      const previousForm = changes['form'].previousValue;
+      const previousForm = changes['form']?.previousValue;
       if (previousForm) {
         cleanUpControl(previousForm, this, /* validateControlPresenceOnChange */ false);
       }
