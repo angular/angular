@@ -765,6 +765,13 @@ export interface HostListenerDecorator {
     new (eventName: string, args?: string[]): any;
 }
 
+// @public
+export class HostTagNameToken {
+    constructor();
+    // (undocumented)
+    toString(): string;
+}
+
 // @public @deprecated
 export type ImportedNgModuleProviders = EnvironmentProviders;
 
@@ -806,6 +813,19 @@ export function inject(token: HostAttributeToken, options: {
 
 // @public (undocumented)
 export function inject(token: HostAttributeToken, options: {
+    optional: false;
+}): string;
+
+// @public (undocumented)
+export function inject(token: HostTagNameToken): string;
+
+// @public (undocumented)
+export function inject(token: HostTagNameToken, options: {
+    optional: true;
+}): string | null;
+
+// @public (undocumented)
+export function inject(token: HostTagNameToken, options: {
     optional: false;
 }): string;
 
