@@ -186,8 +186,8 @@ export function inject(token: HostAttributeToken, options: {optional: true}): st
 export function inject(token: HostAttributeToken, options: {optional: false}): string;
 /**
  * Injects a token from the currently active injector.
- * `inject` is only supported in an [injection context](/guide/dependency-injection-context). It can
- * be used during:
+ * `inject` is only supported in an [injection context](guide/di/dependency-injection-context). It
+ * can be used during:
  * - Construction (via the `constructor`) of a class being instantiated by the DI system, such
  * as an `@Injectable` or `@Component`.
  * - In the initializer for fields of such classes.

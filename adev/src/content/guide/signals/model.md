@@ -3,7 +3,7 @@
 **Model inputs** are a special type of input that enable a component to propagate new values
 back to another component.
 
-HELPFUL: Model inputs are currently in [developer preview](/guide/releases#developer-preview).
+HELPFUL: Model inputs are currently in [developer preview](/reference/releases#developer-preview).
 
 When creating a component, you can define a model input similarly to how you create a standard
 input.
@@ -93,7 +93,7 @@ that values of `checked` and `isAdmin` in sync.
 ## Implicit `change` events
 
 When you declare a model input in a component or directive, Angular automatically creates a
-corresponding [output](/guide/inputs-outputs) for that model. The output's name is the model
+corresponding [output](guide/components/outputs) for that model. The output's name is the model
 input's name suffixed with "Change".
 
 ```typescript
@@ -111,7 +111,7 @@ its `set` or `update` methods.
 ## Customizing model inputs
 
 You can mark a model input as required or provide an alias in the same way as a
-[standard input](/guide/signal-inputs).
+[standard input](guide/signal-inputs).
 
 Model inputs do not support input transforms.
 

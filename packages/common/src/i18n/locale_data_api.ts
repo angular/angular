@@ -20,7 +20,7 @@ import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
 /**
  * Format styles that can be used to represent numbers.
  * @see {@link getLocaleNumberFormat}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -36,7 +36,7 @@ export enum NumberFormatStyle {
  *
  * @see {@link NgPlural}
  * @see {@link NgPluralCase}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -54,7 +54,7 @@ export enum Plural {
  * Typically the standalone version is for the nominative form of the word,
  * and the format version is used for the genitive case.
  * @see [CLDR website](http://cldr.unicode.org/translation/date-time-1/date-time#TOC-Standalone-vs.-Format-Styles)
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -89,7 +89,7 @@ export enum TranslationWidth {
  * @see {@link getLocaleDateFormat}
  * @see {@link getLocaleTimeFormat}
  * @see {@link getLocaleDateTimeFormat}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  * @publicApi
  */
 export enum FormatWidth {
@@ -122,7 +122,7 @@ export enum FormatWidth {
  * Examples are based on `en-US` values.
  *
  * @see {@link getLocaleNumberSymbol}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  * @object-literal-as-enum
@@ -224,7 +224,7 @@ export enum WeekDay {
  * The loaded locale could be, for example, a global one rather than a regional one.
  * @param locale A locale code, such as `fr-FR`.
  * @returns The locale code. For example, `fr`.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -239,7 +239,7 @@ export function getLocaleId(locale: string): string {
  * @param formStyle The required grammatical form.
  * @param width The required character width.
  * @returns An array of localized period strings. For example, `[AM, PM]` for `en-US`.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -265,7 +265,7 @@ export function getLocaleDayPeriods(
  * @param width The required character width.
  * @returns An array of localized name strings.
  * For example,`[Sunday, Monday, ... Saturday]` for `en-US`.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -291,7 +291,7 @@ export function getLocaleDayNames(
  * @param width The required character width.
  * @returns An array of localized name strings.
  * For example,  `[January, February, ...]` for `en-US`.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -316,7 +316,7 @@ export function getLocaleMonthNames(
 
  * @returns An array of localized era strings.
  * For example, `[AD, BC]` for `en-US`.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -336,7 +336,7 @@ export function getLocaleEraNames(
  * @returns A day index number, using the 0-based week-day index for `en-US`
  * (Sunday = 0, Monday = 1, ...).
  * For example, for `fr-FR`, returns 1 to indicate that the first day is Monday.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -350,7 +350,7 @@ export function getLocaleFirstDayOfWeek(locale: string): WeekDay {
  *
  * @param locale A locale code for the locale format rules to use.
  * @returns The range of day values, `[startDay, endDay]`.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -366,7 +366,7 @@ export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay] {
  * @param width The format type.
  * @returns The localized formatting string.
  * @see {@link FormatWidth}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -382,7 +382,7 @@ export function getLocaleDateFormat(locale: string, width: FormatWidth): string 
  * @param width The format type.
  * @returns The localized formatting string.
  * @see {@link FormatWidth}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
 
  * @publicApi
  */
@@ -398,7 +398,7 @@ export function getLocaleTimeFormat(locale: string, width: FormatWidth): string 
  * @param width The format type.
  * @returns The localized formatting string.
  * @see {@link FormatWidth}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -414,7 +414,7 @@ export function getLocaleDateTimeFormat(locale: string, width: FormatWidth): str
  * @param symbol The symbol to localize. Must be one of `NumberSymbol`.
  * @returns The character for the localized symbol.
  * @see {@link NumberSymbol}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -462,7 +462,7 @@ export function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): str
  * @returns The localized format string.
  * @see {@link NumberFormatStyle}
  * @see [CLDR website](http://cldr.unicode.org/translation/number-patterns)
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -478,7 +478,7 @@ export function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): 
  * @param locale A locale code for the locale format rules to use.
  * @returns The localized symbol character,
  * or `null` if the main country cannot be determined.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -493,7 +493,7 @@ export function getLocaleCurrencySymbol(locale: string): string | null {
  * @param locale A locale code for the locale format rules to use.
  * @returns The currency name,
  * or `null` if the main country cannot be determined.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -520,7 +520,7 @@ export function getLocaleCurrencyCode(locale: string): string | null {
  * Retrieves the currency values for a given locale.
  * @param locale A locale code for the locale format rules to use.
  * @returns The currency values.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  */
 function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols} {
   const data = ɵfindLocaleData(locale);
@@ -555,14 +555,14 @@ function checkFullData(data: any) {
  * A rule can specify a period as time range, or as a single time value.
  *
  * This functionality is only available when you have loaded the full locale data.
- * See the ["I18n guide"](guide/i18n-common-format-data-locale).
+ * See the ["I18n guide"](guide/i18n/format-data-locale).
  *
  * @param locale A locale code for the locale format rules to use.
  * @returns The rules for the locale, a single time value or array of *from-time, to-time*,
  * or null if no periods are available.
  *
  * @see {@link getLocaleExtraDayPeriods}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -584,14 +584,14 @@ export function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Tim
  * For example, for `en-US`, periods are morning, noon, afternoon, evening, and midnight.
  *
  * This functionality is only available when you have loaded the full locale data.
- * See the ["I18n guide"](guide/i18n-common-format-data-locale).
+ * See the ["I18n guide"](guide/i18n/format-data-locale).
  *
  * @param locale A locale code for the locale format rules to use.
  * @param formStyle The required grammatical form.
  * @param width The required character width.
  * @returns The translated day-period strings.
  * @see {@link getLocaleExtraDayPeriodRules}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -615,7 +615,7 @@ export function getLocaleExtraDayPeriods(
  * @param locale A locale code for the locale format rules to use.
  * @publicApi
  * @returns 'rtl' or 'ltr'
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  */
 export function getLocaleDirection(locale: string): 'ltr' | 'rtl' {
   const data = ɵfindLocaleData(locale);
@@ -631,7 +631,7 @@ export function getLocaleDirection(locale: string): 'ltr' | 'rtl' {
  * @param data The data array to retrieve from.
  * @param index A 0-based index into the array to start from.
  * @returns The value immediately before the given index position.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -673,7 +673,7 @@ function extractTime(time: string): Time {
  * @param locale A locale code for the locale format rules to use.
  *
  * @returns The symbol, or the currency code if no symbol is available.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -697,7 +697,7 @@ const DEFAULT_NB_OF_CURRENCY_DIGITS = 2;
  *
  * @param code The currency code.
  * @returns The number of decimal digits, typically 0 or 2.
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */

@@ -75,7 +75,7 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  *
  * Only the `en-US` locale data comes with Angular. To localize dates
  * in another language, you must import the corresponding locale data.
- * See the [I18n guide](guide/i18n-common-format-data-locale) for more information.
+ * See the [I18n guide](guide/i18n/format-data-locale) for more information.
  *
  * The time zone of the formatted value can be specified either by passing it in as the second
  * parameter of the pipe, or by setting the default through the `DATE_PIPE_DEFAULT_OPTIONS`
@@ -242,7 +242,7 @@ export class DatePipe implements PipeTransform {
    * is not configured, the end-user's local system timezone is used as a value.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
-   * See [Setting your app locale](guide/i18n-common-locale-id).
+   * See [Setting your app locale](guide/i18n/locale-id).
    *
    * @see {@link DATE_PIPE_DEFAULT_OPTIONS}
    *

@@ -19,7 +19,7 @@ import {stringify} from '../util/stringify';
 
 import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
 import type {ComponentDef, ComponentDefFeature, ComponentTemplate, ContentQueriesFunction, DependencyTypeList, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, HostBindingsFunction, InputTransformFunction, PipeDef, PipeDefListOrFactory, TypeOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import { InputFlags } from './interfaces/input_flags';
+import {InputFlags} from './interfaces/input_flags';
 import type {TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList} from './interfaces/projection';
 import {stringifyCSSSelectorList} from './node_selector_matcher';
@@ -80,7 +80,7 @@ import {stringifyCSSSelectorList} from './node_selector_matcher';
  *  - Because declared and public name are usually same we only generate the array
  *    `['declared', 'public']` format when they differ, or there is a transform.
  *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
- *    inconsistent behavior in that it uses declared names rather than minified or public. 
+ *    inconsistent behavior in that it uses declared names rather than minified or public.
  */
 type DirectiveInputs<T> = {
   [P in keyof T]?:
@@ -605,7 +605,7 @@ export function getPipeDef<T>(type: any): PipeDef<T>|null {
 /**
  * Checks whether a given Component, Directive or Pipe is marked as standalone.
  * This will return false if passed anything other than a Component, Directive, or Pipe class
- * See [this guide](/guide/standalone-components) for additional information:
+ * See [this guide](guide/components/importing) for additional information:
  *
  * @param type A reference to a Component, Directive or Pipe.
  * @publicApi

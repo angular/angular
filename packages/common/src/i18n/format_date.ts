@@ -74,7 +74,7 @@ enum TranslationType {
  * @returns The formatted date string.
  *
  * @see {@link DatePipe}
- * @see [Internationalization (i18n) Guide](/guide/i18n-overview)
+ * @see [Internationalization (i18n) Guide](guide/i18n)
  *
  * @publicApi
  */
@@ -117,8 +117,8 @@ export function formatDate(
     text += dateFormatter
       ? dateFormatter(date, locale, dateTimezoneOffset)
       : value === "''"
-      ? "'"
-      : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
+        ? "'"
+        : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
   });
 
   return text;

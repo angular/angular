@@ -90,7 +90,7 @@ export const subsetMatchOptions: IsActiveMatchOptions = {
  * A service that provides navigation among views and URL manipulation capabilities.
  *
  * @see {@link Route}
- * @see [Routing and Navigation Guide](guide/router).
+ * @see [Routing and Navigation Guide](guide/routing/common-router-tasks).
  *
  * @ngModule RouterModule
  *
@@ -513,7 +513,7 @@ export class Router {
    * router.navigateByUrl("/team/33/user/11", { skipLocationChange: true });
    * ```
    *
-   * @see [Routing and Navigation guide](guide/router)
+   * @see [Routing and Navigation guide](guide/routing/common-router-tasks)
    *
    */
   navigateByUrl(
@@ -563,7 +563,7 @@ export class Router {
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route, skipLocationChange: true});
    * ```
    *
-   * @see [Routing and Navigation guide](guide/router)
+   * @see [Routing and Navigation guide](guide/routing/common-router-tasks)
    *
    */
   navigate(

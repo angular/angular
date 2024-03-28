@@ -62,7 +62,7 @@ export interface FormControlOptions extends AbstractControlOptions {
  * See [usage examples below](#usage-notes).
  *
  * @see {@link AbstractControl}
- * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
  * @see [Usage Notes](#usage-notes)
  *
  * @publicApi

@@ -647,7 +647,7 @@ export type NavigationErrorHandlerFeature =
  * Subscribes to the Router's navigation events and calls the given function when a
  * `NavigationError` happens.
  *
- * This function is run inside application's [injection context](guide/dependency-injection-context)
+ * This function is run inside application's [injection context](guide/di/dependency-injection-context)
  * so you can use the [`inject`](api/core/inject) function.
  *
  * @usageNotes

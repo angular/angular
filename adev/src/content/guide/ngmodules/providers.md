@@ -1,6 +1,6 @@
 # Providing dependencies in modules
 
-A provider is an instruction to the [Dependency Injection](/guide/di) system on how to obtain a value for a dependency.
+A provider is an instruction to the [Dependency Injection](guide/di) system on how to obtain a value for a dependency.
 Most of the time, these dependencies are services that you create and provide.
 
 ## Providing a service
@@ -57,7 +57,7 @@ When the Angular router lazy-loads a module, it creates a new injector.
 This injector is a child of the root application injector.
 Imagine a tree of injectors; there is a single root injector and then a child injector for each lazy loaded module.
 This child injector gets populated with all the module-specific providers, if any.
-Look up resolution for every provider follows the [rules of dependency injection hierarchy](/guide/di/hierarchical-dependency-injection#resolution-rules).
+Look up resolution for every provider follows the [rules of dependency injection hierarchy](guide/di/hierarchical-dependency-injection#resolution-rules).
 
 Any component created within a lazy loaded module's context, such as by router navigation, gets its own local instance of child provided services, not the instance in the root application injector.
 Components in external modules continue to receive the instances created for the application root injector.
@@ -114,7 +114,7 @@ Then each new instance of the `UserEditorComponent` gets its own cached service 
 
 Services are singletons within the scope of an injector, which means there is at most one instance of a service in a given injector.
 
-Angular DI has a [hierarchical injection system](/guide/di/hierarchical-dependency-injection), which means that nested injectors can create their own service instances.
+Angular DI has a [hierarchical injection system](guide/di/hierarchical-dependency-injection), which means that nested injectors can create their own service instances.
 Whenever Angular creates a new instance of a component that has `providers` specified in `@Component()`, it also creates a new child injector for that instance.
 Similarly, when a new NgModule is lazy-loaded at run time, Angular can create an injector for it with its own providers.
 

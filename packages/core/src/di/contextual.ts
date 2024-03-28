@@ -15,7 +15,7 @@ import {getCurrentInjector, setCurrentInjector} from './injector_compatibility';
 import {R3Injector} from './r3_injector';
 
 /**
- * Runs the given function in the [context](guide/dependency-injection-context) of the given
+ * Runs the given function in the [context](guide/di/dependency-injection-context) of the given
  * `Injector`.
  *
  * Within the function's stack frame, [`inject`](api/core/inject) can be used to inject dependencies
@@ -56,7 +56,7 @@ export function isInInjectionContext(): boolean {
 }
 /**
  * Asserts that the current stack frame is within an [injection
- * context](guide/dependency-injection-context) and has access to `inject`.
+ * context](guide/di/dependency-injection-context) and has access to `inject`.
  *
  * @param debugFn a reference to the function making the assertion (used for the error message).
  *

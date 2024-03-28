@@ -15,8 +15,8 @@ import {CALL_SET_DISABLED_STATE, setDisabledStateDefault, SetDisabledStateOption
  * Exports the required providers and directives for template-driven forms,
  * making them available for import by NgModules that import this module.
  *
- * @see [Forms Overview](/guide/forms-overview)
- * @see [Template-driven Forms Guide](/guide/forms)
+ * @see [Forms Overview](guide/forms)
+ * @see [Template-driven Forms Guide](guide/forms)
  *
  * @publicApi
  */
@@ -50,8 +50,8 @@ export class FormsModule {
  * Exports the required infrastructure and directives for reactive forms,
  * making them available for import by NgModules that import this module.
  *
- * @see [Forms Overview](guide/forms-overview)
- * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see [Forms Overview](guide/forms)
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
  *
  * @publicApi
  */

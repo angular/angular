@@ -26,4 +26,4 @@ route-based animations, and for programmatic animation controls that allow an en
 and reverse an animation sequence.
 
 @see Find out more in the [animations guide](guide/animations).
-@see See what polyfills you might need in the [browser support guide](guide/browser-support).
+@see See what polyfills you might need in the [browser support guide](reference/versions#browser-support).

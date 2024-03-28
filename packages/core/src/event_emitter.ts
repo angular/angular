@@ -62,7 +62,6 @@ import {DestroyRef} from './linker/destroy_ref';
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
  * ```
  *
- * @see [Observables in Angular](guide/observables-in-angular)
  * @publicApi
  */
 export interface EventEmitter<T> extends Subject<T>, OutputRef<T> {

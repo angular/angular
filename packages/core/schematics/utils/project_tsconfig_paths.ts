@@ -85,7 +85,7 @@ function createHost(tree: Tree): workspaces.WorkspaceHost {
       // Approximate a directory check.
       // We don't need to consider empty directories and hence this is a good enough approach.
       // This is also per documentation, see:
-      // https://angular.io/guide/schematics-for-libraries#get-the-project-configuration
+      // https://angular.dev/tools/cli/schematics-for-libraries#get-the-project-configuration
       return !tree.exists(path) && tree.getDir(path).subfiles.length > 0;
     },
     async isFile(path: string): Promise<boolean> {

@@ -27,8 +27,6 @@ import {NgModuleFactory} from './ng_module_factory';
  *
  * @deprecated
  * Ivy JIT mode doesn't require accessing this symbol.
- * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
- * additional context.
  */
 export class ModuleWithComponentFactories<T> {
   constructor(
@@ -49,8 +47,6 @@ export class ModuleWithComponentFactories<T> {
  *
  * @deprecated
  * Ivy JIT mode doesn't require accessing this symbol.
- * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
- * additional context.
  */
 @Injectable({providedIn: 'root'})
 export class Compiler {
@@ -137,8 +133,6 @@ export const COMPILER_OPTIONS =
  *
  * @deprecated
  * Ivy JIT mode doesn't require accessing this symbol.
- * See [JIT API changes due to ViewEngine deprecation](guide/deprecations#jit-api-changes) for
- * additional context.
  */
 export abstract class CompilerFactory {
   abstract createCompiler(options?: CompilerOptions[]): Compiler;

@@ -440,7 +440,7 @@ If `ng generate module` with the `--route` parameter returns an error, but runs 
 
 Remember, many common Angular modules should be imported at the base of your application.
 
-For more information on Angular Modules, see [NgModules](/guide/ngmodules).
+For more information on Angular Modules, see [NgModules](guide/ngmodules).
 
 ## More on NgModules and routing
 

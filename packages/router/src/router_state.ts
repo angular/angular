@@ -43,7 +43,7 @@ import {Tree, TreeNode} from './utils/tree';
  * ```
  *
  * @see {@link ActivatedRoute}
- * @see [Getting route information](guide/router#getting-route-information)
+ * @see [Getting route information](guide/routing/common-router-tasks#getting-route-information)
  *
  * @publicApi
  */
@@ -118,7 +118,7 @@ export function createEmptyStateSnapshot(rootComponent: Type<any> | null): Route
  * {@example router/activated-route/module.ts region="activated-route"
  *     header="activated-route.component.ts"}
  *
- * @see [Getting route information](guide/router#getting-route-information)
+ * @see [Getting route information](guide/routing/common-router-tasks#getting-route-information)
  *
  * @publicApi
  */

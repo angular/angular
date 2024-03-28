@@ -15,7 +15,7 @@ export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not support
  * An event emitted when the service worker has checked the version of the app on the server and it
  * didn't find a new version that it doesn't have already downloaded.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -28,7 +28,7 @@ export interface NoNewVersionDetectedEvent {
  * An event emitted when the service worker has detected a new version of the app on the server and
  * is about to start downloading it.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -41,7 +41,7 @@ export interface VersionDetectedEvent {
  * An event emitted when the installation of a new version failed.
  * It may be used for logging/monitoring purposes.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -54,7 +54,7 @@ export interface VersionInstallationFailedEvent {
 /**
  * An event emitted when a new version of the app is available.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -85,7 +85,7 @@ export type VersionEvent =
  * service worker cache has been partially cleaned by the browser, removing some files of a previous
  * app version but not all.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */

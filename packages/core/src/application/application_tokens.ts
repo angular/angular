@@ -125,7 +125,7 @@ export const CSP_NONCE = new InjectionToken<string|null>(ngDevMode ? 'CSP nonce'
  * - disableImageLazyLoadWarning: A boolean value. Setting this to true will
  *      disable console warnings about LCP images configured with `loading="lazy"`.
  * Learn more about the responsive image configuration in [the NgOptimizedImage
- * guide](guide/image-directive).
+ * guide](guide/image-optimization).
  * Learn more about image warning options in [the related error page](errors/NG0913).
  * @publicApi
  */
