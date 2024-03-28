@@ -2,7 +2,7 @@
 Handle user interaction in your application.
 </docs-decorative-header>
 
-One of the key aspects of making applications dynamic is the ability to handle user interaction. In this guide, we'll take a look at two primary categories of user interaction: event handling and forms.
+The ability to handle user interaction and then work with - it is one of the key aspects of building dynamic applications. In this guide, we'll take a look at simple user interaction - event handling.
 
 ## Event Handling
 
