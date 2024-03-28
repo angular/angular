@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs as ɵAllowDetectChangesAndAcknowledgeItCanHideApplicationBugs} from './src/test_bed_common';
+export {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs as ɵAllowDetectChangesAndAcknowledgeItCanHideApplicationBugs} from './test_bed_common';

@@ -14,6 +14,5 @@
  * Entry point for all public APIs of this package.
  */
 export * from './src/testing';
-export * from './private_export';
 
 // This file only reexports content of the `src` folder. Keep it that way.

@@ -12,6 +12,7 @@
  * Entry point for all public APIs of the core/testing package.
  */
 
+export * from './private_export';
 export * from './async';
 export {ComponentFixture} from './component_fixture';
 export {resetFakeAsyncZone, discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from './fake_async';
