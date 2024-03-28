@@ -2140,7 +2140,7 @@ for (const browserAPI of ['navigation', 'history'] as const) {
         let e: any;
         router.navigateByUrl('/invalid')!.then((_) => (e = _));
         advance(fixture);
-        expect(e).toEqual('resolvedValue');
+        expect(e).toEqual(true);
 
         expectEvents(recordedEvents, [
           [NavigationStart, '/invalid'],
