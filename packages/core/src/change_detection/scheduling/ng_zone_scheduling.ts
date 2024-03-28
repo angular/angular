@@ -61,7 +61,7 @@ export const PROVIDED_NG_ZONE = new InjectionToken<boolean>(
 /**
  * Configures change detection scheduling when using ZoneJS.
  */
-export const enum SchedulingMode {
+export enum SchedulingMode {
   /**
    * Change detection will run when the `NgZone.onMicrotaskEmpty` observable emits.
    * Change detection will also be scheduled to run whenever Angular is notified

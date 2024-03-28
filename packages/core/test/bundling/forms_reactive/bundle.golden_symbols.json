@@ -522,6 +522,9 @@
     "name": "Sanitizer"
   },
   {
+    "name": "SchedulingMode"
+  },
+  {
     "name": "ShadowDomRenderer"
   },
   {
