@@ -37,6 +37,7 @@ import {ExtendedTemplateChecker} from '../../typecheck/extended/api';
 import {TemplateSemanticsChecker} from '../../typecheck/template_semantics/api/api';
 import {TemplateSemanticsCheckerImpl} from '../../typecheck/template_semantics/src/template_semantics_checker';
 import {getSourceFileOrNull, isDtsPath, toUnredirectedSourceFile} from '../../util/src/typescript';
+import {SourceFileValidator} from '../../validation';
 import {Xi18nContext} from '../../xi18n';
 import {DiagnosticCategoryLabel, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
@@ -62,6 +63,7 @@ interface LazyCompilationState {
   resourceRegistry: ResourceRegistry;
   extendedTemplateChecker: ExtendedTemplateChecker|null;
   templateSemanticsChecker: TemplateSemanticsChecker|null;
+  sourceFileValidator: SourceFileValidator|null;
 
   /**
    * Only available in local compilation mode when option `generateExtraImportsInLocalMode` is set.
@@ -978,10 +980,17 @@ export class NgCompiler {
   private runAdditionalChecks(sf?: ts.SourceFile): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
     const compilation = this.ensureAnalyzed();
-    const {extendedTemplateChecker, templateSemanticsChecker} = compilation;
+    const {extendedTemplateChecker, templateSemanticsChecker, sourceFileValidator} = compilation;
     const files = sf ? [sf] : this.inputProgram.getSourceFiles();
 
     for (const sf of files) {
+      if (sourceFileValidator !== null) {
+        const sourceFileDiagnostics = sourceFileValidator.getDiagnosticsForFile(sf);
+        if (sourceFileDiagnostics !== null) {
+          diagnostics.push(...sourceFileDiagnostics);
+        }
+      }
+
       if (templateSemanticsChecker !== null) {
         diagnostics.push(...compilation.traitCompiler.runAdditionalChecks(sf, (clazz, handler) => {
           return handler.templateSemanticsCheck?.(clazz, templateSemanticsChecker) || null;
@@ -1239,6 +1248,10 @@ export class NgCompiler {
         new TemplateSemanticsCheckerImpl(templateTypeChecker) :
         null;
 
+    const sourceFileValidator = this.constructionDiagnostics.length === 0 ?
+        new SourceFileValidator(reflector, importTracker) :
+        null;
+
     return {
       isCore,
       traitCompiler,
@@ -1255,6 +1268,7 @@ export class NgCompiler {
       extendedTemplateChecker,
       localCompilationExtraImportsTracker,
       templateSemanticsChecker,
+      sourceFileValidator,
     };
   }
 }

@@ -66,11 +66,16 @@ let patchedTimers: {
   setInterval: typeof setInterval,
   clearTimeout: typeof clearTimeout,
   clearInterval: typeof clearInterval,
+  nativeSetTimeout: typeof setTimeout,
+  nativeClearTimeout: typeof clearTimeout,
 }|undefined;
+
+const timeoutCallback = function() {};
 
 class Scheduler {
   // Next scheduler id.
-  public static nextId: number = 1;
+  public static nextNodeJSId: number = 1;
+  public static nextId: number = -1;
 
   // Scheduler queue with the tuple of end time and callback function - sorted by end time.
   private _schedulerQueue: ScheduledFunction[] = [];
@@ -82,6 +87,17 @@ class Scheduler {
   private _currentTickRequeuePeriodicEntries: any[] = [];
 
   constructor() {}
+
+  static getNextId() {
+    const id = patchedTimers!.nativeSetTimeout.call(global, timeoutCallback, 0);
+    patchedTimers!.nativeClearTimeout.call(global, id);
+    if (typeof id === 'number') {
+      return id;
+    }
+    // in NodeJS, we just use a number for fakeAsync, since it will not
+    // conflict with native TimeoutId
+    return Scheduler.nextNodeJSId++;
+  }
 
   getCurrentTickTime() {
     return this._currentTickTime;
@@ -116,7 +132,8 @@ class Scheduler {
       },
       ...options
     };
-    let currentId = options.id! < 0 ? Scheduler.nextId++ : options.id!;
+    let currentId = options.id! < 0 ? Scheduler.nextId : options.id!;
+    Scheduler.nextId = Scheduler.getNextId();
     let endTime = this._currentTickTime + delay;
 
     // Insert so that scheduler queue remains sorted by end time.
@@ -877,6 +894,10 @@ export function patchFakeAsyncTest(Zone: ZoneType): void {
     setTimeout: global.setTimeout,
     setInterval: global.setInterval,
     clearTimeout: global.clearTimeout,
-    clearInterval: global.clearInterval
+    clearInterval: global.clearInterval,
+    nativeSetTimeout: global[Zone.__symbol__('setTimeout')],
+    nativeClearTimeout: global[Zone.__symbol__('clearTimeout')],
   };
+
+  Scheduler.nextId = Scheduler.getNextId();
 }
