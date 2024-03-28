@@ -35,30 +35,15 @@ import {global} from './global';
  * @returns a function to cancel the scheduled callback
  */
 export function getCallbackScheduler(): (callback: Function) => () => void {
-  // Note: the `getNativeRequestAnimationFrame` is used in the `NgZone` class, but we cannot use the
+  // Note: the `getCallbackScheduler` is used in the `NgZone` class, but we cannot use the
   // `inject` function. The `NgZone` instance may be created manually, and thus the injection
   // context will be unavailable. This might be enough to check whether `requestAnimationFrame` is
   // available because otherwise, we'll fall back to `setTimeout`.
   const hasRequestAnimationFrame = typeof global['requestAnimationFrame'] === 'function';
-  let nativeRequestAnimationFrame =
-      hasRequestAnimationFrame ? global['requestAnimationFrame'] : null;
-  let nativeSetTimeout = global['setTimeout'];
-
-  if (typeof Zone !== 'undefined') {
-    // Note: zone.js sets original implementations on patched APIs behind the
-    // `__zone_symbol__OriginalDelegate` key (see `attachOriginToPatched`). Given the following
-    // example: `window.requestAnimationFrame.__zone_symbol__OriginalDelegate`; this would return an
-    // unpatched implementation of the `requestAnimationFrame`, which isn't intercepted by the
-    // Angular zone. We use the unpatched implementation to avoid another change detection when
-    // coalescing tasks.
-    const ORIGINAL_DELEGATE_SYMBOL = (Zone as any).__symbol__('OriginalDelegate');
-    if (nativeRequestAnimationFrame) {
-      nativeRequestAnimationFrame =
-          (nativeRequestAnimationFrame as any)[ORIGINAL_DELEGATE_SYMBOL] ??
-          nativeRequestAnimationFrame;
-    }
-    nativeSetTimeout = (nativeSetTimeout as any)[ORIGINAL_DELEGATE_SYMBOL] ?? nativeSetTimeout;
-  }
+  let nativeRequestAnimationFrame = hasRequestAnimationFrame ?
+      (global[Zone?.__symbol__?.('requestAnimationFrame')] ?? global['requestAnimationFrame']) :
+      null;
+  let nativeSetTimeout = global[Zone?.__symbol__?.('setTimeout')] ?? global['setTimeout'];
 
   return (callback: Function) => {
     let executeCallback = true;
