@@ -25,6 +25,12 @@ export function resetFakeAsyncZone(): void {
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
 }
 
+export function resetFakeAsyncZoneIfExists(): void {
+  if (fakeAsyncTestModule) {
+    fakeAsyncTestModule.resetFakeAsyncZone();
+  }
+}
+
 /**
  * Wraps a function to be executed in the `fakeAsync` zone:
  * - Microtasks are manually executed by calling `flushMicrotasks()`.
