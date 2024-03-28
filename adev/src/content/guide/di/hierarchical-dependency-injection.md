@@ -338,8 +338,8 @@ The following is an example of how the `<app-root>` and `<app-child>` view trees
        …content goes here…
      </#VIEW>
     </app-child>
-  <#VIEW>
-<app-root>
+  </#VIEW>
+</app-root>
 </docs-code>
 
 Understanding the idea of the `<#VIEW>` demarcation is especially significant when you configure services in the component class.
