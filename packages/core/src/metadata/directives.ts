@@ -232,9 +232,9 @@ export interface Directive {
   outputs?: string[];
 
   /**
-   * Configures the [injector](guide/glossary#injector) of this
-   * directive or component with a [token](guide/glossary#di-token)
-   * that maps to a [provider](guide/glossary#provider) of a dependency.
+   * Configures the injector of this
+   * directive or component with a token
+   * that maps to a provider of a dependency.
    */
   providers?: Provider[];
 
@@ -728,7 +728,7 @@ export interface PipeDecorator {
 export interface Pipe {
   /**
    * The pipe name to use in template bindings.
-   * Typically uses [lowerCamelCase](guide/glossary#case-types)
+   * Typically uses lowerCamelCase
    * because the name cannot contain hyphens.
    */
   name: string;

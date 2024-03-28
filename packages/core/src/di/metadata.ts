@@ -46,7 +46,7 @@ export interface InjectDecorator {
  */
 export interface Inject {
   /**
-   * A [DI token](guide/glossary#di-token) that maps to the dependency to be injected.
+   * A DI token that maps to the dependency to be injected.
    */
   token: any;
 }

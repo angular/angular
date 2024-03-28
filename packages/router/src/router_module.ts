@@ -241,7 +241,7 @@ function provideInitialNavigation(config: Pick<ExtraOptions, 'initialNavigation'
 
 // TODO(atscott): This should not be in the public API
 /**
- * A [DI token](guide/glossary/#di-token) for the router initializer that
+ * A DI token for the router initializer that
  * is called after the app is bootstrapped.
  *
  * @publicApi

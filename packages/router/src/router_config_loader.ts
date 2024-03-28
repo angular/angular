@@ -24,7 +24,7 @@ import {wrapIntoObservable} from './utils/collection';
 import {assertStandalone, standardizeConfig, validateConfig} from './utils/config';
 
 /**
- * The [DI token](guide/glossary/#di-token) for a router configuration.
+ * The DI token for a router configuration.
  *
  * `ROUTES` is a low level API for router configuration via dependency injection.
  *

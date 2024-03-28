@@ -9,7 +9,7 @@
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 
 /**
- * Represents an Angular [view](guide/glossary#view "Definition").
+ * Represents an Angular view.
  *
  * @see {@link ChangeDetectorRef#usage-notes Change detection usage}
  *
@@ -37,8 +37,8 @@ export abstract class ViewRef extends ChangeDetectorRef {
 }
 
 /**
- * Represents an Angular [view](guide/glossary#view) in a view container.
- * An [embedded view](guide/glossary#view-hierarchy) can be referenced from a component
+ * Represents an Angular view in a view container.
+ * An embedded view can be referenced from a component
  * other than the hosting component whose template defines it, or it can be defined
  * independently by a `TemplateRef`.
  *
