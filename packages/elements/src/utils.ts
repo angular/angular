@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
 
 /**
  * Provide methods for scheduling the execution of a callback.
@@ -103,7 +102,7 @@ export function strictEquals(value1: any, value2: any): boolean {
 
 /** Gets a map of default set of attributes to observe and the properties they affect. */
 export function getDefaultAttributeToPropertyInputs(
-  inputs: {propName: string; templateName: string; transform?: (value: any) => any}[],
+  inputs: ReadonlyArray<{propName: string; templateName: string; transform?: (value: any) => any}>,
 ) {
   const attributeToPropertyInputs: {
     [key: string]: [propName: string, transform: ((value: any) => any) | undefined];
@@ -113,21 +112,4 @@ export function getDefaultAttributeToPropertyInputs(
   });
 
   return attributeToPropertyInputs;
-}
-
-/**
- * Gets a component's set of inputs. Uses the injector to get the component factory where the inputs
- * are defined.
- */
-export function getComponentInputs(
-  component: Type<any>,
-  injector: Injector,
-): {
-  propName: string;
-  templateName: string;
-  transform?: (value: any) => any;
-}[] {
-  const componentFactoryResolver = injector.get(ComponentFactoryResolver);
-  const componentFactory = componentFactoryResolver.resolveComponentFactory(component);
-  return componentFactory.inputs;
 }
