@@ -391,9 +391,8 @@ export function patchEventTarget(
           return;
         }
 
-        const passive =
-            passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
-        const options = buildEventListenerOptions(arguments[2], passive);
+        const isPassiveEvent = passiveSupported && passiveEvents?.includes(eventName);
+        const options = buildEventListenerOptions(arguments[2], isPassiveEvent);
         const signal = options && typeof options === 'object' && options.signal &&
                 typeof options.signal === 'object' ?
             options.signal :
@@ -401,6 +400,19 @@ export function patchEventTarget(
         if (signal?.aborted) {
           // the signal is an aborted one, just return without attaching the event listener.
           return;
+        }
+        const passive = typeof options === 'object' && options?.passive;
+
+        const zone = Zone.current;
+        let source;
+        const constructorName = target.constructor['name'];
+        const targetSource = globalSources[constructorName];
+        if (targetSource) {
+          source = targetSource[eventName];
+        }
+        if (!source) {
+          source = constructorName + addSource +
+              (eventNameToString ? eventNameToString(eventName) : eventName);
         }
 
         if (unpatchedEvents) {
@@ -416,10 +428,22 @@ export function patchEventTarget(
           }
         }
 
+        if (passive) {
+          zone.scheduleEventTask(
+              source, delegate, undefined,
+              (t) => {
+                nativeListener.call(target, eventName, t.invoke, options);
+              },
+              (t) => {
+                nativeRemoveEventListener.call(target, eventName, t.invoke, options);
+              });
+          return;
+        }
+
+
         const capture = !options ? false : typeof options === 'boolean' ? true : options.capture;
         const once = options && typeof options === 'object' ? options.once : false;
 
-        const zone = Zone.current;
         let symbolEventNames = zoneSymbolEventNames[eventName];
         if (!symbolEventNames) {
           prepareEventNames(eventName, eventNameToString);
@@ -428,29 +452,21 @@ export function patchEventTarget(
         const symbolEventName = symbolEventNames[capture ? TRUE_STR : FALSE_STR];
         let existingTasks = target[symbolEventName];
         let isExisting = false;
-        if (existingTasks) {
-          // already have task registered
-          isExisting = true;
-          if (checkDuplicate) {
-            for (let i = 0; i < existingTasks.length; i++) {
-              if (compare(existingTasks[i], delegate)) {
-                // same callback, same capture, same event name, just return
-                return;
+        if (!passive) {
+          if (existingTasks) {
+            // already have task registered
+            isExisting = true;
+            if (checkDuplicate) {
+              for (let i = 0; i < existingTasks.length; i++) {
+                if (compare(existingTasks[i], delegate)) {
+                  // same callback, same capture, same event name, just return
+                  return;
+                }
               }
             }
+          } else {
+            existingTasks = target[symbolEventName] = [];
           }
-        } else {
-          existingTasks = target[symbolEventName] = [];
-        }
-        let source;
-        const constructorName = target.constructor['name'];
-        const targetSource = globalSources[constructorName];
-        if (targetSource) {
-          source = targetSource[eventName];
-        }
-        if (!source) {
-          source = constructorName + addSource +
-              (eventNameToString ? eventNameToString(eventName) : eventName);
         }
         // do not create a new object as task.data to pass those things
         // just use the global shared one
@@ -466,7 +482,7 @@ export function patchEventTarget(
         taskData.eventName = eventName;
         taskData.isExisting = isExisting;
 
-        const data = useGlobalCallback ? OPTIMIZED_ZONE_EVENT_TASK_DATA : undefined;
+        const data = useGlobalCallback && !passive ? OPTIMIZED_ZONE_EVENT_TASK_DATA : undefined;
 
         // keep taskData into data to allow onScheduleEventTask to access the task information
         if (data) {

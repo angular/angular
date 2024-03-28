@@ -1491,6 +1491,7 @@ describe('Zone', function() {
              logs.push(e.defaultPrevented.toString());
              e.preventDefault();
              logs.push(e.defaultPrevented.toString());
+             expect(Zone.current.name).toBe(zone.name);
            };
 
            zone.run(function() {
@@ -1501,6 +1502,88 @@ describe('Zone', function() {
 
            expect(hookSpy).toHaveBeenCalled();
            expect(logs).toEqual(['false', 'false']);
+
+           button.removeEventListener('click', listener);
+         }));
+
+      it('should support addEventListener passive first and non passive after',
+         ifEnvSupports(supportEventListenerOptions, function() {
+           const hookSpy = jasmine.createSpy('hook');
+           const logs: string[] = [];
+           const zone = rootZone.fork({
+             name: 'spy',
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
+           });
+
+           const listener = (e: Event) => {
+             logs.push(e.defaultPrevented.toString());
+             e.preventDefault();
+             logs.push(e.defaultPrevented.toString());
+             expect(Zone.current.name).toBe(zone.name);
+           };
+
+           const listener1 = (e: Event) => {
+             logs.push(e.defaultPrevented.toString());
+             e.preventDefault();
+             logs.push(e.defaultPrevented.toString());
+             expect(Zone.current.name).toBe(zone.name);
+           };
+
+           zone.run(function() {
+             (button as any).addEventListener('click', listener, {passive: true});
+             (button as any).addEventListener('click', listener1);
+           });
+
+           button.dispatchEvent(clickEvent);
+
+           expect(hookSpy).toHaveBeenCalled();
+           expect(logs).toEqual(['false', 'false', 'false', 'true']);
+
+           button.removeEventListener('click', listener);
+         }));
+
+      it('should support addEventListener non passive first and passive after',
+         ifEnvSupports(supportEventListenerOptions, function() {
+           const hookSpy = jasmine.createSpy('hook');
+           const logs: string[] = [];
+           const zone = rootZone.fork({
+             name: 'spy',
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
+           });
+
+           const listener = (e: Event) => {
+             logs.push(e.defaultPrevented.toString());
+             e.preventDefault();
+             logs.push(e.defaultPrevented.toString());
+             expect(Zone.current.name).toBe(zone.name);
+           };
+
+           const listener1 = (e: Event) => {
+             logs.push(e.defaultPrevented.toString());
+             e.preventDefault();
+             logs.push(e.defaultPrevented.toString());
+             expect(Zone.current.name).toBe(zone.name);
+           };
+
+           zone.run(function() {
+             (button as any).addEventListener('click', listener);
+             (button as any).addEventListener('click', listener1, {passive: true});
+           });
+
+           button.dispatchEvent(clickEvent);
+
+           expect(hookSpy).toHaveBeenCalled();
+           expect(logs).toEqual(['false', 'true', 'true', 'true']);
 
            button.removeEventListener('click', listener);
          }));
