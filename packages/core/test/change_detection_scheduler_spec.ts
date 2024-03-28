@@ -574,7 +574,9 @@ describe('Angular with scheduler and ZoneJS', () => {
         {providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]});
   });
 
-  it('current default behavior requires updates inside Angular zone', async () => {
+  it('requires updates inside Angular zone when using ngZoneOnly', async () => {
+    TestBed.configureTestingModule(
+        {providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})]});
     @Component({template: '{{thing()}}', standalone: true})
     class App {
       thing = signal('initial');
@@ -593,8 +595,6 @@ describe('Angular with scheduler and ZoneJS', () => {
   });
 
   it('updating signal outside of zone still schedules update when in hybrid mode', async () => {
-    TestBed.configureTestingModule(
-        {providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: false})]});
     @Component({template: '{{thing()}}', standalone: true})
     class App {
       thing = signal('initial');
