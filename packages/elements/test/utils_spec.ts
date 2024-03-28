@@ -13,7 +13,6 @@ import {
   kebabToCamelCase,
   matchesSelector,
   scheduler,
-  strictEquals,
 } from '../src/utils';
 
 describe('utils', () => {
@@ -182,37 +181,6 @@ describe('utils', () => {
       expect(matchesSelector(li, '.qux#quxLi:not(li)')).toBe(false);
       expect(matchesSelector(li, '.bar > #bazUl > .quxLi')).toBe(false);
       expect(matchesSelector(li, 'div span ul li')).toBe(false);
-    });
-  });
-
-  describe('strictEquals()', () => {
-    it('should perform strict equality check', () => {
-      const values = [
-        undefined,
-        null,
-        true,
-        false,
-        42,
-        '42',
-        () => undefined,
-        () => undefined,
-        {},
-        {},
-      ];
-
-      values.forEach((v1, i) => {
-        values.forEach((v2, j) => {
-          expect(strictEquals(v1, v2)).toBe(i === j);
-        });
-      });
-    });
-
-    it('should consider two `NaN` values equals', () => {
-      expect(strictEquals(NaN, NaN)).toBe(true);
-      expect(strictEquals(NaN, 'foo')).toBe(false);
-      expect(strictEquals(NaN, 42)).toBe(false);
-      expect(strictEquals(NaN, null)).toBe(false);
-      expect(strictEquals(NaN, undefined)).toBe(false);
     });
   });
 });

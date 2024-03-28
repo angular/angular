@@ -94,13 +94,6 @@ export function matchesSelector(el: any, selector: string): boolean {
   return el.nodeType === Node.ELEMENT_NODE ? _matches.call(el, selector) : false;
 }
 
-/**
- * Test two values for strict equality, accounting for the fact that `NaN !== NaN`.
- */
-export function strictEquals(value1: any, value2: any): boolean {
-  return value1 === value2 || (value1 !== value1 && value2 !== value2);
-}
-
 /** Gets a map of default set of attributes to observe and the properties they affect. */
 export function getDefaultAttributeToPropertyInputs(
   inputs: {propName: string; templateName: string; transform?: (value: any) => any}[],

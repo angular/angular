@@ -9,15 +9,16 @@
 import {
   ApplicationRef,
   ChangeDetectorRef,
-  ComponentFactory,
-  ComponentFactoryResolver,
+  Component,
   ComponentRef,
+  EnvironmentInjector,
   Injector,
-  NgModuleRef,
   NgZone,
-  SimpleChange,
-  SimpleChanges,
-  Type,
+  OnDestroy,
+  OnInit,
+  ViewRef,
+  input,
+  runInInjectionContext,
 } from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
@@ -27,28 +28,22 @@ import {
   ComponentNgElementStrategyFactory,
 } from '../src/component-factory-strategy';
 import {NgElementStrategyEvent} from '../src/element-strategy';
+import {ComponentFactory} from '@angular/core/src/render3';
+import {R3Injector} from '@angular/core/src/di/r3_injector';
 
 describe('ComponentFactoryNgElementStrategy', () => {
-  let factory: FakeComponentFactory<typeof FakeComponent>;
-  let strategy: ComponentNgElementStrategy;
+  let strategy: ComponentNgElementStrategy<FakeComponent>;
 
-  let injector: any;
-  let componentRef: any;
-  let applicationRef: any;
-  let ngZone: any;
+  let injector: jasmine.SpyObj<Injector>;
+  let componentRef: jasmine.SpyObj<ComponentRef<any>>;
+  let applicationRef: jasmine.SpyObj<ApplicationRef>;
+  let ngZone: jasmine.SpyObj<NgZone>;
+  let environmentInjector: jasmine.SpyObj<EnvironmentInjector>;
 
   let injectables: Map<unknown, unknown>;
 
   beforeEach(() => {
-    factory = new FakeComponentFactory(FakeComponent);
-    componentRef = factory.componentRef;
-
-    applicationRef = jasmine.createSpyObj('applicationRef', ['attachView']);
-
-    ngZone = jasmine.createSpyObj('ngZone', ['run']);
-    ngZone.run.and.callFake((fn: () => unknown) => fn());
-
-    injector = jasmine.createSpyObj('injector', ['get']);
+    injector = jasmine.createSpyObj<Injector>('injector', ['get']);
     injector.get.and.callFake((token: unknown) => {
       if (!injectables.has(token)) {
         throw new Error(`Failed to get injectable from mock injector: ${token}`);
@@ -56,20 +51,58 @@ describe('ComponentFactoryNgElementStrategy', () => {
       return injectables.get(token);
     });
 
+    componentRef = jasmine.createSpyObj<ComponentRef<any>>(
+      'componentRef',
+      // Method spies.
+      ['destroy', 'setInput'],
+      // Property spies.
+      {
+        changeDetectorRef: jasmine.createSpyObj('changeDetectorRef', ['detectChanges']),
+        hostView: jasmine.createSpyObj<ViewRef>('hostView', ['detectChanges']),
+        injector,
+        instance: runInInjectionContext(injector, () => new FakeComponent()),
+      },
+    );
+
+    componentRef.setInput.and.callFake(function (this: ComponentRef<any>, name, value) {
+      this.instance[name] = value;
+    });
+
+    spyOn(ComponentFactory.prototype, 'create').and.returnValue(componentRef);
+
+    spyOnProperty(ComponentFactory.prototype, 'inputs', 'get').and.returnValue([
+      {propName: 'fooFoo', templateName: 'fooFoo', isSignal: true},
+      {propName: 'barBar', templateName: 'my-bar-bar', isSignal: true},
+      {propName: 'falsyUndefined', templateName: 'falsyUndefined', isSignal: true},
+      {propName: 'falsyNull', templateName: 'falsyNull', isSignal: true},
+      {propName: 'falsyEmpty', templateName: 'falsyEmpty', isSignal: true},
+      {propName: 'falsyFalse', templateName: 'falsyFalse', isSignal: true},
+      {propName: 'falsyZero', templateName: 'falsyZero', isSignal: true},
+    ]);
+
+    spyOnProperty(ComponentFactory.prototype, 'outputs', 'get').and.returnValue([
+      {propName: 'output1', templateName: 'templateOutput1'},
+      {propName: 'output2', templateName: 'templateOutput2'},
+    ]);
+
+    applicationRef = jasmine.createSpyObj<ApplicationRef>('applicationRef', ['attachView']);
+    environmentInjector = jasmine.createSpyObj<EnvironmentInjector>('environmentInjector', ['get']);
+
+    ngZone = jasmine.createSpyObj<NgZone>('ngZone', ['run']);
+    ngZone.run.and.callFake((fn) => fn());
+
     injectables = new Map<unknown, unknown>([
       [ApplicationRef, applicationRef],
       [NgZone, ngZone],
+      [EnvironmentInjector, environmentInjector],
+      [ChangeDetectorRef, jasmine.createSpyObj('viewChangeDetectorRef', ['markForCheck'])],
     ]);
 
-    strategy = new ComponentNgElementStrategy(factory, injector);
+    strategy = new ComponentNgElementStrategy(FakeComponent, injector);
     ngZone.run.calls.reset();
   });
 
   it('should create a new strategy from the factory', () => {
-    const factoryResolver = jasmine.createSpyObj('factoryResolver', ['resolveComponentFactory']);
-    factoryResolver.resolveComponentFactory.and.returnValue(factory);
-    injectables.set(ComponentFactoryResolver, factoryResolver);
-
     const strategyFactory = new ComponentNgElementStrategyFactory(FakeComponent, injector);
     expect(strategyFactory.create(injector)).toBeTruthy();
   });
@@ -102,6 +135,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
   });
 
   describe('after connected', () => {
+    let host: HTMLElement;
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
       strategy.setInputValue('fooFoo', 'fooFoo-1');
@@ -110,11 +144,22 @@ describe('ComponentFactoryNgElementStrategy', () => {
       strategy.setInputValue('falsyEmpty', '');
       strategy.setInputValue('falsyFalse', false);
       strategy.setInputValue('falsyZero', 0);
-      strategy.connect(document.createElement('div'));
+
+      host = document.createElement('div');
+      strategy.connect(host);
     });
 
     it('should attach the component to the view', () => {
       expect(applicationRef.attachView).toHaveBeenCalledWith(componentRef.hostView);
+    });
+
+    it('should call the factory with the right arguments', () => {
+      expect(ComponentFactory.prototype.create).toHaveBeenCalledOnceWith(
+        jasmine.any(R3Injector),
+        [],
+        host,
+        environmentInjector,
+      );
     });
 
     it('should detect changes', () => {
@@ -152,30 +197,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
       expect(strategy.getInputValue('falsyZero')).toEqual(0);
       expect(componentRef.instance.falsyZero).toEqual(0);
     });
-
-    it('should call ngOnChanges with the change', () => {
-      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
-        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
-        falsyUndefined: new SimpleChange(undefined, undefined, true),
-        falsyNull: new SimpleChange(undefined, null, true),
-        falsyEmpty: new SimpleChange(undefined, '', true),
-        falsyFalse: new SimpleChange(undefined, false, true),
-        falsyZero: new SimpleChange(undefined, 0, true),
-      });
-    });
-
-    it('should call ngOnChanges with proper firstChange value', fakeAsync(() => {
-      strategy.setInputValue('fooFoo', 'fooFoo-2');
-      strategy.setInputValue('barBar', 'barBar-1');
-      strategy.setInputValue('falsyUndefined', 'notanymore');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      (strategy as any).detectChanges();
-      expectSimpleChanges(componentRef.instance.simpleChanges[1], {
-        fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
-        barBar: new SimpleChange(undefined, 'barBar-1', true),
-        falsyUndefined: new SimpleChange(undefined, 'notanymore', false),
-      });
-    }));
   });
 
   describe('when inputs change and not connected', () => {
@@ -242,137 +263,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
       tick(16); // scheduler waits 16ms if RAF is unavailable
       expect(componentRef.changeDetectorRef.detectChanges).not.toHaveBeenCalled();
     }));
-
-    it('should call ngOnChanges', fakeAsync(() => {
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
-        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
-      });
-    }));
-
-    it('should call ngOnChanges once for multiple input changes', fakeAsync(() => {
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
-        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
-        barBar: new SimpleChange(undefined, 'barBar-1', true),
-      });
-    }));
-
-    it('should call ngOnChanges twice for changes in different rounds with previous values', fakeAsync(() => {
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expectSimpleChanges(componentRef.instance.simpleChanges[0], {
-        fooFoo: new SimpleChange(undefined, 'fooFoo-1', true),
-        barBar: new SimpleChange(undefined, 'barBar-1', true),
-      });
-
-      strategy.setInputValue('fooFoo', 'fooFoo-2');
-      strategy.setInputValue('barBar', 'barBar-2');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expectSimpleChanges(componentRef.instance.simpleChanges[1], {
-        fooFoo: new SimpleChange('fooFoo-1', 'fooFoo-2', false),
-        barBar: new SimpleChange('barBar-1', 'barBar-2', false),
-      });
-    }));
-
-    it('should not call ngOnChanges if the inout is set to the same value', fakeAsync(() => {
-      const ngOnChangesSpy = spyOn(componentRef.instance, 'ngOnChanges');
-
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expect(ngOnChangesSpy).toHaveBeenCalledTimes(1);
-
-      ngOnChangesSpy.calls.reset();
-
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expect(ngOnChangesSpy).not.toHaveBeenCalled();
-    }));
-
-    it('should not try to call ngOnChanges if not present on the component', fakeAsync(() => {
-      const factory2 = new FakeComponentFactory(FakeComponentWithoutNgOnChanges);
-      const strategy2 = new ComponentNgElementStrategy(factory2, injector);
-      const changeDetectorRef2 = factory2.componentRef.changeDetectorRef;
-
-      strategy2.connect(document.createElement('div'));
-      changeDetectorRef2.detectChanges.calls.reset();
-
-      strategy2.setInputValue('fooFoo', 'fooFoo-1');
-      expect(() => tick(16)).not.toThrow(); // scheduler waits 16ms if RAF is unavailable
-
-      // If the strategy would have tried to call `component.ngOnChanges()`, an error would have
-      // been thrown and `changeDetectorRef2.detectChanges()` would not have been called.
-      expect(changeDetectorRef2.detectChanges).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should mark the view for check', fakeAsync(() => {
-      expect(viewChangeDetectorRef.markForCheck).not.toHaveBeenCalled();
-
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-
-      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should mark the view for check once for multiple input changes', fakeAsync(() => {
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-
-      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should mark the view for check twice for changes in different rounds with previous values', fakeAsync(() => {
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-
-      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
-
-      strategy.setInputValue('fooFoo', 'fooFoo-2');
-      strategy.setInputValue('barBar', 'barBar-2');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-
-      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(2);
-    }));
-
-    it('should mark the view for check even if ngOnChanges is not present on the component', fakeAsync(() => {
-      const factory2 = new FakeComponentFactory(FakeComponentWithoutNgOnChanges);
-      const strategy2 = new ComponentNgElementStrategy(factory2, injector);
-      const viewChangeDetectorRef2 = factory2.componentRef.injector.get(ChangeDetectorRef);
-
-      strategy2.connect(document.createElement('div'));
-      (viewChangeDetectorRef2.markForCheck as jasmine.Spy).calls.reset();
-
-      strategy2.setInputValue('fooFoo', 'fooFoo-1');
-      expect(() => tick(16)).not.toThrow(); // scheduler waits 16ms if RAF is unavailable
-
-      // If the strategy would have tried to call `component.ngOnChanges()`, an error would have
-      // been thrown and `viewChangeDetectorRef2.markForCheck()` would not have been called.
-      expect(viewChangeDetectorRef2.markForCheck).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should not mark the view for check if the input is set to the same value', fakeAsync(() => {
-      (viewChangeDetectorRef.markForCheck as jasmine.Spy).calls.reset();
-
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expect(viewChangeDetectorRef.markForCheck).toHaveBeenCalledTimes(1);
-
-      (viewChangeDetectorRef.markForCheck as jasmine.Spy).calls.reset();
-
-      strategy.setInputValue('fooFoo', 'fooFoo-1');
-      strategy.setInputValue('barBar', 'barBar-1');
-      tick(16); // scheduler waits 16ms if RAF is unavailable
-      expect(viewChangeDetectorRef.markForCheck).not.toHaveBeenCalled();
-    }));
   });
 
   describe('disconnect', () => {
@@ -430,91 +320,18 @@ describe('ComponentFactoryNgElementStrategy', () => {
   });
 });
 
-export class FakeComponentWithoutNgOnChanges {
-  output1 = new Subject();
-  output2 = new Subject();
-}
-
-export class FakeComponent {
+@Component({})
+export class FakeComponent implements OnInit, OnDestroy {
   output1 = new Subject();
   output2 = new Subject();
 
-  // Keep track of the simple changes passed to ngOnChanges
-  simpleChanges: SimpleChanges[] = [];
+  static instance?: FakeComponent;
 
-  ngOnChanges(simpleChanges: SimpleChanges) {
-    this.simpleChanges.push(simpleChanges);
-  }
-}
-
-export class FakeComponentFactory<T extends Type<any>> extends ComponentFactory<T> {
-  componentRef: any = jasmine.createSpyObj(
-    'componentRef',
-    // Method spies.
-    ['destroy'],
-    // Property spies.
-    {
-      changeDetectorRef: jasmine.createSpyObj('changeDetectorRef', ['detectChanges']),
-      hostView: {},
-      injector: jasmine.createSpyObj('injector', {
-        get: jasmine.createSpyObj('viewChangeDetectorRef', ['markForCheck']),
-      }),
-      instance: new this.ComponentClass(),
-    },
-  );
-
-  override get selector(): string {
-    return 'fake-component';
-  }
-  override get componentType(): Type<any> {
-    return this.ComponentClass;
-  }
-  override get ngContentSelectors(): string[] {
-    return ['content-1', 'content-2'];
-  }
-  override get inputs(): {propName: string; templateName: string; isSignal: boolean}[] {
-    return [
-      {propName: 'fooFoo', templateName: 'fooFoo', isSignal: false},
-      {propName: 'barBar', templateName: 'my-bar-bar', isSignal: false},
-      {propName: 'falsyUndefined', templateName: 'falsyUndefined', isSignal: false},
-      {propName: 'falsyNull', templateName: 'falsyNull', isSignal: false},
-      {propName: 'falsyEmpty', templateName: 'falsyEmpty', isSignal: false},
-      {propName: 'falsyFalse', templateName: 'falsyFalse', isSignal: false},
-      {propName: 'falsyZero', templateName: 'falsyZero', isSignal: false},
-    ];
-  }
-  override get outputs(): {propName: string; templateName: string}[] {
-    return [
-      {propName: 'output1', templateName: 'templateOutput1'},
-      {propName: 'output2', templateName: 'templateOutput2'},
-    ];
+  ngOnInit() {
+    FakeComponent.instance = this;
   }
 
-  constructor(private ComponentClass: T) {
-    super();
+  ngOnDestroy() {
+    delete FakeComponent.instance;
   }
-
-  override create(
-    injector: Injector,
-    projectableNodes?: any[][],
-    rootSelectorOrNode?: string | any,
-    ngModule?: NgModuleRef<any>,
-  ): ComponentRef<any> {
-    return this.componentRef;
-  }
-}
-
-function expectSimpleChanges(actual: SimpleChanges, expected: SimpleChanges) {
-  Object.keys(actual).forEach((key) => {
-    expect(expected[key]).toBeTruthy(`Change included additional key ${key}`);
-  });
-
-  Object.keys(expected).forEach((key) => {
-    expect(actual[key]).toBeTruthy(`Change should have included key ${key}`);
-    if (actual[key]) {
-      expect(actual[key].previousValue).toBe(expected[key].previousValue, `${key}.previousValue`);
-      expect(actual[key].currentValue).toBe(expected[key].currentValue, `${key}.currentValue`);
-      expect(actual[key].firstChange).toBe(expected[key].firstChange, `${key}.firstChange`);
-    }
-  });
 }

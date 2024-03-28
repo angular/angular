@@ -29,7 +29,7 @@ import {
   NgElementStrategyFactory,
 } from './element-strategy';
 import {extractProjectableNodes} from './extract-projectable-nodes';
-import {scheduler, strictEquals} from './utils';
+import {scheduler} from './utils';
 import {outputToObservable} from '@angular/core/rxjs-interop';
 
 /** Time in milliseconds to wait before destroying the component ref when disconnected. */
@@ -167,7 +167,7 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
       // Ignore the value if the component has already been initialized and the value is strictly
       // equal to the current value. This is because getInputValue does not work for required
       // inputs before they have been set.
-      if (!init && strictEquals(value, this.getInputValue(property))) {
+      if (!init && Object.is(value, this.getInputValue(property))) {
         return;
       }
 
@@ -190,9 +190,9 @@ export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
 
     this.componentRef = createComponent(this.component, {
       environmentInjector,
+      hostElement,
       elementInjector,
       projectableNodes,
-      hostElement,
     });
 
     this.initializeInputs();
