@@ -17,6 +17,8 @@ import {provideHttpClientTesting} from './provider';
  * Inject `HttpTestingController` to expect and flush requests in your tests.
  *
  * @publicApi
+ *
+ * @deprecated Add `provideHttpClientTesting()` to your providers instead.
  */
 @NgModule({
   imports: [HttpClientModule],
