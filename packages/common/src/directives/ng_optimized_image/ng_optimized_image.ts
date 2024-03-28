@@ -314,8 +314,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
 
   /**
    * For responsive images: the intrinsic height of the image in pixels.
-   * For fixed size images: the desired rendered height of the image in pixels.* The intrinsic
-   * height of the image in pixels.
+   * For fixed size images: the desired rendered height of the image in pixels.
    */
   @Input({transform: numberAttribute}) height: number | undefined;
 
