@@ -12,7 +12,10 @@
 
 import {isElement, matchesSelector} from './utils';
 
-export function extractProjectableNodes(host: HTMLElement, ngContentSelectors: string[]): Node[][] {
+export function extractProjectableNodes(
+  host: HTMLElement,
+  ngContentSelectors: readonly string[],
+): Node[][] {
   const nodes = host.childNodes;
   const projectableNodes: Node[][] = ngContentSelectors.map(() => []);
   let wildcardIndex = -1;
@@ -37,7 +40,7 @@ export function extractProjectableNodes(host: HTMLElement, ngContentSelectors: s
   return projectableNodes;
 }
 
-function findMatchingIndex(node: Node, selectors: string[], defaultIndex: number): number {
+function findMatchingIndex(node: Node, selectors: readonly string[], defaultIndex: number): number {
   let matchingIndex = defaultIndex;
 
   if (isElement(node)) {
