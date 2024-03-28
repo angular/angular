@@ -442,10 +442,12 @@ export const enum LViewFlags {
    */
   HasChildViewsToRefresh = 1 << 13,
 
+  ExecutingRefresh = 1 << 14,
+
   /**
    * This is the count of the bits the 1 was shifted above (base 10)
    */
-  IndexWithinInitPhaseShift = 14,
+  IndexWithinInitPhaseShift = 15,
 
   /**
    * Index of the current init phase on last 21 bits

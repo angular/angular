@@ -10,6 +10,8 @@ import {CommonModule} from '@angular/common';
 import {AfterViewInit, Component, ContentChild, ContentChildren, Directive, ElementRef, EventEmitter, forwardRef, InjectionToken, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, ViewRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import { ChangeDetectionStrategy } from '../../src/change_detection';
+import { signal } from '../../src/core';
 
 describe('query logic', () => {
   beforeEach(() => {
@@ -366,6 +368,57 @@ describe('query logic', () => {
       fixture.detectChanges();
 
       expect((queryInstance!.changes as EventEmitter<any>).closed).toBeTruthy();
+    });
+
+    it('ensures query results are up to date when change detection finishes', () => {
+      @Component({
+        selector: 'app-root',
+        standalone: true,
+        template: `
+        {{foos?.length}}
+      <div #foo></div>
+      <ng-template #tpl><div #foo>div2</div></ng-template>`,
+      })
+      class App {
+        @ViewChild('tpl', {static: true, read: TemplateRef}) tpl!: TemplateRef<unknown>;
+        @ViewChild('tpl', {static: true, read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        @ViewChildren('foo') foos?: QueryList<ElementRef>;
+
+        ngAfterViewChecked(): void {
+          this.vcRef.createEmbeddedView(this.tpl);
+        }
+      }
+      const fixture = TestBed.createComponent(App);
+      fixture.componentRef.hostView.detectChanges();
+      expect(fixture.componentInstance.foos?.length).toBe(2);
+      expect(() => fixture.componentRef.changeDetectorRef.checkNoChanges()).toThrow();
+    });
+
+    it('can use `changes` observable with a signal to avoid ExpressionChanged errors', () => {
+      @Component({
+        selector: 'app-root',
+        standalone: true,
+        template: `
+        {{foosLength()}}
+      <div #foo></div>
+      <ng-template #tpl><div #foo></div></ng-template>`,
+      })
+      class App {
+        @ViewChild('tpl', {static: true, read: TemplateRef}) tpl!: TemplateRef<unknown>;
+        @ViewChild('tpl', {static: true, read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        @ViewChildren('foo') foos?: QueryList<ElementRef>;
+        foosLength = signal(0);
+
+        ngAfterViewChecked(): void {
+          this.vcRef.createEmbeddedView(this.tpl);
+          this.foos?.changes.subscribe(() => {
+            this.foosLength.set(this.foos!.length);
+          });
+        }
+      }
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerText).toEqual('2');
     });
   });
 
@@ -1010,6 +1063,76 @@ describe('query logic', () => {
       expect(viewQList.length).toBe(2);
       expect(viewQList.first.nativeElement.getAttribute('id')).toBe('contentAndView');
       expect(viewQList.last.nativeElement.getAttribute('id')).toBe('contentOnly');
+    });
+
+    it('can update after query has already been checked', () => {
+      @Component({
+        selector: 'with-content',
+        standalone: true,
+        template: `{{foos.length}}`,
+      })
+      class WithContent {
+        @ContentChildren('foo') foos!: QueryList<ElementRef>;
+      }
+
+      @Component({
+        selector: 'app-root',
+        standalone: true,
+        imports: [WithContent],
+        template: `
+    <with-content>
+      <div #foo>div1</div>
+      <ng-template #tpl><div #foo>div2</div></ng-template>
+    </with-content>
+  `,
+      })
+      class App {
+        @ViewChild('tpl', {static: true, read: TemplateRef}) tpl!: TemplateRef<unknown>;
+        @ViewChild('tpl', {static: true, read: ViewContainerRef}) vcRef!: ViewContainerRef;
+
+        ngAfterViewChecked(): void {
+          this.vcRef.createEmbeddedView(this.tpl);
+        }
+      }
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerText).toBe('2');
+    });
+
+    it('does not refresh OnPush query owners if host view needs another update', () => {
+      @Component({
+        selector: 'with-content',
+        standalone: true,
+        template: `{{foos.length}}`,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class WithContent {
+        @ContentChildren('foo') foos!: QueryList<ElementRef>;
+      }
+
+      @Component({
+        selector: 'app-root',
+        standalone: true,
+        imports: [WithContent],
+        template: `
+    <with-content>
+      <div #foo>div1</div>
+      <ng-template #tpl><div #foo>div2</div></ng-template>
+    </with-content>
+  `,
+      })
+      class App {
+        @ViewChild('tpl', {static: true, read: TemplateRef}) tpl!: TemplateRef<unknown>;
+        @ViewChild('tpl', {static: true, read: ViewContainerRef}) vcRef!: ViewContainerRef;
+
+        ngAfterViewChecked(): void {
+          this.vcRef.createEmbeddedView(this.tpl);
+        }
+      }
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      // WithContent is OnPush and did not mark itself dirty so it did not sync the updated query length to the DOM
+      expect(fixture.nativeElement.innerText).toBe('1');
     });
   });
 
