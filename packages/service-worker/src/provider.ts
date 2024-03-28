@@ -39,13 +39,20 @@ export function ngswAppInitializer(
       return;
     }
 
-    // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
-    // becomes active. This allows the SW to initialize itself even if there is no application
-    // traffic.
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (navigator.serviceWorker.controller !== null) {
-        navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
-      }
+    const ngZone = injector.get(NgZone);
+
+    // Set up the `controllerchange` event listener outside of
+    // the Angular zone to avoid unnecessary change detections,
+    // as this event has no impact on view updates.
+    ngZone.runOutsideAngular(() => {
+      // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+      // becomes active. This allows the SW to initialize itself even if there is no application
+      // traffic.
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (navigator.serviceWorker.controller !== null) {
+          navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
+        }
+      });
     });
 
     let readyToRegister$: Observable<unknown>;
@@ -81,7 +88,6 @@ export function ngswAppInitializer(
     // Also, run outside the Angular zone to avoid preventing the app from stabilizing (especially
     // given that some registration strategies wait for the app to stabilize).
     // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
-    const ngZone = injector.get(NgZone);
     ngZone.runOutsideAngular(() =>
       readyToRegister$
         .pipe(take(1))
