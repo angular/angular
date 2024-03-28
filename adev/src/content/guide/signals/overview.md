@@ -107,6 +107,8 @@ Effects always run **at least once.** When an effect runs, it tracks any signal 
 
 Effects always execute **asynchronously**, during the change detection process.
 
+Note: In order to be able to read signal inputs, effects in components will first run after `NgOnInit` is invoked. This means change detection will need to run on the components for the effect to run.
+
 ### Use cases for effects
 
 Effects are rarely needed in most application code, but may be useful in specific circumstances. Here are some examples of situations where an `effect` might be a good solution:
