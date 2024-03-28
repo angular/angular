@@ -13,6 +13,7 @@ import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Injectable, Injec
 import {ErrorHandler, INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {PendingTasks} from '../../pending_tasks';
+import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
@@ -146,8 +147,16 @@ export function ngZoneApplicationErrorHandlerFactory() {
  */
 export function provideZoneChangeDetection(options?: NgZoneOptions): EnvironmentProviders {
   const schedulingMode = (options as any)?.schedulingMode;
-  const zoneProviders = internalProvideZoneChangeDetection(
-      {ngZoneFactory: () => new NgZone(getNgZoneOptions(options)), schedulingMode});
+  const zoneProviders = internalProvideZoneChangeDetection({
+    ngZoneFactory: () => {
+      const ngZoneOptions = getNgZoneOptions(options);
+      if (ngZoneOptions.shouldCoalesceEventChangeDetection) {
+        performanceMarkFeature('NgZone_CoalesceEvent');
+      }
+      return new NgZone(ngZoneOptions);
+    },
+    schedulingMode
+  });
   return makeEnvironmentProviders([
     (typeof ngDevMode === 'undefined' || ngDevMode) ? {provide: PROVIDED_NG_ZONE, useValue: true} :
                                                       [],
