@@ -389,7 +389,6 @@ The following documents can help you sort out issues with GitHub accounts and mu
 
 
 
-[angular-group]: https://groups.google.com/forum/#!forum/angular
 [coc]: https://github.com/angular/code-of-conduct/blob/main/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [corporate-cla]: https://cla.developers.google.com/about/google-corporate
@@ -398,7 +397,3 @@ The following documents can help you sort out issues with GitHub accounts and mu
 [discord]: https://discord.gg/angular
 [individual-cla]: https://cla.developers.google.com/about/google-individual
 [js-style-guide]: https://google.github.io/styleguide/jsguide.html
-[jsfiddle]: https://jsfiddle.net/
-[plunker]: https://plnkr.co/edit
-[runnable]: https://runnable.com/
-[stackoverflow]: https://stackoverflow.com/questions/tagged/angular
