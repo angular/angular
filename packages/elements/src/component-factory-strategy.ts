@@ -39,14 +39,14 @@ const DESTROY_DELAY = 10;
  * Factory that creates new ComponentNgElementStrategy instance. Gets the component factory with the
  * constructor's injector's factory resolver and passes that factory to each strategy.
  */
-export class ComponentNgElementStrategyFactory implements NgElementStrategyFactory {
+export class ComponentNgElementStrategyFactory<T = any> implements NgElementStrategyFactory {
   constructor(
     readonly component: Type<any>,
     injector?: Injector,
   ) {}
 
   create(injector: Injector) {
-    return new ComponentNgElementStrategy(this.component, injector);
+    return new ComponentNgElementStrategy<T>(this.component, injector);
   }
 }
 
@@ -54,7 +54,7 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
  * Creates and destroys a component ref using a component factory and handles change detection
  * in response to input changes.
  */
-export class ComponentNgElementStrategy implements NgElementStrategy {
+export class ComponentNgElementStrategy<T = any> implements NgElementStrategy {
   // Subject of `NgElementStrategyEvent` observables corresponding to the component's outputs.
   private eventEmitters = new ReplaySubject<Observable<NgElementStrategyEvent>[]>(1);
 
@@ -62,7 +62,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   readonly events = this.eventEmitters.pipe(switchMap((emitters) => merge(...emitters)));
 
   /** Reference to the component that was created on connect. */
-  private componentRef: ComponentRef<any> | null = null;
+  private componentRef: ComponentRef<T> | null = null;
 
   /** Whether a change detection has been scheduled to run on the component. */
   private scheduledChangeDetectionFn: (() => void) | null = null;
@@ -72,13 +72,6 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
   /** Initial input values that were set before the component was created. */
   private readonly initialInputValues = new Map<string, any>();
-
-  /**
-   * Set of component inputs that have not yet changed, i.e. for which `recordInputChange()` has not
-   * fired.
-   * (This helps detect the first change of an input, even if it is explicitly set to `undefined`.)
-   */
-  private readonly unchangedInputs: Set<string>;
 
   /** Service for setting zone context. */
   private readonly ngZone: NgZone;
@@ -90,13 +83,10 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   private readonly componentMirror: ComponentMirror<any> | null;
 
   constructor(
-    private component: Type<object>,
+    private component: Type<T>,
     private injector: Injector,
   ) {
     this.componentMirror = reflectComponentType(component);
-    this.unchangedInputs = new Set<string>(
-      this.componentMirror?.inputs.map(({propName}) => propName),
-    );
     this.ngZone = this.injector.get<NgZone>(NgZone);
     this.elementZone = typeof Zone === 'undefined' ? null : this.ngZone.run(() => Zone.current);
   }
@@ -163,7 +153,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    * Sets the input value for the property. If the component has not yet been created, the value is
    * cached and set when the component is created.
    */
-  setInputValue(property: string, value: any, transform?: (value: any) => any): void {
+  setInputValue(property: string, value: any, transform?: (value: any) => any, init = false): void {
     this.runInZone(() => {
       if (transform) {
         value = transform.call(this.componentRef?.instance, value);
@@ -174,17 +164,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
         return;
       }
 
-      // Ignore the value if it is strictly equal to the current value, except if it is `undefined`
-      // and this is the first change to the value (because an explicit `undefined` _is_ strictly
-      // equal to not having a value set at all, but we still need to record this as a change).
-      if (
-        strictEquals(value, this.getInputValue(property)) &&
-        !(value === undefined && this.unchangedInputs.has(property))
-      ) {
+      // Ignore the value if the component has already been initialized and the value is strictly
+      // equal to the current value. This is because getInputValue does not work for required
+      // inputs before they have been set.
+      if (!init && strictEquals(value, this.getInputValue(property))) {
         return;
       }
-
-      this.unchangedInputs.delete(property);
 
       // Update the component instance and schedule change detection.
       this.componentRef.setInput(property, value);
@@ -225,7 +210,7 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       if (this.initialInputValues.has(propName)) {
         // Call `setInputValue()` now that the component has been instantiated to update its
         // properties and fire `ngOnChanges()`.
-        this.setInputValue(propName, this.initialInputValues.get(propName), transform);
+        this.setInputValue(propName, this.initialInputValues.get(propName), transform, true);
       }
     });
 
