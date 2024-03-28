@@ -648,6 +648,9 @@
     "name": "Sanitizer"
   },
   {
+    "name": "SchedulingMode"
+  },
+  {
     "name": "SecurityContext"
   },
   {
