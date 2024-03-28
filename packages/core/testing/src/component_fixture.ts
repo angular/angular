@@ -276,8 +276,9 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
         try {
           ɵdetectChangesInViewIfRequired(
               (this.componentRef.hostView as any)._lView,
-              isFirstPass,
               (this.componentRef.hostView as any).notifyErrorHandler,
+              isFirstPass,
+              false /** zoneless enabled */,
           );
         } catch (e: unknown) {
           // If an error occurred during change detection, remove the test view from the application

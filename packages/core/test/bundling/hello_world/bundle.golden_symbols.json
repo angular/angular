@@ -924,9 +924,6 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "shouldRecheckView"
-  },
-  {
     "name": "shouldSearchParent"
   },
   {
