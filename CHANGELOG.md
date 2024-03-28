@@ -1,3 +1,33 @@
+<a name="17.3.2"></a>
+# 17.3.2 (2024-03-28)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b7bad5151](https://github.com/angular/angular/commit/2b7bad515100cbfa40b3e8d844bae13d43fd5602) | fix | invoke method-based tracking function with context ([#54960](https://github.com/angular/angular/pull/54960)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b478dfbfda](https://github.com/angular/angular/commit/b478dfbfda3f32fbe723a1e8725e86490422520d) | fix | report errors when initializer APIs are used on private fields ([#55070](https://github.com/angular/angular/pull/55070)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [708ba8115f](https://github.com/angular/angular/commit/708ba8115f7ad05201db5c529aefe4dd48fc64c5) | fix | establish proper injector resolution order for `@defer` blocks ([#55079](https://github.com/angular/angular/pull/55079)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cb433af0e1](https://github.com/angular/angular/commit/cb433af0e1ba61073eb4a02ccd75cf360e9fd409) | fix | include transferCache when cloning HttpRequest ([#54939](https://github.com/angular/angular/pull/54939)) |
+| [64f202cab9](https://github.com/angular/angular/commit/64f202cab9e7a5c873b17bbddd02368006426152) | fix | manage different body types for caching POST requests ([#54980](https://github.com/angular/angular/pull/54980)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2f9d94bc4a](https://github.com/angular/angular/commit/2f9d94bc4ab5a94e620a13404aba4e094f8b2344) | fix | account for variables in imports initializer ([#55081](https://github.com/angular/angular/pull/55081)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [365fd50407](https://github.com/angular/angular/commit/365fd504077d0e7509efc3077ea4ae8bbafb01f7) | fix | RouterLinkActive will always remove active classes when links are not active ([#54982](https://github.com/angular/angular/pull/54982)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.1"></a>
 # 17.3.1 (2024-03-20)
 ### compiler
