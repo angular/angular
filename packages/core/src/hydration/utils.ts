@@ -16,8 +16,9 @@ import {isRootView} from '../render3/interfaces/type_checks';
 import {HEADER_OFFSET, LView, TVIEW, TViewType} from '../render3/interfaces/view';
 import {makeStateKey, TransferState} from '../transfer_state';
 import {assertDefined} from '../util/assert';
+import type {HydrationContext} from './annotate';
 
-import {CONTAINERS, DehydratedView, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, SerializedView,} from './interfaces';
+import {CONTAINERS, DehydratedView, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NUM_ROOT_NODES, SerializedContainerView, SerializedElementContainers, SerializedView,} from './interfaces';
 
 /**
  * The name of the key used in the TransferState collection,
@@ -372,6 +373,11 @@ export function getNgContainerSize(hydrationInfo: DehydratedView, index: number)
   return size;
 }
 
+export function isSerializedElementContainer(
+    hydrationInfo: DehydratedView, index: number): boolean {
+  return hydrationInfo.data[ELEMENT_CONTAINERS]?.[index] !== undefined;
+}
+
 export function getSerializedContainerViews(
     hydrationInfo: DehydratedView,
     index: number,
@@ -393,6 +399,19 @@ export function calcSerializedContainerSize(hydrationInfo: DehydratedView, index
 }
 
 /**
+ * Attempt to initialize the `disconnectedNodes` field of the given
+ * `DehydratedView`. Returns the initialized value.
+ */
+export function initDisconnectedNodes(hydrationInfo: DehydratedView): Set<number>|null {
+  // Check if we are processing disconnected info for the first time.
+  if (typeof hydrationInfo.disconnectedNodes === 'undefined') {
+    const nodeIds = hydrationInfo.data[DISCONNECTED_NODES];
+    hydrationInfo.disconnectedNodes = nodeIds ? new Set(nodeIds) : null;
+  }
+  return hydrationInfo.disconnectedNodes;
+}
+
+/**
  * Checks whether a node is annotated as "disconnected", i.e. not present
  * in the DOM at serialization time. We should not attempt hydration for
  * such nodes and instead, use a regular "creation mode".
@@ -403,5 +422,50 @@ export function isDisconnectedNode(hydrationInfo: DehydratedView, index: number)
     const nodeIds = hydrationInfo.data[DISCONNECTED_NODES];
     hydrationInfo.disconnectedNodes = nodeIds ? new Set(nodeIds) : null;
   }
-  return !!hydrationInfo.disconnectedNodes?.has(index);
+  return !!initDisconnectedNodes(hydrationInfo)?.has(index);
+}
+
+/**
+ * Helper function to prepare text nodes for serialization by ensuring
+ * that seperate logical text blocks in the DOM remain separate after
+ * serialization.
+ */
+export function processTextNodeBeforeSerialization(context: HydrationContext, node: RNode) {
+  // Handle cases where text nodes can be lost after DOM serialization:
+  //  1. When there is an *empty text node* in DOM: in this case, this
+  //     node would not make it into the serialized string and as a result,
+  //     this node wouldn't be created in a browser. This would result in
+  //     a mismatch during the hydration, where the runtime logic would expect
+  //     a text node to be present in live DOM, but no text node would exist.
+  //     Example: `<span>{{ name }}</span>` when the `name` is an empty string.
+  //     This would result in `<span></span>` string after serialization and
+  //     in a browser only the `span` element would be created. To resolve that,
+  //     an extra comment node is appended in place of an empty text node and
+  //     that special comment node is replaced with an empty text node *before*
+  //     hydration.
+  //  2. When there are 2 consecutive text nodes present in the DOM.
+  //     Example: `<div>Hello <ng-container *ngIf="true">world</ng-container></div>`.
+  //     In this scenario, the live DOM would look like this:
+  //       <div>#text('Hello ') #text('world') #comment('container')</div>
+  //     Serialized string would look like this: `<div>Hello world<!--container--></div>`.
+  //     The live DOM in a browser after that would be:
+  //       <div>#text('Hello world') #comment('container')</div>
+  //     Notice how 2 text nodes are now "merged" into one. This would cause hydration
+  //     logic to fail, since it'd expect 2 text nodes being present, not one.
+  //     To fix this, we insert a special comment node in between those text nodes, so
+  //     serialized representation is: `<div>Hello <!--ngtns-->world<!--container--></div>`.
+  //     This forces browser to create 2 text nodes separated by a comment node.
+  //     Before running a hydration process, this special comment node is removed, so the
+  //     live DOM has exactly the same state as it was before serialization.
+
+  // Collect this node as required special annotation only when its
+  // contents is empty. Otherwise, such text node would be present on
+  // the client after server-side rendering and no special handling needed.
+  const el = node as HTMLElement;
+  const corruptedTextNodes = context.corruptedTextNodes;
+  if (el.textContent === '') {
+    corruptedTextNodes.set(el, TextNodeMarker.EmptyNode);
+  } else if (el.nextSibling?.nodeType === Node.TEXT_NODE) {
+    corruptedTextNodes.set(el, TextNodeMarker.Separator);
+  }
 }

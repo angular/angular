@@ -7,6 +7,7 @@
  */
 
 import {ApplicationRef} from '../application/application_ref';
+import {isDetachedByI18n} from '../i18n/utils';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
 import {collectNativeNodes, collectNativeNodesInLContainer} from '../render3/collect_native_nodes';
@@ -19,12 +20,12 @@ import {CONTEXT, HEADER_OFFSET, HOST, LView, PARENT, RENDERER, TView, TVIEW, TVi
 import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
-import {isI18nHydrationSupportEnabled} from './api';
 import {unsupportedProjectionOfDomNodes} from './error_handling';
-import {CONTAINERS, DISCONNECTED_NODES, ELEMENT_CONTAINERS, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
+import {getOrComputeI18nChildren, isI18nHydrationEnabled, isI18nHydrationSupportEnabled, trySerializeI18nBlock} from './i18n';
+import {CONTAINERS, DISCONNECTED_NODES, ELEMENT_CONTAINERS, I18N_DATA, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
-import {getLNodeForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, TextNodeMarker} from './utils';
+import {getLNodeForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, processTextNodeBeforeSerialization, TextNodeMarker} from './utils';
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -78,9 +79,11 @@ function getSsrId(tView: TView): string {
  * process. The context is used to share and collect information
  * during the serialization.
  */
-interface HydrationContext {
+export interface HydrationContext {
   serializedViewCollection: SerializedViewCollection;
   corruptedTextNodes: Map<HTMLElement, TextNodeMarker>;
+  isI18nHydrationEnabled: boolean;
+  i18nChildren: Map<TView, Set<number>|null>;
 }
 
 /**
@@ -159,6 +162,9 @@ function annotateLContainerForHydration(lContainer: LContainer, context: Hydrati
  * @param doc A reference to the current Document instance.
  */
 export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
+  const injector = appRef.injector;
+  const isI18nHydrationEnabledVal = isI18nHydrationEnabled(injector);
+
   const serializedViewCollection = new SerializedViewCollection();
   const corruptedTextNodes = new Map<HTMLElement, TextNodeMarker>();
   const viewRefs = appRef._views;
@@ -171,6 +177,8 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
       const context: HydrationContext = {
         serializedViewCollection,
         corruptedTextNodes,
+        isI18nHydrationEnabled: isI18nHydrationEnabledVal,
+        i18nChildren: new Map(),
       };
       if (isLContainer(lNode)) {
         annotateLContainerForHydration(lNode, context);
@@ -187,7 +195,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   // hydration logic was setup and enabled correctly. Otherwise, if a client
   // hydration doesn't find a key in the transfer state - an error is produced.
   const serializedViews = serializedViewCollection.getAll();
-  const transferState = appRef.injector.get(TransferState);
+  const transferState = injector.get(TransferState);
   transferState.set(NGH_DATA_KEY, serializedViews);
 }
 
@@ -281,10 +289,11 @@ function serializeLContainer(
  * needs to take to locate a node) and stores it in the `NODES` section of the
  * current serialized view.
  */
-function appendSerializedNodePath(ngh: SerializedView, tNode: TNode, lView: LView) {
+function appendSerializedNodePath(
+    ngh: SerializedView, tNode: TNode, lView: LView, excludedParentNodes: Set<number>|null) {
   const noOffsetIndex = tNode.index - HEADER_OFFSET;
   ngh[NODES] ??= {};
-  ngh[NODES][noOffsetIndex] = calcPathForNode(tNode, lView);
+  ngh[NODES][noOffsetIndex] = calcPathForNode(tNode, lView, excludedParentNodes);
 }
 
 /**
@@ -312,10 +321,21 @@ function appendDisconnectedNodeIndex(ngh: SerializedView, tNode: TNode) {
 function serializeLView(lView: LView, context: HydrationContext): SerializedView {
   const ngh: SerializedView = {};
   const tView = lView[TVIEW];
+  const i18nChildren = getOrComputeI18nChildren(tView, context);
   // Iterate over DOM element references in an LView.
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
     const tNode = tView.data[i] as TNode;
     const noOffsetIndex = i - HEADER_OFFSET;
+
+    // Attempt to serialize any i18n data for the given slot. We do this first, as i18n
+    // has its own process for serialization.
+    const i18nData = trySerializeI18nBlock(lView, i, context);
+    if (i18nData) {
+      ngh[I18N_DATA] ??= {};
+      ngh[I18N_DATA][noOffsetIndex] = i18nData;
+      continue;
+    }
+
     // Skip processing of a given slot in the following cases:
     // - Local refs (e.g. <div #localRef>) take up an extra slot in LViews
     //   to store the same element. In this case, there is no information in
@@ -323,6 +343,13 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
     // - When a slot contains something other than a TNode. For example, there
     //   might be some metadata information about a defer block or a control flow block.
     if (!isTNodeShape(tNode)) {
+      continue;
+    }
+
+    // Skip any nodes that are in an i18n block but are considered detached (i.e. not
+    // present in the template). These nodes are disconnected from the DOM tree, and
+    // so we don't want to serialize any information about them.
+    if (isDetachedByI18n(tNode)) {
       continue;
     }
 
@@ -356,7 +383,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
               // <ng-content *ngIf="false" />).
               appendDisconnectedNodeIndex(ngh, projectionHeadTNode);
             } else {
-              appendSerializedNodePath(ngh, projectionHeadTNode, lView);
+              appendSerializedNodePath(ngh, projectionHeadTNode, lView, i18nChildren);
             }
           }
         } else {
@@ -374,7 +401,7 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
       }
     }
 
-    conditionallyAnnotateNodePath(ngh, tNode, lView);
+    conditionallyAnnotateNodePath(ngh, tNode, lView, i18nChildren);
 
     if (isLContainer(lView[i])) {
       // Serialize information about a template.
@@ -425,45 +452,12 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
         }
         if (nextTNode && !isInSkipHydrationBlock(nextTNode)) {
           // Handle a tNode after the `<ng-content>` slot.
-          appendSerializedNodePath(ngh, nextTNode, lView);
+          appendSerializedNodePath(ngh, nextTNode, lView, i18nChildren);
         }
       } else {
-        // Handle cases where text nodes can be lost after DOM serialization:
-        //  1. When there is an *empty text node* in DOM: in this case, this
-        //     node would not make it into the serialized string and as a result,
-        //     this node wouldn't be created in a browser. This would result in
-        //     a mismatch during the hydration, where the runtime logic would expect
-        //     a text node to be present in live DOM, but no text node would exist.
-        //     Example: `<span>{{ name }}</span>` when the `name` is an empty string.
-        //     This would result in `<span></span>` string after serialization and
-        //     in a browser only the `span` element would be created. To resolve that,
-        //     an extra comment node is appended in place of an empty text node and
-        //     that special comment node is replaced with an empty text node *before*
-        //     hydration.
-        //  2. When there are 2 consecutive text nodes present in the DOM.
-        //     Example: `<div>Hello <ng-container *ngIf="true">world</ng-container></div>`.
-        //     In this scenario, the live DOM would look like this:
-        //       <div>#text('Hello ') #text('world') #comment('container')</div>
-        //     Serialized string would look like this: `<div>Hello world<!--container--></div>`.
-        //     The live DOM in a browser after that would be:
-        //       <div>#text('Hello world') #comment('container')</div>
-        //     Notice how 2 text nodes are now "merged" into one. This would cause hydration
-        //     logic to fail, since it'd expect 2 text nodes being present, not one.
-        //     To fix this, we insert a special comment node in between those text nodes, so
-        //     serialized representation is: `<div>Hello <!--ngtns-->world<!--container--></div>`.
-        //     This forces browser to create 2 text nodes separated by a comment node.
-        //     Before running a hydration process, this special comment node is removed, so the
-        //     live DOM has exactly the same state as it was before serialization.
         if (tNode.type & TNodeType.Text) {
-          const rNode = unwrapRNode(lView[i]) as HTMLElement;
-          // Collect this node as required special annotation only when its
-          // contents is empty. Otherwise, such text node would be present on
-          // the client after server-side rendering and no special handling needed.
-          if (rNode.textContent === '') {
-            context.corruptedTextNodes.set(rNode, TextNodeMarker.EmptyNode);
-          } else if (rNode.nextSibling?.nodeType === Node.TEXT_NODE) {
-            context.corruptedTextNodes.set(rNode, TextNodeMarker.Separator);
-          }
+          const rNode = unwrapRNode(lView[i]);
+          processTextNodeBeforeSerialization(context, rNode);
         }
       }
     }
@@ -477,17 +471,19 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
  *  1. If `tNode.projectionNext` is different from `tNode.next` - it means that
  *     the next `tNode` after projection is different from the one in the original
  *     template. Since hydration relies on `tNode.next`, this serialized info
- *     if required to help runtime code find the node at the correct location.
+ *     is required to help runtime code find the node at the correct location.
  *  2. In certain content projection-based use-cases, it's possible that only
  *     a content of a projected element is rendered. In this case, content nodes
  *     require an extra annotation, since runtime logic can't rely on parent-child
  *     connection to identify the location of a node.
  */
-function conditionallyAnnotateNodePath(ngh: SerializedView, tNode: TNode, lView: LView<unknown>) {
+function conditionallyAnnotateNodePath(
+    ngh: SerializedView, tNode: TNode, lView: LView<unknown>,
+    excludedParentNodes: Set<number>|null) {
   // Handle case #1 described above.
   if (tNode.projectionNext && tNode.projectionNext !== tNode.next &&
       !isInSkipHydrationBlock(tNode.projectionNext)) {
-    appendSerializedNodePath(ngh, tNode.projectionNext, lView);
+    appendSerializedNodePath(ngh, tNode.projectionNext, lView, excludedParentNodes);
   }
 
   // Handle case #2 described above.
@@ -496,7 +492,7 @@ function conditionallyAnnotateNodePath(ngh: SerializedView, tNode: TNode, lView:
   // annotation is needed.
   if (tNode.prev === null && tNode.parent !== null && isDisconnectedNode(tNode.parent, lView) &&
       !isDisconnectedNode(tNode, lView)) {
-    appendSerializedNodePath(ngh, tNode, lView);
+    appendSerializedNodePath(ngh, tNode, lView, excludedParentNodes);
   }
 }
 

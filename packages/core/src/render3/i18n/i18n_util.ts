@@ -138,3 +138,9 @@ export function icuCreateOpCode(opCode: IcuCreateOpCode, parentIdx: number, refI
   ngDevMode && assertGreaterThan(refIdx, 0, 'Missing ref index');
   return opCode | parentIdx << IcuCreateOpCode.SHIFT_PARENT | refIdx << IcuCreateOpCode.SHIFT_REF;
 }
+
+// Returns whether the given value corresponds to a root template message,
+// or a sub-template.
+export function isRootTemplateMessage(subTemplateIndex: number): subTemplateIndex is - 1 {
+  return subTemplateIndex === -1;
+}

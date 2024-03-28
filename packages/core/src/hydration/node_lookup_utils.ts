@@ -51,16 +51,27 @@ export function isDisconnectedNode(tNode: TNode, lView: LView) {
  * @returns an RNode that corresponds to the instruction index
  */
 export function locateI18nRNodeByIndex<T extends RNode>(
-    hydrationInfo: DehydratedView, noOffsetIndex: number): T|null {
+    hydrationInfo: DehydratedView, noOffsetIndex: number): T|null|undefined {
   const i18nNodes = hydrationInfo.i18nNodes;
   if (i18nNodes) {
-    const native = i18nNodes.get(noOffsetIndex);
-    if (native) {
-      i18nNodes.delete(noOffsetIndex);
-    }
-    return native as T;
+    return i18nNodes.get(noOffsetIndex) as T | null | undefined;
   }
-  return null;
+  return undefined;
+}
+
+/**
+ * Attempt to locate an RNode by a path, if it exists.
+ *
+ * @param hydrationInfo The hydration annotation data
+ * @param lView the current lView
+ * @param noOffsetIndex the instruction index
+ * @returns an RNode that corresponds to the instruction index or null if no path exists
+ */
+export function tryLocateRNodeByPath(
+    hydrationInfo: DehydratedView, lView: LView<unknown>, noOffsetIndex: number): RNode|null {
+  const nodes = hydrationInfo.data[NODES];
+  const path = nodes?.[noOffsetIndex];
+  return path ? locateRNodeByPath(path, lView) : null;
 }
 
 /**
@@ -75,9 +86,9 @@ export function locateI18nRNodeByIndex<T extends RNode>(
 export function locateNextRNode<T extends RNode>(
     hydrationInfo: DehydratedView, tView: TView, lView: LView<unknown>, tNode: TNode): T|null {
   const noOffsetIndex = getNoOffsetIndex(tNode);
-  let native: RNode|null = locateI18nRNodeByIndex(hydrationInfo, noOffsetIndex);
+  let native = locateI18nRNodeByIndex(hydrationInfo, noOffsetIndex);
 
-  if (!native) {
+  if (native === undefined) {
     const nodes = hydrationInfo.data[NODES];
     if (nodes?.[noOffsetIndex]) {
       // We know the exact location of the node.
@@ -270,7 +281,8 @@ export function calcPathBetween(from: Node, to: Node, fromNodeName: string): str
  * Invoked at serialization time (on the server) when a set of navigation
  * instructions needs to be generated for a TNode.
  */
-export function calcPathForNode(tNode: TNode, lView: LView): string {
+export function calcPathForNode(
+    tNode: TNode, lView: LView, excludedParentNodes: Set<number>|null): string {
   let parentTNode = tNode.parent;
   let parentIndex: number|string;
   let parentRNode: RNode;
@@ -283,7 +295,13 @@ export function calcPathForNode(tNode: TNode, lView: LView): string {
   // a content of an element is projected and used, when a parent element
   // itself remains detached from DOM. In this scenario we try to find a parent
   // element that is attached to DOM and can act as an anchor instead.
-  while (parentTNode !== null && isDisconnectedNode(parentTNode, lView)) {
+  //
+  // It can also happen that the parent node should be excluded, for example,
+  // because it belongs to an i18n block, which requires paths which aren't
+  // relative to other views in an i18n block.
+  while (
+      parentTNode !== null &&
+      (isDisconnectedNode(parentTNode, lView) || (excludedParentNodes?.has(parentTNode.index)))) {
     parentTNode = parentTNode.parent;
   }
 

@@ -8,6 +8,7 @@
 import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
 
+import {prepareI18nBlockForHydration} from '../../hydration/i18n';
 import {assertDefined} from '../../util/assert';
 import {bindingUpdated} from '../bindings';
 import {applyCreateOpCodes, applyI18n, setMaskBit} from '../i18n/i18n_apply';
@@ -79,6 +80,7 @@ export function ɵɵi18nStart(
   const insertInFrontOf = parentTNode && (parentTNode.type & TNodeType.ElementContainer) ?
       lView[parentTNode.index] :
       null;
+  prepareI18nBlockForHydration(lView, adjustedIndex, parentTNode, subTemplateIndex);
   applyCreateOpCodes(lView, tI18n.create, parentRNode, insertInFrontOf);
   setInI18nBlock(true);
 }

@@ -16,6 +16,7 @@ import {nativeRemoveNode} from '../render3/node_manipulation';
 import {EMPTY_ARRAY} from '../util/empty';
 
 import {validateSiblingNodeExists} from './error_handling';
+import {cleanupI18nHydrationData} from './i18n';
 import {DehydratedContainerView, NUM_ROOT_NODES} from './interfaces';
 import {getLNodeForHydration} from './utils';
 
@@ -69,27 +70,11 @@ function cleanupLContainer(lContainer: LContainer) {
 }
 
 /**
- * Removes any remaining dehydrated i18n nodes from a given LView,
- * both in internal data structure, as well as removing the
- * corresponding DOM nodes.
- */
-function cleanupDehydratedI18nNodes(lView: LView) {
-  const i18nNodes = lView[HYDRATION]?.i18nNodes;
-  if (i18nNodes) {
-    const renderer = lView[RENDERER];
-    for (const node of i18nNodes.values()) {
-      nativeRemoveNode(renderer, node, false);
-    }
-    lView[HYDRATION]!.i18nNodes = undefined;
-  }
-}
-
-/**
  * Walks over `LContainer`s and components registered within
  * this LView and invokes dehydrated views cleanup function for each one.
  */
 function cleanupLView(lView: LView) {
-  cleanupDehydratedI18nNodes(lView);
+  cleanupI18nHydrationData(lView);
 
   const tView = lView[TVIEW];
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {

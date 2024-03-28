@@ -26,7 +26,7 @@ import {getCurrentParentTNode, getCurrentTNode, setCurrentTNode} from '../state'
 import {i18nCreateOpCodesToString, i18nRemoveOpCodesToString, i18nUpdateOpCodesToString, icuCreateOpCodesToString} from './i18n_debug';
 import {addTNodeAndUpdateInsertBeforeIndex} from './i18n_insert_before_index';
 import {ensureIcuContainerVisitorLoaded} from './i18n_tree_shaking';
-import {createTNodePlaceholder, icuCreateOpCode, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
+import {createTNodePlaceholder, icuCreateOpCode, isRootTemplateMessage, setTIcu, setTNodeInsertBeforeIndex} from './i18n_util';
 
 
 
@@ -384,11 +384,6 @@ function countBindings(opCodes: I18nUpdateOpCodes): number {
 function toMaskBit(bindingIndex: number): number {
   return 1 << Math.min(bindingIndex, 31);
 }
-
-function isRootTemplateMessage(subTemplateIndex: number): subTemplateIndex is - 1 {
-  return subTemplateIndex === -1;
-}
-
 
 /**
  * Removes everything inside the sub-templates of a message.
