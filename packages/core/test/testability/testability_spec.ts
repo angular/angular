@@ -11,6 +11,7 @@ import {Injectable} from '@angular/core/src/di';
 import {GetTestability, PendingMacrotask, Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
+import {Subject} from 'rxjs';
 
 import {setTestabilityGetter} from '../../src/testability/testability';
 
@@ -34,10 +35,10 @@ class NoopGetTestability implements GetTestability {
 @Injectable()
 class MockNgZone extends NgZone {
   /** @internal */
-  override onUnstable: EventEmitter<any>;
+  override onUnstable: Subject<any>;
 
   /** @internal */
-  override onStable: EventEmitter<any>;
+  override onStable: Subject<any>;
 
   constructor() {
     super({enableLongStackTrace: false});
@@ -46,11 +47,11 @@ class MockNgZone extends NgZone {
   }
 
   unstable(): void {
-    this.onUnstable.emit(null);
+    this.onUnstable.next(null);
   }
 
   stable(): void {
-    this.onStable.emit(null);
+    this.onStable.next(null);
   }
 }
 
