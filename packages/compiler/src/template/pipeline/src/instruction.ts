@@ -417,23 +417,7 @@ export function pipeBindV(slot: number, varOffset: number, args: o.Expression): 
 
 export function textInterpolate(
     strings: string[], expressions: o.Expression[], sourceSpan: ParseSourceSpan): ir.UpdateOp {
-  if (strings.length < 1 || expressions.length !== strings.length - 1) {
-    throw new Error(
-        `AssertionError: expected specific shape of args for strings/expressions in interpolation`);
-  }
-  const interpolationArgs: o.Expression[] = [];
-
-  if (expressions.length === 1 && strings[0] === '' && strings[1] === '') {
-    interpolationArgs.push(expressions[0]);
-  } else {
-    let idx: number;
-    for (idx = 0; idx < expressions.length; idx++) {
-      interpolationArgs.push(o.literal(strings[idx]), expressions[idx]);
-    }
-    // idx points at the last string.
-    interpolationArgs.push(o.literal(strings[idx]));
-  }
-
+  const interpolationArgs = collateInterpolationArgs(strings, expressions);
   return callVariadicInstruction(TEXT_INTERPOLATE_CONFIG, [], interpolationArgs, [], sourceSpan);
 }
 
