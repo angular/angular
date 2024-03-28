@@ -114,7 +114,7 @@ export class DebugNode {
  * @see [Basics of testing components](guide/testing-components-basics)
  * @see [Testing utility APIs](guide/testing-utility-apis)
  */
-export class DebugElement extends DebugNode {
+export class DebugElement<NativeElementType extends Element = any> extends DebugNode {
   constructor(nativeNode: Element) {
     ngDevMode && assertDomNode(nativeNode);
     super(nativeNode);
@@ -123,8 +123,8 @@ export class DebugElement extends DebugNode {
   /**
    * The underlying DOM element at the root of the component.
    */
-  get nativeElement(): any {
-    return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
+  get nativeElement(): NativeElementType | null {
+    return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as NativeElementType : null;
   }
 
   /**
@@ -253,7 +253,7 @@ export class DebugElement extends DebugNode {
    */
   get classes(): {[key: string]: boolean} {
     const result: {[key: string]: boolean} = {};
-    const element = this.nativeElement as HTMLElement | SVGElement;
+    const element = this.nativeElement as NativeElementType;
 
     // SVG elements return an `SVGAnimatedString` instead of a plain string for the `className`.
     const className = element.className as string | SVGAnimatedString;
@@ -298,15 +298,15 @@ export class DebugElement extends DebugNode {
   /**
    * @returns the first `DebugElement` that matches the predicate at any depth in the subtree.
    */
-  query(predicate: Predicate<DebugElement>): DebugElement {
-    const results = this.queryAll(predicate);
+  query<ExpectedNativeElementType extends Element = any>(predicate: Predicate<DebugElement>): DebugElement<ExpectedNativeElementType> {
+    const results = this.queryAll<ExpectedNativeElementType>(predicate);
     return results[0] || null;
   }
 
   /**
    * @returns All `DebugElement` matches for the predicate at any depth in the subtree.
    */
-  queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
+  queryAll<ExpectedNativeElementType extends Element = any>(predicate: Predicate<DebugElement>): DebugElement<ExpectedNativeElementType>[] {
     const matches: DebugElement[] = [];
     _queryAll(this, predicate, matches, true);
     return matches;
