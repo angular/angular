@@ -29,6 +29,7 @@ import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
 import {DownloadManager} from '../download-manager.service';
 import {IconComponent} from '@angular/docs';
+import {MatTooltip} from '@angular/material/tooltip';
 
 export const REQUIRED_FILES = new Set(['src/main.ts', 'src/index.html']);
 
@@ -38,14 +39,16 @@ export const REQUIRED_FILES = new Set(['src/main.ts', 'src/index.html']);
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, NgFor, MatTabsModule, IconComponent],
+  imports: [NgIf, NgFor, MatTabsModule, IconComponent, MatTooltip],
 })
 export class CodeEditor implements AfterViewInit, OnDestroy {
   @ViewChild('codeEditorWrapper') private codeEditorWrapperRef!: ElementRef<HTMLDivElement>;
   @ViewChild(MatTabGroup) private matTabGroup!: MatTabGroup;
 
   private createFileInputRef?: ElementRef<HTMLInputElement>;
-  @ViewChild('createFileInput') protected set setFileInputRef(
+
+  @ViewChild('createFileInput')
+  protected set setFileInputRef(
     element: ElementRef<HTMLInputElement>,
   ) {
     if (element) {
