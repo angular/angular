@@ -458,10 +458,6 @@ describe('Angular with NoopNgZone', () => {
 describe('Angular with scheduler and ZoneJS', () => {
   // TODO(atscott): Update once option is public
   const hybridModeSchedulingOptions = {schedulingMode: 0} as any;
-  // TODO(atscott): should be removed in favor of fixture.whenStable once #54949 is merged
-  function whenStable(injector = TestBed.inject(EnvironmentInjector)): Promise<true> {
-    return firstValueFrom(injector.get(ApplicationRef).isStable.pipe(filter((v): v is true => v)));
-  }
 
   beforeEach(() => {
     TestBed.configureTestingModule(
@@ -481,8 +477,8 @@ describe('Angular with scheduler and ZoneJS', () => {
     TestBed.inject(NgZone).runOutsideAngular(() => {
       fixture.componentInstance.thing.set('new');
     });
-    expect(isStable()).toBe(true);
-    await whenStable();
+    expect(fixture.isStable()).toBe(true);
+    await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toContain('initial');
   });
 
@@ -501,8 +497,8 @@ describe('Angular with scheduler and ZoneJS', () => {
     TestBed.inject(NgZone).runOutsideAngular(() => {
       fixture.componentInstance.thing.set('new');
     });
-    expect(isStable()).toBe(false);
-    await whenStable();
+    expect(fixture.isStable()).toBe(false);
+    await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toContain('new');
   });
 });
