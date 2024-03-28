@@ -12,6 +12,7 @@ import {ImportedSymbolsTracker} from '../../imports';
 import {ReflectionHost} from '../../reflection';
 
 import {SourceFileValidatorRule} from './rules/api';
+import {InitializerApiUsageRule} from './rules/initializer_api_usage_rule';
 
 /**
  * Validates that TypeScript files match a specific set of rules set by the Angular compiler.
@@ -20,7 +21,7 @@ export class SourceFileValidator {
   private rules: SourceFileValidatorRule[];
 
   constructor(reflector: ReflectionHost, importedSymbolsTracker: ImportedSymbolsTracker) {
-    this.rules = [];  // TODO: implement the rules.
+    this.rules = [new InitializerApiUsageRule(reflector, importedSymbolsTracker)];
   }
 
   /**

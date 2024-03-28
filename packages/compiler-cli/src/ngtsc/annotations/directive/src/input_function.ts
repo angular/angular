@@ -13,8 +13,24 @@ import {InputMapping} from '../../../metadata';
 import {ClassMember, ClassMemberAccessLevel, ReflectionHost} from '../../../reflection';
 
 import {validateAccessOfInitializerApiMember} from './initializer_function_access';
-import {tryParseInitializerApi} from './initializer_functions';
+import {InitializerApiFunction, tryParseInitializerApi} from './initializer_functions';
 import {parseAndValidateInputAndOutputOptions} from './input_output_parse_options';
+
+/** Represents a function that can declare an input. */
+export const INPUT_INITIALIZER_FN: InitializerApiFunction = {
+  functionName: 'input',
+  owningModule: '@angular/core',
+  // Inputs are accessed from parents, via the `property` instruction.
+  // Conceptually, the fields need to be publicly readable, but in practice,
+  // accessing `protected` or `private` members works at runtime, so we can allow
+  // cases where the input is intentionally not part of the public API, programmatically.
+  // Note: `private` is omitted intentionally as this would be a conceptual confusion point.
+  allowedAccessLevels: [
+    ClassMemberAccessLevel.PublicWritable,
+    ClassMemberAccessLevel.PublicReadonly,
+    ClassMemberAccessLevel.Protected,
+  ],
+};
 
 /**
  * Attempts to parse a signal input class member. Returns the parsed
@@ -27,22 +43,8 @@ export function tryParseSignalInputMapping(
     return null;
   }
 
-  const signalInput = tryParseInitializerApi(
-      [{
-        functionName: 'input',
-        owningModule: '@angular/core',
-        // Inputs are accessed from parents, via the `property` instruction.
-        // Conceptually, the fields need to be publicly readable, but in practice,
-        // accessing `protected` or `private` members works at runtime, so we can allow
-        // cases where the input is intentionally not part of the public API, programmatically.
-        // Note: `private` is omitted intentionally as this would be a conceptual confusion point.
-        allowedAccessLevels: [
-          ClassMemberAccessLevel.PublicWritable,
-          ClassMemberAccessLevel.PublicReadonly,
-          ClassMemberAccessLevel.Protected,
-        ],
-      }],
-      member.value, reflector, importTracker);
+  const signalInput =
+      tryParseInitializerApi([INPUT_INITIALIZER_FN], member.value, reflector, importTracker);
   if (signalInput === null) {
     return null;
   }
