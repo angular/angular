@@ -156,6 +156,7 @@ export function booleanAttribute(value: unknown): boolean;
 
 // @public
 export interface BootstrapOptions {
+    ignoreChangesOutsideZone?: boolean;
     ngZone?: NgZone | 'zone.js' | 'noop';
     ngZoneEventCoalescing?: boolean;
     ngZoneRunCoalescing?: boolean;
@@ -1218,6 +1219,7 @@ export class NgZone {
 // @public
 export interface NgZoneOptions {
     eventCoalescing?: boolean;
+    ignoreChangesOutsideZone?: boolean;
     runCoalescing?: boolean;
 }
 
