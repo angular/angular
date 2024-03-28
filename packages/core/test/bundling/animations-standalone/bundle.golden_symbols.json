@@ -1341,6 +1341,9 @@
     "name": "roundOffset"
   },
   {
+    "name": "runInInjectionContext"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
