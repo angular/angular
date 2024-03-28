@@ -11,6 +11,8 @@ import {Inject, Injectable, InjectionToken, NgZone, ɵRuntimeError as RuntimeErr
 
 import {RuntimeErrorCode} from '../../errors';
 
+import type {DomEventsPlugin} from './dom_events';
+
 /**
  * The injection token for plugins of the `EventManager` service.
  *
@@ -37,7 +39,15 @@ export class EventManager {
     plugins.forEach((plugin) => {
       plugin.manager = this;
     });
-    this._plugins = plugins.slice().reverse();
+
+    const otherPlugins = plugins.filter(p => !(p as DomEventsPlugin).isDomEventsPlugin);
+    this._plugins = otherPlugins.slice().reverse();
+
+    // DomEventsPlugin.supports() always returns true, it should always be the last plugin.
+    const domEventPlugin = plugins.find(p => (p as DomEventsPlugin).isDomEventsPlugin);
+    if (domEventPlugin) {
+      this._plugins.push(domEventPlugin);
+    }
   }
 
   /**

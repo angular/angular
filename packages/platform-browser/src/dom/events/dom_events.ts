@@ -17,6 +17,8 @@ export class DomEventsPlugin extends EventManagerPlugin {
     super(doc);
   }
 
+  readonly isDomEventsPlugin = true;
+
   // This plugin should come last in the list of plugins, because it accepts all
   // events.
   override supports(eventName: string): boolean {

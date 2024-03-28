@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, InjectionToken, NgModule, Optional, Provider, ɵConsole as Console} from '@angular/core';
+import {Inject, Injectable, InjectionToken, NgModule, Optional, ɵConsole as Console} from '@angular/core';
 
 import {EVENT_MANAGER_PLUGINS, EventManagerPlugin} from './event_manager';
 
