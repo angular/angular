@@ -17,6 +17,7 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
+  HttpResponse,
   HttpXhrBackend,
   JsonpClientBackend,
 } from '@angular/common/http';
@@ -26,6 +27,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import {
+  ApplicationRef,
   createEnvironmentInjector,
   EnvironmentInjector,
   inject,
@@ -34,7 +36,7 @@ import {
   Provider,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {EMPTY, Observable} from 'rxjs';
+import {EMPTY, Observable, from} from 'rxjs';
 
 import {HttpInterceptorFn, resetFetchBackendWarningFlag} from '../src/interceptor';
 import {
@@ -47,6 +49,27 @@ import {
   withRequestsMadeViaParent,
   withXsrfConfiguration,
 } from '../src/provider';
+
+describe('without provideHttpClientTesting', () => {
+  it('should contribute to stability', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(withInterceptors([() => from(Promise.resolve(new HttpResponse()))])),
+      ],
+    });
+
+    let stable = false;
+    TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+      stable = v;
+    });
+
+    expect(stable).toBe(true);
+    TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+    expect(stable).toBe(false);
+    await Promise.resolve();
+    expect(stable).toBe(true);
+  });
+});
 
 describe('provideHttpClient', () => {
   beforeEach(() => {
@@ -74,6 +97,23 @@ describe('provideHttpClient', () => {
 
     TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
     TestBed.inject(HttpTestingController).expectOne('/test').flush('');
+  });
+
+  it('should not contribute to stability', () => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+
+    let stable = false;
+    TestBed.inject(ApplicationRef).isStable.subscribe((v) => {
+      stable = v;
+    });
+
+    expect(stable).toBe(true);
+    TestBed.inject(HttpClient).get('/test', {responseType: 'text'}).subscribe();
+    expect(stable).toBe(true);
+    TestBed.inject(HttpTestingController).expectOne('/test').flush('');
+    expect(stable).toBe(true);
   });
 
   it('should not use legacy interceptors by default', () => {
