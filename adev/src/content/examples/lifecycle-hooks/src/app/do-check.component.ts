@@ -8,9 +8,11 @@ import {Hero} from './hero';
   template: `
   <div class="info">
     <p>{{hero.name}} can {{power}}</p>
-
+  
     <h3>Change Log</h3>
-    <div *ngFor="let chg of changeLog" class="log">{{chg}}</div>
+    @for (chg of changeLog; track chg) {
+      <div class="log">{{chg}}</div>
+    }
   </div>
   `,
 })

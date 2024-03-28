@@ -17,13 +17,17 @@ export class Pane {
 @Component({
   selector: 'example-app',
   template: `
-    <pane id="1" *ngIf="shouldShow"></pane>
-    <pane id="2" *ngIf="!shouldShow"></pane>
-
+    @if (shouldShow) {
+      <pane id="1"></pane>
+    }
+    @if (!shouldShow) {
+      <pane id="2"></pane>
+    }
+    
     <button (click)="toggle()">Toggle</button>
-
+    
     <div>Selected: {{ selectedPane }}</div>
-  `,
+    `,
 })
 export class ViewChildComp {
   @ViewChild(Pane)

@@ -4,7 +4,6 @@ import {Component, Host, Optional} from '@angular/core';
 
 import {HeroCacheService} from './hero-cache.service';
 import {LoggerService} from './logger.service';
-import {NgIf} from '@angular/common';
 
 // #docregion component
 @Component({
@@ -16,7 +15,7 @@ import {NgIf} from '@angular/common';
       <span>!!!</span>
     }
   </div>`,
-  imports: [NgIf],
+  imports: [],
 })
 export class HeroContactComponent {
   hasLogger = false;

@@ -554,7 +554,7 @@ The `DashboardHeroComponent` is embedded in the `DashboardComponent` template li
 
 <docs-code header="app/dashboard/dashboard.component.html (excerpt)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard.component.html" visibleRegion="dashboard-hero"/>
 
-The `DashboardHeroComponent` appears in an `*ngFor` repeater, which sets each component's `hero` input property to the looping value and listens for the component's `selected` event.
+The `DashboardHeroComponent` appears in an `@for` repeater, which sets each component's `hero` input property to the looping value and listens for the component's `selected` event.
 
 Here's the component's full definition:
 
@@ -662,13 +662,13 @@ The previous tests played the role of the host `DashboardComponent` themselves.
 But does the `DashboardHeroComponent` work correctly when properly data-bound to a host component?
 
 You could test with the actual `DashboardComponent`.
-But doing so could require a lot of setup, especially when its template features an `*ngFor` repeater, other components, layout HTML, additional bindings, a constructor that injects multiple services, and it starts interacting with those services right away.
+But doing so could require a lot of setup, especially when its template features an `@for` repeater, other components, layout HTML, additional bindings, a constructor that injects multiple services, and it starts interacting with those services right away.
 
 Imagine the effort to disable these distractions, just to prove a point that can be made satisfactorily with a *test host* like this one:
 
 <docs-code header="app/dashboard/dashboard-hero.component.spec.ts (test host)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.spec.ts" visibleRegion="test-host"/>
 
-This test host binds to `DashboardHeroComponent` as the `DashboardComponent` would but without the noise of the `Router`, the `HeroService`, or the `*ngFor` repeater.
+This test host binds to `DashboardHeroComponent` as the `DashboardComponent` would but without the noise of the `Router`, the `HeroService`, or the `@for` repeater.
 
 The test host sets the component's `hero` input property with its test hero.
 It binds the component's `selected` event with its `onSelected` handler, which records the emitted hero in its `selectedHero` property.

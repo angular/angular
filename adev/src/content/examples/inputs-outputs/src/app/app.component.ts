@@ -1,6 +1,5 @@
 // #docplaster
 import {Component} from '@angular/core';
-import {NgFor} from '@angular/common';
 
 import {AliasingComponent} from './aliasing.component';
 import {InputOutputComponent} from './input-output.component';
@@ -20,7 +19,6 @@ import {ItemOutputComponent} from './item-output.component';
     ItemDetailComponent,
     ItemDetailMetadataComponent,
     ItemOutputComponent,
-    NgFor,
   ],
 })
 

@@ -7,11 +7,13 @@ import {Component} from '@angular/core';
     <h2>My favorite hero is: {{myHero}}</h2>
     <p>Heroes:</p>
     <ul>
-      <li *ngFor="let hero of heroes">
-        {{ hero }}
-      </li>
+      @for (hero of heroes; track hero) {
+        <li>
+          {{ hero }}
+        </li>
+      }
     </ul>
-  `,
+    `,
 })
 export class AppComponent {
   title = 'Tour of Heroes';

@@ -1,6 +1,6 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Location, NgIf, UpperCasePipe} from '@angular/common';
+import {Location, UpperCasePipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 
 import {Hero} from '../hero';
@@ -10,7 +10,7 @@ import {HeroService} from '../hero.service';
   standalone: true,
   selector: 'app-hero-detail',
   templateUrl: './hero-detail.component.html',
-  imports: [FormsModule, NgIf, UpperCasePipe],
+  imports: [FormsModule, UpperCasePipe],
   styleUrls: ['./hero-detail.component.css'],
 })
 export class HeroDetailComponent implements OnInit {

@@ -14,7 +14,6 @@ import {HeroService} from './hero.service';
 import {LoggerService} from './logger.service';
 import {MinimalLogger} from './minimal-logger.service';
 import {RUNNERS_UP, runnersUpFactory} from './runners-up';
-import {NgFor} from '@angular/common';
 
 // #enddocregion hero-of-the-month
 // #docregion some-hero
@@ -44,7 +43,7 @@ const someHero = new Hero(42, 'Magma', 'Had a great month!', '555-555-5555');
     {provide: RUNNERS_UP, useFactory: runnersUpFactory(2), deps: [Hero, HeroService]},
     // #enddocregion provide-injection-token, use-factory
   ],
-  imports: [NgFor],
+  imports: [],
 })
 export class HeroOfTheMonthComponent {
   logs: string[] = [];

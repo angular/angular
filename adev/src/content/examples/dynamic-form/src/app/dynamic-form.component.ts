@@ -1,6 +1,6 @@
 // #docregion
 import {Component, Input, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
+
 import {FormGroup, ReactiveFormsModule} from '@angular/forms';
 
 import {DynamicFormQuestionComponent} from './dynamic-form-question.component';
@@ -13,7 +13,7 @@ import {QuestionControlService} from './question-control.service';
   selector: 'app-dynamic-form',
   templateUrl: './dynamic-form.component.html',
   providers: [QuestionControlService],
-  imports: [CommonModule, DynamicFormQuestionComponent, ReactiveFormsModule],
+  imports: [DynamicFormQuestionComponent, ReactiveFormsModule],
 })
 export class DynamicFormComponent implements OnInit {
   @Input() questions: QuestionBase<string>[] | null = [];

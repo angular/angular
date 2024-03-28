@@ -28,12 +28,16 @@ export class Tab {
   selector: 'example-app',
   template: `
     <tab>
-      <pane id="1" *ngIf="shouldShow"></pane>
-      <pane id="2" *ngIf="!shouldShow"></pane>
+      @if (shouldShow) {
+        <pane id="1"></pane>
+      }
+      @if (!shouldShow) {
+        <pane id="2"></pane>
+      }
     </tab>
-
+    
     <button (click)="toggle()">Toggle</button>
-  `,
+    `,
 })
 export class ContentChildComp {
   shouldShow = true;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, isPlatformBrowser, NgIf} from '@angular/common';
+import {CommonModule, isPlatformBrowser} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -49,7 +49,7 @@ const INTRODUCTION_LABEL = 'Introduction';
 @Component({
   selector: 'adev-tutorial',
   standalone: true,
-  imports: [CommonModule, DocViewer, NavigationList, ClickOutside, NgIf, RouterLink, IconComponent],
+  imports: [CommonModule, DocViewer, NavigationList, ClickOutside, RouterLink, IconComponent],
   templateUrl: './tutorial.component.html',
   styleUrls: [
     './tutorial.component.scss',

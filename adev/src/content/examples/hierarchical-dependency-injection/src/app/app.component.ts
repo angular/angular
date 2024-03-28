@@ -1,4 +1,3 @@
-import {NgIf} from '@angular/common';
 import {Component} from '@angular/core';
 import {CarsComponent} from './car.components';
 import {HeroesListComponent} from './heroes-list.component';
@@ -27,7 +26,7 @@ import {VillainsListComponent} from './villains-list.component';
     @if (showVillains) {<app-villains-list></app-villains-list>}
     @if (showCars) {<app-cars></app-cars>}
   `,
-  imports: [NgIf, CarsComponent, HeroesListComponent, VillainsListComponent],
+  imports: [CarsComponent, HeroesListComponent, VillainsListComponent],
 })
 export class AppComponent {
   showCars = true;

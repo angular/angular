@@ -1,15 +1,11 @@
 <h2>Products</h2>
 
-<div *ngFor="let product of products">
-
+@for(product of products; track $index) {
   <h3>
-    <a [title]="product.name + ' details'">
-      {{ product.name }}
-    </a>
+    <a [title]="product.name + ' details'"> {{ product.name }} </a>
   </h3>
 
-  <p *ngIf="product.description">
-    Description: {{ product.description }}
-  </p>
-
-</div>
+  @if(product.description) {
+    <p>Description: {{ product.description }}</p>
+  } 
+}

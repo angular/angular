@@ -1,5 +1,7 @@
 <ul>
-  <li *ngFor="let hero of heroes">
-    {{ hero.name }}
-  </li>
+  @for (hero of heroes; track hero) {
+    <li>
+      {{ hero.name }}
+    </li>
+  }
 </ul>

@@ -50,13 +50,15 @@ export class TextFormatter {
   template: `
     <header><ng-content selector="h1"></ng-content></header>
     <ng-content selector=".extra"></ng-content>
-    <div *ngFor="let hero of heroes">
-      <ng1-hero [hero]="hero" (onRemove)="removeHero.emit(hero)">
-        <strong>Super Hero</strong>
-      </ng1-hero>
-    </div>
+    @for (hero of heroes; track hero) {
+      <div>
+        <ng1-hero [hero]="hero" (onRemove)="removeHero.emit(hero)">
+          <strong>Super Hero</strong>
+        </ng1-hero>
+      </div>
+    }
     <button (click)="addHero.emit()">Add Hero</button>
-  `,
+    `,
 })
 export class Ng2HeroesComponent {
   @Input() heroes!: Hero[];

@@ -10,11 +10,13 @@ import {TaxRateService} from './tax-rate.service';
     <p><em>Enter a number and press enter to calculate tax.</em></p>
     <label for="amount-input">Amount: </label>
     <input type="text" id="amount-input" #amountBox (change)="0">
-    <div *ngIf="amountBox.value">
-    <p>The sales tax is
-     {{ getTax(amountBox.value) | currency:'USD':true:'1.2-2' }}</p>
-    </div>
-  `,
+    @if (amountBox.value) {
+      <div>
+        <p>The sales tax is
+        {{ getTax(amountBox.value) | currency:'USD':true:'1.2-2' }}</p>
+      </div>
+    }
+    `,
   providers: [SalesTaxService, TaxRateService],
 })
 export class SalesTaxComponent {
