@@ -543,9 +543,6 @@ describe('Angular with zoneless enabled', () => {
 });
 
 describe('Angular with scheduler and ZoneJS', () => {
-  // TODO(atscott): Update once option is public
-  const hybridModeSchedulingOptions = {schedulingMode: 0} as any;
-
   beforeEach(() => {
     TestBed.configureTestingModule(
         {providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]});
@@ -571,7 +568,7 @@ describe('Angular with scheduler and ZoneJS', () => {
 
   it('updating signal outside of zone still schedules update when in hybrid mode', async () => {
     TestBed.configureTestingModule(
-        {providers: [provideZoneChangeDetection(hybridModeSchedulingOptions)]});
+        {providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: false})]});
     @Component({template: '{{thing()}}', standalone: true})
     class App {
       thing = signal('initial');
