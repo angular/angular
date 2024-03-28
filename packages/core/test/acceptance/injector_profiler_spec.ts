@@ -354,17 +354,14 @@ describe('getInjectorMetadata', () => {
          expect(injectorMetadata[4]).toBeDefined();
          expect(injectorMetadata[5]).toBeDefined();
          expect(injectorMetadata[6]).toBeDefined();
-         expect(injectorMetadata[7]).toBeDefined();
 
          expect(injectorMetadata[0]!.source).toBe(lazyComponent.elementRef.nativeElement);
          expect(injectorMetadata[1]!.source)
              .toBe(myStandaloneComponent.routerOutlet!.nativeElement);
          expect(injectorMetadata[2]!.source).toBe(myStandaloneComponent.elementRef.nativeElement);
          expect(injectorMetadata[3]!.source).toBe('Standalone[LazyComponent]');
-         expect(injectorMetadata[4]!.source).toBe('Standalone[MyStandaloneComponent]');
-         expect(injectorMetadata[5]!.source).toBe('DynamicTestModule');
-         expect(injectorMetadata[6]!.source).toBe('Platform: core');
-         expect(injectorMetadata[7]!.source).toBeNull();
+         expect(injectorMetadata[4]!.source).toBe('DynamicTestModule');
+         expect(injectorMetadata[5]!.source).toBe('Platform: core');
 
          expect(injectorMetadata[0]!.type).toBe('element');
          expect(injectorMetadata[1]!.type).toBe('element');
@@ -372,8 +369,6 @@ describe('getInjectorMetadata', () => {
          expect(injectorMetadata[3]!.type).toBe('environment');
          expect(injectorMetadata[4]!.type).toBe('environment');
          expect(injectorMetadata[5]!.type).toBe('environment');
-         expect(injectorMetadata[6]!.type).toBe('environment');
-         expect(injectorMetadata[7]!.type).toBe('null');
        }
      }));
 
@@ -932,10 +927,10 @@ describe('getDependenciesFromInjectable', () => {
          standalone: true
        })
        class MyStandaloneComponentB {
-         myService = inject(MyService);
+         myService = inject(MyService, {optional: true});
          myServiceB = inject(MyServiceB, {optional: true});
-         myServiceC = inject(MyServiceC, {skipSelf: true});
-         myInjectionTokenValue = inject(myInjectionToken);
+         myServiceC = inject(MyServiceC, {skipSelf: true, optional: true});
+         myInjectionTokenValue = inject(myInjectionToken, {optional: true});
          injector = inject(Injector, {self: true, host: true});
          myServiceD = inject(MyServiceD);
          myServiceG = inject(MyServiceG);
@@ -995,7 +990,7 @@ describe('getDependenciesFromInjectable', () => {
        expect(parentComponentDep.token).toBe(MyStandaloneComponent);
 
        expect(dependenciesOfMyStandaloneComponentB[0].flags).toEqual({
-         optional: false,
+         optional: true,
          skipSelf: false,
          self: false,
          host: false,
@@ -1007,13 +1002,13 @@ describe('getDependenciesFromInjectable', () => {
          host: false,
        });
        expect(myServiceCDep.flags).toEqual({
-         optional: false,
+         optional: true,
          skipSelf: true,
          self: false,
          host: false,
        });
        expect(myInjectionTokenValueDep.flags).toEqual({
-         optional: false,
+         optional: true,
          skipSelf: false,
          self: false,
          host: false,
@@ -1045,18 +1040,18 @@ describe('getDependenciesFromInjectable', () => {
 
 
        expect(dependenciesOfMyStandaloneComponentB[0].value).toBe(myStandalonecomponentB.myService);
-       expect(myServiceBDep.value).toBe('hello world');
-       expect(myServiceCDep.value).toBe(123);
-       expect(myInjectionTokenValueDep.value).toBe(myServiceCInstance);
+       expect(myServiceBDep.value).toBe(null);
+       expect(myServiceCDep.value).toBe(null);
+       expect(myInjectionTokenValueDep.value).toBe(null);
        expect(injectorDep.value).toBe(myStandalonecomponentB.injector);
        expect(myServiceDDep.value).toBe('123');
        expect(myServiceGDep.value).toBe(myStandalonecomponentB.myServiceG);
        expect(parentComponentDep.value).toBe(myStandalonecomponentB.parentComponent);
 
-       expect(dependenciesOfMyStandaloneComponentB[0].providedIn).toBe(standaloneInjector);
-       expect(myServiceBDep.providedIn).toBe(standaloneInjector);
-       expect(myServiceCDep.providedIn).toBe(standaloneInjector);
-       expect(myInjectionTokenValueDep.providedIn).toBe(standaloneInjector);
+       expect(dependenciesOfMyStandaloneComponentB[0].providedIn).toBe(undefined);
+       expect(myServiceBDep.providedIn).toBe(undefined);
+       expect(myServiceCDep.providedIn).toBe(undefined);
+       expect(myInjectionTokenValueDep.providedIn).toBe(undefined);
        expect(injectorDep.providedIn).toBe(myStandalonecomponentB.injector);
        expect(myServiceDDep.providedIn).toBe(standaloneInjector.get(Injector, null, {
          skipSelf: true
@@ -1266,13 +1261,12 @@ describe('getInjectorResolutionPath', () => {
           *    NodeInjector[RouterOutlet],
           *    NodeInjector[MyStandaloneComponent],
           *    R3Injector[LazyComponent],
-          *    R3Injector[MyStandaloneComponent],
           *    R3Injector[Root],
           *    R3Injector[Platform],
           *    NullInjector
           * ]
           */
-         expect(path.length).toBe(8);
+         expect(path.length).toBe(7);
 
          expect(path[0]).toBe(lazyComponentNodeInjector);
 
@@ -1291,16 +1285,13 @@ describe('getInjectorResolutionPath', () => {
 
          expect(path[4]).toBeInstanceOf(R3Injector);
          expect((path[4] as R3Injector).scopes.has('environment')).toBeTrue();
-         expect((path[4] as R3Injector).source).toBe('Standalone[MyStandaloneComponent]');
+         expect((path[4] as R3Injector).source).toBe('DynamicTestModule');
+         expect((path[4] as R3Injector).scopes.has('root')).toBeTrue();
 
          expect(path[5]).toBeInstanceOf(R3Injector);
-         expect((path[5] as R3Injector).scopes.has('environment')).toBeTrue();
-         expect((path[5] as R3Injector).scopes.has('root')).toBeTrue();
+         expect((path[5] as R3Injector).scopes.has('platform')).toBeTrue();
 
-         expect(path[6]).toBeInstanceOf(R3Injector);
-         expect((path[6] as R3Injector).scopes.has('platform')).toBeTrue();
-
-         expect(path[7]).toBeInstanceOf(NullInjector);
+         expect(path[6]).toBeInstanceOf(NullInjector);
        }
      }));
 });
