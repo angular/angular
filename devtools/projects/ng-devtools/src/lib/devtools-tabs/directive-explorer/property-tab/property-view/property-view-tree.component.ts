@@ -14,7 +14,7 @@ import {PropertyDataSource} from '../../property-resolver/property-data-source';
 import {MatIcon} from '@angular/material/icon';
 import {PropertyEditorComponent} from './property-editor.component';
 import {PropertyPreviewComponent} from './property-preview.component';
-import {MatTree, MatTreeNode, MatTreeNodeDef} from '@angular/material/tree';
+import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular/material/tree';
 
 @Component({
   selector: 'ng-property-view-tree',
@@ -25,6 +25,7 @@ import {MatTree, MatTreeNode, MatTreeNodeDef} from '@angular/material/tree';
     MatTree,
     MatTreeNode,
     MatTreeNodeDef,
+    MatTreeNodePadding,
     PropertyPreviewComponent,
     PropertyEditorComponent,
     MatIcon,
