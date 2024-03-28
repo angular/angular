@@ -822,6 +822,9 @@
     "name": "getDeclarationTNode"
   },
   {
+    "name": "getDefaultEnvironmentScope"
+  },
+  {
     "name": "getDirectiveDef"
   },
   {

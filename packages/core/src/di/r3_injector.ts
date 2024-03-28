@@ -455,7 +455,7 @@ export class R3Injector extends EnvironmentInjector {
     }
     const providedIn = resolveForwardRef(def.providedIn);
     if (typeof providedIn === 'string') {
-      return providedIn === 'any' || (this.scopes.has(providedIn));
+      return this.scopes.has(providedIn);
     } else {
       return this.injectorDefTypes.has(providedIn);
     }
