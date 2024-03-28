@@ -16,6 +16,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
   HostListener,
   Input,
@@ -99,11 +100,13 @@ export class DirectiveForestComponent {
   readonly itemHeight = 18;
 
   private _initialized = false;
+  private resizeObserver: ResizeObserver;
 
   constructor(
     private _tabUpdate: TabUpdate,
     private _messageBus: MessageBus<Events>,
     private _cdr: ChangeDetectorRef,
+    private elementRef: ElementRef,
   ) {
     this.subscribeToInspectorEvents();
     this._tabUpdate.tabUpdate$.pipe(takeUntilDestroyed()).subscribe(() => {
@@ -114,6 +117,17 @@ export class DirectiveForestComponent {
         });
       }
     });
+
+    // In some cases there a height changes, we need to recalculate the viewport size.
+    this.resizeObserver = new ResizeObserver(() => {
+      this.viewport.scrollToIndex(0);
+      this.viewport.checkViewportSize();
+    });
+    this.resizeObserver.observe(this.elementRef.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    this.resizeObserver.disconnect();
   }
 
   subscribeToInspectorEvents(): void {
@@ -328,6 +342,10 @@ export class DirectiveForestComponent {
     } catch {
       this.filterRegex = new RegExp('.^');
     }
+  }
+
+  stopPropagation(event: Event): void {
+    event.stopPropagation();
   }
 
   private _findMatchedNodes(): number[] {

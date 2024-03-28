@@ -51,7 +51,7 @@ import {ComponentTreeNode} from './interfaces';
 import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState} from './state-serializer/state-serializer';
-import {runOutsideAngular} from './utils';
+import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 
 export const subscribeToClientEvents = (
@@ -194,7 +194,7 @@ const getNestedPropertiesCallback =
     }
     let data = current.instance;
     for (const prop of propPath) {
-      data = data[prop];
+      data = unwrapSignal(data[prop]);
       if (!data) {
         console.error('Cannot access the properties', propPath, 'of', node);
       }
