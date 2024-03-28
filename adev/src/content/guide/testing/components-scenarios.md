@@ -126,7 +126,7 @@ Please call "TestBed.compileComponents" before your test.
 
 You get this test failure message when the runtime environment compiles the source code *during the tests themselves*.
 
-To correct the problem, call `compileComponents()` as explained in the following [Calling compileComponents](#compile-components) section.
+To correct the problem, call `compileComponents()` as explained in the following [Calling compileComponents](#calling-compilecomponents) section.
 
 ## Component with a dependency
 
@@ -1015,7 +1015,7 @@ One approach is to configure the testing module from the individual pieces as in
 
 HELPFUL: Notice that the `beforeEach()` is asynchronous and calls `TestBed.compileComponents` because the `HeroDetailComponent` has an external template and css file.
 
-As explained in [Calling `compileComponents()`](#compile-components), these tests could be run in a non-CLI environment where Angular would have to compile them in the browser.
+As explained in [Calling `compileComponents()`](#calling-compilecomponents), these tests could be run in a non-CLI environment where Angular would have to compile them in the browser.
 
 ### Import a shared module
 
