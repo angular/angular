@@ -56,7 +56,7 @@
     "@angular/cli": "17.3.0-rc.0",
     "@angular/material": "17.3.0-rc.0",
     "@babel/cli": "7.24.1",
-    "@babel/core": "7.24.1",
+    "@babel/core": "7.24.3",
     "@babel/generator": "7.24.1",
     "@bazel/concatjs": "5.8.1",
     "@bazel/esbuild": "5.8.1",
