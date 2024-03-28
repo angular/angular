@@ -348,6 +348,7 @@ groups:
           'aio/content/guide/signals.md',
           'aio/content/guide/control_flow.md',
           'aio/content/guide/model-inputs.md',
+          'aio/content/guide/output-function.md',
           'aio/content/examples/injection-token/**/{*,.*}',
           ])
     reviewers:
