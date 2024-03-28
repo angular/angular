@@ -16,7 +16,6 @@ import {
   runInInjectionContext,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
-  ɵPendingTasks as PendingTasks,
 } from '@angular/core';
 import {Observable} from 'rxjs';
 import {finalize} from 'rxjs/operators';
@@ -242,9 +241,7 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
       );
     }
 
-    const pendingTasks = inject(PendingTasks);
-    const taskId = pendingTasks.add();
-    return chain(req, handler).pipe(finalize(() => pendingTasks.remove(taskId)));
+    return chain(req, handler);
   };
 }
 
@@ -258,7 +255,6 @@ export function resetFetchBackendWarningFlag() {
 @Injectable()
 export class HttpInterceptorHandler extends HttpHandler {
   private chain: ChainedInterceptorFn<unknown> | null = null;
-  private readonly pendingTasks = inject(PendingTasks);
 
   constructor(
     private backend: HttpBackend,
@@ -316,9 +312,8 @@ export class HttpInterceptorHandler extends HttpHandler {
       );
     }
 
-    const taskId = this.pendingTasks.add();
     return this.chain(initialRequest, (downstreamRequest) =>
       this.backend.handle(downstreamRequest),
-    ).pipe(finalize(() => this.pendingTasks.remove(taskId)));
+    );
   }
 }
