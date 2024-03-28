@@ -345,9 +345,9 @@ describe('Integration', () => {
     }));
 
     it('works with a duplicate popstate/hashchange navigation (as seen in firefox)', fakeAsync(() => {
-      (location as any)._subject.emit({'url': 'one', 'pop': true, 'type': 'popstate'});
+      (location as any)._subject.next({'url': 'one', 'pop': true, 'type': 'popstate'});
       tick(1);
-      (location as any)._subject.emit({'url': 'one', 'pop': true, 'type': 'hashchange'});
+      (location as any)._subject.next({'url': 'one', 'pop': true, 'type': 'hashchange'});
       tick(1000);
       advance(fixture);
 
