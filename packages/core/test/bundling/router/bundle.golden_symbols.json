@@ -1812,6 +1812,9 @@
     "name": "pathCompareMap"
   },
   {
+    "name": "performanceMarkFeature"
+  },
+  {
     "name": "pipeFromArray"
   },
   {
