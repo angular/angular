@@ -120,7 +120,6 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
       asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
     this.controls = controls;
-    this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({
