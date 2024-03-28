@@ -651,7 +651,14 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  * @publicApi
  */
 export class FormRecord<TControl extends AbstractControl = AbstractControl> extends
-    FormGroup<{[key: string]: TControl}> {}
+    FormGroup<{[key: string]: TControl}> {
+  /**
+   * Internal marker to differentiate `FormRecord` from `FormGroup` type.
+   *
+   * This is for internal Angular usage to support typed forms; do not directly use it.
+   */
+  private readonly formRecordBrand!: unknown;
+}
 
 export interface FormRecord<TControl> {
   /**
