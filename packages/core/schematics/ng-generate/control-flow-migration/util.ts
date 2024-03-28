@@ -84,9 +84,16 @@ function updateImportClause(clause: ts.ImportClause, removeCommonModule: boolean
 function updateClassImports(
     propAssignment: ts.PropertyAssignment, removeCommonModule: boolean): string|null {
   const printer = ts.createPrinter();
-  const importList = propAssignment.initializer as ts.ArrayLiteralExpression;
+  const importList = propAssignment.initializer;
+
+  // Can't change non-array literals.
+  if (!ts.isArrayLiteralExpression(importList)) {
+    return null;
+  }
+
   const removals = removeCommonModule ? importWithCommonRemovals : importRemovals;
-  const elements = importList.elements.filter(el => !removals.includes(el.getText()));
+  const elements =
+      importList.elements.filter(el => !ts.isIdentifier(el) || !removals.includes(el.text));
   if (elements.length === importList.elements.length) {
     // nothing changed
     return null;
