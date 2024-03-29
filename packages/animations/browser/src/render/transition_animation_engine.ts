@@ -49,7 +49,6 @@ import {
   normalizeKeyframes,
   optimizeGroupPlayer,
 } from './shared';
-import {NotificationType} from '@angular/core/src/change_detection/scheduling/zoneless_scheduling';
 
 const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';

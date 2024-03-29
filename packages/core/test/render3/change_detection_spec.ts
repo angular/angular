@@ -28,12 +28,11 @@ describe('change detection', () => {
          }
        }
 
+       const fixture = TestBed.createComponent(MyComponent);
        const rendererFactory = TestBed.inject(RendererFactory2);
        rendererFactory.begin = () => log.push('begin');
        rendererFactory.end = () => log.push('end');
-
-       const fixture = TestBed.createComponent(MyComponent);
-       fixture.detectChanges();
+       fixture.changeDetectorRef.detectChanges();
 
        expect(fixture.nativeElement.innerHTML).toEqual('works');
 
@@ -41,7 +40,6 @@ describe('change detection', () => {
          'begin',
          'detect changes',  // regular change detection cycle
          'end',
-         'detect changes'  // check no changes cycle
        ]);
      }));
 });

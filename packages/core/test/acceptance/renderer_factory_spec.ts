@@ -83,20 +83,20 @@ describe('renderer factory lifecycle', () => {
 
   it('should work with a component', () => {
     const fixture = TestBed.createComponent(SomeComponent);
-    fixture.componentRef.changeDetectorRef.detectChanges();
+    fixture.changeDetectorRef.detectChanges();
     expect(logs).toEqual([
       'create', 'create', 'begin', 'end', 'begin', 'some_component create', 'some_component update',
       'end'
     ]);
     logs = [];
-    fixture.componentRef.changeDetectorRef.detectChanges();
+    fixture.changeDetectorRef.detectChanges();
     expect(logs).toEqual(['begin', 'some_component update', 'end']);
   });
 
   it('should work with a component which throws', () => {
     expect(() => {
       const fixture = TestBed.createComponent(SomeComponentWhichThrows);
-      fixture.componentRef.changeDetectorRef.detectChanges();
+      fixture.changeDetectorRef.detectChanges();
     }).toThrow();
     expect(logs).toEqual(['create', 'create', 'begin', 'end', 'begin', 'end']);
   });
