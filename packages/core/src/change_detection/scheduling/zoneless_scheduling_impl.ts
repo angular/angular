@@ -52,7 +52,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
 
     this.pendingRenderTaskId = this.taskService.add();
-    if (Zone?.root?.run) {
+    // TODO(atscott): This zone.root.run can maybe just be removed when we more
+    // effectively get the unpatched versions of setTimeout and rAF (#55092)
+    if (typeof Zone !== 'undefined' && Zone.root?.run) {
       Zone.root.run(() => {
         this.cancelScheduledCallback = this.schedule(() => {
           this.tick(this.shouldRefreshViews);
