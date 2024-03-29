@@ -78,7 +78,7 @@ export {REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
 export {EVENT_MANAGER_PLUGINS, EventManager, EventManagerPlugin} from './dom/events/event_manager';
 export {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerLoader, HammerModule} from './dom/events/hammer_gestures';
 export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl, SafeValue} from './security/dom_sanitization_service';
-export {HydrationFeature, provideClientHydration, HydrationFeatureKind, withHttpTransferCacheOptions, withNoHttpTransferCache} from './hydration';
+export {HydrationFeature, HydrationFeatureKind, provideClientHydration, withHttpTransferCacheOptions, withI18nSupport, withNoHttpTransferCache} from './hydration';
 
 export * from './private_export';
 export {VERSION} from './version';
