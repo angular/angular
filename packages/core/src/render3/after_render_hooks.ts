@@ -44,12 +44,9 @@ export enum AfterRenderPhase {
    * custom layout that the browser doesn't natively support. **Never** use this phase
    * for callbacks that can write to the DOM or when `AfterRenderPhase.Read` is adequate.
    *
-   * <div class="alert is-important">
-   *
-   * Using this value can degrade performance.
+   * IMPORTANT:Using this value can degrade performance.
    * Instead, prefer using built-in browser functionality when possible.
    *
-   * </div>
    */
   EarlyRead,
 
@@ -64,12 +61,8 @@ export enum AfterRenderPhase {
    * DOM, that haven't been refactored to use a different phase. **Never** use this phase
    * for callbacks that can use a different phase instead.
    *
-   * <div class="alert is-critical">
-   *
-   * Using this value can **significantly** degrade performance.
+   * CRITICAL: Using this value can **significantly** degrade performance.
    * Instead, prefer refactoring into multiple callbacks using a more specific phase.
-   *
-   * </div>
    */
   MixedReadWrite,
 
@@ -96,12 +89,8 @@ export interface AfterRenderOptions {
   /**
    * The phase the callback should be invoked in.
    *
-   * <div class="alert is-critical">
-   *
-   * Defaults to `AfterRenderPhase.MixedReadWrite`. You should choose a more specific
+   * CRITICAL: Defaults to `AfterRenderPhase.MixedReadWrite`. You should choose a more specific
    * phase instead. See `AfterRenderPhase` for more information.
-   *
-   * </div>
    */
   phase?: AfterRenderPhase;
 }
@@ -172,24 +161,17 @@ export function internalAfterNextRender(
  * Register a callback to be invoked each time the application
  * finishes rendering.
  *
- * <div class="alert is-critical">
- *
- * You should always explicitly specify a non-default [phase](api/core/AfterRenderPhase), or you
- * risk significant performance degradation.
- *
- * </div>
+ * CRITICAL: You should always explicitly specify a non-default [phase](api/core/AfterRenderPhase),
+ * or you risk significant performance degradation.
  *
  * Note that the callback will run
  * - in the order it was registered
  * - once per render
  * - on browser platforms only
  *
- * <div class="alert is-important">
+ * IMPORTANT:Components are not guaranteed to be [hydrated](guide/hydration) before the callback
+ * runs. You must use caution when directly reading or writing the DOM and layout.
  *
- * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.
- * You must use caution when directly reading or writing the DOM and layout.
- *
- * </div>
  *
  * @param callback A callback function to register
  *
@@ -252,21 +234,16 @@ export function afterRender(callback: VoidFunction, options?: AfterRenderOptions
  * Register a callback to be invoked the next time the application
  * finishes rendering.
  *
- * <div class="alert is-critical">
+ * IMPORTANT: You should always explicitly specify a non-default [phase](api/core/AfterRenderPhase),
+ * or you risk significant performance degradation.
  *
- * You should always explicitly specify a non-default [phase](api/core/AfterRenderPhase), or you
- * risk significant performance degradation.
- *
- * </div>
  *
  * Note that the callback will run
  * - in the order it was registered
  * - on browser platforms only
  *
- * <div class="alert is-important">
- *
- * Components are not guaranteed to be [hydrated](guide/hydration) before the callback runs.
- * You must use caution when directly reading or writing the DOM and layout.
+ * IMPORTANT:Components are not guaranteed to be [hydrated](guide/hydration) before the callback
+ * runs. You must use caution when directly reading or writing the DOM and layout.
  *
  * </div>
  *

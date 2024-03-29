@@ -50,30 +50,18 @@ export class AngularTestingModule {
  *
  * <code-example path="upgrade/static/ts/full/module.spec.ts" region="angular-spec"></code-example>
  *
- * <div class="alert is-important">
- *
- * This helper is for testing services not Components.
+ * IMPORTANT:This helper is for testing services not Components.
  * For Component testing you must still bootstrap a hybrid app. See `UpgradeModule` or
  * `downgradeModule` for more information.
  *
- * </div>
- *
- * <div class="alert is-important">
- *
- * The resulting configuration does not wire up AngularJS digests to Zone hooks. It is the
+ * IMPORTANT:The resulting configuration does not wire up AngularJS digests to Zone hooks. It is the
  * responsibility of the test writer to call `$rootScope.$apply`, as necessary, to trigger
  * AngularJS handlers of async events from Angular.
  *
- * </div>
  *
- * <div class="alert is-important">
- *
- * The helper sets up global variables to hold the shared Angular and AngularJS injectors.
- *
+ * IMPORTANT: The helper sets up global variables to hold the shared Angular and AngularJS injectors.
  * * Only call this helper once per spec.
  * * Do not use `createAngularTestingModule` in the same spec as `createAngularJSTestingModule`.
- *
- * </div>
  *
  * Here is the example application and its unit tests that use `createAngularTestingModule`
  * and `createAngularJSTestingModule`.

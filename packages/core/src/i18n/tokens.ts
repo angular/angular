@@ -76,22 +76,14 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(ngDevMode ? 
  *
  * See the [i18n guide](guide/i18n/locale-id) for more information.
  *
- * <div class="alert is-helpful">
- *
- * **Deprecation notice:**
- *
- * The default currency code is currently always `USD` but this is deprecated from v9.
- *
- * **In v10 the default currency code will be taken from the current locale.**
- *
+ * HELPFUL: **Deprecation notice:**
+ * The default currency code is currently always `USD` but this is deprecated from v9.<br>
+ * **In v10 the default currency code will be taken from the current locale.** <br>
  * If you need the previous behavior then set it by creating a `DEFAULT_CURRENCY_CODE` provider in
- * your application `NgModule`:
- *
+ * your application `NgModule`: <br>
  * ```ts
  * {provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}
  * ```
- *
- * </div>
  *
  * @usageNotes
  * ### Example

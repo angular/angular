@@ -21,14 +21,10 @@ import {ɵɵdefineInjectable} from './interface/defs';
  * `InjectionToken` is parameterized on `T` which is the type of object which will be returned by
  * the `Injector`. This provides an additional level of type safety.
  *
- * <div class="alert is-helpful">
- *
- * **Important Note**: Ensure that you use the same instance of the `InjectionToken` in both the
- * provider and the injection call. Creating a new instance of `InjectionToken` in different places,
- * even with the same description, will be treated as different tokens by Angular's DI system,
- * leading to a `NullInjectorError`.
- *
- * </div>
+ * HELPFUL: **Important Note**: Ensure that you use the same instance of the `InjectionToken` in
+ * both the provider and the injection call. Creating a new instance of `InjectionToken` in
+ * different places, even with the same description, will be treated as different tokens by
+ * Angular's DI system, leading to a `NullInjectorError`.
  *
  * <code-example format="typescript" language="typescript" path="injection-token/src/main.ts"
  * region="InjectionToken"></code-example>

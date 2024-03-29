@@ -966,19 +966,14 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *  - `true` and `false` also match expression values of `1` and `0` respectively (but do not match
  *    _truthy_ and _falsy_ values)
  *
- * <div class="alert is-helpful">
- *
- *  Be careful about entering end leaving elements as their transitions present a common
+ * HELPFUL: Be careful about entering end leaving elements as their transitions present a common
  *  pitfall for developers.
- *
  *  Note that when an element with a trigger enters the DOM its `:enter` transition always
  *  gets executed, but its `:leave` transition will not be executed if the element is removed
  *  alongside its parent (as it will be removed "without warning" before its transition has
  *  a chance to be executed, the only way that such transition can occur is if the element
  *  is exiting the DOM on its own).
  *
- *
- * </div>
  *
  * ### Animating to a Final State
  *
@@ -1205,21 +1200,14 @@ export function useAnimation(
  *  - Those inserted dynamically (via `ViewContainerRef`)
  *  - Those that have a structural directive (which, under the hood, are a subset of the above ones)
  *
- * <div class="alert is-helpful">
- *
- *  Note that elements will be successfully queried via `:enter`/`:leave` even if their
+ * HELPFUL: Note that elements will be successfully queried via `:enter`/`:leave` even if their
  *  insertion/removal is not done manually via `ViewContainerRef`or caused by their structural
  *  directive (e.g. they enter/exit alongside their parent).
  *
- * </div>
- *
- * <div class="alert is-important">
- *
- *  There is an exception to what previously mentioned, besides elements entering/leaving based on
+ * IMPORTANT: There is an exception to what previously mentioned, besides elements entering/leaving based on
  *  their own logic, elements with an animation trigger can always be queried via `:leave` when
  * their parent is also leaving.
  *
- * </div>
  *
  * ### Usage Example
  *

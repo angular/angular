@@ -67,12 +67,8 @@ let moduleUid = 0;
  * available until the downgraded module has been bootstrapped, i.e. by instantiating a downgraded
  * component.
  *
- * <div class="alert is-important">
- *
- *   You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
- *   Use one or the other.
- *
- * </div>
+ * IMPORTANT:You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
+ * Use one or the other.
  *
  * ### Differences with `UpgradeModule`
  *
@@ -98,16 +94,11 @@ let moduleUid = 0;
  * For a more detailed discussion of the differences and their implications, see
  * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
- * <div class="alert is-helpful">
- *
- *   You can manually trigger a change detection run in AngularJS using
+ * HELPFUL: You can manually trigger a change detection run in AngularJS using
  *   [scope.$apply(...)](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$apply) or
  *   [$rootScope.$digest()](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$digest).
- *
  *   You can manually trigger a change detection run in Angular using {@link NgZone#run
  *   ngZone.run(...)}.
- *
- * </div>
  *
  * ### Downgrading multiple modules
  *
@@ -183,12 +174,9 @@ export function downgradeModule<T>(
  * available until the downgraded module has been bootstrapped, i.e. by instantiating a downgraded
  * component.
  *
- * <div class="alert is-important">
+ * IMPORTANT:You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
+ * Use one or the other.
  *
- *   You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
- *   Use one or the other.
- *
- * </div>
  *
  * ### Differences with `UpgradeModule`
  *
@@ -214,16 +202,11 @@ export function downgradeModule<T>(
  * For a more detailed discussion of the differences and their implications, see
  * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
- * <div class="alert is-helpful">
- *
- *   You can manually trigger a change detection run in AngularJS using
+ * HELPFUL: You can manually trigger a change detection run in AngularJS using
  *   [scope.$apply(...)](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$apply) or
  *   [$rootScope.$digest()](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$digest).
- *
  *   You can manually trigger a change detection run in Angular using {@link NgZone#run
  *   ngZone.run(...)}.
- *
- * </div>
  *
  * ### Downgrading multiple modules
  *
@@ -300,12 +283,9 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  * available until the downgraded module has been bootstrapped, i.e. by instantiating a downgraded
  * component.
  *
- * <div class="alert is-important">
+ * IMPORTANT: You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
+ * Use one or the other.
  *
- *   You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
- *   Use one or the other.
- *
- * </div>
  *
  * ### Differences with `UpgradeModule`
  *
@@ -331,16 +311,11 @@ export function downgradeModule<T>(moduleOrBootstrapFn: NgModuleFactory<T>): str
  * For a more detailed discussion of the differences and their implications, see
  * [Upgrading for Performance](https://angular.io/guide/upgrade).
  *
- * <div class="alert is-helpful">
- *
- *   You can manually trigger a change detection run in AngularJS using
+ * HELPFUL: You can manually trigger a change detection run in AngularJS using
  *   [scope.$apply(...)](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$apply) or
  *   [$rootScope.$digest()](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$digest).
- *
  *   You can manually trigger a change detection run in Angular using {@link NgZone#run
  *   ngZone.run(...)}.
- *
- * </div>
  *
  * ### Downgrading multiple modules
  *
