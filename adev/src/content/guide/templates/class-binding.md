@@ -8,7 +8,7 @@ To create a single class binding, type the following:
 
 `[class.sale]="onSale"`
 
-Angular adds the class when the bound expression, `onSale` is truthy, and it removes the class when the expression is falsy—with the exception of `undefined`.
+Angular adds the class when the bound expression, `onSale` is truthy, and it removes the class when the expression is falsy—with the exception of `undefined`. The behavior of `undefined` is specifically useful when multiple bindings to the same class exist across different directives on an element. 
 
 ## Binding to multiple CSS classes
 
