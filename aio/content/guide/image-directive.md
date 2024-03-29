@@ -119,7 +119,7 @@ NgOptimizedImage includes a number of features designed to improve loading perfo
 
 A [`preconnect` resource hint](https://web.dev/preconnect-and-dns-prefetch) for your image origin ensures that the LCP image loads as quickly as possible.
 
-Preconnect links are automatically generated for domains provided as an argument to a [loader](#configuring-an-image-loader-for-ngoptimizedimage). If an image origin cannot be automatically identified, and no preconnect link is detected for the LCP image, `NgOptimizedImage` will warn during development. In that case, you should manually add a resource hint to `index.html`. Within the `<head>` of the document, add a `link` tag with `rel="preload"`, as shown below:
+Preconnect links are automatically generated for domains provided as an argument to a [loader](#configuring-an-image-loader-for-ngoptimizedimage). If an image origin cannot be automatically identified, and no preconnect link is detected for the LCP image, `NgOptimizedImage` will warn during development. In that case, you should manually add a resource hint to `index.html`. Within the `<head>` of the document, add a `link` tag with `rel="preconnect"`, as shown below:
 
 <code-example format="html" language="html">
 
