@@ -10,7 +10,7 @@ import {EventEmitter, NgZone} from '@angular/core';
 import {fakeAsync, flushMicrotasks, inject, waitForAsync} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 
-import {getCallbackScheduler} from '../../src/util/callback_scheduler';
+import {scheduleCallback as scheduler} from '../../src/util/callback_scheduler';
 import {global} from '../../src/util/global';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 
@@ -916,7 +916,6 @@ function commonTests() {
            return;
          }
 
-         const scheduler = getCallbackScheduler();
          const startTime = performance.now();
          // When there is a pending view transition, `requestAnimationFrame` is blocked
          // because the browser is waiting to take a screenshot. This test ensures that
@@ -984,7 +983,6 @@ function commonTests() {
         });
 
     describe('shouldCoalesceEventChangeDetection = true, shouldCoalesceRunChangeDetection = false', () => {
-      const scheduler = getCallbackScheduler();
       let nativeSetTimeout: any = global[Zone.__symbol__('setTimeout')];
       let patchedImmediate: any;
       let coalesceZone: NgZone;
@@ -1116,7 +1114,6 @@ function commonTests() {
     });
 
     describe('shouldCoalesceRunChangeDetection = true', () => {
-      const scheduler = getCallbackScheduler();
       let nativeSetTimeout: any = global[Zone.__symbol__('setTimeout')];
       let patchedImmediate: any;
       let coalesceZone: NgZone;

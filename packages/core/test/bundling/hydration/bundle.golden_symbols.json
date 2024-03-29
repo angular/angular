@@ -804,9 +804,6 @@
     "name": "generateInitialInputs"
   },
   {
-    "name": "getCallbackScheduler"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -1264,6 +1261,9 @@
   },
   {
     "name": "scheduleAsyncIterable"
+  },
+  {
+    "name": "scheduleCallback"
   },
   {
     "name": "searchTokensOnInjector"

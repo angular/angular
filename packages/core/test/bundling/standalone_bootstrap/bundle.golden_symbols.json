@@ -657,9 +657,6 @@
     "name": "generateInitialInputs"
   },
   {
-    "name": "getCallbackScheduler"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -991,6 +988,9 @@
   },
   {
     "name": "saveNameToExportMap"
+  },
+  {
+    "name": "scheduleCallback"
   },
   {
     "name": "searchTokensOnInjector"

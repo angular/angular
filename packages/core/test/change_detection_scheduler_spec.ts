@@ -16,11 +16,13 @@ import {withBody} from '@angular/private/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {filter, take, tap} from 'rxjs/operators';
 
+import {global} from '../src/util/global';
+
 function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
   return toSignal(injector.get(ApplicationRef).isStable, {requireSync: true, injector})();
 }
 
-describe('Angular with NoopNgZone', () => {
+describe('Angular with zoneless enabled', () => {
   async function createFixture<T>(type: Type<T>): Promise<ComponentFixture<T>> {
     const fixture = TestBed.createComponent(type);
     await fixture.whenStable();
@@ -512,6 +514,33 @@ describe('Angular with NoopNgZone', () => {
         await fixture.whenStable();
         expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('new');
       });
+
+  it('does not fail when global timing functions are patched and unpatched', async () => {
+    @Component({template: '', standalone: true})
+    class App {
+      cdr = inject(ChangeDetectorRef);
+    }
+
+    let patched = false;
+    const originalSetTimeout = global.setTimeout;
+    global.setTimeout = (handler: any) => {
+      if (!patched) {
+        throw new Error('no longer patched');
+      }
+      originalSetTimeout(handler);
+    };
+    patched = true;
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    global.setTimeout = originalSetTimeout;
+    patched = false;
+    expect(() => {
+      // cause another scheduler notification. This should not fail due to `setTimeout` being
+      // unpatched.
+      fixture.componentInstance.cdr.markForCheck();
+    }).not.toThrow();
+    await fixture.whenStable();
+  });
 });
 
 describe('Angular with scheduler and ZoneJS', () => {

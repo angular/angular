@@ -1248,9 +1248,6 @@
     "name": "getBootstrapListener"
   },
   {
-    "name": "getCallbackScheduler"
-  },
-  {
     "name": "getChildRouteGuards"
   },
   {
@@ -1912,6 +1909,9 @@
   },
   {
     "name": "scheduleAsyncIterable"
+  },
+  {
+    "name": "scheduleCallback"
   },
   {
     "name": "searchTokensOnInjector"

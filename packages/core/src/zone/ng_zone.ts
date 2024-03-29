@@ -9,7 +9,7 @@
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {EventEmitter} from '../event_emitter';
-import {getCallbackScheduler} from '../util/callback_scheduler';
+import {scheduleCallback} from '../util/callback_scheduler';
 import {global} from '../util/global';
 import {noop} from '../util/noop';
 
@@ -165,7 +165,7 @@ export class NgZone {
         !shouldCoalesceRunChangeDetection && shouldCoalesceEventChangeDetection;
     self.shouldCoalesceRunChangeDetection = shouldCoalesceRunChangeDetection;
     self.callbackScheduled = false;
-    self.scheduleCallback = getCallbackScheduler();
+    self.scheduleCallback = scheduleCallback;
     forkInnerZoneWithAngularBehavior(self);
   }
 
