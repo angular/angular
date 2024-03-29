@@ -64,11 +64,7 @@ type AnimationBrowserModule = typeof import('@angular/animations/browser');
               engine: MockAnimationEngine,
             ) => {
               const animationModule = {
-                ɵcreateEngine: (
-                  _: 'animations' | 'noop',
-                  _2: Document,
-                  _3: ChangeDetectionScheduler | null,
-                ): AnimationEngine => engine,
+                ɵcreateEngine: (_: 'animations' | 'noop', _2: Document): AnimationEngine => engine,
                 ɵAnimationEngine: MockAnimationEngine as any,
                 ɵAnimationRenderer: AnimationRenderer,
                 ɵBaseAnimationRenderer: BaseAnimationRenderer,
