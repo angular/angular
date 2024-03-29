@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NotificationType} from '../../change_detection/scheduling/zoneless_scheduling';
 import {isRootView} from '../interfaces/type_checks';
 import {ENVIRONMENT, FLAGS, LView, LViewFlags} from '../interfaces/view';
 import {isRefreshingViews} from '../state';
@@ -36,7 +37,7 @@ export function markViewDirty(lView: LView): LView|null {
       // afterRender hooks as well as animation listeners which execute after detecting
       // changes in a view when the render factory flushes.
       LViewFlags.RefreshView | LViewFlags.Dirty;
-  lView[ENVIRONMENT].changeDetectionScheduler?.notify();
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationType.RefreshViews);
   while (lView) {
     lView[FLAGS] |= dirtyBitsToUse;
     const parent = getLViewParent(lView);

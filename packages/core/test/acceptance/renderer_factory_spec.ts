@@ -83,20 +83,22 @@ describe('renderer factory lifecycle', () => {
 
   it('should work with a component', () => {
     const fixture = TestBed.createComponent(SomeComponent);
-    fixture.detectChanges();
-    expect(logs).toEqual(
-        ['create', 'create', 'begin', 'some_component create', 'some_component update', 'end']);
+    fixture.componentRef.changeDetectorRef.detectChanges();
+    expect(logs).toEqual([
+      'create', 'create', 'begin', 'end', 'begin', 'some_component create', 'some_component update',
+      'end'
+    ]);
     logs = [];
-    fixture.detectChanges();
+    fixture.componentRef.changeDetectorRef.detectChanges();
     expect(logs).toEqual(['begin', 'some_component update', 'end']);
   });
 
   it('should work with a component which throws', () => {
     expect(() => {
       const fixture = TestBed.createComponent(SomeComponentWhichThrows);
-      fixture.detectChanges();
+      fixture.componentRef.changeDetectorRef.detectChanges();
     }).toThrow();
-    expect(logs).toEqual(['create', 'create', 'begin', 'end']);
+    expect(logs).toEqual(['create', 'create', 'begin', 'end', 'begin', 'end']);
   });
 
   it('should pass in the component styles directly into the underlying renderer', () => {
@@ -339,7 +341,7 @@ function getAnimationRendererFactory2(document: Document): RendererFactory2 {
   return new ɵAnimationRendererFactory(
       getRendererFactory2(document),
       new ɵAnimationEngine(
-          document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer(), null),
+          document, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
       fakeNgZone);
 }
 
