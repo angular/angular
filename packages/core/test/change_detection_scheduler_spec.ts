@@ -26,17 +26,16 @@ describe('Angular with NoopNgZone', () => {
     await fixture.whenStable();
     return fixture;
   }
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+      ]
+    });
+  });
 
   describe('notifies scheduler', () => {
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideZonelessChangeDetection(),
-          {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
-        ]
-      });
-    });
-
     it('contributes to application stableness', async () => {
       const val = signal('initial');
       @Component({template: '{{val()}}', standalone: true})
@@ -428,7 +427,6 @@ describe('Angular with NoopNgZone', () => {
     }
     TestBed.configureTestingModule({
       providers: [
-        provideZonelessChangeDetection(),
         {
           provide: ErrorHandler, useClass: class extends ErrorHandler {
             override handleError(error: any): void {
@@ -453,6 +451,67 @@ describe('Angular with NoopNgZone', () => {
     await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toEqual('new');
   });
+
+  it('change detects embedded view when attached to a host on ApplicationRef and declaration is marked for check',
+     async () => {
+       @Component({
+         template: '<ng-template #template><div>{{thing}}</div></ng-template>',
+         standalone: true,
+       })
+       class DynamicCmp {
+         @ViewChild('template') templateRef!: TemplateRef<{}>;
+         thing = 'initial';
+       }
+       @Component({
+         template: '',
+         standalone: true,
+       })
+       class Host {
+         readonly vcr = inject(ViewContainerRef);
+       }
+
+       const fixture = TestBed.createComponent(DynamicCmp);
+       const host =
+           createComponent(Host, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+       TestBed.inject(ApplicationRef).attachView(host.hostView);
+       await fixture.whenStable();
+
+       const embeddedViewRef = fixture.componentInstance.templateRef.createEmbeddedView({});
+       host.instance.vcr.insert(embeddedViewRef);
+       await fixture.whenStable();
+       expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('initial');
+
+       fixture.componentInstance.thing = 'new';
+       fixture.changeDetectorRef.markForCheck();
+       await fixture.whenStable();
+       expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('new');
+     });
+
+  // TODO(atscott): We should make this work
+  xit('change detects embedded view when attached directly to ApplicationRef and declaration is marked for check',
+      async () => {
+        @Component({
+          template: '<ng-template #template><div>{{thing}}</div></ng-template>',
+          standalone: true,
+        })
+        class DynamicCmp {
+          @ViewChild('template') templateRef!: TemplateRef<{}>;
+          thing = 'initial';
+        }
+
+        const fixture = TestBed.createComponent(DynamicCmp);
+        await fixture.whenStable();
+
+        const embeddedViewRef = fixture.componentInstance.templateRef.createEmbeddedView({});
+        TestBed.inject(ApplicationRef).attachView(embeddedViewRef);
+        await fixture.whenStable();
+        expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('initial');
+
+        fixture.componentInstance.thing = 'new';
+        fixture.changeDetectorRef.markForCheck();
+        await fixture.whenStable();
+        expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('new');
+      });
 });
 
 describe('Angular with scheduler and ZoneJS', () => {
