@@ -194,7 +194,7 @@
     "firebase-tools": "^13.0.0",
     "glob": "8.1.0",
     "gsap": "^3.12.3",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.0",
     "gulp-conventional-changelog": "^4.0.0",
     "husky": "9.0.11",
     "inquirer": "^9.2.7",
