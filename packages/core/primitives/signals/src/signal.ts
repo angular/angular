@@ -8,7 +8,7 @@
 
 import {defaultEquals, ValueEqualityFn} from './equality';
 import {throwInvalidWriteToSignalError} from './errors';
-import {producerAccessed, producerIncrementEpoch, producerNotifyConsumers, producerUpdatesAllowed, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
+import {producerAccessed, producerIncrementEpoch, producerNotifyConsumers, producerUpdatesAllowed, REACTIVE_NODE, ReactiveNode, SIGNAL,} from './graph';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
@@ -26,6 +26,8 @@ export interface SignalNode<T> extends ReactiveNode {
   value: T;
   equal: ValueEqualityFn<T>;
 }
+
+export const ignoreThis: string = 'this is a ci test and will not be merged';
 
 export type SignalBaseGetter<T> = (() => T)&{readonly[SIGNAL]: unknown};
 
