@@ -225,7 +225,7 @@ export function updateAncestorTraversalFlagsOnAttach(lView: LView) {
  * flag is already `true` or the `lView` is detached.
  */
 export function markAncestorsForTraversal(lView: LView) {
-  lView[ENVIRONMENT].changeDetectionScheduler?.notify();
+  lView[ENVIRONMENT].changeDetectionScheduler?.notify(NotificationType.RefreshViews);
   let parent = getLViewParent(lView);
   while (parent !== null) {
     // We stop adding markers to the ancestors once we reach one that already has the marker. This
