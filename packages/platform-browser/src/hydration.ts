@@ -7,7 +7,7 @@
  */
 
 import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration,} from '@angular/core';
+import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration, ɵwithI18nSupport} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 
@@ -20,6 +20,7 @@ import {RuntimeErrorCode} from './errors';
 export enum HydrationFeatureKind {
   NoHttpTransferCache,
   HttpTransferCacheOptions,
+  I18nSupport,
 }
 
 /**
@@ -68,6 +69,16 @@ export function withHttpTransferCacheOptions(
   // This feature has no providers and acts as a flag to pass options to the HTTP transfer cache.
   return hydrationFeature(
       HydrationFeatureKind.HttpTransferCacheOptions, ɵwithHttpTransferCache(options));
+}
+
+/**
+ * Enables support for hydrating i18n blocks.
+ *
+ * @developerPreview
+ * @publicApi
+ */
+export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSupport> {
+  return hydrationFeature(HydrationFeatureKind.I18nSupport, ɵwithI18nSupport());
 }
 
 /**
