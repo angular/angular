@@ -963,9 +963,6 @@
     "name": "getBindingsEnabled"
   },
   {
-    "name": "getCallbackScheduler"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -1414,6 +1411,9 @@
   },
   {
     "name": "saveNameToExportMap"
+  },
+  {
+    "name": "scheduleCallback"
   },
   {
     "name": "searchTokensOnInjector"

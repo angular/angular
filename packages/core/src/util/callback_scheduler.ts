@@ -34,7 +34,7 @@ import {global} from './global';
  *
  * @returns a function to cancel the scheduled callback
  */
-export function getCallbackScheduler(): (callback: Function) => () => void {
+export function scheduleCallback(callback: Function): () => void {
   // Note: the `getNativeRequestAnimationFrame` is used in the `NgZone` class, but we cannot use the
   // `inject` function. The `NgZone` instance may be created manually, and thus the injection
   // context will be unavailable. This might be enough to check whether `requestAnimationFrame` is
@@ -60,25 +60,23 @@ export function getCallbackScheduler(): (callback: Function) => () => void {
     nativeSetTimeout = (nativeSetTimeout as any)[ORIGINAL_DELEGATE_SYMBOL] ?? nativeSetTimeout;
   }
 
-  return (callback: Function) => {
-    let executeCallback = true;
-    nativeSetTimeout(() => {
-      if (!executeCallback) {
-        return;
-      }
-      executeCallback = false;
-      callback();
-    });
-    nativeRequestAnimationFrame?.(() => {
-      if (!executeCallback) {
-        return;
-      }
-      executeCallback = false;
-      callback();
-    });
+  let executeCallback = true;
+  nativeSetTimeout(() => {
+    if (!executeCallback) {
+      return;
+    }
+    executeCallback = false;
+    callback();
+  });
+  nativeRequestAnimationFrame?.(() => {
+    if (!executeCallback) {
+      return;
+    }
+    executeCallback = false;
+    callback();
+  });
 
-    return () => {
-      executeCallback = false;
-    };
+  return () => {
+    executeCallback = false;
   };
 }

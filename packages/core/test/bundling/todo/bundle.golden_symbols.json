@@ -873,9 +873,6 @@
     "name": "getBindingsEnabled"
   },
   {
-    "name": "getCallbackScheduler"
-  },
-  {
     "name": "getClosureSafeProperty"
   },
   {
@@ -1351,6 +1348,9 @@
   },
   {
     "name": "saveResolvedLocalsInData"
+  },
+  {
+    "name": "scheduleCallback"
   },
   {
     "name": "searchTokensOnInjector"
