@@ -9,7 +9,7 @@
 import {visitAll} from '@angular/compiler';
 
 import {ElementCollector, ElementToMigrate, endMarker, MigrateError, Result, startMarker} from './types';
-import {calculateNesting, getMainBlock, getOriginals, hasLineBreaks, parseTemplate, reduceNestingOffset} from './util';
+import {calculateNesting, getMainBlock, getOriginals, getPlaceholder, hasLineBreaks, parseTemplate, PlaceholderKind, reduceNestingOffset} from './util';
 
 export const ngfor = '*ngFor';
 export const nakedngfor = 'ngFor';
@@ -112,9 +112,8 @@ function migrateStandardNgFor(etm: ElementToMigrate, tmpl: string, offset: numbe
     }
     // template
     if (part.startsWith('template:')) {
-      // this generates a special template placeholder just for this use case
-      // which has a φ at the end instead of the standard δ in other placeholders
-      tmplPlaceholder = `θ${part.split(':')[1].trim()}φ`;
+      // use an alternate placeholder here to avoid conflicts
+      tmplPlaceholder = getPlaceholder(part.split(':')[1].trim(), PlaceholderKind.Alternate);
     }
     // aliases
     // declared with `let myIndex = index`

@@ -4364,6 +4364,30 @@ describe('control flow migration', () => {
         `}`,
       ].join('\n'));
     });
+
+    it('should migrate a template using the θδ characters', async () => {
+      writeFile('/comp.ts', `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          selector: 'declare-comp',
+          templateUrl: './comp.html',
+          standalone: true,
+          imports: [NgIf],
+        })
+        class DeclareComp {
+          show = false;
+        }
+      `);
+
+      writeFile('/comp.html', `<div *ngIf="show">Some greek characters: θδ!</div>`);
+
+      await runMigration();
+
+      expect(tree.readContent('/comp.html'))
+          .toBe('@if (show) {<div>Some greek characters: θδ!</div>}');
+    });
   });
 
   describe('formatting', () => {
