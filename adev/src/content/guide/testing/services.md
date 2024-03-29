@@ -1,3 +1,5 @@
+TEST
+
 # Testing services
 
 To check that your services are working as you intend, you can write tests specifically for them.
