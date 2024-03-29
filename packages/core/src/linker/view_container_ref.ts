@@ -49,7 +49,7 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  * (created by instantiating a `TemplateRef` with the `createEmbeddedView()` method).
  *
  * A view container instance can contain other view containers,
- * creating a [view hierarchy](guide/glossary#view-hierarchy).
+ * creating a view hierarchy.
  *
  * @usageNotes
  *
@@ -107,7 +107,7 @@ export abstract class ViewContainerRef {
   abstract get element(): ElementRef;
 
   /**
-   * The [dependency injector](guide/glossary#injector) for this view container.
+   * The dependency injector for this view container.
    */
   abstract get injector(): Injector;
 

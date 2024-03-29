@@ -23,7 +23,7 @@ export interface BrowserAnimationsModuleConfig {
 }
 
 /**
- * Exports `BrowserModule` with additional [dependency-injection providers](guide/glossary#provider)
+ * Exports `BrowserModule` with additional dependency-injection providers
  * for use with animations. See [Animations](guide/animations).
  * @publicApi
  */
@@ -59,7 +59,7 @@ export class BrowserAnimationsModule {
 }
 
 /**
- * Returns the set of [dependency-injection providers](guide/glossary#provider)
+ * Returns the set of dependency-injection providers
  * to enable animations in an application. See [animations guide](guide/animations)
  * to learn more about animations in Angular.
  *
@@ -99,7 +99,7 @@ export class NoopAnimationsModule {
 }
 
 /**
- * Returns the set of [dependency-injection providers](guide/glossary#provider)
+ * Returns the set of dependency-injection providers
  * to disable animations in an application. See [animations guide](guide/animations)
  * to learn more about animations in Angular.
  *

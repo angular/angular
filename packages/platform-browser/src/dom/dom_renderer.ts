@@ -35,7 +35,7 @@ export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = true;
 
 /**
- * A [DI token](guide/glossary#di-token "DI token definition") that indicates whether styles
+ * A DI token that indicates whether styles
  * of destroyed components should be removed from DOM.
  *
  * By default, the value is set to `true`.

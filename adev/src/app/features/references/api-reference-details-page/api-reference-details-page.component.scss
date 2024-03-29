@@ -108,7 +108,6 @@
     & > .docs-code {
       box-sizing: border-box;
       width: 100%;
-      max-height: 93vh;
       overflow: hidden;
       padding: 0;
 
@@ -152,6 +151,10 @@
       overflow-x: auto;
       margin: 0;
     }
+  }
+
+  .docs-reference-cli-toc {
+    margin-bottom: 1rem;
   }
 
   .adev-reference-tab {
@@ -267,7 +270,9 @@
       background-color: var(--octonary-contrast);
       position: relative;
       z-index: 10;
-      transition: background-color 0.3s ease, border 0.3s ease;
+      transition:
+        background-color 0.3s ease,
+        border 0.3s ease;
 
       // h3 + code || # of overloads
       .docs-reference-header {
@@ -402,6 +407,19 @@
   .docs-parameter-description {
     p:first-child {
       margin-block-start: 0;
+    }
+  }
+
+  .docs-ref-content {
+    padding: 1rem 0;
+
+    &:not(:first-child) {
+      border-block-start: 1px solid var(--senary-contrast);
+    }
+
+    .docs-param-keyword {
+      display: block;
+      margin: 0 0 0.5rem 0;
     }
   }
 }

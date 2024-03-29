@@ -13,7 +13,7 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {isPromise, isSubscribable} from '../util/lang';
 
 /**
- * A [DI token](guide/glossary#di-token "DI token definition") that you can use to provide
+ * A DI token that you can use to provide
  * one or more initialization functions.
  *
  * The provided functions are injected at application startup and executed during

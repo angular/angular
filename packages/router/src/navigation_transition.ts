@@ -7,7 +7,14 @@
  */
 
 import {Location} from '@angular/common';
-import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
+import {
+  EnvironmentInjector,
+  inject,
+  Injectable,
+  InjectionToken,
+  runInInjectionContext,
+  Type,
+} from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable, of, Subject} from 'rxjs';
 import {
   catchError,
@@ -287,8 +294,8 @@ export interface NavigationTransition {
   urlAfterRedirects?: UrlTree;
   rawUrl: UrlTree;
   extras: NavigationExtras;
-  resolve: any;
-  reject: any;
+  resolve: (value: boolean | PromiseLike<boolean>) => void;
+  reject: (reason?: any) => void;
   promise: Promise<boolean>;
   source: NavigationTrigger;
   restoredState: RestoredState | null;
@@ -317,6 +324,10 @@ interface InternalRouterInterface {
   onSameUrlNavigation: 'reload' | 'ignore';
 }
 
+export const NAVIGATION_ERROR_HANDLER = new InjectionToken<(error: NavigationError) => void>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '',
+);
+
 @Injectable({providedIn: 'root'})
 export class NavigationTransitions {
   currentNavigation: Navigation | null = null;
@@ -344,6 +355,7 @@ export class NavigationTransitions {
     this.options.paramsInheritanceStrategy || 'emptyOnly';
   private readonly urlHandlingStrategy = inject(UrlHandlingStrategy);
   private readonly createViewTransition = inject(CREATE_VIEW_TRANSITION, {optional: true});
+  private readonly navigationErrorHandler = inject(NAVIGATION_ERROR_HANDLER, {optional: true});
 
   navigationId = 0;
   get hasRequestedNavigation() {
@@ -404,8 +416,8 @@ export class NavigationTransitions {
       urlAfterRedirects: this.urlHandlingStrategy.extract(initialUrlTree),
       rawUrl: initialUrlTree,
       extras: {},
-      resolve: null,
-      reject: null,
+      resolve: () => {},
+      reject: () => {},
       promise: Promise.resolve(true),
       source: IMPERATIVE_NAVIGATION,
       restoredState: null,
@@ -482,7 +494,7 @@ export class NavigationTransitions {
                   NavigationSkippedCode.IgnoredSameUrlNavigation,
                 ),
               );
-              t.resolve(null);
+              t.resolve(false);
               return EMPTY;
             }
 
@@ -581,7 +593,7 @@ export class NavigationTransitions {
                   NavigationSkippedCode.IgnoredByUrlHandlingStrategy,
                 ),
               );
-              t.resolve(null);
+              t.resolve(false);
               return EMPTY;
             }
           }),
@@ -830,16 +842,20 @@ export class NavigationTransitions {
               /* All other errors should reset to the router's internal URL reference
                * to the pre-error state. */
             } else {
-              this.events.next(
-                new NavigationError(
-                  overallTransitionState.id,
-                  this.urlSerializer.serialize(overallTransitionState.extractedUrl),
-                  e,
-                  overallTransitionState.targetSnapshot ?? undefined,
-                ),
+              const navigationError = new NavigationError(
+                overallTransitionState.id,
+                this.urlSerializer.serialize(overallTransitionState.extractedUrl),
+                e,
+                overallTransitionState.targetSnapshot ?? undefined,
               );
+
+              runInInjectionContext(this.environmentInjector, () =>
+                this.navigationErrorHandler?.(navigationError),
+              );
+              this.events.next(navigationError);
               try {
-                overallTransitionState.resolve(router.errorHandler(e));
+                const errorHandlerResult = router.errorHandler(e);
+                overallTransitionState.resolve(!!errorHandlerResult);
               } catch (ee) {
                 // TODO(atscott): consider flipping the default behavior of
                 // resolveNavigationPromiseOnError to be `resolve(false)` when

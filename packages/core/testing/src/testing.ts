@@ -12,9 +12,10 @@
  * Entry point for all public APIs of the core/testing package.
  */
 
+export * from './private_export';
 export * from './async';
 export {ComponentFixture} from './component_fixture';
-export * from './fake_async';
+export {resetFakeAsyncZone, discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from './fake_async';
 export {TestBed, getTestBed, TestBedStatic, inject, InjectSetupWrapper, withModule} from './test_bed';
 export {TestComponentRenderer, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestModuleMetadata, TestEnvironmentOptions, ModuleTeardownOptions} from './test_bed_common';
 export * from './test_hooks';

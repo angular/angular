@@ -414,6 +414,9 @@
     "name": "Sanitizer"
   },
   {
+    "name": "SchedulingMode"
+  },
+  {
     "name": "ShadowDomRenderer"
   },
   {
@@ -544,9 +547,6 @@
   },
   {
     "name": "_currentInjector"
-  },
-  {
-    "name": "_ensureDirtyViewsAreAlwaysReachable"
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"

@@ -637,14 +637,18 @@ export class Router {
     source: NavigationTrigger,
     restoredState: RestoredState | null,
     extras: NavigationExtras,
-    priorPromise?: {resolve: any; reject: any; promise: Promise<boolean>},
+    priorPromise?: {
+      resolve: (result: boolean | PromiseLike<boolean>) => void;
+      reject: (reason?: any) => void;
+      promise: Promise<boolean>;
+    },
   ): Promise<boolean> {
     if (this.disposed) {
       return Promise.resolve(false);
     }
 
-    let resolve: any;
-    let reject: any;
+    let resolve: (result: boolean | PromiseLike<boolean>) => void;
+    let reject: (reason?: any) => void;
     let promise: Promise<boolean>;
     if (priorPromise) {
       resolve = priorPromise.resolve;
@@ -672,8 +676,8 @@ export class Router {
       currentRawUrl: this.currentUrlTree,
       rawUrl,
       extras,
-      resolve,
-      reject,
+      resolve: resolve!,
+      reject: reject!,
       promise,
       currentSnapshot: this.routerState.snapshot,
       currentRouterState: this.routerState,

@@ -10,7 +10,7 @@ import {InjectionToken} from '../di/injection_token';
 import {getDocument} from '../render3/interfaces/document';
 
 /**
- * A [DI token](guide/glossary#di-token "DI token definition") representing a string ID, used
+ * A DI token representing a string ID, used
  * primarily for prefixing application attributes and CSS styles when
  * {@link ViewEncapsulation#Emulated} is being used.
  *
@@ -64,7 +64,7 @@ export const PLATFORM_ID = new InjectionToken<Object>(ngDevMode ? 'Platform ID' 
 });
 
 /**
- * A [DI token](guide/glossary#di-token "DI token definition") that indicates the root directory of
+ * A DI token that indicates the root directory of
  * the application
  * @publicApi
  * @deprecated

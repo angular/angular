@@ -18,7 +18,6 @@ import {
   ApplicationRef,
   ComponentRef,
   ENVIRONMENT_INITIALIZER,
-  EnvironmentInjector,
   EnvironmentProviders,
   inject,
   InjectFlags,
@@ -35,7 +34,7 @@ import {of, Subject} from 'rxjs';
 import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
 import {Event, NavigationError, stringifyEvent} from './events';
 import {Routes} from './models';
-import {NavigationTransitions} from './navigation_transition';
+import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
 import {Router} from './router';
 import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
 import {ROUTES} from './router_config_loader';
@@ -148,7 +147,7 @@ const routerIsProvidedDevModeCheck = {
 };
 
 /**
- * Registers a [DI provider](guide/glossary#provider) for a set of routes.
+ * Registers a DI provider for a set of routes.
  * @param routes The route configuration to provide.
  *
  * @usageNotes
@@ -644,8 +643,7 @@ export type NavigationErrorHandlerFeature =
   RouterFeature<RouterFeatureKind.NavigationErrorHandlerFeature>;
 
 /**
- * Subscribes to the Router's navigation events and calls the given function when a
- * `NavigationError` happens.
+ * Provides a function which is called when a navigation error occurs.
  *
  * This function is run inside application's [injection context](guide/dependency-injection-context)
  * so you can use the [`inject`](api/core/inject) function.
@@ -674,20 +672,12 @@ export type NavigationErrorHandlerFeature =
  * @publicApi
  */
 export function withNavigationErrorHandler(
-  fn: (error: NavigationError) => void,
+  handler: (error: NavigationError) => void,
 ): NavigationErrorHandlerFeature {
   const providers = [
     {
-      provide: ENVIRONMENT_INITIALIZER,
-      multi: true,
-      useValue: () => {
-        const injector = inject(EnvironmentInjector);
-        inject(Router).events.subscribe((e) => {
-          if (e instanceof NavigationError) {
-            runInInjectionContext(injector, () => fn(e));
-          }
-        });
-      },
+      provide: NAVIGATION_ERROR_HANDLER,
+      useValue: handler,
     },
   ];
   return routerFeature(RouterFeatureKind.NavigationErrorHandlerFeature, providers);

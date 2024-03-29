@@ -348,6 +348,9 @@
     "name": "NAVIGATION_CANCELING_ERROR"
   },
   {
+    "name": "NAVIGATION_ERROR_HANDLER"
+  },
+  {
     "name": "NEW_LINE"
   },
   {
@@ -648,6 +651,9 @@
     "name": "Sanitizer"
   },
   {
+    "name": "SchedulingMode"
+  },
+  {
     "name": "SecurityContext"
   },
   {
@@ -784,9 +790,6 @@
   },
   {
     "name": "_currentInjector"
-  },
-  {
-    "name": "_ensureDirtyViewsAreAlwaysReachable"
   },
   {
     "name": "_getInsertInFrontOfRNodeWithI18n"
