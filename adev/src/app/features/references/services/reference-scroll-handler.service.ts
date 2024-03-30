@@ -160,9 +160,6 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       for (const line of Array.from(activeLines)) {
         line.classList.remove(API_TAB_ACTIVE_CODE_LINE);
       }
-      this.getAllMemberCards().forEach((card) => {
-        card.blur();
-      });
     } else {
       const lines = this.document.querySelectorAll<HTMLButtonElement>(
         `button[${MEMBER_ID_ATTRIBUTE}="${currentActiveMemberId}"]`,
@@ -170,7 +167,7 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       for (const line of Array.from(lines)) {
         line.classList.add(API_TAB_ACTIVE_CODE_LINE);
       }
-      this.document.getElementById(`${currentActiveMemberId}`)?.focus();
+      this.document.getElementById(`${currentActiveMemberId}`)?.focus({preventScroll: true});
     }
   }
 
@@ -179,7 +176,9 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       return;
     }
 
-    card.focus();
+    if (card !== <HTMLElement>document.activeElement) {
+      (<HTMLElement>document.activeElement).blur();
+    }
 
     this.window.scrollTo({
       top: card!.offsetTop - this.membersMarginTopInPx(),
@@ -211,8 +210,9 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
 
     this.resizeObserver = new ResizeObserver((_) => {
       this.ngZone.run(() => {
-        if (tabBody.offsetTop) {
-          this.membersMarginTopInPx.set(tabBody.offsetTop);
+        const offsetTop = tabBody.getBoundingClientRect().top;
+        if (offsetTop) {
+          this.membersMarginTopInPx.set(offsetTop);
         }
       });
     });
