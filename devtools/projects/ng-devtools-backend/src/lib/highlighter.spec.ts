@@ -102,7 +102,7 @@ describe('highlighter', () => {
 
   describe('highlightHydrationElement', () => {
     afterEach(() => {
-      document.body.innerHTML = '';
+      document.body.innerText = '';
       delete (window as any).ng;
     });
 
