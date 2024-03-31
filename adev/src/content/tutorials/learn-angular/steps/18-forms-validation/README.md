@@ -23,12 +23,14 @@ export class AppComponent {}
 
 <docs-step title="Add validation to form">
 
-Every `FormControl` can be passed the `Validators` you want to use for validating the `FormControl` values. For example, if you want to make the fields for the `profileForm` required then use `Validators.required`. Update the `name` and `email` `FormControl` to be required:
+Every `FormControl` can be passed the `Validators` you want to use for validating the `FormControl` values. For example, if you want to make the `name` field in `profileForm` required then use `Validators.required`.
+For the `email` field in our Angular form, we want to ensure it's not left empty and follows a valid email address structure. We can achieve this by combining the `Validators.required` and `Validators.email` validators in an array.
+Update the `name` and `email` `FormControl`:
 
 ```ts
 profileForm = new FormGroup({
   name: new FormControl('', Validators.required),
-  email: new FormControl('', Validators.required),
+  email: new FormControl('', [Validators.required, Validators.email]),
 });
 ```
 
