@@ -1,11 +1,15 @@
 # Building Angular with Bazel
 
-Note: this doc is for developing Angular, it is _not_ public
+:::note Note
+
+this doc is for developing Angular, it is _not_ public
 documentation for building an Angular application with Bazel.
 
 The Bazel build tool (https://bazel.build) provides fast, reliable
 incremental builds. We plan to migrate Angular's build scripts to
 Bazel.
+
+:::
 
 ## Installation
 
@@ -53,17 +57,25 @@ new as of May 2017 and not very stable yet.
 - Test all packages: `yarn test packages/...`
 - Test angular.io app locally: `yarn test //aio/... --config=aio_local_deps`
 
-**Note**: The ellipsis in the last command above are not meant to be substituted by a package name, but
+:::note Note
+
+The ellipsis in the last command above are not meant to be substituted by a package name, but
 are used by Bazel as a wildcard to execute all tests in the specified path. To execute all the tests for a
 single package, the commands are (exemplary):
 - `yarn test //packages/core/...` for all tests, or
 - `yarn test //packages/core/test:test` for a particular test suite.
 
-**Note**: The first test run will be much slower than future runs. This is because future runs will
+:::
+
+:::note Note
+
+The first test run will be much slower than future runs. This is because future runs will
 benefit from Bazel's capability to do incremental builds.
 
 You can use [ibazel] to get a "watch mode" that continuously
 keeps the outputs up-to-date as you save sources.
+
+:::
 
 ### Various Flags Used For Tests
 
