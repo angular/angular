@@ -20,7 +20,7 @@ import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
-import {tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
+import {tsAssignmentExpression, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable, tsInferredVariable} from './ts_util';
 import {requiresInlineTypeCtor} from './type_constructor';
 import {TypeParameterEmitter} from './type_parameter_emitter';
 
@@ -1322,7 +1322,7 @@ class TcbBlockVariableOp extends TcbOp {
   override execute(): ts.Identifier {
     const id = this.tcb.allocateId();
     addParseSpanInfo(id, this.variable.keySpan);
-    const variable = tsCreateVariable(id, wrapForTypeChecker(this.initializer));
+    const variable = tsInferredVariable(id);
     addParseSpanInfo(variable.declarationList.declarations[0], this.variable.sourceSpan);
     this.scope.addStatement(variable);
     return id;
@@ -1399,9 +1399,12 @@ class TcbIfOp extends TcbOp {
     expressionScope.render().forEach(stmt => this.scope.addStatement(stmt));
     this.expressionScopes.set(branch, expressionScope);
 
-    const expression = branch.expressionAlias === null ?
-        tcbExpression(branch.expression, this.tcb, expressionScope) :
-        expressionScope.resolve(branch.expressionAlias);
+    let expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+    if (branch.expressionAlias !== null) {
+      const alias = expressionScope.resolve(branch.expressionAlias) as ts.Identifier;
+      expression =
+          tsAssignmentExpression(alias, ts.factory.createParenthesizedExpression(expression));
+    }
 
     const bodyScope = Scope.forNodes(
         this.tcb, expressionScope, null, branch.children, this.generateBranchGuard(index));
@@ -1433,16 +1436,16 @@ class TcbIfOp extends TcbOp {
       }
 
       const expressionScope = this.expressionScopes.get(branch)!;
-      let expression: ts.Expression;
 
-      if (branch.expressionAlias === null) {
-        // We need to recreate the expression and mark it to be ignored for diagnostics,
-        // because it was already checked as a part of the block's condition and we don't
-        // want it to produce a duplicate diagnostic.
-        expression = tcbExpression(branch.expression, this.tcb, expressionScope);
-        markIgnoreDiagnostics(expression);
-      } else {
-        expression = expressionScope.resolve(branch.expressionAlias);
+      // We need to recreate the expression and mark it to be ignored for diagnostics,
+      // because it was already checked as a part of the block's condition and we don't
+      // want it to produce a duplicate diagnostic.
+      let expression = tcbExpression(branch.expression, this.tcb, expressionScope);
+      markIgnoreDiagnostics(expression);
+      if (branch.expressionAlias !== null) {
+        const alias = expressionScope.resolve(branch.expressionAlias) as ts.Identifier;
+        expression =
+            tsAssignmentExpression(alias, ts.factory.createParenthesizedExpression(expression));
       }
 
       // The expressions of the preceding branches have to be negated

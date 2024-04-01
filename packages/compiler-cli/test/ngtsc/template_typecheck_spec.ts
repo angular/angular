@@ -4184,6 +4184,26 @@ suppress
         ]);
       });
 
+
+      it('should narrow types inside the expression, even if aliased', () => {
+        env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`@if (value; as alias) {
+              {{ value.length }}
+            }\`,
+            standalone: true,
+          })
+          export class Main {
+            value!: string|undefined;
+          }
+        `);
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(0);
+      });
+
       it('should narrow the type of the if alias used in a listener', () => {
         env.write('test.ts', `
           import {Component} from '@angular/core';

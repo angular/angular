@@ -98,6 +98,28 @@ export function tsDeclareVariable(id: ts.Identifier, type: ts.TypeNode): ts.Vari
 }
 
 /**
+ * Create a `ts.VariableStatement` which declares a variable with a yet-to-be-inferred type.
+ *
+ * This variable will begin with an implicit type of `any`, but can later be used in an
+ * assignment expression in order to narrow its type. An example of this would be:
+ *
+ * ```
+ * let t0;
+ * if (t0 = expression) {
+ *   // within here, t0 is narrowed to the type of `expression`
+ * }
+ * ```
+ */
+export function tsInferredVariable(id: ts.Identifier): ts.VariableStatement {
+  return ts.factory.createVariableStatement(
+      /* modifiers */ undefined,
+      /* declarationList */
+      ts.factory.createVariableDeclarationList(
+          /* declarations */[ts.factory.createVariableDeclaration(id)],
+          /* flags */ ts.NodeFlags.Let));
+}
+
+/**
  * Creates a `ts.TypeQueryNode` for a coerced input.
  *
  * For example: `typeof MatInput.ngAcceptInputType_value`, where MatInput is `typeName` and `value`
@@ -159,4 +181,12 @@ export function tsNumericExpression(value: number): ts.NumericLiteral|ts.PrefixU
   }
 
   return ts.factory.createNumericLiteral(value);
+}
+
+/**
+ * Generate an assignment expression which sets `lhs` to `rhs`.
+ */
+export function tsAssignmentExpression(
+    lhs: ts.Identifier, rhs: ts.Expression): ts.AssignmentExpression<ts.EqualsToken> {
+  return ts.factory.createAssignment(lhs, rhs);
 }
