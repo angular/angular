@@ -21,6 +21,7 @@ import {
   QueryList,
   Renderer2,
   SimpleChanges,
+  ɵunwrapElementRefInternal,
 } from '@angular/core';
 import {from, of, Subscription} from 'rxjs';
 import {mergeAll} from 'rxjs/operators';
@@ -213,21 +214,22 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
 
     queueMicrotask(() => {
       const hasActiveLinks = this.hasActiveLinks();
+      const nativeElement = ɵunwrapElementRefInternal(this.element);
       this.classes.forEach((c) => {
         if (hasActiveLinks) {
-          this.renderer.addClass(this.element.nativeElement, c);
+          this.renderer.addClass(nativeElement, c);
         } else {
-          this.renderer.removeClass(this.element.nativeElement, c);
+          this.renderer.removeClass(nativeElement, c);
         }
       });
       if (hasActiveLinks && this.ariaCurrentWhenActive !== undefined) {
         this.renderer.setAttribute(
-          this.element.nativeElement,
+          nativeElement,
           'aria-current',
           this.ariaCurrentWhenActive.toString(),
         );
       } else {
-        this.renderer.removeAttribute(this.element.nativeElement, 'aria-current');
+        this.renderer.removeAttribute(nativeElement, 'aria-current');
       }
 
       // Only emit change if the active state changed.

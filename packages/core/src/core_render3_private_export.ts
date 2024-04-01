@@ -324,5 +324,6 @@ export {depsTracker as ɵdepsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT as ɵUSE_
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
 export {InputFlags as ɵɵInputFlags} from './render3/interfaces/input_flags';
+export {withServerElementRefFactory as ɵwithServerElementRefFactory, unwrapElementRefInternal as ɵunwrapElementRefInternal, DefaultElementRefFactory as ɵDefaultElementRefFactory} from './render3/element_ref_factory';
 
 // clang-format on

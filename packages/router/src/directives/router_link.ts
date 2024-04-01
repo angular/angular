@@ -19,6 +19,7 @@ import {
   OnDestroy,
   Renderer2,
   SimpleChanges,
+  ɵunwrapElementRefInternal,
   ɵɵsanitizeUrlOrResourceUrl,
 } from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
@@ -208,7 +209,8 @@ export class RouterLink implements OnChanges, OnDestroy {
     private readonly el: ElementRef,
     private locationStrategy?: LocationStrategy,
   ) {
-    const tagName = el.nativeElement.tagName?.toLowerCase();
+    const nativeElement = ɵunwrapElementRefInternal(el);
+    const tagName = nativeElement.tagName?.toLowerCase();
     this.isAnchorElement = tagName === 'a' || tagName === 'area';
 
     if (this.isAnchorElement) {
@@ -342,6 +344,7 @@ export class RouterLink implements OnChanges, OnDestroy {
         ? this.locationStrategy?.prepareExternalUrl(this.router.serializeUrl(urlTree))
         : null;
 
+    const nativeElement = ɵunwrapElementRefInternal(this.el);
     const sanitizedValue =
       this.href === null
         ? null
@@ -355,17 +358,13 @@ export class RouterLink implements OnChanges, OnDestroy {
           // Note: we should investigate whether we can switch to using `@HostBinding('attr.href')`
           // instead of applying a value via a renderer, after a final merge of the
           // `RouterLinkWithHref` directive.
-          ɵɵsanitizeUrlOrResourceUrl(
-            this.href,
-            this.el.nativeElement.tagName.toLowerCase(),
-            'href',
-          );
+          ɵɵsanitizeUrlOrResourceUrl(this.href, nativeElement.tagName.toLowerCase(), 'href');
     this.applyAttributeValue('href', sanitizedValue);
   }
 
   private applyAttributeValue(attrName: string, attrValue: string | null) {
     const renderer = this.renderer;
-    const nativeElement = this.el.nativeElement;
+    const nativeElement = ɵunwrapElementRefInternal(this.el);
     if (attrValue !== null) {
       renderer.setAttribute(nativeElement, attrName, attrValue);
     } else {

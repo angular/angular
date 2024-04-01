@@ -34,6 +34,7 @@ import {attachPatchData} from './context_discovery';
 import {getComponentDef} from './definition';
 import {depsTracker} from './deps_tracker/deps_tracker';
 import {getNodeInjectable, NodeInjector} from './di';
+import {ElementRefFactory} from './element_ref_factory';
 import {registerPostOrderHooks} from './hooks';
 import {reportUnknownPropertyError} from './instructions/element_validation';
 import {markViewDirty} from './instructions/mark_view_dirty';
@@ -219,6 +220,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
 
       const afterRenderEventManager = rootViewInjector.get(AfterRenderEventManager, null);
       const changeDetectionScheduler = rootViewInjector.get(ChangeDetectionScheduler, null);
+      const elementRefFactory = rootViewInjector.get(ElementRefFactory, null);
 
       const environment: LViewEnvironment = {
         rendererFactory,
@@ -227,6 +229,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         inlineEffectRunner: null,
         afterRenderEventManager,
         changeDetectionScheduler,
+        elementRefFactory,
       };
 
       const hostRenderer = rendererFactory.createRenderer(null, this.componentDef);

@@ -159,6 +159,9 @@
     "name": "DefaultDomRenderer2"
   },
   {
+    "name": "DefaultElementRefFactory"
+  },
+  {
     "name": "DefaultIterableDiffer"
   },
   {
@@ -202,6 +205,9 @@
   },
   {
     "name": "ElementRef"
+  },
+  {
+    "name": "ElementRefFactory"
   },
   {
     "name": "EmulatedEncapsulationDomRenderer2"

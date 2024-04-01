@@ -99,6 +99,9 @@
     "name": "DefaultDomRenderer2"
   },
   {
+    "name": "DefaultElementRefFactory"
+  },
+  {
     "name": "DestroyRef"
   },
   {
@@ -130,6 +133,9 @@
   },
   {
     "name": "ElementRef"
+  },
+  {
+    "name": "ElementRefFactory"
   },
   {
     "name": "EmulatedEncapsulationDomRenderer2"

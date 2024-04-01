@@ -114,6 +114,9 @@
     "name": "DefaultDomRenderer2"
   },
   {
+    "name": "DefaultElementRefFactory"
+  },
+  {
     "name": "DepComponent"
   },
   {
@@ -151,6 +154,9 @@
   },
   {
     "name": "ElementRef"
+  },
+  {
+    "name": "ElementRefFactory"
   },
   {
     "name": "EmulatedEncapsulationDomRenderer2"

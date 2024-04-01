@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import type {ElementRefFactory} from '../render3/element_ref_factory';
 import {TNode} from '../render3/interfaces/node';
 import {RElement} from '../render3/interfaces/renderer_dom';
-import {LView} from '../render3/interfaces/view';
+import {ENVIRONMENT, LView} from '../render3/interfaces/view';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getNativeByTNode} from '../render3/util/view_utils';
 
@@ -29,7 +30,8 @@ export function injectElementRef(): ElementRef {
  * @returns The ElementRef instance to use
  */
 export function createElementRef(tNode: TNode, lView: LView): ElementRef {
-  return new ElementRef(getNativeByTNode(tNode, lView) as RElement);
+  const factory = lView[ENVIRONMENT].elementRefFactory!;
+  return factory.create(getNativeByTNode(tNode, lView) as RElement);
 }
 
 /**

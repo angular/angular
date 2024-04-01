@@ -47,7 +47,8 @@ export function enterViewWithOneDiv() {
         sanitizer: null,
         inlineEffectRunner: null,
         afterRenderEventManager: null,
-        changeDetectionScheduler: null
+        changeDetectionScheduler: null,
+        elementRefFactory: null,
       },
       renderer, null, null, null);
   lView[HEADER_OFFSET] = div;

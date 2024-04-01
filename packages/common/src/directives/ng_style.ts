@@ -15,6 +15,7 @@ import {
   KeyValueDiffers,
   Renderer2,
   RendererStyleFlags2,
+  ɵunwrapElementRefInternal,
 } from '@angular/core';
 
 /**
@@ -87,16 +88,12 @@ export class NgStyle implements DoCheck {
   private _setStyle(nameAndUnit: string, value: string | number | null | undefined): void {
     const [name, unit] = nameAndUnit.split('.');
     const flags = name.indexOf('-') === -1 ? undefined : (RendererStyleFlags2.DashCase as number);
+    const nativeElement = ɵunwrapElementRefInternal(this._ngEl);
 
     if (value != null) {
-      this._renderer.setStyle(
-        this._ngEl.nativeElement,
-        name,
-        unit ? `${value}${unit}` : value,
-        flags,
-      );
+      this._renderer.setStyle(nativeElement, name, unit ? `${value}${unit}` : value, flags);
     } else {
-      this._renderer.removeStyle(this._ngEl.nativeElement, name, flags);
+      this._renderer.removeStyle(nativeElement, name, flags);
     }
   }
 

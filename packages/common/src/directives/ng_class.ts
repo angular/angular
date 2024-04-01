@@ -14,6 +14,7 @@ import {
   KeyValueDiffers,
   Renderer2,
   ɵstringify as stringify,
+  ɵunwrapElementRefInternal,
 } from '@angular/core';
 
 type NgClassSupportedTypes = string[] | Set<string> | {[klass: string]: any} | null | undefined;
@@ -181,11 +182,12 @@ export class NgClass implements DoCheck {
     }
     klass = klass.trim();
     if (klass.length > 0) {
+      const nativeElement = ɵunwrapElementRefInternal(this._ngEl);
       klass.split(WS_REGEXP).forEach((klass) => {
         if (enabled) {
-          this._renderer.addClass(this._ngEl.nativeElement, klass);
+          this._renderer.addClass(nativeElement, klass);
         } else {
-          this._renderer.removeClass(this._ngEl.nativeElement, klass);
+          this._renderer.removeClass(nativeElement, klass);
         }
       });
     }

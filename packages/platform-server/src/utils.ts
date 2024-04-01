@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵwhenStable as whenStable} from '@angular/core';
+import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵunwrapElementRefInternal, ɵwhenStable as whenStable} from '@angular/core';
 
 import {PlatformState} from './platform_state';
 import {platformServer} from './server';
@@ -52,7 +52,7 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
   let serverContext = sanitizeServerContext(injector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
   applicationRef.components.forEach(componentRef => {
     const renderer = componentRef.injector.get(Renderer2);
-    const element = componentRef.location.nativeElement;
+    const element = ɵunwrapElementRefInternal(componentRef.location);
     if (element) {
       renderer.setAttribute(element, 'ng-server-context', serverContext);
     }

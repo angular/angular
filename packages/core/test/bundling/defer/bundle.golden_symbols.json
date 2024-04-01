@@ -129,6 +129,9 @@
     "name": "DefaultDomRenderer2"
   },
   {
+    "name": "DefaultElementRefFactory"
+  },
+  {
     "name": "DeferBlockBehavior"
   },
   {
@@ -181,6 +184,9 @@
   },
   {
     "name": "ElementRef"
+  },
+  {
+    "name": "ElementRefFactory"
   },
   {
     "name": "EmulatedEncapsulationDomRenderer2"
@@ -1327,6 +1333,9 @@
   },
   {
     "name": "init_element_ref"
+  },
+  {
+    "name": "init_element_ref_factory"
   },
   {
     "name": "init_element_validation"

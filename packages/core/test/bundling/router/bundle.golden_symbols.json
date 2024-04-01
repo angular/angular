@@ -168,6 +168,9 @@
     "name": "DefaultDomRenderer2"
   },
   {
+    "name": "DefaultElementRefFactory"
+  },
+  {
     "name": "DefaultRouteReuseStrategy"
   },
   {
@@ -214,6 +217,9 @@
   },
   {
     "name": "ElementRef"
+  },
+  {
+    "name": "ElementRefFactory"
   },
   {
     "name": "EmptyError"
@@ -277,6 +283,9 @@
   },
   {
     "name": "INTERNAL_BROWSER_PLATFORM_PROVIDERS"
+  },
+  {
+    "name": "INTERNAL_NATIVE_ELEMENT"
   },
   {
     "name": "InjectFlags"
@@ -2062,6 +2071,9 @@
   },
   {
     "name": "unwrapElementRef"
+  },
+  {
+    "name": "unwrapElementRefInternal"
   },
   {
     "name": "unwrapRNode"

@@ -148,6 +148,7 @@ describe('di', () => {
             inlineEffectRunner: null,
             afterRenderEventManager: null,
             changeDetectionScheduler: null,
+            elementRefFactory: null,
           },
           {} as any, null, null, null);
       enterView(contentView);

@@ -44,7 +44,7 @@ export class PlatformState {
 }
 
 // @public
-export function provideServerRendering(): EnvironmentProviders;
+export function provideServerRendering(...features: ServerRenderingFeature<ServerRenderingFeatureKind>[]): EnvironmentProviders;
 
 // @public
 export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {

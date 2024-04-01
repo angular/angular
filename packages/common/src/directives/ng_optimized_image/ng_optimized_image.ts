@@ -30,6 +30,7 @@ import {
   ɵSafeValue as SafeValue,
   ɵunwrapSafeValue as unwrapSafeValue,
   ChangeDetectorRef,
+  ɵunwrapElementRefInternal,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -264,7 +265,7 @@ export class NgOptimizedImage implements OnInit, OnChanges, OnDestroy {
   private imageLoader = inject(IMAGE_LOADER);
   private config: ImageConfig = processConfig(inject(IMAGE_CONFIG));
   private renderer = inject(Renderer2);
-  private imgElement: HTMLImageElement = inject(ElementRef).nativeElement;
+  private imgElement: HTMLImageElement = ɵunwrapElementRefInternal(inject(ElementRef));
   private injector = inject(Injector);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
   private readonly preloadLinkCreator = inject(PreloadLinkCreator);
