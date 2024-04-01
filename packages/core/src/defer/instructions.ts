@@ -505,7 +505,7 @@ export function renderDeferBlockState(
  * Detects whether an injector is an instance of a `ChainedInjector`,
  * created based on the `OutletInjector`.
  */
-function isRouterOutletInjector(currentInjector: Injector): boolean {
+export function isRouterOutletInjector(currentInjector: Injector): boolean {
   return (currentInjector instanceof ChainedInjector) &&
       ((currentInjector.injector as any).__ngOutletInjector);
 }
