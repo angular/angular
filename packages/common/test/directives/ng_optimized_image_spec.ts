@@ -1129,6 +1129,38 @@ describe('Image directive', () => {
         );
       });
     }
+
+    it('should add a background-image tag when placeholder is provided as a URL', () => {
+      setupTestingModule({imageLoader});
+      const template =
+        '<img ngSrc="path/img.png" width="400" height="300" placeholder="https://mysite.com/assets/my-image.png" />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      // Double quotes removed to account for different browser behavior.
+      expect(img.getAttribute('style')?.replace(/"/g, '').replace(/\s/g, '')).toBe(
+        `background-size:cover;background-position:50%50%;background-repeat:no-repeat;background-image:url(https://mysite.com/assets/my-image.png);filter:blur(${PLACEHOLDER_BLUR_AMOUNT}px);`,
+      );
+    });
+
+    // DataURLs get stripped from background-image attribute in Node, but not browsers.
+    it('should add a background-image tag when placeholder is provided as relative URL', () => {
+      setupTestingModule({imageLoader});
+      const template =
+        '<img ngSrc="path/img.png" width="400" height="300" placeholder="../../assets/my-image.png" />';
+
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      // Double quotes removed to account for different browser behavior.
+      expect(img.getAttribute('style')?.replace(/"/g, '').replace(/\s/g, '')).toBe(
+        `background-size:cover;background-position:50%50%;background-repeat:no-repeat;background-image:url(../../assets/my-image.png);filter:blur(${PLACEHOLDER_BLUR_AMOUNT}px);`,
+      );
+    });
+
     it('should add a background-image tag when placeholder is provided without value', () => {
       setupTestingModule({imageLoader});
       const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder />';
@@ -1276,6 +1308,40 @@ describe('Image directive', () => {
           `performance, generate a smaller data URL placeholder.`,
       );
     });
+
+    if (isBrowser) {
+      it('should throw if the placeholder height exceeds the threshold', () => {
+        setUpModuleNoLoader();
+
+        const template = `<img ngSrc="path/img.png" width="100" height="100" style="width:1001px; height: 300px" placeholder="data:image/png;base64,${'a'.repeat(
+          100,
+        )}">`;
+
+        const consoleWarnSpy = spyOn(console, 'warn');
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        expect(consoleWarnSpy.calls.count()).toBe(1);
+        expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+          new RegExp(`NG0${RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED}:`),
+        );
+      });
+
+      it('should throw if the placeholder width exceeds the threshold', () => {
+        setUpModuleNoLoader();
+
+        const template = `<img ngSrc="path/img.png" width="100" height="100" style="height:1001px; width: 300px" placeholder="data:image/png;base64,${'a'.repeat(
+          100,
+        )}">`;
+
+        const consoleWarnSpy = spyOn(console, 'warn');
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+        expect(consoleWarnSpy.calls.count()).toBe(1);
+        expect(consoleWarnSpy.calls.argsFor(0)[0]).toMatch(
+          new RegExp(`NG0${RuntimeErrorCode.PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED}:`),
+        );
+      });
+    }
   });
 
   describe('preconnect detector', () => {
