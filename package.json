@@ -24,8 +24,8 @@
     "/ ": "",
     "postinstall": "node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js && patch-package --patch-dir tools/esm-interop/patches/npm && patch-package --patch-dir tools/npm-patches",
     "prepare": "husky",
-    "ng-dev": "ts-node --esm --project .ng-dev/tsconfig.json --transpile-only node_modules/@angular/ng-dev/bundles/cli.mjs",
-    "build": "ts-node --esm --project scripts/tsconfig.json scripts/build/build-packages-dist.mts",
+    "ng-dev": "tsx --tsconfig .ng-dev/tsconfig.json node_modules/@angular/ng-dev/bundles/cli.mjs",
+    "build": "tsx --tsconfig scripts/tsconfig.json scripts/build/build-packages-dist.mts",
     "test": "bazelisk test",
     "test:ci": "bazelisk test -- //... -//integration/... -//adev/... -//devtools/... -//aio/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
@@ -45,7 +45,7 @@
     "devtools:test": "bazelisk test --config snapshot-build --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
     "docs": "[[ -n $CI ]] && echo 'Cannot run this yarn script on CI' && exit 1 || yarn bazel run //adev:serve --fast_adev",
     "docs:build": "[[ -n $CI ]] && echo 'Cannot run this yarn script on CI' && exit 1 || yarn bazel build //adev:build --fast_adev",
-    "benchmarks": "ts-node --esm scripts/benchmarks/index.mts"
+    "benchmarks": "tsx --tsconfig=scripts/tsconfig.json scripts/benchmarks/index.mts"
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
@@ -141,6 +141,7 @@
     "todomvc-common": "^1.0.5",
     "tslib": "^2.3.0",
     "tslint": "6.1.3",
+    "tsx": "^4.7.2",
     "typescript": "5.4.2",
     "webtreemap": "^2.0.1",
     "ws": "^8.15.0",
