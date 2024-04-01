@@ -167,8 +167,8 @@ Join the conversation and help the community.
 [angularmaterial]: https://material.angular.io/
 [cli]: https://angular.dev/tools/cli
 [architecture]: https://angular.dev/essentials
-[componentstemplates]: https://angular.dev/tutorials/learn-angular/components-in-angular
-[forms]: https://angular.dev/tutorials/learn-angular/forms
+[componentstemplates]: https://angular.dev/tutorials/learn-angular/1-components-in-angular
+[forms]: https://angular.dev/tutorials/learn-angular/15-forms
 [api]: https://angular.dev/api
 [angularelements]: https://angular.dev/guide/elements
 [ssr]: https://angular.dev/guide/ssr
