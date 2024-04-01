@@ -395,7 +395,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#dbc38030d8201fe5bf1f90313667563fc7d84146":
   version "0.0.0-375d0b78a4921f80cb51251b752f35c4b951091a"
-  uid dbc38030d8201fe5bf1f90313667563fc7d84146
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#dbc38030d8201fe5bf1f90313667563fc7d84146"
   dependencies:
     "@angular-devkit/build-angular" "17.3.3"
@@ -504,7 +503,6 @@
 
 "@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#2baf8cb925305d55d0ea2e54086e7012c576e5b2":
   version "0.0.0-375d0b78a4921f80cb51251b752f35c4b951091a"
-  uid "2baf8cb925305d55d0ea2e54086e7012c576e5b2"
   resolved "https://github.com/angular/dev-infra-private-docs-builds.git#2baf8cb925305d55d0ea2e54086e7012c576e5b2"
   dependencies:
     "@angular/cdk" "18.0.0-next.3"
@@ -646,7 +644,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#d10a5d49f160594a93a4cc03d52c40cbf249f8e2":
   version "0.0.0-375d0b78a4921f80cb51251b752f35c4b951091a"
-  uid d10a5d49f160594a93a4cc03d52c40cbf249f8e2
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#d10a5d49f160594a93a4cc03d52c40cbf249f8e2"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -7501,8 +7498,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658":
-  version "2.1.6+git"
-  uid "9e7881d2ac1e5977cefbc557f935931ec23f6658"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658"
 
 dompurify@^3.0.5:
@@ -7877,7 +7873,7 @@ esbuild@0.20.1:
     "@esbuild/win32-ia32" "0.20.1"
     "@esbuild/win32-x64" "0.20.1"
 
-esbuild@^0.19.3:
+esbuild@^0.19.3, esbuild@~0.19.10:
   version "0.19.12"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.19.12.tgz#dc82ee5dc79e82f5a5c3b4323a2a641827db3e04"
   integrity sha512-aARqgq8roFBj054KvQr5f1sFu0D65G+miZRCuJyJ0G13Zwx7vRar5Zhn2tkQNzIXcBrNVsv/8stehpj+GAjgbg==
@@ -8835,6 +8831,13 @@ get-symbol-description@^1.0.2:
     call-bind "^1.0.5"
     es-errors "^1.3.0"
     get-intrinsic "^1.2.4"
+
+get-tsconfig@^4.7.2:
+  version "4.7.3"
+  resolved "https://registry.yarnpkg.com/get-tsconfig/-/get-tsconfig-4.7.3.tgz#0498163d98f7b58484dd4906999c0c9d5f103f83"
+  integrity sha512-ZvkrzoUA0PQZM6fy6+/Hce561s+faD1rsNwhnO5FelNjyy7EMGJ3Rz1AQ8GYDWjhRs/7dBLOEJvhK8MiEJOAFg==
+  dependencies:
+    resolve-pkg-maps "^1.0.0"
 
 get-uri@^6.0.1:
   version "6.0.3"
@@ -13594,6 +13597,11 @@ resolve-options@^2.0.0:
   dependencies:
     value-or-function "^4.0.0"
 
+resolve-pkg-maps@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz#616b3dc2c57056b5588c31cdf4b3d64db133720f"
+  integrity sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==
+
 resolve-url-loader@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/resolve-url-loader/-/resolve-url-loader-5.0.0.tgz#ee3142fb1f1e0d9db9524d539cfa166e9314f795"
@@ -13919,7 +13927,6 @@ sass@1.71.1:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz":
   version "0.0.0"
-  uid "9310bc860f7870a1f872b11c4dc6073a1ad34e5e"
   resolved "https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz#9310bc860f7870a1f872b11c4dc6073a1ad34e5e"
 
 saucelabs@7.5.0, saucelabs@^1.5.0, saucelabs@^4.6.3:
@@ -15294,6 +15301,16 @@ tsutils@^2.29.0:
   integrity sha512-g5JVHCIJwzfISaXpXE1qvNalca5Jwob6FjI4AoPlqMusJ6ftFE7IkkFoMhVLRgK+4Kx3gkzb8UZK5t5yTTvEmA==
   dependencies:
     tslib "^1.8.1"
+
+tsx@^4.7.2:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/tsx/-/tsx-4.7.2.tgz#a108b1a6e16876cd4c9a4b4ba263f2a07f9cf562"
+  integrity sha512-BCNd4kz6fz12fyrgCTEdZHGJ9fWTGeUzXmQysh0RVocDY3h4frk05ZNCXSy4kIenF7y/QnrdiVpTsyNRn6vlAw==
+  dependencies:
+    esbuild "~0.19.10"
+    get-tsconfig "^4.7.2"
+  optionalDependencies:
+    fsevents "~2.3.3"
 
 tuf-js@^2.2.0:
   version "2.2.0"
