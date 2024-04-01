@@ -489,31 +489,30 @@ describe('Angular with zoneless enabled', () => {
        expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('new');
      });
 
-  // TODO(atscott): We should make this work
-  xit('change detects embedded view when attached directly to ApplicationRef and declaration is marked for check',
-      async () => {
-        @Component({
-          template: '<ng-template #template><div>{{thing}}</div></ng-template>',
-          standalone: true,
-        })
-        class DynamicCmp {
-          @ViewChild('template') templateRef!: TemplateRef<{}>;
-          thing = 'initial';
-        }
+  it('change detects embedded view when attached directly to ApplicationRef and declaration is marked for check',
+     async () => {
+       @Component({
+         template: '<ng-template #template><div>{{thing}}</div></ng-template>',
+         standalone: true,
+       })
+       class DynamicCmp {
+         @ViewChild('template') templateRef!: TemplateRef<{}>;
+         thing = 'initial';
+       }
 
-        const fixture = TestBed.createComponent(DynamicCmp);
-        await fixture.whenStable();
+       const fixture = TestBed.createComponent(DynamicCmp);
+       await fixture.whenStable();
 
-        const embeddedViewRef = fixture.componentInstance.templateRef.createEmbeddedView({});
-        TestBed.inject(ApplicationRef).attachView(embeddedViewRef);
-        await fixture.whenStable();
-        expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('initial');
+       const embeddedViewRef = fixture.componentInstance.templateRef.createEmbeddedView({});
+       TestBed.inject(ApplicationRef).attachView(embeddedViewRef);
+       await fixture.whenStable();
+       expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('initial');
 
-        fixture.componentInstance.thing = 'new';
-        fixture.changeDetectorRef.markForCheck();
-        await fixture.whenStable();
-        expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('new');
-      });
+       fixture.componentInstance.thing = 'new';
+       fixture.changeDetectorRef.markForCheck();
+       await fixture.whenStable();
+       expect(embeddedViewRef.rootNodes[0].innerHTML).toContain('new');
+     });
 
   it('does not fail when global timing functions are patched and unpatched', async () => {
     @Component({template: '', standalone: true})

@@ -16,10 +16,10 @@ import {collectNativeNodes} from './collect_native_nodes';
 import {checkNoChangesInternal, detectChangesInternal} from './instructions/change_detection';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
-import {isLContainer} from './interfaces/type_checks';
-import {CONTEXT, ENVIRONMENT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
-import {destroyLView, detachView, detachViewFromDOM} from './node_manipulation';
-import {markAncestorsForTraversal, storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
+import {isLContainer, isRootView} from './interfaces/type_checks';
+import {CONTEXT, DECLARATION_LCONTAINER, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
+import {destroyLView, detachMovedView, detachView, detachViewFromDOM, trackMovedView} from './node_manipulation';
+import {storeLViewOnDestroy, updateAncestorTraversalFlagsOnAttach} from './util/view_utils';
 
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
@@ -316,6 +316,11 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
 
   detachFromAppRef() {
     this._appRef = null;
+    const isRoot = isRootView(this._lView);
+    const declarationContainer = this._lView[DECLARATION_LCONTAINER];
+    if (declarationContainer !== null && !isRoot) {
+      detachMovedView(declarationContainer, this._lView);
+    }
     detachViewFromDOM(this._lView[TVIEW], this._lView);
   }
 
@@ -326,6 +331,11 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
           ngDevMode && 'This view is already attached to a ViewContainer!');
     }
     this._appRef = appRef;
+    const isRoot = isRootView(this._lView);
+    const declarationContainer = this._lView[DECLARATION_LCONTAINER];
+    if (declarationContainer !== null && !isRoot) {
+      trackMovedView(declarationContainer, this._lView);
+    }
     updateAncestorTraversalFlagsOnAttach(this._lView);
   }
 }
