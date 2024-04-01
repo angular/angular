@@ -285,23 +285,27 @@ export function insertView(tView: TView, lView: LView, lContainer: LContainer, i
 
 /**
  * Track views created from the declaration container (TemplateRef) and inserted into a
- * different LContainer.
+ * different LContainer or attached directly to ApplicationRef.
  */
-function trackMovedView(declarationContainer: LContainer, lView: LView) {
+export function trackMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertDefined(lView, 'LView required');
   ngDevMode && assertLContainer(declarationContainer);
   const movedViews = declarationContainer[MOVED_VIEWS];
-  const insertedLContainer = lView[PARENT] as LContainer;
-  ngDevMode && assertLContainer(insertedLContainer);
-  const insertedComponentLView = insertedLContainer[PARENT]![DECLARATION_COMPONENT_VIEW];
-  ngDevMode && assertDefined(insertedComponentLView, 'Missing insertedComponentLView');
-  const declaredComponentLView = lView[DECLARATION_COMPONENT_VIEW];
-  ngDevMode && assertDefined(declaredComponentLView, 'Missing declaredComponentLView');
-  if (declaredComponentLView !== insertedComponentLView) {
-    // At this point the declaration-component is not same as insertion-component; this means that
-    // this is a transplanted view. Mark the declared lView as having transplanted views so that
-    // those views can participate in CD.
+  const parent = lView[PARENT]!;
+  ngDevMode && assertDefined(parent, 'missing parent');
+  if (isLView(parent)) {
     declarationContainer[FLAGS] |= LContainerFlags.HasTransplantedViews;
+  } else {
+    const insertedComponentLView = parent[PARENT]![DECLARATION_COMPONENT_VIEW];
+    ngDevMode && assertDefined(insertedComponentLView, 'Missing insertedComponentLView');
+    const declaredComponentLView = lView[DECLARATION_COMPONENT_VIEW];
+    ngDevMode && assertDefined(declaredComponentLView, 'Missing declaredComponentLView');
+    if (declaredComponentLView !== insertedComponentLView) {
+      // At this point the declaration-component is not same as insertion-component; this means that
+      // this is a transplanted view. Mark the declared lView as having transplanted views so that
+      // those views can participate in CD.
+      declarationContainer[FLAGS] |= LContainerFlags.HasTransplantedViews;
+    }
   }
   if (movedViews === null) {
     declarationContainer[MOVED_VIEWS] = [lView];
@@ -310,7 +314,7 @@ function trackMovedView(declarationContainer: LContainer, lView: LView) {
   }
 }
 
-function detachMovedView(declarationContainer: LContainer, lView: LView) {
+export function detachMovedView(declarationContainer: LContainer, lView: LView) {
   ngDevMode && assertLContainer(declarationContainer);
   ngDevMode &&
       assertDefined(
@@ -318,7 +322,6 @@ function detachMovedView(declarationContainer: LContainer, lView: LView) {
           'A projected view should belong to a non-empty projected views collection');
   const movedViews = declarationContainer[MOVED_VIEWS]!;
   const declarationViewIndex = movedViews.indexOf(lView);
-  ngDevMode && assertLContainer(lView[PARENT]);
   movedViews.splice(declarationViewIndex, 1);
 }
 
