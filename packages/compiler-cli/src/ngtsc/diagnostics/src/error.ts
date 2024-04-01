@@ -27,7 +27,7 @@ export class FatalDiagnosticError extends Error {
 
   // Trying to hide `.message` from `Error` to encourage users to look
   // at `diagnosticMessage` instead.
-  override message: never = this.message;
+  declare message: never;
 
   /**
    * @internal
