@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ENVIRONMENT_INITIALIZER} from '../../di/initializer_token';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {getInjectorDef, InjectorType} from '../../di/interface/defs';
 import {InjectFlags, InternalInjectFlags} from '../../di/interface/injector';
+import {ValueProvider} from '../../di/interface/provider';
+import {INJECTOR_DEF_TYPES} from '../../di/internal_tokens';
 import {NullInjector} from '../../di/null_injector';
 import {SingleProvider, walkProviderTree} from '../../di/provider_collection';
 import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
@@ -17,22 +20,19 @@ import {Type} from '../../interface/type';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../../linker/ng_module_factory';
 import {deepForEach} from '../../util/array_utils';
 import {assertDefined, throwError} from '../../util/assert';
-import type {ChainedInjector} from '../component_ref';
-import {getComponentDef} from '../definition';
-import {getNodeInjectorLView, getNodeInjectorTNode, getParentInjectorLocation, NodeInjector} from '../di';
+import {assertTNode, assertTNodeForLView} from '../assert';
+import {ChainedInjector} from '../component_ref';
 import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
 import {InjectedService, ProviderRecord} from '../debug/injector_profiler';
+import {getComponentDef} from '../definition';
+import {getNodeInjectorLView, getNodeInjectorTNode, getParentInjectorLocation, NodeInjector} from '../di';
 import {NodeInjectorOffset} from '../interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from '../interfaces/node';
+import {RElement} from '../interfaces/renderer_dom';
 import {INJECTOR, LView, TVIEW} from '../interfaces/view';
 
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './injector_utils';
-import {assertTNodeForLView, assertTNode} from '../assert';
-import {RElement} from '../interfaces/renderer_dom';
 import {getNativeByTNode} from './view_utils';
-import {INJECTOR_DEF_TYPES} from '../../di/internal_tokens';
-import {ENVIRONMENT_INITIALIZER} from '../../di/initializer_token';
-import {ValueProvider} from '../../di/interface/provider';
 
 /**
  * Discovers the dependencies of an injectable instance. Provides DI information about each
@@ -585,9 +585,11 @@ function getInjectorParent(injector: Injector): Injector|null {
     lView = getNodeInjectorLView(injector);
   } else if (injector instanceof NullInjector) {
     return null;
+  } else if (injector instanceof ChainedInjector) {
+    return injector.parentInjector;
   } else {
     throwError(
-        'getInjectorParent only support injectors of type R3Injector, NodeInjector, NullInjector');
+        'getInjectorParent only support injectors of type R3Injector, NodeInjector, NullInjector, ChainedInjector');
   }
 
   const parentLocation = getParentInjectorLocation(
@@ -633,8 +635,8 @@ function getModuleInjectorOfNodeInjector(injector: NodeInjector): Injector {
     throwError('getModuleInjectorOfNodeInjector must be called with a NodeInjector');
   }
 
-  const chainedInjector = lView[INJECTOR] as ChainedInjector;
-  const moduleInjector = chainedInjector.parentInjector;
+  const inj = lView[INJECTOR] as R3Injector | ChainedInjector;
+  const moduleInjector = (inj instanceof ChainedInjector) ? inj.parentInjector : inj.parent;
   if (!moduleInjector) {
     throwError('NodeInjector must have some connection to the module injector tree');
   }

@@ -7,8 +7,12 @@
  */
 
 import {CommonModule, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, Directive, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, InjectionToken, Input, NgModule, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, Directive, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, InjectionToken, Injector, Input, NgModule, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
+import {isRouterOutletInjector} from '@angular/core/src/defer/instructions';
+import {ChainedInjector} from '@angular/core/src/render3/component_ref';
 import {getComponentDef} from '@angular/core/src/render3/definition';
+import {NodeInjector} from '@angular/core/src/render3/di';
+import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '@angular/core/testing';
 import {ActivatedRoute, provideRouter, Router, RouterOutlet} from '@angular/router';
 
@@ -4155,6 +4159,8 @@ describe('@defer', () => {
 
   describe('Router', () => {
     it('should inject correct `ActivatedRoutes` in components within defer blocks', async () => {
+      let routeCmpNodeInjector;
+
       @Component({
         standalone: true,
         imports: [RouterOutlet],
@@ -4171,6 +4177,9 @@ describe('@defer', () => {
       })
       class AnotherChild {
         route = inject(ActivatedRoute);
+        constructor() {
+          routeCmpNodeInjector = inject(Injector);
+        }
       }
 
       @Component({
@@ -4215,6 +4224,12 @@ describe('@defer', () => {
 
       expect(app.nativeElement.innerHTML).toContain('child: a');
       expect(app.nativeElement.innerHTML).toContain('another child: a');
+
+      // Verify that the first non-NodeInjector refers to the chained injector,
+      // which represents OutletInjector.
+      const path = getInjectorResolutionPath(routeCmpNodeInjector!);
+      const firstEnvInjector = path.find(inj => !(inj instanceof NodeInjector))!;
+      expect(isRouterOutletInjector(firstEnvInjector)).toBe(true);
     });
   });
 });
