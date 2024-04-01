@@ -31,6 +31,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PARENT_NG_SWITCH_NOT_FOUND = 2000,
     // (undocumented)
+    PLACEHOLDER_DIMENSION_LIMIT_EXCEEDED = 2967,
+    // (undocumented)
     PRIORITY_IMG_MISSING_PRECONNECT_TAG = 2956,
     // (undocumented)
     REQUIRED_INPUT_MISSING = 2954,
