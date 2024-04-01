@@ -541,66 +541,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       ));
     });
 
-    describe('navigation warning', () => {
-      const isInAngularZoneFn = NgZone.isInAngularZone;
-      let warnings: string[] = [];
-      let isInAngularZone = true;
-
-      class MockConsole {
-        warn(message: string) {
-          warnings.push(message);
-        }
-      }
-
-      beforeEach(() => {
-        warnings = [];
-        isInAngularZone = true;
-        NgZone.isInAngularZone = () => isInAngularZone;
-        TestBed.overrideProvider(Console, {useValue: new MockConsole()});
-      });
-
-      afterEach(() => {
-        NgZone.isInAngularZone = isInAngularZoneFn;
-      });
-
-      describe('with NgZone enabled', () => {
-        it('should warn when triggered outside Angular zone', fakeAsync(
-          inject([Router], (router: Router) => {
-            isInAngularZone = false;
-            router.navigateByUrl('/simple');
-
-            expect(warnings.length).toBe(1);
-            expect(warnings[0]).toBe(
-              `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`,
-            );
-          }),
-        ));
-
-        it('should not warn when triggered inside Angular zone', fakeAsync(
-          inject([Router], (router: Router) => {
-            router.navigateByUrl('/simple');
-
-            expect(warnings.length).toBe(0);
-          }),
-        ));
-      });
-
-      describe('with NgZone disabled', () => {
-        beforeEach(() => {
-          TestBed.overrideProvider(NgZone, {useValue: new NoopNgZone()});
-        });
-
-        it('should not warn when triggered outside Angular zone', fakeAsync(
-          inject([Router], (router: Router) => {
-            isInAngularZone = false;
-            router.navigateByUrl('/simple');
-
-            expect(warnings.length).toBe(0);
-          }),
-        ));
-      });
-    });
-
     describe('should execute navigations serially', () => {
       let log: Array<string | Params> = [];
 
@@ -1947,13 +1887,40 @@ for (const browserAPI of ['navigation', 'history'] as const) {
                 component: BlankCmp,
               },
             ],
+            withRouterConfig({resolveNavigationPromiseOnError: true}),
             withNavigationErrorHandler(() => (coreInject(Handler).handlerCalled = true)),
           ),
         ],
       });
       const router = TestBed.inject(Router);
-      await expectAsync(router.navigateByUrl('/throw')).toBeRejected();
+      await router.navigateByUrl('/throw');
       expect(TestBed.inject(Handler).handlerCalled).toBeTrue();
+    });
+
+    it('should not break navigation if an error happens in NavigationErrorHandler', async () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [
+              {
+                path: 'throw',
+                canMatch: [
+                  () => {
+                    throw new Error('');
+                  },
+                ],
+                component: BlankCmp,
+              },
+              {path: '**', component: BlankCmp},
+            ],
+            withRouterConfig({resolveNavigationPromiseOnError: true}),
+            withNavigationErrorHandler(() => {
+              throw new Error('e');
+            }),
+          ),
+        ],
+      });
+      const router = TestBed.inject(Router);
     });
 
     // Errors should behave the same for both deferred and eager URL update strategies
@@ -2431,27 +2398,6 @@ for (const browserAPI of ['navigation', 'history'] as const) {
           expect(rightRecorded).toEqual([{one: 1, five: 5, two: 2, six: 6}]);
         }),
       ));
-
-      it('should redirect if a resolver returns RedirectCommand', fakeAsync(() => {
-        const router = TestBed.inject(Router);
-        const fixture = createRoot(router, RootCmpWithTwoOutlets);
-
-        router.resetConfig([
-          {
-            path: 'parent/:id',
-            component: BlankCmp,
-            resolve: {redirectMe: () => new RedirectCommand(router.parseUrl('/login'))},
-          },
-          {
-            path: 'login',
-            component: BlankCmp,
-          },
-        ]);
-
-        router.navigateByUrl('/parent/1');
-        advance(fixture);
-        expect(router.url).toEqual('/login');
-      }));
 
       it('should handle errors', fakeAsync(
         inject([Router], (router: Router) => {

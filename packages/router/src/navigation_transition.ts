@@ -849,11 +849,11 @@ export class NavigationTransitions {
                 overallTransitionState.targetSnapshot ?? undefined,
               );
 
-              runInInjectionContext(this.environmentInjector, () =>
-                this.navigationErrorHandler?.(navigationError),
-              );
               this.events.next(navigationError);
               try {
+                runInInjectionContext(this.environmentInjector, () =>
+                  this.navigationErrorHandler?.(navigationError),
+                );
                 const errorHandlerResult = router.errorHandler(e);
                 overallTransitionState.resolve(!!errorHandlerResult);
               } catch (ee) {
