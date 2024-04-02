@@ -1589,8 +1589,10 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE))
           .toContain(
-              'if ((((this).expr)) === 1) { "" + ((this).one()); } else if ' +
-              '((((this).expr)) === 2) { "" + ((this).two()); } else { "" + ((this).default()); }');
+              'switch (((this).expr)) { ' +
+              'case 1: "" + ((this).one()); break; ' +
+              'case 2: "" + ((this).two()); break; ' +
+              'default: "" + ((this).default()); break; }');
     });
 
     it('should generate a switch block that only has a default case', () => {
@@ -1602,7 +1604,8 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE)).toContain('{ "" + ((this).default()); }');
+      expect(tcb(TEMPLATE))
+          .toContain('switch (((this).expr)) { default: "" + ((this).default()); break; }');
     });
 
     it('should generate a guard expression for a listener inside a switch case', () => {
@@ -1622,10 +1625,9 @@ describe('type check blocks', () => {
 
       const result = tcb(TEMPLATE);
 
-      expect(result).toContain(`if ((((this).expr)) === 1) (this).one();`);
-      expect(result).toContain(`if ((((this).expr)) === 2) (this).two();`);
-      expect(result).toContain(
-          `if ((((this).expr)) !== 1 && (((this).expr)) !== 2) (this).default();`);
+      expect(result).toContain(`if (((this).expr) === 1) (this).one();`);
+      expect(result).toContain(`if (((this).expr) === 2) (this).two();`);
+      expect(result).toContain(`if (((this).expr) !== 1 && ((this).expr) !== 2) (this).default();`);
     });
 
     it('should generate a switch block inside a template', () => {
@@ -1647,14 +1649,14 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE))
           .toContain(
-              'var _t1 = null! as any; { var _t2 = (_t1.exp); _t2(); ' +
-              'if ((_t2()) === "one") { "" + ((this).one()); } ' +
-              'else if ((_t2()) === "two") { "" + ((this).two()); } ' +
-              'else { "" + ((this).default()); } }');
+              'var _t1 = null! as any; { var _t2 = (_t1.exp); switch (_t2()) { ' +
+              'case "one": "" + ((this).one()); break; ' +
+              'case "two": "" + ((this).two()); break; ' +
+              'default: "" + ((this).default()); break; } }');
     });
 
     it('should handle an empty switch block', () => {
-      expect(tcb('@switch (expr) {}')).toContain('if (true) { ((this).expr); }');
+      expect(tcb('@switch (expr) {}')).toContain('if (true) { switch (((this).expr)) { } }');
     });
   });
 
