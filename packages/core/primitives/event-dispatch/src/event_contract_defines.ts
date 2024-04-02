@@ -7,12 +7,6 @@
  */
 
 /**
- * @define Controls the use of event.path logic for the dom
- * walking in createEventInfo_.
- */
-export const USE_EVENT_PATH = false;
-
-/**
  * @define Support for jsnamespace attribute.  This flag can be overridden in a
  * build rule to trim down the EventContract's binary size.
  */
