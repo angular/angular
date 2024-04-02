@@ -1,29 +1,17 @@
-name: 'Feature Request'
-description: Suggest a feature for Angular Framework
+name: Demande de fonctionnalité
+description: Demandez une nouvelle fonctionnalité pour la traduction de la documentation de angular.dev
 
 body:
   - type: dropdown
-    id: affected-packages
+    id: affected-scope
     attributes:
-      label: Which @angular/* package(s) are relevant/related to the feature request?
+      label: Quel est le scope de la demande de fonctionnalité?
       options:
-        - animations
-        - bazel
-        - common
-        - compiler-cli
-        - compiler
-        - core
-        - elements
-        - forms
-        - language-service
-        - localize
-        - platform-browser-dynamic
-        - platform-browser
-        - platform-server
-        - router
-        - service-worker
-        - upgrade
-      multiple: true
+        - traductions
+        - application
+        - GitHub
+        - autre
+      multiple: false
 
   - type: textarea
     id: description
@@ -35,13 +23,13 @@ body:
   - type: textarea
     id: proposed-solution
     attributes:
-      label: Proposed solution
+      label: Solution proposée
     validations:
       required: true
 
   - type: textarea
     id: alternatives-considered
     attributes:
-      label: Alternatives considered
+      label: Alternatives envisagées
     validations:
       required: true

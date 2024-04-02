@@ -1,30 +1,16 @@
-name: Bug Report
-description: Report a bug in the Angular Framework
+name: Déclaration de bug
+description: Déclarez un bug dans la documentation de l'application angular.dev
 
 body:
   - type: dropdown
-    id: affected-packages
+    id: affected-scope
     attributes:
-      label: Which @angular/* package(s) are the source of the bug?
+      label: Quel est le scope du bug?
       options:
-        - animations
-        - bazel
-        - common
-        - compiler-cli
-        - compiler
-        - core
-        - elements
-        - forms
-        - language-service
-        - localize
-        - platform-browser-dynamic
-        - platform-browser
-        - platform-server
-        - router
-        - service-worker
-        - upgrade
-        - zone.js
-        - Don't known / other
+          - traductions
+          - application
+          - GitHub
+          - autre
       multiple: true
     validations:
       required: true
@@ -32,7 +18,7 @@ body:
   - type: dropdown
     id: is-regression
     attributes:
-      label: Is this a regression?
+      label: Est-ce une régression?
       options:
         - 'Yes'
         - 'No'
@@ -49,38 +35,15 @@ body:
   - type: input
     id: reproduction
     attributes:
-      label: Please provide a link to a minimal reproduction of the bug
+      label: Merci de fournir les étapes pour reproduire le bug
 
   - type: textarea
     id: exception-or-error
     attributes:
-      label: Please provide the exception or error you saw
+      label: Si ce problème a provoqué une exception ou une erreur, veuillez la coller ici
       render: true
-
-  - type: textarea
-    id: environment
-    attributes:
-      label: Please provide the environment you discovered this bug in (run `ng version`)
-      render: true
-      placeholder: |
-        Angular CLI: 12.0.5
-        Node: 14.17.0
-        Package Manager: yarn 1.22.10
-        OS: linux x64
-
-        Angular: 12.0.5
-        ... animations, cli, common, compiler, compiler-cli, core, forms
-        ... platform-browser, platform-browser-dynamic, router
-
-        Package                         Version
-        ---------------------------------------------------------
-        @angular-devkit/architect       0.1200.5
-        @angular-devkit/build-angular   12.0.5
-        @angular-devkit/core            12.0.5
-        rxjs                            6.6.7
-        typescript                      4.2.4
 
   - type: textarea
     id: other
     attributes:
-      label: Anything else?
+      label: Autre information
