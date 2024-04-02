@@ -9,16 +9,12 @@ name: Build adev for preview deployment
 
 on:
   pull_request:
-    types: [synchronize, labeled]
 
 permissions: read-all
 
 jobs:
   adev-build:
     runs-on: ubuntu-latest
-    if: |
-      (github.event.action == 'labeled' && github.event.label.name == 'adev: preview') ||
-      (github.event.action == 'synchronize' && contains(github.event.pull_request.labels.*.name, 'adev: preview'))
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@5774b71c01a55c4c998f858ee37d3b77ae704c31
@@ -36,3 +32,12 @@ jobs:
           pull-number: '${{github.event.pull_request.number}}'
           artifact-build-revision: '${{github.event.pull_request.head.sha}}'
           deploy-directory: './dist/bin/adev/build/browser'
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3.0.0
+        with:
+            publish-dir: './dist/bin/adev/build/browser'
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            deploy-message: "Deploy from GitHub Actions"
+        env:
+            NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+            NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
