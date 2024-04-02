@@ -684,6 +684,11 @@
             "title": "Angular from Scratch",
             "desc": "Learn Angular from Scratch, building a sales application",
             "url": "https://leanpub.com/book-angular"
+          },
+          "angular-and-primeng": {
+            "title": "Next-Level UI Development with PrimeNG",
+            "desc": "Master the versatile Angular component library to build stunning Angular applications",
+            "url": "https://www.amazon.com/dp/1803249811"
           }
         }
       },
