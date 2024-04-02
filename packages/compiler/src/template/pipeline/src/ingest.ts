@@ -1003,30 +1003,10 @@ function convertAst(
   if (ast instanceof e.ASTWithSource) {
     return convertAst(ast.ast, job, baseSourceSpan);
   } else if (ast instanceof e.PropertyRead) {
-    const isThisReceiver = ast.receiver instanceof e.ThisReceiver;
     // Whether this is an implicit receiver, *excluding* explicit reads of `this`.
     const isImplicitReceiver =
       ast.receiver instanceof e.ImplicitReceiver && !(ast.receiver instanceof e.ThisReceiver);
-    // Whether the  name of the read is a node that should be never retain its explicit this
-    // receiver.
-    const isSpecialNode = ast.name === '$any' || ast.name === '$event';
-    // TODO: The most sensible condition here would be simply `isImplicitReceiver`, to convert only
-    // actual implicit `this` reads, and not explicit ones. However, TemplateDefinitionBuilder (and
-    // the Typecheck block!) both have the same bug, in which they also consider explicit `this`
-    // reads to be implicit. This causes problems when the explicit `this` read is inside a
-    // template with a context that also provides the variable name being read:
-    // ```
-    // <ng-template let-a>{{this.a}}</ng-template>
-    // ```
-    // The whole point of the explicit `this` was to access the class property, but TDB and the
-    // current TCB treat the read as implicit, and give you the context property instead!
-    //
-    // For now, we emulate this old behavior by aggressively converting explicit reads to to
-    // implicit reads, except for the special cases that TDB and the current TCB protect. However,
-    // it would be an improvement to fix this.
-    //
-    // See also the corresponding comment for the TCB, in `type_check_block.ts`.
-    if (isImplicitReceiver || (isThisReceiver && !isSpecialNode)) {
+    if (isImplicitReceiver) {
       return new ir.LexicalReadExpr(ast.name);
     } else {
       return new o.ReadPropExpr(
