@@ -1,9 +1,9 @@
 /**
  * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * SPDX-License-Identifier: MIT
+ */
+
+/**
  *
  * @fileoverview Implements the local event handling contract. This
  * allows DOM objects in a container that enters into this contract to
