@@ -30,7 +30,7 @@ In the code editor:
 
     When adding a property binding to a component tag, we use the `[attribute] = "value"` syntax to notify Angular that the assigned value should be treated as a property from the component class and not a string value.
 
-    The value on the right handside is the name of the property from the `HomeComponent`.
+    The value on the right-hand side is the name of the property from the `HomeComponent`.
 </docs-step>
 
 <docs-step title="Confirm the code still works">
