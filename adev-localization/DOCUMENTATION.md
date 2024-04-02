@@ -46,3 +46,7 @@ Stuck at
 11:39:01 AM: Use --verbose_failures to see the command lines of failed build steps.
 11:39:01 AM: ERROR: /opt/build/repo/adev/src/assets/BUILD.bazel:5:18 Copying files to directory failed: (Exit 1): markdown.sh failed: error executing command bazel-out/k8-opt-exec-2B5CBBC6/bin/external/npm/@angular/docs/markdown/markdown.sh bazel-out/k8-fastbuild/bin/adev/src/content/introduction/essentials/components.md.html-0.params ... (remaining 1 argument skipped)
 ```
+
+```bash
+ERROR: /vercel/path0/adev/src/assets/BUILD.bazel:5:18 Copying files to directory failed: (Exit 1): markdown.sh failed: error executing command bazel-out/k8-opt-exec-2B5CBBC6/bin/external/npm/@angular/docs/markdown/markdown.sh bazel-out/k8-fastbuild/bin/adev/src/content/guide/di/creating-injectable-service.md.html-0.params ... (remaining 1 argument skipped)
+```
