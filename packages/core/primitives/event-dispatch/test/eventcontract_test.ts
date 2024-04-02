@@ -9,10 +9,10 @@
 import {Attribute as AccessibilityAttribute} from '../src/accessibility';
 import * as cache from '../src/cache';
 import {fireCustomEvent} from '../src/custom_events';
-import {EarlyEventContract, EarlyJsactionData,} from '../src/earlyeventcontract';
+import {EarlyEventContract, EarlyJsactionData} from '../src/earlyeventcontract';
 import {EventContractContainer, EventContractContainerManager,} from '../src/event_contract_container';
 import {EventContractMultiContainer} from '../src/event_contract_multi_container';
-import {EventInfo, EventInfoWrapper,} from '../src/event_info';
+import {EventInfo, EventInfoWrapper} from '../src/event_info';
 import {EventType} from '../src/event_type';
 import {addDeferredA11yClickSupport, Dispatcher, EventContract,} from '../src/eventcontract';
 import {Property} from '../src/property';
@@ -74,6 +74,12 @@ const domContent = `
 <div id="trailing-semicolon-container">
   <div id="trailing-semicolon-action-element" jsaction="handleClick;">
     <div id="trailing-semicolon-target-element"></div>
+  </div>
+</div>
+
+<div id="no-action-name-container">
+  <div id="no-action-name-action-element" jsaction="keydown:;;keyup:">
+    <div id="no-action-name-target-element"></div>
   </div>
 </div>
 
@@ -322,7 +328,6 @@ function dispatchKeyboardEvent(
 describe('EventContract', () => {
   beforeEach(() => {
     safeElement.setInnerHtml(document.body, testonlyHtml(domContent));
-    EventContract.USE_EVENT_PATH = false;
     EventContract.A11Y_CLICK_SUPPORT = false;
     EventContract.A11Y_SUPPORT_IN_DISPATCHER = false;
     EventContract.MOUSE_SPECIAL_SUPPORT = false;
@@ -428,8 +433,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     expect(eventInfoWrapper.getIsReplay()).toBe(true);
   });
 
@@ -454,8 +459,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('dispatches event when targetElement is actionElement', () => {
@@ -478,8 +483,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(targetElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(targetElement);
   });
 
   it('dispatch event to child and ignore parent', () => {
@@ -505,8 +510,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('childHandleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('childHandleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('dispatch event through owner', () => {
@@ -529,8 +534,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('ownerHandleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('ownerHandleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('dispatches event for `webkitanimationend` alias event type', () => {
@@ -561,8 +566,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('animationend');
     expect(eventInfoWrapper.getEvent()).toBe(animationEndEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleAnimationEnd');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleAnimationEnd');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('dispatches modified click event', () => {
@@ -584,8 +589,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('clickmod');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClickMod');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClickMod');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('caches jsaction attribute', () => {
@@ -607,8 +612,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
     actionElement.setAttribute('jsaction', 'renamedHandleClick');
     dispatcher.calls.reset();
@@ -620,8 +625,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('re-parses jsaction attribute if the action cache is cleared', () => {
@@ -643,8 +648,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
     actionElement.setAttribute('jsaction', 'renamedHandleClick');
     // Clear attribute cache.
@@ -658,8 +663,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('renamedHandleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('renamedHandleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('handles trailing semicolon in jsaction attribute', () => {
@@ -685,8 +690,85 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
+  });
+
+  it('handles jsaction attributes without action names, first action', () => {
+    const container = getRequiredElementById('no-action-name-container');
+    const actionElement = getRequiredElementById(
+        'no-action-name-action-element',
+    );
+    const targetElement = getRequiredElementById(
+        'no-action-name-target-element',
+    );
+
+    const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+    createEventContract({
+      eventContractContainerManager: new EventContractContainer(container),
+      eventTypes: ['click', 'keydown', 'keyup'],
+      dispatcher,
+    });
+
+    const keydownEvent = dispatchKeyboardEvent(targetElement);
+
+    expect(dispatcher).toHaveBeenCalledTimes(2);
+    const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+    expect(eventInfoWrapper.getEventType()).toBe('keydown');
+    expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
+    expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
+  });
+
+  it('handles jsaction attributes without action names, last action', () => {
+    const container = getRequiredElementById('no-action-name-container');
+    const actionElement = getRequiredElementById(
+        'no-action-name-action-element',
+    );
+    const targetElement = getRequiredElementById(
+        'no-action-name-target-element',
+    );
+
+    const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+    createEventContract({
+      eventContractContainerManager: new EventContractContainer(container),
+      eventTypes: ['click', 'keydown', 'keyup'],
+      dispatcher,
+    });
+
+    const keyupEvent = dispatchKeyboardEvent(targetElement, {type: 'keyup'});
+
+    expect(dispatcher).toHaveBeenCalledTimes(2);
+    const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+    expect(eventInfoWrapper.getEventType()).toBe('keyup');
+    expect(eventInfoWrapper.getEvent()).toBe(keyupEvent);
+    expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
+  });
+
+  it('does not handle jsaction attributes without event type or action name', () => {
+    const container = getRequiredElementById('no-action-name-container');
+    const targetElement = getRequiredElementById(
+        'no-action-name-target-element',
+    );
+
+    const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
+    createEventContract({
+      eventContractContainerManager: new EventContractContainer(container),
+      eventTypes: ['click', 'keydown', 'keyup'],
+      dispatcher,
+    });
+
+    const clickEvent = dispatchMouseEvent(targetElement);
+
+    expect(dispatcher).toHaveBeenCalledTimes(1);
+    const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
+    expect(eventInfoWrapper.getEventType()).toBe('click');
+    expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
+    expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
+    expect(eventInfoWrapper.getAction()).toBeUndefined();
   });
 
   it('re-dispatches if dispatcher returns an `EventInfo`', () => {
@@ -709,8 +791,7 @@ describe('EventContract', () => {
       const eventInfoWrapper = new EventInfoWrapper(eventInfo);
       if (eventInfoWrapper.getEventType() === 'click') {
         eventInfoWrapper.setEventType('keydown');
-        eventInfoWrapper.setAction('');
-        eventInfoWrapper.setActionElement(null);
+        eventInfoWrapper.setAction(undefined);
         return eventInfoWrapper.eventInfo;
       }
       return;
@@ -723,8 +804,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('keydown');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleKeydown');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleKeydown');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('re-dispatches only once if dispatcher returns an `EventInfo`', () => {
@@ -748,8 +829,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('dispatches event from shadow dom', () => {
@@ -779,8 +860,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     // Target element is set to the host from the event.
     expect(eventInfoWrapper.getTargetElement()).toBe(actionElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('cleanUp removes all event listeners and containers', () => {
@@ -815,122 +896,6 @@ describe('EventContract', () => {
     expect(cleanUpSpy).toHaveBeenCalledTimes(1);
   });
 
-  describe('event path', () => {
-    beforeEach(() => {
-      EventContract.USE_EVENT_PATH = true;
-    });
-
-    it('dispatches event when targetElement is actionElement', () => {
-      const container = getRequiredElementById('self-click-container');
-      const targetElement = getRequiredElementById('self-click-target-element');
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-        dispatcher,
-      });
-
-      const clickEvent = dispatchMouseEvent(targetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(targetElement);
-    });
-
-    it('dispatch event to child and ignore parent', () => {
-      const container = getRequiredElementById('parent-and-child-container');
-      const actionElement = getRequiredElementById(
-          'parent-and-child-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'parent-and-child-target-element',
-      );
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-        dispatcher,
-      });
-
-      const clickEvent = dispatchMouseEvent(targetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('childHandleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
-    });
-
-    it('dispatch event through owner', () => {
-      const container = getRequiredElementById('owner-click-container');
-      const actionElement = getRequiredElementById(
-          'owner-click-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'owner-click-target-element',
-      );
-      targetElement[Property.OWNER] = actionElement;
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-        dispatcher,
-      });
-
-      const clickEvent = dispatchMouseEvent(targetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('ownerHandleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
-    });
-
-    it('dispatches event from shadow dom', () => {
-      const container = getRequiredElementById('shadow-dom-container');
-      const actionElement = getRequiredElementById('shadow-dom-action-element');
-
-      // Not supported in ie11.
-      if (!actionElement.attachShadow) {
-        return;
-      }
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-        dispatcher,
-      });
-
-      const shadow = actionElement.attachShadow({mode: 'open'});
-      const shadowChild = document.createElement('div');
-      shadow.appendChild(shadowChild);
-
-      shadowChild.click();
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      // Target element is set to the host from the event.
-      expect(eventInfoWrapper.getTargetElement()).toBe(actionElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
-    });
-  });
-
   it('exposes event handlers with `handler()`', () => {
     const container = getRequiredElementById('click-container');
     const actionElement = getRequiredElementById('click-action-element');
@@ -957,8 +922,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe(EventType.CLICK);
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
   });
 
   it('has no event handlers with `handler()` for unregistered event type', () => {
@@ -1005,8 +970,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('custom-event');
       expect(eventInfoWrapper.getEvent()).toBe(customEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleCustomEvent');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleCustomEvent');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('dispatches event with data', () => {
@@ -1035,8 +1000,8 @@ describe('EventContract', () => {
       expect(customEvent.type).toBe(EventType.CUSTOM);
       expect(customEvent.detail.data).toBe(data);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleCustomEvent');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleCustomEvent');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
   });
 
@@ -1059,8 +1024,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('click');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClick');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
     expect(clickEvent.preventDefault).toHaveBeenCalled();
   });
@@ -1088,8 +1053,8 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getEventType()).toBe('clickmod');
     expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
     expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()).toBe('handleClickMod');
-    expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+    expect(eventInfoWrapper.getAction()?.name).toBe('handleClickMod');
+    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
     expect(clickEvent.preventDefault).toHaveBeenCalled();
   });
@@ -1132,8 +1097,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('dispatches keydown event', () => {
@@ -1157,8 +1122,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('keydown');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleKeydown');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleKeydown');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('prevents default for enter key on anchor child', () => {
@@ -1184,8 +1149,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
       expect(keydownEvent.preventDefault).toHaveBeenCalled();
     });
@@ -1215,8 +1180,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('clickonly');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClickOnly');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClickOnly');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('dispatches click event to click handler rather than clickonly', () => {
@@ -1246,8 +1211,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
   });
 
@@ -1278,8 +1243,8 @@ describe('EventContract', () => {
           );
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('dispatches non-a11y keydown as maybe click event', () => {
@@ -1309,8 +1274,8 @@ describe('EventContract', () => {
           );
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('dispatches a11y keydown with SKIP_A11Y_CHECK as click', () => {
@@ -1339,8 +1304,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('keydown');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleKeydown');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleKeydown');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('does not prevent default for enter key on anchor child', () => {
@@ -1369,8 +1334,8 @@ describe('EventContract', () => {
           );
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
       expect(keydownEvent.defaultPrevented).toBe(false);
     });
@@ -1401,8 +1366,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('clickonly');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClickOnly');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClickOnly');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('dispatches click event to click handler rather than clickonly', () => {
@@ -1432,8 +1397,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
   });
 
@@ -1459,8 +1424,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('dispatches keydown event', () => {
@@ -1486,8 +1451,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('keydown');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleKeydown');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleKeydown');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('prevents default for enter key on anchor child', () => {
@@ -1515,8 +1480,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
       expect(keydownEvent.preventDefault).toHaveBeenCalled();
     });
@@ -1548,8 +1513,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('clickonly');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClickOnly');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClickOnly');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('dispatches click event to click handler rather than clickonly', () => {
@@ -1581,8 +1546,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
   });
 
@@ -1633,8 +1598,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(outerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBe('outerHandleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(outerActionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('outerHandleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(outerActionElement);
 
       expect(documentListener).toHaveBeenCalledTimes(1);
     });
@@ -1661,8 +1626,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBe('innerHandleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(innerActionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('innerHandleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(innerActionElement);
 
       expect(documentListener).toHaveBeenCalledTimes(1);
     });
@@ -1689,8 +1654,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(outerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBe('outerHandleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(outerActionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('outerHandleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(outerActionElement);
 
       expect(documentListener).toHaveBeenCalledTimes(1);
     });
@@ -1717,8 +1682,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBe('innerHandleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(innerActionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('innerHandleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(innerActionElement);
 
       expect(documentListener).toHaveBeenCalledTimes(1);
     });
@@ -1746,8 +1711,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBe('innerHandleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(innerActionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('innerHandleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(innerActionElement);
 
       expect(documentListener).toHaveBeenCalledTimes(1);
 
@@ -1765,8 +1730,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-      expect(eventInfoWrapper.getAction()).toBe('innerHandleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(innerActionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('innerHandleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(innerActionElement);
 
       expect(documentListener).toHaveBeenCalledTimes(1);
     });
@@ -1799,8 +1764,8 @@ describe('EventContract', () => {
         expect(eventInfoWrapper.getEventType()).toBe('click');
         expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
         expect(eventInfoWrapper.getTargetElement()).toBe(outerTargetElement);
-        expect(eventInfoWrapper.getAction()).toBe('outerHandleClick');
-        expect(eventInfoWrapper.getActionElement()).toBe(outerActionElement);
+        expect(eventInfoWrapper.getAction()?.name).toBe('outerHandleClick');
+        expect(eventInfoWrapper.getAction()?.element).toBe(outerActionElement);
 
         expect(documentListener).toHaveBeenCalledTimes(0);
       });
@@ -1827,8 +1792,8 @@ describe('EventContract', () => {
         expect(eventInfoWrapper.getEventType()).toBe('click');
         expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
         expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-        expect(eventInfoWrapper.getAction()).toBe('innerHandleClick');
-        expect(eventInfoWrapper.getActionElement()).toBe(innerActionElement);
+        expect(eventInfoWrapper.getAction()?.name).toBe('innerHandleClick');
+        expect(eventInfoWrapper.getAction()?.element).toBe(innerActionElement);
 
         expect(documentListener).toHaveBeenCalledTimes(0);
       });
@@ -1855,8 +1820,8 @@ describe('EventContract', () => {
         expect(eventInfoWrapper.getEventType()).toBe('click');
         expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
         expect(eventInfoWrapper.getTargetElement()).toBe(outerTargetElement);
-        expect(eventInfoWrapper.getAction()).toBe('outerHandleClick');
-        expect(eventInfoWrapper.getActionElement()).toBe(outerActionElement);
+        expect(eventInfoWrapper.getAction()?.name).toBe('outerHandleClick');
+        expect(eventInfoWrapper.getAction()?.element).toBe(outerActionElement);
 
         expect(documentListener).toHaveBeenCalledTimes(0);
       });
@@ -1883,8 +1848,8 @@ describe('EventContract', () => {
         expect(eventInfoWrapper.getEventType()).toBe('click');
         expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
         expect(eventInfoWrapper.getTargetElement()).toBe(innerTargetElement);
-        expect(eventInfoWrapper.getAction()).toBe('innerHandleClick');
-        expect(eventInfoWrapper.getActionElement()).toBe(innerActionElement);
+        expect(eventInfoWrapper.getAction()?.name).toBe('innerHandleClick');
+        expect(eventInfoWrapper.getAction()?.element).toBe(innerActionElement);
 
         expect(documentListener).toHaveBeenCalledTimes(0);
       });
@@ -1922,8 +1887,8 @@ describe('EventContract', () => {
       expect(syntheticMouseEvent.type).toBe('mouseenter');
       expect(syntheticMouseEvent.target).toBe(actionElement);
       expect(eventInfoWrapper.getTargetElement()).toBe(actionElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleMouseEnter');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleMouseEnter');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('does not dispatch non-matching mouseover event as mouseenter', () => {
@@ -1975,8 +1940,8 @@ describe('EventContract', () => {
       expect(syntheticMouseEvent.type).toBe('mouseleave');
       expect(syntheticMouseEvent.target).toBe(actionElement);
       expect(eventInfoWrapper.getTargetElement()).toBe(actionElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleMouseLeave');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleMouseLeave');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('does not dispatch non-matching mouseout event as mouseleave', () => {
@@ -2032,8 +1997,8 @@ describe('EventContract', () => {
       expect(syntheticMouseEvent.type).toBe('pointerenter');
       expect(syntheticMouseEvent.target).toBe(actionElement);
       expect(eventInfoWrapper.getTargetElement()).toBe(actionElement);
-      expect(eventInfoWrapper.getAction()).toBe('handlePointerEnter');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handlePointerEnter');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('does not dispatch non-matching pointerover event as pointerenter', () => {
@@ -2093,8 +2058,8 @@ describe('EventContract', () => {
       expect(syntheticMouseEvent.type).toBe('pointerleave');
       expect(syntheticMouseEvent.target).toBe(actionElement);
       expect(eventInfoWrapper.getTargetElement()).toBe(actionElement);
-      expect(eventInfoWrapper.getAction()).toBe('handlePointerLeave');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handlePointerLeave');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('does not dispatch non-matching pointerout event as pointerleave', () => {
@@ -2153,8 +2118,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('namespace.handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('namespace.handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('caches namespace attribute', () => {
@@ -2183,8 +2148,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('namespace.handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('namespace.handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
       namespaceElement.setAttribute('jsnamespace', 'renamedNamespace');
       dispatcher.calls.reset();
@@ -2196,8 +2161,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('namespace.handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('namespace.handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('re-parses jsaction attribute if the action cache is cleared', () => {
@@ -2226,8 +2191,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('namespace.handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('namespace.handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
 
       namespaceElement.setAttribute('jsnamespace', 'renamedNamespace');
       // Clear namespace cache.
@@ -2243,8 +2208,11 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('renamedNamespace.handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name)
+          .toBe(
+              'renamedNamespace.handleClick',
+          );
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
   });
 
@@ -2290,8 +2258,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     it('early events are dispatched when target is cleared', () => {
@@ -2328,8 +2296,8 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()).toBe('handleClick');
-      expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
+      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
 
     describe('non-bubbling mouse events', () => {
@@ -2379,8 +2347,8 @@ describe('EventContract', () => {
         expect(syntheticMouseEvent.type).toBe('mouseleave');
         expect(syntheticMouseEvent.target).toBe(actionElement);
         expect(eventInfoWrapper.getTargetElement()).toBe(actionElement);
-        expect(eventInfoWrapper.getAction()).toBe('handleMouseLeave');
-        expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+        expect(eventInfoWrapper.getAction()?.name).toBe('handleMouseLeave');
+        expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
       });
 
       it('early mouseout dispatched as only mouseleave', () => {
@@ -2425,8 +2393,8 @@ describe('EventContract', () => {
         expect(syntheticMouseEvent.type).toBe('mouseleave');
         expect(syntheticMouseEvent.target).toBe(actionElement);
         expect(eventInfoWrapper.getTargetElement()).toBe(actionElement);
-        expect(eventInfoWrapper.getAction()).toBe('handleMouseLeave');
-        expect(eventInfoWrapper.getActionElement()).toBe(actionElement);
+        expect(eventInfoWrapper.getAction()?.name).toBe('handleMouseLeave');
+        expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
       });
     });
   });

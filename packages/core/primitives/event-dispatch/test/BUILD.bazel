@@ -4,13 +4,11 @@ load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
 ts_library(
     name = "browser_test_lib",
     testonly = True,
-    srcs = [
-        "dispatcher_test.ts",
-        "event_test.ts",
-        "eventcontract_test.ts",
-        "generator_test.ts",
-        "html.ts",
-    ],
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
     deps = [
         "//packages/core/primitives/event-dispatch",
         "//packages/private/testing",
