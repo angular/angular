@@ -4643,7 +4643,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.map(d => ts.flattenDiagnosticMessageText(d.messageText, ''))).toEqual([
-          `This comparison appears to be unintentional because the types 'boolean' and 'number' have no overlap.`,
+          `Type 'number' is not comparable to type 'boolean'.`,
         ]);
       });
 

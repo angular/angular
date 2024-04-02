@@ -1480,60 +1480,23 @@ class TcbSwitchOp extends TcbOp {
   }
 
   override execute(): null {
-    // Since we'll use the expression in multiple comparisons, we don't want to
-    // log the same diagnostic more than once. Ignore this expression since we already
-    // produced a `TcbExpressionOp`.
-    const comparisonExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
-    markIgnoreDiagnostics(comparisonExpression);
+    const switchExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
+    const clauses = this.block.cases.map(current => {
+      const clauseScope = Scope.forNodes(
+          this.tcb, this.scope, null, current.children,
+          this.generateGuard(current, switchExpression));
+      const statements = [...clauseScope.render(), ts.factory.createBreakStatement()];
 
-    // Wrap the comparison expression in parentheses so we don't ignore
-    // diagnostics when comparing incompatible types (see #52315).
-    const expression = ts.factory.createParenthesizedExpression(comparisonExpression);
-    const root = this.generateCase(0, expression, null);
+      return current.expression === null ?
+          ts.factory.createDefaultClause(statements) :
+          ts.factory.createCaseClause(
+              tcbExpression(current.expression, this.tcb, clauseScope), statements);
+    });
 
-    if (root !== undefined) {
-      this.scope.addStatement(root);
-    }
+    this.scope.addStatement(
+        ts.factory.createSwitchStatement(switchExpression, ts.factory.createCaseBlock(clauses)));
 
     return null;
-  }
-
-  private generateCase(
-      index: number, switchValue: ts.Expression,
-      defaultCase: TmplAstSwitchBlockCase|null): ts.Statement|undefined {
-    // If we've reached the end, output the default case as the final `else`.
-    if (index >= this.block.cases.length) {
-      if (defaultCase !== null) {
-        const defaultScope = Scope.forNodes(
-            this.tcb, this.scope, null, defaultCase.children,
-            this.generateGuard(defaultCase, switchValue));
-        return ts.factory.createBlock(defaultScope.render());
-      }
-      return undefined;
-    }
-
-    // If the current case is the default (could be placed arbitrarily),
-    // skip it since it needs to be generated as the final `else` at the end.
-    const current = this.block.cases[index];
-    if (current.expression === null) {
-      return this.generateCase(index + 1, switchValue, current);
-    }
-
-    const caseScope = Scope.forNodes(
-        this.tcb, this.scope, null, current.children, this.generateGuard(current, switchValue));
-    const caseValue = tcbExpression(current.expression, this.tcb, caseScope);
-
-    // TODO(crisbeto): change back to a switch statement when the TS bug is resolved.
-    // Note that it would be simpler to generate a `switch` statement to represent the user's
-    // code, but the current TypeScript version (at the time of writing 5.2.2) has a bug where
-    // parenthesized `switch` expressions aren't narrowed correctly:
-    // https://github.com/microsoft/TypeScript/issues/56030. We work around it by generating
-    // `if`/`else if`/`else` statements to represent the switch block instead.
-    return ts.factory.createIfStatement(
-        ts.factory.createBinaryExpression(
-            switchValue, ts.SyntaxKind.EqualsEqualsEqualsToken, caseValue),
-        ts.factory.createBlock(caseScope.render()),
-        this.generateCase(index + 1, switchValue, defaultCase));
   }
 
   private generateGuard(node: TmplAstSwitchBlockCase, switchValue: ts.Expression): ts.Expression
@@ -2024,9 +1987,7 @@ class Scope {
     } else if (node instanceof TmplAstIfBlock) {
       this.opQueue.push(new TcbIfOp(this.tcb, this, node));
     } else if (node instanceof TmplAstSwitchBlock) {
-      this.opQueue.push(
-          new TcbExpressionOp(this.tcb, this, node.expression),
-          new TcbSwitchOp(this.tcb, this, node));
+      this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
     } else if (node instanceof TmplAstForLoopBlock) {
       this.opQueue.push(new TcbForOfOp(this.tcb, this, node));
       node.empty && this.appendChildren(node.empty);
