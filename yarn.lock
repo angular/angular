@@ -316,7 +316,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#4a72a4dd4c19416cb8204deee884500766fee9f8":
   version "0.0.0-8f2d8c6452b2ba9d672591f09784b18831753a88"
-  uid "4a72a4dd4c19416cb8204deee884500766fee9f8"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#4a72a4dd4c19416cb8204deee884500766fee9f8"
   dependencies:
     "@angular-devkit/build-angular" "17.3.0-rc.0"
@@ -425,7 +424,6 @@
 
 "@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#82c4573f5c9d4fb864271a1c74259fc251457e2f":
   version "0.0.0-5774b71c01a55c4c998f858ee37d3b77ae704c31"
-  uid "82c4573f5c9d4fb864271a1c74259fc251457e2f"
   resolved "https://github.com/angular/dev-infra-private-docs-builds.git#82c4573f5c9d4fb864271a1c74259fc251457e2f"
   dependencies:
     "@angular/cdk" "17.3.0-next.0"
@@ -565,10 +563,9 @@
     "@material/typography" "15.0.0-canary.7f224ddd4.0"
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#7dea535110c0215b221908e37067ee6b605db373":
-  version "0.0.0-5774b71c01a55c4c998f858ee37d3b77ae704c31"
-  uid "7dea535110c0215b221908e37067ee6b605db373"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#7dea535110c0215b221908e37067ee6b605db373"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#36946be4df61f6549ae3829c026022e47674eae2":
+  version "0.0.0-804107deac3621184db54fab3e7cfe7f735a0d74"
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#36946be4df61f6549ae3829c026022e47674eae2"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
     typescript "~4.9.0"
@@ -4371,6 +4368,7 @@
     "@types/node" "*"
 
 "@types/selenium-webdriver4@npm:@types/selenium-webdriver@4.1.22", "@types/selenium-webdriver@^4.1.21":
+  name "@types/selenium-webdriver4"
   version "4.1.22"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.22.tgz#344519b90727eb713e1ce6d2e0198eb0b4f8f316"
   integrity sha512-MCL4l7q8dwxejr2Q2NXLyNwHWMPdlWE0Kpn6fFwJtvkJF7PTkG5jkvbH/X1IAAQxgt/L1dA8u2GtDeekvSKvOA==
@@ -7501,8 +7499,7 @@ domhandler@^5.0.2, domhandler@^5.0.3:
     domelementtype "^2.3.0"
 
 "domino@https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658":
-  version "2.1.6+git"
-  uid "9e7881d2ac1e5977cefbc557f935931ec23f6658"
+  version "2.1.6"
   resolved "https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658"
 
 dompurify@^3.0.5:
@@ -13760,7 +13757,6 @@ sass@1.71.1:
 
 "sauce-connect@https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz":
   version "0.0.0"
-  uid "9310bc860f7870a1f872b11c4dc6073a1ad34e5e"
   resolved "https://saucelabs.com/downloads/sc-4.9.1-linux.tar.gz#9310bc860f7870a1f872b11c4dc6073a1ad34e5e"
 
 saucelabs@7.5.0, saucelabs@^1.5.0, saucelabs@^4.6.3:

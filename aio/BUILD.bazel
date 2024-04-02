@@ -1,11 +1,11 @@
-load("@aio_npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
+load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "npm_package_bin")
 load("//tools:defaults.bzl", "nodejs_binary")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load(":local_packages_util.bzl", "link_local_packages", "substitute_local_package_deps")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 load("//aio/scripts:local_server_test.bzl", "local_server_test")
-load("@aio_npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 load(":aio_targets.bzl", "aio_test")
 load("@bazel_skylib//lib:collections.bzl", "collections")
 
@@ -91,7 +91,7 @@ npm_package_bin(
     tags = [
         "requires-network",
     ],
-    tool = "@aio_npm//dgeni/bin:dgeni",
+    tool = "@npm//dgeni/bin:dgeni",
     toolchains = [
         "@npm//@angular/build-tooling/bazel/git-toolchain:current_git_toolchain",
     ],
@@ -148,29 +148,29 @@ APPLICATION_DEPS = [
     ":stackblitz",
     ":example-zips",
     "//aio/src/generated:ngsw-config",
-    "@aio_npm//@angular-devkit/build-angular",
-    "@aio_npm//@angular-eslint/builder",
-    "@aio_npm//@angular/animations",
-    "@aio_npm//@angular/cdk",
-    "@aio_npm//@angular/cli",
-    "@aio_npm//@angular/common",
-    "@aio_npm//@angular/compiler",
-    "@aio_npm//@angular/compiler-cli",
-    "@aio_npm//@angular/core",
-    "@aio_npm//@angular/elements",
-    "@aio_npm//@angular/forms",
-    "@aio_npm//@angular/material",
-    "@aio_npm//@angular/platform-browser",
-    "@aio_npm//@angular/platform-browser-dynamic",
-    "@aio_npm//@angular/router",
-    "@aio_npm//@angular/service-worker",
-    "@aio_npm//@types/lunr",
-    "@aio_npm//@types/trusted-types",
-    "@aio_npm//lunr",
-    "@aio_npm//rxjs",
-    "@aio_npm//safevalues",
-    "@aio_npm//tslib",
-    "@aio_npm//zone.js",
+    "@npm//@angular-devkit/build-angular",
+    "@npm//@angular-eslint/builder",
+    "@npm//@angular/animations",
+    "@npm//@angular/cdk",
+    "@npm//@angular/cli",
+    "@npm//@angular/common",
+    "@npm//@angular/compiler",
+    "@npm//@angular/compiler-cli",
+    "@npm//@angular/core",
+    "@npm//@angular/elements",
+    "@npm//@angular/forms",
+    "@npm//@angular/material",
+    "@npm//@angular/platform-browser",
+    "@npm//@angular/platform-browser-dynamic",
+    "@npm//@angular/router",
+    "@npm//@angular/service-worker",
+    "@npm//@types/lunr",
+    "@npm//@types/trusted-types",
+    "@npm//lunr",
+    "@npm//rxjs",
+    "@npm//safevalues",
+    "@npm//tslib",
+    "@npm//zone.js",
 ]
 
 # All sources, specs, and config files required to test the docs app
@@ -183,16 +183,16 @@ TEST_FILES = APPLICATION_FILES + [
 
 # Dependencies required to test the docs app
 TEST_DEPS = APPLICATION_DEPS + [
-    "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
-    "@aio_npm//@types/jasmine",
-    "@aio_npm//@types/node",
-    "@aio_npm//assert",
-    "@aio_npm//jasmine",
-    "@aio_npm//jasmine-core",
-    "@aio_npm//karma-chrome-launcher",
-    "@aio_npm//karma-coverage",
-    "@aio_npm//karma-jasmine",
-    "@aio_npm//karma-jasmine-html-reporter",
+    "@npm//@angular/build-tooling/bazel/browsers/chromium",
+    "@npm//@types/jasmine",
+    "@npm//@types/node",
+    "@npm//assert",
+    "@npm//jasmine",
+    "@npm//jasmine-core",
+    "@npm//karma-chrome-launcher",
+    "@npm//karma-coverage",
+    "@npm//karma-jasmine",
+    "@npm//karma-jasmine-html-reporter",
     "//aio/tools:windows-chromium-path",
 ]
 
@@ -202,12 +202,12 @@ E2E_FILES = APPLICATION_FILES + glob(["tests/e2e/**"])
 
 # Dependencies required to run the e2e tests
 E2E_DEPS = APPLICATION_DEPS + [
-    "@aio_npm//@angular/build-tooling/bazel/browsers/chromium",
-    "@aio_npm//@types/jasmine",
-    "@aio_npm//@types/node",
-    "@aio_npm//jasmine-spec-reporter",
-    "@aio_npm//protractor",
-    "@aio_npm//ts-node",
+    "@npm//@angular/build-tooling/bazel/browsers/chromium",
+    "@npm//@types/jasmine",
+    "@npm//@types/node",
+    "@npm//jasmine-spec-reporter",
+    "@npm//protractor",
+    "@npm//ts-node",
     "//aio/tools:windows-chromium-path",
 ]
 
@@ -322,7 +322,7 @@ architect_test(
     #       (presumably after AIO migration to Bazel)
     flaky = True,
     toolchains = [
-        "@aio_npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
     ],
 )
 

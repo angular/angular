@@ -1,5 +1,5 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
+load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,7 +18,7 @@ js_library(
         "//aio/tools/transforms/angular-content-package",
         "//aio/tools/transforms/angular-errors-package",
         "//aio/tools/transforms/angular-extended-diagnostics-package",
-        "@aio_npm//dgeni",
+        "@npm//dgeni",
     ],
 )
 
@@ -29,7 +29,7 @@ js_library(
     ],
     deps = [
         ":authors-package",
-        "@aio_npm//watchr",
+        "@npm//watchr",
     ],
 )
 
@@ -46,6 +46,6 @@ jasmine_node_test(
     deps = [
         ":authors-package",
         "//aio/tools/transforms",
-        "@aio_npm//canonical-path",
+        "@npm//canonical-path",
     ],
 )
