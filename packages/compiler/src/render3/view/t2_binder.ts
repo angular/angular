@@ -922,21 +922,13 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   private maybeMap(ast: PropertyRead | SafePropertyRead | PropertyWrite, name: string): void {
     // If the receiver of the expression isn't the `ImplicitReceiver`, this isn't the root of an
     // `AST` expression that maps to a `Variable` or `Reference`.
-    if (!(ast.receiver instanceof ImplicitReceiver)) {
+    if (!(ast.receiver instanceof ImplicitReceiver) || ast.receiver instanceof ThisReceiver) {
       return;
     }
 
     // Check whether the name exists in the current scope. If so, map it. Otherwise, the name is
     // probably a property on the top-level component context.
     const target = this.scope.lookup(name);
-
-    // It's not allowed to read template entities via `this`, however it previously worked by
-    // accident (see #55115). Since `@let` declarations are new, we can fix it from the beginning,
-    // whereas pre-existing template entities will be fixed in #55115.
-    if (target instanceof LetDeclaration && ast.receiver instanceof ThisReceiver) {
-      return;
-    }
-
     if (target !== null) {
       this.bindings.set(ast, target);
     }

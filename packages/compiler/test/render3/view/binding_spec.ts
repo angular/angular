@@ -373,6 +373,35 @@ describe('t2 binding', () => {
     expect((target as a.LetDeclaration)?.name).toBe('value');
   });
 
+  it('should not resolve a `this` access to a template reference', () => {
+    const template = parseTemplate(
+      `
+        <input #value>
+        {{this.value}}
+      `,
+      '',
+    );
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const interpolationWrapper = (template.nodes[1] as a.BoundText).value as e.ASTWithSource;
+    const propertyRead = (interpolationWrapper.ast as e.Interpolation).expressions[0];
+    const target = res.getExpressionTarget(propertyRead);
+
+    expect(target).toBe(null);
+  });
+
+  it('should not resolve a `this` access to a template variable', () => {
+    const template = parseTemplate(`<ng-template let-value>{{this.value}}</ng-template>`, '');
+    const binder = new R3TargetBinder(new SelectorMatcher<DirectiveMeta[]>());
+    const res = binder.bind({template: template.nodes});
+    const templateNode = template.nodes[0] as a.Template;
+    const interpolationWrapper = (templateNode.children[0] as a.BoundText).value as e.ASTWithSource;
+    const propertyRead = (interpolationWrapper.ast as e.Interpolation).expressions[0];
+    const target = res.getExpressionTarget(propertyRead);
+
+    expect(target).toBe(null);
+  });
+
   it('should not resolve a `this` access to a `@let` declaration', () => {
     const template = parseTemplate(
       `
