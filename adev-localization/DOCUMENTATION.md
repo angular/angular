@@ -17,6 +17,9 @@
 Build command: `yarn docs:build`
 Publish directory: `dist/bind/adev/build/browser`
 
+## GitHub Actions
+
+The `.github/workflows` adev GitHub ctions has been updated to use Netlify.
 
 
 
