@@ -233,6 +233,24 @@ In this example, the third route is a redirect so that the router defaults to th
 Notice that this redirect precedes the wildcard route.
 Here, `path: ''` means to use the initial relative URL \(`''`\).
 
+Sometimes a redirect is not a simple, static redirect. The `redirectTo` property can also be a function
+with more complex logic that returns a string or `UrlTree`.
+
+```ts
+const routes: Routes = [
+  { path: "first-component", component: FirstComponent },
+  {
+    path: "old-user-page",
+    redirectTo: ({ queryParams }) => {
+      const userIdParam = queryParams['userId'];
+      return inject(Router).parseUrl(`user/${userIdParam}`);
+    },
+    pathMatch: "full",
+  },
+  { path: "user/:userId", component: OtherComponent },
+];
+```
+
 ## Nesting routes
 
 As your application grows more complex, you might want to create routes that are relative to a component other than your root component.
