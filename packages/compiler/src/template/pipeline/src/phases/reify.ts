@@ -416,11 +416,7 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         if (op.processed === null) {
           throw new Error(`Conditional test was not set.`);
         }
-        if (op.targetSlot.slot === null) {
-          throw new Error(`Conditional slot was not set.`);
-        }
-        ir.OpList.replace(
-            op, ng.conditional(op.targetSlot.slot, op.processed, op.contextValue, op.sourceSpan));
+        ir.OpList.replace(op, ng.conditional(op.processed, op.contextValue, op.sourceSpan));
         break;
       case ir.OpKind.Repeater:
         ir.OpList.replace(op, ng.repeater(op.collection, op.sourceSpan));

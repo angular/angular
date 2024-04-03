@@ -77,7 +77,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     if (rf & 2) {
       let $MyApp_contFlowTmp$;
       $r3$.ɵɵadvance(2);
-      $r3$.ɵɵconditional(2, ($MyApp_contFlowTmp$ = ctx.count) === 0 ? 2 : $MyApp_contFlowTmp$ === 1 ? 3 : 4);
+      $r3$.ɵɵconditional(($MyApp_contFlowTmp$ = ctx.count) === 0 ? 2 : $MyApp_contFlowTmp$ === 1 ? 3 : 4);
     }
   },
   …

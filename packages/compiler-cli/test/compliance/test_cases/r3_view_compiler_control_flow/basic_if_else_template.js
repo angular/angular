@@ -21,6 +21,6 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
     $r3$.ɵɵadvance();
-    $r3$.ɵɵconditional(2, ctx.value() ? 2 : 3);
+    $r3$.ɵɵconditional(ctx.value() ? 2 : 3);
   }
 }

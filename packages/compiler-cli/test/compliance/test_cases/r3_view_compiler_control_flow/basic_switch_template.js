@@ -34,6 +34,6 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
     $r3$.ɵɵadvance();
-    $r3$.ɵɵconditional(2, ($MyApp_contFlowTmp$ = ctx.value()) === 0 ? 2 : $MyApp_contFlowTmp$ === 1 ? 3 : $MyApp_contFlowTmp$ === 2 ? 4 : 5);
+    $r3$.ɵɵconditional(($MyApp_contFlowTmp$ = ctx.value()) === 0 ? 2 : $MyApp_contFlowTmp$ === 1 ? 3 : $MyApp_contFlowTmp$ === 2 ? 4 : 5);
   }
 }

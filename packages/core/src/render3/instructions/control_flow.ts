@@ -33,12 +33,12 @@ import {declareTemplate} from './template';
  * built-in "if" and "switch". On the high level this instruction is responsible for adding and
  * removing views selected by a conditional expression.
  *
- * @param matchingTemplateIndex index of a template TNode representing a conditional view to be
+ * @param matchingTemplateIndex Index of a template TNode representing a conditional view to be
  *     inserted; -1 represents a special case when there is no view to insert.
+ * @param contextValue Value that should be exposed as the context of the conditional.
  * @codeGenApi
  */
-export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex: number, value?: T) {
-  // TODO: we could remove the containerIndex argument to this instruction now (!)
+export function ɵɵconditional<T>(matchingTemplateIndex: number, contextValue?: T) {
   performanceMarkFeature('NgControlFlow');
 
   const hostLView = getLView();
@@ -69,7 +69,7 @@ export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex
         const dehydratedView =
             findMatchingDehydratedView(nextContainer, templateTNode.tView!.ssrId);
         const embeddedLView =
-            createAndRenderEmbeddedLView(hostLView, templateTNode, value, {dehydratedView});
+            createAndRenderEmbeddedLView(hostLView, templateTNode, contextValue, {dehydratedView});
 
         addLViewToLContainer(
             nextContainer, embeddedLView, viewInContainerIdx,
@@ -83,7 +83,7 @@ export function ɵɵconditional<T>(containerIndex: number, matchingTemplateIndex
     // changed - re-bind in context.
     const lView = getLViewFromLContainer<T|undefined>(prevContainer, viewInContainerIdx);
     if (lView !== undefined) {
-      lView[CONTEXT] = value;
+      lView[CONTEXT] = contextValue;
     }
   }
 }
