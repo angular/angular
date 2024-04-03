@@ -589,7 +589,7 @@ function getInjectorParent(injector: Injector): Injector|null {
     return injector.parentInjector;
   } else {
     throwError(
-        'getInjectorParent only support injectors of type R3Injector, NodeInjector, NullInjector');
+        'getInjectorParent only support injectors of type R3Injector, NodeInjector, NullInjector, ChainedInjector');
   }
 
   const parentLocation = getParentInjectorLocation(
