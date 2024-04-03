@@ -45,20 +45,18 @@ export function createImagekitUrl(path: string, config: ImageLoaderConfig): stri
   // Example of an ImageKit image URL:
   // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
   const {src, width} = config;
-  let urlSegments: string[];
+  const params: string[] = [];
 
   if (width) {
-    const params = `tr:w-${width}`;
-    urlSegments = [path, params, src];
-  } else {
-    urlSegments = [path, src];
+    params.push(`w-${width}`);
   }
-
-  const url = new URL(urlSegments.join('/'));
 
   // When requesting a placeholder image we ask for a low quality image to reduce the load time.
   if (config.isPlaceholder) {
-    url.searchParams.set('q', PLACEHOLDER_QUALITY);
+    params.push(`q-${PLACEHOLDER_QUALITY}`);
   }
+
+  const urlSegments = params.length ? [path, `tr:${params.join(',')}`, src] : [path, src];
+  const url = new URL(urlSegments.join('/'));
   return url.href;
 }
