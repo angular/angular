@@ -45,7 +45,6 @@ export function createImagekitUrl(path: string, config: ImageLoaderConfig): stri
   // Example of an ImageKit image URL:
   // https://ik.imagekit.io/demo/tr:w-300,h-300/medium_cafe_B1iTdD0C.jpg
   const {src, width} = config;
-  const urlSegments: string[] = [path, src];
   const params: string[] = [];
 
   if (width) {
@@ -57,10 +56,7 @@ export function createImagekitUrl(path: string, config: ImageLoaderConfig): stri
     params.push(`q-${PLACEHOLDER_QUALITY}`);
   }
 
-  if (params.length) {
-    urlSegments.splice(1, 0, `tr:${params.join(',')}`);
-  }
-
+  const urlSegments = params.length ? [path, `tr:${params.join(',')}`, src] : [path, src];
   const url = new URL(urlSegments.join('/'));
   return url.href;
 }
