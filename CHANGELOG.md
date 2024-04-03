@@ -1,3 +1,17 @@
+<a name="17.3.3"></a>
+# 17.3.3 (2024-04-03)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [158ceaf062](https://github.com/angular/angular/commit/158ceaf062036bde2a828ee769580f99433a31a8) | fix | handle `ChainedInjector`s in injector debug utils ([#55144](https://github.com/angular/angular/pull/55144)) |
+| [4d043992e5](https://github.com/angular/angular/commit/4d043992e5635a2f841b633fb38d0009a39f05d0) | fix | test cleanup should not throw if Zone is not present ([#55096](https://github.com/angular/angular/pull/55096)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [949dec26b8](https://github.com/angular/angular/commit/949dec26b860a500e90874ad778da74549d21d7e) | fix | avoid conflicts with some greek letters in control flow migration ([#55113](https://github.com/angular/angular/pull/55113)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.2"></a>
 # 17.3.2 (2024-03-28)
 ### compiler
