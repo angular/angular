@@ -140,7 +140,7 @@ groups:
         - alxhub
         - crisbeto
         - ~jelbourn
-        - jessicajaniuk
+        - thepunderwoman
 
   # =========================================================
   #  Framework: Compiler
@@ -183,7 +183,7 @@ groups:
         - crisbeto
         - devversion
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - AndrewKushnir
 
   # =========================================================
@@ -358,7 +358,7 @@ groups:
         - crisbeto
         - devversion
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -378,7 +378,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -415,7 +415,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -438,7 +438,7 @@ groups:
         - andrewseguin
         - atscott
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -536,7 +536,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -615,7 +615,7 @@ groups:
     reviewers:
       users:
         - alxhub
-        - jessicajaniuk
+        - thepunderwoman
 
   # =========================================================
   #  Framework: Testing
@@ -644,7 +644,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -663,7 +663,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -682,7 +682,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -778,7 +778,7 @@ groups:
         - atscott
         - crisbeto
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   # =========================================================
@@ -813,7 +813,7 @@ groups:
         - AndrewKushnir
         - atscott
         - dylhunn
-        - jessicajaniuk
+        - thepunderwoman
         - josephperrott
         - pkozlowski-opensource
 
@@ -867,7 +867,7 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-        - jessicajaniuk
+        - thepunderwoman
 
   # =========================================================
   #  Docs: Marketing
@@ -946,7 +946,7 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - jessicajaniuk
+        - thepunderwoman
         - jelbourn
 
   # =========================================================
@@ -1078,7 +1078,7 @@ groups:
         - josephperrott
         - jelbourn
         - bencodezen
-        - jessicajaniuk
+        - thepunderwoman
         - dylhunn
         - AndrewKushnir
         - alxhub
@@ -1143,7 +1143,7 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-        - jessicajaniuk
+        - thepunderwoman
         - josephperrott
 
   # =========================================================
@@ -1242,7 +1242,7 @@ groups:
         - atscott
         - dylhunn
         - ~jelbourn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
     reviews:
       request: 3 # Request reviews from 3 people
@@ -1268,7 +1268,7 @@ groups:
         - atscott
         - dylhunn
         - ~jelbourn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
     reviews:
       request: 2 # Request reviews from 2 people
@@ -1294,7 +1294,7 @@ groups:
         - atscott
         - dylhunn
         - ~jelbourn
-        - jessicajaniuk
+        - thepunderwoman
         - pkozlowski-opensource
 
   ####################################################################################
@@ -1318,7 +1318,7 @@ groups:
         - andrewseguin
         - dgp1130
         - ~jelbourn
-        - jessicajaniuk
+        - thepunderwoman
         - josephperrott
 
   # =========================================================
@@ -1337,7 +1337,7 @@ groups:
       users:
         - pkozlowski-opensource # Pawel Kozlowski
         - alxhub # Alex Rickabaugh
-        - jessicajaniuk # Jessica Janiuk
+        - thepunderwoman # Jessica Janiuk
         - dylhunn # Dylan Hunn
         - AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
