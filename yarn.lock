@@ -236,7 +236,7 @@
     tree-kill "1.2.2"
     tslib "2.6.2"
     undici "6.7.0"
-    vite "5.1.5"
+    vite "5.1.7"
     watchpack "2.4.0"
     webpack "5.90.3"
     webpack-dev-middleware "6.1.1"
@@ -15610,10 +15610,10 @@ vinyl@^3.0.0:
     replace-ext "^2.0.0"
     teex "^1.0.1"
 
-vite@5.1.5:
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.1.5.tgz#bdbc2b15e8000d9cc5172f059201178f9c9de5fb"
-  integrity sha512-BdN1xh0Of/oQafhU+FvopafUp6WaYenLU/NFoL5WyJL++GxkNfieKzBhM24H3HVsPQrlAqB7iJYTHabzaRed5Q==
+vite@5.1.7:
+  version "5.1.7"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.1.7.tgz#9f685a2c4c70707fef6d37341b0e809c366da619"
+  integrity sha512-sgnEEFTZYMui/sTlH1/XEnVNHMujOahPLGMxn1+5sIT45Xjng1Ec1K78jRP15dSmVgg5WBin9yO81j3o9OxofA==
   dependencies:
     esbuild "^0.19.3"
     postcss "^8.4.35"
