@@ -1,3 +1,57 @@
+<a name="18.0.0-next.3"></a>
+# 18.0.0-next.3 (2024-04-03)
+## Breaking Changes
+### router
+- Providers available to the routed components always
+  come from the injector heirarchy of the routes and never inherit from
+  the `RouterOutlet`. This means that providers available only to the
+  component that defines the `RouterOutlet` will no longer be available to
+  route components in any circumstances. This was already the case
+  whenever routes defined providers, either through lazy loading an
+  `NgModule` or through explicit `providers` on the route config.
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f824911510](https://github.com/angular/angular/commit/f8249115102204dbb957a0d292ed5342ea5108e9) | fix | For `FatalDiagnosticError`, hide the `message` field without affecting the emit ([#55160](https://github.com/angular/angular/pull/55160)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c04ffb1fa6](https://github.com/angular/angular/commit/c04ffb1fa61f5164ee5eb7c05b7d76292042ff0b) | fix | use switch statements to narrow Angular switch blocks ([#55168](https://github.com/angular/angular/pull/55168)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [666d646575](https://github.com/angular/angular/commit/666d646575800e9326eebd513776f8e92b0357e9) | feat | Add event delegation library to queue up events and replay them when the application is ready ([#55121](https://github.com/angular/angular/pull/55121)) |
+| [146306a141](https://github.com/angular/angular/commit/146306a1417c378920d80a6d91fd847f22e407ab) | feat | add support for i18n hydration ([#54823](https://github.com/angular/angular/pull/54823)) |
+| [840c375255](https://github.com/angular/angular/commit/840c375255dc381674bb27746d9ababd14567c33) | fix | do not save point-in-time `setTimeout` and `rAF` references ([#55124](https://github.com/angular/angular/pull/55124)) |
+| [231e0a3528](https://github.com/angular/angular/commit/231e0a3528e152cb1de3a215d437f5104191445c) | fix | handle `ChainedInjector`s in injector debug utils ([#55144](https://github.com/angular/angular/pull/55144)) |
+| [a5fa279b6e](https://github.com/angular/angular/commit/a5fa279b6e9f5ab4005d6d33107f0e1bb48d05de) | fix | prevent i18n hydration from cleaning projected nodes ([#54823](https://github.com/angular/angular/pull/54823)) |
+| [f44a5e4604](https://github.com/angular/angular/commit/f44a5e460491a29e5c0cad5577bade8347d52e11) | fix | support content projection and VCRs in i18n ([#54823](https://github.com/angular/angular/pull/54823)) |
+| [914e4530b0](https://github.com/angular/angular/commit/914e4530b036eb20eb553dbb47f89183458066f4) | fix | test cleanup should not throw if Zone is not present ([#55096](https://github.com/angular/angular/pull/55096)) |
+| [a99cb7ce5b](https://github.com/angular/angular/commit/a99cb7ce5b77a125ab660da8ebef23ecb158e2e3) | fix | zoneless scheduler should check if Zone is defined before accessing it ([#55118](https://github.com/angular/angular/pull/55118)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1c736dc3b2](https://github.com/angular/angular/commit/1c736dc3b258a502360cda40b3a00c07102ccbf5) | feat | Unified Control State Change Events ([#54579](https://github.com/angular/angular/pull/54579)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a48afe0d94](https://github.com/angular/angular/commit/a48afe0d9478aca314e68552f4af77f4123563cd) | fix | avoid generating TS syntactic diagnostics for templates ([#55091](https://github.com/angular/angular/pull/55091)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0c20c4075a](https://github.com/angular/angular/commit/0c20c4075af753d8e5eaecb5f7114a48ced5ad96) | fix | avoid conflicts with some greek letters in control flow migration ([#55113](https://github.com/angular/angular/pull/55113)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [45ae7a6b60](https://github.com/angular/angular/commit/45ae7a6b60019bd49b8a58122a0d5bcbda7e245b) | feat | add withI18nSupport() in developer preview ([#55130](https://github.com/angular/angular/pull/55130)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [87f3f27f90](https://github.com/angular/angular/commit/87f3f27f9087d757e18e8e2a0f2fca6f2a2c7edf) | feat | Allow resolvers to return `RedirectCommand` ([#54556](https://github.com/angular/angular/pull/54556)) |
+| [3839cfbb18](https://github.com/angular/angular/commit/3839cfbb18fcc70cae5a6ba4ba7676b1c4acf7a0) | fix | Routed components never inherit `RouterOutlet` `EnvironmentInjector` ([#54265](https://github.com/angular/angular/pull/54265)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-next.2"></a>
 # 18.0.0-next.2 (2024-03-28)
 ## Breaking Changes
