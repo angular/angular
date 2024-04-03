@@ -8,6 +8,7 @@
 
 import {NavigationItem} from '@angular/docs';
 
+// These 2 imports are expected to be red because they are generated a build time
 import FIRST_APP_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/first-app/routes.json';
 import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/learn-angular/routes.json';
 
@@ -926,7 +927,28 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'ng analytics',
-        path: 'cli/analytics',
+        children: [
+          {
+            label: 'Overview',
+            path: 'cli/analytics',
+          },
+          {
+            label: 'disable',
+            path: 'cli/analytics/disable',
+          },
+          {
+            label: 'enable',
+            path: 'cli/analytics/enable',
+          },
+          {
+            label: 'info',
+            path: 'cli/analytics/info',
+          },
+          {
+            label: 'prompt',
+            path: 'cli/analytics/prompt',
+          },
+        ],
       },
       {
         label: 'ng build',
@@ -934,11 +956,41 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'ng cache',
-        path: 'cli/cache',
+        children: [
+          {
+            label: 'Overview',
+            path: 'cli/cache',
+          },
+          {
+            label: 'clear',
+            path: 'cli/cache/clean',
+          },
+          {
+            label: 'disable',
+            path: 'cli/cache/disable',
+          },
+          {
+            label: 'enable',
+            path: 'cli/cache/enable',
+          },
+          {
+            label: 'info',
+            path: 'cli/cache/info',
+          },
+        ],
       },
       {
         label: 'ng completion',
-        path: 'cli/completion',
+        children: [
+          {
+            label: 'Overview',
+            path: 'cli/completion',
+          },
+          {
+            label: 'script',
+            path: 'cli/completion/script',
+          },
+        ],
       },
       {
         label: 'ng config',
@@ -962,7 +1014,80 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'ng generate',
-        path: 'cli/generate',
+        children: [
+          {
+            label: 'Overview',
+            path: 'cli/generate',
+          },
+          {
+            label: 'app-shell',
+            path: 'cli/generate/app-shell',
+          },
+          {
+            label: 'application',
+            path: 'cli/generate/application',
+          },
+          {
+            label: 'class',
+            path: 'cli/generate/class',
+          },
+          {
+            label: 'component',
+            path: 'cli/generate/component',
+          },
+          {
+            label: 'config',
+            path: 'cli/generate/config',
+          },
+          {
+            label: 'enum',
+            path: 'cli/generate/enum',
+          },
+          {
+            label: 'environments',
+            path: 'cli/generate/environments',
+          },
+          {
+            label: 'guard',
+            path: 'cli/generate/guard',
+          },
+          {
+            label: 'interceptor',
+            path: 'cli/generate/interceptor',
+          },
+          {
+            label: 'interface',
+            path: 'cli/generate/interface',
+          },
+          {
+            label: 'library',
+            path: 'cli/generate/library',
+          },
+          {
+            label: 'module',
+            path: 'cli/generate/module',
+          },
+          {
+            label: 'pipe',
+            path: 'cli/generate/pipe',
+          },
+          {
+            label: 'resolver',
+            path: 'cli/generate/resolver',
+          },
+          {
+            label: 'service-worker',
+            path: 'cli/generate/service-worker',
+          },
+          {
+            label: 'service',
+            path: 'cli/generate/service',
+          },
+          {
+            label: 'web-worker',
+            path: 'cli/generate/web-worker',
+          },
+        ],
       },
       {
         label: 'ng lint',

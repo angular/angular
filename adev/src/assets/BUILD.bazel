@@ -74,7 +74,7 @@ copy_to_directory(
         "//tools/manual_api_docs/elements:elements_docs",
     ],
     replace_prefixes = {
-        "adev/src/content/cli/**/": "cli/",
+        "adev/src/content/cli/help/cli_docs_html": "cli/",
         "adev/src/content": "",
         "packages/**/": "api/",
         "tools/**/": "api/",
