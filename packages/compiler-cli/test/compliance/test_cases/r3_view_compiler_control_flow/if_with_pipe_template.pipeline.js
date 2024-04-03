@@ -30,6 +30,6 @@ function $MyApp_Conditional_3_Template$(rf, ctx) {
 	  $r3$.ɵɵadvance();
 	  $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
 	  $r3$.ɵɵadvance();
-	  $r3$.ɵɵconditional(2, $r3$.ɵɵpipeBind1(3, 2, ctx.val) === 1 ? 2 : $r3$.ɵɵpipeBind1(4, 4, ctx.val) === 2 ? 5 : 6);
+	  $r3$.ɵɵconditional($r3$.ɵɵpipeBind1(3, 2, ctx.val) === 1 ? 2 : $r3$.ɵɵpipeBind1(4, 4, ctx.val) === 2 ? 5 : 6);
 	}
   }

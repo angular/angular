@@ -544,9 +544,9 @@ function call<OpT extends ir.CreateOp|ir.UpdateOp>(
 }
 
 export function conditional(
-    slot: number, condition: o.Expression, contextValue: o.Expression|null,
+    condition: o.Expression, contextValue: o.Expression|null,
     sourceSpan: ParseSourceSpan|null): ir.UpdateOp {
-  const args = [o.literal(slot), condition];
+  const args = [condition];
   if (contextValue !== null) {
     args.push(contextValue);
   }

@@ -355,7 +355,6 @@ function ingestBoundText(
  */
 function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
   let firstXref: ir.XrefId|null = null;
-  let firstSlotHandle: ir.SlotHandle|null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (let i = 0; i < ifBlock.branches.length; i++) {
     const ifCase = ifBlock.branches[i];
@@ -381,7 +380,6 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
 
     if (firstXref === null) {
       firstXref = cView.xref;
-      firstSlotHandle = templateOp.handle;
     }
 
     const caseExpr = ifCase.expression ? convertAst(ifCase.expression, unit.job, null) : null;
@@ -390,9 +388,7 @@ function ingestIfBlock(unit: ViewCompilationUnit, ifBlock: t.IfBlock): void {
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, ifCase.children);
   }
-  const conditional =
-      ir.createConditionalOp(firstXref!, firstSlotHandle!, null, conditions, ifBlock.sourceSpan);
-  unit.update.push(conditional);
+  unit.update.push(ir.createConditionalOp(firstXref!, null, conditions, ifBlock.sourceSpan));
 }
 
 /**
@@ -405,7 +401,6 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
   }
 
   let firstXref: ir.XrefId|null = null;
-  let firstSlotHandle: ir.SlotHandle|null = null;
   let conditions: Array<ir.ConditionalCaseExpr> = [];
   for (const switchCase of switchBlock.cases) {
     const cView = unit.job.allocateView(unit.xref);
@@ -424,7 +419,6 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     unit.create.push(templateOp);
     if (firstXref === null) {
       firstXref = cView.xref;
-      firstSlotHandle = templateOp.handle;
     }
     const caseExpr = switchCase.expression ?
         convertAst(switchCase.expression, unit.job, switchBlock.startSourceSpan) :
@@ -434,10 +428,9 @@ function ingestSwitchBlock(unit: ViewCompilationUnit, switchBlock: t.SwitchBlock
     conditions.push(conditionalCaseExpr);
     ingestNodes(cView, switchCase.children);
   }
-  const conditional = ir.createConditionalOp(
-      firstXref!, firstSlotHandle!, convertAst(switchBlock.expression, unit.job, null), conditions,
-      switchBlock.sourceSpan);
-  unit.update.push(conditional);
+  unit.update.push(ir.createConditionalOp(
+      firstXref!, convertAst(switchBlock.expression, unit.job, null), conditions,
+      switchBlock.sourceSpan));
 }
 
 function ingestDeferView(

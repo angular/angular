@@ -69,7 +69,7 @@ $r3$.ɵɵdefineComponent({
     }
     if (rf & 2) {
       $r3$.ɵɵadvance(5);
-      $r3$.ɵɵconditional(5, ctx.hasFooter ? 5 : -1);
+      $r3$.ɵɵconditional(ctx.hasFooter ? 5 : -1);
       $r3$.ɵɵadvance();
       $r3$.ɵɵproperty("ngIf", ctx.hasStructural);
     }
