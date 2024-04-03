@@ -1380,12 +1380,12 @@ groups:
       rejected: 'requires: TGP'
 
   # External team required reviews
-  primitives-jsaction:
+  primitives-event-dispatch:
     <<: *defaults
     conditions:
       - >
         contains_any_globs(files, [
-          'packages/core/primitives/jsaction/**/{*,.*}',
+          'packages/core/primitives/event-dispatch/**/{*,.*}',
         ])
     reviewers:
       users:
