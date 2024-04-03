@@ -171,8 +171,8 @@ describe('Built-in image directive loaders', () => {
     it('should load a low quality image when a placeholder is requested', () => {
       const path = 'https://ik.imageengine.io/imagetest';
       const loader = createImageKitLoader(path);
-      const config = {src: 'img.png', isPlaceholder: true};
-      expect(loader(config)).toBe(`${path}/img.png?q=20`);
+      const config = {src: 'img.png', isPlaceholder: true, width: 30};
+      expect(loader(config)).toBe(`${path}/tr:w-30,q-20/img.png`);
     });
 
     describe('input validation', () => {
