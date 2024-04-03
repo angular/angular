@@ -9,6 +9,7 @@
 import {
   IMAGE_LOADER,
   ImageLoader,
+  ImageLoaderConfig,
   provideNetlifyLoader,
 } from '@angular/common/src/directives/ng_optimized_image';
 import {provideCloudflareLoader} from '@angular/common/src/directives/ng_optimized_image/image_loaders/cloudflare_loader';
@@ -171,8 +172,12 @@ describe('Built-in image directive loaders', () => {
     it('should load a low quality image when a placeholder is requested', () => {
       const path = 'https://ik.imageengine.io/imagetest';
       const loader = createImageKitLoader(path);
-      const config = {src: 'img.png', isPlaceholder: true};
-      expect(loader(config)).toBe(`${path}/img.png?q=20`);
+
+      let config: ImageLoaderConfig = {src: 'img.png', isPlaceholder: true};
+      expect(loader(config)).toBe(`${path}/tr:q-20/img.png`);
+
+      config = {src: 'img.png', isPlaceholder: true, width: 30};
+      expect(loader(config)).toBe(`${path}/tr:w-30,q-20/img.png`);
     });
 
     describe('input validation', () => {
