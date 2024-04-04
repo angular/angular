@@ -38,7 +38,7 @@ runInEachFileSystem(() => {
       const js = env.getContents('test.js');
       const dts = env.getContents('test.d.ts');
 
-      expect(js).toContain('inputs: { value: [i0.ɵɵInputFlags.SignalBased, "value"] }');
+      expect(js).toContain('inputs: { value: [1, "value"] }');
       expect(js).toContain('outputs: { value: "valueChange" }');
       expect(dts).toContain(
           'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +
@@ -60,7 +60,7 @@ runInEachFileSystem(() => {
       const js = env.getContents('test.js');
       const dts = env.getContents('test.d.ts');
 
-      expect(js).toContain('inputs: { value: [i0.ɵɵInputFlags.SignalBased, "alias", "value"] }');
+      expect(js).toContain('inputs: { value: [1, "alias", "value"] }');
       expect(js).toContain('outputs: { value: "aliasChange" }');
       expect(dts).toContain(
           'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +
@@ -82,7 +82,7 @@ runInEachFileSystem(() => {
       const js = env.getContents('test.js');
       const dts = env.getContents('test.d.ts');
 
-      expect(js).toContain('inputs: { value: [i0.ɵɵInputFlags.SignalBased, "value"] }');
+      expect(js).toContain('inputs: { value: [1, "value"] }');
       expect(js).toContain('outputs: { value: "valueChange" }');
       expect(dts).toContain(
           'static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, never, never, ' +

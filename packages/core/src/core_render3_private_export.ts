@@ -323,6 +323,5 @@ export { AfterRenderEventManager as ɵAfterRenderEventManager, internalAfterNext
 export {depsTracker as ɵdepsTracker, USE_RUNTIME_DEPS_TRACKER_FOR_JIT as ɵUSE_RUNTIME_DEPS_TRACKER_FOR_JIT} from './render3/deps_tracker/deps_tracker';
 export {generateStandaloneInDeclarationsError as ɵgenerateStandaloneInDeclarationsError} from './render3/jit/module';
 export {getAsyncClassMetadataFn as ɵgetAsyncClassMetadataFn} from './render3/metadata';
-export {InputFlags as ɵɵInputFlags} from './render3/interfaces/input_flags';
 
 // clang-format on

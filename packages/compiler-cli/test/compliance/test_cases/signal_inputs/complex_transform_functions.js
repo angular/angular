@@ -1,10 +1,10 @@
 TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
     …
     inputs: {
-        name: [$r3$.ɵɵInputFlags.SignalBased, "name"],
-        name2: [$r3$.ɵɵInputFlags.SignalBased, "name2"],
-        genericTransform: [$r3$.ɵɵInputFlags.SignalBased, "genericTransform"],
-        genericTransform2: [$r3$.ɵɵInputFlags.SignalBased, "genericTransform2"]
+        name: [1, "name"],
+        name2: [1, "name2"],
+        genericTransform: [1, "genericTransform"],
+        genericTransform2: [1, "genericTransform2"]
     },
     …
   });

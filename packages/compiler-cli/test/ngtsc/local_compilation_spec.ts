@@ -1505,7 +1505,7 @@ runInEachFileSystem(() => {
           @Directive({standalone: true})
           export class LocalDirective {
           }
-    
+
           @Component({
             selector: 'my-comp',
             template: '',
@@ -1527,7 +1527,7 @@ runInEachFileSystem(() => {
            env.write('test.ts', `
           import {Directive, Component} from '@angular/core';
           import {HostDir} from 'some_where';
-   
+
           @Component({
             selector: 'my-comp',
             template: '',
@@ -1554,7 +1554,7 @@ runInEachFileSystem(() => {
          () => {
            env.write('test.ts', `
           import {Directive, Component} from '@angular/core';
-          
+
           @Directive({standalone: true})
           export class LocalDirective {
           }
@@ -1585,14 +1585,14 @@ runInEachFileSystem(() => {
         env.write('test.ts', `
           import {Directive, Component} from '@angular/core';
           import {ExternalDirective} from 'some_where';
-          
+
           @Directive({
             standalone: true,
             hostDirectives: [ExternalDirective],
           })
           export class LocalDirective {
           }
-  
+
           @Directive({
             standalone: true,
             hostDirectives: [LocalDirective],
@@ -1617,7 +1617,7 @@ runInEachFileSystem(() => {
       it('should generate hostDirectives definition with forward references of local directives', () => {
         env.write('test.ts', `
           import {Component, Directive, forwardRef, Input} from '@angular/core';
-  
+
           @Component({
             selector: 'my-component',
             template: '',
@@ -1625,14 +1625,14 @@ runInEachFileSystem(() => {
           })
           export class MyComponent {
           }
-  
+
           @Directive({
             standalone: true,
             hostDirectives: [{directive: forwardRef(() => DirectiveA), inputs: ['value']}],
           })
           export class DirectiveB {
           }
-  
+
           @Directive({standalone: true})
           export class DirectiveA {
             @Input() value: any;
@@ -1655,7 +1655,7 @@ runInEachFileSystem(() => {
            env.write('test.ts', `
           import {Component, Directive, forwardRef} from '@angular/core';
           import {ExternalDirective} from 'some_where';
-  
+
           @Component({
             selector: 'my-component',
             template: '',
@@ -1695,13 +1695,12 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", externalFunc] }');
+        expect(jsContents).toContain('inputs: { x: [2, "x", "x", externalFunc] }');
       });
 
-      it('should generate input info for transform function imported externally using namespace', () => {
-        env.write('test.ts', `
+      it('should generate input info for transform function imported externally using namespace',
+         () => {
+           env.write('test.ts', `
         import {Component, NgModule, Input} from '@angular/core';
         import * as n from './some_where';
 
@@ -1714,13 +1713,11 @@ runInEachFileSystem(() => {
         }
      `);
 
-        env.driveMain();
-        const jsContents = env.getContents('test.js');
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", n.externalFunc] }');
-      });
+           expect(jsContents).toContain('inputs: { x: [2, "x", "x", n.externalFunc] }');
+         });
 
       it('should generate input info for transform function defined locally', () => {
         env.write('test.ts', `
@@ -1742,9 +1739,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", localFunc] }');
+        expect(jsContents).toContain('inputs: { x: [2, "x", "x", localFunc] }');
       });
 
       it('should generate input info for inline transform function', () => {
@@ -1763,9 +1758,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", (v) => v + \'TRANSFORMED!\'] }');
+        expect(jsContents).toContain('inputs: { x: [2, "x", "x", (v) => v + \'TRANSFORMED!\'] }');
       });
 
       it('should not check inline function param type', () => {
@@ -1784,9 +1777,7 @@ runInEachFileSystem(() => {
         env.driveMain();
         const jsContents = env.getContents('test.js');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { x: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "x", "x", v => v + \'TRANSFORMED!\'] }');
+        expect(jsContents).toContain('inputs: { x: [2, "x", "x", v => v + \'TRANSFORMED!\'] }');
       });
     });
 

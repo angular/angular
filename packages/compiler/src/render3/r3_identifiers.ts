@@ -387,11 +387,6 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static InputFlags: o.ExternalReference = {
-    name: 'ɵɵInputFlags',
-    moduleName: CORE,
-  };
-
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ɵɵsanitizeHtml', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵɵsanitizeStyle', moduleName: CORE};

@@ -12,7 +12,6 @@ import {splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
 import {CssSelector} from '../../selector';
 import * as t from '../r3_ast';
-import {Identifiers as R3} from '../r3_identifiers';
 
 import {isI18nAttribute} from './i18n/util';
 
@@ -104,21 +103,21 @@ export function conditionallyCreateDirectiveBindingLiteral(
 
       const differentDeclaringName = publicName !== declaredName;
       const hasDecoratorInputTransform = value.transformFunction !== null;
+      let flags = InputFlags.None;
 
       // Build up input flags
-      let flags: o.Expression|null = null;
       if (value.isSignal) {
-        flags = bitwiseOrInputFlagsExpr(InputFlags.SignalBased, flags);
+        flags |= InputFlags.SignalBased;
       }
       if (hasDecoratorInputTransform) {
-        flags = bitwiseOrInputFlagsExpr(InputFlags.HasDecoratorInputTransform, flags);
+        flags |= InputFlags.HasDecoratorInputTransform;
       }
 
       // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), support
       // decorator input transform functions, or store flag information if there is any.
-      if (forInputs && (differentDeclaringName || hasDecoratorInputTransform || flags !== null)) {
-        const flagsExpr = flags ?? o.importExpr(R3.InputFlags).prop(InputFlags[InputFlags.None]);
-        const result: o.Expression[] = [flagsExpr, asLiteral(publicName)];
+      if (forInputs &&
+          (differentDeclaringName || hasDecoratorInputTransform || flags !== InputFlags.None)) {
+        const result = [o.literal(flags), asLiteral(publicName)];
 
         if (differentDeclaringName || hasDecoratorInputTransform) {
           result.push(asLiteral(declaredName));
@@ -141,29 +140,6 @@ export function conditionallyCreateDirectiveBindingLiteral(
       value: expressionValue,
     };
   }));
-}
-
-/** Gets an output AST expression referencing the given flag. */
-function getInputFlagExpr(flag: InputFlags): o.Expression {
-  return o.importExpr(R3.InputFlags).prop(InputFlags[flag]);
-}
-
-/** Combines a given input flag with an existing flag expression, if present. */
-function bitwiseOrInputFlagsExpr(flag: InputFlags, expr: o.Expression|null): o.Expression {
-  if (expr === null) {
-    return getInputFlagExpr(flag);
-  }
-  return getInputFlagExpr(flag).bitwiseOr(expr);
-}
-
-/**
- *  Remove trailing null nodes as they are implied.
- */
-export function trimTrailingNulls(parameters: o.Expression[]): o.Expression[] {
-  while (o.isNull(parameters[parameters.length - 1])) {
-    parameters.pop();
-  }
-  return parameters;
 }
 
 /**
