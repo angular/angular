@@ -35,7 +35,7 @@ runInEachFileSystem(() => {
       `);
       env.driveMain();
       const js = env.getContents('test.js');
-      expect(js).toContain('inputs: { data: [i0.ɵɵInputFlags.SignalBased, "data"] }');
+      expect(js).toContain('inputs: { data: [1, "data"] }');
     });
 
     it('should fail if @Input is applied on signal input member', () => {
@@ -144,7 +144,7 @@ runInEachFileSystem(() => {
       `);
       env.driveMain();
       const js = env.getContents('test.js');
-      expect(js).toContain('inputs: { data: [i0.ɵɵInputFlags.SignalBased, "publicName", "data"] }');
+      expect(js).toContain('inputs: { data: [1, "publicName", "data"] }');
     });
 
     it('should error if a required input declares an initial value', () => {
@@ -177,8 +177,7 @@ runInEachFileSystem(() => {
         }
       `);
       env.driveMain();
-      expect(env.getContents('test.js'))
-          .toContain(`inputs: { data: [i0.ɵɵInputFlags.SignalBased, "data"] }`);
+      expect(env.getContents('test.js')).toContain(`inputs: { data: [1, "data"] }`);
       expect(env.getContents('test.d.ts')).toContain('"required": true; "isSignal": true;');
       expect(env.getContents('test.d.ts'))
           .withContext(
@@ -197,8 +196,7 @@ runInEachFileSystem(() => {
         }
       `);
       env.driveMain();
-      expect(env.getContents('test.js'))
-          .toContain(`inputs: { data: [i0.ɵɵInputFlags.SignalBased, "data"] }`);
+      expect(env.getContents('test.js')).toContain(`inputs: { data: [1, "data"] }`);
     });
 
     it('should report mixed two-way binding with a signal input', () => {

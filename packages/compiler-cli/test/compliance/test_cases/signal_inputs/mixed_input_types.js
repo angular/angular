@@ -1,12 +1,12 @@
 TestDir.ɵdir = /* @__PURE__ */ $r3$.ɵɵdefineDirective({
   …
   inputs: {
-    counter: [$r3$.ɵɵInputFlags.SignalBased, "counter"],
-    signalWithTransform: [$r3$.ɵɵInputFlags.SignalBased, "signalWithTransform"],
-    signalWithTransformAndAlias: [$r3$.ɵɵInputFlags.SignalBased, "publicNameSignal", "signalWithTransformAndAlias"],
+    counter: [1, "counter"],
+    signalWithTransform: [1, "signalWithTransform"],
+    signalWithTransformAndAlias: [1, "publicNameSignal", "signalWithTransformAndAlias"],
     decoratorInput: "decoratorInput",
-    decoratorInputWithAlias: [$r3$.ɵɵInputFlags.None, "publicNameDecorator", "decoratorInputWithAlias"],
-    decoratorInputWithTransformAndAlias: [$r3$.ɵɵInputFlags.HasDecoratorInputTransform, "publicNameDecorator2", "decoratorInputWithTransformAndAlias", convertToBoolean]
+    decoratorInputWithAlias: [0, "publicNameDecorator", "decoratorInputWithAlias"],
+    decoratorInputWithTransformAndAlias: [2, "publicNameDecorator2", "decoratorInputWithTransformAndAlias", convertToBoolean]
   },
   …
 });

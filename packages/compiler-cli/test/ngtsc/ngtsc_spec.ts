@@ -5838,8 +5838,8 @@ function allTests(os: string) {
         "track-name": "track-name",
         inputTrackName: "inputTrackName",
         "src.xl": "src.xl",
-        trackType: [i0.ɵɵInputFlags.None, "track-type", "trackType"],
-        trackName: [i0.ɵɵInputFlags.None, "track-name", "trackName"]
+        trackType: [0, "track-type", "trackType"],
+        trackName: [0, "track-name", "trackName"]
       },
       outputs: {
         "output-track-type": "output-track-type",
@@ -8759,9 +8759,7 @@ function allTests(os: string) {
         const jsContents = env.getContents('test.js');
         const dtsContents = env.getContents('test.d.ts');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", toNumber] }');
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", toNumber] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
@@ -8783,21 +8781,20 @@ function allTests(os: string) {
         const jsContents = env.getContents('test.js');
         const dtsContents = env.getContents('test.d.ts');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", toNumber] }');
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", toNumber] }');
         expect(jsContents)
             .toContain('features: [i0.ɵɵInputTransformsFeature, i0.ɵɵStandaloneFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
 
-      it('should compile an input with a transform function that contains a generic parameter', () => {
-        env.write('/types.ts', `
+      it('should compile an input with a transform function that contains a generic parameter',
+         () => {
+           env.write('/types.ts', `
             export interface GenericWrapper<T> {
               value: T;
             }
           `);
-        env.write('/test.ts', `
+           env.write('/test.ts', `
             import {Directive, Input} from '@angular/core';
             import {GenericWrapper} from './types';
 
@@ -8809,20 +8806,18 @@ function allTests(os: string) {
             }
           `);
 
-        env.driveMain();
+           env.driveMain();
 
-        const jsContents = env.getContents('test.js');
-        const dtsContents = env.getContents('test.d.ts');
+           const jsContents = env.getContents('test.js');
+           const dtsContents = env.getContents('test.d.ts');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", toNumber] }');
-        expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
-        expect(dtsContents).toContain('import * as i1 from "./types"');
-        expect(dtsContents)
-            .toContain(
-                'static ngAcceptInputType_value: boolean | string | i1.GenericWrapper<string>;');
-      });
+           expect(jsContents).toContain('inputs: { value: [2, "value", "value", toNumber] }');
+           expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
+           expect(dtsContents).toContain('import * as i1 from "./types"');
+           expect(dtsContents)
+               .toContain(
+                   'static ngAcceptInputType_value: boolean | string | i1.GenericWrapper<string>;');
+         });
 
       it('should compile an input with a transform function that contains nested generic parameters',
          () => {
@@ -8855,9 +8850,7 @@ function allTests(os: string) {
            const jsContents = env.getContents('test.js');
            const dtsContents = env.getContents('test.d.ts');
 
-           expect(jsContents)
-               .toContain(
-                   'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", toNumber] }');
+           expect(jsContents).toContain('inputs: { value: [2, "value", "value", toNumber] }');
            expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
            expect(dtsContents).toContain('import * as i1 from "./types"');
            expect(dtsContents).toContain('import * as i2 from "./other-types"');
@@ -8893,9 +8886,7 @@ function allTests(os: string) {
         const dtsContents = env.getContents('test.d.ts');
 
         expect(jsContents).toContain(`import { externalToNumber } from 'external';`);
-        expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", externalToNumber] }');
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", externalToNumber] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('import * as i1 from "external";');
         expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
@@ -8926,8 +8917,7 @@ function allTests(os: string) {
         const dtsContents = env.getContents('test.d.ts');
 
         expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", (value) => value ? 1 : 0] }');
+            .toContain('inputs: { value: [2, "value", "value", (value) => value ? 1 : 0] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('import * as i1 from "external";');
         expect(dtsContents).toContain('static ngAcceptInputType_value: i1.ExternalToNumberType;');
@@ -8954,9 +8944,7 @@ function allTests(os: string) {
         const jsContents = env.getContents('test.js');
         const dtsContents = env.getContents('test.d.ts');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", toBoolean] }');
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", toBoolean] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents)
             .toContain(`static ngAcceptInputType_value: boolean | "" | "true" | "false";`);
@@ -8979,9 +8967,7 @@ function allTests(os: string) {
         const jsContents = env.getContents('test.js');
         const dtsContents = env.getContents('test.d.ts');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", toNumber] }');
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", toNumber] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
       });
@@ -9003,9 +8989,7 @@ function allTests(os: string) {
         const jsContents = env.getContents('test.js');
         const dtsContents = env.getContents('test.d.ts');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", toNumber] }');
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", toNumber] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: unknown;');
       });
@@ -9030,9 +9014,7 @@ function allTests(os: string) {
         const jsContents = env.getContents('test.js');
         const dtsContents = env.getContents('test.d.ts');
 
-        expect(jsContents)
-            .toContain(
-                'inputs: { value: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "value", "value", toNumber] }');
+        expect(jsContents).toContain('inputs: { value: [2, "value", "value", toNumber] }');
         expect(jsContents)
             .toContain('features: [i0.ɵɵInputTransformsFeature, i0.ɵɵInheritDefinitionFeature]');
         expect(dtsContents).toContain('static ngAcceptInputType_value: boolean | string;');
@@ -9061,8 +9043,7 @@ function allTests(os: string) {
         const dtsContents = env.getContents('test.d.ts');
 
         expect(jsContents)
-            .toContain(
-                'inputs: { element: [i0.ɵɵInputFlags.HasDecoratorInputTransform, "element", "element", coerceElement] }');
+            .toContain('inputs: { element: [2, "element", "element", coerceElement] }');
         expect(jsContents).toContain('features: [i0.ɵɵInputTransformsFeature]');
         expect(dtsContents)
             .toContain(
