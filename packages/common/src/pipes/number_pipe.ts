@@ -123,6 +123,7 @@ export class DecimalPipe implements PipeTransform {
  * string, formatted according to locale rules that determine group sizing and
  * separator, decimal-point character, and other locale-specific
  * configurations.
+ * {{ value_expression | percent [ : digitsInfo [ : locale ] ] }}
  *
  * @see {@link formatPercent}
  *
@@ -131,7 +132,26 @@ export class DecimalPipe implements PipeTransform {
  * into text strings, according to various format specifications,
  * where the caller's default locale is `en-US`.
  *
- * <code-example path="common/pipes/ts/percent_pipe.ts" region='PercentPipe'></code-example>
+ * The following code shows how the pipe transforms numbers into text strings, according to various format specifications, where the caller's default locale is en-US.
+
+content_copy
+@Component({
+  selector: 'percent-pipe',
+  template: `<div>
+    <!--output '26%'-->
+    <p>A: {{ a | percent }}</p>
+
+    <!--output '0,134.950%'-->
+    <p>B: {{ b | percent: '4.3-5' }}</p>
+
+    <!--output '0 134,950 %'-->
+    <p>B: {{ b | percent: '4.3-5' : 'fr' }}</p>
+  </div>`,
+})
+export class PercentPipeComponent {
+  a: number = 0.259;
+  b: number = 1.3495;
+}
  *
  * @publicApi
  */
