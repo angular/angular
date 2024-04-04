@@ -6,32 +6,28 @@
 
 <blockquote>
 <!-- #docregion asterisk -->
-@if (hero) {<div class="name">{{ hero.name }}</div>}
+<div *ngIf="hero" class="name">{{hero.name}}</div>
 <!-- #enddocregion asterisk -->
 </blockquote>
 
 <p>List of heroes</p>
 
 <ul>
-  @for (hero of heroes; track hero) {<li>{{ hero.name }}</li>}
+  <li *ngFor="let hero of heroes">{{hero.name}}</li>
 </ul>
 
 <hr>
 
 <h2 id="ngIf">NgIf</h2>
 
-@if (true) {
-  <p>
-    Expression is true and ngIf is true.
-    This paragraph is in the DOM.
-  </p>
-}
-@if (false) {
-  <p>
-    Expression is false and ngIf is false.
-    This paragraph is not in the DOM.
-  </p>
-}
+<p *ngIf="true">
+  Expression is true and ngIf is true.
+  This paragraph is in the DOM.
+</p>
+<p *ngIf="false">
+  Expression is false and ngIf is false.
+  This paragraph is not in the DOM.
+</p>
 
 <p [style.display]="'block'">
   Expression sets display to "block".
@@ -46,7 +42,7 @@
 <p>&lt;ng-template&gt; element</p>
 <!-- #docregion ngif-template -->
 <ng-template [ngIf]="hero">
-  <div class="name">{{ hero.name }}</div>
+  <div class="name">{{hero.name}}</div>
 </ng-template>
 <!-- #enddocregion ngif-template -->
 
@@ -61,18 +57,18 @@
 <!-- #docregion ngif-ngcontainer -->
 <p>
   I turned the corner
-  @if (hero) {
-    and saw {{ hero.name }}. I waved
-  }
+  <ng-container *ngIf="hero">
+    and saw {{hero.name}}. I waved
+  </ng-container>
   and continued on my way.
 </p>
 <!-- #enddocregion ngif-ngcontainer -->
 
 <p>
   I turned the corner
-  @if (hero) {
-    <span>and saw {{ hero.name }}. I waved</span>
-  }
+  <span *ngIf="hero">
+    and saw {{hero.name}}. I waved
+  </span>
   and continued on my way.
 </p>
 
@@ -83,15 +79,11 @@
   (<label for="show-sad"><input id="show-sad" type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
 </div>
 <select [(ngModel)]="hero">
-  @for (h of heroes; track h) {
-    <span>
-      @if (showSad || h.emotion !== 'sad') {
-        <span>
-          <option [ngValue]="h">{{ h.name }} ({{ h.emotion }})</option>
-        </span>
-      }
+  <span *ngFor="let h of heroes">
+    <span *ngIf="showSad || h.emotion !== 'sad'">
+      <option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>
     </span>
-  }
+  </span>
 </select>
 
 <p><em>&lt;select&gt; with &lt;ng-container&gt;</em></p>
@@ -101,11 +93,11 @@
   (<label for="showSad"><input id="showSad" type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
 </div>
 <select [(ngModel)]="hero">
-  @for (h of heroes; track h) {
-    @if (showSad || h.emotion !== 'sad') {
-      <option [ngValue]="h">{{ h.name }} ({{ h.emotion }})</option>
-    }
-  }
+  <ng-container *ngFor="let h of heroes">
+    <ng-container *ngIf="showSad || h.emotion !== 'sad'">
+      <option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>
+    </ng-container>
+  </ng-container>
 </select>
 <!-- #enddocregion select-ngcontainer -->
 <br><br>
@@ -118,12 +110,11 @@
 
 <p class="code">&lt;div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd"&gt;</p>
 <!--#docregion inside-ngfor -->
-@for (hero of heroes; track hero; let odd = $odd; let i = $index) {
-  <div
-    [class.odd]="odd">
-    ({{ i }}) {{ hero.name }}
-  </div>
-}
+<div
+  *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById"
+  [class.odd]="odd">
+  ({{i}}) {{hero.name}}
+</div>
 
 <!--#enddocregion inside-ngfor -->
 <p class="code">&lt;ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById"/&gt;</p>
@@ -131,7 +122,7 @@
 <ng-template ngFor let-hero [ngForOf]="heroes"
   let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
   <div [class.odd]="odd">
-    ({{ i }}) {{ hero.name }}
+    ({{i}}) {{hero.name}}
   </div>
 </ng-template>
 <!--#enddocregion inside-ngfor -->
@@ -143,46 +134,35 @@
 
 <div>Pick your favorite hero</div>
 <p>
-  @for (h of heroes; track h) {
-    <label for="hero-{{ h }}">
-      <input id="hero-{{ h }}" type="radio" name="heroes" [(ngModel)]="hero" [value]="h">{{ h.name }}
-    </label>
-  }
+  <label for="hero-{{h}}" *ngFor="let h of heroes">
+    <input id="hero-{{h}}" type="radio" name="heroes" [(ngModel)]="hero" [value]="h">{{h.name}}
+  </label>
   <label for="none-of-the-above"><input id="none-of-the-above" type="radio" name="heroes" (click)="hero = null">None of the above</label>
 </p>
 
 <h4>NgSwitch</h4>
 
-<div>
-  @switch (hero?.emotion) {
-    @case ('happy') {
-      <app-happy-hero [hero]="hero!"></app-happy-hero>
-    } @case ('sad') {
-      <app-sad-hero [hero]="hero!"></app-sad-hero>
-    } @case ('confused') {
-      <app-confused-hero [hero]="hero!"></app-confused-hero>
-    } @default {
-      <app-unknown-hero [hero]="hero!"></app-unknown-hero>
-    }
-  }
+<div [ngSwitch]="hero?.emotion">
+  <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="hero!"></app-happy-hero>
+  <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="hero!"></app-sad-hero>
+  <app-confused-hero *ngSwitchCase="'confused'" [hero]="hero!"></app-confused-hero>
+  <app-unknown-hero  *ngSwitchDefault           [hero]="hero!"></app-unknown-hero>
 </div>
 
 <h4>NgSwitch with &lt;ng-template&gt;</h4>
-<div>
-  @switch (hero?.emotion) {
-    @case ('happy') {
-      <app-happy-hero [hero]="hero!"></app-happy-hero>
-    }
-    @case ('sad') {
-      <app-sad-hero [hero]="hero!"></app-sad-hero>
-    }
-    @case ('confused') {
-      <app-confused-hero [hero]="hero!"></app-confused-hero>
-    }
-    @default {
-      <app-unknown-hero [hero]="hero!"></app-unknown-hero>
-    }
-  }
+<div [ngSwitch]="hero?.emotion">
+  <ng-template ngSwitchCase="happy">
+    <app-happy-hero [hero]="hero!"></app-happy-hero>
+  </ng-template>
+  <ng-template ngSwitchCase="sad">
+    <app-sad-hero [hero]="hero!"></app-sad-hero>
+  </ng-template>
+  <ng-template ngSwitchCase="confused">
+    <app-confused-hero [hero]="hero!"></app-confused-hero>
+  </ng-template >
+  <ng-template ngSwitchDefault>
+    <app-unknown-hero [hero]="hero!"></app-unknown-hero>
+  </ng-template>
 </div>
 
 <hr>
@@ -192,12 +172,12 @@
 <!-- #docregion toggle-info -->
 <p>
   The condition is currently
-  <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{ condition }}</span>.
+  <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span>.
   <button
     type="button"
     (click)="condition = !condition"
-    [ngClass]="{ 'a': condition, 'b': !condition }" >
-    Toggle condition to {{ condition ? 'false' : 'true' }}
+    [ngClass] = "{ 'a': condition, 'b': !condition }" >
+    Toggle condition to {{condition ? 'false' : 'true'}}
   </button>
 </p>
 <!-- #enddocregion toggle-info -->
