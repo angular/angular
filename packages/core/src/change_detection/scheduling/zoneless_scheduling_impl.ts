@@ -51,19 +51,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
 
     this.pendingRenderTaskId = this.taskService.add();
-    // TODO(atscott): This zone.root.run can maybe just be removed when we more
-    // effectively get the unpatched versions of setTimeout and rAF (#55092)
-    if (typeof Zone !== 'undefined' && Zone.root?.run) {
-      Zone.root.run(() => {
-        this.cancelScheduledCallback = scheduleCallback(() => {
-          this.tick(this.shouldRefreshViews);
-        });
-      });
-    } else {
-      this.cancelScheduledCallback = scheduleCallback(() => {
-        this.tick(this.shouldRefreshViews);
-      });
-    }
+    this.cancelScheduledCallback = scheduleCallback(() => {
+      this.tick(this.shouldRefreshViews);
+    });
   }
 
   private shouldScheduleTick(): boolean {
