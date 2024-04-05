@@ -210,7 +210,8 @@ export function createLView<T>(
     LViewFlags.CreationMode |
     LViewFlags.Attached |
     LViewFlags.FirstLViewPass |
-    LViewFlags.Dirty;
+    LViewFlags.Dirty |
+    LViewFlags.RefreshView;
   if (
     embeddedViewInjector !== null ||
     (parentLView && parentLView[FLAGS] & LViewFlags.HasEmbeddedViewInjector)
