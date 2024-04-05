@@ -46,14 +46,6 @@ detectAngularMessageBus.on('detectAngular', (detectionResult) => {
     return;
   }
 
-  if (detectionResult.isDebugMode !== true) {
-    return;
-  }
-
-  if (detectionResult.isSupportedAngularVersion !== true) {
-    return;
-  }
-
   // Defensive check against non html page. Realistically this should never happen.
   if (document.contentType !== 'text/html') {
     return;

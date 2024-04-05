@@ -2,9 +2,9 @@
   @switch (angularStatus) {
     @case (AngularStatus.EXISTS) {
       @if (angularIsInDevMode) {
-        @if (supportedVersion) {
+        @if (supportedVersion()) {
           <div class="devtools-wrapper noselect" [@enterAnimation]>
-            <ng-devtools-tabs (frameSelected)="inspectFrame($event)" [isHydrationEnabled]="hydration" [angularVersion]="angularVersion"></ng-devtools-tabs>
+            <ng-devtools-tabs (frameSelected)="inspectFrame($event)" [isHydrationEnabled]="hydration" [angularVersion]="angularVersion()"></ng-devtools-tabs>
           </div>
         } @else {
           <p class="text-message">

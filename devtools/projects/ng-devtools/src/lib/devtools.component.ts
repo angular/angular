@@ -9,7 +9,15 @@
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
-import {Component, inject, OnDestroy, OnInit} from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {Events, MessageBus} from 'protocol';
 import {interval} from 'rxjs';
 
@@ -40,6 +48,8 @@ enum AngularStatus {
   EXISTS,
 }
 
+const LAST_SUPPORTED_VERSION = 9;
+
 @Component({
   selector: 'ng-devtools',
   templateUrl: './devtools.component.html',
@@ -56,10 +66,22 @@ enum AngularStatus {
 export class DevToolsComponent implements OnInit, OnDestroy {
   AngularStatus = AngularStatus;
   angularStatus: AngularStatus = AngularStatus.UNKNOWN;
-  angularVersion: string | boolean | undefined = undefined;
+  angularVersion: WritableSignal<string | undefined> = signal(undefined);
   angularIsInDevMode = true;
   hydration: boolean = false;
-  ivy!: boolean;
+  ivy: WritableSignal<boolean | undefined> = signal(undefined);
+
+  supportedVersion = computed(() => {
+    const version = this.angularVersion();
+    if (!version) {
+      return false;
+    }
+    const majorVersion = parseInt(version.toString().split('.')[0], 10);
+
+    // Check that major version is either greater or equal to the last supported version
+    // or that the major version is 0 for the (0.0.0-PLACEHOLDER) dev build case.
+    return (majorVersion >= LAST_SUPPORTED_VERSION || majorVersion === 0) && this.ivy();
+  });
 
   private readonly _firefoxStyleName = 'firefox_styles.css';
   private readonly _chromeStyleName = 'chrome_styles.css';
@@ -85,9 +107,9 @@ export class DevToolsComponent implements OnInit, OnDestroy {
 
     this._messageBus.once('ngAvailability', ({version, devMode, ivy, hydration}) => {
       this.angularStatus = version ? AngularStatus.EXISTS : AngularStatus.DOES_NOT_EXIST;
-      this.angularVersion = version;
+      this.angularVersion.set(version);
       this.angularIsInDevMode = devMode;
-      this.ivy = ivy;
+      this.ivy.set(ivy);
       this._interval$.unsubscribe();
       this.hydration = hydration;
     });
@@ -96,17 +118,6 @@ export class DevToolsComponent implements OnInit, OnDestroy {
       ? this._firefoxStyleName
       : this._chromeStyleName;
     this._loadStyle(browserStyleName);
-  }
-
-  get majorAngularVersion(): number {
-    if (!this.angularVersion) {
-      return -1;
-    }
-    return parseInt(this.angularVersion.toString().split('.')[0], 10);
-  }
-
-  get supportedVersion(): boolean {
-    return (this.majorAngularVersion >= 9 || this.majorAngularVersion === 0) && this.ivy;
   }
 
   /** Add a style file in header based on fileName */
