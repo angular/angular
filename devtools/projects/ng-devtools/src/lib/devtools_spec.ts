@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FrameManager} from './frame_manager';
 import {DevToolsComponent} from './devtools.component';
@@ -44,8 +44,8 @@ describe('DevtoolsComponent', () => {
   it('should render ng devtools tabs when Angular Status is EXISTS and is in dev mode and is supported version', () => {
     component.angularStatus = component.AngularStatus.EXISTS;
     component.angularIsInDevMode = true;
-    component.angularVersion = '0.0.0';
-    component.ivy = true;
+    component.angularVersion = signal('0.0.0');
+    component.ivy = signal(true);
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('ng-devtools-tabs')).toBeTruthy();
   });
@@ -62,7 +62,7 @@ describe('DevtoolsComponent', () => {
   it('should render version support message when Angular Status is EXISTS and angular version is not supported', () => {
     component.angularStatus = component.AngularStatus.EXISTS;
     component.angularIsInDevMode = true;
-    component.angularVersion = '1.0.0';
+    component.angularVersion = signal('1.0.0');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.devtools').textContent).toContain(
       'Angular Devtools only supports Angular versions 12 and above',

@@ -238,7 +238,7 @@ export interface Events {
   shutdown: () => void;
   queryNgAvailability: () => void;
   ngAvailability: (config: {
-    version: string | undefined | boolean;
+    version: string | undefined;
     devMode: boolean;
     ivy: boolean;
     hydration: boolean;

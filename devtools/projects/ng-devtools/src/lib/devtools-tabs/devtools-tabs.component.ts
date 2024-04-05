@@ -9,8 +9,10 @@
 import {
   AfterViewInit,
   Component,
+  computed,
   EventEmitter,
   inject,
+  input,
   Input,
   OnInit,
   Output,
@@ -59,7 +61,6 @@ type Tabs = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
   providers: [TabUpdate],
 })
 export class DevToolsTabsComponent implements OnInit, AfterViewInit {
-  @Input() angularVersion: string | undefined = undefined;
   @Input() isHydrationEnabled = false;
 
   @Output() frameSelected = new EventEmitter<Frame>();
@@ -79,6 +80,15 @@ export class DevToolsTabsComponent implements OnInit, AfterViewInit {
   frameManager = inject(FrameManager);
 
   TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
+
+  angularVersion = input<string | undefined>(undefined);
+  majorAngularVersion = computed(() => {
+    const version = this.angularVersion();
+    if (!version) {
+      return -1;
+    }
+    return parseInt(version.toString().split('.')[0], 10);
+  });
 
   constructor(
     public tabUpdate: TabUpdate,

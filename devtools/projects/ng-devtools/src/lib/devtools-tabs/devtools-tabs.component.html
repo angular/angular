@@ -30,12 +30,27 @@
       {{ tab }}
     </a>
   }
-  @if (angularVersion) {
+  @if (angularVersion()) {
     <section id="app-angular-version">
       Angular version:
-      <span id="version-number">
-        {{ angularVersion }}
-      </span>
+
+      @if (majorAngularVersion() > 12 || majorAngularVersion() == 0) {
+        <span id="version-number">
+          {{ angularVersion() }}
+        </span>
+      } @else {
+        <span 
+          id="version-number"
+          matTooltip="
+            Angular Devtools supports Angular versions 12 and above. Some DevTools features may be available in 
+            older versions of Angular, but it is not officially supported.
+          "
+          class="unsupported-version"
+          >
+          {{ angularVersion() }} (unsupported)
+        </span>
+      }
+
       @if (latestSHA) {
         | DevTools SHA: {{ latestSHA }}
       }
