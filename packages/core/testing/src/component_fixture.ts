@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentRef, DebugElement, ElementRef, getDebugNode, inject, NgZone, RendererFactory2, ViewRef, ɵChangeDetectionScheduler, ɵDeferBlockDetails as DeferBlockDetails, ɵdetectChangesInViewIfRequired, ɵEffectScheduler as EffectScheduler, ɵgetDeferBlocks as getDeferBlocks, ɵNoopNgZone as NoopNgZone, ɵPendingTasks as PendingTasks} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
 
@@ -63,6 +63,9 @@ export abstract class ComponentFixture<T> {
   /** @internal */
   protected readonly _testAppRef = this._appRef as unknown as TestAppRef;
   private readonly pendingTasks = inject(PendingTasks);
+  /** @internal */
+  protected abstract _autoDetect: boolean;
+  private readonly scheduler = inject(ɵChangeDetectionScheduler, {optional: true});
 
   // TODO(atscott): Remove this from public API
   ngZone = this._noZoneOptionIsSet ? null : this._ngZone;
@@ -75,6 +78,16 @@ export abstract class ComponentFixture<T> {
     this.componentInstance = componentRef.instance;
     this.nativeElement = this.elementRef.nativeElement;
     this.componentRef = componentRef;
+  }
+
+  initialize(): void {
+    if (this._autoDetect) {
+      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
+      this.scheduler?.notify();
+    }
+    this.componentRef.hostView.onDestroy(() => {
+      this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
+    });
   }
 
   /**
@@ -157,6 +170,7 @@ export abstract class ComponentFixture<T> {
    * Trigger component destruction.
    */
   destroy(): void {
+    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
     if (!this._isDestroyed) {
       this.componentRef.destroy();
       this._isDestroyed = true;
@@ -173,10 +187,8 @@ export abstract class ComponentFixture<T> {
 export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   private readonly disableDetectChangesError =
       inject(AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, {optional: true}) ?? false;
-
-  initialize(): void {
-    this._appRef.attachView(this.componentRef.hostView);
-  }
+  /** @internal */
+  protected override _autoDetect = true;
 
   override detectChanges(checkNoChanges: boolean = true): void {
     if (!this.disableDetectChangesError) {
@@ -209,15 +221,11 @@ interface TestAppRef {
  */
 export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   private _subscriptions = new Subscription();
-  private _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
+  /** @internal */
+  override _autoDetect = inject(ComponentFixtureAutoDetect, {optional: true}) ?? false;
 
-  initialize(): void {
-    if (this._autoDetect) {
-      this._testAppRef.externalTestViews.add(this.componentRef.hostView);
-    }
-    this.componentRef.hostView.onDestroy(() => {
-      this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
-    });
+  override initialize(): void {
+    super.initialize();
     // Create subscriptions outside the NgZone so that the callbacks run outside
     // of NgZone.
     this._ngZone.runOutsideAngular(() => {
@@ -264,7 +272,6 @@ export class PseudoApplicationComponentFixture<T> extends ComponentFixture<T> {
   }
 
   override destroy(): void {
-    this._testAppRef.externalTestViews.delete(this.componentRef.hostView);
     this._subscriptions.unsubscribe();
     super.destroy();
   }
