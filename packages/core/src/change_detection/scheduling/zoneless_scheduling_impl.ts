@@ -12,7 +12,7 @@ import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {PendingTasks} from '../../pending_tasks';
-import {scheduleCallback} from '../../util/callback_scheduler';
+import {scheduleCallbackWithMicrotask, scheduleCallbackWithRafRace} from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NoopNgZone} from '../../zone/ng_zone';
 
@@ -41,6 +41,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       this.cleanup();
     }
   });
+  private scheduleCallback = scheduleCallbackWithRafRace;
 
   constructor() {
     // TODO(atscott): These conditions will need to change when zoneless is the default
@@ -64,12 +65,12 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     this.pendingRenderTaskId = this.taskService.add();
     if (this.zoneIsDefined) {
       Zone.root.run(() => {
-        this.cancelScheduledCallback = scheduleCallback(() => {
+        this.cancelScheduledCallback = this.scheduleCallback(() => {
           this.tick(this.shouldRefreshViews);
         }, false /** useNativeTimers */);
       });
     } else {
-      this.cancelScheduledCallback = scheduleCallback(() => {
+      this.cancelScheduledCallback = this.scheduleCallback(() => {
         this.tick(this.shouldRefreshViews);
       }, false /** useNativeTimers */);
     }
@@ -109,14 +110,28 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return;
     }
 
+    const task = this.taskService.add();
     try {
       this.ngZone.run(() => {
         this.runningTick = true;
         this.appRef._tick(shouldRefreshViews);
       }, undefined, this.schedulerTickApplyArgs);
+    } catch (e: unknown) {
+      this.taskService.remove(task);
+      throw e;
     } finally {
       this.cleanup();
     }
+    // If we're notified of a change within 1 microtask of running change
+    // detection, run another round in the same event loop. This allows code
+    // which uses Promise.resolve (see NgModel) to avoid
+    // ExpressionChanged...Error to still be reflected in a single browser
+    // paint, even if that spans multiple rounds of change detection.
+    this.scheduleCallback = scheduleCallbackWithMicrotask;
+    scheduleCallbackWithMicrotask(() => {
+      this.scheduleCallback = scheduleCallbackWithRafRace;
+      this.taskService.remove(task);
+    });
   }
 
   ngOnDestroy() {

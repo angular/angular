@@ -10,7 +10,7 @@ import {EventEmitter, NgZone} from '@angular/core';
 import {fakeAsync, flushMicrotasks, inject, waitForAsync} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 
-import {scheduleCallback as scheduler} from '../../src/util/callback_scheduler';
+import {scheduleCallbackWithRafRace as scheduler} from '../../src/util/callback_scheduler';
 import {global} from '../../src/util/global';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 

@@ -34,7 +34,8 @@ import {global} from './global';
  *
  * @returns a function to cancel the scheduled callback
  */
-export function scheduleCallback(callback: Function, useNativeTimers = true): () => void {
+export function scheduleCallbackWithRafRace(callback: Function, useNativeTimers = true): () =>
+    void {
   // Note: the `scheduleCallback` is used in the `NgZone` class, but we cannot use the
   // `inject` function. The `NgZone` instance may be created manually, and thus the injection
   // context will be unavailable. This might be enough to check whether `requestAnimationFrame` is
@@ -65,6 +66,19 @@ export function scheduleCallback(callback: Function, useNativeTimers = true): ()
     }
     executeCallback = false;
     callback();
+  });
+
+  return () => {
+    executeCallback = false;
+  };
+}
+
+export function scheduleCallbackWithMicrotask(callback: Function): () => void {
+  let executeCallback = true;
+  queueMicrotask(() => {
+    if (executeCallback) {
+      callback();
+    }
   });
 
   return () => {
