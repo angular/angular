@@ -318,7 +318,7 @@ export class ApplicationRef {
   /** @internal */
   afterTick = new Subject<void>();
   /** @internal */
-  get allViews() {
+  get allViews(): Array<InternalViewRef<unknown>> {
     return [...this.externalTestViews.keys(), ...this._views];
   }
 
@@ -577,7 +577,7 @@ export class ApplicationRef {
       this.detectChangesInAttachedViews(refreshViews);
 
       if (typeof ngDevMode === 'undefined' || ngDevMode) {
-        for (let view of this._views) {
+        for (let view of this.allViews) {
           view.checkNoChanges();
         }
       }
@@ -605,7 +605,7 @@ export class ApplicationRef {
       // After the we execute render hooks in the first pass, we loop while views are marked dirty and should refresh them.
       if (refreshViews || !isFirstPass) {
         this.beforeRender.next(isFirstPass);
-        for (let {_lView, notifyErrorHandler} of this._views) {
+        for (let {_lView, notifyErrorHandler} of this.allViews) {
           detectChangesInViewIfRequired(
             _lView,
             notifyErrorHandler,
