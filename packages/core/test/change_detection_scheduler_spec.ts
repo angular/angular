@@ -16,6 +16,7 @@ import {withBody} from '@angular/private/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {filter, take, tap} from 'rxjs/operators';
 
+import {scheduleCallbackWithRafRace} from '../src/util/callback_scheduler';
 import {global} from '../src/util/global';
 
 function isStable(injector = TestBed.inject(EnvironmentInjector)): boolean {
@@ -566,6 +567,29 @@ describe('Angular with zoneless enabled', () => {
        // scheduled run
        expect(changeDetectionRuns).toEqual(2);
      });
+
+  it('coalesces microtasks that happen during change detection into a single paint', async () => {
+    if (!isBrowser) {
+      return;
+    }
+    @Component({
+      template: '{{thing}}',
+      standalone: true,
+    })
+    class App {
+      thing = 'initial';
+      cdr = inject(ChangeDetectorRef);
+      ngAfterViewInit() {
+        queueMicrotask(() => {
+          this.thing = 'new';
+          this.cdr.markForCheck();
+        });
+      }
+    }
+    const fixture = TestBed.createComponent(App);
+    await new Promise<void>(resolve => scheduleCallbackWithRafRace(resolve));
+    expect(fixture.nativeElement.innerText).toContain('new');
+  });
 });
 
 describe('Angular with scheduler and ZoneJS', () => {

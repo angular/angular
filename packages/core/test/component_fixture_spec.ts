@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, Input, provideExperimentalZonelessChangeDetection, signal} from '@angular/core';
+import {Component, ErrorHandler, Injectable, Input, provideExperimentalZonelessChangeDetection, signal} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -369,7 +369,12 @@ describe('ComponentFixture', () => {
 
 describe('ComponentFixture with zoneless', () => {
   it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
-    TestBed.configureTestingModule({providers: [provideExperimentalZonelessChangeDetection()]});
+    TestBed.configureTestingModule({
+      providers: [
+        provideExperimentalZonelessChangeDetection(),
+        {provide: ErrorHandler, useValue: {handleError: () => {}}},
+      ]
+    });
     @Component({standalone: true, template: '{{signalThing()}}|{{regularThing}}'})
     class CheckAlwaysCmp {
       regularThing = 'initial';
