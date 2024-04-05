@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, Input, signal, ɵprovideZonelessChangeDetection} from '@angular/core';
+import {Component, ErrorHandler, Injectable, Input, NgZone, signal, ɵprovideZonelessChangeDetection} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -366,6 +366,49 @@ describe('ComponentFixture', () => {
          componentFixture.detectChanges();
          expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
        }));
+  });
+
+  it('reports errors from autoDetect change detection to error handler', () => {
+    let throwError = false;
+    @Component({template: ''})
+    class TestComponent {
+      ngDoCheck() {
+        if (throwError) {
+          throw new Error();
+        }
+      }
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.autoDetectChanges();
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError').and.callThrough();
+
+
+    throwError = true;
+    TestBed.inject(NgZone).run(() => {});
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('reports errors from checkNoChanges in autoDetect to error handler', () => {
+    let throwError = false;
+    @Component({template: '{{thing}}'})
+    class TestComponent {
+      thing = 'initial';
+      ngAfterViewChecked() {
+        if (throwError) {
+          this.thing = 'new';
+        }
+      }
+    }
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.autoDetectChanges();
+    const errorHandler = TestBed.inject(ErrorHandler);
+    const spy = spyOn(errorHandler, 'handleError').and.callThrough();
+
+
+    throwError = true;
+    TestBed.inject(NgZone).run(() => {});
+    expect(spy).toHaveBeenCalled();
   });
 });
 

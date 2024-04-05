@@ -283,8 +283,9 @@ export class ApplicationRef {
   // Needed for ComponentFixture temporarily during migration of autoDetect behavior
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
-  private beforeRender = new Subject<boolean>();
-  private afterTick = new Subject<void>();
+  private get allViews(): Array<InternalViewRef<unknown>> {
+    return [...this.externalTestViews.keys(), ...this._views];
+  }
 
   /**
    * Indicates whether this instance was destroyed.
@@ -515,7 +516,7 @@ export class ApplicationRef {
       this.detectChangesInAttachedViews(refreshViews);
 
       if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
-        for (let view of this._views) {
+        for (let view of this.allViews) {
           view.checkNoChanges();
         }
       }
@@ -523,7 +524,6 @@ export class ApplicationRef {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
       this.internalErrorHandler(e);
     } finally {
-      this.afterTick.next();
       this._runningTick = false;
       setActiveConsumer(prevConsumer);
     }
@@ -535,8 +535,7 @@ export class ApplicationRef {
     while (runs < MAXIMUM_REFRESH_RERUNS) {
       if (refreshViews) {
         const isFirstPass = runs === 0;
-        this.beforeRender.next(isFirstPass);
-        for (let {_lView, notifyErrorHandler} of this._views) {
+        for (let {_lView, notifyErrorHandler} of this.allViews) {
           detectChangesInViewIfRequired(
               _lView, notifyErrorHandler, isFirstPass, this.zonelessEnabled);
         }
@@ -546,16 +545,14 @@ export class ApplicationRef {
       afterRenderEffectManager.executeInternalCallbacks();
       // If we have a newly dirty view after running internal callbacks, recheck the views again
       // before running user-provided callbacks
-      if ([...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
+      if (this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
         continue;
       }
 
       afterRenderEffectManager.execute();
       // If after running all afterRender callbacks we have no more views that need to be refreshed,
       // we can break out of the loop
-      if (![...this.externalTestViews.keys(), ...this._views].some(
-              ({_lView}) => requiresRefreshOrTraversal(_lView))) {
+      if (!this.allViews.some(({_lView}) => requiresRefreshOrTraversal(_lView))) {
         break;
       }
     }
