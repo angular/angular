@@ -9,10 +9,12 @@
       const THEME_PREFERENCE_LOCAL_STORAGE_KEY = 'themePreference';
       const DARK_MODE_CLASS_NAME = 'docs-dark-mode';
       const LIGHT_MODE_CLASS_NAME = 'docs-light-mode';
+      const PREFERS_COLOR_SCHEME_DARK = '(prefers-color-scheme: dark)';
+
 
       const theme = localStorage.getItem(THEME_PREFERENCE_LOCAL_STORAGE_KEY) ?? 'auto';
       const prefersDark =
-        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        window.matchMedia && window.matchMedia(PREFERS_COLOR_SCHEME_DARK).matches;
       const documentClassList = this.document.documentElement.classList;
 
       // clearing classes before setting them.
