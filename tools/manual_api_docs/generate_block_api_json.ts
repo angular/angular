@@ -23,6 +23,11 @@ function main() {
       entryType: EntryType.Block,
       description: fileContent,
       rawComment: fileContent,
+      source: {
+        filePath: sourceFilePath,
+        startLine: 0,
+        endLine: 0,
+      },
       jsdocTags: [],
     };
   });

@@ -734,7 +734,10 @@ export class NgCompiler {
       throw new Error(`Entry point "${entryPoint}" not found in program sources.`);
     }
 
-    return docsExtractor.extractAll(entryPointSourceFile);
+    // TODO: Technically the current directory is not the root dir.
+    //  Should probably be derived from the config.
+    const rootDir = this.inputProgram.getCurrentDirectory();
+    return docsExtractor.extractAll(entryPointSourceFile, rootDir);
   }
 
   /**
