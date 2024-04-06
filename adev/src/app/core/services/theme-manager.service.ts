@@ -82,7 +82,7 @@ export class ThemeManager {
   }
 
   private watchPreferredColorScheme() {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+    window.matchMedia(PREFERS_COLOR_SCHEME_DARK).addEventListener('change', (event) => {
       const preferredScheme = event.matches ? 'dark' : 'light';
       this.setThemeBodyClasses(preferredScheme);
     });
@@ -90,5 +90,5 @@ export class ThemeManager {
 }
 
 function preferredScheme(): 'dark' | 'light' {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return window.matchMedia(PREFERS_COLOR_SCHEME_DARK).matches ? 'dark' : 'light';
 }
