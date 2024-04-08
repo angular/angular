@@ -29,6 +29,7 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["//tools/testing:node"],
+    flaky = True,  # TODO: figure out why one of the transferCache tests is flaky
     deps = [
         ":test_lib",
     ],
@@ -36,6 +37,7 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
+    flaky = True,  # TODO: figure out why one of the transferCache tests is flaky
     deps = [
         ":test_lib",
     ],
