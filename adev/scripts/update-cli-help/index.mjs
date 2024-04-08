@@ -11,7 +11,7 @@ const CLI_BUILDS_REPO = 'angular/cli-builds';
 const GITHUB_API_CLI_BUILDS = posix.join(GITHUB_API, CLI_BUILDS_REPO);
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
-const CLI_HELP_CONTENT_PATH = resolvePath(scriptDir, '../../content/cli/help');
+const CLI_HELP_CONTENT_PATH = resolvePath(scriptDir, '../../src/content/cli/help');
 const CLI_SHA_PATH = join(CLI_HELP_CONTENT_PATH, 'build-info.json');
 
 async function main() {

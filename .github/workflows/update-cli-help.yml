@@ -28,7 +28,7 @@ jobs:
           # This is needed as otherwise the PR creation will fail with `shallow update not allowed` when the forked branch is not in sync.
           fetch-depth: 0
       - name: Generate CLI help
-        run: node aio/scripts/update-cli-help/index.mjs
+        run: node adev/scripts/update-cli-help/index.mjs
         env:
           ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN }}
       - name: Create a PR (if necessary)
