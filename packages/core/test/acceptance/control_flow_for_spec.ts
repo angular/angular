@@ -38,6 +38,19 @@ describe('control flow - for', () => {
     expect(fixture.nativeElement.textContent).toBe('3(0)|2(1)|1(2)|');
   });
 
+  it('should loop over iterators that can be iterated over only once', () => {
+    @Component({
+      template: '@for ((item of items.keys()); track $index) {{{item}}|}',
+    })
+    class TestComponent {
+      items = new Map([['a', 1], ['b', 2], ['c', 3]]);
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('a|b|c|');
+  });
+
   it('should work correctly with trackBy index', () => {
     @Component({
       template: '@for ((item of items); track idx; let idx = $index) {{{item}}({{idx}})|}',
@@ -272,6 +285,95 @@ describe('control flow - for', () => {
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       expect(context).toBe(fixture.componentInstance);
+    });
+
+    it('should warn about duplicated keys when using arrays', () => {
+      @Component({
+        template: `@for (item of items; track item) {{{item}}}`,
+      })
+      class TestComponent {
+        items = ['a', 'b', 'a', 'c', 'a'];
+      }
+
+      spyOn(console, 'warn');
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('abaca');
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(
+              `NG0955: The provided track expression resulted in duplicated keys for a given collection.`));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(
+              `Adjust the tracking expression such that it uniquely identifies all the items in the collection. `));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(`key "a" at index "0" and "2"`));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(`key "a" at index "2" and "4"`));
+    });
+
+    it('should warn about duplicated keys when using iterables', () => {
+      @Component({
+        template: `@for (item of items.values(); track item) {{{item}}}`,
+      })
+      class TestComponent {
+        items = new Map([[1, 'a'], [2, 'b'], [3, 'a'], [4, 'c'], [5, 'a']]);
+      }
+
+      spyOn(console, 'warn');
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('abaca');
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(
+              `NG0955: The provided track expression resulted in duplicated keys for a given collection.`));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(
+              `Adjust the tracking expression such that it uniquely identifies all the items in the collection. `));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(`key "a" at index "0" and "2"`));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(`key "a" at index "2" and "4"`));
+    });
+
+    it('should warn about duplicate keys when keys are expressed as symbols', () => {
+      const value = Symbol('a');
+
+      @Component({
+        template: `@for (item of items.values(); track item) {}`,
+      })
+      class TestComponent {
+        items = new Map([[1, value], [2, value]]);
+      }
+
+      spyOn(console, 'warn');
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(`Symbol(a)" at index "0" and "1".`));
+    });
+
+    it('should warn about duplicate keys iterating over the new collection only', () => {
+      @Component({
+        template: `@for (item of items; track item) {}`,
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+      }
+
+      spyOn(console, 'warn');
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(console.warn).not.toHaveBeenCalled();
+
+      fixture.componentInstance.items = [4, 5, 6];
+      fixture.detectChanges();
+      expect(console.warn).not.toHaveBeenCalled();
     });
   });
 

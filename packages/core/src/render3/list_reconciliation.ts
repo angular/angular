@@ -7,7 +7,10 @@
  */
 
 import {TrackByFunction} from '../change_detection';
+import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {assertNotSame} from '../util/assert';
+
+import {stringifyForError} from './util/stringify_utils';
 
 /**
  * A type representing the live collection to be reconciled with any new (incoming) collection. This
@@ -61,6 +64,16 @@ function valuesMatching<V>(
   return 0;
 }
 
+function recordDuplicateKeys(keyToIdx: Map<unknown, Set<number>>, key: unknown, idx: number): void {
+  const idxSoFar = keyToIdx.get(key);
+
+  if (idxSoFar !== undefined) {
+    idxSoFar.add(idx);
+  } else {
+    keyToIdx.set(key, new Set([idx]));
+  }
+}
+
 /**
  * The live collection reconciliation algorithm that perform various in-place operations, so it
  * reflects the content of the new (incoming) collection.
@@ -93,6 +106,8 @@ export function reconcile<T, V>(
   let liveStartIdx = 0;
   let liveEndIdx = liveCollection.length - 1;
 
+  const duplicateKeys = ngDevMode ? new Map<unknown, Set<number>>() : undefined;
+
   if (Array.isArray(newCollection)) {
     let newEndIdx = newCollection.length - 1;
 
@@ -100,6 +115,11 @@ export function reconcile<T, V>(
       // compare from the beginning
       const liveStartValue = liveCollection.at(liveStartIdx);
       const newStartValue = newCollection[liveStartIdx];
+
+      if (ngDevMode) {
+        recordDuplicateKeys(duplicateKeys!, trackByFn(liveStartIdx, newStartValue), liveStartIdx);
+      }
+
       const isStartMatching =
           valuesMatching(liveStartIdx, liveStartValue, liveStartIdx, newStartValue, trackByFn);
       if (isStartMatching !== 0) {
@@ -114,6 +134,11 @@ export function reconcile<T, V>(
       // TODO(perf): do _all_ the matching from the end
       const liveEndValue = liveCollection.at(liveEndIdx);
       const newEndValue = newCollection[newEndIdx];
+
+      if (ngDevMode) {
+        recordDuplicateKeys(duplicateKeys!, trackByFn(newEndIdx, newEndValue), newEndIdx);
+      }
+
       const isEndMatching =
           valuesMatching(liveEndIdx, liveEndValue, newEndIdx, newEndValue, trackByFn);
       if (isEndMatching !== 0) {
@@ -188,6 +213,11 @@ export function reconcile<T, V>(
     while (!newIterationResult.done && liveStartIdx <= liveEndIdx) {
       const liveValue = liveCollection.at(liveStartIdx);
       const newValue = newIterationResult.value;
+
+      if (ngDevMode) {
+        recordDuplicateKeys(duplicateKeys!, trackByFn(liveStartIdx, newValue), liveStartIdx);
+      }
+
       const isStartMatching =
           valuesMatching(liveStartIdx, liveValue, liveStartIdx, newValue, trackByFn);
       if (isStartMatching !== 0) {
@@ -244,6 +274,31 @@ export function reconcile<T, V>(
   detachedItems?.forEach(item => {
     liveCollection.destroy(item);
   });
+
+  // report duplicate keys (dev mode only)
+  if (ngDevMode) {
+    let duplicatedKeysMsg = [];
+    for (const [key, idxSet] of duplicateKeys!) {
+      if (idxSet.size > 1) {
+        const idx = [...idxSet].sort((a, b) => a - b);
+        for (let i = 1; i < idx.length; i++) {
+          duplicatedKeysMsg.push(
+              `key "${stringifyForError(key)}" at index "${idx[i - 1]}" and "${idx[i]}"`);
+        }
+      }
+    }
+
+    if (duplicatedKeysMsg.length > 0) {
+      const message = formatRuntimeError(
+          RuntimeErrorCode.LOOP_TRACK_DUPLICATE_KEYS,
+          'The provided track expression resulted in duplicated keys for a given collection. ' +
+              'Adjust the tracking expression such that it uniquely identifies all the items in the collection. ' +
+              'Duplicated keys were: \n' + duplicatedKeysMsg.join(', \n') + '.');
+
+      // tslint:disable-next-line:no-console
+      console.warn(message);
+    }
+  }
 }
 
 function attachPreviouslyDetached<T, V>(
