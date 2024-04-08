@@ -1287,7 +1287,7 @@ describe('reactive forms integration tests', () => {
       expectStatusChangeEvent(fc1Events.at(-1), 'VALID', fc1);
     });
 
-    it('formContorl should not emit when emitEvent is false', () => {
+    it('formControl should not emit when emitEvent is false', () => {
       const fc = new FormControl<string|null>('foo', Validators.required);
       const fcEvents: ControlEvent[] = [];
       fc.events.subscribe(event => fcEvents.push(event));
