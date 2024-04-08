@@ -124,6 +124,9 @@ export const enum RuntimeErrorCode {
   // Output()
   OUTPUT_REF_DESTROYED = 953,
 
+  // Repeater errors
+  LOOP_TRACK_DUPLICATE_KEYS = 955,
+
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 1000,
   RUNTIME_DEPS_ORPHAN_COMPONENT = 1001,
