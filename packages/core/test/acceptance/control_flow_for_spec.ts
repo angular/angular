@@ -273,6 +273,32 @@ describe('control flow - for', () => {
       fixture.detectChanges();
       expect(context).toBe(fixture.componentInstance);
     });
+
+    it('should warn about duplicated keys', () => {
+      @Component({
+        template: `@for (item of items; track item) {{{item}}}`,
+      })
+      class TestComponent {
+        items = ['a', 'b', 'a', 'c', 'a'];
+      }
+
+      spyOn(console, 'warn');
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('abaca');
+      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(
+              `NG0955: The provided track expression resulted in duplicated keys for a given collection.`));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(
+              `Adjust the tracking expression such that it uniquely identifies all the items in the collection. `));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(`key "a" at index "0" and "2"`));
+      expect(console.warn)
+          .toHaveBeenCalledWith(jasmine.stringContaining(`key "a" at index "2" and "4"`));
+    });
   });
 
   describe('list diffing and view operations', () => {
