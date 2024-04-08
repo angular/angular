@@ -993,6 +993,9 @@
     "name": "fillProperties"
   },
   {
+    "name": "filter"
+  },
+  {
     "name": "findAttrIndexInNode"
   },
   {

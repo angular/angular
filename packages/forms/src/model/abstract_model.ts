@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, ɵRuntimeError as RuntimeError, ɵWritable as Writable} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {ɵRuntimeError as RuntimeError, ɵWritable as Writable} from '@angular/core';
+import {filter, map, Observable, Subject} from 'rxjs';
 
 import {
   asyncValidatorsDroppedWithOptsWarning,
@@ -709,10 +709,10 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * accessing a value of a parent control (using the `value` property) from the callback of this
    * event might result in getting a value that has not been updated yet. Subscribe to the
    * `valueChanges` event of the parent control instead.
-   *
-   * TODO: this should be piped from events() but is breaking in G3
    */
-  public readonly valueChanges!: Observable<TValue>;
+  public readonly valueChanges: Observable<TValue> = this.events.pipe(
+      filter((e): e is ValueChangeEvent<TValue> => e instanceof ValueChangeEvent),
+      map(e => e.value));
 
   /**
    * A multicasting observable that emits an event every time the validation `status` of the control
@@ -720,10 +720,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    *
    * @see {@link FormControlStatus}
    * @see {@link AbstractControl.status}
-   *
-   * TODO: this should be piped from events() but is breaking in G3
    */
-  public readonly statusChanges!: Observable<FormControlStatus>;
+  public readonly statusChanges: Observable<FormControlStatus> = this.events.pipe(
+      filter((e): e is StatusChangeEvent => e instanceof StatusChangeEvent), map(e => e.status));
 
   /**
    * Reports the update strategy of the `AbstractControl` (meaning
@@ -1134,7 +1133,6 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     const sourceControl = opts.sourceControl ?? this;
     if (opts.emitEvent !== false) {
       this._events.next(new StatusChangeEvent(this.status, sourceControl));
-      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
 
     if (this._parent && !opts.onlySelf) {
@@ -1183,8 +1181,6 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     if (opts.emitEvent !== false) {
       this._events.next(new ValueChangeEvent(this.value, sourceControl));
       this._events.next(new StatusChangeEvent(this.status, sourceControl));
-      (this.valueChanges as EventEmitter<TValue>).emit(this.value);
-      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
 
     this._updateAncestors({...opts, skipPristineCheck}, this);
@@ -1312,8 +1308,6 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     if (opts.emitEvent !== false) {
       this._events.next(new ValueChangeEvent<TValue>(this.value, sourceControl));
       this._events.next(new StatusChangeEvent(this.status, sourceControl));
-      (this.valueChanges as EventEmitter<TValue>).emit(this.value);
-      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
 
     if (this._parent && !opts.onlySelf) {
@@ -1536,19 +1530,12 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     (this as Writable<this>).status = this._calculateStatus();
 
     if (emitEvent) {
-      (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
       this._events.next(new StatusChangeEvent(this.status, changedControl));
     }
 
     if (this._parent) {
       this._parent._updateControlsErrors(emitEvent, changedControl);
     }
-  }
-
-  /** @internal */
-  _initObservables() {
-    (this as Writable<this>).valueChanges = new EventEmitter();
-    (this as Writable<this>).statusChanges = new EventEmitter();
   }
 
   private _calculateStatus(): FormControlStatus {
