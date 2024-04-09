@@ -40,7 +40,6 @@ export class DeferBlockFixture {
     const skipTimerScheduling = true;
     renderDeferBlockState(state, this.block.tNode, this.block.lContainer, skipTimerScheduling);
     this.componentFixture.detectChanges();
-    return this.componentFixture.whenStable();
   }
 
   /**
