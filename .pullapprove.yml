@@ -850,8 +850,10 @@ groups:
         - mturco # Matt Turco
         - neonstalwart # Ben Hockey
         - nicholasyu-google # Nicholas Yu
-        - rahatarmanahmed # Rahat Ahmed
         - emspishak # Eric Spishak-Thomas
+        - iteriani # Thomas Nguyen
+        - tbondwilkinson # Tom Wilkinson
+        - rahatarmanahmed # Rahat Ahmed
     reviews:
       required: 1
       reviewed_for: optional
@@ -859,23 +861,6 @@ groups:
       pending: 'requires: TGP'
       approved: 'requires: TGP'
       rejected: 'requires: TGP'
-
-  # External team required reviews
-  primitives-event-dispatch:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/core/primitives/event-dispatch/**/{*,.*}',
-        ])
-    reviewers:
-      users:
-        - iteriani # Thomas Nguyen
-        - tbondwilkinson # Tom Wilkinson
-        - rahatarmanahmed # Rahat Ahmed
-    reviews:
-      required: 1
-      reviewed_for: optional
 
   ####################################################################################
   # Override managed result groups
