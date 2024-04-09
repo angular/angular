@@ -269,3 +269,11 @@ export function getExternalFiles(project: ts.server.Project): string[] {
   }
   return [...typecheckFiles, ...resourceFiles];
 }
+
+/** Implementation of a ts.server.PluginModuleFactory */
+export function initialize(mod: {typescript: typeof ts}): ts.server.PluginModule {
+  return {
+    create,
+    getExternalFiles,
+  };
+}
