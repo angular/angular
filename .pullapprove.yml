@@ -1343,7 +1343,7 @@ groups:
         - atscott # Andrew Scott
     reviews:
       required: 1
-      reviewed_for: required
+      reviewed_for: optional
     labels:
       pending: 'requires: TGP'
       approved: 'requires: TGP'
@@ -1373,7 +1373,7 @@ groups:
         - emspishak # Eric Spishak-Thomas
     reviews:
       required: 1
-      reviewed_for: required
+      reviewed_for: optional
     labels:
       pending: 'requires: TGP'
       approved: 'requires: TGP'
@@ -1394,7 +1394,7 @@ groups:
         - rahatarmanahmed # Rahat Ahmed
     reviews:
       required: 1
-      reviewed_for: required
+      reviewed_for: optional
 
   ####################################################################################
   # Override managed result groups
