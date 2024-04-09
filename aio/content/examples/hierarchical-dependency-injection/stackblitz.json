@@ -1,9 +1,0 @@
-{
-  "description": "Hierarchical Dependency Injection",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"
-  ],
-  "file": "src/app/app.component.ts", 
-  "tags": ["dependency", "injection"]
-}

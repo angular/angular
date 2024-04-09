@@ -1,4 +1,4 @@
-load("//aio/content/examples:examples.bzl", "docs_example")
+load("//adev/scripts:examples.bzl", "docs_example")
 
 package(default_visibility = ["//visibility:public"])
 

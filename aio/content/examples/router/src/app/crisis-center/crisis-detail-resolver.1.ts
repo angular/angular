@@ -1,4 +1,0 @@
-// #docregion
-
-export function crisisDetailResolver() {
-}

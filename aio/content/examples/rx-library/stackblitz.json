@@ -1,7 +1,0 @@
-{
-  "description": "RxJS Library",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"],
-  "tags": ["RxJS"]
-}
