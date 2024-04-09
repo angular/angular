@@ -12,6 +12,7 @@ import {
   inject,
   InjectionToken,
   makeStateKey,
+  PLATFORM_ID,
   Provider,
   StateKey,
   TransferState,
@@ -19,8 +20,9 @@ import {
   ɵperformanceMarkFeature as performanceMarkFeature,
   ɵtruncateMiddle as truncateMiddle,
   ɵwhenStable as whenStable,
-  PLATFORM_ID,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
+import {isPlatformServer} from '@angular/common';
 import {Observable, of} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -30,7 +32,6 @@ import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 import {HttpParams} from './params';
-import {isPlatformServer} from '@angular/common';
 
 /**
  * Options to configure how TransferCache should be used to cache requests made via HttpClient.
@@ -55,6 +56,36 @@ export type HttpTransferCacheOptions = {
 };
 
 /**
+ * If your application uses different HTTP origins to make API calls (via `HttpClient`) on the server and
+ * on the client, the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token allows you to establish a mapping
+ * between those origins, so that `HttpTransferCache` feature can recognize those requests as the same
+ * ones and reuse the data cached on the server during hydration on the client.
+ *
+ * **Important note**: the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token should *only* be provided in
+ * the *server* code of your application (typically in the `app.server.config.ts` script). Angular throws an
+ * error if it detects that the token is defined while running on the client.
+ *
+ * @usageNotes
+ *
+ * When the same API endpoint is accessed via `http://internal-domain.com:8080` on the server and
+ * via `https://external-domain.com` on the client, you can use the following configuration:
+ * ```typescript
+ * // in app.server.config.ts
+ * {
+ *     provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+ *     useValue: {
+ *         'http://internal-domain.com:8080': 'https://external-domain.com'
+ *     }
+ * }
+ * ```
+ *
+ * @publicApi
+ */
+export const HTTP_TRANSFER_CACHE_ORIGIN_MAP = new InjectionToken<Record<string, string>>(
+  ngDevMode ? 'HTTP_TRANSFER_CACHE_ORIGIN_MAP' : '',
+);
+
+/**
  * Keys within cached response data structure.
  */
 
@@ -62,7 +93,7 @@ export const BODY = 'b';
 export const HEADERS = 'h';
 export const STATUS = 's';
 export const STATUS_TEXT = 'st';
-export const URL = 'u';
+export const REQ_URL = 'u';
 export const RESPONSE_TYPE = 'rt';
 
 interface TransferHttpResponse {
@@ -75,7 +106,7 @@ interface TransferHttpResponse {
   /** statusText */
   [STATUS_TEXT]?: string;
   /** url */
-  [URL]?: string;
+  [REQ_URL]?: string;
   /** responseType */
   [RESPONSE_TYPE]?: HttpRequest<unknown>['responseType'];
 }
@@ -115,7 +146,24 @@ export function transferCacheInterceptorFn(
   }
 
   const transferState = inject(TransferState);
-  const storeKey = makeCacheKey(req);
+
+  const originMap: Record<string, string> | null = inject(HTTP_TRANSFER_CACHE_ORIGIN_MAP, {
+    optional: true,
+  });
+  const isServer = isPlatformServer(inject(PLATFORM_ID));
+  if (originMap && !isServer) {
+    throw new RuntimeError(
+      RuntimeErrorCode.HTTP_ORIGIN_MAP_USED_IN_CLIENT,
+      ngDevMode &&
+        'Angular detected that the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token is configured and ' +
+          'present in the client side code. Please ensure that this token is only provided in the ' +
+          'server code of the application.',
+    );
+  }
+
+  const requestUrl = isServer && originMap ? mapRequestOriginUrl(req.url, originMap) : req.url;
+
+  const storeKey = makeCacheKey(req, requestUrl);
   const response = transferState.get(storeKey, null);
 
   let headersToInclude = globalOptions.includeHeaders;
@@ -131,7 +179,7 @@ export function transferCacheInterceptorFn(
       [HEADERS]: httpHeaders,
       [STATUS]: status,
       [STATUS_TEXT]: statusText,
-      [URL]: url,
+      [REQ_URL]: url,
     } = response;
     // Request found in cache. Respond using it.
     let body: ArrayBuffer | Blob | string | undefined = undecodedBody;
@@ -167,8 +215,6 @@ export function transferCacheInterceptorFn(
     );
   }
 
-  const isServer = isPlatformServer(inject(PLATFORM_ID));
-
   // Request not found in cache. Make the request and cache it if on the server.
   return next(req).pipe(
     tap((event: HttpEvent<unknown>) => {
@@ -178,7 +224,7 @@ export function transferCacheInterceptorFn(
           [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
           [STATUS]: event.status,
           [STATUS_TEXT]: event.statusText,
-          [URL]: event.url || '',
+          [REQ_URL]: requestUrl,
           [RESPONSE_TYPE]: req.responseType,
         });
       }
@@ -217,9 +263,12 @@ function sortAndConcatParams(params: HttpParams | URLSearchParams): string {
     .join('&');
 }
 
-function makeCacheKey(request: HttpRequest<any>): StateKey<TransferHttpResponse> {
+function makeCacheKey(
+  request: HttpRequest<any>,
+  mappedRequestUrl: string,
+): StateKey<TransferHttpResponse> {
   // make the params encoded same as a url so it's easy to identify
-  const {params, method, responseType, url} = request;
+  const {params, method, responseType} = request;
   const encodedParams = sortAndConcatParams(params);
 
   let serializedBody = request.serializeBody();
@@ -229,7 +278,7 @@ function makeCacheKey(request: HttpRequest<any>): StateKey<TransferHttpResponse>
     serializedBody = '';
   }
 
-  const key = [method, responseType, url, serializedBody, encodedParams].join('|');
+  const key = [method, responseType, mappedRequestUrl, serializedBody, encodedParams].join('|');
   const hash = generateHash(key);
 
   return makeStateKey(hash);
@@ -344,4 +393,29 @@ function appendMissingHeadersDetection(
       };
     },
   });
+}
+
+function mapRequestOriginUrl(url: string, originMap: Record<string, string>): string {
+  const origin = new URL(url, 'resolve://').origin;
+  const mappedOrigin = originMap[origin];
+  if (!mappedOrigin) {
+    return url;
+  }
+
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    verifyMappedOrigin(mappedOrigin);
+  }
+
+  return url.replace(origin, mappedOrigin);
+}
+
+function verifyMappedOrigin(url: string): void {
+  if (new URL(url, 'resolve://').pathname !== '/') {
+    throw new RuntimeError(
+      RuntimeErrorCode.HTTP_ORIGIN_MAP_CONTAINS_PATH,
+      'Angular detected a URL with a path segment in the value provided for the ' +
+        `\`HTTP_TRANSFER_CACHE_ORIGIN_MAP\` token: ${url}. The map should only contain origins ` +
+        'without any other segments.',
+    );
+  }
 }

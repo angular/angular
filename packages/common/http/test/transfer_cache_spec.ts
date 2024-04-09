@@ -17,13 +17,15 @@ import {HttpClient, HttpResponse, provideHttpClient} from '../public_api';
 import {
   BODY,
   HEADERS,
+  HTTP_TRANSFER_CACHE_ORIGIN_MAP,
   RESPONSE_TYPE,
   STATUS,
   STATUS_TEXT,
-  URL,
+  REQ_URL,
   withHttpTransferCache,
 } from '../src/transfer_cache';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
+import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '../../src/platform_id';
 
 interface RequestParams {
   method?: string;
@@ -95,7 +97,7 @@ describe('TransferCache', () => {
         TestBed.configureTestingModule({
           declarations: [SomeComponent],
           providers: [
-            {provide: PLATFORM_ID, useValue: 'server'},
+            {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
             {provide: DOCUMENT, useFactory: () => document},
             {provide: ApplicationRef, useClass: ApplicationRefPatched},
             withHttpTransferCache({}),
@@ -134,7 +136,7 @@ describe('TransferCache', () => {
           [HEADERS]: {},
           [STATUS]: 200,
           [STATUS_TEXT]: 'OK',
-          [URL]: '/test-1',
+          [REQ_URL]: '/test-1',
           [RESPONSE_TYPE]: 'json',
         },
         '2400572440': {
@@ -142,7 +144,7 @@ describe('TransferCache', () => {
           [HEADERS]: {},
           [STATUS]: 200,
           [STATUS_TEXT]: 'OK',
-          [URL]: '/test-2',
+          [REQ_URL]: '/test-2',
           [RESPONSE_TYPE]: 'json',
         },
       });
@@ -330,7 +332,7 @@ describe('TransferCache', () => {
           TestBed.configureTestingModule({
             declarations: [SomeComponent],
             providers: [
-              {provide: PLATFORM_ID, useValue: 'browser'},
+              {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
               withHttpTransferCache({}),
@@ -365,7 +367,7 @@ describe('TransferCache', () => {
           TestBed.configureTestingModule({
             declarations: [SomeComponent],
             providers: [
-              {provide: PLATFORM_ID, useValue: 'server'},
+              {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
               withHttpTransferCache({
@@ -446,6 +448,179 @@ describe('TransferCache', () => {
         // This one was cached with headers
         const response = makeRequestAndExpectNone('/include?foo=1');
         expect(response.headers.keys().length).toBe(0);
+      });
+    });
+
+    describe('caching with public origins', () => {
+      beforeEach(
+        withBody('<test-app-http></test-app-http>', () => {
+          TestBed.resetTestingModule();
+          isStable = new BehaviorSubject<boolean>(false);
+
+          @Injectable()
+          class ApplicationRefPatched extends ApplicationRef {
+            override isStable = new BehaviorSubject<boolean>(false);
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              withHttpTransferCache({}),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+              {
+                provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                useValue: {
+                  'http://internal-domain.com:1234': 'https://external-domain.net:443',
+                },
+              },
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+          isStable = appRef.isStable as BehaviorSubject<boolean>;
+        }),
+      );
+
+      it('should cache with public origin', () => {
+        makeRequestAndExpectOne('http://internal-domain.com:1234/test-1?foo=1', 'foo');
+        const cachedRequest = makeRequestAndExpectNone(
+          'https://external-domain.net:443/test-1?foo=1',
+        );
+        expect(cachedRequest.url).toBe('https://external-domain.net:443/test-1?foo=1');
+      });
+
+      it('should cache normally when there is no mapping defined for the origin', () => {
+        makeRequestAndExpectOne('https://other.internal-domain.com:1234/test-1?foo=1', 'foo');
+        makeRequestAndExpectNone('https://other.internal-domain.com:1234/test-1?foo=1');
+      });
+
+      describe('when the origin map is configured with extra paths', () => {
+        beforeEach(
+          withBody('<test-app-http></test-app-http>', () => {
+            TestBed.resetTestingModule();
+            isStable = new BehaviorSubject<boolean>(false);
+
+            @Injectable()
+            class ApplicationRefPatched extends ApplicationRef {
+              override isStable = new BehaviorSubject<boolean>(false);
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [SomeComponent],
+              providers: [
+                {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+                {provide: DOCUMENT, useFactory: () => document},
+                {provide: ApplicationRef, useClass: ApplicationRefPatched},
+                withHttpTransferCache({}),
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                {
+                  provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                  useValue: {
+                    'http://internal-domain.com:1234': 'https://external-domain.net:443/path',
+                  },
+                },
+              ],
+            });
+
+            const appRef = TestBed.inject(ApplicationRef);
+            appRef.bootstrap(SomeComponent);
+            isStable = appRef.isStable as BehaviorSubject<boolean>;
+          }),
+        );
+
+        it('should throw an error when the origin map is configured with extra paths', () => {
+          TestBed.inject(HttpClient)
+            .request('GET', 'http://internal-domain.com:1234/path/test-1')
+            .subscribe({
+              error: (error: Error) => {
+                expect(error.message).toBe(
+                  'NG02804: Angular detected a URL with a path segment in the value provided for the ' +
+                    '`HTTP_TRANSFER_CACHE_ORIGIN_MAP` token: https://external-domain.net:443/path. ' +
+                    'The map should only contain origins without any other segments.',
+                );
+              },
+            });
+        });
+      });
+
+      describe('on the client', () => {
+        beforeEach(
+          withBody('<test-app-http></test-app-http>', () => {
+            TestBed.resetTestingModule();
+            isStable = new BehaviorSubject<boolean>(false);
+
+            @Injectable()
+            class ApplicationRefPatched extends ApplicationRef {
+              override isStable = new BehaviorSubject<boolean>(false);
+            }
+
+            TestBed.configureTestingModule({
+              declarations: [SomeComponent],
+              providers: [
+                {provide: DOCUMENT, useFactory: () => document},
+                {provide: ApplicationRef, useClass: ApplicationRefPatched},
+                withHttpTransferCache({}),
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                {
+                  provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                  useValue: {
+                    'http://internal-domain.com:1234': 'https://external-domain.net:443',
+                  },
+                },
+                {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+              ],
+            });
+
+            // Make a request on the server to fill the transfer state then reuse it in the browser
+            makeRequestAndExpectOne('http://internal-domain.com:1234/test-1?foo=1', 'foo');
+            const transferState = TestBed.inject(TransferState);
+
+            TestBed.resetTestingModule();
+            TestBed.configureTestingModule({
+              declarations: [SomeComponent],
+              providers: [
+                {provide: DOCUMENT, useFactory: () => document},
+                {provide: ApplicationRef, useClass: ApplicationRefPatched},
+                withHttpTransferCache({}),
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                {
+                  provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+                  useValue: {
+                    'http://internal-domain.com:1234': 'https://external-domain.net:443',
+                  },
+                },
+                {provide: TransferState, useValue: transferState},
+                {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+              ],
+            });
+
+            const appRef = TestBed.inject(ApplicationRef);
+            appRef.bootstrap(SomeComponent);
+            isStable = appRef.isStable as BehaviorSubject<boolean>;
+          }),
+        );
+
+        it('should throw an error when origin mapping is defined', () => {
+          TestBed.inject(HttpClient)
+            .request('GET', 'https://external-domain.net:443/test-1?foo=1')
+            .subscribe({
+              error: (error: Error) => {
+                expect(error.message).toBe(
+                  'NG02803: Angular detected that the `HTTP_TRANSFER_CACHE_ORIGIN_MAP` token is configured and ' +
+                    'present in the client side code. Please ensure that this token is only provided in the ' +
+                    'server code of the application.',
+                );
+              },
+            });
+        });
       });
     });
   });
