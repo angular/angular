@@ -183,6 +183,9 @@
     "name": "HTTP_ROOT_INTERCEPTOR_FNS"
   },
   {
+    "name": "HTTP_TRANSFER_CACHE_ORIGIN_MAP"
+  },
+  {
     "name": "HttpEventType"
   },
   {
@@ -405,6 +408,9 @@
     "name": "REMOVE_STYLES_ON_COMPONENT_DESTROY"
   },
   {
+    "name": "REQ_URL"
+  },
+  {
     "name": "RESPONSE_TYPE"
   },
   {
@@ -475,9 +481,6 @@
   },
   {
     "name": "TransferState"
-  },
-  {
-    "name": "URL2"
   },
   {
     "name": "USE_VALUE"

@@ -27,6 +27,9 @@ export class FetchBackend implements HttpBackend {
 export const HTTP_INTERCEPTORS: InjectionToken<readonly HttpInterceptor[]>;
 
 // @public
+export const HTTP_TRANSFER_CACHE_ORIGIN_MAP: InjectionToken<Record<string, string>>;
+
+// @public
 export abstract class HttpBackend implements HttpHandler {
     // (undocumented)
     abstract handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
