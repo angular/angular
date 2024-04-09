@@ -696,7 +696,8 @@ export function triggerPrefetching(tDetails: TDeferBlockDetails, lView: LView, t
  * @param tDetails Static information about this defer block.
  * @param lView LView of a host view.
  */
-export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LView, tNode: TNode) {
+export function triggerResourceLoading(
+    tDetails: TDeferBlockDetails, lView: LView, tNode: TNode): Promise<unknown> {
   const injector = lView[INJECTOR]!;
   const tView = lView[TVIEW];
 
@@ -704,7 +705,7 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
     // If the loading status is different from initial one, it means that
     // the loading of dependencies is in progress and there is nothing to do
     // in this function. All details can be obtained from the `tDetails` object.
-    return;
+    return tDetails.loadingPromise ?? Promise.resolve();
   }
 
   const lDetails = getLDeferBlockDetails(lView, tNode);
@@ -741,7 +742,7 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
       tDetails.loadingState = DeferDependenciesLoadingState.COMPLETE;
       pendingTasks.remove(taskId);
     });
-    return;
+    return tDetails.loadingPromise;
   }
 
   // Start downloading of defer block dependencies.
@@ -807,6 +808,7 @@ export function triggerResourceLoading(tDetails: TDeferBlockDetails, lView: LVie
       }
     }
   });
+  return tDetails.loadingPromise;
 }
 
 /** Utility function to render placeholder content (if present) */

@@ -7,7 +7,7 @@
  */
 
 import {ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {Component, PLATFORM_ID} from '@angular/core';
+import {Component, PLATFORM_ID, ɵPendingTasks as PendingTasks} from '@angular/core';
 import {DeferBlockBehavior, DeferBlockState, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -172,6 +172,42 @@ describe('DeferFixture', () => {
       `
     })
     class DeferComp {
+    }
+
+    TestBed.configureTestingModule({
+      imports: [
+        DeferComp,
+        SecondDeferredComp,
+      ],
+      providers: COMMON_PROVIDERS,
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+    });
+
+    const componentFixture = TestBed.createComponent(DeferComp);
+    const deferBlock = (await componentFixture.getDeferBlocks())[0];
+    const el = componentFixture.nativeElement as HTMLElement;
+    await deferBlock.render(DeferBlockState.Complete);
+    expect(el.querySelector('.more')).toBeDefined();
+  });
+
+  it('should not wait forever if application is unstable for a long time', async () => {
+    @Component({
+      selector: 'defer-comp',
+      standalone: true,
+      imports: [SecondDeferredComp],
+      template: `
+        <div>
+          @defer (on immediate) {
+            <second-deferred-comp />
+          }
+        </div>
+      `
+    })
+    class DeferComp {
+      constructor(taskService: PendingTasks) {
+        // Add a task and never remove it. Keeps application unstable forever
+        taskService.add();
+      }
     }
 
     TestBed.configureTestingModule({
