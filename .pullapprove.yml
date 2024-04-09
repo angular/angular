@@ -1370,8 +1370,10 @@ groups:
         - mturco # Matt Turco
         - neonstalwart # Ben Hockey
         - nicholasyu-google # Nicholas Yu
-        - rahatarmanahmed # Rahat Ahmed
         - emspishak # Eric Spishak-Thomas
+        - iteriani # Thomas Nguyen
+        - tbondwilkinson # Tom Wilkinson
+        - rahatarmanahmed # Rahat Ahmed
     reviews:
       required: 1
       reviewed_for: required
