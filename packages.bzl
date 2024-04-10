@@ -4,8 +4,6 @@
 # found in the LICENSE file at https://angular.io/license
 """Packages published to npm"""
 
-load("@build_bazel_rules_nodejs//internal/linker:npm_link.bzl", "npm_link")
-
 def to_package_label(package_name):
     """Get a label corresponding to the npm_package target for the package name"""
     if package_name == "angular-in-memory-web-api":
@@ -18,23 +16,6 @@ def _exclude_pkgs(packages, *args):
     for pkg in args:
         modified_packages.remove(pkg)
     return modified_packages
-
-def link_packages(packages = []):
-    linked_packages = []
-    for package in packages:
-        pkg_name = Label(package).package
-        if pkg_name in ALL_PACKAGES:
-            name = "%s_linked" % pkg_name.replace("@angular/", "").replace("/", "_")
-            npm_link(
-                name = name,
-                target = to_package_label(pkg_name),
-                package_name = pkg_name,
-                tags = ["manual"],
-            )
-            linked_packages += [":%s" % name]
-        else:
-            linked_packages += [package]
-    return linked_packages
 
 # All framework packages published to NPM.
 ALL_PACKAGES = [
