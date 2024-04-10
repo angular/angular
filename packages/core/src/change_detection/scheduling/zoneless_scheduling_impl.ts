@@ -25,12 +25,20 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private pendingRenderTaskId: number|null = null;
   private shouldRefreshViews = false;
   private readonly ngZone = inject(NgZone);
-  private runningTick = false;
+  runningTick = false;
   private cancelScheduledCallback: null|(() => void) = null;
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly disableScheduling =
       inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.scheduleEventTask;
+  private readonly afterTickSubscription = this.appRef.afterTick.subscribe(() => {
+    // If the scheduler isn't running a tick but the application ticked, that means
+    // someone called ApplicationRef.tick manually. In this case, we should cancel
+    // any change detections that had been scheduled so we don't run an extra one.
+    if (!this.runningTick) {
+      this.cleanup();
+    }
+  });
 
   constructor() {
     // TODO(atscott): These conditions will need to change when zoneless is the default
@@ -91,11 +99,11 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
    * @param shouldRefreshViews Passed directly to `ApplicationRef._tick` and skips straight to
    *     render hooks when `false`.
    */
-  tick(shouldRefreshViews: boolean): void {
+  private tick(shouldRefreshViews: boolean): void {
     // When ngZone.run below exits, onMicrotaskEmpty may emit if the zone is
     // stable. We want to prevent double ticking so we track whether the tick is
     // already running and skip it if so.
-    if (this.runningTick || this.appRef.destroyed || this.appRef._runningTick) {
+    if (this.runningTick || this.appRef.destroyed) {
       return;
     }
 
@@ -110,6 +118,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   }
 
   ngOnDestroy() {
+    this.afterTickSubscription.unsubscribe();
     this.cleanup();
   }
 

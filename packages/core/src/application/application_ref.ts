@@ -299,7 +299,8 @@ export class ApplicationRef {
   // Eventually the hostView of the fixture should just attach to ApplicationRef.
   private externalTestViews: Set<InternalViewRef<unknown>> = new Set();
   private beforeRender = new Subject<boolean>();
-  private afterTick = new Subject<void>();
+  /** @internal */
+  afterTick = new Subject<void>();
 
   /**
    * Indicates whether this instance was destroyed.
@@ -538,9 +539,9 @@ export class ApplicationRef {
       // Attention: Don't rethrow as it could cancel subscriptions to Observables!
       this.internalErrorHandler(e);
     } finally {
-      this.afterTick.next();
       this._runningTick = false;
       setActiveConsumer(prevConsumer);
+      this.afterTick.next();
     }
   }
 

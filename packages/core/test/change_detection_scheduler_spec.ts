@@ -540,6 +540,32 @@ describe('Angular with zoneless enabled', () => {
     }).not.toThrow();
     await fixture.whenStable();
   });
+
+  it('should not run change detection twice if manual tick called when CD was scheduled',
+     async () => {
+       let changeDetectionRuns = 0;
+       TestBed.runInInjectionContext(() => {
+         afterRender(() => {
+           changeDetectionRuns++;
+         });
+       });
+       @Component({template: '', standalone: true})
+       class MyComponent {
+         cdr = inject(ChangeDetectorRef);
+       }
+       const fixture = TestBed.createComponent(MyComponent);
+       await fixture.whenStable();
+       expect(changeDetectionRuns).toEqual(1);
+
+       // notify the scheduler
+       fixture.componentInstance.cdr.markForCheck();
+       // call tick manually
+       TestBed.inject(ApplicationRef).tick();
+       await fixture.whenStable();
+       // ensure we only ran render hook 1 more time rather than once for tick and once for the
+       // scheduled run
+       expect(changeDetectionRuns).toEqual(2);
+     });
 });
 
 describe('Angular with scheduler and ZoneJS', () => {
@@ -589,7 +615,7 @@ describe('Angular with scheduler and ZoneJS', () => {
   it('should not run change detection twice if notified during AppRef.tick', async () => {
     TestBed.configureTestingModule({
       providers: [
-        provideZoneChangeDetection(hybridModeSchedulingOptions),
+        provideZoneChangeDetection({ignoreChangesOutsideZone: false}),
         {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
       ]
     });
