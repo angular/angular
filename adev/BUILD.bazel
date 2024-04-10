@@ -1,8 +1,9 @@
-load("//:packages.bzl", "link_packages")
 load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
+load("@bazel_skylib//lib:collections.bzl", "collections")
+load("//adev/tools/local_deps:index.bzl", "ensure_local_package_deps", "link_local_packages")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -30,7 +31,17 @@ TEST_FILES = APPLICATION_FILES + [
     ["**/*.spec.ts"],
 )
 
-APPLICATION_DEPS = link_packages([
+APPLICATION_ASSETS = [
+    "//adev/src/assets/images",
+    "//adev/src/assets/textures",
+    "//adev/src/assets/previews",
+    "//adev/src/assets:tutorials",
+    "//adev/src/assets/icons",
+    "//adev/src/assets:api",
+    "//adev/src/assets:content",
+]
+
+APPLICATION_DEPS = [
     "@npm//@angular-devkit/build-angular",
     "@npm//@angular/animations",
     "@npm//@angular/cdk",
@@ -50,13 +61,6 @@ APPLICATION_DEPS = link_packages([
     "@npm//ogl",
     "@npm//rxjs",
     "@npm//typescript",
-    "//adev/src/assets/images",
-    "//adev/src/assets/textures",
-    "//adev/src/assets/previews",
-    "//adev/src/assets:tutorials",
-    "//adev/src/assets/icons",
-    "//adev/src/assets:api",
-    "//adev/src/assets:content",
     "@npm//@typescript/vfs",
     "@npm//@codemirror/state",
     "@npm//@codemirror/view",
@@ -76,11 +80,10 @@ APPLICATION_DEPS = link_packages([
     "@npm//@xterm/xterm",
     "@npm//xterm-addon-fit",
     "@npm//angular-split",
-])
+]
 
-TEST_DEPS = APPLICATION_DEPS + link_packages([
+TEST_DEPS = APPLICATION_DEPS + [
     "@npm//@angular/platform-browser-dynamic",
-    "@npm//@angular/build-tooling/bazel/browsers/chromium",
     "@npm//@types/jasmine",
     "@npm//@types/node",
     "@npm//assert",
@@ -90,8 +93,13 @@ TEST_DEPS = APPLICATION_DEPS + link_packages([
     "@npm//karma-coverage",
     "@npm//karma-jasmine",
     "@npm//karma-jasmine-html-reporter",
-    "//aio/tools:windows-chromium-path",
-])
+]
+
+# Create `npm_link` targets for all dependencies that correspond to a
+# first-party Angular package that can be built from `HEAD`.
+link_local_packages(
+    all_deps = collections.uniq(APPLICATION_DEPS + TEST_DEPS),
+)
 
 copy_to_bin(
     name = "application_files_bin",
@@ -129,7 +137,7 @@ architect(
         "--output-path=build",
     ] + config_based_architect_flags,
     chdir = "$(RULEDIR)",
-    data = APPLICATION_DEPS + [
+    data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
         ":application_files_bin",
     ],
     # Network is required to inline fonts.
@@ -149,7 +157,7 @@ architect(
         "--watch",
     ],
     chdir = package_name(),
-    data = APPLICATION_DEPS + [
+    data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
         ":application_files_bin",
     ],
     tags = [
@@ -164,7 +172,10 @@ architect_test(
         "--no-watch",
     ],
     chdir = package_name(),
-    data = TEST_DEPS + TEST_FILES,
+    data = ensure_local_package_deps(TEST_DEPS) + TEST_FILES + APPLICATION_ASSETS + [
+        "//aio/tools:windows-chromium-path",
+        "@npm//@angular/build-tooling/bazel/browsers/chromium",
+    ],
     env = {
         "CHROME_BIN": "../$(CHROMIUM)",
     },
