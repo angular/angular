@@ -769,7 +769,7 @@ groups:
     conditions:
       - >
         contains_any_globs(files, [
-          'packages/misc/angular-in-memory-web-api/**/{*,.*}',
+          'packages/angular-in-memory-web-api/**/{*,.*}',
           ])
     reviewers:
       users:

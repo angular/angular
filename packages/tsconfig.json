@@ -25,7 +25,7 @@
       "rxjs/*": ["./node_modules/rxjs/*"],
       "@angular/*": ["./packages/*"],
       "zone.js/*": ["./packages/zone.js/*"],
-      "angular-in-memory-web-api": ["./packages/misc/angular-in-memory-web-api/index.ts"]
+      "angular-in-memory-web-api": ["./packages/angular-in-memory-web-api/index.ts"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,

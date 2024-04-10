@@ -7,11 +7,11 @@ ts_library(
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
+        "//packages/angular-in-memory-web-api",
         "//packages/common",
         "//packages/common/http",
         "//packages/core",
         "//packages/core/testing",
-        "//packages/misc/angular-in-memory-web-api",
         "@npm//@types/jasmine-ajax",
         "@npm//jasmine-ajax",
         "@npm//rxjs",

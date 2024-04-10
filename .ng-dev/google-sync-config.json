@@ -9,6 +9,7 @@
   ],
   "alwaysExternalFilePatterns": [
     "packages/*",
+    "packages/angular-in-memory-web-api/**",
     "packages/bazel/*",
     "packages/bazel/src/*",
     "packages/bazel/src/api-extractor/**",

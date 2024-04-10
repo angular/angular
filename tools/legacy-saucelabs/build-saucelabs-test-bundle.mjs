@@ -143,7 +143,7 @@ async function createEntryPointSpecFile() {
 async function createResolveEsbuildPlugin() {
   const resolveMappings = new Map([
     [/@angular\//, `${legacyOutputDir}/`],
-    [/^angular-in-memory-web-api$/, join(legacyOutputDir, 'misc/angular-in-memory-web-api')],
+    [/^angular-in-memory-web-api$/, `${legacyOutputDir}/angular-in-memory-web-api/`],
     [/^zone.js\//, `${legacyOutputDir}/zone.js/`],
   ]);
 

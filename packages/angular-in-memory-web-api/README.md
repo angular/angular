@@ -13,7 +13,7 @@ _This package used to live [in its own repository](https://github.com/angular/in
 ### _It used to work and now it doesn't :-(_
 
 Perhaps you installed a new version of this library? Check the
-[CHANGELOG.md](https://github.com/angular/angular/blob/main/packages/misc/angular-in-memory-web-api/CHANGELOG.md)
+[CHANGELOG.md](https://github.com/angular/angular/blob/main/packages/angular-in-memory-web-api/CHANGELOG.md)
 for breaking changes that may have affected your app.
 
 If that doesn't explain it, create an
@@ -154,7 +154,7 @@ CLI-based apps can exclude the provider in production builds like this:
   ```
 
 # Examples
-The [tests](https://github.com/angular/angular/blob/main/packages/misc/angular-in-memory-web-api/test)
+The [tests](https://github.com/angular/angular/blob/main/packages/angular-in-memory-web-api/test)
 are a good place to learn how to setup and use this in-memory web api library.
 
 See also the example source code in the official Angular.dev documentation such as the
@@ -377,7 +377,7 @@ and compose a response.
 
 ## In-memory Web Api Examples
 
-The [test fixtures](https://github.com/angular/angular/tree/main/packages/misc/angular-in-memory-web-api/test/fixtures)
+The [test fixtures](https://github.com/angular/angular/tree/main/packages/angular-in-memory-web-api/test/fixtures)
 demonstrates library usage with tested examples.
 
 The `HeroInMemDataService` class (in `test/fixtures/hero-in-mem-data-service.ts`) is a Hero-oriented `InMemoryDbService`

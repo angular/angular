@@ -43,8 +43,9 @@ export function performNpmReleaseBuild(): BuiltPackage[] {
  */
 export function performDefaultSnapshotBuild(): BuiltPackage[] {
   return buildReleasePackages(defaultDistPath, /* isSnapshotBuild */ true, [
-    // For snapshot builds, the Bazel package is still built. We want to have
-    // GitHub snapshot builds for it.
+    // For snapshot builds, these packages are still built. We want to have
+    // GitHub snapshot builds for them.
+    '//packages/angular-in-memory-web-api:npm_package',
     '//packages/bazel:npm_package',
   ]);
 }
