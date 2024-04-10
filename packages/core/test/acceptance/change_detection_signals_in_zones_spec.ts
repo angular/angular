@@ -181,7 +181,7 @@ describe('CheckAlways components', () => {
     class App {
       val = val;
       ngOnInit() {
-        this.val.update(v => v+1);
+        this.val.update(v => v + 1);
       }
     }
     const fixture = TestBed.createComponent(App);
@@ -433,12 +433,12 @@ describe('OnPush components with signals', () => {
 
     fixture.detectChanges();
     expect(fixture.nativeElement.outerHTML).not.toContain('blue');
-    expect(fixture.componentInstance.numTemplateExecutions).not.toContain(1);
+    expect(fixture.componentInstance.numTemplateExecutions).toBe(1);
 
     useBlue.set(true);
     fixture.detectChanges();
     expect(fixture.nativeElement.outerHTML).toContain('blue');
-    expect(fixture.componentInstance.numTemplateExecutions).not.toContain(1);
+    expect(fixture.componentInstance.numTemplateExecutions).toBe(1);
   });
 
   it('can read a signal in a host binding', () => {
