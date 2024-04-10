@@ -142,7 +142,7 @@ The minimal policy required for a brand-new Angular application is:
 
 <docs-code language="text">
 
-default-src 'self'; style-src 'self' 'nonce-randomNonceGoesHere'; script-src 'self' 'nonce-randomNonceGoesHere';
+default-src 'self'; style-src 'self' 'nonce-randomNonceGoesHere'; style-src-attr 'unsafe-inline'; script-src 'self' 'nonce-randomNonceGoesHere';
 
 </docs-code>
 
@@ -180,6 +180,7 @@ If you cannot generate nonces in your project, you can allow inline styles by ad
 | :----------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `default-src 'self';`                            | Allows the page to load all its required resources from the same origin.                                                                                                                                        |
 | `style-src 'self' 'nonce-randomNonceGoesHere';`  | Allows the page to load global styles from the same origin \(`'self'`\) and styles inserted by Angular with the `nonce-randomNonceGoesHere`.                                                                    |
+| `style-src-attr 'unsafe-inline'; `               | Allows angular to set style attributes on html elements with [ngStyle](api/common/NgStyle) and [animations](api/animations/style).                                         |
 | `script-src 'self' 'nonce-randomNonceGoesHere';` | Allows the page to load JavaScript from the same origin \(`'self'`\) and scripts inserted by the Angular CLI with the `nonce-randomNonceGoesHere`. This is only required if you're using critical CSS inlining. |
 
 Angular itself requires only these settings to function correctly.
