@@ -31,6 +31,14 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly disableScheduling =
       inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.scheduleEventTask;
+  private readonly afterTickSubscription = this.appRef.afterTick.subscribe(() => {
+    // If the scheduler isn't running a tick but the application ticked, that means
+    // someone called ApplicationRef.tick manually. In this case, we should cancel
+    // any change detections that had been scheduled so we don't run an extra one.
+    if (!this.runningTick) {
+      this.cleanup();
+    }
+  });
 
   constructor() {
     // TODO(atscott): These conditions will need to change when zoneless is the default
@@ -110,6 +118,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   }
 
   ngOnDestroy() {
+    this.afterTickSubscription.unsubscribe();
     this.cleanup();
   }
 
