@@ -1,3 +1,13 @@
+<a name="17.3.4"></a>
+# 17.3.4 (2024-04-10)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [53427d875d](https://github.com/angular/angular/commit/53427d875d33de16b1dbb04e76a9fe32a2b8a445) | fix | invalid ImageKit quality parameter ([#55193](https://github.com/angular/angular/pull/55193)) |
+| [766548c3ec](https://github.com/angular/angular/commit/766548c3ecc06ffd8f06ed9a7d0cbb3db6f1b0f6) | fix | skip transfer cache on client ([#55012](https://github.com/angular/angular/pull/55012)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-next.3"></a>
 # 18.0.0-next.3 (2024-04-03)
 ## Breaking Changes
