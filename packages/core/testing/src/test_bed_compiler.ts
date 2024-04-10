@@ -840,10 +840,11 @@ export class TestBedCompiler {
   private compileTestModule(): void {
     class RootScopeModule {}
     compileNgModuleDefs(RootScopeModule as NgModuleType<any>, {
-      providers: [...this.rootProviderOverrides, provideZoneChangeDetection()],
+      providers: [...this.rootProviderOverrides],
     });
 
     const providers = [
+      provideZoneChangeDetection(),
       {provide: Compiler, useFactory: () => new R3TestCompiler(this)},
       {provide: DEFER_BLOCK_CONFIG, useValue: {behavior: this.deferBlockBehavior}},
       ...this.providers,
