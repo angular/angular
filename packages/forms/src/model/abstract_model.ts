@@ -396,9 +396,9 @@ export type ɵGetProperty<T, K> =
  * The first type parameter TValue represents the value type of the control (`control.value`).
  * The optional type parameter TRawValue  represents the raw value type (`control.getRawValue()`).
  *
- * @see [Forms Guide](/guide/forms)
- * @see [Reactive Forms Guide](/guide/reactive-forms)
- * @see [Dynamic Forms Guide](/guide/dynamic-form)
+ * @see [Forms Guide](guide/forms)
+ * @see [Reactive Forms Guide](guide/forms/reactive-forms)
+ * @see [Dynamic Forms Guide](guide/forms/dynamic-forms)
  *
  * @publicApi
  */
@@ -876,6 +876,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * and emits events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), the `events`
+   * observable emits a `TouchedChangeEvent` with the `touched` property being `true`.
+   * When false, no events are emitted.
    */
   markAsTouched(opts?: {onlySelf?: boolean, emitEvent?: boolean}): void;
   /**
@@ -902,6 +905,12 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
   /**
    * Marks the control and all its descendant controls as `touched`.
    * @see {@link markAsTouched()}
+   *
+   * @param opts Configuration options that determine how the control propagates changes
+   * and emits events after marking is applied.
+   * * `emitEvent`: When true or not supplied (the default), the `events`
+   * observable emits a `TouchedChangeEvent` with the `touched` property being `true`.
+   * When false, no events are emitted.
    */
   markAllAsTouched(opts: {emitEvent?: boolean} = {}): void {
     this.markAsTouched({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this});
@@ -923,6 +932,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * and emits events after the marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), the `events`
+   * observable emits a `TouchedChangeEvent` with the `touched` property being `false`.
+   * When false, no events are emitted.
    */
   markAsUntouched(opts?: {onlySelf?: boolean, emitEvent?: boolean}): void;
   /**
@@ -1049,8 +1061,9 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
    * * `emitEvent`: When true or not supplied (the default), the `statusChanges`
-   * observable emits an event with the latest status the control is marked pending.
-   * When false, no events are emitted.
+   * observable emits an event with the latest status the control is marked pending
+   * and the `events` observable emits a `StatusChangeEvent` with the `status` property being
+   * `PENDING` When false, no events are emitted.
    *
    */
   markAsPending(opts?: {onlySelf?: boolean, emitEvent?: boolean}): void;
@@ -1087,8 +1100,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * changes and emits events after the control is disabled.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
-   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
-   * `valueChanges`
+   * * `emitEvent`: When true or not supplied (the default), the `statusChanges`,
+   * `valueChanges` and `events`
    * observables emit events with the latest status and value when the control is disabled.
    * When false, no events are emitted.
    */
@@ -1113,8 +1126,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
 
     const sourceControl = opts.sourceControl ?? this;
     if (opts.emitEvent !== false) {
-      this._events.next(new StatusChangeEvent(this.status, sourceControl));
       this._events.next(new ValueChangeEvent(this.value, sourceControl));
+      this._events.next(new StatusChangeEvent(this.status, sourceControl));
       (this.valueChanges as EventEmitter<TValue>).emit(this.value);
       (this.statusChanges as EventEmitter<FormControlStatus>).emit(this.status);
     }
@@ -1136,8 +1149,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * emits events when marked as untouched
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors. Default is false.
-   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
-   * `valueChanges`
+   * * `emitEvent`: When true or not supplied (the default), the `statusChanges`,
+   * `valueChanges` and `events`
    * observables emit events with the latest status and value when the control is enabled.
    * When false, no events are emitted.
    */
@@ -1209,8 +1222,8 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
    * after updates and validity checks are applied.
    * * `onlySelf`: When true, only update this control. When false or not supplied,
    * update all direct ancestors. Default is false.
-   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
-   * `valueChanges`
+   * * `emitEvent`: When true or not supplied (the default), the `statusChanges`,
+   * `valueChanges` and `events`
    * observables emit events with the latest status and value when the control is updated.
    * When false, no events are emitted.
    */

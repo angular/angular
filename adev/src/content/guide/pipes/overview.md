@@ -24,4 +24,4 @@ The following are commonly used built-in pipes for data formatting:
 - [`JsonPipe`](api/common/JsonPipe): Display a component object property to the screen as JSON for debugging.
 
 Note: For a complete list of built-in pipes, see the [pipes API documentation](/api/common#pipes "Pipes API reference summary").
-To learn more about using pipes for internationalization (i18n) efforts, see [formatting data based on locale](/guide/i18n/format-data-locale).
+To learn more about using pipes for internationalization (i18n) efforts, see [formatting data based on locale](guide/i18n/format-data-locale).

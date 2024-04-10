@@ -13,6 +13,7 @@ import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {PendingTasks} from '../../pending_tasks';
 import {scheduleCallback} from '../../util/callback_scheduler';
+import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NoopNgZone} from '../../zone/ng_zone';
 
 import {ChangeDetectionScheduler, NotificationType, ZONELESS_ENABLED, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
@@ -51,19 +52,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
 
     this.pendingRenderTaskId = this.taskService.add();
-    // TODO(atscott): This zone.root.run can maybe just be removed when we more
-    // effectively get the unpatched versions of setTimeout and rAF (#55092)
-    if (typeof Zone !== 'undefined' && Zone.root?.run) {
-      Zone.root.run(() => {
-        this.cancelScheduledCallback = scheduleCallback(() => {
-          this.tick(this.shouldRefreshViews);
-        });
-      });
-    } else {
-      this.cancelScheduledCallback = scheduleCallback(() => {
-        this.tick(this.shouldRefreshViews);
-      });
-    }
+    this.cancelScheduledCallback = scheduleCallback(() => {
+      this.tick(this.shouldRefreshViews);
+    });
   }
 
   private shouldScheduleTick(): boolean {
@@ -135,6 +126,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 }
 
 export function provideZonelessChangeDetection(): EnvironmentProviders {
+  performanceMarkFeature('NgZoneless');
   return makeEnvironmentProviders([
     {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
     {provide: NgZone, useClass: NoopNgZone},

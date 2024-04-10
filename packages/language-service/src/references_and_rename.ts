@@ -10,7 +10,6 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MetaKind, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
@@ -21,9 +20,7 @@ import {getTemplateInfoAtPosition, TemplateInfo} from './utils';
 export class ReferencesBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
 
-  constructor(
-      private readonly driver: ProgramDriver, private readonly tsLS: ts.LanguageService,
-      private readonly compiler: NgCompiler) {}
+  constructor(private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
 
   getReferencesAtPosition(filePath: string, position: number): ts.ReferenceEntry[]|undefined {
     this.ttc.generateAllTypeCheckBlocks();
@@ -62,7 +59,8 @@ export class ReferencesBuilder {
     const entries: ts.ReferenceEntry[] = [];
     for (const ref of refs) {
       if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
-        const entry = convertToTemplateDocumentSpan(ref, this.ttc, this.driver.getProgram());
+        const entry =
+            convertToTemplateDocumentSpan(ref, this.ttc, this.compiler.getCurrentProgram());
         if (entry !== null) {
           entries.push(entry);
         }
@@ -143,9 +141,7 @@ function isDirectRenameContext(context: RenameRequest): context is DirectFromTem
 export class RenameBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
 
-  constructor(
-      private readonly driver: ProgramDriver, private readonly tsLS: ts.LanguageService,
-      private readonly compiler: NgCompiler) {}
+  constructor(private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
 
   getRenameInfo(filePath: string, position: number):
       Omit<ts.RenameInfoSuccess, 'kind'|'kindModifiers'>|ts.RenameInfoFailure {
@@ -265,7 +261,7 @@ export class RenameBuilder {
       for (const location of locations) {
         if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(location.fileName))) {
           const entry = convertToTemplateDocumentSpan(
-              location, this.ttc, this.driver.getProgram(), expectedRenameText);
+              location, this.ttc, this.compiler.getCurrentProgram(), expectedRenameText);
           // There is no template node whose text matches the original rename request. Bail on
           // renaming completely rather than providing incomplete results.
           if (entry === null) {
@@ -293,7 +289,7 @@ export class RenameBuilder {
   }
 
   private getTsNodeAtPosition(filePath: string, position: number): ts.Node|null {
-    const sf = this.driver.getProgram().getSourceFile(filePath);
+    const sf = this.compiler.getCurrentProgram().getSourceFile(filePath);
     if (!sf) {
       return null;
     }
@@ -349,7 +345,7 @@ export class RenameBuilder {
         !ts.isStringLiteral(meta.nameExpr)) {
       return null;
     }
-    const typeChecker = this.driver.getProgram().getTypeChecker();
+    const typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
     const memberMethods = collectMemberMethods(meta.ref.node, typeChecker) ?? [];
     const pipeTransformNode: ts.MethodDeclaration|undefined =
         memberMethods.find(m => m.name.getText() === 'transform');

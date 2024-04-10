@@ -296,7 +296,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     const mapping = this.resolver.getSourceMapping(templateId);
     const errorMsg = `The property and event halves of the two-way binding '${
         input.name}' are not bound to the same target.
-            Find more at https://angular.io/guide/two-way-binding#how-two-way-binding-works`;
+            Find more at https://angular.dev/guide/templates/two-way-binding#how-two-way-binding-works`;
 
     const relatedMessages: {text: string; start: number; end: number;
                             sourceFile: ts.SourceFile;}[] = [];

@@ -89,7 +89,7 @@ import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
  *
  * @see {@link Router#navigate}
  * @see {@link Router#createUrlTree}
- * @see [Routing and Navigation guide](guide/router)
+ * @see [Routing and Navigation guide](guide/routing/common-router-tasks)
  *
  * @publicApi
  */
@@ -198,7 +198,7 @@ export interface UrlCreationOptions {
  * @see {@link Router#navigate}
  * @see {@link Router#navigateByUrl}
  * @see {@link Router#createurltree}
- * @see [Routing and Navigation guide](guide/router)
+ * @see [Routing and Navigation guide](guide/routing/common-router-tasks)
  * @see {@link UrlCreationOptions}
  * @see {@link NavigationBehaviorOptions}
  *

@@ -1,10 +1,10 @@
 TestDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   …
   inputs: {
-    counter: [$r3$.ɵɵInputFlags.SignalBased, "counter"],
-    modelWithAlias: [$r3$.ɵɵInputFlags.SignalBased, "alias", "modelWithAlias"],
+    counter: [1, "counter"],
+    modelWithAlias: [1, "alias", "modelWithAlias"],
     decoratorInput: "decoratorInput",
-    decoratorInputWithAlias: [$r3$.ɵɵInputFlags.None, "publicNameDecorator", "decoratorInputWithAlias"],
+    decoratorInputWithAlias: [0, "publicNameDecorator", "decoratorInputWithAlias"],
     decoratorInputTwoWay: "decoratorInputTwoWay"
   },
   outputs: {

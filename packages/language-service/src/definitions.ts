@@ -10,7 +10,6 @@ import {AST, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNo
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, Symbol, SymbolKind, TcbLocation, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
@@ -32,9 +31,7 @@ interface HasTcbLocation {
 export class DefinitionBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
 
-  constructor(
-      private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
-      private readonly driver: ProgramDriver) {}
+  constructor(private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
@@ -160,7 +157,7 @@ export class DefinitionBuilder {
     for (const info of definitionInfos) {
       if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(info.fileName))) {
         const templateDefinitionInfo =
-            convertToTemplateDocumentSpan(info, this.ttc, this.driver.getProgram());
+            convertToTemplateDocumentSpan(info, this.ttc, this.compiler.getCurrentProgram());
         if (templateDefinitionInfo === null) {
           continue;
         }

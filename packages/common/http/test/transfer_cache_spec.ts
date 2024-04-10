@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, Component, Injectable} from '@angular/core';
+import {ApplicationRef, Component, Injectable, PLATFORM_ID} from '@angular/core';
 import {makeStateKey, TransferState} from '@angular/core/src/transfer_state';
 import {fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
@@ -95,6 +95,7 @@ describe('TransferCache', () => {
         TestBed.configureTestingModule({
           declarations: [SomeComponent],
           providers: [
+            {provide: PLATFORM_ID, useValue: 'server'},
             {provide: DOCUMENT, useFactory: () => document},
             {provide: ApplicationRef, useClass: ApplicationRefPatched},
             withHttpTransferCache({}),
@@ -298,6 +299,41 @@ describe('TransferCache', () => {
       });
     });
 
+    describe('caching in browser context', () => {
+      beforeEach(
+        withBody('<test-app-http></test-app-http>', () => {
+          TestBed.resetTestingModule();
+          isStable = new BehaviorSubject<boolean>(false);
+
+          @Injectable()
+          class ApplicationRefPatched extends ApplicationRef {
+            override isStable = new BehaviorSubject<boolean>(false);
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: PLATFORM_ID, useValue: 'browser'},
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              withHttpTransferCache({}),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+          isStable = appRef.isStable as BehaviorSubject<boolean>;
+        }),
+      );
+
+      it('should skip storing in transfer cache when platform is browser', () => {
+        makeRequestAndExpectOne('/test-1?foo=1', 'foo');
+        makeRequestAndExpectOne('/test-1?foo=1', 'foo');
+      });
+    });
+
     describe('caching with global setting', () => {
       beforeEach(
         withBody('<test-app-http></test-app-http>', () => {
@@ -312,6 +348,7 @@ describe('TransferCache', () => {
           TestBed.configureTestingModule({
             declarations: [SomeComponent],
             providers: [
+              {provide: PLATFORM_ID, useValue: 'server'},
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
               withHttpTransferCache({

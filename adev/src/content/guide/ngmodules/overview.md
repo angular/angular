@@ -29,10 +29,10 @@ NgModule metadata does the following:
 * Provides services that other application components can use
 
 Every Angular application has at least one module, the root module.
-You [bootstrap](/guide/ngmodules/bootstrapping) that module to launch the application.
+You [bootstrap](guide/ngmodules/bootstrapping) that module to launch the application.
 
 The root module is all you need in an application with few components.
-As the application grows, you refactor the root module into [feature modules](/guide/ngmodules/feature-modules) that represent collections of related functionality.
+As the application grows, you refactor the root module into [feature modules](guide/ngmodules/feature-modules) that represent collections of related functionality.
 You then import these modules into the root module.
 
 ## The basic NgModule
@@ -56,7 +56,7 @@ export class AppModule {}
 
 At the top are the import statements.
 The next section is where you configure the `@NgModule` by stating what components and directives belong to it (`declarations`) as well as which other modules it uses (`imports`).
-For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](/guide/ngmodules/bootstrapping).
+For more information on the structure of an `@NgModule`, be sure to read [Bootstrapping](guide/ngmodules/bootstrapping).
 
 ## More on NgModules
 

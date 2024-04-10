@@ -23,7 +23,7 @@ export interface ValueSansProvider {
 
 /**
  * Configures the `Injector` to return a value for a token.
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @usageNotes
  *
@@ -72,7 +72,7 @@ export interface StaticClassSansProvider {
 
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @usageNotes
  *
@@ -104,7 +104,7 @@ export interface StaticClassProvider extends StaticClassSansProvider {
 /**
  * Configures the `Injector` to return an instance of a token.
  *
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @usageNotes
  *
@@ -125,7 +125,7 @@ export interface ConstructorSansProvider {
 /**
  * Configures the `Injector` to return an instance of a token.
  *
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @usageNotes
  *
@@ -154,7 +154,7 @@ export interface ConstructorProvider extends ConstructorSansProvider {
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
  * @see {@link ExistingProvider}
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @publicApi
  */
@@ -168,7 +168,7 @@ export interface ExistingSansProvider {
 /**
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @usageNotes
  *
@@ -197,7 +197,7 @@ export interface ExistingProvider extends ExistingSansProvider {
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
  *
  * @see {@link FactoryProvider}
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @publicApi
  */
@@ -217,7 +217,7 @@ export interface FactorySansProvider {
 
 /**
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @usageNotes
  *
@@ -251,7 +251,7 @@ export interface FactoryProvider extends FactorySansProvider {
  * A static provider provides tokens to an injector for various types of dependencies.
  *
  * @see {@link Injector.create()}
- * @see [Dependency Injection Guide](guide/dependency-injection-providers).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection-providers).
  *
  * @publicApi
  */
@@ -265,7 +265,7 @@ export type StaticProvider =
  * Create an instance by invoking the `new` operator and supplying additional arguments.
  * This form is a short form of `TypeProvider`;
  *
- * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
+ * For more details, see the ["Dependency Injection Guide"](guide/di/dependency-injection.
  *
  * @usageNotes
  *
@@ -279,7 +279,7 @@ export interface TypeProvider extends Type<any> {}
  * Configures the `Injector` to return a value by invoking a `useClass` function.
  * Base for `ClassProvider` decorator.
  *
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @publicApi
  */
@@ -292,7 +292,7 @@ export interface ClassSansProvider {
 
 /**
  * Configures the `Injector` to return an instance of `useClass` for a token.
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @usageNotes
  *
@@ -323,7 +323,7 @@ export interface ClassProvider extends ClassSansProvider {
 
 /**
  * Describes how the `Injector` should be configured.
- * @see [Dependency Injection Guide](guide/dependency-injection).
+ * @see [Dependency Injection Guide](guide/di/dependency-injection.
  *
  * @see {@link StaticProvider}
  *
@@ -378,8 +378,6 @@ export type ProcessProvidersFunction = (providers: Provider[]) => Provider[];
 /**
  * A wrapper around an NgModule that associates it with providers
  * Usage without a generic type is deprecated.
- *
- * @see [Deprecations](guide/deprecations#modulewithproviders-type-without-a-generic)
  *
  * @publicApi
  */

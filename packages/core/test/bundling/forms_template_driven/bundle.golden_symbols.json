@@ -696,9 +696,6 @@
     "name": "activeConsumer"
   },
   {
-    "name": "addLViewToLContainer"
-  },
-  {
     "name": "addPropertyBinding"
   },
   {
@@ -1344,6 +1341,9 @@
     "name": "isRefreshingViews"
   },
   {
+    "name": "isRootView"
+  },
+  {
     "name": "isStylingMatch"
   },
   {
@@ -1735,6 +1735,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "trackMovedView"
   },
   {
     "name": "uniqueIdCounter"

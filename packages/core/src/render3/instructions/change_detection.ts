@@ -320,7 +320,7 @@ function detectChangesInEmbeddedViews(lView: LView, mode: ChangeDetectionMode) {
 }
 
 /**
- * Mark transplanted views as needing to be refreshed at their insertion points.
+ * Mark transplanted views as needing to be refreshed at their attachment points.
  *
  * @param lView The `LView` that may have transplanted views.
  */
@@ -333,8 +333,6 @@ function markTransplantedViewsForRefresh(lView: LView) {
     ngDevMode && assertDefined(movedViews, 'Transplanted View flags set but missing MOVED_VIEWS');
     for (let i = 0; i < movedViews.length; i++) {
       const movedLView = movedViews[i]!;
-      const insertionLContainer = movedLView[PARENT] as LContainer;
-      ngDevMode && assertLContainer(insertionLContainer);
       markViewForRefresh(movedLView);
     }
   }

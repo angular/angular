@@ -20,7 +20,7 @@ import {
  * Subscribe to update notifications from the Service Worker, trigger update
  * checks, and forcibly activate updates.
  *
- * @see {@link guide/service-worker-communications Service worker communication guide}
+ * @see {@link ecosystem/service-workers/communications Service worker communication guide}
  *
  * @publicApi
  */

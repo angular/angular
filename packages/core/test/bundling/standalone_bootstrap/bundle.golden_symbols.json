@@ -843,6 +843,9 @@
     "name": "isRefreshingViews"
   },
   {
+    "name": "isRootView"
+  },
+  {
     "name": "isSubscription"
   },
   {
@@ -937,6 +940,9 @@
   },
   {
     "name": "parseAndConvertBindingsForDefinition"
+  },
+  {
+    "name": "performanceMarkFeature"
   },
   {
     "name": "processInjectorTypesWithProviders"

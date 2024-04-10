@@ -113,7 +113,7 @@ All requests forward up to the root injector, whether you configured it with the
 If you configure an app-wide provider in the `ApplicationConfig` of `bootstrapApplication`, it overrides one configured for `root` in the `@Injectable()` metadata.
 You can do this to configure a non-default provider of a service that is shared with multiple applications.
 
-Here is an example of the case where the component router configuration includes a non-default [location strategy](/guide/routing#location-strategy) by listing its provider in the `providers` list of the `ApplicationConfig`.
+Here is an example of the case where the component router configuration includes a non-default [location strategy](guide/routing#location-strategy) by listing its provider in the `providers` list of the `ApplicationConfig`.
 
 ```ts
 providers: [
@@ -338,8 +338,8 @@ The following is an example of how the `<app-root>` and `<app-child>` view trees
        …content goes here…
      </#VIEW>
     </app-child>
-  <#VIEW>
-<app-root>
+  </#VIEW>
+</app-root>
 </docs-code>
 
 Understanding the idea of the `<#VIEW>` demarcation is especially significant when you configure services in the component class.

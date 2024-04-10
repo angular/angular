@@ -2,7 +2,6 @@
 
 When you build your Angular application, take advantage of sophisticated first-party libraries, as well as rich ecosystem of third-party libraries.
 [Angular Material][AngularMaterialMain] is an example of a sophisticated first-party library.
-For links to the most popular libraries, see [Angular Resources][Resources].
 
 ## Install libraries
 

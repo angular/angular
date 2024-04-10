@@ -2,7 +2,7 @@ MyDirective.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   …
   inputs:{
     directiveInput: "directiveInput",
-    originalDirectiveInput: [$r3$.ɵɵInputFlags.None, "renamedDirectiveInput", "originalDirectiveInput"]
+    originalDirectiveInput: [0, "renamedDirectiveInput", "originalDirectiveInput"]
   },
   outputs: {
     directiveOutput: "directiveOutput",

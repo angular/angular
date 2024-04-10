@@ -1,7 +1,7 @@
 <h1 align="center">Angular - The modern web developer's platform</h1>
 
 <p align="center">
-  <img src="aio/src/assets/images/logos/angular/angular_renaissance.png" alt="angular-logo" width="120px" height="120px"/>
+  <img src="adev/src/assets/images/press-kit/angular_icon_gradient.gif" alt="angular-logo" width="120px" height="120px"/>
   <br>
   <em>Angular is a development platform for building mobile and desktop web applications
     <br> using TypeScript/JavaScript and other languages.</em>
@@ -167,8 +167,8 @@ Join the conversation and help the community.
 [angularmaterial]: https://material.angular.io/
 [cli]: https://angular.dev/tools/cli
 [architecture]: https://angular.dev/essentials
-[componentstemplates]: https://angular.dev/tutorials/learn-angular/components-in-angular
-[forms]: https://angular.dev/tutorials/learn-angular/forms
+[componentstemplates]: https://angular.dev/tutorials/learn-angular/1-components-in-angular
+[forms]: https://angular.dev/tutorials/learn-angular/15-forms
 [api]: https://angular.dev/api
 [angularelements]: https://angular.dev/guide/elements
 [ssr]: https://angular.dev/guide/ssr

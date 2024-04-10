@@ -66,9 +66,8 @@ function addBody<T>(
  * A single overload version of the method handles each response type.
  * The value of `responseType` cannot be a union, as the combined signature could imply.
 
- *
+ * TODO(adev): review
  * @usageNotes
- * Sample HTTP requests for the [Tour of Heroes](/tutorial/tour-of-heroes/toh-pt0) application.
  *
  * ### HTTP Request Example
  *
@@ -105,7 +104,7 @@ function addBody<T>(
  * }
  * ```
  *
- * @see [HTTP Guide](guide/understanding-communicating-with-http)
+ * @see [HTTP Guide](guide/http)
  * @see [HTTP Request](api/common/http/HttpRequest)
  *
  * @publicApi

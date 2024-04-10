@@ -1051,18 +1051,18 @@ describe('reactive forms integration tests', () => {
       expectPristineChangeEvent(values.at(-1), true, fc);
 
       fc.disable();
-      expectStatusChangeEvent(values.at(-2), 'DISABLED', fc);
-      expectValueChangeEvent(values.at(-1), 'foo', fc);
+      expectValueChangeEvent(values.at(-2), 'foo', fc);
+      expectStatusChangeEvent(values.at(-1), 'DISABLED', fc);
       expect(values.length).toBe(6);
 
       fc.enable();
-      expectStatusChangeEvent(values.at(-1), 'VALID', fc);
       expectValueChangeEvent(values.at(-2), 'foo', fc);
+      expectStatusChangeEvent(values.at(-1), 'VALID', fc);
       expect(values.length).toBe(8);
 
       fc.setValue(null);
-      expectStatusChangeEvent(values.at(-1), 'INVALID', fc);
       expectValueChangeEvent(values.at(-2), null, fc);
+      expectStatusChangeEvent(values.at(-1), 'INVALID', fc);
       expect(values.length).toBe(10);  // setValue doesnt emit dirty or touched
 
       fc.setValue('bar');
@@ -1228,10 +1228,10 @@ describe('reactive forms integration tests', () => {
       expectValueChangeEvent(fgEvents.at(-3), {fc2: 'bar'}, fg);
       expectStatusChangeEvent(fgEvents.at(-2), 'VALID', fg);
       expectTouchedChangeEvent(fgEvents.at(-1), false, fc1);
-      // Not prisitine event sent as fg was already pristine
+      // No prisitine event sent as fg was already pristine
 
-      expectStatusChangeEvent(fc1Events.at(-2), 'DISABLED', fc1);
-      expectValueChangeEvent(fc1Events.at(-1), 'foo', fc1);
+      expectValueChangeEvent(fc1Events.at(-2), 'foo', fc1);
+      expectStatusChangeEvent(fc1Events.at(-1), 'DISABLED', fc1);
     });
 
     it('Nested formControl should emit PENDING', () => {
@@ -1287,7 +1287,7 @@ describe('reactive forms integration tests', () => {
       expectStatusChangeEvent(fc1Events.at(-1), 'VALID', fc1);
     });
 
-    it('formContorl should not emit when emitEvent is false', () => {
+    it('formControl should not emit when emitEvent is false', () => {
       const fc = new FormControl<string|null>('foo', Validators.required);
       const fcEvents: ControlEvent[] = [];
       fc.events.subscribe(event => fcEvents.push(event));

@@ -43,4 +43,4 @@ Next, bind the `contentEditable` attribute of the `div` to the `isEditable` prop
 
 The div is now editable. Nice work 👍
 
-Property binding is one of Angular's many powerful features. If you'd like to learn more checkout [the Angular documentation](/guide/templates/property-binding).
+Property binding is one of Angular's many powerful features. If you'd like to learn more checkout [the Angular documentation](guide/templates/property-binding).

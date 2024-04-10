@@ -16,7 +16,7 @@ import {ApplicationRef} from '../application/application_ref';
  *
  * Reference to the current application is provided as a parameter.
  *
- * See ["Bootstrapping"](guide/bootstrapping).
+ * See ["Bootstrapping"](guide/ngmodules/bootstrapping).
  *
  * @usageNotes
  * The example below uses `ApplicationRef.bootstrap()` to render the

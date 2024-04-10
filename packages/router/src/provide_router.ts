@@ -645,7 +645,7 @@ export type NavigationErrorHandlerFeature =
 /**
  * Provides a function which is called when a navigation error occurs.
  *
- * This function is run inside application's [injection context](guide/dependency-injection-context)
+ * This function is run inside application's [injection context](guide/di/dependency-injection-context)
  * so you can use the [`inject`](api/core/inject) function.
  *
  * @usageNotes

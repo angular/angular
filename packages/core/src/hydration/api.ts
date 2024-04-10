@@ -209,12 +209,10 @@ export function withDomHydration(): EnvironmentProviders {
             // The timing is similar to when we start the serialization process
             // on the server.
             //
-            // Note: the cleanup task *MUST* be scheduled within the Angular zone
+            // Note: the cleanup task *MUST* be scheduled within the Angular zone in Zone apps
             // to ensure that change detection is properly run afterward.
             whenStableWithTimeout(appRef, injector).then(() => {
-              NgZone.assertInAngularZone();
               cleanupDehydratedViews(appRef);
-
               if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                 printHydrationStats(injector);
               }

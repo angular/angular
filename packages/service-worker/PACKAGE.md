@@ -12,5 +12,5 @@ ng add @angular/pwa
 The command configures your app to use service workers by adding the service-worker package
 and generating the necessary support files.
 
-For more usage information, see the [Service Workers](guide/service-worker-intro) guide.
+For more usage information, see the [Service Workers](ecosystem/service-workers) guide.
 

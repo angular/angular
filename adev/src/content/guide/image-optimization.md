@@ -71,7 +71,7 @@ Marking an image as `priority` applies the following optimizations:
 
 * Sets `fetchpriority=high` (read more about priority hints [here](https://web.dev/priority-hints))
 * Sets `loading=eager` (read more about native lazy loading [here](https://web.dev/browser-level-image-lazy-loading))
-* Automatically generates a [preload link element](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload) if [rendering on the server](/guide/ssr).
+* Automatically generates a [preload link element](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preload) if [rendering on the server](guide/ssr).
 
 Angular displays a warning during development if the LCP element is an image that does not have the `priority` attribute. A page’s LCP element can vary based on a number of factors - such as the dimensions of a user's screen, so a page may have multiple images that should be marked `priority`. See [CSS for Web Vitals](https://web.dev/css-web-vitals/#images-and-largest-contentful-paint-lcp) for more details.
 </docs-step>
@@ -118,17 +118,17 @@ IMPORTANT: For the "fill" image to render properly, its parent element **must** 
 
 NgOptimizedImage can display an automatic low-resolution placeholder for your image if you're using a CDN or image host that provides automatic image resizing. Take advantage of this feature by adding the `placeholder` attribute to your image:
 
-<code-example format="typescript" language="typescript">
+<docs-code format="typescript" language="typescript">
 
 <img ngSrc="cat.jpg" width="400" height="200" placeholder>
 
-</code-example>
+</docs-code>
 
 Adding this attribute automatically requests a second, smaller version of the image using your specified image loader. This small image will be applied as a `background-image` style with a CSS blur while your image loads. If no image loader is provided, no placeholder image can be generated and an error will be thrown.
 
 The default size for generated placeholders is 30px wide. You can change this size by specifying a pixel value in the `IMAGE_CONFIG` provider, as seen below:
 
-<code-example format="typescript" language="typescript">
+<docs-code format="typescript" language="typescript">
 providers: [
   {
     provide: IMAGE_CONFIG,
@@ -137,7 +137,7 @@ providers: [
     }
   },
 ],
-</code-example>
+</docs-code>
 
 If you want sharp edges around your blurred placeholder, you can wrap your image in a containing `<div>` with the `overflow: hidden` style. As long as the `<div>` is the same size as the image (such as by using the `width: fit-content` style), the "fuzzy edges" of the placeholder will be hidden.
 
@@ -145,11 +145,11 @@ If you want sharp edges around your blurred placeholder, you can wrap your image
 
 You can also specify a placeholder using a base64 [data URL](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs) without an image loader. The data url format is `data:image/[imagetype];[data]`, where `[imagetype]` is the image format, just as `png`, and `[data]` is a base64 encoding of the image. That encoding can be done using the command line or in JavaScript. For specific commands, see [the MDN documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs#encoding_data_into_base64_format). An example of a data URL placeholder with truncated data is shown below:
 
-<code-example format="typescript" language="typescript">
+<docs-code format="typescript" language="typescript">
 
 <img ngSrc="cat.jpg" width="400" height="200" placeholder="data:image/png;base64,iVBORw0K...">
 
-</code-example>
+</docs-code>
 
 However, large data URLs  increase the size of your Angular bundles and slow down page load. If you cannot use an image loader, the Angular team recommends keeping base64 placeholder images smaller than 4KB and using them exclusively on critical images. In addition to decreasing placeholder dimensions, consider changing image formats or parameters used when saving images. At very low resolutions, these parameters can have a large effect on file size.
 
@@ -157,11 +157,11 @@ However, large data URLs  increase the size of your Angular bundles and slow dow
 
 By default, NgOptimizedImage applies a CSS blur effect to image placeholders. To render a placeholder without blur, provide a `placeholderConfig` argument with an object that includes the `blur` property, set to false. For example:
 
-<code-example format="typescript" language="typescript">
+<docs-code format="typescript" language="typescript">
 
 <img ngSrc="cat.jpg" width="400" height="200" placeholder [placeholderConfig]="{blur: false}">
 
-</code-example>
+</docs-code>
 
 ## Adjusting image styling
 

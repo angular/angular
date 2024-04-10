@@ -45,7 +45,7 @@ import {HttpEvent} from './response';
  *
  * @publicApi
  *
- * @see [HTTP Guide](guide/http-intercept-requests-and-responses)
+ * @see [HTTP Guide](guide/http/interceptors)
  * @see {@link HttpInterceptorFn}
  *
  * @usageNotes
@@ -84,7 +84,7 @@ export interface HttpInterceptor {
  *
  * @publicApi
  *
- * @see [HTTP Guide](guide/http-intercept-requests-and-responses)
+ * @see [HTTP Guide](guide/http/interceptors)
  */
 export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<unknown>>;
 
@@ -99,10 +99,10 @@ export type HttpHandlerFn = (req: HttpRequest<unknown>) => Observable<HttpEvent<
  * request) is provided. Most interceptors will delegate to this function, but that is not required
  * (see `HttpHandlerFn` for more details).
  *
- * `HttpInterceptorFn`s are executed in an [injection context](/guide/dependency-injection-context).
+ * `HttpInterceptorFn`s are executed in an [injection context](guide/di/dependency-injection-context).
  * They have access to `inject()` via the `EnvironmentInjector` from which they were configured.
  *
- * @see [HTTP Guide](guide/http-intercept-requests-and-responses)
+ * @see [HTTP Guide](guide/http/interceptors)
  * @see {@link withInterceptors}
  *
  * @usageNotes
