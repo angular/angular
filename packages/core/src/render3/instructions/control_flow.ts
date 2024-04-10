@@ -9,7 +9,6 @@
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {TrackByFunction} from '../../change_detection';
-import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {assertDefined, assertFunction} from '../../util/assert';
@@ -254,35 +253,6 @@ class LiveCollectionLContainerImpl extends
   }
 }
 
-function detectDuplicateKeys(
-    collection: Iterable<unknown>, trackByFn: TrackByFunction<unknown>): void {
-  const keyToIdx = new Map<unknown, number>();
-  let duplicatedKeysMsg: string[] = [];
-
-  let idx = 0;
-  for (const item of collection) {
-    const key = trackByFn(idx, item);
-
-    if (keyToIdx.has(key)) {
-      const prevIdx = keyToIdx.get(key);
-      duplicatedKeysMsg.push(`key "${key}" at index "${prevIdx}" and "${idx}"`);
-    }
-
-    keyToIdx.set(key, idx++);
-  }
-
-  if (duplicatedKeysMsg.length > 0) {
-    const message = formatRuntimeError(
-        RuntimeErrorCode.LOOP_TRACK_DUPLICATE_KEYS,
-        'The provided track expression resulted in duplicated keys for a given collection. ' +
-            'Adjust the tracking expression such that it uniquely identifies all the items in the collection. ' +
-            'Duplicated keys were: \n' + duplicatedKeysMsg.join(', \n') + '.');
-
-    // tslint:disable-next-line:no-console
-    console.warn(message);
-  }
-}
-
 /**
  * The repeater instruction does update-time diffing of a provided collection (against the
  * collection seen previously) and maps changes in the collection to views structure (by adding,
@@ -306,11 +276,6 @@ export function ɵɵrepeater(collection: Iterable<unknown>|undefined|null): void
           new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
     } else {
       metadata.liveCollection.reset();
-    }
-
-    // make sure that tracking expression doesn't result in duplicate keys for a given collection
-    if (ngDevMode && collection != null) {
-      detectDuplicateKeys(collection, metadata.trackByFn);
     }
 
     const liveCollection = metadata.liveCollection;
