@@ -80,8 +80,8 @@ export class ImportManager implements
       disableOriginalSourceFileReuse: false,
       forceGenerateNamespacesForNewImports: false,
       namespaceImportPrefix: 'i',
-      generateUniqueIdentifier: this._config.generateUniqueIdentifier ??
-          createGenerateUniqueIdentifierHelper(),
+      generateUniqueIdentifier:
+          this._config.generateUniqueIdentifier ?? createGenerateUniqueIdentifierHelper(),
       ...this._config,
     };
     this.reuseSourceFileImportsTracker = {
