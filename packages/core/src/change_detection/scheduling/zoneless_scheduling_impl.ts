@@ -70,7 +70,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return false;
     }
     // already scheduled or running
-    if (this.pendingRenderTaskId !== null || this.runningTick) {
+    if (this.pendingRenderTaskId !== null || this.runningTick || this.appRef._runningTick) {
       return false;
     }
     // If we're inside the zone don't bother with scheduler. Zone will stabilize
@@ -95,7 +95,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     // When ngZone.run below exits, onMicrotaskEmpty may emit if the zone is
     // stable. We want to prevent double ticking so we track whether the tick is
     // already running and skip it if so.
-    if (this.runningTick || this.appRef.destroyed) {
+    if (this.runningTick || this.appRef.destroyed || this.appRef._runningTick) {
       return;
     }
 

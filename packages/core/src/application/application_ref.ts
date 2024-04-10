@@ -285,7 +285,8 @@ export function optionsReducer<T extends Object>(dst: T, objs: T|T[]): T {
 export class ApplicationRef {
   /** @internal */
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
-  private _runningTick: boolean = false;
+  /** @internal */
+  _runningTick: boolean = false;
   private _destroyed = false;
   private _destroyListeners: Array<() => void> = [];
   /** @internal */

@@ -585,4 +585,38 @@ describe('Angular with scheduler and ZoneJS', () => {
     await fixture.whenStable();
     expect(fixture.nativeElement.innerText).toContain('new');
   });
+
+  it('should not run change detection twice if notified during AppRef.tick', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZoneChangeDetection(hybridModeSchedulingOptions),
+        {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+      ]
+    });
+
+    let changeDetectionRuns = 0;
+    TestBed.runInInjectionContext(() => {
+      afterRender(() => {
+        changeDetectionRuns++;
+      });
+    });
+    @Component({template: '', standalone: true})
+    class MyComponent {
+      cdr = inject(ChangeDetectorRef);
+      ngDoCheck() {
+        // notify scheduler every time this component is checked
+        this.cdr.markForCheck();
+      }
+    }
+    const fixture = TestBed.createComponent(MyComponent);
+    await fixture.whenStable();
+    expect(changeDetectionRuns).toEqual(1);
+
+    // call tick manually
+    TestBed.inject(ApplicationRef).tick();
+    await fixture.whenStable();
+    // ensure we only ran render hook 1 more time rather than once for tick and once for the
+    // scheduled run
+    expect(changeDetectionRuns).toEqual(2);
+  });
 });
