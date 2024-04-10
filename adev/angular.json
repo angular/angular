@@ -19,9 +19,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "externalDependencies": [
-              "path"
-            ],
+            "externalDependencies": ["path"],
             "outputPath": "dist/angular-dev",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -29,11 +27,7 @@
             "polyfills": ["src/polyfills.ts", "zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/favicon.ico",
-              "src/robots.txt",
-              "src/assets"
-            ],
+            "assets": ["src/favicon.ico", "src/robots.txt", "src/assets"],
             "styles": ["@angular/docs/styles/global-styles.scss"],
             "scripts": [],
             "webWorkerTsConfig": "tsconfig.worker.json",
@@ -99,6 +93,11 @@
     }
   },
   "cli": {
-    "analytics": "dca119a9-da31-47f7-a6cb-b60541037021"
+    "analytics": "dca119a9-da31-47f7-a6cb-b60541037021",
+    "cache": {
+      // Disable build caching as the cache folder will just be dropped
+      // when run under Bazel sandboxed execution.
+      "enabled": false
+    }
   }
 }
