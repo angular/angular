@@ -1001,10 +1001,6 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'cli/deploy',
       },
       {
-        label: 'ng doc',
-        path: 'cli/doc',
-      },
-      {
         label: 'ng e2e',
         path: 'cli/e2e',
       },
