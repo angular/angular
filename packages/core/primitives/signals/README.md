@@ -67,7 +67,7 @@ Effects do not execute synchronously with the set (see the section on glitch-fre
 
 ## Producer and Consumer
 
-Internally, the signals implementation is defined in terms of two abstractions, producers and consumers.Producers represents values which can deliver change notifications, such as the various flavors of `Signal`s. Consumers represents a reactive context which may depend on some number of producers. In other words, producers produce reactivity, and consumers consume it.
+Internally, the signals implementation is defined in terms of two abstractions, producers and consumers. Producers represents values which can deliver change notifications, such as the various flavors of `Signal`s. Consumers represents a reactive context which may depend on some number of producers. In other words, producers produce reactivity, and consumers consume it.
 
 Implementers of either abstraction define a node object which implements the `ReactiveNode` interface, which models participation in the reactive graph. Any `ReactiveNode` can act in the role of a producer, a consumer, or both, by interacting with the appropriate subset of APIs. For example, `WritableSignal`s implement `ReactiveNode` but only operate against the producer APIs, since `WritableSignal`s don't consume other signal values.
 
