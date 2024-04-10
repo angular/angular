@@ -8,7 +8,7 @@ filegroup(
             "BUILD.bazel",
         ],
     ) + [
-        "//adev/src/content/cli/help",
-        "//adev/src/content/cli/help:build-info.json",
+        "//aio/content/cli/help",
+        "//aio/content/cli/help:build-info.json",
     ],
 )
