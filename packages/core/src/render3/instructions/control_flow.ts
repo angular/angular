@@ -9,6 +9,7 @@
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {TrackByFunction} from '../../change_detection';
+import {formatRuntimeError, RuntimeErrorCode} from '../../errors';
 import {DehydratedContainerView} from '../../hydration/interfaces';
 import {findMatchingDehydratedView} from '../../hydration/views';
 import {assertDefined, assertFunction} from '../../util/assert';
@@ -191,8 +192,44 @@ export function ɵɵrepeaterCreate(
   }
 }
 
+function isViewExpensiveToRecreate(lView: LView): boolean {
+  // assumption: anything more than a text node with a binding is considered "expensive"
+  return lView.length - HEADER_OFFSET > 2;
+}
+
+class OperationsCounter {
+  created = 0;
+  destroyed = 0;
+
+  reset() {
+    this.created = 0;
+    this.destroyed = 0;
+  }
+
+  recordCreate() {
+    this.created++;
+  }
+
+  recordDestroy() {
+    this.destroyed++;
+  }
+
+  /**
+   * A method indicating if the entire collection was re-created as part of the reconciliation pass.
+   * Used to warn developers about the usage of a tracking function that might result in excessive
+   * amount of view creation / destroy operations.
+   *
+   * @returns boolean value indicating if a live collection was re-created
+   */
+  wasReCreated(collectionLen: number): boolean {
+    return collectionLen > 0 && this.created === this.destroyed && this.created === collectionLen;
+  }
+}
+
 class LiveCollectionLContainerImpl extends
     LiveCollection<LView<RepeaterContext<unknown>>, unknown> {
+  operationsCounter = ngDevMode ? new OperationsCounter() : undefined;
+
   /**
    Property indicating if indexes in the repeater context need to be updated following the live
    collection changes. Index updates are necessary if and only if views are inserted / removed in
@@ -226,21 +263,24 @@ class LiveCollectionLContainerImpl extends
     const embeddedLView = createAndRenderEmbeddedLView(
         this.hostLView, this.templateTNode, new RepeaterContext(this.lContainer, value, index),
         {dehydratedView});
+    this.operationsCounter?.recordCreate();
 
     return embeddedLView;
   }
   override destroy(lView: LView<RepeaterContext<unknown>>): void {
     destroyLView(lView[TVIEW], lView);
+    this.operationsCounter?.recordDestroy();
   }
   override updateValue(index: number, value: unknown): void {
     this.getLView(index)[CONTEXT].$implicit = value;
   }
 
-  reset() {
+  reset(): void {
     this.needsIndexUpdate = false;
+    this.operationsCounter?.reset();
   }
 
-  updateIndexes() {
+  updateIndexes(): void {
     if (this.needsIndexUpdate) {
       for (let i = 0; i < this.length; i++) {
         this.getLView(i)[CONTEXT].$index = i;
@@ -267,10 +307,10 @@ export function ɵɵrepeater(collection: Iterable<unknown>|undefined|null): void
     const hostLView = getLView();
     const hostTView = hostLView[TVIEW];
     const metadata = hostLView[metadataSlotIdx] as RepeaterMetadata;
+    const containerIndex = metadataSlotIdx + 1;
+    const lContainer = getLContainer(hostLView, containerIndex);
 
     if (metadata.liveCollection === undefined) {
-      const containerIndex = metadataSlotIdx + 1;
-      const lContainer = getLContainer(hostLView, containerIndex);
       const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
       metadata.liveCollection =
           new LiveCollectionLContainerImpl(lContainer, hostLView, itemTemplateTNode);
@@ -280,6 +320,22 @@ export function ɵɵrepeater(collection: Iterable<unknown>|undefined|null): void
 
     const liveCollection = metadata.liveCollection;
     reconcile(liveCollection, collection, metadata.trackByFn);
+
+    // Warn developers about situations where the entire collection was re-created as part of the
+    // reconciliation pass. Note that this warning might be "overreacting" and report cases where
+    // the collection re-creation is the intended behavior. Still, the assumption is that most of
+    // the time it is undesired.
+    if (ngDevMode && metadata.trackByFn === ɵɵrepeaterTrackByIdentity &&
+        liveCollection.operationsCounter?.wasReCreated(liveCollection.length) &&
+        isViewExpensiveToRecreate(getExistingLViewFromLContainer(lContainer, 0))) {
+      const message = formatRuntimeError(
+          RuntimeErrorCode.LOOP_TRACK_RECREATE,
+          `The configured tracking expression (track by identity) caused re-creation of the entire collection of size ${
+              liveCollection.length}. ` +
+              'This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. ' +
+              'Please review the "track expression" and make sure that it uniquely identifies items in a collection.');
+      console.warn(message);
+    }
 
     // moves in the container might caused context's index to get out of order, re-adjust if needed
     liveCollection.updateIndexes();

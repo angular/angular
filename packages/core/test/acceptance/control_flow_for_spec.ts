@@ -357,7 +357,7 @@ describe('control flow - for', () => {
           .toHaveBeenCalledWith(jasmine.stringContaining(`Symbol(a)" at index "0" and "1".`));
     });
 
-    it('should warn about duplicate keys iterating over the new collection only', () => {
+    it('should not warn about duplicate keys iterating over the new collection only', () => {
       @Component({
         template: `@for (item of items; track item) {}`,
       })
@@ -375,6 +375,74 @@ describe('control flow - for', () => {
       fixture.detectChanges();
       expect(console.warn).not.toHaveBeenCalled();
     });
+
+    it('should warn about collection re-creation due to identity tracking', () => {
+      @Component({
+        template: `@for (item of items; track item) {(<span>{{item.value}}</span>)}`,
+      })
+      class TestComponent {
+        items = [{value: 0}, {value: 1}];
+      }
+
+      spyOn(console, 'warn');
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('(0)(1)');
+      expect(console.warn).not.toHaveBeenCalled();
+
+      fixture.componentInstance.items =
+          fixture.componentInstance.items.map(item => ({value: item.value + 1}));
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('(1)(2)');
+      expect(console.warn).toHaveBeenCalled();
+    });
+
+    it('should NOT warn about collection re-creation when a view is not considered expensive',
+       () => {
+         @Component({
+           template: `@for (item of items; track item) {({{item.value}})}`,
+         })
+         class TestComponent {
+           items = [{value: 0}, {value: 1}];
+         }
+
+         spyOn(console, 'warn');
+
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('(0)(1)');
+         expect(console.warn).not.toHaveBeenCalled();
+
+         fixture.componentInstance.items =
+             fixture.componentInstance.items.map(item => ({value: item.value + 1}));
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('(1)(2)');
+         expect(console.warn).not.toHaveBeenCalled();
+       });
+
+    it('should NOT warn about collection re-creation when a trackBy function is not identity',
+       () => {
+         @Component({
+           template: `@for (item of items; track item.value) {({{item.value}})}`,
+         })
+         class TestComponent {
+           items = [{value: 0}, {value: 1}];
+         }
+
+         spyOn(console, 'warn');
+
+         const fixture = TestBed.createComponent(TestComponent);
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('(0)(1)');
+         expect(console.warn).not.toHaveBeenCalled();
+
+         fixture.componentInstance.items =
+             fixture.componentInstance.items.map(item => ({value: item.value + 1}));
+         fixture.detectChanges();
+         expect(fixture.nativeElement.textContent).toBe('(1)(2)');
+         expect(console.warn).not.toHaveBeenCalled();
+       });
   });
 
   describe('list diffing and view operations', () => {
