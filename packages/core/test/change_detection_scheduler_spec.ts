@@ -615,7 +615,7 @@ describe('Angular with scheduler and ZoneJS', () => {
   it('should not run change detection twice if notified during AppRef.tick', async () => {
     TestBed.configureTestingModule({
       providers: [
-        provideZoneChangeDetection(hybridModeSchedulingOptions),
+        provideZoneChangeDetection({ignoreChangesOutsideZone: false}),
         {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
       ]
     });

@@ -35,12 +35,14 @@ export class NgZoneChangeDetectionScheduler {
 
     this._onMicrotaskEmptySubscription = this.zone.onMicrotaskEmpty.subscribe({
       next: () => {
+        // `onMicroTaskEmpty` can happen _during_ the zoneless scheduler change detection because
+        // zone.run(() => {}) will result in `checkStable` at the end of the `zone.run` closure
+        // and emit `onMicrotaskEmpty` synchronously if run coalsecing is false.
+        if (this.changeDetectionScheduler?.runningTick) {
+          return;
+        }
         this.zone.run(() => {
-          if (this.changeDetectionScheduler) {
-            this.changeDetectionScheduler.tick(true /* shouldRefreshViews */);
-          } else {
-            this.applicationRef.tick();
-          }
+          this.applicationRef.tick();
         });
       }
     });
