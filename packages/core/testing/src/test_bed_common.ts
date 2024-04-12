@@ -37,13 +37,6 @@ export class TestComponentRenderer {
 export const ComponentFixtureAutoDetect = new InjectionToken<boolean>('ComponentFixtureAutoDetect');
 
 /**
- * TODO(atscott): Make public API once we have decided if we want this error and how we want devs to
- * disable it.
- */
-export const AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs =
-    new InjectionToken<boolean>('AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs');
-
-/**
  * @publicApi
  */
 export const ComponentFixtureNoNgZone = new InjectionToken<boolean>('ComponentFixtureNoNgZone');

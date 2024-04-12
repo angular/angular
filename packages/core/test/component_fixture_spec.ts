@@ -11,8 +11,6 @@ import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAs
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs} from '../testing/src/test_bed_common';
-
 @Component({selector: 'simple-comp', template: `<span>Original {{simpleBinding}}</span>`})
 @Injectable()
 class SimpleComp {
@@ -371,12 +369,7 @@ describe('ComponentFixture', () => {
 
 describe('ComponentFixture with zoneless', () => {
   it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
-    TestBed.configureTestingModule({
-      providers: [
-        provideExperimentalZonelessChangeDetection(),
-        {provide: AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, useValue: true},
-      ]
-    });
+    TestBed.configureTestingModule({providers: [provideExperimentalZonelessChangeDetection()]});
     @Component({standalone: true, template: '{{signalThing()}}|{{regularThing}}'})
     class CheckAlwaysCmp {
       regularThing = 'initial';
