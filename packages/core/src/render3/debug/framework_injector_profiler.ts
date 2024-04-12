@@ -6,15 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {APP_ID} from '../../application/application_tokens';
 import {Injector} from '../../di/injector';
-import {EnvironmentInjector} from '../../di/r3_injector';
+import {EnvironmentInjector, R3Injector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {assertDefined, throwError} from '../../util/assert';
-import {assertTNode, assertTNodeForLView} from '../assert';
+import {assertTNodeForLView} from '../assert';
+import {ChainedInjector} from '../component_ref';
 import {getComponentDef} from '../definition';
 import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
 import {TNode} from '../interfaces/node';
-import {LView} from '../interfaces/view';
+import {isLView} from '../interfaces/type_checks';
+import {INJECTOR, LView} from '../interfaces/view';
 
 import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, InjectorProfilerEvent, InjectorProfilerEventType, ProviderRecord, setInjectorProfiler} from './injector_profiler';
 
@@ -55,15 +58,15 @@ import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, Injec
  */
 class DIDebugData {
   resolverToTokenToDependencies =
-      new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-  resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
-  standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
+      new Map<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
+  resolverToProviders = new Map<Injector|TNode, ProviderRecord[]>();
+  standaloneInjectorToComponent = new Map<Injector, Type<unknown>>();
 
   reset() {
     this.resolverToTokenToDependencies =
-        new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-    this.resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
-    this.standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
+        new Map<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
+    this.resolverToProviders = new Map<Injector|TNode, ProviderRecord[]>();
+    this.standaloneInjectorToComponent = new Map<Injector, Type<unknown>>();
   }
 }
 
@@ -72,6 +75,66 @@ let frameworkDIDebugData = new DIDebugData();
 export function getFrameworkDIDebugData(): DIDebugData {
   return frameworkDIDebugData;
 }
+
+/**
+ * `appIdBeingDestroyed` is a token used to identify injectors that need to be
+ * removed from debug data maps. Multiple apps might be running simultaneously,
+ * causing the `frameworkDIDebugData` maps to contain injectors or LViews associated
+ * with different apps. Therefore, the `APP_ID` token must be provided when multiple
+ * apps are running to ensure correct functionality.
+ *
+ * Suppose the first app provides the `app-1` ID, and the second app provides `app-2`.
+ * When the first app is about to be destroyed, its application reference will resolve
+ * the `APP_ID` token, resulting in `app-1`. At this point, we need to review the injectors
+ * and identify those that resolve to the same `app-1` ID, indicating that these injectors
+ * are associated with the first app.
+ */
+export function cleanupApplicationRelatedDIDebugData(appIdBeingDestroyed: string): void {
+  function isSameAppId(injector: Injector|null) {
+    // For `resolverToTokenToDependencies`, it may be either `R3Injector` or `LView`.
+    // `LView` has a chained injector implementation stored as such, so we have to retrieve
+    // its `parentInjector`.
+    if (injector instanceof ChainedInjector) {
+      injector = injector.parentInjector;
+    }
+
+    // The `try-catch` is used to prevent errors originating when the injector is already destroyed.
+    // We're not able to do anything with a destroyed injector in this specific case. This code is
+    // also dev-mode only and removed in production.
+    try {
+      return appIdBeingDestroyed === injector!.get(APP_ID, null);
+    } catch {
+      return false;
+    }
+  }
+
+  // TODO: Should the logic below be unified from 3 loops into a single loop? There are some typing
+  // issues when iterating over maps in a loop.
+
+  for (const key of frameworkDIDebugData.resolverToProviders.keys()) {
+    // Not sure if we're able to retrieve the injector back from the `TNode` (since the `key` is
+    // `Injector|TNode`).
+    const injector = key instanceof R3Injector ? key : null;
+    if (isSameAppId(injector)) {
+      frameworkDIDebugData.resolverToProviders.delete(key);
+    }
+  }
+
+  for (const key of frameworkDIDebugData.resolverToTokenToDependencies.keys()) {
+    const injector = isLView(key) ? key[INJECTOR] : key;
+    if (isSameAppId(injector)) {
+      frameworkDIDebugData.resolverToTokenToDependencies.delete(key);
+    }
+  }
+
+  for (const key of frameworkDIDebugData.standaloneInjectorToComponent.keys()) {
+    const injector = key;
+    if (isSameAppId(injector)) {
+      frameworkDIDebugData.standaloneInjectorToComponent.delete(key);
+    }
+  }
+}
+
 
 /**
  * Initalize default handling of injector events. This handling parses events

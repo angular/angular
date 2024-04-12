@@ -29,6 +29,7 @@ import {ViewRef} from '../linker/view_ref';
 import {PendingTasks} from '../pending_tasks';
 import {AfterRenderEventManager} from '../render3/after_render_hooks';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
+import {cleanupApplicationRelatedDIDebugData} from '../render3/debug/framework_injector_profiler';
 import {isStandalone} from '../render3/definition';
 import {ChangeDetectionMode, detectChangesInternal} from '../render3/instructions/change_detection';
 import {FLAGS, LView, LViewFlags} from '../render3/interfaces/view';
@@ -40,6 +41,7 @@ import {isPromise} from '../util/lang';
 import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from './application_init';
+import {APP_ID} from './application_tokens';
 
 /**
  * A DI token that provides a set of callbacks to
@@ -667,6 +669,14 @@ export class ApplicationRef {
       throw new RuntimeError(
           RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
           ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.');
+    }
+
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      const appIdBeingDestroyed = this._injector.get(APP_ID);
+      // Note: this must be run within the `destroy` function and before the root
+      // environment injector is destroyed. We can't use `appRef.onDestroy` because
+      // its callbacks are invoked later.
+      cleanupApplicationRelatedDIDebugData(appIdBeingDestroyed);
     }
 
     // This is a temporary type to represent an instance of an R3Injector, which can be destroyed.
