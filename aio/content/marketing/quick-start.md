@@ -6,7 +6,7 @@ A few lines of TypeScript are all it takes to create your first Angular app. As 
 
 The code editor contains a complete Angular app.
 
-<iframe src="https://stackblitz.com/github/angular/angular/tree/main/aio/content/demos/first-app?embed=1&file=src/main.ts&hideExplorer=1&hideNavigation=1" height="550" width="100%" style="border: solid 1px 777"></iframe>
+<iframe src="https://stackblitz.com/github/angular/angular/tree/17.3.x/aio/content/demos/first-app?embed=1&file=src/main.ts&hideExplorer=1&hideNavigation=1" height="550" width="100%" style="border: solid 1px 777"></iframe>
 
 The Angular app in the code editor shows the TypeScript that makes a simple, but complete, Angular component.
 It imports resources from existing libraries and defines the properties of the new component.
