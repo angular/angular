@@ -236,10 +236,15 @@ const routes: Routes = [
   {
     path: "old-user-page",
     redirectTo: ({ queryParams }) => {
+      const errorHandler = inject(ErrorHandler);
       const userIdParam = queryParams['userId'];
-      return inject(Router).parseUrl(`user/${userIdParam}`);
+      if (userIdParam !== undefined) {
+        return `/user/${userIdParam}`;
+      } else {
+        errorHandler.handleError(new Error('Attempted navigation to user page without user ID.'));
+        return `/not-found`;
+      }
     },
-    pathMatch: "full",
   },
   { path: "user/:userId", component: OtherComponent },
 ];
