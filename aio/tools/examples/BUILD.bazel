@@ -1,8 +1,8 @@
 load("//tools:defaults.bzl", "nodejs_binary")
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("@npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
-load("//adev/scripts:examples.bzl", "EXAMPLES")
-load("//:packages.bzl", "ADEV_EXAMPLE_PACKAGES", "to_package_label")
+load("//aio/content/examples:examples.bzl", "EXAMPLES")
+load("//:packages.bzl", "AIO_EXAMPLE_PACKAGES", "to_package_label")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -97,12 +97,12 @@ js_library(
     ],
 )
 
-LOCAL_PACKAGE_DEPS = [to_package_label(dep) for dep in ADEV_EXAMPLE_PACKAGES]
+LOCAL_PACKAGE_DEPS = [to_package_label(dep) for dep in AIO_EXAMPLE_PACKAGES]
 
 LOCAL_PACKAGE_ARGS = ["--localPackage=%s#$(rootpath %s)" % (
     dep,
     to_package_label(dep),
-) for dep in ADEV_EXAMPLE_PACKAGES]
+) for dep in AIO_EXAMPLE_PACKAGES]
 
 [nodejs_binary(
     name = "create-example-playground-%s" % example,

@@ -43,7 +43,7 @@ ALL_PACKAGES = [
 INTEGRATION_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "angular-in-memory-web-api")
 
 # Packages used by example e2e tests
-ADEV_EXAMPLE_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "@angular/benchpress")
+AIO_EXAMPLE_PACKAGES = _exclude_pkgs(ALL_PACKAGES, "@angular/benchpress")
 
 # Package names under //packages that have `files_for_docgen` targets
 # including files needed for AIO doc generation.

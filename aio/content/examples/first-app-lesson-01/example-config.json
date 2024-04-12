@@ -1,0 +1,6 @@
+{
+  "useCommonBoilerplate": false,
+  "overrideBoilerplate": [
+    "src/styles.css"
+  ]
+}
