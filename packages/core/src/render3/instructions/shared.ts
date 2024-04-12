@@ -871,7 +871,13 @@ function setNgReflectProperty(
   } else {
     const textContent =
         escapeCommentText(`bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`);
-    renderer.setValue((element as RComment), textContent);
+    // Prevent reassigning the same text content to the comment node.
+    // Setting the value will trigger content observers and we don't want to ever do that with a
+    // debug-only thing but as a compromise, we can at least prvent it when the content doesn't
+    // change.
+    if ((element as RComment).textContent !== textContent) {
+      renderer.setValue((element as RComment), textContent);
+    }
   }
 }
 
