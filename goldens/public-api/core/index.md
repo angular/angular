@@ -1354,6 +1354,9 @@ export class PlatformRef {
 export type Predicate<T> = (value: T) => boolean;
 
 // @public
+export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders;
+
+// @public
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
 
 // @public

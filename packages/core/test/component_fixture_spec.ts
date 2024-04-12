@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, Input, signal, ɵprovideZonelessChangeDetection} from '@angular/core';
+import {Component, Injectable, Input, provideExperimentalZonelessChangeDetection, signal} from '@angular/core';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBed, waitForAsync, withModule} from '@angular/core/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -373,7 +373,7 @@ describe('ComponentFixture with zoneless', () => {
   it('will not refresh CheckAlways views when detectChanges is called if not marked dirty', () => {
     TestBed.configureTestingModule({
       providers: [
-        ɵprovideZonelessChangeDetection(),
+        provideExperimentalZonelessChangeDetection(),
         {provide: AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, useValue: true},
       ]
     });
