@@ -11,7 +11,7 @@ import {Subject, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
 
 import {DeferBlockFixture} from './defer';
-import {AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, ComponentFixtureAutoDetect, ComponentFixtureNoNgZone,} from './test_bed_common';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone} from './test_bed_common';
 
 /**
  * Fixture for debugging and testing a component.
@@ -171,20 +171,12 @@ export abstract class ComponentFixture<T> {
  * `ApplicationRef.isStable`, and `autoDetectChanges` cannot be disabled.
  */
 export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
-  private readonly disableDetectChangesError =
-      inject(AllowDetectChangesAndAcknowledgeItCanHideApplicationBugs, {optional: true}) ?? false;
-
   initialize(): void {
     this._appRef.attachView(this.componentRef.hostView);
   }
 
   override detectChanges(checkNoChanges: boolean = true): void {
-    if (!this.disableDetectChangesError) {
-      throw new Error(
-          'Do not use `detectChanges` directly when using zoneless change detection.' +
-              ' Instead, wait for the next render or `fixture.whenStable`.',
-      );
-    } else if (!checkNoChanges) {
+    if (!checkNoChanges) {
       throw new Error(
           'Cannot disable `checkNoChanges` in this configuration. ' +
               'Use `fixture.componentRef.hostView.changeDetectorRef.detectChanges()` instead.',
@@ -196,7 +188,10 @@ export class ScheduledComponentFixture<T> extends ComponentFixture<T> {
   }
 
   override autoDetectChanges(autoDetect?: boolean|undefined): void {
-    throw new Error('Cannot call autoDetectChanges when using change detection scheduling.');
+    if (!autoDetect) {
+      throw new Error('Cannot disable autoDetect when using the zoneless scheduler.');
+    }
+    this.detectChanges();
   }
 }
 
