@@ -108,7 +108,10 @@ export function createViewTransition(
   return injector.get(NgZone).runOutsideAngular(() => {
     if (!document.startViewTransition || transitionOptions.skipNextTransition) {
       transitionOptions.skipNextTransition = false;
-      return Promise.resolve();
+      // The timing of `startViewTransition` is closer to a macrotask. It won't be called
+      // until the current event loop exits so we use a promise resolved in a timeout instead
+      // of Promise.resolve().
+      return new Promise((resolve) => setTimeout(resolve));
     }
 
     let resolveViewTransitionStarted: () => void;
