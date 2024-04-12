@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '@angular/core';
+import {ElementRef, InjectionToken} from '@angular/core';
 
 /**
  * A DI Token representing the main rendering context.
@@ -16,3 +16,13 @@ import {InjectionToken} from '@angular/core';
  * @publicApi
  */
 export const DOCUMENT = new InjectionToken<Document>(ngDevMode ? 'DocumentToken' : '');
+
+/**
+ * A DI token representing a reference to the main the DOM Document.
+ * Unlike `DOCUMENT`, this always has a value even if DOM emulation is disabled.
+ *
+ * @publicApi
+ */
+export const DOCUMENT_REF = new InjectionToken<ElementRef<Document>>(
+  ngDevMode ? 'DocumentRefToken' : '',
+);

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
+import {DOCUMENT_REF, LocationChangeEvent, LocationChangeListener, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
+import {ElementRef, Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
@@ -51,7 +51,8 @@ export class ServerPlatformLocation implements PlatformLocation {
   private _hashUpdate = new Subject<LocationChangeEvent>();
 
   constructor(
-      @Inject(DOCUMENT) private _doc: any, @Optional() @Inject(INITIAL_CONFIG) _config: any) {
+      @Inject(DOCUMENT_REF) private _doc: ElementRef<Document>,
+      @Optional() @Inject(INITIAL_CONFIG) _config: any) {
     const config = _config as PlatformConfig | null;
     if (!config) {
       return;
@@ -64,12 +65,12 @@ export class ServerPlatformLocation implements PlatformLocation {
       this.pathname = url.pathname;
       this.search = url.search;
       this.hash = url.hash;
-      this.href = _doc.location.href;
+      this.href = _doc.nativeElement.location.href;
     }
   }
 
   getBaseHrefFromDOM(): string {
-    return getDOM().getBaseHref(this._doc)!;
+    return getDOM().getBaseHref(this._doc.nativeElement)!;
   }
 
   onPopState(fn: LocationChangeListener): VoidFunction {

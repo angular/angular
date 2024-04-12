@@ -5,6 +5,7 @@
 ```ts
 
 import { ApplicationRef } from '@angular/core';
+import { ElementRef } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common/http';
@@ -34,8 +35,10 @@ export const platformServer: (extraProviders?: StaticProvider[] | undefined) => 
 
 // @public
 export class PlatformState {
-    constructor(_doc: any);
+    constructor(_doc: ElementRef<Document>);
+    // @deprecated
     getDocument(): any;
+    getDocumentRef(): ElementRef<Document>;
     renderToString(): string;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<PlatformState, never>;

@@ -66,7 +66,7 @@ export {
   NgTemplateOutlet,
   NgComponentOutlet,
 } from './directives/index';
-export {DOCUMENT} from './dom_tokens';
+export {DOCUMENT, DOCUMENT_REF} from './dom_tokens';
 export {
   AsyncPipe,
   DatePipe,

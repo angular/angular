@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT} from '@angular/common';
-import {APP_ID, Provider, TransferState} from '@angular/core';
+import {DOCUMENT_REF} from '@angular/common';
+import {APP_ID, ElementRef, Provider, TransferState} from '@angular/core';
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
@@ -15,12 +15,13 @@ export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [
   {
     provide: BEFORE_APP_SERIALIZED,
     useFactory: serializeTransferStateFactory,
-    deps: [DOCUMENT, APP_ID, TransferState],
+    deps: [DOCUMENT_REF, APP_ID, TransferState],
     multi: true,
   },
 ];
 
-function serializeTransferStateFactory(doc: Document, appId: string, transferStore: TransferState) {
+function serializeTransferStateFactory(
+    docRef: ElementRef<Document>, appId: string, transferStore: TransferState) {
   return () => {
     // The `.toJSON` here causes the `onSerialize` callbacks to be called.
     // These callbacks can be used to provide the value for a given key.
@@ -32,6 +33,7 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
       return;
     }
 
+    const doc = docRef.nativeElement;
     const script = doc.createElement('script');
     script.id = appId + '-state';
     script.setAttribute('type', 'application/json');

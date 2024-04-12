@@ -167,6 +167,9 @@ export class DecimalPipe implements PipeTransform {
 export const DOCUMENT: InjectionToken<Document>;
 
 // @public
+export const DOCUMENT_REF: InjectionToken<ElementRef<Document>>;
+
+// @public
 export function formatCurrency(value: number, locale: string, currency: string, currencyCode?: string, digitsInfo?: string): string;
 
 // @public
