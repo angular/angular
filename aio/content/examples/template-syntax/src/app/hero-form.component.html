@@ -1,0 +1,21 @@
+<div id="heroForm">
+  <!-- #docregion -->
+  <form (ngSubmit)="onSubmit(heroForm)" #heroForm="ngForm">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input
+        type="text"
+        id="name"
+        class="form-control"
+        name="name"
+        required
+        [(ngModel)]="hero.name"
+      />
+    </div>
+    <button type="submit" [disabled]="!heroForm.form.valid">Submit</button>
+  </form>
+  <div [hidden]="!heroForm.form.valid">
+    {{submitMessage}}
+  </div>
+  <!-- #enddocregion -->
+</div>

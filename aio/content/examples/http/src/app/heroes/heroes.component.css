@@ -1,0 +1,79 @@
+/* HeroesComponent's private CSS styles */
+.search input {
+  margin: 1rem 0;
+}
+
+.heroes {
+  list-style-type: none;
+  padding: 0;
+}
+
+.heroes li {
+  display: grid;
+  grid-template-columns: min-content max-content 1fr max-content max-content;
+  grid-template-areas: "badge name . edit delete";
+  margin: 1rem 0;
+  align-items: center;
+  background-color: #eee;
+  border-radius: 4px;
+}
+
+.heroes li .badge {
+  grid-area: badge;
+}
+
+.heroes li .name {
+  grid-area: name;
+}
+
+.heroes li button {
+  margin: 0.3rem;
+  padding: 0.3rem 0.8rem;
+}
+
+.heroes li button.edit {
+  grid-area: edit;
+}
+
+.heroes li button.delete {
+  grid-area: delete;
+}
+
+.heroes li button:hover, .heros li button:focus {
+  color: #eee;
+  background-color: #000;
+}
+
+.heroes .badge {
+  padding: 0.5rem 0.6rem;
+  color: white;
+  background-color: #435B60;
+  margin-right: 0.8rem;
+  border-radius: 4px 0 0 4px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.heroes input {
+  max-width: 12rem;
+  padding: .25rem;
+}
+
+@media (max-width: 550px) {
+  .heroes li {
+    grid-template-columns: min-content 1fr 1fr;
+    grid-template-rows: 2rem max-content;
+    grid-template-areas:
+      "badge name name"
+      "badge edit delete";
+  }
+
+  .heroes li .name {
+    margin-top: 0.3rem;
+  }
+
+  .heroes li button {
+    justify-self: center;
+  }
+}
