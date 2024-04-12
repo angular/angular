@@ -49,7 +49,12 @@ const formControlBinding: Provider = {
  * @ngModule ReactiveFormsModule
  * @publicApi
  */
-@Directive({selector: '[formControl]', providers: [formControlBinding], exportAs: 'ngForm'})
+@Directive({
+  selector: '[formControl]',
+  providers: [formControlBinding],
+  exportAs: 'ngForm',
+  standalone: true,
+})
 export class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
   /**
    * Internal reference to the view model value.

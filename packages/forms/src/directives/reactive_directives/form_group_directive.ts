@@ -54,7 +54,8 @@ const formDirectiveProvider: Provider = {
   selector: '[formGroup]',
   providers: [formDirectiveProvider],
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
-  exportAs: 'ngForm'
+  exportAs: 'ngForm',
+  standalone: true,
 })
 export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
   /**

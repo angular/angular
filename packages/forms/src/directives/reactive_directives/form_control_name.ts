@@ -59,7 +59,7 @@ const controlNameBinding: Provider = {
  * @ngModule ReactiveFormsModule
  * @publicApi
  */
-@Directive({selector: '[formControlName]', providers: [controlNameBinding]})
+@Directive({selector: '[formControlName]', providers: [controlNameBinding], standalone: true})
 export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
   /**

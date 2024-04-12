@@ -284,7 +284,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
     ngOnInit(): void;
     get path(): string[];
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormArrayName, "[formArrayName]", never, { "name": { "alias": "formArrayName"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormArrayName, "[formArrayName]", never, { "name": { "alias": "formArrayName"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormArrayName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
@@ -368,7 +368,7 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
     viewModel: any;
     viewToModelUpdate(newValue: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlDirective, "[formControl]", ["ngForm"], { "form": { "alias": "formControl"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlDirective, "[formControl]", ["ngForm"], { "form": { "alias": "formControl"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormControlDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }, { optional: true; }]>;
 }
@@ -391,7 +391,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     update: EventEmitter<any>;
     viewToModelUpdate(newValue: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlName, "[formControlName]", never, { "name": { "alias": "formControlName"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormControlName, "[formControlName]", never, { "name": { "alias": "formControlName"; "required": false; }; "isDisabled": { "alias": "disabled"; "required": false; }; "model": { "alias": "ngModel"; "required": false; }; }, { "update": "ngModelChange"; }, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormControlName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
@@ -504,7 +504,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     readonly submitted: boolean;
     updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": { "alias": "formGroup"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": { "alias": "formGroup"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
@@ -514,7 +514,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
     constructor(parent: ControlContainer, validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[]);
     name: string | number | null;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupName, "[formGroupName]", never, { "name": { "alias": "formGroupName"; "required": false; }; }, {}, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupName, "[formGroupName]", never, { "name": { "alias": "formGroupName"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupName, [{ optional: true; host: true; skipSelf: true; }, { optional: true; self: true; }, { optional: true; self: true; }]>;
 }
@@ -833,7 +833,7 @@ export class ReactiveFormsModule {
     // (undocumented)
     static ɵinj: i0.ɵɵInjectorDeclaration<ReactiveFormsModule>;
     // (undocumented)
-    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, [typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName], never, [typeof i4_2.ɵInternalFormsSharedModule, typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName]>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ReactiveFormsModule, never, [typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName], [typeof i4_2.ɵInternalFormsSharedModule, typeof i5_2.FormControlDirective, typeof i6_2.FormGroupDirective, typeof i7_2.FormControlName, typeof i8_2.FormGroupName, typeof i8_2.FormArrayName]>;
 }
 
 // @public

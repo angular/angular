@@ -56,7 +56,7 @@ export class FormsModule {
  * @publicApi
  */
 @NgModule({
-  declarations: [REACTIVE_DRIVEN_DIRECTIVES],
+  imports: [REACTIVE_DRIVEN_DIRECTIVES],
   exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
 })
 export class ReactiveFormsModule {
