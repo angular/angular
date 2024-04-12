@@ -1,0 +1,20 @@
+{
+    "ecma": "es2020",
+    "compress": {
+      "toplevel": true,
+      "passes": 2,
+      "pure_getters": true
+    },
+    "mangle": {
+      "toplevel": true,
+      "properties": true,
+      "keep_classnames": false,
+      "keep_fnames": false
+    },
+    "format": {
+      "ecma": "es2020",
+      "ascii_only": true,
+      "wrap_func_args": false,
+      "comments": false
+    }
+  }

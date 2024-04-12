@@ -1,4 +1,6 @@
 load("//tools:defaults.bzl", "ts_library", "tsec_test")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//@bazel/terser:index.bzl", "terser_minified")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -25,4 +27,17 @@ filegroup(
         "src/**/*.ts",
     ]),
     visibility = ["//visibility:public"],
+)
+
+rollup_bundle(
+    name = "bundled_contract_binary_tmp",
+    entry_point = ":contract_binary.ts",
+    format = "esm",
+    deps = [":event-dispatch"],
+)
+
+terser_minified(
+    name = "bundle",
+    src = ":bundled_contract_binary_tmp",
+    config_file = ":terser.config.json",
 )
