@@ -11,7 +11,6 @@ import {
   DestroyRef,
   EnvironmentInjector,
   Injectable,
-  NgZone,
   OnDestroy,
   afterNextRender,
   inject,
@@ -41,7 +40,6 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly injector = inject(EnvironmentInjector);
-  private readonly ngZone = inject(NgZone);
   private readonly window = inject(WINDOW);
 
   private readonly cardOffsetTop = new Map<string, number>();
@@ -75,35 +73,31 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       return;
     }
 
-    this.ngZone.runOutsideAngular(() => {
-      fromEvent(tocContainer, 'click')
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((event) => {
-          // Get the card member ID from the attributes
-          const target =
-            event.target instanceof HTMLButtonElement
-              ? event.target
-              : this.findButtonElement(event.target as HTMLElement);
-          const memberId = this.getMemberId(target);
+    fromEvent(tocContainer, 'click')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        // Get the card member ID from the attributes
+        const target =
+          event.target instanceof HTMLButtonElement
+            ? event.target
+            : this.findButtonElement(event.target as HTMLElement);
+        const memberId = this.getMemberId(target);
 
-          if (memberId) {
-            const card = this.document.querySelector<HTMLDivElement>(`#${memberId}`);
-            this.scrollToCard(card);
-          }
-        });
-    });
+        if (memberId) {
+          const card = this.document.querySelector<HTMLDivElement>(`#${memberId}`);
+          this.scrollToCard(card);
+        }
+      });
   }
 
   private setupMemberCardListeners(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.getAllMemberCards().forEach((card) => {
-        this.cardOffsetTop.set(card.id, card.offsetTop);
-        fromEvent(card, 'click')
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            this.scrollToCard(card);
-          });
-      });
+    this.getAllMemberCards().forEach((card) => {
+      this.cardOffsetTop.set(card.id, card.offsetTop);
+      fromEvent(card, 'click')
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          this.scrollToCard(card);
+        });
     });
   }
 
@@ -113,9 +107,7 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
       takeUntilDestroyed(this.destroyRef),
     );
 
-    this.ngZone.runOutsideAngular(() => {
-      scroll$.subscribe(() => this.setActiveCodeLine());
-    });
+    scroll$.subscribe(() => this.setActiveCodeLine());
   }
 
   private listenToResizeCardContainer(): void {
@@ -209,12 +201,10 @@ export class ReferenceScrollHandler implements OnDestroy, ReferenceScrollHandler
     this.resizeObserver?.disconnect();
 
     this.resizeObserver = new ResizeObserver((_) => {
-      this.ngZone.run(() => {
-        const offsetTop = tabBody.getBoundingClientRect().top;
-        if (offsetTop) {
-          this.membersMarginTopInPx.set(offsetTop);
-        }
-      });
+      const offsetTop = tabBody.getBoundingClientRect().top;
+      if (offsetTop) {
+        this.membersMarginTopInPx.set(offsetTop);
+      }
     });
 
     this.resizeObserver.observe(tabBody);

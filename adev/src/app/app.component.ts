@@ -11,7 +11,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  NgZone,
   OnInit,
   PLATFORM_ID,
   signal,
@@ -48,10 +47,12 @@ import {ESCAPE, SEARCH_TRIGGER_KEY} from './core/constants/keys';
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  host: {
+    '(window:keydown)': 'setSearchDialogVisibilityOnKeyPress($event)',
+  },
 })
 export class AppComponent implements OnInit {
   private readonly document = inject(DOCUMENT);
-  private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
   private readonly window = inject(WINDOW);
 
@@ -63,7 +64,6 @@ export class AppComponent implements OnInit {
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   ngOnInit(): void {
-    this.setSearchDialogVisibilityOnKeyPress();
     this.closeSearchDialogOnNavigationSkipped();
     this.router.events
       .pipe(
@@ -107,24 +107,16 @@ export class AppComponent implements OnInit {
       });
   }
 
-  private setSearchDialogVisibilityOnKeyPress(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.window.addEventListener('keydown', (event: KeyboardEvent) => {
-        if (event.key === SEARCH_TRIGGER_KEY && (event.metaKey || event.ctrlKey)) {
-          this.ngZone.run(() => {
-            event.preventDefault();
-            this.displaySearchDialog.update((display) => !display);
-          });
-        }
+  private setSearchDialogVisibilityOnKeyPress(event: KeyboardEvent): void {
+    if (event.key === SEARCH_TRIGGER_KEY && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      this.displaySearchDialog.update((display) => !display);
+    }
 
-        if (event.key === ESCAPE && this.displaySearchDialog()) {
-          this.ngZone.run(() => {
-            event.preventDefault();
-            this.displaySearchDialog.set(false);
-          });
-        }
-      });
-    });
+    if (event.key === ESCAPE && this.displaySearchDialog()) {
+      event.preventDefault();
+      this.displaySearchDialog.set(false);
+    }
   }
 
   private closeSearchDialogOnNavigationSkipped(): void {
