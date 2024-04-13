@@ -15,6 +15,7 @@ import {
   VERSION,
   inject,
   provideZoneChangeDetection,
+  provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
 import {
   DOCS_CONTENT_LOADER,
@@ -70,6 +71,7 @@ export const appConfig: ApplicationConfig = {
         },
       }),
     ),
+    provideExperimentalZonelessChangeDetection(),
     provideClientHydration(),
     provideHttpClient(withFetch()),
     provideAnimationsAsync(),
@@ -97,7 +99,6 @@ export const appConfig: ApplicationConfig = {
       deps: [DOCUMENT],
     },
     {provide: TitleStrategy, useClass: ADevTitleStrategy},
-    provideZoneChangeDetection({eventCoalescing: true}),
     ReferenceScrollHandler,
   ],
 };
