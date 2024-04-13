@@ -20,11 +20,17 @@
           "builder": "@angular/build:application",
           "options": {
             "externalDependencies": ["path"],
+            "define": {
+              // We need this until xterm 5.6.0 is released
+              // see https://github.com/xtermjs/xterm.js/pull/4940
+              "self": "this"
+            },
             "outputPath": "dist/angular-dev",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "server": "src/main.server.ts",
-            "polyfills": ["src/polyfills.ts", "zone.js"],
+            "ssr": true,
+            "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/robots.txt", "src/assets"],
