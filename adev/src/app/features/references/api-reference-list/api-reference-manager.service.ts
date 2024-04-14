@@ -7,6 +7,7 @@
  */
 
 import {Injectable, signal} from '@angular/core';
+// This file is generated at build-time, error is expected here.
 import API_MANIFEST_JSON from '../../../../../src/assets/api/manifest.json';
 import {ANGULAR_PACKAGE_PREFIX, getApiUrl} from '../helpers/manifest.helper';
 import {ApiItem} from '../interfaces/api-item';
@@ -40,6 +41,7 @@ export class ApiReferenceManager {
   // Represents group of the featured items.
   featuredGroup = signal<ApiItemsGroup>({
     title: FEATURED_GROUP_TITLE,
+    id: 'featured',
     items: [],
     isFeatured: true,
   });
@@ -58,6 +60,7 @@ export class ApiReferenceManager {
 
       groups.push({
         title: packageNameWithoutPrefix,
+        id: packageNameWithoutPrefix.replaceAll('/', '-'),
         items: packageApis
           .map((api) => {
             const url = getApiUrl(packageNameWithoutPrefix, api.name);

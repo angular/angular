@@ -15,6 +15,7 @@ import {ApiItemType} from '../interfaces/api-item-type';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import ApiItemLabel from '../api-item-label/api-item-label.component';
 import {ApiLabel} from '../pipes/api-label.pipe';
+import {ApiItemsGroup} from '../interfaces/api-items-group';
 
 export const ALL_STATUSES_KEY = 'All';
 
@@ -45,11 +46,12 @@ export default class ApiReferenceList {
   type = signal(ALL_STATUSES_KEY);
 
   featuredGroup = this.apiReferenceManager.featuredGroup;
-  filteredGroups = computed(() => {
+  filteredGroups = computed((): ApiItemsGroup[] => {
     return this.allGroups()
       .map((group) => ({
         title: group.title,
         isFeatured: group.isFeatured,
+        id: group.id,
         items: group.items.filter((apiItem) => {
           return (
             (this.query()
