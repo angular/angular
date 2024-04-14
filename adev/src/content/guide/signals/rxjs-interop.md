@@ -114,7 +114,7 @@ class MyDir {
 }
 ```
 
-See more details in the [output() API guide](/guide/output-function).
+See more details in the [output() API guide](/guide/components/output-fn).
 
 ### `outputToObservable`
 
@@ -127,4 +127,4 @@ outputToObservable(myComp.instance.onNameChange)
   .subscribe(...)
 ```
 
-See more details in the [output() API guide](/guide/output-function).
+See more details in the [output() API guide](/guide/components/output-fn).
