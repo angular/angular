@@ -1,7 +1,7 @@
+@use '@angular/docs/styles/anchor' as anchor;
+
 .adev-api-items-section-header {
   display: flex;
-  gap: 0.75em;
-  align-items: center;
 
   svg {
     fill: var(--primary-contrast);
@@ -9,6 +9,11 @@
 
   h3 {
     flex: 1;
+
+    display: flex;
+    gap: 0.75em;
+    align-items: flex-start;
+
     margin-top: 1.43rem;
     font-size: 1.25rem;
   }
@@ -99,4 +104,11 @@
   border-radius: 0.25rem;
   padding: 0.001rem 0.2rem 0.005rem;
   margin-inline-start: 0.5rem;
+}
+
+
+.adev-api-anchor {
+  color: inherit;
+
+  @include anchor.docs-anchor();
 }
