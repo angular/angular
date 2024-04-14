@@ -23,6 +23,9 @@ import {extractTypeAlias} from './type_alias_extractor';
 
 type DeclarationWithExportName = readonly[string, ts.Declaration];
 
+const exportedAsGlobals = new Map([
+  [`ɵ$localize`, '$localize'],  // exported as private but available as global
+]);
 /**
  * Extracts all information from a source file that may be relevant for generating
  * public API documentation.
@@ -42,7 +45,9 @@ export class DocsExtractor {
     const exportedDeclarations = this.getExportedDeclarations(sourceFile);
     for (const [exportName, node] of exportedDeclarations) {
       // Skip any symbols with an Angular-internal name.
-      if (isAngularPrivateName(exportName)) {
+
+      const allowedPrivate = exportedAsGlobals.get(exportName);
+      if (isAngularPrivateName(exportName) && !allowedPrivate) {
         continue;
       }
 
@@ -50,7 +55,7 @@ export class DocsExtractor {
       if (entry && !isIgnoredDocEntry(entry)) {
         // The exported name of an API may be different from its declaration name, so
         // use the declaration name.
-        entries.push({...entry, name: exportName});
+        entries.push({...entry, name: allowedPrivate ?? exportName});
       }
     }
 
