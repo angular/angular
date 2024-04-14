@@ -427,13 +427,7 @@ export function patchEventTarget(
         const passive =
           passiveSupported && !!passiveEvents && passiveEvents.indexOf(eventName) !== -1;
         const options = buildEventListenerOptions(arguments[2], passive);
-        const signal =
-          options &&
-          typeof options === 'object' &&
-          options.signal &&
-          typeof options.signal === 'object'
-            ? options.signal
-            : undefined;
+        const signal: AbortSignal | undefined = options?.signal;
         if (signal?.aborted) {
           // the signal is an aborted one, just return without attaching the event listener.
           return;
@@ -528,14 +522,18 @@ export function patchEventTarget(
         if (signal) {
           // after task is scheduled, we need to store the signal back to task.options
           taskData.options.signal = signal;
-          nativeListener.call(
-            signal,
-            'abort',
-            () => {
-              task.zone.cancelTask(task);
-            },
-            {once: true},
-          );
+          // Wrapping `task` in a weak reference would not prevent memory leaks. Weak references are
+          // primarily used for preventing strong references cycles. `onAbort` is always reachable
+          // as it's an event listener, so its closure retains a strong reference to the `task`.
+          const onAbort = () => task.zone.cancelTask(task);
+          nativeListener.call(signal, 'abort', onAbort, {once: true});
+          // We need to remove the `abort` listener when the event listener is going to be removed,
+          // as it creates a closure that captures `task`. This closure retains a reference to the
+          // `task` object even after it goes out of scope, preventing `task` from being garbage
+          // collected.
+          if (data) {
+            (data as any).removeAbortListener = () => signal.removeEventListener('abort', onAbort);
+          }
         }
 
         // should clear taskData.target to avoid memory leak
@@ -620,7 +618,7 @@ export function patchEventTarget(
       if (symbolEventNames) {
         symbolEventName = symbolEventNames[capture ? TRUE_STR : FALSE_STR];
       }
-      const existingTasks = symbolEventName && target[symbolEventName];
+      const existingTasks: Task[] = symbolEventName && target[symbolEventName];
       if (existingTasks) {
         for (let i = 0; i < existingTasks.length; i++) {
           const existingTask = existingTasks[i];
@@ -643,6 +641,15 @@ export function patchEventTarget(
                 target[onPropertySymbol] = null;
               }
             }
+
+            // Note that `removeAllListeners` would ultimately call `removeEventListener`,
+            // so we're safe to remove the abort listener only once here.
+            const taskData = existingTask.data as any;
+            if (taskData?.removeAbortListener) {
+              taskData.removeAbortListener();
+              taskData.removeAbortListener = null;
+            }
+
             existingTask.zone.cancelTask(existingTask);
             if (returnTarget) {
               return target;
