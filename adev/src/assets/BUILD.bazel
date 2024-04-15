@@ -55,7 +55,7 @@ copy_to_directory(
         "//packages/elements:elements_docs",
         "//packages/forms:forms_docs",
         "//packages/localize:localize_docs",
-        "//packages/localize/init:localize_docs",
+        "//packages/localize/src/localize:localize_init_docs",
         "//packages/platform-browser:platform-browser_docs",
         "//packages/platform-browser-dynamic:platform-browser_dynamic_docs",
         "//packages/platform-browser-dynamic/testing:platform-browser_dynamic_testing_docs",
