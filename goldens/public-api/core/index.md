@@ -1357,6 +1357,9 @@ export interface Predicate<T> {
 }
 
 // @public
+export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders;
+
+// @public
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
 
 // @public

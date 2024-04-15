@@ -153,7 +153,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * @usageNotes
  * ```typescript
  * bootstrapApplication(MyApp, {providers: [
- *   provideZonelessChangeDetection(),
+ *   provideExperimentalZonelessChangeDetection(),
  * ]});
  * ```
  *
@@ -165,7 +165,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * @experimental
  * @see {@link bootstrapApplication}
  */
-export function provideZonelessChangeDetection(): EnvironmentProviders {
+export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');
   return makeEnvironmentProviders([
     {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},

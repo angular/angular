@@ -8,7 +8,7 @@
 
 import {AsyncPipe} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, NgZone, PLATFORM_ID, provideZoneChangeDetection, signal, TemplateRef, Type, ViewChild, ViewContainerRef, ɵprovideZonelessChangeDetection as provideZonelessChangeDetection} from '@angular/core';
+import {afterNextRender, afterRender, ApplicationRef, ChangeDetectorRef, Component, createComponent, destroyPlatform, ElementRef, EnvironmentInjector, ErrorHandler, inject, Input, NgZone, PLATFORM_ID, provideExperimentalZonelessChangeDetection as provideZonelessChangeDetection, provideZoneChangeDetection, signal, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ComponentFixture, ComponentFixtureAutoDetect, TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
