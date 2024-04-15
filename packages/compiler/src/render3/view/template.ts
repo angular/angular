@@ -123,6 +123,14 @@ export interface ParseTemplateOptions {
 
   /** Whether the @ block syntax is enabled. */
   enableBlockSyntax?: boolean;
+
+  // TODO(crisbeto): delete this option when the migration is deleted.
+  /**
+   * Whether the parser should allow invalid two-way bindings.
+   *
+   * This option is only present to support an automated migration away from the invalid syntax.
+   */
+  allowInvalidAssignmentEvents?: boolean;
 }
 
 /**
@@ -134,8 +142,13 @@ export interface ParseTemplateOptions {
  */
 export function parseTemplate(
     template: string, templateUrl: string, options: ParseTemplateOptions = {}): ParsedTemplate {
-  const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
-  const bindingParser = makeBindingParser(interpolationConfig);
+  const {
+    interpolationConfig,
+    preserveWhitespaces,
+    enableI18nLegacyMessageIdFormat,
+    allowInvalidAssignmentEvents
+  } = options;
+  const bindingParser = makeBindingParser(interpolationConfig, allowInvalidAssignmentEvents);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, {
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
@@ -230,8 +243,11 @@ const elementRegistry = new DomElementSchemaRegistry();
  * Construct a `BindingParser` with a default configuration.
  */
 export function makeBindingParser(
-    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): BindingParser {
-  return new BindingParser(new Parser(new Lexer()), interpolationConfig, elementRegistry, []);
+    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
+    allowInvalidAssignmentEvents = false): BindingParser {
+  return new BindingParser(
+      new Parser(new Lexer()), interpolationConfig, elementRegistry, [],
+      allowInvalidAssignmentEvents);
 }
 
 /**
