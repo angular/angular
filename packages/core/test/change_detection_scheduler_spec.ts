@@ -16,6 +16,8 @@ import {withBody} from '@angular/private/testing';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {filter, take, tap} from 'rxjs/operators';
 
+import {RuntimeError, RuntimeErrorCode} from '../src/errors';
+import {handleError} from '../src/render3/instructions/shared';
 import {scheduleCallbackWithRafRace} from '../src/util/callback_scheduler';
 import {global} from '../src/util/global';
 
@@ -590,6 +592,36 @@ describe('Angular with zoneless enabled', () => {
     await new Promise<void>(resolve => scheduleCallbackWithRafRace(resolve));
     expect(fixture.nativeElement.innerText).toContain('new');
   });
+
+  it('throws a nice error when notifications prevent exiting the event loop (infinite CD)',
+     async () => {
+       let caughtError: unknown;
+       let previousHandle = (Zone.root as any)._zoneDelegate.handleError;
+       (Zone.root as any)._zoneDelegate.handleError = (zone: ZoneSpec, e: unknown) => {
+         caughtError = e;
+       };
+       @Component({
+         template: '',
+         standalone: true,
+       })
+       class App {
+         cdr = inject(ChangeDetectorRef);
+         ngDoCheck() {
+           queueMicrotask(() => {
+             this.cdr.markForCheck();
+           });
+         }
+       }
+       const fixture = TestBed.createComponent(App);
+       await fixture.whenStable();
+       expect(caughtError).toBeInstanceOf(RuntimeError);
+       const runtimeError = caughtError as RuntimeError;
+       expect(runtimeError.code).toEqual(RuntimeErrorCode.INFINITE_CHANGE_DETECTION);
+       expect(runtimeError.message).toContain('markForCheck');
+       expect(runtimeError.message).toContain('notify');
+
+       (Zone.root as any)._zoneDelegate.handleError = previousHandle;
+     });
 });
 
 describe('Angular with scheduler and ZoneJS', () => {
