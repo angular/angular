@@ -1434,6 +1434,9 @@
     "name": "handleUnhandledError"
   },
   {
+    "name": "hasApplyArgsData"
+  },
+  {
     "name": "hasEmptyPathConfig"
   },
   {

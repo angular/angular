@@ -570,8 +570,12 @@ describe('Angular with zoneless enabled', () => {
 
 describe('Angular with scheduler and ZoneJS', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule(
-        {providers: [{provide: ComponentFixtureAutoDetect, useValue: true}]});
+    TestBed.configureTestingModule({
+      providers: [
+        {provide: ComponentFixtureAutoDetect, useValue: true},
+        {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
+      ]
+    });
   });
 
   it('requires updates inside Angular zone when using ngZoneOnly', async () => {
@@ -644,5 +648,32 @@ describe('Angular with scheduler and ZoneJS', () => {
     // ensure we only ran render hook 1 more time rather than once for tick and once for the
     // scheduled run
     expect(changeDetectionRuns).toEqual(2);
+  });
+
+  it('does not cause double change detection with run coalescing', async () => {
+    if (isNode) {
+      return;
+    }
+
+    TestBed.configureTestingModule({
+      providers:
+          [provideZoneChangeDetection({runCoalescing: true, ignoreChangesOutsideZone: false})]
+    });
+    @Component({template: '{{thing()}}', standalone: true})
+    class App {
+      thing = signal('initial');
+    }
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    let ticks = 0;
+    TestBed.runInInjectionContext(() => {
+      afterRender(() => {
+        ticks++;
+      });
+    });
+    fixture.componentInstance.thing.set('new');
+    await fixture.whenStable();
+    expect(ticks).toBe(1);
   });
 });

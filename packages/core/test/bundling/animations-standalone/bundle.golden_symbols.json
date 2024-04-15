@@ -1023,6 +1023,9 @@
     "name": "handleUnhandledError"
   },
   {
+    "name": "hasApplyArgsData"
+  },
+  {
     "name": "hasTagAndTypeMatch"
   },
   {

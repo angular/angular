@@ -678,6 +678,9 @@
     "name": "handleUnhandledError"
   },
   {
+    "name": "hasApplyArgsData"
+  },
+  {
     "name": "icuContainerIterate"
   },
   {
