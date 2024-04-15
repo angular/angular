@@ -35,7 +35,6 @@ export default function(options: Options): Rule {
           'Could not find any tsconfig file. Cannot run the control flow migration.');
     }
 
-    context.logger.warn('IMPORTANT! This migration is in developer preview. Use with caution.');
     let errors: string[] = [];
 
     for (const tsconfigPath of allPaths) {
