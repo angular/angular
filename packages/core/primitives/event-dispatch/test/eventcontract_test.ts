@@ -887,6 +887,8 @@ describe('EventContract', () => {
     });
 
     eventContract.cleanUp();
+    // Should not add the click listener back.
+    eventContract.addEvent('click');
 
     actionElement.click();
 

@@ -493,7 +493,7 @@ export class EventContract implements UnrenamedEventContract {
    *     in another.
    */
   addEvent(eventType: string, prefixedEventType?: string) {
-    if (eventType in this.eventHandlers) {
+    if (eventType in this.eventHandlers || !this.containerManager) {
       return;
     }
 
@@ -524,7 +524,7 @@ export class EventContract implements UnrenamedEventContract {
       this.browserEventTypeToExtraEventTypes[browserEventType] = eventTypes;
     }
 
-    this.containerManager!.addEventListener(
+    this.containerManager.addEventListener(
         browserEventType,
         (element: Element) => {
           return (event: Event) => {
