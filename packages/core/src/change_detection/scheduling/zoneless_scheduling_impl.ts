@@ -18,6 +18,7 @@ import {NgZone, NoopNgZone} from '../../zone/ng_zone';
 
 import {ChangeDetectionScheduler, NotificationType, ZONELESS_ENABLED, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
 
+
 @Injectable({providedIn: 'root'})
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private appRef = inject(ApplicationRef);
@@ -31,6 +32,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly disableScheduling =
       inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
+  private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly afterTickSubscription = this.appRef.afterTick.subscribe(() => {
     // If the scheduler isn't running a tick but the application ticked, that means
     // someone called ApplicationRef.tick manually. In this case, we should cancel
@@ -111,7 +113,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       this.ngZone.run(() => {
         this.runningTick = true;
         this.appRef._tick(shouldRefreshViews);
-      });
+      }, undefined, this.schedulerTickApplyArgs);
     } finally {
       this.cleanup();
     }

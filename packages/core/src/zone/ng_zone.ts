@@ -417,6 +417,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
     onInvokeTask:
         (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
          applyArgs: any): any => {
+          // Prevent triggering change detection when the flag is detected.
           if (shouldBeIgnoredByZone(applyArgs)) {
             return delegate.invokeTask(target, task, applyThis, applyArgs);
           }
@@ -433,19 +434,29 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
           }
         },
 
-    onInvoke:
-        (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function, applyThis: any,
-         applyArgs?: any[], source?: string): any => {
-          try {
-            onEnter(zone);
-            return delegate.invoke(target, callback, applyThis, applyArgs, source);
-          } finally {
-            if (zone.shouldCoalesceRunChangeDetection) {
-              delayChangeDetectionForEventsDelegate();
-            }
-            onLeave(zone);
-          }
-        },
+    onInvoke: (
+        delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function, applyThis: any,
+        applyArgs?: any[], source?: string): any => {
+      try {
+        onEnter(zone);
+        return delegate.invoke(target, callback, applyThis, applyArgs, source);
+      } finally {
+        if (zone.shouldCoalesceRunChangeDetection &&
+            // Do not delay change detection when the task is the scheduler's tick.
+            // We need to synchronously trigger the stability logic so that the
+            // zone-based scheduler can prevent a duplicate ApplicationRef.tick
+            // by first checking if the scheduler tick is running. This does seem a bit roundabout,
+            // but we _do_ still want to trigger all the correct events when we exit the zone.run
+            // (`onMicrotaskEmpty` and `onStable` _should_ emit; developers can have code which
+            // relies on these events happening after change detection runs).
+            // Note: `zone.callbackScheduled` is already in delayChangeDetectionForEventsDelegate
+            // but is added here as well to prevent reads of applyArgs when not necessary
+            !zone.callbackScheduled && !isSchedulerTick(applyArgs)) {
+          delayChangeDetectionForEventsDelegate();
+        }
+        onLeave(zone);
+      }
+    },
 
     onHasTask:
         (delegate: ZoneDelegate, current: Zone, target: Zone, hasTaskState: HasTaskState) => {
@@ -526,6 +537,14 @@ export class NoopNgZone implements NgZone {
 
 
 function shouldBeIgnoredByZone(applyArgs: unknown): boolean {
+  return hasApplyArgsData(applyArgs, '__ignore_ng_zone__');
+}
+
+function isSchedulerTick(applyArgs: unknown): boolean {
+  return hasApplyArgsData(applyArgs, '__scheduler_tick__');
+}
+
+function hasApplyArgsData(applyArgs: unknown, key: string) {
   if (!Array.isArray(applyArgs)) {
     return false;
   }
@@ -536,8 +555,7 @@ function shouldBeIgnoredByZone(applyArgs: unknown): boolean {
     return false;
   }
 
-  // Prevent triggering change detection when the __ignore_ng_zone__ flag is detected.
-  return applyArgs[0].data?.['__ignore_ng_zone__'] === true;
+  return applyArgs[0].data?.[key] === true;
 }
 
 
