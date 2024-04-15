@@ -38,7 +38,8 @@ export interface HostListeners {
 export class BindingParser {
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
-      private _schemaRegistry: ElementSchemaRegistry, public errors: ParseError[]) {}
+      private _schemaRegistry: ElementSchemaRegistry, public errors: ParseError[],
+      private _allowInvalidAssignmentEvents = false) {}
 
   get interpolationConfig(): InterpolationConfig {
     return this._interpolationConfig;
@@ -546,6 +547,12 @@ export class BindingParser {
 
     if (ast instanceof PropertyRead || ast instanceof KeyedRead) {
       return true;
+    }
+
+    // TODO(crisbeto): this logic is only here to support the automated migration away
+    // from invalid bindings. It should be removed once the migration is deleted.
+    if (!this._allowInvalidAssignmentEvents) {
+      return false;
     }
 
     if (ast instanceof Binary) {
