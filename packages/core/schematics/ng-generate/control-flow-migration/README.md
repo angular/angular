@@ -8,8 +8,6 @@ the template. It has the following option:
 * `path` - Relative path within the project that the migration should apply to. Can be used to
 migrate specific sub-directories individually. Defaults to the project root.
 
-NOTE: This is a developer preview migration
-
 #### Before
 ```ts
 import {Component} from '@angular/core';

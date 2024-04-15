@@ -3588,9 +3588,6 @@ describe('control flow migration', () => {
 
       await runMigration();
       tree.readContent('/comp.ts');
-
-      expect(warnOutput.join(' '))
-          .toContain('IMPORTANT! This migration is in developer preview. Use with caution.');
     });
 
     it('should log a migration error when duplicate ng-template names are detected', async () => {
