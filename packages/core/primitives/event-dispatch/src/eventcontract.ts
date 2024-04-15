@@ -169,7 +169,7 @@ export class EventContract implements UnrenamedEventContract {
 
   constructor(
       containerManager: EventContractContainerManager,
-      private readonly stopPropagation = EventContract.STOP_PROPAGATION,
+      private readonly stopPropagation: false = false,
   ) {
     this.containerManager = containerManager;
     if (EventContract.CUSTOM_EVENT_SUPPORT) {
