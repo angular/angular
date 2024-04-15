@@ -33,7 +33,7 @@ import {of, Subject} from 'rxjs';
 
 import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
 import {Event, NavigationError, stringifyEvent} from './events';
-import {Routes} from './models';
+import {RedirectCommand, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
 import {Router} from './router';
 import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
@@ -648,6 +648,12 @@ export type NavigationErrorHandlerFeature =
  * This function is run inside application's [injection context](guide/di/dependency-injection-context)
  * so you can use the [`inject`](api/core/inject) function.
  *
+ * This function can return a `RedirectCommand` to convert the error to a redirect, similar to returning
+ * a `UrlTree` or `RedirectCommand` from a guard. This will also prevent the `Router` from emitting
+ * `NavigationError`; it will instead emit `NavigationCancel` with code NavigationCancellationCode.Redirect.
+ * Return values other than `RedirectCommand` are ignored and do not change any behavior with respect to
+ * how the `Router` handles the error.
+ *
  * @usageNotes
  *
  * Basic example of how you can use the error handler option:
@@ -672,7 +678,7 @@ export type NavigationErrorHandlerFeature =
  * @publicApi
  */
 export function withNavigationErrorHandler(
-  handler: (error: NavigationError) => void,
+  handler: (error: NavigationError) => unknown | RedirectCommand,
 ): NavigationErrorHandlerFeature {
   const providers = [
     {

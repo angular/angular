@@ -1148,7 +1148,7 @@ export function withHashLocation(): RouterHashLocationFeature;
 export function withInMemoryScrolling(options?: InMemoryScrollingOptions): InMemoryScrollingFeature;
 
 // @public
-export function withNavigationErrorHandler(handler: (error: NavigationError) => void): NavigationErrorHandlerFeature;
+export function withNavigationErrorHandler(handler: (error: NavigationError) => unknown | RedirectCommand): NavigationErrorHandlerFeature;
 
 // @public
 export function withPreloading(preloadingStrategy: Type<PreloadingStrategy>): PreloadingFeature;
