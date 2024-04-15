@@ -1,4 +1,4 @@
-name: 'Docs or angular.io Bug Report'
+name: 'Docs or angular.dev Bug Report'
 description: Report an issue in Angular's documentation or angular.io application
 
 body:
