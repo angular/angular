@@ -51,7 +51,14 @@ import {
   RouteConfigLoadStart,
   RoutesRecognized,
 } from './events';
-import {GuardResult, NavigationBehaviorOptions, QueryParamsHandling, Route, Routes} from './models';
+import {
+  GuardResult,
+  NavigationBehaviorOptions,
+  QueryParamsHandling,
+  RedirectCommand,
+  Route,
+  Routes,
+} from './models';
 import {
   isNavigationCancelingError,
   isRedirectingNavigationCancelingError,
@@ -324,9 +331,9 @@ interface InternalRouterInterface {
   onSameUrlNavigation: 'reload' | 'ignore';
 }
 
-export const NAVIGATION_ERROR_HANDLER = new InjectionToken<(error: NavigationError) => void>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '',
-);
+export const NAVIGATION_ERROR_HANDLER = new InjectionToken<
+  (error: NavigationError) => unknown | RedirectCommand
+>(typeof ngDevMode === 'undefined' || ngDevMode ? 'navigation error handler' : '');
 
 @Injectable({providedIn: 'root'})
 export class NavigationTransitions {
@@ -849,13 +856,38 @@ export class NavigationTransitions {
                 overallTransitionState.targetSnapshot ?? undefined,
               );
 
-              this.events.next(navigationError);
               try {
-                runInInjectionContext(this.environmentInjector, () =>
-                  this.navigationErrorHandler?.(navigationError),
+                const navigationErrorHandlerResult = runInInjectionContext(
+                  this.environmentInjector,
+                  () => this.navigationErrorHandler?.(navigationError),
                 );
-                const errorHandlerResult = router.errorHandler(e);
-                overallTransitionState.resolve(!!errorHandlerResult);
+
+                if (navigationErrorHandlerResult instanceof RedirectCommand) {
+                  const {message, cancellationCode} = redirectingNavigationError(
+                    this.urlSerializer,
+                    navigationErrorHandlerResult,
+                  );
+                  this.events.next(
+                    new NavigationCancel(
+                      overallTransitionState.id,
+                      this.urlSerializer.serialize(overallTransitionState.extractedUrl),
+                      message,
+                      cancellationCode,
+                    ),
+                  );
+                  this.events.next(
+                    new RedirectRequest(
+                      navigationErrorHandlerResult.redirectTo,
+                      navigationErrorHandlerResult.navigationBehaviorOptions,
+                    ),
+                  );
+                } else {
+                  this.events.next(navigationError);
+                  // TODO(atscott): remove deprecation on errorHandler in RouterModule.forRoot and change behavior to provide NAVIGATION_ERROR_HANDLER
+                  // Note: Still remove public `Router.errorHandler` property, as this is supposed to be configured in DI.
+                  const errorHandlerResult = router.errorHandler(e);
+                  overallTransitionState.resolve(!!errorHandlerResult);
+                }
               } catch (ee) {
                 // TODO(atscott): consider flipping the default behavior of
                 // resolveNavigationPromiseOnError to be `resolve(false)` when
@@ -873,6 +905,7 @@ export class NavigationTransitions {
                 }
               }
             }
+
             return EMPTY;
           }),
         );

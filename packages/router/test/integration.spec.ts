@@ -1897,6 +1897,46 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(TestBed.inject(Handler).handlerCalled).toBeTrue();
     });
 
+    it('can redirect from error handler', async () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [
+              {
+                path: 'throw',
+                canMatch: [
+                  () => {
+                    throw new Error('');
+                  },
+                ],
+                component: BlankCmp,
+              },
+              {path: 'error', component: BlankCmp},
+            ],
+            withRouterConfig({resolveNavigationPromiseOnError: true}),
+            withNavigationErrorHandler(
+              () => new RedirectCommand(coreInject(Router).parseUrl('/error')),
+            ),
+          ),
+        ],
+      });
+      const router = TestBed.inject(Router);
+      let emitNavigationError = false;
+      let emitNavigationCancelWithRedirect = false;
+      router.events.subscribe((e) => {
+        if (e instanceof NavigationError) {
+          emitNavigationError = true;
+        }
+        if (e instanceof NavigationCancel && e.code === NavigationCancellationCode.Redirect) {
+          emitNavigationCancelWithRedirect = true;
+        }
+      });
+      await router.navigateByUrl('/throw');
+      expect(router.url).toEqual('/error');
+      expect(emitNavigationError).toBe(false);
+      expect(emitNavigationCancelWithRedirect).toBe(true);
+    });
+
     it('should not break navigation if an error happens in NavigationErrorHandler', async () => {
       TestBed.configureTestingModule({
         providers: [
