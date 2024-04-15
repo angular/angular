@@ -9,12 +9,13 @@
 import {Attribute as AccessibilityAttribute} from '../src/accessibility';
 import * as cache from '../src/cache';
 import {fireCustomEvent} from '../src/custom_events';
+import {stopPropagation} from '../src/dispatcher';
 import {EarlyEventContract, EarlyJsactionData} from '../src/earlyeventcontract';
 import {EventContractContainer, EventContractContainerManager,} from '../src/event_contract_container';
 import {EventContractMultiContainer} from '../src/event_contract_multi_container';
 import {EventInfo, EventInfoWrapper} from '../src/event_info';
 import {EventType} from '../src/event_type';
-import {addDeferredA11yClickSupport, Dispatcher, EventContract,} from '../src/eventcontract';
+import {addDeferredA11yClickSupport, Dispatcher, EventContract} from '../src/eventcontract';
 import {Property} from '../src/property';
 import {Restriction} from '../src/restriction';
 
@@ -187,10 +188,9 @@ function getRequiredElementById(id: string) {
   return element!;
 }
 
-function createEventContractMultiContainer(container: Element) {
-  const eventContractContainerManager = new EventContractMultiContainer(
-      EventContract.STOP_PROPAGATION,
-  );
+function createEventContractMultiContainer(
+    container: Element, {stopPropagation = false}: {stopPropagation?: boolean} = {}) {
+  const eventContractContainerManager = new EventContractMultiContainer(stopPropagation);
   eventContractContainerManager.addContainer(container);
   return eventContractContainerManager;
 }
@@ -205,7 +205,9 @@ function createEventContract({
   exportAddA11yClickSupport?: boolean; eventTypes: Array<string|[string, string]>;
   dispatcher?: jasmine.Spy<Dispatcher>;
 }): EventContract {
-  const eventContract = new EventContract(eventContractContainerManager);
+  const eventContract = new EventContract(
+      eventContractContainerManager,
+      /* stopPropagation= */ false);
   if (exportAddA11yClickSupport) {
     eventContract.exportAddA11yClickSupport();
   }
@@ -218,101 +220,66 @@ function createEventContract({
     }
   }
   if (dispatcher) {
-    eventContract.registerDispatcher(
-        dispatcher,
-        Restriction.I_AM_THE_JSACTION_FRAMEWORK,
-    );
+    eventContract.registerDispatcher(dispatcher, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
   }
   return eventContract;
 }
 
-function getLastDispatchedEventInfoWrapper(
-    dispatcher: jasmine.Spy<Dispatcher>,
-    ): EventInfoWrapper {
+function getLastDispatchedEventInfoWrapper(dispatcher: jasmine.Spy<Dispatcher>): EventInfoWrapper {
   return new EventInfoWrapper(dispatcher.calls.mostRecent().args[0]);
 }
 
-function dispatchMouseEvent(
-    target: Element,
-    {
-      type = 'click',
-      ctrlKey = false,
-      altKey = false,
-      shiftKey = false,
-      metaKey = false,
-      relatedTarget = null,
-    }: {
-      type?: string;
-      ctrlKey?: boolean;
-      altKey?: boolean;
-      shiftKey?: boolean;
-      metaKey?: boolean;
-      relatedTarget?: Element | null;
-    } = {},
-) {
+function dispatchMouseEvent(target: Element, {
+  type = 'click',
+  ctrlKey = false,
+  altKey = false,
+  shiftKey = false,
+  metaKey = false,
+  relatedTarget = null,
+}: {
+  type?: string;
+  ctrlKey?: boolean;
+  altKey?: boolean;
+  shiftKey?: boolean;
+  metaKey?: boolean;
+  relatedTarget?: Element | null;
+} = {}) {
   // createEvent/initMouseEvent is used to support IE11
   // tslint:disable:deprecation
   const event = document.createEvent('MouseEvent');
   event.initMouseEvent(
-      type,
-      true,
-      true,
-      window,
-      0,
-      0,
-      0,
-      0,
-      0,
-      ctrlKey,
-      altKey,
-      shiftKey,
-      metaKey,
-      0,
-      relatedTarget,
-  );
+      type, true, true, window, 0, 0, 0, 0, 0, ctrlKey, altKey, shiftKey, metaKey, 0,
+      relatedTarget);
   // tslint:enable:deprecation
   spyOn(event, 'preventDefault').and.callThrough();
   target.dispatchEvent(event);
   return event;
 }
 
-function dispatchKeyboardEvent(
-    target: Element,
-    {
-      type = 'keydown',
-      key = '',
-      location = 0,
-      ctrlKey = false,
-      altKey = false,
-      shiftKey = false,
-      metaKey = false,
-      skipA11yCheck = false,
-    }: {
-      type?: string;
-      key?: string;
-      location?: number;
-      ctrlKey?: boolean;
-      altKey?: boolean;
-      shiftKey?: boolean;
-      metaKey?: boolean;
-      skipA11yCheck?: boolean;
-    } = {},
-) {
+function dispatchKeyboardEvent(target: Element, {
+  type = 'keydown',
+  key = '',
+  location = 0,
+  ctrlKey = false,
+  altKey = false,
+  shiftKey = false,
+  metaKey = false,
+  skipA11yCheck = false,
+}: {
+  type?: string;
+  key?: string;
+  location?: number;
+  ctrlKey?: boolean;
+  altKey?: boolean;
+  shiftKey?: boolean;
+  metaKey?: boolean;
+  skipA11yCheck?: boolean;
+} = {}) {
   // createEvent/initKeyboardEvent is used to support IE11
   // tslint:disable:deprecation
   const event = document.createEvent('KeyboardEvent');
   event.initKeyboardEvent(
-      type,
-      true,
-      true,
-      window,
-      key,
-      location,
-      ctrlKey,
-      altKey,
-      shiftKey,
-      metaKey,
-  );
+      type, true, true, window, key, location, ctrlKey, altKey, shiftKey, metaKey);
   // tslint:enable:deprecation
   // This is necessary as Chrome does not respect the key parameter in
   // `initKeyboardEvent`.
@@ -331,8 +298,6 @@ describe('EventContract', () => {
     EventContract.A11Y_CLICK_SUPPORT = false;
     EventContract.A11Y_SUPPORT_IN_DISPATCHER = false;
     EventContract.MOUSE_SPECIAL_SUPPORT = false;
-    EventContract.STOP_PROPAGATION = false;
-    EventContractMultiContainer.STOP_PROPAGATION = false;
     EventContract.CUSTOM_EVENT_SUPPORT = false;
 
     // Normalize timestamp.
@@ -346,9 +311,10 @@ describe('EventContract', () => {
     const addEventListenerSpy2 = spyOn(container2, 'addEventListener');
 
     const eventContractContainerManager = new EventContractMultiContainer(
-        EventContract.STOP_PROPAGATION,
-    );
-    const eventContract = new EventContract(eventContractContainerManager);
+        /* stopPropagation= */ false);
+    const eventContract = new EventContract(
+        eventContractContainerManager,
+        /* stopPropagation= */ false);
     eventContract.addEvent('click');
 
     expect(addEventListenerSpy).not.toHaveBeenCalled();
@@ -372,9 +338,10 @@ describe('EventContract', () => {
     const addEventListenerSpy2 = spyOn(container2, 'addEventListener');
 
     const eventContractContainerManager = new EventContractMultiContainer(
-        EventContract.STOP_PROPAGATION,
-    );
-    const eventContract = new EventContract(eventContractContainerManager);
+        /* stopPropagation= */ false);
+    const eventContract = new EventContract(
+        eventContractContainerManager,
+        /* stopPropagation= */ false);
     eventContractContainerManager.addContainer(container);
     eventContractContainerManager.addContainer(container2);
 
@@ -397,9 +364,10 @@ describe('EventContract', () => {
     const addEventListenerSpy = spyOn(container, 'addEventListener');
 
     const eventContractContainerManager = new EventContractMultiContainer(
-        EventContract.STOP_PROPAGATION,
-    );
-    const eventContract = new EventContract(eventContractContainerManager);
+        /* stopPropagation= */ false);
+    const eventContract = new EventContract(
+        eventContractContainerManager,
+        /* stopPropagation= */ false);
     eventContract.addEvent('animationend', 'webkitanimationend');
     eventContractContainerManager.addContainer(container);
 
@@ -421,10 +389,7 @@ describe('EventContract', () => {
     const clickEvent = dispatchMouseEvent(targetElement);
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-    eventContract.registerDispatcher(
-        dispatcher,
-        Restriction.I_AM_THE_JSACTION_FRAMEWORK,
-    );
+    eventContract.registerDispatcher(dispatcher, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
 
     expect(dispatcher).toHaveBeenCalledTimes(2);
 
@@ -489,12 +454,8 @@ describe('EventContract', () => {
 
   it('dispatch event to child and ignore parent', () => {
     const container = getRequiredElementById('parent-and-child-container');
-    const actionElement = getRequiredElementById(
-        'parent-and-child-action-element',
-    );
-    const targetElement = getRequiredElementById(
-        'parent-and-child-target-element',
-    );
+    const actionElement = getRequiredElementById('parent-and-child-action-element');
+    const targetElement = getRequiredElementById('parent-and-child-target-element');
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
@@ -669,12 +630,8 @@ describe('EventContract', () => {
 
   it('handles trailing semicolon in jsaction attribute', () => {
     const container = getRequiredElementById('trailing-semicolon-container');
-    const actionElement = getRequiredElementById(
-        'trailing-semicolon-action-element',
-    );
-    const targetElement = getRequiredElementById(
-        'trailing-semicolon-target-element',
-    );
+    const actionElement = getRequiredElementById('trailing-semicolon-action-element');
+    const targetElement = getRequiredElementById('trailing-semicolon-target-element');
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
@@ -696,12 +653,8 @@ describe('EventContract', () => {
 
   it('handles jsaction attributes without action names, first action', () => {
     const container = getRequiredElementById('no-action-name-container');
-    const actionElement = getRequiredElementById(
-        'no-action-name-action-element',
-    );
-    const targetElement = getRequiredElementById(
-        'no-action-name-target-element',
-    );
+    const actionElement = getRequiredElementById('no-action-name-action-element');
+    const targetElement = getRequiredElementById('no-action-name-target-element');
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
@@ -723,12 +676,8 @@ describe('EventContract', () => {
 
   it('handles jsaction attributes without action names, last action', () => {
     const container = getRequiredElementById('no-action-name-container');
-    const actionElement = getRequiredElementById(
-        'no-action-name-action-element',
-    );
-    const targetElement = getRequiredElementById(
-        'no-action-name-target-element',
-    );
+    const actionElement = getRequiredElementById('no-action-name-action-element');
+    const targetElement = getRequiredElementById('no-action-name-target-element');
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
@@ -750,9 +699,7 @@ describe('EventContract', () => {
 
   it('does not handle jsaction attributes without event type or action name', () => {
     const container = getRequiredElementById('no-action-name-container');
-    const targetElement = getRequiredElementById(
-        'no-action-name-target-element',
-    );
+    const targetElement = getRequiredElementById('no-action-name-target-element');
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
@@ -773,12 +720,8 @@ describe('EventContract', () => {
 
   it('re-dispatches if dispatcher returns an `EventInfo`', () => {
     const container = getRequiredElementById('a11y-click-keydown-container');
-    const actionElement = getRequiredElementById(
-        'a11y-click-keydown-action-element',
-    );
-    const targetElement = getRequiredElementById(
-        'a11y-click-keydown-target-element',
-    );
+    const actionElement = getRequiredElementById('a11y-click-keydown-action-element');
+    const targetElement = getRequiredElementById('a11y-click-keydown-target-element');
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
@@ -866,20 +809,12 @@ describe('EventContract', () => {
 
   it('cleanUp removes all event listeners and containers', () => {
     const container = getRequiredElementById('click-container');
-    const removeEventListenerSpy = spyOn(
-                                       container,
-                                       'removeEventListener',
-                                       )
-                                       .and.callThrough();
+    const removeEventListenerSpy = spyOn(container, 'removeEventListener').and.callThrough();
     const actionElement = getRequiredElementById('click-action-element');
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     const eventContractContainerManager = new EventContractContainer(container);
-    const cleanUpSpy = spyOn(
-                           eventContractContainerManager,
-                           'cleanUp',
-                           )
-                           .and.callThrough();
+    const cleanUpSpy = spyOn(eventContractContainerManager, 'cleanUp').and.callThrough();
     const eventContract = createEventContract({
       eventContractContainerManager,
       eventTypes: ['click'],
@@ -944,12 +879,8 @@ describe('EventContract', () => {
 
     it('dispatches event', () => {
       const container = getRequiredElementById('custom-event-container');
-      const targetElement = getRequiredElementById(
-          'custom-event-target-element',
-      );
-      const actionElement = getRequiredElementById(
-          'custom-event-action-element',
-      );
+      const targetElement = getRequiredElementById('custom-event-target-element');
+      const actionElement = getRequiredElementById('custom-event-action-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -976,12 +907,8 @@ describe('EventContract', () => {
 
     it('dispatches event with data', () => {
       const container = getRequiredElementById('custom-event-container');
-      const targetElement = getRequiredElementById(
-          'custom-event-target-element',
-      );
-      const actionElement = getRequiredElementById(
-          'custom-event-action-element',
-      );
+      const targetElement = getRequiredElementById('custom-event-target-element');
+      const actionElement = getRequiredElementById('custom-event-action-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1032,12 +959,8 @@ describe('EventContract', () => {
 
   it('prevents default for modified click on anchor child', () => {
     const container = getRequiredElementById('anchor-clickmod-container');
-    const actionElement = getRequiredElementById(
-        'anchor-clickmod-action-element',
-    );
-    const targetElement = getRequiredElementById(
-        'anchor-clickmod-target-element',
-    );
+    const actionElement = getRequiredElementById('anchor-clickmod-action-element');
+    const targetElement = getRequiredElementById('anchor-clickmod-target-element');
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
@@ -1128,12 +1051,8 @@ describe('EventContract', () => {
 
     it('prevents default for enter key on anchor child', () => {
       const container = getRequiredElementById('a11y-anchor-click-container');
-      const actionElement = getRequiredElementById(
-          'a11y-anchor-click-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-anchor-click-target-element',
-      );
+      const actionElement = getRequiredElementById('a11y-anchor-click-action-element');
+      const targetElement = getRequiredElementById('a11y-anchor-click-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1157,12 +1076,8 @@ describe('EventContract', () => {
 
     it('dispatches clickonly event', () => {
       const container = getRequiredElementById('a11y-clickonly-container');
-      const actionElement = getRequiredElementById(
-          'a11y-clickonly-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-clickonly-target-element',
-      );
+      const actionElement = getRequiredElementById('a11y-clickonly-action-element');
+      const targetElement = getRequiredElementById('a11y-clickonly-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1185,15 +1100,9 @@ describe('EventContract', () => {
     });
 
     it('dispatches click event to click handler rather than clickonly', () => {
-      const container = getRequiredElementById(
-          'a11y-click-clickonly-container',
-      );
-      const actionElement = getRequiredElementById(
-          'a11y-click-clickonly-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-click-clickonly-target-element',
-      );
+      const container = getRequiredElementById('a11y-click-clickonly-container');
+      const actionElement = getRequiredElementById('a11y-click-clickonly-action-element');
+      const targetElement = getRequiredElementById('a11y-click-clickonly-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1237,10 +1146,7 @@ describe('EventContract', () => {
 
       expect(dispatcher).toHaveBeenCalledTimes(2);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType())
-          .toBe(
-              AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE,
-          );
+      expect(eventInfoWrapper.getEventType()).toBe(AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE);
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
       expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
@@ -1249,12 +1155,8 @@ describe('EventContract', () => {
 
     it('dispatches non-a11y keydown as maybe click event', () => {
       const container = getRequiredElementById('a11y-click-keydown-container');
-      const actionElement = getRequiredElementById(
-          'a11y-click-keydown-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-click-keydown-target-element',
-      );
+      const actionElement = getRequiredElementById('a11y-click-keydown-action-element');
+      const targetElement = getRequiredElementById('a11y-click-keydown-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1268,10 +1170,7 @@ describe('EventContract', () => {
 
       expect(dispatcher).toHaveBeenCalledTimes(2);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType())
-          .toBe(
-              AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE,
-          );
+      expect(eventInfoWrapper.getEventType()).toBe(AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE);
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
       expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
@@ -1280,12 +1179,8 @@ describe('EventContract', () => {
 
     it('dispatches a11y keydown with SKIP_A11Y_CHECK as click', () => {
       const container = getRequiredElementById('a11y-click-keydown-container');
-      const actionElement = getRequiredElementById(
-          'a11y-click-keydown-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-click-keydown-target-element',
-      );
+      const actionElement = getRequiredElementById('a11y-click-keydown-action-element');
+      const targetElement = getRequiredElementById('a11y-click-keydown-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1310,12 +1205,8 @@ describe('EventContract', () => {
 
     it('does not prevent default for enter key on anchor child', () => {
       const container = getRequiredElementById('a11y-anchor-click-container');
-      const actionElement = getRequiredElementById(
-          'a11y-anchor-click-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-anchor-click-target-element',
-      );
+      const actionElement = getRequiredElementById('a11y-anchor-click-action-element');
+      const targetElement = getRequiredElementById('a11y-anchor-click-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1328,10 +1219,7 @@ describe('EventContract', () => {
 
       expect(dispatcher).toHaveBeenCalledTimes(2);
       const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType())
-          .toBe(
-              AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE,
-          );
+      expect(eventInfoWrapper.getEventType()).toBe(AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE);
       expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
       expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
@@ -1342,12 +1230,8 @@ describe('EventContract', () => {
 
     it('dispatches clickonly event', () => {
       const container = getRequiredElementById('a11y-clickonly-container');
-      const actionElement = getRequiredElementById(
-          'a11y-clickonly-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-clickonly-target-element',
-      );
+      const actionElement = getRequiredElementById('a11y-clickonly-action-element');
+      const targetElement = getRequiredElementById('a11y-clickonly-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1371,15 +1255,9 @@ describe('EventContract', () => {
     });
 
     it('dispatches click event to click handler rather than clickonly', () => {
-      const container = getRequiredElementById(
-          'a11y-click-clickonly-container',
-      );
-      const actionElement = getRequiredElementById(
-          'a11y-click-clickonly-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-click-clickonly-target-element',
-      );
+      const container = getRequiredElementById('a11y-click-clickonly-container');
+      const actionElement = getRequiredElementById('a11y-click-clickonly-action-element');
+      const targetElement = getRequiredElementById('a11y-click-clickonly-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -1457,12 +1335,8 @@ describe('EventContract', () => {
 
     it('prevents default for enter key on anchor child', () => {
       const container = getRequiredElementById('a11y-anchor-click-container');
-      const actionElement = getRequiredElementById(
-          'a11y-anchor-click-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-anchor-click-target-element',
-      );
+      const actionElement = getRequiredElementById('a11y-anchor-click-action-element');
+      const targetElement = getRequiredElementById('a11y-anchor-click-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContract = createEventContract({
@@ -1488,12 +1362,8 @@ describe('EventContract', () => {
 
     it('dispatches clickonly event', () => {
       const container = getRequiredElementById('a11y-clickonly-container');
-      const actionElement = getRequiredElementById(
-          'a11y-clickonly-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-clickonly-target-element',
-      );
+      const actionElement = getRequiredElementById('a11y-clickonly-action-element');
+      const targetElement = getRequiredElementById('a11y-clickonly-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContract = createEventContract({
@@ -1518,15 +1388,9 @@ describe('EventContract', () => {
     });
 
     it('dispatches click event to click handler rather than clickonly', () => {
-      const container = getRequiredElementById(
-          'a11y-click-clickonly-container',
-      );
-      const actionElement = getRequiredElementById(
-          'a11y-click-clickonly-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'a11y-click-clickonly-target-element',
-      );
+      const container = getRequiredElementById('a11y-click-clickonly-container');
+      const actionElement = getRequiredElementById('a11y-click-clickonly-action-element');
+      const targetElement = getRequiredElementById('a11y-click-clickonly-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContract = createEventContract({
@@ -1561,27 +1425,16 @@ describe('EventContract', () => {
 
     beforeEach(() => {
       outerContainer = getRequiredElementById('nested-outer-container');
-      outerActionElement = getRequiredElementById(
-          'nested-outer-action-element',
-      );
-      outerTargetElement = getRequiredElementById(
-          'nested-outer-target-element',
-      );
+      outerActionElement = getRequiredElementById('nested-outer-action-element');
+      outerTargetElement = getRequiredElementById('nested-outer-target-element');
       innerContainer = getRequiredElementById('nested-inner-container');
-      innerActionElement = getRequiredElementById(
-          'nested-inner-action-element',
-      );
-      innerTargetElement = getRequiredElementById(
-          'nested-inner-target-element',
-      );
+      innerActionElement = getRequiredElementById('nested-inner-action-element');
+      innerTargetElement = getRequiredElementById('nested-inner-target-element');
     });
 
     it('dispatches events in outer container', () => {
       const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener(
-          'click',
-          documentListener,
-      );
+      window.document.documentElement.addEventListener('click', documentListener);
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager = createEventContractMultiContainer(outerContainer);
       createEventContract({
@@ -1606,10 +1459,7 @@ describe('EventContract', () => {
 
     it('dispatches events in inner container', () => {
       const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener(
-          'click',
-          documentListener,
-      );
+      window.document.documentElement.addEventListener('click', documentListener);
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager = createEventContractMultiContainer(outerContainer);
       createEventContract({
@@ -1634,10 +1484,7 @@ describe('EventContract', () => {
 
     it('dispatches events in outer container, inner registered first', () => {
       const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener(
-          'click',
-          documentListener,
-      );
+      window.document.documentElement.addEventListener('click', documentListener);
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager = createEventContractMultiContainer(innerContainer);
       createEventContract({
@@ -1662,10 +1509,7 @@ describe('EventContract', () => {
 
     it('dispatches events in inner container, inner container registered first', () => {
       const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener(
-          'click',
-          documentListener,
-      );
+      window.document.documentElement.addEventListener('click', documentListener);
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager = createEventContractMultiContainer(innerContainer);
       createEventContract({
@@ -1690,10 +1534,7 @@ describe('EventContract', () => {
 
     it('dispatches events in inner container, inner container removed', () => {
       const documentListener = jasmine.createSpy('documentListener');
-      window.document.documentElement.addEventListener(
-          'click',
-          documentListener,
-      );
+      window.document.documentElement.addEventListener('click', documentListener);
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       const eventContractContainerManager = createEventContractMultiContainer(outerContainer);
       createEventContract({
@@ -1719,9 +1560,7 @@ describe('EventContract', () => {
       dispatcher.calls.reset();
       documentListener.calls.reset();
 
-      eventContractContainerManager.removeContainer(
-          innerEventContractContainer,
-      );
+      eventContractContainerManager.removeContainer(innerEventContractContainer);
 
       clickEvent = dispatchMouseEvent(innerTargetElement);
 
@@ -1737,19 +1576,16 @@ describe('EventContract', () => {
     });
 
     describe('with stop propagation', () => {
-      beforeEach(() => {
-        EventContract.STOP_PROPAGATION = true;
-        EventContractMultiContainer.STOP_PROPAGATION = true;
-      });
-
       it('dispatches events in outer container', () => {
         const documentListener = jasmine.createSpy('documentListener');
-        window.document.documentElement.addEventListener(
-            'click',
-            documentListener,
-        );
-        const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-        const eventContractContainerManager = createEventContractMultiContainer(outerContainer);
+        window.document.documentElement.addEventListener('click', documentListener);
+        const dispatcher =
+            jasmine.createSpy<Dispatcher>('dispatcher').and.callFake((eventInfo: EventInfo) => {
+              stopPropagation(new EventInfoWrapper(eventInfo));
+            });
+        const eventContractContainerManager = createEventContractMultiContainer(outerContainer, {
+          stopPropagation: true,
+        });
         createEventContract({
           eventContractContainerManager,
           eventTypes: ['click'],
@@ -1772,12 +1608,14 @@ describe('EventContract', () => {
 
       it('dispatches events in inner container', () => {
         const documentListener = jasmine.createSpy('documentListener');
-        window.document.documentElement.addEventListener(
-            'click',
-            documentListener,
-        );
-        const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-        const eventContractContainerManager = createEventContractMultiContainer(outerContainer);
+        window.document.documentElement.addEventListener('click', documentListener);
+        const dispatcher =
+            jasmine.createSpy<Dispatcher>('dispatcher').and.callFake((eventInfo: EventInfo) => {
+              stopPropagation(new EventInfoWrapper(eventInfo));
+            });
+        const eventContractContainerManager = createEventContractMultiContainer(outerContainer, {
+          stopPropagation: true,
+        });
         createEventContract({
           eventContractContainerManager,
           eventTypes: ['click'],
@@ -1800,12 +1638,14 @@ describe('EventContract', () => {
 
       it('dispatches events in outer container, inner registered first', () => {
         const documentListener = jasmine.createSpy('documentListener');
-        window.document.documentElement.addEventListener(
-            'click',
-            documentListener,
-        );
-        const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-        const eventContractContainerManager = createEventContractMultiContainer(innerContainer);
+        window.document.documentElement.addEventListener('click', documentListener);
+        const dispatcher =
+            jasmine.createSpy<Dispatcher>('dispatcher').and.callFake((eventInfo: EventInfo) => {
+              stopPropagation(new EventInfoWrapper(eventInfo));
+            });
+        const eventContractContainerManager = createEventContractMultiContainer(innerContainer, {
+          stopPropagation: true,
+        });
         createEventContract({
           eventContractContainerManager,
           eventTypes: ['click'],
@@ -1828,12 +1668,14 @@ describe('EventContract', () => {
 
       it('dispatches events in inner container, inner registered first', () => {
         const documentListener = jasmine.createSpy('documentListener');
-        window.document.documentElement.addEventListener(
-            'click',
-            documentListener,
-        );
-        const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-        const eventContractContainerManager = createEventContractMultiContainer(innerContainer);
+        window.document.documentElement.addEventListener('click', documentListener);
+        const dispatcher =
+            jasmine.createSpy<Dispatcher>('dispatcher').and.callFake((eventInfo: EventInfo) => {
+              stopPropagation(new EventInfoWrapper(eventInfo));
+            });
+        const eventContractContainerManager = createEventContractMultiContainer(innerContainer, {
+          stopPropagation: true,
+        });
         createEventContract({
           eventContractContainerManager,
           eventTypes: ['click'],
@@ -1969,12 +1811,8 @@ describe('EventContract', () => {
 
     it('dispatches matching pointerover as pointerenter event', () => {
       const container = getRequiredElementById('pointerenter-container');
-      const actionElement = getRequiredElementById(
-          'pointerenter-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'pointerenter-target-element',
-      );
+      const actionElement = getRequiredElementById('pointerenter-action-element');
+      const targetElement = getRequiredElementById('pointerenter-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -2003,12 +1841,8 @@ describe('EventContract', () => {
 
     it('does not dispatch non-matching pointerover event as pointerenter', () => {
       const container = getRequiredElementById('pointerenter-container');
-      const actionElement = getRequiredElementById(
-          'pointerenter-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'pointerenter-target-element',
-      );
+      const actionElement = getRequiredElementById('pointerenter-action-element');
+      const targetElement = getRequiredElementById('pointerenter-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -2030,12 +1864,8 @@ describe('EventContract', () => {
 
     it('dispatches matching pointerout as pointerleave event', () => {
       const container = getRequiredElementById('pointerleave-container');
-      const actionElement = getRequiredElementById(
-          'pointerleave-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'pointerleave-target-element',
-      );
+      const actionElement = getRequiredElementById('pointerleave-action-element');
+      const targetElement = getRequiredElementById('pointerleave-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -2064,12 +1894,8 @@ describe('EventContract', () => {
 
     it('does not dispatch non-matching pointerout event as pointerleave', () => {
       const container = getRequiredElementById('pointerleave-container');
-      const actionElement = getRequiredElementById(
-          'pointerleave-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'pointerleave-target-element',
-      );
+      const actionElement = getRequiredElementById('pointerleave-action-element');
+      const targetElement = getRequiredElementById('pointerleave-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -2097,12 +1923,8 @@ describe('EventContract', () => {
 
     it('dispatches event', () => {
       const container = getRequiredElementById('jsnamespace-container');
-      const actionElement = getRequiredElementById(
-          'jsnamespace-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'jsnamespace-target-element',
-      );
+      const actionElement = getRequiredElementById('jsnamespace-action-element');
+      const targetElement = getRequiredElementById('jsnamespace-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -2124,15 +1946,9 @@ describe('EventContract', () => {
 
     it('caches namespace attribute', () => {
       const container = getRequiredElementById('jsnamespace-container');
-      const namespaceElement = getRequiredElementById(
-          'jsnamespace-namespace-element',
-      );
-      const actionElement = getRequiredElementById(
-          'jsnamespace-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'jsnamespace-target-element',
-      );
+      const namespaceElement = getRequiredElementById('jsnamespace-namespace-element');
+      const actionElement = getRequiredElementById('jsnamespace-action-element');
+      const targetElement = getRequiredElementById('jsnamespace-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -2167,15 +1983,9 @@ describe('EventContract', () => {
 
     it('re-parses jsaction attribute if the action cache is cleared', () => {
       const container = getRequiredElementById('jsnamespace-container');
-      const namespaceElement = getRequiredElementById(
-          'jsnamespace-namespace-element',
-      );
-      const actionElement = getRequiredElementById(
-          'jsnamespace-action-element',
-      );
-      const targetElement = getRequiredElementById(
-          'jsnamespace-target-element',
-      );
+      const namespaceElement = getRequiredElementById('jsnamespace-namespace-element');
+      const actionElement = getRequiredElementById('jsnamespace-action-element');
+      const targetElement = getRequiredElementById('jsnamespace-target-element');
 
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
@@ -2208,10 +2018,7 @@ describe('EventContract', () => {
       expect(eventInfoWrapper.getEventType()).toBe('click');
       expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
       expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name)
-          .toBe(
-              'renamedNamespace.handleClick',
-          );
+      expect(eventInfoWrapper.getAction()?.name).toBe('renamedNamespace.handleClick');
       expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
     });
   });
@@ -2220,11 +2027,8 @@ describe('EventContract', () => {
     let removeEventListenerSpy: jasmine.Spy;
 
     beforeEach(() => {
-      removeEventListenerSpy = spyOn(
-                                   window.document.documentElement,
-                                   'removeEventListener',
-                                   )
-                                   .and.callThrough();
+      removeEventListenerSpy =
+          spyOn(window.document.documentElement, 'removeEventListener').and.callThrough();
     });
 
     it('early events are dispatched', () => {
@@ -2307,12 +2111,8 @@ describe('EventContract', () => {
 
       it('early mouseout dispatched as mouseleave and mouseout', () => {
         const container = getRequiredElementById('mouseleave-container');
-        const actionElement = getRequiredElementById(
-            'mouseleave-action-element',
-        );
-        const targetElement = getRequiredElementById(
-            'mouseleave-target-element',
-        );
+        const actionElement = getRequiredElementById('mouseleave-action-element');
+        const targetElement = getRequiredElementById('mouseleave-target-element');
 
         const early = new EarlyEventContract();
         early.addEvents(['mouseout']);
@@ -2353,12 +2153,8 @@ describe('EventContract', () => {
 
       it('early mouseout dispatched as only mouseleave', () => {
         const container = getRequiredElementById('mouseleave-container');
-        const actionElement = getRequiredElementById(
-            'mouseleave-action-element',
-        );
-        const targetElement = getRequiredElementById(
-            'mouseleave-target-element',
-        );
+        const actionElement = getRequiredElementById('mouseleave-action-element');
+        const targetElement = getRequiredElementById('mouseleave-target-element');
 
         const early = new EarlyEventContract();
         early.addEvents(['mouseout']);
