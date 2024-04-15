@@ -86,6 +86,7 @@ generate_api_manifest(
         "//packages/elements:elements_docs_extraction",
         "//packages/forms:forms_docs_extraction",
         "//packages/localize:localize_docs_extraction",
+        "//packages/localize/src/localize:localize_init_docs_extraction",
         "//packages/platform-browser:platform-browser_docs_extraction",
         "//packages/platform-browser-dynamic:platform-browser_dynamic_docs_extraction",
         "//packages/platform-browser-dynamic/testing:platform-browser_dynamic_testing_docs_extraction",
