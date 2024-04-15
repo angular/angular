@@ -756,7 +756,7 @@ export interface HostListener {
     eventName?: string;
 }
 
-// @public
+// @public (undocumented)
 export const HostListener: HostListenerDecorator;
 
 // @public
