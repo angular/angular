@@ -40,6 +40,7 @@ export function ngswAppInitializer(
     }
 
     const ngZone = injector.get(NgZone);
+    const appRef = injector.get(ApplicationRef);
 
     // Set up the `controllerchange` event listener outside of
     // the Angular zone to avoid unnecessary change detections,
@@ -48,10 +49,13 @@ export function ngswAppInitializer(
       // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
       // becomes active. This allows the SW to initialize itself even if there is no application
       // traffic.
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (navigator.serviceWorker.controller !== null) {
-          navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
-        }
+      const sw = navigator.serviceWorker;
+      const onControllerChange = () => sw.controller?.postMessage({action: 'INITIALIZE'});
+
+      sw.addEventListener('controllerchange', onControllerChange);
+
+      appRef.onDestroy(() => {
+        sw.removeEventListener('controllerchange', onControllerChange);
       });
     });
 
