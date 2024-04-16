@@ -7,7 +7,7 @@
  */
 
 import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration, ɵwithI18nSupport} from '@angular/core';
+import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration, ɵwithEventReplay, ɵwithI18nSupport} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 
@@ -21,6 +21,7 @@ export enum HydrationFeatureKind {
   NoHttpTransferCache,
   HttpTransferCacheOptions,
   I18nSupport,
+  EventReplay,
 }
 
 /**
@@ -79,6 +80,16 @@ export function withHttpTransferCacheOptions(
  */
 export function withI18nSupport(): HydrationFeature<HydrationFeatureKind.I18nSupport> {
   return hydrationFeature(HydrationFeatureKind.I18nSupport, ɵwithI18nSupport());
+}
+
+/**
+ * Enables support for event replay
+ *
+ * @developerPreview
+ * @publicApi
+ */
+export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventReplay> {
+  return hydrationFeature(HydrationFeatureKind.EventReplay, ɵwithEventReplay());
 }
 
 /**

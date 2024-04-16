@@ -20,6 +20,13 @@ export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [
   },
 ];
 
+/** TODO: Move this to a utils folder and convert to use SafeValues. */
+export function createScript(doc: Document, textContent: string) {
+  const script = doc.createElement('script');
+  script.textContent = textContent;
+  return script;
+}
+
 function serializeTransferStateFactory(doc: Document, appId: string, transferStore: TransferState) {
   return () => {
     // The `.toJSON` here causes the `onSerialize` callbacks to be called.
@@ -32,10 +39,9 @@ function serializeTransferStateFactory(doc: Document, appId: string, transferSto
       return;
     }
 
-    const script = doc.createElement('script');
+    const script = createScript(doc, content);
     script.id = appId + '-state';
     script.setAttribute('type', 'application/json');
-    script.textContent = content;
 
     // It is intentional that we add the script at the very bottom. Angular CLI script tags for
     // bundles are always `type="module"`. These are deferred by default and cause the transfer
