@@ -7,6 +7,7 @@
  */
 
 import {ApplicationRef} from '../application/application_ref';
+import {APP_ID} from '../application/application_tokens';
 import {isDetachedByI18n} from '../i18n/utils';
 import {ViewEncapsulation} from '../metadata';
 import {Renderer2} from '../render';
@@ -21,11 +22,14 @@ import {unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {TransferState} from '../transfer_state';
 
 import {unsupportedProjectionOfDomNodes} from './error_handling';
+import {collectDomEventsInfo, EVENT_REPLAY_ENABLED_DEFAULT, setJSActionAttribute} from './event_replay';
 import {getOrComputeI18nChildren, isI18nHydrationEnabled, isI18nHydrationSupportEnabled, trySerializeI18nBlock} from './i18n';
 import {CONTAINERS, DISCONNECTED_NODES, ELEMENT_CONTAINERS, I18N_DATA, MULTIPLIER, NODES, NUM_ROOT_NODES, SerializedContainerView, SerializedView, TEMPLATE_ID, TEMPLATES} from './interfaces';
 import {calcPathForNode, isDisconnectedNode} from './node_lookup_utils';
 import {isInSkipHydrationBlock, SKIP_HYDRATION_ATTR_NAME} from './skip_hydration';
+import {IS_EVENT_REPLAY_ENABLED} from './tokens';
 import {getLNodeForHydration, NGH_ATTR_NAME, NGH_DATA_KEY, processTextNodeBeforeSerialization, TextNodeMarker} from './utils';
+
 
 /**
  * A collection that tracks all serialized views (`ngh` DOM annotations)
@@ -84,6 +88,8 @@ export interface HydrationContext {
   corruptedTextNodes: Map<HTMLElement, TextNodeMarker>;
   isI18nHydrationEnabled: boolean;
   i18nChildren: Map<TView, Set<number>|null>;
+  eventTypesToReplay: Set<string>;
+  shouldReplayEvents: boolean;
 }
 
 /**
@@ -160,14 +166,16 @@ function annotateLContainerForHydration(lContainer: LContainer, context: Hydrati
  *
  * @param appRef An instance of an ApplicationRef.
  * @param doc A reference to the current Document instance.
+ * @return event types that need to be replayed
  */
 export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const injector = appRef.injector;
   const isI18nHydrationEnabledVal = isI18nHydrationEnabled(injector);
-
   const serializedViewCollection = new SerializedViewCollection();
   const corruptedTextNodes = new Map<HTMLElement, TextNodeMarker>();
   const viewRefs = appRef._views;
+  const shouldReplayEvents = injector.get(IS_EVENT_REPLAY_ENABLED, EVENT_REPLAY_ENABLED_DEFAULT);
+  const eventTypesToReplay = new Set<string>();
   for (const viewRef of viewRefs) {
     const lNode = getLNodeForHydration(viewRef);
 
@@ -179,6 +187,8 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
         corruptedTextNodes,
         isI18nHydrationEnabled: isI18nHydrationEnabledVal,
         i18nChildren: new Map(),
+        eventTypesToReplay,
+        shouldReplayEvents,
       };
       if (isLContainer(lNode)) {
         annotateLContainerForHydration(lNode, context);
@@ -197,6 +207,7 @@ export function annotateForHydration(appRef: ApplicationRef, doc: Document) {
   const serializedViews = serializedViewCollection.getAll();
   const transferState = injector.get(TransferState);
   transferState.set(NGH_DATA_KEY, serializedViews);
+  return eventTypesToReplay.size > 0 ? eventTypesToReplay : undefined;
 }
 
 /**
@@ -322,10 +333,16 @@ function serializeLView(lView: LView, context: HydrationContext): SerializedView
   const ngh: SerializedView = {};
   const tView = lView[TVIEW];
   const i18nChildren = getOrComputeI18nChildren(tView, context);
+  const nativeElementsToEventTypes = context.shouldReplayEvents ?
+      collectDomEventsInfo(tView, lView, context.eventTypesToReplay) :
+      null;
   // Iterate over DOM element references in an LView.
   for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
     const tNode = tView.data[i] as TNode;
     const noOffsetIndex = i - HEADER_OFFSET;
+    if (nativeElementsToEventTypes) {
+      setJSActionAttribute(tNode, lView[i], nativeElementsToEventTypes);
+    }
 
     // Attempt to serialize any i18n data for the given slot. We do this first, as i18n
     // has its own process for serialization.

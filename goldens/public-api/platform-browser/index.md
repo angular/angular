@@ -155,6 +155,8 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
 // @public
 export enum HydrationFeatureKind {
     // (undocumented)
+    EventReplay = 3,
+    // (undocumented)
     HttpTransferCacheOptions = 1,
     // (undocumented)
     I18nSupport = 2,
@@ -256,6 +258,9 @@ export const TransferState: {
 
 // @public (undocumented)
 export const VERSION: Version;
+
+// @public
+export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventReplay>;
 
 // @public
 export function withHttpTransferCacheOptions(options: HttpTransferCacheOptions): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions>;

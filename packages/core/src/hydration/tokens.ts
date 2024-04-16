@@ -35,3 +35,10 @@ export const PRESERVE_HOST_CONTENT = new InjectionToken<boolean>(
  */
 export const IS_I18N_HYDRATION_ENABLED = new InjectionToken<boolean>(
     (typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_I18N_HYDRATION_ENABLED' : ''));
+
+/**
+ * Internal token that indicates whether event replay support for SSR
+ * is enabled.
+ */
+export const IS_EVENT_REPLAY_ENABLED = new InjectionToken<boolean>(
+    (typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_EVENT_REPLAY_ENABLED' : ''));
