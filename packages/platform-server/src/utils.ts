@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵwhenStable as whenStable} from '@angular/core';
+import {APP_ID, ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵwhenStable as whenStable} from '@angular/core';
 
 import {PlatformState} from './platform_state';
 import {platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
+import {createScript} from './transfer_state';
 
 interface PlatformOptions {
   document?: string|Document;
@@ -59,6 +60,16 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
   });
 }
 
+function insertEventRecordScript(
+    appId: string, doc: Document, eventTypesToBeReplayed: Set<string>) {
+  const events = Array.from(eventTypesToBeReplayed);
+  // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
+  const replayScript = `window.__jsaction_bootstrap('ngContracts', document.body, ${
+      JSON.stringify(appId)}, ${JSON.stringify(events)});`;
+  const script = createScript(doc, replayScript);
+  doc.body.insertBefore(script, doc.body.firstChild);
+}
+
 async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef): Promise<string> {
   const environmentInjector = applicationRef.injector;
 
@@ -69,7 +80,10 @@ async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef)
   if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
     const doc = platformState.getDocument();
     appendSsrContentIntegrityMarker(doc);
-    annotateForHydration(applicationRef, doc);
+    const eventTypesToBeReplayed = annotateForHydration(applicationRef, doc);
+    if (eventTypesToBeReplayed) {
+      insertEventRecordScript(environmentInjector.get(APP_ID), doc, eventTypesToBeReplayed);
+    }
   }
 
   // Run any BEFORE_APP_SERIALIZED callbacks just before rendering to string.

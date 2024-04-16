@@ -25,6 +25,8 @@ import {provideRouter, RouterOutlet, Routes} from '@angular/router';
 import {provideServerRendering} from '../public_api';
 import {renderApplication} from '../src/utils';
 
+import {getAppContents, stripUtilAttributes} from './dom_utils';
+
 /**
  * The name of the attribute that contains a slot index
  * inside the TransferState storage where hydration info
@@ -39,40 +41,8 @@ const SKIP_HYDRATION_ATTR_NAME_LOWER_CASE = SKIP_HYDRATION_ATTR_NAME.toLowerCase
 
 const TRANSFER_STATE_TOKEN_ID = '__nghData__';
 
-const NGH_ATTR_REGEXP = new RegExp(` ${NGH_ATTR_NAME}=".*?"`, 'g');
-const EMPTY_TEXT_NODE_REGEXP = new RegExp(`<!--${EMPTY_TEXT_NODE_COMMENT}-->`, 'g');
-const TEXT_NODE_SEPARATOR_REGEXP = new RegExp(`<!--${TEXT_NODE_SEPARATOR_COMMENT}-->`, 'g');
-
-/**
- * Drop utility attributes such as `ng-version`, `ng-server-context` and `ngh`,
- * so that it's easier to make assertions in tests.
- */
-function stripUtilAttributes(html: string, keepNgh: boolean): string {
-  html = html.replace(/ ng-version=".*?"/g, '')
-             .replace(/ ng-server-context=".*?"/g, '')
-             .replace(/ ng-reflect-(.*?)=".*?"/g, '')
-             .replace(/ _nghost(.*?)=""/g, '')
-             .replace(/ _ngcontent(.*?)=""/g, '');
-  if (!keepNgh) {
-    html = html.replace(NGH_ATTR_REGEXP, '')
-               .replace(EMPTY_TEXT_NODE_REGEXP, '')
-               .replace(TEXT_NODE_SEPARATOR_REGEXP, '');
-  }
-  return html;
-}
-
 function getComponentRef<T>(appRef: ApplicationRef): ComponentRef<T> {
   return appRef.components[0];
-}
-
-/**
- * Extracts a portion of HTML located inside of the `<body>` element.
- * This content belongs to the application view (and supporting TransferState
- * scripts) rendered on the server.
- */
-function getAppContents(html: string): string {
-  const result = stripUtilAttributes(html, true).match(/<body>(.*?)<\/body>/s);
-  return result ? result[1] : html;
 }
 
 /**

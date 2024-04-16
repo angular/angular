@@ -1368,6 +1368,9 @@
     "name": "init_event_emitter"
   },
   {
+    "name": "init_event_replay"
+  },
+  {
     "name": "init_fields"
   },
   {
