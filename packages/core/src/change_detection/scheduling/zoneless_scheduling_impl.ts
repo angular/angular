@@ -156,12 +156,12 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       Zone.root.run(() => {
         this.cancelScheduledCallback = scheduleCallback(() => {
           this.tick(this.shouldRefreshViews);
-        }, false /** useNativeTimers */);
+        });
       });
     } else {
       this.cancelScheduledCallback = scheduleCallback(() => {
         this.tick(this.shouldRefreshViews);
-      }, false /** useNativeTimers */);
+      });
     }
   }
 
