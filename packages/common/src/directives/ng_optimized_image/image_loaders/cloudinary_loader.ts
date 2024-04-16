@@ -62,5 +62,9 @@ function createCloudinaryUrl(path: string, config: ImageLoaderConfig) {
     params += `,w_${config.width}`;
   }
 
+  if (config.loaderParams?.['rounded']) {
+    params += `,r_max`;
+  }
+
   return `${path}/image/upload/${params}/${config.src}`;
 }
