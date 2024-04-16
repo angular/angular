@@ -23,6 +23,8 @@ jasmine_node_test(
         "//packages/core/schematics/migrations/block-template-entities:bundle",
         "//packages/core/schematics/migrations/compiler-options",
         "//packages/core/schematics/migrations/compiler-options:bundle",
+        "//packages/core/schematics/migrations/intl-opt-out",
+        "//packages/core/schematics/migrations/intl-opt-out:bundle",
         "//packages/core/schematics/migrations/invalid-two-way-bindings",
         "//packages/core/schematics/migrations/invalid-two-way-bindings:bundle",
         "//packages/core/schematics/migrations/transfer-state",

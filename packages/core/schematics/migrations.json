@@ -19,6 +19,11 @@
       "version": "17.3.0",
       "description": "Updates two-way bindings that have an invalid expression to use the longform expression instead.",
       "factory": "./migrations/invalid-two-way-bindings/bundle"
+    },
+    "intl-opt-out": {
+      "version": "18.0.0",
+      "description": "Updates the app to retain CLDR-based logic for i18n subsystem. Newly created applications would use Intl-based implementation by default.",
+      "factory": "./migrations/intl-opt-out/bundle"
     }
   }
 }
