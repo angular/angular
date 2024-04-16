@@ -63,8 +63,8 @@ Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<d
 
     <docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgClass-1"/>
 
-For this use case, Angular applies the classes on initialization and in case of changes.
-The full example calls `setCurrentClasses()` initially with `ngOnInit()` and when the dependent properties change through a button click.
+For this use case, Angular applies the classes on initialization and in case of changes caused by reassigning the `currentClasses` object.
+The full example calls `setCurrentClasses()` initially with `ngOnInit()` when the user clicks on the `Refresh currentClasses` button.
 These steps are not necessary to implement `ngClass`.
 
 ## Setting inline styles with `NgStyle`
