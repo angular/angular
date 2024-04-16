@@ -4,7 +4,9 @@
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
- *
+ */
+
+/**
  * @fileoverview Implements the local event handling contract. This
  * allows DOM objects in a container that enters into this contract to
  * define event handlers which are executed in a local context.
@@ -36,10 +38,9 @@ import {Char} from './char';
 import {EarlyJsactionData} from './earlyeventcontract';
 import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
-import {A11Y_CLICK_SUPPORT, A11Y_SUPPORT_IN_DISPATCHER, CUSTOM_EVENT_SUPPORT, JSNAMESPACE_SUPPORT, MOUSE_SPECIAL_SUPPORT, STOP_PROPAGATION, USE_EVENT_PATH,} from './event_contract_defines';
+import {A11Y_CLICK_SUPPORT, A11Y_SUPPORT_IN_DISPATCHER, CUSTOM_EVENT_SUPPORT, JSNAMESPACE_SUPPORT, MOUSE_SPECIAL_SUPPORT, STOP_PROPAGATION,} from './event_contract_defines';
 import * as eventInfoLib from './event_info';
 import {EventType} from './event_type';
-import * as domGenerator from './generator';
 import {Property} from './property';
 import {Restriction} from './restriction';
 
@@ -110,7 +111,6 @@ export class EventContract implements UnrenamedEventContract {
   static STOP_PROPAGATION = STOP_PROPAGATION;
   static A11Y_SUPPORT_IN_DISPATCHER = A11Y_SUPPORT_IN_DISPATCHER;
   static A11Y_CLICK_SUPPORT = A11Y_CLICK_SUPPORT;
-  static USE_EVENT_PATH = USE_EVENT_PATH;
   static MOUSE_SPECIAL_SUPPORT = MOUSE_SPECIAL_SUPPORT;
   static JSNAMESPACE_SUPPORT = JSNAMESPACE_SUPPORT;
 
@@ -156,6 +156,7 @@ export class EventContract implements UnrenamedEventContract {
       ) => void = undefined;
 
   private populateClickOnlyAction?: (
+      actionElement: Element,
       eventInfo: eventInfoLib.EventInfo,
       actionMap: {[key: string]: string},
       ) => void = undefined;
@@ -186,8 +187,6 @@ export class EventContract implements UnrenamedEventContract {
         /* event= */ event,
         /* targetElement= */ event.target as Element,
         /* container= */ container,
-        /* action= */ '',
-        /* actionElement= */ null,
         /* timestamp= */ Date.now(),
     );
     this.handleEventInfo(eventInfo);
@@ -235,7 +234,8 @@ export class EventContract implements UnrenamedEventContract {
       this.dispatcher(globalEventInfo, /* dispatch global event */ true);
     }
 
-    if (canSkipDispatch(eventInfo)) {
+    const action = eventInfoLib.getAction(eventInfo);
+    if (!action && !checkDispatcherForA11yClick(eventInfo)) {
       return;
     }
 
@@ -263,7 +263,11 @@ export class EventContract implements UnrenamedEventContract {
     }
 
     if (this.dispatcher) {
-      if (shouldPreventDefaultBeforeDispatching(eventInfo)) {
+      if (action &&
+          shouldPreventDefaultBeforeDispatching(
+              eventInfoLib.getActionElement(action),
+              eventInfo,
+              )) {
         eventLib.preventDefault(eventInfoLib.getEvent(eventInfo));
       }
 
@@ -288,8 +292,7 @@ export class EventContract implements UnrenamedEventContract {
    * fields of the EventInfo object passed in by finding the first
    * jsaction attribute above the target Node of the event, and below
    * the container Node, that specifies a jsaction for the event
-   * type. If no such jsaction is found, then action and actionElement are
-   * set to '' and null, respectively.
+   * type. If no such jsaction is found, then action is undefined.
    *
    * @param eventInfo `EventInfo` to set `action` and `actionElement` if an
    *    action is found on any `Element` in the path of the `Event`.
@@ -345,56 +348,32 @@ export class EventContract implements UnrenamedEventContract {
       );
     }
 
-    // In order to avoid complicating the code that calculates the
-    // event's path, we need a common interface to iterating over event.path or
-    // walking the DOM.  We use the generator pattern here, as generating the
-    // path array ahead of time for DOM walks will result in degraded
-    // performance.
+    // Walk to the parent node, unless the node has a different owner in
+    // which case we walk to the owner. Attempt to walk to host of a
+    // shadow root if needed.
+    let actionElement: Element|null = eventInfoLib.getTargetElement(eventInfo);
+    while (actionElement && actionElement !== eventInfoLib.getContainer(eventInfo)) {
+      this.populateActionOnElement(actionElement, eventInfo);
 
-    if (EventContract.USE_EVENT_PATH) {
-      const generator = domGenerator.getGenerator(
-          eventInfoLib.getEvent(eventInfo),
-          eventInfoLib.getTargetElement(eventInfo),
-          eventInfoLib.getContainer(eventInfo),
-      );
-      let actionElement: Element|null = null;
-      while ((actionElement = generator.next() as Element | null)) {
-        this.populateActionOnElement(actionElement, eventInfo);
-
-        if (eventInfoLib.getAction(eventInfo)) {
-          // An event is handled by at most one jsaction. Thus we stop at the
-          // first matching jsaction specified in a jsaction attribute up the
-          // ancestor chain of the event target node.
-          break;
-        }
+      if (eventInfoLib.getAction(eventInfo)) {
+        // An event is handled by at most one jsaction. Thus we stop at the
+        // first matching jsaction specified in a jsaction attribute up the
+        // ancestor chain of the event target node.
+        break;
       }
-    } else {
-      // Walk to the parent node, unless the node has a different owner in
-      // which case we walk to the owner. Attempt to walk to host of a
-      // shadow root if needed.
-      let actionElement: Element|null = eventInfoLib.getTargetElement(eventInfo);
-      while (actionElement && actionElement !== eventInfoLib.getContainer(eventInfo)) {
-        this.populateActionOnElement(actionElement, eventInfo);
-
-        if (eventInfoLib.getAction(eventInfo)) {
-          // An event is handled by at most one jsaction. Thus we stop at the
-          // first matching jsaction specified in a jsaction attribute up the
-          // ancestor chain of the event target node.
-          break;
-        }
-        if (actionElement[Property.OWNER]) {
-          actionElement = actionElement[Property.OWNER] as Element;
-          continue;
-        }
-        if (actionElement.parentNode?.nodeName !== '#document-fragment') {
-          actionElement = actionElement.parentNode as Element | null;
-        } else {
-          actionElement = (actionElement.parentNode as ShadowRoot | null)?.host ?? null;
-        }
+      if (actionElement[Property.OWNER]) {
+        actionElement = actionElement[Property.OWNER] as Element;
+        continue;
+      }
+      if (actionElement.parentNode?.nodeName !== '#document-fragment') {
+        actionElement = actionElement.parentNode as Element | null;
+      } else {
+        actionElement = (actionElement.parentNode as ShadowRoot | null)?.host ?? null;
       }
     }
 
-    if (!eventInfoLib.getAction(eventInfo)) {
+    const action = eventInfoLib.getAction(eventInfo);
+    if (!action) {
       // No action found.
       return;
     }
@@ -417,7 +396,7 @@ export class EventContract implements UnrenamedEventContract {
       if (eventLib.isMouseSpecialEvent(
               eventInfoLib.getEvent(eventInfo),
               eventInfoLib.getEventType(eventInfo),
-              eventInfoLib.getActionElement(eventInfo)!,
+              eventInfoLib.getActionElement(action),
               )) {
         // If both mouseover/mouseout and mouseenter/mouseleave events are
         // enabled, two separate handlers for mouseover/mouseout are
@@ -426,7 +405,7 @@ export class EventContract implements UnrenamedEventContract {
         // the mouseover/mouseout event.
         const copiedEvent = eventLib.createMouseSpecialEvent(
             eventInfoLib.getEvent(eventInfo),
-            eventInfoLib.getActionElement(eventInfo)!,
+            eventInfoLib.getActionElement(action),
         );
         eventInfoLib.setEvent(eventInfo, copiedEvent);
         // Since the mouseenter/mouseleave events do not bubble, the target
@@ -434,11 +413,10 @@ export class EventContract implements UnrenamedEventContract {
         // `jsaction` attribute)
         eventInfoLib.setTargetElement(
             eventInfo,
-            eventInfoLib.getActionElement(eventInfo)!,
+            eventInfoLib.getActionElement(action),
         );
       } else {
-        eventInfoLib.setAction(eventInfo, '');
-        eventInfoLib.setActionElement(eventInfo, null);
+        eventInfoLib.unsetAction(eventInfo);
       }
     }
   }
@@ -466,16 +444,17 @@ export class EventContract implements UnrenamedEventContract {
         eventInfoLib.getContainer(eventInfo),
     );
 
-    eventInfoLib.setAction(
-        eventInfo,
-        actionMap[eventInfoLib.getEventType(eventInfo)] || '',
-    );
+    const actionName = actionMap[eventInfoLib.getEventType(eventInfo)];
+    if (actionName !== undefined) {
+      eventInfoLib.setAction(eventInfo, actionName, actionElement);
+    }
 
     if (this.hasA11yClickSupport) {
-      this.populateClickOnlyAction!(eventInfo, actionMap);
+      this.populateClickOnlyAction!(actionElement, eventInfo, actionMap);
     }
     if (EventContract.A11Y_SUPPORT_IN_DISPATCHER) {
-      if (eventInfoLib.getEventType(eventInfo) === AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE) {
+      if (eventInfoLib.getEventType(eventInfo) === AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE &&
+          actionMap[EventType.CLICK] !== undefined) {
         // We'll take the first CLICK action we find and have the dispatcher
         // check if the keydown event can be used as a CLICK. If not, the
         // dispatcher will retrigger the event so that we can find a keydown
@@ -485,14 +464,18 @@ export class EventContract implements UnrenamedEventContract {
         // eventInfoLib.getEventType(eventInfo, ) as MAYBE_CLICK_EVENT_TYPE. The
         // dispatcher uses this event type to determine if it should get the
         // handler for the action.
-        eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICK]);
+        eventInfoLib.setAction(
+            eventInfo,
+            actionMap[EventType.CLICK],
+            actionElement,
+        );
       } else {
-        a11yClickLib.populateClickOnlyAction(eventInfo, actionMap);
+        a11yClickLib.populateClickOnlyAction(
+            actionElement,
+            eventInfo,
+            actionMap,
+        );
       }
-    }
-
-    if (eventInfoLib.getAction(eventInfo)) {
-      eventInfoLib.setActionElement(eventInfo, actionElement);
     }
   }
 
@@ -718,44 +701,31 @@ export function addDeferredA11yClickSupport(eventContract: EventContract) {
 }
 
 /**
- * Determines if we can skip triggering the dispatcher based on the eventType
- * and action found.
- *
+ * Determines whether or not the `EventContract` needs to check with the
+ * dispatcher even if there's no action.
  */
-function canSkipDispatch(eventInfo: eventInfoLib.EventInfo): boolean {
-  // Return early if no action element found while walking up the DOM tree.
-  if (!EventContract.A11Y_SUPPORT_IN_DISPATCHER && !eventInfoLib.getActionElement(eventInfo)) {
-    return true;
-  }
-  // Return early in A11Y_SUPPORT_IN_DISPATCHER mode only if the eventType is
-  // not MAYBE_CLICK_EVENT_TYPE, because if it is, we want the dispatcher to
-  // check the key event and retrigger the event if necessary.
-  if (EventContract.A11Y_SUPPORT_IN_DISPATCHER && !eventInfoLib.getActionElement(eventInfo) &&
-      eventInfoLib.getEventType(eventInfo) !== AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE) {
-    return true;
-  }
-
-  return false;
+function checkDispatcherForA11yClick(
+    eventInfo: eventInfoLib.EventInfo,
+    ): boolean {
+  return (
+      EventContract.A11Y_SUPPORT_IN_DISPATCHER &&
+      eventInfoLib.getEventType(eventInfo) === AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE);
 }
 
 /**
  * Returns true if the default action of this event should be prevented before
  * this event is dispatched.
- *
- * This is primarily for internal use.
- *
- * @param eventInfo The event info object.
  */
 function shouldPreventDefaultBeforeDispatching(
+    actionElement: Element,
     eventInfo: eventInfoLib.EventInfo,
     ): boolean {
   // Prevent browser from following <a> node links if a jsaction is present
   // and we are dispatching the action now. Note that the targetElement may be
   // a child of an anchor that has a jsaction attached. For that reason, we
   // need to check the actionElement rather than the targetElement.
-  const actionElement = eventInfoLib.getActionElement(eventInfo);
   return (
-      !!actionElement && actionElement.tagName === 'A' &&
+      actionElement.tagName === 'A' &&
       (eventInfoLib.getEventType(eventInfo) === EventType.CLICK ||
        eventInfoLib.getEventType(eventInfo) === EventType.CLICKMOD));
 }

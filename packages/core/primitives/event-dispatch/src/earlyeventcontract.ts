@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
 import {createEventInfoFromParameters, EventInfo} from './event_info';
 
 declare global {
@@ -44,8 +45,6 @@ export class EarlyEventContract {
             event,
             event.target as Element,
             window.document.documentElement,
-            '',
-            null,
             Date.now(),
         );
         window._ejsa!.q.push(eventInfo);

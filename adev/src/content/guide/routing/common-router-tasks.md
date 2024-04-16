@@ -168,12 +168,6 @@ set id(heroId: string) {
 ```
 
 NOTE: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
-If you want to use the parent components route info you will need to set the router paramsInheritanceStrategy option: withRouterConfig({paramsInheritanceStrategy: 'always'})
-
-</docs-step>
-
-Note: You can bind all route data with key, value pairs to component inputs: static or resolved route data, path parameters, matrix parameters, and query parameters.
-
 If you want to use the parent components route info you will need to set the router `paramsInheritanceStrategy` option:
 `withRouterConfig({paramsInheritanceStrategy: 'always'})`
 
@@ -232,6 +226,29 @@ const routes: Routes = [
 In this example, the third route is a redirect so that the router defaults to the `first-component` route.
 Notice that this redirect precedes the wildcard route.
 Here, `path: ''` means to use the initial relative URL \(`''`\).
+
+Sometimes a redirect is not a simple, static redirect. The `redirectTo` property can also be a function
+with more complex logic that returns a string or `UrlTree`.
+
+```ts
+const routes: Routes = [
+  { path: "first-component", component: FirstComponent },
+  {
+    path: "old-user-page",
+    redirectTo: ({ queryParams }) => {
+      const errorHandler = inject(ErrorHandler);
+      const userIdParam = queryParams['userId'];
+      if (userIdParam !== undefined) {
+        return `/user/${userIdParam}`;
+      } else {
+        errorHandler.handleError(new Error('Attempted navigation to user page without user ID.'));
+        return `/not-found`;
+      }
+    },
+  },
+  { path: "user/:userId", component: OtherComponent },
+];
+```
 
 ## Nesting routes
 

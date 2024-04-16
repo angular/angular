@@ -8,7 +8,7 @@
 
 import {Attribute as AccessibilityAttribute} from './accessibility';
 import {Char} from './char';
-import * as jsactionEvent from './event';
+import * as eventLib from './event';
 import {EventInfo, EventInfoWrapper} from './event_info';
 import {EventType} from './event_type';
 import {UnrenamedEventContract} from './eventcontract';
@@ -126,13 +126,8 @@ export class Dispatcher {
     const resolved = resolveA11yEvent(eventInfoWrapper, isGlobalDispatch);
     if (!resolved) {
       // Reset action information.
-      eventInfoWrapper.setAction('');
-      eventInfoWrapper.setActionElement(null);
+      eventInfoWrapper.setAction(undefined);
       return eventInfoWrapper.eventInfo;
-    }
-    // Stop propagation just before global dispatch.
-    if (isGlobalDispatch && this.stopPropagation && !skipStopPropagation(eventInfoWrapper)) {
-      eventInfoWrapper.getEvent().stopPropagation();
     }
 
     if (isGlobalDispatch) {
@@ -151,12 +146,17 @@ export class Dispatcher {
         }
       }
       if (shouldPreventDefault) {
-        jsactionEvent.preventDefault(ev);
+        eventLib.preventDefault(ev);
       }
       return;
     }
 
-    const action = eventInfoWrapper.getAction();
+    // Stop propagation if there's an action.
+    if (this.stopPropagation) {
+      stopPropagation(eventInfoWrapper);
+    }
+
+    const action = eventInfoWrapper.getAction()!;
 
     let handler: EventInfoHandler|void = undefined;
     if (this.getHandler) {
@@ -164,7 +164,7 @@ export class Dispatcher {
     }
 
     if (!handler) {
-      handler = this.actions[action];
+      handler = this.actions[action.name];
     }
 
     if (handler) {
@@ -185,6 +185,7 @@ export class Dispatcher {
    * Attempts to replay the queued events after registering the handlers.
    *
    * @param namespace The namespace of the jsaction name.
+   *
    * @param instance The object to bind the methods to. If this is null, then
    *     the functions are not bound, but directly added under the public names.
    *
@@ -259,11 +260,11 @@ export class Dispatcher {
    * event replayer to check whether the dispatcher can replay an event.
    */
   canDispatch(eventInfoWrapper: EventInfoWrapper): boolean {
-    const name = eventInfoWrapper.getAction();
-    if (this.hasAction(name)) {
-      return true;
+    const action = eventInfoWrapper.getAction();
+    if (!action) {
+      return false;
     }
-    return false;
+    return this.hasAction(action.name);
   }
 
   /**
@@ -336,7 +337,7 @@ function resolveA11yEvent(
 
   if (isA11yClickEvent(eventInfoWrapper, isGlobalDispatch)) {
     if (shouldPreventDefault(eventInfoWrapper)) {
-      jsactionEvent.preventDefault(eventInfoWrapper.getEvent());
+      eventLib.preventDefault(eventInfoWrapper.getEvent());
     }
     // If the keydown event can be treated as a click, we change the eventType
     // to 'click' so that the dispatcher can retrieve the right handler for
@@ -367,17 +368,17 @@ function resolveA11yEvent(
  * before the event handler is envoked.
  */
 function shouldPreventDefault(eventInfoWrapper: EventInfoWrapper): boolean {
-  const actionElement = eventInfoWrapper.getActionElement();
+  const actionElement = eventInfoWrapper.getAction()?.element;
   // For parity with no-a11y-support behavior.
   if (!actionElement) {
     return false;
   }
   // Prevent scrolling if the Space key was pressed
-  if (jsactionEvent.isSpaceKeyEvent(eventInfoWrapper.getEvent())) {
+  if (eventLib.isSpaceKeyEvent(eventInfoWrapper.getEvent())) {
     return true;
   }
   // or prevent the browser's default action for native HTML controls.
-  if (jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(
+  if (eventLib.shouldCallPreventDefaultOnNativeHtmlControl(
           eventInfoWrapper.getEvent(),
           )) {
     return true;
@@ -403,8 +404,8 @@ function isA11yClickEvent(
     isGlobalDispatch?: boolean,
     ): boolean {
   return (
-      (isGlobalDispatch || eventInfoWrapper.getActionElement() != null) &&
-      jsactionEvent.isActionKeyEvent(eventInfoWrapper.getEvent()));
+      (isGlobalDispatch || eventInfoWrapper.getAction() !== undefined) &&
+      eventLib.isActionKeyEvent(eventInfoWrapper.getEvent()));
 }
 
 /**
@@ -420,15 +421,25 @@ export function registerDispatcher(
   }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
 }
 
-/**
- * Do nothing since stopping propagation a focus event on an input element in
- * Firefox makes the text cursor disappear:
- * https://bugzilla.mozilla.org/show_bug.cgi?id=509684
- */
-function skipStopPropagation(eventInfoWrapper: EventInfoWrapper) {
-  return (
-      jsactionEvent.isGecko &&
+/** Stop propagation for an `EventInfo`. */
+export function stopPropagation(eventInfoWrapper: EventInfoWrapper) {
+  if (eventLib.isGecko &&
       (eventInfoWrapper.getTargetElement().tagName === 'INPUT' ||
        eventInfoWrapper.getTargetElement().tagName === 'TEXTAREA') &&
-      eventInfoWrapper.getEventType() === EventType.FOCUS);
+      eventInfoWrapper.getEventType() === EventType.FOCUS) {
+    /**
+     * Do nothing since stopping propagation on a focus event on an input
+     * element in Firefox makes the text cursor disappear:
+     * https://bugzilla.mozilla.org/show_bug.cgi?id=509684
+     */
+    return;
+  }
+
+  const event = eventInfoWrapper.getEvent();
+  // There are some cases where users of the `Dispatcher` will call dispatch
+  // with a fake event that does not support `stopPropagation`.
+  if (!event.stopPropagation) {
+    return;
+  }
+  event.stopPropagation();
 }

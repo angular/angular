@@ -1,3 +1,31 @@
+<a name="18.0.0-next.4"></a>
+# 18.0.0-next.4 (2024-04-10)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2a6f809507](https://github.com/angular/angular/commit/2a6f80950756530d5fb1147addabcb31025b0a78) | fix | invalid ImageKit quality parameter ([#55193](https://github.com/angular/angular/pull/55193)) |
+| [11705f58a7](https://github.com/angular/angular/commit/11705f58a77e9390163b0bc99439fb4c8928e531) | fix | skip transfer cache on client ([#55012](https://github.com/angular/angular/pull/55012)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [39624c6b12](https://github.com/angular/angular/commit/39624c6b129252af352c22c6d6f12ef153477bfc) | fix | output input flags as a literal ([#55215](https://github.com/angular/angular/pull/55215)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bd236cc150](https://github.com/angular/angular/commit/bd236cc150e1b21932612ecf91678be77a503d18) | fix | implement getDefinitionAtPosition for Angular templates ([#55269](https://github.com/angular/angular/pull/55269)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="17.3.4"></a>
+# 17.3.4 (2024-04-10)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [53427d875d](https://github.com/angular/angular/commit/53427d875d33de16b1dbb04e76a9fe32a2b8a445) | fix | invalid ImageKit quality parameter ([#55193](https://github.com/angular/angular/pull/55193)) |
+| [766548c3ec](https://github.com/angular/angular/commit/766548c3ecc06ffd8f06ed9a7d0cbb3db6f1b0f6) | fix | skip transfer cache on client ([#55012](https://github.com/angular/angular/pull/55012)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="18.0.0-next.3"></a>
 # 18.0.0-next.3 (2024-04-03)
 ## Breaking Changes

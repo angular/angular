@@ -1,0 +1,8 @@
+{
+  "description": "What is Angular?",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags":["overview", "angular"]
+}

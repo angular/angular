@@ -2,9 +2,6 @@
 
 Angular templates support *control flow blocks* that let you conditionally show, hide, and repeat elements.
 
-IMPORTANT: Angular built-in control flow is in [developer preview](reference/releases#developer-preview). It is ready to
-try, but may change before becoming stable.
-
 ## `@if` block conditionals
 
 The `@if` block conditionally displays its content when its condition expression is truthy:

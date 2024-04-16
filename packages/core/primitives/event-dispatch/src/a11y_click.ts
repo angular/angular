@@ -44,18 +44,23 @@ export function preventDefaultForA11yClick(eventInfo: eventInfoLib.EventInfo) {
  * and if there is not already a click action.
  */
 export function populateClickOnlyAction(
+    actionElement: Element,
     eventInfo: eventInfoLib.EventInfo,
     actionMap: {[key: string]: string},
 ) {
-  if (eventInfoLib.getEventType(eventInfo) === EventType.CLICK &&
-      // No a11y clicks should map to 'clickonly'.
-      !eventInfoLib.getA11yClickKey(eventInfo) && !actionMap[EventType.CLICK] &&
-      actionMap[EventType.CLICKONLY]) {
-    // A 'click' triggered by a DOM click should be mapped to the 'click'
-    // jsaction, if available, or else fallback to the 'clickonly' jsaction.
-    // If 'click' and 'clickonly' jsactions are used together, 'click' will
-    // prevail.
-    eventInfoLib.setEventType(eventInfo, EventType.CLICKONLY);
-    eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICKONLY]);
+  if (
+      // If there's already an action, don't attempt to set a CLICKONLY
+      eventInfoLib.getAction(eventInfo) ||
+      // Only attempt CLICKONLY if the type is CLICK
+      eventInfoLib.getEventType(eventInfo) !== EventType.CLICK ||
+      // a11y clicks are never CLICKONLY
+      eventInfoLib.getA11yClickKey(eventInfo) || actionMap[EventType.CLICKONLY] === undefined) {
+    return;
   }
+  eventInfoLib.setEventType(eventInfo, EventType.CLICKONLY);
+  eventInfoLib.setAction(
+      eventInfo,
+      actionMap[EventType.CLICKONLY],
+      actionElement,
+  );
 }

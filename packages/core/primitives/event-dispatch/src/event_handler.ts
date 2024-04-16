@@ -4,6 +4,9 @@
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  *
  * Information about a registered event handler, which can be used to
  * deregister the event handler.

@@ -20,6 +20,11 @@ function main() {
 
     return {
       name: basename(sourceFilePath, '.md'),
+      source: {
+        filePath: sourceFilePath,
+        startLine: 0,
+        endLine: 0,
+      },
       entryType: EntryType.Element,
       description: fileContent,
       rawComment: fileContent,

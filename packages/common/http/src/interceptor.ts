@@ -222,6 +222,14 @@ export const PRIMARY_HTTP_BACKEND = new InjectionToken<HttpBackend>(
   ngDevMode ? 'PRIMARY_HTTP_BACKEND' : '',
 );
 
+// TODO(atscott): We need a larger discussion about stability and what should contribute to stability.
+// Should the whole interceptor chain contribute to stability or just the backend request #55075?
+// Should HttpClient contribute to stability automatically at all?
+export const REQUESTS_CONTRIBUTE_TO_STABILITY = new InjectionToken<boolean>(
+  ngDevMode ? 'REQUESTS_CONTRIBUTE_TO_STABILITY' : '',
+  {providedIn: 'root', factory: () => true},
+);
+
 /**
  * Creates an `HttpInterceptorFn` which lazily initializes an interceptor chain from the legacy
  * class-based interceptors and runs the request through it.
@@ -243,8 +251,13 @@ export function legacyInterceptorFnFactory(): HttpInterceptorFn {
     }
 
     const pendingTasks = inject(PendingTasks);
-    const taskId = pendingTasks.add();
-    return chain(req, handler).pipe(finalize(() => pendingTasks.remove(taskId)));
+    const contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
+    if (contributeToStability) {
+      const taskId = pendingTasks.add();
+      return chain(req, handler).pipe(finalize(() => pendingTasks.remove(taskId)));
+    } else {
+      return chain(req, handler);
+    }
   };
 }
 
@@ -259,6 +272,7 @@ export function resetFetchBackendWarningFlag() {
 export class HttpInterceptorHandler extends HttpHandler {
   private chain: ChainedInterceptorFn<unknown> | null = null;
   private readonly pendingTasks = inject(PendingTasks);
+  private readonly contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
 
   constructor(
     private backend: HttpBackend,
@@ -316,9 +330,15 @@ export class HttpInterceptorHandler extends HttpHandler {
       );
     }
 
-    const taskId = this.pendingTasks.add();
-    return this.chain(initialRequest, (downstreamRequest) =>
-      this.backend.handle(downstreamRequest),
-    ).pipe(finalize(() => this.pendingTasks.remove(taskId)));
+    if (this.contributeToStability) {
+      const taskId = this.pendingTasks.add();
+      return this.chain(initialRequest, (downstreamRequest) =>
+        this.backend.handle(downstreamRequest),
+      ).pipe(finalize(() => this.pendingTasks.remove(taskId)));
+    } else {
+      return this.chain(initialRequest, (downstreamRequest) =>
+        this.backend.handle(downstreamRequest),
+      );
+    }
   }
 }

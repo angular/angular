@@ -7,11 +7,18 @@
  */
 
 import {Dispatcher, Replayer} from '../src/dispatcher';
-import {createEventInfo, EventInfo,} from '../src/event_info';
+import {ActionInfo, createEventInfo, EventInfo, EventInfoWrapper,} from '../src/event_info';
 import {createEvent} from '../src/replay';
 
 function createMockClickEvent() {
   return createEvent({type: 'click'} as Event);
+}
+
+function createTestActionInfo({
+  name = 'foo.bar',
+  element = document.createElement('div'),
+} = {}): ActionInfo {
+  return {name, element};
 }
 
 function createTestEventInfo({
@@ -19,18 +26,16 @@ function createTestEventInfo({
   event = createMockClickEvent(),
   targetElement = document.createElement('div'),
   container = document.createElement('div'),
-  action = 'foo.bar',
-  actionElement = document.createElement('div'),
   timestamp = 0,
+  action = createTestActionInfo(),
   isReplay = undefined,
 }: {
   eventType?: string;
   event?: Event;
   targetElement?: Element;
   container?: Element;
-  action?: string;
-  actionElement?: Element;
   timestamp?: number;
+  action?: ActionInfo;
   isReplay?: boolean;
 } = {}): EventInfo {
   return createEventInfo({
@@ -38,14 +43,35 @@ function createTestEventInfo({
     eventType,
     targetElement,
     container,
-    action,
-    actionElement,
     timestamp,
+    action,
     isReplay,
   });
 }
 
 describe('dispatcher test.ts', () => {
+  it('dispatches to registered EventInfo handler', () => {
+    const actionElement = document.createElement('div');
+
+    let eventInfo!: EventInfoWrapper;
+    const actionHandler = (event: EventInfoWrapper) => {
+      eventInfo = event;
+    };
+
+    const dispatcher = new Dispatcher();
+    const actions = {'bar': actionHandler};
+    dispatcher.registerEventInfoHandlers('foo', null, actions);
+
+    dispatcher.dispatch(
+        createTestEventInfo({
+          action: createTestActionInfo({element: actionElement}),
+        }),
+    );
+    expect(eventInfo).not.toBeNull();
+    expect(eventInfo.getEventType()).toBe(createMockClickEvent().type);
+    expect(eventInfo.getAction()!.element).toBe(actionElement);
+  });
+
   it('dispatches preferentially to delegated EventInfo handler', () => {
     const actionElement = document.createElement('div');
 
@@ -59,7 +85,7 @@ describe('dispatcher test.ts', () => {
 
     dispatcher.dispatch(
         createTestEventInfo({
-          actionElement,
+          action: createTestActionInfo({element: actionElement}),
         }),
     );
     expect(eventInfoHandler1).toHaveBeenCalled();
@@ -219,10 +245,38 @@ describe('dispatcher test.ts', () => {
         event,
         targetElement,
         container,
-        action: 'foo',
-        actionElement: targetElement,
+        action: {name: 'foo', element: targetElement},
       });
       dispatcher.dispatch(eventInfo, true);
+    });
+    targetElement.addEventListener('click', targetHandler);
+    const parentHandler = jasmine.createSpy('parentHandler');
+    container.addEventListener('click', parentHandler);
+
+    targetElement.click();
+
+    expect(targetHandler).toHaveBeenCalled();
+    expect(parentHandler).toHaveBeenCalled();
+    window.document.body.removeChild(container);
+  });
+
+  it('allows propagation for events during global dispatch', () => {
+    const container = document.createElement('div');
+    window.document.body.appendChild(container);
+    const targetElement = document.createElement('div');
+    container.appendChild(targetElement);
+    const dispatcher = new Dispatcher(undefined, {stopPropagation: true});
+
+    const targetHandler = jasmine.createSpy('targetHandler');
+    targetHandler.and.callFake((event) => {
+      const eventInfo = createTestEventInfo({
+        eventType: 'click',
+        event,
+        targetElement,
+        container,
+        action: {name: 'foo', element: targetElement},
+      });
+      dispatcher.dispatch(eventInfo, /* globalDispatch= */ true);
     });
     targetElement.addEventListener('click', targetHandler);
     const parentHandler = jasmine.createSpy('parentHandler');
@@ -249,10 +303,9 @@ describe('dispatcher test.ts', () => {
         event,
         targetElement,
         container,
-        action: 'foo',
-        actionElement: targetElement,
+        action: {name: 'foo', element: targetElement},
       });
-      dispatcher.dispatch(eventInfo, /* globalDispatch= */ true);
+      dispatcher.dispatch(eventInfo);
     });
     targetElement.addEventListener('click', targetHandler);
     const parentHandler = jasmine.createSpy('parentHandler');

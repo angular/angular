@@ -30,7 +30,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly disableScheduling =
       inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
-  private readonly zoneIsDefined = typeof Zone !== 'undefined';
+  private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.scheduleEventTask;
 
   constructor() {
     // TODO(atscott): These conditions will need to change when zoneless is the default
@@ -53,7 +53,15 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 
     this.pendingRenderTaskId = this.taskService.add();
     this.cancelScheduledCallback = scheduleCallback(() => {
-      this.tick(this.shouldRefreshViews);
+      if (this.zoneIsDefined) {
+        // https://github.com/angular/angular/blob/c9abe775d07d075b171a187844d09e57f9685f3b/packages/core/src/zone/ng_zone.ts#L387-L395
+        const task = Zone.root.scheduleEventTask('fakeTopEventTask', () => {
+          this.tick(this.shouldRefreshViews);
+        }, undefined, () => {}, () => {});
+        task.invoke();
+      } else {
+        this.tick(this.shouldRefreshViews);
+      }
     });
   }
 

@@ -14,7 +14,7 @@ import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflectio
 import {extractClass, extractInterface} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
 import {extractorDecorator, isDecoratorDeclaration, isDecoratorOptionsInterface} from './decorator_extractor';
-import {DocEntry} from './entities';
+import {DocEntry, DocEntryWithSourceInfo} from './entities';
 import {extractEnum} from './enum_extractor';
 import {isAngularPrivateName} from './filters';
 import {FunctionExtractor} from './function_extractor';
@@ -36,7 +36,7 @@ export class DocsExtractor {
    *
    * @param sourceFile The file from which to extract documentable entries.
    */
-  extractAll(sourceFile: ts.SourceFile): DocEntry[] {
+  extractAll(sourceFile: ts.SourceFile, rootDir: string): DocEntry[] {
     const entries: DocEntry[] = [];
 
     const exportedDeclarations = this.getExportedDeclarations(sourceFile);
@@ -48,6 +48,17 @@ export class DocsExtractor {
 
       const entry = this.extractDeclaration(node);
       if (entry && !isIgnoredDocEntry(entry)) {
+        // The source file parameter is the package entry: the index.ts
+        // We want the real source file of the declaration.
+        const realSourceFile = node.getSourceFile();
+
+        // Set the source code references for the extracted entry.
+        (entry as DocEntryWithSourceInfo).source = {
+          filePath: getRelativeFilePath(realSourceFile, rootDir),
+          startLine: ts.getLineAndCharacterOfPosition(realSourceFile, node.getFullStart()).line,
+          endLine: ts.getLineAndCharacterOfPosition(realSourceFile, node.getEnd()).line,
+        };
+
         // The exported name of an API may be different from its declaration name, so
         // use the declaration name.
         entries.push({...entry, name: exportName});
@@ -156,4 +167,12 @@ function isIgnoredDocEntry(entry: DocEntry): boolean {
   }
 
   return isDocsPrivate !== undefined;
+}
+
+
+function getRelativeFilePath(sourceFile: ts.SourceFile, rootDir: string): string {
+  const fullPath = sourceFile.fileName;
+  const relativePath = fullPath.replace(rootDir, '');
+
+  return relativePath;
 }

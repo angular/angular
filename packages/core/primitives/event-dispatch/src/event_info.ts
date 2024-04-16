@@ -4,7 +4,19 @@
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
- *
+ */
+
+/**
+ * Records information about the action that should handle a given `Event`.
+ */
+export interface ActionInfo {
+  name: string;
+  element: Element;
+}
+
+type ActionInfoInternal = [name: string, element: Element];
+
+/**
  * Records information for later handling of events. This type is
  * shared, and instances of it are passed, between the eventcontract
  * and the dispatcher jsbinary. Therefore, the fields of this type are
@@ -27,9 +39,11 @@ export declare interface EventInfo {
   targetElement: Element;
   /** The element that is the container for this Event. */
   eic: Element;
-  action: string;
-  actionElement: Element|null;
   timeStamp: number;
+  /**
+   * The action parsed from the JSAction element.
+   */
+  eia?: ActionInfoInternal;
   /**
    * Whether this `Event` is a replay event, meaning no dispatcher was
    * installed when this `Event` was originally dispatched.
@@ -83,29 +97,6 @@ export function setContainer(eventInfo: EventInfo, container: Element) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function getAction(eventInfo: EventInfo) {
-  return eventInfo.action;
-}
-
-/** Added for readability when accessing stable property names. */
-export function setAction(eventInfo: EventInfo, action: string) {
-  eventInfo.action = action;
-}
-
-/** Added for readability when accessing stable property names. */
-export function getActionElement(eventInfo: EventInfo) {
-  return eventInfo.actionElement;
-}
-
-/** Added for readability when accessing stable property names. */
-export function setActionElement(
-    eventInfo: EventInfo,
-    actionElement: Element|null,
-) {
-  eventInfo.actionElement = actionElement;
-}
-
-/** Added for readability when accessing stable property names. */
 export function getTimestamp(eventInfo: EventInfo) {
   return eventInfo.timeStamp;
 }
@@ -113,6 +104,35 @@ export function getTimestamp(eventInfo: EventInfo) {
 /** Added for readability when accessing stable property names. */
 export function setTimestamp(eventInfo: EventInfo, timestamp: number) {
   eventInfo.timeStamp = timestamp;
+}
+
+/** Added for readability when accessing stable property names. */
+export function getAction(eventInfo: EventInfo) {
+  return eventInfo.eia;
+}
+
+/** Added for readability when accessing stable property names. */
+export function setAction(
+    eventInfo: EventInfo,
+    actionName: string,
+    actionElement: Element,
+) {
+  eventInfo.eia = [actionName, actionElement];
+}
+
+/** Added for readability when accessing stable property names. */
+export function unsetAction(eventInfo: EventInfo) {
+  eventInfo.eia = undefined;
+}
+
+/** Added for readability when accessing stable property names. */
+export function getActionName(actionInfo: ActionInfoInternal) {
+  return actionInfo[0];
+}
+
+/** Added for readability when accessing stable property names. */
+export function getActionElement(actionInfo: ActionInfoInternal) {
+  return actionInfo[1];
 }
 
 /** Added for readability when accessing stable property names. */
@@ -142,8 +162,7 @@ export function cloneEventInfo(eventInfo: EventInfo): EventInfo {
     event: eventInfo.event,
     targetElement: eventInfo.targetElement,
     eic: eventInfo.eic,
-    action: eventInfo.action,
-    actionElement: eventInfo.actionElement,
+    eia: eventInfo.eia,
     timeStamp: eventInfo.timeStamp,
     eirp: eventInfo.eirp,
     eiack: eventInfo.eiack,
@@ -161,9 +180,8 @@ export function createEventInfoFromParameters(
     event: Event,
     targetElement: Element,
     container: Element,
-    action: string,
-    actionElement: Element|null,
     timestamp: number,
+    action?: ActionInfoInternal,
     isReplay?: boolean,
     a11yClickKey?: boolean,
     ): EventInfo {
@@ -172,9 +190,8 @@ export function createEventInfoFromParameters(
     event,
     targetElement,
     eic: container,
-    action,
-    actionElement,
     timeStamp: timestamp,
+    eia: action,
     eirp: isReplay,
     eiack: a11yClickKey,
   };
@@ -186,23 +203,30 @@ export function createEventInfoFromParameters(
  * This should be used in compilation units that are less sensitive to code
  * size.
  */
-export function createEventInfo(info: {
-  eventType: string; event: Event; targetElement: Element; container: Element; action: string;
-  actionElement: Element | null;
-  timestamp: number;
+export function createEventInfo({
+  eventType,
+  event,
+  targetElement,
+  container,
+  timestamp,
+  action,
+  isReplay,
+  a11yClickKey,
+}: {
+  eventType: string; event: Event; targetElement: Element; container: Element; timestamp: number;
+  action?: ActionInfo;
   isReplay?: boolean;
   a11yClickKey?: boolean;
 }): EventInfo {
   return {
-    eventType: info.eventType,
-    event: info.event,
-    targetElement: info.targetElement,
-    eic: info.container,
-    action: info.action,
-    actionElement: info.actionElement,
-    timeStamp: info.timestamp,
-    eirp: info.isReplay,
-    eiack: info.a11yClickKey,
+    eventType,
+    event,
+    targetElement,
+    eic: container,
+    timeStamp: timestamp,
+    eia: action ? [action.name, action.element] : undefined,
+    eirp: isReplay,
+    eiack: a11yClickKey,
   };
 }
 
@@ -246,29 +270,29 @@ export class EventInfoWrapper {
   setContainer(container: Element) {
     setContainer(this.eventInfo, container);
   }
-
-  getAction() {
-    return getAction(this.eventInfo);
-  }
-
-  setAction(action: string) {
-    setAction(this.eventInfo, action);
-  }
-
-  getActionElement() {
-    return getActionElement(this.eventInfo);
-  }
-
-  setActionElement(actionElement: Element|null) {
-    setActionElement(this.eventInfo, actionElement);
-  }
-
   getTimestamp() {
     return getTimestamp(this.eventInfo);
   }
 
   setTimestamp(timestamp: number) {
     setTimestamp(this.eventInfo, timestamp);
+  }
+
+  getAction() {
+    const action = getAction(this.eventInfo);
+    if (!action) return undefined;
+    return {
+      name: action[0],
+      element: action[1],
+    };
+  }
+
+  setAction(action: ActionInfo|undefined) {
+    if (!action) {
+      unsetAction(this.eventInfo);
+      return;
+    }
+    setAction(this.eventInfo, action.name, action.element);
   }
 
   getIsReplay() {

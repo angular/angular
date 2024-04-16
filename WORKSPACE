@@ -64,16 +64,16 @@ load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 nodejs_register_toolchains(
     name = "nodejs",
     node_repositories = {
-        "18.18.2-darwin_arm64": ("node-v18.18.2-darwin-arm64.tar.gz", "node-v18.18.2-darwin-arm64", "9f982cc91b28778dd8638e4f94563b0c2a1da7aba62beb72bd427721035ab553"),
-        "18.18.2-darwin_amd64": ("node-v18.18.2-darwin-x64.tar.gz", "node-v18.18.2-darwin-x64", "5bb8da908ed590e256a69bf2862238c8a67bc4600119f2f7721ca18a7c810c0f"),
-        "18.18.2-linux_arm64": ("node-v18.18.2-linux-arm64.tar.xz", "node-v18.18.2-linux-arm64", "2e630e18548627f61eaf573233da7949dc0a1df5eef3f486fa9820c5f6c121aa"),
-        "18.18.2-linux_ppc64le": ("node-v18.18.2-linux-ppc64le.tar.xz", "node-v18.18.2-linux-ppc64le", "b0adff5cf5938266b711d6c724fb134d802e0dee40b3a3f73d162de1b3d11880"),
-        "18.18.2-linux_s390x": ("node-v18.18.2-linux-s390x.tar.xz", "node-v18.18.2-linux-s390x", "c70ec2074b5e2b42c55bb4b8105418b67bf8a61c500d9376a07430dfcc341fdb"),
-        "18.18.2-linux_amd64": ("node-v18.18.2-linux-x64.tar.xz", "node-v18.18.2-linux-x64", "75aba25ae76999309fc6c598efe56ce53fbfc221381a44a840864276264ab8ac"),
-        "18.18.2-windows_amd64": ("node-v18.18.2-win-x64.zip", "node-v18.18.2-win-x64", "3bb0e51e579a41a22b3bf6cb2f3e79c03801aa17acbe0ca00fc555d1282e7acd"),
+        "18.20.0-darwin_arm64": ("node-v18.20.0-darwin-arm64.tar.gz", "node-v18.20.0-darwin-arm64", "10066ad4dd9e03ea5c4c45ef8775420ff37b860de09bbdf87b97e0c07b1ea036"),
+        "18.20.0-darwin_amd64": ("node-v18.20.0-darwin-x64.tar.gz", "node-v18.20.0-darwin-x64", "062ba71618e88e06321de5caa038843c350aababa2d315f3ca7b8551f8e66c1c"),
+        "18.20.0-linux_arm64": ("node-v18.20.0-linux-arm64.tar.xz", "node-v18.20.0-linux-arm64", "afe51da9ffb38ac1e3a20d9a06efd403ced4bf8831ab554a02a088dd8392fd79"),
+        "18.20.0-linux_ppc64le": ("node-v18.20.0-linux-ppc64le.tar.xz", "node-v18.20.0-linux-ppc64le", "9e652bbf53a3e37285b11dfb9d6a9bb8b02010c3b50e5c8229d4cc10e72681da"),
+        "18.20.0-linux_s390x": ("node-v18.20.0-linux-s390x.tar.xz", "node-v18.20.0-linux-s390x", "a6c2a5796b9d9e9bf21da62ec89ff30b41a8108880b9eaa3c912f1ce795a7743"),
+        "18.20.0-linux_amd64": ("node-v18.20.0-linux-x64.tar.xz", "node-v18.20.0-linux-x64", "03eea148e56785babb27930b05ed6bf311aaa3bc573c0399dd63cad2fe5713c7"),
+        "18.20.0-windows_amd64": ("node-v18.20.0-win-x64.zip", "node-v18.20.0-win-x64", "1c0aab05cc6836a8f5148cca345b92ebc948a4a2013f18d117b7ade6ff05aca6"),
     },
     # We need at least Node 18.17 due to some transitive dependencies.
-    node_version = "18.18.2",
+    node_version = "18.20.0",
 )
 
 # Download npm dependencies.
@@ -181,10 +181,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "f6d8058da1bad8d4eac74f3220f74212ad06b355eea6387251f161e0a17e29e3",
-    strip_prefix = "rules_sass-147f7fa5210c89e58c1a4b99245c7daf64c4c8ad",
+    sha256 = "ca27b3dcd294b134ccc9d0a1c6b63b810e115204e87a2b3d4cc247f5676d0a85",
+    strip_prefix = "rules_sass-c3f163fd9f570846c2aae4bf16ac69b4217e6f3b",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/147f7fa5210c89e58c1a4b99245c7daf64c4c8ad.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/c3f163fd9f570846c2aae4bf16ac69b4217e6f3b.zip",
     ],
 )
 

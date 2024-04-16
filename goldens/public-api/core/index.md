@@ -156,6 +156,7 @@ export function booleanAttribute(value: unknown): boolean;
 
 // @public
 export interface BootstrapOptions {
+    ignoreChangesOutsideZone?: boolean;
     ngZone?: NgZone | 'zone.js' | 'noop';
     ngZoneEventCoalescing?: boolean;
     ngZoneRunCoalescing?: boolean;
@@ -755,7 +756,7 @@ export interface HostListener {
     eventName?: string;
 }
 
-// @public
+// @public (undocumented)
 export const HostListener: HostListenerDecorator;
 
 // @public
@@ -1218,6 +1219,7 @@ export class NgZone {
 // @public
 export interface NgZoneOptions {
     eventCoalescing?: boolean;
+    ignoreChangesOutsideZone?: boolean;
     runCoalescing?: boolean;
 }
 
@@ -1594,13 +1596,7 @@ export abstract class TemplateRef<C> {
 // @public
 export class Testability implements PublicTestability {
     constructor(_ngZone: NgZone, registry: TestabilityRegistry, testabilityGetter: GetTestability);
-    // @deprecated
-    decreasePendingRequestCount(): number;
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
-    // @deprecated
-    getPendingRequestCount(): number;
-    // @deprecated
-    increasePendingRequestCount(): number;
     isStable(): boolean;
     whenStable(doneCb: Function, timeout?: number, updateCb?: Function): void;
     // (undocumented)

@@ -64,6 +64,16 @@ export interface GenericEntry {
   default: string|undefined;
 }
 
+export interface SourceEntry {
+  filePath: string;
+  startLine: number;
+  endLine: number;
+}
+
+export interface DocEntryWithSourceInfo extends DocEntry {
+  source: SourceEntry;
+}
+
 /** Base type for all documentation entities. */
 export interface DocEntry {
   entryType: EntryType;
@@ -194,4 +204,8 @@ export interface InitializerApiFunctionEntry extends DocEntry {
      */
     showTypesInSignaturePreview?: boolean;
   };
+}
+
+export function isDocEntryWithSourceInfo(entry: DocEntry): entry is DocEntryWithSourceInfo {
+  return 'source' in entry;
 }
