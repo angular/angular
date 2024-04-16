@@ -1401,6 +1401,9 @@
     "name": "init_host_property"
   },
   {
+    "name": "init_host_tag_name_token"
+  },
+  {
     "name": "init_html_sanitizer"
   },
   {

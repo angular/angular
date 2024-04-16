@@ -90,6 +90,9 @@
     "name": "createInjector"
   },
   {
+    "name": "createLFrame"
+  },
+  {
     "name": "deepForEach"
   },
   {
@@ -130,6 +133,9 @@
   },
   {
     "name": "injectableDefOrInjectorDefFactory"
+  },
+  {
+    "name": "instructionState"
   },
   {
     "name": "internalImportProvidersFrom"

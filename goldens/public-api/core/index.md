@@ -722,6 +722,9 @@ export interface Host {
 export const Host: HostDecorator;
 
 // @public
+export const HOST_TAG_NAME: InjectionToken<string>;
+
+// @public
 export class HostAttributeToken {
     constructor(attributeName: string);
     // (undocumented)
