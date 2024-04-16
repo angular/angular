@@ -29,6 +29,7 @@ export const commitMessage: CommitMessageConfig = {
     'platform-browser',
     'platform-browser-dynamic',
     'platform-server',
+    'primitives',
     'router',
     'service-worker',
     'upgrade',

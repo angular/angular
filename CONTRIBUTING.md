@@ -247,7 +247,7 @@ The `footer` is optional. The [Commit Message Footer](#commit-footer) format des
   │                          elements|forms|http|language-service|localize|platform-browser|
   │                          platform-browser-dynamic|platform-server|router|service-worker|
   │                          upgrade|zone.js|packaging|changelog|docs-infra|migrations|
-  │                          devtools
+  │                          devtools|primitives
   │
   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|test
 ```
@@ -289,6 +289,7 @@ The following is the list of supported scopes:
 * `platform-browser`
 * `platform-browser-dynamic`
 * `platform-server`
+* `primitives`
 * `router`
 * `service-worker`
 * `upgrade`
