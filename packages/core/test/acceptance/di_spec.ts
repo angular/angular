@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {assertInInjectionContext, Attribute, ChangeDetectorRef, Component, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HostAttributeToken, HostBinding, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
+import {assertInInjectionContext, Attribute, ChangeDetectorRef, Component, ComponentRef, createEnvironmentInjector, createNgModule, Directive, ElementRef, ENVIRONMENT_INITIALIZER, EnvironmentInjector, EventEmitter, forwardRef, Host, HOST_TAG_NAME, HostAttributeToken, HostBinding, importProvidersFrom, ImportProvidersSource, inject, Inject, Injectable, InjectFlags, InjectionToken, InjectOptions, INJECTOR, Injector, Input, LOCALE_ID, makeEnvironmentProviders, ModuleWithProviders, NgModule, NgModuleRef, NgZone, Optional, Output, Pipe, PipeTransform, Provider, runInInjectionContext, Self, SkipSelf, TemplateRef, Type, ViewChild, ViewContainerRef, ViewEncapsulation, ViewRef, ɵcreateInjector as createInjector, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵINJECTOR_SCOPE, ɵInternalEnvironmentProviders as InternalEnvironmentProviders} from '@angular/core';
 import {RuntimeError, RuntimeErrorCode} from '@angular/core/src/errors';
 import {ViewRef as ViewRefInternal} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
@@ -4495,6 +4495,95 @@ describe('di', () => {
       @Component({
         standalone: true,
         template: '<div dir other="ignore"></div>',
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.dir.value).toBe(null);
+    });
+  });
+
+  describe('HOST_TAG_NAME', () => {
+    it('should inject the tag name on an element node', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      @Component({
+        standalone: true,
+        template: `
+          <div dir #v1></div>
+          <span dir #v2></span>
+          <svg dir #v3></svg>
+          <custom-component dir #v4></custom-component>
+          <video dir #v5></video>
+        `,
+        imports: [Dir],
+      })
+      class TestCmp {
+        @ViewChild('v1', {read: Dir}) value1!: Dir;
+        @ViewChild('v2', {read: Dir}) value2!: Dir;
+        @ViewChild('v3', {read: Dir}) value3!: Dir;
+        @ViewChild('v4', {read: Dir}) value4!: Dir;
+        @ViewChild('v5', {read: Dir}) value5!: Dir;
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value1.value).toBe('div');
+      expect(fixture.componentInstance.value2.value).toBe('span');
+      expect(fixture.componentInstance.value3.value).toBe('svg');
+      expect(fixture.componentInstance.value4.value).toBe('custom-component');
+      expect(fixture.componentInstance.value5.value).toBe('video');
+    });
+
+    it('should throw a DI error when injecting into non-DOM nodes', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(HOST_TAG_NAME);
+      }
+
+      @Component({
+        standalone: true,
+        template: '<ng-container dir></ng-container>',
+        imports: [Dir],
+      })
+      class TestNgContainer {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      @Component({
+        standalone: true,
+        template: '<ng-template dir></ng-template>',
+        imports: [Dir],
+      })
+      class TestNgTemplate {
+        @ViewChild(Dir) dir!: Dir;
+      }
+
+      expect(() => TestBed.createComponent(TestNgContainer))
+          .toThrowError(
+              /HOST_TAG_NAME was used on an <ng-container> which doesn't have an underlying element in the DOM/);
+
+      expect(() => TestBed.createComponent(TestNgTemplate))
+          .toThrowError(
+              /HOST_TAG_NAME was used on an <ng-template> which doesn't have an underlying element in the DOM/);
+    });
+
+    it('should not throw a DI error when injecting into non-DOM nodes with optional: true', () => {
+      @Directive({selector: '[dir]', standalone: true})
+      class Dir {
+        value = inject(HOST_TAG_NAME, {optional: true});
+      }
+
+      @Component({
+        standalone: true,
+        template: '<ng-container dir></ng-container>',
         imports: [Dir],
       })
       class TestCmp {

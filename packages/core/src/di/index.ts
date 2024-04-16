@@ -29,3 +29,4 @@ export {INJECTOR} from './injector_token';
 export {ClassProvider, ModuleWithProviders, ClassSansProvider, ImportedNgModuleProviders, ConstructorProvider, EnvironmentProviders, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, Provider, StaticClassProvider, StaticClassSansProvider, StaticProvider, TypeProvider, ValueProvider, ValueSansProvider} from './interface/provider';
 export {InjectionToken} from './injection_token';
 export {HostAttributeToken} from './host_attribute_token';
+export {HOST_TAG_NAME} from './host_tag_name_token';
