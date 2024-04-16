@@ -2338,6 +2338,7 @@ export type HttpTransferCacheOptions = {
     includeHeaders?: string[];
     filter?: (req: HttpRequest<unknown>) => boolean;
     includePostRequests?: boolean;
+    includeRequestsWithAuthHeaders?: boolean;
 };
 
 // @public
