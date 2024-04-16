@@ -168,7 +168,11 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
                 provideServiceWorker('sw.js'),
                 {
                   provide: ApplicationRef,
-                  useValue: {isStable: isStableSub.asObservable(), afterTick: new Subject()},
+                  useValue: {
+                    isStable: isStableSub.asObservable(),
+                    afterTick: new Subject(),
+                    onDestroy: () => {},
+                  },
                 },
                 {provide: PLATFORM_ID, useValue: 'browser'},
                 {
@@ -183,7 +187,11 @@ const serviceWorkerModuleApi = 'ServiceWorkerModule';
               providers: [
                 {
                   provide: ApplicationRef,
-                  useValue: {isStable: isStableSub.asObservable(), afterTick: new Subject()},
+                  useValue: {
+                    isStable: isStableSub.asObservable(),
+                    afterTick: new Subject(),
+                    onDestroy: () => {},
+                  },
                 },
                 {provide: PLATFORM_ID, useValue: 'browser'},
                 {
