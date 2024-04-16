@@ -142,6 +142,16 @@ describe('Built-in image directive loaders', () => {
         expect(loader({src: '/img.png'})).toBe(`${path}/image/upload/f_auto,q_auto/img.png`);
       });
     });
+
+    describe('config validation', () => {
+      it('should add the r_max cloudinary transformation to the URL when the rounded option is provided', () => {
+        const path = 'https://res.cloudinary.com/mysite';
+        const loader = createCloudinaryLoader(path);
+        expect(loader({src: '/img.png', loaderParams: {rounded: true}})).toBe(
+          `${path}/image/upload/f_auto,q_auto,r_max/img.png`,
+        );
+      });
+    });
   });
 
   describe('ImageKit loader', () => {
