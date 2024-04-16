@@ -30,7 +30,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly disableScheduling =
       inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
-  private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.scheduleEventTask;
+  private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly afterTickSubscription = this.appRef.afterTick.subscribe(() => {
     // If the scheduler isn't running a tick but the application ticked, that means
     // someone called ApplicationRef.tick manually. In this case, we should cancel
@@ -60,17 +60,17 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
 
     this.pendingRenderTaskId = this.taskService.add();
-    this.cancelScheduledCallback = scheduleCallback(() => {
-      if (this.zoneIsDefined) {
-        // https://github.com/angular/angular/blob/c9abe775d07d075b171a187844d09e57f9685f3b/packages/core/src/zone/ng_zone.ts#L387-L395
-        const task = Zone.root.scheduleEventTask('fakeTopEventTask', () => {
+    if (this.zoneIsDefined) {
+      Zone.root.run(() => {
+        this.cancelScheduledCallback = scheduleCallback(() => {
           this.tick(this.shouldRefreshViews);
-        }, undefined, () => {}, () => {});
-        task.invoke();
-      } else {
+        }, false /** useNativeTimers */);
+      });
+    } else {
+      this.cancelScheduledCallback = scheduleCallback(() => {
         this.tick(this.shouldRefreshViews);
-      }
-    });
+      }, false /** useNativeTimers */);
+    }
   }
 
   private shouldScheduleTick(): boolean {
