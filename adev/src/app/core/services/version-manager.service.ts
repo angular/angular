@@ -61,7 +61,9 @@ export class VersionManager {
 
   private getVersion(versionMode: VersionMode): string {
     if (versionMode === 'stable') {
-      return `v${VERSION.major}`;
+      return 'v17';
+      // Temporarily commenting out till this works correctly
+      // return `v${VERSION.major}`;
     }
     if (Number.isInteger(versionMode)) {
       return `v${versionMode}`;
