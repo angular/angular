@@ -11,7 +11,14 @@ import {BehaviorSubject, Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {Data, ResolveData, Route} from './models';
-import {convertToParamMap, ParamMap, Params, PRIMARY_OUTLET, RouteTitleKey} from './shared';
+import {
+  convertToParamMap,
+  ParamMap,
+  Params,
+  PRIMARY_OUTLET,
+  RouteMetadataKey,
+  RouteTitleKey,
+} from './shared';
 import {equalSegments, UrlSegment} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
@@ -289,8 +296,13 @@ export function getInherited(
     };
   }
 
-  if (routeConfig && hasStaticTitle(routeConfig)) {
-    inherited.resolve[RouteTitleKey] = routeConfig.title;
+  if (routeConfig) {
+    if (hasStaticTitle(routeConfig)) {
+      inherited.resolve[RouteTitleKey] = routeConfig.title;
+    }
+    if (hasStaticMetadata(routeConfig)) {
+      inherited.resolve[RouteMetadataKey] = routeConfig.metadata;
+    }
   }
   return inherited;
 }
@@ -524,4 +536,8 @@ export function equalParamsAndUrlSegments(
 
 export function hasStaticTitle(config: Route) {
   return typeof config.title === 'string' || config.title === null;
+}
+
+export function hasStaticMetadata(config: Route) {
+  return typeof config.metadata === 'object' || config.metadata === null;
 }

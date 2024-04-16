@@ -15,6 +15,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_DOUBLE_DOTS = 4005,
     // (undocumented)
+    INVALID_METADATA = 4017,
+    // (undocumented)
     INVALID_ROOT_URL_SEGMENT = 4015,
     // (undocumented)
     INVALID_ROUTE_CONFIG = 4014,

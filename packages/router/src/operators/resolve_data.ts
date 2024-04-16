@@ -15,10 +15,11 @@ import {NavigationTransition} from '../navigation_transition';
 import {
   ActivatedRouteSnapshot,
   getInherited,
+  hasStaticMetadata,
   hasStaticTitle,
   RouterStateSnapshot,
 } from '../router_state';
-import {RouteTitleKey} from '../shared';
+import {RouteMetadataKey, RouteTitleKey} from '../shared';
 import {getDataKeys, wrapIntoObservable} from '../utils/collection';
 import {getClosestRouteInjector} from '../utils/config';
 import {getTokenOrFunctionIdentity} from '../utils/preactivation';
@@ -88,6 +89,9 @@ function runResolve(
   const resolve = futureARS._resolve;
   if (config?.title !== undefined && !hasStaticTitle(config)) {
     resolve[RouteTitleKey] = config.title;
+  }
+  if (config?.metadata !== undefined && !hasStaticMetadata(config)) {
+    resolve[RouteMetadataKey] = config.metadata;
   }
   return resolveNode(resolve, futureARS, futureRSS, injector).pipe(
     map((resolvedData: any) => {

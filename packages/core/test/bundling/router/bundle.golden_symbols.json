@@ -168,6 +168,9 @@
     "name": "DefaultDomRenderer2"
   },
   {
+    "name": "DefaultMetadataStrategy"
+  },
+  {
     "name": "DefaultRouteReuseStrategy"
   },
   {
@@ -324,6 +327,9 @@
     "name": "MAXIMUM_REFRESH_RERUNS"
   },
   {
+    "name": "META_KEYS_MAP"
+  },
+  {
     "name": "MODIFIER_KEYS"
   },
   {
@@ -334,6 +340,12 @@
   },
   {
     "name": "MOVED_VIEWS"
+  },
+  {
+    "name": "Meta"
+  },
+  {
+    "name": "MetadataStrategy"
   },
   {
     "name": "ModuleWithComponentFactories"
@@ -592,6 +604,9 @@
   },
   {
     "name": "RouteConfigLoadStart"
+  },
+  {
+    "name": "RouteMetadataKey"
   },
   {
     "name": "RouteReuseStrategy"
@@ -940,6 +955,9 @@
   },
   {
     "name": "compare"
+  },
+  {
+    "name": "computeMetadataKey"
   },
   {
     "name": "computeStaticStyling"
@@ -1447,6 +1465,9 @@
   },
   {
     "name": "hasParentInjector"
+  },
+  {
+    "name": "hasStaticMetadata"
   },
   {
     "name": "hasStaticTitle"

@@ -332,6 +332,23 @@ export type RunGuardsAndResolvers =
   | ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 /**
+ * Represents metadata for a particular route.
+ *
+ * @publicApi
+ */
+export interface MetadataEntry {
+  charset?: string;
+  content?: string;
+  httpEquiv?: string;
+  id?: string;
+  itemprop?: string;
+  name?: string;
+  property?: string;
+  scheme?: string;
+  url?: string;
+}
+
+/**
  * A configuration object that defines a single route.
  * A set of routes are collected in a `Routes` array to define a `Router` configuration.
  * The router attempts to match segments of a given URL against each route,
@@ -564,6 +581,12 @@ export interface Route {
    * @see {@link TitleStrategy}
    */
   title?: string | Type<Resolve<string>> | ResolveFn<string>;
+
+  /**
+   * Used to define page metadata for the route. This can be a static object or a `ResolveFn`
+   * function.
+   */
+  metadata?: Array<MetadataEntry> | ResolveFn<Array<MetadataEntry>>;
 
   /**
    * The path to match against. Cannot be used together with a custom `matcher` function.

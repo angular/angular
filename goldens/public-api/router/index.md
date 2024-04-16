@@ -671,6 +671,7 @@ export interface Route {
     loadChildren?: LoadChildren;
     loadComponent?: () => Type<unknown> | Observable<Type<unknown> | DefaultExport<Type<unknown>>> | Promise<Type<unknown> | DefaultExport<Type<unknown>>>;
     matcher?: UrlMatcher;
+    metadata?: Array<MetadataEntry> | ResolveFn<Array<MetadataEntry>>;
     outlet?: string;
     path?: string;
     pathMatch?: 'prefix' | 'full';

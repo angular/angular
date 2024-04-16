@@ -86,6 +86,7 @@ import {UrlHandlingStrategy} from './url_handling_strategy';
 import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
+import {MetadataStrategy} from './page_metadata_strategy';
 
 /**
  * @description
@@ -357,6 +358,7 @@ export class NavigationTransitions {
   private readonly location = inject(Location);
   private readonly inputBindingEnabled = inject(INPUT_BINDER, {optional: true}) !== null;
   private readonly titleStrategy?: TitleStrategy = inject(TitleStrategy);
+  private readonly metadataStrategy?: MetadataStrategy = inject(MetadataStrategy);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true}) || {};
   private readonly paramsInheritanceStrategy =
     this.options.paramsInheritanceStrategy || 'emptyOnly';
@@ -777,6 +779,7 @@ export class NavigationTransitions {
                 ),
               );
               this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
+              this.metadataStrategy?.updateMetadata(t.targetRouterState!.snapshot);
               t.resolve(true);
             },
             complete: () => {
