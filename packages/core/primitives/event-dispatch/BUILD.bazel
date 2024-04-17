@@ -33,7 +33,7 @@ rollup_bundle(
     name = "contract_bundle",
     args = ["--no-sourcemap"],
     entry_point = ":contract_binary.ts",
-    format = "esm",
+    format = "iife",
     deps = [":event-dispatch"],
 )
 
