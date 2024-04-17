@@ -24,7 +24,7 @@ function main() {
       description: fileContent,
       rawComment: fileContent,
       source: {
-        filePath: sourceFilePath,
+        filePath: '/' + sourceFilePath,
         startLine: 0,
         endLine: 0,
       },

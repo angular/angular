@@ -21,7 +21,7 @@ function main() {
     return {
       name: basename(sourceFilePath, '.md'),
       source: {
-        filePath: sourceFilePath,
+        filePath: '/' + sourceFilePath,
         startLine: 0,
         endLine: 0,
       },
