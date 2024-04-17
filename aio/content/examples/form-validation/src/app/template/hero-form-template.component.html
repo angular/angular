@@ -8,7 +8,7 @@
       <div
         class="cross-validation"
         [class.cross-validation-error]="
-          heroForm.errors?.['identityRevealed'] &&
+          heroForm.hasError('identityRevealed') &&
           (heroForm.touched || heroForm.dirty)
         "
       >
@@ -33,11 +33,11 @@
             *ngIf="name.invalid && (name.dirty || name.touched)"
             class="alert"
           >
-            <div *ngIf="name.errors?.['required']">Name is required.</div>
-            <div *ngIf="name.errors?.['minlength']">
+            <div *ngIf="name.hasError('required')">Name is required.</div>
+            <div *ngIf="name.hasError('minlength')">
               Name must be at least 4 characters long.
             </div>
-            <div *ngIf="name.errors?.['forbiddenName']">
+            <div *ngIf="name.hasError('forbiddenName')">
               Name cannot be Bob.
             </div>
           </div>
@@ -59,7 +59,7 @@
           <!-- #enddocregion alterEgo-input -->
           <div *ngIf="alterEgo.pending">Validating...</div>
           <div *ngIf="alterEgo.invalid" class="alert alter-ego-errors">
-            <div *ngIf="alterEgo.errors?.['uniqueAlterEgo']">
+            <div *ngIf="alterEgo.hasError('uniqueAlterEgo')">
               Alter ego is already taken.
             </div>
           </div>
@@ -68,7 +68,7 @@
         <!-- #docregion cross-validation-error-message -->
         <div
           *ngIf="
-            heroForm.errors?.['identityRevealed'] &&
+            heroForm.hasError('identityRevealed') &&
             (heroForm.touched || heroForm.dirty)
           "
           class="cross-validation-error-message alert"
