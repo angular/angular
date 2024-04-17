@@ -3,13 +3,8 @@
     <h6>Getting Started</h6>
     <h1 tabindex="-1">API Reference</h1>
   </header>
-
-  @if (featuredGroup().items.length) {
-  <adev-api-items-section [group]="featuredGroup()" class="adev-featured-list" />
-  }
-
   <form class="adev-reference-list-form">
-    <docs-text-field
+  <docs-text-field
       name="query"
       placeholder="Filter"
       [ngModel]="query()"
@@ -25,6 +20,13 @@
         (ngModelChange)="includeDeprecated.set($event)"
       />
     </div>
+  </form>
+  @if (featuredGroup().items.length) {
+  <adev-api-items-section [group]="featuredGroup()" class="adev-featured-list" />
+  }
+
+  <form class="adev-reference-list-form">
+    
     <ul class="adev-reference-list-legend">
       @for (itemType of itemTypes; track itemType) {
         <li
