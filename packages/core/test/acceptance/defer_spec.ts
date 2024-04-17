@@ -9,7 +9,6 @@
 import {CommonModule, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
 import {ApplicationRef, Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, createComponent, DebugElement, Directive, EnvironmentInjector, ErrorHandler, getDebugNode, inject, Injectable, InjectionToken, Injector, Input, NgModule, NgZone, Pipe, PipeTransform, PLATFORM_ID, QueryList, Type, ViewChildren, ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR} from '@angular/core';
 import {isRouterOutletInjector} from '@angular/core/src/defer/instructions';
-import {ChainedInjector} from '@angular/core/src/render3/component_ref';
 import {getComponentDef} from '@angular/core/src/render3/definition';
 import {NodeInjector} from '@angular/core/src/render3/di';
 import {getInjectorResolutionPath} from '@angular/core/src/render3/util/injector_discovery_utils';
@@ -4161,6 +4160,14 @@ describe('@defer', () => {
     it('should inject correct `ActivatedRoutes` in components within defer blocks', async () => {
       let routeCmpNodeInjector;
 
+      const TokenA = new InjectionToken<string>('TokenA');
+
+      @NgModule({
+        providers: [{provide: TokenA, useValue: 'nested'}],
+      })
+      class MyModuleA {
+      }
+
       @Component({
         standalone: true,
         imports: [RouterOutlet],
@@ -4172,11 +4179,12 @@ describe('@defer', () => {
       @Component({
         standalone: true,
         selector: 'another-child',
-        imports: [CommonModule],
-        template: 'another child: {{route.snapshot.url[0]}}',
+        imports: [CommonModule, MyModuleA],
+        template: 'another child: {{route.snapshot.url[0]}} | token: {{tokenA}}',
       })
       class AnotherChild {
         route = inject(ActivatedRoute);
+        tokenA = inject(TokenA);
         constructor() {
           routeCmpNodeInjector = inject(Injector);
         }
@@ -4186,7 +4194,8 @@ describe('@defer', () => {
         standalone: true,
         imports: [CommonModule, AnotherChild],
         template: `
-          child: {{route.snapshot.url[0]}}
+          child: {{route.snapshot.url[0]}} |
+          token: {{tokenA}}
           @defer (on immediate) {
             <another-child />
           }
@@ -4194,6 +4203,7 @@ describe('@defer', () => {
       })
       class Child {
         route = inject(ActivatedRoute);
+        tokenA = inject(TokenA);
       }
 
       const deferDepsInterceptor = {
@@ -4206,30 +4216,38 @@ describe('@defer', () => {
 
       TestBed.configureTestingModule({
         providers: [
+          {provide: TokenA, useValue: 'root'},
           {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
           {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
           provideRouter([
             {path: 'a', component: Child},
+            {path: 'b', component: Child},
           ]),
         ],
       });
       clearDirectiveDefs(Child);
 
       const app = TestBed.createComponent(App);
-      await TestBed.inject(Router).navigateByUrl('/a?x=1');
+      await TestBed.inject(Router).navigateByUrl('/a');
       app.detectChanges();
 
       await allPendingDynamicImports();
       app.detectChanges();
 
-      expect(app.nativeElement.innerHTML).toContain('child: a');
-      expect(app.nativeElement.innerHTML).toContain('another child: a');
+      expect(app.nativeElement.innerHTML).toContain('child: a | token: root');
+      expect(app.nativeElement.innerHTML).toContain('another child: a | token: nested');
 
-      // Verify that the first non-NodeInjector refers to the chained injector,
-      // which represents OutletInjector.
-      const path = getInjectorResolutionPath(routeCmpNodeInjector!);
-      const firstEnvInjector = path.find(inj => !(inj instanceof NodeInjector))!;
-      expect(isRouterOutletInjector(firstEnvInjector)).toBe(true);
+      // Navigate to `/b`
+      await TestBed.inject(Router).navigateByUrl('/b');
+      app.detectChanges();
+
+      await allPendingDynamicImports();
+      app.detectChanges();
+
+      // Expect that `ActivatedRoute` information get updated inside
+      // of a component used in a `@defer` block.
+      expect(app.nativeElement.innerHTML).toContain('child: b | token: root');
+      expect(app.nativeElement.innerHTML).toContain('another child: b | token: nested');
     });
   });
 });
