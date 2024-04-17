@@ -108,8 +108,7 @@ export function transferCacheInterceptorFn(
     (requestMethod === 'POST' && !globalOptions.includePostRequests && !requestOptions) ||
     (requestMethod !== 'POST' && !ALLOWED_METHODS.includes(requestMethod)) ||
     // Do not cache request that require authorization when includeRequestsWithAuthHeaders is falsey
-    (!globalOptions.includeRequestsWithAuthHeaders &&
-      (req.headers.has('authorization') || req.headers.has('proxy-authorization'))) ||
+    (!globalOptions.includeRequestsWithAuthHeaders && hasAuthHeaders(req)) ||
     globalOptions.filter?.(req) === false
   ) {
     return next(req);
@@ -185,6 +184,11 @@ export function transferCacheInterceptorFn(
       }
     }),
   );
+}
+
+/** @returns true when the requests contains autorization related headers. */
+function hasAuthHeaders(req: HttpRequest<unknown>): boolean {
+  return req.headers.has('authorization') || req.headers.has('proxy-authorization');
 }
 
 function getFilteredHeaders(
