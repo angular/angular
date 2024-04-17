@@ -1,3 +1,57 @@
+<a name="18.0.0-next.5"></a>
+# 18.0.0-next.5 (2024-04-17)
+## Breaking Changes
+### common
+- The deprecated `isPlatformWorkerUi` and `isPlatformWorkerApp` have been removed without replacement, as they serve no purpose since the removal of the WebWorker platform.
+### compiler
+- Angular only supports writable expressions inside of two-way bindings.
+### core
+- Angular will ensure change detection runs, even when the state update originates from
+  outside the zone, tests may observe additional rounds of change
+  detection compared to the previous behavior.
+  
+  This change will be more likely to impact existing unit tests.
+  This should usually be seen as more correct and the test should be updated,
+  but in cases where it is too much effort to debug, the test can revert to the old behavior by adding
+  `provideZoneChangeDetection({schedulingMode: NgZoneSchedulingMode.NgZoneOnly})`
+  to the `TestBed` providers.
+  
+  Similarly, applications which may want to update state outside the zone
+  and _not_ trigger change detection can add
+  `provideZoneChangeDetection({schedulingMode: NgZoneSchedulingMode.NgZoneOnly})`
+  to the providers in `bootstrapApplication` or add
+  `schedulingMode: NgZoneSchedulingMode.NgZoneOnly` to the
+  `BootstrapOptions` of `bootstrapModule`.
+- Testability methods `increasePendingRequestCount`,
+  `decreasePendingRequestCount` and `getPendingRequestCount` have been
+  removed. This information is tracked with zones.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3b0de30b37](https://github.com/angular/angular/commit/3b0de30b37f558d4815ca9a61db1010aaf3df068) | refactor | remove deprecated `isPlatformWorkerApp` and `isPlatformWorkerUi` API ([#55302](https://github.com/angular/angular/pull/55302)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7d5bc1c628](https://github.com/angular/angular/commit/7d5bc1c62870d9c68e06eddec229a9b8988e92ee) | fix | remove container index from conditional instruction ([#55190](https://github.com/angular/angular/pull/55190)) |
+| [4eb0165750](https://github.com/angular/angular/commit/4eb0165750d8c65812502343a70ef4cc35c725b9) | fix | remove support for unassignable expressions in two-way bindings ([#55342](https://github.com/angular/angular/pull/55342)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fdd560ea14](https://github.com/angular/angular/commit/fdd560ea14f2f35608e26102c7fac0471a634b3e) | feat | Add ability to configure zone change detection to use zoneless scheduler ([#55252](https://github.com/angular/angular/pull/55252)) |
+| [bce5e2344f](https://github.com/angular/angular/commit/bce5e2344f312dc3a8a30d54e412958bd07180c1) | feat | Add build target for jsaction contract binary. ([#55319](https://github.com/angular/angular/pull/55319)) |
+| [f09c5a7bc4](https://github.com/angular/angular/commit/f09c5a7bc455a59aea133264cbf9fd9ef7509a7f) | feat | Add zoneless change detection provider as experimental ([#55329](https://github.com/angular/angular/pull/55329)) |
+| [d28614b90e](https://github.com/angular/angular/commit/d28614b90eff835639747e8961fe61e874c44666) | feat | Modify EventType from an enum to an object. ([#55323](https://github.com/angular/angular/pull/55323)) |
+| [1ee9f32621](https://github.com/angular/angular/commit/1ee9f32621f6d72e8038a08f5ad4a0cfe8bd6a13) | feat | Synchronize changes from internal JSAction codebase. ([#55182](https://github.com/angular/angular/pull/55182)) |
+| [de7447d15e](https://github.com/angular/angular/commit/de7447d15ed964ae26f0dace4cb3b08f5cccb1c1) | fix | Angular should not ignore changes that happen outside the zone ([#55102](https://github.com/angular/angular/pull/55102)) |
+| [0cec9e4f9a](https://github.com/angular/angular/commit/0cec9e4f9a90ec59f0e9838dcbd82705b1709fc0) | fix | Fix null dereference error `addEvent` ([#55353](https://github.com/angular/angular/pull/55353)) |
+| [6534c035c0](https://github.com/angular/angular/commit/6534c035c099b30987d6fd1346aea454b79cc79d) | fix | Remove deprecated Testability methods ([#53768](https://github.com/angular/angular/pull/53768)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3bc63eaaf3](https://github.com/angular/angular/commit/3bc63eaaf344712ac6de1c9618d4558d9443c848) | fix | avoid running CDs on `controllerchange` ([#54222](https://github.com/angular/angular/pull/54222)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="17.3.5"></a>
 # 17.3.5 (2024-04-17)
 
