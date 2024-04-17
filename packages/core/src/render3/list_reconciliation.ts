@@ -136,7 +136,7 @@ export function reconcile<T, V>(
       const newEndValue = newCollection[newEndIdx];
 
       if (ngDevMode) {
-        recordDuplicateKeys(duplicateKeys!, trackByFn(liveEndIdx, newEndValue), liveEndIdx);
+        recordDuplicateKeys(duplicateKeys!, trackByFn(newEndIdx, newEndValue), newEndIdx);
       }
 
       const isEndMatching =

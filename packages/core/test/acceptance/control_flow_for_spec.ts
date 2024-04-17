@@ -356,6 +356,25 @@ describe('control flow - for', () => {
       expect(console.warn)
           .toHaveBeenCalledWith(jasmine.stringContaining(`Symbol(a)" at index "0" and "1".`));
     });
+
+    it('should warn about duplicate keys iterating over the new collection only', () => {
+      @Component({
+        template: `@for (item of items; track item) {}`,
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+      }
+
+      spyOn(console, 'warn');
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(console.warn).not.toHaveBeenCalled();
+
+      fixture.componentInstance.items = [4, 5, 6];
+      fixture.detectChanges();
+      expect(console.warn).not.toHaveBeenCalled();
+    });
   });
 
   describe('list diffing and view operations', () => {
