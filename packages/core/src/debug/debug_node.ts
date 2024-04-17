@@ -669,6 +669,4 @@ export function removeDebugNodeFromIndex(node: DebugNode) {
  *
  * @publicApi
  */
-export interface Predicate<T> {
-  (value: T): boolean;
-}
+export type Predicate<T> = (value: T) => boolean;

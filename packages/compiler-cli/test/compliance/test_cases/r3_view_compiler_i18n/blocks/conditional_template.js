@@ -88,9 +88,9 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     }
     if (rf & 2) {
       $r3$.ɵɵadvance(2);
-      $r3$.ɵɵconditional(2, ctx.count === 0 ? 2 : ctx.count === 1 ? 3 : 4);
+      $r3$.ɵɵconditional(ctx.count === 0 ? 2 : ctx.count === 1 ? 3 : 4);
       $r3$.ɵɵadvance(3);
-      $r3$.ɵɵconditional(5, ctx.count === 7 ? 5 : -1);
+      $r3$.ɵɵconditional(ctx.count === 7 ? 5 : -1);
     }
   },
   …

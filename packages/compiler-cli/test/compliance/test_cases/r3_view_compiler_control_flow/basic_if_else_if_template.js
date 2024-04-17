@@ -33,6 +33,6 @@ function MyApp_Template(rf, ctx) {
     $r3$.ɵɵadvance();
     $r3$.ɵɵtextInterpolate1(" ", ctx.message, " ");
     $r3$.ɵɵadvance();
-    $r3$.ɵɵconditional(2, ctx.value() === 1 ? 2 : ctx.otherValue() === 2 ? 3 : ctx.message ? 4 : 5);
+    $r3$.ɵɵconditional(ctx.value() === 1 ? 2 : ctx.otherValue() === 2 ? 3 : ctx.message ? 4 : 5);
   }
 }

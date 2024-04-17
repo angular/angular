@@ -23,7 +23,7 @@ export function migrateTemplate(template: string): string|null {
   let rootNodes: TmplAstNode[]|null = null;
 
   try {
-    const parsed = parseTemplate(template, '');
+    const parsed = parseTemplate(template, '', {allowInvalidAssignmentEvents: true});
 
     if (parsed.errors === null) {
       rootNodes = parsed.nodes;

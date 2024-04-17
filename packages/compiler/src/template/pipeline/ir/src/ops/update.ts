@@ -599,11 +599,6 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
   target: XrefId;
 
   /**
-   * The slot of the target, to be populated during slot allocation.
-   */
-  targetSlot: SlotHandle;
-
-  /**
    * The main test expression (for a switch), or `null` (for an if, which has no test
    * expression).
    */
@@ -634,12 +629,11 @@ export interface ConditionalOp extends Op<ConditionalOp>, DependsOnSlotContextOp
  * Create a conditional op, which will display an embedded view according to a condtion.
  */
 export function createConditionalOp(
-    target: XrefId, targetSlot: SlotHandle, test: o.Expression|null,
-    conditions: Array<ConditionalCaseExpr>, sourceSpan: ParseSourceSpan): ConditionalOp {
+    target: XrefId, test: o.Expression|null, conditions: Array<ConditionalCaseExpr>,
+    sourceSpan: ParseSourceSpan): ConditionalOp {
   return {
     kind: OpKind.Conditional,
     target,
-    targetSlot,
     test,
     conditions,
     processed: null,

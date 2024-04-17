@@ -1351,10 +1351,10 @@ export class PlatformRef {
 }
 
 // @public
-export interface Predicate<T> {
-    // (undocumented)
-    (value: T): boolean;
-}
+export type Predicate<T> = (value: T) => boolean;
+
+// @public
+export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders;
 
 // @public
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];

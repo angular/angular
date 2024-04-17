@@ -9117,220 +9117,56 @@ function allTests(os: string) {
          });
     });
 
-    describe('two-way binding backwards compatibility', () => {
-      it('should allow an && expression in a two-way binding', () => {
-        env.write(`test.ts`, `
-          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
+    describe('tsickle compatibility', () => {
+      it('should preserve fileoverview comments', () => {
+        env.write('test.ts', `
+          // type-only import that will be elided.
+          import {SimpleChanges} from '@angular/core';
 
-          @Directive({standalone: true, selector: '[dir]'})
-          class Dir {
-            @Input() value: any;
-            @Output() valueChange = new EventEmitter<any>();
-          }
-
-          @Component({
-            standalone: true,
-            imports: [Dir],
-            template: \`<div dir [(value)]="a && !b && c"></div>\`
-          })
-          class App {
-            a = true;
-            b = false;
-            c = 'hello';
+          export class X {
+            p: SimpleChanges = null!;
           }
         `);
 
-        env.driveMain();
-        const jsContents = env.getContents('test.js');
+        const options: CompilerOptions = {
+          strict: true,
+          strictTemplates: true,
+          target: ts.ScriptTarget.Latest,
+          module: ts.ModuleKind.ESNext,
+          annotateForClosureCompiler: true,
+        };
 
-        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a && !ctx.b && ctx.c);');
-        expect(jsContents)
-            .toContain(
-                '{ ctx.a && !ctx.b && (i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event)); return $event; }');
-      });
+        const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
+        const transformers = program.compiler.prepareEmit().transformers;
 
-      it('should allow an || expression in a two-way binding', () => {
-        env.write(`test.ts`, `
-          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
-
-          @Directive({standalone: true, selector: '[dir]'})
-          class Dir {
-            @Input() value: any;
-            @Output() valueChange = new EventEmitter<any>();
-          }
-
-          @Component({
-            standalone: true,
-            imports: [Dir],
-            template: \`<div dir [(value)]="a || !b || c"></div>\`
-          })
-          class App {
-            a = true;
-            b = false;
-            c = 'hello';
-          }
-        `);
-
-        env.driveMain();
-        const jsContents = env.getContents('test.js');
-
-        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a || !ctx.b || ctx.c);');
-        expect(jsContents)
-            .toContain(
-                '{ ctx.a || !ctx.b || (i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event)); return $event; }');
-      });
-
-      it('should allow an ?? expression in a two-way binding', () => {
-        env.write(`test.ts`, `
-          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
-
-          @Directive({standalone: true, selector: '[dir]'})
-          class Dir {
-            @Input() value: any;
-            @Output() valueChange = new EventEmitter<any>();
-          }
-
-          @Component({
-            standalone: true,
-            imports: [Dir],
-            template: \`<div dir [(value)]="a ?? !b ?? c"></div>\`
-          })
-          class App {
-            a = true;
-            b = false;
-            c = 'hello';
-          }
-        `);
-
-        env.driveMain();
-        const jsContents = env.getContents('test.js');
-
-        expect(jsContents).toContain('let tmp_0_0;');
-        expect(jsContents)
-            .toContain(
-                'ɵɵtwoWayProperty("value", (tmp_0_0 = (tmp_0_0 = ctx.a) !== null && ' +
-                'tmp_0_0 !== undefined ? tmp_0_0 : !ctx.b) !== null && tmp_0_0 !== undefined ? tmp_0_0 : ctx.c);');
-
-        expect(jsContents).toContain('let tmp_0_0;');
-        expect(jsContents)
-            .toContain(
-                '(tmp_0_0 = (tmp_0_0 = ctx.a) !== null && tmp_0_0 !== undefined ? ' +
-                'tmp_0_0 : !ctx.b) !== null && tmp_0_0 !== undefined ? tmp_0_0 : ' +
-                'i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event); return $event;');
-      });
-
-      it('should allow a ternary expression in a two-way binding', () => {
-        env.write(`test.ts`, `
-          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
-
-          @Directive({standalone: true, selector: '[dir]'})
-          class Dir {
-            @Input() value: any;
-            @Output() valueChange = new EventEmitter<any>();
-          }
-
-          @Component({
-            standalone: true,
-            imports: [Dir],
-            template: \`<div dir [(value)]="a ? b : c"></div>\`
-          })
-          class App {
-            a = true;
-            b = false;
-            c = 'hello';
-          }
-        `);
-
-        env.driveMain();
-        const jsContents = env.getContents('test.js');
-
-        expect(jsContents).toContain('ɵɵtwoWayProperty("value", ctx.a ? ctx.b : ctx.c);');
-        expect(jsContents)
-            .toContain(
-                '{ ctx.a ? ctx.b : i0.ɵɵtwoWayBindingSet(ctx.c, $event) || (ctx.c = $event); return $event; }');
-      });
-
-      it('should allow a prefixed unary expression in a two-way binding', () => {
-        env.write(`test.ts`, `
-          import {Component, Directive, Input, Output, EventEmitter} from '@angular/core';
-
-          @Directive({standalone: true, selector: '[dir]'})
-          class Dir {
-            @Input() value: any;
-            @Output() valueChange = new EventEmitter<any>();
-          }
-
-          @Component({
-            standalone: true,
-            imports: [Dir],
-            template: \`<div dir [(value)]="!!!a"></div>\`
-          })
-          class App {
-            a = true;
-          }
-        `);
-
-        env.driveMain();
-        const jsContents = env.getContents('test.js');
-
-        expect(jsContents).toContain('ɵɵtwoWayProperty("value", !!!ctx.a);');
-        expect(jsContents)
-            .toContain(
-                '{ i0.ɵɵtwoWayBindingSet(ctx.a, $event) || (ctx.a = $event); return $event; }');
-      });
-
-      describe('tsickle compatibility', () => {
-        it('should preserve fileoverview comments', () => {
-          env.write('test.ts', `
-            // type-only import that will be elided.
-            import {SimpleChanges} from '@angular/core';
-
-            export class X {
-              p: SimpleChanges = null!;
-            }
-          `);
-
-          const options: CompilerOptions = {
-            strict: true,
-            strictTemplates: true,
-            target: ts.ScriptTarget.Latest,
-            module: ts.ModuleKind.ESNext,
-            annotateForClosureCompiler: true,
-          };
-
-          const program = new NgtscProgram(['/test.ts'], options, createCompilerHost({options}));
-          const transformers = program.compiler.prepareEmit().transformers;
-
-          // Add a "fake tsickle" transform before Angular's transform.
-          transformers.before!.unshift(ctx => (sf: ts.SourceFile) => {
-            const tsickleFileOverview = ctx.factory.createNotEmittedStatement(sf);
-            ts.setSyntheticLeadingComments(tsickleFileOverview, [
-              {
-                kind: ts.SyntaxKind.MultiLineCommentTrivia,
-                text: `*
-                    * @fileoverview Closure comment
-                    * @suppress bla1
-                    * @suppress bla2
-                  `,
-                pos: -1,
-                end: -1,
-                hasTrailingNewLine: true,
-              },
-            ]);
-            return ctx.factory.updateSourceFile(
-                sf, [tsickleFileOverview, ...sf.statements], sf.isDeclarationFile,
-                sf.referencedFiles, sf.typeReferenceDirectives, sf.hasNoDefaultLib,
-                sf.libReferenceDirectives);
-          });
-
-          const {diagnostics, emitSkipped} =
-              program.getTsProgram().emit(undefined, undefined, undefined, undefined, transformers);
-
-          expect(diagnostics.length).toBe(0);
-          expect(emitSkipped).toBe(false);
-
-          expect(env.getContents('/test.js')).toContain(`* @fileoverview Closure comment`);
+        // Add a "fake tsickle" transform before Angular's transform.
+        transformers.before!.unshift(ctx => (sf: ts.SourceFile) => {
+          const tsickleFileOverview = ctx.factory.createNotEmittedStatement(sf);
+          ts.setSyntheticLeadingComments(tsickleFileOverview, [
+            {
+              kind: ts.SyntaxKind.MultiLineCommentTrivia,
+              text: `*
+                  * @fileoverview Closure comment
+                  * @suppress bla1
+                  * @suppress bla2
+                `,
+              pos: -1,
+              end: -1,
+              hasTrailingNewLine: true,
+            },
+          ]);
+          return ctx.factory.updateSourceFile(
+              sf, [tsickleFileOverview, ...sf.statements], sf.isDeclarationFile, sf.referencedFiles,
+              sf.typeReferenceDirectives, sf.hasNoDefaultLib, sf.libReferenceDirectives);
         });
+
+        const {diagnostics, emitSkipped} =
+            program.getTsProgram().emit(undefined, undefined, undefined, undefined, transformers);
+
+        expect(diagnostics.length).toBe(0);
+        expect(emitSkipped).toBe(false);
+
+        expect(env.getContents('/test.js')).toContain(`* @fileoverview Closure comment`);
       });
     });
   });
