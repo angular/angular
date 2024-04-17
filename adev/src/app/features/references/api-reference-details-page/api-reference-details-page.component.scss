@@ -358,6 +358,10 @@
     }
   }
 
+  .docs-deprecation-message {
+    border-block-end: 1px solid var(--senary-contrast);
+  }
+
   .docs-param-group {
     margin-block-start: 1rem;
   }

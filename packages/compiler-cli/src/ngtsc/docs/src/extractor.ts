@@ -55,8 +55,10 @@ export class DocsExtractor {
         // Set the source code references for the extracted entry.
         (entry as DocEntryWithSourceInfo).source = {
           filePath: getRelativeFilePath(realSourceFile, rootDir),
-          startLine: ts.getLineAndCharacterOfPosition(realSourceFile, node.getFullStart()).line,
-          endLine: ts.getLineAndCharacterOfPosition(realSourceFile, node.getEnd()).line,
+
+          // Start & End are off by 1
+          startLine: ts.getLineAndCharacterOfPosition(realSourceFile, node.getStart()).line + 1,
+          endLine: ts.getLineAndCharacterOfPosition(realSourceFile, node.getEnd()).line + 1,
         };
 
         // The exported name of an API may be different from its declaration name, so
