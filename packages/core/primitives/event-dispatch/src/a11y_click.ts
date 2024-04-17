@@ -29,11 +29,11 @@ export function updateEventInfoForA11yClick(eventInfo: eventInfoLib.EventInfo) {
  * browser's default action for native HTML controls.
  */
 export function preventDefaultForA11yClick(eventInfo: eventInfoLib.EventInfo) {
-  if (!eventInfoLib.getA11yClickKey(eventInfo) ||
-      (!eventLib.isSpaceKeyEvent(eventInfoLib.getEvent(eventInfo)) &&
-       !eventLib.shouldCallPreventDefaultOnNativeHtmlControl(
-           eventInfoLib.getEvent(eventInfo),
-           ))) {
+  if (
+    !eventInfoLib.getA11yClickKey(eventInfo) ||
+    (!eventLib.isSpaceKeyEvent(eventInfoLib.getEvent(eventInfo)) &&
+      !eventLib.shouldCallPreventDefaultOnNativeHtmlControl(eventInfoLib.getEvent(eventInfo)))
+  ) {
     return;
   }
   eventLib.preventDefault(eventInfoLib.getEvent(eventInfo));
@@ -44,23 +44,21 @@ export function preventDefaultForA11yClick(eventInfo: eventInfoLib.EventInfo) {
  * and if there is not already a click action.
  */
 export function populateClickOnlyAction(
-    actionElement: Element,
-    eventInfo: eventInfoLib.EventInfo,
-    actionMap: {[key: string]: string},
+  actionElement: Element,
+  eventInfo: eventInfoLib.EventInfo,
+  actionMap: {[key: string]: string},
 ) {
   if (
-      // If there's already an action, don't attempt to set a CLICKONLY
-      eventInfoLib.getAction(eventInfo) ||
-      // Only attempt CLICKONLY if the type is CLICK
-      eventInfoLib.getEventType(eventInfo) !== EventType.CLICK ||
-      // a11y clicks are never CLICKONLY
-      eventInfoLib.getA11yClickKey(eventInfo) || actionMap[EventType.CLICKONLY] === undefined) {
+    // If there's already an action, don't attempt to set a CLICKONLY
+    eventInfoLib.getAction(eventInfo) ||
+    // Only attempt CLICKONLY if the type is CLICK
+    eventInfoLib.getEventType(eventInfo) !== EventType.CLICK ||
+    // a11y clicks are never CLICKONLY
+    eventInfoLib.getA11yClickKey(eventInfo) ||
+    actionMap[EventType.CLICKONLY] === undefined
+  ) {
     return;
   }
   eventInfoLib.setEventType(eventInfo, EventType.CLICKONLY);
-  eventInfoLib.setAction(
-      eventInfo,
-      actionMap[EventType.CLICKONLY],
-      actionElement,
-  );
+  eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICKONLY], actionElement);
 }

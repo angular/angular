@@ -7,7 +7,7 @@
  */
 
 import {Dispatcher, Replayer} from '../src/dispatcher';
-import {ActionInfo, createEventInfo, EventInfo, EventInfoWrapper,} from '../src/event_info';
+import {ActionInfo, createEventInfo, EventInfo, EventInfoWrapper} from '../src/event_info';
 import {createEvent} from '../src/replay';
 
 function createMockClickEvent() {
@@ -63,9 +63,9 @@ describe('dispatcher test.ts', () => {
     dispatcher.registerEventInfoHandlers('foo', null, actions);
 
     dispatcher.dispatch(
-        createTestEventInfo({
-          action: createTestActionInfo({element: actionElement}),
-        }),
+      createTestEventInfo({
+        action: createTestActionInfo({element: actionElement}),
+      }),
     );
     expect(eventInfo).not.toBeNull();
     expect(eventInfo.getEventType()).toBe(createMockClickEvent().type);
@@ -84,9 +84,9 @@ describe('dispatcher test.ts', () => {
     dispatcher.registerEventInfoHandlers('bar', null, eventInfoHandlers);
 
     dispatcher.dispatch(
-        createTestEventInfo({
-          action: createTestActionInfo({element: actionElement}),
-        }),
+      createTestEventInfo({
+        action: createTestActionInfo({element: actionElement}),
+      }),
     );
     expect(eventInfoHandler1).toHaveBeenCalled();
     expect(eventInfoHandler2).not.toHaveBeenCalled();
@@ -143,17 +143,16 @@ describe('dispatcher test.ts', () => {
   });
 
   function expectEventReplayerToHaveBeenCalledWith(
-      eventReplayer: jasmine.Spy<Replayer>,
-      expectedEventInfos: EventInfo[],
-      expectedDispatcher: Dispatcher,
+    eventReplayer: jasmine.Spy<Replayer>,
+    expectedEventInfos: EventInfo[],
+    expectedDispatcher: Dispatcher,
   ) {
     const args = eventReplayer.calls.mostRecent().args;
     expect(args.length).toBe(2);
     const [eventInfoWrappers, dispatcher] = args;
-    expect(
-        eventInfoWrappers.map((eventInfoWrapper) => eventInfoWrapper.eventInfo),
-        )
-        .toEqual(expectedEventInfos);
+    expect(eventInfoWrappers.map((eventInfoWrapper) => eventInfoWrapper.eventInfo)).toEqual(
+      expectedEventInfos,
+    );
     expect(dispatcher).toBe(expectedDispatcher);
   }
 
@@ -172,11 +171,7 @@ describe('dispatcher test.ts', () => {
     dispatcher.dispatch(eventInfo2);
 
     await expectAsync(replayed).toBeResolved();
-    expectEventReplayerToHaveBeenCalledWith(
-        eventReplayer,
-        [eventInfo1, eventInfo2],
-        dispatcher,
-    );
+    expectEventReplayerToHaveBeenCalledWith(eventReplayer, [eventInfo1, eventInfo2], dispatcher);
   });
 
   it('events are replayed when handlers are registered', async () => {
@@ -189,22 +184,14 @@ describe('dispatcher test.ts', () => {
     dispatcher.dispatch(eventInfo);
 
     await expectAsync(replayed).toBeResolved();
-    expectEventReplayerToHaveBeenCalledWith(
-        eventReplayer,
-        [eventInfo],
-        dispatcher,
-    );
+    expectEventReplayerToHaveBeenCalledWith(eventReplayer, [eventInfo], dispatcher);
 
     replayed = waitForEventReplayer(eventReplayer);
 
     dispatcher.registerEventInfoHandlers('foo', null, {'bar': () => {}});
 
     await expectAsync(replayed).toBeResolved();
-    expectEventReplayerToHaveBeenCalledWith(
-        eventReplayer,
-        [eventInfo],
-        dispatcher,
-    );
+    expectEventReplayerToHaveBeenCalledWith(eventReplayer, [eventInfo], dispatcher);
   });
 
   it('dispatches to registered global EventInfo handler', () => {

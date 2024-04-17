@@ -18,10 +18,10 @@ import {EventContract} from './eventcontract';
  *              then this is how contracts can be initialized for each one.
  */
 export function bootstrapEventContract(
-    field: string,
-    container: Element,
-    appId: string,
-    events: string[],
+  field: string,
+  container: Element,
+  appId: string,
+  events: string[],
 ) {
   const contractContainer = new EventContractContainer(container);
   // tslint:disable-next-line:no-any
@@ -29,10 +29,7 @@ export function bootstrapEventContract(
   if (!anyWindow[field]) {
     anyWindow[field] = {};
   }
-  const eventContract = new EventContract(
-      contractContainer,
-      /* stopPropagation */ false,
-  );
+  const eventContract = new EventContract(contractContainer, /* stopPropagation */ false);
   anyWindow[field][appId] = eventContract;
   for (const ev of events) {
     eventContract.addEvent(ev);

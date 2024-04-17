@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {bootstrapEventContract} from './src/register_events';
 
 (window as any)['__jsaction_bootstrap'] = bootstrapEventContract;

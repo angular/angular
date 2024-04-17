@@ -9,7 +9,7 @@
 export const safeElement = {
   async setInnerHtml(element: Element, content: string) {
     element.innerHTML = content;
-  }
+  },
 };
 
 export const testonlyHtml = (content: string) => content;

@@ -73,5 +73,5 @@ export enum Attribute {
    *
    * Used by ActionFlow.
    */
-  JSTRACK = 'jstrack'
+  JSTRACK = 'jstrack',
 }

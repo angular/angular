@@ -15,9 +15,9 @@ import {EventHandlerInfo} from './event_handler';
  */
 export interface EventContractContainerManager {
   addEventListener(
-      eventType: string,
-      getHandler: (element: Element) => (event: Event) => void,
-      ): void;
+    eventType: string,
+    getHandler: (element: Element) => (event: Event) => void,
+  ): void;
 
   cleanUp(): void;
 }
@@ -50,10 +50,7 @@ export class EventContractContainer implements EventContractContainerManager {
    * and maintains a reference to resulting handler in order to remove it
    * later if desired.
    */
-  addEventListener(
-      eventType: string,
-      getHandler: (element: Element) => (event: Event) => void,
-  ) {
+  addEventListener(eventType: string, getHandler: (element: Element) => (event: Event) => void) {
     // In iOS, event bubbling doesn't happen automatically in any DOM element,
     // unless it has an onclick attribute or DOM event handler attached to it.
     // This breaks JsAction in some cases. See "Making Elements Clickable"
@@ -69,11 +66,7 @@ export class EventContractContainer implements EventContractContainerManager {
       (this.element as HTMLElement).style.cursor = 'pointer';
     }
     this.handlerInfos.push(
-        eventLib.addEventListener(
-            this.element,
-            eventType,
-            getHandler(this.element),
-            ),
+      eventLib.addEventListener(this.element, eventType, getHandler(this.element)),
     );
   }
 

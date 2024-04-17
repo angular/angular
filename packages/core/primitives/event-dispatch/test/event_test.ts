@@ -38,10 +38,10 @@ function roleTarget(): HTMLElement {
  *     Defaults to `opt_target`.
  */
 function baseIsActionKeyEvent(
-    keyCodeOrKey: string|number,
-    target?: HTMLElement,
-    originalTarget?: HTMLElement,
-    ): boolean {
+  keyCodeOrKey: string | number,
+  target?: HTMLElement,
+  originalTarget?: HTMLElement,
+): boolean {
   const key = typeof keyCodeOrKey === 'string' ? keyCodeOrKey : undefined;
   const keyCode = typeof keyCodeOrKey === 'number' ? keyCodeOrKey : undefined;
   const event = {
@@ -55,7 +55,7 @@ function baseIsActionKeyEvent(
   try {
     // isFocusable() in IE calls getBoundingClientRect(), which fails on orphans
     document.body.appendChild(event.target);
-    event.target.style.height = '4px';  // Make sure we don't report as hidden.
+    event.target.style.height = '4px'; // Make sure we don't report as hidden.
     event.target.style.width = '4px';
     return jsactionEvent.isActionKeyEvent(event as unknown as Event);
   } finally {
@@ -71,61 +71,37 @@ describe('event test.ts', () => {
   });
 
   it('add event listener w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(
-        divInternal,
-        'click',
-        () => {},
-    );
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'click', () => {});
     expect(eventInfo.eventType).toBe('click');
     expect(eventInfo.capture).toBe(false);
   });
 
   it('add event listener focus w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(
-        divInternal,
-        'focus',
-        () => {},
-    );
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'focus', () => {});
     expect(eventInfo.eventType).toBe('focus');
     expect(eventInfo.capture).toBe(true);
   });
 
   it('add event listener blur w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(
-        divInternal,
-        'blur',
-        () => {},
-    );
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'blur', () => {});
     expect(eventInfo.eventType).toBe('blur');
     expect(eventInfo.capture).toBe(true);
   });
 
   it('add event listener error w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(
-        divInternal,
-        'error',
-        () => {},
-    );
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'error', () => {});
     expect(eventInfo.eventType).toBe('error');
     expect(eventInfo.capture).toBe(true);
   });
 
   it('add event listener load w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(
-        divInternal,
-        'load',
-        () => {},
-    );
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'load', () => {});
     expect(eventInfo.eventType).toBe('load');
     expect(eventInfo.capture).toBe(true);
   });
 
   it('add event listener toggle w3 c', () => {
-    const eventInfo = jsactionEvent.addEventListener(
-        divInternal,
-        'toggle',
-        () => {},
-    );
+    const eventInfo = jsactionEvent.addEventListener(divInternal, 'toggle', () => {});
     expect(eventInfo.eventType).toBe('toggle');
     expect(eventInfo.capture).toBe(true);
   });
@@ -301,10 +277,7 @@ describe('event test.ts', () => {
       target: child,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, child),
-        )
-        .toBe(true);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, child)).toBe(true);
   });
 
   it('is mouse special event not mouseenter', () => {
@@ -318,14 +291,8 @@ describe('event test.ts', () => {
       target: root,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, root),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, child),
-        )
-        .toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, root)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, child)).toBe(false);
   });
 
   it('is mouse special event mouseover', () => {
@@ -341,18 +308,9 @@ describe('event test.ts', () => {
       target: subchild,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, root),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, child),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, subchild),
-        )
-        .toBe(true);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, root)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, child)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSEENTER, subchild)).toBe(true);
   });
 
   it('is mouse special event mouseleave', () => {
@@ -366,10 +324,7 @@ describe('event test.ts', () => {
       target: child,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child),
-        )
-        .toBe(true);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child)).toBe(true);
   });
 
   it('is mouse special event not mouseleave', () => {
@@ -383,14 +338,8 @@ describe('event test.ts', () => {
       target: root,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, root),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child),
-        )
-        .toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, root)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child)).toBe(false);
   });
 
   it('is mouse special event mouseout', () => {
@@ -406,18 +355,9 @@ describe('event test.ts', () => {
       target: subchild,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, root),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, subchild),
-        )
-        .toBe(true);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, root)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, subchild)).toBe(true);
   });
 
   it('is mouse special event not mouse', () => {
@@ -431,14 +371,8 @@ describe('event test.ts', () => {
       target: child,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child),
-        )
-        .toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.MOUSELEAVE, child)).toBe(false);
   });
 
   it('create mouse special event mouseenter', () => {
@@ -474,10 +408,7 @@ describe('event test.ts', () => {
       target: child,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, child),
-        )
-        .toBe(true);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, child)).toBe(true);
   });
 
   it('is mouse special event not pointerenter', () => {
@@ -491,14 +422,8 @@ describe('event test.ts', () => {
       target: root,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, root),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, child),
-        )
-        .toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, root)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, child)).toBe(false);
   });
 
   it('is mouse special event pointerover', () => {
@@ -514,22 +439,9 @@ describe('event test.ts', () => {
       target: subchild,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, root),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, child),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(
-            event,
-            EventType.POINTERENTER,
-            subchild,
-            ),
-        )
-        .toBe(true);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, root)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, child)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERENTER, subchild)).toBe(true);
   });
 
   it('is mouse special event pointerleave', () => {
@@ -543,10 +455,7 @@ describe('event test.ts', () => {
       target: child,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child),
-        )
-        .toBe(true);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(true);
   });
 
   it('is mouse special event not pointerleave', () => {
@@ -559,14 +468,8 @@ describe('event test.ts', () => {
       target: root,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, root),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child),
-        )
-        .toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, root)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
   });
 
   it('is mouse special event pointerout', () => {
@@ -581,22 +484,9 @@ describe('event test.ts', () => {
       target: subchild,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, root),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(
-            event,
-            EventType.POINTERLEAVE,
-            subchild,
-            ),
-        )
-        .toBe(true);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, root)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, subchild)).toBe(true);
   });
 
   it('is mouse special event not mouse', () => {
@@ -609,14 +499,8 @@ describe('event test.ts', () => {
       target: child,
     } as unknown as Event;
 
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child),
-        )
-        .toBe(false);
-    expect(
-        jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child),
-        )
-        .toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
+    expect(jsactionEvent.isMouseSpecialEvent(event, EventType.POINTERLEAVE, child)).toBe(false);
   });
 
   it('create mouse special event pointerenter', () => {
@@ -817,102 +701,66 @@ describe('event test.ts', () => {
   it('should call prevent default on native html control', () => {
     let event = {target: validTarget()} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(true);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(true);
 
     event = {target: invalidTarget()} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(false);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(false);
 
     event = {target: roleTarget()} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(false);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(false);
 
     const button = document.createElement('button');
     event = {target: button} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(true);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(true);
 
     const divWithButtonRole = document.createElement('div');
     divWithButtonRole.setAttribute('role', 'button');
     event = {target: divWithButtonRole} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(true);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(true);
 
     const input = document.createElement('input');
     input.type = 'button';
     event = {target: input} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(true);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(true);
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     event = {target: checkbox} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(false);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(false);
 
     const radio = document.createElement('input');
     radio.type = 'radio';
     event = {target: radio} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(false);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(false);
 
     const select = document.createElement('select');
     event = {target: select} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(false);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(false);
 
     const option = document.createElement('option');
     event = {target: option} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(false);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(false);
 
     const link = document.createElement('a');
     link.setAttribute('href', 'http://www.google.com');
     event = {target: link} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(false);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(false);
 
     const linkWithRole = document.createElement('a');
     linkWithRole.setAttribute('href', 'http://www.google.com');
     linkWithRole.setAttribute('role', 'menuitem');
     event = {target: linkWithRole} as unknown as Event;
 
-    expect(
-        jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event),
-        )
-        .toBe(false);
+    expect(jsactionEvent.shouldCallPreventDefaultOnNativeHtmlControl(event)).toBe(false);
   });
 });

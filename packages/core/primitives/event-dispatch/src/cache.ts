@@ -42,7 +42,7 @@ export function set(element: Element, actionMap: {[key: string]: string}) {
  * @param text Unparsed jsaction attribute value.
  * @return Parsed jsaction attribute value, if already present in the cache.
  */
-export function getParsed(text: string): {[key: string]: string}|undefined {
+export function getParsed(text: string): {[key: string]: string} | undefined {
   return parseCache[text];
 }
 
@@ -75,7 +75,7 @@ export function clear(element: Element) {
  * @param element .
  * @return .
  */
-export function getNamespace(element: Element): string|null|undefined {
+export function getNamespace(element: Element): string | null | undefined {
   // @ts-ignore
   return element[Property.JSNAMESPACE];
 }
@@ -87,7 +87,7 @@ export function getNamespace(element: Element): string|null|undefined {
  * @param element .
  * @param jsnamespace .
  */
-export function setNamespace(element: Element, jsnamespace: string|null) {
+export function setNamespace(element: Element, jsnamespace: string | null) {
   // @ts-ignore
   element[Property.JSNAMESPACE] = jsnamespace;
 }

@@ -17,17 +17,13 @@ import * as jsactionEvent from './/event';
 import {EventType} from './/event_type';
 
 type Writeable<T> = {
-  -readonly[P in keyof T]: T[P]
+  -readonly [P in keyof T]: T[P];
 };
 
 /**
  * Replays an event.
  */
-export function replayEvent(
-    event: Event,
-    targetElement: Element,
-    eventType?: string,
-) {
+export function replayEvent(event: Event, targetElement: Element, eventType?: string) {
   triggerEvent(targetElement, createEvent(event, eventType));
 }
 
@@ -38,8 +34,10 @@ export function replayEvent(
  */
 function isKeyboardEvent(eventType: string): boolean {
   return (
-      eventType === EventType.KEYPRESS || eventType === EventType.KEYDOWN ||
-      eventType === EventType.KEYUP);
+    eventType === EventType.KEYPRESS ||
+    eventType === EventType.KEYDOWN ||
+    eventType === EventType.KEYUP
+  );
 }
 
 /**
@@ -50,9 +48,13 @@ function isKeyboardEvent(eventType: string): boolean {
 function isMouseEvent(eventType: string): boolean {
   // TODO: Verify if Drag events should be bound here.
   return (
-      eventType === EventType.CLICK || eventType === EventType.DBLCLICK ||
-      eventType === EventType.MOUSEDOWN || eventType === EventType.MOUSEOVER ||
-      eventType === EventType.MOUSEOUT || eventType === EventType.MOUSEMOVE);
+    eventType === EventType.CLICK ||
+    eventType === EventType.DBLCLICK ||
+    eventType === EventType.MOUSEDOWN ||
+    eventType === EventType.MOUSEOVER ||
+    eventType === EventType.MOUSEOUT ||
+    eventType === EventType.MOUSEMOVE
+  );
 }
 
 /**
@@ -64,9 +66,12 @@ function isUiEvent(eventType: string): boolean {
   // Almost nobody supports the W3C method of creating FocusEvents.
   // For now, we're going to use the UIEvent as a super-interface.
   return (
-      eventType === EventType.FOCUS || eventType === EventType.BLUR ||
-      eventType === EventType.FOCUSIN || eventType === EventType.FOCUSOUT ||
-      eventType === EventType.SCROLL);
+    eventType === EventType.FOCUS ||
+    eventType === EventType.BLUR ||
+    eventType === EventType.FOCUSIN ||
+    eventType === EventType.FOCUSOUT ||
+    eventType === EventType.SCROLL
+  );
 }
 
 /**
@@ -80,11 +85,11 @@ function isUiEvent(eventType: string): boolean {
  * @return The constructed modifier keys string.
  */
 function createKeyboardModifiersList(
-    alt: boolean,
-    ctrl: boolean,
-    meta: boolean,
-    shift: boolean,
-    ): string {
+  alt: boolean,
+  ctrl: boolean,
+  meta: boolean,
+  shift: boolean,
+): string {
   const keys = [];
   if (alt) {
     keys.push('Alt');
@@ -109,7 +114,7 @@ function createKeyboardModifiersList(
  * @return The event object.
  */
 export function createUiEvent(original: Event, opt_eventType?: string): Event {
-  let event: Writeable<UIEvent>&{originalTimestamp?: DOMHighResTimeStamp};
+  let event: Writeable<UIEvent> & {originalTimestamp?: DOMHighResTimeStamp};
   if (document.createEvent) {
     const originalUiEvent = original as UIEvent;
     // Event creation as per W3C event model specification.  This codepath
@@ -118,11 +123,11 @@ export function createUiEvent(original: Event, opt_eventType?: string): Event {
     // On IE and Opera < 12, we must provide non-undefined values to
     // initEvent, otherwise it will fail.
     event.initUIEvent(
-        opt_eventType || originalUiEvent.type,
-        originalUiEvent.bubbles !== undefined ? originalUiEvent.bubbles : true,
-        originalUiEvent.cancelable || false,
-        originalUiEvent.view || window,
-        (original as CustomEvent).detail || 0,
+      opt_eventType || originalUiEvent.type,
+      originalUiEvent.bubbles !== undefined ? originalUiEvent.bubbles : true,
+      originalUiEvent.cancelable || false,
+      originalUiEvent.view || window,
+      (original as CustomEvent).detail || 0,
     );
     // detail
   } else {
@@ -153,10 +158,7 @@ export function createUiEvent(original: Event, opt_eventType?: string): Event {
  * @return The event object.
  * @suppress {strictMissingProperties} Two definitions of initKeyboardEvent.
  */
-export function createKeyboardEvent(
-    original: Event,
-    opt_eventType?: string,
-    ): Event {
+export function createKeyboardEvent(original: Event, opt_eventType?: string): Event {
   let event;
   const keyboardEvent = original as KeyboardEvent;
   if (document.createEvent) {
@@ -168,41 +170,41 @@ export function createKeyboardEvent(
         // IE9+
         // https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/ff975945(v=vs.85)
         const modifiers = createKeyboardModifiersList(
-            keyboardEvent.altKey,
-            keyboardEvent.ctrlKey,
-            keyboardEvent.metaKey,
-            keyboardEvent.shiftKey,
+          keyboardEvent.altKey,
+          keyboardEvent.ctrlKey,
+          keyboardEvent.metaKey,
+          keyboardEvent.shiftKey,
         );
         event.initKeyboardEvent(
-            opt_eventType || keyboardEvent.type,
-            true,
-            true,
-            window,
-            keyboardEvent.key,
-            keyboardEvent.location,
-            // Suppressing errors for ts-migration.
-            //   TS2345: Argument of type 'string' is not assignable to
-            //   parameter of type 'boolean | undefined'.
-            // @ts-ignore
-            modifiers,
-            keyboardEvent.repeat,
-            // @ts-ignore This doesn't exist
-            keyboardEvent.locale,
+          opt_eventType || keyboardEvent.type,
+          true,
+          true,
+          window,
+          keyboardEvent.key,
+          keyboardEvent.location,
+          // Suppressing errors for ts-migration.
+          //   TS2345: Argument of type 'string' is not assignable to
+          //   parameter of type 'boolean | undefined'.
+          // @ts-ignore
+          modifiers,
+          keyboardEvent.repeat,
+          // @ts-ignore This doesn't exist
+          keyboardEvent.locale,
         );
       } else {
         // W3C DOM Level 3 Events model.
         // https://www.w3.org/TR/uievents/#idl-interface-KeyboardEvent-initializers
         event.initKeyboardEvent(
-            opt_eventType || original.type,
-            true,
-            true,
-            window,
-            keyboardEvent.key,
-            keyboardEvent.location,
-            keyboardEvent.ctrlKey,
-            keyboardEvent.altKey,
-            keyboardEvent.shiftKey,
-            keyboardEvent.metaKey,
+          opt_eventType || original.type,
+          true,
+          true,
+          window,
+          keyboardEvent.key,
+          keyboardEvent.location,
+          keyboardEvent.ctrlKey,
+          keyboardEvent.altKey,
+          keyboardEvent.shiftKey,
+          keyboardEvent.metaKey,
         );
         Object.defineProperty(event, 'repeat', {
           get: () => (original as KeyboardEvent).repeat,
@@ -214,7 +216,7 @@ export function createKeyboardEvent(
           // Suppressing errors for ts-migration.
           //   TS2339: Property 'locale' does not exist on type 'Event'.
           // @ts-ignore
-          get: () => (original.locale),
+          get: () => original.locale,
           enumerable: true,
         });
         // Apple WebKit has a non-standard altGraphKey that is not implemented
@@ -259,34 +261,34 @@ export function createKeyboardEvent(
       // for details.
       // @ts-ignore ditto
       event.initKeyEvent(
-          opt_eventType || original.type,
-          true,
-          true,
-          window,
-          // Suppressing errors for ts-migration.
-          //   TS2339: Property 'ctrlKey' does not exist on type 'Event'.
-          // @ts-ignore
-          original.ctrlKey,
-          // Suppressing errors for ts-migration.
-          //   TS2339: Property 'altKey' does not exist on type 'Event'.
-          // @ts-ignore
-          original.altKey,
-          // Suppressing errors for ts-migration.
-          //   TS2339: Property 'shiftKey' does not exist on type 'Event'.
-          // @ts-ignore
-          original.shiftKey,
-          // Suppressing errors for ts-migration.
-          //   TS2339: Property 'metaKey' does not exist on type 'Event'.
-          // @ts-ignore
-          original.metaKey,
-          // Suppressing errors for ts-migration.
-          //   TS2339: Property 'keyCode' does not exist on type 'Event'.
-          // @ts-ignore
-          original.keyCode,
-          // Suppressing errors for ts-migration.
-          //   TS2339: Property 'charCode' does not exist on type 'Event'.
-          // @ts-ignore
-          original.charCode,
+        opt_eventType || original.type,
+        true,
+        true,
+        window,
+        // Suppressing errors for ts-migration.
+        //   TS2339: Property 'ctrlKey' does not exist on type 'Event'.
+        // @ts-ignore
+        original.ctrlKey,
+        // Suppressing errors for ts-migration.
+        //   TS2339: Property 'altKey' does not exist on type 'Event'.
+        // @ts-ignore
+        original.altKey,
+        // Suppressing errors for ts-migration.
+        //   TS2339: Property 'shiftKey' does not exist on type 'Event'.
+        // @ts-ignore
+        original.shiftKey,
+        // Suppressing errors for ts-migration.
+        //   TS2339: Property 'metaKey' does not exist on type 'Event'.
+        // @ts-ignore
+        original.metaKey,
+        // Suppressing errors for ts-migration.
+        //   TS2339: Property 'keyCode' does not exist on type 'Event'.
+        // @ts-ignore
+        original.keyCode,
+        // Suppressing errors for ts-migration.
+        //   TS2339: Property 'charCode' does not exist on type 'Event'.
+        // @ts-ignore
+        original.charCode,
       );
     }
   } else {
@@ -317,10 +319,7 @@ export function createKeyboardEvent(
  *     E.g. a keypress is handled as click in some cases.
  * @return The event object.
  */
-export function createMouseEvent(
-    original: Event,
-    opt_eventType?: string,
-    ): MouseEvent {
+export function createMouseEvent(original: Event, opt_eventType?: string): MouseEvent {
   let event;
   const originalMouseEvent = original as MouseEvent;
   if (document.createEvent) {
@@ -330,21 +329,21 @@ export function createMouseEvent(
     // On IE and Opera < 12, we must provide non-undefined values to
     // initMouseEvent, otherwise it will fail.
     event.initMouseEvent(
-        opt_eventType || original.type,
-        true,  // canBubble
-        true,  // cancelable
-        window,
-        (original as CustomEvent).detail || 1,
-        originalMouseEvent.screenX || 0,
-        originalMouseEvent.screenY || 0,
-        originalMouseEvent.clientX || 0,
-        originalMouseEvent.clientY || 0,
-        originalMouseEvent.ctrlKey || false,
-        originalMouseEvent.altKey || false,
-        originalMouseEvent.shiftKey || false,
-        originalMouseEvent.metaKey || false,
-        originalMouseEvent.button || 0,
-        originalMouseEvent.relatedTarget || null,
+      opt_eventType || original.type,
+      true, // canBubble
+      true, // cancelable
+      window,
+      (original as CustomEvent).detail || 1,
+      originalMouseEvent.screenX || 0,
+      originalMouseEvent.screenY || 0,
+      originalMouseEvent.clientX || 0,
+      originalMouseEvent.clientY || 0,
+      originalMouseEvent.ctrlKey || false,
+      originalMouseEvent.altKey || false,
+      originalMouseEvent.shiftKey || false,
+      originalMouseEvent.metaKey || false,
+      originalMouseEvent.button || 0,
+      originalMouseEvent.relatedTarget || null,
     );
   } else {
     // Older versions of IE (up to version 8) do not support the
@@ -420,9 +419,9 @@ export function createEvent(base: unknown, opt_eventType?: string): Event {
     event = createUiEvent(original, opt_eventType);
   } else if (eventType === EventType.CUSTOM) {
     event = createCustomEvent(
-        opt_eventType!,
-        (original as CustomEvent)['detail']['data'],
-        (original as CustomEvent)['detail']['triggeringEvent'],
+      opt_eventType!,
+      (original as CustomEvent)['detail']['data'],
+      (original as CustomEvent)['detail']['triggeringEvent'],
     );
     (event as {originalTimestamp?: number | null} | null)!.originalTimestamp = original.timeStamp;
   } else {

@@ -7,8 +7,15 @@
  */
 
 import {defaultEquals, ValueEqualityFn} from './equality';
-import {consumerAfterComputation, consumerBeforeComputation, producerAccessed, producerUpdateValueVersion, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
-
+import {
+  consumerAfterComputation,
+  consumerBeforeComputation,
+  producerAccessed,
+  producerUpdateValueVersion,
+  REACTIVE_NODE,
+  ReactiveNode,
+  SIGNAL,
+} from './graph';
 
 /**
  * A computation, which derives a value from a declarative reactive expression.
@@ -36,7 +43,7 @@ export interface ComputedNode<T> extends ReactiveNode {
   equal: ValueEqualityFn<T>;
 }
 
-export type ComputedGetter<T> = (() => T)&{
+export type ComputedGetter<T> = (() => T) & {
   [SIGNAL]: ComputedNode<T>;
 };
 
@@ -121,8 +128,12 @@ const COMPUTED_NODE = /* @__PURE__ */ (() => {
         consumerAfterComputation(node, prevConsumer);
       }
 
-      if (oldValue !== UNSET && oldValue !== ERRORED && newValue !== ERRORED &&
-          node.equal(oldValue, newValue)) {
+      if (
+        oldValue !== UNSET &&
+        oldValue !== ERRORED &&
+        newValue !== ERRORED &&
+        node.equal(oldValue, newValue)
+      ) {
         // No change to `valueVersion` - old and new values are
         // semantically equivalent.
         node.value = oldValue;

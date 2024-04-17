@@ -112,11 +112,7 @@ export function getAction(eventInfo: EventInfo) {
 }
 
 /** Added for readability when accessing stable property names. */
-export function setAction(
-    eventInfo: EventInfo,
-    actionName: string,
-    actionElement: Element,
-) {
+export function setAction(eventInfo: EventInfo, actionName: string, actionElement: Element) {
   eventInfo.eia = [actionName, actionElement];
 }
 
@@ -176,15 +172,15 @@ export function cloneEventInfo(eventInfo: EventInfo): EventInfo {
  * parameters vs. an `Object` literal reduces code size.
  */
 export function createEventInfoFromParameters(
-    eventType: string,
-    event: Event,
-    targetElement: Element,
-    container: Element,
-    timestamp: number,
-    action?: ActionInfoInternal,
-    isReplay?: boolean,
-    a11yClickKey?: boolean,
-    ): EventInfo {
+  eventType: string,
+  event: Event,
+  targetElement: Element,
+  container: Element,
+  timestamp: number,
+  action?: ActionInfoInternal,
+  isReplay?: boolean,
+  a11yClickKey?: boolean,
+): EventInfo {
   return {
     eventType,
     event,
@@ -213,7 +209,11 @@ export function createEventInfo({
   isReplay,
   a11yClickKey,
 }: {
-  eventType: string; event: Event; targetElement: Element; container: Element; timestamp: number;
+  eventType: string;
+  event: Event;
+  targetElement: Element;
+  container: Element;
+  timestamp: number;
   action?: ActionInfo;
   isReplay?: boolean;
   a11yClickKey?: boolean;
@@ -287,7 +287,7 @@ export class EventInfoWrapper {
     };
   }
 
-  setAction(action: ActionInfo|undefined) {
+  setAction(action: ActionInfo | undefined) {
     if (!action) {
       unsetAction(this.eventInfo);
       return;
