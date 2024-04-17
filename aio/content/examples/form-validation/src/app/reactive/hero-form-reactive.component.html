@@ -7,7 +7,7 @@
       <div
         class="cross-validation"
         [class.cross-validation-error]="
-          heroForm.errors?.['identityRevealed'] &&
+          heroForm.hasError('identityRevealed') &&
           (heroForm.touched || heroForm.dirty)
         "
       >
@@ -26,11 +26,11 @@
             *ngIf="name.invalid && (name.dirty || name.touched)"
             class="alert alert-danger"
           >
-            <div *ngIf="name.errors?.['required']">Name is required.</div>
-            <div *ngIf="name.errors?.['minlength']">
+            <div *ngIf="name.hasError('required')">Name is required.</div>
+            <div *ngIf="name.hasError('minlength')">
               Name must be at least 4 characters long.
             </div>
-            <div *ngIf="name.errors?.['forbiddenName']">
+            <div *ngIf="name.hasError('forbiddenName')">
               Name cannot be Bob.
             </div>
           </div>
@@ -51,7 +51,7 @@
             *ngIf="alterEgo.invalid"
             class="alert alert-danger alter-ego-errors"
           >
-            <div *ngIf="alterEgo.errors?.['uniqueAlterEgo']">
+            <div *ngIf="alterEgo.hasError('uniqueAlterEgo')">
               Alter ego is already taken.
             </div>
           </div>
@@ -60,7 +60,7 @@
         <!-- #docregion cross-validation-error-message -->
         <div
           *ngIf="
-            heroForm.errors?.['identityRevealed'] &&
+            heroForm.hasError('identityRevealed') &&
             (heroForm.touched || heroForm.dirty)
           "
           class="cross-validation-error-message alert alert-danger"
@@ -82,7 +82,7 @@
         </select>
 
         <div *ngIf="power.invalid && power.touched" class="alert alert-danger">
-          <div *ngIf="power.errors?.['required']">Power is required.</div>
+          <div *ngIf="power.hasError('required')">Power is required.</div>
         </div>
       </div>
 
