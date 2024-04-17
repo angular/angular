@@ -8,11 +8,19 @@
 
 import {defaultEquals, ValueEqualityFn} from './equality';
 import {throwInvalidWriteToSignalError} from './errors';
-import {producerAccessed, producerIncrementEpoch, producerNotifyConsumers, producerUpdatesAllowed, REACTIVE_NODE, ReactiveNode, SIGNAL} from './graph';
+import {
+  producerAccessed,
+  producerIncrementEpoch,
+  producerNotifyConsumers,
+  producerUpdatesAllowed,
+  REACTIVE_NODE,
+  ReactiveNode,
+  SIGNAL,
+} from './graph';
 
 // Required as the signals library is in a separate package, so we need to explicitly ensure the
 // global `ngDevMode` type is defined.
-declare const ngDevMode: boolean|undefined;
+declare const ngDevMode: boolean | undefined;
 
 /**
  * If set, called after `WritableSignal`s are updated.
@@ -20,19 +28,19 @@ declare const ngDevMode: boolean|undefined;
  * This hook can be used to achieve various effects, such as running effects synchronously as part
  * of setting a signal.
  */
-let postSignalSetFn: (() => void)|null = null;
+let postSignalSetFn: (() => void) | null = null;
 
 export interface SignalNode<T> extends ReactiveNode {
   value: T;
   equal: ValueEqualityFn<T>;
 }
 
-export type SignalBaseGetter<T> = (() => T)&{readonly[SIGNAL]: unknown};
+export type SignalBaseGetter<T> = (() => T) & {readonly [SIGNAL]: unknown};
 
 // Note: Closure *requires* this to be an `interface` and not a type, which is why the
 // `SignalBaseGetter` type exists to provide the correct shape.
 export interface SignalGetter<T> extends SignalBaseGetter<T> {
-  readonly[SIGNAL]: SignalNode<T>;
+  readonly [SIGNAL]: SignalNode<T>;
 }
 
 /**
@@ -42,14 +50,14 @@ export function createSignal<T>(initialValue: T): SignalGetter<T> {
   const node: SignalNode<T> = Object.create(SIGNAL_NODE);
   node.value = initialValue;
   const getter = (() => {
-                   producerAccessed(node);
-                   return node.value;
-                 }) as SignalGetter<T>;
+    producerAccessed(node);
+    return node.value;
+  }) as SignalGetter<T>;
   (getter as any)[SIGNAL] = node;
   return getter;
 }
 
-export function setPostSignalSetFn(fn: (() => void)|null): (() => void)|null {
+export function setPostSignalSetFn(fn: (() => void) | null): (() => void) | null {
   const prev = postSignalSetFn;
   postSignalSetFn = fn;
   return prev;

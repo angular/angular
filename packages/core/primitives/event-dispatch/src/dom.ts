@@ -13,7 +13,7 @@
  * @param otherNode Node being contained.
  * @return True if otherNode is contained within node.
  */
-export function contains(node: Node, otherNode: Node|null): boolean {
+export function contains(node: Node, otherNode: Node | null): boolean {
   if (otherNode === null) {
     return false;
   }
@@ -28,7 +28,7 @@ export function contains(node: Node, otherNode: Node|null): boolean {
 
   // W3C DOM Level 3
   if ('compareDocumentPosition' in node) {
-    return (node === otherNode || Boolean(node.compareDocumentPosition(otherNode) & 16));
+    return node === otherNode || Boolean(node.compareDocumentPosition(otherNode) & 16);
   }
 
   // W3C DOM Level 1
@@ -42,10 +42,7 @@ export function contains(node: Node, otherNode: Node|null): boolean {
  * Helper method for broadcastCustomEvent. Returns true if any member of
  * the set is an ancestor of element.
  */
-export function hasAncestorInNodeList(
-    element: Element,
-    nodeList: NodeList,
-    ): boolean {
+export function hasAncestorInNodeList(element: Element, nodeList: NodeList): boolean {
   for (let idx = 0; idx < nodeList.length; ++idx) {
     const member = nodeList[idx];
     if (member !== element && contains(member, element)) {

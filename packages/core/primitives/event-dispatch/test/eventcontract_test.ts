@@ -11,7 +11,10 @@ import * as cache from '../src/cache';
 import {fireCustomEvent} from '../src/custom_events';
 import {stopPropagation} from '../src/dispatcher';
 import {EarlyEventContract, EarlyJsactionData} from '../src/earlyeventcontract';
-import {EventContractContainer, EventContractContainerManager,} from '../src/event_contract_container';
+import {
+  EventContractContainer,
+  EventContractContainerManager,
+} from '../src/event_contract_container';
 import {EventContractMultiContainer} from '../src/event_contract_multi_container';
 import {EventInfo, EventInfoWrapper} from '../src/event_info';
 import {EventType} from '../src/event_type';
@@ -189,7 +192,9 @@ function getRequiredElementById(id: string) {
 }
 
 function createEventContractMultiContainer(
-    container: Element, {stopPropagation = false}: {stopPropagation?: boolean} = {}) {
+  container: Element,
+  {stopPropagation = false}: {stopPropagation?: boolean} = {},
+) {
   const eventContractContainerManager = new EventContractMultiContainer(stopPropagation);
   eventContractContainerManager.addContainer(container);
   return eventContractContainerManager;
@@ -202,12 +207,14 @@ function createEventContract({
   dispatcher,
 }: {
   eventContractContainerManager: EventContractContainerManager;
-  exportAddA11yClickSupport?: boolean; eventTypes: Array<string|[string, string]>;
+  exportAddA11yClickSupport?: boolean;
+  eventTypes: Array<string | [string, string]>;
   dispatcher?: jasmine.Spy<Dispatcher>;
 }): EventContract {
   const eventContract = new EventContract(
-      eventContractContainerManager,
-      /* stopPropagation= */ false);
+    eventContractContainerManager,
+    /* stopPropagation= */ false,
+  );
   if (exportAddA11yClickSupport) {
     eventContract.exportAddA11yClickSupport();
   }
@@ -229,57 +236,87 @@ function getLastDispatchedEventInfoWrapper(dispatcher: jasmine.Spy<Dispatcher>):
   return new EventInfoWrapper(dispatcher.calls.mostRecent().args[0]);
 }
 
-function dispatchMouseEvent(target: Element, {
-  type = 'click',
-  ctrlKey = false,
-  altKey = false,
-  shiftKey = false,
-  metaKey = false,
-  relatedTarget = null,
-}: {
-  type?: string;
-  ctrlKey?: boolean;
-  altKey?: boolean;
-  shiftKey?: boolean;
-  metaKey?: boolean;
-  relatedTarget?: Element | null;
-} = {}) {
+function dispatchMouseEvent(
+  target: Element,
+  {
+    type = 'click',
+    ctrlKey = false,
+    altKey = false,
+    shiftKey = false,
+    metaKey = false,
+    relatedTarget = null,
+  }: {
+    type?: string;
+    ctrlKey?: boolean;
+    altKey?: boolean;
+    shiftKey?: boolean;
+    metaKey?: boolean;
+    relatedTarget?: Element | null;
+  } = {},
+) {
   // createEvent/initMouseEvent is used to support IE11
   // tslint:disable:deprecation
   const event = document.createEvent('MouseEvent');
   event.initMouseEvent(
-      type, true, true, window, 0, 0, 0, 0, 0, ctrlKey, altKey, shiftKey, metaKey, 0,
-      relatedTarget);
+    type,
+    true,
+    true,
+    window,
+    0,
+    0,
+    0,
+    0,
+    0,
+    ctrlKey,
+    altKey,
+    shiftKey,
+    metaKey,
+    0,
+    relatedTarget,
+  );
   // tslint:enable:deprecation
   spyOn(event, 'preventDefault').and.callThrough();
   target.dispatchEvent(event);
   return event;
 }
 
-function dispatchKeyboardEvent(target: Element, {
-  type = 'keydown',
-  key = '',
-  location = 0,
-  ctrlKey = false,
-  altKey = false,
-  shiftKey = false,
-  metaKey = false,
-  skipA11yCheck = false,
-}: {
-  type?: string;
-  key?: string;
-  location?: number;
-  ctrlKey?: boolean;
-  altKey?: boolean;
-  shiftKey?: boolean;
-  metaKey?: boolean;
-  skipA11yCheck?: boolean;
-} = {}) {
+function dispatchKeyboardEvent(
+  target: Element,
+  {
+    type = 'keydown',
+    key = '',
+    location = 0,
+    ctrlKey = false,
+    altKey = false,
+    shiftKey = false,
+    metaKey = false,
+    skipA11yCheck = false,
+  }: {
+    type?: string;
+    key?: string;
+    location?: number;
+    ctrlKey?: boolean;
+    altKey?: boolean;
+    shiftKey?: boolean;
+    metaKey?: boolean;
+    skipA11yCheck?: boolean;
+  } = {},
+) {
   // createEvent/initKeyboardEvent is used to support IE11
   // tslint:disable:deprecation
   const event = document.createEvent('KeyboardEvent');
   event.initKeyboardEvent(
-      type, true, true, window, key, location, ctrlKey, altKey, shiftKey, metaKey);
+    type,
+    true,
+    true,
+    window,
+    key,
+    location,
+    ctrlKey,
+    altKey,
+    shiftKey,
+    metaKey,
+  );
   // tslint:enable:deprecation
   // This is necessary as Chrome does not respect the key parameter in
   // `initKeyboardEvent`.
@@ -311,10 +348,12 @@ describe('EventContract', () => {
     const addEventListenerSpy2 = spyOn(container2, 'addEventListener');
 
     const eventContractContainerManager = new EventContractMultiContainer(
-        /* stopPropagation= */ false);
+      /* stopPropagation= */ false,
+    );
     const eventContract = new EventContract(
-        eventContractContainerManager,
-        /* stopPropagation= */ false);
+      eventContractContainerManager,
+      /* stopPropagation= */ false,
+    );
     eventContract.addEvent('click');
 
     expect(addEventListenerSpy).not.toHaveBeenCalled();
@@ -322,12 +361,14 @@ describe('EventContract', () => {
     eventContractContainerManager.addContainer(container);
     eventContractContainerManager.addContainer(container2);
 
-    const registeredEventTypes =
-        addEventListenerSpy.calls.allArgs().map(([eventType]) => eventType);
+    const registeredEventTypes = addEventListenerSpy.calls
+      .allArgs()
+      .map(([eventType]) => eventType);
     expect(registeredEventTypes).toEqual(['click']);
 
-    const registeredEventTypes2 =
-        addEventListenerSpy2.calls.allArgs().map(([eventType]) => eventType);
+    const registeredEventTypes2 = addEventListenerSpy2.calls
+      .allArgs()
+      .map(([eventType]) => eventType);
     expect(registeredEventTypes2).toEqual(['click']);
   });
 
@@ -338,10 +379,12 @@ describe('EventContract', () => {
     const addEventListenerSpy2 = spyOn(container2, 'addEventListener');
 
     const eventContractContainerManager = new EventContractMultiContainer(
-        /* stopPropagation= */ false);
+      /* stopPropagation= */ false,
+    );
     const eventContract = new EventContract(
-        eventContractContainerManager,
-        /* stopPropagation= */ false);
+      eventContractContainerManager,
+      /* stopPropagation= */ false,
+    );
     eventContractContainerManager.addContainer(container);
     eventContractContainerManager.addContainer(container2);
 
@@ -350,12 +393,14 @@ describe('EventContract', () => {
 
     eventContract.addEvent('click');
 
-    const registeredEventTypes =
-        addEventListenerSpy.calls.allArgs().map(([eventType]) => eventType);
+    const registeredEventTypes = addEventListenerSpy.calls
+      .allArgs()
+      .map(([eventType]) => eventType);
     expect(registeredEventTypes).toEqual(['click']);
 
-    const registeredEventTypes2 =
-        addEventListenerSpy2.calls.allArgs().map(([eventType]) => eventType);
+    const registeredEventTypes2 = addEventListenerSpy2.calls
+      .allArgs()
+      .map(([eventType]) => eventType);
     expect(registeredEventTypes2).toEqual(['click']);
   });
 
@@ -364,15 +409,18 @@ describe('EventContract', () => {
     const addEventListenerSpy = spyOn(container, 'addEventListener');
 
     const eventContractContainerManager = new EventContractMultiContainer(
-        /* stopPropagation= */ false);
+      /* stopPropagation= */ false,
+    );
     const eventContract = new EventContract(
-        eventContractContainerManager,
-        /* stopPropagation= */ false);
+      eventContractContainerManager,
+      /* stopPropagation= */ false,
+    );
     eventContract.addEvent('animationend', 'webkitanimationend');
     eventContractContainerManager.addContainer(container);
 
-    const registeredEventTypes =
-        addEventListenerSpy.calls.allArgs().map(([eventType]) => eventType);
+    const registeredEventTypes = addEventListenerSpy.calls
+      .allArgs()
+      .map(([eventType]) => eventType);
     expect(registeredEventTypes).toEqual(['webkitanimationend']);
   });
 
@@ -1545,7 +1593,7 @@ describe('EventContract', () => {
         dispatcher,
       });
       const innerEventContractContainer =
-          eventContractContainerManager.addContainer(innerContainer);
+        eventContractContainerManager.addContainer(innerContainer);
 
       let clickEvent = dispatchMouseEvent(innerTargetElement);
 
@@ -1581,10 +1629,11 @@ describe('EventContract', () => {
       it('dispatches events in outer container', () => {
         const documentListener = jasmine.createSpy('documentListener');
         window.document.documentElement.addEventListener('click', documentListener);
-        const dispatcher =
-            jasmine.createSpy<Dispatcher>('dispatcher').and.callFake((eventInfo: EventInfo) => {
-              stopPropagation(new EventInfoWrapper(eventInfo));
-            });
+        const dispatcher = jasmine
+          .createSpy<Dispatcher>('dispatcher')
+          .and.callFake((eventInfo: EventInfo) => {
+            stopPropagation(new EventInfoWrapper(eventInfo));
+          });
         const eventContractContainerManager = createEventContractMultiContainer(outerContainer, {
           stopPropagation: true,
         });
@@ -1611,10 +1660,11 @@ describe('EventContract', () => {
       it('dispatches events in inner container', () => {
         const documentListener = jasmine.createSpy('documentListener');
         window.document.documentElement.addEventListener('click', documentListener);
-        const dispatcher =
-            jasmine.createSpy<Dispatcher>('dispatcher').and.callFake((eventInfo: EventInfo) => {
-              stopPropagation(new EventInfoWrapper(eventInfo));
-            });
+        const dispatcher = jasmine
+          .createSpy<Dispatcher>('dispatcher')
+          .and.callFake((eventInfo: EventInfo) => {
+            stopPropagation(new EventInfoWrapper(eventInfo));
+          });
         const eventContractContainerManager = createEventContractMultiContainer(outerContainer, {
           stopPropagation: true,
         });
@@ -1641,10 +1691,11 @@ describe('EventContract', () => {
       it('dispatches events in outer container, inner registered first', () => {
         const documentListener = jasmine.createSpy('documentListener');
         window.document.documentElement.addEventListener('click', documentListener);
-        const dispatcher =
-            jasmine.createSpy<Dispatcher>('dispatcher').and.callFake((eventInfo: EventInfo) => {
-              stopPropagation(new EventInfoWrapper(eventInfo));
-            });
+        const dispatcher = jasmine
+          .createSpy<Dispatcher>('dispatcher')
+          .and.callFake((eventInfo: EventInfo) => {
+            stopPropagation(new EventInfoWrapper(eventInfo));
+          });
         const eventContractContainerManager = createEventContractMultiContainer(innerContainer, {
           stopPropagation: true,
         });
@@ -1671,10 +1722,11 @@ describe('EventContract', () => {
       it('dispatches events in inner container, inner registered first', () => {
         const documentListener = jasmine.createSpy('documentListener');
         window.document.documentElement.addEventListener('click', documentListener);
-        const dispatcher =
-            jasmine.createSpy<Dispatcher>('dispatcher').and.callFake((eventInfo: EventInfo) => {
-              stopPropagation(new EventInfoWrapper(eventInfo));
-            });
+        const dispatcher = jasmine
+          .createSpy<Dispatcher>('dispatcher')
+          .and.callFake((eventInfo: EventInfo) => {
+            stopPropagation(new EventInfoWrapper(eventInfo));
+          });
         const eventContractContainerManager = createEventContractMultiContainer(innerContainer, {
           stopPropagation: true,
         });
@@ -2029,8 +2081,10 @@ describe('EventContract', () => {
     let removeEventListenerSpy: jasmine.Spy;
 
     beforeEach(() => {
-      removeEventListenerSpy =
-          spyOn(window.document.documentElement, 'removeEventListener').and.callThrough();
+      removeEventListenerSpy = spyOn(
+        window.document.documentElement,
+        'removeEventListener',
+      ).and.callThrough();
     });
 
     it('early events are dispatched', () => {
@@ -2043,7 +2097,7 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(targetElement);
 
-      const earlyJsactionData: EarlyJsactionData|undefined = window._ejsa;
+      const earlyJsactionData: EarlyJsactionData | undefined = window._ejsa;
       expect(earlyJsactionData).toBeDefined();
       expect(earlyJsactionData!.q.length).toBe(1);
       expect(earlyJsactionData!.q[0].event).toBe(clickEvent);
@@ -2078,7 +2132,7 @@ describe('EventContract', () => {
 
       const clickEvent = dispatchMouseEvent(targetElement);
 
-      const earlyJsactionData: EarlyJsactionData|undefined = window._ejsa;
+      const earlyJsactionData: EarlyJsactionData | undefined = window._ejsa;
       expect(earlyJsactionData).toBeDefined();
       expect(earlyJsactionData!.q.length).toBe(1);
       expect(earlyJsactionData!.q[0].event).toBe(clickEvent);
@@ -2126,7 +2180,7 @@ describe('EventContract', () => {
           relatedTarget: container,
         });
 
-        const earlyJsactionData: EarlyJsactionData|undefined = window._ejsa;
+        const earlyJsactionData: EarlyJsactionData | undefined = window._ejsa;
         expect(earlyJsactionData).toBeDefined();
         expect(earlyJsactionData!.q.length).toBe(1);
         expect(earlyJsactionData!.q[0].event).toBe(mouseOutEvent);
@@ -2168,7 +2222,7 @@ describe('EventContract', () => {
           relatedTarget: container,
         });
 
-        const earlyJsactionData: EarlyJsactionData|undefined = window._ejsa;
+        const earlyJsactionData: EarlyJsactionData | undefined = window._ejsa;
         expect(earlyJsactionData).toBeDefined();
         expect(earlyJsactionData!.q.length).toBe(1);
         expect(earlyJsactionData!.q[0].event).toBe(mouseOutEvent);

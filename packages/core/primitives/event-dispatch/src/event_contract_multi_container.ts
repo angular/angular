@@ -30,10 +30,7 @@ export class EventContractMultiContainer implements EventContractContainerManage
    * and maintains a reference to resulting handler in order to remove it
    * later if desired.
    */
-  addEventListener(
-      eventType: string,
-      getHandler: (element: Element) => (event: Event) => void,
-  ) {
+  addEventListener(eventType: string, getHandler: (element: Element) => (event: Event) => void) {
     const eventHandlerInstaller = (container: EventContractContainer) => {
       container.addEventListener(eventType, getHandler);
     };
@@ -183,7 +180,9 @@ export class EventContractMultiContainer implements EventContractContainerManage
  * Checks whether the container is a child of any of the containers.
  */
 function isNested(
-    container: EventContractContainer, containers: EventContractContainer[]): boolean {
+  container: EventContractContainer,
+  containers: EventContractContainer[],
+): boolean {
   for (let i = 0; i < containers.length; ++i) {
     if (containsNode(containers[i].element, container.element)) {
       return true;

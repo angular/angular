@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {createEventInfoFromParameters, EventInfo} from './event_info';
 
 declare global {
@@ -41,11 +40,11 @@ export class EarlyEventContract {
       et: [],
       h: (event: Event) => {
         const eventInfo = createEventInfoFromParameters(
-            event.type,
-            event,
-            event.target as Element,
-            window.document.documentElement,
-            Date.now(),
+          event.type,
+          event,
+          event.target as Element,
+          window.document.documentElement,
+          Date.now(),
         );
         window._ejsa!.q.push(eventInfo);
       },
@@ -59,10 +58,7 @@ export class EarlyEventContract {
     for (let idx = 0; idx < types.length; idx++) {
       const eventType = types[idx];
       window._ejsa!.et.push(eventType);
-      window.document.documentElement.addEventListener(
-          eventType,
-          window._ejsa!.h,
-      );
+      window.document.documentElement.addEventListener(eventType, window._ejsa!.h);
     }
   }
 }

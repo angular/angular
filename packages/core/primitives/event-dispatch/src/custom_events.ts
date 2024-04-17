@@ -30,12 +30,8 @@ export interface CustomEventDetail<T> {
  *     actionFlow.event().detail.triggeringEvent.
  * @return The new custom event.
  */
-export function createCustomEvent<T>(
-    type: string,
-    data?: T,
-    triggeringEvent?: Event,
-    ): Event {
-  let event: CustomEvent<CustomEventDetail<T>&UnrenamedCustomEventDetail>;
+export function createCustomEvent<T>(type: string, data?: T, triggeringEvent?: Event): Event {
+  let event: CustomEvent<CustomEventDetail<T> & UnrenamedCustomEventDetail>;
   const unrenamedDetail: UnrenamedCustomEventDetail = {
     '_type': type,
   };
@@ -78,10 +74,10 @@ export function createCustomEvent<T>(
  *     event.
  */
 export function fireCustomEvent<T>(
-    target: Element,
-    type: string,
-    data?: T,
-    triggeringEvent?: Event,
+  target: Element,
+  type: string,
+  data?: T,
+  triggeringEvent?: Event,
 ) {
   const event = createCustomEvent(type, data, triggeringEvent);
   target.dispatchEvent(event);

@@ -19,16 +19,13 @@ import {Restriction} from './restriction';
  * A replayer is a function that is called when there are queued events,
  * either from the `EventContract` or when there are no detected handlers.
  */
-export type Replayer = (
-    eventInfoWrappers: EventInfoWrapper[],
-    dispatcher: Dispatcher,
-    ) => void;
+export type Replayer = (eventInfoWrappers: EventInfoWrapper[], dispatcher: Dispatcher) => void;
 
 /**
  * A global handler is dispatched to before normal handler dispatch. Returning
  * false will `preventDefault` on the event.
  */
-export type GlobalHandler = (event: Event) => boolean|void;
+export type GlobalHandler = (event: Event) => boolean | void;
 
 /**
  * A handler is dispatched to during normal handling.
@@ -46,7 +43,7 @@ export class Dispatcher {
    * This should be the primary one used once migration off of registerHandlers
    * is done.
    */
-  private readonly actions: {[key: string]: EventInfoHandler;} = {};
+  private readonly actions: {[key: string]: EventInfoHandler} = {};
 
   /** The queue of events. */
   private readonly queuedEventInfos: EventInfoWrapper[] = [];
@@ -54,7 +51,7 @@ export class Dispatcher {
   /** A map of global event handlers, where each key is an event type. */
   private readonly globalHandlers_ = new Map<string, Set<GlobalHandler>>();
 
-  private eventReplayer: Replayer|null = null;
+  private eventReplayer: Replayer | null = null;
 
   private eventReplayScheduled = false;
 
@@ -69,10 +66,8 @@ export class Dispatcher {
    *     given event info.
    */
   constructor(
-      private readonly getHandler?: (
-          eventInfoWrapper: EventInfoWrapper,
-          ) => EventInfoHandler | void,
-      {stopPropagation = false}: {stopPropagation?: boolean} = {},
+    private readonly getHandler?: (eventInfoWrapper: EventInfoWrapper) => EventInfoHandler | void,
+    {stopPropagation = false}: {stopPropagation?: boolean} = {},
   ) {
     this.stopPropagation = stopPropagation;
   }
@@ -101,7 +96,7 @@ export class Dispatcher {
    * @return An `EventInfo` for the `EventContract` to handle again if the
    *    `Dispatcher` tried to resolve an a11y event as a click but failed.
    */
-  dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): EventInfo|void {
+  dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): EventInfo | void {
     const eventInfoWrapper = new EventInfoWrapper(eventInfo);
     if (eventInfoWrapper.getIsReplay()) {
       if (isGlobalDispatch || !this.eventReplayer) {
@@ -112,9 +107,9 @@ export class Dispatcher {
         // Send the event back through the `EventContract` by dispatching to
         // the browser.
         replayEvent(
-            eventInfoWrapper.getEvent(),
-            eventInfoWrapper.getTargetElement(),
-            eventInfoWrapper.getEventType(),
+          eventInfoWrapper.getEvent(),
+          eventInfoWrapper.getTargetElement(),
+          eventInfoWrapper.getEventType(),
         );
         return;
       }
@@ -134,9 +129,7 @@ export class Dispatcher {
       // Skip everything related to jsaction handlers, and execute the global
       // handlers.
       const ev = eventInfoWrapper.getEvent();
-      const eventTypeHandlers = this.globalHandlers_.get(
-          eventInfoWrapper.getEventType(),
-      );
+      const eventTypeHandlers = this.globalHandlers_.get(eventInfoWrapper.getEventType());
       let shouldPreventDefault = false;
       if (eventTypeHandlers) {
         for (const handler of eventTypeHandlers) {
@@ -158,7 +151,7 @@ export class Dispatcher {
 
     const action = eventInfoWrapper.getAction()!;
 
-    let handler: EventInfoHandler|void = undefined;
+    let handler: EventInfoHandler | void = undefined;
     if (this.getHandler) {
       handler = this.getHandler(eventInfoWrapper);
     }
@@ -195,9 +188,9 @@ export class Dispatcher {
    *     methods of instance.
    */
   registerEventInfoHandlers<T>(
-      namespace: string,
-      instance: T|null,
-      methods: {[key: string]: EventInfoHandler},
+    namespace: string,
+    instance: T | null,
+    methods: {[key: string]: EventInfoHandler},
   ) {
     for (const [name, method] of Object.entries(methods)) {
       const handler = instance ? method.bind(instance) : method;
@@ -327,10 +320,7 @@ export class Dispatcher {
  * @return Returns false if the a11y event could not be resolved and should
  *    be re-dispatched.
  */
-function resolveA11yEvent(
-    eventInfoWrapper: EventInfoWrapper,
-    isGlobalDispatch = false,
-    ): boolean {
+function resolveA11yEvent(eventInfoWrapper: EventInfoWrapper, isGlobalDispatch = false): boolean {
   if (eventInfoWrapper.getEventType() !== AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE) {
     return true;
   }
@@ -378,9 +368,7 @@ function shouldPreventDefault(eventInfoWrapper: EventInfoWrapper): boolean {
     return true;
   }
   // or prevent the browser's default action for native HTML controls.
-  if (eventLib.shouldCallPreventDefaultOnNativeHtmlControl(
-          eventInfoWrapper.getEvent(),
-          )) {
+  if (eventLib.shouldCallPreventDefaultOnNativeHtmlControl(eventInfoWrapper.getEvent())) {
     return true;
   }
   // Prevent browser from following <a> node links if a jsaction is present
@@ -399,23 +387,18 @@ function shouldPreventDefault(eventInfoWrapper: EventInfoWrapper): boolean {
  * @param isGlobalDispatch Whether the eventInfo is meant to be dispatched to
  *     the global handlers.
  */
-function isA11yClickEvent(
-    eventInfoWrapper: EventInfoWrapper,
-    isGlobalDispatch?: boolean,
-    ): boolean {
+function isA11yClickEvent(eventInfoWrapper: EventInfoWrapper, isGlobalDispatch?: boolean): boolean {
   return (
-      (isGlobalDispatch || eventInfoWrapper.getAction() !== undefined) &&
-      eventLib.isActionKeyEvent(eventInfoWrapper.getEvent()));
+    (isGlobalDispatch || eventInfoWrapper.getAction() !== undefined) &&
+    eventLib.isActionKeyEvent(eventInfoWrapper.getEvent())
+  );
 }
 
 /**
  * Registers deferred functionality for an EventContract and a Jsaction
  * Dispatcher.
  */
-export function registerDispatcher(
-    eventContract: UnrenamedEventContract,
-    dispatcher: Dispatcher,
-) {
+export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher) {
   eventContract.ecrd((eventInfo: EventInfo, globalDispatch?: boolean) => {
     return dispatcher.dispatch(eventInfo, globalDispatch);
   }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
@@ -423,10 +406,12 @@ export function registerDispatcher(
 
 /** Stop propagation for an `EventInfo`. */
 export function stopPropagation(eventInfoWrapper: EventInfoWrapper) {
-  if (eventLib.isGecko &&
-      (eventInfoWrapper.getTargetElement().tagName === 'INPUT' ||
-       eventInfoWrapper.getTargetElement().tagName === 'TEXTAREA') &&
-      eventInfoWrapper.getEventType() === EventType.FOCUS) {
+  if (
+    eventLib.isGecko &&
+    (eventInfoWrapper.getTargetElement().tagName === 'INPUT' ||
+      eventInfoWrapper.getTargetElement().tagName === 'TEXTAREA') &&
+    eventInfoWrapper.getEventType() === EventType.FOCUS
+  ) {
     /**
      * Do nothing since stopping propagation on a focus event on an input
      * element in Firefox makes the text cursor disappear:
