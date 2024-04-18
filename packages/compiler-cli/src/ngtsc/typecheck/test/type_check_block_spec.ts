@@ -856,6 +856,7 @@ describe('type check blocks', () => {
       applyTemplateContextGuards: true,
       checkQueries: false,
       checkTemplateBodies: true,
+      checkControlFlowBodies: true,
       alwaysCheckSchemaInTemplateBodies: true,
       checkTypeOfInputBindings: true,
       honorAccessModifiersForInputBindings: false,
@@ -1572,6 +1573,28 @@ describe('type check blocks', () => {
           .toContain('var _t1 = ((((this).expr)) === (1)); if (_t1) { "" + (_t1); } } }');
     });
 
+    it('should not generate the body of if blocks when `checkControlFlowBodies` is disabled',
+       () => {
+         const TEMPLATE = `
+          @if (expr === 0) {
+            {{main()}}
+          } @else if (expr1 === 1) {
+            {{one()}}
+          } @else if (expr2 === 2) {
+            {{two()}}
+          } @else {
+            {{other()}}
+          }
+        `;
+
+         expect(tcb(TEMPLATE, undefined, {checkControlFlowBodies: false}))
+             .toContain(
+                 'if ((((this).expr)) === (0)) { } ' +
+                 'else if ((((this).expr1)) === (1)) { } ' +
+                 'else if ((((this).expr2)) === (2)) { } ' +
+                 'else { }');
+       });
+
     it('should generate a switch block', () => {
       const TEMPLATE = `
         @switch (expr) {
@@ -1658,6 +1681,30 @@ describe('type check blocks', () => {
     it('should handle an empty switch block', () => {
       expect(tcb('@switch (expr) {}')).toContain('if (true) { switch (((this).expr)) { } }');
     });
+
+    it('should not generate the body of a switch block if checkControlFlowBodies is disabled',
+       () => {
+         const TEMPLATE = `
+          @switch (expr) {
+            @case (1) {
+              {{one()}}
+            }
+            @case (2) {
+              {{two()}}
+            }
+            @default {
+              {{default()}}
+            }
+          }
+        `;
+
+         expect(tcb(TEMPLATE, undefined, {checkControlFlowBodies: false}))
+             .toContain(
+                 'switch (((this).expr)) { ' +
+                 'case 1: break; ' +
+                 'case 2: break; ' +
+                 'default: break; }');
+       });
   });
 
   describe('for loop blocks', () => {
@@ -1747,6 +1794,22 @@ describe('type check blocks', () => {
       expect(result).toContain('for (const _t1 of ((this).items)!) { var _t2 = null! as number;');
       expect(result).toContain('(this).trackingFn(_t2, _t1, ((this).prop));');
     });
+
+    it('should not generate the body of a for block when checkControlFlowBodies is disabled',
+       () => {
+         const TEMPLATE = `
+            @for (item of items; track item) {
+              {{main(item)}}
+            } @empty {
+              {{empty()}}
+            }
+          `;
+
+         const result = tcb(TEMPLATE, undefined, {checkControlFlowBodies: false});
+         expect(result).toContain('for (const _t1 of ((this).items)!) {');
+         expect(result).not.toContain('.main');
+         expect(result).not.toContain('.empty');
+       });
   });
 
   describe('import generation', () => {

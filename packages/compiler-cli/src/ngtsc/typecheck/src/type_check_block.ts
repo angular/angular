@@ -1386,8 +1386,7 @@ class TcbIfOp extends TcbOp {
 
     // If the expression is null, it means that it's an `else` statement.
     if (branch.expression === null) {
-      const branchScope = Scope.forNodes(
-          this.tcb, this.scope, null, branch.children, this.generateBranchGuard(index));
+      const branchScope = this.getBranchScope(this.scope, branch, index);
       return ts.factory.createBlock(branchScope.render());
     }
 
@@ -1402,12 +1401,17 @@ class TcbIfOp extends TcbOp {
     const expression = branch.expressionAlias === null ?
         tcbExpression(branch.expression, this.tcb, expressionScope) :
         expressionScope.resolve(branch.expressionAlias);
-
-    const bodyScope = Scope.forNodes(
-        this.tcb, expressionScope, null, branch.children, this.generateBranchGuard(index));
+    const bodyScope = this.getBranchScope(expressionScope, branch, index);
 
     return ts.factory.createIfStatement(
         expression, ts.factory.createBlock(bodyScope.render()), this.generateBranch(index + 1));
+  }
+
+  private getBranchScope(parentScope: Scope, branch: TmplAstIfBlockBranch, index: number): Scope {
+    const checkBody = this.tcb.env.config.checkControlFlowBodies;
+    return Scope.forNodes(
+        this.tcb, parentScope, null, checkBody ? branch.children : [],
+        checkBody ? this.generateBranchGuard(index) : null);
   }
 
   private generateBranchGuard(index: number): ts.Expression|null {
@@ -1482,9 +1486,10 @@ class TcbSwitchOp extends TcbOp {
   override execute(): null {
     const switchExpression = tcbExpression(this.block.expression, this.tcb, this.scope);
     const clauses = this.block.cases.map(current => {
+      const checkBody = this.tcb.env.config.checkControlFlowBodies;
       const clauseScope = Scope.forNodes(
-          this.tcb, this.scope, null, current.children,
-          this.generateGuard(current, switchExpression));
+          this.tcb, this.scope, null, checkBody ? current.children : [],
+          checkBody ? this.generateGuard(current, switchExpression) : null);
       const statements = [...clauseScope.render(), ts.factory.createBreakStatement()];
 
       return current.expression === null ?
@@ -1559,7 +1564,9 @@ class TcbForOfOp extends TcbOp {
   }
 
   override execute(): null {
-    const loopScope = Scope.forNodes(this.tcb, this.scope, this.block, this.block.children, null);
+    const loopScope = Scope.forNodes(
+        this.tcb, this.scope, this.block,
+        this.tcb.env.config.checkControlFlowBodies ? this.block.children : [], null);
     const initializerId = loopScope.resolve(this.block.item);
     if (!ts.isIdentifier(initializerId)) {
       throw new Error(
@@ -1990,7 +1997,7 @@ class Scope {
       this.opQueue.push(new TcbSwitchOp(this.tcb, this, node));
     } else if (node instanceof TmplAstForLoopBlock) {
       this.opQueue.push(new TcbForOfOp(this.tcb, this, node));
-      node.empty && this.appendChildren(node.empty);
+      node.empty && this.tcb.env.config.checkControlFlowBodies && this.appendChildren(node.empty);
     } else if (node instanceof TmplAstBoundText) {
       this.opQueue.push(new TcbExpressionOp(this.tcb, this, node.value));
     } else if (node instanceof TmplAstIcu) {
