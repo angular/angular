@@ -24,10 +24,12 @@ export class LanguageServiceTestEnv {
     if (!(fs instanceof MockFileSystem)) {
       throw new Error(`LanguageServiceTestEnvironment only works with a mock filesystem`);
     }
-    fs.init(loadStandardTestFiles({
-      fakeCommon: true,
-      rxjs: true,
-    }));
+    fs.init(
+      loadStandardTestFiles({
+        fakeCommon: true,
+        rxjs: true,
+      }),
+    );
 
     const host = new MockServerHost(fs);
 
@@ -46,22 +48,33 @@ export class LanguageServiceTestEnv {
 
   private projects = new Map<string, Project>();
 
-  constructor(private host: MockServerHost, private projectService: ts.server.ProjectService) {}
+  constructor(
+    private host: MockServerHost,
+    private projectService: ts.server.ProjectService,
+  ) {}
 
   addProject(
-      name: string, files: ProjectFiles, angularCompilerOptions: TestableOptions = {},
-      tsCompilerOptions = {}): Project {
+    name: string,
+    files: ProjectFiles,
+    angularCompilerOptions: TestableOptions = {},
+    tsCompilerOptions = {},
+  ): Project {
     if (this.projects.has(name)) {
       throw new Error(`Project ${name} is already defined`);
     }
 
     const project = Project.initialize(
-        name, this.projectService, files, angularCompilerOptions, tsCompilerOptions);
+      name,
+      this.projectService,
+      files,
+      angularCompilerOptions,
+      tsCompilerOptions,
+    );
     this.projects.set(name, project);
     return project;
   }
 
-  getTextFromTsSpan(fileName: string, span: ts.TextSpan): string|null {
+  getTextFromTsSpan(fileName: string, span: ts.TextSpan): string | null {
     const scriptInfo = this.projectService.getScriptInfo(fileName);
     if (scriptInfo === undefined) {
       return null;
@@ -77,20 +90,19 @@ export class LanguageServiceTestEnv {
 }
 
 const logger: ts.server.Logger = {
-  close(): void{},
+  close(): void {},
   hasLevel(level: ts.server.LogLevel): boolean {
     return false;
   },
   loggingEnabled(): boolean {
     return false;
   },
-  perftrc(s: string): void{},
-  info(s: string): void{},
-  startGroup(): void{},
-  endGroup(): void{},
-  msg(s: string, type?: ts.server.Msg): void{},
-  getLogFileName(): string |
-      undefined {
-        return;
-      },
+  perftrc(s: string): void {},
+  info(s: string): void {},
+  startGroup(): void {},
+  endGroup(): void {},
+  msg(s: string, type?: ts.server.Msg): void {},
+  getLogFileName(): string | undefined {
+    return;
+  },
 };

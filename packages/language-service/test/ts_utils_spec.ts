@@ -9,7 +9,19 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
-import {addElementToArrayLiteral, collectMemberMethods, ensureArrayWithIdentifier, findTightestNode, generateImport, hasImport, nonCollidingImportName, objectPropertyAssignmentForKey, printNode, updateImport, updateObjectValueForKey} from '../src/ts_utils';
+import {
+  addElementToArrayLiteral,
+  collectMemberMethods,
+  ensureArrayWithIdentifier,
+  findTightestNode,
+  generateImport,
+  hasImport,
+  nonCollidingImportName,
+  objectPropertyAssignmentForKey,
+  printNode,
+  updateImport,
+  updateObjectValueForKey,
+} from '../src/ts_utils';
 import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
 
 describe('TS util', () => {
@@ -80,8 +92,8 @@ describe('TS util', () => {
       const node = findTightestNode(sf, file.cursor)!;
       expect(ts.isClassDeclaration(node.parent)).toBe(true);
       return collectMemberMethods(node.parent as ts.ClassDeclaration, project.getTypeChecker())
-          .map(m => m.name.getText())
-          .sort();
+        .map((m) => m.name.getText())
+        .sort();
     }
   });
 
@@ -95,8 +107,13 @@ describe('TS util', () => {
 
     beforeAll(() => {
       printer = ts.createPrinter();
-      sourceFile =
-          ts.createSourceFile('placeholder.ts', '', ts.ScriptTarget.ESNext, true, ts.ScriptKind.TS);
+      sourceFile = ts.createSourceFile(
+        'placeholder.ts',
+        '',
+        ts.ScriptTarget.ESNext,
+        true,
+        ts.ScriptKind.TS,
+      );
     });
 
     describe('addElementToArrayLiteral', () => {
@@ -107,8 +124,10 @@ describe('TS util', () => {
       });
 
       it('transforms an existing array literal expression', () => {
-        const oldArr =
-            ts.factory.createArrayLiteralExpression([ts.factory.createStringLiteral('a')], false);
+        const oldArr = ts.factory.createArrayLiteralExpression(
+          [ts.factory.createStringLiteral('a')],
+          false,
+        );
         const newArr = addElementToArrayLiteral(oldArr, ts.factory.createStringLiteral('b'));
         expect(print(newArr)).toEqual('["a", "b"]');
       });
@@ -119,9 +138,14 @@ describe('TS util', () => {
 
       beforeEach(() => {
         oldObj = ts.factory.createObjectLiteralExpression(
-            [ts.factory.createPropertyAssignment(
-                ts.factory.createIdentifier('foo'), ts.factory.createStringLiteral('bar'))],
-            false);
+          [
+            ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier('foo'),
+              ts.factory.createStringLiteral('bar'),
+            ),
+          ],
+          false,
+        );
       });
 
       it('returns null when no property exists', () => {
@@ -146,9 +170,14 @@ describe('TS util', () => {
 
       beforeEach(() => {
         oldObj = ts.factory.createObjectLiteralExpression(
-            [ts.factory.createPropertyAssignment(
-                ts.factory.createIdentifier('foo'), ts.factory.createStringLiteral('bar'))],
-            false);
+          [
+            ts.factory.createPropertyAssignment(
+              ts.factory.createIdentifier('foo'),
+              ts.factory.createStringLiteral('bar'),
+            ),
+          ],
+          false,
+        );
       });
 
       it('creates a non-existent property', () => {

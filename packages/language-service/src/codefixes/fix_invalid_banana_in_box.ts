@@ -26,16 +26,20 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
       return [];
     }
     const textChanges = convertBoundEventToTsTextChange(boundEvent);
-    return [{
-      fixName: FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
-      fixId: FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
-      fixAllDescription: 'fix all invalid banana-in-box',
-      description: `fix invalid banana-in-box for '${boundEvent.sourceSpan.toString()}'`,
-      changes: [{
-        fileName,
-        textChanges,
-      }],
-    }];
+    return [
+      {
+        fixName: FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
+        fixId: FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
+        fixAllDescription: 'fix all invalid banana-in-box',
+        description: `fix invalid banana-in-box for '${boundEvent.sourceSpan.toString()}'`,
+        changes: [
+          {
+            fileName,
+            textChanges,
+          },
+        ],
+      },
+    ];
   },
   fixIds: [FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX],
   getAllCodeActions({diagnostics, compiler}) {
@@ -85,8 +89,10 @@ export const fixInvalidBananaInBoxMeta: CodeActionMeta = {
   },
 };
 
-function getTheBoundEventAtPosition(templateInfo: TemplateInfo, start: number): TmplAstBoundEvent|
-    null {
+function getTheBoundEventAtPosition(
+  templateInfo: TemplateInfo,
+  start: number,
+): TmplAstBoundEvent | null {
   // It's safe to get the bound event at the position `start + 1` because the `start` is at the
   // start of the diagnostic, and the node outside the attribute key and value spans are skipped by
   // the function `getTargetAtPosition`.
@@ -97,8 +103,10 @@ function getTheBoundEventAtPosition(templateInfo: TemplateInfo, start: number): 
     return null;
   }
 
-  if (positionDetail.context.kind !== TargetNodeKind.AttributeInKeyContext ||
-      !(positionDetail.context.node instanceof TmplAstBoundEvent)) {
+  if (
+    positionDetail.context.kind !== TargetNodeKind.AttributeInKeyContext ||
+    !(positionDetail.context.node instanceof TmplAstBoundEvent)
+  ) {
     return null;
   }
 

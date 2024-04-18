@@ -40,8 +40,10 @@ describe('definitions', () => {
 
   describe('templates', () => {
     it('should return no definitions for ng-templates', () => {
-      const {position} =
-          service.overwriteInlineTemplate(APP_COMPONENT, `<ng-templ¦ate></ng-template>`);
+      const {position} = service.overwriteInlineTemplate(
+        APP_COMPONENT,
+        `<ng-templ¦ate></ng-template>`,
+      );
       const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
       expect(definitionAndBoundSpan).toBeUndefined();
     });
@@ -82,9 +84,9 @@ describe('definitions', () => {
       expect(definitions.length).toEqual(1);
       expect(definitions[0].fileName).toContain('ng_for_of.d.ts');
       expect(definitions[0].textSpan).toEqual('NgForOf');
-      expect(definitions[0].contextSpan)
-          .toContain(
-              'export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck');
+      expect(definitions[0].contextSpan).toContain(
+        'export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck',
+      );
     });
 
     it('should return binding for structural directive where key maps to a binding', () => {
@@ -170,8 +172,9 @@ describe('definitions', () => {
         const [inputDef, directiveDef] = definitions;
 
         expect(inputDef.textSpan).toEqual('ngForOf');
-        expect(inputDef.contextSpan)
-            .toEqual('set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);');
+        expect(inputDef.contextSpan).toEqual(
+          'set ngForOf(ngForOf: (U & NgIterable<T>) | undefined | null);',
+        );
         expect(directiveDef.textSpan).toEqual('NgForOf');
         expect(directiveDef.contextSpan).toContain('export declare class NgForOf');
       });
@@ -187,8 +190,9 @@ describe('definitions', () => {
         expect(inputDef.textSpan).toEqual('model');
         expect(inputDef.contextSpan).toEqual(`@Input() model: string = 'model';`);
         expect(outputDef.textSpan).toEqual('modelChange');
-        expect(outputDef.contextSpan)
-            .toEqual(`@Output() modelChange: EventEmitter<string> = new EventEmitter();`);
+        expect(outputDef.contextSpan).toEqual(
+          `@Output() modelChange: EventEmitter<string> = new EventEmitter();`,
+        );
       });
     });
 
@@ -202,12 +206,14 @@ describe('definitions', () => {
 
         const [def] = definitions;
         expect(def.textSpan).toEqual('testEvent');
-        expect(def.contextSpan).toEqual('@Output(\'test\') testEvent = new EventEmitter();');
+        expect(def.contextSpan).toEqual("@Output('test') testEvent = new EventEmitter();");
       });
 
       it('should return nothing for $event from EventEmitter', () => {
         const {position} = service.overwriteInlineTemplate(
-            APP_COMPONENT, `<div string-model (modelChange)="myClick($e¦vent)"></div>`);
+          APP_COMPONENT,
+          `<div string-model (modelChange)="myClick($e¦vent)"></div>`,
+        );
         const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
         expect(definitionAndBoundSpan).toBeUndefined();
       });
@@ -233,8 +239,9 @@ describe('definitions', () => {
         });
         expect(definitions!.length).toEqual(1);
         expect(definitions[0].textSpan).toEqual('addEventListener');
-        expect(definitions[0].contextSpan)
-            .toContain('addEventListener<K extends keyof HTMLElementEventMap>');
+        expect(definitions[0].contextSpan).toContain(
+          'addEventListener<K extends keyof HTMLElementEventMap>',
+        );
         expect(definitions[0].fileName).toContain('lib.dom.d.ts');
       });
     });
@@ -242,8 +249,10 @@ describe('definitions', () => {
 
   describe('references', () => {
     it('should work for element reference declarations', () => {
-      const {position} =
-          service.overwriteInlineTemplate(APP_COMPONENT, `<div #cha¦rt></div>{{chart}}`);
+      const {position} = service.overwriteInlineTemplate(
+        APP_COMPONENT,
+        `<div #cha¦rt></div>{{chart}}`,
+      );
       const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
       // We're already at the definition, so nothing is returned
       expect(definitionAndBoundSpan).toBeUndefined();
@@ -453,8 +462,10 @@ describe('definitions', () => {
     });
 
     it('should return nothing for the $any() cast function', () => {
-      const {position} =
-          service.overwriteInlineTemplate(APP_COMPONENT, `<div>{{$an¦y(title)}}</div>`);
+      const {position} = service.overwriteInlineTemplate(
+        APP_COMPONENT,
+        `<div>{{$an¦y(title)}}</div>`,
+      );
       const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
       expect(definitionAndBoundSpan).toBeUndefined();
     });
@@ -488,12 +499,15 @@ describe('definitions', () => {
 
   describe('external resources', () => {
     it('should be able to find a template from a url', () => {
-      const {position, text} = service.overwrite(APP_COMPONENT, `
+      const {position, text} = service.overwrite(
+        APP_COMPONENT,
+        `
         import {Component} from '@angular/core';
 	      @Component({
 	        templateUrl: './tes¦t.ng',
 	      })
-	      export class AppComponent {}`);
+	      export class AppComponent {}`,
+      );
       const result = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
 
       expect(result).toBeDefined();
@@ -509,21 +523,24 @@ describe('definitions', () => {
     });
 
     it('should be able to find a stylesheet from a url', () => {
-      const {position, text} = service.overwrite(APP_COMPONENT, `
+      const {position, text} = service.overwrite(
+        APP_COMPONENT,
+        `
         import {Component} from '@angular/core';
 	      @Component({
 	        template: 'empty',
 	        styleUrls: ['./te¦st.css']
 	      })
-	      export class AppComponent {}`);
+	      export class AppComponent {}`,
+      );
       const result = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
-
 
       expect(result).toBeDefined();
       const {textSpan, definitions} = result!;
 
-      expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
-          .toEqual('./test.css');
+      expect(text.substring(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+        './test.css',
+      );
 
       expect(definitions).toBeDefined();
       expect(definitions!.length).toBe(1);
@@ -533,21 +550,24 @@ describe('definitions', () => {
     });
 
     it('should be able to find a stylesheet from a style url', () => {
-      const {position, text} = service.overwrite(APP_COMPONENT, `
+      const {position, text} = service.overwrite(
+        APP_COMPONENT,
+        `
         import {Component} from '@angular/core';
 	      @Component({
 	        template: 'empty',
 	        styleUrl: './te¦st.css'
 	      })
-	      export class AppComponent {}`);
+	      export class AppComponent {}`,
+      );
       const result = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
-
 
       expect(result).toBeDefined();
       const {textSpan, definitions} = result!;
 
-      expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
-          .toEqual('./test.css');
+      expect(text.substring(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+        './test.css',
+      );
 
       expect(definitions).toBeDefined();
       expect(definitions!.length).toBe(1);
@@ -557,36 +577,44 @@ describe('definitions', () => {
     });
 
     xit('should be able to find a resource url with malformed component meta', () => {
-      const {position, text} = service.overwrite(APP_COMPONENT, `
+      const {position, text} = service.overwrite(
+        APP_COMPONENT,
+        `
         import {Component} from '@angular/core';
 	      @Component({
 	        invalidProperty: '',
 	        styleUrls: ['./te¦st.css']
 	      })
-	      export class AppComponent {}`);
+	      export class AppComponent {}`,
+      );
       const result = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
-
 
       expect(result).toBeDefined();
       const {textSpan, definitions} = result!;
 
-      expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
-          .toEqual('./test.css');
+      expect(text.substring(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+        './test.css',
+      );
       expect(definitions).toBeDefined();
       expect(definitions![0].fileName).toContain('/app/test.css');
     });
   });
 
-  function getDefinitionsAndAssertBoundSpan(
-      {templateOverride, expectedSpanText}: {templateOverride: string, expectedSpanText: string}):
-      Array<{textSpan: string, contextSpan: string | undefined, fileName: string}> {
+  function getDefinitionsAndAssertBoundSpan({
+    templateOverride,
+    expectedSpanText,
+  }: {
+    templateOverride: string;
+    expectedSpanText: string;
+  }): Array<{textSpan: string; contextSpan: string | undefined; fileName: string}> {
     const {position, text} = service.overwriteInlineTemplate(APP_COMPONENT, templateOverride);
     const definitionAndBoundSpan = ngLS.getDefinitionAndBoundSpan(APP_COMPONENT, position);
     expect(definitionAndBoundSpan).toBeTruthy();
     const {textSpan, definitions} = definitionAndBoundSpan!;
-    expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
-        .toEqual(expectedSpanText);
+    expect(text.substring(textSpan.start, textSpan.start + textSpan.length)).toEqual(
+      expectedSpanText,
+    );
     expect(definitions).toBeTruthy();
-    return definitions!.map(d => humanizeDefinitionInfo(d, service));
+    return definitions!.map((d) => humanizeDefinitionInfo(d, service));
   }
 });

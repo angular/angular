@@ -51,7 +51,7 @@ const factory: ts.server.PluginModuleFactory = (): ts.server.PluginModule => {
           }
         },
       };
-    }
+    },
   };
 };
 

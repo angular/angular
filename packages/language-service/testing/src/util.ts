@@ -17,13 +17,13 @@ import {Project, ProjectFiles, TestableOptions} from './project';
  * This assertion is independent of the order of either list.
  */
 export function assertFileNames(refs: Array<{fileName: string}>, expectedFileNames: string[]) {
-  const actualPaths = refs.map(r => r.fileName);
-  const actualFileNames = actualPaths.map(p => last(p.split('/')));
+  const actualPaths = refs.map((r) => r.fileName);
+  const actualFileNames = actualPaths.map((p) => last(p.split('/')));
   expect(new Set(actualFileNames)).toEqual(new Set(expectedFileNames));
 }
 
 export function assertTextSpans(items: Array<{textSpan: string}>, expectedTextSpans: string[]) {
-  const actualSpans = items.map(item => item.textSpan);
+  const actualSpans = items.map((item) => item.textSpan);
   expect(new Set(actualSpans)).toEqual(new Set(expectedTextSpans));
 }
 
@@ -48,8 +48,12 @@ function getFirstClassDeclaration(declaration: string) {
 }
 
 export function createModuleAndProjectWithDeclarations(
-    env: LanguageServiceTestEnv, projectName: string, projectFiles: ProjectFiles,
-    angularCompilerOptions: TestableOptions = {}, standaloneFiles: ProjectFiles = {}): Project {
+  env: LanguageServiceTestEnv,
+  projectName: string,
+  projectFiles: ProjectFiles,
+  angularCompilerOptions: TestableOptions = {},
+  standaloneFiles: ProjectFiles = {},
+): Project {
   const externalClasses: string[] = [];
   const externalImports: string[] = [];
   for (const [fileName, fileContents] of Object.entries(projectFiles)) {
@@ -76,18 +80,21 @@ export function createModuleAndProjectWithDeclarations(
 }
 
 export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(
-    item: T, env: LanguageServiceTestEnv): T&Stringy<ts.DocumentSpan> {
+  item: T,
+  env: LanguageServiceTestEnv,
+): T & Stringy<ts.DocumentSpan> {
   return {
     ...item,
     textSpan: env.getTextFromTsSpan(item.fileName, item.textSpan),
-    contextSpan: item.contextSpan ? env.getTextFromTsSpan(item.fileName, item.contextSpan) :
-                                    undefined,
-    originalTextSpan: item.originalTextSpan ?
-        env.getTextFromTsSpan(item.fileName, item.originalTextSpan) :
-        undefined,
-    originalContextSpan: item.originalContextSpan ?
-        env.getTextFromTsSpan(item.fileName, item.originalContextSpan) :
-        undefined,
+    contextSpan: item.contextSpan
+      ? env.getTextFromTsSpan(item.fileName, item.contextSpan)
+      : undefined,
+    originalTextSpan: item.originalTextSpan
+      ? env.getTextFromTsSpan(item.fileName, item.originalTextSpan)
+      : undefined,
+    originalContextSpan: item.originalContextSpan
+      ? env.getTextFromTsSpan(item.fileName, item.originalContextSpan)
+      : undefined,
   };
 }
 type Stringy<T> = {

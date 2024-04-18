@@ -8,7 +8,13 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {assertFileNames, assertTextSpans, humanizeDocumentSpanLike, LanguageServiceTestEnv, Project} from '../testing';
+import {
+  assertFileNames,
+  assertTextSpans,
+  humanizeDocumentSpanLike,
+  LanguageServiceTestEnv,
+  Project,
+} from '../testing';
 
 describe('type definitions', () => {
   let env: LanguageServiceTestEnv;
@@ -31,8 +37,9 @@ describe('type definitions', () => {
     // checkTypeOfPipes is set to false when strict templates is false
     env = LanguageServiceTestEnv.setup();
     const project = env.addProject('test', files, {strictTemplates: false});
-    const definitions =
-        getTypeDefinitionsAndAssertBoundSpan(project, {templateOverride: '{{"1/1/2020" | dat¦e}}'});
+    const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
+      templateOverride: '{{"1/1/2020" | dat¦e}}',
+    });
     expect(definitions!.length).toEqual(3);
 
     assertTextSpans(definitions, ['transform']);
@@ -65,8 +72,9 @@ describe('type definitions', () => {
       };
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
-      const definitions = getTypeDefinitionsAndAssertBoundSpan(
-          project, {templateOverride: `<my-dir [first¦Name]="undefined" />`});
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
+        templateOverride: `<my-dir [first¦Name]="undefined" />`,
+      });
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['InputSignal']);
@@ -102,8 +110,9 @@ describe('type definitions', () => {
       };
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
-      const definitions = getTypeDefinitionsAndAssertBoundSpan(
-          project, {templateOverride: `<my-dir (name¦Changes)="doSmth()" />`});
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
+        templateOverride: `<my-dir (name¦Changes)="doSmth()" />`,
+      });
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['OutputEmitterRef']);
@@ -140,8 +149,9 @@ describe('type definitions', () => {
       };
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
-      const definitions = getTypeDefinitionsAndAssertBoundSpan(
-          project, {templateOverride: `<my-dir (name¦Changes)="doSmth()" />`});
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
+        templateOverride: `<my-dir (name¦Changes)="doSmth()" />`,
+      });
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['OutputRef']);
@@ -179,8 +189,9 @@ describe('type definitions', () => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
-      const definitions = getTypeDefinitionsAndAssertBoundSpan(
-          project, {templateOverride: `<my-dir [twoWa¦yValue]="value" />`});
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
+        templateOverride: `<my-dir [twoWa¦yValue]="value" />`,
+      });
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
@@ -191,8 +202,9 @@ describe('type definitions', () => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
-      const definitions = getTypeDefinitionsAndAssertBoundSpan(
-          project, {templateOverride: `<my-dir (twoWayV¦alueChange)="noop()" />`});
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
+        templateOverride: `<my-dir (twoWayV¦alueChange)="noop()" />`,
+      });
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
@@ -203,8 +215,9 @@ describe('type definitions', () => {
       initMockFileSystem('Native');
       env = LanguageServiceTestEnv.setup();
       const project = env.addProject('test', files);
-      const definitions = getTypeDefinitionsAndAssertBoundSpan(
-          project, {templateOverride: `<my-dir [(twoWa¦yValue)]="value" />`});
+      const definitions = getTypeDefinitionsAndAssertBoundSpan(project, {
+        templateOverride: `<my-dir [(twoWa¦yValue)]="value" />`,
+      });
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
@@ -213,7 +226,9 @@ describe('type definitions', () => {
   });
 
   function getTypeDefinitionsAndAssertBoundSpan(
-      project: Project, {templateOverride}: {templateOverride: string}) {
+    project: Project,
+    {templateOverride}: {templateOverride: string},
+  ) {
     const text = templateOverride.replace('¦', '');
     const template = project.openFile('app.html');
     template.contents = text;
@@ -223,6 +238,6 @@ describe('type definitions', () => {
     template.moveCursorToText(templateOverride);
     const defs = template.getTypeDefinitionAtPosition();
     expect(defs).toBeTruthy();
-    return defs!.map(d => humanizeDocumentSpanLike(d, env));
+    return defs!.map((d) => humanizeDocumentSpanLike(d, env));
   }
 });

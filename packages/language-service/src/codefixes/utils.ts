@@ -60,7 +60,9 @@ export interface CodeActionMeta {
  * Convert the span of `textChange` in the TCB to the span of the template.
  */
 export function convertFileTextChangeInTcb(
-    changes: readonly tss.FileTextChanges[], compiler: NgCompiler): tss.FileTextChanges[] {
+  changes: readonly tss.FileTextChanges[],
+  compiler: NgCompiler,
+): tss.FileTextChanges[] {
   const ttc = compiler.getTemplateTypeChecker();
   const fileTextChanges: tss.FileTextChanges[] = [];
   for (const fileTextChange of changes) {
@@ -69,7 +71,7 @@ export function convertFileTextChangeInTcb(
       continue;
     }
     const textChanges: tss.TextChange[] = [];
-    let fileName: string|undefined;
+    let fileName: string | undefined;
     const seenTextChangeInTemplate = new Set<string>();
     for (const textChange of fileTextChange.textChanges) {
       const templateMap = ttc.getTemplateMappingAtTcbLocation({

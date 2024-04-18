@@ -11,7 +11,7 @@ import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testin
 import ts from 'typescript';
 
 const NOOP_FILE_WATCHER: ts.FileWatcher = {
-  close() {}
+  close() {},
 };
 
 export class MockServerHost implements ts.server.ServerHost {
@@ -25,7 +25,7 @@ export class MockServerHost implements ts.server.ServerHost {
     return this.fs.isCaseSensitive();
   }
 
-  readFile(path: string, encoding?: string): string|undefined {
+  readFile(path: string, encoding?: string): string | undefined {
     return this.fs.readFile(absoluteFrom(path));
   }
 
@@ -66,14 +66,20 @@ export class MockServerHost implements ts.server.ServerHost {
   }
 
   watchFile(
-      path: string, callback: ts.FileWatcherCallback, pollingInterval?: number,
-      options?: ts.WatchOptions): ts.FileWatcher {
+    path: string,
+    callback: ts.FileWatcherCallback,
+    pollingInterval?: number,
+    options?: ts.WatchOptions,
+  ): ts.FileWatcher {
     return NOOP_FILE_WATCHER;
   }
 
   watchDirectory(
-      path: string, callback: ts.DirectoryWatcherCallback, recursive?: boolean,
-      options?: ts.WatchOptions): ts.FileWatcher {
+    path: string,
+    callback: ts.DirectoryWatcherCallback,
+    recursive?: boolean,
+    options?: ts.WatchOptions,
+  ): ts.FileWatcher {
     return NOOP_FILE_WATCHER;
   }
 
@@ -106,8 +112,12 @@ export class MockServerHost implements ts.server.ServerHost {
   }
 
   readDirectory(
-      path: string, extensions?: readonly string[], exclude?: readonly string[],
-      include?: readonly string[], depth?: number): string[] {
+    path: string,
+    extensions?: readonly string[],
+    exclude?: readonly string[],
+    include?: readonly string[],
+    depth?: number,
+  ): string[] {
     throw new Error('Method not implemented.');
   }
 

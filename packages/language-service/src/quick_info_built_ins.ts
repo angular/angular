@@ -5,59 +5,84 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, Call, ImplicitReceiver, ParseSourceSpan, PropertyRead, ThisReceiver, TmplAstBlockNode, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstNode} from '@angular/compiler';
+import {
+  AST,
+  Call,
+  ImplicitReceiver,
+  ParseSourceSpan,
+  PropertyRead,
+  ThisReceiver,
+  TmplAstBlockNode,
+  TmplAstDeferredBlock,
+  TmplAstDeferredBlockError,
+  TmplAstDeferredBlockLoading,
+  TmplAstDeferredBlockPlaceholder,
+  TmplAstDeferredTrigger,
+  TmplAstForLoopBlock,
+  TmplAstForLoopBlockEmpty,
+  TmplAstNode,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_TEXT} from './display_parts';
 import {createQuickInfo, getTextSpanOfNode, isWithin, toTextSpan} from './utils';
 
-export function isDollarAny(node: TmplAstNode|AST): node is Call {
-  return node instanceof Call && node.receiver instanceof PropertyRead &&
-      node.receiver.receiver instanceof ImplicitReceiver &&
-      !(node.receiver.receiver instanceof ThisReceiver) && node.receiver.name === '$any' &&
-      node.args.length === 1;
+export function isDollarAny(node: TmplAstNode | AST): node is Call {
+  return (
+    node instanceof Call &&
+    node.receiver instanceof PropertyRead &&
+    node.receiver.receiver instanceof ImplicitReceiver &&
+    !(node.receiver.receiver instanceof ThisReceiver) &&
+    node.receiver.name === '$any' &&
+    node.args.length === 1
+  );
 }
 
 export function createDollarAnyQuickInfo(node: Call): ts.QuickInfo {
   return createQuickInfo(
-      '$any',
-      DisplayInfoKind.METHOD,
-      getTextSpanOfNode(node.receiver),
-      /** containerName */ undefined,
-      'any',
-      [{
+    '$any',
+    DisplayInfoKind.METHOD,
+    getTextSpanOfNode(node.receiver),
+    /** containerName */ undefined,
+    'any',
+    [
+      {
         kind: SYMBOL_TEXT,
         text: 'function to cast an expression to the `any` type',
-      }],
+      },
+    ],
   );
 }
 
 // TODO(atscott): Create special `ts.QuickInfo` for `ng-template` and `ng-container` as well.
-export function createNgTemplateQuickInfo(node: TmplAstNode|AST): ts.QuickInfo {
+export function createNgTemplateQuickInfo(node: TmplAstNode | AST): ts.QuickInfo {
   return createQuickInfo(
-      'ng-template',
-      DisplayInfoKind.TEMPLATE,
-      getTextSpanOfNode(node),
-      /** containerName */ undefined,
-      /** type */ undefined,
-      [{
+    'ng-template',
+    DisplayInfoKind.TEMPLATE,
+    getTextSpanOfNode(node),
+    /** containerName */ undefined,
+    /** type */ undefined,
+    [
+      {
         kind: SYMBOL_TEXT,
-        text:
-            'The `<ng-template>` is an Angular element for rendering HTML. It is never displayed directly.',
-      }],
+        text: 'The `<ng-template>` is an Angular element for rendering HTML. It is never displayed directly.',
+      },
+    ],
   );
 }
 
 export function createQuickInfoForBuiltIn(
-    node: TmplAstDeferredTrigger|TmplAstBlockNode, cursorPositionInTemplate: number): ts.QuickInfo|
-    undefined {
+  node: TmplAstDeferredTrigger | TmplAstBlockNode,
+  cursorPositionInTemplate: number,
+): ts.QuickInfo | undefined {
   let partSpan: ParseSourceSpan;
   if (node instanceof TmplAstDeferredTrigger) {
     if (node.prefetchSpan !== null && isWithin(cursorPositionInTemplate, node.prefetchSpan)) {
       partSpan = node.prefetchSpan;
     } else if (
-        node.whenOrOnSourceSpan !== null &&
-        isWithin(cursorPositionInTemplate, node.whenOrOnSourceSpan)) {
+      node.whenOrOnSourceSpan !== null &&
+      isWithin(cursorPositionInTemplate, node.whenOrOnSourceSpan)
+    ) {
       partSpan = node.whenOrOnSourceSpan;
     } else if (node.nameSpan !== null && isWithin(cursorPositionInTemplate, node.nameSpan)) {
       partSpan = node.nameSpan;
@@ -65,15 +90,19 @@ export function createQuickInfoForBuiltIn(
       return undefined;
     }
   } else {
-    if (node instanceof TmplAstDeferredBlock || node instanceof TmplAstDeferredBlockError ||
-        node instanceof TmplAstDeferredBlockLoading ||
-        node instanceof TmplAstDeferredBlockPlaceholder ||
-        node instanceof TmplAstForLoopBlockEmpty &&
-            isWithin(cursorPositionInTemplate, node.nameSpan)) {
+    if (
+      node instanceof TmplAstDeferredBlock ||
+      node instanceof TmplAstDeferredBlockError ||
+      node instanceof TmplAstDeferredBlockLoading ||
+      node instanceof TmplAstDeferredBlockPlaceholder ||
+      (node instanceof TmplAstForLoopBlockEmpty &&
+        isWithin(cursorPositionInTemplate, node.nameSpan))
+    ) {
       partSpan = node.nameSpan;
     } else if (
-        node instanceof TmplAstForLoopBlock &&
-        isWithin(cursorPositionInTemplate, node.trackKeywordSpan)) {
+      node instanceof TmplAstForLoopBlock &&
+      isWithin(cursorPositionInTemplate, node.trackKeywordSpan)
+    ) {
       partSpan = node.trackKeywordSpan;
     } else {
       return undefined;
@@ -82,29 +111,32 @@ export function createQuickInfoForBuiltIn(
 
   const partName = partSpan.toString().trim();
   const partInfo = BUILT_IN_NAMES_TO_DOC_MAP[partName];
-  const linkTags: ts.JSDocTagInfo[] =
-      (partInfo?.links ?? []).map(text => ({text: [{kind: SYMBOL_TEXT, text}], name: 'see'}));
+  const linkTags: ts.JSDocTagInfo[] = (partInfo?.links ?? []).map((text) => ({
+    text: [{kind: SYMBOL_TEXT, text}],
+    name: 'see',
+  }));
   return createQuickInfo(
-      partName,
-      partInfo.displayInfoKind,
-      toTextSpan(partSpan),
-      /** containerName */ undefined,
-      /** type */ undefined,
-      [{
+    partName,
+    partInfo.displayInfoKind,
+    toTextSpan(partSpan),
+    /** containerName */ undefined,
+    /** type */ undefined,
+    [
+      {
         kind: SYMBOL_TEXT,
         text: partInfo?.docString ?? '',
-      }],
-      linkTags,
+      },
+    ],
+    linkTags,
   );
 }
 
 const triggerDescriptionPreamble = 'A trigger to start loading the defer content after ';
 const BUILT_IN_NAMES_TO_DOC_MAP: {
-  [name: string]: {docString: string, links: string[], displayInfoKind: DisplayInfoKind}
+  [name: string]: {docString: string; links: string[]; displayInfoKind: DisplayInfoKind};
 } = {
   '@defer': {
-    docString:
-        `A type of block that can be used to defer load the JavaScript for components, directives and pipes used inside a component template.`,
+    docString: `A type of block that can be used to defer load the JavaScript for components, directives and pipes used inside a component template.`,
     links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
     displayInfoKind: DisplayInfoKind.BLOCK,
   },
@@ -165,19 +197,19 @@ const BUILT_IN_NAMES_TO_DOC_MAP: {
   },
   'prefetch': {
     docString:
-        'Keyword that indicates that the trigger configures when prefetching the defer block contents should start. You can use `on` and `when` conditions as prefetch triggers.',
+      'Keyword that indicates that the trigger configures when prefetching the defer block contents should start. You can use `on` and `when` conditions as prefetch triggers.',
     links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'when': {
     docString:
-        'Keyword that starts the expression-based trigger section. Should be followed by an expression that returns a boolean.',
+      'Keyword that starts the expression-based trigger section. Should be followed by an expression that returns a boolean.',
     links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },
   'on': {
     docString:
-        'Keyword that starts the event-based trigger section. Should be followed by one of the built-in triggers.',
+      'Keyword that starts the event-based trigger section. Should be followed by one of the built-in triggers.',
     links: ['[AIO Reference](https://next.angular.io/api/core/defer)'],
     displayInfoKind: DisplayInfoKind.KEYWORD,
   },

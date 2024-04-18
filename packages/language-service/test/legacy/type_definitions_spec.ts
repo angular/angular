@@ -22,8 +22,11 @@ describe('type definitions', () => {
   });
 
   const possibleArrayDefFiles: readonly string[] = [
-    'lib.es5.d.ts', 'lib.es2015.core.d.ts', 'lib.es2015.iterable.d.ts',
-    'lib.es2015.symbol.wellknown.d.ts', 'lib.es2016.array.include.d.ts'
+    'lib.es5.d.ts',
+    'lib.es2015.core.d.ts',
+    'lib.es2015.iterable.d.ts',
+    'lib.es2015.symbol.wellknown.d.ts',
+    'lib.es2016.array.include.d.ts',
   ];
 
   beforeEach(() => {
@@ -54,8 +57,10 @@ describe('type definitions', () => {
 
   describe('templates', () => {
     it('should return no definitions for ng-templates', () => {
-      const {position} =
-          service.overwriteInlineTemplate(APP_COMPONENT, `<ng-templ¦ate></ng-template>`);
+      const {position} = service.overwriteInlineTemplate(
+        APP_COMPONENT,
+        `<ng-templ¦ate></ng-template>`,
+      );
       const defs = ngLS.getTypeDefinitionAtPosition(APP_COMPONENT, position);
       expect(defs).toEqual([]);
     });
@@ -88,9 +93,9 @@ describe('type definitions', () => {
       expect(definitions.length).toEqual(1);
       expect(definitions[0].fileName).toContain('ng_for_of.d.ts');
       expect(definitions[0].textSpan).toEqual('NgForOf');
-      expect(definitions[0].contextSpan)
-          .toContain(
-              'export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck');
+      expect(definitions[0].contextSpan).toContain(
+        'export declare class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck',
+      );
     });
 
     it('should work for directives with compound selectors', () => {
@@ -135,8 +140,10 @@ describe('type definitions', () => {
         // In addition to all the array defs, this will also return the NgForOf def because the
         // input is part of the selector ([ngFor][ngForOf]).
         expectAllDefinitions(
-            definitions, new Set(['Array', 'NgForOf']),
-            new Set([...possibleArrayDefFiles, 'ng_for_of.d.ts']));
+          definitions,
+          new Set(['Array', 'NgForOf']),
+          new Set([...possibleArrayDefFiles, 'ng_for_of.d.ts']),
+        );
       });
 
       it('should return nothing for two-way binding providers', () => {
@@ -158,8 +165,9 @@ describe('type definitions', () => {
 
         const [emitterInterface, emitterConst] = definitions;
         expect(emitterInterface.textSpan).toEqual('EventEmitter');
-        expect(emitterInterface.contextSpan)
-            .toContain('export interface EventEmitter<T> extends Subject<T>');
+        expect(emitterInterface.contextSpan).toContain(
+          'export interface EventEmitter<T> extends Subject<T>',
+        );
         expect(emitterInterface.fileName).toContain('event_emitter.d.ts');
         expect(emitterConst.textSpan).toEqual('EventEmitter');
         expect(emitterConst.contextSpan).toContain('export declare const EventEmitter');
@@ -183,9 +191,9 @@ describe('type definitions', () => {
         });
         expect(definitions!.length).toEqual(1);
         expect(definitions[0].textSpan).toEqual('addEventListener');
-        expect(definitions[0].contextSpan)
-            .toEqual(
-                'addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;');
+        expect(definitions[0].contextSpan).toEqual(
+          'addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;',
+        );
         expect(definitions[0].fileName).toContain('lib.dom.d.ts');
       });
     });
@@ -307,8 +315,10 @@ describe('type definitions', () => {
         templateOverride: `<div *ngFor="let item of heroes as her¦oes2; trackBy: test;"></div>`,
       });
       expectAllDefinitions(
-          definitions, new Set(['Hero', 'Array']),
-          new Set([...possibleArrayDefFiles, 'app.component.ts']));
+        definitions,
+        new Set(['Hero', 'Array']),
+        new Set([...possibleArrayDefFiles, 'app.component.ts']),
+      );
     });
 
     it('should work for uses of members in structural directives', () => {
@@ -316,8 +326,10 @@ describe('type definitions', () => {
         templateOverride: `<div *ngFor="let item of heroes as heroes2">{{her¦oes2}}</div>`,
       });
       expectAllDefinitions(
-          definitions, new Set(['Hero', 'Array']),
-          new Set([...possibleArrayDefFiles, 'app.component.ts']));
+        definitions,
+        new Set(['Hero', 'Array']),
+        new Set([...possibleArrayDefFiles, 'app.component.ts']),
+      );
     });
 
     it('should work for members in structural directives', () => {
@@ -325,37 +337,46 @@ describe('type definitions', () => {
         templateOverride: `<div *ngFor="let item of her¦oes; trackBy: test;"></div>`,
       });
       expectAllDefinitions(
-          definitions, new Set(['Hero', 'Array']),
-          new Set([...possibleArrayDefFiles, 'app.component.ts']));
+        definitions,
+        new Set(['Hero', 'Array']),
+        new Set([...possibleArrayDefFiles, 'app.component.ts']),
+      );
     });
 
     it('should return nothing for the $any() cast function', () => {
-      const {position} =
-          service.overwriteInlineTemplate(APP_COMPONENT, `<div>{{$an¦y(title)}}</div>`);
+      const {position} = service.overwriteInlineTemplate(
+        APP_COMPONENT,
+        `<div>{{$an¦y(title)}}</div>`,
+      );
       const definitionAndBoundSpan = ngLS.getTypeDefinitionAtPosition(APP_COMPONENT, position);
       expect(definitionAndBoundSpan).toBeUndefined();
     });
   });
 
-  function getTypeDefinitions({templateOverride}: {templateOverride: string}):
-      HumanizedDefinitionInfo[] {
+  function getTypeDefinitions({
+    templateOverride,
+  }: {
+    templateOverride: string;
+  }): HumanizedDefinitionInfo[] {
     const {position} = service.overwriteInlineTemplate(APP_COMPONENT, templateOverride);
     const defs = ngLS.getTypeDefinitionAtPosition(APP_COMPONENT, position);
     expect(defs).toBeTruthy();
-    return defs!.map(d => humanizeDefinitionInfo(d, service));
+    return defs!.map((d) => humanizeDefinitionInfo(d, service));
   }
 
   function expectAllDefinitions(
-      definitions: HumanizedDefinitionInfo[], textSpans: Set<string>,
-      possibleFileNames: Set<string>) {
+    definitions: HumanizedDefinitionInfo[],
+    textSpans: Set<string>,
+    possibleFileNames: Set<string>,
+  ) {
     expect(definitions!.length).toBeGreaterThan(0);
-    const actualTextSpans = new Set(definitions.map(d => d.textSpan));
+    const actualTextSpans = new Set(definitions.map((d) => d.textSpan));
     expect(actualTextSpans).toEqual(textSpans);
     for (const def of definitions) {
       const fileName = def.fileName.split('/').slice(-1)[0];
       expect(possibleFileNames)
-          .withContext(`Expected ${fileName} to be one of: ${possibleFileNames}`)
-          .toContain(fileName);
+        .withContext(`Expected ${fileName} to be one of: ${possibleFileNames}`)
+        .toContain(fileName);
     }
   }
 });

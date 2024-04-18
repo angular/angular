@@ -33,27 +33,33 @@ describe('language service adapter', () => {
 
   describe('parse compiler options', () => {
     it('should initialize with angularCompilerOptions from tsconfig.json', () => {
-      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
-        strictTemplates: true,
-        strictInjectionParameters: true,
-      }));
+      expect(ngLS.getCompilerOptions()).toEqual(
+        jasmine.objectContaining({
+          strictTemplates: true,
+          strictInjectionParameters: true,
+        }),
+      );
     });
 
     it('should reparse angularCompilerOptions on tsconfig.json change', () => {
-      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
-        strictTemplates: true,
-        strictInjectionParameters: true,
-      }));
+      expect(ngLS.getCompilerOptions()).toEqual(
+        jasmine.objectContaining({
+          strictTemplates: true,
+          strictInjectionParameters: true,
+        }),
+      );
 
       configFileFs.overwriteConfigFile(TSCONFIG, {
         angularCompilerOptions: {
           strictTemplates: false,
-        }
+        },
       });
 
-      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
-        strictTemplates: false,
-      }));
+      expect(ngLS.getCompilerOptions()).toEqual(
+        jasmine.objectContaining({
+          strictTemplates: false,
+        }),
+      );
     });
 
     it('should always enable strictTemplates if forceStrictTemplates is true', () => {
@@ -63,23 +69,27 @@ describe('language service adapter', () => {
       });
 
       // First make sure the default for strictTemplates is true
-      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
-        strictTemplates: true,
-        strictInjectionParameters: true,
-      }));
+      expect(ngLS.getCompilerOptions()).toEqual(
+        jasmine.objectContaining({
+          strictTemplates: true,
+          strictInjectionParameters: true,
+        }),
+      );
 
       // Change strictTemplates to false
       configFileFs.overwriteConfigFile(TSCONFIG, {
         angularCompilerOptions: {
           strictTemplates: false,
-        }
+        },
       });
 
       // Make sure strictTemplates is still true because forceStrictTemplates
       // is enabled.
-      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
-        strictTemplates: true,
-      }));
+      expect(ngLS.getCompilerOptions()).toEqual(
+        jasmine.objectContaining({
+          strictTemplates: true,
+        }),
+      );
     });
 
     it('should always disable block syntax if enableBlockSyntax is false', () => {
@@ -88,9 +98,11 @@ describe('language service adapter', () => {
         enableBlockSyntax: false,
       });
 
-      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
-        '_enableBlockSyntax': false,
-      }));
+      expect(ngLS.getCompilerOptions()).toEqual(
+        jasmine.objectContaining({
+          '_enableBlockSyntax': false,
+        }),
+      );
     });
 
     it('should pass the @angular/core version along to the compiler', () => {
@@ -99,9 +111,11 @@ describe('language service adapter', () => {
         angularCoreVersion: '17.2.11-rc.8',
       });
 
-      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
-        '_angularCoreVersion': '17.2.11-rc.8',
-      }));
+      expect(ngLS.getCompilerOptions()).toEqual(
+        jasmine.objectContaining({
+          '_angularCoreVersion': '17.2.11-rc.8',
+        }),
+      );
     });
   });
 
@@ -157,13 +171,13 @@ describe('language service adapter', () => {
       const d1 = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(d1.length).toBe(0);
       const p1 = getLastKnownProgram(ngLS);
-      expect(p1).toBe(p0);  // last known program should not have changed
+      expect(p1).toBe(p0); // last known program should not have changed
 
       service.overwrite(TEST_TEMPLATE, `<test-c¦omp></test-comp>`);
       const d2 = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
       expect(d2.length).toBe(0);
       const p2 = getLastKnownProgram(ngLS);
-      expect(p2).not.toBe(p1);  // last known program should have changed
+      expect(p2).not.toBe(p1); // last known program should have changed
     });
 
     it('should be set after getDefinitionAndBoundSpan()', () => {
@@ -176,13 +190,13 @@ describe('language service adapter', () => {
       const d1 = ngLS.getDefinitionAndBoundSpan(TEST_TEMPLATE, pos0);
       expect(d1).toBeDefined();
       const p1 = getLastKnownProgram(ngLS);
-      expect(p1).toBe(p0);  // last known program should not have changed
+      expect(p1).toBe(p0); // last known program should not have changed
 
       const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
       const d2 = ngLS.getDefinitionAndBoundSpan(TEST_TEMPLATE, pos1);
       expect(d2).toBeDefined();
       const p2 = getLastKnownProgram(ngLS);
-      expect(p2).not.toBe(p1);  // last known program should have changed
+      expect(p2).not.toBe(p1); // last known program should have changed
     });
 
     it('should be set after getQuickInfoAtPosition()', () => {
@@ -195,13 +209,13 @@ describe('language service adapter', () => {
       const q1 = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, pos0);
       expect(q1).toBeDefined();
       const p1 = getLastKnownProgram(ngLS);
-      expect(p1).toBe(p0);  // last known program should not have changed
+      expect(p1).toBe(p0); // last known program should not have changed
 
       const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
       const q2 = ngLS.getQuickInfoAtPosition(TEST_TEMPLATE, pos1);
       expect(q2).toBeDefined();
       const p2 = getLastKnownProgram(ngLS);
-      expect(p2).not.toBe(p1);  // last known program should have changed
+      expect(p2).not.toBe(p1); // last known program should have changed
     });
 
     it('should be set after getTypeDefinitionAtPosition()', () => {
@@ -214,13 +228,13 @@ describe('language service adapter', () => {
       const d1 = ngLS.getTypeDefinitionAtPosition(TEST_TEMPLATE, pos0);
       expect(d1).toBeDefined();
       const p1 = getLastKnownProgram(ngLS);
-      expect(p1).toBe(p0);  // last known program should not have changed
+      expect(p1).toBe(p0); // last known program should not have changed
 
       const {position: pos1} = service.overwrite(TEST_TEMPLATE, `{{ ti¦tle }}`);
       const d2 = ngLS.getTypeDefinitionAtPosition(TEST_TEMPLATE, pos1);
       expect(d2).toBeDefined();
       const p2 = getLastKnownProgram(ngLS);
-      expect(p2).not.toBe(p1);  // last known program should have changed
+      expect(p2).not.toBe(p1); // last known program should have changed
     });
   });
 });

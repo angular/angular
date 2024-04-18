@@ -9,7 +9,14 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import ts from 'typescript';
 
-import {assertFileNames, assertTextSpans, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv, OpenBuffer} from '../testing';
+import {
+  assertFileNames,
+  assertTextSpans,
+  createModuleAndProjectWithDeclarations,
+  humanizeDocumentSpanLike,
+  LanguageServiceTestEnv,
+  OpenBuffer,
+} from '../testing';
 
 describe('find references and rename locations', () => {
   let env: LanguageServiceTestEnv;
@@ -34,7 +41,7 @@ describe('find references and rename locations', () => {
           export class AppCmp {
             myProp!: string;
           }`,
-        'app.html': '{{myProp}}'
+        'app.html': '{{myProp}}',
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -69,7 +76,7 @@ describe('find references and rename locations', () => {
           export class AppCmp {
             myProp = '';
           }`,
-        'app.html': '{{myProp}}'
+        'app.html': '{{myProp}}',
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -103,7 +110,7 @@ describe('find references and rename locations', () => {
           @Component({template: '<div (click)="setTitle(2)"></div>'})
           export class AppCmp {
             setTitle(s: number) {}
-          }`
+          }`,
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -140,7 +147,7 @@ describe('find references and rename locations', () => {
           export class AppCmp {
             title = '';
             setTitle(s: string) {}
-          }`
+          }`,
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -173,7 +180,7 @@ describe('find references and rename locations', () => {
           @Component({template: '<div (click)="setTitle($event)"></div>'})
           export class AppCmp {
             setTitle(s: any) {}
-          }`
+          }`,
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -206,7 +213,7 @@ describe('find references and rename locations', () => {
           export class AppCmp {
             title = '';
           }`,
-        'app.html': `<div (click)="title = 'newtitle'"></div>`
+        'app.html': `<div (click)="title = 'newtitle'"></div>`,
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -243,7 +250,7 @@ describe('find references and rename locations', () => {
           export class AppCmp {
             title = '';
             otherTitle = '';
-          }`
+          }`,
       };
 
       env = LanguageServiceTestEnv.setup();
@@ -280,7 +287,7 @@ describe('find references and rename locations', () => {
           @Component({template: '{{hero["name"]}}' })
           export class AppCmp {
             hero: {name: string} = {name: 'Superman'};
-          }`
+          }`,
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -329,7 +336,7 @@ describe('find references and rename locations', () => {
             hero: {name: string} = {name: 'Superman'};
             batman = 'batman';
           }`,
-        'app.html': `<div (click)="hero['name'] = batman"></div>`
+        'app.html': `<div (click)="hero['name'] = batman"></div>`,
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -365,7 +372,7 @@ describe('find references and rename locations', () => {
           @Component({template: '<input #myInput /> {{ myInput.value }}'})
           export class AppCmp {
             title = '';
-          }`
+          }`,
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -402,7 +409,7 @@ describe('find references and rename locations', () => {
           }`,
         'app.html': `
               <ng-template #myTemplate >bla</ng-template>
-              <ng-container [ngTemplateOutlet]="myTemplate"></ng-container>`
+              <ng-container [ngTemplateOutlet]="myTemplate"></ng-container>`,
       };
       env = LanguageServiceTestEnv.setup();
       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -447,7 +454,7 @@ describe('find references and rename locations', () => {
           const files = {
             'app.ts': appFileContents,
             'dir.ts': dirFileContents,
-            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef }}'
+            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef }}',
           };
           env = LanguageServiceTestEnv.setup();
           const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -476,7 +483,7 @@ describe('find references and rename locations', () => {
           const files = {
             'app.ts': appFileContents,
             'dir.ts': dirFileContents,
-            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef.dirValue }}'
+            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef.dirValue }}',
           };
           env = LanguageServiceTestEnv.setup();
           const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -505,14 +512,13 @@ describe('find references and rename locations', () => {
           const files = {
             'app.ts': appFileContents,
             'dir.ts': dirFileContents,
-            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef?.dirValue }}'
+            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef?.dirValue }}',
           };
           env = LanguageServiceTestEnv.setup();
           const project = createModuleAndProjectWithDeclarations(env, 'test', files);
           file = project.openFile('app.html');
           file.moveCursorToText('dirRef?.dirV¦alue');
         });
-
 
         it('should get references', () => {
           const refs = getReferencesAtPosition(file)!;
@@ -535,14 +541,13 @@ describe('find references and rename locations', () => {
           const files = {
             'app.ts': appFileContents,
             'dir.ts': dirFileContents,
-            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef?.doSomething() }}'
+            'app.html': '<div [dir] #dirRef="myDir"></div> {{ dirRef?.doSomething() }}',
           };
           env = LanguageServiceTestEnv.setup();
           const project = createModuleAndProjectWithDeclarations(env, 'test', files);
           file = project.openFile('app.html');
           file.moveCursorToText('dirRef?.doSometh¦ing()');
         });
-
 
         it('should get references', () => {
           const refs = getReferencesAtPosition(file)!;
@@ -579,7 +584,7 @@ describe('find references and rename locations', () => {
               {{hero}}
             </span>
           </div>
-          `
+          `,
         };
         env = LanguageServiceTestEnv.setup();
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -612,7 +617,7 @@ describe('find references and rename locations', () => {
           @Component({template: '<div *ngFor="let hero of heroes; let iRef = index">{{iRef}}</div>'})
           export class AppCmp {
             heroes: string[] = [];
-          }`
+          }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -665,7 +670,7 @@ describe('find references and rename locations', () => {
         }
 
         @NgModule({declarations: [AppCmp, ExampleDirective]})
-        export class AppModule {}`
+        export class AppModule {}`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -701,7 +706,7 @@ describe('find references and rename locations', () => {
             @Component({template: '<div *ngFor="let hero of heroes">{{hero.name}}</div>'})
             export class AppCmp {
               heroes: Array<{name: string}> = [];
-            }`
+            }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -737,7 +742,7 @@ describe('find references and rename locations', () => {
               name = 'Frodo';
 
               setHero(hero: {name: string}) {}
-            }`
+            }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -788,7 +793,7 @@ describe('find references and rename locations', () => {
           birthday = '';
         }
       `,
-            'prefix-pipe.ts': prefixPipe
+            'prefix-pipe.ts': prefixPipe,
           };
 
           env = LanguageServiceTestEnv.setup();
@@ -829,7 +834,7 @@ describe('find references and rename locations', () => {
           birthday = '';
         }
       `,
-          'prefix_pipe.ts': prefixPipe
+          'prefix_pipe.ts': prefixPipe,
         };
         env = LanguageServiceTestEnv.setup();
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -843,9 +848,12 @@ describe('find references and rename locations', () => {
         const result = file.getRenameInfo() as ts.RenameInfoSuccess;
         expect(result.canRename).toEqual(true);
         expect(result.displayName).toEqual('prefixPipe');
-        expect(file.contents.substring(
-                   result.triggerSpan.start, result.triggerSpan.start + result.triggerSpan.length))
-            .toBe('prefixPipe');
+        expect(
+          file.contents.substring(
+            result.triggerSpan.start,
+            result.triggerSpan.start + result.triggerSpan.length,
+          ),
+        ).toBe('prefixPipe');
       });
 
       it('finds rename locations in base class', () => {
@@ -867,7 +875,7 @@ describe('find references and rename locations', () => {
 
             @Component({template: '{{"a" | prefixPipe: "MM/dd/yy"}}'})
             export class AppCmp { }
-          `
+          `,
         };
         env = LanguageServiceTestEnv.setup();
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -893,7 +901,7 @@ describe('find references and rename locations', () => {
           birthday = '';
           prefix = '';
         }
-      `
+      `,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -938,7 +946,7 @@ describe('find references and rename locations', () => {
         @Component({template: '<div string-model [model]="title"></div>'})
         export class AppCmp {
           title = 'title';
-        }`
+        }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -981,7 +989,7 @@ describe('find references and rename locations', () => {
         @Component({template: '<div string-model [model]="title"></div>'})
         export class AppCmp {
           title = 'title';
-        }`
+        }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -1021,7 +1029,7 @@ describe('find references and rename locations', () => {
         @Component({template: '<div string-model model="title"></div>'})
         export class AppCmp {
           title = 'title';
-        }`
+        }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -1062,7 +1070,7 @@ describe('find references and rename locations', () => {
         @Component({template: '<div string-model model="title"></div>'})
         export class AppCmp {
           title = 'title';
-        }`
+        }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -1115,7 +1123,7 @@ describe('find references and rename locations', () => {
         @Component({template: '<div string-model other-dir model="title"></div>'})
         export class AppCmp {
           title = 'title';
-        }`
+        }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -1150,7 +1158,7 @@ describe('find references and rename locations', () => {
         @Component({template: '<div string-model [alias]="title"></div>'})
         export class AppCmp {
           title = 'title';
-        }`
+        }`,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -1204,8 +1212,9 @@ describe('find references and rename locations', () => {
     describe('when cursor is on output key in template', () => {
       let file: OpenBuffer;
       beforeEach(() => {
-        const appFile =
-            generateAppFile(`<div string-model (modelChange)="setTitle($event)"></div>`);
+        const appFile = generateAppFile(
+          `<div string-model (modelChange)="setTitle($event)"></div>`,
+        );
 
         env = LanguageServiceTestEnv.setup();
         const project = env.addProject('test', {'app.ts': appFile, 'string-model.ts': dirFile});
@@ -1269,8 +1278,7 @@ describe('find references and rename locations', () => {
       @Component({template: '<div string-model [(model)]="title"></div>'})
       export class AppCmp {
         title = 'title';
-      }`
-
+      }`,
     };
 
     env = LanguageServiceTestEnv.setup();
@@ -1299,7 +1307,7 @@ describe('find references and rename locations', () => {
         @Component({template: '<div signal-model [(signalModel)]="title"></div>'})
         export class AppCmp {
           title = 'title';
-        }`
+        }`,
     };
 
     env = LanguageServiceTestEnv.setup();
@@ -1333,7 +1341,7 @@ describe('find references and rename locations', () => {
 
         @NgModule({declarations: [AppCmp, Dir]})
         export class AppModule {}
-      `
+      `,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -1387,8 +1395,11 @@ describe('find references and rename locations', () => {
         export class AppModule {}
       `;
         env = LanguageServiceTestEnv.setup();
-        const project =
-            env.addProject('test', {'app.ts': appFile, 'dir.ts': dirFile, 'dir2.ts': dirFile2});
+        const project = env.addProject('test', {
+          'app.ts': appFile,
+          'dir.ts': dirFile,
+          'dir2.ts': dirFile2,
+        });
         file = project.openFile('app.ts');
         file.moveCursorToText('<div di¦r></div>');
       });
@@ -1421,7 +1432,7 @@ describe('find references and rename locations', () => {
         export class AppCmp {
           items = [];
         }
-      `
+      `,
         };
 
         env = LanguageServiceTestEnv.setup();
@@ -1572,24 +1583,23 @@ describe('find references and rename locations', () => {
   });
 
   describe('get rename info', () => {
-    it('indicates inability to rename when cursor is outside template and in a string literal',
-       () => {
-         const comp = `
+    it('indicates inability to rename when cursor is outside template and in a string literal', () => {
+      const comp = `
             import {Component} from '@angular/core';
 
             @Component({selector: 'my-comp', template: ''})
             export class MyComp {
               myProp = 'cannot rename me';
             }`;
-         env = LanguageServiceTestEnv.setup();
-         const project = createModuleAndProjectWithDeclarations(env, 'test', {'my-comp.ts': comp});
-         env.expectNoSourceDiagnostics();
+      env = LanguageServiceTestEnv.setup();
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {'my-comp.ts': comp});
+      env.expectNoSourceDiagnostics();
 
-         const file = project.openFile('my-comp.ts');
-         file.moveCursorToText('cannot rena¦me me');
-         const result = file.getRenameInfo();
-         expect(result.canRename).toEqual(false);
-       });
+      const file = project.openFile('my-comp.ts');
+      file.moveCursorToText('cannot rena¦me me');
+      const result = file.getRenameInfo();
+      expect(result.canRename).toEqual(false);
+    });
 
     it('gets rename info when cursor is outside template', () => {
       const comp = `
@@ -1629,14 +1639,18 @@ describe('find references and rename locations', () => {
       expect(result.canRename).toEqual(true);
       expect(result.displayName).toEqual('myProp');
       expect(result.kind).toEqual('property');
-      expect(text.substring(
-                 result.triggerSpan.start, result.triggerSpan.start + result.triggerSpan.length))
-          .toBe('myProp');
+      expect(
+        text.substring(
+          result.triggerSpan.start,
+          result.triggerSpan.start + result.triggerSpan.length,
+        ),
+      ).toBe('myProp');
       // re-queries also work
       const {triggerSpan, displayName} = file.getRenameInfo() as ts.RenameInfoSuccess;
       expect(displayName).toEqual('myProp');
-      expect(text.substring(triggerSpan.start, triggerSpan.start + triggerSpan.length))
-          .toBe('myProp');
+      expect(text.substring(triggerSpan.start, triggerSpan.start + triggerSpan.length)).toBe(
+        'myProp',
+      );
     });
 
     it('gets rename info when cursor is on a directive input in a template', () => {
@@ -1653,7 +1667,7 @@ describe('find references and rename locations', () => {
             @Component({selector: 'my-comp', template: '<div dir="something"></div>'})
             export class MyComp {
               @Input() myProp!: string;
-            }`
+            }`,
       };
 
       env = LanguageServiceTestEnv.setup();

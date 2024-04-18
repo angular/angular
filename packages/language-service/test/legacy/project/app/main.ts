@@ -29,7 +29,6 @@ import * as ParsingCases from './parsing-cases';
     ParsingCases.WithContextDirective,
     ParsingCases.CompoundCustomButtonDirective,
     ParsingCases.EventSelectorDirective,
-  ]
+  ],
 })
-export class AppModule {
-}
+export class AppModule {}

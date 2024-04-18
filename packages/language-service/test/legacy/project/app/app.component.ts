@@ -24,7 +24,7 @@ export interface Hero {
   template: `
     <h1>{{title}}</h1>
     <h2>{{hero.name}} details!</h2>
-  `
+  `,
 })
 export class AppComponent {
   /** This is the title of the `AppComponent` Component. */
@@ -47,7 +47,7 @@ export class AppComponent {
   readonlyHeroes: ReadonlyArray<Readonly<Hero>> = this.heroes;
   constNames = [{name: 'name'}] as const;
   private myField = 'My Field';
-  strOrNumber: string|number = '';
+  strOrNumber: string | number = '';
   name = 'Frodo';
   setTitle(newTitle: string) {
     this.title = newTitle;

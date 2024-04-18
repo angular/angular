@@ -20,8 +20,12 @@ import {getTemplateInfoAtPosition} from './utils';
  * Queries the TypeScript Language Service to get signature help for a template position.
  */
 export function getSignatureHelp(
-    compiler: NgCompiler, tsLS: ts.LanguageService, fileName: string, position: number,
-    options: ts.SignatureHelpItemsOptions|undefined): ts.SignatureHelpItems|undefined {
+  compiler: NgCompiler,
+  tsLS: ts.LanguageService,
+  fileName: string,
+  position: number,
+  options: ts.SignatureHelpItemsOptions | undefined,
+): ts.SignatureHelpItems | undefined {
   const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
   if (templateInfo === undefined) {
     return undefined;
@@ -32,14 +36,17 @@ export function getSignatureHelp(
     return undefined;
   }
 
-  if (targetInfo.context.kind !== TargetNodeKind.RawExpression &&
-      targetInfo.context.kind !== TargetNodeKind.CallExpressionInArgContext) {
+  if (
+    targetInfo.context.kind !== TargetNodeKind.RawExpression &&
+    targetInfo.context.kind !== TargetNodeKind.CallExpressionInArgContext
+  ) {
     // Signature completions are only available in expressions.
     return undefined;
   }
 
-  const symbol = compiler.getTemplateTypeChecker().getSymbolOfNode(
-      targetInfo.context.node, templateInfo.component);
+  const symbol = compiler
+    .getTemplateTypeChecker()
+    .getSymbolOfNode(targetInfo.context.node, templateInfo.component);
   if (symbol === null || symbol.kind !== SymbolKind.Expression) {
     return undefined;
   }
@@ -48,7 +55,7 @@ export function getSignatureHelp(
   // Additionally, extract the `Call` node for which signature help is being queried, as this
   // is needed to construct the correct span for the results later.
   let shimPosition: number;
-  let expr: Call|SafeCall;
+  let expr: Call | SafeCall;
   switch (targetInfo.context.kind) {
     case TargetNodeKind.RawExpression:
       // For normal expressions, just use the primary TCB position of the expression.
@@ -56,7 +63,7 @@ export function getSignatureHelp(
 
       // Walk up the parents of this expression and try to find a
       // `Call` for which signature information is being fetched.
-      let callExpr: Call|SafeCall|null = null;
+      let callExpr: Call | SafeCall | null = null;
       const parents = targetInfo.context.parents;
       for (let i = parents.length - 1; i >= 0; i--) {
         const parent = parents[i];
@@ -88,8 +95,8 @@ export function getSignatureHelp(
       //
       // First, use `findTightestNode` to locate the `ts.Node` at `symbol`'s location.
       const shimSf = getSourceFileOrError(compiler.getCurrentProgram(), symbol.tcbLocation.tcbPath);
-      let shimNode: ts.Node|null =
-          findTightestNode(shimSf, symbol.tcbLocation.positionInFile) ?? null;
+      let shimNode: ts.Node | null =
+        findTightestNode(shimSf, symbol.tcbLocation.positionInFile) ?? null;
 
       // This node should be somewhere inside a `ts.CallExpression`. Walk up the AST to find it.
       while (shimNode !== null) {

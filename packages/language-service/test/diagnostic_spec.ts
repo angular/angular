@@ -12,7 +12,6 @@ import ts from 'typescript';
 
 import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
 
-
 describe('getSemanticDiagnostics', () => {
   let env: LanguageServiceTestEnv;
   beforeEach(() => {
@@ -29,7 +28,7 @@ describe('getSemanticDiagnostics', () => {
         template: ''
       })
       export class AppComponent {}
-    `
+    `,
     };
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
 
@@ -46,7 +45,7 @@ describe('getSemanticDiagnostics', () => {
         template: '{{nope}}'
       })
       export class AppComponent {}
-    `
+    `,
     };
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
 
@@ -68,7 +67,7 @@ describe('getSemanticDiagnostics', () => {
       })
       export class AppComponent {}
     `,
-      'app.html': `Hello world!`
+      'app.html': `Hello world!`,
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -86,7 +85,7 @@ describe('getSemanticDiagnostics', () => {
         })
         export class AppComponent {}
       `,
-      'app.html': '{{nope}}'
+      'app.html': '{{nope}}',
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -103,7 +102,7 @@ describe('getSemanticDiagnostics', () => {
           template: '{{nope}}',
         })
         export class AppComponent {}
-      `
+      `,
     };
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const diags = project.getDiagnosticsForFile('app.ts');
@@ -124,7 +123,7 @@ describe('getSemanticDiagnostics', () => {
       })
       export class AppComponent {}
     `,
-      'app.html': '{{nope}}'
+      'app.html': '{{nope}}',
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -148,7 +147,7 @@ describe('getSemanticDiagnostics', () => {
         nope = false;
       }
     `,
-      'app.html': '{{nope = true}}'
+      'app.html': '{{nope = true}}',
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -158,9 +157,9 @@ describe('getSemanticDiagnostics', () => {
     const {category, file, messageText} = diags[0];
     expect(category).toBe(ts.DiagnosticCategory.Error);
     expect(file?.fileName).toBe('/test/app.html');
-    expect(messageText)
-        .toContain(
-            `Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}]`);
+    expect(messageText).toContain(
+      `Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}]`,
+    );
   });
 
   it('reports html parse errors along with typecheck errors as diagnostics', () => {
@@ -175,7 +174,7 @@ describe('getSemanticDiagnostics', () => {
         nope = false;
       }
     `,
-      'app.html': '<dne'
+      'app.html': '<dne',
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -214,21 +213,21 @@ describe('getSemanticDiagnostics', () => {
           imports: [CommonModule],
         })
         export class AppModule {}
-    `
+    `,
     };
 
     const project = env.addProject('test', files);
     const diags1 = project.getDiagnosticsForFile('app1.html');
     expect(diags1.length).toBe(1);
-    expect(diags1[0].messageText)
-        .toBe(
-            'Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = false}}] in /test/app1.html@0:0');
+    expect(diags1[0].messageText).toBe(
+      'Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = false}}] in /test/app1.html@0:0',
+    );
 
     const diags2 = project.getDiagnosticsForFile('app2.html');
     expect(diags2.length).toBe(1);
-    expect(diags2[0].messageText)
-        .toBe(
-            'Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}] in /test/app2.html@0:0');
+    expect(diags2[0].messageText).toBe(
+      'Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}] in /test/app2.html@0:0',
+    );
   });
 
   it('reports a diagnostic for a component without a template', () => {
@@ -237,14 +236,12 @@ describe('getSemanticDiagnostics', () => {
       import {Component} from '@angular/core';
       @Component({})
       export class MyComponent {}
-    `
+    `,
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const diags = project.getDiagnosticsForFile('app.ts');
-    expect(diags.map(x => x.messageText)).toEqual([
-      'component is missing a template',
-    ]);
+    expect(diags.map((x) => x.messageText)).toEqual(['component is missing a template']);
   });
 
   it('reports a warning when the project configuration prevents good type inference', () => {
@@ -259,7 +256,7 @@ describe('getSemanticDiagnostics', () => {
         export class MyComponent {
           users = ['Alpha', 'Beta'];
         }
-      `
+      `,
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
@@ -288,7 +285,7 @@ describe('getSemanticDiagnostics', () => {
           template: 'Simple template',
         })
         export class MyComponent<T extends PrivateInterface> {}
-      `
+      `,
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -330,7 +327,7 @@ describe('getSemanticDiagnostics', () => {
           imports: [MyPipeModule],
         })
         export class MyModule {}
-      `
+      `,
     };
 
     const project = env.addProject('test', files);
@@ -344,7 +341,7 @@ describe('getSemanticDiagnostics', () => {
         import {Component} from '@angular/core';
         @Component({ template: '' })
         export class MyComponent {}
-      `
+      `,
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -355,9 +352,9 @@ describe('getSemanticDiagnostics', () => {
 
     const diags = project.getDiagnosticsForFile('app.ts');
     expect(diags.length).toEqual(0);
-    expect(logger.perftrc)
-        .toHaveBeenCalledWith(jasmine.stringMatching(
-            /LanguageService\#LsDiagnostics\:.*\"LsDiagnostics\":\s*\d+.*/g));
+    expect(logger.perftrc).toHaveBeenCalledWith(
+      jasmine.stringMatching(/LanguageService\#LsDiagnostics\:.*\"LsDiagnostics\":\s*\d+.*/g),
+    );
   });
 
   it('does not produce diagnostics when pre-compiled file is found', () => {
@@ -415,10 +412,11 @@ describe('getSemanticDiagnostics', () => {
         export class TestCmp {
           bar: string = "text";
         }
-    `
+    `,
     };
-    const project =
-        createModuleAndProjectWithDeclarations(env, 'test', files, {strictTemplates: true});
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      strictTemplates: true,
+    });
 
     const diags = project.getDiagnosticsForFile('app.ts');
     expect(diags.length).toEqual(1);
@@ -437,7 +435,7 @@ describe('getSemanticDiagnostics', () => {
         export class TestCmp {
           bar: string = "text";
         }
-    `
+    `,
     };
     const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
       strictTemplates: false,
@@ -459,10 +457,11 @@ describe('getSemanticDiagnostics', () => {
           bar: string = "text";
         }
     `,
-      'app.html': `<div ([foo])="bar"></div>`
+      'app.html': `<div ([foo])="bar"></div>`,
     };
-    const project =
-        createModuleAndProjectWithDeclarations(env, 'test', files, {strictTemplates: true});
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      strictTemplates: true,
+    });
 
     const diags = project.getDiagnosticsForFile('app.html');
     expect(diags.length).toEqual(1);
@@ -470,10 +469,9 @@ describe('getSemanticDiagnostics', () => {
     expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
   });
 
-  it('should not produce invalid banana in box warning in external html file without `strictTemplates`',
-     () => {
-       const files = {
-         'app.ts': `
+  it('should not produce invalid banana in box warning in external html file without `strictTemplates`', () => {
+    const files = {
+      'app.ts': `
         import {Component} from '@angular/core';
         @Component({
           selector: 'test',
@@ -483,15 +481,15 @@ describe('getSemanticDiagnostics', () => {
           bar: string = "text";
         }
     `,
-         'app.html': `<div ([foo])="bar"></div>`
-       };
-       const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-         strictTemplates: false,
-       });
+      'app.html': `<div ([foo])="bar"></div>`,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      strictTemplates: false,
+    });
 
-       const diags = project.getDiagnosticsForFile('app.html');
-       expect(diags.length).toEqual(0);
-     });
+    const diags = project.getDiagnosticsForFile('app.html');
+    expect(diags.length).toEqual(0);
+  });
 
   it('generates diagnostic when the library does not export the host directive', () => {
     const files = {
@@ -524,7 +522,7 @@ describe('getSemanticDiagnostics', () => {
       })
       export class Main { }
        `,
-      'test.ng.html': '<lib-post />'
+      'test.ng.html': '<lib-post />',
     };
 
     const tsCompilerOptions = {paths: {'post': ['dist/post']}};
@@ -532,8 +530,9 @@ describe('getSemanticDiagnostics', () => {
 
     const diags = project.getDiagnosticsForFile('test.ng.html');
     expect(diags.length).toBe(1);
-    expect(ts.flattenDiagnosticMessageText(diags[0].messageText, ''))
-        .toContain('HostBindDirective');
+    expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '')).toContain(
+      'HostBindDirective',
+    );
   });
 });
 

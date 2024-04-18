@@ -5,32 +5,66 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, TmplAstBlockNode, TmplAstBoundAttribute, TmplAstDeferredTrigger, TmplAstNode, TmplAstTextAttribute} from '@angular/compiler';
+import {
+  AST,
+  TmplAstBlockNode,
+  TmplAstBoundAttribute,
+  TmplAstDeferredTrigger,
+  TmplAstNode,
+  TmplAstTextAttribute,
+} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, Symbol, SymbolKind, TcbLocation, VariableSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  DirectiveSymbol,
+  DomBindingSymbol,
+  ElementSymbol,
+  InputBindingSymbol,
+  OutputBindingSymbol,
+  PipeSymbol,
+  ReferenceSymbol,
+  Symbol,
+  SymbolKind,
+  TcbLocation,
+  VariableSymbol,
+} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './display_parts';
-import {createDollarAnyQuickInfo, createNgTemplateQuickInfo, createQuickInfoForBuiltIn, isDollarAny} from './quick_info_built_ins';
+import {
+  createDollarAnyQuickInfo,
+  createNgTemplateQuickInfo,
+  createQuickInfoForBuiltIn,
+  isDollarAny,
+} from './quick_info_built_ins';
 import {TemplateTarget} from './template_target';
-import {createQuickInfo, filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTextSpanOfNode} from './utils';
+import {
+  createQuickInfo,
+  filterAliasImports,
+  getDirectiveMatchesForAttribute,
+  getDirectiveMatchesForElementTag,
+  getTextSpanOfNode,
+} from './utils';
 
 export class QuickInfoBuilder {
   private readonly typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
   private readonly parent = this.positionDetails.parent;
 
   constructor(
-      private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
-      private readonly component: ts.ClassDeclaration, private node: TmplAstNode|AST,
-      private readonly positionDetails: TemplateTarget) {}
+    private readonly tsLS: ts.LanguageService,
+    private readonly compiler: NgCompiler,
+    private readonly component: ts.ClassDeclaration,
+    private node: TmplAstNode | AST,
+    private readonly positionDetails: TemplateTarget,
+  ) {}
 
-  get(): ts.QuickInfo|undefined {
+  get(): ts.QuickInfo | undefined {
     if (this.node instanceof TmplAstDeferredTrigger || this.node instanceof TmplAstBlockNode) {
       return createQuickInfoForBuiltIn(this.node, this.positionDetails.position);
     }
 
-    const symbol =
-        this.compiler.getTemplateTypeChecker().getSymbolOfNode(this.node, this.component);
+    const symbol = this.compiler
+      .getTemplateTypeChecker()
+      .getSymbolOfNode(this.node, this.component);
     if (symbol !== null) {
       return this.getQuickInfoForSymbol(symbol);
     }
@@ -48,7 +82,7 @@ export class QuickInfoBuilder {
     return undefined;
   }
 
-  private getQuickInfoForSymbol(symbol: Symbol): ts.QuickInfo|undefined {
+  private getQuickInfoForSymbol(symbol: Symbol): ts.QuickInfo | undefined {
     switch (symbol.kind) {
       case SymbolKind.Input:
       case SymbolKind.Output:
@@ -72,14 +106,15 @@ export class QuickInfoBuilder {
     }
   }
 
-  private getQuickInfoForBindingSymbol(symbol: InputBindingSymbol|OutputBindingSymbol): ts.QuickInfo
-      |undefined {
+  private getQuickInfoForBindingSymbol(
+    symbol: InputBindingSymbol | OutputBindingSymbol,
+  ): ts.QuickInfo | undefined {
     if (symbol.bindings.length === 0) {
       return undefined;
     }
 
     const kind =
-        symbol.kind === SymbolKind.Input ? DisplayInfoKind.PROPERTY : DisplayInfoKind.EVENT;
+      symbol.kind === SymbolKind.Input ? DisplayInfoKind.PROPERTY : DisplayInfoKind.EVENT;
 
     const quickInfo = this.getQuickInfoAtTcbLocation(symbol.bindings[0].tcbLocation);
     return quickInfo === undefined ? undefined : updateQuickInfoKind(quickInfo, kind);
@@ -93,43 +128,65 @@ export class QuickInfoBuilder {
     }
 
     return createQuickInfo(
-        templateNode.name, DisplayInfoKind.ELEMENT, getTextSpanOfNode(templateNode),
-        undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType));
+      templateNode.name,
+      DisplayInfoKind.ELEMENT,
+      getTextSpanOfNode(templateNode),
+      undefined /* containerName */,
+      this.typeChecker.typeToString(symbol.tsType),
+    );
   }
 
   private getQuickInfoForVariableSymbol(symbol: VariableSymbol): ts.QuickInfo {
     const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.initializerLocation);
     return createQuickInfo(
-        symbol.declaration.name, DisplayInfoKind.VARIABLE, getTextSpanOfNode(this.node),
-        undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
+      symbol.declaration.name,
+      DisplayInfoKind.VARIABLE,
+      getTextSpanOfNode(this.node),
+      undefined /* containerName */,
+      this.typeChecker.typeToString(symbol.tsType),
+      documentation,
+    );
   }
 
   private getQuickInfoForReferenceSymbol(symbol: ReferenceSymbol): ts.QuickInfo {
     const documentation = this.getDocumentationFromTypeDefAtLocation(symbol.targetLocation);
     return createQuickInfo(
-        symbol.declaration.name, DisplayInfoKind.REFERENCE, getTextSpanOfNode(this.node),
-        undefined /* containerName */, this.typeChecker.typeToString(symbol.tsType), documentation);
+      symbol.declaration.name,
+      DisplayInfoKind.REFERENCE,
+      getTextSpanOfNode(this.node),
+      undefined /* containerName */,
+      this.typeChecker.typeToString(symbol.tsType),
+      documentation,
+    );
   }
 
-  private getQuickInfoForPipeSymbol(symbol: PipeSymbol): ts.QuickInfo|undefined {
+  private getQuickInfoForPipeSymbol(symbol: PipeSymbol): ts.QuickInfo | undefined {
     if (symbol.tsSymbol !== null) {
       const quickInfo = this.getQuickInfoAtTcbLocation(symbol.tcbLocation);
-      return quickInfo === undefined ? undefined :
-                                       updateQuickInfoKind(quickInfo, DisplayInfoKind.PIPE);
+      return quickInfo === undefined
+        ? undefined
+        : updateQuickInfoKind(quickInfo, DisplayInfoKind.PIPE);
     } else {
       return createQuickInfo(
-          this.typeChecker.typeToString(symbol.classSymbol.tsType), DisplayInfoKind.PIPE,
-          getTextSpanOfNode(this.node));
+        this.typeChecker.typeToString(symbol.classSymbol.tsType),
+        DisplayInfoKind.PIPE,
+        getTextSpanOfNode(this.node),
+      );
     }
   }
 
   private getQuickInfoForDomBinding(symbol: DomBindingSymbol) {
-    if (!(this.node instanceof TmplAstTextAttribute) &&
-        !(this.node instanceof TmplAstBoundAttribute)) {
+    if (
+      !(this.node instanceof TmplAstTextAttribute) &&
+      !(this.node instanceof TmplAstBoundAttribute)
+    ) {
       return undefined;
     }
     const directives = getDirectiveMatchesForAttribute(
-        this.node.name, symbol.host.templateNode, symbol.host.directives);
+      this.node.name,
+      symbol.host.templateNode,
+      symbol.host.directives,
+    );
     if (directives.size === 0) {
       return undefined;
     }
@@ -137,32 +194,42 @@ export class QuickInfoBuilder {
     return this.getQuickInfoForDirectiveSymbol(directives.values().next().value);
   }
 
-  private getQuickInfoForDirectiveSymbol(dir: DirectiveSymbol, node: TmplAstNode|AST = this.node):
-      ts.QuickInfo {
+  private getQuickInfoForDirectiveSymbol(
+    dir: DirectiveSymbol,
+    node: TmplAstNode | AST = this.node,
+  ): ts.QuickInfo {
     const kind = dir.isComponent ? DisplayInfoKind.COMPONENT : DisplayInfoKind.DIRECTIVE;
     const documentation = this.getDocumentationFromTypeDefAtLocation(dir.tcbLocation);
-    let containerName: string|undefined;
+    let containerName: string | undefined;
     if (ts.isClassDeclaration(dir.tsSymbol.valueDeclaration) && dir.ngModule !== null) {
       containerName = dir.ngModule.name.getText();
     }
 
     return createQuickInfo(
-        this.typeChecker.typeToString(dir.tsType), kind, getTextSpanOfNode(this.node),
-        containerName, undefined, documentation);
+      this.typeChecker.typeToString(dir.tsType),
+      kind,
+      getTextSpanOfNode(this.node),
+      containerName,
+      undefined,
+      documentation,
+    );
   }
 
-  private getDocumentationFromTypeDefAtLocation(tcbLocation: TcbLocation):
-      ts.SymbolDisplayPart[]|undefined {
-    const typeDefs =
-        this.tsLS.getTypeDefinitionAtPosition(tcbLocation.tcbPath, tcbLocation.positionInFile);
+  private getDocumentationFromTypeDefAtLocation(
+    tcbLocation: TcbLocation,
+  ): ts.SymbolDisplayPart[] | undefined {
+    const typeDefs = this.tsLS.getTypeDefinitionAtPosition(
+      tcbLocation.tcbPath,
+      tcbLocation.positionInFile,
+    );
     if (typeDefs === undefined || typeDefs.length === 0) {
       return undefined;
     }
     return this.tsLS.getQuickInfoAtPosition(typeDefs[0].fileName, typeDefs[0].textSpan.start)
-        ?.documentation;
+      ?.documentation;
   }
 
-  private getQuickInfoAtTcbLocation(location: TcbLocation): ts.QuickInfo|undefined {
+  private getQuickInfoAtTcbLocation(location: TcbLocation): ts.QuickInfo | undefined {
     const quickInfo = this.tsLS.getQuickInfoAtPosition(location.tcbPath, location.positionInFile);
     if (quickInfo === undefined || quickInfo.displayParts === undefined) {
       return quickInfo;
@@ -180,10 +247,11 @@ function updateQuickInfoKind(quickInfo: ts.QuickInfo, kind: DisplayInfoKind): ts
     return quickInfo;
   }
 
-  const startsWithKind = quickInfo.displayParts.length >= 3 &&
-      displayPartsEqual(quickInfo.displayParts[0], {text: '(', kind: SYMBOL_PUNC}) &&
-      quickInfo.displayParts[1].kind === SYMBOL_TEXT &&
-      displayPartsEqual(quickInfo.displayParts[2], {text: ')', kind: SYMBOL_PUNC});
+  const startsWithKind =
+    quickInfo.displayParts.length >= 3 &&
+    displayPartsEqual(quickInfo.displayParts[0], {text: '(', kind: SYMBOL_PUNC}) &&
+    quickInfo.displayParts[1].kind === SYMBOL_TEXT &&
+    displayPartsEqual(quickInfo.displayParts[2], {text: ')', kind: SYMBOL_PUNC});
   if (startsWithKind) {
     quickInfo.displayParts[1].text = kind;
   } else {
@@ -198,6 +266,6 @@ function updateQuickInfoKind(quickInfo: ts.QuickInfo, kind: DisplayInfoKind): ts
   return quickInfo;
 }
 
-function displayPartsEqual(a: {text: string, kind: string}, b: {text: string, kind: string}) {
+function displayPartsEqual(a: {text: string; kind: string}, b: {text: string; kind: string}) {
   return a.text === b.text && a.kind === b.kind;
 }

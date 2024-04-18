@@ -25,7 +25,7 @@ describe('get typecheck block', () => {
       })
       export class AppCmp {
         myProp!: string;
-      }`
+      }`,
     };
     const env = LanguageServiceTestEnv.setup();
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -55,7 +55,7 @@ describe('get typecheck block', () => {
             export class AppCmp {
               myProp!: string;
             }`,
-      'app.html': '<div>{{ myProp }}</div>'
+      'app.html': '<div>{{ myProp }}</div>',
     };
     const env = LanguageServiceTestEnv.setup();
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
@@ -84,7 +84,7 @@ describe('get typecheck block', () => {
       })
       export class AppCmp {
         myProp!: string;
-      }`
+      }`,
     };
     const env = LanguageServiceTestEnv.setup();
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);

@@ -8,14 +8,18 @@
 
 import tss from 'typescript';
 
-import {getTargetAtPosition, getTcbNodesOfTemplateAtPosition, TargetNodeKind} from '../template_target';
+import {
+  getTargetAtPosition,
+  getTcbNodesOfTemplateAtPosition,
+  TargetNodeKind,
+} from '../template_target';
 import {getTemplateInfoAtPosition} from '../utils';
 
 import {CodeActionMeta, convertFileTextChangeInTcb, FixIdForCodeFixesAll} from './utils';
 
 const errorCodes: number[] = [
-  2551,  // https://github.com/microsoft/TypeScript/blob/8e6e87fea6463e153822e88431720f846c3b8dfa/src/compiler/diagnosticMessages.json#L2493
-  2339,  // https://github.com/microsoft/TypeScript/blob/8e6e87fea6463e153822e88431720f846c3b8dfa/src/compiler/diagnosticMessages.json#L1717
+  2551, // https://github.com/microsoft/TypeScript/blob/8e6e87fea6463e153822e88431720f846c3b8dfa/src/compiler/diagnosticMessages.json#L2493
+  2339, // https://github.com/microsoft/TypeScript/blob/8e6e87fea6463e153822e88431720f846c3b8dfa/src/compiler/diagnosticMessages.json#L1717
 ];
 
 /**
@@ -24,8 +28,15 @@ const errorCodes: number[] = [
  */
 export const missingMemberMeta: CodeActionMeta = {
   errorCodes,
-  getCodeActions: function(
-      {templateInfo, start, compiler, formatOptions, preferences, errorCode, tsLs}) {
+  getCodeActions: function ({
+    templateInfo,
+    start,
+    compiler,
+    formatOptions,
+    preferences,
+    errorCode,
+    tsLs,
+  }) {
     const tcbNodesInfo = getTcbNodesOfTemplateAtPosition(templateInfo, start, compiler);
     if (tcbNodesInfo === null) {
       return [];
@@ -35,11 +46,16 @@ export const missingMemberMeta: CodeActionMeta = {
     const tcb = tcbNodesInfo.componentTcbNode;
     for (const tcbNode of tcbNodesInfo.nodes) {
       const tsLsCodeActions = tsLs.getCodeFixesAtPosition(
-          tcb.getSourceFile().fileName, tcbNode.getStart(), tcbNode.getEnd(), [errorCode],
-          formatOptions, preferences);
+        tcb.getSourceFile().fileName,
+        tcbNode.getStart(),
+        tcbNode.getEnd(),
+        [errorCode],
+        formatOptions,
+        preferences,
+      );
       codeActions.push(...tsLsCodeActions);
     }
-    return codeActions.map(codeAction => {
+    return codeActions.map((codeAction) => {
       return {
         fixName: codeAction.fixName,
         fixId: codeAction.fixId,
@@ -51,8 +67,15 @@ export const missingMemberMeta: CodeActionMeta = {
     });
   },
   fixIds: [FixIdForCodeFixesAll.FIX_SPELLING, FixIdForCodeFixesAll.FIX_MISSING_MEMBER],
-  getAllCodeActions: function(
-      {tsLs, scope, fixId, formatOptions, preferences, compiler, diagnostics}) {
+  getAllCodeActions: function ({
+    tsLs,
+    scope,
+    fixId,
+    formatOptions,
+    preferences,
+    compiler,
+    diagnostics,
+  }) {
     const changes: tss.FileTextChanges[] = [];
     const seen: Set<tss.ClassDeclaration> = new Set();
     for (const diag of diagnostics) {
@@ -82,15 +105,18 @@ export const missingMemberMeta: CodeActionMeta = {
       }
 
       const combinedCodeActions = tsLs.getCombinedCodeFix(
-          {
-            type: scope.type,
-            fileName: tcb.getSourceFile().fileName,
-          },
-          fixId, formatOptions, preferences);
+        {
+          type: scope.type,
+          fileName: tcb.getSourceFile().fileName,
+        },
+        fixId,
+        formatOptions,
+        preferences,
+      );
       changes.push(...combinedCodeActions.changes);
     }
     return {
       changes: convertFileTextChangeInTcb(changes, compiler),
     };
-  }
+  },
 };
