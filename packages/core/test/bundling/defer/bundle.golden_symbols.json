@@ -2115,6 +2115,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invokeAllTriggerCleanupFns"
   },
   {
@@ -2308,9 +2311,6 @@
   },
   {
     "name": "profiler"
-  },
-  {
-    "name": "provideZoneChangeDetection"
   },
   {
     "name": "refreshContentQueries"

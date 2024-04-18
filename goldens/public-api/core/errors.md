@@ -117,6 +117,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     PLATFORM_NOT_FOUND = 401,
     // (undocumented)
+    PROVIDED_BOTH_ZONE_AND_ZONELESS = 408,
+    // (undocumented)
     PROVIDER_IN_WRONG_CONTEXT = 207,
     // (undocumented)
     PROVIDER_NOT_FOUND = -201,

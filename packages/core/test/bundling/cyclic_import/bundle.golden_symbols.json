@@ -798,6 +798,9 @@
     "name": "getNextLContainer"
   },
   {
+    "name": "getNgZoneOptions"
+  },
+  {
     "name": "getNodeInjectable"
   },
   {

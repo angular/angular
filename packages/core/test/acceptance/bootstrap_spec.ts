@@ -14,6 +14,7 @@ import {
   forwardRef,
   NgModule,
   NgZone,
+  provideExperimentalZonelessChangeDetection,
   TestabilityRegistry,
   ViewContainerRef,
   ViewEncapsulation,
@@ -321,6 +322,38 @@ describe('bootstrap', () => {
             const expectedErrorMessage =
               'The `StandaloneComponent` class is a standalone component, ' +
               'which can not be used in the `@NgModule.bootstrap` array.';
+            expect(e).toBeInstanceOf(Error);
+            expect((e as Error).message).toContain(expectedErrorMessage);
+          }
+        }),
+      );
+
+      it(
+        'should throw when using zoneless without ngZone: "noop"',
+        withBody('<my-app></my-app>', async () => {
+          @Component({
+            template: '...',
+          })
+          class App {}
+
+          @NgModule({
+            declarations: [App],
+            providers: [provideExperimentalZonelessChangeDetection()],
+            imports: [BrowserModule],
+            bootstrap: [App],
+          })
+          class MyModule {}
+
+          try {
+            await platformBrowserDynamic().bootstrapModule(MyModule);
+
+            // This test tries to bootstrap a standalone component using NgModule-based bootstrap
+            // mechanisms. We expect standalone components to be bootstrapped via
+            // `bootstrapApplication` API instead.
+            fail('Expected to throw');
+          } catch (e: unknown) {
+            const expectedErrorMessage =
+              "Invalid change detection configuration: `ngZone: 'noop'` must be set in `BootstrapOptions`";
             expect(e).toBeInstanceOf(Error);
             expect((e as Error).message).toContain(expectedErrorMessage);
           }

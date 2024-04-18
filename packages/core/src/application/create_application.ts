@@ -8,7 +8,7 @@
 
 import {Subscription} from 'rxjs';
 
-import {provideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
+import {internalProvideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
 import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {ErrorHandler} from '../error_handler';
@@ -55,7 +55,7 @@ export function internalCreateApplication(config: {
 
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
-    const allAppProviders = [provideZoneChangeDetection(), ...(appProviders || [])];
+    const allAppProviders = [internalProvideZoneChangeDetection({}), ...(appProviders || [])];
     const adapter = new EnvironmentNgModuleRefAdapter({
       providers: allAppProviders,
       parent: platformInjector as EnvironmentInjector,

@@ -1083,6 +1083,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "interpolateParams"
   },
   {
@@ -1291,9 +1294,6 @@
   },
   {
     "name": "profiler"
-  },
-  {
-    "name": "provideZoneChangeDetection"
   },
   {
     "name": "refreshContentQueries"

@@ -64,6 +64,14 @@ describe('Angular with zoneless enabled', () => {
     });
   });
 
+  it('throws an error if used with zone provider', () => {
+    TestBed.configureTestingModule({providers: [provideZoneChangeDetection()]});
+
+    expect(() => TestBed.inject(NgZone)).toThrowError(
+      /NG0408: Invalid change detection configuration/,
+    );
+  });
+
   describe('notifies scheduler', () => {
     it('contributes to application stableness', async () => {
       const val = signal('initial');

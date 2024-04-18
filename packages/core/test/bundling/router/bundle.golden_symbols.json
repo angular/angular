@@ -1524,6 +1524,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invokeDirectivesHostBindings"
   },
   {
@@ -1671,9 +1674,6 @@
     "name": "lookupTokenUsingNodeInjector"
   },
   {
-    "name": "makeEnvironmentProviders"
-  },
-  {
     "name": "makeRecord"
   },
   {
@@ -1818,9 +1818,6 @@
     "name": "pathCompareMap"
   },
   {
-    "name": "performanceMarkFeature"
-  },
-  {
     "name": "pipeFromArray"
   },
   {
@@ -1843,9 +1840,6 @@
   },
   {
     "name": "profiler"
-  },
-  {
-    "name": "provideZoneChangeDetection"
   },
   {
     "name": "readableStreamLikeToAsyncGenerator"
