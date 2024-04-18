@@ -22,9 +22,24 @@ import {FormControlDirective} from './directives/reactive_directives/form_contro
 import {FormControlName} from './directives/reactive_directives/form_control_name';
 import {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 import {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
-import {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
-import {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
-import {CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator} from './directives/validators';
+import {
+  NgSelectOption,
+  SelectControlValueAccessor,
+} from './directives/select_control_value_accessor';
+import {
+  NgSelectMultipleOption,
+  SelectMultipleControlValueAccessor,
+} from './directives/select_multiple_control_value_accessor';
+import {
+  CheckboxRequiredValidator,
+  EmailValidator,
+  MaxLengthValidator,
+  MaxValidator,
+  MinLengthValidator,
+  MinValidator,
+  PatternValidator,
+  RequiredValidator,
+} from './directives/validators';
 
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {ControlValueAccessor} from './directives/control_value_accessor';
@@ -37,12 +52,21 @@ export {NgModelGroup} from './directives/ng_model_group';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 export {RangeValueAccessor} from './directives/range_value_accessor';
-export {FormControlDirective, NG_MODEL_WITH_FORM_CONTROL_WARNING} from './directives/reactive_directives/form_control_directive';
+export {
+  FormControlDirective,
+  NG_MODEL_WITH_FORM_CONTROL_WARNING,
+} from './directives/reactive_directives/form_control_directive';
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
-export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
-export {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
+export {
+  NgSelectOption,
+  SelectControlValueAccessor,
+} from './directives/select_control_value_accessor';
+export {
+  NgSelectMultipleOption,
+  SelectMultipleControlValueAccessor,
+} from './directives/select_multiple_control_value_accessor';
 export {CALL_SET_DISABLED_STATE} from './directives/shared';
 
 export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
@@ -70,8 +94,13 @@ export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
 
 export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] = [NgModel, NgModelGroup, NgForm];
 
-export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
-    [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];
+export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] = [
+  FormControlDirective,
+  FormGroupDirective,
+  FormControlName,
+  FormGroupName,
+  FormArrayName,
+];
 
 /**
  * Internal module used for sharing directives between FormsModule and ReactiveFormsModule
@@ -80,7 +109,6 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
   declarations: SHARED_FORM_DIRECTIVES,
   exports: SHARED_FORM_DIRECTIVES,
 })
-export class ɵInternalFormsSharedModule {
-}
+export class ɵInternalFormsSharedModule {}
 
 export {ɵInternalFormsSharedModule as InternalFormsSharedModule};

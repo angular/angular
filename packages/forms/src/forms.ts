@@ -38,15 +38,80 @@ export {FormControlDirective} from './directives/reactive_directives/form_contro
 export {FormControlName} from './directives/reactive_directives/form_control_name';
 export {FormGroupDirective} from './directives/reactive_directives/form_group_directive';
 export {FormArrayName, FormGroupName} from './directives/reactive_directives/form_group_name';
-export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
-export {SelectMultipleControlValueAccessor, ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
+export {
+  NgSelectOption,
+  SelectControlValueAccessor,
+} from './directives/select_control_value_accessor';
+export {
+  SelectMultipleControlValueAccessor,
+  ɵNgSelectMultipleOption,
+} from './directives/select_multiple_control_value_accessor';
 export {SetDisabledStateOption} from './directives/shared';
-export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
-export {ControlConfig, FormBuilder, NonNullableFormBuilder, UntypedFormBuilder, ɵElement} from './form_builder';
-export {AbstractControl, AbstractControlOptions, ControlEvent, FormControlStatus, PristineChangeEvent as PristineEvent, StatusChangeEvent as StatusEvent, TouchedChangeEvent as TouchedEvent, ValueChangeEvent, ɵCoerceStrArrToNumArr, ɵGetProperty, ɵNavigate, ɵRawValue, ɵTokenize, ɵTypedOrUntyped, ɵValue, ɵWriteable} from './model/abstract_model';
-export {FormArray, isFormArray, UntypedFormArray, ɵFormArrayRawValue, ɵFormArrayValue} from './model/form_array';
-export {FormControl, FormControlOptions, FormControlState, isFormControl, UntypedFormControl, ɵFormControlCtor} from './model/form_control';
-export {FormGroup, FormRecord, isFormGroup, isFormRecord, UntypedFormGroup, ɵFormGroupRawValue, ɵFormGroupValue, ɵOptionalKeys} from './model/form_group';
+export {
+  AsyncValidator,
+  AsyncValidatorFn,
+  CheckboxRequiredValidator,
+  EmailValidator,
+  MaxLengthValidator,
+  MaxValidator,
+  MinLengthValidator,
+  MinValidator,
+  PatternValidator,
+  RequiredValidator,
+  ValidationErrors,
+  Validator,
+  ValidatorFn,
+} from './directives/validators';
+export {
+  ControlConfig,
+  FormBuilder,
+  NonNullableFormBuilder,
+  UntypedFormBuilder,
+  ɵElement,
+} from './form_builder';
+export {
+  AbstractControl,
+  AbstractControlOptions,
+  ControlEvent,
+  FormControlStatus,
+  PristineChangeEvent as PristineEvent,
+  StatusChangeEvent as StatusEvent,
+  TouchedChangeEvent as TouchedEvent,
+  ValueChangeEvent,
+  ɵCoerceStrArrToNumArr,
+  ɵGetProperty,
+  ɵNavigate,
+  ɵRawValue,
+  ɵTokenize,
+  ɵTypedOrUntyped,
+  ɵValue,
+  ɵWriteable,
+} from './model/abstract_model';
+export {
+  FormArray,
+  isFormArray,
+  UntypedFormArray,
+  ɵFormArrayRawValue,
+  ɵFormArrayValue,
+} from './model/form_array';
+export {
+  FormControl,
+  FormControlOptions,
+  FormControlState,
+  isFormControl,
+  UntypedFormControl,
+  ɵFormControlCtor,
+} from './model/form_control';
+export {
+  FormGroup,
+  FormRecord,
+  isFormGroup,
+  isFormRecord,
+  UntypedFormGroup,
+  ɵFormGroupRawValue,
+  ɵFormGroupValue,
+  ɵOptionalKeys,
+} from './model/form_group';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
 

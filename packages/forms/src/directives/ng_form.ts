@@ -6,24 +6,46 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterViewInit, Directive, EventEmitter, forwardRef, Inject, Input, Optional, Provider, Self, ɵWritable as Writable} from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  EventEmitter,
+  forwardRef,
+  Inject,
+  Input,
+  Optional,
+  Provider,
+  Self,
+  ɵWritable as Writable,
+} from '@angular/core';
 
 import {AbstractControl, FormHooks} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
 import {FormGroup} from '../model/form_group';
-import {composeAsyncValidators, composeValidators, NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
+import {
+  composeAsyncValidators,
+  composeValidators,
+  NG_ASYNC_VALIDATORS,
+  NG_VALIDATORS,
+} from '../validators';
 
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {CALL_SET_DISABLED_STATE, SetDisabledStateOption, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
+import {
+  CALL_SET_DISABLED_STATE,
+  SetDisabledStateOption,
+  setUpControl,
+  setUpFormContainer,
+  syncPendingControls,
+} from './shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 const formDirectiveProvider: Provider = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => NgForm)
+  useExisting: forwardRef(() => NgForm),
 };
 
 const resolvedPromise = (() => Promise.resolve())();
@@ -97,7 +119,7 @@ const resolvedPromise = (() => Promise.resolve())();
   providers: [formDirectiveProvider],
   host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
   outputs: ['ngSubmit'],
-  exportAs: 'ngForm'
+  exportAs: 'ngForm',
 })
 export class NgForm extends ControlContainer implements Form, AfterViewInit {
   /**
@@ -133,14 +155,21 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   @Input('ngFormOptions') options!: {updateOn?: FormHooks};
 
   constructor(
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          (AsyncValidator|AsyncValidatorFn)[],
-      @Optional() @Inject(CALL_SET_DISABLED_STATE) private callSetDisabledState?:
-          SetDisabledStateOption) {
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator | ValidatorFn)[],
+    @Optional()
+    @Self()
+    @Inject(NG_ASYNC_VALIDATORS)
+    asyncValidators: (AsyncValidator | AsyncValidatorFn)[],
+    @Optional()
+    @Inject(CALL_SET_DISABLED_STATE)
+    private callSetDisabledState?: SetDisabledStateOption,
+  ) {
     super();
-    this.form =
-        new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
+    this.form = new FormGroup(
+      {},
+      composeValidators(validators),
+      composeAsyncValidators(asyncValidators),
+    );
   }
 
   /** @nodoc */
@@ -191,8 +220,9 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      (dir as Writable<NgModel>).control =
-          <FormControl>container.registerControl(dir.name, dir.control);
+      (dir as Writable<NgModel>).control = <FormControl>(
+        container.registerControl(dir.name, dir.control)
+      );
       setUpControl(dir.control, dir, this.callSetDisabledState);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.add(dir);

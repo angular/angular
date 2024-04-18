@@ -8,12 +8,16 @@
 
 import {Directive, forwardRef, Provider} from '@angular/core';
 
-import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {
+  BuiltInControlValueAccessor,
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+} from './control_value_accessor';
 
 const RANGE_VALUE_ACCESSOR: Provider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => RangeValueAccessor),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -42,16 +46,18 @@ const RANGE_VALUE_ACCESSOR: Provider = {
  */
 @Directive({
   selector:
-      'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
+    'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
-    '(blur)': 'onTouched()'
+    '(blur)': 'onTouched()',
   },
-  providers: [RANGE_VALUE_ACCESSOR]
+  providers: [RANGE_VALUE_ACCESSOR],
 })
-export class RangeValueAccessor extends BuiltInControlValueAccessor implements
-    ControlValueAccessor {
+export class RangeValueAccessor
+  extends BuiltInControlValueAccessor
+  implements ControlValueAccessor
+{
   /**
    * Sets the "value" property on the input element.
    * @nodoc
@@ -64,7 +70,7 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor implements
    * Registers a function called when the control value changes.
    * @nodoc
    */
-  override registerOnChange(fn: (_: number|null) => void): void {
+  override registerOnChange(fn: (_: number | null) => void): void {
     this.onChange = (value) => {
       fn(value == '' ? null : parseFloat(value));
     };
