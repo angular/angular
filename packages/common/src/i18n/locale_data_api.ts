@@ -573,7 +573,7 @@ export function getLocaleCurrencyName(locale: string): string | null {
  *
  * @publicApi
  *
- * @deprecated We recommend you create a map of locale to ISO 4217 currency codes.
+ * @deprecated Angular recommend you create a map of locale to ISO 4217 currency codes.
  * Time relative currency data is provided by the CLDR project. See https://www.unicode.org/cldr/charts/44/supplemental/detailed_territory_currency_information.html
  */
 export function getLocaleCurrencyCode(locale: string): string | null {
@@ -591,6 +591,8 @@ function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols
   return data[ɵLocaleDataIndex.Currencies];
 }
 
+const pluralMapping = ['zero', 'one', 'two', 'few', 'many'];
+
 /**
  * @publicApi
  *
@@ -598,7 +600,8 @@ function getLocaleCurrencies(locale: string): {[code: string]: CurrenciesSymbols
  * Use `Intl.PluralRules` instead
  */
 export const getLocalePluralCase: (locale: string) => (value: number) => Plural =
-  ɵgetLocalePluralCase;
+  (locale: string) => (value) =>
+    pluralMapping.indexOf(ɵgetLocalePluralCase(locale)(value));
 
 function checkFullData(data: any) {
   if (!data[ɵLocaleDataIndex.ExtraData]) {

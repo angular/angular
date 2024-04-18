@@ -7,12 +7,17 @@
  */
 
 import {useNumberIntlImplementation, useNumberLegacyImplementation} from './format_number';
+import {
+  ɵusePluralIntlImplementation as usePluralIntlImplementation,
+  ɵusePluralLegacyImplementation as usePluralLegacyImplementation,
+} from '@angular/core';
 
 /**
  * @publicApi
  */
 export const useIntlImplementation = () => {
   useNumberIntlImplementation();
+  usePluralIntlImplementation();
 };
 
 /**
@@ -20,4 +25,5 @@ export const useIntlImplementation = () => {
  */
 export const useLegacyImplementation = () => {
   useNumberLegacyImplementation();
+  usePluralLegacyImplementation();
 };

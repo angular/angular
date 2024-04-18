@@ -57,7 +57,9 @@ export function formatIntlCurrency(
     parseDigitInfo(digitsInfo);
 
   const isValidIntlDisplay = ['name', 'code', 'symbol', 'narrowSymbol'].includes(displayOrCurrency);
-  let currencyDisplay = isValidIntlDisplay ? displayOrCurrency : undefined;
+  let currencyDisplay = isValidIntlDisplay
+    ? (displayOrCurrency as Intl.NumberFormatOptions['currencyDisplay'])
+    : undefined;
 
   // If the currency is supported by Intl, it will handle the maximum fraction digit automatically
   // It will handle currencies that don't have sub-units (eg JPY, the japanese Yen)

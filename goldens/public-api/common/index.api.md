@@ -889,7 +889,7 @@ export const provideImgixLoader: (path: string) => Provider[];
 // @public
 export function provideNetlifyLoader(path?: string): Provider[];
 
-// @public
+// @public @deprecated
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 // @public
