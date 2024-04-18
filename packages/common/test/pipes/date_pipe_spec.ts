@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DATE_PIPE_DEFAULT_OPTIONS, DatePipe} from '@angular/common';
+import {
+  DATE_PIPE_DEFAULT_OPTIONS,
+  DatePipe,
+  useIntlImplementation,
+  useLegacyImplementation,
+} from '@angular/common';
 import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
 import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
@@ -17,12 +22,26 @@ describe('DatePipe', () => {
   let pipe: DatePipe;
   let date: Date;
 
-  beforeAll(() => ɵregisterLocaleData(localeEn, localeEnExtra));
-  afterAll(() => ɵunregisterLocaleData());
+  // Following ignore is to ease the review of the diff
+  // prettier-ignore
+  [true, false].forEach((useIntl) => {
+  describe(useIntl ? '- Intl formatting - ' : ' - Legacy formatting -', () => {
+
+  if (!useIntl) {
+    beforeAll(() => ɵregisterLocaleData(localeEn, localeEnExtra));
+    afterAll(() => ɵunregisterLocaleData());
+  }
 
   beforeEach(() => {
     date = new Date(2015, 5, 15, 9, 3, 1, 550);
     pipe = new DatePipe('en-US', null);
+    if (useIntl) {
+      useIntlImplementation();
+    }
+  });
+
+  afterEach(() => {
+    useLegacyImplementation();
   });
 
   describe('supports', () => {
@@ -146,38 +165,61 @@ describe('DatePipe', () => {
     });
 
     it('should take timezone into account with timezone offset', () => {
-      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
+      if ((isNode || isAndroid()) && useIntl) {
+        // Node < 22 does not support this format (but works on cloudflare workers for example)
+        // isAndroid() is because the old versions tested on Saucelabs (Android 11 & 12)
+        expect(() => pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toThrow();
+      } else {
+        expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual(
+          'Jan 10, 2017',
+        );
+      }
     });
 
     it('should support an empty string for the timezone', () => {
       expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '')).toEqual('Jan 11, 2017');
     });
 
-    it('should take timezone into account', () => {
+    it('should take timezone into account with timezone offset when using legacy formatting', () => {
+      if(!useIntl) {
       expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
+      }
     });
 
-    it('should take timezone into account with timezone offset', () => {
-      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '-1200')).toEqual('Jan 10, 2017');
-    });
+    if(useIntl) {
+      it('should take timezone into account with Etc format', () => {
+        expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', 'Etc/GMT+12')).toEqual(
+          'Jan 10, 2017',
+        );
+      });
+
+      it('should take timezone into account with timezone name format', () => {
+        expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', 'Europe/Paris')).toEqual(
+          'Jan 11, 2017',
+        );
+      });
+    }
 
     it('should take the default timezone into account when no timezone is passed in', () => {
-      pipe = new DatePipe('en-US', '-1200');
+      pipe = new DatePipe('en-US', useIntl ? 'Etc/GMT+12' : '-1200');
       expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate')).toEqual('Jan 10, 2017');
     });
 
     it('should give precedence to the passed in timezone over the default one', () => {
-      pipe = new DatePipe('en-US', '-1200');
-      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', '+0100')).toEqual('Jan 11, 2017');
+      pipe = new DatePipe('en-US', useIntl ? 'Etc/GMT+12' : '-1200');
+      expect(pipe.transform('2017-01-11T00:00:00', 'mediumDate', useIntl ? 'Europe/Paris': '+0100')).toEqual(
+        'Jan 11, 2017',
+      );
     });
 
     it('should use timezone provided in component as default timezone when no format is passed in', () => {
+      const timezone = useIntl ? 'Etc/GMT+12' : '-1200';
       @Component({
         selector: 'test-component',
         imports: [DatePipe],
         template: '{{ value | date }}',
         standalone: true,
-        providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}],
+        providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone}}],
       })
       class TestComponent {
         value = '2017-01-11T00:00:00';
@@ -191,6 +233,8 @@ describe('DatePipe', () => {
     });
 
     it('should use timezone provided in module as default timezone when no format is passed in', () => {
+      const timezone = useIntl ? 'Etc/GMT+12' : '-1200';
+
       @Component({
         selector: 'test-component',
         imports: [DatePipe],
@@ -203,7 +247,7 @@ describe('DatePipe', () => {
 
       TestBed.configureTestingModule({
         imports: [TestComponent],
-        providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone: '-1200'}}],
+        providers: [{provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: {timezone}}],
       });
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
@@ -230,4 +274,16 @@ describe('DatePipe', () => {
     const content = fixture.nativeElement.textContent;
     expect(content).toBe('Jan 11, 2017');
   });
+  });
+  });
 });
+
+function isAndroid() {
+  if (isNode) return false;
+
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (userAgent.indexOf('android') != -1) {
+    return true;
+  }
+  return false;
+}

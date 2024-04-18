@@ -21,9 +21,7 @@ export {useIntlImplementation, useLegacyImplementation} from './i18n/implementat
 export {
   Plural,
   NumberFormatStyle,
-  FormStyle,
   Time,
-  TranslationWidth,
   FormatWidth,
   NumberSymbol,
   WeekDay,
@@ -49,6 +47,7 @@ export {
   getLocaleCurrencySymbol,
   getLocaleDirection,
 } from './i18n/locale_data_api';
+export {FormStyle, TranslationWidth} from './i18n/format_date_interface';
 export {parseCookieValue as ɵparseCookieValue} from './cookie';
 export {CommonModule} from './common_module';
 export {
