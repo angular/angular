@@ -771,4 +771,35 @@ describe('Angular with scheduler and ZoneJS', () => {
     await fixture.whenStable();
     expect(ticks).toBe(1);
   });
+
+  it('does not cause double change detection with run coalescing when both schedulers are notified',
+     async () => {
+       if (isNode) {
+         return;
+       }
+
+       TestBed.configureTestingModule({
+         providers:
+             [provideZoneChangeDetection({runCoalescing: true, ignoreChangesOutsideZone: false})]
+       });
+       @Component({template: '{{thing()}}', standalone: true})
+       class App {
+         thing = signal('initial');
+       }
+       const fixture = TestBed.createComponent(App);
+       await fixture.whenStable();
+
+       let ticks = 0;
+       TestBed.runInInjectionContext(() => {
+         afterRender(() => {
+           ticks++;
+         });
+       });
+       // notifies the zoneless scheduler
+       fixture.componentInstance.thing.set('new');
+       // notifies the zone scheduler
+       TestBed.inject(NgZone).run(() => {});
+       await fixture.whenStable();
+       expect(ticks).toBe(1);
+     });
 });

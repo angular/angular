@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Subscription} from 'rxjs';
+
 import {ApplicationRef} from '../../application/application_ref';
 import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
@@ -43,29 +45,40 @@ function trackMicrotaskNotificationForDebugging() {
 
 @Injectable({providedIn: 'root'})
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
-  private appRef = inject(ApplicationRef);
-  private taskService = inject(PendingTasks);
-  private pendingRenderTaskId: number|null = null;
-  private shouldRefreshViews = false;
+  private readonly appRef = inject(ApplicationRef);
+  private readonly taskService = inject(PendingTasks);
   private readonly ngZone = inject(NgZone);
-  runningTick = false;
-  private cancelScheduledCallback: null|(() => void) = null;
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly disableScheduling =
       inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
-  private readonly afterTickSubscription = this.appRef.afterTick.subscribe(() => {
-    // If the scheduler isn't running a tick but the application ticked, that means
-    // someone called ApplicationRef.tick manually. In this case, we should cancel
-    // any change detections that had been scheduled so we don't run an extra one.
-    if (!this.runningTick) {
-      this.cleanup();
-    }
-  });
+  private readonly subscriptions = new Subscription();
+
+  private cancelScheduledCallback: null|(() => void) = null;
+  private shouldRefreshViews = false;
+  private pendingRenderTaskId: number|null = null;
   private useMicrotaskScheduler = false;
+  runningTick = false;
 
   constructor() {
+    this.subscriptions.add(this.appRef.afterTick.subscribe(() => {
+      // If the scheduler isn't running a tick but the application ticked, that means
+      // someone called ApplicationRef.tick manually. In this case, we should cancel
+      // any change detections that had been scheduled so we don't run an extra one.
+      if (!this.runningTick) {
+        this.cleanup();
+      }
+    }));
+    this.subscriptions.add(this.ngZone.onUnstable.subscribe(() => {
+      // If the zone becomes unstable when we're not running tick (this happens from the zone.run),
+      // we should cancel any scheduled change detection here because at this point we
+      // know that the zone will stabilize at some point and run change detection itself.
+      if (!this.runningTick) {
+        this.cleanup();
+      }
+    }));
+
     // TODO(atscott): These conditions will need to change when zoneless is the default
     // Instead, they should flip to checking if ZoneJS scheduling is provided
     this.disableScheduling ||= !this.zonelessEnabled &&
@@ -197,7 +210,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   }
 
   ngOnDestroy() {
-    this.afterTickSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
     this.cleanup();
   }
 
