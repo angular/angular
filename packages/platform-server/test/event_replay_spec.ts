@@ -55,7 +55,7 @@ describe('event replay', () => {
 
     describe('server rendering', () => {
       let doc: Document;
-      let eventContract!: EventContract;
+      let eventContract: EventContract;
 
       beforeEach(() => {
         doc = TestBed.inject(DOCUMENT);

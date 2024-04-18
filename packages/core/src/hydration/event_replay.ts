@@ -44,9 +44,10 @@ export function withEventReplay(): Provider[] {
           return () => {
             whenStable(appRef).then(() => {
               const appId = injector.get(APP_ID);
+              // This is set in packages/platform-server/src/utils.ts
               const eventContract = (globalThis as any)[CONTRACT_PROPERTY][appId] as EventContract;
               if (eventContract) {
-                const dispatcher: Dispatcher = new Dispatcher(() => handleEvent);
+                const dispatcher: Dispatcher = new Dispatcher();
                 setEventReplayer(appRef, new Set([appId]), dispatcher);
                 registerDispatcher(eventContract, dispatcher);
               }
@@ -128,8 +129,8 @@ function getLViewByElement(element: Element): LView|null {
 }
 
 function handleEvent(event: EventInfoWrapper) {
-  const eventName = event.getEventType();  // 'click'
-  const nativeElement = event.getAction()?.element;
+  const eventName = event.getEventType();
+  const nativeElement = event.getAction()!.element;
   // Dispatch event via Angular's logic
   if (nativeElement) {
     const lView = getLViewByElement(nativeElement);
@@ -137,15 +138,17 @@ function handleEvent(event: EventInfoWrapper) {
       const tView = lView[TVIEW];
       const listeners = getEventListeners(tView, lView, nativeElement, eventName);
       for (const listener of listeners) {
-        listener();
+        listener(event.getEvent());
       }
     }
   }
 }
 
+type Listener = (value: any) => any;
+
 function getEventListeners(
-    tView: TView, lView: LView, nativeElement: Element, eventName: string): Function[] {
-  const listeners: Function[] = [];
+    tView: TView, lView: LView, nativeElement: Element, eventName: string): Listener[] {
+  const listeners: Listener[] = [];
   const lCleanup = lView[CLEANUP];
   const tCleanup = tView.cleanup;
   if (tCleanup && lCleanup) {
@@ -154,7 +157,7 @@ function getEventListeners(
       const nativeElementIndex = tCleanup[i++];
       if (typeof storedEventName === 'string') {
         const listenerElement = unwrapRNode(lView[nativeElementIndex]) as any as Element;
-        const listener: (value: any) => any = lCleanup[tCleanup[i++]];
+        const listener: Listener = lCleanup[tCleanup[i++]];
         i++;  // increment to the next position;
         if (listenerElement === nativeElement && eventName === storedEventName) {
           listeners.push(listener);
