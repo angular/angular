@@ -5,7 +5,6 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     deps = [
-        "//packages/core/schematics/migrations/compiler-options",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tslint",
         "@npm//tslint",
