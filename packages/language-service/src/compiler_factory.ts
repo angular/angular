@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, resourceChangeTicket} from '@angular/compiler-cli/src/ngtsc/core';
+import {
+  CompilationTicket,
+  freshCompilationTicket,
+  incrementalFromCompilerTicket,
+  NgCompiler,
+  resourceChangeTicket,
+} from '@angular/compiler-cli/src/ngtsc/core';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
@@ -25,12 +31,12 @@ import {LanguageServiceAdapter} from './adapters';
  */
 export class CompilerFactory {
   private readonly incrementalStrategy = new TrackedIncrementalBuildStrategy();
-  private compiler: NgCompiler|null = null;
+  private compiler: NgCompiler | null = null;
 
   constructor(
-      private readonly adapter: LanguageServiceAdapter,
-      private readonly programStrategy: ProgramDriver,
-      private readonly options: NgCompilerOptions,
+    private readonly adapter: LanguageServiceAdapter,
+    private readonly programStrategy: ProgramDriver,
+    private readonly options: NgCompilerOptions,
   ) {}
 
   getOrCreate(): NgCompiler {
@@ -57,12 +63,23 @@ export class CompilerFactory {
     let ticket: CompilationTicket;
     if (this.compiler === null) {
       ticket = freshCompilationTicket(
-          program, this.options, this.incrementalStrategy, this.programStrategy,
-          /* perfRecorder */ null, true, true);
+        program,
+        this.options,
+        this.incrementalStrategy,
+        this.programStrategy,
+        /* perfRecorder */ null,
+        true,
+        true,
+      );
     } else {
       ticket = incrementalFromCompilerTicket(
-          this.compiler, program, this.incrementalStrategy, this.programStrategy,
-          modifiedResourceFiles, /* perfRecorder */ null);
+        this.compiler,
+        program,
+        this.incrementalStrategy,
+        this.programStrategy,
+        modifiedResourceFiles,
+        /* perfRecorder */ null,
+      );
     }
     this.compiler = NgCompiler.fromTicket(ticket, this.adapter);
     return this.compiler;

@@ -7,7 +7,13 @@
  */
 
 import {CssSelector, SelectorMatcher, TmplAstElement, TmplAstTemplate} from '@angular/compiler';
-import {ElementSymbol, PotentialDirective, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  ElementSymbol,
+  PotentialDirective,
+  TemplateSymbol,
+  TemplateTypeChecker,
+  TypeCheckableDirectiveMeta,
+} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
@@ -105,8 +111,9 @@ export interface DomEventCompletion {
  * Completion of an attribute which results in a new directive being matched on an element.
  */
 export interface DirectiveAttributeCompletion {
-  kind: AttributeCompletionKind.DirectiveAttribute|
-      AttributeCompletionKind.StructuralDirectiveAttribute;
+  kind:
+    | AttributeCompletionKind.DirectiveAttribute
+    | AttributeCompletionKind.StructuralDirectiveAttribute;
 
   /**
    * Name of the attribute whose addition causes this directive to match the element.
@@ -178,8 +185,12 @@ export interface DirectiveOutputCompletion {
  * Disambiguated by the `kind` property into various types of completions.
  */
 export type AttributeCompletion =
-    DomAttributeCompletion|DomPropertyCompletion|DirectiveAttributeCompletion|
-    DirectiveInputCompletion|DirectiveOutputCompletion|DomEventCompletion;
+  | DomAttributeCompletion
+  | DomPropertyCompletion
+  | DirectiveAttributeCompletion
+  | DirectiveInputCompletion
+  | DirectiveOutputCompletion
+  | DomEventCompletion;
 
 /**
  * Given an element and its context, produce a `Map` of all possible attribute completions.
@@ -196,14 +207,17 @@ export type AttributeCompletion =
  * completion, not the DOM completion for that name.
  */
 export function buildAttributeCompletionTable(
-    component: ts.ClassDeclaration, element: TmplAstElement|TmplAstTemplate,
-    checker: TemplateTypeChecker): Map<string, AttributeCompletion> {
+  component: ts.ClassDeclaration,
+  element: TmplAstElement | TmplAstTemplate,
+  checker: TemplateTypeChecker,
+): Map<string, AttributeCompletion> {
   const table = new Map<string, AttributeCompletion>();
 
   // Use the `ElementSymbol` or `TemplateSymbol` to iterate over directives present on the node, and
   // their inputs/outputs. These have the highest priority of completion results.
-  const symbol: ElementSymbol|TemplateSymbol =
-      checker.getSymbolOfNode(element, component) as ElementSymbol | TemplateSymbol;
+  const symbol: ElementSymbol | TemplateSymbol = checker.getSymbolOfNode(element, component) as
+    | ElementSymbol
+    | TemplateSymbol;
   const presentDirectives = new Set<ts.ClassDeclaration>();
   if (symbol !== null) {
     // An `ElementSymbol` was available. This means inputs and outputs for directives on the
@@ -273,8 +287,9 @@ export function buildAttributeCompletionTable(
 
   // Next, explore hypothetical directives and determine if the addition of any single attributes
   // can cause the directive to match the element.
-  const directivesInScope =
-      checker.getPotentialTemplateDirectives(component).filter(d => d.isInScope);
+  const directivesInScope = checker
+    .getPotentialTemplateDirectives(component)
+    .filter((d) => d.isInScope);
   if (directivesInScope !== null) {
     const elementSelector = makeElementSelector(element);
 
@@ -327,7 +342,7 @@ export function buildAttributeCompletionTable(
                 directive: dirInScope,
                 propertyName: attrName,
                 classPropertyName:
-                    meta.inputs.getByBindingPropertyName(attrName)![0].classPropertyName,
+                  meta.inputs.getByBindingPropertyName(attrName)![0].classPropertyName,
                 twoWayBindingSupported: meta.outputs.hasBindingPropertyName(attrName + 'Change'),
               });
             } else if (meta.outputs.hasBindingPropertyName(attrName)) {
@@ -337,7 +352,7 @@ export function buildAttributeCompletionTable(
                 directive: dirInScope,
                 eventName: attrName,
                 classPropertyName:
-                    meta.outputs.getByBindingPropertyName(attrName)![0].classPropertyName,
+                  meta.outputs.getByBindingPropertyName(attrName)![0].classPropertyName,
               });
             } else {
               // This attribute causes a new directive to be matched, but does not also correspond
@@ -393,7 +408,7 @@ export function buildAttributeCompletionTable(
   return table;
 }
 
-function buildSnippet(insertSnippet: true|undefined, text: string): string|undefined {
+function buildSnippet(insertSnippet: true | undefined, text: string): string | undefined {
   return insertSnippet ? `${text}="$1"` : undefined;
 }
 
@@ -427,9 +442,13 @@ export enum AsciiSortPriority {
  * `insertText` is `(myOutput)="$0"`.
  */
 export function addAttributeCompletionEntries(
-    entries: ts.CompletionEntry[], completion: AttributeCompletion, isAttributeContext: boolean,
-    isElementContext: boolean, replacementSpan: ts.TextSpan|undefined,
-    insertSnippet: true|undefined): void {
+  entries: ts.CompletionEntry[],
+  completion: AttributeCompletion,
+  isAttributeContext: boolean,
+  isElementContext: boolean,
+  replacementSpan: ts.TextSpan | undefined,
+  insertSnippet: true | undefined,
+): void {
   switch (completion.kind) {
     case AttributeCompletionKind.DirectiveAttribute: {
       entries.push({
@@ -566,7 +585,9 @@ export function addAttributeCompletionEntries(
 }
 
 export function getAttributeCompletionSymbol(
-    completion: AttributeCompletion, checker: ts.TypeChecker): ts.Symbol|null {
+  completion: AttributeCompletion,
+  checker: ts.TypeChecker,
+): ts.Symbol | null {
   switch (completion.kind) {
     case AttributeCompletionKind.DomAttribute:
     case AttributeCompletionKind.DomEvent:
@@ -577,9 +598,11 @@ export function getAttributeCompletionSymbol(
       return completion.directive.tsSymbol;
     case AttributeCompletionKind.DirectiveInput:
     case AttributeCompletionKind.DirectiveOutput:
-      return checker.getDeclaredTypeOfSymbol(completion.directive.tsSymbol)
-                 .getProperty(completion.classPropertyName) ??
-          null;
+      return (
+        checker
+          .getDeclaredTypeOfSymbol(completion.directive.tsSymbol)
+          .getProperty(completion.classPropertyName) ?? null
+      );
   }
 }
 
@@ -619,8 +642,9 @@ function getStructuralAttributes(meta: TypeCheckableDirectiveMeta): string[] {
     // input bindings must begin with the base. E.g. in `*ngFor="let a of b"`, `ngFor` is the
     // base attribute, and the `of` binding key corresponds to an input of `ngForOf`.
     const baseAttr = attributes.reduce(
-        (prev, curr) => prev === null || curr.length < prev.length ? curr : prev,
-        null as string | null);
+      (prev, curr) => (prev === null || curr.length < prev.length ? curr : prev),
+      null as string | null,
+    );
     if (baseAttr === null) {
       // No attributes in this selector?
       continue;
@@ -659,9 +683,11 @@ function getStructuralAttributes(meta: TypeCheckableDirectiveMeta): string[] {
 }
 
 export function buildAnimationCompletionEntries(
-    animations: string[], replacementSpan: ts.TextSpan,
-    kind: DisplayInfoKind): ts.CompletionEntry[] {
-  return animations.map(animation => {
+  animations: string[],
+  replacementSpan: ts.TextSpan,
+  kind: DisplayInfoKind,
+): ts.CompletionEntry[] {
+  return animations.map((animation) => {
     return {
       kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
       name: animation,

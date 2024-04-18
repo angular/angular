@@ -6,12 +6,56 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, AST, ASTWithSource, Call, ImplicitReceiver, ParseSourceSpan, ParseSpan, PropertyRead, RecursiveAstVisitor, SafeCall, TmplAstBoundAttribute, TmplAstBoundDeferredTrigger, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstIcu, TmplAstIfBlock, TmplAstIfBlockBranch, TmplAstNode, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstUnknownBlock, TmplAstVariable, tmplAstVisitAll, TmplAstVisitor} from '@angular/compiler';
+import {
+  AbsoluteSourceSpan,
+  AST,
+  ASTWithSource,
+  Call,
+  ImplicitReceiver,
+  ParseSourceSpan,
+  ParseSpan,
+  PropertyRead,
+  RecursiveAstVisitor,
+  SafeCall,
+  TmplAstBoundAttribute,
+  TmplAstBoundDeferredTrigger,
+  TmplAstBoundEvent,
+  TmplAstBoundText,
+  TmplAstContent,
+  TmplAstDeferredBlock,
+  TmplAstDeferredBlockError,
+  TmplAstDeferredBlockLoading,
+  TmplAstDeferredBlockPlaceholder,
+  TmplAstDeferredTrigger,
+  TmplAstElement,
+  TmplAstForLoopBlock,
+  TmplAstForLoopBlockEmpty,
+  TmplAstIcu,
+  TmplAstIfBlock,
+  TmplAstIfBlockBranch,
+  TmplAstNode,
+  TmplAstReference,
+  TmplAstSwitchBlock,
+  TmplAstSwitchBlockCase,
+  TmplAstTemplate,
+  TmplAstText,
+  TmplAstTextAttribute,
+  TmplAstUnknownBlock,
+  TmplAstVariable,
+  tmplAstVisitAll,
+  TmplAstVisitor,
+} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import tss from 'typescript';
 
-import {isBoundEventWithSyntheticHandler, isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue, TemplateInfo} from './utils';
+import {
+  isBoundEventWithSyntheticHandler,
+  isTemplateNodeWithKeyAndValue,
+  isWithin,
+  isWithinKeyValue,
+  TemplateInfo,
+} from './utils';
 
 /**
  * Contextual information for a target position within the template.
@@ -31,12 +75,12 @@ export interface TemplateTarget {
    * The `TmplAstTemplate` which contains the found node or expression (or `null` if in the root
    * template).
    */
-  template: TmplAstTemplate|null;
+  template: TmplAstTemplate | null;
 
   /**
    * The immediate parent node of the targeted node.
    */
-  parent: TmplAstNode|AST|null;
+  parent: TmplAstNode | AST | null;
 }
 
 /**
@@ -47,11 +91,17 @@ export interface TemplateTarget {
  * name as well as a body, and a given position definitively points to one or the other.
  * `TargetNode` captures the node itself, as well as this additional contextual disambiguation.
  */
-export type TargetContext = SingleNodeTarget|MultiNodeTarget;
+export type TargetContext = SingleNodeTarget | MultiNodeTarget;
 
 /** Contexts which logically target only a single node in the template AST. */
-export type SingleNodeTarget = RawExpression|CallExpressionInArgContext|RawTemplateNode|
-    ElementInBodyContext|ElementInTagContext|AttributeInKeyContext|AttributeInValueContext;
+export type SingleNodeTarget =
+  | RawExpression
+  | CallExpressionInArgContext
+  | RawTemplateNode
+  | ElementInBodyContext
+  | ElementInTagContext
+  | AttributeInKeyContext
+  | AttributeInValueContext;
 
 /**
  * Contexts which logically target multiple nodes in the template AST, which cannot be
@@ -94,7 +144,7 @@ export interface RawExpression {
  */
 export interface CallExpressionInArgContext {
   kind: TargetNodeKind.CallExpressionInArgContext;
-  node: Call|SafeCall;
+  node: Call | SafeCall;
 }
 
 /**
@@ -111,7 +161,7 @@ export interface RawTemplateNode {
  */
 export interface ElementInTagContext {
   kind: TargetNodeKind.ElementInTagContext;
-  node: TmplAstElement|TmplAstTemplate;
+  node: TmplAstElement | TmplAstTemplate;
 }
 
 /**
@@ -120,17 +170,17 @@ export interface ElementInTagContext {
  */
 export interface ElementInBodyContext {
   kind: TargetNodeKind.ElementInBodyContext;
-  node: TmplAstElement|TmplAstTemplate;
+  node: TmplAstElement | TmplAstTemplate;
 }
 
 export interface AttributeInKeyContext {
   kind: TargetNodeKind.AttributeInKeyContext;
-  node: TmplAstTextAttribute|TmplAstBoundAttribute|TmplAstBoundEvent;
+  node: TmplAstTextAttribute | TmplAstBoundAttribute | TmplAstBoundEvent;
 }
 
 export interface AttributeInValueContext {
   kind: TargetNodeKind.AttributeInValueContext;
-  node: TmplAstTextAttribute|TmplAstBoundAttribute|TmplAstBoundEvent;
+  node: TmplAstTextAttribute | TmplAstBoundAttribute | TmplAstBoundEvent;
 }
 
 /**
@@ -156,8 +206,10 @@ class OutsideKeyValueMarkerAst extends AST {
  * This special marker is added to the path when the cursor is within the sourceSpan but not the key
  * or value span of a node with key/value spans.
  */
-const OUTSIDE_K_V_MARKER =
-    new OutsideKeyValueMarkerAst(new ParseSpan(-1, -1), new AbsoluteSourceSpan(-1, -1));
+const OUTSIDE_K_V_MARKER = new OutsideKeyValueMarkerAst(
+  new ParseSpan(-1, -1),
+  new AbsoluteSourceSpan(-1, -1),
+);
 
 /**
  * Return the template AST node or expression AST node that most accurately
@@ -166,8 +218,10 @@ const OUTSIDE_K_V_MARKER =
  * @param template AST tree of the template
  * @param position target cursor position
  */
-export function getTargetAtPosition(template: TmplAstNode[], position: number): TemplateTarget|
-    null {
+export function getTargetAtPosition(
+  template: TmplAstNode[],
+  position: number,
+): TemplateTarget | null {
   const path = TemplateTargetVisitor.visitTemplate(template, position);
   if (path.length === 0) {
     return null;
@@ -176,7 +230,7 @@ export function getTargetAtPosition(template: TmplAstNode[], position: number): 
   const candidate = path[path.length - 1];
   // Walk up the result nodes to find the nearest `TmplAstTemplate` which contains the targeted
   // node.
-  let context: TmplAstTemplate|null = null;
+  let context: TmplAstTemplate | null = null;
   for (let i = path.length - 2; i >= 0; i--) {
     const node = path[i];
     if (node instanceof TmplAstTemplate) {
@@ -187,14 +241,16 @@ export function getTargetAtPosition(template: TmplAstNode[], position: number): 
 
   // Given the candidate node, determine the full targeted context.
   let nodeInContext: TargetContext;
-  if ((candidate instanceof Call || candidate instanceof SafeCall) &&
-      isWithin(position, candidate.argumentSpan)) {
+  if (
+    (candidate instanceof Call || candidate instanceof SafeCall) &&
+    isWithin(position, candidate.argumentSpan)
+  ) {
     nodeInContext = {
       kind: TargetNodeKind.CallExpressionInArgContext,
       node: candidate,
     };
   } else if (candidate instanceof AST) {
-    const parents = path.filter((value: AST|TmplAstNode): value is AST => value instanceof AST);
+    const parents = path.filter((value: AST | TmplAstNode): value is AST => value instanceof AST);
     // Remove the current node from the parents list.
     parents.pop();
 
@@ -209,7 +265,7 @@ export function getTargetAtPosition(template: TmplAstNode[], position: number): 
 
     // Calculate the end of the element tag name. Any position beyond this is in the element body.
     const tagEndPos =
-        candidate.sourceSpan.start.offset + 1 /* '<' element open */ + candidate.name.length;
+      candidate.sourceSpan.start.offset + 1 /* '<' element open */ + candidate.name.length;
     if (position > tagEndPos) {
       // Position is within the element body
       nodeInContext = {
@@ -223,13 +279,17 @@ export function getTargetAtPosition(template: TmplAstNode[], position: number): 
       };
     }
   } else if (
-      (candidate instanceof TmplAstBoundAttribute || candidate instanceof TmplAstBoundEvent ||
-       candidate instanceof TmplAstTextAttribute) &&
-      candidate.keySpan !== undefined) {
+    (candidate instanceof TmplAstBoundAttribute ||
+      candidate instanceof TmplAstBoundEvent ||
+      candidate instanceof TmplAstTextAttribute) &&
+    candidate.keySpan !== undefined
+  ) {
     const previousCandidate = path[path.length - 2];
-    if (candidate instanceof TmplAstBoundEvent &&
-        previousCandidate instanceof TmplAstBoundAttribute &&
-        candidate.name === previousCandidate.name + 'Change') {
+    if (
+      candidate instanceof TmplAstBoundEvent &&
+      previousCandidate instanceof TmplAstBoundAttribute &&
+      candidate.name === previousCandidate.name + 'Change'
+    ) {
       const boundAttribute: TmplAstBoundAttribute = previousCandidate;
       const boundEvent: TmplAstBoundEvent = candidate;
       nodeInContext = {
@@ -254,7 +314,7 @@ export function getTargetAtPosition(template: TmplAstNode[], position: number): 
     };
   }
 
-  let parent: TmplAstNode|AST|null = null;
+  let parent: TmplAstNode | AST | null = null;
   if (nodeInContext.kind === TargetNodeKind.TwoWayBindingContext && path.length >= 3) {
     parent = path[path.length - 3];
   } else if (path.length >= 2) {
@@ -265,14 +325,13 @@ export function getTargetAtPosition(template: TmplAstNode[], position: number): 
 }
 
 function findFirstMatchingNodeForSourceSpan(
-    tcb: tss.Node, sourceSpan: ParseSourceSpan|AbsoluteSourceSpan) {
-  return findFirstMatchingNode(
-      tcb,
-      {
-        withSpan: sourceSpan,
-        filter: (node: tss.Node): node is tss.Node => true,
-      },
-  );
+  tcb: tss.Node,
+  sourceSpan: ParseSourceSpan | AbsoluteSourceSpan,
+) {
+  return findFirstMatchingNode(tcb, {
+    withSpan: sourceSpan,
+    filter: (node: tss.Node): node is tss.Node => true,
+  });
 }
 
 /**
@@ -288,8 +347,10 @@ interface TcbNodesInfoForTemplate {
  *
  */
 export function getTcbNodesOfTemplateAtPosition(
-    templateInfo: TemplateInfo, position: number, compiler: NgCompiler): TcbNodesInfoForTemplate|
-    null {
+  templateInfo: TemplateInfo,
+  position: number,
+  compiler: NgCompiler,
+): TcbNodesInfoForTemplate | null {
   const target = getTargetAtPosition(templateInfo.template, position);
   if (target === null) {
     return null;
@@ -300,22 +361,25 @@ export function getTcbNodesOfTemplateAtPosition(
     return null;
   }
 
-  const tcbNodes: (tss.Node|null)[] = [];
+  const tcbNodes: (tss.Node | null)[] = [];
   if (target.context.kind === TargetNodeKind.RawExpression) {
     const targetNode = target.context.node;
     if (targetNode instanceof PropertyRead) {
       const tsNode = findFirstMatchingNode(tcb, {
         withSpan: targetNode.nameSpan,
-        filter: (node): node is tss.PropertyAccessExpression => tss.isPropertyAccessExpression(node)
+        filter: (node): node is tss.PropertyAccessExpression =>
+          tss.isPropertyAccessExpression(node),
       });
       tcbNodes.push(tsNode?.name ?? null);
     } else {
       tcbNodes.push(findFirstMatchingNodeForSourceSpan(tcb, target.context.node.sourceSpan));
     }
   } else if (target.context.kind === TargetNodeKind.TwoWayBindingContext) {
-    const targetNodes = target.context.nodes.map(n => n.sourceSpan).map((node) => {
-      return findFirstMatchingNodeForSourceSpan(tcb, node);
-    });
+    const targetNodes = target.context.nodes
+      .map((n) => n.sourceSpan)
+      .map((node) => {
+        return findFirstMatchingNodeForSourceSpan(tcb, node);
+      });
     tcbNodes.push(...targetNodes);
   } else {
     tcbNodes.push(findFirstMatchingNodeForSourceSpan(tcb, target.context.node.sourceSpan));
@@ -335,18 +399,20 @@ export function getTcbNodesOfTemplateAtPosition(
 class TemplateTargetVisitor implements TmplAstVisitor {
   // We need to keep a path instead of the last node because we might need more
   // context for the last node, for example what is the parent node?
-  readonly path: Array<TmplAstNode|AST> = [];
+  readonly path: Array<TmplAstNode | AST> = [];
 
-  static visitTemplate(template: TmplAstNode[], position: number): Array<TmplAstNode|AST> {
+  static visitTemplate(template: TmplAstNode[], position: number): Array<TmplAstNode | AST> {
     const visitor = new TemplateTargetVisitor(position);
     visitor.visitAll(template);
     const {path} = visitor;
 
-    const strictPath = path.filter(v => v !== OUTSIDE_K_V_MARKER);
+    const strictPath = path.filter((v) => v !== OUTSIDE_K_V_MARKER);
     const candidate = strictPath[strictPath.length - 1];
-    const matchedASourceSpanButNotAKvSpan = path.some(v => v === OUTSIDE_K_V_MARKER);
-    if (matchedASourceSpanButNotAKvSpan &&
-        (candidate instanceof TmplAstTemplate || candidate instanceof TmplAstElement)) {
+    const matchedASourceSpanButNotAKvSpan = path.some((v) => v === OUTSIDE_K_V_MARKER);
+    if (
+      matchedASourceSpanButNotAKvSpan &&
+      (candidate instanceof TmplAstTemplate || candidate instanceof TmplAstElement)
+    ) {
       // Template nodes with key and value spans are always defined on a `TmplAstTemplate` or
       // `TmplAstElement`. If we found a node on a template with a `sourceSpan` that includes the
       // cursor, it is possible that we are outside the k/v spans (i.e. in-between them). If this is
@@ -367,11 +433,11 @@ class TemplateTargetVisitor implements TmplAstVisitor {
       return;
     }
 
-    const last: TmplAstNode|AST|undefined = this.path[this.path.length - 1];
+    const last: TmplAstNode | AST | undefined = this.path[this.path.length - 1];
     const withinKeySpanOfLastNode =
-        last && isTemplateNodeWithKeyAndValue(last) && isWithin(this.position, last.keySpan);
+      last && isTemplateNodeWithKeyAndValue(last) && isWithin(this.position, last.keySpan);
     const withinKeySpanOfCurrentNode =
-        isTemplateNodeWithKeyAndValue(node) && isWithin(this.position, node.keySpan);
+      isTemplateNodeWithKeyAndValue(node) && isWithin(this.position, node.keySpan);
     if (withinKeySpanOfLastNode && !withinKeySpanOfCurrentNode) {
       // We've already identified that we are within a `keySpan` of a node.
       // Unless we are _also_ in the `keySpan` of the current node (happens with two way bindings),
@@ -403,12 +469,11 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     this.visitElementOrTemplate(element);
   }
 
-
   visitTemplate(template: TmplAstTemplate) {
     this.visitElementOrTemplate(template);
   }
 
-  visitElementOrTemplate(element: TmplAstTemplate|TmplAstElement) {
+  visitElementOrTemplate(element: TmplAstTemplate | TmplAstElement) {
     this.visitAll(element.attributes);
     this.visitAll(element.inputs);
     // We allow the path to contain both the `TmplAstBoundAttribute` and `TmplAstBoundEvent` for
@@ -417,8 +482,10 @@ class TemplateTargetVisitor implements TmplAstVisitor {
     // path that also contains the `PropertyWrite` from the `TmplAstBoundEvent`. This early return
     // condition ensures we target just `TmplAstBoundAttribute` for this case and exclude
     // `TmplAstBoundEvent` children.
-    if (this.path[this.path.length - 1] !== element &&
-        !(this.path[this.path.length - 1] instanceof TmplAstBoundAttribute)) {
+    if (
+      this.path[this.path.length - 1] !== element &&
+      !(this.path[this.path.length - 1] instanceof TmplAstBoundAttribute)
+    ) {
       return;
     }
     this.visitAll(element.outputs);
@@ -561,7 +628,7 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     super();
   }
 
-  override visit(node: AST, path: Array<TmplAstNode|AST>) {
+  override visit(node: AST, path: Array<TmplAstNode | AST>) {
     if (node instanceof ASTWithSource) {
       // In order to reduce noise, do not include `ASTWithSource` in the path.
       // For the purpose of source spans, there is no difference between

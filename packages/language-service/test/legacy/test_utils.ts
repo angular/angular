@@ -13,17 +13,19 @@ import {MockService} from './mock_host';
 export interface HumanizedDefinitionInfo {
   fileName: string;
   textSpan: string;
-  contextSpan: string|undefined;
+  contextSpan: string | undefined;
 }
 
 export function humanizeDefinitionInfo(
-    def: ts.DefinitionInfo, service: MockService): HumanizedDefinitionInfo {
+  def: ts.DefinitionInfo,
+  service: MockService,
+): HumanizedDefinitionInfo {
   const snapshot = service.getScriptInfo(def.fileName).getSnapshot();
   return {
     fileName: def.fileName,
     textSpan: snapshot.getText(def.textSpan.start, def.textSpan.start + def.textSpan.length),
-    contextSpan: def.contextSpan ?
-        snapshot.getText(def.contextSpan.start, def.contextSpan.start + def.contextSpan.length) :
-        undefined,
+    contextSpan: def.contextSpan
+      ? snapshot.getText(def.contextSpan.start, def.contextSpan.start + def.contextSpan.length)
+      : undefined,
   };
 }

@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseLocation, ParseSourceSpan, TmplAstBlockNode, TmplAstDeferredBlock, TmplAstForLoopBlock, TmplAstIfBlock, TmplAstNode, TmplAstRecursiveVisitor, tmplAstVisitAll} from '@angular/compiler';
+import {
+  ParseLocation,
+  ParseSourceSpan,
+  TmplAstBlockNode,
+  TmplAstDeferredBlock,
+  TmplAstForLoopBlock,
+  TmplAstIfBlock,
+  TmplAstNode,
+  TmplAstRecursiveVisitor,
+  tmplAstVisitAll,
+} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
@@ -35,7 +45,7 @@ export function getOutliningSpans(compiler: NgCompiler, fileName: string): ts.Ou
         templatesInFile.push(template);
       }
     }
-    return templatesInFile.map(template => BlockVisitor.getBlockSpans(template)).flat();
+    return templatesInFile.map((template) => BlockVisitor.getBlockSpans(template)).flat();
   } else {
     const templateInfo = getFirstComponentForTemplateFile(fileName, compiler);
     if (templateInfo === undefined) {
@@ -53,7 +63,7 @@ class BlockVisitor extends TmplAstRecursiveVisitor {
     const visitor = new BlockVisitor();
     tmplAstVisitAll(visitor, templateNodes);
     const {blocks} = visitor;
-    return blocks.map(block => {
+    return blocks.map((block) => {
       let mainBlockSpan = block.sourceSpan;
       // The source span of for loops and deferred blocks contain all parts (ForLoopBlockEmpty,
       // DeferredBlockLoading, etc.). The folding range should only include the main block span for
@@ -65,7 +75,8 @@ class BlockVisitor extends TmplAstRecursiveVisitor {
         // We move the end back 1 character so we do not consume the close brace of the block in the
         // range.
         textSpan: toTextSpan(
-            new ParseSourceSpan(block.startSourceSpan.end, mainBlockSpan.end.moveBy(-1))),
+          new ParseSourceSpan(block.startSourceSpan.end, mainBlockSpan.end.moveBy(-1)),
+        ),
         hintSpan: toTextSpan(block.startSourceSpan),
         bannerText: '...',
         autoCollapse: false,
@@ -75,9 +86,11 @@ class BlockVisitor extends TmplAstRecursiveVisitor {
   }
 
   visit(node: TmplAstNode) {
-    if (node instanceof TmplAstBlockNode
-        // Omit `IfBlock` because we include the branches individually
-        && !(node instanceof TmplAstIfBlock)) {
+    if (
+      node instanceof TmplAstBlockNode &&
+      // Omit `IfBlock` because we include the branches individually
+      !(node instanceof TmplAstIfBlock)
+    ) {
       this.blocks.push(node);
     }
   }

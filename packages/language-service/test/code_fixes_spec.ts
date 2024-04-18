@@ -32,27 +32,32 @@ describe('code fixes', () => {
          title1 = '';
        }
      `,
-      'app.html': `{{title}}`
+      'app.html': `{{title}}`,
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const diags = project.getDiagnosticsForFile('app.html');
     const appFile = project.openFile('app.html');
     appFile.moveCursorToText('title¦');
-    const codeActions =
-        project.getCodeFixesAtPosition('app.html', appFile.cursor, appFile.cursor, [diags[0].code]);
+    const codeActions = project.getCodeFixesAtPosition('app.html', appFile.cursor, appFile.cursor, [
+      diags[0].code,
+    ]);
     expectIncludeReplacementText({
       codeActions,
       content: appFile.contents,
       text: 'title',
       newText: 'title1',
-      fileName: 'app.html'
+      fileName: 'app.html',
     });
 
     const appTsFile = project.openFile('app.ts');
     appTsFile.moveCursorToText(`title1 = '';\n¦`);
-    expectIncludeAddText(
-        {codeActions, position: appTsFile.cursor, text: 'title: any;\n', fileName: 'app.ts'});
+    expectIncludeAddText({
+      codeActions,
+      position: appTsFile.cursor,
+      text: 'title: any;\n',
+      fileName: 'app.ts',
+    });
   });
 
   it('should fix a missing method when property does not exist on type', () => {
@@ -66,15 +71,16 @@ describe('code fixes', () => {
        export class AppComponent {
        }
      `,
-      'app.html': `{{title('Angular')}}`
+      'app.html': `{{title('Angular')}}`,
     };
 
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const diags = project.getDiagnosticsForFile('app.html');
     const appFile = project.openFile('app.html');
     appFile.moveCursorToText('title¦');
-    const codeActions =
-        project.getCodeFixesAtPosition('app.html', appFile.cursor, appFile.cursor, [diags[0].code]);
+    const codeActions = project.getCodeFixesAtPosition('app.html', appFile.cursor, appFile.cursor, [
+      diags[0].code,
+    ]);
 
     const appTsFile = project.openFile('app.ts');
     appTsFile.moveCursorToText(`class AppComponent {¦`);
@@ -82,14 +88,13 @@ describe('code fixes', () => {
       codeActions,
       position: appTsFile.cursor,
       text: `\ntitle(arg0: string) {\nthrow new Error('Method not implemented.');\n}`,
-      fileName: 'app.ts'
+      fileName: 'app.ts',
     });
   });
 
-  it('should not show fix all errors when there is only one diagnostic in the template but has two or more diagnostics in TCB',
-     () => {
-       const files = {
-         'app.ts': `
+  it('should not show fix all errors when there is only one diagnostic in the template but has two or more diagnostics in TCB', () => {
+    const files = {
+      'app.ts': `
          import {Component, NgModule} from '@angular/core';
 
          @Component({
@@ -99,17 +104,18 @@ describe('code fixes', () => {
            title1 = '';
          }
        `,
-         'app.html': `<div *ngIf="title" />`
-       };
+      'app.html': `<div *ngIf="title" />`,
+    };
 
-       const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-       const diags = project.getDiagnosticsForFile('app.html');
-       const appFile = project.openFile('app.html');
-       appFile.moveCursorToText('title¦');
-       const codeActions = project.getCodeFixesAtPosition(
-           'app.html', appFile.cursor, appFile.cursor, [diags[0].code]);
-       expectNotIncludeFixAllInfo(codeActions);
-     });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const diags = project.getDiagnosticsForFile('app.html');
+    const appFile = project.openFile('app.html');
+    appFile.moveCursorToText('title¦');
+    const codeActions = project.getCodeFixesAtPosition('app.html', appFile.cursor, appFile.cursor, [
+      diags[0].code,
+    ]);
+    expectNotIncludeFixAllInfo(codeActions);
+  });
 
   it('should fix all errors when property does not exist on type', () => {
     const files = {
@@ -135,14 +141,14 @@ describe('code fixes', () => {
       content: appFile.contents,
       text: 'tite',
       newText: 'title',
-      fileName: 'app.ts'
+      fileName: 'app.ts',
     });
     expectIncludeReplacementTextForFileTextChange({
       fileTextChanges: fixesAllSpelling.changes,
       content: appFile.contents,
       text: 'bannr',
       newText: 'banner',
-      fileName: 'app.ts'
+      fileName: 'app.ts',
     });
 
     const fixAllMissingMember = project.getCombinedCodeFix('app.ts', 'fixMissingMember' as string);
@@ -151,13 +157,13 @@ describe('code fixes', () => {
       fileTextChanges: fixAllMissingMember.changes,
       position: appFile.cursor,
       text: 'tite: any;\n',
-      fileName: 'app.ts'
+      fileName: 'app.ts',
     });
     expectIncludeAddTextForFileTextChange({
       fileTextChanges: fixAllMissingMember.changes,
       position: appFile.cursor,
       text: 'bannr: any;\n',
-      fileName: 'app.ts'
+      fileName: 'app.ts',
     });
   });
 
@@ -181,15 +187,16 @@ describe('code fixes', () => {
     const appFile = project.openFile('app.html');
     appFile.moveCursorToText('¦([ngModel');
 
-    const codeActions =
-        project.getCodeFixesAtPosition('app.html', appFile.cursor, appFile.cursor, [diags[0].code]);
+    const codeActions = project.getCodeFixesAtPosition('app.html', appFile.cursor, appFile.cursor, [
+      diags[0].code,
+    ]);
     expectIncludeReplacementText({
       codeActions,
       content: appFile.contents,
       text: `([ngModel])="title"`,
       newText: `[(ngModel)]="title"`,
       fileName: 'app.html',
-      description: `fix invalid banana-in-box for '([ngModel])="title"'`
+      description: `fix invalid banana-in-box for '([ngModel])="title"'`,
     });
   });
 
@@ -211,21 +218,23 @@ describe('code fixes', () => {
     const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const appFile = project.openFile('app.ts');
 
-    const fixesAllActions =
-        project.getCombinedCodeFix('app.ts', FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX);
+    const fixesAllActions = project.getCombinedCodeFix(
+      'app.ts',
+      FixIdForCodeFixesAll.FIX_INVALID_BANANA_IN_BOX,
+    );
     expectIncludeReplacementTextForFileTextChange({
       fileTextChanges: fixesAllActions.changes,
       content: appFile.contents,
       text: `([ngModel])="title"`,
       newText: `[(ngModel)]="title"`,
-      fileName: 'app.ts'
+      fileName: 'app.ts',
     });
     expectIncludeReplacementTextForFileTextChange({
       fileTextChanges: fixesAllActions.changes,
       content: appFile.contents,
       text: `([value])="title"`,
       newText: `[(value)]="title"`,
-      fileName: 'app.ts'
+      fileName: 'app.ts',
     });
   });
 
@@ -257,18 +266,16 @@ describe('code fixes', () => {
       const fixFile = project.openFile('foo.ts');
       fixFile.moveCursorToText('<¦bar>');
 
-      const codeActions =
-          project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [diags[0].code]);
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooComponent`, [
-        [
-          ``,
-          `import { BarComponent } from "./bar";`,
-        ],
+        [``, `import { BarComponent } from "./bar";`],
         [
           `{`,
           `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [BarComponent] }`,
-        ]
+        ],
       ]);
     });
 
@@ -304,18 +311,16 @@ describe('code fixes', () => {
       const fixFile = project.openFile('foo.ts');
       fixFile.moveCursorToText('<¦bar>');
 
-      const codeActions =
-          project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [diags[0].code]);
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
-        [
-          ``,
-          `import { BarModule } from "./bar";`,
-        ],
+        [``, `import { BarModule } from "./bar";`],
         [
           `{`,
           `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [BarModule] }`,
-        ]
+        ],
       ]);
     });
 
@@ -351,18 +356,13 @@ describe('code fixes', () => {
       const fixFile = project.openFile('foo.ts');
       fixFile.moveCursorToText('<¦bar>');
 
-      const codeActions =
-          project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [diags[0].code]);
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarComponent from './bar' on FooModule`, [
-        [
-          ``,
-          `import { BarComponent } from "./bar";`,
-        ],
-        [
-          `{`,
-          `{ declarations: [FooComponent], exports: [], imports: [BarComponent] }`,
-        ]
+        [``, `import { BarComponent } from "./bar";`],
+        [`{`, `{ declarations: [FooComponent], exports: [], imports: [BarComponent] }`],
       ]);
     });
 
@@ -396,19 +396,17 @@ describe('code fixes', () => {
       const fixFile = project.openFile('foo.ts');
       fixFile.moveCursorToText('"hello"|b¦ar');
 
-      const codeActions =
-          project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [diags[0].code]);
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
 
       actionChangesMatch(actionChanges, `Import BarPipe from './bar' on FooComponent`, [
-        [
-          ``,
-          `import { BarPipe } from "./bar";`,
-        ],
+        [``, `import { BarPipe } from "./bar";`],
         [
           '{',
           `{ selector: 'foo', template: '{{"hello"|bar}}', standalone: true, imports: [BarPipe] }`,
-        ]
+        ],
       ]);
     });
 
@@ -450,40 +448,37 @@ describe('code fixes', () => {
       const fixFile = project.openFile('foo.ts');
       fixFile.moveCursorToText('<¦bar>');
 
-      const codeActions =
-          project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [diags[0].code]);
+      const codeActions = project.getCodeFixesAtPosition('foo.ts', fixFile.cursor, fixFile.cursor, [
+        diags[0].code,
+      ]);
       const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
       actionChangesMatch(actionChanges, `Import BarModule from './bar' on FooComponent`, [
-        [
-          ``,
-          `import { BarModule } from "./bar";`,
-        ],
+        [``, `import { BarModule } from "./bar";`],
         [
           `{`,
           `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [BarModule] }`,
-        ]
+        ],
       ]);
       actionChangesMatch(actionChanges, `Import Bar2Module from './bar' on FooComponent`, [
-        [
-          ``,
-          `import { Bar2Module } from "./bar";`,
-        ],
+        [``, `import { Bar2Module } from "./bar";`],
         [
           `{`,
           `{ selector: 'foo', template: '<bar></bar>', standalone: true, imports: [Bar2Module] }`,
-        ]
+        ],
       ]);
     });
   });
 });
 
 type ActionChanges = {
-  [description: string]: Array<readonly[string, string]>
+  [description: string]: Array<readonly [string, string]>;
 };
 
 function actionChangesMatch(
-    actionChanges: ActionChanges, description: string,
-    substitutions: Array<readonly[string, string]>) {
+  actionChanges: ActionChanges,
+  description: string,
+  substitutions: Array<readonly [string, string]>,
+) {
   expect(Object.keys(actionChanges)).toContain(description);
   for (const substitution of substitutions) {
     expect(actionChanges[description]).toContain([substitution[0], substitution[1]]);
@@ -493,14 +488,20 @@ function actionChangesMatch(
 // Returns the ActionChanges for all changes in the given code actions, collapsing whitespace into a
 // single space and trimming at the ends.
 function allChangesForCodeActions(
-    fileContents: string, codeActions: readonly ts.CodeAction[]): ActionChanges {
+  fileContents: string,
+  codeActions: readonly ts.CodeAction[],
+): ActionChanges {
   // Replace all whitespace characters with a single space, then deduplicate spaces and trim.
-  const collapse = (s: string) => s.replace(/\s/g, ' ').replace(/\s{2,}/g, ' ').trim();
+  const collapse = (s: string) =>
+    s
+      .replace(/\s/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
   let allActionChanges: ActionChanges = {};
   // For all code actions, construct a map from descriptions to [oldText, newText] pairs.
   for (const action of codeActions) {
-    const actionChanges = action.changes.flatMap(change => {
-      return change.textChanges.map(tc => {
+    const actionChanges = action.changes.flatMap((change) => {
+      return change.textChanges.map((tc) => {
         const oldText = collapse(fileContents.slice(tc.span.start, tc.span.start + spawn.length));
         const newText = collapse(tc.newText);
         return [oldText, newText] as const;
@@ -522,18 +523,31 @@ function expectNotIncludeFixAllInfo(codeActions: readonly ts.CodeFixAction[]) {
  * The `description` is optional because if the description comes from the ts server, no need to
  * check it.
  */
-function expectIncludeReplacementText(
-    {codeActions, content, text, newText, fileName, description}: {
-      codeActions: readonly ts.CodeAction[]; content: string; text: string | null; newText: string;
-      fileName: string;
-      description?: string;
-    }) {
+function expectIncludeReplacementText({
+  codeActions,
+  content,
+  text,
+  newText,
+  fileName,
+  description,
+}: {
+  codeActions: readonly ts.CodeAction[];
+  content: string;
+  text: string | null;
+  newText: string;
+  fileName: string;
+  description?: string;
+}) {
   let includeReplacementText = false;
   for (const codeAction of codeActions) {
     includeReplacementText =
-        includeReplacementTextInChanges(
-            {fileTextChanges: codeAction.changes, content, text, newText, fileName}) &&
-        (description === undefined ? true : (description === codeAction.description));
+      includeReplacementTextInChanges({
+        fileTextChanges: codeAction.changes,
+        content,
+        text,
+        newText,
+        fileName,
+      }) && (description === undefined ? true : description === codeAction.description);
     if (includeReplacementText) {
       return;
     }
@@ -541,13 +555,25 @@ function expectIncludeReplacementText(
   expect(includeReplacementText).toBeTruthy();
 }
 
-function expectIncludeAddText({codeActions, position, text, fileName}: {
-  codeActions: readonly ts.CodeAction[]; position: number | null; text: string; fileName: string;
+function expectIncludeAddText({
+  codeActions,
+  position,
+  text,
+  fileName,
+}: {
+  codeActions: readonly ts.CodeAction[];
+  position: number | null;
+  text: string;
+  fileName: string;
 }) {
   let includeAddText = false;
   for (const codeAction of codeActions) {
-    includeAddText =
-        includeAddTextInChanges({fileTextChanges: codeAction.changes, position, text, fileName});
+    includeAddText = includeAddTextInChanges({
+      fileTextChanges: codeAction.changes,
+      position,
+      text,
+      fileName,
+    });
     if (includeAddText) {
       return;
     }
@@ -555,24 +581,48 @@ function expectIncludeAddText({codeActions, position, text, fileName}: {
   expect(includeAddText).toBeTruthy();
 }
 
-function expectIncludeReplacementTextForFileTextChange(
-    {fileTextChanges, content, text, newText, fileName}: {
-      fileTextChanges: readonly ts.FileTextChanges[]; content: string; text: string;
-      newText: string;
-      fileName: string;
-    }) {
-  expect(includeReplacementTextInChanges({fileTextChanges, content, text, newText, fileName}))
-      .toBeTruthy();
+function expectIncludeReplacementTextForFileTextChange({
+  fileTextChanges,
+  content,
+  text,
+  newText,
+  fileName,
+}: {
+  fileTextChanges: readonly ts.FileTextChanges[];
+  content: string;
+  text: string;
+  newText: string;
+  fileName: string;
+}) {
+  expect(
+    includeReplacementTextInChanges({fileTextChanges, content, text, newText, fileName}),
+  ).toBeTruthy();
 }
 
-function expectIncludeAddTextForFileTextChange({fileTextChanges, position, text, fileName}: {
-  fileTextChanges: readonly ts.FileTextChanges[]; position: number; text: string; fileName: string;
+function expectIncludeAddTextForFileTextChange({
+  fileTextChanges,
+  position,
+  text,
+  fileName,
+}: {
+  fileTextChanges: readonly ts.FileTextChanges[];
+  position: number;
+  text: string;
+  fileName: string;
 }) {
   expect(includeAddTextInChanges({fileTextChanges, position, text, fileName})).toBeTruthy();
 }
 
-function includeReplacementTextInChanges({fileTextChanges, content, text, newText, fileName}: {
-  fileTextChanges: readonly ts.FileTextChanges[]; content: string; text: string | null;
+function includeReplacementTextInChanges({
+  fileTextChanges,
+  content,
+  text,
+  newText,
+  fileName,
+}: {
+  fileTextChanges: readonly ts.FileTextChanges[];
+  content: string;
+  text: string | null;
   newText: string;
   fileName: string;
 }) {
@@ -584,8 +634,10 @@ function includeReplacementTextInChanges({fileTextChanges, content, text, newTex
       if (textChange.span.length === 0) {
         continue;
       }
-      const textChangeOldText =
-          content.slice(textChange.span.start, textChange.span.start + textChange.span.length);
+      const textChangeOldText = content.slice(
+        textChange.span.start,
+        textChange.span.start + textChange.span.length,
+      );
       const oldTextMatches = text === null || textChangeOldText === text;
       const newTextMatches = newText === textChange.newText;
       if (oldTextMatches && newTextMatches) {
@@ -596,8 +648,15 @@ function includeReplacementTextInChanges({fileTextChanges, content, text, newTex
   return false;
 }
 
-function includeAddTextInChanges({fileTextChanges, position, text, fileName}: {
-  fileTextChanges: readonly ts.FileTextChanges[]; position: number | null; text: string;
+function includeAddTextInChanges({
+  fileTextChanges,
+  position,
+  text,
+  fileName,
+}: {
+  fileTextChanges: readonly ts.FileTextChanges[];
+  position: number | null;
+  text: string;
   fileName: string;
 }) {
   for (const change of fileTextChanges) {
@@ -609,7 +668,7 @@ function includeAddTextInChanges({fileTextChanges, position, text, fileName}: {
         continue;
       }
       const includeAddText =
-          (position === null || position === textChange.span.start) && text === textChange.newText;
+        (position === null || position === textChange.span.start) && text === textChange.newText;
       if (includeAddText) {
         return true;
       }

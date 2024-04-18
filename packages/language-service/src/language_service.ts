@@ -17,7 +17,12 @@ import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflectio
 import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
-import {GetComponentLocationsForTemplateResponse, GetTcbResponse, GetTemplateLocationForComponentResponse, PluginConfig} from '../api';
+import {
+  GetComponentLocationsForTemplateResponse,
+  GetTcbResponse,
+  GetTemplateLocationForComponentResponse,
+  PluginConfig,
+} from '../api';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {ALL_CODE_FIXES_METAS, CodeFixes} from './codefixes';
@@ -29,8 +34,17 @@ import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {createLocationKey} from './references_and_rename_utils';
 import {getSignatureHelp} from './signature_help';
-import {getTargetAtPosition, getTcbNodesOfTemplateAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode, getClassDeclFromDecoratorProp, getParentClassDeclaration, getPropertyAssignmentFromValue} from './ts_utils';
+import {
+  getTargetAtPosition,
+  getTcbNodesOfTemplateAtPosition,
+  TargetNodeKind,
+} from './template_target';
+import {
+  findTightestNode,
+  getClassDeclFromDecoratorProp,
+  getParentClassDeclaration,
+  getPropertyAssignmentFromValue,
+} from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
@@ -41,9 +55,9 @@ export class LanguageService {
   private readonly codeFixes: CodeFixes;
 
   constructor(
-      private readonly project: ts.server.Project,
-      private readonly tsLS: ts.LanguageService,
-      private readonly config: Omit<PluginConfig, 'angularOnly'>,
+    private readonly project: ts.server.Project,
+    private readonly tsLS: ts.LanguageService,
+    private readonly config: Omit<PluginConfig, 'angularOnly'>,
   ) {
     if (project.projectKind === ts.server.ProjectKind.Configured) {
       const parseConfigHost = new LSParseConfigHost(project.projectService.host);
@@ -94,8 +108,11 @@ export class LanguageService {
           //
           // TODO(alxhub): figure out a good user experience for indirect template diagnostics
           // and show them from within the Language Service.
-          diagnostics.push(...ngDiagnostics.filter(
-              diag => diag.file !== undefined && diag.file.fileName === sourceFile.fileName));
+          diagnostics.push(
+            ...ngDiagnostics.filter(
+              (diag) => diag.file !== undefined && diag.file.fileName === sourceFile.fileName,
+            ),
+          );
         }
       } else {
         const components = compiler.getComponentsWithTemplateFile(fileName);
@@ -109,39 +126,47 @@ export class LanguageService {
     });
   }
 
-  getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
-      |undefined {
+  getDefinitionAndBoundSpan(
+    fileName: string,
+    position: number,
+  ): ts.DefinitionInfoAndBoundSpan | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDefinition, (compiler) => {
       if (!isInAngularContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
-      return new DefinitionBuilder(this.tsLS, compiler)
-          .getDefinitionAndBoundSpan(fileName, position);
+      return new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(
+        fileName,
+        position,
+      );
     });
   }
 
-  getTypeDefinitionAtPosition(fileName: string, position: number):
-      readonly ts.DefinitionInfo[]|undefined {
+  getTypeDefinitionAtPosition(
+    fileName: string,
+    position: number,
+  ): readonly ts.DefinitionInfo[] | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDefinition, (compiler) => {
       if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
-      return new DefinitionBuilder(this.tsLS, compiler)
-          .getTypeDefinitionsAtPosition(fileName, position);
+      return new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(
+        fileName,
+        position,
+      );
     });
   }
 
-  getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
+  getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsQuickInfo, (compiler) => {
       return this.getQuickInfoAtPositionImpl(fileName, position, compiler);
     });
   }
 
   private getQuickInfoAtPositionImpl(
-      fileName: string,
-      position: number,
-      compiler: NgCompiler,
-      ): ts.QuickInfo|undefined {
+    fileName: string,
+    position: number,
+    compiler: NgCompiler,
+  ): ts.QuickInfo | undefined {
     if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
       return undefined;
     }
@@ -158,47 +183,66 @@ export class LanguageService {
     // Because we can only show 1 quick info, just use the bound attribute if the target is a two
     // way binding. We may consider concatenating additional display parts from the other target
     // nodes or representing the two way binding in some other manner in the future.
-    const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
-        positionDetails.context.nodes[0] :
-        positionDetails.context.node;
-    return new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, node, positionDetails)
-        .get();
+    const node =
+      positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext
+        ? positionDetails.context.nodes[0]
+        : positionDetails.context.node;
+    return new QuickInfoBuilder(
+      this.tsLS,
+      compiler,
+      templateInfo.component,
+      node,
+      positionDetails,
+    ).get();
   }
 
-  getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
+  getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[] | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      const results =
-          new ReferencesBuilder(this.tsLS, compiler).getReferencesAtPosition(fileName, position);
+      const results = new ReferencesBuilder(this.tsLS, compiler).getReferencesAtPosition(
+        fileName,
+        position,
+      );
       return results === undefined ? undefined : getUniqueLocations(results);
     });
   }
 
   getRenameInfo(fileName: string, position: number): ts.RenameInfo {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      const renameInfo =
-          new RenameBuilder(this.tsLS, compiler).getRenameInfo(absoluteFrom(fileName), position);
+      const renameInfo = new RenameBuilder(this.tsLS, compiler).getRenameInfo(
+        absoluteFrom(fileName),
+        position,
+      );
       if (!renameInfo.canRename) {
         return renameInfo;
       }
 
-      const quickInfo = this.getQuickInfoAtPositionImpl(fileName, position, compiler) ??
-          this.tsLS.getQuickInfoAtPosition(fileName, position);
+      const quickInfo =
+        this.getQuickInfoAtPositionImpl(fileName, position, compiler) ??
+        this.tsLS.getQuickInfoAtPosition(fileName, position);
       const kind = quickInfo?.kind ?? ts.ScriptElementKind.unknown;
       const kindModifiers = quickInfo?.kindModifiers ?? ts.ScriptElementKind.unknown;
       return {...renameInfo, kind, kindModifiers};
     });
   }
 
-  findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
+  findRenameLocations(
+    fileName: string,
+    position: number,
+  ): readonly ts.RenameLocation[] | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      const results =
-          new RenameBuilder(this.tsLS, compiler).findRenameLocations(fileName, position);
+      const results = new RenameBuilder(this.tsLS, compiler).findRenameLocations(
+        fileName,
+        position,
+      );
       return results === null ? undefined : getUniqueLocations(results);
     });
   }
 
-  private getCompletionBuilder(fileName: string, position: number, compiler: NgCompiler):
-      CompletionBuilder<TmplAstNode|AST>|null {
+  private getCompletionBuilder(
+    fileName: string,
+    position: number,
+    compiler: NgCompiler,
+  ): CompletionBuilder<TmplAstNode | AST> | null {
     const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
     if (templateInfo === undefined) {
       return null;
@@ -210,24 +254,35 @@ export class LanguageService {
 
     // For two-way bindings, we actually only need to be concerned with the bound attribute because
     // the bindings in the template are written with the attribute name, not the event name.
-    const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
-        positionDetails.context.nodes[0] :
-        positionDetails.context.node;
+    const node =
+      positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext
+        ? positionDetails.context.nodes[0]
+        : positionDetails.context.node;
     return new CompletionBuilder(
-        this.tsLS, compiler, templateInfo.component, node, positionDetails);
+      this.tsLS,
+      compiler,
+      templateInfo.component,
+      node,
+      positionDetails,
+    );
   }
 
   getCompletionsAtPosition(
-      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined):
-      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    fileName: string,
+    position: number,
+    options: ts.GetCompletionsAtPositionOptions | undefined,
+  ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsCompletions, (compiler) => {
       return this.getCompletionsAtPositionImpl(fileName, position, options, compiler);
     });
   }
 
   private getCompletionsAtPositionImpl(
-      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined,
-      compiler: NgCompiler): ts.WithMetadata<ts.CompletionInfo>|undefined {
+    fileName: string,
+    position: number,
+    options: ts.GetCompletionsAtPositionOptions | undefined,
+    compiler: NgCompiler,
+  ): ts.WithMetadata<ts.CompletionInfo> | undefined {
     if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
       return undefined;
     }
@@ -240,10 +295,13 @@ export class LanguageService {
   }
 
   getCompletionEntryDetails(
-      fileName: string, position: number, entryName: string,
-      formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
-      preferences: ts.UserPreferences|undefined,
-      data: ts.CompletionEntryData|undefined): ts.CompletionEntryDetails|undefined {
+    fileName: string,
+    position: number,
+    entryName: string,
+    formatOptions: ts.FormatCodeOptions | ts.FormatCodeSettings | undefined,
+    preferences: ts.UserPreferences | undefined,
+    data: ts.CompletionEntryData | undefined,
+  ): ts.CompletionEntryDetails | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsCompletions, (compiler) => {
       if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
@@ -257,9 +315,12 @@ export class LanguageService {
     });
   }
 
-  getSignatureHelpItems(fileName: string, position: number, options?: ts.SignatureHelpItemsOptions):
-      ts.SignatureHelpItems|undefined {
-    return this.withCompilerAndPerfTracing(PerfPhase.LsSignatureHelp, compiler => {
+  getSignatureHelpItems(
+    fileName: string,
+    position: number,
+    options?: ts.SignatureHelpItemsOptions,
+  ): ts.SignatureHelpItems | undefined {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsSignatureHelp, (compiler) => {
       if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
@@ -269,13 +330,16 @@ export class LanguageService {
   }
 
   getOutliningSpans(fileName: string): ts.OutliningSpan[] {
-    return this.withCompilerAndPerfTracing(PerfPhase.OutliningSpans, compiler => {
+    return this.withCompilerAndPerfTracing(PerfPhase.OutliningSpans, (compiler) => {
       return getOutliningSpans(compiler, fileName);
     });
   }
 
-  getCompletionEntrySymbol(fileName: string, position: number, entryName: string): ts.Symbol
-      |undefined {
+  getCompletionEntrySymbol(
+    fileName: string,
+    position: number,
+    entryName: string,
+  ): ts.Symbol | undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsCompletions, (compiler) => {
       if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
@@ -291,122 +355,166 @@ export class LanguageService {
   }
 
   getCodeFixesAtPosition(
-      fileName: string, start: number, end: number, errorCodes: readonly number[],
-      formatOptions: ts.FormatCodeSettings,
-      preferences: ts.UserPreferences): readonly ts.CodeFixAction[] {
+    fileName: string,
+    start: number,
+    end: number,
+    errorCodes: readonly number[],
+    formatOptions: ts.FormatCodeSettings,
+    preferences: ts.UserPreferences,
+  ): readonly ts.CodeFixAction[] {
     return this.withCompilerAndPerfTracing<readonly ts.CodeFixAction[]>(
-        PerfPhase.LsCodeFixes, (compiler) => {
-          const templateInfo = getTemplateInfoAtPosition(fileName, start, compiler);
-          if (templateInfo === undefined) {
-            return [];
-          }
-          const diags = this.getSemanticDiagnostics(fileName);
-          if (diags.length === 0) {
-            return [];
-          }
-          return this.codeFixes.getCodeFixesAtPosition(
-              fileName, templateInfo, compiler, start, end, errorCodes, diags, formatOptions,
-              preferences);
-        });
+      PerfPhase.LsCodeFixes,
+      (compiler) => {
+        const templateInfo = getTemplateInfoAtPosition(fileName, start, compiler);
+        if (templateInfo === undefined) {
+          return [];
+        }
+        const diags = this.getSemanticDiagnostics(fileName);
+        if (diags.length === 0) {
+          return [];
+        }
+        return this.codeFixes.getCodeFixesAtPosition(
+          fileName,
+          templateInfo,
+          compiler,
+          start,
+          end,
+          errorCodes,
+          diags,
+          formatOptions,
+          preferences,
+        );
+      },
+    );
   }
 
   getCombinedCodeFix(
-      scope: ts.CombinedCodeFixScope, fixId: string, formatOptions: ts.FormatCodeSettings,
-      preferences: ts.UserPreferences): ts.CombinedCodeActions {
+    scope: ts.CombinedCodeFixScope,
+    fixId: string,
+    formatOptions: ts.FormatCodeSettings,
+    preferences: ts.UserPreferences,
+  ): ts.CombinedCodeActions {
     return this.withCompilerAndPerfTracing<ts.CombinedCodeActions>(
-        PerfPhase.LsCodeFixesAll, (compiler) => {
-          const diags = this.getSemanticDiagnostics(scope.fileName);
-          if (diags.length === 0) {
-            return {changes: []};
-          }
-          return this.codeFixes.getAllCodeActions(
-              compiler, diags, scope, fixId, formatOptions, preferences);
-        });
+      PerfPhase.LsCodeFixesAll,
+      (compiler) => {
+        const diags = this.getSemanticDiagnostics(scope.fileName);
+        if (diags.length === 0) {
+          return {changes: []};
+        }
+        return this.codeFixes.getAllCodeActions(
+          compiler,
+          diags,
+          scope,
+          fixId,
+          formatOptions,
+          preferences,
+        );
+      },
+    );
   }
 
   getComponentLocationsForTemplate(fileName: string): GetComponentLocationsForTemplateResponse {
     return this.withCompilerAndPerfTracing<GetComponentLocationsForTemplateResponse>(
-        PerfPhase.LsComponentLocations, (compiler) => {
-          const components = compiler.getComponentsWithTemplateFile(fileName);
-          const componentDeclarationLocations: ts.DocumentSpan[] =
-              Array.from(components.values()).map(c => {
-                let contextSpan: ts.TextSpan|undefined = undefined;
-                let textSpan: ts.TextSpan;
-                if (isNamedClassDeclaration(c)) {
-                  textSpan = ts.createTextSpanFromBounds(c.name.getStart(), c.name.getEnd());
-                  contextSpan = ts.createTextSpanFromBounds(c.getStart(), c.getEnd());
-                } else {
-                  textSpan = ts.createTextSpanFromBounds(c.getStart(), c.getEnd());
-                }
-                return {
-                  fileName: c.getSourceFile().fileName,
-                  textSpan,
-                  contextSpan,
-                };
-              });
-          return componentDeclarationLocations;
-        });
-  }
-
-  getTemplateLocationForComponent(fileName: string, position: number):
-      GetTemplateLocationForComponentResponse {
-    return this.withCompilerAndPerfTracing<GetTemplateLocationForComponentResponse>(
-        PerfPhase.LsComponentLocations, (compiler) => {
-          const nearestNode =
-              findTightestNodeAtPosition(compiler.getCurrentProgram(), fileName, position);
-          if (nearestNode === undefined) {
-            return undefined;
-          }
-          const classDeclaration = getParentClassDeclaration(nearestNode);
-          if (classDeclaration === undefined) {
-            return undefined;
-          }
-          const resources = compiler.getComponentResources(classDeclaration);
-          if (resources === null) {
-            return undefined;
-          }
-          const {template} = resources;
-          let templateFileName: string;
-          let span: ts.TextSpan;
-          if (template.path !== null) {
-            span = ts.createTextSpanFromBounds(0, 0);
-            templateFileName = template.path;
+      PerfPhase.LsComponentLocations,
+      (compiler) => {
+        const components = compiler.getComponentsWithTemplateFile(fileName);
+        const componentDeclarationLocations: ts.DocumentSpan[] = Array.from(
+          components.values(),
+        ).map((c) => {
+          let contextSpan: ts.TextSpan | undefined = undefined;
+          let textSpan: ts.TextSpan;
+          if (isNamedClassDeclaration(c)) {
+            textSpan = ts.createTextSpanFromBounds(c.name.getStart(), c.name.getEnd());
+            contextSpan = ts.createTextSpanFromBounds(c.getStart(), c.getEnd());
           } else {
-            span = ts.createTextSpanFromBounds(
-                template.expression.getStart(), template.expression.getEnd());
-            templateFileName = template.expression.getSourceFile().fileName;
+            textSpan = ts.createTextSpanFromBounds(c.getStart(), c.getEnd());
           }
-          return {fileName: templateFileName, textSpan: span, contextSpan: span};
+          return {
+            fileName: c.getSourceFile().fileName,
+            textSpan,
+            contextSpan,
+          };
         });
+        return componentDeclarationLocations;
+      },
+    );
   }
 
-  getTcb(fileName: string, position: number): GetTcbResponse|undefined {
-    return this.withCompilerAndPerfTracing<GetTcbResponse|undefined>(PerfPhase.LsTcb, compiler => {
-      const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
-      if (templateInfo === undefined) {
-        return undefined;
-      }
+  getTemplateLocationForComponent(
+    fileName: string,
+    position: number,
+  ): GetTemplateLocationForComponentResponse {
+    return this.withCompilerAndPerfTracing<GetTemplateLocationForComponentResponse>(
+      PerfPhase.LsComponentLocations,
+      (compiler) => {
+        const nearestNode = findTightestNodeAtPosition(
+          compiler.getCurrentProgram(),
+          fileName,
+          position,
+        );
+        if (nearestNode === undefined) {
+          return undefined;
+        }
+        const classDeclaration = getParentClassDeclaration(nearestNode);
+        if (classDeclaration === undefined) {
+          return undefined;
+        }
+        const resources = compiler.getComponentResources(classDeclaration);
+        if (resources === null) {
+          return undefined;
+        }
+        const {template} = resources;
+        let templateFileName: string;
+        let span: ts.TextSpan;
+        if (template.path !== null) {
+          span = ts.createTextSpanFromBounds(0, 0);
+          templateFileName = template.path;
+        } else {
+          span = ts.createTextSpanFromBounds(
+            template.expression.getStart(),
+            template.expression.getEnd(),
+          );
+          templateFileName = template.expression.getSourceFile().fileName;
+        }
+        return {fileName: templateFileName, textSpan: span, contextSpan: span};
+      },
+    );
+  }
 
-      const selectionNodesInfo = getTcbNodesOfTemplateAtPosition(templateInfo, position, compiler);
-      if (selectionNodesInfo === null) {
-        return undefined;
-      }
+  getTcb(fileName: string, position: number): GetTcbResponse | undefined {
+    return this.withCompilerAndPerfTracing<GetTcbResponse | undefined>(
+      PerfPhase.LsTcb,
+      (compiler) => {
+        const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+        if (templateInfo === undefined) {
+          return undefined;
+        }
 
-      const sf = selectionNodesInfo.componentTcbNode.getSourceFile();
+        const selectionNodesInfo = getTcbNodesOfTemplateAtPosition(
+          templateInfo,
+          position,
+          compiler,
+        );
+        if (selectionNodesInfo === null) {
+          return undefined;
+        }
 
-      const selections = selectionNodesInfo.nodes.map(n => {
+        const sf = selectionNodesInfo.componentTcbNode.getSourceFile();
+
+        const selections = selectionNodesInfo.nodes.map((n) => {
+          return {
+            start: n.getStart(sf),
+            length: n.getEnd() - n.getStart(sf),
+          };
+        });
+
         return {
-          start: n.getStart(sf),
-          length: n.getEnd() - n.getStart(sf),
+          fileName: sf.fileName,
+          content: sf.getFullText(),
+          selections,
         };
-      });
-
-      return {
-        fileName: sf.fileName,
-        content: sf.getFullText(),
-        selections,
-      };
-    });
+      },
+    );
   }
 
   /**
@@ -431,8 +539,9 @@ export class LanguageService {
     const result = compiler.perfRecorder.inPhase(phase, () => p(compiler));
     const logger = this.project.projectService.logger;
     if (logger.hasLevel(ts.server.LogLevel.verbose)) {
-      logger.perftrc(`LanguageService#${PerfPhase[phase]}: ${
-          JSON.stringify(compiler.perfRecorder.finalize())}`);
+      logger.perftrc(
+        `LanguageService#${PerfPhase[phase]}: ${JSON.stringify(compiler.perfRecorder.finalize())}`,
+      );
     }
 
     return result;
@@ -446,13 +555,15 @@ export class LanguageService {
 
     return this.withCompilerAndPerfTracing(PerfPhase.LsDiagnostics, (compiler) => {
       const diagnostics: ts.Diagnostic[] = [];
-      const configSourceFile = ts.readJsonConfigFile(
-          project.getConfigFilePath(), (path: string) => project.readFile(path));
+      const configSourceFile = ts.readJsonConfigFile(project.getConfigFilePath(), (path: string) =>
+        project.readFile(path),
+      );
 
       if (!this.options.strictTemplates && !this.options.fullTemplateTypeCheck) {
         diagnostics.push({
-          messageText: 'Some language features are not available. ' +
-              'To access all features, enable `strictTemplates` in `angularCompilerOptions`.',
+          messageText:
+            'Some language features are not available. ' +
+            'To access all features, enable `strictTemplates` in `angularCompilerOptions`.',
           category: ts.DiagnosticCategory.Suggestion,
           code: ngErrorCode(ErrorCode.SUGGEST_STRICT_TEMPLATES),
           file: configSourceFile,
@@ -477,13 +588,15 @@ export class LanguageService {
     }
     const {host} = project.projectService;
     host.watchFile(
-        project.getConfigFilePath(), (fileName: string, eventKind: ts.FileWatcherEventKind) => {
-          project.log(`Config file changed: ${fileName}`);
-          if (eventKind === ts.FileWatcherEventKind.Changed) {
-            this.options = parseNgCompilerOptions(project, parseConfigHost, this.config);
-            logCompilerOptions(project, this.options);
-          }
-        });
+      project.getConfigFilePath(),
+      (fileName: string, eventKind: ts.FileWatcherEventKind) => {
+        project.log(`Config file changed: ${fileName}`);
+        if (eventKind === ts.FileWatcherEventKind.Changed) {
+          this.options = parseNgCompilerOptions(project, parseConfigHost, this.config);
+          logCompilerOptions(project, this.options);
+        }
+      },
+    );
   }
 }
 
@@ -494,13 +607,18 @@ function logCompilerOptions(project: ts.server.Project, options: CompilerOptions
 }
 
 function parseNgCompilerOptions(
-    project: ts.server.Project, host: ConfigurationHost,
-    config: LanguageServiceConfig): CompilerOptions {
+  project: ts.server.Project,
+  host: ConfigurationHost,
+  config: LanguageServiceConfig,
+): CompilerOptions {
   if (!(project instanceof ts.server.ConfiguredProject)) {
     return {};
   }
-  const {options, errors} =
-      readConfiguration(project.getConfigFilePath(), /* existingOptions */ undefined, host);
+  const {options, errors} = readConfiguration(
+    project.getConfigFilePath(),
+    /* existingOptions */ undefined,
+    host,
+  );
   if (errors.length > 0) {
     project.setProjectErrors(errors);
   }
@@ -550,12 +668,14 @@ function createProgramDriver(project: ts.server.Project): ProgramDriver {
     },
     getSourceFileVersion(sf: ts.SourceFile): string {
       return project.getScriptVersion(sf.fileName);
-    }
+    },
   };
 }
 
 function getOrCreateTypeCheckScriptInfo(
-    project: ts.server.Project, tcf: string): ts.server.ScriptInfo {
+  project: ts.server.Project,
+  tcf: string,
+): ts.server.ScriptInfo {
   // First check if there is already a ScriptInfo for the tcf
   const {projectService} = project;
   let scriptInfo = projectService.getScriptInfo(tcf);
@@ -564,12 +684,12 @@ function getOrCreateTypeCheckScriptInfo(
     // content. We must also provide file content, otherwise the service will
     // attempt to fetch the content from disk and fail.
     scriptInfo = projectService.getOrCreateScriptInfoForNormalizedPath(
-        ts.server.toNormalizedPath(tcf),
-        true,  // openedByClient
-        '',    // fileContent
-        // script info added by plugins should be marked as external, see
-        // https://github.com/microsoft/TypeScript/blob/b217f22e798c781f55d17da72ed099a9dee5c650/src/compiler/program.ts#L1897-L1899
-        ts.ScriptKind.External,  // scriptKind
+      ts.server.toNormalizedPath(tcf),
+      true, // openedByClient
+      '', // fileContent
+      // script info added by plugins should be marked as external, see
+      // https://github.com/microsoft/TypeScript/blob/b217f22e798c781f55d17da72ed099a9dee5c650/src/compiler/program.ts#L1897-L1899
+      ts.ScriptKind.External, // scriptKind
     );
     if (!scriptInfo) {
       throw new Error(`Failed to create script info for ${tcf}`);
@@ -611,12 +731,13 @@ function isInAngularContext(program: ts.Program, fileName: string, position: num
     return false;
   }
 
-  const assignment = getPropertyAssignmentFromValue(node, 'template') ??
-      getPropertyAssignmentFromValue(node, 'templateUrl') ??
-      // `node.parent` is used because the string is a child of an array element and we want to get
-      // the property name
-      getPropertyAssignmentFromValue(node.parent, 'styleUrls') ??
-      getPropertyAssignmentFromValue(node, 'styleUrl');
+  const assignment =
+    getPropertyAssignmentFromValue(node, 'template') ??
+    getPropertyAssignmentFromValue(node, 'templateUrl') ??
+    // `node.parent` is used because the string is a child of an array element and we want to get
+    // the property name
+    getPropertyAssignmentFromValue(node.parent, 'styleUrls') ??
+    getPropertyAssignmentFromValue(node, 'styleUrl');
   return assignment !== null && getClassDeclFromDecoratorProp(assignment) !== null;
 }
 

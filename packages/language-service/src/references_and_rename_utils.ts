@@ -5,17 +5,46 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AST, BindingPipe, LiteralPrimitive, PropertyRead, PropertyWrite, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstNode, TmplAstReference, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {
+  AST,
+  BindingPipe,
+  LiteralPrimitive,
+  PropertyRead,
+  PropertyWrite,
+  SafePropertyRead,
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
+  TmplAstNode,
+  TmplAstReference,
+  TmplAstTextAttribute,
+  TmplAstVariable,
+} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {DirectiveMeta, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {DirectiveSymbol, Symbol, SymbolKind, TcbLocation, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {ExpressionIdentifier, hasExpressionIdentifier} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
+import {
+  DirectiveSymbol,
+  Symbol,
+  SymbolKind,
+  TcbLocation,
+  TemplateTypeChecker,
+} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  ExpressionIdentifier,
+  hasExpressionIdentifier,
+} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateLocationFromTcbLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
+import {
+  getDirectiveMatchesForAttribute,
+  getDirectiveMatchesForElementTag,
+  getTemplateLocationFromTcbLocation,
+  isWithin,
+  TemplateInfo,
+  toTextSpan,
+} from './utils';
 
 /** Represents a location in a file. */
 export interface FilePosition {
@@ -33,7 +62,7 @@ export interface TemplateLocationDetails {
   /**
    * A target node in a template.
    */
-  templateTarget: TmplAstNode|AST;
+  templateTarget: TmplAstNode | AST;
 
   /**
    * TypeScript locations which the template node maps to. A given template node might map to
@@ -48,23 +77,25 @@ export interface TemplateLocationDetails {
   symbol: Symbol;
 }
 
-
 /**
  * Takes a position in a template and finds equivalent targets in TS files as well as details about
  * the targeted template node.
  */
 export function getTargetDetailsAtTemplatePosition(
-    {template, component}: TemplateInfo, position: number,
-    templateTypeChecker: TemplateTypeChecker): TemplateLocationDetails[]|null {
+  {template, component}: TemplateInfo,
+  position: number,
+  templateTypeChecker: TemplateTypeChecker,
+): TemplateLocationDetails[] | null {
   // Find the AST node in the template at the position.
   const positionDetails = getTargetAtPosition(template, position);
   if (positionDetails === null) {
     return null;
   }
 
-  const nodes = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
-      positionDetails.context.nodes :
-      [positionDetails.context.node];
+  const nodes =
+    positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext
+      ? positionDetails.context.nodes
+      : [positionDetails.context.node];
 
   const details: TemplateLocationDetails[] = [];
 
@@ -99,7 +130,10 @@ export function getTargetDetailsAtTemplatePosition(
           return null;
         }
         const directives = getDirectiveMatchesForAttribute(
-            node.name, symbol.host.templateNode, symbol.host.directives);
+          node.name,
+          symbol.host.templateNode,
+          symbol.host.directives,
+        );
         details.push({
           typescriptLocations: getPositionsForDirectives(directives),
           templateTarget,
@@ -116,9 +150,11 @@ export function getTargetDetailsAtTemplatePosition(
         break;
       }
       case SymbolKind.Variable: {
-        if ((templateTarget instanceof TmplAstVariable)) {
-          if (templateTarget.valueSpan !== undefined &&
-              isWithin(position, templateTarget.valueSpan)) {
+        if (templateTarget instanceof TmplAstVariable) {
+          if (
+            templateTarget.valueSpan !== undefined &&
+            isWithin(position, templateTarget.valueSpan)
+          ) {
             // In the valueSpan of the variable, we want to get the reference of the initializer.
             details.push({
               typescriptLocations: [toFilePosition(symbol.initializerLocation)],
@@ -147,7 +183,9 @@ export function getTargetDetailsAtTemplatePosition(
       case SymbolKind.Input:
       case SymbolKind.Output: {
         details.push({
-          typescriptLocations: symbol.bindings.map(binding => toFilePosition(binding.tcbLocation)),
+          typescriptLocations: symbol.bindings.map((binding) =>
+            toFilePosition(binding.tcbLocation),
+          ),
           templateTarget,
           symbol,
         });
@@ -204,15 +242,20 @@ export function createLocationKey(ds: ts.DocumentSpan) {
  * matches. If it does not, this function will return `null`.
  */
 export function convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
-    shimDocumentSpan: T, templateTypeChecker: TemplateTypeChecker, program: ts.Program,
-    requiredNodeText?: string): T|null {
+  shimDocumentSpan: T,
+  templateTypeChecker: TemplateTypeChecker,
+  program: ts.Program,
+  requiredNodeText?: string,
+): T | null {
   const sf = program.getSourceFile(shimDocumentSpan.fileName);
   if (sf === undefined) {
     return null;
   }
   const tcbNode = findTightestNode(sf, shimDocumentSpan.textSpan.start);
-  if (tcbNode === undefined ||
-      hasExpressionIdentifier(sf, tcbNode, ExpressionIdentifier.EVENT_PARAMETER)) {
+  if (
+    tcbNode === undefined ||
+    hasExpressionIdentifier(sf, tcbNode, ExpressionIdentifier.EVENT_PARAMETER)
+  ) {
     // If the reference result is the $event parameter in the subscribe/addEventListener
     // function in the TCB, we want to filter this result out of the references. We really only
     // want to return references to the parameter in the template itself.
@@ -236,8 +279,11 @@ export function convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
   // serverHost or LSParseConfigHost in the adapter. We should have a better defined way to
   // normalize paths.
   const mapping = getTemplateLocationFromTcbLocation(
-      templateTypeChecker, absoluteFrom(shimDocumentSpan.fileName), /* tcbIsShim */ true,
-      shimDocumentSpan.textSpan.start);
+    templateTypeChecker,
+    absoluteFrom(shimDocumentSpan.fileName),
+    /* tcbIsShim */ true,
+    shimDocumentSpan.textSpan.start,
+  );
   if (mapping === null) {
     return null;
   }
@@ -263,9 +309,14 @@ export function convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
  * Finds the text and `ts.TextSpan` for the node at a position in a template.
  */
 export function getRenameTextAndSpanAtPosition(
-    node: TmplAstNode|AST, position: number): {text: string, span: ts.TextSpan}|null {
-  if (node instanceof TmplAstBoundAttribute || node instanceof TmplAstTextAttribute ||
-      node instanceof TmplAstBoundEvent) {
+  node: TmplAstNode | AST,
+  position: number,
+): {text: string; span: ts.TextSpan} | null {
+  if (
+    node instanceof TmplAstBoundAttribute ||
+    node instanceof TmplAstTextAttribute ||
+    node instanceof TmplAstBoundEvent
+  ) {
     if (node.keySpan === undefined) {
       return null;
     }
@@ -278,8 +329,12 @@ export function getRenameTextAndSpanAtPosition(
     }
   }
 
-  if (node instanceof PropertyRead || node instanceof PropertyWrite ||
-      node instanceof SafePropertyRead || node instanceof BindingPipe) {
+  if (
+    node instanceof PropertyRead ||
+    node instanceof PropertyWrite ||
+    node instanceof SafePropertyRead ||
+    node instanceof BindingPipe
+  ) {
     return {text: node.name, span: toTextSpan(node.nameSpan)};
   } else if (node instanceof LiteralPrimitive) {
     const span = toTextSpan(node.sourceSpan);
@@ -300,8 +355,10 @@ export function getRenameTextAndSpanAtPosition(
  *
  * Returns `null` if the node has no parent class or there is no meta associated with the class.
  */
-export function getParentClassMeta(requestNode: ts.Node, compiler: NgCompiler): PipeMeta|
-    DirectiveMeta|null {
+export function getParentClassMeta(
+  requestNode: ts.Node,
+  compiler: NgCompiler,
+): PipeMeta | DirectiveMeta | null {
   const parentClass = getParentClassDeclaration(requestNode);
   if (parentClass === undefined) {
     return null;

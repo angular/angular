@@ -30,21 +30,44 @@ export function patchLanguageServiceProjectsWithTestHost() {
     const _originalHostGetSourceFile = host.getSourceFile;
     const _originalHostGetSourceFileByPath = host.getSourceFileByPath;
 
-    host.getSourceFile =
-        (fileName, languageVersionOrOptions, onError, shouldCreateNewSourceFile) => {
-          return getCachedSourceFile(fileName, () => host.readFile(fileName)) ??
-              _originalHostGetSourceFile.call(
-                  host, fileName, languageVersionOrOptions, onError, shouldCreateNewSourceFile);
-        };
+    host.getSourceFile = (
+      fileName,
+      languageVersionOrOptions,
+      onError,
+      shouldCreateNewSourceFile,
+    ) => {
+      return (
+        getCachedSourceFile(fileName, () => host.readFile(fileName)) ??
+        _originalHostGetSourceFile.call(
+          host,
+          fileName,
+          languageVersionOrOptions,
+          onError,
+          shouldCreateNewSourceFile,
+        )
+      );
+    };
 
     if (_originalHostGetSourceFileByPath !== undefined) {
-      host.getSourceFileByPath =
-          (fileName, path, languageVersionOrOptions, onError, shouldCreateNewSourceFile) => {
-            return getCachedSourceFile(fileName, () => host.readFile(fileName)) ??
-                _originalHostGetSourceFileByPath.call(
-                    host, fileName, path, languageVersionOrOptions, onError,
-                    shouldCreateNewSourceFile);
-          };
+      host.getSourceFileByPath = (
+        fileName,
+        path,
+        languageVersionOrOptions,
+        onError,
+        shouldCreateNewSourceFile,
+      ) => {
+        return (
+          getCachedSourceFile(fileName, () => host.readFile(fileName)) ??
+          _originalHostGetSourceFileByPath.call(
+            host,
+            fileName,
+            path,
+            languageVersionOrOptions,
+            onError,
+            shouldCreateNewSourceFile,
+          )
+        );
+      };
     }
   };
 }

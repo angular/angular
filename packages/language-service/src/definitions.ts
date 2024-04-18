@@ -6,21 +6,47 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute} from '@angular/compiler';
+import {
+  AST,
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
+  TmplAstElement,
+  TmplAstNode,
+  TmplAstTemplate,
+  TmplAstTextAttribute,
+} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
-import {DirectiveSymbol, DomBindingSymbol, ElementSymbol, Symbol, SymbolKind, TcbLocation, TemplateSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  DirectiveSymbol,
+  DomBindingSymbol,
+  ElementSymbol,
+  Symbol,
+  SymbolKind,
+  TcbLocation,
+  TemplateSymbol,
+} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromTcbLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
+import {
+  getDirectiveMatchesForAttribute,
+  getDirectiveMatchesForElementTag,
+  getTemplateInfoAtPosition,
+  getTemplateLocationFromTcbLocation,
+  getTextSpanOfNode,
+  isDollarEvent,
+  isTypeScriptFile,
+  TemplateInfo,
+  toTextSpan,
+} from './utils';
 
 interface DefinitionMeta {
-  node: AST|TmplAstNode;
-  parent: AST|TmplAstNode|null;
+  node: AST | TmplAstNode;
+  parent: AST | TmplAstNode | null;
   symbol: Symbol;
 }
 
@@ -31,10 +57,15 @@ interface HasTcbLocation {
 export class DefinitionBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
 
-  constructor(private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
+  constructor(
+    private readonly tsLS: ts.LanguageService,
+    private readonly compiler: NgCompiler,
+  ) {}
 
-  getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
-      |undefined {
+  getDefinitionAndBoundSpan(
+    fileName: string,
+    position: number,
+  ): ts.DefinitionInfoAndBoundSpan | undefined {
     const templateInfo = getTemplateInfoAtPosition(fileName, position, this.compiler);
     if (templateInfo === undefined) {
       // We were unable to get a template at the given position. If we are in a TS file, instead
@@ -62,9 +93,9 @@ export class DefinitionBuilder {
       }
 
       definitions.push(
-          ...(this.getDefinitionsForSymbol({...definitionMeta, ...templateInfo}) ?? []));
+        ...(this.getDefinitionsForSymbol({...definitionMeta, ...templateInfo}) ?? []),
+      );
     }
-
 
     if (definitions.length === 0) {
       return undefined;
@@ -73,8 +104,12 @@ export class DefinitionBuilder {
     return {definitions, textSpan: getTextSpanOfNode(definitionMetas[0].node)};
   }
 
-  private getDefinitionsForSymbol({symbol, node, parent, component}: DefinitionMeta&
-                                  TemplateInfo): readonly ts.DefinitionInfo[]|undefined {
+  private getDefinitionsForSymbol({
+    symbol,
+    node,
+    parent,
+    component,
+  }: DefinitionMeta & TemplateInfo): readonly ts.DefinitionInfo[] | undefined {
     switch (symbol.kind) {
       case SymbolKind.Directive:
       case SymbolKind.Element:
@@ -107,11 +142,16 @@ export class DefinitionBuilder {
       case SymbolKind.Reference: {
         const definitions: ts.DefinitionInfo[] = [];
         if (symbol.declaration !== node) {
-          const tcbLocation = symbol.kind === SymbolKind.Variable ? symbol.localVarLocation :
-                                                                    symbol.referenceVarLocation;
+          const tcbLocation =
+            symbol.kind === SymbolKind.Variable
+              ? symbol.localVarLocation
+              : symbol.referenceVarLocation;
           const mapping = getTemplateLocationFromTcbLocation(
-              this.compiler.getTemplateTypeChecker(), tcbLocation.tcbPath, tcbLocation.isShimFile,
-              tcbLocation.positionInFile);
+            this.compiler.getTemplateTypeChecker(),
+            tcbLocation.tcbPath,
+            tcbLocation.isShimFile,
+            tcbLocation.positionInFile,
+          );
           if (mapping !== null) {
             definitions.push({
               name: symbol.declaration.name,
@@ -126,7 +166,8 @@ export class DefinitionBuilder {
         }
         if (symbol.kind === SymbolKind.Variable) {
           definitions.push(
-              ...this.getDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}));
+            ...this.getDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}),
+          );
         }
         return definitions;
       }
@@ -151,13 +192,17 @@ export class DefinitionBuilder {
    * Converts and definition info result that points to a template typecheck file to a reference to
    * the corresponding location in the template.
    */
-  private mapShimResultsToTemplates(definitionInfos: readonly ts.DefinitionInfo[]):
-      readonly ts.DefinitionInfo[] {
+  private mapShimResultsToTemplates(
+    definitionInfos: readonly ts.DefinitionInfo[],
+  ): readonly ts.DefinitionInfo[] {
     const result: ts.DefinitionInfo[] = [];
     for (const info of definitionInfos) {
       if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(info.fileName))) {
-        const templateDefinitionInfo =
-            convertToTemplateDocumentSpan(info, this.ttc, this.compiler.getCurrentProgram());
+        const templateDefinitionInfo = convertToTemplateDocumentSpan(
+          info,
+          this.ttc,
+          this.compiler.getCurrentProgram(),
+        );
         if (templateDefinitionInfo === null) {
           continue;
         }
@@ -169,8 +214,10 @@ export class DefinitionBuilder {
     return result;
   }
 
-  getTypeDefinitionsAtPosition(fileName: string, position: number):
-      readonly ts.DefinitionInfo[]|undefined {
+  getTypeDefinitionsAtPosition(
+    fileName: string,
+    position: number,
+  ): readonly ts.DefinitionInfo[] | undefined {
     const templateInfo = getTemplateInfoAtPosition(fileName, position, this.compiler);
     if (templateInfo === undefined) {
       return undefined;
@@ -195,8 +242,11 @@ export class DefinitionBuilder {
           definitions.push(...bindingDefs);
           // Also attempt to get directive matches for the input name. If there is a directive that
           // has the input name as part of the selector, we want to return that as well.
-          const directiveDefs =
-              this.getDirectiveTypeDefsForBindingNode(node, parent, templateInfo.component);
+          const directiveDefs = this.getDirectiveTypeDefsForBindingNode(
+            node,
+            parent,
+            templateInfo.component,
+          );
           definitions.push(...directiveDefs);
           break;
         }
@@ -212,14 +262,16 @@ export class DefinitionBuilder {
         }
         case SymbolKind.Reference:
           definitions.push(
-              ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.targetLocation}));
+            ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.targetLocation}),
+          );
           break;
         case SymbolKind.Expression:
           definitions.push(...this.getTypeDefinitionsForSymbols(symbol));
           break;
         case SymbolKind.Variable: {
           definitions.push(
-              ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}));
+            ...this.getTypeDefinitionsForSymbols({tcbLocation: symbol.initializerLocation}),
+          );
           break;
         }
       }
@@ -229,8 +281,9 @@ export class DefinitionBuilder {
   }
 
   private getTypeDefinitionsForTemplateInstance(
-      symbol: TemplateSymbol|ElementSymbol|DomBindingSymbol|DirectiveSymbol,
-      node: AST|TmplAstNode): ts.DefinitionInfo[] {
+    symbol: TemplateSymbol | ElementSymbol | DomBindingSymbol | DirectiveSymbol,
+    node: AST | TmplAstNode,
+  ): ts.DefinitionInfo[] {
     switch (symbol.kind) {
       case SymbolKind.Template: {
         const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
@@ -240,16 +293,19 @@ export class DefinitionBuilder {
         const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
         // If one of the directive matches is a component, we should not include the native element
         // in the results because it is replaced by the component.
-        return Array.from(matches).some(dir => dir.isComponent) ?
-            this.getTypeDefinitionsForSymbols(...matches) :
-            this.getTypeDefinitionsForSymbols(...matches, symbol);
+        return Array.from(matches).some((dir) => dir.isComponent)
+          ? this.getTypeDefinitionsForSymbols(...matches)
+          : this.getTypeDefinitionsForSymbols(...matches, symbol);
       }
       case SymbolKind.DomBinding: {
         if (!(node instanceof TmplAstTextAttribute)) {
           return [];
         }
         const dirs = getDirectiveMatchesForAttribute(
-            node.name, symbol.host.templateNode, symbol.host.directives);
+          node.name,
+          symbol.host.templateNode,
+          symbol.host.directives,
+        );
         return this.getTypeDefinitionsForSymbols(...dirs);
       }
       case SymbolKind.Directive:
@@ -258,24 +314,38 @@ export class DefinitionBuilder {
   }
 
   private getDirectiveTypeDefsForBindingNode(
-      node: TmplAstNode|AST, parent: TmplAstNode|AST|null, component: ts.ClassDeclaration) {
-    if (!(node instanceof TmplAstBoundAttribute) && !(node instanceof TmplAstTextAttribute) &&
-        !(node instanceof TmplAstBoundEvent)) {
+    node: TmplAstNode | AST,
+    parent: TmplAstNode | AST | null,
+    component: ts.ClassDeclaration,
+  ) {
+    if (
+      !(node instanceof TmplAstBoundAttribute) &&
+      !(node instanceof TmplAstTextAttribute) &&
+      !(node instanceof TmplAstBoundEvent)
+    ) {
       return [];
     }
-    if (parent === null ||
-        !(parent instanceof TmplAstTemplate || parent instanceof TmplAstElement)) {
+    if (
+      parent === null ||
+      !(parent instanceof TmplAstTemplate || parent instanceof TmplAstElement)
+    ) {
       return [];
     }
-    const templateOrElementSymbol =
-        this.compiler.getTemplateTypeChecker().getSymbolOfNode(parent, component);
-    if (templateOrElementSymbol === null ||
-        (templateOrElementSymbol.kind !== SymbolKind.Template &&
-         templateOrElementSymbol.kind !== SymbolKind.Element)) {
+    const templateOrElementSymbol = this.compiler
+      .getTemplateTypeChecker()
+      .getSymbolOfNode(parent, component);
+    if (
+      templateOrElementSymbol === null ||
+      (templateOrElementSymbol.kind !== SymbolKind.Template &&
+        templateOrElementSymbol.kind !== SymbolKind.Element)
+    ) {
       return [];
     }
-    const dirs =
-        getDirectiveMatchesForAttribute(node.name, parent, templateOrElementSymbol.directives);
+    const dirs = getDirectiveMatchesForAttribute(
+      node.name,
+      parent,
+      templateOrElementSymbol.directives,
+    );
     return this.getTypeDefinitionsForSymbols(...dirs);
   }
 
@@ -286,8 +356,10 @@ export class DefinitionBuilder {
     });
   }
 
-  private getDefinitionMetaAtPosition({template, component}: TemplateInfo, position: number):
-      DefinitionMeta[]|undefined {
+  private getDefinitionMetaAtPosition(
+    {template, component}: TemplateInfo,
+    position: number,
+  ): DefinitionMeta[] | undefined {
     const target = getTargetAtPosition(template, position);
     if (target === null) {
       return undefined;
@@ -295,8 +367,7 @@ export class DefinitionBuilder {
     const {context, parent} = target;
 
     const nodes =
-        context.kind === TargetNodeKind.TwoWayBindingContext ? context.nodes : [context.node];
-
+      context.kind === TargetNodeKind.TwoWayBindingContext ? context.nodes : [context.node];
 
     const definitionMetas: DefinitionMeta[] = [];
     for (const node of nodes) {
@@ -314,8 +385,10 @@ export class DefinitionBuilder {
  * Gets an Angular-specific definition in a TypeScript source file.
  */
 function getDefinitionForExpressionAtPosition(
-    fileName: string, position: number, compiler: NgCompiler): ts.DefinitionInfoAndBoundSpan|
-    undefined {
+  fileName: string,
+  position: number,
+  compiler: NgCompiler,
+): ts.DefinitionInfoAndBoundSpan | undefined {
   const sf = compiler.getCurrentProgram().getSourceFile(fileName);
   if (sf === undefined) {
     return;
@@ -336,23 +409,25 @@ function getDefinitionForExpressionAtPosition(
 
   const allResources = [...componentResources.styles, componentResources.template];
 
-  const resourceForExpression = allResources.find(resource => resource.expression === expression);
+  const resourceForExpression = allResources.find((resource) => resource.expression === expression);
   if (resourceForExpression === undefined || !isExternalResource(resourceForExpression)) {
     return;
   }
 
-  const templateDefinitions: ts.DefinitionInfo[] = [{
-    kind: ts.ScriptElementKind.externalModuleName,
-    name: resourceForExpression.path,
-    containerKind: ts.ScriptElementKind.unknown,
-    containerName: '',
-    // Reading the template is expensive, so don't provide a preview.
-    // TODO(ayazhafiz): Consider providing an actual span:
-    //  1. We're likely to read the template anyway
-    //  2. We could show just the first 100 chars or so
-    textSpan: {start: 0, length: 0},
-    fileName: resourceForExpression.path,
-  }];
+  const templateDefinitions: ts.DefinitionInfo[] = [
+    {
+      kind: ts.ScriptElementKind.externalModuleName,
+      name: resourceForExpression.path,
+      containerKind: ts.ScriptElementKind.unknown,
+      containerName: '',
+      // Reading the template is expensive, so don't provide a preview.
+      // TODO(ayazhafiz): Consider providing an actual span:
+      //  1. We're likely to read the template anyway
+      //  2. We could show just the first 100 chars or so
+      textSpan: {start: 0, length: 0},
+      fileName: resourceForExpression.path,
+    },
+  ];
 
   return {
     definitions: templateDefinitions,

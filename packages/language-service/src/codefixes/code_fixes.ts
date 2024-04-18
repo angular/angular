@@ -18,12 +18,14 @@ export class CodeFixes {
   private fixIdToRegistration = new Map<FixIdForCodeFixesAll, CodeActionMeta>();
 
   constructor(
-      private readonly tsLS: tss.LanguageService, readonly codeActionMetas: CodeActionMeta[]) {
+    private readonly tsLS: tss.LanguageService,
+    readonly codeActionMetas: CodeActionMeta[],
+  ) {
     for (const meta of codeActionMetas) {
       for (const err of meta.errorCodes) {
         let errMeta = this.errorCodeToFixes.get(err);
         if (errMeta === undefined) {
-          this.errorCodeToFixes.set(err, errMeta = []);
+          this.errorCodeToFixes.set(err, (errMeta = []));
         }
         errMeta.push(meta);
       }
@@ -43,10 +45,16 @@ export class CodeFixes {
    * and collect all the responses from the `codeActionMetas` which could handle the `errorCodes`.
    */
   getCodeFixesAtPosition(
-      fileName: string, templateInfo: TemplateInfo, compiler: NgCompiler, start: number,
-      end: number, errorCodes: readonly number[], diagnostics: tss.Diagnostic[],
-      formatOptions: tss.FormatCodeSettings,
-      preferences: tss.UserPreferences): readonly tss.CodeFixAction[] {
+    fileName: string,
+    templateInfo: TemplateInfo,
+    compiler: NgCompiler,
+    start: number,
+    end: number,
+    errorCodes: readonly number[],
+    diagnostics: tss.Diagnostic[],
+    formatOptions: tss.FormatCodeSettings,
+    preferences: tss.UserPreferences,
+  ): readonly tss.CodeFixAction[] {
     const codeActions: tss.CodeFixAction[] = [];
     for (const code of errorCodes) {
       const metas = this.errorCodeToFixes.get(code);
@@ -66,11 +74,13 @@ export class CodeFixes {
           tsLs: this.tsLS,
         });
         const fixAllAvailable = isFixAllAvailable(meta, diagnostics);
-        const removeFixIdForCodeActions =
-            codeActionsForMeta.map(({fixId, fixAllDescription, ...codeActionForMeta}) => {
-              return fixAllAvailable ? {...codeActionForMeta, fixId, fixAllDescription} :
-                                       codeActionForMeta;
-            });
+        const removeFixIdForCodeActions = codeActionsForMeta.map(
+          ({fixId, fixAllDescription, ...codeActionForMeta}) => {
+            return fixAllAvailable
+              ? {...codeActionForMeta, fixId, fixAllDescription}
+              : codeActionForMeta;
+          },
+        );
         codeActions.push(...removeFixIdForCodeActions);
       }
     }
@@ -83,9 +93,13 @@ export class CodeFixes {
    * `CodeActionMeta` that the `fixId` belongs to.
    */
   getAllCodeActions(
-      compiler: NgCompiler, diagnostics: tss.Diagnostic[], scope: tss.CombinedCodeFixScope,
-      fixId: string, formatOptions: tss.FormatCodeSettings,
-      preferences: tss.UserPreferences): tss.CombinedCodeActions {
+    compiler: NgCompiler,
+    diagnostics: tss.Diagnostic[],
+    scope: tss.CombinedCodeFixScope,
+    fixId: string,
+    formatOptions: tss.FormatCodeSettings,
+    preferences: tss.UserPreferences,
+  ): tss.CombinedCodeActions {
     const meta = this.fixIdToRegistration.get(fixId as FixIdForCodeFixesAll);
     if (meta === undefined) {
       return {
@@ -100,7 +114,7 @@ export class CodeFixes {
       tsLs: this.tsLS,
       scope,
       // only pass the diagnostics the `meta` cares about.
-      diagnostics: diagnostics.filter(diag => meta.errorCodes.includes(diag.code)),
+      diagnostics: diagnostics.filter((diag) => meta.errorCodes.includes(diag.code)),
     });
   }
 }

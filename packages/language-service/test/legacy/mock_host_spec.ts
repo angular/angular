@@ -29,27 +29,30 @@ describe('mock host', () => {
   it('can load test project from Bazel runfiles', () => {
     expect(project).toBeInstanceOf(ts.server.ConfiguredProject);
     const configPath = (project as ts.server.ConfiguredProject).getConfigFilePath();
-    expect(configPath.substring(TEST_SRCDIR.length))
-        .toBe('/angular/packages/language-service/test/legacy/project/tsconfig.json');
+    expect(configPath.substring(TEST_SRCDIR.length)).toBe(
+      '/angular/packages/language-service/test/legacy/project/tsconfig.json',
+    );
     const program = tsLS.getProgram();
     expect(program).toBeDefined();
-    const sourceFiles = program!.getSourceFiles().map(sf => {
+    const sourceFiles = program!.getSourceFiles().map((sf) => {
       const {fileName} = sf;
       if (fileName.startsWith(TEST_SRCDIR)) {
         return fileName.substring(TEST_SRCDIR.length);
       }
       return fileName;
     });
-    expect(sourceFiles).toEqual(jasmine.arrayContaining([
-      // This shows that module resolution works
-      '/angular/packages/common/src/common.d.ts',
-      '/angular/packages/core/src/core.d.ts',
-      '/angular/packages/forms/src/forms.d.ts',
-      // This shows that project files are present
-      '/angular/packages/language-service/test/legacy/project/app/app.component.ts',
-      '/angular/packages/language-service/test/legacy/project/app/main.ts',
-      '/angular/packages/language-service/test/legacy/project/app/parsing-cases.ts',
-    ]));
+    expect(sourceFiles).toEqual(
+      jasmine.arrayContaining([
+        // This shows that module resolution works
+        '/angular/packages/common/src/common.d.ts',
+        '/angular/packages/core/src/core.d.ts',
+        '/angular/packages/forms/src/forms.d.ts',
+        // This shows that project files are present
+        '/angular/packages/language-service/test/legacy/project/app/app.component.ts',
+        '/angular/packages/language-service/test/legacy/project/app/main.ts',
+        '/angular/packages/language-service/test/legacy/project/app/parsing-cases.ts',
+      ]),
+    );
   });
 
   it('produces no TS error for test project', () => {
@@ -87,8 +90,9 @@ describe('mock host', () => {
     });
 
     it('will throw if there is more than one cursor', () => {
-      expect(() => service.overwrite(APP_MAIN, `const f¦oo = 'hello wo¦rld';`))
-          .toThrowError(/matches more than one occurrence in text/);
+      expect(() => service.overwrite(APP_MAIN, `const f¦oo = 'hello wo¦rld';`)).toThrowError(
+        /matches more than one occurrence in text/,
+      );
     });
 
     it('will return -1 if cursor is not present', () => {
@@ -123,13 +127,15 @@ describe('mock host', () => {
     });
 
     it('will throw if there is no template in file', () => {
-      expect(() => service.overwriteInlineTemplate(APP_MAIN, `{{ foo }}`))
-          .toThrowError(/does not contain a component with template/);
+      expect(() => service.overwriteInlineTemplate(APP_MAIN, `{{ foo }}`)).toThrowError(
+        /does not contain a component with template/,
+      );
     });
 
     it('will throw if there is more than one cursor', () => {
-      expect(() => service.overwriteInlineTemplate(APP_COMPONENT, `{{ f¦o¦o }}`))
-          .toThrowError(/matches more than one occurrence in text/);
+      expect(() => service.overwriteInlineTemplate(APP_COMPONENT, `{{ f¦o¦o }}`)).toThrowError(
+        /matches more than one occurrence in text/,
+      );
     });
 
     it('will return -1 if cursor is not present', () => {
@@ -138,7 +144,9 @@ describe('mock host', () => {
     });
 
     it('will throw if there is more than one component with template', () => {
-      service.overwrite(APP_COMPONENT, `
+      service.overwrite(
+        APP_COMPONENT,
+        `
         import {Component} from '@angular/core';
 
         @Component({
@@ -150,9 +158,11 @@ describe('mock host', () => {
           template: \`<h2></h2>\`,
         })
         export class ComponentB {}
-      `);
-      expect(() => service.overwriteInlineTemplate(APP_COMPONENT, `<p></p>`))
-          .toThrowError(/matches more than one occurrence in text/);
+      `,
+      );
+      expect(() => service.overwriteInlineTemplate(APP_COMPONENT, `<p></p>`)).toThrowError(
+        /matches more than one occurrence in text/,
+      );
     });
   });
 });

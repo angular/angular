@@ -6,8 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InternalOptions, LegacyNgcOptions, StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  InternalOptions,
+  LegacyNgcOptions,
+  StrictTemplateOptions,
+} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  FileSystem,
+  getFileSystem,
+  getSourceFileOrError,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
@@ -21,35 +31,40 @@ export type ProjectFiles = {
 };
 
 function writeTsconfig(
-    fs: FileSystem, tsConfigPath: AbsoluteFsPath, entryFiles: AbsoluteFsPath[],
-    angularCompilerOptions: TestableOptions, tsCompilerOptions: {}): void {
+  fs: FileSystem,
+  tsConfigPath: AbsoluteFsPath,
+  entryFiles: AbsoluteFsPath[],
+  angularCompilerOptions: TestableOptions,
+  tsCompilerOptions: {},
+): void {
   fs.writeFile(
-      tsConfigPath,
-      JSON.stringify(
-          {
-            compilerOptions: {
-              strict: true,
-              experimentalDecorators: true,
-              moduleResolution: 'node',
-              target: 'es2015',
-              rootDir: '.',
-              lib: [
-                'dom',
-                'es2015',
-              ],
-              ...tsCompilerOptions,
-            },
-            files: entryFiles,
-            angularCompilerOptions: {
-              strictTemplates: true,
-              ...angularCompilerOptions,
-            }
-          },
-          null, 2));
+    tsConfigPath,
+    JSON.stringify(
+      {
+        compilerOptions: {
+          strict: true,
+          experimentalDecorators: true,
+          moduleResolution: 'node',
+          target: 'es2015',
+          rootDir: '.',
+          lib: ['dom', 'es2015'],
+          ...tsCompilerOptions,
+        },
+        files: entryFiles,
+        angularCompilerOptions: {
+          strictTemplates: true,
+          ...angularCompilerOptions,
+        },
+      },
+      null,
+      2,
+    ),
+  );
 }
 
-export type TestableOptions =
-    StrictTemplateOptions&InternalOptions&Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'>;
+export type TestableOptions = StrictTemplateOptions &
+  InternalOptions &
+  Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'>;
 
 export class Project {
   private tsProject: ts.server.Project;
@@ -58,8 +73,12 @@ export class Project {
   private buffers = new Map<string, OpenBuffer>();
 
   static initialize(
-      projectName: string, projectService: ts.server.ProjectService, files: ProjectFiles,
-      angularCompilerOptions: TestableOptions = {}, tsCompilerOptions = {}): Project {
+    projectName: string,
+    projectService: ts.server.ProjectService,
+    files: ProjectFiles,
+    angularCompilerOptions: TestableOptions = {},
+    tsCompilerOptions = {},
+  ): Project {
     const fs = getFileSystem();
     const tsConfigPath = absoluteFrom(`/${projectName}/tsconfig.json`);
 
@@ -88,8 +107,10 @@ export class Project {
   }
 
   private constructor(
-      readonly name: string, private projectService: ts.server.ProjectService,
-      private tsConfigPath: AbsoluteFsPath) {
+    readonly name: string,
+    private projectService: ts.server.ProjectService,
+    private tsConfigPath: AbsoluteFsPath,
+  ) {
     // LS for project
     const tsProject = projectService.findProject(tsConfigPath);
     if (tsProject === undefined) {
@@ -108,9 +129,12 @@ export class Project {
       const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
       let scriptInfo = this.tsProject.getScriptInfo(fileName);
       this.projectService.openClientFile(
-          // By attempting to open the file, the compiler is going to try to parse it as
-          // TS which will throw an error. We pass in JSX which is more permissive.
-          fileName, undefined, fileName.endsWith('.html') ? ts.ScriptKind.JSX : ts.ScriptKind.TS);
+        // By attempting to open the file, the compiler is going to try to parse it as
+        // TS which will throw an error. We pass in JSX which is more permissive.
+        fileName,
+        undefined,
+        fileName.endsWith('.html') ? ts.ScriptKind.JSX : ts.ScriptKind.TS,
+      );
       // Mark the project as dirty because the act of opening a file may result in the version
       // changing since TypeScript will `switchToScriptVersionCache` when a file is opened.
       // Note that this emulates what we have to do in the server/extension as well.
@@ -120,16 +144,19 @@ export class Project {
       scriptInfo = this.tsProject.getScriptInfo(fileName);
       if (scriptInfo === undefined) {
         throw new Error(
-            `Unable to open ScriptInfo for ${projectFileName} in project ${this.tsConfigPath}`);
+          `Unable to open ScriptInfo for ${projectFileName} in project ${this.tsConfigPath}`,
+        );
       }
       this.buffers.set(
-          projectFileName, new OpenBuffer(this.ngLS, this.tsProject, projectFileName, scriptInfo));
+        projectFileName,
+        new OpenBuffer(this.ngLS, this.tsProject, projectFileName, scriptInfo),
+      );
     }
 
     return this.buffers.get(projectFileName)!;
   }
 
-  getSourceFile(projectFileName: string): ts.SourceFile|undefined {
+  getSourceFile(projectFileName: string): ts.SourceFile | undefined {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
     return this.tsProject.getSourceFile(this.projectService.toPath(fileName));
   }
@@ -151,11 +178,11 @@ export class Project {
   }
 
   getCodeFixesAtPosition(
-      projectFileName: string,
-      start: number,
-      end: number,
-      errorCodes: readonly number[],
-      ): readonly ts.CodeFixAction[] {
+    projectFileName: string,
+    start: number,
+    end: number,
+    errorCodes: readonly number[],
+  ): readonly ts.CodeFixAction[] {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
     return this.ngLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, {}, {});
   }
@@ -163,11 +190,14 @@ export class Project {
   getCombinedCodeFix(projectFileName: string, fixId: string): ts.CombinedCodeActions {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
     return this.ngLS.getCombinedCodeFix(
-        {
-          type: 'file',
-          fileName,
-        },
-        fixId, {}, {});
+      {
+        type: 'file',
+        fileName,
+      },
+      fixId,
+      {},
+      {},
+    );
   }
 
   expectNoSourceDiagnostics(): void {
@@ -179,19 +209,22 @@ export class Project {
     const ngCompiler = this.ngLS.compilerFactory.getOrCreate();
 
     for (const sf of program.getSourceFiles()) {
-      if (sf.isDeclarationFile || sf.fileName.endsWith('.ngtypecheck.ts') ||
-          !sf.fileName.endsWith('.ts')) {
+      if (
+        sf.isDeclarationFile ||
+        sf.fileName.endsWith('.ngtypecheck.ts') ||
+        !sf.fileName.endsWith('.ts')
+      ) {
         continue;
       }
 
       const syntactic = program.getSyntacticDiagnostics(sf);
-      expect(syntactic.map(diag => diag.messageText)).toEqual([]);
+      expect(syntactic.map((diag) => diag.messageText)).toEqual([]);
       if (syntactic.length > 0) {
         continue;
       }
 
       const semantic = program.getSemanticDiagnostics(sf);
-      expect(semantic.map(diag => diag.messageText)).toEqual([]);
+      expect(semantic.map((diag) => diag.messageText)).toEqual([]);
       if (semantic.length > 0) {
         continue;
       }
@@ -199,7 +232,7 @@ export class Project {
       // It's more efficient to optimize for WholeProgram since we call this with every file in the
       // program.
       const ngDiagnostics = ngCompiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
-      expect(ngDiagnostics.map(diag => diag.messageText)).toEqual([]);
+      expect(ngDiagnostics.map((diag) => diag.messageText)).toEqual([]);
     }
   }
 
@@ -213,7 +246,7 @@ export class Project {
     const component = getClassOrError(sf, className);
 
     const diags = this.getTemplateTypeChecker().getDiagnosticsForComponent(component);
-    expect(diags.map(diag => diag.messageText)).toEqual([]);
+    expect(diags.map((diag) => diag.messageText)).toEqual([]);
   }
 
   getTemplateTypeChecker(): TemplateTypeChecker {
