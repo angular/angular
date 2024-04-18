@@ -945,6 +945,9 @@
     "name": "getNgDirectiveDef"
   },
   {
+    "name": "getNgZoneOptions"
+  },
+  {
     "name": "getNodeInjectable"
   },
   {

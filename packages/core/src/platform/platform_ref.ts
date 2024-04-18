@@ -20,6 +20,7 @@ import {
   internalProvideZoneChangeDetection,
   PROVIDED_NG_ZONE,
 } from '../change_detection/scheduling/ng_zone_scheduling';
+import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
 import {Injectable, InjectionToken, Injector} from '../di';
 import {ErrorHandler} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -101,6 +102,17 @@ export class PlatformRef {
         throw new RuntimeError(
           RuntimeErrorCode.PROVIDER_IN_WRONG_CONTEXT,
           '`bootstrapModule` does not support `provideZoneChangeDetection`. Use `BootstrapOptions` instead.',
+        );
+      }
+      if (
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        moduleRef.injector.get(ZONELESS_ENABLED, null) &&
+        options?.ngZone !== 'noop'
+      ) {
+        throw new RuntimeError(
+          RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
+          'Invalid change detection configuration: ' +
+            "`ngZone: 'noop'` must be set in `BootstrapOptions` with provideExperimentalZonelessChangeDetection.",
         );
       }
 
