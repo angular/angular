@@ -16,9 +16,19 @@ import {
   NgLocalization,
 } from '@angular/common/src/i18n/localization';
 import {LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
+import {
+  usePluralIntlImplementation,
+  usePluralLegacyImplementation,
+} from '@angular/core/src/i18n/implementation';
 import {inject, TestBed} from '@angular/core/testing';
 
+// Following ignore is to ease the review of the diff
+// prettier-ignore
 describe('l10n', () => {
+  [true, false].forEach((useIntl) => {
+  describe(useIntl ? '- Intl formatting - ' : ' - Legacy formatting -', () => {
+  
+  if(!useIntl) {
   beforeAll(() => {
     ɵregisterLocaleData(localeRo);
     ɵregisterLocaleData(localeSr);
@@ -27,6 +37,17 @@ describe('l10n', () => {
   });
 
   afterAll(() => ɵunregisterLocaleData());
+  }
+
+  beforeEach(() => {
+    if (useIntl) {
+      usePluralIntlImplementation();
+    }
+  });
+
+  afterEach(() => {
+    usePluralLegacyImplementation();
+  });
 
   describe('NgLocalization', () => {
     function roTests() {
@@ -192,4 +213,7 @@ describe('l10n', () => {
       });
     });
   });
+
+});
+});
 });

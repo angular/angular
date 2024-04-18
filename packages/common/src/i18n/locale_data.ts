@@ -15,6 +15,8 @@ import {ɵregisterLocaleData} from '@angular/core';
  *
  * The signature registerLocaleData(data: any, extraData?: any) is deprecated since v5.1
  *
+ * @deprecated Angular recommends relying on the `Intl` API for i18n.
+ *
  * @publicApi
  */
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void {
