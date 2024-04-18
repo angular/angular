@@ -50,13 +50,14 @@ export class LanguageServiceTestEnv {
 
   addProject(
       name: string, files: ProjectFiles, angularCompilerOptions: TestableOptions = {},
-      tsCompilerOptions = {}): Project {
+      tsCompilerOptions = {}, entryTsConfigPath: string|undefined = undefined): Project {
     if (this.projects.has(name)) {
       throw new Error(`Project ${name} is already defined`);
     }
 
     const project = Project.initialize(
-        name, this.projectService, files, angularCompilerOptions, tsCompilerOptions);
+        name, this.projectService, files, angularCompilerOptions, tsCompilerOptions,
+        entryTsConfigPath);
     this.projects.set(name, project);
     return project;
   }

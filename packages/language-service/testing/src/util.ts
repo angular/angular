@@ -49,7 +49,8 @@ function getFirstClassDeclaration(declaration: string) {
 
 export function createModuleAndProjectWithDeclarations(
     env: LanguageServiceTestEnv, projectName: string, projectFiles: ProjectFiles,
-    angularCompilerOptions: TestableOptions = {}, standaloneFiles: ProjectFiles = {}): Project {
+    angularCompilerOptions: TestableOptions = {}, standaloneFiles: ProjectFiles = {},
+    tsCompilerOptions = {}, entryTsConfigPath: string|undefined = undefined): Project {
   const externalClasses: string[] = [];
   const externalImports: string[] = [];
   for (const [fileName, fileContents] of Object.entries(projectFiles)) {
@@ -72,7 +73,9 @@ export function createModuleAndProjectWithDeclarations(
         export class AppModule {}
       `;
   projectFiles['app-module.ts'] = moduleContents;
-  return env.addProject(projectName, {...projectFiles, ...standaloneFiles}, angularCompilerOptions);
+  return env.addProject(
+      projectName, {...standaloneFiles, ...projectFiles}, angularCompilerOptions, tsCompilerOptions,
+      entryTsConfigPath);
 }
 
 export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(
