@@ -335,6 +335,11 @@ export interface TypeCheckingConfig {
    * Whether the type of two-way bindings should be widened to allow `WritableSignal`.
    */
   allowSignalsInTwoWayBindings: boolean;
+
+  /**
+   * Whether to descend into the bodies of control flow blocks (`@if`, `@switch` and `@for`).
+   */
+  checkControlFlowBodies: boolean;
 }
 
 
