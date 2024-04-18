@@ -25,6 +25,10 @@ import {IS_EVENT_REPLAY_ENABLED} from './tokens';
 export const EVENT_REPLAY_ENABLED_DEFAULT = false;
 export const CONTRACT_PROPERTY = 'ngContracts';
 
+declare global {
+  var ngContracts: {[key: string]: EventContract};
+}
+
 /**
  * Returns a set of providers required to setup support for event replay.
  * Requires hydration to be enabled separately.
@@ -42,19 +46,22 @@ export function withEventReplay(): Provider[] {
           const injector = inject(Injector);
           const appRef = inject(ApplicationRef);
           return () => {
+            // Kick off event replay logic once hydration for the initial part
+            // of the application is completed. This timing is similar to the unclaimed
+            // dehydrated views cleanup timing.
             whenStable(appRef).then(() => {
               const appId = injector.get(APP_ID);
               // This is set in packages/platform-server/src/utils.ts
-              const eventContract = (globalThis as any)[CONTRACT_PROPERTY][appId] as EventContract;
+              const eventContract = globalThis[CONTRACT_PROPERTY][appId] as EventContract;
               if (eventContract) {
-                const dispatcher: Dispatcher = new Dispatcher();
+                const dispatcher = new Dispatcher();
                 setEventReplayer(appRef, new Set([appId]), dispatcher);
                 registerDispatcher(eventContract, dispatcher);
               }
             });
           };
         }
-        return () => {};  // noop
+        return () => {};  // noop for the server code
       },
       multi: true,
     }
@@ -144,7 +151,7 @@ function handleEvent(event: EventInfoWrapper) {
   }
 }
 
-type Listener = (value: any) => any;
+type Listener = ((value: Event) => unknown)|(() => unknown);
 
 function getEventListeners(
     tView: TView, lView: LView, nativeElement: Element, eventName: string): Listener[] {

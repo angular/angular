@@ -35,7 +35,3 @@ export function bootstrapEventContract(
   }
   return eventContract;
 }
-
-export function cleanup() {
-  (globalThis as any).__ngEventContracts__ = undefined;
-}
