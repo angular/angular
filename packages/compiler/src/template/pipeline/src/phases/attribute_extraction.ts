@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {SecurityContext} from '../../../../core';
 import * as ir from '../../ir';
 import {CompilationJobKind, type CompilationJob, type CompilationUnit} from '../compilation';
@@ -38,21 +37,35 @@ export function extractAttributes(job: CompilationJob): void {
             }
 
             ir.OpList.insertBefore<ir.CreateOp>(
-                // Deliberately null i18nMessage value
-                ir.createExtractedAttributeOp(
-                    op.target, bindingKind, null, op.name, /* expression */ null,
-                    /* i18nContext */ null,
-                    /* i18nMessage */ null, op.securityContext),
-                lookupElement(elements, op.target));
+              // Deliberately null i18nMessage value
+              ir.createExtractedAttributeOp(
+                op.target,
+                bindingKind,
+                null,
+                op.name,
+                /* expression */ null,
+                /* i18nContext */ null,
+                /* i18nMessage */ null,
+                op.securityContext,
+              ),
+              lookupElement(elements, op.target),
+            );
           }
           break;
         case ir.OpKind.TwoWayProperty:
           ir.OpList.insertBefore<ir.CreateOp>(
-              ir.createExtractedAttributeOp(
-                  op.target, ir.BindingKind.TwoWayProperty, null, op.name, /* expression */ null,
-                  /* i18nContext */ null,
-                  /* i18nMessage */ null, op.securityContext),
-              lookupElement(elements, op.target));
+            ir.createExtractedAttributeOp(
+              op.target,
+              ir.BindingKind.TwoWayProperty,
+              null,
+              op.name,
+              /* expression */ null,
+              /* i18nContext */ null,
+              /* i18nMessage */ null,
+              op.securityContext,
+            ),
+            lookupElement(elements, op.target),
+          );
           break;
         case ir.OpKind.StyleProp:
         case ir.OpKind.ClassProp:
@@ -61,22 +74,37 @@ export function extractAttributes(job: CompilationJob): void {
           // The old compiler treated empty style bindings as regular bindings for the purpose of
           // directive matching. That behavior is incorrect, but we emulate it in compatibility
           // mode.
-          if (unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-              op.expression instanceof ir.EmptyExpr) {
+          if (
+            unit.job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+            op.expression instanceof ir.EmptyExpr
+          ) {
             ir.OpList.insertBefore<ir.CreateOp>(
-                ir.createExtractedAttributeOp(
-                    op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
-                    /* i18nContext */ null,
-                    /* i18nMessage */ null, SecurityContext.STYLE),
-                lookupElement(elements, op.target));
+              ir.createExtractedAttributeOp(
+                op.target,
+                ir.BindingKind.Property,
+                null,
+                op.name,
+                /* expression */ null,
+                /* i18nContext */ null,
+                /* i18nMessage */ null,
+                SecurityContext.STYLE,
+              ),
+              lookupElement(elements, op.target),
+            );
           }
           break;
         case ir.OpKind.Listener:
           if (!op.isAnimationListener) {
             const extractedAttributeOp = ir.createExtractedAttributeOp(
-                op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
-                /* i18nContext */ null,
-                /* i18nMessage */ null, SecurityContext.NONE);
+              op.target,
+              ir.BindingKind.Property,
+              null,
+              op.name,
+              /* expression */ null,
+              /* i18nContext */ null,
+              /* i18nMessage */ null,
+              SecurityContext.NONE,
+            );
             if (job.kind === CompilationJobKind.Host) {
               if (job.compatibility) {
                 // TemplateDefinitionBuilder does not extract listener bindings to the const array
@@ -88,7 +116,9 @@ export function extractAttributes(job: CompilationJob): void {
               unit.create.push(extractedAttributeOp);
             } else {
               ir.OpList.insertBefore<ir.CreateOp>(
-                  extractedAttributeOp, lookupElement(elements, op.target));
+                extractedAttributeOp,
+                lookupElement(elements, op.target),
+              );
             }
           }
           break;
@@ -96,11 +126,19 @@ export function extractAttributes(job: CompilationJob): void {
           // Two-way listeners aren't supported in host bindings.
           if (job.kind !== CompilationJobKind.Host) {
             const extractedAttributeOp = ir.createExtractedAttributeOp(
-                op.target, ir.BindingKind.Property, null, op.name, /* expression */ null,
-                /* i18nContext */ null,
-                /* i18nMessage */ null, SecurityContext.NONE);
+              op.target,
+              ir.BindingKind.Property,
+              null,
+              op.name,
+              /* expression */ null,
+              /* i18nContext */ null,
+              /* i18nMessage */ null,
+              SecurityContext.NONE,
+            );
             ir.OpList.insertBefore<ir.CreateOp>(
-                extractedAttributeOp, lookupElement(elements, op.target));
+              extractedAttributeOp,
+              lookupElement(elements, op.target),
+            );
           }
           break;
       }
@@ -112,8 +150,9 @@ export function extractAttributes(job: CompilationJob): void {
  * Looks up an element in the given map by xref ID.
  */
 function lookupElement(
-    elements: Map<ir.XrefId, ir.ConsumesSlotOpTrait&ir.CreateOp>,
-    xref: ir.XrefId): ir.ConsumesSlotOpTrait&ir.CreateOp {
+  elements: Map<ir.XrefId, ir.ConsumesSlotOpTrait & ir.CreateOp>,
+  xref: ir.XrefId,
+): ir.ConsumesSlotOpTrait & ir.CreateOp {
   const el = elements.get(xref);
   if (el === undefined) {
     throw new Error('All attributes should have an element-like target.');
@@ -125,8 +164,10 @@ function lookupElement(
  * Extracts an attribute binding.
  */
 function extractAttributeOp(
-    unit: CompilationUnit, op: ir.AttributeOp,
-    elements: Map<ir.XrefId, ir.ConsumesSlotOpTrait&ir.CreateOp>) {
+  unit: CompilationUnit,
+  op: ir.AttributeOp,
+  elements: Map<ir.XrefId, ir.ConsumesSlotOpTrait & ir.CreateOp>,
+) {
   if (op.expression instanceof ir.Interpolation) {
     return;
   }
@@ -140,9 +181,15 @@ function extractAttributeOp(
 
   if (extractable) {
     const extractedAttributeOp = ir.createExtractedAttributeOp(
-        op.target,
-        op.isStructuralTemplateAttribute ? ir.BindingKind.Template : ir.BindingKind.Attribute,
-        op.namespace, op.name, op.expression, op.i18nContext, op.i18nMessage, op.securityContext);
+      op.target,
+      op.isStructuralTemplateAttribute ? ir.BindingKind.Template : ir.BindingKind.Attribute,
+      op.namespace,
+      op.name,
+      op.expression,
+      op.i18nContext,
+      op.i18nMessage,
+      op.securityContext,
+    );
     if (unit.job.kind === CompilationJobKind.Host) {
       // This attribute will apply to the enclosing host binding compilation unit, so order doesn't
       // matter.

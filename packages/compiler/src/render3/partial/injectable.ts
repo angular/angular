@@ -26,8 +26,9 @@ const MINIMUM_PARTIAL_LINKER_VERSION = '12.0.0';
 /**
  * Compile a Injectable declaration defined by the `R3InjectableMetadata`.
  */
-export function compileDeclareInjectableFromMetadata(meta: R3InjectableMetadata):
-    R3CompiledExpression {
+export function compileDeclareInjectableFromMetadata(
+  meta: R3InjectableMetadata,
+): R3CompiledExpression {
   const definitionMap = createInjectableDefinitionMap(meta);
 
   const expression = o.importExpr(R3.declareInjectable).callFn([definitionMap.toLiteralMap()]);
@@ -39,8 +40,9 @@ export function compileDeclareInjectableFromMetadata(meta: R3InjectableMetadata)
 /**
  * Gathers the declaration fields for a Injectable into a `DefinitionMap`.
  */
-export function createInjectableDefinitionMap(meta: R3InjectableMetadata):
-    DefinitionMap<R3DeclareInjectableMetadata> {
+export function createInjectableDefinitionMap(
+  meta: R3InjectableMetadata,
+): DefinitionMap<R3DeclareInjectableMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareInjectableMetadata>();
 
   definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));

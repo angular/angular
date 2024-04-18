@@ -14,14 +14,16 @@ import {_extractMessages} from '../i18n_parser_spec';
 describe('i18n AST', () => {
   describe('CloneVisitor', () => {
     it('should clone an AST', () => {
-      const messages =
-          _extractMessages('<div i18n="m|d">b{count, plural, =0 {{sex, select, male {m}}}}a</div>');
+      const messages = _extractMessages(
+        '<div i18n="m|d">b{count, plural, =0 {{sex, select, male {m}}}}a</div>',
+      );
       const nodes = messages[0].nodes;
       const text = serializeNodes(nodes).join('');
       expect(text).toEqual(
-          'b<ph icu name="ICU">{count, plural, =0 {[{sex, select, male {[m]}}]}}</ph>a');
+        'b<ph icu name="ICU">{count, plural, =0 {[{sex, select, male {[m]}}]}}</ph>a',
+      );
       const visitor = new i18n.CloneVisitor();
-      const cloneNodes = nodes.map(n => n.visit(visitor));
+      const cloneNodes = nodes.map((n) => n.visit(visitor));
       expect(serializeNodes(nodes)).toEqual(serializeNodes(cloneNodes));
       nodes.forEach((n: i18n.Node, i: number) => {
         expect(n).toEqual(cloneNodes[i]);
@@ -34,12 +36,13 @@ describe('i18n AST', () => {
     it('should visit all nodes', () => {
       const visitor = new RecurseVisitor();
       const container = new i18n.Container(
-          [
-            new i18n.Text('', null!),
-            new i18n.Placeholder('', '', null!),
-            new i18n.IcuPlaceholder(null!, '', null!),
-          ],
-          null!);
+        [
+          new i18n.Text('', null!),
+          new i18n.Placeholder('', '', null!),
+          new i18n.IcuPlaceholder(null!, '', null!),
+        ],
+        null!,
+      );
       const tag = new i18n.TagPlaceholder('', {}, '', '', [container], false, null!, null, null);
       const icu = new i18n.Icu('', '', {tag}, null!);
 

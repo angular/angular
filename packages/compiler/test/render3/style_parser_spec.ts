@@ -5,7 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {hyphenate, parse as parseStyle} from '../../src/template/pipeline/src/phases/parse_extracted_styles';
+import {
+  hyphenate,
+  parse as parseStyle,
+} from '../../src/template/pipeline/src/phases/parse_extracted_styles';
 
 describe('style parsing', () => {
   it('should parse empty or blank strings', () => {
@@ -37,7 +40,7 @@ describe('style parsing', () => {
   });
 
   it('should not mess up with quoted strings that contain inner quote values', () => {
-    const quoteStr = '"one \'two\' three \"four\" five"';
+    const quoteStr = '"one \'two\' three "four" five"';
     const result = parseStyle(`content: ${quoteStr}; width: 123px`);
     expect(result).toEqual(['content', quoteStr, 'width', '123px']);
   });

@@ -19,7 +19,13 @@ import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 
 import * as t from './r3_ast';
-import {createForLoop, createIfBlock, createSwitchBlock, isConnectedForLoopBlock, isConnectedIfLoopBlock} from './r3_control_flow';
+import {
+  createForLoop,
+  createIfBlock,
+  createSwitchBlock,
+  isConnectedForLoopBlock,
+  isConnectedIfLoopBlock,
+} from './r3_control_flow';
 import {createDeferredBlock, isConnectedDeferLoopBlock} from './r3_deferred_blocks';
 import {I18N_ICU_VAR_PREFIX} from './view/i18n/util';
 
@@ -64,8 +70,10 @@ interface Render3ParseOptions {
 }
 
 export function htmlAstToRender3Ast(
-    htmlNodes: html.Node[], bindingParser: BindingParser,
-    options: Render3ParseOptions): Render3ParseResult {
+  htmlNodes: html.Node[],
+  bindingParser: BindingParser,
+  options: Render3ParseOptions,
+): Render3ParseResult {
   const transformer = new HtmlAstToIvyAst(bindingParser, options);
   const ivyNodes = html.visitAll(transformer, htmlNodes, htmlNodes);
 
@@ -77,7 +85,7 @@ export function htmlAstToRender3Ast(
     errors: allErrors,
     styleUrls: transformer.styleUrls,
     styles: transformer.styles,
-    ngContentSelectors: transformer.ngContentSelectors
+    ngContentSelectors: transformer.ngContentSelectors,
   };
   if (options.collectCommentNodes) {
     result.commentNodes = transformer.commentNodes;
@@ -98,18 +106,22 @@ class HtmlAstToIvyAst implements html.Visitor {
    * Keeps track of the nodes that have been processed already when previous nodes were visited.
    * These are typically blocks connected to other blocks or text nodes between connected blocks.
    */
-  private processedNodes = new Set<html.Block|html.Text>();
+  private processedNodes = new Set<html.Block | html.Text>();
 
-  constructor(private bindingParser: BindingParser, private options: Render3ParseOptions) {}
+  constructor(
+    private bindingParser: BindingParser,
+    private options: Render3ParseOptions,
+  ) {}
 
   // HTML visitor
-  visitElement(element: html.Element): t.Node|null {
+  visitElement(element: html.Element): t.Node | null {
     const isI18nRootElement = isI18nRootNode(element.i18n);
     if (isI18nRootElement) {
       if (this.inI18nBlock) {
         this.reportError(
-            'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.',
-            element.sourceSpan);
+          'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.',
+          element.sourceSpan,
+        );
       }
       this.inI18nBlock = true;
     }
@@ -123,8 +135,9 @@ class HtmlAstToIvyAst implements html.Visitor {
       }
       return null;
     } else if (
-        preparsedElement.type === PreparsedElementType.STYLESHEET &&
-        isStyleUrlResolvable(preparsedElement.hrefAttr)) {
+      preparsedElement.type === PreparsedElementType.STYLESHEET &&
+      isStyleUrlResolvable(preparsedElement.hrefAttr)
+    ) {
       this.styleUrls.push(preparsedElement.hrefAttr);
       return null;
     }
@@ -160,8 +173,9 @@ class HtmlAstToIvyAst implements html.Visitor {
         // *-attributes
         if (elementHasInlineTemplate) {
           this.reportError(
-              `Can't have multiple template bindings on one element. Use only one attribute prefixed with *`,
-              attribute.sourceSpan);
+            `Can't have multiple template bindings on one element. Use only one attribute prefixed with *`,
+            attribute.sourceSpan,
+          );
         }
         isTemplateBinding = true;
         elementHasInlineTemplate = true;
@@ -169,22 +183,39 @@ class HtmlAstToIvyAst implements html.Visitor {
         const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
 
         const parsedVariables: ParsedVariable[] = [];
-        const absoluteValueOffset = attribute.valueSpan ?
-            attribute.valueSpan.start.offset :
-            // If there is no value span the attribute does not have a value, like `attr` in
+        const absoluteValueOffset = attribute.valueSpan
+          ? attribute.valueSpan.start.offset
+          : // If there is no value span the attribute does not have a value, like `attr` in
             //`<div attr></div>`. In this case, point to one character beyond the last character of
             // the attribute name.
             attribute.sourceSpan.start.offset + attribute.name.length;
 
         this.bindingParser.parseInlineTemplateBinding(
-            templateKey, templateValue, attribute.sourceSpan, absoluteValueOffset, [],
-            templateParsedProperties, parsedVariables, true /* isIvyAst */);
-        templateVariables.push(...parsedVariables.map(
-            v => new t.Variable(v.name, v.value, v.sourceSpan, v.keySpan, v.valueSpan)));
+          templateKey,
+          templateValue,
+          attribute.sourceSpan,
+          absoluteValueOffset,
+          [],
+          templateParsedProperties,
+          parsedVariables,
+          true /* isIvyAst */,
+        );
+        templateVariables.push(
+          ...parsedVariables.map(
+            (v) => new t.Variable(v.name, v.value, v.sourceSpan, v.keySpan, v.valueSpan),
+          ),
+        );
       } else {
         // Check for variables, events, property bindings, interpolation
         hasBinding = this.parseAttribute(
-            isTemplateElement, attribute, [], parsedProperties, boundEvents, variables, references);
+          isTemplateElement,
+          attribute,
+          [],
+          parsedProperties,
+          boundEvents,
+          variables,
+          references,
+        );
       }
 
       if (!hasBinding && !isTemplateBinding) {
@@ -204,10 +235,10 @@ class HtmlAstToIvyAst implements html.Visitor {
       children = html.visitAll(this, element.children, element.children);
     }
 
-    let parsedElement: t.Content|t.Template|t.Element|undefined;
+    let parsedElement: t.Content | t.Template | t.Element | undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       const selector = preparsedElement.selectAttr;
-      const attrs: t.TextAttribute[] = element.attrs.map(attr => this.visitAttribute(attr));
+      const attrs: t.TextAttribute[] = element.attrs.map((attr) => this.visitAttribute(attr));
       parsedElement = new t.Content(selector, attrs, children, element.sourceSpan, element.i18n);
       this.ngContentSelectors.push(selector);
     } else if (isTemplateElement) {
@@ -215,14 +246,35 @@ class HtmlAstToIvyAst implements html.Visitor {
       const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
 
       parsedElement = new t.Template(
-          element.name, attributes, attrs.bound, boundEvents, [/* no template attributes */],
-          children, references, variables, element.sourceSpan, element.startSourceSpan,
-          element.endSourceSpan, element.i18n);
+        element.name,
+        attributes,
+        attrs.bound,
+        boundEvents,
+        [
+          /* no template attributes */
+        ],
+        children,
+        references,
+        variables,
+        element.sourceSpan,
+        element.startSourceSpan,
+        element.endSourceSpan,
+        element.i18n,
+      );
     } else {
       const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
       parsedElement = new t.Element(
-          element.name, attributes, attrs.bound, boundEvents, children, references,
-          element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
+        element.name,
+        attributes,
+        attrs.bound,
+        boundEvents,
+        children,
+        references,
+        element.sourceSpan,
+        element.startSourceSpan,
+        element.endSourceSpan,
+        element.i18n,
+      );
     }
 
     if (elementHasInlineTemplate) {
@@ -231,16 +283,17 @@ class HtmlAstToIvyAst implements html.Visitor {
       // Moreover, if the node is an element, then we need to hoist its attributes to the template
       // node for matching against content projection selectors.
       const attrs = this.extractAttributes('ng-template', templateParsedProperties, i18nAttrsMeta);
-      const templateAttrs: (t.TextAttribute|t.BoundAttribute)[] = [];
-      attrs.literal.forEach(attr => templateAttrs.push(attr));
-      attrs.bound.forEach(attr => templateAttrs.push(attr));
-      const hoistedAttrs = parsedElement instanceof t.Element ?
-          {
-            attributes: parsedElement.attributes,
-            inputs: parsedElement.inputs,
-            outputs: parsedElement.outputs,
-          } :
-          {attributes: [], inputs: [], outputs: []};
+      const templateAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
+      attrs.literal.forEach((attr) => templateAttrs.push(attr));
+      attrs.bound.forEach((attr) => templateAttrs.push(attr));
+      const hoistedAttrs =
+        parsedElement instanceof t.Element
+          ? {
+              attributes: parsedElement.attributes,
+              inputs: parsedElement.inputs,
+              outputs: parsedElement.outputs,
+            }
+          : {attributes: [], inputs: [], outputs: []};
 
       // For <ng-template>s with structural directives on them, avoid passing i18n information to
       // the wrapping template to prevent unnecessary i18n instructions from being generated. The
@@ -249,9 +302,21 @@ class HtmlAstToIvyAst implements html.Visitor {
       const name = parsedElement instanceof t.Template ? null : parsedElement.name;
 
       parsedElement = new t.Template(
-          name, hoistedAttrs.attributes, hoistedAttrs.inputs, hoistedAttrs.outputs, templateAttrs,
-          [parsedElement], [/* no references */], templateVariables, element.sourceSpan,
-          element.startSourceSpan, element.endSourceSpan, i18n);
+        name,
+        hoistedAttrs.attributes,
+        hoistedAttrs.inputs,
+        hoistedAttrs.outputs,
+        templateAttrs,
+        [parsedElement],
+        [
+          /* no references */
+        ],
+        templateVariables,
+        element.sourceSpan,
+        element.startSourceSpan,
+        element.endSourceSpan,
+        i18n,
+      );
     }
     if (isI18nRootElement) {
       this.inI18nBlock = false;
@@ -261,33 +326,39 @@ class HtmlAstToIvyAst implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, attribute.keySpan,
-        attribute.valueSpan, attribute.i18n);
+      attribute.name,
+      attribute.value,
+      attribute.sourceSpan,
+      attribute.keySpan,
+      attribute.valueSpan,
+      attribute.i18n,
+    );
   }
 
-  visitText(text: html.Text): t.Node|null {
-    return this.processedNodes.has(text) ?
-        null :
-        this._visitTextWithInterpolation(text.value, text.sourceSpan, text.tokens, text.i18n);
+  visitText(text: html.Text): t.Node | null {
+    return this.processedNodes.has(text)
+      ? null
+      : this._visitTextWithInterpolation(text.value, text.sourceSpan, text.tokens, text.i18n);
   }
 
-  visitExpansion(expansion: html.Expansion): t.Icu|null {
+  visitExpansion(expansion: html.Expansion): t.Icu | null {
     if (!expansion.i18n) {
       // do not generate Icu in case it was created
       // outside of i18n block in a template
       return null;
     }
     if (!isI18nRootNode(expansion.i18n)) {
-      throw new Error(`Invalid type "${expansion.i18n.constructor}" for "i18n" property of ${
-          expansion.sourceSpan.toString()}. Expected a "Message"`);
+      throw new Error(
+        `Invalid type "${expansion.i18n.constructor}" for "i18n" property of ${expansion.sourceSpan.toString()}. Expected a "Message"`,
+      );
     }
     const message = expansion.i18n;
     const vars: {[name: string]: t.BoundText} = {};
-    const placeholders: {[name: string]: t.Text|t.BoundText} = {};
+    const placeholders: {[name: string]: t.Text | t.BoundText} = {};
     // extract VARs from ICUs - we process them separately while
     // assembling resulting message via goog.getMsg function, since
     // we need to pass them to top-level goog.getMsg call
-    Object.keys(message.placeholders).forEach(key => {
+    Object.keys(message.placeholders).forEach((key) => {
       const value = message.placeholders[key];
       if (key.startsWith(I18N_ICU_VAR_PREFIX)) {
         // Currently when the `plural` or `select` keywords in an ICU contain trailing spaces (e.g.
@@ -327,7 +398,8 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     if (index === -1) {
       throw new Error(
-          'Visitor invoked incorrectly. Expecting visitBlock to be invoked siblings array as its context');
+        'Visitor invoked incorrectly. Expecting visitBlock to be invoked siblings array as its context',
+      );
     }
 
     // Connected blocks may have been processed as a part of the previous block.
@@ -335,13 +407,16 @@ class HtmlAstToIvyAst implements html.Visitor {
       return null;
     }
 
-    let result: {node: t.Node|null, errors: ParseError[]}|null = null;
+    let result: {node: t.Node | null; errors: ParseError[]} | null = null;
 
     switch (block.name) {
       case 'defer':
         result = createDeferredBlock(
-            block, this.findConnectedBlocks(index, context, isConnectedDeferLoopBlock), this,
-            this.bindingParser);
+          block,
+          this.findConnectedBlocks(index, context, isConnectedDeferLoopBlock),
+          this,
+          this.bindingParser,
+        );
         break;
 
       case 'switch':
@@ -350,14 +425,20 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       case 'for':
         result = createForLoop(
-            block, this.findConnectedBlocks(index, context, isConnectedForLoopBlock), this,
-            this.bindingParser);
+          block,
+          this.findConnectedBlocks(index, context, isConnectedForLoopBlock),
+          this,
+          this.bindingParser,
+        );
         break;
 
       case 'if':
         result = createIfBlock(
-            block, this.findConnectedBlocks(index, context, isConnectedIfLoopBlock), this,
-            this.bindingParser);
+          block,
+          this.findConnectedBlocks(index, context, isConnectedIfLoopBlock),
+          this,
+          this.bindingParser,
+        );
         break;
 
       default:
@@ -388,8 +469,10 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private findConnectedBlocks(
-      primaryBlockIndex: number, siblings: html.Node[],
-      predicate: (blockName: string) => boolean): html.Block[] {
+    primaryBlockIndex: number,
+    siblings: html.Node[],
+    predicate: (blockName: string) => boolean,
+  ): html.Block[] {
     const relatedBlocks: html.Block[] = [];
 
     for (let i = primaryBlockIndex + 1; i < siblings.length; i++) {
@@ -417,24 +500,36 @@ class HtmlAstToIvyAst implements html.Visitor {
 
   // convert view engine `ParsedProperty` to a format suitable for IVY
   private extractAttributes(
-      elementName: string, properties: ParsedProperty[],
-      i18nPropsMeta: {[key: string]: i18n.I18nMeta}):
-      {bound: t.BoundAttribute[], literal: t.TextAttribute[]} {
+    elementName: string,
+    properties: ParsedProperty[],
+    i18nPropsMeta: {[key: string]: i18n.I18nMeta},
+  ): {bound: t.BoundAttribute[]; literal: t.TextAttribute[]} {
     const bound: t.BoundAttribute[] = [];
     const literal: t.TextAttribute[] = [];
 
-    properties.forEach(prop => {
+    properties.forEach((prop) => {
       const i18n = i18nPropsMeta[prop.name];
       if (prop.isLiteral) {
-        literal.push(new t.TextAttribute(
-            prop.name, prop.expression.source || '', prop.sourceSpan, prop.keySpan, prop.valueSpan,
-            i18n));
+        literal.push(
+          new t.TextAttribute(
+            prop.name,
+            prop.expression.source || '',
+            prop.sourceSpan,
+            prop.keySpan,
+            prop.valueSpan,
+            i18n,
+          ),
+        );
       } else {
         // Note that validation is skipped and property mapping is disabled
         // due to the fact that we need to make sure a given prop is not an
         // input of a directive and directive matching happens at runtime.
         const bep = this.bindingParser.createBoundElementProperty(
-            elementName, prop, /* skipValidation */ true, /* mapPropertyName */ false);
+          elementName,
+          prop,
+          /* skipValidation */ true,
+          /* mapPropertyName */ false,
+        );
         bound.push(t.BoundAttribute.fromBoundElementProperty(bep, i18n));
       }
     });
@@ -443,14 +538,20 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private parseAttribute(
-      isTemplateElement: boolean, attribute: html.Attribute, matchableAttributes: string[][],
-      parsedProperties: ParsedProperty[], boundEvents: t.BoundEvent[], variables: t.Variable[],
-      references: t.Reference[]) {
+    isTemplateElement: boolean,
+    attribute: html.Attribute,
+    matchableAttributes: string[][],
+    parsedProperties: ParsedProperty[],
+    boundEvents: t.BoundEvent[],
+    variables: t.Variable[],
+    references: t.Reference[],
+  ) {
     const name = normalizeAttributeName(attribute.name);
     const value = attribute.value;
     const srcSpan = attribute.sourceSpan;
-    const absoluteOffset =
-        attribute.valueSpan ? attribute.valueSpan.start.offset : srcSpan.start.offset;
+    const absoluteOffset = attribute.valueSpan
+      ? attribute.valueSpan.start.offset
+      : srcSpan.start.offset;
 
     function createKeySpan(srcSpan: ParseSourceSpan, prefix: string, identifier: string) {
       // We need to adjust the start location for the keySpan to account for the removed 'data-'
@@ -468,9 +569,17 @@ class HtmlAstToIvyAst implements html.Visitor {
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_BIND_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
-            identifier, value, false, false, srcSpan, absoluteOffset, attribute.valueSpan,
-            matchableAttributes, parsedProperties, keySpan);
-
+          identifier,
+          value,
+          false,
+          false,
+          srcSpan,
+          absoluteOffset,
+          attribute.valueSpan,
+          matchableAttributes,
+          parsedProperties,
+          keySpan,
+        );
       } else if (bindParts[KW_LET_IDX]) {
         if (isTemplateElement) {
           const identifier = bindParts[IDENT_KW_IDX];
@@ -479,7 +588,6 @@ class HtmlAstToIvyAst implements html.Visitor {
         } else {
           this.reportError(`"let-" is only supported on ng-template elements.`, srcSpan);
         }
-
       } else if (bindParts[KW_REF_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_REF_IDX], identifier);
@@ -489,30 +597,59 @@ class HtmlAstToIvyAst implements html.Visitor {
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_ON_IDX], identifier);
         this.bindingParser.parseEvent(
-            identifier, value, /* isAssignmentEvent */ false, srcSpan,
-            attribute.valueSpan || srcSpan, matchableAttributes, events, keySpan);
+          identifier,
+          value,
+          /* isAssignmentEvent */ false,
+          srcSpan,
+          attribute.valueSpan || srcSpan,
+          matchableAttributes,
+          events,
+          keySpan,
+        );
         addEvents(events, boundEvents);
       } else if (bindParts[KW_BINDON_IDX]) {
         const identifier = bindParts[IDENT_KW_IDX];
         const keySpan = createKeySpan(srcSpan, bindParts[KW_BINDON_IDX], identifier);
         this.bindingParser.parsePropertyBinding(
-            identifier, value, false, true, srcSpan, absoluteOffset, attribute.valueSpan,
-            matchableAttributes, parsedProperties, keySpan);
+          identifier,
+          value,
+          false,
+          true,
+          srcSpan,
+          absoluteOffset,
+          attribute.valueSpan,
+          matchableAttributes,
+          parsedProperties,
+          keySpan,
+        );
         this.parseAssignmentEvent(
-            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
-            keySpan);
+          identifier,
+          value,
+          srcSpan,
+          attribute.valueSpan,
+          matchableAttributes,
+          boundEvents,
+          keySpan,
+        );
       } else if (bindParts[KW_AT_IDX]) {
         const keySpan = createKeySpan(srcSpan, '', name);
         this.bindingParser.parseLiteralAttr(
-            name, value, srcSpan, absoluteOffset, attribute.valueSpan, matchableAttributes,
-            parsedProperties, keySpan);
+          name,
+          value,
+          srcSpan,
+          absoluteOffset,
+          attribute.valueSpan,
+          matchableAttributes,
+          parsedProperties,
+          keySpan,
+        );
       }
       return true;
     }
 
     // We didn't see a kw-prefixed property binding, but we have not yet checked
     // for the []/()/[()] syntax.
-    let delims: {start: string, end: string}|null = null;
+    let delims: {start: string; end: string} | null = null;
     if (name.startsWith(BINDING_DELIMS.BANANA_BOX.start)) {
       delims = BINDING_DELIMS.BANANA_BOX;
     } else if (name.startsWith(BINDING_DELIMS.PROPERTY.start)) {
@@ -520,30 +657,64 @@ class HtmlAstToIvyAst implements html.Visitor {
     } else if (name.startsWith(BINDING_DELIMS.EVENT.start)) {
       delims = BINDING_DELIMS.EVENT;
     }
-    if (delims !== null &&
-        // NOTE: older versions of the parser would match a start/end delimited
-        // binding iff the property name was terminated by the ending delimiter
-        // and the identifier in the binding was non-empty.
-        // TODO(ayazhafiz): update this to handle malformed bindings.
-        name.endsWith(delims.end) && name.length > delims.start.length + delims.end.length) {
+    if (
+      delims !== null &&
+      // NOTE: older versions of the parser would match a start/end delimited
+      // binding iff the property name was terminated by the ending delimiter
+      // and the identifier in the binding was non-empty.
+      // TODO(ayazhafiz): update this to handle malformed bindings.
+      name.endsWith(delims.end) &&
+      name.length > delims.start.length + delims.end.length
+    ) {
       const identifier = name.substring(delims.start.length, name.length - delims.end.length);
       const keySpan = createKeySpan(srcSpan, delims.start, identifier);
       if (delims.start === BINDING_DELIMS.BANANA_BOX.start) {
         this.bindingParser.parsePropertyBinding(
-            identifier, value, false, true, srcSpan, absoluteOffset, attribute.valueSpan,
-            matchableAttributes, parsedProperties, keySpan);
+          identifier,
+          value,
+          false,
+          true,
+          srcSpan,
+          absoluteOffset,
+          attribute.valueSpan,
+          matchableAttributes,
+          parsedProperties,
+          keySpan,
+        );
         this.parseAssignmentEvent(
-            identifier, value, srcSpan, attribute.valueSpan, matchableAttributes, boundEvents,
-            keySpan);
+          identifier,
+          value,
+          srcSpan,
+          attribute.valueSpan,
+          matchableAttributes,
+          boundEvents,
+          keySpan,
+        );
       } else if (delims.start === BINDING_DELIMS.PROPERTY.start) {
         this.bindingParser.parsePropertyBinding(
-            identifier, value, false, false, srcSpan, absoluteOffset, attribute.valueSpan,
-            matchableAttributes, parsedProperties, keySpan);
+          identifier,
+          value,
+          false,
+          false,
+          srcSpan,
+          absoluteOffset,
+          attribute.valueSpan,
+          matchableAttributes,
+          parsedProperties,
+          keySpan,
+        );
       } else {
         const events: ParsedEvent[] = [];
         this.bindingParser.parseEvent(
-            identifier, value, /* isAssignmentEvent */ false, srcSpan,
-            attribute.valueSpan || srcSpan, matchableAttributes, events, keySpan);
+          identifier,
+          value,
+          /* isAssignmentEvent */ false,
+          srcSpan,
+          attribute.valueSpan || srcSpan,
+          matchableAttributes,
+          events,
+          keySpan,
+        );
         addEvents(events, boundEvents);
       }
 
@@ -553,23 +724,37 @@ class HtmlAstToIvyAst implements html.Visitor {
     // No explicit binding found.
     const keySpan = createKeySpan(srcSpan, '' /* prefix */, name);
     const hasBinding = this.bindingParser.parsePropertyInterpolation(
-        name, value, srcSpan, attribute.valueSpan, matchableAttributes, parsedProperties, keySpan,
-        attribute.valueTokens ?? null);
+      name,
+      value,
+      srcSpan,
+      attribute.valueSpan,
+      matchableAttributes,
+      parsedProperties,
+      keySpan,
+      attribute.valueTokens ?? null,
+    );
     return hasBinding;
   }
 
   private _visitTextWithInterpolation(
-      value: string, sourceSpan: ParseSourceSpan,
-      interpolatedTokens: InterpolatedAttributeToken[]|InterpolatedTextToken[]|null,
-      i18n?: i18n.I18nMeta): t.Text|t.BoundText {
+    value: string,
+    sourceSpan: ParseSourceSpan,
+    interpolatedTokens: InterpolatedAttributeToken[] | InterpolatedTextToken[] | null,
+    i18n?: i18n.I18nMeta,
+  ): t.Text | t.BoundText {
     const valueNoNgsp = replaceNgsp(value);
     const expr = this.bindingParser.parseInterpolation(valueNoNgsp, sourceSpan, interpolatedTokens);
     return expr ? new t.BoundText(expr, sourceSpan, i18n) : new t.Text(valueNoNgsp, sourceSpan);
   }
 
   private parseVariable(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
-      valueSpan: ParseSourceSpan|undefined, variables: t.Variable[]) {
+    identifier: string,
+    value: string,
+    sourceSpan: ParseSourceSpan,
+    keySpan: ParseSourceSpan,
+    valueSpan: ParseSourceSpan | undefined,
+    variables: t.Variable[],
+  ) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in variable names`, sourceSpan);
     } else if (identifier.length === 0) {
@@ -580,13 +765,18 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private parseReference(
-      identifier: string, value: string, sourceSpan: ParseSourceSpan, keySpan: ParseSourceSpan,
-      valueSpan: ParseSourceSpan|undefined, references: t.Reference[]) {
+    identifier: string,
+    value: string,
+    sourceSpan: ParseSourceSpan,
+    keySpan: ParseSourceSpan,
+    valueSpan: ParseSourceSpan | undefined,
+    references: t.Reference[],
+  ) {
     if (identifier.indexOf('-') > -1) {
       this.reportError(`"-" is not allowed in reference names`, sourceSpan);
     } else if (identifier.length === 0) {
       this.reportError(`Reference does not have a name`, sourceSpan);
-    } else if (references.some(reference => reference.name === identifier)) {
+    } else if (references.some((reference) => reference.name === identifier)) {
       this.reportError(`Reference "#${identifier}" is defined more than once`, sourceSpan);
     }
 
@@ -594,29 +784,45 @@ class HtmlAstToIvyAst implements html.Visitor {
   }
 
   private parseAssignmentEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan,
-      valueSpan: ParseSourceSpan|undefined, targetMatchableAttrs: string[][],
-      boundEvents: t.BoundEvent[], keySpan: ParseSourceSpan) {
+    name: string,
+    expression: string,
+    sourceSpan: ParseSourceSpan,
+    valueSpan: ParseSourceSpan | undefined,
+    targetMatchableAttrs: string[][],
+    boundEvents: t.BoundEvent[],
+    keySpan: ParseSourceSpan,
+  ) {
     const events: ParsedEvent[] = [];
     this.bindingParser.parseEvent(
-        `${name}Change`, expression, /* isAssignmentEvent */ true, sourceSpan,
-        valueSpan || sourceSpan, targetMatchableAttrs, events, keySpan);
+      `${name}Change`,
+      expression,
+      /* isAssignmentEvent */ true,
+      sourceSpan,
+      valueSpan || sourceSpan,
+      targetMatchableAttrs,
+      events,
+      keySpan,
+    );
     addEvents(events, boundEvents);
   }
 
   private reportError(
-      message: string, sourceSpan: ParseSourceSpan,
-      level: ParseErrorLevel = ParseErrorLevel.ERROR) {
+    message: string,
+    sourceSpan: ParseSourceSpan,
+    level: ParseErrorLevel = ParseErrorLevel.ERROR,
+  ) {
     this.errors.push(new ParseError(sourceSpan, message, level));
   }
 }
 
 class NonBindableVisitor implements html.Visitor {
-  visitElement(ast: html.Element): t.Element|null {
+  visitElement(ast: html.Element): t.Element | null {
     const preparsedElement = preparseElement(ast);
-    if (preparsedElement.type === PreparsedElementType.SCRIPT ||
-        preparsedElement.type === PreparsedElementType.STYLE ||
-        preparsedElement.type === PreparsedElementType.STYLESHEET) {
+    if (
+      preparsedElement.type === PreparsedElementType.SCRIPT ||
+      preparsedElement.type === PreparsedElementType.STYLE ||
+      preparsedElement.type === PreparsedElementType.STYLESHEET
+    ) {
       // Skipping <script> for security reasons
       // Skipping <style> and stylesheets as we already processed them
       // in the StyleCompiler
@@ -625,9 +831,16 @@ class NonBindableVisitor implements html.Visitor {
 
     const children: t.Node[] = html.visitAll(this, ast.children, null);
     return new t.Element(
-        ast.name, html.visitAll(this, ast.attrs) as t.TextAttribute[],
-        /* inputs */[], /* outputs */[], children, /* references */[], ast.sourceSpan,
-        ast.startSourceSpan, ast.endSourceSpan);
+      ast.name,
+      html.visitAll(this, ast.attrs) as t.TextAttribute[],
+      /* inputs */ [],
+      /* outputs */ [],
+      children,
+      /* references */ [],
+      ast.sourceSpan,
+      ast.startSourceSpan,
+      ast.endSourceSpan,
+    );
   }
 
   visitComment(comment: html.Comment): any {
@@ -636,8 +849,13 @@ class NonBindableVisitor implements html.Visitor {
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, attribute.keySpan,
-        attribute.valueSpan, attribute.i18n);
+      attribute.name,
+      attribute.value,
+      attribute.sourceSpan,
+      attribute.keySpan,
+      attribute.valueSpan,
+      attribute.i18n,
+    );
   }
 
   visitText(text: html.Text): t.Text {
@@ -657,7 +875,7 @@ class NonBindableVisitor implements html.Visitor {
       // In an ngNonBindable context we treat the opening/closing tags of block as plain text.
       // This is the as if the `tokenizeBlocks` option was disabled.
       new t.Text(block.startSourceSpan.toString(), block.startSourceSpan),
-      ...html.visitAll(this, block.children)
+      ...html.visitAll(this, block.children),
     ];
 
     if (block.endSourceSpan !== null) {
@@ -679,10 +897,10 @@ function normalizeAttributeName(attrName: string): string {
 }
 
 function addEvents(events: ParsedEvent[], boundEvents: t.BoundEvent[]) {
-  boundEvents.push(...events.map(e => t.BoundEvent.fromParsedEvent(e)));
+  boundEvents.push(...events.map((e) => t.BoundEvent.fromParsedEvent(e)));
 }
 
-function textContents(node: html.Element): string|null {
+function textContents(node: html.Element): string | null {
   if (node.children.length !== 1 || !(node.children[0] instanceof html.Text)) {
     return null;
   } else {

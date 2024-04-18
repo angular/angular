@@ -7,17 +7,48 @@
  */
 
 import {AST} from '../../expression_parser/ast';
-import {BoundAttribute, BoundEvent, Content, DeferredBlock, DeferredBlockError, DeferredBlockLoading, DeferredBlockPlaceholder, DeferredTrigger, Element, ForLoopBlock, ForLoopBlockEmpty, IfBlockBranch, Node, Reference, SwitchBlockCase, Template, TextAttribute, Variable} from '../r3_ast';
+import {
+  BoundAttribute,
+  BoundEvent,
+  Content,
+  DeferredBlock,
+  DeferredBlockError,
+  DeferredBlockLoading,
+  DeferredBlockPlaceholder,
+  DeferredTrigger,
+  Element,
+  ForLoopBlock,
+  ForLoopBlockEmpty,
+  IfBlockBranch,
+  Node,
+  Reference,
+  SwitchBlockCase,
+  Template,
+  TextAttribute,
+  Variable,
+} from '../r3_ast';
 
 /** Node that has a `Scope` associated with it. */
-export type ScopedNode = Template|SwitchBlockCase|IfBlockBranch|ForLoopBlock|ForLoopBlockEmpty|
-    DeferredBlock|DeferredBlockError|DeferredBlockLoading|DeferredBlockPlaceholder|Content;
+export type ScopedNode =
+  | Template
+  | SwitchBlockCase
+  | IfBlockBranch
+  | ForLoopBlock
+  | ForLoopBlockEmpty
+  | DeferredBlock
+  | DeferredBlockError
+  | DeferredBlockLoading
+  | DeferredBlockPlaceholder
+  | Content;
 
 /** Possible values that a reference can be resolved to. */
-export type ReferenceTarget<DirectiveT> = {
-  directive: DirectiveT,
-  node: Element|Template
-}|Element|Template;
+export type ReferenceTarget<DirectiveT> =
+  | {
+      directive: DirectiveT;
+      node: Element | Template;
+    }
+  | Element
+  | Template;
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -65,7 +96,7 @@ export interface DirectiveMeta {
   name: string;
 
   /** The selector for the directive or `null` if there isn't one. */
-  selector: string|null;
+  selector: string | null;
 
   /**
    * Whether the directive is a component.
@@ -91,7 +122,7 @@ export interface DirectiveMeta {
    *
    * Null otherwise
    */
-  exportAs: string[]|null;
+  exportAs: string[] | null;
 
   /**
    * Whether the directive is a structural directive (e.g. `<div *ngIf></div>`).
@@ -101,7 +132,7 @@ export interface DirectiveMeta {
   /**
    * If the directive is a component, includes the selectors of its `ng-content` elements.
    */
-  ngContentSelectors: string[]|null;
+  ngContentSelectors: string[] | null;
 
   /**
    * Whether the template of the component preserves whitespaces.
@@ -112,7 +143,7 @@ export interface DirectiveMeta {
    * The name of animations that the user defines in the component.
    * Only includes the animation names.
    */
-  animationTriggerNames: AnimationTriggerNames|null;
+  animationTriggerNames: AnimationTriggerNames | null;
 }
 
 /**
@@ -143,21 +174,22 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * For a given template node (either an `Element` or a `Template`), get the set of directives
    * which matched the node, if any.
    */
-  getDirectivesOfNode(node: Element|Template): DirectiveT[]|null;
+  getDirectivesOfNode(node: Element | Template): DirectiveT[] | null;
 
   /**
    * For a given `Reference`, get the reference's target - either an `Element`, a `Template`, or
    * a directive on a particular node.
    */
-  getReferenceTarget(ref: Reference): ReferenceTarget<DirectiveT>|null;
+  getReferenceTarget(ref: Reference): ReferenceTarget<DirectiveT> | null;
 
   /**
    * For a given binding, get the entity to which the binding is being made.
    *
    * This will either be a directive or the node itself.
    */
-  getConsumerOfBinding(binding: BoundAttribute|BoundEvent|TextAttribute): DirectiveT|Element
-      |Template|null;
+  getConsumerOfBinding(
+    binding: BoundAttribute | BoundEvent | TextAttribute,
+  ): DirectiveT | Element | Template | null;
 
   /**
    * If the given `AST` expression refers to a `Reference` or `Variable` within the `Target`, then
@@ -168,7 +200,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * This is only defined for `AST` expressions that read or write to a property of an
    * `ImplicitReceiver`.
    */
-  getExpressionTarget(expr: AST): Reference|Variable|null;
+  getExpressionTarget(expr: AST): Reference | Variable | null;
 
   /**
    * Given a particular `Reference` or `Variable`, get the `ScopedNode` which created it.
@@ -176,7 +208,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * All `Variable`s are defined on node, so this will always return a value for a `Variable`
    * from the `Target`. Returns `null` otherwise.
    */
-  getDefinitionNodeOfSymbol(symbol: Reference|Variable): ScopedNode|null;
+  getDefinitionNodeOfSymbol(symbol: Reference | Variable): ScopedNode | null;
 
   /**
    * Get the nesting level of a particular `ScopedNode`.
@@ -190,7 +222,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * Get all `Reference`s and `Variables` visible within the given `ScopedNode` (or at the top
    * level, if `null` is passed).
    */
-  getEntitiesInScope(node: ScopedNode|null): ReadonlySet<Reference|Variable>;
+  getEntitiesInScope(node: ScopedNode | null): ReadonlySet<Reference | Variable>;
 
   /**
    * Get a list of all the directives used by the target,
@@ -226,7 +258,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * @param block Block that the trigger belongs to.
    * @param trigger Trigger whose target is being looked up.
    */
-  getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element|null;
+  getDeferredTriggerTarget(block: DeferredBlock, trigger: DeferredTrigger): Element | null;
 
   /**
    * Whether a given node is located in a `@defer` block.

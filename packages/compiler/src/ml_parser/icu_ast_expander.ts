@@ -42,7 +42,11 @@ export function expandNodes(nodes: html.Node[]): ExpansionResult {
 }
 
 export class ExpansionResult {
-  constructor(public nodes: html.Node[], public expanded: boolean, public errors: ParseError[]) {}
+  constructor(
+    public nodes: html.Node[],
+    public expanded: boolean,
+    public errors: ParseError[],
+  ) {}
 }
 
 export class ExpansionError extends ParseError {
@@ -62,8 +66,13 @@ class _Expander implements html.Visitor {
 
   visitElement(element: html.Element, context: any): any {
     return new html.Element(
-        element.name, element.attrs, html.visitAll(this, element.children), element.sourceSpan,
-        element.startSourceSpan, element.endSourceSpan);
+      element.name,
+      element.attrs,
+      html.visitAll(this, element.children),
+      element.sourceSpan,
+      element.startSourceSpan,
+      element.endSourceSpan,
+    );
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
@@ -80,8 +89,9 @@ class _Expander implements html.Visitor {
 
   visitExpansion(icu: html.Expansion, context: any): any {
     this.isExpanded = true;
-    return icu.type === 'plural' ? _expandPluralForm(icu, this.errors) :
-                                   _expandDefaultForm(icu, this.errors);
+    return icu.type === 'plural'
+      ? _expandPluralForm(icu, this.errors)
+      : _expandDefaultForm(icu, this.errors);
   }
 
   visitExpansionCase(icuCase: html.ExpansionCase, context: any): any {
@@ -90,8 +100,14 @@ class _Expander implements html.Visitor {
 
   visitBlock(block: html.Block, context: any) {
     return new html.Block(
-        block.name, block.parameters, html.visitAll(this, block.children), block.sourceSpan,
-        block.nameSpan, block.startSourceSpan, block.endSourceSpan);
+      block.name,
+      block.parameters,
+      html.visitAll(this, block.children),
+      block.sourceSpan,
+      block.nameSpan,
+      block.startSourceSpan,
+      block.endSourceSpan,
+    );
   }
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {
@@ -101,56 +117,119 @@ class _Expander implements html.Visitor {
 
 // Plural forms are expanded to `NgPlural` and `NgPluralCase`s
 function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Element {
-  const children = ast.cases.map(c => {
+  const children = ast.cases.map((c) => {
     if (PLURAL_CASES.indexOf(c.value) === -1 && !c.value.match(/^=\d+$/)) {
-      errors.push(new ExpansionError(
+      errors.push(
+        new ExpansionError(
           c.valueSourceSpan,
-          `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(', ')}`));
+          `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(', ')}`,
+        ),
+      );
     }
 
     const expansionResult = expandNodes(c.expression);
     errors.push(...expansionResult.errors);
 
     return new html.Element(
-        `ng-template`,
-        [new html.Attribute(
-            'ngPluralCase', `${c.value}`, c.valueSourceSpan, undefined /* keySpan */,
-            undefined /* valueSpan */, undefined /* valueTokens */, undefined /* i18n */)],
-        expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
+      `ng-template`,
+      [
+        new html.Attribute(
+          'ngPluralCase',
+          `${c.value}`,
+          c.valueSourceSpan,
+          undefined /* keySpan */,
+          undefined /* valueSpan */,
+          undefined /* valueTokens */,
+          undefined /* i18n */,
+        ),
+      ],
+      expansionResult.nodes,
+      c.sourceSpan,
+      c.sourceSpan,
+      c.sourceSpan,
+    );
   });
   const switchAttr = new html.Attribute(
-      '[ngPlural]', ast.switchValue, ast.switchValueSourceSpan, undefined /* keySpan */,
-      undefined /* valueSpan */, undefined /* valueTokens */, undefined /* i18n */);
+    '[ngPlural]',
+    ast.switchValue,
+    ast.switchValueSourceSpan,
+    undefined /* keySpan */,
+    undefined /* valueSpan */,
+    undefined /* valueTokens */,
+    undefined /* i18n */,
+  );
   return new html.Element(
-      'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
+    'ng-container',
+    [switchAttr],
+    children,
+    ast.sourceSpan,
+    ast.sourceSpan,
+    ast.sourceSpan,
+  );
 }
 
 // ICU messages (excluding plural form) are expanded to `NgSwitch`  and `NgSwitchCase`s
 function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Element {
-  const children = ast.cases.map(c => {
+  const children = ast.cases.map((c) => {
     const expansionResult = expandNodes(c.expression);
     errors.push(...expansionResult.errors);
 
     if (c.value === 'other') {
       // other is the default case when no values match
       return new html.Element(
-          `ng-template`,
-          [new html.Attribute(
-              'ngSwitchDefault', '', c.valueSourceSpan, undefined /* keySpan */,
-              undefined /* valueSpan */, undefined /* valueTokens */, undefined /* i18n */)],
-          expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
+        `ng-template`,
+        [
+          new html.Attribute(
+            'ngSwitchDefault',
+            '',
+            c.valueSourceSpan,
+            undefined /* keySpan */,
+            undefined /* valueSpan */,
+            undefined /* valueTokens */,
+            undefined /* i18n */,
+          ),
+        ],
+        expansionResult.nodes,
+        c.sourceSpan,
+        c.sourceSpan,
+        c.sourceSpan,
+      );
     }
 
     return new html.Element(
-        `ng-template`,
-        [new html.Attribute(
-            'ngSwitchCase', `${c.value}`, c.valueSourceSpan, undefined /* keySpan */,
-            undefined /* valueSpan */, undefined /* valueTokens */, undefined /* i18n */)],
-        expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
+      `ng-template`,
+      [
+        new html.Attribute(
+          'ngSwitchCase',
+          `${c.value}`,
+          c.valueSourceSpan,
+          undefined /* keySpan */,
+          undefined /* valueSpan */,
+          undefined /* valueTokens */,
+          undefined /* i18n */,
+        ),
+      ],
+      expansionResult.nodes,
+      c.sourceSpan,
+      c.sourceSpan,
+      c.sourceSpan,
+    );
   });
   const switchAttr = new html.Attribute(
-      '[ngSwitch]', ast.switchValue, ast.switchValueSourceSpan, undefined /* keySpan */,
-      undefined /* valueSpan */, undefined /* valueTokens */, undefined /* i18n */);
+    '[ngSwitch]',
+    ast.switchValue,
+    ast.switchValueSourceSpan,
+    undefined /* keySpan */,
+    undefined /* valueSpan */,
+    undefined /* valueTokens */,
+    undefined /* i18n */,
+  );
   return new html.Element(
-      'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
+    'ng-container',
+    [switchAttr],
+    children,
+    ast.sourceSpan,
+    ast.sourceSpan,
+    ast.sourceSpan,
+  );
 }

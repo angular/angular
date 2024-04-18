@@ -33,105 +33,185 @@ export class Identifiers {
 
   static advance: o.ExternalReference = {name: 'ɵɵadvance', moduleName: CORE};
 
-  static syntheticHostProperty:
-      o.ExternalReference = {name: 'ɵɵsyntheticHostProperty', moduleName: CORE};
+  static syntheticHostProperty: o.ExternalReference = {
+    name: 'ɵɵsyntheticHostProperty',
+    moduleName: CORE,
+  };
 
-  static syntheticHostListener:
-      o.ExternalReference = {name: 'ɵɵsyntheticHostListener', moduleName: CORE};
+  static syntheticHostListener: o.ExternalReference = {
+    name: 'ɵɵsyntheticHostListener',
+    moduleName: CORE,
+  };
 
   static attribute: o.ExternalReference = {name: 'ɵɵattribute', moduleName: CORE};
 
-  static attributeInterpolate1:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate1', moduleName: CORE};
-  static attributeInterpolate2:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate2', moduleName: CORE};
-  static attributeInterpolate3:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate3', moduleName: CORE};
-  static attributeInterpolate4:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate4', moduleName: CORE};
-  static attributeInterpolate5:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate5', moduleName: CORE};
-  static attributeInterpolate6:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate6', moduleName: CORE};
-  static attributeInterpolate7:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate7', moduleName: CORE};
-  static attributeInterpolate8:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolate8', moduleName: CORE};
-  static attributeInterpolateV:
-      o.ExternalReference = {name: 'ɵɵattributeInterpolateV', moduleName: CORE};
+  static attributeInterpolate1: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolate1',
+    moduleName: CORE,
+  };
+  static attributeInterpolate2: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolate2',
+    moduleName: CORE,
+  };
+  static attributeInterpolate3: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolate3',
+    moduleName: CORE,
+  };
+  static attributeInterpolate4: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolate4',
+    moduleName: CORE,
+  };
+  static attributeInterpolate5: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolate5',
+    moduleName: CORE,
+  };
+  static attributeInterpolate6: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolate6',
+    moduleName: CORE,
+  };
+  static attributeInterpolate7: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolate7',
+    moduleName: CORE,
+  };
+  static attributeInterpolate8: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolate8',
+    moduleName: CORE,
+  };
+  static attributeInterpolateV: o.ExternalReference = {
+    name: 'ɵɵattributeInterpolateV',
+    moduleName: CORE,
+  };
 
   static classProp: o.ExternalReference = {name: 'ɵɵclassProp', moduleName: CORE};
 
-  static elementContainerStart:
-      o.ExternalReference = {name: 'ɵɵelementContainerStart', moduleName: CORE};
+  static elementContainerStart: o.ExternalReference = {
+    name: 'ɵɵelementContainerStart',
+    moduleName: CORE,
+  };
 
-  static elementContainerEnd:
-      o.ExternalReference = {name: 'ɵɵelementContainerEnd', moduleName: CORE};
+  static elementContainerEnd: o.ExternalReference = {
+    name: 'ɵɵelementContainerEnd',
+    moduleName: CORE,
+  };
 
   static elementContainer: o.ExternalReference = {name: 'ɵɵelementContainer', moduleName: CORE};
 
   static styleMap: o.ExternalReference = {name: 'ɵɵstyleMap', moduleName: CORE};
 
-  static styleMapInterpolate1:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate1', moduleName: CORE};
-  static styleMapInterpolate2:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate2', moduleName: CORE};
-  static styleMapInterpolate3:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate3', moduleName: CORE};
-  static styleMapInterpolate4:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate4', moduleName: CORE};
-  static styleMapInterpolate5:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate5', moduleName: CORE};
-  static styleMapInterpolate6:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate6', moduleName: CORE};
-  static styleMapInterpolate7:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate7', moduleName: CORE};
-  static styleMapInterpolate8:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolate8', moduleName: CORE};
-  static styleMapInterpolateV:
-      o.ExternalReference = {name: 'ɵɵstyleMapInterpolateV', moduleName: CORE};
+  static styleMapInterpolate1: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolate1',
+    moduleName: CORE,
+  };
+  static styleMapInterpolate2: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolate2',
+    moduleName: CORE,
+  };
+  static styleMapInterpolate3: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolate3',
+    moduleName: CORE,
+  };
+  static styleMapInterpolate4: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolate4',
+    moduleName: CORE,
+  };
+  static styleMapInterpolate5: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolate5',
+    moduleName: CORE,
+  };
+  static styleMapInterpolate6: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolate6',
+    moduleName: CORE,
+  };
+  static styleMapInterpolate7: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolate7',
+    moduleName: CORE,
+  };
+  static styleMapInterpolate8: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolate8',
+    moduleName: CORE,
+  };
+  static styleMapInterpolateV: o.ExternalReference = {
+    name: 'ɵɵstyleMapInterpolateV',
+    moduleName: CORE,
+  };
 
   static classMap: o.ExternalReference = {name: 'ɵɵclassMap', moduleName: CORE};
 
-  static classMapInterpolate1:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolate1', moduleName: CORE};
-  static classMapInterpolate2:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolate2', moduleName: CORE};
-  static classMapInterpolate3:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolate3', moduleName: CORE};
-  static classMapInterpolate4:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolate4', moduleName: CORE};
-  static classMapInterpolate5:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolate5', moduleName: CORE};
-  static classMapInterpolate6:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolate6', moduleName: CORE};
-  static classMapInterpolate7:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolate7', moduleName: CORE};
-  static classMapInterpolate8:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolate8', moduleName: CORE};
-  static classMapInterpolateV:
-      o.ExternalReference = {name: 'ɵɵclassMapInterpolateV', moduleName: CORE};
+  static classMapInterpolate1: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolate1',
+    moduleName: CORE,
+  };
+  static classMapInterpolate2: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolate2',
+    moduleName: CORE,
+  };
+  static classMapInterpolate3: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolate3',
+    moduleName: CORE,
+  };
+  static classMapInterpolate4: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolate4',
+    moduleName: CORE,
+  };
+  static classMapInterpolate5: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolate5',
+    moduleName: CORE,
+  };
+  static classMapInterpolate6: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolate6',
+    moduleName: CORE,
+  };
+  static classMapInterpolate7: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolate7',
+    moduleName: CORE,
+  };
+  static classMapInterpolate8: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolate8',
+    moduleName: CORE,
+  };
+  static classMapInterpolateV: o.ExternalReference = {
+    name: 'ɵɵclassMapInterpolateV',
+    moduleName: CORE,
+  };
 
   static styleProp: o.ExternalReference = {name: 'ɵɵstyleProp', moduleName: CORE};
 
-  static stylePropInterpolate1:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolate1', moduleName: CORE};
-  static stylePropInterpolate2:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolate2', moduleName: CORE};
-  static stylePropInterpolate3:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolate3', moduleName: CORE};
-  static stylePropInterpolate4:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolate4', moduleName: CORE};
-  static stylePropInterpolate5:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolate5', moduleName: CORE};
-  static stylePropInterpolate6:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolate6', moduleName: CORE};
-  static stylePropInterpolate7:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolate7', moduleName: CORE};
-  static stylePropInterpolate8:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolate8', moduleName: CORE};
-  static stylePropInterpolateV:
-      o.ExternalReference = {name: 'ɵɵstylePropInterpolateV', moduleName: CORE};
+  static stylePropInterpolate1: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolate1',
+    moduleName: CORE,
+  };
+  static stylePropInterpolate2: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolate2',
+    moduleName: CORE,
+  };
+  static stylePropInterpolate3: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolate3',
+    moduleName: CORE,
+  };
+  static stylePropInterpolate4: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolate4',
+    moduleName: CORE,
+  };
+  static stylePropInterpolate5: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolate5',
+    moduleName: CORE,
+  };
+  static stylePropInterpolate6: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolate6',
+    moduleName: CORE,
+  };
+  static stylePropInterpolate7: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolate7',
+    moduleName: CORE,
+  };
+  static stylePropInterpolate8: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolate8',
+    moduleName: CORE,
+  };
+  static stylePropInterpolateV: o.ExternalReference = {
+    name: 'ɵɵstylePropInterpolateV',
+    moduleName: CORE,
+  };
 
   static nextContext: o.ExternalReference = {name: 'ɵɵnextContext', moduleName: CORE};
 
@@ -148,28 +228,46 @@ export class Identifiers {
   static deferOnInteraction: o.ExternalReference = {name: 'ɵɵdeferOnInteraction', moduleName: CORE};
   static deferOnViewport: o.ExternalReference = {name: 'ɵɵdeferOnViewport', moduleName: CORE};
   static deferPrefetchWhen: o.ExternalReference = {name: 'ɵɵdeferPrefetchWhen', moduleName: CORE};
-  static deferPrefetchOnIdle:
-      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnIdle', moduleName: CORE};
-  static deferPrefetchOnImmediate:
-      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnImmediate', moduleName: CORE};
-  static deferPrefetchOnTimer:
-      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnTimer', moduleName: CORE};
-  static deferPrefetchOnHover:
-      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnHover', moduleName: CORE};
-  static deferPrefetchOnInteraction:
-      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnInteraction', moduleName: CORE};
-  static deferPrefetchOnViewport:
-      o.ExternalReference = {name: 'ɵɵdeferPrefetchOnViewport', moduleName: CORE};
-  static deferEnableTimerScheduling:
-      o.ExternalReference = {name: 'ɵɵdeferEnableTimerScheduling', moduleName: CORE};
+  static deferPrefetchOnIdle: o.ExternalReference = {
+    name: 'ɵɵdeferPrefetchOnIdle',
+    moduleName: CORE,
+  };
+  static deferPrefetchOnImmediate: o.ExternalReference = {
+    name: 'ɵɵdeferPrefetchOnImmediate',
+    moduleName: CORE,
+  };
+  static deferPrefetchOnTimer: o.ExternalReference = {
+    name: 'ɵɵdeferPrefetchOnTimer',
+    moduleName: CORE,
+  };
+  static deferPrefetchOnHover: o.ExternalReference = {
+    name: 'ɵɵdeferPrefetchOnHover',
+    moduleName: CORE,
+  };
+  static deferPrefetchOnInteraction: o.ExternalReference = {
+    name: 'ɵɵdeferPrefetchOnInteraction',
+    moduleName: CORE,
+  };
+  static deferPrefetchOnViewport: o.ExternalReference = {
+    name: 'ɵɵdeferPrefetchOnViewport',
+    moduleName: CORE,
+  };
+  static deferEnableTimerScheduling: o.ExternalReference = {
+    name: 'ɵɵdeferEnableTimerScheduling',
+    moduleName: CORE,
+  };
 
   static conditional: o.ExternalReference = {name: 'ɵɵconditional', moduleName: CORE};
   static repeater: o.ExternalReference = {name: 'ɵɵrepeater', moduleName: CORE};
   static repeaterCreate: o.ExternalReference = {name: 'ɵɵrepeaterCreate', moduleName: CORE};
-  static repeaterTrackByIndex:
-      o.ExternalReference = {name: 'ɵɵrepeaterTrackByIndex', moduleName: CORE};
-  static repeaterTrackByIdentity:
-      o.ExternalReference = {name: 'ɵɵrepeaterTrackByIdentity', moduleName: CORE};
+  static repeaterTrackByIndex: o.ExternalReference = {
+    name: 'ɵɵrepeaterTrackByIndex',
+    moduleName: CORE,
+  };
+  static repeaterTrackByIdentity: o.ExternalReference = {
+    name: 'ɵɵrepeaterTrackByIdentity',
+    moduleName: CORE,
+  };
   static componentInstance: o.ExternalReference = {name: 'ɵɵcomponentInstance', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵɵtext', moduleName: CORE};
@@ -214,26 +312,46 @@ export class Identifiers {
 
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
-  static propertyInterpolate:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate', moduleName: CORE};
-  static propertyInterpolate1:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate1', moduleName: CORE};
-  static propertyInterpolate2:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate2', moduleName: CORE};
-  static propertyInterpolate3:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate3', moduleName: CORE};
-  static propertyInterpolate4:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate4', moduleName: CORE};
-  static propertyInterpolate5:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate5', moduleName: CORE};
-  static propertyInterpolate6:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate6', moduleName: CORE};
-  static propertyInterpolate7:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate7', moduleName: CORE};
-  static propertyInterpolate8:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolate8', moduleName: CORE};
-  static propertyInterpolateV:
-      o.ExternalReference = {name: 'ɵɵpropertyInterpolateV', moduleName: CORE};
+  static propertyInterpolate: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate',
+    moduleName: CORE,
+  };
+  static propertyInterpolate1: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate1',
+    moduleName: CORE,
+  };
+  static propertyInterpolate2: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate2',
+    moduleName: CORE,
+  };
+  static propertyInterpolate3: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate3',
+    moduleName: CORE,
+  };
+  static propertyInterpolate4: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate4',
+    moduleName: CORE,
+  };
+  static propertyInterpolate5: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate5',
+    moduleName: CORE,
+  };
+  static propertyInterpolate6: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate6',
+    moduleName: CORE,
+  };
+  static propertyInterpolate7: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate7',
+    moduleName: CORE,
+  };
+  static propertyInterpolate8: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolate8',
+    moduleName: CORE,
+  };
+  static propertyInterpolateV: o.ExternalReference = {
+    name: 'ɵɵpropertyInterpolateV',
+    moduleName: CORE,
+  };
 
   static i18n: o.ExternalReference = {name: 'ɵɵi18n', moduleName: CORE};
   static i18nAttributes: o.ExternalReference = {name: 'ɵɵi18nAttributes', moduleName: CORE};
@@ -258,23 +376,29 @@ export class Identifiers {
   static invalidFactory: o.ExternalReference = {name: 'ɵɵinvalidFactory', moduleName: CORE};
   static invalidFactoryDep: o.ExternalReference = {name: 'ɵɵinvalidFactoryDep', moduleName: CORE};
 
-  static templateRefExtractor:
-      o.ExternalReference = {name: 'ɵɵtemplateRefExtractor', moduleName: CORE};
+  static templateRefExtractor: o.ExternalReference = {
+    name: 'ɵɵtemplateRefExtractor',
+    moduleName: CORE,
+  };
 
   static forwardRef: o.ExternalReference = {name: 'forwardRef', moduleName: CORE};
   static resolveForwardRef: o.ExternalReference = {name: 'resolveForwardRef', moduleName: CORE};
 
   static ɵɵdefineInjectable: o.ExternalReference = {name: 'ɵɵdefineInjectable', moduleName: CORE};
   static declareInjectable: o.ExternalReference = {name: 'ɵɵngDeclareInjectable', moduleName: CORE};
-  static InjectableDeclaration:
-      o.ExternalReference = {name: 'ɵɵInjectableDeclaration', moduleName: CORE};
+  static InjectableDeclaration: o.ExternalReference = {
+    name: 'ɵɵInjectableDeclaration',
+    moduleName: CORE,
+  };
 
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};
 
-  static getComponentDepsFactory:
-      o.ExternalReference = {name: 'ɵɵgetComponentDepsFactory', moduleName: CORE};
+  static getComponentDepsFactory: o.ExternalReference = {
+    name: 'ɵɵgetComponentDepsFactory',
+    moduleName: CORE,
+  };
 
   static defineComponent: o.ExternalReference = {name: 'ɵɵdefineComponent', moduleName: CORE};
   static declareComponent: o.ExternalReference = {name: 'ɵɵngDeclareComponent', moduleName: CORE};
@@ -311,8 +435,10 @@ export class Identifiers {
   };
 
   static InjectorDef: o.ExternalReference = {name: 'ɵɵInjectorDef', moduleName: CORE};
-  static InjectorDeclaration:
-      o.ExternalReference = {name: 'ɵɵInjectorDeclaration', moduleName: CORE};
+  static InjectorDeclaration: o.ExternalReference = {
+    name: 'ɵɵInjectorDeclaration',
+    moduleName: CORE,
+  };
 
   static defineInjector: o.ExternalReference = {name: 'ɵɵdefineInjector', moduleName: CORE};
   static declareInjector: o.ExternalReference = {name: 'ɵɵngDeclareInjector', moduleName: CORE};
@@ -330,22 +456,29 @@ export class Identifiers {
   static defineNgModule: o.ExternalReference = {name: 'ɵɵdefineNgModule', moduleName: CORE};
   static declareNgModule: o.ExternalReference = {name: 'ɵɵngDeclareNgModule', moduleName: CORE};
   static setNgModuleScope: o.ExternalReference = {name: 'ɵɵsetNgModuleScope', moduleName: CORE};
-  static registerNgModuleType:
-      o.ExternalReference = {name: 'ɵɵregisterNgModuleType', moduleName: CORE};
-
+  static registerNgModuleType: o.ExternalReference = {
+    name: 'ɵɵregisterNgModuleType',
+    moduleName: CORE,
+  };
 
   static PipeDeclaration: o.ExternalReference = {name: 'ɵɵPipeDeclaration', moduleName: CORE};
 
   static definePipe: o.ExternalReference = {name: 'ɵɵdefinePipe', moduleName: CORE};
   static declarePipe: o.ExternalReference = {name: 'ɵɵngDeclarePipe', moduleName: CORE};
 
-  static declareClassMetadata:
-      o.ExternalReference = {name: 'ɵɵngDeclareClassMetadata', moduleName: CORE};
-  static declareClassMetadataAsync:
-      o.ExternalReference = {name: 'ɵɵngDeclareClassMetadataAsync', moduleName: CORE};
+  static declareClassMetadata: o.ExternalReference = {
+    name: 'ɵɵngDeclareClassMetadata',
+    moduleName: CORE,
+  };
+  static declareClassMetadataAsync: o.ExternalReference = {
+    name: 'ɵɵngDeclareClassMetadataAsync',
+    moduleName: CORE,
+  };
   static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
-  static setClassMetadataAsync:
-      o.ExternalReference = {name: 'ɵsetClassMetadataAsync', moduleName: CORE};
+  static setClassMetadataAsync: o.ExternalReference = {
+    name: 'ɵsetClassMetadataAsync',
+    moduleName: CORE,
+  };
   static setClassDebugInfo: o.ExternalReference = {name: 'ɵsetClassDebugInfo', moduleName: CORE};
   static queryRefresh: o.ExternalReference = {name: 'ɵɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵɵviewQuery', moduleName: CORE};
@@ -364,21 +497,29 @@ export class Identifiers {
 
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵɵNgOnChangesFeature', moduleName: CORE};
 
-  static InheritDefinitionFeature:
-      o.ExternalReference = {name: 'ɵɵInheritDefinitionFeature', moduleName: CORE};
+  static InheritDefinitionFeature: o.ExternalReference = {
+    name: 'ɵɵInheritDefinitionFeature',
+    moduleName: CORE,
+  };
 
-  static CopyDefinitionFeature:
-      o.ExternalReference = {name: 'ɵɵCopyDefinitionFeature', moduleName: CORE};
+  static CopyDefinitionFeature: o.ExternalReference = {
+    name: 'ɵɵCopyDefinitionFeature',
+    moduleName: CORE,
+  };
 
   static StandaloneFeature: o.ExternalReference = {name: 'ɵɵStandaloneFeature', moduleName: CORE};
 
   static ProvidersFeature: o.ExternalReference = {name: 'ɵɵProvidersFeature', moduleName: CORE};
 
-  static HostDirectivesFeature:
-      o.ExternalReference = {name: 'ɵɵHostDirectivesFeature', moduleName: CORE};
+  static HostDirectivesFeature: o.ExternalReference = {
+    name: 'ɵɵHostDirectivesFeature',
+    moduleName: CORE,
+  };
 
-  static InputTransformsFeatureFeature:
-      o.ExternalReference = {name: 'ɵɵInputTransformsFeature', moduleName: CORE};
+  static InputTransformsFeatureFeature: o.ExternalReference = {
+    name: 'ɵɵInputTransformsFeature',
+    moduleName: CORE,
+  };
 
   static listener: o.ExternalReference = {name: 'ɵɵlistener', moduleName: CORE};
 
@@ -390,17 +531,25 @@ export class Identifiers {
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ɵɵsanitizeHtml', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵɵsanitizeStyle', moduleName: CORE};
-  static sanitizeResourceUrl:
-      o.ExternalReference = {name: 'ɵɵsanitizeResourceUrl', moduleName: CORE};
+  static sanitizeResourceUrl: o.ExternalReference = {
+    name: 'ɵɵsanitizeResourceUrl',
+    moduleName: CORE,
+  };
   static sanitizeScript: o.ExternalReference = {name: 'ɵɵsanitizeScript', moduleName: CORE};
   static sanitizeUrl: o.ExternalReference = {name: 'ɵɵsanitizeUrl', moduleName: CORE};
-  static sanitizeUrlOrResourceUrl:
-      o.ExternalReference = {name: 'ɵɵsanitizeUrlOrResourceUrl', moduleName: CORE};
+  static sanitizeUrlOrResourceUrl: o.ExternalReference = {
+    name: 'ɵɵsanitizeUrlOrResourceUrl',
+    moduleName: CORE,
+  };
   static trustConstantHtml: o.ExternalReference = {name: 'ɵɵtrustConstantHtml', moduleName: CORE};
-  static trustConstantResourceUrl:
-      o.ExternalReference = {name: 'ɵɵtrustConstantResourceUrl', moduleName: CORE};
-  static validateIframeAttribute:
-      o.ExternalReference = {name: 'ɵɵvalidateIframeAttribute', moduleName: CORE};
+  static trustConstantResourceUrl: o.ExternalReference = {
+    name: 'ɵɵtrustConstantResourceUrl',
+    moduleName: CORE,
+  };
+  static validateIframeAttribute: o.ExternalReference = {
+    name: 'ɵɵvalidateIframeAttribute',
+    moduleName: CORE,
+  };
 
   // type-checking
   static InputSignalBrandWriteType = {name: 'ɵINPUT_SIGNAL_BRAND_WRITE_TYPE', moduleName: CORE};

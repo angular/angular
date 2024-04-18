@@ -8,7 +8,12 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {CompilationJob, CompilationUnit, ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
+import {
+  CompilationJob,
+  CompilationUnit,
+  ComponentCompilationJob,
+  ViewCompilationUnit,
+} from '../compilation';
 
 /**
  * Resolves `ir.ContextExpr` expressions (which represent embedded view or component contexts) to
@@ -22,7 +27,10 @@ export function resolveContexts(job: CompilationJob): void {
   }
 }
 
-function processLexicalScope(view: CompilationUnit, ops: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
+function processLexicalScope(
+  view: CompilationUnit,
+  ops: ir.OpList<ir.CreateOp | ir.UpdateOp>,
+): void {
   // Track the expressions used to access all available contexts within the current view, by the
   // view `ir.XrefId`.
   const scope = new Map<ir.XrefId, o.Expression>();
@@ -52,16 +60,21 @@ function processLexicalScope(view: CompilationUnit, ops: ir.OpList<ir.CreateOp|i
   }
 
   for (const op of ops) {
-    ir.transformExpressionsInOp(op, expr => {
-      if (expr instanceof ir.ContextExpr) {
-        if (!scope.has(expr.view)) {
-          throw new Error(
-              `No context found for reference to view ${expr.view} from view ${view.xref}`);
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => {
+        if (expr instanceof ir.ContextExpr) {
+          if (!scope.has(expr.view)) {
+            throw new Error(
+              `No context found for reference to view ${expr.view} from view ${view.xref}`,
+            );
+          }
+          return scope.get(expr.view)!;
+        } else {
+          return expr;
         }
-        return scope.get(expr.view)!;
-      } else {
-        return expr;
-      }
-    }, ir.VisitorContextFlag.None);
+      },
+      ir.VisitorContextFlag.None,
+    );
   }
 }

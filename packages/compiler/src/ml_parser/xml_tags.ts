@@ -10,7 +10,7 @@ import {TagContentType, TagDefinition} from './tags';
 
 export class XmlTagDefinition implements TagDefinition {
   closedByParent: boolean = false;
-  implicitNamespacePrefix: string|null = null;
+  implicitNamespacePrefix: string | null = null;
   isVoid: boolean = false;
   ignoreFirstLf: boolean = false;
   canSelfClose: boolean = true;

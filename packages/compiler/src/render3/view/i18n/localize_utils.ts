@@ -13,13 +13,20 @@ import {serializeIcuNode} from './icu_serializer';
 import {formatI18nPlaceholderName} from './util';
 
 export function createLocalizeStatements(
-    variable: o.ReadVarExpr, message: i18n.Message,
-    params: {[name: string]: o.Expression}): o.Statement[] {
+  variable: o.ReadVarExpr,
+  message: i18n.Message,
+  params: {[name: string]: o.Expression},
+): o.Statement[] {
   const {messageParts, placeHolders} = serializeI18nMessageForLocalize(message);
   const sourceSpan = getSourceSpan(message);
-  const expressions = placeHolders.map(ph => params[ph.text]);
-  const localizedString =
-      o.localizedString(message, messageParts, placeHolders, expressions, sourceSpan);
+  const expressions = placeHolders.map((ph) => params[ph.text]);
+  const localizedString = o.localizedString(
+    message,
+    messageParts,
+    placeHolders,
+    expressions,
+    sourceSpan,
+  );
   const variableInitialization = variable.set(localizedString);
   return [new o.ExpressionStatement(variableInitialization)];
 }
@@ -31,8 +38,9 @@ export function createLocalizeStatements(
  */
 class LocalizeSerializerVisitor implements i18n.Visitor {
   constructor(
-      private placeholderToMessage: {[phName: string]: i18n.Message},
-      private pieces: o.MessagePiece[]) {}
+    private placeholderToMessage: {[phName: string]: i18n.Message},
+    private pieces: o.MessagePiece[],
+  ) {}
 
   visitText(text: i18n.Text): any {
     if (this.pieces[this.pieces.length - 1] instanceof o.LiteralPiece) {
@@ -40,14 +48,17 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
       this.pieces[this.pieces.length - 1].text += text.value;
     } else {
       const sourceSpan = new ParseSourceSpan(
-          text.sourceSpan.fullStart, text.sourceSpan.end, text.sourceSpan.fullStart,
-          text.sourceSpan.details);
+        text.sourceSpan.fullStart,
+        text.sourceSpan.end,
+        text.sourceSpan.fullStart,
+        text.sourceSpan.details,
+      );
       this.pieces.push(new o.LiteralPiece(text.value, sourceSpan));
     }
   }
 
   visitContainer(container: i18n.Container): any {
-    container.children.forEach(child => child.visit(this));
+    container.children.forEach((child) => child.visit(this));
   }
 
   visitIcu(icu: i18n.Icu): any {
@@ -56,11 +67,13 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder): any {
     this.pieces.push(
-        this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan));
+      this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan),
+    );
     if (!ph.isVoid) {
-      ph.children.forEach(child => child.visit(this));
+      ph.children.forEach((child) => child.visit(this));
       this.pieces.push(
-          this.createPlaceholderPiece(ph.closeName, ph.endSourceSpan ?? ph.sourceSpan));
+        this.createPlaceholderPiece(ph.closeName, ph.endSourceSpan ?? ph.sourceSpan),
+      );
     }
   }
 
@@ -70,21 +83,28 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
 
   visitBlockPlaceholder(ph: i18n.BlockPlaceholder): any {
     this.pieces.push(
-        this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan));
-    ph.children.forEach(child => child.visit(this));
+      this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan),
+    );
+    ph.children.forEach((child) => child.visit(this));
     this.pieces.push(this.createPlaceholderPiece(ph.closeName, ph.endSourceSpan ?? ph.sourceSpan));
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder): any {
     this.pieces.push(
-        this.createPlaceholderPiece(ph.name, ph.sourceSpan, this.placeholderToMessage[ph.name]));
+      this.createPlaceholderPiece(ph.name, ph.sourceSpan, this.placeholderToMessage[ph.name]),
+    );
   }
 
   private createPlaceholderPiece(
-      name: string, sourceSpan: ParseSourceSpan,
-      associatedMessage?: i18n.Message): o.PlaceholderPiece {
+    name: string,
+    sourceSpan: ParseSourceSpan,
+    associatedMessage?: i18n.Message,
+  ): o.PlaceholderPiece {
     return new o.PlaceholderPiece(
-        formatI18nPlaceholderName(name, /* useCamelCase */ false), sourceSpan, associatedMessage);
+      formatI18nPlaceholderName(name, /* useCamelCase */ false),
+      sourceSpan,
+      associatedMessage,
+    );
   }
 }
 
@@ -96,11 +116,13 @@ class LocalizeSerializerVisitor implements i18n.Visitor {
  * @param message The message to be serialized.
  * @returns an object containing the messageParts and placeholders.
  */
-export function serializeI18nMessageForLocalize(message: i18n.Message):
-    {messageParts: o.LiteralPiece[], placeHolders: o.PlaceholderPiece[]} {
+export function serializeI18nMessageForLocalize(message: i18n.Message): {
+  messageParts: o.LiteralPiece[];
+  placeHolders: o.PlaceholderPiece[];
+} {
   const pieces: o.MessagePiece[] = [];
   const serializerVisitor = new LocalizeSerializerVisitor(message.placeholderToMessage, pieces);
-  message.nodes.forEach(node => node.visit(serializerVisitor));
+  message.nodes.forEach((node) => node.visit(serializerVisitor));
   return processMessagePieces(pieces);
 }
 
@@ -108,8 +130,11 @@ function getSourceSpan(message: i18n.Message): ParseSourceSpan {
   const startNode = message.nodes[0];
   const endNode = message.nodes[message.nodes.length - 1];
   return new ParseSourceSpan(
-      startNode.sourceSpan.fullStart, endNode.sourceSpan.end, startNode.sourceSpan.fullStart,
-      startNode.sourceSpan.details);
+    startNode.sourceSpan.fullStart,
+    endNode.sourceSpan.end,
+    startNode.sourceSpan.fullStart,
+    startNode.sourceSpan.details,
+  );
 }
 
 /**
@@ -121,8 +146,10 @@ function getSourceSpan(message: i18n.Message): ParseSourceSpan {
  * @param pieces The pieces to process.
  * @returns an object containing the messageParts and placeholders.
  */
-function processMessagePieces(pieces: o.MessagePiece[]):
-    {messageParts: o.LiteralPiece[], placeHolders: o.PlaceholderPiece[]} {
+function processMessagePieces(pieces: o.MessagePiece[]): {
+  messageParts: o.LiteralPiece[];
+  placeHolders: o.PlaceholderPiece[];
+} {
   const messageParts: o.LiteralPiece[] = [];
   const placeHolders: o.PlaceholderPiece[] = [];
 

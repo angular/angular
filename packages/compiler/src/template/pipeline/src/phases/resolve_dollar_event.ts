@@ -21,19 +21,23 @@ export function resolveDollarEvent(job: CompilationJob): void {
   }
 }
 
-function transformDollarEvent(ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>): void {
+function transformDollarEvent(ops: ir.OpList<ir.CreateOp> | ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
-      ir.transformExpressionsInOp(op, (expr) => {
-        if (expr instanceof ir.LexicalReadExpr && expr.name === '$event') {
-          // Two-way listeners always consume `$event` so they omit this field.
-          if (op.kind === ir.OpKind.Listener) {
-            op.consumesDollarEvent = true;
+      ir.transformExpressionsInOp(
+        op,
+        (expr) => {
+          if (expr instanceof ir.LexicalReadExpr && expr.name === '$event') {
+            // Two-way listeners always consume `$event` so they omit this field.
+            if (op.kind === ir.OpKind.Listener) {
+              op.consumesDollarEvent = true;
+            }
+            return new o.ReadVarExpr(expr.name);
           }
-          return new o.ReadVarExpr(expr.name);
-        }
-        return expr;
-      }, ir.VisitorContextFlag.InChildOperation);
+          return expr;
+        },
+        ir.VisitorContextFlag.InChildOperation,
+      );
     }
   }
 }

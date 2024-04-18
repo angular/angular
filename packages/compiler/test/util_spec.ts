@@ -72,7 +72,11 @@ describe('util', () => {
         ['\uDFFF', '\xED\xBF\xBF'],
       ];
       tests.forEach(([input, output]) => {
-        expect(utf8Encode(input).map(byte => String.fromCharCode(byte)).join('')).toEqual(output);
+        expect(
+          utf8Encode(input)
+            .map((byte) => String.fromCharCode(byte))
+            .join(''),
+        ).toEqual(output);
       });
     });
   });
@@ -94,7 +98,8 @@ describe('util', () => {
 
     it('should handle arrays of objects', () => {
       expect(partitionArray([{id: 1}, {id: 2}, {id: 3}], (el: any) => el.id < 2)).toEqual([
-        [{id: 1}], [{id: 2}, {id: 3}]
+        [{id: 1}],
+        [{id: 2}, {id: 3}],
       ]);
     });
   });

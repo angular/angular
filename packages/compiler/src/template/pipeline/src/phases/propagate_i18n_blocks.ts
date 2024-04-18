@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import * as i18n from '../../../../i18n/i18n_ast';
 import * as ir from '../../ir';
 import {ComponentCompilationJob, ViewCompilationUnit} from '../compilation';
@@ -25,8 +24,10 @@ export function propagateI18nBlocks(job: ComponentCompilationJob): void {
  * Propagates i18n ops in the given view through to any child views recursively.
  */
 function propagateI18nBlocksToTemplates(
-    unit: ViewCompilationUnit, subTemplateIndex: number): number {
-  let i18nBlock: ir.I18nStartOp|null = null;
+  unit: ViewCompilationUnit,
+  subTemplateIndex: number,
+): number {
+  let i18nBlock: ir.I18nStartOp | null = null;
   for (const op of unit.create) {
     switch (op.kind) {
       case ir.OpKind.I18nStart:
@@ -42,18 +43,29 @@ function propagateI18nBlocksToTemplates(
         break;
       case ir.OpKind.Template:
         subTemplateIndex = propagateI18nBlocksForView(
-            unit.job.views.get(op.xref)!, i18nBlock, op.i18nPlaceholder, subTemplateIndex);
+          unit.job.views.get(op.xref)!,
+          i18nBlock,
+          op.i18nPlaceholder,
+          subTemplateIndex,
+        );
         break;
       case ir.OpKind.RepeaterCreate:
         // Propagate i18n blocks to the @for template.
         const forView = unit.job.views.get(op.xref)!;
-        subTemplateIndex =
-            propagateI18nBlocksForView(forView, i18nBlock, op.i18nPlaceholder, subTemplateIndex);
+        subTemplateIndex = propagateI18nBlocksForView(
+          forView,
+          i18nBlock,
+          op.i18nPlaceholder,
+          subTemplateIndex,
+        );
         // Then if there's an @empty template, propagate the i18n blocks for it as well.
         if (op.emptyView !== null) {
           subTemplateIndex = propagateI18nBlocksForView(
-              unit.job.views.get(op.emptyView)!, i18nBlock, op.emptyI18nPlaceholder,
-              subTemplateIndex);
+            unit.job.views.get(op.emptyView)!,
+            i18nBlock,
+            op.emptyI18nPlaceholder,
+            subTemplateIndex,
+          );
         }
         break;
     }
@@ -65,9 +77,11 @@ function propagateI18nBlocksToTemplates(
  * Propagate i18n blocks for a view.
  */
 function propagateI18nBlocksForView(
-    view: ViewCompilationUnit, i18nBlock: ir.I18nStartOp|null,
-    i18nPlaceholder: i18n.TagPlaceholder|i18n.BlockPlaceholder|undefined,
-    subTemplateIndex: number) {
+  view: ViewCompilationUnit,
+  i18nBlock: ir.I18nStartOp | null,
+  i18nPlaceholder: i18n.TagPlaceholder | i18n.BlockPlaceholder | undefined,
+  subTemplateIndex: number,
+) {
   // We found an <ng-template> inside an i18n block; increment the sub-template counter and
   // wrap the template's view in a child i18n block.
   if (i18nPlaceholder !== undefined) {
@@ -90,8 +104,10 @@ function wrapTemplateWithI18n(unit: ViewCompilationUnit, parentI18n: ir.I18nStar
   if (unit.create.head.next?.kind !== ir.OpKind.I18nStart) {
     const id = unit.job.allocateXrefId();
     ir.OpList.insertAfter(
-        // Nested ng-template i18n start/end ops should not receive source spans.
-        ir.createI18nStartOp(id, parentI18n.message, parentI18n.root, null), unit.create.head);
+      // Nested ng-template i18n start/end ops should not receive source spans.
+      ir.createI18nStartOp(id, parentI18n.message, parentI18n.root, null),
+      unit.create.head,
+    );
     ir.OpList.insertBefore(ir.createI18nEndOp(id, null), unit.create.tail);
   }
 }

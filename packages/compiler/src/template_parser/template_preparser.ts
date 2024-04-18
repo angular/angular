@@ -20,12 +20,12 @@ const NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 const NG_PROJECT_AS = 'ngProjectAs';
 
 export function preparseElement(ast: html.Element): PreparsedElement {
-  let selectAttr: string|null = null;
-  let hrefAttr: string|null = null;
-  let relAttr: string|null = null;
+  let selectAttr: string | null = null;
+  let hrefAttr: string | null = null;
+  let relAttr: string | null = null;
   let nonBindable = false;
   let projectAs = '';
-  ast.attrs.forEach(attr => {
+  ast.attrs.forEach((attr) => {
     const lcAttrName = attr.name.toLowerCase();
     if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
       selectAttr = attr.value;
@@ -61,17 +61,20 @@ export enum PreparsedElementType {
   STYLE,
   STYLESHEET,
   SCRIPT,
-  OTHER
+  OTHER,
 }
 
 export class PreparsedElement {
   constructor(
-      public type: PreparsedElementType, public selectAttr: string, public hrefAttr: string|null,
-      public nonBindable: boolean, public projectAs: string) {}
+    public type: PreparsedElementType,
+    public selectAttr: string,
+    public hrefAttr: string | null,
+    public nonBindable: boolean,
+    public projectAs: string,
+  ) {}
 }
 
-
-function normalizeNgContentSelect(selectAttr: string|null): string {
+function normalizeNgContentSelect(selectAttr: string | null): string {
   if (selectAttr === null || selectAttr.length === 0) {
     return '*';
   }

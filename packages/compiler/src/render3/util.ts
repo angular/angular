@@ -65,10 +65,18 @@ export function devOnlyGuardedExpression(expr: o.Expression): o.Expression {
 export function guardedExpression(guard: string, expr: o.Expression): o.Expression {
   const guardExpr = new o.ExternalExpr({name: guard, moduleName: null});
   const guardNotDefined = new o.BinaryOperatorExpr(
-      o.BinaryOperator.Identical, new o.TypeofExpr(guardExpr), o.literal('undefined'));
+    o.BinaryOperator.Identical,
+    new o.TypeofExpr(guardExpr),
+    o.literal('undefined'),
+  );
   const guardUndefinedOrTrue = new o.BinaryOperatorExpr(
-      o.BinaryOperator.Or, guardNotDefined, guardExpr, /* type */ undefined,
-      /* sourceSpan */ undefined, true);
+    o.BinaryOperator.Or,
+    guardNotDefined,
+    guardExpr,
+    /* type */ undefined,
+    /* sourceSpan */ undefined,
+    true,
+  );
   return new o.BinaryOperatorExpr(o.BinaryOperator.And, guardUndefinedOrTrue, expr);
 }
 
@@ -78,10 +86,9 @@ export function wrapReference(value: any): R3Reference {
 }
 
 export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
-  const values = o.literalArr(refs.map(ref => ref.value));
+  const values = o.literalArr(refs.map((ref) => ref.value));
   return shouldForwardDeclare ? o.arrowFn([], values) : values;
 }
-
 
 /**
  * Describes an expression that may have been wrapped in a `forwardRef()` guard.
@@ -117,7 +124,9 @@ export interface MaybeForwardRefExpression<T extends o.Expression = o.Expression
 }
 
 export function createMayBeForwardRefExpression<T extends o.Expression>(
-    expression: T, forwardRef: ForwardRefHandling): MaybeForwardRefExpression<T> {
+  expression: T,
+  forwardRef: ForwardRefHandling,
+): MaybeForwardRefExpression<T> {
   return {expression, forwardRef};
 }
 
@@ -132,8 +141,10 @@ export function createMayBeForwardRefExpression<T extends o.Expression>(
  * See `packages/compiler-cli/src/ngtsc/annotations/src/injectable.ts` and
  * `packages/compiler/src/jit_compiler_facade.ts` for more information.
  */
-export function convertFromMaybeForwardRefExpression(
-    {expression, forwardRef}: MaybeForwardRefExpression): o.Expression {
+export function convertFromMaybeForwardRefExpression({
+  expression,
+  forwardRef,
+}: MaybeForwardRefExpression): o.Expression {
   switch (forwardRef) {
     case ForwardRefHandling.None:
     case ForwardRefHandling.Wrapped:

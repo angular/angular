@@ -66,12 +66,12 @@ describe('DOMElementSchema', () => {
 
   it('should detect different kinds of types', () => {
     // inheritance: video => media => [HTMLElement] => [Element]
-    expect(registry.hasProperty('video', 'className', [])).toBeTruthy();   // from [Element]
-    expect(registry.hasProperty('video', 'id', [])).toBeTruthy();          // string
-    expect(registry.hasProperty('video', 'scrollLeft', [])).toBeTruthy();  // number
-    expect(registry.hasProperty('video', 'height', [])).toBeTruthy();      // number
-    expect(registry.hasProperty('video', 'autoplay', [])).toBeTruthy();    // boolean
-    expect(registry.hasProperty('video', 'classList', [])).toBeTruthy();   // object
+    expect(registry.hasProperty('video', 'className', [])).toBeTruthy(); // from [Element]
+    expect(registry.hasProperty('video', 'id', [])).toBeTruthy(); // string
+    expect(registry.hasProperty('video', 'scrollLeft', [])).toBeTruthy(); // number
+    expect(registry.hasProperty('video', 'height', [])).toBeTruthy(); // number
+    expect(registry.hasProperty('video', 'autoplay', [])).toBeTruthy(); // boolean
+    expect(registry.hasProperty('video', 'classList', [])).toBeTruthy(); // object
     // from *; but events are not properties
     expect(registry.hasProperty('video', 'click', [])).toBeFalsy();
   });
@@ -109,31 +109,31 @@ describe('DOMElementSchema', () => {
   it('should return an error message when asserting event properties', () => {
     let report = registry.validateProperty('onClick');
     expect(report.error).toBeTruthy();
-    expect(report.msg)
-        .toEqual(
-            `Binding to event property 'onClick' is disallowed for security reasons, please use (Click)=...
-If 'onClick' is a directive input, make sure the directive is imported by the current module.`);
+    expect(report.msg).toEqual(
+      `Binding to event property 'onClick' is disallowed for security reasons, please use (Click)=...
+If 'onClick' is a directive input, make sure the directive is imported by the current module.`,
+    );
 
     report = registry.validateProperty('onAnything');
     expect(report.error).toBeTruthy();
-    expect(report.msg)
-        .toEqual(
-            `Binding to event property 'onAnything' is disallowed for security reasons, please use (Anything)=...
-If 'onAnything' is a directive input, make sure the directive is imported by the current module.`);
+    expect(report.msg).toEqual(
+      `Binding to event property 'onAnything' is disallowed for security reasons, please use (Anything)=...
+If 'onAnything' is a directive input, make sure the directive is imported by the current module.`,
+    );
   });
 
   it('should return an error message when asserting event attributes', () => {
     let report = registry.validateAttribute('onClick');
     expect(report.error).toBeTruthy();
-    expect(report.msg)
-        .toEqual(
-            `Binding to event attribute 'onClick' is disallowed for security reasons, please use (Click)=...`);
+    expect(report.msg).toEqual(
+      `Binding to event attribute 'onClick' is disallowed for security reasons, please use (Click)=...`,
+    );
 
     report = registry.validateAttribute('onAnything');
     expect(report.error).toBeTruthy();
-    expect(report.msg)
-        .toEqual(
-            `Binding to event attribute 'onAnything' is disallowed for security reasons, please use (Anything)=...`);
+    expect(report.msg).toEqual(
+      `Binding to event attribute 'onAnything' is disallowed for security reasons, please use (Anything)=...`,
+    );
   });
 
   it('should not return an error message when asserting non-event properties or attributes', () => {
@@ -204,26 +204,27 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
   });
 
   describe('normalizeAnimationStyleValue', () => {
-    it('should normalize the given dimensional CSS style value to contain a PX value when numeric',
-       () => {
-         expect(registry.normalizeAnimationStyleValue('borderRadius', 'border-radius', 10)['value'])
-             .toBe('10px');
-       });
+    it('should normalize the given dimensional CSS style value to contain a PX value when numeric', () => {
+      expect(
+        registry.normalizeAnimationStyleValue('borderRadius', 'border-radius', 10)['value'],
+      ).toBe('10px');
+    });
 
     it('should not normalize any values that are of zero', () => {
       expect(registry.normalizeAnimationStyleValue('opacity', 'opacity', 0)['value']).toBe('0');
       expect(registry.normalizeAnimationStyleValue('width', 'width', 0)['value']).toBe('0');
     });
 
-    it('should retain the given dimensional CSS style value\'s unit if it already exists', () => {
+    it("should retain the given dimensional CSS style value's unit if it already exists", () => {
       expect(
-          registry.normalizeAnimationStyleValue('borderRadius', 'border-radius', '10em')['value'])
-          .toBe('10em');
+        registry.normalizeAnimationStyleValue('borderRadius', 'border-radius', '10em')['value'],
+      ).toBe('10em');
     });
 
     it('should trim the provided CSS style value', () => {
-      expect(registry.normalizeAnimationStyleValue('color', 'color', '   red ')['value'])
-          .toBe('red');
+      expect(registry.normalizeAnimationStyleValue('color', 'color', '   red ')['value']).toBe(
+        'red',
+      );
     });
 
     it('should stringify all non dimensional numeric style values', () => {

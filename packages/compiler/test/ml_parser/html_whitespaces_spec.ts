@@ -43,9 +43,7 @@ describe('removeWhitespaces', () => {
   });
 
   it('should remove whitespaces from the beginning and end of a template', () => {
-    expect(parseAndRemoveWS(` <br>\t`)).toEqual([
-      [html.Element, 'br', 0],
-    ]);
+    expect(parseAndRemoveWS(` <br>\t`)).toEqual([[html.Element, 'br', 0]]);
   });
 
   it('should convert &ngsp; to a space and preserve it', () => {
@@ -79,25 +77,27 @@ describe('removeWhitespaces', () => {
 
   it('should not replace &nbsp;', () => {
     expect(parseAndRemoveWS('&nbsp;')).toEqual([
-      [html.Text, '\u00a0', 0, [''], ['\u00a0', '&nbsp;'], ['']]
+      [html.Text, '\u00a0', 0, [''], ['\u00a0', '&nbsp;'], ['']],
     ]);
   });
 
   it('should not replace sequences of &nbsp;', () => {
-    expect(parseAndRemoveWS('&nbsp;&nbsp;foo&nbsp;&nbsp;')).toEqual([[
-      html.Text,
-      '\u00a0\u00a0foo\u00a0\u00a0',
-      0,
-      [''],
-      ['\u00a0', '&nbsp;'],
-      [''],
-      ['\u00a0', '&nbsp;'],
-      ['foo'],
-      ['\u00a0', '&nbsp;'],
-      [''],
-      ['\u00a0', '&nbsp;'],
-      [''],
-    ]]);
+    expect(parseAndRemoveWS('&nbsp;&nbsp;foo&nbsp;&nbsp;')).toEqual([
+      [
+        html.Text,
+        '\u00a0\u00a0foo\u00a0\u00a0',
+        0,
+        [''],
+        ['\u00a0', '&nbsp;'],
+        [''],
+        ['\u00a0', '&nbsp;'],
+        ['foo'],
+        ['\u00a0', '&nbsp;'],
+        [''],
+        ['\u00a0', '&nbsp;'],
+        [''],
+      ],
+    ]);
   });
 
   it('should not replace single tab and newline with spaces', () => {
@@ -106,16 +106,18 @@ describe('removeWhitespaces', () => {
   });
 
   it('should preserve single whitespaces between interpolations', () => {
-    expect(parseAndRemoveWS(`{{fooExp}} {{barExp}}`)).toEqual([[
-      html.Text,
-      '{{fooExp}} {{barExp}}',
-      0,
-      [''],
-      ['{{', 'fooExp', '}}'],
-      [' '],
-      ['{{', 'barExp', '}}'],
-      [''],
-    ]]);
+    expect(parseAndRemoveWS(`{{fooExp}} {{barExp}}`)).toEqual([
+      [
+        html.Text,
+        '{{fooExp}} {{barExp}}',
+        0,
+        [''],
+        ['{{', 'fooExp', '}}'],
+        [' '],
+        ['{{', 'barExp', '}}'],
+        [''],
+      ],
+    ]);
     expect(parseAndRemoveWS(`{{fooExp}}\t{{barExp}}`)).toEqual([
       [
         html.Text,
@@ -144,19 +146,20 @@ describe('removeWhitespaces', () => {
 
   it('should preserve whitespaces around interpolations', () => {
     expect(parseAndRemoveWS(` {{exp}} `)).toEqual([
-      [html.Text, ' {{exp}} ', 0, [' '], ['{{', 'exp', '}}'], [' ']]
+      [html.Text, ' {{exp}} ', 0, [' '], ['{{', 'exp', '}}'], [' ']],
     ]);
   });
 
   it('should preserve whitespaces around ICU expansions', () => {
-    expect(parseAndRemoveWS(`<span> {a, b, =4 {c}} </span>`, {tokenizeExpansionForms: true}))
-        .toEqual([
-          [html.Element, 'span', 0],
-          [html.Text, ' ', 1, [' ']],
-          [html.Expansion, 'a', 'b', 1],
-          [html.ExpansionCase, '=4', 2],
-          [html.Text, ' ', 1, [' ']],
-        ]);
+    expect(
+      parseAndRemoveWS(`<span> {a, b, =4 {c}} </span>`, {tokenizeExpansionForms: true}),
+    ).toEqual([
+      [html.Element, 'span', 0],
+      [html.Text, ' ', 1, [' ']],
+      [html.Expansion, 'a', 'b', 1],
+      [html.ExpansionCase, '=4', 2],
+      [html.Text, ' ', 1, [' ']],
+    ]);
   });
 
   it('should preserve whitespaces inside <pre> elements', () => {

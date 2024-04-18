@@ -27,11 +27,7 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     _SECURITY_SCHEMA = {};
     // Case is insignificant below, all element and attribute names are lower-cased for lookup.
 
-    registerContext(SecurityContext.HTML, [
-      'iframe|srcdoc',
-      '*|innerHTML',
-      '*|outerHTML',
-    ]);
+    registerContext(SecurityContext.HTML, ['iframe|srcdoc', '*|innerHTML', '*|outerHTML']);
     registerContext(SecurityContext.STYLE, ['*|style']);
     // NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
     registerContext(SecurityContext.URL, [
@@ -86,8 +82,14 @@ function registerContext(ctx: SecurityContext, specs: string[]) {
  * Note: avoid using this set directly, use the `isIframeSecuritySensitiveAttr` function
  * in the code instead.
  */
-export const IFRAME_SECURITY_SENSITIVE_ATTRS =
-    new Set(['sandbox', 'allow', 'allowfullscreen', 'referrerpolicy', 'csp', 'fetchpriority']);
+export const IFRAME_SECURITY_SENSITIVE_ATTRS = new Set([
+  'sandbox',
+  'allow',
+  'allowfullscreen',
+  'referrerpolicy',
+  'csp',
+  'fetchpriority',
+]);
 
 /**
  * Checks whether a given attribute name might represent a security-sensitive

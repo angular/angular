@@ -26,8 +26,9 @@ export function generateTemporaryVariables(job: CompilationJob): void {
   }
 }
 
-function generateTemporaries(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>):
-    Array<ir.StatementOp<ir.CreateOp|ir.UpdateOp>> {
+function generateTemporaries(
+  ops: ir.OpList<ir.CreateOp | ir.UpdateOp>,
+): Array<ir.StatementOp<ir.CreateOp | ir.UpdateOp>> {
   let opCount = 0;
   let generatedStatements: Array<ir.StatementOp<ir.UpdateOp>> = [];
 
@@ -74,8 +75,10 @@ function generateTemporaries(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>):
 
     // Add declarations for the temp vars.
     generatedStatements.push(
-        ...Array.from(new Set(defs.values()))
-            .map(name => ir.createStatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name))));
+      ...Array.from(new Set(defs.values())).map((name) =>
+        ir.createStatementOp<ir.UpdateOp>(new o.DeclareVarStmt(name)),
+      ),
+    );
     opCount++;
 
     if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
@@ -90,7 +93,9 @@ function generateTemporaries(ops: ir.OpList<ir.CreateOp|ir.UpdateOp>):
  * Assigns a name to the temporary variable in the given temporary variable expression.
  */
 function assignName(
-    names: Map<ir.XrefId, string>, expr: ir.AssignTemporaryExpr|ir.ReadTemporaryExpr) {
+  names: Map<ir.XrefId, string>,
+  expr: ir.AssignTemporaryExpr | ir.ReadTemporaryExpr,
+) {
   const name = names.get(expr.xref);
   if (name === undefined) {
     throw new Error(`Found xref with unassigned name: ${expr.xref}`);

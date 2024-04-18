@@ -23,8 +23,11 @@ export function deleteAnyCasts(job: CompilationJob): void {
 }
 
 function removeAnys(e: o.Expression): o.Expression {
-  if (e instanceof o.InvokeFunctionExpr && e.fn instanceof ir.LexicalReadExpr &&
-      e.fn.name === '$any') {
+  if (
+    e instanceof o.InvokeFunctionExpr &&
+    e.fn instanceof ir.LexicalReadExpr &&
+    e.fn.name === '$any'
+  ) {
     if (e.args.length !== 1) {
       throw new Error('The $any builtin function expects exactly one argument.');
     }

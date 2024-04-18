@@ -55,9 +55,13 @@ export function getTranslationConstPrefix(extra: string): string {
  */
 export function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
   return new o.DeclareVarStmt(
-      variable.name!, undefined, o.INFERRED_TYPE, undefined, variable.sourceSpan);
+    variable.name!,
+    undefined,
+    o.INFERRED_TYPE,
+    undefined,
+    variable.sourceSpan,
+  );
 }
-
 
 /**
  * Lifts i18n properties into the consts array.
@@ -67,7 +71,7 @@ export function declareI18nVariable(variable: o.ReadVarExpr): o.Statement {
  */
 export function collectI18nConsts(job: ComponentCompilationJob): void {
   const fileBasedI18nSuffix =
-      job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
+    job.relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_').toUpperCase() + '_';
   // Step One: Build up various lookup maps we need to collect all the consts.
 
   // Context Xref -> Extracted Attribute Ops
@@ -88,7 +92,9 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
       } else if (op.kind === ir.OpKind.I18nAttributes) {
         i18nAttributesByElement.set(op.target, op);
       } else if (
-          op.kind === ir.OpKind.I18nExpression && op.usage === ir.I18nExpressionFor.I18nAttribute) {
+        op.kind === ir.OpKind.I18nExpression &&
+        op.usage === ir.I18nExpressionFor.I18nAttribute
+      ) {
         const expressions = i18nExpressionsByElement.get(op.target) ?? [];
         expressions.push(op);
         i18nExpressionsByElement.set(op.target, expressions);
@@ -162,28 +168,29 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
           // Unused i18nAttributes should have already been removed.
           // TODO: Should the removal of those dead instructions be merged with this phase?
           throw new Error(
-              'AssertionError: Could not find any i18n expressions associated with an I18nAttributes instruction');
+            'AssertionError: Could not find any i18n expressions associated with an I18nAttributes instruction',
+          );
         }
 
         // Find expressions for all the unique property names, removing duplicates.
         const seenPropertyNames = new Set<string>();
-        i18nExpressions = i18nExpressions.filter(i18nExpr => {
-          const seen = (seenPropertyNames.has(i18nExpr.name));
+        i18nExpressions = i18nExpressions.filter((i18nExpr) => {
+          const seen = seenPropertyNames.has(i18nExpr.name);
           seenPropertyNames.add(i18nExpr.name);
           return !seen;
         });
 
-        const i18nAttributeConfig = i18nExpressions.flatMap(i18nExpr => {
+        const i18nAttributeConfig = i18nExpressions.flatMap((i18nExpr) => {
           const i18nExprValue = i18nValuesByContext.get(i18nExpr.context);
           if (i18nExprValue === undefined) {
-            throw new Error('AssertionError: Could not find i18n expression\'s value');
+            throw new Error("AssertionError: Could not find i18n expression's value");
           }
           return [o.literal(i18nExpr.name), i18nExprValue];
         });
 
-
-        i18nAttributes.i18nAttributesConfig =
-            job.addConst(new o.LiteralArrayExpr(i18nAttributeConfig));
+        i18nAttributes.i18nAttributesConfig = job.addConst(
+          new o.LiteralArrayExpr(i18nAttributeConfig),
+        );
       }
     }
   }
@@ -196,7 +203,8 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
         const msgIndex = messageConstIndices.get(op.root);
         if (msgIndex === undefined) {
           throw new Error(
-              'AssertionError: Could not find corresponding i18n block index for an i18n message op; was an i18n message incorrectly assumed to correspond to an attribute?');
+            'AssertionError: Could not find corresponding i18n block index for an i18n message op; was an i18n message incorrectly assumed to correspond to an attribute?',
+          );
         }
         op.messageIndex = msgIndex;
       }
@@ -209,9 +217,11 @@ export function collectI18nConsts(job: ComponentCompilationJob): void {
  * This will recursively collect any sub-messages referenced from the parent message as well.
  */
 function collectMessage(
-    job: ComponentCompilationJob, fileBasedI18nSuffix: string,
-    messages: Map<ir.XrefId, ir.I18nMessageOp>,
-    messageOp: ir.I18nMessageOp): {mainVar: o.ReadVarExpr, statements: o.Statement[]} {
+  job: ComponentCompilationJob,
+  fileBasedI18nSuffix: string,
+  messages: Map<ir.XrefId, ir.I18nMessageOp>,
+  messageOp: ir.I18nMessageOp,
+): {mainVar: o.ReadVarExpr; statements: o.Statement[]} {
   // Recursively collect any sub-messages, record each sub-message's main variable under its
   // placeholder so that we can add them to the params for the parent message. It is possible
   // that multiple sub-messages will share the same placeholder, so we need to track an array of
@@ -220,8 +230,12 @@ function collectMessage(
   const subMessagePlaceholders = new Map<string, o.Expression[]>();
   for (const subMessageId of messageOp.subMessages) {
     const subMessage = messages.get(subMessageId)!;
-    const {mainVar: subMessageVar, statements: subMessageStatements} =
-        collectMessage(job, fileBasedI18nSuffix, messages, subMessage);
+    const {mainVar: subMessageVar, statements: subMessageStatements} = collectMessage(
+      job,
+      fileBasedI18nSuffix,
+      messages,
+      subMessage,
+    );
     statements.push(...subMessageStatements);
     const subMessages = subMessagePlaceholders.get(subMessage.messagePlaceholder!) ?? [];
     subMessages.push(subMessageVar);
@@ -237,28 +251,42 @@ function collectMessage(
   // const to start with `MSG_`. We define a variable starting with `MSG_` just for the
   // `goog.getMsg` call
   const closureVar = i18nGenerateClosureVar(
-      job.pool, messageOp.message.id, fileBasedI18nSuffix, job.i18nUseExternalIds);
+    job.pool,
+    messageOp.message.id,
+    fileBasedI18nSuffix,
+    job.i18nUseExternalIds,
+  );
   let transformFn = undefined;
 
   // If nescessary, add a post-processing step and resolve any placeholder params that are
   // set in post-processing.
   if (messageOp.needsPostprocessing || messageOp.postprocessingParams.size > 0) {
     // Sort the post-processing params for consistency with TemaplateDefinitionBuilder output.
-    const postprocessingParams =
-        Object.fromEntries([...messageOp.postprocessingParams.entries()].sort());
-    const formattedPostprocessingParams =
-        formatI18nPlaceholderNamesInMap(postprocessingParams, /* useCamelCase */ false);
+    const postprocessingParams = Object.fromEntries(
+      [...messageOp.postprocessingParams.entries()].sort(),
+    );
+    const formattedPostprocessingParams = formatI18nPlaceholderNamesInMap(
+      postprocessingParams,
+      /* useCamelCase */ false,
+    );
     const extraTransformFnParams: o.Expression[] = [];
     if (messageOp.postprocessingParams.size > 0) {
       extraTransformFnParams.push(mapLiteral(formattedPostprocessingParams, /* quoted */ true));
     }
     transformFn = (expr: o.ReadVarExpr) =>
-        o.importExpr(Identifiers.i18nPostprocess).callFn([expr, ...extraTransformFnParams]);
+      o.importExpr(Identifiers.i18nPostprocess).callFn([expr, ...extraTransformFnParams]);
   }
 
   // Add the message's statements
-  statements.push(...getTranslationDeclStmts(
-      messageOp.message, mainVar, closureVar, messageOp.params, transformFn));
+  statements.push(
+    ...getTranslationDeclStmts(
+      messageOp.message,
+      mainVar,
+      closureVar,
+      messageOp.params,
+      transformFn,
+    ),
+  );
 
   return {mainVar, statements};
 }
@@ -272,13 +300,17 @@ function collectMessage(
  * step. We then add the array of variables as a post-processing param.
  */
 function addSubMessageParams(
-    messageOp: ir.I18nMessageOp, subMessagePlaceholders: Map<string, o.Expression[]>) {
+  messageOp: ir.I18nMessageOp,
+  subMessagePlaceholders: Map<string, o.Expression[]>,
+) {
   for (const [placeholder, subMessages] of subMessagePlaceholders) {
     if (subMessages.length === 1) {
       messageOp.params.set(placeholder, subMessages[0]);
     } else {
       messageOp.params.set(
-          placeholder, o.literal(`${ESCAPE}${I18N_ICU_MAPPING_PREFIX}${placeholder}${ESCAPE}`));
+        placeholder,
+        o.literal(`${ESCAPE}${I18N_ICU_MAPPING_PREFIX}${placeholder}${ESCAPE}`),
+      );
       messageOp.postprocessingParams.set(placeholder, o.literalArr(subMessages));
     }
   }
@@ -312,18 +344,24 @@ function addSubMessageParams(
  * @returns An array of statements that defined a given translation.
  */
 function getTranslationDeclStmts(
-    message: i18n.Message, variable: o.ReadVarExpr, closureVar: o.ReadVarExpr,
-    params: Map<string, o.Expression>,
-    transformFn?: (raw: o.ReadVarExpr) => o.Expression): o.Statement[] {
+  message: i18n.Message,
+  variable: o.ReadVarExpr,
+  closureVar: o.ReadVarExpr,
+  params: Map<string, o.Expression>,
+  transformFn?: (raw: o.ReadVarExpr) => o.Expression,
+): o.Statement[] {
   const paramsObject = Object.fromEntries(params);
   const statements: o.Statement[] = [
     declareI18nVariable(variable),
     o.ifStmt(
-        createClosureModeGuard(),
-        createGoogleGetMsgStatements(variable, message, closureVar, paramsObject),
-        createLocalizeStatements(
-            variable, message,
-            formatI18nPlaceholderNamesInMap(paramsObject, /* useCamelCase */ false))),
+      createClosureModeGuard(),
+      createGoogleGetMsgStatements(variable, message, closureVar, paramsObject),
+      createLocalizeStatements(
+        variable,
+        message,
+        formatI18nPlaceholderNamesInMap(paramsObject, /* useCamelCase */ false),
+      ),
+    ),
   ];
 
   if (transformFn) {
@@ -342,17 +380,21 @@ function getTranslationDeclStmts(
  * ```
  */
 function createClosureModeGuard(): o.BinaryOperatorExpr {
-  return o.typeofExpr(o.variable(NG_I18N_CLOSURE_MODE))
-      .notIdentical(o.literal('undefined', o.STRING_TYPE))
-      .and(o.variable(NG_I18N_CLOSURE_MODE));
+  return o
+    .typeofExpr(o.variable(NG_I18N_CLOSURE_MODE))
+    .notIdentical(o.literal('undefined', o.STRING_TYPE))
+    .and(o.variable(NG_I18N_CLOSURE_MODE));
 }
 
 /**
  * Generates vars with Closure-specific names for i18n blocks (i.e. `MSG_XXX`).
  */
 function i18nGenerateClosureVar(
-    pool: ConstantPool, messageId: string, fileBasedI18nSuffix: string,
-    useExternalIds: boolean): o.ReadVarExpr {
+  pool: ConstantPool,
+  messageId: string,
+  fileBasedI18nSuffix: string,
+  useExternalIds: boolean,
+): o.ReadVarExpr {
   let name: string;
   const suffix = fileBasedI18nSuffix;
   if (useExternalIds) {

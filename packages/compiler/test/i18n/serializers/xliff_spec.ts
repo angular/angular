@@ -259,8 +259,8 @@ lignes</target>
 describe('XLIFF serializer', () => {
   const serializer = new Xliff();
 
-  function toXliff(html: string, locale: string|null = null): string {
-    const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
+  function toXliff(html: string, locale: string | null = null): string {
+    const catalog = new MessageBundle(new HtmlParser(), [], {}, locale);
     catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
     return catalog.write(serializer);
   }
@@ -269,8 +269,9 @@ describe('XLIFF serializer', () => {
     const {i18nNodesByMsgId} = serializer.load(xliff, 'url');
 
     const msgMap: {[id: string]: string} = {};
-    Object.keys(i18nNodesByMsgId)
-        .forEach(id => msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join(''));
+    Object.keys(i18nNodesByMsgId).forEach(
+      (id) => (msgMap[id] = serializeNodes(i18nNodesByMsgId[id]).join('')),
+    );
 
     return msgMap;
   }
@@ -289,27 +290,27 @@ describe('XLIFF serializer', () => {
       expect(loadAsMap(LOAD_XLIFF)).toEqual({
         '983775b9a51ce14b036be72d4cfd65d68d64e231': 'etubirtta elbatalsnart',
         'ec1d033f2436133c14ab038286c4f5df4697484a':
-            '<ph name="INTERPOLATION"/> footnemele elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>',
+          '<ph name="INTERPOLATION"/> footnemele elbatalsnart <ph name="START_BOLD_TEXT"/>sredlohecalp htiw<ph name="CLOSE_BOLD_TEXT"/>',
         'e2ccf3d131b15f54aa1fcf1314b1ca77c14bfcc2':
-            '{VAR_PLURAL, plural, =0 {[<ph name="START_PARAGRAPH"/>, TEST, <ph name="CLOSE_PARAGRAPH"/>]}}',
+          '{VAR_PLURAL, plural, =0 {[<ph name="START_PARAGRAPH"/>, TEST, <ph name="CLOSE_PARAGRAPH"/>]}}',
         'db3e0a6a5a96481f60aec61d98c3eecddef5ac23': 'oof',
         'i': 'toto',
         'bar': 'tata',
         'd7fa2d59aaedcaa5309f13028c59af8c85b8c49d':
-            '<ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/><ph name="TAG_IMG"/><ph name="LINE_BREAK"/>',
+          '<ph name="START_TAG_DIV"/><ph name="CLOSE_TAG_DIV"/><ph name="TAG_IMG"/><ph name="LINE_BREAK"/>',
         'empty target': '',
         'baz':
-            '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
+          '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}}',
         '52ffa620dcd76247a56d5331f34e73f340a43cdb': 'Test: <ph name="ICU"/>',
         '1503afd0ccc20ff01d5e2266a9157b7b342ba494':
-            '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
-            ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
+          '{VAR_PLURAL, plural, =0 {[{VAR_SELECT, select, other {[<ph' +
+          ' name="START_PARAGRAPH"/>, profondément imbriqué, <ph name="CLOSE_PARAGRAPH"/>]}},  ]}, =other {[beaucoup]}}',
         'fcfa109b0e152d4c217dbc02530be0bcb8123ad1': `multi
 lignes`,
         '3e17847a6823c7777ca57c7338167badca0f4d19':
-            'élément traduisible <ph name="START_BLOCK_IF"/>avec<ph name="CLOSE_BLOCK_IF"/> <ph name="START_BLOCK_ELSE_IF"/>des blocs<ph name="CLOSE_BLOCK_ELSE_IF"/>',
+          'élément traduisible <ph name="START_BLOCK_IF"/>avec<ph name="CLOSE_BLOCK_IF"/> <ph name="START_BLOCK_ELSE_IF"/>des blocs<ph name="CLOSE_BLOCK_ELSE_IF"/>',
         'mrk-test': 'Translated first sentence.',
-        'mrk-test2': 'Translated first sentence.'
+        'mrk-test2': 'Translated first sentence.',
       });
     });
 
@@ -359,7 +360,6 @@ lignes`,
           loadAsMap(XLIFF);
         }).toThrowError(/Message missingtarget misses a translation/);
       });
-
 
       it('should throw when a trans-unit has no id attribute', () => {
         const XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -418,9 +418,9 @@ lignes`,
 
         expect(() => {
           loadAsMap(XLIFF);
-        })
-            .toThrowError(
-                new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)));
+        }).toThrowError(
+          new RegExp(escapeRegExp(`[ERROR ->]<b>msg should contain only ph tags</b>`)),
+        );
       });
 
       it('should throw when a placeholder misses an id attribute', () => {

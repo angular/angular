@@ -15,8 +15,9 @@ class _SerializerVisitor implements html.Visitor {
       return `<${element.name}${this._visitAll(element.attrs, ' ', ' ')}/>`;
     }
 
-    return `<${element.name}${this._visitAll(element.attrs, ' ', ' ')}>${
-        this._visitAll(element.children)}</${element.name}>`;
+    return `<${element.name}${this._visitAll(element.attrs, ' ', ' ')}>${this._visitAll(
+      element.children,
+    )}</${element.name}>`;
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
@@ -41,7 +42,7 @@ class _SerializerVisitor implements html.Visitor {
 
   visitBlock(block: html.Block, context: any) {
     const params =
-        block.parameters.length === 0 ? ' ' : ` (${this._visitAll(block.parameters, ';', ' ')}) `;
+      block.parameters.length === 0 ? ' ' : ` (${this._visitAll(block.parameters, ';', ' ')}) `;
     return `@${block.name}${params}{${this._visitAll(block.children)}}`;
   }
 
@@ -50,12 +51,12 @@ class _SerializerVisitor implements html.Visitor {
   }
 
   private _visitAll(nodes: html.Node[], separator = '', prefix = ''): string {
-    return nodes.length > 0 ? prefix + nodes.map(a => a.visit(this, null)).join(separator) : '';
+    return nodes.length > 0 ? prefix + nodes.map((a) => a.visit(this, null)).join(separator) : '';
   }
 }
 
 const serializerVisitor = new _SerializerVisitor();
 
 export function serializeNodes(nodes: html.Node[]): string[] {
-  return nodes.map(node => node.visit(serializerVisitor, null));
+  return nodes.map((node) => node.visit(serializerVisitor, null));
 }

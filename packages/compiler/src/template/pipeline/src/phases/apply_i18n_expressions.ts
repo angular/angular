@@ -28,7 +28,9 @@ export function applyI18nExpressions(job: CompilationJob): void {
       if (op.kind === ir.OpKind.I18nExpression && needsApplication(i18nContexts, op)) {
         // TODO: what should be the source span for the apply op?
         ir.OpList.insertAfter<ir.UpdateOp>(
-            ir.createI18nApplyOp(op.i18nOwner, op.handle, null!), op);
+          ir.createI18nApplyOp(op.i18nOwner, op.handle, null!),
+          op,
+        );
       }
     }
   }
@@ -48,12 +50,14 @@ function needsApplication(i18nContexts: Map<ir.XrefId, ir.I18nContextOp>, op: ir
 
   if (context === undefined) {
     throw new Error(
-        'AssertionError: expected an I18nContextOp to exist for the I18nExpressionOp\'s context');
+      "AssertionError: expected an I18nContextOp to exist for the I18nExpressionOp's context",
+    );
   }
 
   if (nextContext === undefined) {
     throw new Error(
-        'AssertionError: expected an I18nContextOp to exist for the next I18nExpressionOp\'s context');
+      "AssertionError: expected an I18nContextOp to exist for the next I18nExpressionOp's context",
+    );
   }
 
   // If the next op is an expression targeting a different i18n block (or different element, in the

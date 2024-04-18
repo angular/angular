@@ -23,10 +23,12 @@ import {BindingParser} from '../../../src/template_parser/binding_parser';
 
 class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(
-      public existingProperties: {[key: string]: boolean},
-      public attrPropMapping: {[key: string]: string},
-      public existingElements: {[key: string]: boolean}, public invalidProperties: Array<string>,
-      public invalidAttributes: Array<string>) {}
+    public existingProperties: {[key: string]: boolean},
+    public attrPropMapping: {[key: string]: string},
+    public existingElements: {[key: string]: boolean},
+    public invalidProperties: Array<string>,
+    public invalidAttributes: Array<string>,
+  ) {}
 
   hasProperty(tagName: string, property: string, schemas: any[]): boolean {
     const value = this.existingProperties[property];
@@ -54,7 +56,7 @@ class MockSchemaRegistry implements ElementSchemaRegistry {
     return 'ng-component';
   }
 
-  validateProperty(name: string): {error: boolean, msg?: string} {
+  validateProperty(name: string): {error: boolean; msg?: string} {
     if (this.invalidProperties.indexOf(name) > -1) {
       return {error: true, msg: `Binding to property '${name}' is disallowed for security reasons`};
     } else {
@@ -62,11 +64,11 @@ class MockSchemaRegistry implements ElementSchemaRegistry {
     }
   }
 
-  validateAttribute(name: string): {error: boolean, msg?: string} {
+  validateAttribute(name: string): {error: boolean; msg?: string} {
     if (this.invalidAttributes.indexOf(name) > -1) {
       return {
         error: true,
-        msg: `Binding to attribute '${name}' is disallowed for security reasons`
+        msg: `Binding to attribute '${name}' is disallowed for security reasons`,
       };
     } else {
       return {error: false};
@@ -76,36 +78,35 @@ class MockSchemaRegistry implements ElementSchemaRegistry {
   normalizeAnimationStyleProperty(propName: string): string {
     return propName;
   }
-  normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
-      {error: string, value: string} {
+  normalizeAnimationStyleValue(
+    camelCaseProp: string,
+    userProvidedProp: string,
+    val: string | number,
+  ): {error: string; value: string} {
     return {error: null!, value: val.toString()};
   }
 }
 
-
-export function findExpression(tmpl: a.Node[], expr: string): e.AST|null {
-  const res = tmpl.reduce((found, node) => {
-    if (found !== null) {
-      return found;
-    } else {
-      return findExpressionInNode(node, expr);
-    }
-  }, null as e.AST | null);
+export function findExpression(tmpl: a.Node[], expr: string): e.AST | null {
+  const res = tmpl.reduce(
+    (found, node) => {
+      if (found !== null) {
+        return found;
+      } else {
+        return findExpressionInNode(node, expr);
+      }
+    },
+    null as e.AST | null,
+  );
   if (res instanceof e.ASTWithSource) {
     return res.ast;
   }
   return res;
 }
 
-function findExpressionInNode(node: a.Node, expr: string): e.AST|null {
+function findExpressionInNode(node: a.Node, expr: string): e.AST | null {
   if (node instanceof a.Element || node instanceof a.Template) {
-    return findExpression(
-        [
-          ...node.inputs,
-          ...node.outputs,
-          ...node.children,
-        ],
-        expr);
+    return findExpression([...node.inputs, ...node.outputs, ...node.children], expr);
   } else if (node instanceof a.BoundAttribute || node instanceof a.BoundText) {
     const ts = toStringExpression(node.value);
     return toStringExpression(node.value) === expr ? node.value : null;
@@ -141,11 +142,14 @@ export function toStringExpression(expr: e.AST): string {
 }
 
 // Parse an html string to IVY specific info
-export function parseR3(input: string, options: {
-  preserveWhitespaces?: boolean,
-  leadingTriviaChars?: string[],
-  ignoreError?: boolean,
-} = {}): Render3ParseResult {
+export function parseR3(
+  input: string,
+  options: {
+    preserveWhitespaces?: boolean;
+    leadingTriviaChars?: string[];
+    ignoreError?: boolean;
+  } = {},
+): Render3ParseResult {
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(input, 'path:://to/template', {
     tokenizeExpansionForms: true,
@@ -153,7 +157,7 @@ export function parseR3(input: string, options: {
   });
 
   if (parseResult.errors.length > 0 && !options.ignoreError) {
-    const msg = parseResult.errors.map(e => e.toString()).join('\n');
+    const msg = parseResult.errors.map((e) => e.toString()).join('\n');
     throw new Error(msg);
   }
 
@@ -165,14 +169,22 @@ export function parseR3(input: string, options: {
 
   const expressionParser = new Parser(new Lexer());
   const schemaRegistry = new MockSchemaRegistry(
-      {'invalidProp': false}, {'mappedAttr': 'mappedProp'}, {'unknown': false, 'un-known': false},
-      ['onEvent'], ['onEvent']);
-  const bindingParser =
-      new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, []);
+    {'invalidProp': false},
+    {'mappedAttr': 'mappedProp'},
+    {'unknown': false, 'un-known': false},
+    ['onEvent'],
+    ['onEvent'],
+  );
+  const bindingParser = new BindingParser(
+    expressionParser,
+    DEFAULT_INTERPOLATION_CONFIG,
+    schemaRegistry,
+    [],
+  );
   const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser, {collectCommentNodes: false});
 
   if (r3Result.errors.length > 0 && !options.ignoreError) {
-    const msg = r3Result.errors.map(e => e.toString()).join('\n');
+    const msg = r3Result.errors.map((e) => e.toString()).join('\n');
     throw new Error(msg);
   }
 
@@ -180,11 +192,14 @@ export function parseR3(input: string, options: {
 }
 
 export function processI18nMeta(
-    htmlAstWithErrors: ParseTreeResult,
-    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
+  htmlAstWithErrors: ParseTreeResult,
+  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
+): ParseTreeResult {
   return new ParseTreeResult(
-      html.visitAll(
-          new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
-          htmlAstWithErrors.rootNodes),
-      htmlAstWithErrors.errors);
+    html.visitAll(
+      new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
+      htmlAstWithErrors.rootNodes,
+    ),
+    htmlAstWithErrors.errors,
+  );
 }

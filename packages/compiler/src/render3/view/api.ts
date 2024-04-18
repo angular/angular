@@ -41,12 +41,12 @@ export interface R3DirectiveMetadata {
   /**
    * Dependencies of the directive's constructor.
    */
-  deps: R3DependencyMetadata[]|'invalid'|null;
+  deps: R3DependencyMetadata[] | 'invalid' | null;
 
   /**
    * Unparsed selector of the directive, or `null` if there was no selector.
    */
-  selector: string|null;
+  selector: string | null;
 
   /**
    * Information about the content queries made by the directive.
@@ -101,12 +101,12 @@ export interface R3DirectiveMetadata {
    * Reference name under which to export the directive's type in a template,
    * if any.
    */
-  exportAs: string[]|null;
+  exportAs: string[] | null;
 
   /**
    * The list of providers defined in the directive.
    */
-  providers: o.Expression|null;
+  providers: o.Expression | null;
 
   /**
    * Whether or not the component or directive is standalone.
@@ -121,7 +121,7 @@ export interface R3DirectiveMetadata {
   /**
    * Additional directives applied to the directive host.
    */
-  hostDirectives: R3HostDirectiveMetadata[]|null;
+  hostDirectives: R3HostDirectiveMetadata[] | null;
 }
 
 /**
@@ -198,8 +198,8 @@ export const enum DeclarationListEmitMode {
 /**
  * Information needed to compile a component for the render3 runtime.
  */
-export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> extends
-    R3DirectiveMetadata {
+export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
+  extends R3DirectiveMetadata {
   /**
    * Information about the component's template.
    */
@@ -249,12 +249,12 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
   /**
    * A collection of animation triggers that will be used in the component template.
    */
-  animations: o.Expression|null;
+  animations: o.Expression | null;
 
   /**
    * The list of view providers defined in the component.
    */
-  viewProviders: o.Expression|null;
+  viewProviders: o.Expression | null;
 
   /**
    * Path to the .ts file in which this template's generated code will be included, relative to
@@ -281,7 +281,7 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
    * statically resolved during analysis phase. Whereas in local compilation mode the value is the
    * expression as appears in the decorator.
    */
-  changeDetection: ChangeDetectionStrategy|o.Expression|null;
+  changeDetection: ChangeDetectionStrategy | o.Expression | null;
 
   /**
    * The imports expression as appears on the component decorate for standalone component. This
@@ -294,13 +294,15 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency> 
 /**
  * Information about the deferred blocks in a component's template.
  */
-export type R3ComponentDeferMetadata = {
-  mode: DeferBlockDepsEmitMode.PerBlock,
-  blocks: Map<t.DeferredBlock, o.Expression|null>,
-}|{
-  mode: DeferBlockDepsEmitMode.PerComponent,
-  dependenciesFn: o.Expression | null,
-};
+export type R3ComponentDeferMetadata =
+  | {
+      mode: DeferBlockDepsEmitMode.PerBlock;
+      blocks: Map<t.DeferredBlock, o.Expression | null>;
+    }
+  | {
+      mode: DeferBlockDepsEmitMode.PerComponent;
+      dependenciesFn: o.Expression | null;
+    };
 
 /**
  * Metadata for an individual input on a directive.
@@ -316,7 +318,7 @@ export interface R3InputMetadata {
    * Null if there is no transform, or if this is a signal input.
    * Signal inputs capture their transform as part of the `InputSignal`.
    */
-  transformFunction: o.Expression|null;
+  transformFunction: o.Expression | null;
 }
 
 export enum R3TemplateDependencyKind {
@@ -341,7 +343,9 @@ export interface R3TemplateDependency {
  * A dependency that's used within a component template
  */
 export type R3TemplateDependencyMetadata =
-    R3DirectiveDependencyMetadata|R3PipeDependencyMetadata|R3NgModuleDependencyMetadata;
+  | R3DirectiveDependencyMetadata
+  | R3PipeDependencyMetadata
+  | R3NgModuleDependencyMetadata;
 
 /**
  * Information about a directive that is used in a component template. Only the stable, public
@@ -368,7 +372,7 @@ export interface R3DirectiveDependencyMetadata extends R3TemplateDependency {
   /**
    * Name under which the directive is exported, if any (exportAs in Angular). Null otherwise.
    */
-  exportAs: string[]|null;
+  exportAs: string[] | null;
 
   /**
    * If true then this directive is actually a component; otherwise it is not.
@@ -410,7 +414,7 @@ export interface R3QueryMetadata {
    * Notably, if the selector is not statically analyzable due to an expression,
    * the selectors may need to be split up at runtime.
    */
-  predicate: MaybeForwardRefExpression|string[];
+  predicate: MaybeForwardRefExpression | string[];
 
   /**
    * Whether to include only direct children or all descendants.
@@ -428,7 +432,7 @@ export interface R3QueryMetadata {
    * An expression representing a type to read from each matched node, or null if the default value
    * for a given node is to be returned.
    */
-  read: o.Expression|null;
+  read: o.Expression | null;
 
   /**
    * Whether or not this query should collect only static results.
@@ -471,7 +475,7 @@ export interface R3HostMetadata {
    */
   properties: {[key: string]: string};
 
-  specialAttributes: {styleAttr?: string; classAttr?: string;};
+  specialAttributes: {styleAttr?: string; classAttr?: string};
 }
 
 /**
@@ -485,22 +489,24 @@ export interface R3HostDirectiveMetadata {
   isForwardReference: boolean;
 
   /** Inputs from the host directive that will be exposed on the host. */
-  inputs: {[publicName: string]: string}|null;
+  inputs: {[publicName: string]: string} | null;
 
   /** Outputs from the host directive that will be exposed on the host. */
-  outputs: {[publicName: string]: string}|null;
+  outputs: {[publicName: string]: string} | null;
 }
 
 /**
  * Information needed to compile the defer block resolver function.
  */
-export type R3DeferResolverFunctionMetadata = {
-  mode: DeferBlockDepsEmitMode.PerBlock,
-  dependencies: R3DeferPerBlockDependency[],
-}|{
-  mode: DeferBlockDepsEmitMode.PerComponent,
-  dependencies: R3DeferPerComponentDependency[],
-};
+export type R3DeferResolverFunctionMetadata =
+  | {
+      mode: DeferBlockDepsEmitMode.PerBlock;
+      dependencies: R3DeferPerBlockDependency[];
+    }
+  | {
+      mode: DeferBlockDepsEmitMode.PerComponent;
+      dependencies: R3DeferPerComponentDependency[];
+    };
 
 /**
  * Information about a single dependency of a defer block in `PerBlock` mode.
@@ -524,7 +530,7 @@ export interface R3DeferPerBlockDependency {
   /**
    * Import path where this dependency is located.
    */
-  importPath: string|null;
+  importPath: string | null;
 
   /**
    * Whether the symbol is the default export.

@@ -55,29 +55,41 @@ export class WhitespaceVisitor implements html.Visitor {
       // don't descent into elements where we need to preserve whitespaces
       // but still visit all attributes to eliminate one used as a market to preserve WS
       return new html.Element(
-          element.name, html.visitAll(this, element.attrs), element.children, element.sourceSpan,
-          element.startSourceSpan, element.endSourceSpan, element.i18n);
+        element.name,
+        html.visitAll(this, element.attrs),
+        element.children,
+        element.sourceSpan,
+        element.startSourceSpan,
+        element.endSourceSpan,
+        element.i18n,
+      );
     }
 
     return new html.Element(
-        element.name, element.attrs, visitAllWithSiblings(this, element.children),
-        element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
+      element.name,
+      element.attrs,
+      visitAllWithSiblings(this, element.children),
+      element.sourceSpan,
+      element.startSourceSpan,
+      element.endSourceSpan,
+      element.i18n,
+    );
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {
     return attribute.name !== PRESERVE_WS_ATTR_NAME ? attribute : null;
   }
 
-  visitText(text: html.Text, context: SiblingVisitorContext|null): any {
+  visitText(text: html.Text, context: SiblingVisitorContext | null): any {
     const isNotBlank = text.value.match(NO_WS_REGEXP);
-    const hasExpansionSibling = context &&
-        (context.prev instanceof html.Expansion || context.next instanceof html.Expansion);
+    const hasExpansionSibling =
+      context && (context.prev instanceof html.Expansion || context.next instanceof html.Expansion);
 
     if (isNotBlank || hasExpansionSibling) {
       // Process the whitespace in the tokens of this Text node
-      const tokens = text.tokens.map(
-          token =>
-              token.type === TokenType.TEXT ? createWhitespaceProcessedTextToken(token) : token);
+      const tokens = text.tokens.map((token) =>
+        token.type === TokenType.TEXT ? createWhitespaceProcessedTextToken(token) : token,
+      );
       // Process the whitespace of the value of this Text node
       const value = processWhitespace(text.value);
       return new html.Text(value, text.sourceSpan, tokens, text.i18n);
@@ -100,8 +112,14 @@ export class WhitespaceVisitor implements html.Visitor {
 
   visitBlock(block: html.Block, context: any): any {
     return new html.Block(
-        block.name, block.parameters, visitAllWithSiblings(this, block.children), block.sourceSpan,
-        block.nameSpan, block.startSourceSpan, block.endSourceSpan);
+      block.name,
+      block.parameters,
+      visitAllWithSiblings(this, block.children),
+      block.sourceSpan,
+      block.nameSpan,
+      block.startSourceSpan,
+      block.endSourceSpan,
+    );
   }
 
   visitBlockParameter(parameter: html.BlockParameter, context: any) {
@@ -119,13 +137,14 @@ function processWhitespace(text: string): string {
 
 export function removeWhitespaces(htmlAstWithErrors: ParseTreeResult): ParseTreeResult {
   return new ParseTreeResult(
-      html.visitAll(new WhitespaceVisitor(), htmlAstWithErrors.rootNodes),
-      htmlAstWithErrors.errors);
+    html.visitAll(new WhitespaceVisitor(), htmlAstWithErrors.rootNodes),
+    htmlAstWithErrors.errors,
+  );
 }
 
 interface SiblingVisitorContext {
-  prev: html.Node|undefined;
-  next: html.Node|undefined;
+  prev: html.Node | undefined;
+  next: html.Node | undefined;
 }
 
 function visitAllWithSiblings(visitor: WhitespaceVisitor, nodes: html.Node[]): any[] {

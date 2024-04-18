@@ -58,15 +58,16 @@ export const enum QueryFlags {
  */
 function toQueryFlags(query: R3QueryMetadata): number {
   return (
-      (query.descendants ? QueryFlags.descendants : QueryFlags.none) |
-      (query.static ? QueryFlags.isStatic : QueryFlags.none) |
-      (query.emitDistinctChangesOnly ? QueryFlags.emitDistinctChangesOnly : QueryFlags.none));
+    (query.descendants ? QueryFlags.descendants : QueryFlags.none) |
+    (query.static ? QueryFlags.isStatic : QueryFlags.none) |
+    (query.emitDistinctChangesOnly ? QueryFlags.emitDistinctChangesOnly : QueryFlags.none)
+  );
 }
 
 export function getQueryPredicate(
-    query: R3QueryMetadata,
-    constantPool: ConstantPool,
-    ): o.Expression {
+  query: R3QueryMetadata,
+  constantPool: ConstantPool,
+): o.Expression {
   if (Array.isArray(query.predicate)) {
     let predicate: o.Expression[] = [];
     query.predicate.forEach((selector: string): void => {
@@ -90,11 +91,11 @@ export function getQueryPredicate(
 }
 
 export function createQueryCreateCall(
-    query: R3QueryMetadata,
-    constantPool: ConstantPool,
-    queryTypeFns: {signalBased: o.ExternalReference; nonSignal: o.ExternalReference},
-    prependParams?: o.Expression[],
-    ): o.InvokeFunctionExpr {
+  query: R3QueryMetadata,
+  constantPool: ConstantPool,
+  queryTypeFns: {signalBased: o.ExternalReference; nonSignal: o.ExternalReference},
+  prependParams?: o.Expression[],
+): o.InvokeFunctionExpr {
   const parameters: o.Expression[] = [];
   if (prependParams !== undefined) {
     parameters.push(...prependParams);
@@ -136,16 +137,19 @@ const queryAdvancePlaceholder = Symbol('queryAdvancePlaceholder');
  *   bla();
  * ```
  */
-function collapseAdvanceStatements(statements: (o.Statement|typeof queryAdvancePlaceholder)[]):
-    o.Statement[] {
+function collapseAdvanceStatements(
+  statements: (o.Statement | typeof queryAdvancePlaceholder)[],
+): o.Statement[] {
   const result: o.Statement[] = [];
   let advanceCollapseCount = 0;
   const flushAdvanceCount = () => {
     if (advanceCollapseCount > 0) {
       result.unshift(
-          o.importExpr(R3.queryAdvance)
-              .callFn(advanceCollapseCount === 1 ? [] : [o.literal(advanceCollapseCount)])
-              .toStmt());
+        o
+          .importExpr(R3.queryAdvance)
+          .callFn(advanceCollapseCount === 1 ? [] : [o.literal(advanceCollapseCount)])
+          .toStmt(),
+      );
       advanceCollapseCount = 0;
     }
   };
@@ -166,10 +170,13 @@ function collapseAdvanceStatements(statements: (o.Statement|typeof queryAdvanceP
 
 // Define and update any view queries
 export function createViewQueriesFunction(
-    viewQueries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
+  viewQueries: R3QueryMetadata[],
+  constantPool: ConstantPool,
+  name?: string,
+): o.Expression {
   const createStatements: o.Statement[] = [];
-  const updateStatements: (o.Statement|typeof queryAdvancePlaceholder)[] = [];
-  const tempAllocator = temporaryAllocator(st => updateStatements.push(st), TEMPORARY_NAME);
+  const updateStatements: (o.Statement | typeof queryAdvancePlaceholder)[] = [];
+  const tempAllocator = temporaryAllocator((st) => updateStatements.push(st), TEMPORARY_NAME);
 
   viewQueries.forEach((query: R3QueryMetadata) => {
     // creation call, e.g. r3.viewQuery(somePredicate, true) or
@@ -190,37 +197,47 @@ export function createViewQueriesFunction(
     const temporary = tempAllocator();
     const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
     const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-    const updateDirective = o.variable(CONTEXT_NAME)
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary.prop('first') : temporary);
+    const updateDirective = o
+      .variable(CONTEXT_NAME)
+      .prop(query.propertyName)
+      .set(query.first ? temporary.prop('first') : temporary);
     updateStatements.push(refresh.and(updateDirective).toStmt());
   });
 
   const viewQueryFnName = name ? `${name}_Query` : null;
   return o.fn(
-      [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
-      [
-        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements))
-      ],
-      o.INFERRED_TYPE, null, viewQueryFnName);
+    [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
+    [
+      renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
+      renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
+    ],
+    o.INFERRED_TYPE,
+    null,
+    viewQueryFnName,
+  );
 }
 
 // Define and update any content queries
 export function createContentQueriesFunction(
-    queries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
+  queries: R3QueryMetadata[],
+  constantPool: ConstantPool,
+  name?: string,
+): o.Expression {
   const createStatements: o.Statement[] = [];
-  const updateStatements: (o.Statement|typeof queryAdvancePlaceholder)[] = [];
-  const tempAllocator = temporaryAllocator(st => updateStatements.push(st), TEMPORARY_NAME);
+  const updateStatements: (o.Statement | typeof queryAdvancePlaceholder)[] = [];
+  const tempAllocator = temporaryAllocator((st) => updateStatements.push(st), TEMPORARY_NAME);
 
   for (const query of queries) {
     // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null) or
     //                r3.contentQuerySignal(dirIndex, propName, somePredicate, <flags>, <read>).
-    createStatements.push(createQueryCreateCall(
-                              query, constantPool,
-                              {nonSignal: R3.contentQuery, signalBased: R3.contentQuerySignal},
-                              /* prependParams */[o.variable('dirIndex')])
-                              .toStmt());
+    createStatements.push(
+      createQueryCreateCall(
+        query,
+        constantPool,
+        {nonSignal: R3.contentQuery, signalBased: R3.contentQuerySignal},
+        /* prependParams */ [o.variable('dirIndex')],
+      ).toStmt(),
+    );
 
     // Signal queries update lazily and we just advance the index.
     if (query.isSignal) {
@@ -232,21 +249,26 @@ export function createContentQueriesFunction(
     const temporary = tempAllocator();
     const getQueryList = o.importExpr(R3.loadQuery).callFn([]);
     const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-    const updateDirective = o.variable(CONTEXT_NAME)
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary.prop('first') : temporary);
+    const updateDirective = o
+      .variable(CONTEXT_NAME)
+      .prop(query.propertyName)
+      .set(query.first ? temporary.prop('first') : temporary);
     updateStatements.push(refresh.and(updateDirective).toStmt());
   }
 
   const contentQueriesFnName = name ? `${name}_ContentQueries` : null;
   return o.fn(
-      [
-        new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
-        new o.FnParam('dirIndex', null)
-      ],
-      [
-        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
-        renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
-      ],
-      o.INFERRED_TYPE, null, contentQueriesFnName);
+    [
+      new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE),
+      new o.FnParam(CONTEXT_NAME, null),
+      new o.FnParam('dirIndex', null),
+    ],
+    [
+      renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
+      renderFlagCheckIfStmt(core.RenderFlags.Update, collapseAdvanceStatements(updateStatements)),
+    ],
+    o.INFERRED_TYPE,
+    null,
+    contentQueriesFnName,
+  );
 }

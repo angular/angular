@@ -12,12 +12,23 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util'
 import {RecursiveVisitor, visitAll} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {generateForwardRef, R3CompiledExpression} from '../util';
-import {DeclarationListEmitMode, DeferBlockDepsEmitMode, R3ComponentMetadata, R3TemplateDependencyKind, R3TemplateDependencyMetadata} from '../view/api';
+import {
+  DeclarationListEmitMode,
+  DeferBlockDepsEmitMode,
+  R3ComponentMetadata,
+  R3TemplateDependencyKind,
+  R3TemplateDependencyMetadata,
+} from '../view/api';
 import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
 import {DefinitionMap} from '../view/util';
 
-import {R3DeclareComponentMetadata, R3DeclareDirectiveDependencyMetadata, R3DeclareNgModuleDependencyMetadata, R3DeclarePipeDependencyMetadata} from './api';
+import {
+  R3DeclareComponentMetadata,
+  R3DeclareDirectiveDependencyMetadata,
+  R3DeclareNgModuleDependencyMetadata,
+  R3DeclarePipeDependencyMetadata,
+} from './api';
 import {createDirectiveDefinitionMap} from './directive';
 import {toOptionalLiteralArray} from './util';
 
@@ -47,15 +58,17 @@ export interface DeclareComponentTemplateInfo {
    * If the template was defined inline by a direct string literal, then this is that literal
    * expression. Otherwise `null`, if the template was not defined inline or was not a literal.
    */
-  inlineTemplateLiteralExpression: o.Expression|null;
+  inlineTemplateLiteralExpression: o.Expression | null;
 }
 
 /**
  * Compile a component declaration defined by the `R3ComponentMetadata`.
  */
 export function compileDeclareComponentFromMetadata(
-    meta: R3ComponentMetadata<R3TemplateDependencyMetadata>, template: ParsedTemplate,
-    additionalTemplateInfo: DeclareComponentTemplateInfo): R3CompiledExpression {
+  meta: R3ComponentMetadata<R3TemplateDependencyMetadata>,
+  template: ParsedTemplate,
+  additionalTemplateInfo: DeclareComponentTemplateInfo,
+): R3CompiledExpression {
   const definitionMap = createComponentDefinitionMap(meta, template, additionalTemplateInfo);
 
   const expression = o.importExpr(R3.declareComponent).callFn([definitionMap.toLiteralMap()]);
@@ -68,10 +81,12 @@ export function compileDeclareComponentFromMetadata(
  * Gathers the declaration fields for a component into a `DefinitionMap`.
  */
 export function createComponentDefinitionMap(
-    meta: R3ComponentMetadata<R3TemplateDependencyMetadata>, template: ParsedTemplate,
-    templateInfo: DeclareComponentTemplateInfo): DefinitionMap<R3DeclareComponentMetadata> {
+  meta: R3ComponentMetadata<R3TemplateDependencyMetadata>,
+  template: ParsedTemplate,
+  templateInfo: DeclareComponentTemplateInfo,
+): DefinitionMap<R3DeclareComponentMetadata> {
   const definitionMap: DefinitionMap<R3DeclareComponentMetadata> =
-      createDirectiveDefinitionMap(meta);
+    createDirectiveDefinitionMap(meta);
   const blockVisitor = new BlockPresenceVisitor();
   visitAll(blockVisitor, template.nodes);
 
@@ -98,19 +113,23 @@ export function createComponentDefinitionMap(
     }
 
     definitionMap.set(
-        'changeDetection',
-        o.importExpr(R3.ChangeDetectionStrategy)
-            .prop(core.ChangeDetectionStrategy[meta.changeDetection]));
+      'changeDetection',
+      o
+        .importExpr(R3.ChangeDetectionStrategy)
+        .prop(core.ChangeDetectionStrategy[meta.changeDetection]),
+    );
   }
   if (meta.encapsulation !== core.ViewEncapsulation.Emulated) {
     definitionMap.set(
-        'encapsulation',
-        o.importExpr(R3.ViewEncapsulation).prop(core.ViewEncapsulation[meta.encapsulation]));
+      'encapsulation',
+      o.importExpr(R3.ViewEncapsulation).prop(core.ViewEncapsulation[meta.encapsulation]),
+    );
   }
   if (meta.interpolation !== DEFAULT_INTERPOLATION_CONFIG) {
     definitionMap.set(
-        'interpolation',
-        o.literalArr([o.literal(meta.interpolation.start), o.literal(meta.interpolation.end)]));
+      'interpolation',
+      o.literalArr([o.literal(meta.interpolation.start), o.literal(meta.interpolation.end)]),
+    );
   }
 
   if (template.preserveWhitespaces === true) {
@@ -144,7 +163,9 @@ export function createComponentDefinitionMap(
 }
 
 function getTemplateExpression(
-    template: ParsedTemplate, templateInfo: DeclareComponentTemplateInfo): o.Expression {
+  template: ParsedTemplate,
+  templateInfo: DeclareComponentTemplateInfo,
+): o.Expression {
   // If the template has been defined using a direct literal, we use that expression directly
   // without any modifications. This is ensures proper source mapping from the partially
   // compiled code to the source file declaring the template. Note that this does not capture
@@ -187,17 +208,19 @@ function computeEndLocation(file: ParseSourceFile, contents: string): ParseLocat
   return new ParseLocation(file, length, line, length - lastLineStart);
 }
 
-function compileUsedDependenciesMetadata(meta: R3ComponentMetadata<R3TemplateDependencyMetadata>):
-    o.LiteralArrayExpr|null {
-  const wrapType = meta.declarationListEmitMode !== DeclarationListEmitMode.Direct ?
-      generateForwardRef :
-      (expr: o.Expression) => expr;
+function compileUsedDependenciesMetadata(
+  meta: R3ComponentMetadata<R3TemplateDependencyMetadata>,
+): o.LiteralArrayExpr | null {
+  const wrapType =
+    meta.declarationListEmitMode !== DeclarationListEmitMode.Direct
+      ? generateForwardRef
+      : (expr: o.Expression) => expr;
 
   if (meta.declarationListEmitMode === DeclarationListEmitMode.RuntimeResolved) {
     throw new Error(`Unsupported emit mode`);
   }
 
-  return toOptionalLiteralArray(meta.declarations, decl => {
+  return toOptionalLiteralArray(meta.declarations, (decl) => {
     switch (decl.kind) {
       case R3TemplateDependencyKind.Directive:
         const dirMeta = new DefinitionMap<R3DeclareDirectiveDependencyMetadata>();

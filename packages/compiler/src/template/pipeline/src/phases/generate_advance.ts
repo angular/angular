@@ -22,7 +22,8 @@ export function generateAdvance(job: CompilationJob): void {
         continue;
       } else if (op.handle.slot === null) {
         throw new Error(
-            `AssertionError: expected slots to have been allocated before generating advance() calls`);
+          `AssertionError: expected slots to have been allocated before generating advance() calls`,
+        );
       }
 
       slotMap.set(op.xref, op.handle.slot);
@@ -55,7 +56,9 @@ export function generateAdvance(job: CompilationJob): void {
         }
 
         ir.OpList.insertBefore<ir.UpdateOp>(
-            ir.createAdvanceOp(delta, (op as ir.DependsOnSlotContextOpTrait).sourceSpan), op);
+          ir.createAdvanceOp(delta, (op as ir.DependsOnSlotContextOpTrait).sourceSpan),
+          op,
+        );
         slotContext = slot;
       }
     }

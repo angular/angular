@@ -19,12 +19,16 @@ import type {ComponentCompilationJob} from '../compilation';
 export function collectConstExpressions(job: ComponentCompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.ops()) {
-      ir.transformExpressionsInOp(op, expr => {
-        if (!(expr instanceof ir.ConstCollectedExpr)) {
-          return expr;
-        }
-        return o.literal(job.addConst(expr.expr));
-      }, ir.VisitorContextFlag.None);
+      ir.transformExpressionsInOp(
+        op,
+        (expr) => {
+          if (!(expr instanceof ir.ConstCollectedExpr)) {
+            return expr;
+          }
+          return o.literal(job.addConst(expr.expr));
+        },
+        ir.VisitorContextFlag.None,
+      );
     }
   }
 }

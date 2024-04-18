@@ -13,7 +13,7 @@ import * as i18n from './i18n_ast';
 /**
  * A lazily created TextEncoder instance for converting strings into UTF-8 bytes
  */
-let textEncoder: TextEncoder|undefined;
+let textEncoder: TextEncoder | undefined;
 
 /**
  * Return the message id or compute it using the XLIFF1 digest.
@@ -41,7 +41,7 @@ export function decimalDigest(message: i18n.Message): string {
  */
 export function computeDecimalDigest(message: i18n.Message): string {
   const visitor = new _SerializerIgnoreIcuExpVisitor();
-  const parts = message.nodes.map(a => a.visit(visitor, null));
+  const parts = message.nodes.map((a) => a.visit(visitor, null));
   return computeMsgId(parts.join(''), message.meaning);
 }
 
@@ -58,20 +58,22 @@ class _SerializerVisitor implements i18n.Visitor {
   }
 
   visitContainer(container: i18n.Container, context: any): any {
-    return `[${container.children.map(child => child.visit(this)).join(', ')}]`;
+    return `[${container.children.map((child) => child.visit(this)).join(', ')}]`;
   }
 
   visitIcu(icu: i18n.Icu, context: any): any {
-    const strCases =
-        Object.keys(icu.cases).map((k: string) => `${k} {${icu.cases[k].visit(this)}}`);
+    const strCases = Object.keys(icu.cases).map(
+      (k: string) => `${k} {${icu.cases[k].visit(this)}}`,
+    );
     return `{${icu.expression}, ${icu.type}, ${strCases.join(', ')}}`;
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context: any): any {
-    return ph.isVoid ?
-        `<ph tag name="${ph.startName}"/>` :
-        `<ph tag name="${ph.startName}">${
-            ph.children.map(child => child.visit(this)).join(', ')}</ph name="${ph.closeName}">`;
+    return ph.isVoid
+      ? `<ph tag name="${ph.startName}"/>`
+      : `<ph tag name="${ph.startName}">${ph.children
+          .map((child) => child.visit(this))
+          .join(', ')}</ph name="${ph.closeName}">`;
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context: any): any {
@@ -83,15 +85,16 @@ class _SerializerVisitor implements i18n.Visitor {
   }
 
   visitBlockPlaceholder(ph: i18n.BlockPlaceholder, context: any): any {
-    return `<ph block name="${ph.startName}">${
-        ph.children.map(child => child.visit(this)).join(', ')}</ph name="${ph.closeName}">`;
+    return `<ph block name="${ph.startName}">${ph.children
+      .map((child) => child.visit(this))
+      .join(', ')}</ph name="${ph.closeName}">`;
   }
 }
 
 const serializerVisitor = new _SerializerVisitor();
 
 export function serializeNodes(nodes: i18n.Node[]): string[] {
-  return nodes.map(a => a.visit(serializerVisitor, null));
+  return nodes.map((a) => a.visit(serializerVisitor, null));
 }
 
 /**
@@ -124,13 +127,21 @@ export function sha1(str: string): string {
   const len = utf8.length * 8;
 
   const w = new Uint32Array(80);
-  let a = 0x67452301, b = 0xefcdab89, c = 0x98badcfe, d = 0x10325476, e = 0xc3d2e1f0;
+  let a = 0x67452301,
+    b = 0xefcdab89,
+    c = 0x98badcfe,
+    d = 0x10325476,
+    e = 0xc3d2e1f0;
 
-  words32[len >> 5] |= 0x80 << (24 - len % 32);
-  words32[((len + 64 >> 9) << 4) + 15] = len;
+  words32[len >> 5] |= 0x80 << (24 - (len % 32));
+  words32[(((len + 64) >> 9) << 4) + 15] = len;
 
   for (let i = 0; i < words32.length; i += 16) {
-    const h0 = a, h1 = b, h2 = c, h3 = d, h4 = e;
+    const h0 = a,
+      h1 = b,
+      h2 = c,
+      h3 = d,
+      h4 = e;
 
     for (let j = 0; j < 80; j++) {
       if (j < 16) {
@@ -216,8 +227,9 @@ export function computeMsgId(msg: string, meaning: string = ''): string {
   if (meaning) {
     // Rotate the 64-bit message fingerprint one bit to the left and then add the meaning
     // fingerprint.
-    msgFingerprint = BigInt.asUintN(64, msgFingerprint << BigInt(1)) |
-        ((msgFingerprint >> BigInt(63)) & BigInt(1));
+    msgFingerprint =
+      BigInt.asUintN(64, msgFingerprint << BigInt(1)) |
+      ((msgFingerprint >> BigInt(63)) & BigInt(1));
     msgFingerprint += fingerprint(meaning);
   }
 
@@ -225,7 +237,8 @@ export function computeMsgId(msg: string, meaning: string = ''): string {
 }
 
 function hash32(view: DataView, length: number, c: number): number {
-  let a = 0x9e3779b9, b = 0x9e3779b9;
+  let a = 0x9e3779b9,
+    b = 0x9e3779b9;
   let index = 0;
 
   const end = length - 12;
@@ -234,7 +247,7 @@ function hash32(view: DataView, length: number, c: number): number {
     b += view.getUint32(index + 4, true);
     c += view.getUint32(index + 8, true);
     const res = mix(a, b, c);
-    a = res[0], b = res[1], c = res[2];
+    (a = res[0]), (b = res[1]), (c = res[2]);
   }
 
   const remainder = length - index;
@@ -290,15 +303,33 @@ function hash32(view: DataView, length: number, c: number): number {
 
 // clang-format off
 function mix(a: number, b: number, c: number): [number, number, number] {
-  a -= b; a -= c; a ^= c >>> 13;
-  b -= c; b -= a; b ^= a << 8;
-  c -= a; c -= b; c ^= b >>> 13;
-  a -= b; a -= c; a ^= c >>> 12;
-  b -= c; b -= a; b ^= a << 16;
-  c -= a; c -= b; c ^= b >>> 5;
-  a -= b; a -= c; a ^= c >>> 3;
-  b -= c; b -= a; b ^= a << 10;
-  c -= a; c -= b; c ^= b >>> 15;
+  a -= b;
+  a -= c;
+  a ^= c >>> 13;
+  b -= c;
+  b -= a;
+  b ^= a << 8;
+  c -= a;
+  c -= b;
+  c ^= b >>> 13;
+  a -= b;
+  a -= c;
+  a ^= c >>> 12;
+  b -= c;
+  b -= a;
+  b ^= a << 16;
+  c -= a;
+  c -= b;
+  c ^= b >>> 5;
+  a -= b;
+  a -= c;
+  a ^= c >>> 3;
+  b -= c;
+  b -= a;
+  b ^= a << 10;
+  c -= a;
+  c -= b;
+  c ^= b >>> 15;
   return [a, b, c];
 }
 // clang-format on
@@ -348,7 +379,7 @@ function wordAt(bytes: Byte[], index: number, endian: Endian): number {
     }
   } else {
     for (let i = 0; i < 4; i++) {
-      word += byteAt(bytes, index + i) << 8 * i;
+      word += byteAt(bytes, index + i) << (8 * i);
     }
   }
   return word;

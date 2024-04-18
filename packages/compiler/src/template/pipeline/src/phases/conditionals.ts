@@ -44,16 +44,24 @@ export function generateConditionalExpressions(job: ComponentCompilationJob): vo
         }
         if (tmp !== null) {
           const useTmp = i === 0 ? tmp : new ir.ReadTemporaryExpr(tmp.xref);
-          conditionalCase.expr =
-              new o.BinaryOperatorExpr(o.BinaryOperator.Identical, useTmp, conditionalCase.expr);
+          conditionalCase.expr = new o.BinaryOperatorExpr(
+            o.BinaryOperator.Identical,
+            useTmp,
+            conditionalCase.expr,
+          );
         } else if (conditionalCase.alias !== null) {
           const caseExpressionTemporaryXref = job.allocateXrefId();
-          conditionalCase.expr =
-              new ir.AssignTemporaryExpr(conditionalCase.expr, caseExpressionTemporaryXref);
+          conditionalCase.expr = new ir.AssignTemporaryExpr(
+            conditionalCase.expr,
+            caseExpressionTemporaryXref,
+          );
           op.contextValue = new ir.ReadTemporaryExpr(caseExpressionTemporaryXref);
         }
         test = new o.ConditionalExpr(
-            conditionalCase.expr, new ir.SlotLiteralExpr(conditionalCase.targetSlot), test);
+          conditionalCase.expr,
+          new ir.SlotLiteralExpr(conditionalCase.targetSlot),
+          test,
+        );
       }
 
       // Save the resulting aggregate Joost-expression.

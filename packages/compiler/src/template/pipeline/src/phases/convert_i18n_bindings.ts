@@ -37,12 +37,14 @@ export function convertI18nBindings(job: CompilationJob): void {
           const i18nAttributesForElem = i18nAttributesByElem.get(op.target);
           if (i18nAttributesForElem === undefined) {
             throw new Error(
-                'AssertionError: An i18n attribute binding instruction requires the owning element to have an I18nAttributes create instruction');
+              'AssertionError: An i18n attribute binding instruction requires the owning element to have an I18nAttributes create instruction',
+            );
           }
 
           if (i18nAttributesForElem.target !== op.target) {
             throw new Error(
-                'AssertionError: Expected i18nAttributes target element to match binding target element');
+              'AssertionError: Expected i18nAttributes target element to match binding target element',
+            );
           }
 
           const ops: ir.UpdateOp[] = [];
@@ -51,16 +53,25 @@ export function convertI18nBindings(job: CompilationJob): void {
 
             if (op.expression.i18nPlaceholders.length !== op.expression.expressions.length) {
               throw new Error(
-                  `AssertionError: An i18n attribute binding instruction requires the same number of expressions and placeholders, but found ${
-                      op.expression.i18nPlaceholders.length} placeholders and ${
-                      op.expression.expressions.length} expressions`);
+                `AssertionError: An i18n attribute binding instruction requires the same number of expressions and placeholders, but found ${op.expression.i18nPlaceholders.length} placeholders and ${op.expression.expressions.length} expressions`,
+              );
             }
 
-            ops.push(ir.createI18nExpressionOp(
-                op.i18nContext, i18nAttributesForElem.target, i18nAttributesForElem.xref,
-                i18nAttributesForElem.handle, expr, null, op.expression.i18nPlaceholders[i],
-                ir.I18nParamResolutionTime.Creation, ir.I18nExpressionFor.I18nAttribute, op.name,
-                op.sourceSpan));
+            ops.push(
+              ir.createI18nExpressionOp(
+                op.i18nContext,
+                i18nAttributesForElem.target,
+                i18nAttributesForElem.xref,
+                i18nAttributesForElem.handle,
+                expr,
+                null,
+                op.expression.i18nPlaceholders[i],
+                ir.I18nParamResolutionTime.Creation,
+                ir.I18nExpressionFor.I18nAttribute,
+                op.name,
+                op.sourceSpan,
+              ),
+            );
           }
           ir.OpList.replaceWithMany(op as ir.UpdateOp, ops);
           break;

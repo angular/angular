@@ -140,5 +140,5 @@ describe('Expander', () => {
 });
 
 function humanizeErrors(errors: ParseError[]): string[] {
-  return errors.map(error => error.msg);
+  return errors.map((error) => error.msg);
 }

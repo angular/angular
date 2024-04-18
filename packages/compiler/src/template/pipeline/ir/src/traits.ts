@@ -35,7 +35,7 @@ export const UsesVarOffset = Symbol('UsesVarOffset');
  * Marks an operation as requiring allocation of one or more data slots for storage.
  */
 export interface ConsumesSlotOpTrait {
-  readonly[ConsumesSlot]: true;
+  readonly [ConsumesSlot]: true;
 
   /**
    * Assigned data slot (the starting index, if more than one slot is needed) for this operation, or
@@ -58,7 +58,6 @@ export interface ConsumesSlotOpTrait {
   xref: XrefId;
 }
 
-
 /**
  * Marks an operation as depending on the runtime's implicit slot context being set to a particular
  * slot.
@@ -68,7 +67,7 @@ export interface ConsumesSlotOpTrait {
  * this implicit context to be `advance()`'d to point at a particular slot prior to execution.
  */
 export interface DependsOnSlotContextOpTrait {
-  readonly[DependsOnSlotContext]: true;
+  readonly [DependsOnSlotContext]: true;
 
   /**
    * `XrefId` of the `ConsumesSlotOpTrait` which the implicit slot context must reference before
@@ -93,14 +92,14 @@ export interface ConsumesVarsTrait {
 export interface UsesVarOffsetTrait {
   [UsesVarOffset]: true;
 
-  varOffset: number|null;
+  varOffset: number | null;
 }
 
 /**
  * Default values for most `ConsumesSlotOpTrait` fields (used with the spread operator to initialize
  * implementors of the trait).
  */
-export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'|'handle'> = {
+export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref' | 'handle'> = {
   [ConsumesSlot]: true,
   numSlotsUsed: 1,
 } as const;
@@ -109,10 +108,12 @@ export const TRAIT_CONSUMES_SLOT: Omit<ConsumesSlotOpTrait, 'xref'|'handle'> = {
  * Default values for most `DependsOnSlotContextOpTrait` fields (used with the spread operator to
  * initialize implementors of the trait).
  */
-export const TRAIT_DEPENDS_ON_SLOT_CONTEXT:
-    Omit<DependsOnSlotContextOpTrait, 'target'|'sourceSpan'> = {
-      [DependsOnSlotContext]: true,
-    } as const;
+export const TRAIT_DEPENDS_ON_SLOT_CONTEXT: Omit<
+  DependsOnSlotContextOpTrait,
+  'target' | 'sourceSpan'
+> = {
+  [DependsOnSlotContext]: true,
+} as const;
 
 /**
  * Default values for `UsesVars` fields (used with the spread operator to initialize
@@ -125,24 +126,28 @@ export const TRAIT_CONSUMES_VARS: ConsumesVarsTrait = {
 /**
  * Test whether an operation implements `ConsumesSlotOpTrait`.
  */
-export function hasConsumesSlotTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&ConsumesSlotOpTrait {
+export function hasConsumesSlotTrait<OpT extends Op<OpT>>(
+  op: OpT,
+): op is OpT & ConsumesSlotOpTrait {
   return (op as Partial<ConsumesSlotOpTrait>)[ConsumesSlot] === true;
 }
 
 /**
  * Test whether an operation implements `DependsOnSlotContextOpTrait`.
  */
-export function hasDependsOnSlotContextTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&
-    DependsOnSlotContextOpTrait {
+export function hasDependsOnSlotContextTrait<OpT extends Op<OpT>>(
+  op: OpT,
+): op is OpT & DependsOnSlotContextOpTrait {
   return (op as Partial<DependsOnSlotContextOpTrait>)[DependsOnSlotContext] === true;
 }
 
 /**
  * Test whether an operation implements `ConsumesVarsTrait`.
  */
-export function hasConsumesVarsTrait<ExprT extends Expression>(expr: ExprT): expr is ExprT&
-    ConsumesVarsTrait;
-export function hasConsumesVarsTrait<OpT extends Op<OpT>>(op: OpT): op is OpT&ConsumesVarsTrait;
+export function hasConsumesVarsTrait<ExprT extends Expression>(
+  expr: ExprT,
+): expr is ExprT & ConsumesVarsTrait;
+export function hasConsumesVarsTrait<OpT extends Op<OpT>>(op: OpT): op is OpT & ConsumesVarsTrait;
 export function hasConsumesVarsTrait(value: any): boolean {
   return (value as Partial<ConsumesVarsTrait>)[ConsumesVarsTrait] === true;
 }
@@ -150,7 +155,8 @@ export function hasConsumesVarsTrait(value: any): boolean {
 /**
  * Test whether an expression implements `UsesVarOffsetTrait`.
  */
-export function hasUsesVarOffsetTrait<ExprT extends Expression>(expr: ExprT): expr is ExprT&
-    UsesVarOffsetTrait {
+export function hasUsesVarOffsetTrait<ExprT extends Expression>(
+  expr: ExprT,
+): expr is ExprT & UsesVarOffsetTrait {
   return (expr as Partial<UsesVarOffsetTrait>)[UsesVarOffset] === true;
 }

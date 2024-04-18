@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '../../output/output_ast';
-import {compileComponentMetadataAsyncResolver, R3ClassMetadata} from '../r3_class_metadata_compiler';
+import {
+  compileComponentMetadataAsyncResolver,
+  R3ClassMetadata,
+} from '../r3_class_metadata_compiler';
 import {Identifiers as R3} from '../r3_identifiers';
 import {R3DeferPerComponentDependency} from '../view/api';
 import {DefinitionMap} from '../view/util';
@@ -40,9 +43,10 @@ export function compileDeclareClassMetadata(metadata: R3ClassMetadata): o.Expres
   return o.importExpr(R3.declareClassMetadata).callFn([definitionMap.toLiteralMap()]);
 }
 
-
 export function compileComponentDeclareClassMetadata(
-    metadata: R3ClassMetadata, dependencies: R3DeferPerComponentDependency[]|null): o.Expression {
+  metadata: R3ClassMetadata,
+  dependencies: R3DeferPerComponentDependency[] | null,
+): o.Expression {
   if (dependencies === null || dependencies.length === 0) {
     return compileDeclareClassMetadata(metadata);
   }
@@ -59,10 +63,12 @@ export function compileComponentDeclareClassMetadata(
   definitionMap.set('type', metadata.type);
   definitionMap.set('resolveDeferredDeps', compileComponentMetadataAsyncResolver(dependencies));
   definitionMap.set(
-      'resolveMetadata',
-      o.arrowFn(
-          dependencies.map(dep => new o.FnParam(dep.symbolName, o.DYNAMIC_TYPE)),
-          callbackReturnDefinitionMap.toLiteralMap()));
+    'resolveMetadata',
+    o.arrowFn(
+      dependencies.map((dep) => new o.FnParam(dep.symbolName, o.DYNAMIC_TYPE)),
+      callbackReturnDefinitionMap.toLiteralMap(),
+    ),
+  );
 
   return o.importExpr(R3.declareClassMetadataAsync).callFn([definitionMap.toLiteralMap()]);
 }

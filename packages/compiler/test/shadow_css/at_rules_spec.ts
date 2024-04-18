@@ -13,14 +13,14 @@ describe('ShadowCss, at-rules', () => {
     it('should handle media rules with simple rules', () => {
       const css = '@media screen and (max-width: 800px) {div {font-size: 50px;}} div {}';
       const expected =
-          '@media screen and (max-width:800px) {div[contenta] {font-size:50px;}} div[contenta] {}';
+        '@media screen and (max-width:800px) {div[contenta] {font-size:50px;}} div[contenta] {}';
       expect(shim(css, 'contenta')).toEqualCss(expected);
     });
 
     it('should handle media rules with both width and height', () => {
       const css = '@media screen and (max-width:800px, max-height:100%) {div {font-size:50px;}}';
       const expected =
-          '@media screen and (max-width:800px, max-height:100%) {div[contenta] {font-size:50px;}}';
+        '@media screen and (max-width:800px, max-height:100%) {div[contenta] {font-size:50px;}}';
       expect(shim(css, 'contenta')).toEqualCss(expected);
     });
   });
@@ -63,12 +63,15 @@ describe('ShadowCss, at-rules', () => {
     });
 
     it('should strip ::ng-deep and :host from within @page rules', () => {
-      expect(shim('@page { margin-right: 4in; }', 'contenta', 'h'))
-          .toEqualCss('@page { margin-right:4in;}');
-      expect(shim('@page { ::ng-deep @top-left { content: "Hamlet";}}', 'contenta', 'h'))
-          .toEqualCss('@page { @top-left { content:"Hamlet";}}');
-      expect(shim('@page { :host ::ng-deep @top-left { content:"Hamlet";}}', 'contenta', 'h'))
-          .toEqualCss('@page { @top-left { content:"Hamlet";}}');
+      expect(shim('@page { margin-right: 4in; }', 'contenta', 'h')).toEqualCss(
+        '@page { margin-right:4in;}',
+      );
+      expect(
+        shim('@page { ::ng-deep @top-left { content: "Hamlet";}}', 'contenta', 'h'),
+      ).toEqualCss('@page { @top-left { content:"Hamlet";}}');
+      expect(
+        shim('@page { :host ::ng-deep @top-left { content:"Hamlet";}}', 'contenta', 'h'),
+      ).toEqualCss('@page { @top-left { content:"Hamlet";}}');
     });
   });
 
@@ -80,21 +83,27 @@ describe('ShadowCss, at-rules', () => {
     });
 
     it('should strip ::ng-deep and :host from within @supports', () => {
-      expect(shim(
-                 '@supports (display: flex) { @font-face { :host ::ng-deep font-family{} } }',
-                 'contenta', 'h'))
-          .toEqualCss('@supports (display:flex) { @font-face { font-family{}}}');
+      expect(
+        shim(
+          '@supports (display: flex) { @font-face { :host ::ng-deep font-family{} } }',
+          'contenta',
+          'h',
+        ),
+      ).toEqualCss('@supports (display:flex) { @font-face { font-family{}}}');
     });
   });
 
   describe('@font-face', () => {
     it('should strip ::ng-deep and :host from within @font-face', () => {
-      expect(shim('@font-face { font-family {} }', 'contenta', 'h'))
-          .toEqualCss('@font-face { font-family {}}');
-      expect(shim('@font-face { ::ng-deep font-family{} }', 'contenta', 'h'))
-          .toEqualCss('@font-face { font-family{}}');
-      expect(shim('@font-face { :host ::ng-deep font-family{} }', 'contenta', 'h'))
-          .toEqualCss('@font-face { font-family{}}');
+      expect(shim('@font-face { font-family {} }', 'contenta', 'h')).toEqualCss(
+        '@font-face { font-family {}}',
+      );
+      expect(shim('@font-face { ::ng-deep font-family{} }', 'contenta', 'h')).toEqualCss(
+        '@font-face { font-family{}}',
+      );
+      expect(shim('@font-face { :host ::ng-deep font-family{} }', 'contenta', 'h')).toEqualCss(
+        '@font-face { font-family{}}',
+      );
     });
   });
 
@@ -115,22 +124,24 @@ describe('ShadowCss, at-rules', () => {
       const styleStr = '@import url("a"); div {background-image: url("a.jpg"); color: red;}';
       const css = shim(styleStr, 'contenta');
       expect(css).toEqualCss(
-          '@import url("a"); div[contenta] {background-image:url("a.jpg"); color:red;}');
+        '@import url("a"); div[contenta] {background-image:url("a.jpg"); color:red;}',
+      );
     });
 
     it('should pass through @import directives whose URL contains colons and semicolons', () => {
       const styleStr =
-          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");';
+        '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");';
       const css = shim(styleStr, 'contenta');
       expect(css).toEqualCss(styleStr);
     });
 
     it('should shim rules after @import with colons and semicolons', () => {
       const styleStr =
-          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div {}';
+        '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div {}';
       const css = shim(styleStr, 'contenta');
       expect(css).toEqualCss(
-          '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div[contenta] {}');
+        '@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"); div[contenta] {}',
+      );
     });
   });
 
