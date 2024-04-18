@@ -10,7 +10,6 @@ import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
 
-
 /**
  * @description
  * A base class that all `FormControl`-based directives extend. It binds a `FormControl`
@@ -25,19 +24,19 @@ export abstract class NgControl extends AbstractControlDirective {
    *
    * @internal
    */
-  _parent: ControlContainer|null = null;
+  _parent: ControlContainer | null = null;
 
   /**
    * @description
    * The name for the control
    */
-  name: string|number|null = null;
+  name: string | number | null = null;
 
   /**
    * @description
    * The value accessor for the control
    */
-  valueAccessor: ControlValueAccessor|null = null;
+  valueAccessor: ControlValueAccessor | null = null;
 
   /**
    * @description

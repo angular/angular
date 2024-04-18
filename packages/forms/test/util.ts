@@ -11,8 +11,10 @@ import {AbstractControl, AsyncValidatorFn, ValidationErrors} from '@angular/form
 import {of} from 'rxjs';
 
 function createValidationPromise(
-    result: ValidationErrors|null, timeout: number): Promise<ValidationErrors|null> {
-  return new Promise(resolve => {
+  result: ValidationErrors | null,
+  timeout: number,
+): Promise<ValidationErrors | null> {
+  return new Promise((resolve) => {
     if (timeout == 0) {
       resolve(result);
     } else {
@@ -54,23 +56,27 @@ export function asyncValidator(expected: string, timeouts = {}): AsyncValidatorF
 export function simpleAsyncValidator({
   timeout = 0,
   shouldFail,
-  customError =
-  {
-    async: true
-  }
-}: {timeout?: number, shouldFail: boolean, customError?: any}): AsyncValidatorFn {
+  customError = {
+    async: true,
+  },
+}: {
+  timeout?: number;
+  shouldFail: boolean;
+  customError?: any;
+}): AsyncValidatorFn {
   const result = shouldFail ? customError : null;
   return (c: AbstractControl) =>
-             timeout === 0 ? of(result) : createValidationPromise(result, timeout);
+    timeout === 0 ? of(result) : createValidationPromise(result, timeout);
 }
 
 /**
  * Returns the asynchronous validation state of each provided control
  * @param controls A collection of controls
  */
-export function currentStateOf(controls: AbstractControl[]):
-    {errors: any; pending: boolean; status: string;}[] {
-  return controls.map(c => ({errors: c.errors, pending: c.pending, status: c.status}));
+export function currentStateOf(
+  controls: AbstractControl[],
+): {errors: any; pending: boolean; status: string}[] {
+  return controls.map((c) => ({errors: c.errors, pending: c.pending, status: c.status}));
 }
 
 /**

@@ -12,8 +12,6 @@ import {FormGroup} from '../model/form_group';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
 import {NgControl} from './ng_control';
 
-
-
 /**
  * @description
  * An interface implemented by `FormGroupDirective` and `NgForm` directives.

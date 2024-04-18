@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, forwardRef, Host, Inject, Input, OnDestroy, OnInit, Optional, Provider, Self, SkipSelf} from '@angular/core';
+import {
+  Directive,
+  forwardRef,
+  Host,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Provider,
+  Self,
+  SkipSelf,
+} from '@angular/core';
 
 import {FormArray} from '../../model/form_array';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../../validators';
@@ -20,7 +32,7 @@ import {FormGroupDirective} from './form_group_directive';
 
 const formGroupNameProvider: Provider = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => FormGroupName)
+  useExisting: forwardRef(() => FormGroupName),
 };
 
 /**
@@ -81,13 +93,16 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
    * while the numerical form allows for form groups to be bound
    * to indices when iterating over groups in a `FormArray`.
    */
-  @Input('formGroupName') override name: string|number|null = null;
+  @Input('formGroupName') override name: string | number | null = null;
 
   constructor(
-      @Optional() @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          (AsyncValidator|AsyncValidatorFn)[]) {
+    @Optional() @Host() @SkipSelf() parent: ControlContainer,
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator | ValidatorFn)[],
+    @Optional()
+    @Self()
+    @Inject(NG_ASYNC_VALIDATORS)
+    asyncValidators: (AsyncValidator | AsyncValidatorFn)[],
+  ) {
     super();
     this._parent = parent;
     this._setValidators(validators);
@@ -104,7 +119,7 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
 
 export const formArrayNameProvider: any = {
   provide: ControlContainer,
-  useExisting: forwardRef(() => FormArrayName)
+  useExisting: forwardRef(() => FormArrayName),
 };
 
 /**
@@ -145,13 +160,16 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * while the numerical form allows for form arrays to be bound
    * to indices when iterating over arrays in a `FormArray`.
    */
-  @Input('formArrayName') override name: string|number|null = null;
+  @Input('formArrayName') override name: string | number | null = null;
 
   constructor(
-      @Optional() @Host() @SkipSelf() parent: ControlContainer,
-      @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator|ValidatorFn)[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators:
-          (AsyncValidator|AsyncValidatorFn)[]) {
+    @Optional() @Host() @SkipSelf() parent: ControlContainer,
+    @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator | ValidatorFn)[],
+    @Optional()
+    @Self()
+    @Inject(NG_ASYNC_VALIDATORS)
+    asyncValidators: (AsyncValidator | AsyncValidatorFn)[],
+  ) {
     super();
     this._parent = parent;
     this._setValidators(validators);
@@ -190,7 +208,7 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  override get formDirective(): FormGroupDirective|null {
+  override get formDirective(): FormGroupDirective | null {
     return this._parent ? <FormGroupDirective>this._parent.formDirective : null;
   }
 
@@ -211,6 +229,9 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
 }
 
 function _hasInvalidParent(parent: ControlContainer): boolean {
-  return !(parent instanceof FormGroupName) && !(parent instanceof FormGroupDirective) &&
-      !(parent instanceof FormArrayName);
+  return (
+    !(parent instanceof FormGroupName) &&
+    !(parent instanceof FormGroupDirective) &&
+    !(parent instanceof FormArrayName)
+  );
 }

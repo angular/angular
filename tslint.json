@@ -65,7 +65,7 @@
       "packages/platform-browser/src/",
       "packages/router/src/"
     ],
-    "semicolon": [true],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "variable-name": [true, "ban-keywords"],
     "no-inner-declarations": [true, "function"],
     "no-debugger": true,

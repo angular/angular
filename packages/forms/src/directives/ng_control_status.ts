@@ -19,9 +19,9 @@ import {type FormGroupDirective} from './reactive_directives/form_group_directiv
 // advanced Closure Compiler optimizations related to property renaming
 // can work correctly.
 export class AbstractControlStatus {
-  private _cd: AbstractControlDirective|null;
+  private _cd: AbstractControlDirective | null;
 
-  constructor(cd: AbstractControlDirective|null) {
+  constructor(cd: AbstractControlDirective | null) {
     this._cd = cd;
   }
 
@@ -56,7 +56,7 @@ export class AbstractControlStatus {
   protected get isSubmitted() {
     // We check for the `submitted` field from `NgForm` and `FormGroupDirective` classes, but
     // we avoid instanceof checks to prevent non-tree-shakable references to those types.
-    return !!(this._cd as Writable<NgForm|FormGroupDirective>| null)?.submitted;
+    return !!(this._cd as Writable<NgForm | FormGroupDirective> | null)?.submitted;
   }
 }
 
@@ -119,8 +119,8 @@ export class NgControlStatus extends AbstractControlStatus {
  */
 @Directive({
   selector:
-      '[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]',
-  host: ngGroupStatusHost
+    '[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]',
+  host: ngGroupStatusHost,
 })
 export class NgControlStatusGroup extends AbstractControlStatus {
   constructor(@Optional() @Self() cd: ControlContainer) {
