@@ -153,7 +153,10 @@ export class BaseControlValueAccessor {
    */
   onTouched = () => {};
 
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
+  constructor(
+    private _renderer: Renderer2,
+    private _elementRef: ElementRef,
+  ) {}
 
   /**
    * Helper method that sets a property on a target element using the current Renderer
@@ -199,8 +202,7 @@ export class BaseControlValueAccessor {
  * applications code.
  */
 @Directive()
-export class BuiltInControlValueAccessor extends BaseControlValueAccessor {
-}
+export class BuiltInControlValueAccessor extends BaseControlValueAccessor {}
 
 /**
  * Used to provide a `ControlValueAccessor` for form controls.
@@ -209,5 +211,6 @@ export class BuiltInControlValueAccessor extends BaseControlValueAccessor {
  *
  * @publicApi
  */
-export const NG_VALUE_ACCESSOR =
-    new InjectionToken<ReadonlyArray<ControlValueAccessor>>(ngDevMode ? 'NgValueAccessor' : '');
+export const NG_VALUE_ACCESSOR = new InjectionToken<ReadonlyArray<ControlValueAccessor>>(
+  ngDevMode ? 'NgValueAccessor' : '',
+);

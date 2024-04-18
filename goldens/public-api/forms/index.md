@@ -42,7 +42,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     get enabled(): boolean;
     readonly errors: ValidationErrors | null;
     readonly events: Observable<ControlEvent<TValue>>;
-    get<P extends string | (readonly (string | number)[])>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
+    get<P extends string | readonly (string | number)[]>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
     get<P extends string | Array<string | number>>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
     getRawValue(): any;
@@ -183,7 +183,11 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 export const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
 
 // @public
-export type ControlConfig<T> = [T | FormControlState<T>, (ValidatorFn | (ValidatorFn[]))?, (AsyncValidatorFn | AsyncValidatorFn[])?];
+export type ControlConfig<T> = [
+T | FormControlState<T>,
+(ValidatorFn | ValidatorFn[])?,
+(AsyncValidatorFn | AsyncValidatorFn[])?
+];
 
 // @public
 export abstract class ControlContainer extends AbstractControlDirective {

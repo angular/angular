@@ -10,24 +10,29 @@ import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
-import {formArrayNameExample, formControlNameExample, formGroupNameExample, ngModelGroupExample} from './error_examples';
-
+import {
+  formArrayNameExample,
+  formControlNameExample,
+  formGroupNameExample,
+  ngModelGroupExample,
+} from './error_examples';
 
 export function controlParentException(): Error {
   return new RuntimeError(
-      RuntimeErrorCode.FORM_CONTROL_NAME_MISSING_PARENT,
-      `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
+    RuntimeErrorCode.FORM_CONTROL_NAME_MISSING_PARENT,
+    `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
 
     Example:
 
-    ${formControlNameExample}`);
+    ${formControlNameExample}`,
+  );
 }
 
 export function ngModelGroupException(): Error {
   return new RuntimeError(
-      RuntimeErrorCode.FORM_CONTROL_NAME_INSIDE_MODEL_GROUP,
-      `formControlName cannot be used with an ngModelGroup parent. It is only compatible with parents
+    RuntimeErrorCode.FORM_CONTROL_NAME_INSIDE_MODEL_GROUP,
+    `formControlName cannot be used with an ngModelGroup parent. It is only compatible with parents
       that also have a "form" prefix: formGroupName, formArrayName, or formGroup.
 
       Option 1:  Update the parent to be formGroupName (reactive form strategy)
@@ -36,39 +41,43 @@ export function ngModelGroupException(): Error {
 
       Option 2: Use ngModel instead of formControlName (template-driven strategy)
 
-      ${ngModelGroupExample}`);
+      ${ngModelGroupExample}`,
+  );
 }
 
 export function missingFormException(): Error {
   return new RuntimeError(
-      RuntimeErrorCode.FORM_GROUP_MISSING_INSTANCE,
-      `formGroup expects a FormGroup instance. Please pass one in.
+    RuntimeErrorCode.FORM_GROUP_MISSING_INSTANCE,
+    `formGroup expects a FormGroup instance. Please pass one in.
 
       Example:
 
-      ${formControlNameExample}`);
+      ${formControlNameExample}`,
+  );
 }
 
 export function groupParentException(): Error {
   return new RuntimeError(
-      RuntimeErrorCode.FORM_GROUP_NAME_MISSING_PARENT,
-      `formGroupName must be used with a parent formGroup directive.  You'll want to add a formGroup
+    RuntimeErrorCode.FORM_GROUP_NAME_MISSING_PARENT,
+    `formGroupName must be used with a parent formGroup directive.  You'll want to add a formGroup
     directive and pass it an existing FormGroup instance (you can create one in your class).
 
     Example:
 
-    ${formGroupNameExample}`);
+    ${formGroupNameExample}`,
+  );
 }
 
 export function arrayParentException(): Error {
   return new RuntimeError(
-      RuntimeErrorCode.FORM_ARRAY_NAME_MISSING_PARENT,
-      `formArrayName must be used with a parent formGroup directive.  You'll want to add a formGroup
+    RuntimeErrorCode.FORM_ARRAY_NAME_MISSING_PARENT,
+    `formArrayName must be used with a parent formGroup directive.  You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
 
       Example:
 
-      ${formArrayNameExample}`);
+      ${formArrayNameExample}`,
+  );
 }
 
 export const disabledAttrWarning = `
@@ -113,26 +122,28 @@ export function ngModelWarning(directiveName: string): string {
 
   For more information on this, see our API docs here:
   https://angular.io/api/forms/${
-      directiveName === 'formControl' ? 'FormControlDirective' : 'FormControlName'}#use-with-ngmodel
+    directiveName === 'formControl' ? 'FormControlDirective' : 'FormControlName'
+  }#use-with-ngmodel
   `;
 }
 
-function describeKey(isFormGroup: boolean, key: string|number): string {
+function describeKey(isFormGroup: boolean, key: string | number): string {
   return isFormGroup ? `with name: '${key}'` : `at index: ${key}`;
 }
 
 export function noControlsError(isFormGroup: boolean): string {
   return `
     There are no form controls registered with this ${
-      isFormGroup ? 'group' : 'array'} yet. If you're using ngModel,
+      isFormGroup ? 'group' : 'array'
+    } yet. If you're using ngModel,
     you may want to check next tick (e.g. use setTimeout).
   `;
 }
 
-export function missingControlError(isFormGroup: boolean, key: string|number): string {
+export function missingControlError(isFormGroup: boolean, key: string | number): string {
   return `Cannot find form control ${describeKey(isFormGroup, key)}`;
 }
 
-export function missingControlValueError(isFormGroup: boolean, key: string|number): string {
+export function missingControlValueError(isFormGroup: boolean, key: string | number): string {
   return `Must supply a value for form control ${describeKey(isFormGroup, key)}`;
 }

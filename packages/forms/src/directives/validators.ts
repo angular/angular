@@ -6,11 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {booleanAttribute, Directive, forwardRef, Input, OnChanges, Provider, SimpleChanges} from '@angular/core';
+import {
+  booleanAttribute,
+  Directive,
+  forwardRef,
+  Input,
+  OnChanges,
+  Provider,
+  SimpleChanges,
+} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model/abstract_model';
-import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, minValidator, NG_VALIDATORS, nullValidator, patternValidator, requiredTrueValidator, requiredValidator} from '../validators';
+import {
+  emailValidator,
+  maxLengthValidator,
+  maxValidator,
+  minLengthValidator,
+  minValidator,
+  NG_VALIDATORS,
+  nullValidator,
+  patternValidator,
+  requiredTrueValidator,
+  requiredValidator,
+} from '../validators';
 
 /**
  * Method that updates string to integer if not already a number
@@ -18,7 +37,7 @@ import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, mi
  * @param value The value to convert to integer.
  * @returns value of parameter converted to number or integer.
  */
-function toInteger(value: string|number): number {
+function toInteger(value: string | number): number {
   return typeof value === 'number' ? value : parseInt(value, 10);
 }
 
@@ -28,7 +47,7 @@ function toInteger(value: string|number): number {
  * @param value The value to convert to float.
  * @returns value of parameter converted to number or float.
  */
-function toFloat(value: string|number): number {
+function toFloat(value: string | number): number {
   return typeof value === 'number' ? value : parseFloat(value);
 }
 
@@ -39,7 +58,7 @@ function toFloat(value: string|number): number {
  * @publicApi
  */
 export type ValidationErrors = {
-  [key: string]: any
+  [key: string]: any;
 };
 
 /**
@@ -77,7 +96,7 @@ export interface Validator {
    * @returns A map of validation errors if validation fails,
    * otherwise null.
    */
-  validate(control: AbstractControl): ValidationErrors|null;
+  validate(control: AbstractControl): ValidationErrors | null;
 
   /**
    * @description
@@ -148,7 +167,7 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
   }
 
   /** @nodoc */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: AbstractControl): ValidationErrors | null {
     return this._validator(control);
   }
 
@@ -176,7 +195,7 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
 export const MAX_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MaxValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -202,20 +221,20 @@ export const MAX_VALIDATOR: Provider = {
  */
 @Directive({
   selector:
-      'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
+    'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
   providers: [MAX_VALIDATOR],
-  host: {'[attr.max]': '_enabled ? max : null'}
+  host: {'[attr.max]': '_enabled ? max : null'},
 })
 export class MaxValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the max bound to this directive.
    */
-  @Input() max!: string|number|null;
+  @Input() max!: string | number | null;
   /** @internal */
   override inputName = 'max';
   /** @internal */
-  override normalizeInput = (input: string|number): number => toFloat(input);
+  override normalizeInput = (input: string | number): number => toFloat(input);
   /** @internal */
   override createValidator = (max: number): ValidatorFn => maxValidator(max);
 }
@@ -227,7 +246,7 @@ export class MaxValidator extends AbstractValidatorDirective {
 export const MIN_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MinValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -253,20 +272,20 @@ export const MIN_VALIDATOR: Provider = {
  */
 @Directive({
   selector:
-      'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
+    'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
   providers: [MIN_VALIDATOR],
-  host: {'[attr.min]': '_enabled ? min : null'}
+  host: {'[attr.min]': '_enabled ? min : null'},
 })
 export class MinValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the min bound to this directive.
    */
-  @Input() min!: string|number|null;
+  @Input() min!: string | number | null;
   /** @internal */
   override inputName = 'min';
   /** @internal */
-  override normalizeInput = (input: string|number): number => toFloat(input);
+  override normalizeInput = (input: string | number): number => toFloat(input);
   /** @internal */
   override createValidator = (min: number): ValidatorFn => minValidator(min);
 }
@@ -309,8 +328,9 @@ export interface AsyncValidator extends Validator {
    * @returns A promise or observable that resolves a map of validation errors
    * if validation fails, otherwise null.
    */
-  validate(control: AbstractControl):
-      Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  validate(
+    control: AbstractControl,
+  ): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
 /**
@@ -320,7 +340,7 @@ export interface AsyncValidator extends Validator {
 export const REQUIRED_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => RequiredValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -330,9 +350,8 @@ export const REQUIRED_VALIDATOR: Provider = {
 export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => CheckboxRequiredValidator),
-  multi: true
+  multi: true,
 };
-
 
 /**
  * @description
@@ -355,16 +374,16 @@ export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
  */
 @Directive({
   selector:
-      ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
+    ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
   providers: [REQUIRED_VALIDATOR],
-  host: {'[attr.required]': '_enabled ? "" : null'}
+  host: {'[attr.required]': '_enabled ? "" : null'},
 })
 export class RequiredValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the required attribute bound to this directive.
    */
-  @Input() required!: boolean|string;
+  @Input() required!: boolean | string;
 
   /** @internal */
   override inputName = 'required';
@@ -380,7 +399,6 @@ export class RequiredValidator extends AbstractValidatorDirective {
     return input;
   }
 }
-
 
 /**
  * A Directive that adds the `required` validator to checkbox controls marked with the
@@ -405,9 +423,9 @@ export class RequiredValidator extends AbstractValidatorDirective {
  */
 @Directive({
   selector:
-      'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
+    'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
   providers: [CHECKBOX_REQUIRED_VALIDATOR],
-  host: {'[attr.required]': '_enabled ? "" : null'}
+  host: {'[attr.required]': '_enabled ? "" : null'},
 })
 export class CheckboxRequiredValidator extends RequiredValidator {
   /** @internal */
@@ -421,7 +439,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 export const EMAIL_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => EmailValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -453,14 +471,14 @@ export const EMAIL_VALIDATOR: any = {
  */
 @Directive({
   selector: '[email][formControlName],[email][formControl],[email][ngModel]',
-  providers: [EMAIL_VALIDATOR]
+  providers: [EMAIL_VALIDATOR],
 })
 export class EmailValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the email attribute bound to this directive.
    */
-  @Input() email!: boolean|string;
+  @Input() email!: boolean | string;
 
   /** @internal */
   override inputName = 'email';
@@ -485,7 +503,7 @@ export class EmailValidator extends AbstractValidatorDirective {
  * @publicApi
  */
 export interface ValidatorFn {
-  (control: AbstractControl): ValidationErrors|null;
+  (control: AbstractControl): ValidationErrors | null;
 }
 
 /**
@@ -496,7 +514,9 @@ export interface ValidatorFn {
  * @publicApi
  */
 export interface AsyncValidatorFn {
-  (control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  (
+    control: AbstractControl,
+  ): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
 /**
@@ -506,7 +526,7 @@ export interface AsyncValidatorFn {
 export const MIN_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MinLengthValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -533,20 +553,20 @@ export const MIN_LENGTH_VALIDATOR: any = {
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
   providers: [MIN_LENGTH_VALIDATOR],
-  host: {'[attr.minlength]': '_enabled ? minlength : null'}
+  host: {'[attr.minlength]': '_enabled ? minlength : null'},
 })
 export class MinLengthValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the minimum length bound to this directive.
    */
-  @Input() minlength!: string|number|null;
+  @Input() minlength!: string | number | null;
 
   /** @internal */
   override inputName = 'minlength';
 
   /** @internal */
-  override normalizeInput = (input: string|number): number => toInteger(input);
+  override normalizeInput = (input: string | number): number => toInteger(input);
 
   /** @internal */
   override createValidator = (minlength: number): ValidatorFn => minLengthValidator(minlength);
@@ -559,7 +579,7 @@ export class MinLengthValidator extends AbstractValidatorDirective {
 export const MAX_LENGTH_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MaxLengthValidator),
-  multi: true
+  multi: true,
 };
 
 /**
@@ -586,20 +606,20 @@ export const MAX_LENGTH_VALIDATOR: any = {
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
   providers: [MAX_LENGTH_VALIDATOR],
-  host: {'[attr.maxlength]': '_enabled ? maxlength : null'}
+  host: {'[attr.maxlength]': '_enabled ? maxlength : null'},
 })
 export class MaxLengthValidator extends AbstractValidatorDirective {
   /**
    * @description
    * Tracks changes to the maximum length bound to this directive.
    */
-  @Input() maxlength!: string|number|null;
+  @Input() maxlength!: string | number | null;
 
   /** @internal */
   override inputName = 'maxlength';
 
   /** @internal */
-  override normalizeInput = (input: string|number): number => toInteger(input);
+  override normalizeInput = (input: string | number): number => toInteger(input);
 
   /** @internal */
   override createValidator = (maxlength: number): ValidatorFn => maxLengthValidator(maxlength);
@@ -612,9 +632,8 @@ export class MaxLengthValidator extends AbstractValidatorDirective {
 export const PATTERN_VALIDATOR: any = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => PatternValidator),
-  multi: true
+  multi: true,
 };
-
 
 /**
  * @description
@@ -642,7 +661,7 @@ export const PATTERN_VALIDATOR: any = {
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
   providers: [PATTERN_VALIDATOR],
-  host: {'[attr.pattern]': '_enabled ? pattern : null'}
+  host: {'[attr.pattern]': '_enabled ? pattern : null'},
 })
 export class PatternValidator extends AbstractValidatorDirective {
   /**
@@ -650,14 +669,14 @@ export class PatternValidator extends AbstractValidatorDirective {
    * Tracks changes to the pattern bound to this directive.
    */
   @Input()
-  pattern!: string|RegExp;  // This input is always defined, since the name matches selector.
+  pattern!: string | RegExp; // This input is always defined, since the name matches selector.
 
   /** @internal */
   override inputName = 'pattern';
 
   /** @internal */
-  override normalizeInput = (input: string|RegExp): string|RegExp => input;
+  override normalizeInput = (input: string | RegExp): string | RegExp => input;
 
   /** @internal */
-  override createValidator = (input: string|RegExp): ValidatorFn => patternValidator(input);
+  override createValidator = (input: string | RegExp): ValidatorFn => patternValidator(input);
 }

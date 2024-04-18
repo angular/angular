@@ -31,8 +31,10 @@ import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
  *
  * @see {@link FormsModule#withconfig}
  */
-export const CALL_SET_DISABLED_STATE = new InjectionToken(
-    'CallSetDisabledState', {providedIn: 'root', factory: () => setDisabledStateDefault});
+export const CALL_SET_DISABLED_STATE = new InjectionToken('CallSetDisabledState', {
+  providedIn: 'root',
+  factory: () => setDisabledStateDefault,
+});
 
 /**
  * The type for CALL_SET_DISABLED_STATE. If `always`, then ControlValueAccessor will always call
@@ -42,14 +44,14 @@ export const CALL_SET_DISABLED_STATE = new InjectionToken(
  * @publicApi
  * @see {@link FormsModule#withconfig}
  */
-export type SetDisabledStateOption = 'whenDisabledForLegacyCode'|'always';
+export type SetDisabledStateOption = 'whenDisabledForLegacyCode' | 'always';
 
 /**
  * Whether to use the fixed setDisabledState behavior by default.
  */
 export const setDisabledStateDefault: SetDisabledStateOption = 'always';
 
-export function controlPath(name: string|null, parent: ControlContainer): string[] {
+export function controlPath(name: string | null, parent: ControlContainer): string[] {
   return [...parent.path!, name!];
 }
 
@@ -61,8 +63,10 @@ export function controlPath(name: string|null, parent: ControlContainer): string
  * @param dir Directive that should be linked with a given control.
  */
 export function setUpControl(
-    control: FormControl, dir: NgControl,
-    callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault): void {
+  control: FormControl,
+  dir: NgControl,
+  callSetDisabledState: SetDisabledStateOption = setDisabledStateDefault,
+): void {
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (!control) _throwError(dir, 'Cannot find control with');
     if (!dir.valueAccessor) _throwMissingValueAccessorError(dir);
@@ -99,8 +103,10 @@ export function setUpControl(
  *     to avoid potentially breaking changes caused by better control cleanup introduced in #39235.
  */
 export function cleanUpControl(
-    control: FormControl|null, dir: NgControl,
-    validateControlPresenceOnChange: boolean = true): void {
+  control: FormControl | null,
+  dir: NgControl,
+  validateControlPresenceOnChange: boolean = true,
+): void {
   const noop = () => {
     if (validateControlPresenceOnChange && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       _noControlError(dir);
@@ -125,8 +131,8 @@ export function cleanUpControl(
   }
 }
 
-function registerOnValidatorChange<V>(validators: (V|Validator)[], onChange: () => void): void {
-  validators.forEach((validator: V|Validator) => {
+function registerOnValidatorChange<V>(validators: (V | Validator)[], onChange: () => void): void {
+  validators.forEach((validator: V | Validator) => {
     if ((<Validator>validator).registerOnValidatorChange)
       (<Validator>validator).registerOnValidatorChange!(onChange);
   });
@@ -179,7 +185,8 @@ export function setUpValidators(control: AbstractControl, dir: AbstractControlDi
   const asyncValidators = getControlAsyncValidators(control);
   if (dir.asyncValidator !== null) {
     control.setAsyncValidators(
-        mergeValidators<AsyncValidatorFn>(asyncValidators, dir.asyncValidator));
+      mergeValidators<AsyncValidatorFn>(asyncValidators, dir.asyncValidator),
+    );
   } else if (typeof asyncValidators === 'function') {
     control.setAsyncValidators([asyncValidators]);
   }
@@ -200,7 +207,9 @@ export function setUpValidators(control: AbstractControl, dir: AbstractControlDi
  * @returns true if a control was updated as a result of this action.
  */
 export function cleanUpValidators(
-    control: AbstractControl|null, dir: AbstractControlDirective): boolean {
+  control: AbstractControl | null,
+  dir: AbstractControlDirective,
+): boolean {
   let isControlUpdated = false;
   if (control !== null) {
     if (dir.validator !== null) {
@@ -219,8 +228,9 @@ export function cleanUpValidators(
       const asyncValidators = getControlAsyncValidators(control);
       if (Array.isArray(asyncValidators) && asyncValidators.length > 0) {
         // Filter out directive async validator function.
-        const updatedAsyncValidators =
-            asyncValidators.filter((asyncValidator) => asyncValidator !== dir.asyncValidator);
+        const updatedAsyncValidators = asyncValidators.filter(
+          (asyncValidator) => asyncValidator !== dir.asyncValidator,
+        );
         if (updatedAsyncValidators.length !== asyncValidators.length) {
           isControlUpdated = true;
           control.setAsyncValidators(updatedAsyncValidators);
@@ -288,7 +298,9 @@ function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
  * @param dir Directive that provides view validators.
  */
 export function setUpFormContainer(
-    control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
+  control: FormGroup | FormArray,
+  dir: AbstractFormGroupDirective | FormArrayName,
+) {
   if (control == null && (typeof ngDevMode === 'undefined' || ngDevMode))
     _throwError(dir, 'Cannot find control with');
   setUpValidators(control, dir);
@@ -302,7 +314,9 @@ export function setUpFormContainer(
  * @returns true if a control was updated as a result of this action.
  */
 export function cleanUpFormContainer(
-    control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName): boolean {
+  control: FormGroup | FormArray,
+  dir: AbstractFormGroupDirective | FormArrayName,
+): boolean {
   return cleanUpValidators(control, dir);
 }
 
@@ -325,15 +339,18 @@ function _describeControlLocation(dir: AbstractControlDirective): string {
 function _throwMissingValueAccessorError(dir: AbstractControlDirective) {
   const loc = _describeControlLocation(dir);
   throw new RuntimeError(
-      RuntimeErrorCode.NG_MISSING_VALUE_ACCESSOR, `No value accessor for form control ${loc}.`);
+    RuntimeErrorCode.NG_MISSING_VALUE_ACCESSOR,
+    `No value accessor for form control ${loc}.`,
+  );
 }
 
 function _throwInvalidValueAccessorError(dir: AbstractControlDirective) {
   const loc = _describeControlLocation(dir);
   throw new RuntimeError(
-      RuntimeErrorCode.NG_VALUE_ACCESSOR_NOT_PROVIDED,
-      `Value accessor was not provided as an array for form control with ${loc}. ` +
-          `Check that the \`NG_VALUE_ACCESSOR\` token is configured as a \`multi: true\` provider.`);
+    RuntimeErrorCode.NG_VALUE_ACCESSOR_NOT_PROVIDED,
+    `Value accessor was not provided as an array for form control with ${loc}. ` +
+      `Check that the \`NG_VALUE_ACCESSOR\` token is configured as a \`multi: true\` provider.`,
+  );
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
@@ -350,7 +367,10 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
   return Object.getPrototypeOf(valueAccessor.constructor) === BuiltInControlValueAccessor;
 }
 
-export function syncPendingControls(form: FormGroup, directives: Set<NgControl>|NgControl[]): void {
+export function syncPendingControls(
+  form: FormGroup,
+  directives: Set<NgControl> | NgControl[],
+): void {
   form._syncPendingControls();
   directives.forEach((dir: NgControl) => {
     const control = dir.control as FormControl;
@@ -363,15 +383,17 @@ export function syncPendingControls(form: FormGroup, directives: Set<NgControl>|
 
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
-    dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor|null {
+  dir: NgControl,
+  valueAccessors: ControlValueAccessor[],
+): ControlValueAccessor | null {
   if (!valueAccessors) return null;
 
   if (!Array.isArray(valueAccessors) && (typeof ngDevMode === 'undefined' || ngDevMode))
     _throwInvalidValueAccessorError(dir);
 
-  let defaultAccessor: ControlValueAccessor|undefined = undefined;
-  let builtinAccessor: ControlValueAccessor|undefined = undefined;
-  let customAccessor: ControlValueAccessor|undefined = undefined;
+  let defaultAccessor: ControlValueAccessor | undefined = undefined;
+  let builtinAccessor: ControlValueAccessor | undefined = undefined;
+  let customAccessor: ControlValueAccessor | undefined = undefined;
 
   valueAccessors.forEach((v: ControlValueAccessor) => {
     if (v.constructor === DefaultValueAccessor) {
@@ -404,12 +426,17 @@ export function removeListItem<T>(list: T[], el: T): void {
 
 // TODO(kara): remove after deprecation period
 export function _ngModelWarning(
-    name: string, type: {_ngModelWarningSentOnce: boolean},
-    instance: {_ngModelWarningSent: boolean}, warningConfig: string|null) {
+  name: string,
+  type: {_ngModelWarningSentOnce: boolean},
+  instance: {_ngModelWarningSent: boolean},
+  warningConfig: string | null,
+) {
   if (warningConfig === 'never') return;
 
-  if (((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
-      (warningConfig === 'always' && !instance._ngModelWarningSent)) {
+  if (
+    ((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
+    (warningConfig === 'always' && !instance._ngModelWarningSent)
+  ) {
     console.warn(ngModelWarning(name));
     type._ngModelWarningSentOnce = true;
     instance._ngModelWarningSent = true;

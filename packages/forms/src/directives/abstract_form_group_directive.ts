@@ -14,8 +14,6 @@ import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {controlPath} from './shared';
 
-
-
 /**
  * @description
  * A base class for code shared between the `NgModelGroup` and `FormGroupName` directives.
@@ -68,7 +66,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  override get formDirective(): Form|null {
+  override get formDirective(): Form | null {
     return this._parent ? this._parent.formDirective : null;
   }
 

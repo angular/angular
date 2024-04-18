@@ -11,7 +11,13 @@ import {ɵWritable as Writable} from '@angular/core';
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 import {removeListItem} from '../util';
 
-import {AbstractControl, AbstractControlOptions, isOptionsObj, pickAsyncValidators, pickValidators} from './abstract_model';
+import {
+  AbstractControl,
+  AbstractControlOptions,
+  isOptionsObj,
+  pickAsyncValidators,
+  pickValidators,
+} from './abstract_model';
 
 /**
  * FormControlState is a boxed form value. It is an object with a `value` key and a `disabled` key.
@@ -227,12 +233,15 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
    * event to update the model.
    *
    */
-  setValue(value: TValue, options?: {
-    onlySelf?: boolean,
-    emitEvent?: boolean,
-    emitModelToViewChange?: boolean,
-    emitViewToModelChange?: boolean
-  }): void;
+  setValue(
+    value: TValue,
+    options?: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+      emitModelToViewChange?: boolean;
+      emitViewToModelChange?: boolean;
+    },
+  ): void;
 
   /**
    * Patches the value of a control.
@@ -243,12 +252,15 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
    *
    * @see {@link FormControl#setValue} for options
    */
-  patchValue(value: TValue, options?: {
-    onlySelf?: boolean,
-    emitEvent?: boolean,
-    emitModelToViewChange?: boolean,
-    emitViewToModelChange?: boolean
-  }): void;
+  patchValue(
+    value: TValue,
+    options?: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+      emitModelToViewChange?: boolean;
+      emitViewToModelChange?: boolean;
+    },
+  ): void;
 
   /**
    * Resets the form control, marking it `pristine` and `untouched`, and resetting
@@ -283,10 +295,13 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
    * When false, no events are emitted.
    *
    */
-  reset(formState?: TValue|FormControlState<TValue>, options?: {
-    onlySelf?: boolean,
-    emitEvent?: boolean
-  }): void;
+  reset(
+    formState?: TValue | FormControlState<TValue>,
+    options?: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+    },
+  ): void;
 
   /**
    * For a simple FormControl, the raw value is equivalent to the value.
@@ -308,14 +323,12 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
    */
   _allControlsDisabled(): boolean;
 
-
   /**
    * Register a listener for change events.
    *
    * @param fn The method that is called when the value changes
    */
   registerOnChange(fn: Function): void;
-
 
   /**
    * Internal function to unregister a change events listener.
@@ -361,7 +374,7 @@ export interface ɵFormControlCtor {
   /**
    * Construct a FormControl with no initial value or validators.
    */
-  new(): FormControl<any>;
+  new (): FormControl<any>;
 
   /**
    * Creates a new `FormControl` instance.
@@ -375,27 +388,35 @@ export interface ɵFormControlCtor {
    *
    * @param asyncValidator A single async validator or array of async validator functions
    */
-  new<T = any>(value: FormControlState<T>|T, opts: FormControlOptions&{nonNullable: true}):
-      FormControl<T>;
+  new <T = any>(
+    value: FormControlState<T> | T,
+    opts: FormControlOptions & {nonNullable: true},
+  ): FormControl<T>;
 
   /**
    * @deprecated Use `nonNullable` instead.
    */
-  new<T = any>(value: FormControlState<T>|T, opts: FormControlOptions&{
-    initialValueIsDefault: true
-  }): FormControl<T>;
+  new <T = any>(
+    value: FormControlState<T> | T,
+    opts: FormControlOptions & {
+      initialValueIsDefault: true;
+    },
+  ): FormControl<T>;
 
   /**
    * @deprecated When passing an `options` argument, the `asyncValidator` argument has no effect.
    */
-  new<T = any>(
-      value: FormControlState<T>|T, opts: FormControlOptions,
-      asyncValidator: AsyncValidatorFn|AsyncValidatorFn[]): FormControl<T|null>;
+  new <T = any>(
+    value: FormControlState<T> | T,
+    opts: FormControlOptions,
+    asyncValidator: AsyncValidatorFn | AsyncValidatorFn[],
+  ): FormControl<T | null>;
 
-  new<T = any>(
-      value: FormControlState<T>|T,
-      validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): FormControl<T|null>;
+  new <T = any>(
+    value: FormControlState<T> | T,
+    validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null,
+    asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null,
+  ): FormControl<T | null>;
 
   /**
    * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
@@ -405,149 +426,169 @@ export interface ɵFormControlCtor {
 }
 
 function isFormControlState(formState: unknown): formState is FormControlState<unknown> {
-  return typeof formState === 'object' && formState !== null &&
-      Object.keys(formState).length === 2 && 'value' in formState && 'disabled' in formState;
+  return (
+    typeof formState === 'object' &&
+    formState !== null &&
+    Object.keys(formState).length === 2 &&
+    'value' in formState &&
+    'disabled' in formState
+  );
 }
 
-export const FormControl: ɵFormControlCtor =
-    (class FormControl<TValue = any> extends AbstractControl<
-         TValue> implements FormControlInterface<TValue> {
-      /** @publicApi */
-      public readonly defaultValue: TValue = null as unknown as TValue;
+export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
+  extends AbstractControl<TValue>
+  implements FormControlInterface<TValue>
+{
+  /** @publicApi */
+  public readonly defaultValue: TValue = null as unknown as TValue;
 
-      /** @internal */
-      _onChange: Array<Function> = [];
+  /** @internal */
+  _onChange: Array<Function> = [];
 
-      /** @internal */
-      _pendingValue!: TValue;
+  /** @internal */
+  _pendingValue!: TValue;
 
-      /** @internal */
-      _pendingChange: boolean = false;
+  /** @internal */
+  _pendingChange: boolean = false;
 
-      constructor(
-          // formState and defaultValue will only be null if T is nullable
-          formState: FormControlState<TValue>|TValue = null as unknown as TValue,
-          validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
-          asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null) {
-        super(
-            pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
-        this._applyFormState(formState);
-        this._setUpdateStrategy(validatorOrOpts);
-        this._initObservables();
-        this.updateValueAndValidity({
-          onlySelf: true,
-          // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
-          // `VALID` or `INVALID`.
-          // The status should be broadcasted via the `statusChanges` observable, so we set
-          // `emitEvent` to `true` to allow that during the control creation process.
-          emitEvent: !!this.asyncValidator
-        });
-        if (isOptionsObj(validatorOrOpts) &&
-            (validatorOrOpts.nonNullable || validatorOrOpts.initialValueIsDefault)) {
-          if (isFormControlState(formState)) {
-            this.defaultValue = formState.value;
-          } else {
-            this.defaultValue = formState;
-          }
-        }
-      }
-
-      override setValue(value: TValue, options: {
-        onlySelf?: boolean,
-        emitEvent?: boolean,
-        emitModelToViewChange?: boolean,
-        emitViewToModelChange?: boolean
-      } = {}): void {
-        (this as Writable<this>).value = this._pendingValue = value;
-        if (this._onChange.length && options.emitModelToViewChange !== false) {
-          this._onChange.forEach(
-              (changeFn) => changeFn(this.value, options.emitViewToModelChange !== false));
-        }
-        this.updateValueAndValidity(options);
-      }
-
-      override patchValue(value: TValue, options: {
-        onlySelf?: boolean,
-        emitEvent?: boolean,
-        emitModelToViewChange?: boolean,
-        emitViewToModelChange?: boolean
-      } = {}): void {
-        this.setValue(value, options);
-      }
-
-      override reset(
-          formState: TValue|FormControlState<TValue> = this.defaultValue,
-          options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-        this._applyFormState(formState);
-        this.markAsPristine(options);
-        this.markAsUntouched(options);
-        this.setValue(this.value, options);
-        this._pendingChange = false;
-      }
-
-      /**  @internal */
-      override _updateValue(): void {}
-
-      /**  @internal */
-      override _anyControls(condition: (c: AbstractControl) => boolean): boolean {
-        return false;
-      }
-
-      /**  @internal */
-      override _allControlsDisabled(): boolean {
-        return this.disabled;
-      }
-
-      registerOnChange(fn: Function): void {
-        this._onChange.push(fn);
-      }
-
-      /** @internal */
-      _unregisterOnChange(fn: (value?: any, emitModelEvent?: boolean) => void): void {
-        removeListItem(this._onChange, fn);
-      }
-
-      registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
-        this._onDisabledChange.push(fn);
-      }
-
-      /** @internal */
-      _unregisterOnDisabledChange(fn: (isDisabled: boolean) => void): void {
-        removeListItem(this._onDisabledChange, fn);
-      }
-
-      /** @internal */
-      override _forEachChild(cb: (c: AbstractControl) => void): void {}
-
-      /** @internal */
-      override _syncPendingControls(): boolean {
-        if (this.updateOn === 'submit') {
-          if (this._pendingDirty) this.markAsDirty();
-          if (this._pendingTouched) this.markAsTouched();
-          if (this._pendingChange) {
-            this.setValue(this._pendingValue, {onlySelf: true, emitModelToViewChange: false});
-            return true;
-          }
-        }
-        return false;
-      }
-
-      private _applyFormState(formState: FormControlState<TValue>|TValue) {
-        if (isFormControlState(formState)) {
-          (this as Writable<this>).value = this._pendingValue = formState.value;
-          formState.disabled ? this.disable({onlySelf: true, emitEvent: false}) :
-                               this.enable({onlySelf: true, emitEvent: false});
-        } else {
-          (this as Writable<this>).value = this._pendingValue = formState;
-        }
-      }
+  constructor(
+    // formState and defaultValue will only be null if T is nullable
+    formState: FormControlState<TValue> | TValue = null as unknown as TValue,
+    validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null,
+    asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null,
+  ) {
+    super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
+    this._applyFormState(formState);
+    this._setUpdateStrategy(validatorOrOpts);
+    this._initObservables();
+    this.updateValueAndValidity({
+      onlySelf: true,
+      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
+      // `VALID` or `INVALID`.
+      // The status should be broadcasted via the `statusChanges` observable, so we set
+      // `emitEvent` to `true` to allow that during the control creation process.
+      emitEvent: !!this.asyncValidator,
     });
+    if (
+      isOptionsObj(validatorOrOpts) &&
+      (validatorOrOpts.nonNullable || validatorOrOpts.initialValueIsDefault)
+    ) {
+      if (isFormControlState(formState)) {
+        this.defaultValue = formState.value;
+      } else {
+        this.defaultValue = formState;
+      }
+    }
+  }
+
+  override setValue(
+    value: TValue,
+    options: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+      emitModelToViewChange?: boolean;
+      emitViewToModelChange?: boolean;
+    } = {},
+  ): void {
+    (this as Writable<this>).value = this._pendingValue = value;
+    if (this._onChange.length && options.emitModelToViewChange !== false) {
+      this._onChange.forEach((changeFn) =>
+        changeFn(this.value, options.emitViewToModelChange !== false),
+      );
+    }
+    this.updateValueAndValidity(options);
+  }
+
+  override patchValue(
+    value: TValue,
+    options: {
+      onlySelf?: boolean;
+      emitEvent?: boolean;
+      emitModelToViewChange?: boolean;
+      emitViewToModelChange?: boolean;
+    } = {},
+  ): void {
+    this.setValue(value, options);
+  }
+
+  override reset(
+    formState: TValue | FormControlState<TValue> = this.defaultValue,
+    options: {onlySelf?: boolean; emitEvent?: boolean} = {},
+  ): void {
+    this._applyFormState(formState);
+    this.markAsPristine(options);
+    this.markAsUntouched(options);
+    this.setValue(this.value, options);
+    this._pendingChange = false;
+  }
+
+  /**  @internal */
+  override _updateValue(): void {}
+
+  /**  @internal */
+  override _anyControls(condition: (c: AbstractControl) => boolean): boolean {
+    return false;
+  }
+
+  /**  @internal */
+  override _allControlsDisabled(): boolean {
+    return this.disabled;
+  }
+
+  registerOnChange(fn: Function): void {
+    this._onChange.push(fn);
+  }
+
+  /** @internal */
+  _unregisterOnChange(fn: (value?: any, emitModelEvent?: boolean) => void): void {
+    removeListItem(this._onChange, fn);
+  }
+
+  registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
+    this._onDisabledChange.push(fn);
+  }
+
+  /** @internal */
+  _unregisterOnDisabledChange(fn: (isDisabled: boolean) => void): void {
+    removeListItem(this._onDisabledChange, fn);
+  }
+
+  /** @internal */
+  override _forEachChild(cb: (c: AbstractControl) => void): void {}
+
+  /** @internal */
+  override _syncPendingControls(): boolean {
+    if (this.updateOn === 'submit') {
+      if (this._pendingDirty) this.markAsDirty();
+      if (this._pendingTouched) this.markAsTouched();
+      if (this._pendingChange) {
+        this.setValue(this._pendingValue, {onlySelf: true, emitModelToViewChange: false});
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private _applyFormState(formState: FormControlState<TValue> | TValue) {
+    if (isFormControlState(formState)) {
+      (this as Writable<this>).value = this._pendingValue = formState.value;
+      formState.disabled
+        ? this.disable({onlySelf: true, emitEvent: false})
+        : this.enable({onlySelf: true, emitEvent: false});
+    } else {
+      (this as Writable<this>).value = this._pendingValue = formState;
+    }
+  }
+};
 
 interface UntypedFormControlCtor {
-  new(): UntypedFormControl;
+  new (): UntypedFormControl;
 
-  new(formState?: any, validatorOrOpts?: ValidatorFn|ValidatorFn[]|FormControlOptions|null,
-      asyncValidator?: AsyncValidatorFn|AsyncValidatorFn[]|null): UntypedFormControl;
+  new (
+    formState?: any,
+    validatorOrOpts?: ValidatorFn | ValidatorFn[] | FormControlOptions | null,
+    asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null,
+  ): UntypedFormControl;
 
   /**
    * The presence of an explicit `prototype` property provides backwards-compatibility for apps that
@@ -570,4 +611,4 @@ export const UntypedFormControl: UntypedFormControlCtor = FormControl;
  * @publicApi
  */
 export const isFormControl = (control: unknown): control is FormControl =>
-    control instanceof FormControl;
+  control instanceof FormControl;
