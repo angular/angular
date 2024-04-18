@@ -167,7 +167,7 @@ export class DecimalPipe implements PipeTransform {
 export { DOCUMENT }
 
 // @public
-export function formatCurrency(value: number, locale: string, currency: string, currencyCode?: string, digitsInfo?: string): string;
+export function formatCurrency(value: number, locale: string, display: 'code' | 'symbol' | 'symbol-narrow' | string, currencyCode?: string, digitsInfo?: string): string;
 
 // @public
 export function formatDate(value: string | number | Date, format: string, locale: string, timezone?: string): string;

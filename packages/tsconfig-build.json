@@ -19,7 +19,7 @@
     "moduleResolution": "node",
     "module": "esnext",
     "target": "es2022",
-    "lib": ["es2020", "es2022", "dom", "dom.iterable"],
+    "lib": ["es2020", "es2022", "dom", "dom.iterable", "ES2022.Intl"],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": [],

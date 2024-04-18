@@ -17,6 +17,7 @@ export {formatDate} from './i18n/format_date';
 export {formatCurrency, formatNumber, formatPercent} from './i18n/format_number';
 export {NgLocaleLocalization, NgLocalization} from './i18n/localization';
 export {registerLocaleData} from './i18n/locale_data';
+export {useIntlImplementation, useLegacyImplementation} from './i18n/implementation';
 export {
   Plural,
   NumberFormatStyle,
