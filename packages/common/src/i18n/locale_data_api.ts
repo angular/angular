@@ -18,6 +18,7 @@ import {
 
 import {CURRENCIES_EN, CurrenciesSymbols} from './currencies';
 import {RuntimeErrorCode} from '../errors';
+import {FormStyle, TranslationWidth} from './format_date_interface';
 
 /**
  * Format styles that can be used to represent numbers.
@@ -53,42 +54,6 @@ export enum Plural {
   Few = 3,
   Many = 4,
   Other = 5,
-}
-
-/**
- * Context-dependant translation forms for strings.
- * Typically the standalone version is for the nominative form of the word,
- * and the format version is used for the genitive case.
- * @see [CLDR website](http://cldr.unicode.org/translation/date-time-1/date-time#TOC-Standalone-vs.-Format-Styles)
- * @see [Internationalization (i18n) Guide](guide/i18n)
- *
- * @publicApi
- *
- * @deprecated locale data getters are deprecated
- */
-export enum FormStyle {
-  Format,
-  Standalone,
-}
-
-/**
- * String widths available for translations.
- * The specific character widths are locale-specific.
- * Examples are given for the word "Sunday" in English.
- *
- * @publicApi
- *
- * @deprecated locale data getters are deprecated
- */
-export enum TranslationWidth {
-  /** 1 character for `en-US`. For example: 'S' */
-  Narrow,
-  /** 3 characters for `en-US`. For example: 'Sun' */
-  Abbreviated,
-  /** Full length for `en-US`. For example: "Sunday" */
-  Wide,
-  /** 2 characters for `en-US`, For example: "Su" */
-  Short,
 }
 
 /**

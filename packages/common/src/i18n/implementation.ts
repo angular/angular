@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {useDateIntlFormatting, useDateLegacyFormatting} from './format_date';
 import {useNumberIntlImplementation, useNumberLegacyImplementation} from './format_number';
 import {
   ɵusePluralIntlImplementation as usePluralIntlImplementation,
@@ -18,6 +19,7 @@ import {
 export const useIntlImplementation = () => {
   useNumberIntlImplementation();
   usePluralIntlImplementation();
+  useDateIntlFormatting();
 };
 
 /**
@@ -26,4 +28,5 @@ export const useIntlImplementation = () => {
 export const useLegacyImplementation = () => {
   useNumberLegacyImplementation();
   usePluralLegacyImplementation();
+  useDateLegacyFormatting();
 };
