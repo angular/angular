@@ -449,6 +449,24 @@ describe('provideHttpClient', () => {
       expect(consoleWarnSpy.calls.count()).toBe(0);
     });
 
+    it('should throw when fetch is used together with withRequestsMadeViaParent()', () => {
+      TestBed.resetTestingModule();
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ]
+      });
+
+      expect(() => createEnvironmentInjector(
+        [provideHttpClient(
+          withFetch(),
+          withRequestsMadeViaParent(),
+        )],
+        TestBed.inject(EnvironmentInjector))).toThrow();
+    });
+
     it('should warn during SSR if fetch is not configured', () => {
       resetFetchBackendWarningFlag();
 

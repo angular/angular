@@ -89,6 +89,13 @@ export function provideHttpClient(...features: HttpFeature<HttpFeatureKind>[]):
               `Configuration error: found both withXsrfConfiguration() and withNoXsrfProtection() in the same call to provideHttpClient(), which is a contradiction.` :
               '');
     }
+
+    if (featureKinds.has(HttpFeatureKind.RequestsMadeViaParent) && featureKinds.has(HttpFeatureKind.Fetch)) {
+      throw new Error(
+          ngDevMode ?
+              `Configuration error: found both withRequestsMadeViaParent() and withFetch() in the same call to provideHttpClient(), which is a contradiction.` :
+              '');
+    }
   }
 
   const providers: Provider[] = [
