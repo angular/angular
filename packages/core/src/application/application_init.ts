@@ -8,7 +8,16 @@
 
 import {Observable} from 'rxjs';
 
-import {inject, Injectable, InjectionToken} from '../di';
+import {
+  EnvironmentProviders,
+  inject,
+  Injectable,
+  InjectionToken,
+  Injector,
+  makeEnvironmentProviders,
+  Provider,
+  runInInjectionContext,
+} from '../di';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {isPromise, isSubscribable} from '../util/lang';
 
@@ -25,7 +34,12 @@ import {isPromise, isSubscribable} from '../util/lang';
  * The function is executed during the application bootstrap process,
  * and the needed data is available on startup.
  *
+ * Note that the provided initializer is run in the injection context.
+ *
+ * @deprecated from v18.1.0, use provideAppInitializer instead
+ *
  * @see {@link ApplicationInitStatus}
+ * @see {@link provideAppInitializer}
  *
  * @usageNotes
  *
@@ -34,10 +48,12 @@ import {isPromise, isSubscribable} from '../util/lang';
  * ### Example with NgModule-based application
  * ```
  *  function initializeApp(): Promise<any> {
- *    return new Promise((resolve, reject) => {
- *      // Do some asynchronous stuff
- *      resolve();
- *    });
+ *    const http = inject(HttpClient);
+ *    return firstValueFrom(
+ *      http
+ *        .get("https://someUrl.com/api/user")
+ *        .pipe(tap(user => { ... }))
+ *    );
  *  }
  *
  *  @NgModule({
@@ -46,8 +62,8 @@ import {isPromise, isSubscribable} from '../util/lang';
  *   bootstrap: [AppComponent],
  *   providers: [{
  *     provide: APP_INITIALIZER,
- *     useFactory: () => initializeApp,
- *     multi: true
+ *     useValue: initializeApp,
+ *     multi: true,
  *    }]
  *   })
  *  export class AppModule {}
@@ -55,13 +71,13 @@ import {isPromise, isSubscribable} from '../util/lang';
  *
  * ### Example with standalone application
  * ```
- * export function initializeApp(http: HttpClient) {
- *   return (): Promise<any> =>
- *     firstValueFrom(
- *       http
- *         .get("https://someUrl.com/api/user")
- *         .pipe(tap(user => { ... }))
- *     );
+ * function initializeApp() {
+ *   const http = inject(HttpClient);
+ *   return firstValueFrom(
+ *     http
+ *       .get("https://someUrl.com/api/user")
+ *       .pipe(tap(user => { ... }))
+ *   );
  * }
  *
  * bootstrapApplication(App, {
@@ -69,9 +85,8 @@ import {isPromise, isSubscribable} from '../util/lang';
  *     provideHttpClient(),
  *     {
  *       provide: APP_INITIALIZER,
- *       useFactory: initializeApp,
+ *       useValue: initializeApp,
  *       multi: true,
- *       deps: [HttpClient],
  *     },
  *   ],
  * });
@@ -86,44 +101,46 @@ import {isPromise, isSubscribable} from '../util/lang';
  *
  * ### Example with NgModule-based application
  * ```
- *  function initializeAppFactory(httpClient: HttpClient): () => Observable<any> {
- *   return () => httpClient.get("https://someUrl.com/api/user")
- *     .pipe(
- *        tap(user => { ... })
- *     );
- *  }
+ * function initializeApp() {
+ *   const http = inject(HttpClient);
+ *   return firstValueFrom(
+ *     http
+ *       .get("https://someUrl.com/api/user")
+ *       .pipe(tap(user => { ... }))
+ *   );
+ * }
  *
- *  @NgModule({
- *    imports: [BrowserModule, HttpClientModule],
- *    declarations: [AppComponent],
- *    bootstrap: [AppComponent],
- *    providers: [{
- *      provide: APP_INITIALIZER,
- *      useFactory: initializeAppFactory,
- *      deps: [HttpClient],
- *      multi: true
- *    }]
- *  })
- *  export class AppModule {}
+ * @NgModule({
+ *   imports: [BrowserModule, HttpClientModule],
+ *   declarations: [AppComponent],
+ *   bootstrap: [AppComponent],
+ *   providers: [{
+ *     provide: APP_INITIALIZER,
+ *     useValue: initializeApp,
+ *     multi: true,
+ *   }]
+ * })
+ * export class AppModule {}
  * ```
  *
  * ### Example with standalone application
  * ```
- *  function initializeAppFactory(httpClient: HttpClient): () => Observable<any> {
- *   return () => httpClient.get("https://someUrl.com/api/user")
- *     .pipe(
- *        tap(user => { ... })
- *     );
- *  }
+ * function initializeApp() {
+ *   const http = inject(HttpClient);
+ *   return firstValueFrom(
+ *     http
+ *       .get("https://someUrl.com/api/user")
+ *       .pipe(tap(user => { ... }))
+ *   );
+ * }
  *
  * bootstrapApplication(App, {
  *   providers: [
  *     provideHttpClient(),
  *     {
  *       provide: APP_INITIALIZER,
- *       useFactory: initializeAppFactory,
+ *       useValue: initializeApp,
  *       multi: true,
- *       deps: [HttpClient],
  *     },
  *   ],
  * });
@@ -134,6 +151,56 @@ import {isPromise, isSubscribable} from '../util/lang';
 export const APP_INITIALIZER = new InjectionToken<
   ReadonlyArray<() => Observable<unknown> | Promise<unknown> | void>
 >(ngDevMode ? 'Application Initializer' : '');
+
+/**
+ * @description
+ * The provided function is injected at application startup and executed during
+ * app initialization. If the function returns a Promise or an Observable, initialization
+ * does not complete until the Promise is resolved or the Observable is completed.
+ *
+ * You can, for example, create a function that loads language data
+ * or an external configuration, and provide that function using `provideAppInitializer()`.
+ * The function is executed during the application bootstrap process,
+ * and the needed data is available on startup.
+ *
+ * Note that the provided initializer is run in the injection context.
+ *
+ * Previously, this was achieved using the `APP_INITIALIZER` token which is now deprecated.
+ *
+ * @see {@link APP_INITIALIZER}
+ *
+ * @usageNotes
+ * The following example illustrates how to configure an initialization function using
+ * `provideAppInitializer()`
+ * ```
+ * bootstrapApplication(App, {
+ *   providers: [
+ *     provideAppInitializer(() => {
+ *       const http = inject(HttpClient);
+ *       return firstValueFrom(
+ *         http
+ *           .get("https://someUrl.com/api/user")
+ *           .pipe(tap(user => { ... }))
+ *       );
+ *     }),
+ *     provideHttpClient(),
+ *   ],
+ * });
+ * ```
+ *
+ * @publicApi
+ */
+export function provideAppInitializer(
+  initializerFn: () => Observable<unknown> | Promise<unknown> | void,
+): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useValue: initializerFn,
+    },
+  ]);
+}
 
 /**
  * A class that reflects the state of running {@link APP_INITIALIZER} functions.
@@ -155,6 +222,7 @@ export class ApplicationInitStatus {
   });
 
   private readonly appInits = inject(APP_INITIALIZER, {optional: true}) ?? [];
+  private readonly injector = inject(Injector);
 
   constructor() {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && !Array.isArray(this.appInits)) {
@@ -176,7 +244,7 @@ export class ApplicationInitStatus {
 
     const asyncInitPromises = [];
     for (const appInits of this.appInits) {
-      const initResult = appInits();
+      const initResult = runInInjectionContext(this.injector, appInits);
       if (isPromise(initResult)) {
         asyncInitPromises.push(initResult);
       } else if (isSubscribable(initResult)) {

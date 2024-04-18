@@ -27,7 +27,6 @@ import {
   EnvironmentProviders,
   ExistingProvider,
   FactoryProvider,
-  ImportedNgModuleProviders,
   InternalEnvironmentProviders,
   isEnvironmentProviders,
   ModuleWithProviders,
@@ -48,6 +47,43 @@ export function makeEnvironmentProviders(
   return {
     ɵproviders: providers,
   } as unknown as EnvironmentProviders;
+}
+
+/**
+ * @description
+ * This function is used to provide initialization functions that will be executed upon construction
+ * of an environment injector.
+ *
+ * Note that the provided initializer is run in the injection context.
+ *
+ * Previously, this was achieved using the `ENVIRONMENT_INITIALIZER` token which is now deprecated.
+ *
+ * @see {@link ENVIRONMENT_INITIALIZER}
+ *
+ * @usageNotes
+ * The following example illustrates how to configure an initialization function using
+ * `provideEnvironmentInitializer()`
+ * ```
+ * createEnvironmentInjector(
+ *   [
+ *     provideEnvironmentInjector(() => {
+ *       console.log('environment initialized');
+ *     }),
+ *   ],
+ *   parentInjector
+ * );
+ * ```
+ *
+ * @publicApi
+ */
+export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      multi: true,
+      useValue: initializerFn,
+    },
+  ]);
 }
 
 /**

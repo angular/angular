@@ -8,7 +8,11 @@
 import {
   APP_INITIALIZER,
   ApplicationInitStatus,
-} from '@angular/core/src/application/application_init';
+  Component,
+  inject,
+  InjectionToken,
+  provideAppInitializer,
+} from '@angular/core';
 import {EMPTY, Observable, Subscriber} from 'rxjs';
 
 import {TestBed} from '../testing';
@@ -187,4 +191,75 @@ describe('ApplicationInitStatus', () => {
       );
     });
   });
+
+  describe('provideAppInitializer', () => {
+    it('should call the provided function when app is initialized', async () => {
+      let isInitialized = false;
+      TestBed.configureTestingModule({
+        providers: [
+          provideAppInitializer(() => {
+            isInitialized = true;
+          }),
+        ],
+      });
+
+      expect(isInitialized).toBeFalse();
+
+      await initApp();
+
+      expect(isInitialized).toBeTrue();
+    });
+
+    it('should be able to inject dependencies', async () => {
+      const TEST_TOKEN = new InjectionToken<string>('TEST_TOKEN', {
+        providedIn: 'root',
+        factory: () => 'test',
+      });
+      let injectedValue!: string;
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideAppInitializer(() => {
+            injectedValue = inject(TEST_TOKEN);
+          }),
+        ],
+      });
+
+      await initApp();
+
+      expect(injectedValue).toBe('test');
+    });
+
+    it('should handle async initializer', async () => {
+      let isInitialized = false;
+      TestBed.configureTestingModule({
+        providers: [
+          provideAppInitializer(async () => {
+            await new Promise((resolve) => setTimeout(resolve));
+            isInitialized = true;
+          }),
+        ],
+      });
+
+      await initApp();
+
+      expect(isInitialized).toBeTrue();
+    });
+  });
 });
+
+async function initApp() {
+  return await TestBed.inject(ApplicationInitStatus).donePromise;
+}
+
+/**
+ * Typing tests.
+ */
+
+@Component({
+  template: '',
+  // @ts-expect-error: `provideAppInitializer()` should not work with Component.providers, as it
+  // wouldn't be executed anyway.
+  providers: [provideAppInitializer(() => {})],
+})
+class Test {}

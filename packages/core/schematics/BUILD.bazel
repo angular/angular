@@ -37,6 +37,7 @@ rollup_bundle(
         "//packages/core/schematics/ng-generate/signal-input-migration:index.ts": "signal-input-migration",
         "//packages/core/schematics/migrations/explicit-standalone-flag:index.ts": "explicit-standalone-flag",
         "//packages/core/schematics/migrations/pending-tasks:index.ts": "pending-tasks",
+        "//packages/core/schematics/migrations/provide-initializer:index.ts": "provide-initializer",
     },
     format = "cjs",
     link_workspace_root = True,
@@ -48,6 +49,7 @@ rollup_bundle(
     deps = [
         "//packages/core/schematics/migrations/explicit-standalone-flag",
         "//packages/core/schematics/migrations/pending-tasks",
+        "//packages/core/schematics/migrations/provide-initializer",
         "//packages/core/schematics/ng-generate/control-flow-migration",
         "//packages/core/schematics/ng-generate/inject-migration",
         "//packages/core/schematics/ng-generate/route-lazy-loading",

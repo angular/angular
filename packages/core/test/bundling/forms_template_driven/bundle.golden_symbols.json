@@ -1746,6 +1746,9 @@
     "name": "runEffectsInView"
   },
   {
+    "name": "runInInjectionContext"
+  },
+  {
     "name": "saveNameToExportMap"
   },
   {
