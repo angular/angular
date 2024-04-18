@@ -39,7 +39,7 @@ For example, you can ask `HttpClient` to download the raw bytes of a `.jpeg` ima
 
 <docs-code language="ts">
 http.get('/images/dog.jpg', {responseType: 'arraybuffer'}).subscribe(buffer => {
-  console.log('The image is ' + buffer.length + ' bytes large');
+  console.log('The image is ' + buffer.byteLength + ' bytes large');
 });
 </docs-code>
 
