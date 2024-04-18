@@ -816,6 +816,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invokeHostBindingsInCreationMode"
   },
   {
@@ -948,9 +951,6 @@
     "name": "parseAndConvertBindingsForDefinition"
   },
   {
-    "name": "performanceMarkFeature"
-  },
-  {
     "name": "processInjectorTypesWithProviders"
   },
   {
@@ -961,9 +961,6 @@
   },
   {
     "name": "profiler"
-  },
-  {
-    "name": "provideZoneChangeDetection"
   },
   {
     "name": "refreshContentQueries"

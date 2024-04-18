@@ -20,11 +20,9 @@ import {
   ModuleWithProviders,
   NgModule,
   NgModuleFactory,
-  NgZone,
   Pipe,
   PlatformRef,
   Provider,
-  provideZoneChangeDetection,
   resolveForwardRef,
   StaticProvider,
   Type,
@@ -42,6 +40,7 @@ import {
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetInjectableDef as getInjectableDef,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
+  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   ɵisComponentDefPendingResolution,
   ɵisEnvironmentProviders as isEnvironmentProviders,
   ɵNG_COMP_DEF as NG_COMP_DEF,
@@ -927,7 +926,7 @@ export class TestBedCompiler {
   private compileTestModule(): void {
     class RootScopeModule {}
     compileNgModuleDefs(RootScopeModule as NgModuleType<any>, {
-      providers: [...this.rootProviderOverrides, provideZoneChangeDetection()],
+      providers: [...this.rootProviderOverrides, internalProvideZoneChangeDetection({})],
     });
 
     const providers = [

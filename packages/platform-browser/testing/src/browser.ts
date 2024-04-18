@@ -13,8 +13,8 @@ import {
   NgModule,
   PLATFORM_INITIALIZER,
   platformCore,
-  provideZoneChangeDetection,
   StaticProvider,
+  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
 } from '@angular/core';
 import {BrowserModule, ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 
@@ -46,7 +46,7 @@ export const platformBrowserTesting = createPlatformFactory(
   exports: [BrowserModule],
   providers: [
     {provide: APP_ID, useValue: 'a'},
-    provideZoneChangeDetection(),
+    internalProvideZoneChangeDetection({}),
     {provide: PlatformLocation, useClass: MockPlatformLocation},
   ],
 })

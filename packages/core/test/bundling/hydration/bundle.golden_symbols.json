@@ -999,6 +999,9 @@
     "name": "internalImportProvidersFrom"
   },
   {
+    "name": "internalProvideZoneChangeDetection"
+  },
+  {
     "name": "invokeHostBindingsInCreationMode"
   },
   {
@@ -1210,9 +1213,6 @@
   },
   {
     "name": "profiler"
-  },
-  {
-    "name": "provideZoneChangeDetection"
   },
   {
     "name": "readableStreamLikeToAsyncGenerator"

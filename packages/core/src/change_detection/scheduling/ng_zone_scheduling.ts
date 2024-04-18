@@ -26,7 +26,11 @@ import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
 import {alwaysProvideZonelessScheduler} from './flags';
-import {ChangeDetectionScheduler, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
+import {
+  ChangeDetectionScheduler,
+  ZONELESS_ENABLED,
+  ZONELESS_SCHEDULER_DISABLED,
+} from './zoneless_scheduling';
 import {ChangeDetectionSchedulerImpl} from './zoneless_scheduling_impl';
 
 @Injectable({providedIn: 'root'})
@@ -74,9 +78,10 @@ export function internalProvideZoneChangeDetection({
   ngZoneFactory,
   ignoreChangesOutsideZone,
 }: {
-  ngZoneFactory: () => NgZone;
+  ngZoneFactory?: () => NgZone;
   ignoreChangesOutsideZone?: boolean;
 }): StaticProvider[] {
+  ngZoneFactory ??= () => new NgZone(getNgZoneOptions());
   return [
     {provide: NgZone, useFactory: ngZoneFactory},
     {
@@ -161,7 +166,7 @@ export function provideZoneChangeDetection(options?: NgZoneOptions): Environment
   });
   return makeEnvironmentProviders([
     typeof ngDevMode === 'undefined' || ngDevMode
-      ? {provide: PROVIDED_NG_ZONE, useValue: true}
+      ? [{provide: PROVIDED_NG_ZONE, useValue: true}, bothZoneAndZonelessErrorCheckProvider]
       : [],
     zoneProviders,
   ]);
@@ -295,3 +300,19 @@ export class ZoneStablePendingTask {
     this.subscription.unsubscribe();
   }
 }
+
+const bothZoneAndZonelessErrorCheckProvider = {
+  provide: ENVIRONMENT_INITIALIZER,
+  multi: true,
+  useFactory: () => {
+    const providedZoneless = inject(ZONELESS_ENABLED, {optional: true});
+    if (providedZoneless) {
+      throw new RuntimeError(
+        RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
+        'Invalid change detection configuration: ' +
+          'provideZoneChangeDetection and provideExperimentalZonelessChangeDetection cannot be used together.',
+      );
+    }
+    return () => {};
+  },
+};
