@@ -22,10 +22,9 @@ export function bootstrapEventContract(
   container: Element,
   appId: string,
   events: string[],
+  anyWindow: any = window,
 ) {
   const contractContainer = new EventContractContainer(container);
-  // tslint:disable-next-line:no-any
-  const anyWindow = window as any;
   if (!anyWindow[field]) {
     anyWindow[field] = {};
   }
@@ -34,6 +33,7 @@ export function bootstrapEventContract(
   for (const ev of events) {
     eventContract.addEvent(ev);
   }
+  return eventContract;
 }
 
 export function cleanup() {

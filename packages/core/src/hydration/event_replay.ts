@@ -6,15 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Dispatcher, EventContract, EventInfoWrapper, registerDispatcher} from '@angular/core/primitives/event-dispatch';
+
+import {APP_BOOTSTRAP_LISTENER, ApplicationRef, whenStable} from '../application/application_ref';
+import {APP_ID} from '../application/application_tokens';
+import {Injector} from '../di';
+import {inject} from '../di/injector_compatibility';
 import {Provider} from '../di/interface/provider';
+import {getLContext} from '../render3/context_discovery';
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RNode} from '../render3/interfaces/renderer_dom';
-import {CLEANUP, LView, TView} from '../render3/interfaces/view';
+import {CLEANUP, LView, TVIEW, TView} from '../render3/interfaces/view';
+import {isPlatformBrowser} from '../render3/util/misc_utils';
 import {unwrapRNode} from '../render3/util/view_utils';
 
 import {IS_EVENT_REPLAY_ENABLED} from './tokens';
 
 export const EVENT_REPLAY_ENABLED_DEFAULT = false;
+export const CONTRACT_PROPERTY = 'ngContracts';
 
 /**
  * Returns a set of providers required to setup support for event replay.
@@ -26,6 +35,28 @@ export function withEventReplay(): Provider[] {
       provide: IS_EVENT_REPLAY_ENABLED,
       useValue: true,
     },
+    {
+      provide: APP_BOOTSTRAP_LISTENER,
+      useFactory: () => {
+        if (isPlatformBrowser()) {
+          const injector = inject(Injector);
+          const appRef = inject(ApplicationRef);
+          return () => {
+            whenStable(appRef).then(() => {
+              const appId = injector.get(APP_ID);
+              const eventContract = (globalThis as any)[CONTRACT_PROPERTY][appId] as EventContract;
+              if (eventContract) {
+                const dispatcher: Dispatcher = new Dispatcher(() => handleEvent);
+                setEventReplayer(appRef, new Set([appId]), dispatcher);
+                registerDispatcher(eventContract, dispatcher);
+              }
+            });
+          };
+        }
+        return () => {};  // noop
+      },
+      multi: true,
+    }
   ];
 }
 
@@ -78,4 +109,58 @@ export function setJSActionAttribute(
       nativeElement.setAttribute('jsaction', parts.join(';'));
     }
   }
+}
+
+function setEventReplayer(appRef: ApplicationRef, namespaces: Set<string>, dispatcher: Dispatcher) {
+  dispatcher.setEventReplayer(queue => {
+    for (const event of queue) {
+      handleEvent(event);
+    }
+  });
+}
+
+function getLViewByElement(element: Element): LView|null {
+  // TODO: we should *not* use discovery utils here, consider extracting
+  // the lookup logic into a separate function and use it here and in the
+  // discovery code.
+  const lContext = getLContext(element);
+  return lContext?.lView ?? null;
+}
+
+function handleEvent(event: EventInfoWrapper) {
+  const eventName = event.getEventType();  // 'click'
+  const nativeElement = event.getAction()?.element;
+  // Dispatch event via Angular's logic
+  if (nativeElement) {
+    const lView = getLViewByElement(nativeElement);
+    if (lView !== null) {
+      const tView = lView[TVIEW];
+      const listeners = getEventListeners(tView, lView, nativeElement, eventName);
+      for (const listener of listeners) {
+        listener();
+      }
+    }
+  }
+}
+
+function getEventListeners(
+    tView: TView, lView: LView, nativeElement: Element, eventName: string): Function[] {
+  const listeners: Function[] = [];
+  const lCleanup = lView[CLEANUP];
+  const tCleanup = tView.cleanup;
+  if (tCleanup && lCleanup) {
+    for (let i = 0; i < tCleanup.length;) {
+      const storedEventName = tCleanup[i++];
+      const nativeElementIndex = tCleanup[i++];
+      if (typeof storedEventName === 'string') {
+        const listenerElement = unwrapRNode(lView[nativeElementIndex]) as any as Element;
+        const listener: (value: any) => any = lCleanup[tCleanup[i++]];
+        i++;  // increment to the next position;
+        if (listenerElement === nativeElement && eventName === storedEventName) {
+          listeners.push(listener);
+        }
+      }
+    }
+  }
+  return listeners;
 }
