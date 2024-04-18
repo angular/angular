@@ -115,7 +115,7 @@ export const isWebWorker: boolean =
 export const isNode: boolean =
   !('nw' in _global) &&
   typeof _global.process !== 'undefined' &&
-  {}.toString.call(_global.process) === '[object process]';
+  _global.process.toString() === '[object process]';
 
 export const isBrowser: boolean =
   !isNode && !isWebWorker && !!(isWindowExists && internalWindow['HTMLElement']);
@@ -125,7 +125,7 @@ export const isBrowser: boolean =
 // this code.
 export const isMix: boolean =
   typeof _global.process !== 'undefined' &&
-  {}.toString.call(_global.process) === '[object process]' &&
+  _global.process.toString() === '[object process]' &&
   !isWebWorker &&
   !!(isWindowExists && internalWindow['HTMLElement']);
 
