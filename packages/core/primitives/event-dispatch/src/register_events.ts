@@ -16,26 +16,24 @@ import {EventContract} from './eventcontract';
  * @param container The container that listens to events
  * @param appId A given identifier for an application. If there are multiple apps on the page
  *              then this is how contracts can be initialized for each one.
+ * @param events An array of event names that should be listened to.
+ * @param anyWindow The global window object that should receive the event contract.
+ * @returns The `event` contract. This is both assigned to `anyWindow` and returned for testing.
  */
 export function bootstrapEventContract(
   field: string,
   container: Element,
   appId: string,
   events: string[],
+  anyWindow: any = window,
 ) {
-  const contractContainer = new EventContractContainer(container);
-  // tslint:disable-next-line:no-any
-  const anyWindow = window as any;
   if (!anyWindow[field]) {
     anyWindow[field] = {};
   }
-  const eventContract = new EventContract(contractContainer, /* stopPropagation */ false);
+  const eventContract = new EventContract(new EventContractContainer(container));
   anyWindow[field][appId] = eventContract;
   for (const ev of events) {
     eventContract.addEvent(ev);
   }
-}
-
-export function cleanup() {
-  (globalThis as any).__ngEventContracts__ = undefined;
+  return eventContract;
 }
