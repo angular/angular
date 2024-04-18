@@ -10,18 +10,20 @@ import {ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
-import {formArrayNameExample, formControlNameExample, formGroupNameExample, ngModelGroupExample} from './error_examples';
+import {formArrayNameExample, formControlNameExample, formGroupNameExample, ngModelGroupExample,} from './error_examples';
 
-
-export function controlParentException(): Error {
+export function controlParentException(controlName: string|number|null): Error {
   return new RuntimeError(
       RuntimeErrorCode.FORM_CONTROL_NAME_MISSING_PARENT,
       `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
 
+    Form Control (name or index): ${controlName ?? 'unavailable'}
+
     Example:
 
-    ${formControlNameExample}`);
+    ${formControlNameExample}`,
+  );
 }
 
 export function ngModelGroupException(): Error {
@@ -36,7 +38,8 @@ export function ngModelGroupException(): Error {
 
       Option 2: Use ngModel instead of formControlName (template-driven strategy)
 
-      ${ngModelGroupExample}`);
+      ${ngModelGroupExample}`,
+  );
 }
 
 export function missingFormException(): Error {
@@ -46,7 +49,8 @@ export function missingFormException(): Error {
 
       Example:
 
-      ${formControlNameExample}`);
+      ${formControlNameExample}`,
+  );
 }
 
 export function groupParentException(): Error {
@@ -57,7 +61,8 @@ export function groupParentException(): Error {
 
     Example:
 
-    ${formGroupNameExample}`);
+    ${formGroupNameExample}`,
+  );
 }
 
 export function arrayParentException(): Error {
@@ -68,7 +73,8 @@ export function arrayParentException(): Error {
 
       Example:
 
-      ${formArrayNameExample}`);
+      ${formArrayNameExample}`,
+  );
 }
 
 export const disabledAttrWarning = `
