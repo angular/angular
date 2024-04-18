@@ -21,7 +21,7 @@
     "target": "es2022",
     // Keep the below in sync with ng_module.bzl
     "useDefineForClassFields": false,
-    "lib": ["es2020", "dom", "dom.iterable"],
+    "lib": ["es2020", "dom", "dom.iterable", "ES2022.Intl"],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": [],
