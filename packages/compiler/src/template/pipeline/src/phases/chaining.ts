@@ -66,16 +66,18 @@ export function chain(job: CompilationJob): void {
   }
 }
 
-function chainOperationsInList(opList: ir.OpList<ir.CreateOp|ir.UpdateOp>): void {
-  let chain: Chain|null = null;
+function chainOperationsInList(opList: ir.OpList<ir.CreateOp | ir.UpdateOp>): void {
+  let chain: Chain | null = null;
   for (const op of opList) {
     if (op.kind !== ir.OpKind.Statement || !(op.statement instanceof o.ExpressionStatement)) {
       // This type of statement isn't chainable.
       chain = null;
       continue;
     }
-    if (!(op.statement.expr instanceof o.InvokeFunctionExpr) ||
-        !(op.statement.expr.fn instanceof o.ExternalExpr)) {
+    if (
+      !(op.statement.expr instanceof o.InvokeFunctionExpr) ||
+      !(op.statement.expr.fn instanceof o.ExternalExpr)
+    ) {
       // This is a statement, but not an instruction-type call, so not chainable.
       chain = null;
       continue;
@@ -93,10 +95,13 @@ function chainOperationsInList(opList: ir.OpList<ir.CreateOp|ir.UpdateOp>): void
     if (chain !== null && chain.instruction === instruction) {
       // This instruction can be added onto the previous chain.
       const expression = chain.expression.callFn(
-          op.statement.expr.args, op.statement.expr.sourceSpan, op.statement.expr.pure);
+        op.statement.expr.args,
+        op.statement.expr.sourceSpan,
+        op.statement.expr.pure,
+      );
       chain.expression = expression;
       chain.op.statement = expression.toStmt();
-      ir.OpList.remove(op as ir.Op<ir.CreateOp|ir.UpdateOp>);
+      ir.OpList.remove(op as ir.Op<ir.CreateOp | ir.UpdateOp>);
     } else {
       // Leave this instruction alone for now, but consider it the start of a new chain.
       chain = {
@@ -115,7 +120,7 @@ interface Chain {
   /**
    * The statement which holds the entire chain.
    */
-  op: ir.StatementOp<ir.CreateOp|ir.UpdateOp>;
+  op: ir.StatementOp<ir.CreateOp | ir.UpdateOp>;
 
   /**
    * The expression representing the whole current chained call.

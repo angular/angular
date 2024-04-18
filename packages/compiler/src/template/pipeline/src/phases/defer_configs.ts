@@ -22,12 +22,14 @@ export function configureDeferInstructions(job: ComponentCompilationJob): void {
       }
 
       if (op.placeholderMinimumTime !== null) {
-        op.placeholderConfig =
-            new ir.ConstCollectedExpr(literalOrArrayLiteral([op.placeholderMinimumTime]));
+        op.placeholderConfig = new ir.ConstCollectedExpr(
+          literalOrArrayLiteral([op.placeholderMinimumTime]),
+        );
       }
       if (op.loadingMinimumTime !== null || op.loadingAfterTime !== null) {
         op.loadingConfig = new ir.ConstCollectedExpr(
-            literalOrArrayLiteral([op.loadingMinimumTime, op.loadingAfterTime]));
+          literalOrArrayLiteral([op.loadingMinimumTime, op.loadingAfterTime]),
+        );
       }
     }
   }

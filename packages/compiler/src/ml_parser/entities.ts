@@ -2135,9 +2135,8 @@ export const NAMED_ENTITIES: Record<string, string> = {
   'zopf': '\uD835\uDD6B',
   'zscr': '\uD835\uDCCF',
   'zwj': '\u200D',
-  'zwnj': '\u200C'
+  'zwnj': '\u200C',
 };
-
 
 // The &ngsp; pseudo-entity is denoting a space.
 // 0xE500 is a PUA (Private Use Areas) unicode character

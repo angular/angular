@@ -11,14 +11,15 @@ import * as t from '../../src/render3/r3_ast';
 
 import {parseR3 as parse} from './view/util';
 
-
 class R3AstSourceSpans implements t.Visitor<void> {
   result: any[] = [];
 
   visitElement(element: t.Element) {
     this.result.push([
-      'Element', humanizeSpan(element.sourceSpan), humanizeSpan(element.startSourceSpan),
-      humanizeSpan(element.endSourceSpan)
+      'Element',
+      humanizeSpan(element.sourceSpan),
+      humanizeSpan(element.startSourceSpan),
+      humanizeSpan(element.endSourceSpan),
     ]);
     this.visitAll([
       element.attributes,
@@ -31,8 +32,10 @@ class R3AstSourceSpans implements t.Visitor<void> {
 
   visitTemplate(template: t.Template) {
     this.result.push([
-      'Template', humanizeSpan(template.sourceSpan), humanizeSpan(template.startSourceSpan),
-      humanizeSpan(template.endSourceSpan)
+      'Template',
+      humanizeSpan(template.sourceSpan),
+      humanizeSpan(template.startSourceSpan),
+      humanizeSpan(template.endSourceSpan),
     ]);
     this.visitAll([
       template.attributes,
@@ -61,29 +64,37 @@ class R3AstSourceSpans implements t.Visitor<void> {
 
   visitReference(reference: t.Reference) {
     this.result.push([
-      'Reference', humanizeSpan(reference.sourceSpan), humanizeSpan(reference.keySpan),
-      humanizeSpan(reference.valueSpan)
+      'Reference',
+      humanizeSpan(reference.sourceSpan),
+      humanizeSpan(reference.keySpan),
+      humanizeSpan(reference.valueSpan),
     ]);
   }
 
   visitTextAttribute(attribute: t.TextAttribute) {
     this.result.push([
-      'TextAttribute', humanizeSpan(attribute.sourceSpan), humanizeSpan(attribute.keySpan),
-      humanizeSpan(attribute.valueSpan)
+      'TextAttribute',
+      humanizeSpan(attribute.sourceSpan),
+      humanizeSpan(attribute.keySpan),
+      humanizeSpan(attribute.valueSpan),
     ]);
   }
 
   visitBoundAttribute(attribute: t.BoundAttribute) {
     this.result.push([
-      'BoundAttribute', humanizeSpan(attribute.sourceSpan), humanizeSpan(attribute.keySpan),
-      humanizeSpan(attribute.valueSpan)
+      'BoundAttribute',
+      humanizeSpan(attribute.sourceSpan),
+      humanizeSpan(attribute.keySpan),
+      humanizeSpan(attribute.valueSpan),
     ]);
   }
 
   visitBoundEvent(event: t.BoundEvent) {
     this.result.push([
-      'BoundEvent', humanizeSpan(event.sourceSpan), humanizeSpan(event.keySpan),
-      humanizeSpan(event.handlerSpan)
+      'BoundEvent',
+      humanizeSpan(event.sourceSpan),
+      humanizeSpan(event.keySpan),
+      humanizeSpan(event.handlerSpan),
     ]);
   }
 
@@ -107,30 +118,39 @@ class R3AstSourceSpans implements t.Visitor<void> {
 
   visitDeferredBlock(deferred: t.DeferredBlock): void {
     this.result.push([
-      'DeferredBlock', humanizeSpan(deferred.sourceSpan), humanizeSpan(deferred.startSourceSpan),
-      humanizeSpan(deferred.endSourceSpan)
+      'DeferredBlock',
+      humanizeSpan(deferred.sourceSpan),
+      humanizeSpan(deferred.startSourceSpan),
+      humanizeSpan(deferred.endSourceSpan),
     ]);
     deferred.visitAll(this);
   }
 
   visitSwitchBlock(block: t.SwitchBlock): void {
     this.result.push([
-      'SwitchBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
-      humanizeSpan(block.endSourceSpan)
+      'SwitchBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
     ]);
     this.visitAll([block.cases]);
   }
 
   visitSwitchBlockCase(block: t.SwitchBlockCase): void {
-    this.result.push(
-        ['SwitchBlockCase', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.result.push([
+      'SwitchBlockCase',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+    ]);
     this.visitAll([block.children]);
   }
 
   visitForLoopBlock(block: t.ForLoopBlock): void {
     this.result.push([
-      'ForLoopBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
-      humanizeSpan(block.endSourceSpan)
+      'ForLoopBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
     ]);
     this.visitVariable(block.item);
     this.visitAll([block.contextVariables]);
@@ -139,22 +159,30 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   visitForLoopBlockEmpty(block: t.ForLoopBlockEmpty): void {
-    this.result.push(
-        ['ForLoopBlockEmpty', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.result.push([
+      'ForLoopBlockEmpty',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+    ]);
     this.visitAll([block.children]);
   }
 
   visitIfBlock(block: t.IfBlock): void {
     this.result.push([
-      'IfBlock', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
-      humanizeSpan(block.endSourceSpan)
+      'IfBlock',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
     ]);
     this.visitAll([block.branches]);
   }
 
   visitIfBlockBranch(block: t.IfBlockBranch): void {
-    this.result.push(
-        ['IfBlockBranch', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan)]);
+    this.result.push([
+      'IfBlockBranch',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+    ]);
     if (block.expressionAlias) {
       this.visitVariable(block.expressionAlias);
     }
@@ -187,24 +215,30 @@ class R3AstSourceSpans implements t.Visitor<void> {
 
   visitDeferredBlockPlaceholder(block: t.DeferredBlockPlaceholder): void {
     this.result.push([
-      'DeferredBlockPlaceholder', humanizeSpan(block.sourceSpan),
-      humanizeSpan(block.startSourceSpan), humanizeSpan(block.endSourceSpan)
+      'DeferredBlockPlaceholder',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
     ]);
     this.visitAll([block.children]);
   }
 
   visitDeferredBlockError(block: t.DeferredBlockError): void {
     this.result.push([
-      'DeferredBlockError', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
-      humanizeSpan(block.endSourceSpan)
+      'DeferredBlockError',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
     ]);
     this.visitAll([block.children]);
   }
 
   visitDeferredBlockLoading(block: t.DeferredBlockLoading): void {
     this.result.push([
-      'DeferredBlockLoading', humanizeSpan(block.sourceSpan), humanizeSpan(block.startSourceSpan),
-      humanizeSpan(block.endSourceSpan)
+      'DeferredBlockLoading',
+      humanizeSpan(block.sourceSpan),
+      humanizeSpan(block.startSourceSpan),
+      humanizeSpan(block.endSourceSpan),
     ]);
     this.visitAll([block.children]);
   }
@@ -214,11 +248,11 @@ class R3AstSourceSpans implements t.Visitor<void> {
   }
 
   private visitAll(nodes: t.Node[][]) {
-    nodes.forEach(node => t.visitAll(this, node));
+    nodes.forEach((node) => t.visitAll(this, node));
   }
 }
 
-function humanizeSpan(span: ParseSourceSpan|null|undefined): string {
+function humanizeSpan(span: ParseSourceSpan | null | undefined): string {
   if (span === null || span === undefined) {
     return `<empty>`;
   }
@@ -238,9 +272,7 @@ function expectFromR3Nodes(nodes: t.Node[]) {
 describe('R3 AST source spans', () => {
   describe('nodes without binding', () => {
     it('is correct for text nodes', () => {
-      expectFromHtml('a').toEqual([
-        ['Text', 'a'],
-      ]);
+      expectFromHtml('a').toEqual([['Text', 'a']]);
     });
 
     it('is correct for elements with attributes', () => {
@@ -267,9 +299,7 @@ describe('R3 AST source spans', () => {
 
   describe('bound text nodes', () => {
     it('is correct for bound text nodes', () => {
-      expectFromHtml('{{a}}').toEqual([
-        ['BoundText', '{{a}}'],
-      ]);
+      expectFromHtml('{{a}}').toEqual([['BoundText', '{{a}}']]);
     });
   });
 
@@ -319,8 +349,10 @@ describe('R3 AST source spans', () => {
     it('is correct for bound properties via animation-', () => {
       expectFromHtml('<div bind-animate-animationName="v"></div>').toEqual([
         [
-          'Element', '<div bind-animate-animationName="v"></div>',
-          '<div bind-animate-animationName="v">', '</div>'
+          'Element',
+          '<div bind-animate-animationName="v"></div>',
+          '<div bind-animate-animationName="v">',
+          '</div>',
         ],
         ['BoundAttribute', 'bind-animate-animationName="v"', 'animationName', 'v'],
       ]);
@@ -359,7 +391,10 @@ describe('R3 AST source spans', () => {
     it('is correct for reference with name', () => {
       expectFromHtml('<ng-template #a="b"></ng-template>').toEqual([
         [
-          'Template', '<ng-template #a="b"></ng-template>', '<ng-template #a="b">', '</ng-template>'
+          'Template',
+          '<ng-template #a="b"></ng-template>',
+          '<ng-template #a="b">',
+          '</ng-template>',
         ],
         ['Reference', '#a="b"', 'a', 'b'],
       ]);
@@ -375,8 +410,10 @@ describe('R3 AST source spans', () => {
     it('is correct for reference via data-ref-...', () => {
       expectFromHtml('<ng-template data-ref-a></ng-template>').toEqual([
         [
-          'Template', '<ng-template data-ref-a></ng-template>', '<ng-template data-ref-a>',
-          '</ng-template>'
+          'Template',
+          '<ng-template data-ref-a></ng-template>',
+          '<ng-template data-ref-a>',
+          '</ng-template>',
         ],
         ['Reference', 'data-ref-a', 'a', '<empty>'],
       ]);
@@ -385,8 +422,10 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via let-...', () => {
       expectFromHtml('<ng-template let-a="b"></ng-template>').toEqual([
         [
-          'Template', '<ng-template let-a="b"></ng-template>', '<ng-template let-a="b">',
-          '</ng-template>'
+          'Template',
+          '<ng-template let-a="b"></ng-template>',
+          '<ng-template let-a="b">',
+          '</ng-template>',
         ],
         ['Variable', 'let-a="b"', 'a', 'b'],
       ]);
@@ -395,8 +434,10 @@ describe('R3 AST source spans', () => {
     it('is correct for variables via data-let-...', () => {
       expectFromHtml('<ng-template data-let-a="b"></ng-template>').toEqual([
         [
-          'Template', '<ng-template data-let-a="b"></ng-template>', '<ng-template data-let-a="b">',
-          '</ng-template>'
+          'Template',
+          '<ng-template data-let-a="b"></ng-template>',
+          '<ng-template data-let-a="b">',
+          '</ng-template>',
         ],
         ['Variable', 'data-let-a="b"', 'a', 'b'],
       ]);
@@ -405,8 +446,10 @@ describe('R3 AST source spans', () => {
     it('is correct for attributes', () => {
       expectFromHtml('<ng-template k1="v1"></ng-template>').toEqual([
         [
-          'Template', '<ng-template k1="v1"></ng-template>', '<ng-template k1="v1">',
-          '</ng-template>'
+          'Template',
+          '<ng-template k1="v1"></ng-template>',
+          '<ng-template k1="v1">',
+          '</ng-template>',
         ],
         ['TextAttribute', 'k1="v1"', 'k1', 'v1'],
       ]);
@@ -415,8 +458,10 @@ describe('R3 AST source spans', () => {
     it('is correct for bound attributes', () => {
       expectFromHtml('<ng-template [k1]="v1"></ng-template>').toEqual([
         [
-          'Template', '<ng-template [k1]="v1"></ng-template>', '<ng-template [k1]="v1">',
-          '</ng-template>'
+          'Template',
+          '<ng-template [k1]="v1"></ng-template>',
+          '<ng-template [k1]="v1">',
+          '</ng-template>',
         ],
         ['BoundAttribute', '[k1]="v1"', 'k1', 'v1'],
       ]);
@@ -432,15 +477,19 @@ describe('R3 AST source spans', () => {
       // </ng-template>
       expectFromHtml('<div *ngFor="let item of items"></div>').toEqual([
         [
-          'Template', '<div *ngFor="let item of items"></div>', '<div *ngFor="let item of items">',
-          '</div>'
+          'Template',
+          '<div *ngFor="let item of items"></div>',
+          '<div *ngFor="let item of items">',
+          '</div>',
         ],
         ['TextAttribute', 'ngFor', 'ngFor', '<empty>'],
         ['BoundAttribute', 'of items', 'of', 'items'],
         ['Variable', 'let item ', 'item', '<empty>'],
         [
-          'Element', '<div *ngFor="let item of items"></div>', '<div *ngFor="let item of items">',
-          '</div>'
+          'Element',
+          '<div *ngFor="let item of items"></div>',
+          '<div *ngFor="let item of items">',
+          '</div>',
         ],
       ]);
 
@@ -452,7 +501,10 @@ describe('R3 AST source spans', () => {
       // </ng-template>
       expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
         [
-          'Template', '<div *ngFor="item of items"></div>', '<div *ngFor="item of items">', '</div>'
+          'Template',
+          '<div *ngFor="item of items"></div>',
+          '<div *ngFor="item of items">',
+          '</div>',
         ],
         ['BoundAttribute', 'ngFor="item ', 'ngFor', 'item'],
         ['BoundAttribute', 'of items', 'of', 'items'],
@@ -461,18 +513,21 @@ describe('R3 AST source spans', () => {
 
       expectFromHtml('<div *ngFor="let item of items; trackBy: trackByFn"></div>').toEqual([
         [
-          'Template', '<div *ngFor="let item of items; trackBy: trackByFn"></div>',
-          '<div *ngFor="let item of items; trackBy: trackByFn">', '</div>'
+          'Template',
+          '<div *ngFor="let item of items; trackBy: trackByFn"></div>',
+          '<div *ngFor="let item of items; trackBy: trackByFn">',
+          '</div>',
         ],
         ['TextAttribute', 'ngFor', 'ngFor', '<empty>'],
         ['BoundAttribute', 'of items; ', 'of', 'items'],
         ['BoundAttribute', 'trackBy: trackByFn', 'trackBy', 'trackByFn'],
         ['Variable', 'let item ', 'item', '<empty>'],
         [
-          'Element', '<div *ngFor="let item of items; trackBy: trackByFn"></div>',
-          '<div *ngFor="let item of items; trackBy: trackByFn">', '</div>'
+          'Element',
+          '<div *ngFor="let item of items; trackBy: trackByFn"></div>',
+          '<div *ngFor="let item of items; trackBy: trackByFn">',
+          '</div>',
         ],
-
       ]);
     });
 
@@ -581,56 +636,59 @@ describe('R3 AST source spans', () => {
 
   describe('ICU expressions', () => {
     it('is correct for variables and placeholders', () => {
-      expectFromHtml('<span i18n>{item.var, plural, other { {{item.placeholder}} items } }</span>')
-          .toEqual([
-            [
-              'Element',
-              '<span i18n>{item.var, plural, other { {{item.placeholder}} items } }</span>',
-              '<span i18n>', '</span>'
-            ],
-            ['Icu', '{item.var, plural, other { {{item.placeholder}} items } }'],
-            ['Icu:Var', 'item.var'],
-            ['Icu:Placeholder', '{{item.placeholder}}'],
-          ]);
+      expectFromHtml(
+        '<span i18n>{item.var, plural, other { {{item.placeholder}} items } }</span>',
+      ).toEqual([
+        [
+          'Element',
+          '<span i18n>{item.var, plural, other { {{item.placeholder}} items } }</span>',
+          '<span i18n>',
+          '</span>',
+        ],
+        ['Icu', '{item.var, plural, other { {{item.placeholder}} items } }'],
+        ['Icu:Var', 'item.var'],
+        ['Icu:Placeholder', '{{item.placeholder}}'],
+      ]);
     });
 
     it('is correct for nested ICUs', () => {
       expectFromHtml(
-          '<span i18n>{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }</span>')
-          .toEqual([
-            [
-              'Element',
-              '<span i18n>{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }</span>',
-              '<span i18n>', '</span>'
-            ],
-            [
-              'Icu',
-              '{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }'
-            ],
-            ['Icu:Var', 'nestedVar'],
-            ['Icu:Var', 'item.var'],
-            ['Icu:Placeholder', '{{item.placeholder}}'],
-            ['Icu:Placeholder', '{{nestedPlaceholder}}'],
-          ]);
+        '<span i18n>{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }</span>',
+      ).toEqual([
+        [
+          'Element',
+          '<span i18n>{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }</span>',
+          '<span i18n>',
+          '</span>',
+        ],
+        [
+          'Icu',
+          '{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }',
+        ],
+        ['Icu:Var', 'nestedVar'],
+        ['Icu:Var', 'item.var'],
+        ['Icu:Placeholder', '{{item.placeholder}}'],
+        ['Icu:Placeholder', '{{nestedPlaceholder}}'],
+      ]);
     });
   });
 
   describe('deferred blocks', () => {
     it('is correct for deferred blocks', () => {
       const html =
-          '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
-          'interaction(button), viewport(container); prefetch on immediate; ' +
-          'prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}' +
-          '@loading (minimum 1s; after 100ms) {Loading...}' +
-          '@placeholder (minimum 500) {Placeholder content!}' +
-          '@error {Loading failed :(}';
+        '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, ' +
+        'interaction(button), viewport(container); prefetch on immediate; ' +
+        'prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}' +
+        '@loading (minimum 1s; after 100ms) {Loading...}' +
+        '@placeholder (minimum 500) {Placeholder content!}' +
+        '@error {Loading failed :(}';
 
       expectFromHtml(html).toEqual([
         [
           'DeferredBlock',
           '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {<calendar-cmp [date]="current"/>}@loading (minimum 1s; after 100ms) {Loading...}@placeholder (minimum 500) {Placeholder content!}@error {Loading failed :(}',
           '@defer (when isVisible() && foo; on hover(button), timer(10s), idle, immediate, interaction(button), viewport(container); prefetch on immediate; prefetch when isDataLoaded()) {',
-          '}'
+          '}',
         ],
         ['BoundDeferredTrigger', 'when isVisible() && foo'],
         ['HoverDeferredTrigger', 'on hover(button)'],
@@ -642,18 +700,24 @@ describe('R3 AST source spans', () => {
         ['ImmediateDeferredTrigger', 'prefetch on immediate'],
         ['BoundDeferredTrigger', 'prefetch when isDataLoaded()'],
         [
-          'Element', '<calendar-cmp [date]="current"/>', '<calendar-cmp [date]="current"/>',
-          '<calendar-cmp [date]="current"/>'
+          'Element',
+          '<calendar-cmp [date]="current"/>',
+          '<calendar-cmp [date]="current"/>',
+          '<calendar-cmp [date]="current"/>',
         ],
         ['BoundAttribute', '[date]="current"', 'date', 'current'],
         [
-          'DeferredBlockPlaceholder', '@placeholder (minimum 500) {Placeholder content!}',
-          '@placeholder (minimum 500) {', '}'
+          'DeferredBlockPlaceholder',
+          '@placeholder (minimum 500) {Placeholder content!}',
+          '@placeholder (minimum 500) {',
+          '}',
         ],
         ['Text', 'Placeholder content!'],
         [
-          'DeferredBlockLoading', '@loading (minimum 1s; after 100ms) {Loading...}',
-          '@loading (minimum 1s; after 100ms) {', '}'
+          'DeferredBlockLoading',
+          '@loading (minimum 1s; after 100ms) {Loading...}',
+          '@loading (minimum 1s; after 100ms) {',
+          '}',
         ],
         ['Text', 'Loading...'],
         ['DeferredBlockError', '@error {Loading failed :(}', '@error {', '}'],
@@ -664,22 +728,24 @@ describe('R3 AST source spans', () => {
 
   describe('switch blocks', () => {
     it('is correct for switch blocks', () => {
-      const html = `@switch (cond.kind) {` +
-          `@case (x()) {X case}` +
-          `@case ('hello') {Y case}` +
-          `@case (42) {Z case}` +
-          `@default {No case matched}` +
-          `}`;
+      const html =
+        `@switch (cond.kind) {` +
+        `@case (x()) {X case}` +
+        `@case ('hello') {Y case}` +
+        `@case (42) {Z case}` +
+        `@default {No case matched}` +
+        `}`;
 
       expectFromHtml(html).toEqual([
         [
           'SwitchBlock',
-          '@switch (cond.kind) {@case (x()) {X case}@case (\'hello\') {Y case}@case (42) {Z case}@default {No case matched}}',
-          '@switch (cond.kind) {', '}'
+          "@switch (cond.kind) {@case (x()) {X case}@case ('hello') {Y case}@case (42) {Z case}@default {No case matched}}",
+          '@switch (cond.kind) {',
+          '}',
         ],
         ['SwitchBlockCase', '@case (x()) {X case}', '@case (x()) {'],
         ['Text', 'X case'],
-        ['SwitchBlockCase', '@case (\'hello\') {Y case}', '@case (\'hello\') {'],
+        ['SwitchBlockCase', "@case ('hello') {Y case}", "@case ('hello') {"],
         ['Text', 'Y case'],
         ['SwitchBlockCase', '@case (42) {Z case}', '@case (42) {'],
         ['Text', 'Z case'],
@@ -692,14 +758,15 @@ describe('R3 AST source spans', () => {
   describe('for loop blocks', () => {
     it('is correct for loop blocks', () => {
       const html =
-          `@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {<h1>{{ item }}</h1>}` +
-          `@empty {There were no items in the list.}`;
+        `@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {<h1>{{ item }}</h1>}` +
+        `@empty {There were no items in the list.}`;
 
       expectFromHtml(html).toEqual([
         [
           'ForLoopBlock',
           '@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {<h1>{{ item }}</h1>}@empty {There were no items in the list.}',
-          '@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {', '}'
+          '@for (item of items.foo.bar; track item.id; let i = $index, _o_d_d_ = $odd) {',
+          '}',
         ],
         ['Variable', 'item', 'item', '<empty>'],
         ['Variable', '', '', '<empty>'],
@@ -720,24 +787,29 @@ describe('R3 AST source spans', () => {
 
   describe('if blocks', () => {
     it('is correct for if blocks', () => {
-      const html = `@if (cond.expr; as foo) {Main case was true!}` +
-          `@else if (other.expr) {Extra case was true!}` +
-          `@else {False case!}`;
+      const html =
+        `@if (cond.expr; as foo) {Main case was true!}` +
+        `@else if (other.expr) {Extra case was true!}` +
+        `@else {False case!}`;
 
       expectFromHtml(html).toEqual([
         [
           'IfBlock',
           '@if (cond.expr; as foo) {Main case was true!}@else if (other.expr) {Extra case was true!}@else {False case!}',
-          '@if (cond.expr; as foo) {', '}'
+          '@if (cond.expr; as foo) {',
+          '}',
         ],
         [
-          'IfBlockBranch', '@if (cond.expr; as foo) {Main case was true!}',
-          '@if (cond.expr; as foo) {'
+          'IfBlockBranch',
+          '@if (cond.expr; as foo) {Main case was true!}',
+          '@if (cond.expr; as foo) {',
         ],
         ['Variable', 'foo', 'foo', '<empty>'],
         ['Text', 'Main case was true!'],
         [
-          'IfBlockBranch', '@else if (other.expr) {Extra case was true!}', '@else if (other.expr) {'
+          'IfBlockBranch',
+          '@else if (other.expr) {Extra case was true!}',
+          '@else if (other.expr) {',
         ],
         ['Text', 'Extra case was true!'],
         ['IfBlockBranch', '@else {False case!}', '@else {'],

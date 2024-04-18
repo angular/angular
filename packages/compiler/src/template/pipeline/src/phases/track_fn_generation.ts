@@ -32,18 +32,22 @@ export function generateTrackFns(job: CompilationJob): void {
 
       // Find all component context reads.
       let usesComponentContext = false;
-      op.track = ir.transformExpressionsInExpression(op.track, expr => {
-        if (expr instanceof ir.PipeBindingExpr || expr instanceof ir.PipeBindingVariadicExpr) {
-          throw new Error(`Illegal State: Pipes are not allowed in this context`);
-        }
-        if (expr instanceof ir.TrackContextExpr) {
-          usesComponentContext = true;
-          return o.variable('this');
-        }
-        return expr;
-      }, ir.VisitorContextFlag.None);
+      op.track = ir.transformExpressionsInExpression(
+        op.track,
+        (expr) => {
+          if (expr instanceof ir.PipeBindingExpr || expr instanceof ir.PipeBindingVariadicExpr) {
+            throw new Error(`Illegal State: Pipes are not allowed in this context`);
+          }
+          if (expr instanceof ir.TrackContextExpr) {
+            usesComponentContext = true;
+            return o.variable('this');
+          }
+          return expr;
+        },
+        ir.VisitorContextFlag.None,
+      );
 
-      let fn: o.FunctionExpr|o.ArrowFunctionExpr;
+      let fn: o.FunctionExpr | o.ArrowFunctionExpr;
 
       const fnParams = [new o.FnParam('$index'), new o.FnParam('$item')];
       if (usesComponentContext) {

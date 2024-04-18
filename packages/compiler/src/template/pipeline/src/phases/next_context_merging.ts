@@ -37,8 +37,11 @@ export function mergeNextContextExpressions(job: CompilationJob): void {
 function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     // Look for a candidate operation to maybe merge.
-    if (op.kind !== ir.OpKind.Statement || !(op.statement instanceof o.ExpressionStatement) ||
-        !(op.statement.expr instanceof ir.NextContextExpr)) {
+    if (
+      op.kind !== ir.OpKind.Statement ||
+      !(op.statement instanceof o.ExpressionStatement) ||
+      !(op.statement.expr instanceof ir.NextContextExpr)
+    ) {
       continue;
     }
 
@@ -46,8 +49,11 @@ function mergeNextContextsInOps(ops: ir.OpList<ir.UpdateOp>): void {
 
     // Try to merge this `ir.NextContextExpr`.
     let tryToMerge = true;
-    for (let candidate = op.next!; candidate.kind !== ir.OpKind.ListEnd && tryToMerge;
-         candidate = candidate.next!) {
+    for (
+      let candidate = op.next!;
+      candidate.kind !== ir.OpKind.ListEnd && tryToMerge;
+      candidate = candidate.next!
+    ) {
       ir.visitExpressionsInOp(candidate, (expr, flags) => {
         if (!ir.isIrExpression(expr)) {
           return expr;

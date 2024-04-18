@@ -42,8 +42,10 @@ export function optimizeTrackFns(job: CompilationJob): void {
         } else {
           // This is a plain method call, but not in the component's root view.
           // We need to get the component instance, and then call the method on it.
-          op.trackByFn =
-              o.importExpr(Identifiers.componentInstance).callFn([]).prop(op.track.receiver.name);
+          op.trackByFn = o
+            .importExpr(Identifiers.componentInstance)
+            .callFn([])
+            .prop(op.track.receiver.name);
           // Because the context is not avaiable (without a special function), we don't want to
           // try to resolve it later. Let's get rid of it by overwriting the original track
           // expression (which won't be used anyway).
@@ -53,32 +55,40 @@ export function optimizeTrackFns(job: CompilationJob): void {
         // The track function could not be optimized.
         // Replace context reads with a special IR expression, since context reads in a track
         // function are emitted specially.
-        op.track = ir.transformExpressionsInExpression(op.track, expr => {
-          if (expr instanceof ir.ContextExpr) {
-            op.usesComponentInstance = true;
-            return new ir.TrackContextExpr(expr.view);
-          }
-          return expr;
-        }, ir.VisitorContextFlag.None);
+        op.track = ir.transformExpressionsInExpression(
+          op.track,
+          (expr) => {
+            if (expr instanceof ir.ContextExpr) {
+              op.usesComponentInstance = true;
+              return new ir.TrackContextExpr(expr.view);
+            }
+            return expr;
+          },
+          ir.VisitorContextFlag.None,
+        );
       }
     }
   }
 }
 
 function isTrackByFunctionCall(
-    rootView: ir.XrefId, expr: o.Expression): expr is o.InvokeFunctionExpr&{
-  receiver: o.ReadPropExpr &
-      {
-        receiver: ir.ContextExpr
-      }
+  rootView: ir.XrefId,
+  expr: o.Expression,
+): expr is o.InvokeFunctionExpr & {
+  receiver: o.ReadPropExpr & {
+    receiver: ir.ContextExpr;
+  };
 } {
   if (!(expr instanceof o.InvokeFunctionExpr) || expr.args.length !== 2) {
     return false;
   }
 
-  if (!(expr.receiver instanceof o.ReadPropExpr &&
-        expr.receiver.receiver instanceof ir.ContextExpr) ||
-      expr.receiver.receiver.view !== rootView) {
+  if (
+    !(
+      expr.receiver instanceof o.ReadPropExpr && expr.receiver.receiver instanceof ir.ContextExpr
+    ) ||
+    expr.receiver.receiver.view !== rootView
+  ) {
     return false;
   }
 

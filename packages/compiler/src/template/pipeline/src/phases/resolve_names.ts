@@ -25,8 +25,10 @@ export function resolveNames(job: CompilationJob): void {
 }
 
 function processLexicalScope(
-    unit: CompilationUnit, ops: ir.OpList<ir.CreateOp>|ir.OpList<ir.UpdateOp>,
-    savedView: SavedView|null): void {
+  unit: CompilationUnit,
+  ops: ir.OpList<ir.CreateOp> | ir.OpList<ir.UpdateOp>,
+  savedView: SavedView | null,
+): void {
   // Maps names defined in the lexical scope of this template to the `ir.XrefId`s of the variable
   // declarations which represent those values.
   //
@@ -76,38 +78,43 @@ function processLexicalScope(
       // Listeners were already processed above with their own scopes.
       continue;
     }
-    ir.transformExpressionsInOp(op, (expr) => {
-      if (expr instanceof ir.LexicalReadExpr) {
-        // `expr` is a read of a name within the lexical scope of this view.
-        // Either that name is defined within the current view, or it represents a property from the
-        // main component context.
-        if (scope.has(expr.name)) {
-          // This was a defined variable in the current scope.
-          return new ir.ReadVariableExpr(scope.get(expr.name)!);
+    ir.transformExpressionsInOp(
+      op,
+      (expr) => {
+        if (expr instanceof ir.LexicalReadExpr) {
+          // `expr` is a read of a name within the lexical scope of this view.
+          // Either that name is defined within the current view, or it represents a property from the
+          // main component context.
+          if (scope.has(expr.name)) {
+            // This was a defined variable in the current scope.
+            return new ir.ReadVariableExpr(scope.get(expr.name)!);
+          } else {
+            // Reading from the component context.
+            return new o.ReadPropExpr(new ir.ContextExpr(unit.job.root.xref), expr.name);
+          }
+        } else if (expr instanceof ir.RestoreViewExpr && typeof expr.view === 'number') {
+          // `ir.RestoreViewExpr` happens in listener functions and restores a saved view from the
+          // parent creation list. We expect to find that we captured the `savedView` previously, and
+          // that it matches the expected view to be restored.
+          if (savedView === null || savedView.view !== expr.view) {
+            throw new Error(`AssertionError: no saved view ${expr.view} from view ${unit.xref}`);
+          }
+          expr.view = new ir.ReadVariableExpr(savedView.variable);
+          return expr;
         } else {
-          // Reading from the component context.
-          return new o.ReadPropExpr(new ir.ContextExpr(unit.job.root.xref), expr.name);
+          return expr;
         }
-      } else if (expr instanceof ir.RestoreViewExpr && typeof expr.view === 'number') {
-        // `ir.RestoreViewExpr` happens in listener functions and restores a saved view from the
-        // parent creation list. We expect to find that we captured the `savedView` previously, and
-        // that it matches the expected view to be restored.
-        if (savedView === null || savedView.view !== expr.view) {
-          throw new Error(`AssertionError: no saved view ${expr.view} from view ${unit.xref}`);
-        }
-        expr.view = new ir.ReadVariableExpr(savedView.variable);
-        return expr;
-      } else {
-        return expr;
-      }
-    }, ir.VisitorContextFlag.None);
+      },
+      ir.VisitorContextFlag.None,
+    );
   }
 
   for (const op of ops) {
-    ir.visitExpressionsInOp(op, expr => {
+    ir.visitExpressionsInOp(op, (expr) => {
       if (expr instanceof ir.LexicalReadExpr) {
         throw new Error(
-            `AssertionError: no lexical reads should remain, but found read of ${expr.name}`);
+          `AssertionError: no lexical reads should remain, but found read of ${expr.name}`,
+        );
       }
     });
   }

@@ -29,7 +29,7 @@ export function countVariables(job: CompilationJob): void {
     // might be conditional (e.g. `pipeBinding` inside of a ternary), and we don't want to interfere
     // with indices for top-level binding slots (e.g. `property`).
     for (const op of unit.ops()) {
-      ir.visitExpressionsInOp(op, expr => {
+      ir.visitExpressionsInOp(op, (expr) => {
         if (!ir.isIrExpression(expr)) {
           return;
         }
@@ -37,8 +37,10 @@ export function countVariables(job: CompilationJob): void {
         // TemplateDefinitionBuilder assigns variable offsets for everything but pure functions
         // first, and then assigns offsets to pure functions lazily. We emulate that behavior by
         // assigning offsets in two passes instead of one, only in compatibility mode.
-        if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
-            expr instanceof ir.PureFunctionExpr) {
+        if (
+          job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder &&
+          expr instanceof ir.PureFunctionExpr
+        ) {
           return;
         }
 
@@ -56,7 +58,7 @@ export function countVariables(job: CompilationJob): void {
     // Compatibility mode pass for pure function offsets (as explained above).
     if (job.compatibility === ir.CompatibilityMode.TemplateDefinitionBuilder) {
       for (const op of unit.ops()) {
-        ir.visitExpressionsInOp(op, expr => {
+        ir.visitExpressionsInOp(op, (expr) => {
           if (!ir.isIrExpression(expr) || !(expr instanceof ir.PureFunctionExpr)) {
             return;
           }
@@ -99,7 +101,7 @@ export function countVariables(job: CompilationJob): void {
  * Different operations that implement `ir.UsesVarsTrait` use different numbers of variables, so
  * count the variables used by any particular `op`.
  */
-function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): number {
+function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): number {
   let slots: number;
   switch (op.kind) {
     case ir.OpKind.Property:
@@ -144,7 +146,7 @@ function varsUsedByOp(op: (ir.CreateOp|ir.UpdateOp)&ir.ConsumesVarsTrait): numbe
   }
 }
 
-export function varsUsedByIrExpression(expr: ir.Expression&ir.ConsumesVarsTrait): number {
+export function varsUsedByIrExpression(expr: ir.Expression & ir.ConsumesVarsTrait): number {
   switch (expr.kind) {
     case ir.ExpressionKind.PureFunctionExpr:
       return 1 + expr.args.length;
@@ -154,7 +156,8 @@ export function varsUsedByIrExpression(expr: ir.Expression&ir.ConsumesVarsTrait)
       return 1 + expr.numArgs;
     default:
       throw new Error(
-          `AssertionError: unhandled ConsumesVarsTrait expression ${expr.constructor.name}`);
+        `AssertionError: unhandled ConsumesVarsTrait expression ${expr.constructor.name}`,
+      );
   }
 }
 

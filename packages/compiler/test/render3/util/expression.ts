@@ -23,7 +23,7 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   // This method is defined to reconcile the type of ExpressionSourceHumanizer
   // since both RecursiveAstVisitor and Visitor define the visit() method in
   // their interfaces.
-  override visit(node: e.AST|t.Node, context?: any) {
+  override visit(node: e.AST | t.Node, context?: any) {
     if (node instanceof e.AST) {
       node.visit(this, context);
     } else {

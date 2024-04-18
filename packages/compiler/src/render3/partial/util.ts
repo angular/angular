@@ -21,11 +21,13 @@ import {R3DeclareDependencyMetadata} from './api';
  * is itself null.
  */
 export function toOptionalLiteralArray<T>(
-    values: T[]|null, mapper: (value: T) => o.Expression): o.LiteralArrayExpr|null {
+  values: T[] | null,
+  mapper: (value: T) => o.Expression,
+): o.LiteralArrayExpr | null {
   if (values === null || values.length === 0) {
     return null;
   }
-  return o.literalArr(values.map(value => mapper(value)));
+  return o.literalArr(values.map((value) => mapper(value)));
 }
 
 /**
@@ -38,8 +40,10 @@ export function toOptionalLiteralArray<T>(
  * any keys.
  */
 export function toOptionalLiteralMap<T>(
-    object: {[key: string]: T}, mapper: (value: T) => o.Expression): o.LiteralMapExpr|null {
-  const entries = Object.keys(object).map(key => {
+  object: {[key: string]: T},
+  mapper: (value: T) => o.Expression,
+): o.LiteralMapExpr | null {
+  const entries = Object.keys(object).map((key) => {
     const value = object[key];
     return {key, value: mapper(value), quoted: true};
   });
@@ -51,8 +55,9 @@ export function toOptionalLiteralMap<T>(
   }
 }
 
-export function compileDependencies(deps: R3DependencyMetadata[]|'invalid'|null): o.LiteralExpr|
-    o.LiteralArrayExpr {
+export function compileDependencies(
+  deps: R3DependencyMetadata[] | 'invalid' | null,
+): o.LiteralExpr | o.LiteralArrayExpr {
   if (deps === 'invalid') {
     // The `deps` can be set to the string "invalid"  by the `unwrapConstructorDependencies()`
     // function, which tries to convert `ConstructorDeps` into `R3DependencyMetadata[]`.

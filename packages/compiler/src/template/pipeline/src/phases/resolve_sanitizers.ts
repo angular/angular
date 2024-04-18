@@ -21,7 +21,8 @@ const sanitizerFns = new Map<SecurityContext, o.ExternalReference>([
   [SecurityContext.HTML, Identifiers.sanitizeHtml],
   [SecurityContext.RESOURCE_URL, Identifiers.sanitizeResourceUrl],
   [SecurityContext.SCRIPT, Identifiers.sanitizeScript],
-  [SecurityContext.STYLE, Identifiers.sanitizeStyle], [SecurityContext.URL, Identifiers.sanitizeUrl]
+  [SecurityContext.STYLE, Identifiers.sanitizeStyle],
+  [SecurityContext.URL, Identifiers.sanitizeUrl],
 ]);
 
 /**
@@ -47,7 +48,7 @@ export function resolveSanitizers(job: CompilationJob): void {
       for (const op of unit.create) {
         if (op.kind === ir.OpKind.ExtractedAttribute) {
           const trustedValueFn =
-              trustedValueFns.get(getOnlySecurityContext(op.securityContext)) ?? null;
+            trustedValueFns.get(getOnlySecurityContext(op.securityContext)) ?? null;
           op.trustedValueFn = trustedValueFn !== null ? o.importExpr(trustedValueFn) : null;
         }
       }
@@ -58,10 +59,13 @@ export function resolveSanitizers(job: CompilationJob): void {
         case ir.OpKind.Property:
         case ir.OpKind.Attribute:
         case ir.OpKind.HostProperty:
-          let sanitizerFn: o.ExternalReference|null = null;
-          if (Array.isArray(op.securityContext) && op.securityContext.length === 2 &&
-              op.securityContext.indexOf(SecurityContext.URL) > -1 &&
-              op.securityContext.indexOf(SecurityContext.RESOURCE_URL) > -1) {
+          let sanitizerFn: o.ExternalReference | null = null;
+          if (
+            Array.isArray(op.securityContext) &&
+            op.securityContext.length === 2 &&
+            op.securityContext.indexOf(SecurityContext.URL) > -1 &&
+            op.securityContext.indexOf(SecurityContext.RESOURCE_URL) > -1
+          ) {
             // When the host element isn't known, some URL attributes (such as "src" and "href") may
             // be part of multiple different security contexts. In this case we use special
             // sanitization function and select the actual sanitizer at runtime based on a tag name
@@ -113,8 +117,9 @@ function isIframeElement(op: ir.ElementOrContainerOps): boolean {
 /**
  * Asserts that there is only a single security context and returns it.
  */
-function getOnlySecurityContext(securityContext: SecurityContext|
-                                SecurityContext[]): SecurityContext {
+function getOnlySecurityContext(
+  securityContext: SecurityContext | SecurityContext[],
+): SecurityContext {
   if (Array.isArray(securityContext)) {
     if (securityContext.length > 1) {
       // TODO: What should we do here? TDB just took the first one, but this feels like something we

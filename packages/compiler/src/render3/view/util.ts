@@ -39,9 +39,11 @@ export const RENDER_FLAGS = 'rf';
  *
  * A variable declaration is added to the statements the first time the allocator is invoked.
  */
-export function temporaryAllocator(pushStatement: (st: o.Statement) => void, name: string): () =>
-    o.ReadVarExpr {
-  let temp: o.ReadVarExpr|null = null;
+export function temporaryAllocator(
+  pushStatement: (st: o.Statement) => void,
+  name: string,
+): () => o.ReadVarExpr {
+  let temp: o.ReadVarExpr | null = null;
   return () => {
     if (!temp) {
       pushStatement(new o.DeclareVarStmt(TEMPORARY_NAME, undefined, o.DYNAMIC_TYPE));
@@ -51,10 +53,10 @@ export function temporaryAllocator(pushStatement: (st: o.Statement) => void, nam
   };
 }
 
-
-export function invalid<T>(this: t.Visitor, arg: o.Expression|o.Statement|t.Node): never {
+export function invalid<T>(this: t.Visitor, arg: o.Expression | o.Statement | t.Node): never {
   throw new Error(
-      `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
+    `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`,
+  );
 }
 
 export function asLiteral(value: any): o.Expression {
@@ -71,75 +73,85 @@ export function asLiteral(value: any): o.Expression {
  * file size of fully compiled applications.
  */
 export function conditionallyCreateDirectiveBindingLiteral(
-    map: Record<string, string|{
-      classPropertyName: string;
-      bindingPropertyName: string;
-      transformFunction: o.Expression|null;
-      isSignal: boolean,
-    }>, forInputs?: boolean): o.Expression|null {
+  map: Record<
+    string,
+    | string
+    | {
+        classPropertyName: string;
+        bindingPropertyName: string;
+        transformFunction: o.Expression | null;
+        isSignal: boolean;
+      }
+  >,
+  forInputs?: boolean,
+): o.Expression | null {
   const keys = Object.getOwnPropertyNames(map);
 
   if (keys.length === 0) {
     return null;
   }
 
-  return o.literalMap(keys.map(key => {
-    const value = map[key];
-    let declaredName: string;
-    let publicName: string;
-    let minifiedName: string;
-    let expressionValue: o.Expression;
+  return o.literalMap(
+    keys.map((key) => {
+      const value = map[key];
+      let declaredName: string;
+      let publicName: string;
+      let minifiedName: string;
+      let expressionValue: o.Expression;
 
-    if (typeof value === 'string') {
-      // canonical syntax: `dirProp: publicProp`
-      declaredName = key;
-      minifiedName = key;
-      publicName = value;
-      expressionValue = asLiteral(publicName);
-    } else {
-      minifiedName = key;
-      declaredName = value.classPropertyName;
-      publicName = value.bindingPropertyName;
+      if (typeof value === 'string') {
+        // canonical syntax: `dirProp: publicProp`
+        declaredName = key;
+        minifiedName = key;
+        publicName = value;
+        expressionValue = asLiteral(publicName);
+      } else {
+        minifiedName = key;
+        declaredName = value.classPropertyName;
+        publicName = value.bindingPropertyName;
 
-      const differentDeclaringName = publicName !== declaredName;
-      const hasDecoratorInputTransform = value.transformFunction !== null;
-      let flags = InputFlags.None;
+        const differentDeclaringName = publicName !== declaredName;
+        const hasDecoratorInputTransform = value.transformFunction !== null;
+        let flags = InputFlags.None;
 
-      // Build up input flags
-      if (value.isSignal) {
-        flags |= InputFlags.SignalBased;
-      }
-      if (hasDecoratorInputTransform) {
-        flags |= InputFlags.HasDecoratorInputTransform;
-      }
-
-      // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), support
-      // decorator input transform functions, or store flag information if there is any.
-      if (forInputs &&
-          (differentDeclaringName || hasDecoratorInputTransform || flags !== InputFlags.None)) {
-        const result = [o.literal(flags), asLiteral(publicName)];
-
-        if (differentDeclaringName || hasDecoratorInputTransform) {
-          result.push(asLiteral(declaredName));
-
-          if (hasDecoratorInputTransform) {
-            result.push(value.transformFunction!);
-          }
+        // Build up input flags
+        if (value.isSignal) {
+          flags |= InputFlags.SignalBased;
+        }
+        if (hasDecoratorInputTransform) {
+          flags |= InputFlags.HasDecoratorInputTransform;
         }
 
-        expressionValue = o.literalArr(result);
-      } else {
-        expressionValue = asLiteral(publicName);
-      }
-    }
+        // Inputs, compared to outputs, will track their declared name (for `ngOnChanges`), support
+        // decorator input transform functions, or store flag information if there is any.
+        if (
+          forInputs &&
+          (differentDeclaringName || hasDecoratorInputTransform || flags !== InputFlags.None)
+        ) {
+          const result = [o.literal(flags), asLiteral(publicName)];
 
-    return {
-      key: minifiedName,
-      // put quotes around keys that contain potentially unsafe characters
-      quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
-      value: expressionValue,
-    };
-  }));
+          if (differentDeclaringName || hasDecoratorInputTransform) {
+            result.push(asLiteral(declaredName));
+
+            if (hasDecoratorInputTransform) {
+              result.push(value.transformFunction!);
+            }
+          }
+
+          expressionValue = o.literalArr(result);
+        } else {
+          expressionValue = asLiteral(publicName);
+        }
+      }
+
+      return {
+        key: minifiedName,
+        // put quotes around keys that contain potentially unsafe characters
+        quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
+        value: expressionValue,
+      };
+    }),
+  );
 }
 
 /**
@@ -148,11 +160,11 @@ export function conditionallyCreateDirectiveBindingLiteral(
  * property names that are set can be resolved to their documented declaration.
  */
 export class DefinitionMap<T = any> {
-  values: {key: string, quoted: boolean, value: o.Expression}[] = [];
+  values: {key: string; quoted: boolean; value: o.Expression}[] = [];
 
-  set(key: keyof T, value: o.Expression|null): void {
+  set(key: keyof T, value: o.Expression | null): void {
     if (value) {
-      const existing = this.values.find(value => value.key === key);
+      const existing = this.values.find((value) => value.key === key);
 
       if (existing) {
         existing.value = value;
@@ -170,7 +182,7 @@ export class DefinitionMap<T = any> {
 /**
  * Creates a `CssSelector` from an AST node.
  */
-export function createCssSelectorFromNode(node: t.Element|t.Template): CssSelector {
+export function createCssSelectorFromNode(node: t.Element | t.Template): CssSelector {
   const elementName = node instanceof t.Element ? node.name : 'ng-template';
   const attributes = getAttrsForDirectiveMatching(node);
   const cssSelector = new CssSelector();
@@ -185,7 +197,7 @@ export function createCssSelectorFromNode(node: t.Element|t.Template): CssSelect
     cssSelector.addAttribute(nameNoNs, value);
     if (name.toLowerCase() === 'class') {
       const classes = value.trim().split(/\s+/);
-      classes.forEach(className => cssSelector.addClassName(className));
+      classes.forEach((className) => cssSelector.addClassName(className));
     }
   });
 
@@ -201,25 +213,24 @@ export function createCssSelectorFromNode(node: t.Element|t.Template): CssSelect
  * object maps a property name to its (static) value. For any bindings, this map simply maps the
  * property name to an empty string.
  */
-function getAttrsForDirectiveMatching(elOrTpl: t.Element|t.Template): {[name: string]: string} {
+function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template): {[name: string]: string} {
   const attributesMap: {[name: string]: string} = {};
 
-
   if (elOrTpl instanceof t.Template && elOrTpl.tagName !== 'ng-template') {
-    elOrTpl.templateAttrs.forEach(a => attributesMap[a.name] = '');
+    elOrTpl.templateAttrs.forEach((a) => (attributesMap[a.name] = ''));
   } else {
-    elOrTpl.attributes.forEach(a => {
+    elOrTpl.attributes.forEach((a) => {
       if (!isI18nAttribute(a.name)) {
         attributesMap[a.name] = a.value;
       }
     });
 
-    elOrTpl.inputs.forEach(i => {
+    elOrTpl.inputs.forEach((i) => {
       if (i.type === BindingType.Property || i.type === BindingType.TwoWay) {
         attributesMap[i.name] = '';
       }
     });
-    elOrTpl.outputs.forEach(o => {
+    elOrTpl.outputs.forEach((o) => {
       attributesMap[o.name] = '';
     });
   }

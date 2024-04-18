@@ -26,20 +26,28 @@ export function specializeStyleBindings(job: CompilationJob): void {
             throw new Error(`Unexpected interpolation in ClassName binding`);
           }
           ir.OpList.replace<ir.UpdateOp>(
-              op, ir.createClassPropOp(op.target, op.name, op.expression, op.sourceSpan));
+            op,
+            ir.createClassPropOp(op.target, op.name, op.expression, op.sourceSpan),
+          );
           break;
         case ir.BindingKind.StyleProperty:
           ir.OpList.replace<ir.UpdateOp>(
-              op, ir.createStylePropOp(op.target, op.name, op.expression, op.unit, op.sourceSpan));
+            op,
+            ir.createStylePropOp(op.target, op.name, op.expression, op.unit, op.sourceSpan),
+          );
           break;
         case ir.BindingKind.Property:
         case ir.BindingKind.Template:
           if (op.name === 'style') {
             ir.OpList.replace<ir.UpdateOp>(
-                op, ir.createStyleMapOp(op.target, op.expression, op.sourceSpan));
+              op,
+              ir.createStyleMapOp(op.target, op.expression, op.sourceSpan),
+            );
           } else if (op.name === 'class') {
             ir.OpList.replace<ir.UpdateOp>(
-                op, ir.createClassMapOp(op.target, op.expression, op.sourceSpan));
+              op,
+              ir.createClassMapOp(op.target, op.expression, op.sourceSpan),
+            );
           }
           break;
       }

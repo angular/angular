@@ -34,8 +34,9 @@ export function compileDeclareInjectorFromMetadata(meta: R3InjectorMetadata): R3
 /**
  * Gathers the declaration fields for an Injector into a `DefinitionMap`.
  */
-function createInjectorDefinitionMap(meta: R3InjectorMetadata):
-    DefinitionMap<R3DeclareInjectorMetadata> {
+function createInjectorDefinitionMap(
+  meta: R3InjectorMetadata,
+): DefinitionMap<R3DeclareInjectorMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareInjectorMetadata>();
 
   definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));

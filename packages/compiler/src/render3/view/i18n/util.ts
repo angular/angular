@@ -29,8 +29,9 @@ export function icuFromI18nMessage(message: i18n.Message) {
   return message.nodes[0] as i18n.IcuPlaceholder;
 }
 
-export function placeholdersToParams(placeholders: Map<string, string[]>):
-    {[name: string]: o.LiteralExpr} {
+export function placeholdersToParams(placeholders: Map<string, string[]>): {
+  [name: string]: o.LiteralExpr;
+} {
   const params: {[name: string]: o.LiteralExpr} = {};
   placeholders.forEach((values: string[], key: string) => {
     params[key] = o.literal(values.length > 1 ? `[${values.join('|')}]` : values[0]);
@@ -49,11 +50,14 @@ export function placeholdersToParams(placeholders: Map<string, string[]>):
  * @returns A new map of formatted placeholder names to expressions.
  */
 export function formatI18nPlaceholderNamesInMap(
-    params: {[name: string]: o.Expression} = {}, useCamelCase: boolean) {
+  params: {[name: string]: o.Expression} = {},
+  useCamelCase: boolean,
+) {
   const _params: {[key: string]: o.Expression} = {};
   if (params && Object.keys(params).length) {
     Object.keys(params).forEach(
-        key => _params[formatI18nPlaceholderName(key, useCamelCase)] = params[key]);
+      (key) => (_params[formatI18nPlaceholderName(key, useCamelCase)] = params[key]),
+    );
   }
   return _params;
 }
@@ -83,7 +87,7 @@ export function formatI18nPlaceholderName(name: string, useCamelCase: boolean = 
   }
   let raw = chunks.shift()!.toLowerCase();
   if (chunks.length) {
-    raw += chunks.map(c => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase()).join('');
+    raw += chunks.map((c) => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase()).join('');
   }
   return postfix ? `${raw}_${postfix}` : raw;
 }

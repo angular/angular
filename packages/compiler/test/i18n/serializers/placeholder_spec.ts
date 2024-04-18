@@ -39,27 +39,34 @@ describe('PlaceholderRegistry', () => {
     });
 
     it('should generate the same name for the same tag with the same attributes', () => {
-      expect(reg.getStartTagPlaceholderName('p', {foo: 'a', bar: 'b'}, false))
-          .toEqual('START_PARAGRAPH');
-      expect(reg.getStartTagPlaceholderName('p', {foo: 'a', bar: 'b'}, false))
-          .toEqual('START_PARAGRAPH');
-      expect(reg.getStartTagPlaceholderName('p', {bar: 'b', foo: 'a'}, false))
-          .toEqual('START_PARAGRAPH');
+      expect(reg.getStartTagPlaceholderName('p', {foo: 'a', bar: 'b'}, false)).toEqual(
+        'START_PARAGRAPH',
+      );
+      expect(reg.getStartTagPlaceholderName('p', {foo: 'a', bar: 'b'}, false)).toEqual(
+        'START_PARAGRAPH',
+      );
+      expect(reg.getStartTagPlaceholderName('p', {bar: 'b', foo: 'a'}, false)).toEqual(
+        'START_PARAGRAPH',
+      );
     });
 
     it('should generate different names for the same tag with different attributes', () => {
-      expect(reg.getStartTagPlaceholderName('p', {foo: 'a', bar: 'b'}, false))
-          .toEqual('START_PARAGRAPH');
+      expect(reg.getStartTagPlaceholderName('p', {foo: 'a', bar: 'b'}, false)).toEqual(
+        'START_PARAGRAPH',
+      );
       expect(reg.getStartTagPlaceholderName('p', {foo: 'a'}, false)).toEqual('START_PARAGRAPH_1');
     });
 
     it('should be case sensitive for attributes', () => {
-      expect(reg.getStartTagPlaceholderName('p', {foo: 'a', bar: 'b'}, false))
-          .toEqual('START_PARAGRAPH');
-      expect(reg.getStartTagPlaceholderName('p', {fOo: 'a', bar: 'b'}, false))
-          .toEqual('START_PARAGRAPH_1');
-      expect(reg.getStartTagPlaceholderName('p', {fOo: 'a', bAr: 'b'}, false))
-          .toEqual('START_PARAGRAPH_2');
+      expect(reg.getStartTagPlaceholderName('p', {foo: 'a', bar: 'b'}, false)).toEqual(
+        'START_PARAGRAPH',
+      );
+      expect(reg.getStartTagPlaceholderName('p', {fOo: 'a', bar: 'b'}, false)).toEqual(
+        'START_PARAGRAPH_1',
+      );
+      expect(reg.getStartTagPlaceholderName('p', {fOo: 'a', bAr: 'b'}, false)).toEqual(
+        'START_PARAGRAPH_2',
+      );
     });
 
     it('should support void tags', () => {

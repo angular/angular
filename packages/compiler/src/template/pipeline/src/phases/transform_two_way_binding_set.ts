@@ -21,28 +21,32 @@ export function transformTwoWayBindingSet(job: CompilationJob): void {
   for (const unit of job.units) {
     for (const op of unit.create) {
       if (op.kind === ir.OpKind.TwoWayListener) {
-        ir.transformExpressionsInOp(op, (expr) => {
-          if (!(expr instanceof ir.TwoWayBindingSetExpr)) {
-            return expr;
-          }
+        ir.transformExpressionsInOp(
+          op,
+          (expr) => {
+            if (!(expr instanceof ir.TwoWayBindingSetExpr)) {
+              return expr;
+            }
 
-          const {target, value} = expr;
+            const {target, value} = expr;
 
-          if (target instanceof o.ReadPropExpr || target instanceof o.ReadKeyExpr) {
-            return ng.twoWayBindingSet(target, value).or(target.set(value));
-          }
+            if (target instanceof o.ReadPropExpr || target instanceof o.ReadKeyExpr) {
+              return ng.twoWayBindingSet(target, value).or(target.set(value));
+            }
 
-          // ASSUMPTION: here we're assuming that `ReadVariableExpr` will be a reference
-          // to a local template variable. This appears to be the case at the time of writing.
-          // If the expression is targeting a variable read, we only emit the `twoWayBindingSet`
-          // since the fallback would be attempting to write into a constant. Invalid usages will be
-          // flagged during template type checking.
-          if (target instanceof ir.ReadVariableExpr) {
-            return ng.twoWayBindingSet(target, value);
-          }
+            // ASSUMPTION: here we're assuming that `ReadVariableExpr` will be a reference
+            // to a local template variable. This appears to be the case at the time of writing.
+            // If the expression is targeting a variable read, we only emit the `twoWayBindingSet`
+            // since the fallback would be attempting to write into a constant. Invalid usages will be
+            // flagged during template type checking.
+            if (target instanceof ir.ReadVariableExpr) {
+              return ng.twoWayBindingSet(target, value);
+            }
 
-          throw new Error(`Unsupported expression in two-way action binding.`);
-        }, ir.VisitorContextFlag.InChildOperation);
+            throw new Error(`Unsupported expression in two-way action binding.`);
+          },
+          ir.VisitorContextFlag.InChildOperation,
+        );
       }
     }
   }

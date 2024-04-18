@@ -15,7 +15,9 @@ import {CompilationJob, CompilationJobKind} from '../compilation';
  * Looks up an element in the given map by xref ID.
  */
 function lookupElement(
-    elements: Map<ir.XrefId, ir.ElementOrContainerOps>, xref: ir.XrefId): ir.ElementOrContainerOps {
+  elements: Map<ir.XrefId, ir.ElementOrContainerOps>,
+  xref: ir.XrefId,
+): ir.ElementOrContainerOps {
   const el = elements.get(xref);
   if (el === undefined) {
     throw new Error('All attributes should have an element-like target.');
@@ -48,28 +50,52 @@ export function specializeBindings(job: CompilationJob): void {
           } else {
             const [namespace, name] = splitNsName(op.name);
             ir.OpList.replace<ir.UpdateOp>(
-                op,
-                ir.createAttributeOp(
-                    op.target, namespace, name, op.expression, op.securityContext,
-                    op.isTextAttribute, op.isStructuralTemplateAttribute, op.templateKind,
-                    op.i18nMessage, op.sourceSpan));
+              op,
+              ir.createAttributeOp(
+                op.target,
+                namespace,
+                name,
+                op.expression,
+                op.securityContext,
+                op.isTextAttribute,
+                op.isStructuralTemplateAttribute,
+                op.templateKind,
+                op.i18nMessage,
+                op.sourceSpan,
+              ),
+            );
           }
           break;
         case ir.BindingKind.Property:
         case ir.BindingKind.Animation:
           if (job.kind === CompilationJobKind.Host) {
             ir.OpList.replace<ir.UpdateOp>(
-                op,
-                ir.createHostPropertyOp(
-                    op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
-                    op.i18nContext, op.securityContext, op.sourceSpan));
+              op,
+              ir.createHostPropertyOp(
+                op.name,
+                op.expression,
+                op.bindingKind === ir.BindingKind.Animation,
+                op.i18nContext,
+                op.securityContext,
+                op.sourceSpan,
+              ),
+            );
           } else {
             ir.OpList.replace<ir.UpdateOp>(
-                op,
-                ir.createPropertyOp(
-                    op.target, op.name, op.expression, op.bindingKind === ir.BindingKind.Animation,
-                    op.securityContext, op.isStructuralTemplateAttribute, op.templateKind,
-                    op.i18nContext, op.i18nMessage, op.sourceSpan));
+              op,
+              ir.createPropertyOp(
+                op.target,
+                op.name,
+                op.expression,
+                op.bindingKind === ir.BindingKind.Animation,
+                op.securityContext,
+                op.isStructuralTemplateAttribute,
+                op.templateKind,
+                op.i18nContext,
+                op.i18nMessage,
+                op.sourceSpan,
+              ),
+            );
           }
 
           break;
@@ -79,15 +105,24 @@ export function specializeBindings(job: CompilationJob): void {
             // result in a parser error. We assert here so that downstream we can assume that
             // the value is always an expression.
             throw new Error(
-                `Expected value of two-way property binding "${op.name}" to be an expression`);
+              `Expected value of two-way property binding "${op.name}" to be an expression`,
+            );
           }
 
           ir.OpList.replace<ir.UpdateOp>(
-              op,
-              ir.createTwoWayPropertyOp(
-                  op.target, op.name, op.expression, op.securityContext,
-                  op.isStructuralTemplateAttribute, op.templateKind, op.i18nContext, op.i18nMessage,
-                  op.sourceSpan));
+            op,
+            ir.createTwoWayPropertyOp(
+              op.target,
+              op.name,
+              op.expression,
+              op.securityContext,
+              op.isStructuralTemplateAttribute,
+              op.templateKind,
+              op.i18nContext,
+              op.i18nMessage,
+              op.sourceSpan,
+            ),
+          );
           break;
         case ir.BindingKind.I18n:
         case ir.BindingKind.ClassName:

@@ -20,11 +20,29 @@ import {ConsumesVarsTrait, UsesVarOffset, UsesVarOffsetTrait} from './traits';
 /**
  * An `o.Expression` subtype representing a logical expression in the intermediate representation.
  */
-export type Expression = LexicalReadExpr|ReferenceExpr|ContextExpr|NextContextExpr|
-    GetCurrentViewExpr|RestoreViewExpr|ResetViewExpr|ReadVariableExpr|PureFunctionExpr|
-    PureFunctionParameterExpr|PipeBindingExpr|PipeBindingVariadicExpr|SafePropertyReadExpr|
-    SafeKeyedReadExpr|SafeInvokeFunctionExpr|EmptyExpr|AssignTemporaryExpr|ReadTemporaryExpr|
-    SlotLiteralExpr|ConditionalCaseExpr|ConstCollectedExpr|TwoWayBindingSetExpr;
+export type Expression =
+  | LexicalReadExpr
+  | ReferenceExpr
+  | ContextExpr
+  | NextContextExpr
+  | GetCurrentViewExpr
+  | RestoreViewExpr
+  | ResetViewExpr
+  | ReadVariableExpr
+  | PureFunctionExpr
+  | PureFunctionParameterExpr
+  | PipeBindingExpr
+  | PipeBindingVariadicExpr
+  | SafePropertyReadExpr
+  | SafeKeyedReadExpr
+  | SafeInvokeFunctionExpr
+  | EmptyExpr
+  | AssignTemporaryExpr
+  | ReadTemporaryExpr
+  | SlotLiteralExpr
+  | ConditionalCaseExpr
+  | ConstCollectedExpr
+  | TwoWayBindingSetExpr;
 
 /**
  * Transformer type which converts expressions into general `o.Expression`s (which may be an
@@ -45,7 +63,7 @@ export function isIrExpression(expr: o.Expression): expr is Expression {
 export abstract class ExpressionBase extends o.Expression {
   abstract readonly kind: ExpressionKind;
 
-  constructor(sourceSpan: ParseSourceSpan|null = null) {
+  constructor(sourceSpan: ParseSourceSpan | null = null) {
     super(null, sourceSpan);
   }
 
@@ -53,8 +71,10 @@ export abstract class ExpressionBase extends o.Expression {
    * Run the transformer against any nested expressions which may be present in this IR expression
    * subtype.
    */
-  abstract transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void;
+  abstract transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void;
 }
 
 /**
@@ -93,7 +113,11 @@ export class LexicalReadExpr extends ExpressionBase {
 export class ReferenceExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.Reference;
 
-  constructor(readonly target: XrefId, readonly targetSlot: SlotHandle, readonly offset: number) {
+  constructor(
+    readonly target: XrefId,
+    readonly targetSlot: SlotHandle,
+    readonly offset: number,
+  ) {
     super();
   }
 
@@ -235,7 +259,7 @@ export class GetCurrentViewExpr extends ExpressionBase {
 export class RestoreViewExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.RestoreView;
 
-  constructor(public view: XrefId|o.Expression) {
+  constructor(public view: XrefId | o.Expression) {
     super();
   }
 
@@ -261,8 +285,10 @@ export class RestoreViewExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     if (typeof this.view !== 'number') {
       this.view = transformExpressionsInExpression(this.view, transform, flags);
     }
@@ -295,8 +321,10 @@ export class ResetViewExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     this.expr = transformExpressionsInExpression(this.expr, transform, flags);
   }
 
@@ -308,7 +336,10 @@ export class ResetViewExpr extends ExpressionBase {
 export class TwoWayBindingSetExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.TwoWayBindingSet;
 
-  constructor(public target: o.Expression, public value: o.Expression) {
+  constructor(
+    public target: o.Expression,
+    public value: o.Expression,
+  ) {
     super();
   }
 
@@ -340,7 +371,7 @@ export class TwoWayBindingSetExpr extends ExpressionBase {
  */
 export class ReadVariableExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.ReadVariable;
-  name: string|null = null;
+  name: string | null = null;
   constructor(readonly xref: XrefId) {
     super();
   }
@@ -364,13 +395,15 @@ export class ReadVariableExpr extends ExpressionBase {
   }
 }
 
-export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrait,
-                                                                UsesVarOffsetTrait {
+export class PureFunctionExpr
+  extends ExpressionBase
+  implements ConsumesVarsTrait, UsesVarOffsetTrait
+{
   override readonly kind = ExpressionKind.PureFunctionExpr;
-  readonly[ConsumesVarsTrait] = true;
-  readonly[UsesVarOffset] = true;
+  readonly [ConsumesVarsTrait] = true;
+  readonly [UsesVarOffset] = true;
 
-  varOffset: number|null = null;
+  varOffset: number | null = null;
 
   /**
    * The expression which should be memoized as a pure computation.
@@ -378,7 +411,7 @@ export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrai
    * This expression contains internal `PureFunctionParameterExpr`s, which are placeholders for the
    * positional argument expressions in `args.
    */
-  body: o.Expression|null;
+  body: o.Expression | null;
 
   /**
    * Positional arguments to the pure function which will memoize the `body` expression, which act
@@ -390,9 +423,9 @@ export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrai
    * Once extracted to the `ConstantPool`, a reference to the function which defines the computation
    * of `body`.
    */
-  fn: o.Expression|null = null;
+  fn: o.Expression | null = null;
 
-  constructor(expression: o.Expression|null, args: o.Expression[]) {
+  constructor(expression: o.Expression | null, args: o.Expression[]) {
     super();
     this.body = expression;
     this.args = args;
@@ -410,20 +443,29 @@ export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrai
       return false;
     }
 
-    return other.body !== null && this.body !== null && other.body.isEquivalent(this.body) &&
-        other.args.every((arg, idx) => arg.isEquivalent(this.args[idx]));
+    return (
+      other.body !== null &&
+      this.body !== null &&
+      other.body.isEquivalent(this.body) &&
+      other.args.every((arg, idx) => arg.isEquivalent(this.args[idx]))
+    );
   }
 
   override isConstant(): boolean {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     if (this.body !== null) {
       // TODO: figure out if this is the right flag to pass here.
       this.body = transformExpressionsInExpression(
-          this.body, transform, flags | VisitorContextFlag.InChildOperation);
+        this.body,
+        transform,
+        flags | VisitorContextFlag.InChildOperation,
+      );
     } else if (this.fn !== null) {
       this.fn = transformExpressionsInExpression(this.fn, transform, flags);
     }
@@ -434,8 +476,10 @@ export class PureFunctionExpr extends ExpressionBase implements ConsumesVarsTrai
   }
 
   override clone(): PureFunctionExpr {
-    const expr =
-        new PureFunctionExpr(this.body?.clone() ?? null, this.args.map(arg => arg.clone()));
+    const expr = new PureFunctionExpr(
+      this.body?.clone() ?? null,
+      this.args.map((arg) => arg.clone()),
+    );
     expr.fn = this.fn?.clone() ?? null;
     expr.varOffset = this.varOffset;
     return expr;
@@ -466,17 +510,22 @@ export class PureFunctionParameterExpr extends ExpressionBase {
   }
 }
 
-export class PipeBindingExpr extends ExpressionBase implements ConsumesVarsTrait,
-                                                               UsesVarOffsetTrait {
+export class PipeBindingExpr
+  extends ExpressionBase
+  implements ConsumesVarsTrait, UsesVarOffsetTrait
+{
   override readonly kind = ExpressionKind.PipeBinding;
-  readonly[ConsumesVarsTrait] = true;
-  readonly[UsesVarOffset] = true;
+  readonly [ConsumesVarsTrait] = true;
+  readonly [UsesVarOffset] = true;
 
-  varOffset: number|null = null;
+  varOffset: number | null = null;
 
   constructor(
-      readonly target: XrefId, readonly targetSlot: SlotHandle, readonly name: string,
-      readonly args: o.Expression[]) {
+    readonly target: XrefId,
+    readonly targetSlot: SlotHandle,
+    readonly name: string,
+    readonly args: o.Expression[],
+  ) {
     super();
   }
 
@@ -494,32 +543,44 @@ export class PipeBindingExpr extends ExpressionBase implements ConsumesVarsTrait
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     for (let idx = 0; idx < this.args.length; idx++) {
       this.args[idx] = transformExpressionsInExpression(this.args[idx], transform, flags);
     }
   }
 
   override clone() {
-    const r =
-        new PipeBindingExpr(this.target, this.targetSlot, this.name, this.args.map(a => a.clone()));
+    const r = new PipeBindingExpr(
+      this.target,
+      this.targetSlot,
+      this.name,
+      this.args.map((a) => a.clone()),
+    );
     r.varOffset = this.varOffset;
     return r;
   }
 }
 
-export class PipeBindingVariadicExpr extends ExpressionBase implements ConsumesVarsTrait,
-                                                                       UsesVarOffsetTrait {
+export class PipeBindingVariadicExpr
+  extends ExpressionBase
+  implements ConsumesVarsTrait, UsesVarOffsetTrait
+{
   override readonly kind = ExpressionKind.PipeBindingVariadic;
-  readonly[ConsumesVarsTrait] = true;
-  readonly[UsesVarOffset] = true;
+  readonly [ConsumesVarsTrait] = true;
+  readonly [UsesVarOffset] = true;
 
-  varOffset: number|null = null;
+  varOffset: number | null = null;
 
   constructor(
-      readonly target: XrefId, readonly targetSlot: SlotHandle, readonly name: string,
-      public args: o.Expression, public numArgs: number) {
+    readonly target: XrefId,
+    readonly targetSlot: SlotHandle,
+    readonly name: string,
+    public args: o.Expression,
+    public numArgs: number,
+  ) {
     super();
   }
 
@@ -535,14 +596,21 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements ConsumesV
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     this.args = transformExpressionsInExpression(this.args, transform, flags);
   }
 
   override clone(): PipeBindingVariadicExpr {
     const r = new PipeBindingVariadicExpr(
-        this.target, this.targetSlot, this.name, this.args.clone(), this.numArgs);
+      this.target,
+      this.targetSlot,
+      this.name,
+      this.args.clone(),
+      this.numArgs,
+    );
     r.varOffset = this.varOffset;
     return r;
   }
@@ -551,7 +619,10 @@ export class PipeBindingVariadicExpr extends ExpressionBase implements ConsumesV
 export class SafePropertyReadExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SafePropertyRead;
 
-  constructor(public receiver: o.Expression, public name: string) {
+  constructor(
+    public receiver: o.Expression,
+    public name: string,
+  ) {
     super();
   }
 
@@ -572,8 +643,10 @@ export class SafePropertyReadExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
   }
 
@@ -586,7 +659,10 @@ export class SafeKeyedReadExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SafeKeyedRead;
 
   constructor(
-      public receiver: o.Expression, public index: o.Expression, sourceSpan: ParseSourceSpan|null) {
+    public receiver: o.Expression,
+    public index: o.Expression,
+    sourceSpan: ParseSourceSpan | null,
+  ) {
     super(sourceSpan);
   }
 
@@ -603,8 +679,10 @@ export class SafeKeyedReadExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
     this.index = transformExpressionsInExpression(this.index, transform, flags);
   }
@@ -617,7 +695,10 @@ export class SafeKeyedReadExpr extends ExpressionBase {
 export class SafeInvokeFunctionExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SafeInvokeFunction;
 
-  constructor(public receiver: o.Expression, public args: o.Expression[]) {
+  constructor(
+    public receiver: o.Expression,
+    public args: o.Expression[],
+  ) {
     super();
   }
 
@@ -636,8 +717,10 @@ export class SafeInvokeFunctionExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     this.receiver = transformExpressionsInExpression(this.receiver, transform, flags);
     for (let i = 0; i < this.args.length; i++) {
       this.args[i] = transformExpressionsInExpression(this.args[i], transform, flags);
@@ -645,14 +728,20 @@ export class SafeInvokeFunctionExpr extends ExpressionBase {
   }
 
   override clone(): SafeInvokeFunctionExpr {
-    return new SafeInvokeFunctionExpr(this.receiver.clone(), this.args.map(a => a.clone()));
+    return new SafeInvokeFunctionExpr(
+      this.receiver.clone(),
+      this.args.map((a) => a.clone()),
+    );
   }
 }
 
 export class SafeTernaryExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.SafeTernaryExpr;
 
-  constructor(public guard: o.Expression, public expr: o.Expression) {
+  constructor(
+    public guard: o.Expression,
+    public expr: o.Expression,
+  ) {
     super();
   }
 
@@ -669,8 +758,10 @@ export class SafeTernaryExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     this.guard = transformExpressionsInExpression(this.guard, transform, flags);
     this.expr = transformExpressionsInExpression(this.expr, transform, flags);
   }
@@ -703,9 +794,12 @@ export class EmptyExpr extends ExpressionBase {
 export class AssignTemporaryExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.AssignTemporaryExpr;
 
-  public name: string|null = null;
+  public name: string | null = null;
 
-  constructor(public expr: o.Expression, public xref: XrefId) {
+  constructor(
+    public expr: o.Expression,
+    public xref: XrefId,
+  ) {
     super();
   }
 
@@ -721,8 +815,10 @@ export class AssignTemporaryExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     this.expr = transformExpressionsInExpression(this.expr, transform, flags);
   }
 
@@ -736,7 +832,7 @@ export class AssignTemporaryExpr extends ExpressionBase {
 export class ReadTemporaryExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.ReadTemporaryExpr;
 
-  public name: string|null = null;
+  public name: string | null = null;
 
   constructor(public xref: XrefId) {
     super();
@@ -752,8 +848,10 @@ export class ReadTemporaryExpr extends ExpressionBase {
     return false;
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {}
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {}
 
   override clone(): ReadTemporaryExpr {
     const r = new ReadTemporaryExpr(this.xref);
@@ -795,8 +893,11 @@ export class ConditionalCaseExpr extends ExpressionBase {
    * @param target The Xref of the view to be displayed if this condition is true.
    */
   constructor(
-      public expr: o.Expression|null, readonly target: XrefId, readonly targetSlot: SlotHandle,
-      readonly alias: t.Variable|null = null) {
+    public expr: o.Expression | null,
+    readonly target: XrefId,
+    readonly targetSlot: SlotHandle,
+    readonly alias: t.Variable | null = null,
+  ) {
     super();
   }
 
@@ -818,14 +919,15 @@ export class ConditionalCaseExpr extends ExpressionBase {
     return new ConditionalCaseExpr(this.expr, this.target, this.targetSlot);
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     if (this.expr !== null) {
       this.expr = transformExpressionsInExpression(this.expr, transform, flags);
     }
   }
 }
-
 
 export class ConstCollectedExpr extends ExpressionBase {
   override readonly kind = ExpressionKind.ConstCollected;
@@ -834,8 +936,10 @@ export class ConstCollectedExpr extends ExpressionBase {
     super();
   }
 
-  override transformInternalExpressions(transform: ExpressionTransform, flags: VisitorContextFlag):
-      void {
+  override transformInternalExpressions(
+    transform: ExpressionTransform,
+    flags: VisitorContextFlag,
+  ): void {
     this.expr = transform(this.expr, flags);
   }
 
@@ -863,11 +967,17 @@ export class ConstCollectedExpr extends ExpressionBase {
  * Visits all `Expression`s in the AST of `op` with the `visitor` function.
  */
 export function visitExpressionsInOp(
-    op: CreateOp|UpdateOp, visitor: (expr: o.Expression, flags: VisitorContextFlag) => void): void {
-  transformExpressionsInOp(op, (expr, flags) => {
-    visitor(expr, flags);
-    return expr;
-  }, VisitorContextFlag.None);
+  op: CreateOp | UpdateOp,
+  visitor: (expr: o.Expression, flags: VisitorContextFlag) => void,
+): void {
+  transformExpressionsInOp(
+    op,
+    (expr, flags) => {
+      visitor(expr, flags);
+      return expr;
+    },
+    VisitorContextFlag.None,
+  );
 }
 
 export enum VisitorContextFlag {
@@ -876,10 +986,16 @@ export enum VisitorContextFlag {
 }
 
 function transformExpressionsInInterpolation(
-    interpolation: Interpolation, transform: ExpressionTransform, flags: VisitorContextFlag) {
+  interpolation: Interpolation,
+  transform: ExpressionTransform,
+  flags: VisitorContextFlag,
+) {
   for (let i = 0; i < interpolation.expressions.length; i++) {
-    interpolation.expressions[i] =
-        transformExpressionsInExpression(interpolation.expressions[i], transform, flags);
+    interpolation.expressions[i] = transformExpressionsInExpression(
+      interpolation.expressions[i],
+      transform,
+      flags,
+    );
   }
 }
 
@@ -890,7 +1006,10 @@ function transformExpressionsInInterpolation(
  * identity transformation.
  */
 export function transformExpressionsInOp(
-    op: CreateOp|UpdateOp, transform: ExpressionTransform, flags: VisitorContextFlag): void {
+  op: CreateOp | UpdateOp,
+  transform: ExpressionTransform,
+  flags: VisitorContextFlag,
+): void {
   switch (op.kind) {
     case OpKind.StyleProp:
     case OpKind.StyleMap:
@@ -912,12 +1031,12 @@ export function transformExpressionsInOp(
         op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       }
       op.sanitizer =
-          op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
+        op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
       break;
     case OpKind.TwoWayProperty:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
       op.sanitizer =
-          op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
+        op.sanitizer && transformExpressionsInExpression(op.sanitizer, transform, flags);
       break;
     case OpKind.I18nExpression:
       op.expression = transformExpressionsInExpression(op.expression, transform, flags);
@@ -954,9 +1073,9 @@ export function transformExpressionsInOp(
       break;
     case OpKind.ExtractedAttribute:
       op.expression =
-          op.expression && transformExpressionsInExpression(op.expression, transform, flags);
-      op.trustedValueFn = op.trustedValueFn &&
-          transformExpressionsInExpression(op.trustedValueFn, transform, flags);
+        op.expression && transformExpressionsInExpression(op.expression, transform, flags);
+      op.trustedValueFn =
+        op.trustedValueFn && transformExpressionsInExpression(op.trustedValueFn, transform, flags);
       break;
     case OpKind.RepeaterCreate:
       op.track = transformExpressionsInExpression(op.track, transform, flags);
@@ -972,8 +1091,11 @@ export function transformExpressionsInOp(
         op.loadingConfig = transformExpressionsInExpression(op.loadingConfig, transform, flags);
       }
       if (op.placeholderConfig !== null) {
-        op.placeholderConfig =
-            transformExpressionsInExpression(op.placeholderConfig, transform, flags);
+        op.placeholderConfig = transformExpressionsInExpression(
+          op.placeholderConfig,
+          transform,
+          flags,
+        );
       }
       if (op.resolverFn !== null) {
         op.resolverFn = transformExpressionsInExpression(op.resolverFn, transform, flags);
@@ -985,7 +1107,9 @@ export function transformExpressionsInOp(
       }
       for (const [placeholder, expr] of op.postprocessingParams) {
         op.postprocessingParams.set(
-            placeholder, transformExpressionsInExpression(expr, transform, flags));
+          placeholder,
+          transformExpressionsInExpression(expr, transform, flags),
+        );
       }
       break;
     case OpKind.DeferWhen:
@@ -1030,7 +1154,10 @@ export function transformExpressionsInOp(
  * identity transformation.
  */
 export function transformExpressionsInExpression(
-    expr: o.Expression, transform: ExpressionTransform, flags: VisitorContextFlag): o.Expression {
+  expr: o.Expression,
+  transform: ExpressionTransform,
+  flags: VisitorContextFlag,
+): o.Expression {
   if (expr instanceof ExpressionBase) {
     expr.transformInternalExpressions(transform, flags);
   } else if (expr instanceof o.BinaryOperatorExpr) {
@@ -1061,8 +1188,11 @@ export function transformExpressionsInExpression(
     }
   } else if (expr instanceof o.LiteralMapExpr) {
     for (let i = 0; i < expr.entries.length; i++) {
-      expr.entries[i].value =
-          transformExpressionsInExpression(expr.entries[i].value, transform, flags);
+      expr.entries[i].value = transformExpressionsInExpression(
+        expr.entries[i].value,
+        transform,
+        flags,
+      );
     }
   } else if (expr instanceof o.ConditionalExpr) {
     expr.condition = transformExpressionsInExpression(expr.condition, transform, flags);
@@ -1082,8 +1212,9 @@ export function transformExpressionsInExpression(
     expr.condition = transformExpressionsInExpression(expr.condition, transform, flags);
   } else if (expr instanceof o.TaggedTemplateExpr) {
     expr.tag = transformExpressionsInExpression(expr.tag, transform, flags);
-    expr.template.expressions =
-        expr.template.expressions.map(e => transformExpressionsInExpression(e, transform, flags));
+    expr.template.expressions = expr.template.expressions.map((e) =>
+      transformExpressionsInExpression(e, transform, flags),
+    );
   } else if (expr instanceof o.ArrowFunctionExpr) {
     if (Array.isArray(expr.body)) {
       for (let i = 0; i < expr.body.length; i++) {
@@ -1095,8 +1226,10 @@ export function transformExpressionsInExpression(
   } else if (expr instanceof o.WrappedNodeExpr) {
     // TODO: Do we need to transform any TS nodes nested inside of this expression?
   } else if (
-      expr instanceof o.ReadVarExpr || expr instanceof o.ExternalExpr ||
-      expr instanceof o.LiteralExpr) {
+    expr instanceof o.ReadVarExpr ||
+    expr instanceof o.ExternalExpr ||
+    expr instanceof o.LiteralExpr
+  ) {
     // No action for these types.
   } else {
     throw new Error(`Unhandled expression kind: ${expr.constructor.name}`);
@@ -1111,7 +1244,10 @@ export function transformExpressionsInExpression(
  * identity transformation.
  */
 export function transformExpressionsInStatement(
-    stmt: o.Statement, transform: ExpressionTransform, flags: VisitorContextFlag): void {
+  stmt: o.Statement,
+  transform: ExpressionTransform,
+  flags: VisitorContextFlag,
+): void {
   if (stmt instanceof o.ExpressionStatement) {
     stmt.expr = transformExpressionsInExpression(stmt.expr, transform, flags);
   } else if (stmt instanceof o.ReturnStatement) {
@@ -1136,6 +1272,6 @@ export function transformExpressionsInStatement(
 /**
  * Checks whether the given expression is a string literal.
  */
-export function isStringLiteral(expr: o.Expression): expr is o.LiteralExpr&{value: string} {
+export function isStringLiteral(expr: o.Expression): expr is o.LiteralExpr & {value: string} {
   return expr instanceof o.LiteralExpr && typeof expr.value === 'string';
 }

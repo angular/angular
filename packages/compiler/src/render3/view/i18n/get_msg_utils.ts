@@ -51,37 +51,45 @@ const GOOG_GET_MSG = 'goog.getMsg';
  * ```
  */
 export function createGoogleGetMsgStatements(
-    variable: o.ReadVarExpr, message: i18n.Message, closureVar: o.ReadVarExpr,
-    placeholderValues: {[name: string]: o.Expression}): o.Statement[] {
+  variable: o.ReadVarExpr,
+  message: i18n.Message,
+  closureVar: o.ReadVarExpr,
+  placeholderValues: {[name: string]: o.Expression},
+): o.Statement[] {
   const messageString = serializeI18nMessageForGetMsg(message);
   const args = [o.literal(messageString) as o.Expression];
   if (Object.keys(placeholderValues).length) {
     // Message template parameters containing the magic strings replaced by the Angular runtime with
     // real data, e.g. `{'interpolation': '\uFFFD0\uFFFD'}`.
-    args.push(mapLiteral(
+    args.push(
+      mapLiteral(
         formatI18nPlaceholderNamesInMap(placeholderValues, true /* useCamelCase */),
-        true /* quoted */));
+        true /* quoted */,
+      ),
+    );
 
     // Message options object, which contains original source code for placeholders (as they are
     // present in a template, e.g.
     // `{original_code: {'interpolation': '{{ name }}', 'startTagSpan': '<span>'}}`.
-    args.push(mapLiteral({
-      original_code:
-          o.literalMap(Object.keys(placeholderValues)
-                           .map((param) => ({
-                                  key: formatI18nPlaceholderName(param),
-                                  quoted: true,
-                                  value: message.placeholders[param] ?
-                                      // Get source span for typical placeholder if it exists.
-                                      o.literal(message.placeholders[param].sourceSpan.toString()) :
-                                      // Otherwise must be an ICU expression, get it's source span.
-                                      o.literal(
-                                          message.placeholderToMessage[param]
-                                              .nodes.map((node) => node.sourceSpan.toString())
-                                              .join(''),
-                                          ),
-                                }))),
-    }));
+    args.push(
+      mapLiteral({
+        original_code: o.literalMap(
+          Object.keys(placeholderValues).map((param) => ({
+            key: formatI18nPlaceholderName(param),
+            quoted: true,
+            value: message.placeholders[param]
+              ? // Get source span for typical placeholder if it exists.
+                o.literal(message.placeholders[param].sourceSpan.toString())
+              : // Otherwise must be an ICU expression, get it's source span.
+                o.literal(
+                  message.placeholderToMessage[param].nodes
+                    .map((node) => node.sourceSpan.toString())
+                    .join(''),
+                ),
+          })),
+        ),
+      }),
+    );
   }
 
   // /**
@@ -110,7 +118,7 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
   }
 
   visitContainer(container: i18n.Container): any {
-    return container.children.map(child => child.visit(this)).join('');
+    return container.children.map((child) => child.visit(this)).join('');
   }
 
   visitIcu(icu: i18n.Icu): any {
@@ -118,10 +126,11 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
   }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder): any {
-    return ph.isVoid ?
-        this.formatPh(ph.startName) :
-        `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${
-            this.formatPh(ph.closeName)}`;
+    return ph.isVoid
+      ? this.formatPh(ph.startName)
+      : `${this.formatPh(ph.startName)}${ph.children.map((child) => child.visit(this)).join('')}${this.formatPh(
+          ph.closeName,
+        )}`;
   }
 
   visitPlaceholder(ph: i18n.Placeholder): any {
@@ -129,8 +138,9 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
   }
 
   visitBlockPlaceholder(ph: i18n.BlockPlaceholder): any {
-    return `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${
-        this.formatPh(ph.closeName)}`;
+    return `${this.formatPh(ph.startName)}${ph.children.map((child) => child.visit(this)).join('')}${this.formatPh(
+      ph.closeName,
+    )}`;
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
@@ -141,5 +151,5 @@ class GetMsgSerializerVisitor implements i18n.Visitor {
 const serializerVisitor = new GetMsgSerializerVisitor();
 
 export function serializeI18nMessageForGetMsg(message: i18n.Message): string {
-  return message.nodes.map(node => node.visit(serializerVisitor, null)).join('');
+  return message.nodes.map((node) => node.visit(serializerVisitor, null)).join('');
 }

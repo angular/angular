@@ -11,7 +11,11 @@ import * as i18n from '../../../i18n/i18n_ast';
 import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
 import {I18nError} from '../../../i18n/parse_util';
 import * as html from '../../../ml_parser/ast';
-import {DEFAULT_CONTAINER_BLOCKS, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../ml_parser/defaults';
+import {
+  DEFAULT_CONTAINER_BLOCKS,
+  DEFAULT_INTERPOLATION_CONFIG,
+  InterpolationConfig,
+} from '../../../ml_parser/defaults';
 import {ParseTreeResult} from '../../../ml_parser/parser';
 import * as o from '../../../output/output_ast';
 import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks';
@@ -19,13 +23,12 @@ import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks';
 import {hasI18nAttrs, I18N_ATTR, I18N_ATTR_PREFIX, icuFromI18nMessage} from './util';
 
 export type I18nMeta = {
-  id?: string,
-  customId?: string,
-  legacyIds?: string[],
-  description?: string,
-  meaning?: string
+  id?: string;
+  customId?: string;
+  legacyIds?: string[];
+  description?: string;
+  meaning?: string;
 };
-
 
 const setI18nRefs: VisitNodeFn = (htmlNode, i18nNode) => {
   if (htmlNode instanceof html.NodeWithI18n) {
@@ -52,16 +55,22 @@ export class I18nMetaVisitor implements html.Visitor {
   private _errors: I18nError[] = [];
 
   constructor(
-      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-      private keepI18nAttrs = false, private enableI18nLegacyMessageIdFormat = false,
-      private containerBlocks: Set<string> = DEFAULT_CONTAINER_BLOCKS) {}
+    private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
+    private keepI18nAttrs = false,
+    private enableI18nLegacyMessageIdFormat = false,
+    private containerBlocks: Set<string> = DEFAULT_CONTAINER_BLOCKS,
+  ) {}
 
   private _generateI18nMessage(
-      nodes: html.Node[], meta: string|i18n.I18nMeta = '',
-      visitNodeFn?: VisitNodeFn): i18n.Message {
+    nodes: html.Node[],
+    meta: string | i18n.I18nMeta = '',
+    visitNodeFn?: VisitNodeFn,
+  ): i18n.Message {
     const {meaning, description, customId} = this._parseMetadata(meta);
-    const createI18nMessage =
-        createI18nMessageFactory(this.interpolationConfig, this.containerBlocks);
+    const createI18nMessage = createI18nMessageFactory(
+      this.interpolationConfig,
+      this.containerBlocks,
+    );
     const message = createI18nMessage(nodes, meaning, description, customId, visitNodeFn);
     this._setMessageId(message, meta);
     this._setLegacyIds(message, meta);
@@ -69,12 +78,12 @@ export class I18nMetaVisitor implements html.Visitor {
   }
 
   visitAllWithErrors(nodes: html.Node[]): ParseTreeResult {
-    const result = nodes.map(node => node.visit(this, null));
+    const result = nodes.map((node) => node.visit(this, null));
     return new ParseTreeResult(result, this._errors);
   }
 
   visitElement(element: html.Element): any {
-    let message: i18n.Message|undefined = undefined;
+    let message: i18n.Message | undefined = undefined;
 
     if (hasI18nAttrs(element)) {
       this.hasI18nMeta = true;
@@ -97,7 +106,9 @@ export class I18nMetaVisitor implements html.Visitor {
           const name = attr.name.slice(I18N_ATTR_PREFIX.length);
           if (isTrustedTypesSink(element.name, name)) {
             this._reportError(
-                attr, `Translating attribute '${name}' is disallowed for security reasons.`);
+              attr,
+              `Translating attribute '${name}' is disallowed for security reasons.`,
+            );
           } else {
             attrsMeta[name] = attr.value;
           }
@@ -128,7 +139,7 @@ export class I18nMetaVisitor implements html.Visitor {
     return element;
   }
 
-  visitExpansion(expansion: html.Expansion, currentMessage: i18n.Message|null): any {
+  visitExpansion(expansion: html.Expansion, currentMessage: i18n.Message | null): any {
     let message;
     const meta = expansion.i18n;
     this.hasI18nMeta = true;
@@ -188,18 +199,20 @@ export class I18nMetaVisitor implements html.Visitor {
    * @param meta the bucket that holds information about the message
    * @returns the parsed metadata.
    */
-  private _parseMetadata(meta: string|i18n.I18nMeta): I18nMeta {
-    return typeof meta === 'string'  ? parseI18nMeta(meta) :
-        meta instanceof i18n.Message ? meta :
-                                       {};
+  private _parseMetadata(meta: string | i18n.I18nMeta): I18nMeta {
+    return typeof meta === 'string'
+      ? parseI18nMeta(meta)
+      : meta instanceof i18n.Message
+        ? meta
+        : {};
   }
 
   /**
    * Generate (or restore) message id if not specified already.
    */
-  private _setMessageId(message: i18n.Message, meta: string|i18n.I18nMeta): void {
+  private _setMessageId(message: i18n.Message, meta: string | i18n.I18nMeta): void {
     if (!message.id) {
-      message.id = meta instanceof i18n.Message && meta.id || decimalDigest(message);
+      message.id = (meta instanceof i18n.Message && meta.id) || decimalDigest(message);
     }
   }
 
@@ -209,7 +222,7 @@ export class I18nMetaVisitor implements html.Visitor {
    * @param message the message whose legacy id should be set
    * @param meta information about the message being processed
    */
-  private _setLegacyIds(message: i18n.Message, meta: string|i18n.I18nMeta): void {
+  private _setLegacyIds(message: i18n.Message, meta: string | i18n.I18nMeta): void {
     if (this.enableI18nLegacyMessageIdFormat) {
       message.legacyIds = [computeDigest(message), computeDecimalDigest(message)];
     } else if (typeof meta !== 'string') {
@@ -217,9 +230,12 @@ export class I18nMetaVisitor implements html.Visitor {
       // `packages/compiler/src/render3/view/template.ts`).
       // In that case we want to reuse the legacy message generated in the 1st pass (see
       // `setI18nRefs()`).
-      const previousMessage = meta instanceof i18n.Message ? meta :
-          meta instanceof i18n.IcuPlaceholder              ? meta.previousMessage :
-                                                             undefined;
+      const previousMessage =
+        meta instanceof i18n.Message
+          ? meta
+          : meta instanceof i18n.IcuPlaceholder
+            ? meta.previousMessage
+            : undefined;
       message.legacyIds = previousMessage ? previousMessage.legacyIds : [];
     }
   }
@@ -244,9 +260,9 @@ const I18N_ID_SEPARATOR = '@@';
  * @returns Object with id, meaning and description fields
  */
 export function parseI18nMeta(meta: string = ''): I18nMeta {
-  let customId: string|undefined;
-  let meaning: string|undefined;
-  let description: string|undefined;
+  let customId: string | undefined;
+  let meaning: string | undefined;
+  let description: string | undefined;
 
   meta = meta.trim();
   if (meta) {
@@ -254,10 +270,11 @@ export function parseI18nMeta(meta: string = ''): I18nMeta {
     const descIndex = meta.indexOf(I18N_MEANING_SEPARATOR);
     let meaningAndDesc: string;
     [meaningAndDesc, customId] =
-        (idIndex > -1) ? [meta.slice(0, idIndex), meta.slice(idIndex + 2)] : [meta, ''];
-    [meaning, description] = (descIndex > -1) ?
-        [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
-        ['', meaningAndDesc];
+      idIndex > -1 ? [meta.slice(0, idIndex), meta.slice(idIndex + 2)] : [meta, ''];
+    [meaning, description] =
+      descIndex > -1
+        ? [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)]
+        : ['', meaningAndDesc];
   }
 
   return {customId, meaning, description};

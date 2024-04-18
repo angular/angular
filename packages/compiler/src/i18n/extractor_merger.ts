@@ -26,26 +26,36 @@ let i18nCommentsWarned = false;
  * Extract translatable messages from an html AST
  */
 export function extractMessages(
-    nodes: html.Node[], interpolationConfig: InterpolationConfig, implicitTags: string[],
-    implicitAttrs: {[k: string]: string[]}): ExtractionResult {
+  nodes: html.Node[],
+  interpolationConfig: InterpolationConfig,
+  implicitTags: string[],
+  implicitAttrs: {[k: string]: string[]},
+): ExtractionResult {
   const visitor = new _Visitor(implicitTags, implicitAttrs);
   return visitor.extract(nodes, interpolationConfig);
 }
 
 export function mergeTranslations(
-    nodes: html.Node[], translations: TranslationBundle, interpolationConfig: InterpolationConfig,
-    implicitTags: string[], implicitAttrs: {[k: string]: string[]}): ParseTreeResult {
+  nodes: html.Node[],
+  translations: TranslationBundle,
+  interpolationConfig: InterpolationConfig,
+  implicitTags: string[],
+  implicitAttrs: {[k: string]: string[]},
+): ParseTreeResult {
   const visitor = new _Visitor(implicitTags, implicitAttrs);
   return visitor.merge(nodes, translations, interpolationConfig);
 }
 
 export class ExtractionResult {
-  constructor(public messages: i18n.Message[], public errors: I18nError[]) {}
+  constructor(
+    public messages: i18n.Message[],
+    public errors: I18nError[],
+  ) {}
 }
 
 enum _VisitorMode {
   Extract,
-  Merge
+  Merge,
 }
 
 /**
@@ -74,7 +84,7 @@ class _Visitor implements html.Visitor {
   private _inIcu!: boolean;
 
   // set to void 0 when not in a section
-  private _msgCountAtSectionStart: number|undefined;
+  private _msgCountAtSectionStart: number | undefined;
   private _errors!: I18nError[];
   private _mode!: _VisitorMode;
 
@@ -85,8 +95,10 @@ class _Visitor implements html.Visitor {
   private _translations!: TranslationBundle;
   private _createI18nMessage!: I18nMessageFactory;
 
-
-  constructor(private _implicitTags: string[], private _implicitAttrs: {[k: string]: string[]}) {}
+  constructor(
+    private _implicitTags: string[],
+    private _implicitAttrs: {[k: string]: string[]},
+  ) {}
 
   /**
    * Extracts the messages from the tree
@@ -94,7 +106,7 @@ class _Visitor implements html.Visitor {
   extract(nodes: html.Node[], interpolationConfig: InterpolationConfig): ExtractionResult {
     this._init(_VisitorMode.Extract, interpolationConfig);
 
-    nodes.forEach(node => node.visit(this, null));
+    nodes.forEach((node) => node.visit(this, null));
 
     if (this._inI18nBlock) {
       this._reportError(nodes[nodes.length - 1], 'Unclosed block');
@@ -107,8 +119,10 @@ class _Visitor implements html.Visitor {
    * Returns a tree where all translatable nodes are translated
    */
   merge(
-      nodes: html.Node[], translations: TranslationBundle,
-      interpolationConfig: InterpolationConfig): ParseTreeResult {
+    nodes: html.Node[],
+    translations: TranslationBundle,
+    interpolationConfig: InterpolationConfig,
+  ): ParseTreeResult {
     this._init(_VisitorMode.Merge, interpolationConfig);
     this._translations = translations;
 
@@ -130,8 +144,12 @@ class _Visitor implements html.Visitor {
 
     if (this._mode === _VisitorMode.Merge) {
       return new html.ExpansionCase(
-          icuCase.value, expression, icuCase.sourceSpan, icuCase.valueSourceSpan,
-          icuCase.expSourceSpan);
+        icuCase.value,
+        expression,
+        icuCase.sourceSpan,
+        icuCase.valueSourceSpan,
+        icuCase.expSourceSpan,
+      );
     }
   }
 
@@ -152,7 +170,12 @@ class _Visitor implements html.Visitor {
 
     if (this._mode === _VisitorMode.Merge) {
       icu = new html.Expansion(
-          icu.switchValue, icu.type, cases, icu.sourceSpan, icu.switchValueSourceSpan);
+        icu.switchValue,
+        icu.type,
+        cases,
+        icu.sourceSpan,
+        icu.switchValueSourceSpan,
+      );
     }
 
     this._inIcu = wasInIcu;
@@ -183,14 +206,16 @@ class _Visitor implements html.Visitor {
             i18nCommentsWarned = true;
             const details = comment.sourceSpan.details ? `, ${comment.sourceSpan.details}` : '';
             // TODO(ocombe): use a log service once there is a public one available
-            console.warn(`I18n comments are deprecated, use an <ng-container> element instead (${
-                comment.sourceSpan.start}${details})`);
+            console.warn(
+              `I18n comments are deprecated, use an <ng-container> element instead (${comment.sourceSpan.start}${details})`,
+            );
           }
           this._inI18nBlock = true;
           this._blockStartDepth = this._depth;
           this._blockChildren = [];
-          this._blockMeaningAndDesc =
-              comment.value!.replace(_I18N_COMMENT_PREFIX_REGEXP, '').trim();
+          this._blockMeaningAndDesc = comment
+            .value!.replace(_I18N_COMMENT_PREFIX_REGEXP, '')
+            .trim();
           this._openTranslatableSection(comment);
         }
       } else {
@@ -218,7 +243,7 @@ class _Visitor implements html.Visitor {
     return text;
   }
 
-  visitElement(el: html.Element, context: any): html.Element|null {
+  visitElement(el: html.Element, context: any): html.Element | null {
     this._mayBeAddBlockChildren(el);
     this._depth++;
     const wasInI18nNode = this._inI18nNode;
@@ -231,8 +256,10 @@ class _Visitor implements html.Visitor {
     // - ICU messages
     const i18nAttr = _getI18nAttr(el);
     const i18nMeta = i18nAttr ? i18nAttr.value : '';
-    const isImplicit = this._implicitTags.some(tag => el.name === tag) && !this._inIcu &&
-        !this._isInTranslatableSection;
+    const isImplicit =
+      this._implicitTags.some((tag) => el.name === tag) &&
+      !this._inIcu &&
+      !this._isInTranslatableSection;
     const isTopLevelImplicit = !wasInImplicitNode && isImplicit;
     this._inImplicitNode = wasInImplicitNode || isImplicit;
 
@@ -252,7 +279,9 @@ class _Visitor implements html.Visitor {
     } else {
       if (i18nAttr || isTopLevelImplicit) {
         this._reportError(
-            el, 'Could not mark an element as translatable inside a translatable section');
+          el,
+          'Could not mark an element as translatable inside a translatable section',
+        );
       }
 
       if (this._mode == _VisitorMode.Extract) {
@@ -263,7 +292,7 @@ class _Visitor implements html.Visitor {
 
     if (this._mode === _VisitorMode.Merge) {
       const visitNodes = translatedChildNodes || el.children;
-      visitNodes.forEach(child => {
+      visitNodes.forEach((child) => {
         const visited = child.visit(this, context);
         if (visited && !this._isInTranslatableSection) {
           // Do not add the children from translatable sections (= i18n blocks here)
@@ -282,8 +311,13 @@ class _Visitor implements html.Visitor {
     if (this._mode === _VisitorMode.Merge) {
       const translatedAttrs = this._translateAttributes(el);
       return new html.Element(
-          el.name, translatedAttrs, childNodes, el.sourceSpan, el.startSourceSpan,
-          el.endSourceSpan);
+        el.name,
+        translatedAttrs,
+        childNodes,
+        el.sourceSpan,
+        el.startSourceSpan,
+        el.endSourceSpan,
+      );
     }
     return null;
   }
@@ -308,8 +342,10 @@ class _Visitor implements html.Visitor {
     this._errors = [];
     this._messages = [];
     this._inImplicitNode = false;
-    this._createI18nMessage =
-        createI18nMessageFactory(interpolationConfig, DEFAULT_CONTAINER_BLOCKS);
+    this._createI18nMessage = createI18nMessageFactory(
+      interpolationConfig,
+      DEFAULT_CONTAINER_BLOCKS,
+    );
   }
 
   // looks for translatable attributes
@@ -317,24 +353,27 @@ class _Visitor implements html.Visitor {
     const explicitAttrNameToValue: {[k: string]: string} = {};
     const implicitAttrNames: string[] = this._implicitAttrs[el.name] || [];
 
-    el.attrs.filter(attr => attr.name.startsWith(_I18N_ATTR_PREFIX))
-        .forEach(
-            attr => explicitAttrNameToValue[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
-                attr.value);
+    el.attrs
+      .filter((attr) => attr.name.startsWith(_I18N_ATTR_PREFIX))
+      .forEach(
+        (attr) => (explicitAttrNameToValue[attr.name.slice(_I18N_ATTR_PREFIX.length)] = attr.value),
+      );
 
-    el.attrs.forEach(attr => {
+    el.attrs.forEach((attr) => {
       if (attr.name in explicitAttrNameToValue) {
         this._addMessage([attr], explicitAttrNameToValue[attr.name]);
-      } else if (implicitAttrNames.some(name => attr.name === name)) {
+      } else if (implicitAttrNames.some((name) => attr.name === name)) {
         this._addMessage([attr]);
       }
     });
   }
 
   // add a translatable message
-  private _addMessage(ast: html.Node[], msgMeta?: string): i18n.Message|null {
-    if (ast.length == 0 ||
-        ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value) {
+  private _addMessage(ast: html.Node[], msgMeta?: string): i18n.Message | null {
+    if (
+      ast.length == 0 ||
+      (ast.length == 1 && ast[0] instanceof html.Attribute && !(<html.Attribute>ast[0]).value)
+    ) {
       // Do not create empty messages
       return null;
     }
@@ -357,7 +396,9 @@ class _Visitor implements html.Visitor {
       }
 
       this._reportError(
-          el, `Translation unavailable for message id="${this._translations.digest(message)}"`);
+        el,
+        `Translation unavailable for message id="${this._translations.digest(message)}"`,
+      );
     }
 
     return [];
@@ -366,13 +407,15 @@ class _Visitor implements html.Visitor {
   // translate the attributes of an element and remove i18n specific attributes
   private _translateAttributes(el: html.Element): html.Attribute[] {
     const attributes = el.attrs;
-    const i18nParsedMessageMeta:
-        {[name: string]: {meaning: string, description: string, id: string}} = {};
+    const i18nParsedMessageMeta: {
+      [name: string]: {meaning: string; description: string; id: string};
+    } = {};
 
-    attributes.forEach(attr => {
+    attributes.forEach((attr) => {
       if (attr.name.startsWith(_I18N_ATTR_PREFIX)) {
-        i18nParsedMessageMeta[attr.name.slice(_I18N_ATTR_PREFIX.length)] =
-            _parseMessageMeta(attr.value);
+        i18nParsedMessageMeta[attr.name.slice(_I18N_ATTR_PREFIX.length)] = _parseMessageMeta(
+          attr.value,
+        );
       }
     });
 
@@ -390,25 +433,45 @@ class _Visitor implements html.Visitor {
         const nodes = this._translations.get(message);
         if (nodes) {
           if (nodes.length == 0) {
-            translatedAttributes.push(new html.Attribute(
-                attr.name, '', attr.sourceSpan, undefined /* keySpan */, undefined /* valueSpan */,
-                undefined /* valueTokens */, undefined /* i18n */));
+            translatedAttributes.push(
+              new html.Attribute(
+                attr.name,
+                '',
+                attr.sourceSpan,
+                undefined /* keySpan */,
+                undefined /* valueSpan */,
+                undefined /* valueTokens */,
+                undefined /* i18n */,
+              ),
+            );
           } else if (nodes[0] instanceof html.Text) {
             const value = (nodes[0] as html.Text).value;
-            translatedAttributes.push(new html.Attribute(
-                attr.name, value, attr.sourceSpan, undefined /* keySpan */,
-                undefined /* valueSpan */, undefined /* valueTokens */, undefined /* i18n */));
+            translatedAttributes.push(
+              new html.Attribute(
+                attr.name,
+                value,
+                attr.sourceSpan,
+                undefined /* keySpan */,
+                undefined /* valueSpan */,
+                undefined /* valueTokens */,
+                undefined /* i18n */,
+              ),
+            );
           } else {
             this._reportError(
-                el,
-                `Unexpected translation for attribute "${attr.name}" (id="${
-                    id || this._translations.digest(message)}")`);
+              el,
+              `Unexpected translation for attribute "${attr.name}" (id="${
+                id || this._translations.digest(message)
+              }")`,
+            );
           }
         } else {
           this._reportError(
-              el,
-              `Translation unavailable for attribute "${attr.name}" (id="${
-                  id || this._translations.digest(message)}")`);
+            el,
+            `Translation unavailable for attribute "${attr.name}" (id="${
+              id || this._translations.digest(message)
+            }")`,
+          );
         }
       } else {
         translatedAttributes.push(attr);
@@ -417,7 +480,6 @@ class _Visitor implements html.Visitor {
 
     return translatedAttributes;
   }
-
 
   /**
    * Add the node as a child of the block when:
@@ -475,8 +537,9 @@ class _Visitor implements html.Visitor {
 
     const startIndex = this._msgCountAtSectionStart;
     const significantChildren: number = directChildren.reduce(
-        (count: number, node: html.Node): number => count + (node instanceof html.Comment ? 0 : 1),
-        0);
+      (count: number, node: html.Node): number => count + (node instanceof html.Comment ? 0 : 1),
+      0,
+    );
 
     if (significantChildren == 1) {
       for (let i = this._messages.length - 1; i >= startIndex!; i--) {
@@ -504,20 +567,21 @@ function _isClosingComment(n: html.Node): boolean {
   return !!(n instanceof html.Comment && n.value && n.value === '/i18n');
 }
 
-function _getI18nAttr(p: html.Element): html.Attribute|null {
-  return p.attrs.find(attr => attr.name === _I18N_ATTR) || null;
+function _getI18nAttr(p: html.Element): html.Attribute | null {
+  return p.attrs.find((attr) => attr.name === _I18N_ATTR) || null;
 }
 
-function _parseMessageMeta(i18n?: string): {meaning: string, description: string, id: string} {
+function _parseMessageMeta(i18n?: string): {meaning: string; description: string; id: string} {
   if (!i18n) return {meaning: '', description: '', id: ''};
 
   const idIndex = i18n.indexOf(ID_SEPARATOR);
   const descIndex = i18n.indexOf(MEANING_SEPARATOR);
   const [meaningAndDesc, id] =
-      (idIndex > -1) ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
-  const [meaning, description] = (descIndex > -1) ?
-      [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)] :
-      ['', meaningAndDesc];
+    idIndex > -1 ? [i18n.slice(0, idIndex), i18n.slice(idIndex + 2)] : [i18n, ''];
+  const [meaning, description] =
+    descIndex > -1
+      ? [meaningAndDesc.slice(0, descIndex), meaningAndDesc.slice(descIndex + 1)]
+      : ['', meaningAndDesc];
 
   return {meaning, description, id: id.trim()};
 }

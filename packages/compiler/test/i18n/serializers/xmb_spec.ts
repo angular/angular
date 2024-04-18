@@ -76,9 +76,8 @@ lines</msg>
   });
 });
 
-
-function toXmb(html: string, url: string, locale: string|null = null): string {
-  const catalog = new MessageBundle(new HtmlParser, [], {}, locale);
+function toXmb(html: string, url: string, locale: string | null = null): string {
+  const catalog = new MessageBundle(new HtmlParser(), [], {}, locale);
   const serializer = new Xmb();
 
   catalog.updateFromTemplate(html, url, DEFAULT_INTERPOLATION_CONFIG);

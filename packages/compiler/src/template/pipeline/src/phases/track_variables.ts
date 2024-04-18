@@ -23,18 +23,22 @@ export function generateTrackVariables(job: CompilationJob): void {
         continue;
       }
 
-      op.track = ir.transformExpressionsInExpression(op.track, expr => {
-        if (expr instanceof ir.LexicalReadExpr) {
-          if (op.varNames.$index.has(expr.name)) {
-            return o.variable('$index');
-          } else if (expr.name === op.varNames.$implicit) {
-            return o.variable('$item');
-          }
+      op.track = ir.transformExpressionsInExpression(
+        op.track,
+        (expr) => {
+          if (expr instanceof ir.LexicalReadExpr) {
+            if (op.varNames.$index.has(expr.name)) {
+              return o.variable('$index');
+            } else if (expr.name === op.varNames.$implicit) {
+              return o.variable('$item');
+            }
 
-          // TODO: handle prohibited context variables (emit as globals?)
-        }
-        return expr;
-      }, ir.VisitorContextFlag.None);
+            // TODO: handle prohibited context variables (emit as globals?)
+          }
+          return expr;
+        },
+        ir.VisitorContextFlag.None,
+      );
     }
   }
 }

@@ -7,5 +7,5 @@
  */
 
 export class SlotHandle {
-  slot: number|null = null;
+  slot: number | null = null;
 }

@@ -15,12 +15,12 @@ import {DefinitionMap} from './view/util';
 export interface R3InjectorMetadata {
   name: string;
   type: R3Reference;
-  providers: o.Expression|null;
+  providers: o.Expression | null;
   imports: o.Expression[];
 }
 
 export function compileInjector(meta: R3InjectorMetadata): R3CompiledExpression {
-  const definitionMap = new DefinitionMap<{providers: o.Expression; imports: o.Expression;}>();
+  const definitionMap = new DefinitionMap<{providers: o.Expression; imports: o.Expression}>();
 
   if (meta.providers !== null) {
     definitionMap.set('providers', meta.providers);
@@ -30,13 +30,15 @@ export function compileInjector(meta: R3InjectorMetadata): R3CompiledExpression 
     definitionMap.set('imports', o.literalArr(meta.imports));
   }
 
-  const expression =
-      o.importExpr(R3.defineInjector).callFn([definitionMap.toLiteralMap()], undefined, true);
+  const expression = o
+    .importExpr(R3.defineInjector)
+    .callFn([definitionMap.toLiteralMap()], undefined, true);
   const type = createInjectorType(meta);
   return {expression, type, statements: []};
 }
 
 export function createInjectorType(meta: R3InjectorMetadata): o.Type {
   return new o.ExpressionType(
-      o.importExpr(R3.InjectorDeclaration, [new o.ExpressionType(meta.type.type)]));
+    o.importExpr(R3.InjectorDeclaration, [new o.ExpressionType(meta.type.type)]),
+  );
 }

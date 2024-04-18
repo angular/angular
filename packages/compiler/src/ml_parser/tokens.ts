@@ -41,18 +41,42 @@ export const enum TokenType {
   EOF,
 }
 
-export type Token = TagOpenStartToken|TagOpenEndToken|TagOpenEndVoidToken|TagCloseToken|
-    IncompleteTagOpenToken|TextToken|InterpolationToken|EncodedEntityToken|CommentStartToken|
-    CommentEndToken|CdataStartToken|CdataEndToken|AttributeNameToken|AttributeQuoteToken|
-    AttributeValueTextToken|AttributeValueInterpolationToken|DocTypeToken|ExpansionFormStartToken|
-    ExpansionCaseValueToken|ExpansionCaseExpressionStartToken|ExpansionCaseExpressionEndToken|
-    ExpansionFormEndToken|EndOfFileToken|BlockParameterToken|BlockOpenStartToken|BlockOpenEndToken|
-    BlockCloseToken|IncompleteBlockOpenToken;
+export type Token =
+  | TagOpenStartToken
+  | TagOpenEndToken
+  | TagOpenEndVoidToken
+  | TagCloseToken
+  | IncompleteTagOpenToken
+  | TextToken
+  | InterpolationToken
+  | EncodedEntityToken
+  | CommentStartToken
+  | CommentEndToken
+  | CdataStartToken
+  | CdataEndToken
+  | AttributeNameToken
+  | AttributeQuoteToken
+  | AttributeValueTextToken
+  | AttributeValueInterpolationToken
+  | DocTypeToken
+  | ExpansionFormStartToken
+  | ExpansionCaseValueToken
+  | ExpansionCaseExpressionStartToken
+  | ExpansionCaseExpressionEndToken
+  | ExpansionFormEndToken
+  | EndOfFileToken
+  | BlockParameterToken
+  | BlockOpenStartToken
+  | BlockOpenEndToken
+  | BlockCloseToken
+  | IncompleteBlockOpenToken;
 
-export type InterpolatedTextToken = TextToken|InterpolationToken|EncodedEntityToken;
+export type InterpolatedTextToken = TextToken | InterpolationToken | EncodedEntityToken;
 
 export type InterpolatedAttributeToken =
-    AttributeValueTextToken|AttributeValueInterpolationToken|EncodedEntityToken;
+  | AttributeValueTextToken
+  | AttributeValueInterpolationToken
+  | EncodedEntityToken;
 
 export interface TokenBase {
   type: TokenType;
@@ -86,14 +110,15 @@ export interface IncompleteTagOpenToken extends TokenBase {
 }
 
 export interface TextToken extends TokenBase {
-  type: TokenType.TEXT|TokenType.ESCAPABLE_RAW_TEXT|TokenType.RAW_TEXT;
+  type: TokenType.TEXT | TokenType.ESCAPABLE_RAW_TEXT | TokenType.RAW_TEXT;
   parts: [text: string];
 }
 
 export interface InterpolationToken extends TokenBase {
   type: TokenType.INTERPOLATION;
-  parts: [startMarker: string, expression: string, endMarker: string]|
-      [startMarker: string, expression: string];
+  parts:
+    | [startMarker: string, expression: string, endMarker: string]
+    | [startMarker: string, expression: string];
 }
 
 export interface EncodedEntityToken extends TokenBase {
@@ -128,7 +153,7 @@ export interface AttributeNameToken extends TokenBase {
 
 export interface AttributeQuoteToken extends TokenBase {
   type: TokenType.ATTR_QUOTE;
-  parts: [quote: '\''|'"'];
+  parts: [quote: "'" | '"'];
 }
 
 export interface AttributeValueTextToken extends TokenBase {
@@ -138,8 +163,9 @@ export interface AttributeValueTextToken extends TokenBase {
 
 export interface AttributeValueInterpolationToken extends TokenBase {
   type: TokenType.ATTR_VALUE_INTERPOLATION;
-  parts: [startMarker: string, expression: string, endMarker: string]|
-      [startMarker: string, expression: string];
+  parts:
+    | [startMarker: string, expression: string, endMarker: string]
+    | [startMarker: string, expression: string];
 }
 
 export interface DocTypeToken extends TokenBase {

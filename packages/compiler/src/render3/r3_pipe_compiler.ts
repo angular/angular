@@ -35,7 +35,7 @@ export interface R3PipeMetadata {
   /**
    * Dependencies of the pipe's constructor.
    */
-  deps: R3DependencyMetadata[]|null;
+  deps: R3DependencyMetadata[] | null;
 
   /**
    * Whether the pipe is marked as pure.
@@ -49,7 +49,7 @@ export interface R3PipeMetadata {
 }
 
 export function compilePipeFromMetadata(metadata: R3PipeMetadata): R3CompiledExpression {
-  const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
+  const definitionMapValues: {key: string; quoted: boolean; value: o.Expression}[] = [];
 
   // e.g. `name: 'myPipe'`
   definitionMapValues.push({key: 'name', value: o.literal(metadata.pipeName), quoted: false});
@@ -64,17 +64,20 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata): R3CompiledExp
     definitionMapValues.push({key: 'standalone', value: o.literal(true), quoted: false});
   }
 
-  const expression =
-      o.importExpr(R3.definePipe).callFn([o.literalMap(definitionMapValues)], undefined, true);
+  const expression = o
+    .importExpr(R3.definePipe)
+    .callFn([o.literalMap(definitionMapValues)], undefined, true);
   const type = createPipeType(metadata);
 
   return {expression, type, statements: []};
 }
 
 export function createPipeType(metadata: R3PipeMetadata): o.Type {
-  return new o.ExpressionType(o.importExpr(R3.PipeDeclaration, [
-    typeWithParameters(metadata.type.type, metadata.typeArgumentCount),
-    new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
-    new o.ExpressionType(new o.LiteralExpr(metadata.isStandalone)),
-  ]));
+  return new o.ExpressionType(
+    o.importExpr(R3.PipeDeclaration, [
+      typeWithParameters(metadata.type.type, metadata.typeArgumentCount),
+      new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
+      new o.ExpressionType(new o.LiteralExpr(metadata.isStandalone)),
+    ]),
+  );
 }

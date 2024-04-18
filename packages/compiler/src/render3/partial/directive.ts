@@ -7,10 +7,19 @@
  */
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {convertFromMaybeForwardRefExpression, generateForwardRef, R3CompiledExpression} from '../util';
+import {
+  convertFromMaybeForwardRefExpression,
+  generateForwardRef,
+  R3CompiledExpression,
+} from '../util';
 import {R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from '../view/api';
 import {createDirectiveType, createHostDirectivesMappingArray} from '../view/compiler';
-import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap, UNSAFE_OBJECT_KEY_NAME_REGEXP} from '../view/util';
+import {
+  asLiteral,
+  conditionallyCreateDirectiveBindingLiteral,
+  DefinitionMap,
+  UNSAFE_OBJECT_KEY_NAME_REGEXP,
+} from '../view/util';
 
 import {R3DeclareDirectiveMetadata, R3DeclareQueryMetadata} from './api';
 import {toOptionalLiteralMap} from './util';
@@ -18,8 +27,9 @@ import {toOptionalLiteralMap} from './util';
 /**
  * Compile a directive declaration defined by the `R3DirectiveMetadata`.
  */
-export function compileDeclareDirectiveFromMetadata(meta: R3DirectiveMetadata):
-    R3CompiledExpression {
+export function compileDeclareDirectiveFromMetadata(
+  meta: R3DirectiveMetadata,
+): R3CompiledExpression {
   const definitionMap = createDirectiveDefinitionMap(meta);
 
   const expression = o.importExpr(R3.declareDirective).callFn([definitionMap.toLiteralMap()]);
@@ -32,8 +42,9 @@ export function compileDeclareDirectiveFromMetadata(meta: R3DirectiveMetadata):
  * Gathers the declaration fields for a directive into a `DefinitionMap`. This allows for reusing
  * this logic for components, as they extend the directive metadata.
  */
-export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
-    DefinitionMap<R3DeclareDirectiveMetadata> {
+export function createDirectiveDefinitionMap(
+  meta: R3DirectiveMetadata,
+): DefinitionMap<R3DeclareDirectiveMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareDirectiveMetadata>();
   const minVersion = getMinimumVersionForPartialOutput(meta);
 
@@ -56,9 +67,11 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
   }
 
   definitionMap.set(
-      'inputs',
-      needsNewInputPartialOutput(meta) ? createInputsPartialMetadata(meta.inputs) :
-                                         legacyInputsPartialMetadata(meta.inputs));
+    'inputs',
+    needsNewInputPartialOutput(meta)
+      ? createInputsPartialMetadata(meta.inputs)
+      : legacyInputsPartialMetadata(meta.inputs),
+  );
   definitionMap.set('outputs', conditionallyCreateDirectiveBindingLiteral(meta.outputs));
 
   definitionMap.set('host', compileHostMetadata(meta.host));
@@ -114,8 +127,9 @@ function getMinimumVersionForPartialOutput(meta: R3DirectiveMetadata): string {
   // Note: in order to allow consuming Angular libraries that have been compiled with 16.1+ in
   // Angular 16.0, we only force a minimum version of 16.1 if input transform feature as introduced
   // in 16.1 is actually used.
-  const hasDecoratorTransformFunctions =
-      Object.values(meta.inputs).some(input => input.transformFunction !== null);
+  const hasDecoratorTransformFunctions = Object.values(meta.inputs).some(
+    (input) => input.transformFunction !== null,
+  );
   if (hasDecoratorTransformFunctions) {
     minVersion = '16.1.0';
   }
@@ -129,7 +143,7 @@ function getMinimumVersionForPartialOutput(meta: R3DirectiveMetadata): string {
 
   // If there are signal-based queries, partial output generates an extra field
   // that should be parsed by linkers. Ensure a proper minimum linker version.
-  if (meta.queries.some(q => q.isSignal) || meta.viewQueries.some(q => q.isSignal)) {
+  if (meta.queries.some((q) => q.isSignal) || meta.viewQueries.some((q) => q.isSignal)) {
     minVersion = '17.2.0';
   }
 
@@ -141,7 +155,7 @@ function getMinimumVersionForPartialOutput(meta: R3DirectiveMetadata): string {
  * that can hold additional metadata like `isRequired`, `isSignal` etc.
  */
 function needsNewInputPartialOutput(meta: R3DirectiveMetadata): boolean {
-  return Object.values(meta.inputs).some(input => input.isSignal);
+  return Object.values(meta.inputs).some((input) => input.isSignal);
 }
 
 /**
@@ -155,9 +169,11 @@ function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
     meta.set('first', o.literal(true));
   }
   meta.set(
-      'predicate',
-      Array.isArray(query.predicate) ? asLiteral(query.predicate) :
-                                       convertFromMaybeForwardRefExpression(query.predicate));
+    'predicate',
+    Array.isArray(query.predicate)
+      ? asLiteral(query.predicate)
+      : convertFromMaybeForwardRefExpression(query.predicate),
+  );
   if (!query.emitDistinctChangesOnly) {
     // `emitDistinctChangesOnly` is special because we expect it to be `true`.
     // Therefore we explicitly emit the field, and explicitly place it only when it's `false`.
@@ -182,9 +198,12 @@ function compileQuery(query: R3QueryMetadata): o.LiteralMapExpr {
  * Compiles the host metadata into its partial declaration form as declared
  * in `R3DeclareDirectiveMetadata['host']`
  */
-function compileHostMetadata(meta: R3HostMetadata): o.LiteralMapExpr|null {
+function compileHostMetadata(meta: R3HostMetadata): o.LiteralMapExpr | null {
   const hostMetadata = new DefinitionMap<NonNullable<R3DeclareDirectiveMetadata['host']>>();
-  hostMetadata.set('attributes', toOptionalLiteralMap(meta.attributes, expression => expression));
+  hostMetadata.set(
+    'attributes',
+    toOptionalLiteralMap(meta.attributes, (expression) => expression),
+  );
   hostMetadata.set('listeners', toOptionalLiteralMap(meta.listeners, o.literal));
   hostMetadata.set('properties', toOptionalLiteralMap(meta.properties, o.literal));
 
@@ -202,18 +221,23 @@ function compileHostMetadata(meta: R3HostMetadata): o.LiteralMapExpr|null {
   }
 }
 
-function createHostDirectives(hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>):
-    o.LiteralArrayExpr {
-  const expressions = hostDirectives.map(current => {
-    const keys = [{
-      key: 'directive',
-      value: current.isForwardReference ? generateForwardRef(current.directive.type) :
-                                          current.directive.type,
-      quoted: false
-    }];
+function createHostDirectives(
+  hostDirectives: NonNullable<R3DirectiveMetadata['hostDirectives']>,
+): o.LiteralArrayExpr {
+  const expressions = hostDirectives.map((current) => {
+    const keys = [
+      {
+        key: 'directive',
+        value: current.isForwardReference
+          ? generateForwardRef(current.directive.type)
+          : current.directive.type,
+        quoted: false,
+      },
+    ];
     const inputsLiteral = current.inputs ? createHostDirectivesMappingArray(current.inputs) : null;
-    const outputsLiteral =
-        current.outputs ? createHostDirectivesMappingArray(current.outputs) : null;
+    const outputsLiteral = current.outputs
+      ? createHostDirectivesMappingArray(current.outputs)
+      : null;
 
     if (inputsLiteral) {
       keys.push({key: 'inputs', value: inputsLiteral, quoted: false});
@@ -236,28 +260,30 @@ function createHostDirectives(hostDirectives: NonNullable<R3DirectiveMetadata['h
  *
  * The generated structure is expected to match `R3DeclareDirectiveFacade['inputs']`.
  */
-function createInputsPartialMetadata(inputs: R3DirectiveMetadata['inputs']): o.Expression|null {
+function createInputsPartialMetadata(inputs: R3DirectiveMetadata['inputs']): o.Expression | null {
   const keys = Object.getOwnPropertyNames(inputs);
   if (keys.length === 0) {
     return null;
   }
 
-  return o.literalMap(keys.map(declaredName => {
-    const value = inputs[declaredName];
+  return o.literalMap(
+    keys.map((declaredName) => {
+      const value = inputs[declaredName];
 
-    return {
-      key: declaredName,
-      // put quotes around keys that contain potentially unsafe characters
-      quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(declaredName),
-      value: o.literalMap([
-        {key: 'classPropertyName', quoted: false, value: asLiteral(value.classPropertyName)},
-        {key: 'publicName', quoted: false, value: asLiteral(value.bindingPropertyName)},
-        {key: 'isSignal', quoted: false, value: asLiteral(value.isSignal)},
-        {key: 'isRequired', quoted: false, value: asLiteral(value.required)},
-        {key: 'transformFunction', quoted: false, value: value.transformFunction ?? o.NULL_EXPR},
-      ])
-    };
-  }));
+      return {
+        key: declaredName,
+        // put quotes around keys that contain potentially unsafe characters
+        quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(declaredName),
+        value: o.literalMap([
+          {key: 'classPropertyName', quoted: false, value: asLiteral(value.classPropertyName)},
+          {key: 'publicName', quoted: false, value: asLiteral(value.bindingPropertyName)},
+          {key: 'isSignal', quoted: false, value: asLiteral(value.isSignal)},
+          {key: 'isRequired', quoted: false, value: asLiteral(value.required)},
+          {key: 'transformFunction', quoted: false, value: value.transformFunction ?? o.NULL_EXPR},
+        ]),
+      };
+    }),
+  );
 }
 
 /**
@@ -273,7 +299,7 @@ function createInputsPartialMetadata(inputs: R3DirectiveMetadata['inputs']): o.E
  * See:
  * https://github.com/angular/angular/blob/d4b423690210872b5c32a322a6090beda30b05a3/packages/core/src/compiler/compiler_facade_interface.ts#L197-L199
  */
-function legacyInputsPartialMetadata(inputs: R3DirectiveMetadata['inputs']): o.Expression|null {
+function legacyInputsPartialMetadata(inputs: R3DirectiveMetadata['inputs']): o.Expression | null {
   // TODO(legacy-partial-output-inputs): Remove function in v18.
 
   const keys = Object.getOwnPropertyNames(inputs);
@@ -281,27 +307,29 @@ function legacyInputsPartialMetadata(inputs: R3DirectiveMetadata['inputs']): o.E
     return null;
   }
 
-  return o.literalMap(keys.map(declaredName => {
-    const value = inputs[declaredName];
-    const publicName = value.bindingPropertyName;
-    const differentDeclaringName = publicName !== declaredName;
-    let result: o.Expression;
+  return o.literalMap(
+    keys.map((declaredName) => {
+      const value = inputs[declaredName];
+      const publicName = value.bindingPropertyName;
+      const differentDeclaringName = publicName !== declaredName;
+      let result: o.Expression;
 
-    if (differentDeclaringName || value.transformFunction !== null) {
-      const values = [asLiteral(publicName), asLiteral(declaredName)];
-      if (value.transformFunction !== null) {
-        values.push(value.transformFunction);
+      if (differentDeclaringName || value.transformFunction !== null) {
+        const values = [asLiteral(publicName), asLiteral(declaredName)];
+        if (value.transformFunction !== null) {
+          values.push(value.transformFunction);
+        }
+        result = o.literalArr(values);
+      } else {
+        result = asLiteral(publicName);
       }
-      result = o.literalArr(values);
-    } else {
-      result = asLiteral(publicName);
-    }
 
-    return {
-      key: declaredName,
-      // put quotes around keys that contain potentially unsafe characters
-      quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(declaredName),
-      value: result,
-    };
-  }));
+      return {
+        key: declaredName,
+        // put quotes around keys that contain potentially unsafe characters
+        quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(declaredName),
+        value: result,
+      };
+    }),
+  );
 }

@@ -141,12 +141,15 @@ export interface ParseTemplateOptions {
  * @param options options to modify how the template is parsed
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: ParseTemplateOptions = {}): ParsedTemplate {
+  template: string,
+  templateUrl: string,
+  options: ParseTemplateOptions = {},
+): ParsedTemplate {
   const {
     interpolationConfig,
     preserveWhitespaces,
     enableI18nLegacyMessageIdFormat,
-    allowInvalidAssignmentEvents
+    allowInvalidAssignmentEvents,
   } = options;
   const bindingParser = makeBindingParser(interpolationConfig, allowInvalidAssignmentEvents);
   const htmlParser = new HtmlParser();
@@ -157,8 +160,11 @@ export function parseTemplate(
     tokenizeBlocks: options.enableBlockSyntax ?? true,
   });
 
-  if (!options.alwaysAttemptHtmlToR3AstConversion && parseResult.errors &&
-      parseResult.errors.length > 0) {
+  if (
+    !options.alwaysAttemptHtmlToR3AstConversion &&
+    parseResult.errors &&
+    parseResult.errors.length > 0
+  ) {
     const parsedTemplate: ParsedTemplate = {
       interpolationConfig,
       preserveWhitespaces,
@@ -166,7 +172,7 @@ export function parseTemplate(
       nodes: [],
       styleUrls: [],
       styles: [],
-      ngContentSelectors: []
+      ngContentSelectors: [],
     };
     if (options.collectCommentNodes) {
       parsedTemplate.commentNodes = [];
@@ -181,12 +187,17 @@ export function parseTemplate(
   // extraction process (ng extract-i18n) relies on a raw content to generate
   // message ids
   const i18nMetaVisitor = new I18nMetaVisitor(
-      interpolationConfig, /* keepI18nAttrs */ !preserveWhitespaces,
-      enableI18nLegacyMessageIdFormat);
+    interpolationConfig,
+    /* keepI18nAttrs */ !preserveWhitespaces,
+    enableI18nLegacyMessageIdFormat,
+  );
   const i18nMetaResult = i18nMetaVisitor.visitAllWithErrors(rootNodes);
 
-  if (!options.alwaysAttemptHtmlToR3AstConversion && i18nMetaResult.errors &&
-      i18nMetaResult.errors.length > 0) {
+  if (
+    !options.alwaysAttemptHtmlToR3AstConversion &&
+    i18nMetaResult.errors &&
+    i18nMetaResult.errors.length > 0
+  ) {
     const parsedTemplate: ParsedTemplate = {
       interpolationConfig,
       preserveWhitespaces,
@@ -194,7 +205,7 @@ export function parseTemplate(
       nodes: [],
       styleUrls: [],
       styles: [],
-      ngContentSelectors: []
+      ngContentSelectors: [],
     };
     if (options.collectCommentNodes) {
       parsedTemplate.commentNodes = [];
@@ -213,12 +224,17 @@ export function parseTemplate(
     // mimic existing extraction process (ng extract-i18n)
     if (i18nMetaVisitor.hasI18nMeta) {
       rootNodes = html.visitAll(
-          new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false), rootNodes);
+        new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
+        rootNodes,
+      );
     }
   }
 
   const {nodes, errors, styleUrls, styles, ngContentSelectors, commentNodes} = htmlAstToRender3Ast(
-      rootNodes, bindingParser, {collectCommentNodes: !!options.collectCommentNodes});
+    rootNodes,
+    bindingParser,
+    {collectCommentNodes: !!options.collectCommentNodes},
+  );
   errors.push(...parseResult.errors, ...i18nMetaResult.errors);
 
   const parsedTemplate: ParsedTemplate = {
@@ -228,7 +244,7 @@ export function parseTemplate(
     nodes,
     styleUrls,
     styles,
-    ngContentSelectors
+    ngContentSelectors,
   };
 
   if (options.collectCommentNodes) {
@@ -243,11 +259,16 @@ const elementRegistry = new DomElementSchemaRegistry();
  * Construct a `BindingParser` with a default configuration.
  */
 export function makeBindingParser(
-    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-    allowInvalidAssignmentEvents = false): BindingParser {
+  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
+  allowInvalidAssignmentEvents = false,
+): BindingParser {
   return new BindingParser(
-      new Parser(new Lexer()), interpolationConfig, elementRegistry, [],
-      allowInvalidAssignmentEvents);
+    new Parser(new Lexer()),
+    interpolationConfig,
+    elementRegistry,
+    [],
+    allowInvalidAssignmentEvents,
+  );
 }
 
 /**
@@ -271,7 +292,7 @@ export interface ParsedTemplate {
    *
    * `null` if there are no errors. Otherwise, the array of errors is guaranteed to be non-empty.
    */
-  errors: ParseError[]|null;
+  errors: ParseError[] | null;
 
   /**
    * The template AST, parsed from the template.

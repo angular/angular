@@ -10,8 +10,9 @@ import * as xml from '../../../src/i18n/serializers/xml_helper';
 
 describe('XML helper', () => {
   it('should serialize XML declaration', () => {
-    expect(xml.serialize([new xml.Declaration({version: '1.0'})]))
-        .toEqual('<?xml version="1.0" ?>');
+    expect(xml.serialize([new xml.Declaration({version: '1.0'})])).toEqual(
+      '<?xml version="1.0" ?>',
+    );
   });
 
   it('should serialize text node', () => {
@@ -27,20 +28,22 @@ describe('XML helper', () => {
   });
 
   it('should serialize xml nodes with children', () => {
-    expect(xml.serialize([
-      new xml.Tag('parent', {}, [new xml.Tag('child', {}, [new xml.Text('content')])])
-    ])).toEqual('<parent><child>content</child></parent>');
+    expect(
+      xml.serialize([
+        new xml.Tag('parent', {}, [new xml.Tag('child', {}, [new xml.Text('content')])]),
+      ]),
+    ).toEqual('<parent><child>content</child></parent>');
   });
 
   it('should serialize node lists', () => {
-    expect(xml.serialize([
-      new xml.Tag('el', {order: '0'}, []),
-      new xml.Tag('el', {order: '1'}, []),
-    ])).toEqual('<el order="0"/><el order="1"/>');
+    expect(
+      xml.serialize([new xml.Tag('el', {order: '0'}, []), new xml.Tag('el', {order: '1'}, [])]),
+    ).toEqual('<el order="0"/><el order="1"/>');
   });
 
   it('should escape attribute values', () => {
-    expect(xml.serialize([new xml.Tag('el', {foo: '<">'}, [])]))
-        .toEqual('<el foo="&lt;&quot;&gt;"/>');
+    expect(xml.serialize([new xml.Tag('el', {foo: '<">'}, [])])).toEqual(
+      '<el foo="&lt;&quot;&gt;"/>',
+    );
   });
 });

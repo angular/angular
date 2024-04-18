@@ -12,13 +12,20 @@ import {ParseSourceSpan} from '../parse_util';
 export class ParserError {
   public message: string;
   constructor(
-      message: string, public input: string, public errLocation: string, public ctxLocation?: any) {
+    message: string,
+    public input: string,
+    public errLocation: string,
+    public ctxLocation?: any,
+  ) {
     this.message = `Parser Error: ${message} ${errLocation} [${input}] in ${ctxLocation}`;
   }
 }
 
 export class ParseSpan {
-  constructor(public start: number, public end: number) {}
+  constructor(
+    public start: number,
+    public end: number,
+  ) {}
   toAbsolute(absoluteOffset: number): AbsoluteSourceSpan {
     return new AbsoluteSourceSpan(absoluteOffset + this.start, absoluteOffset + this.end);
   }
@@ -26,11 +33,12 @@ export class ParseSpan {
 
 export abstract class AST {
   constructor(
-      public span: ParseSpan,
-      /**
-       * Absolute location of the expression AST in a source code file.
-       */
-      public sourceSpan: AbsoluteSourceSpan) {}
+    public span: ParseSpan,
+    /**
+     * Absolute location of the expression AST in a source code file.
+     */
+    public sourceSpan: AbsoluteSourceSpan,
+  ) {}
 
   abstract visit(visitor: AstVisitor, context?: any): any;
 
@@ -41,7 +49,10 @@ export abstract class AST {
 
 export abstract class ASTWithName extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public nameSpan: AbsoluteSourceSpan) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public nameSpan: AbsoluteSourceSpan,
+  ) {
     super(span, sourceSpan);
   }
 }
@@ -76,7 +87,11 @@ export class ThisReceiver extends ImplicitReceiver {
  * Multiple expressions separated by a semicolon.
  */
 export class Chain extends AST {
-  constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public expressions: any[]) {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public expressions: any[],
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -86,8 +101,12 @@ export class Chain extends AST {
 
 export class Conditional extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public condition: AST, public trueExp: AST,
-      public falseExp: AST) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public condition: AST,
+    public trueExp: AST,
+    public falseExp: AST,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -97,8 +116,12 @@ export class Conditional extends AST {
 
 export class PropertyRead extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
-      public receiver: AST, public name: string) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    nameSpan: AbsoluteSourceSpan,
+    public receiver: AST,
+    public name: string,
+  ) {
     super(span, sourceSpan, nameSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -108,8 +131,13 @@ export class PropertyRead extends ASTWithName {
 
 export class PropertyWrite extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
-      public receiver: AST, public name: string, public value: AST) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    nameSpan: AbsoluteSourceSpan,
+    public receiver: AST,
+    public name: string,
+    public value: AST,
+  ) {
     super(span, sourceSpan, nameSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -119,8 +147,12 @@ export class PropertyWrite extends ASTWithName {
 
 export class SafePropertyRead extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
-      public receiver: AST, public name: string) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    nameSpan: AbsoluteSourceSpan,
+    public receiver: AST,
+    public name: string,
+  ) {
     super(span, sourceSpan, nameSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -130,7 +162,11 @@ export class SafePropertyRead extends ASTWithName {
 
 export class KeyedRead extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public key: AST) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public receiver: AST,
+    public key: AST,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -140,7 +176,11 @@ export class KeyedRead extends AST {
 
 export class SafeKeyedRead extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public key: AST) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public receiver: AST,
+    public key: AST,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -150,8 +190,12 @@ export class SafeKeyedRead extends AST {
 
 export class KeyedWrite extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public key: AST,
-      public value: AST) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public receiver: AST,
+    public key: AST,
+    public value: AST,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -161,8 +205,13 @@ export class KeyedWrite extends AST {
 
 export class BindingPipe extends ASTWithName {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public exp: AST, public name: string,
-      public args: any[], nameSpan: AbsoluteSourceSpan) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public exp: AST,
+    public name: string,
+    public args: any[],
+    nameSpan: AbsoluteSourceSpan,
+  ) {
     super(span, sourceSpan, nameSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -171,7 +220,11 @@ export class BindingPipe extends ASTWithName {
 }
 
 export class LiteralPrimitive extends AST {
-  constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public value: any) {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public value: any,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -180,7 +233,11 @@ export class LiteralPrimitive extends AST {
 }
 
 export class LiteralArray extends AST {
-  constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public expressions: any[]) {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public expressions: any[],
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -189,13 +246,17 @@ export class LiteralArray extends AST {
 }
 
 export type LiteralMapKey = {
-  key: string; quoted: boolean;
+  key: string;
+  quoted: boolean;
 };
 
 export class LiteralMap extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public keys: LiteralMapKey[],
-      public values: any[]) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public keys: LiteralMapKey[],
+    public values: any[],
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -205,8 +266,11 @@ export class LiteralMap extends AST {
 
 export class Interpolation extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public strings: string[],
-      public expressions: AST[]) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public strings: string[],
+    public expressions: AST[],
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -216,8 +280,12 @@ export class Interpolation extends AST {
 
 export class Binary extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public operation: string, public left: AST,
-      public right: AST) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public operation: string,
+    public left: AST,
+    public right: AST,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -242,7 +310,14 @@ export class Unary extends Binary {
    */
   static createMinus(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, expr: AST): Unary {
     return new Unary(
-        span, sourceSpan, '-', expr, '-', new LiteralPrimitive(span, sourceSpan, 0), expr);
+      span,
+      sourceSpan,
+      '-',
+      expr,
+      '-',
+      new LiteralPrimitive(span, sourceSpan, 0),
+      expr,
+    );
   }
 
   /**
@@ -250,7 +325,14 @@ export class Unary extends Binary {
    */
   static createPlus(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, expr: AST): Unary {
     return new Unary(
-        span, sourceSpan, '+', expr, '-', expr, new LiteralPrimitive(span, sourceSpan, 0));
+      span,
+      sourceSpan,
+      '+',
+      expr,
+      '-',
+      expr,
+      new LiteralPrimitive(span, sourceSpan, 0),
+    );
   }
 
   /**
@@ -258,8 +340,14 @@ export class Unary extends Binary {
    * a `Unary` with the fallback properties for `Binary`.
    */
   private constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public operator: string, public expr: AST,
-      binaryOp: string, binaryLeft: AST, binaryRight: AST) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public operator: string,
+    public expr: AST,
+    binaryOp: string,
+    binaryLeft: AST,
+    binaryRight: AST,
+  ) {
     super(span, sourceSpan, binaryOp, binaryLeft, binaryRight);
   }
 
@@ -272,7 +360,11 @@ export class Unary extends Binary {
 }
 
 export class PrefixNot extends AST {
-  constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public expression: AST) {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public expression: AST,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -281,7 +373,11 @@ export class PrefixNot extends AST {
 }
 
 export class NonNullAssert extends AST {
-  constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public expression: AST) {
+  constructor(
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public expression: AST,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -291,8 +387,12 @@ export class NonNullAssert extends AST {
 
 export class Call extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: AST[],
-      public argumentSpan: AbsoluteSourceSpan) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public receiver: AST,
+    public args: AST[],
+    public argumentSpan: AbsoluteSourceSpan,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -302,8 +402,12 @@ export class Call extends AST {
 
 export class SafeCall extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public args: AST[],
-      public argumentSpan: AbsoluteSourceSpan) {
+    span: ParseSpan,
+    sourceSpan: AbsoluteSourceSpan,
+    public receiver: AST,
+    public args: AST[],
+    public argumentSpan: AbsoluteSourceSpan,
+  ) {
     super(span, sourceSpan);
   }
   override visit(visitor: AstVisitor, context: any = null): any {
@@ -311,23 +415,32 @@ export class SafeCall extends AST {
   }
 }
 
-
 /**
  * Records the absolute position of a text span in a source file, where `start` and `end` are the
  * starting and ending byte offsets, respectively, of the text span in a source file.
  */
 export class AbsoluteSourceSpan {
-  constructor(public readonly start: number, public readonly end: number) {}
+  constructor(
+    public readonly start: number,
+    public readonly end: number,
+  ) {}
 }
 
 export class ASTWithSource<T extends AST = AST> extends AST {
   constructor(
-      public ast: T, public source: string|null, public location: string, absoluteOffset: number,
-      public errors: ParserError[]) {
+    public ast: T,
+    public source: string | null,
+    public location: string,
+    absoluteOffset: number,
+    public errors: ParserError[],
+  ) {
     super(
-        new ParseSpan(0, source === null ? 0 : source.length),
-        new AbsoluteSourceSpan(
-            absoluteOffset, source === null ? absoluteOffset : absoluteOffset + source.length));
+      new ParseSpan(0, source === null ? 0 : source.length),
+      new AbsoluteSourceSpan(
+        absoluteOffset,
+        source === null ? absoluteOffset : absoluteOffset + source.length,
+      ),
+    );
   }
   override visit(visitor: AstVisitor, context: any = null): any {
     if (visitor.visitASTWithSource) {
@@ -359,7 +472,7 @@ export class ASTWithSource<T extends AST = AST> extends AST {
  * the LHS of a HTML attribute to the expression in the RHS. All other bindings
  * in the example above are derived solely from the RHS.
  */
-export type TemplateBinding = VariableBinding|ExpressionBinding;
+export type TemplateBinding = VariableBinding | ExpressionBinding;
 
 export class VariableBinding {
   /**
@@ -368,9 +481,10 @@ export class VariableBinding {
    * @param value optional value for the RHS along with its span.
    */
   constructor(
-      public readonly sourceSpan: AbsoluteSourceSpan,
-      public readonly key: TemplateBindingIdentifier,
-      public readonly value: TemplateBindingIdentifier|null) {}
+    public readonly sourceSpan: AbsoluteSourceSpan,
+    public readonly key: TemplateBindingIdentifier,
+    public readonly value: TemplateBindingIdentifier | null,
+  ) {}
 }
 
 export class ExpressionBinding {
@@ -385,8 +499,10 @@ export class ExpressionBinding {
    * @param value optional expression for the RHS.
    */
   constructor(
-      public readonly sourceSpan: AbsoluteSourceSpan,
-      public readonly key: TemplateBindingIdentifier, public readonly value: ASTWithSource|null) {}
+    public readonly sourceSpan: AbsoluteSourceSpan,
+    public readonly key: TemplateBindingIdentifier,
+    public readonly value: ASTWithSource | null,
+  ) {}
 }
 
 export interface TemplateBindingIdentifier {
@@ -536,18 +652,33 @@ export class AstTransformer implements AstVisitor {
 
   visitPropertyRead(ast: PropertyRead, context: any): AST {
     return new PropertyRead(
-        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name);
+      ast.span,
+      ast.sourceSpan,
+      ast.nameSpan,
+      ast.receiver.visit(this),
+      ast.name,
+    );
   }
 
   visitPropertyWrite(ast: PropertyWrite, context: any): AST {
     return new PropertyWrite(
-        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
-        ast.value.visit(this));
+      ast.span,
+      ast.sourceSpan,
+      ast.nameSpan,
+      ast.receiver.visit(this),
+      ast.name,
+      ast.value.visit(this),
+    );
   }
 
   visitSafePropertyRead(ast: SafePropertyRead, context: any): AST {
     return new SafePropertyRead(
-        ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name);
+      ast.span,
+      ast.sourceSpan,
+      ast.nameSpan,
+      ast.receiver.visit(this),
+      ast.name,
+    );
   }
 
   visitLiteralArray(ast: LiteralArray, context: any): AST {
@@ -571,7 +702,12 @@ export class AstTransformer implements AstVisitor {
 
   visitBinary(ast: Binary, context: any): AST {
     return new Binary(
-        ast.span, ast.sourceSpan, ast.operation, ast.left.visit(this), ast.right.visit(this));
+      ast.span,
+      ast.sourceSpan,
+      ast.operation,
+      ast.left.visit(this),
+      ast.right.visit(this),
+    );
   }
 
   visitPrefixNot(ast: PrefixNot, context: any): AST {
@@ -584,14 +720,23 @@ export class AstTransformer implements AstVisitor {
 
   visitConditional(ast: Conditional, context: any): AST {
     return new Conditional(
-        ast.span, ast.sourceSpan, ast.condition.visit(this), ast.trueExp.visit(this),
-        ast.falseExp.visit(this));
+      ast.span,
+      ast.sourceSpan,
+      ast.condition.visit(this),
+      ast.trueExp.visit(this),
+      ast.falseExp.visit(this),
+    );
   }
 
   visitPipe(ast: BindingPipe, context: any): AST {
     return new BindingPipe(
-        ast.span, ast.sourceSpan, ast.exp.visit(this), ast.name, this.visitAll(ast.args),
-        ast.nameSpan);
+      ast.span,
+      ast.sourceSpan,
+      ast.exp.visit(this),
+      ast.name,
+      this.visitAll(ast.args),
+      ast.nameSpan,
+    );
   }
 
   visitKeyedRead(ast: KeyedRead, context: any): AST {
@@ -600,20 +745,32 @@ export class AstTransformer implements AstVisitor {
 
   visitKeyedWrite(ast: KeyedWrite, context: any): AST {
     return new KeyedWrite(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.key.visit(this),
-        ast.value.visit(this));
+      ast.span,
+      ast.sourceSpan,
+      ast.receiver.visit(this),
+      ast.key.visit(this),
+      ast.value.visit(this),
+    );
   }
 
   visitCall(ast: Call, context: any): AST {
     return new Call(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), this.visitAll(ast.args),
-        ast.argumentSpan);
+      ast.span,
+      ast.sourceSpan,
+      ast.receiver.visit(this),
+      this.visitAll(ast.args),
+      ast.argumentSpan,
+    );
   }
 
   visitSafeCall(ast: SafeCall, context: any): AST {
     return new SafeCall(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), this.visitAll(ast.args),
-        ast.argumentSpan);
+      ast.span,
+      ast.sourceSpan,
+      ast.receiver.visit(this),
+      this.visitAll(ast.args),
+      ast.argumentSpan,
+    );
   }
 
   visitAll(asts: any[]): any[] {
@@ -630,7 +787,11 @@ export class AstTransformer implements AstVisitor {
 
   visitSafeKeyedRead(ast: SafeKeyedRead, context: any): AST {
     return new SafeKeyedRead(
-        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.key.visit(this));
+      ast.span,
+      ast.sourceSpan,
+      ast.receiver.visit(this),
+      ast.key.visit(this),
+    );
   }
 }
 
@@ -795,7 +956,6 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     return ast;
   }
 
-
   visitCall(ast: Call, context: any): AST {
     const receiver = ast.receiver.visit(this);
     const args = this.visitAll(ast.args);
@@ -831,9 +991,13 @@ export class ParsedProperty {
   public readonly isAnimation: boolean;
 
   constructor(
-      public name: string, public expression: ASTWithSource, public type: ParsedPropertyType,
-      public sourceSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan,
-      public valueSpan: ParseSourceSpan|undefined) {
+    public name: string,
+    public expression: ASTWithSource,
+    public type: ParsedPropertyType,
+    public sourceSpan: ParseSourceSpan,
+    readonly keySpan: ParseSourceSpan,
+    public valueSpan: ParseSourceSpan | undefined,
+  ) {
     this.isLiteral = this.type === ParsedPropertyType.LITERAL_ATTR;
     this.isAnimation = this.type === ParsedPropertyType.ANIMATION;
   }
@@ -859,18 +1023,34 @@ export class ParsedEvent {
   // Regular events have a target
   // Animation events have a phase
   constructor(
-      name: string, targetOrPhase: string, type: ParsedEventType.TwoWay,
-      handler: ASTWithSource<NonNullAssert|PropertyRead|KeyedRead>, sourceSpan: ParseSourceSpan,
-      handlerSpan: ParseSourceSpan, keySpan: ParseSourceSpan);
+    name: string,
+    targetOrPhase: string,
+    type: ParsedEventType.TwoWay,
+    handler: ASTWithSource<NonNullAssert | PropertyRead | KeyedRead>,
+    sourceSpan: ParseSourceSpan,
+    handlerSpan: ParseSourceSpan,
+    keySpan: ParseSourceSpan,
+  );
 
   constructor(
-      name: string, targetOrPhase: string, type: ParsedEventType, handler: ASTWithSource,
-      sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan, keySpan: ParseSourceSpan);
+    name: string,
+    targetOrPhase: string,
+    type: ParsedEventType,
+    handler: ASTWithSource,
+    sourceSpan: ParseSourceSpan,
+    handlerSpan: ParseSourceSpan,
+    keySpan: ParseSourceSpan,
+  );
 
   constructor(
-      public name: string, public targetOrPhase: string, public type: ParsedEventType,
-      public handler: ASTWithSource, public sourceSpan: ParseSourceSpan,
-      public handlerSpan: ParseSourceSpan, readonly keySpan: ParseSourceSpan) {}
+    public name: string,
+    public targetOrPhase: string,
+    public type: ParsedEventType,
+    public handler: ASTWithSource,
+    public sourceSpan: ParseSourceSpan,
+    public handlerSpan: ParseSourceSpan,
+    readonly keySpan: ParseSourceSpan,
+  ) {}
 }
 
 /**
@@ -878,9 +1058,12 @@ export class ParsedEvent {
  */
 export class ParsedVariable {
   constructor(
-      public readonly name: string, public readonly value: string,
-      public readonly sourceSpan: ParseSourceSpan, public readonly keySpan: ParseSourceSpan,
-      public readonly valueSpan?: ParseSourceSpan) {}
+    public readonly name: string,
+    public readonly value: string,
+    public readonly sourceSpan: ParseSourceSpan,
+    public readonly keySpan: ParseSourceSpan,
+    public readonly valueSpan?: ParseSourceSpan,
+  ) {}
 }
 
 export enum BindingType {
@@ -900,7 +1083,13 @@ export enum BindingType {
 
 export class BoundElementProperty {
   constructor(
-      public name: string, public type: BindingType, public securityContext: SecurityContext,
-      public value: ASTWithSource, public unit: string|null, public sourceSpan: ParseSourceSpan,
-      readonly keySpan: ParseSourceSpan|undefined, public valueSpan: ParseSourceSpan|undefined) {}
+    public name: string,
+    public type: BindingType,
+    public securityContext: SecurityContext,
+    public value: ASTWithSource,
+    public unit: string | null,
+    public sourceSpan: ParseSourceSpan,
+    readonly keySpan: ParseSourceSpan | undefined,
+    public valueSpan: ParseSourceSpan | undefined,
+  ) {}
 }

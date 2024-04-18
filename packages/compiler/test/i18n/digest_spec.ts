@@ -10,19 +10,21 @@ import {computeMsgId, digest, sha1} from '../../src/i18n/digest';
 
 describe('digest', () => {
   describe('digest', () => {
-    it('must return the ID if it\'s explicit', () => {
-      expect(digest({
-        id: 'i',
-        legacyIds: [],
-        nodes: [],
-        placeholders: {},
-        placeholderToMessage: {},
-        meaning: '',
-        description: '',
-        sources: [],
-        customId: 'i',
-        messageString: '',
-      })).toEqual('i');
+    it("must return the ID if it's explicit", () => {
+      expect(
+        digest({
+          id: 'i',
+          legacyIds: [],
+          nodes: [],
+          placeholders: {},
+          placeholderToMessage: {},
+          meaning: '',
+          description: '',
+          sources: [],
+          customId: 'i',
+          messageString: '',
+        }),
+      ).toEqual('i');
     });
   });
 
@@ -82,8 +84,8 @@ describe('digest', () => {
         'First Name': '6028371114637047813',
         'View': '2509141182388535183',
         'START_BOLDNUMEND_BOLD of START_BOLDmillionsEND_BOLD': '29997634073898638',
-        'The customer\'s credit card was authorized for AMOUNT and passed all risk checks.':
-            '6836487644149622036',
+        "The customer's credit card was authorized for AMOUNT and passed all risk checks.":
+          '6836487644149622036',
         'Hello world!': '3022994926184248873',
         'Jalape\u00f1o': '8054366208386598941',
         'The set of SET_NAME is {XXX, ...}.': '135956960462609535',
@@ -92,7 +94,7 @@ describe('digest', () => {
         '': '4416290763660062288',
       };
 
-      Object.keys(fixtures).forEach(msg => {
+      Object.keys(fixtures).forEach((msg) => {
         expect(computeMsgId(msg, '')).toEqual(fixtures[msg]);
       });
     });
@@ -104,7 +106,7 @@ describe('digest', () => {
         '3993998469942805487': ['View', 'Gmail UI'],
       };
 
-      Object.keys(fixtures).forEach(id => {
+      Object.keys(fixtures).forEach((id) => {
         expect(computeMsgId(fixtures[id][0], fixtures[id][1])).toEqual(id);
       });
     });
