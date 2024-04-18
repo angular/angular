@@ -17,7 +17,7 @@
  *   object.doSomething.then(() => {
  *     expect(...);
  *   })
- * });
+ * })));
  * ```
  *
  * @publicApi
