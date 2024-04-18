@@ -20,7 +20,7 @@ export {forwardRef, resolveForwardRef, ForwardRefFn} from './forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
 export {Injector} from './injector';
 export {EnvironmentInjector} from './r3_injector';
-export {importProvidersFrom, ImportProvidersSource, makeEnvironmentProviders} from './provider_collection';
+export {importProvidersFrom, ImportProvidersSource, makeEnvironmentProviders, provideEnvironmentInitializer} from './provider_collection';
 export {ENVIRONMENT_INITIALIZER} from './initializer_token';
 export {ProviderToken} from './provider_token';
 export {ɵɵinject, inject, ɵɵinvalidFactoryDep} from './injector_compatibility';

@@ -70,7 +70,7 @@ export const APP_BOOTSTRAP_LISTENER: InjectionToken<readonly ((compRef: Componen
 // @public
 export const APP_ID: InjectionToken<string>;
 
-// @public
+// @public @deprecated
 export const APP_INITIALIZER: InjectionToken<readonly (() => Observable<unknown> | Promise<unknown> | void)[]>;
 
 // @public
@@ -616,7 +616,7 @@ export abstract class EmbeddedViewRef<C> extends ViewRef {
 // @public
 export function enableProdMode(): void;
 
-// @public
+// @public @deprecated
 export const ENVIRONMENT_INITIALIZER: InjectionToken<readonly (() => void)[]>;
 
 // @public
@@ -1332,7 +1332,7 @@ export interface PipeTransform {
 // @public
 export const PLATFORM_ID: InjectionToken<Object>;
 
-// @public
+// @public @deprecated
 export const PLATFORM_INITIALIZER: InjectionToken<readonly (() => void)[]>;
 
 // @public
@@ -1357,7 +1357,16 @@ export class PlatformRef {
 export type Predicate<T> = (value: T) => boolean;
 
 // @public
+export function provideAppInitializer(initializerFn: () => Observable<unknown> | Promise<unknown> | void): EnvironmentProviders;
+
+// @public
+export function provideEnvironmentInitializer(initializerFn: () => void): EnvironmentProviders;
+
+// @public
 export function provideExperimentalZonelessChangeDetection(): EnvironmentProviders;
+
+// @public
+export function providePlatformInitializer(initializerFn: () => void): EnvironmentProviders;
 
 // @public
 export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
