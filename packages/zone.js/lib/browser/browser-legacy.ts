@@ -16,15 +16,19 @@ import {propertyDescriptorLegacyPatch} from './property-descriptor-legacy';
 import {registerElementPatch} from './register-element';
 
 export function patchBrowserLegacy(): void {
-  const _global: any = typeof window !== 'undefined' ? window :
-      typeof global !== 'undefined'                  ? global :
-      typeof self !== 'undefined'                    ? self :
-                                                       {};
+  const _global: any =
+    typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+        ? global
+        : typeof self !== 'undefined'
+          ? self
+          : {};
   const symbolPrefix = _global['__Zone_symbol_prefix'] || '__zone_symbol__';
   function __symbol__(name: string) {
     return symbolPrefix + name;
   }
-  _global[__symbol__('legacyPatch')] = function() {
+  _global[__symbol__('legacyPatch')] = function () {
     const Zone = _global['Zone'];
     Zone.__load_patch('defineProperty', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
       api._redefineProperty = _redefineProperty;

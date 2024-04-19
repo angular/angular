@@ -1,5 +1,4 @@
-
-module.exports = function(config) {
+module.exports = function (config) {
   require('./karma-dist.conf.js')(config);
 
   for (let i = 0; i < config.files.length; i++) {
@@ -17,7 +16,7 @@ module.exports = function(config) {
   config.plugins.push(require('karma-mocha'));
   config.frameworks.push('mocha');
   config.client.mocha = {
-    timeout: 5000  // copied timeout for Jasmine in WebSocket.spec (otherwise Mochas default timeout
-                   // at 2 sec is to low for the tests)
+    timeout: 5000, // copied timeout for Jasmine in WebSocket.spec (otherwise Mochas default timeout
+    // at 2 sec is to low for the tests)
   };
 };

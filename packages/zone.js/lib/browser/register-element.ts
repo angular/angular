@@ -12,8 +12,12 @@ export function registerElementPatch(_global: any, api: _ZonePrivate) {
     return;
   }
 
-  const callbacks =
-      ['createdCallback', 'attachedCallback', 'detachedCallback', 'attributeChangedCallback'];
+  const callbacks = [
+    'createdCallback',
+    'attachedCallback',
+    'detachedCallback',
+    'attributeChangedCallback',
+  ];
 
   api.patchCallbacks(api, document, 'Document', 'registerElement', callbacks);
 }

@@ -10,10 +10,12 @@ const {WebSocketServer} = require('ws');
 
 // simple echo server
 const wss = new WebSocketServer({port: 8001});
-wss.on('connection', (ws) => {ws.on('message', (data) => {
-                       if (data.toString() === 'close') {
-                         wss.close();
-                         return;
-                       }
-                       ws.send(data);
-                     })});
+wss.on('connection', (ws) => {
+  ws.on('message', (data) => {
+    if (data.toString() === 'close') {
+      wss.close();
+      return;
+    }
+    ws.send(data);
+  });
+});

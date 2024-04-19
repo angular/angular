@@ -113,7 +113,7 @@ function disableJestPatch() {
   global[Zone.__symbol__('fakeAsyncDisablePatchingFakeTimer')] = false;
 }
 const {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync} =
-    Zone[Zone.__symbol__('fakeAsyncTest')];
+  Zone[Zone.__symbol__('fakeAsyncTest')];
 
 describe('jest modern fakeTimers with zone.js fakeAsync', () => {
   beforeEach(() => {
@@ -134,8 +134,7 @@ describe('jest modern fakeTimers with zone.js fakeAsync', () => {
     let d = fakeAsyncZoneSpec.getRealSystemTime();
     jest.setSystemTime(d);
     expect(Date.now()).toEqual(d);
-    for (let i = 0; i < 100000; i++) {
-    }
+    for (let i = 0; i < 100000; i++) {}
     expect(fakeAsyncZoneSpec.getRealSystemTime()).not.toEqual(d);
     d = fakeAsyncZoneSpec.getRealSystemTime();
     let timeoutTriggered = false;
@@ -379,8 +378,7 @@ describe('jest fakeTimers inside test should call native delegate', () => {
     expect(fakeAsyncZoneSpec).toBeFalsy();
     const d = Date.now();
     jest.setSystemTime(d);
-    for (let i = 0; i < 100000; i++) {
-    }
+    for (let i = 0; i < 100000; i++) {}
     expect(jest.getRealSystemTime()).not.toEqual(d);
     jest.useRealTimers();
   });

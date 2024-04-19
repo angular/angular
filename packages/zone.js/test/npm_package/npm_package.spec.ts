@@ -68,12 +68,14 @@ describe('Zone.js npm_package', () => {
     describe('rxjs patch', () => {
       it('should not contain rxjs source', () => {
         checkInSubFolder('./bundles', () => {
-          expect(shx.cat('zone-patch-rxjs.umd.js'))
-              .not.toContain('_enable_super_gross_mode_that_will_cause_bad_things');
+          expect(shx.cat('zone-patch-rxjs.umd.js')).not.toContain(
+            '_enable_super_gross_mode_that_will_cause_bad_things',
+          );
         });
         checkInSubFolder('./fesm2015', () => {
-          expect(shx.cat('zone-patch-rxjs.js'))
-              .not.toContain('_enable_super_gross_mode_that_will_cause_bad_things');
+          expect(shx.cat('zone-patch-rxjs.js')).not.toContain(
+            '_enable_super_gross_mode_that_will_cause_bad_things',
+          );
         });
       });
     });

@@ -17,23 +17,29 @@ describe('cordova test', () => {
 
     zone.run(() => {
       cordova.exec(
-          () => {
-            expect(Zone.current.name).toEqual('cordova');
-          },
-          () => {
-            fail('should not fail');
-          },
-          'service', 'successAction', ['arg0', 'arg1']);
+        () => {
+          expect(Zone.current.name).toEqual('cordova');
+        },
+        () => {
+          fail('should not fail');
+        },
+        'service',
+        'successAction',
+        ['arg0', 'arg1'],
+      );
 
       cordova.exec(
-          () => {
-            fail('should not success');
-          },
-          () => {
-            expect(Zone.current.name).toEqual('cordova');
-            done();
-          },
-          'service', 'failAction', ['arg0', 'arg1']);
+        () => {
+          fail('should not success');
+        },
+        () => {
+          expect(Zone.current.name).toEqual('cordova');
+          done();
+        },
+        'service',
+        'failAction',
+        ['arg0', 'arg1'],
+      );
     });
   });
 });

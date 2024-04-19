@@ -12,7 +12,7 @@
 
 export function patchQueueMicrotask(global: any, api: _ZonePrivate) {
   api.patchMethod(global, 'queueMicrotask', (delegate) => {
-    return function(self: any, args: any[]) {
+    return function (self: any, args: any[]) {
       Zone.current.scheduleMicroTask('queueMicrotask', args[0]);
     };
   });

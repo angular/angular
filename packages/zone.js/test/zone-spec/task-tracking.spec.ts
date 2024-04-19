@@ -11,9 +11,9 @@ import {supportPatchXHROnProperty} from '../test-util';
 
 declare const global: any;
 
-describe('TaskTrackingZone', function() {
+describe('TaskTrackingZone', function () {
   let _TaskTrackingZoneSpec: typeof TaskTrackingZoneSpec = (Zone as any)['TaskTrackingZoneSpec'];
-  let taskTrackingZoneSpec: TaskTrackingZoneSpec|null = null;
+  let taskTrackingZoneSpec: TaskTrackingZoneSpec | null = null;
   let taskTrackingZone: Zone;
 
   beforeEach(() => {
@@ -61,8 +61,9 @@ describe('TaskTrackingZone', function() {
         expect(taskTrackingZoneSpec!.macroTasks.length).toBe(1);
         expect(taskTrackingZoneSpec!.macroTasks[0].source).toBe('XMLHttpRequest.send');
         if (supportPatchXHROnProperty()) {
-          expect(taskTrackingZoneSpec!.eventTasks[0].source)
-              .toMatch(/\.addEventListener:readystatechange/);
+          expect(taskTrackingZoneSpec!.eventTasks[0].source).toMatch(
+            /\.addEventListener:readystatechange/,
+          );
         }
       });
     });

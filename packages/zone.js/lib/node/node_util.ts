@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bindArguments, patchMacroTask, patchMethod, patchOnProperties, setShouldCopySymbolProperties} from '../common/utils';
+import {
+  bindArguments,
+  patchMacroTask,
+  patchMethod,
+  patchOnProperties,
+  setShouldCopySymbolProperties,
+} from '../common/utils';
 import {ZoneType} from '../zone-impl';
 
 export function patchNodeUtil(Zone: ZoneType): void {

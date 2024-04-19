@@ -19,34 +19,37 @@ export function patchBluebird(Zone: ZoneType): void {
     (Zone as any)[Zone.__symbol__(BLUEBIRD)] = function patchBluebird(Bluebird: any) {
       // patch method of Bluebird.prototype which not using `then` internally
       const bluebirdApis: string[] = ['then', 'spread', 'finally'];
-      bluebirdApis.forEach(bapi => {
+      bluebirdApis.forEach((bapi) => {
         api.patchMethod(
-            Bluebird.prototype, bapi, (delegate: Function) => (self: any, args: any[]) => {
-              const zone = Zone.current;
-              for (let i = 0; i < args.length; i++) {
-                const func = args[i];
-                if (typeof func === 'function') {
-                  args[i] = function() {
-                    const argSelf: any = this;
-                    const argArgs: any = arguments;
-                    return new Bluebird((res: any, rej: any) => {
-                      zone.scheduleMicroTask('Promise.then', () => {
-                        try {
-                          res(func.apply(argSelf, argArgs));
-                        } catch (error) {
-                          rej(error);
-                        }
-                      });
+          Bluebird.prototype,
+          bapi,
+          (delegate: Function) => (self: any, args: any[]) => {
+            const zone = Zone.current;
+            for (let i = 0; i < args.length; i++) {
+              const func = args[i];
+              if (typeof func === 'function') {
+                args[i] = function () {
+                  const argSelf: any = this;
+                  const argArgs: any = arguments;
+                  return new Bluebird((res: any, rej: any) => {
+                    zone.scheduleMicroTask('Promise.then', () => {
+                      try {
+                        res(func.apply(argSelf, argArgs));
+                      } catch (error) {
+                        rej(error);
+                      }
                     });
-                  };
-                }
+                  });
+                };
               }
-              return delegate.apply(self, args);
-            });
+            }
+            return delegate.apply(self, args);
+          },
+        );
       });
 
       if (typeof window !== 'undefined') {
-        window.addEventListener('unhandledrejection', function(event: any) {
+        window.addEventListener('unhandledrejection', function (event: any) {
           const error = event.detail && event.detail.reason;
           if (error && error.isHandledByZone) {
             event.preventDefault();
@@ -64,14 +67,14 @@ export function patchBluebird(Zone: ZoneType): void {
               // will not be triggered.
               process.removeAllListeners('unhandledRejection');
               process.nextTick(() => {
-                listeners.forEach(listener => process.on('unhandledRejection', listener));
+                listeners.forEach((listener) => process.on('unhandledRejection', listener));
               });
             }
           }
         });
       }
 
-      Bluebird.onPossiblyUnhandledRejection(function(e: any, promise: any) {
+      Bluebird.onPossiblyUnhandledRejection(function (e: any, promise: any) {
         try {
           Zone.current.runGuarded(() => {
             e.isHandledByZone = true;

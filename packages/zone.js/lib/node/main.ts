@@ -16,7 +16,7 @@ import {patchNode} from './node';
 export function rollupMain(): ZoneType {
   const Zone = loadZone();
 
-  patchNode(Zone);  // Node needs to come first.
+  patchNode(Zone); // Node needs to come first.
   patchPromise(Zone);
   patchToString(Zone);
 

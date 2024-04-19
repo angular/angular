@@ -20,12 +20,12 @@ export function patchEvents(Zone: ZoneType): void {
     const EE_ON = 'on';
     const EE_OFF = 'off';
 
-    const compareTaskCallbackVsDelegate = function(task: any, delegate: any) {
+    const compareTaskCallbackVsDelegate = function (task: any, delegate: any) {
       // same callback, same capture, same event name, just return
       return task.callback === delegate || task.callback.listener === delegate;
     };
 
-    const eventNameToString = function(eventName: string|Symbol) {
+    const eventNameToString = function (eventName: string | Symbol) {
       if (typeof eventName === 'string') {
         return eventName;
       }
@@ -46,7 +46,7 @@ export function patchEvents(Zone: ZoneType): void {
         chkDup: false,
         rt: true,
         diff: compareTaskCallbackVsDelegate,
-        eventNameToString: eventNameToString
+        eventNameToString: eventNameToString,
       });
       if (result && result[0]) {
         obj[EE_ON] = obj[EE_ADD_LISTENER];
@@ -58,8 +58,7 @@ export function patchEvents(Zone: ZoneType): void {
     let events;
     try {
       events = require('events');
-    } catch (err) {
-    }
+    } catch (err) {}
 
     if (events && events.EventEmitter) {
       patchEventEmitterMethods(events.EventEmitter.prototype);

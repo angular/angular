@@ -9,73 +9,78 @@
 import {ifEnvSupports} from '../test-util';
 declare const global: any;
 
+describe(
+  'MutationObserver',
+  ifEnvSupports('MutationObserver', function () {
+    let elt: HTMLDivElement;
 
-describe('MutationObserver', ifEnvSupports('MutationObserver', function() {
-           let elt: HTMLDivElement;
+    beforeEach(function () {
+      elt = document.createElement('div');
+      document.body.appendChild(elt);
+    });
 
-           beforeEach(function() {
-             elt = document.createElement('div');
-             document.body.appendChild(elt);
-           });
+    afterEach(function () {
+      document.body.removeChild(elt);
+    });
 
-           afterEach(function() {
-             document.body.removeChild(elt);
-           });
+    it('should run observers within the zone', function (done) {
+      const testZone = Zone.current.fork({name: 'test'});
+      let ob;
+      elt = document.createElement('div');
+      document.body.appendChild(elt);
 
-           it('should run observers within the zone', function(done) {
-             const testZone = Zone.current.fork({name: 'test'});
-             let ob;
-             elt = document.createElement('div');
-             document.body.appendChild(elt);
+      testZone.run(function () {
+        ob = new MutationObserver(function () {
+          expect(Zone.current).toBe(testZone);
+          done();
+        });
 
-             testZone.run(function() {
-               ob = new MutationObserver(function() {
-                 expect(Zone.current).toBe(testZone);
-                 done();
-               });
+        ob.observe(elt, {childList: true});
+      });
 
-               ob.observe(elt, {childList: true});
-             });
+      elt.innerHTML = '<p>hey</p>';
+    });
 
-             elt.innerHTML = '<p>hey</p>';
-           });
+    it('should only dequeue upon disconnect if something is observed', function () {
+      let ob: MutationObserver;
+      let flag = false;
+      const elt = document.createElement('div');
+      const childZone = Zone.current.fork({
+        name: 'test',
+        onInvokeTask: function () {
+          flag = true;
+        },
+      });
 
-           it('should only dequeue upon disconnect if something is observed', function() {
-             let ob: MutationObserver;
-             let flag = false;
-             const elt = document.createElement('div');
-             const childZone = Zone.current.fork({
-               name: 'test',
-               onInvokeTask: function() {
-                 flag = true;
-               }
-             });
+      childZone.run(function () {
+        ob = new MutationObserver(function () {});
+      });
 
-             childZone.run(function() {
-               ob = new MutationObserver(function() {});
-             });
+      ob!.disconnect();
+      expect(flag).toBe(false);
+    });
+  }),
+);
 
-             ob!.disconnect();
-             expect(flag).toBe(false);
-           });
-         }));
+describe(
+  'WebKitMutationObserver',
+  ifEnvSupports('WebKitMutationObserver', function () {
+    it('should run observers within the zone', function (done) {
+      const testZone = Zone.current.fork({name: 'test'});
+      let elt: HTMLDivElement;
 
-describe('WebKitMutationObserver', ifEnvSupports('WebKitMutationObserver', function() {
-           it('should run observers within the zone', function(done) {
-             const testZone = Zone.current.fork({name: 'test'});
-             let elt: HTMLDivElement;
+      testZone.run(function () {
+        elt = document.createElement('div');
 
-             testZone.run(function() {
-               elt = document.createElement('div');
+        const ob = new global['WebKitMutationObserver'](function () {
+          expect(Zone.current).toBe(testZone);
+          done();
+        });
 
-               const ob = new global['WebKitMutationObserver'](function() {
-                 expect(Zone.current).toBe(testZone);
-                 done();
-               });
+        ob.observe(elt, {childList: true});
+      });
 
-               ob.observe(elt, {childList: true});
-             });
-
-             elt!.innerHTML = '<p>hey</p>';
-           });
-         }));
+      elt!.innerHTML = '<p>hey</p>';
+    });
+  }),
+);

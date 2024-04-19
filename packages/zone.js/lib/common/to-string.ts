@@ -47,11 +47,10 @@ export function patchToString(Zone: ZoneType): void {
     (newFunctionToString as any)[ORIGINAL_DELEGATE_SYMBOL] = originalFunctionToString;
     Function.prototype.toString = newFunctionToString;
 
-
     // patch Object.prototype.toString to let them look like native
     const originalObjectToString = Object.prototype.toString;
     const PROMISE_OBJECT_TO_STRING = '[object Promise]';
-    Object.prototype.toString = function() {
+    Object.prototype.toString = function () {
       if (typeof Promise === 'function' && this instanceof Promise) {
         return PROMISE_OBJECT_TO_STRING;
       }

@@ -11,12 +11,12 @@ import {ZoneType} from '../zone-impl';
 export class ProxyZoneSpec implements ZoneSpec {
   name: string = 'ProxyZone';
 
-  private _delegateSpec: ZoneSpec|null = null;
+  private _delegateSpec: ZoneSpec | null = null;
 
   properties: {[k: string]: any} = {'ProxyZoneSpec': this};
-  propertyKeys: string[]|null = null;
+  propertyKeys: string[] | null = null;
 
-  lastTaskState: HasTaskState|null = null;
+  lastTaskState: HasTaskState | null = null;
   isNeedToTriggerHasTask = false;
 
   private tasks: Task[] = [];
@@ -36,22 +36,25 @@ export class ProxyZoneSpec implements ZoneSpec {
     return ProxyZoneSpec.get();
   }
 
-  constructor(private defaultSpecDelegate: ZoneSpec|null = null) {
+  constructor(private defaultSpecDelegate: ZoneSpec | null = null) {
     this.setDelegate(defaultSpecDelegate);
   }
 
-  setDelegate(delegateSpec: ZoneSpec|null) {
+  setDelegate(delegateSpec: ZoneSpec | null) {
     const isNewDelegate = this._delegateSpec !== delegateSpec;
     this._delegateSpec = delegateSpec;
     this.propertyKeys && this.propertyKeys.forEach((key) => delete this.properties[key]);
     this.propertyKeys = null;
     if (delegateSpec && delegateSpec.properties) {
       this.propertyKeys = Object.keys(delegateSpec.properties);
-      this.propertyKeys.forEach((k) => this.properties[k] = delegateSpec.properties![k]);
+      this.propertyKeys.forEach((k) => (this.properties[k] = delegateSpec.properties![k]));
     }
     // if a new delegateSpec was set, check if we need to trigger hasTask
-    if (isNewDelegate && this.lastTaskState &&
-        (this.lastTaskState.macroTask || this.lastTaskState.microTask)) {
+    if (
+      isNewDelegate &&
+      this.lastTaskState &&
+      (this.lastTaskState.macroTask || this.lastTaskState.microTask)
+    ) {
       this.isNeedToTriggerHasTask = true;
     }
   }
@@ -59,7 +62,6 @@ export class ProxyZoneSpec implements ZoneSpec {
   getDelegate() {
     return this._delegateSpec;
   }
-
 
   resetDelegate() {
     const delegateSpec = this.getDelegate();
@@ -92,12 +94,13 @@ export class ProxyZoneSpec implements ZoneSpec {
       return '';
     }
     const taskInfo = this.tasks.map((task: Task) => {
-      const dataInfo = task.data &&
-          Object.keys(task.data)
-              .map((key: string) => {
-                return key + ':' + (task.data as any)[key];
-              })
-              .join(',');
+      const dataInfo =
+        task.data &&
+        Object.keys(task.data)
+          .map((key: string) => {
+            return key + ':' + (task.data as any)[key];
+          })
+          .join(',');
       return `type: ${task.type}, source: ${task.source}, args: {${dataInfo}}`;
     });
     const pendingTasksInfo = '--Pending async tasks are: [' + taskInfo + ']';
@@ -107,8 +110,12 @@ export class ProxyZoneSpec implements ZoneSpec {
     return pendingTasksInfo;
   }
 
-  onFork(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, zoneSpec: ZoneSpec):
-      Zone {
+  onFork(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    zoneSpec: ZoneSpec,
+  ): Zone {
     if (this._delegateSpec && this._delegateSpec.onFork) {
       return this._delegateSpec.onFork(parentZoneDelegate, currentZone, targetZone, zoneSpec);
     } else {
@@ -116,33 +123,57 @@ export class ProxyZoneSpec implements ZoneSpec {
     }
   }
 
-
   onIntercept(
-      parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
-      source: string): Function {
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    delegate: Function,
+    source: string,
+  ): Function {
     if (this._delegateSpec && this._delegateSpec.onIntercept) {
       return this._delegateSpec.onIntercept(
-          parentZoneDelegate, currentZone, targetZone, delegate, source);
+        parentZoneDelegate,
+        currentZone,
+        targetZone,
+        delegate,
+        source,
+      );
     } else {
       return parentZoneDelegate.intercept(targetZone, delegate, source);
     }
   }
 
-
   onInvoke(
-      parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
-      applyThis: any, applyArgs?: any[], source?: string): any {
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    delegate: Function,
+    applyThis: any,
+    applyArgs?: any[],
+    source?: string,
+  ): any {
     this.tryTriggerHasTask(parentZoneDelegate, currentZone, targetZone);
     if (this._delegateSpec && this._delegateSpec.onInvoke) {
       return this._delegateSpec.onInvoke(
-          parentZoneDelegate, currentZone, targetZone, delegate, applyThis, applyArgs, source);
+        parentZoneDelegate,
+        currentZone,
+        targetZone,
+        delegate,
+        applyThis,
+        applyArgs,
+        source,
+      );
     } else {
       return parentZoneDelegate.invoke(targetZone, delegate, applyThis, applyArgs, source);
     }
   }
 
-  onHandleError(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, error: any):
-      boolean {
+  onHandleError(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    error: any,
+  ): boolean {
     if (this._delegateSpec && this._delegateSpec.onHandleError) {
       return this._delegateSpec.onHandleError(parentZoneDelegate, currentZone, targetZone, error);
     } else {
@@ -150,8 +181,12 @@ export class ProxyZoneSpec implements ZoneSpec {
     }
   }
 
-  onScheduleTask(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-      Task {
+  onScheduleTask(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+  ): Task {
     if (task.type !== 'eventTask') {
       this.tasks.push(task);
     }
@@ -163,22 +198,37 @@ export class ProxyZoneSpec implements ZoneSpec {
   }
 
   onInvokeTask(
-      parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task,
-      applyThis: any, applyArgs: any): any {
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+    applyThis: any,
+    applyArgs: any,
+  ): any {
     if (task.type !== 'eventTask') {
       this.removeFromTasks(task);
     }
     this.tryTriggerHasTask(parentZoneDelegate, currentZone, targetZone);
     if (this._delegateSpec && this._delegateSpec.onInvokeTask) {
       return this._delegateSpec.onInvokeTask(
-          parentZoneDelegate, currentZone, targetZone, task, applyThis, applyArgs);
+        parentZoneDelegate,
+        currentZone,
+        targetZone,
+        task,
+        applyThis,
+        applyArgs,
+      );
     } else {
       return parentZoneDelegate.invokeTask(targetZone, task, applyThis, applyArgs);
     }
   }
 
-  onCancelTask(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-      any {
+  onCancelTask(
+    parentZoneDelegate: ZoneDelegate,
+    currentZone: Zone,
+    targetZone: Zone,
+    task: Task,
+  ): any {
     if (task.type !== 'eventTask') {
       this.removeFromTasks(task);
     }
