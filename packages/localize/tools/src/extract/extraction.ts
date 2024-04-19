@@ -5,7 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, Logger, ReadonlyFileSystem, SourceFile, SourceFileLoader} from '@angular/compiler-cli/private/localize';
+import {
+  AbsoluteFsPath,
+  Logger,
+  ReadonlyFileSystem,
+  SourceFile,
+  SourceFileLoader,
+} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 import {transformSync} from '@babel/core';
 
@@ -31,17 +37,17 @@ export class MessageExtractor {
   private loader: SourceFileLoader;
 
   constructor(
-      private fs: ReadonlyFileSystem, private logger: Logger,
-      {basePath, useSourceMaps = true, localizeName = '$localize'}: ExtractionOptions) {
+    private fs: ReadonlyFileSystem,
+    private logger: Logger,
+    {basePath, useSourceMaps = true, localizeName = '$localize'}: ExtractionOptions,
+  ) {
     this.basePath = basePath;
     this.useSourceMaps = useSourceMaps;
     this.localizeName = localizeName;
     this.loader = new SourceFileLoader(this.fs, this.logger, {webpack: basePath});
   }
 
-  extractMessages(
-      filename: string,
-      ): ɵParsedMessage[] {
+  extractMessages(filename: string): ɵParsedMessage[] {
     const messages: ɵParsedMessage[] = [];
     const sourceCode = this.fs.readFile(this.fs.resolve(this.basePath, filename));
     if (sourceCode.includes(this.localizeName)) {
@@ -54,7 +60,7 @@ export class MessageExtractor {
           makeEs5ExtractPlugin(this.fs, messages, this.localizeName),
         ],
         code: false,
-        ast: false
+        ast: false,
       });
       if (this.useSourceMaps && messages.length > 0) {
         this.updateSourceLocations(filename, sourceCode, messages);
@@ -67,10 +73,15 @@ export class MessageExtractor {
    * Update the location of each message to point to the source-mapped original source location, if
    * available.
    */
-  private updateSourceLocations(filename: string, contents: string, messages: ɵParsedMessage[]):
-      void {
-    const sourceFile =
-        this.loader.loadSourceFile(this.fs.resolve(this.basePath, filename), contents);
+  private updateSourceLocations(
+    filename: string,
+    contents: string,
+    messages: ɵParsedMessage[],
+  ): void {
+    const sourceFile = this.loader.loadSourceFile(
+      this.fs.resolve(this.basePath, filename),
+      contents,
+    );
     if (sourceFile === null) {
       return;
     }
@@ -80,7 +91,8 @@ export class MessageExtractor {
 
         if (message.messagePartLocations) {
           message.messagePartLocations = message.messagePartLocations.map(
-              location => location && this.getOriginalLocation(sourceFile, location));
+            (location) => location && this.getOriginalLocation(sourceFile, location),
+          );
         }
 
         if (message.substitutionLocations) {
@@ -88,7 +100,7 @@ export class MessageExtractor {
           for (const placeholderName of placeholderNames) {
             const location = message.substitutionLocations[placeholderName];
             message.substitutionLocations[placeholderName] =
-                location && this.getOriginalLocation(sourceFile, location);
+              location && this.getOriginalLocation(sourceFile, location);
           }
         }
       }
@@ -105,8 +117,10 @@ export class MessageExtractor {
    *     `location` in the generated `sourceFile`.
    */
   private getOriginalLocation(sourceFile: SourceFile, location: ɵSourceLocation): ɵSourceLocation {
-    const originalStart =
-        sourceFile.getOriginalLocation(location.start.line, location.start.column);
+    const originalStart = sourceFile.getOriginalLocation(
+      location.start.line,
+      location.start.column,
+    );
     if (originalStart === null) {
       return location;
     }
@@ -114,11 +128,13 @@ export class MessageExtractor {
     const start = {line: originalStart.line, column: originalStart.column};
     // We check whether the files are the same, since the returned location can only have a single
     // `file` and it would not make sense to store the end position from a different source file.
-    const end = (originalEnd !== null && originalEnd.file === originalStart.file) ?
-        {line: originalEnd.line, column: originalEnd.column} :
-        start;
-    const originalSourceFile =
-        sourceFile.sources.find(sf => sf?.sourcePath === originalStart.file)!;
+    const end =
+      originalEnd !== null && originalEnd.file === originalStart.file
+        ? {line: originalEnd.line, column: originalEnd.column}
+        : start;
+    const originalSourceFile = sourceFile.sources.find(
+      (sf) => sf?.sourcePath === originalStart.file,
+    )!;
     const startPos = originalSourceFile.startOfLinePositions[start.line] + start.column;
     const endPos = originalSourceFile.startOfLinePositions[end.line] + end.column;
     const text = originalSourceFile.contents.substring(startPos, endPos).trim();

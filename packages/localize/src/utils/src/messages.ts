@@ -55,7 +55,7 @@ export type MessageId = string;
  *
  * @see https://github.com/angular/angular/issues/45179
  */
-type AbsoluteFsPathLocalizeCopy = string&{_brand: 'AbsoluteFsPath'};
+type AbsoluteFsPathLocalizeCopy = string & {_brand: 'AbsoluteFsPath'};
 
 /**
  * The location of the message in the source file.
@@ -63,8 +63,8 @@ type AbsoluteFsPathLocalizeCopy = string&{_brand: 'AbsoluteFsPath'};
  * The `line` and `column` values for the `start` and `end` properties are zero-based.
  */
 export interface SourceLocation {
-  start: {line: number, column: number};
-  end: {line: number, column: number};
+  start: {line: number; column: number};
+  end: {line: number; column: number};
   file: AbsoluteFsPathLocalizeCopy;
   text?: string;
 }
@@ -147,7 +147,7 @@ export interface ParsedMessage extends MessageMetadata {
   /**
    * An optional mapping of placeholder names to source locations
    */
-  substitutionLocations?: Record<string, SourceLocation|undefined>;
+  substitutionLocations?: Record<string, SourceLocation | undefined>;
   /**
    * The static parts of the message.
    */
@@ -155,7 +155,7 @@ export interface ParsedMessage extends MessageMetadata {
   /**
    * An optional mapping of message parts to source locations
    */
-  messagePartLocations?: (SourceLocation|undefined)[];
+  messagePartLocations?: (SourceLocation | undefined)[];
   /**
    * The names of the placeholders that will be replaced with substitutions.
    */
@@ -169,19 +169,25 @@ export interface ParsedMessage extends MessageMetadata {
  * See `ParsedMessage` for an example.
  */
 export function parseMessage(
-    messageParts: TemplateStringsArray, expressions?: readonly any[], location?: SourceLocation,
-    messagePartLocations?: (SourceLocation|undefined)[],
-    expressionLocations: (SourceLocation|undefined)[] = []): ParsedMessage {
+  messageParts: TemplateStringsArray,
+  expressions?: readonly any[],
+  location?: SourceLocation,
+  messagePartLocations?: (SourceLocation | undefined)[],
+  expressionLocations: (SourceLocation | undefined)[] = [],
+): ParsedMessage {
   const substitutions: {[placeholderName: string]: any} = {};
-  const substitutionLocations: {[placeholderName: string]: SourceLocation|undefined} = {};
+  const substitutionLocations: {[placeholderName: string]: SourceLocation | undefined} = {};
   const associatedMessageIds: {[placeholderName: string]: MessageId} = {};
   const metadata = parseMetadata(messageParts[0], messageParts.raw[0]);
   const cleanedMessageParts: string[] = [metadata.text];
   const placeholderNames: string[] = [];
   let messageString = metadata.text;
   for (let i = 1; i < messageParts.length; i++) {
-    const {messagePart, placeholderName = computePlaceholderName(i), associatedMessageId} =
-        parsePlaceholder(messageParts[i], messageParts.raw[i]);
+    const {
+      messagePart,
+      placeholderName = computePlaceholderName(i),
+      associatedMessageId,
+    } = parsePlaceholder(messageParts[i], messageParts.raw[i]);
     messageString += `{$${placeholderName}}${messagePart}`;
     if (expressions !== undefined) {
       substitutions[placeholderName] = expressions[i - 1];
@@ -194,7 +200,7 @@ export function parseMessage(
     cleanedMessageParts.push(messagePart);
   }
   const messageId = metadata.customId || computeMsgId(messageString, metadata.meaning || '');
-  const legacyIds = metadata.legacyIds ? metadata.legacyIds.filter(id => id !== messageId) : [];
+  const legacyIds = metadata.legacyIds ? metadata.legacyIds.filter((id) => id !== messageId) : [];
   return {
     id: messageId,
     legacyIds,
@@ -245,7 +251,7 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
   } else {
     const [meaningDescAndId, ...legacyIds] = block.split(LEGACY_ID_INDICATOR);
     const [meaningAndDesc, customId] = meaningDescAndId.split(ID_SEPARATOR, 2);
-    let [meaning, description]: (string|undefined)[] = meaningAndDesc.split(MEANING_SEPARATOR, 2);
+    let [meaning, description]: (string | undefined)[] = meaningAndDesc.split(MEANING_SEPARATOR, 2);
     if (description === undefined) {
       description = meaning;
       meaning = undefined;
@@ -277,8 +283,10 @@ export function parseMetadata(cooked: string, raw: string): MessageMetadata {
  * @returns A object containing the metadata (`placeholderName` and `associatedMessageId`) of the
  *     preceding placeholder, along with the static text that follows.
  */
-export function parsePlaceholder(cooked: string, raw: string):
-    {messagePart: string; placeholderName?: string; associatedMessageId?: string;} {
+export function parsePlaceholder(
+  cooked: string,
+  raw: string,
+): {messagePart: string; placeholderName?: string; associatedMessageId?: string} {
   const {text: messagePart, block} = splitBlock(cooked, raw);
   if (block === undefined) {
     return {messagePart};
@@ -308,7 +316,7 @@ export function parsePlaceholder(cooked: string, raw: string):
  * exists.
  * @throws an error if the `block` is unterminated
  */
-export function splitBlock(cooked: string, raw: string): {text: string, block?: string} {
+export function splitBlock(cooked: string, raw: string): {text: string; block?: string} {
   if (raw.charAt(0) !== BLOCK_MARKER) {
     return {text: cooked};
   } else {
@@ -319,7 +327,6 @@ export function splitBlock(cooked: string, raw: string): {text: string, block?: 
     };
   }
 }
-
 
 function computePlaceholderName(index: number) {
   return index === 1 ? 'PH' : `PH_${index - 1}`;

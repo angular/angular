@@ -8,9 +8,20 @@
  * @fileoverview Schematics for `ng add @angular/localize` schematic.
  */
 
-import {chain, noop, Rule, SchematicContext, SchematicsException, Tree,} from '@angular-devkit/schematics';
+import {
+  chain,
+  noop,
+  Rule,
+  SchematicContext,
+  SchematicsException,
+  Tree,
+} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
-import {addPackageJsonDependency, NodeDependencyType, removePackageJsonDependency,} from '@schematics/angular/utility/dependencies';
+import {
+  addPackageJsonDependency,
+  NodeDependencyType,
+  removePackageJsonDependency,
+} from '@schematics/angular/utility/dependencies';
 import {JSONFile, JSONPath} from '@schematics/angular/utility/json-file';
 import {getWorkspace} from '@schematics/angular/utility/workspace';
 import {Builders} from '@schematics/angular/utility/workspace-models';
@@ -66,12 +77,14 @@ function addTypeScriptConfigTypes(projectName: string): Rule {
       const json = new JSONFile(host, path);
       const types = json.get(typesJsonPath) ?? [];
       if (!Array.isArray(types)) {
-        throw new SchematicsException(`TypeScript configuration file '${
-            path}' has an invalid 'types' property. It must be an array.`);
+        throw new SchematicsException(
+          `TypeScript configuration file '${path}' has an invalid 'types' property. It must be an array.`,
+        );
       }
 
-      const hasLocalizeType =
-          types.some((t) => t === localizeType || t === '@angular/localize/init');
+      const hasLocalizeType = types.some(
+        (t) => t === localizeType || t === '@angular/localize/init',
+      );
       if (hasLocalizeType) {
         // Skip has already localize type.
         continue;
@@ -107,7 +120,7 @@ function moveToDependencies(host: Tree, context: SchematicContext): void {
   context.addTask(new NodePackageInstallTask());
 }
 
-export default function(options: Schema): Rule {
+export default function (options: Schema): Rule {
   return () => {
     // We favor the name option because the project option has a
     // smart default which can be populated even when unspecified by the user.

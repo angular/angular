@@ -5,7 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  getFileSystem,
+  PathManipulation,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵmakeTemplateObject} from '@angular/localize';
 import babel, {NodePath, TransformOptions, template, types as t} from '@babel/core';
 import _generate from '@babel/generator';
@@ -14,13 +18,25 @@ import _generate from '@babel/generator';
 // https://github.com/babel/babel/issues/15269.
 const generate = (_generate as any)['default'] as typeof _generate;
 
-import {buildLocalizeReplacement, getLocation, isArrayOfExpressions, isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, unwrapMessagePartsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, unwrapStringLiteralArray, unwrapSubstitutionsFromLocalizeCall, wrapInParensIfNecessary} from '../src/source_file_utils';
+import {
+  buildLocalizeReplacement,
+  getLocation,
+  isArrayOfExpressions,
+  isGlobalIdentifier,
+  isNamedIdentifier,
+  isStringLiteralArray,
+  unwrapMessagePartsFromLocalizeCall,
+  unwrapMessagePartsFromTemplateLiteral,
+  unwrapStringLiteralArray,
+  unwrapSubstitutionsFromLocalizeCall,
+  wrapInParensIfNecessary,
+} from '../src/source_file_utils';
 
 import {runInNativeFileSystem} from './helpers';
 
 runInNativeFileSystem(() => {
   let fs: PathManipulation;
-  beforeEach(() => fs = getFileSystem());
+  beforeEach(() => (fs = getFileSystem()));
   describe('utils', () => {
     describe('isNamedIdentifier()', () => {
       it('should return true if the expression is an identifier with name `$localize`', () => {
@@ -28,11 +44,10 @@ runInNativeFileSystem(() => {
         expect(isNamedIdentifier(taggedTemplate.get('tag'), '$localize')).toBe(true);
       });
 
-      it('should return false if the expression is an identifier without the name `$localize`',
-         () => {
-           const taggedTemplate = getTaggedTemplate('other ``;');
-           expect(isNamedIdentifier(taggedTemplate.get('tag'), '$localize')).toBe(false);
-         });
+      it('should return false if the expression is an identifier without the name `$localize`', () => {
+        const taggedTemplate = getTaggedTemplate('other ``;');
+        expect(isNamedIdentifier(taggedTemplate.get('tag'), '$localize')).toBe(false);
+      });
 
       it('should return false if the expression is not an identifier', () => {
         const taggedTemplate = getTaggedTemplate('$localize() ``;');
@@ -79,124 +94,121 @@ runInNativeFileSystem(() => {
     });
 
     describe('unwrapMessagePartsFromLocalizeCall', () => {
-      it('should return an array of string literals and locations from a direct call to a tag function',
-         () => {
-           const localizeCall = getLocalizeCall(`$localize(['a', 'b\\t', 'c'], 1, 2)`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
-           expect(parts).toEqual(['a', 'b\t', 'c']);
-           expect(locations).toEqual([
-             {
-               start: {line: 0, column: 11},
-               end: {line: 0, column: 14},
-               file: absoluteFrom('/test/file.js'),
-               text: `'a'`,
-             },
-             {
-               start: {line: 0, column: 16},
-               end: {line: 0, column: 21},
-               file: absoluteFrom('/test/file.js'),
-               text: `'b\\t'`,
-             },
-             {
-               start: {line: 0, column: 23},
-               end: {line: 0, column: 26},
-               file: absoluteFrom('/test/file.js'),
-               text: `'c'`,
-             },
-           ]);
-         });
+      it('should return an array of string literals and locations from a direct call to a tag function', () => {
+        const localizeCall = getLocalizeCall(`$localize(['a', 'b\\t', 'c'], 1, 2)`);
+        const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+        expect(parts).toEqual(['a', 'b\t', 'c']);
+        expect(locations).toEqual([
+          {
+            start: {line: 0, column: 11},
+            end: {line: 0, column: 14},
+            file: absoluteFrom('/test/file.js'),
+            text: `'a'`,
+          },
+          {
+            start: {line: 0, column: 16},
+            end: {line: 0, column: 21},
+            file: absoluteFrom('/test/file.js'),
+            text: `'b\\t'`,
+          },
+          {
+            start: {line: 0, column: 23},
+            end: {line: 0, column: 26},
+            file: absoluteFrom('/test/file.js'),
+            text: `'c'`,
+          },
+        ]);
+      });
 
-      it('should return an array of string literals and locations from a downleveled tagged template',
-         () => {
-           let localizeCall = getLocalizeCall(
-               `$localize(__makeTemplateObject(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
-           expect(parts).toEqual(['a', 'b\t', 'c']);
-           expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
-           expect(locations).toEqual([
-             {
-               start: {line: 0, column: 51},
-               end: {line: 0, column: 54},
-               file: absoluteFrom('/test/file.js'),
-               text: `'a'`,
-             },
-             {
-               start: {line: 0, column: 56},
-               end: {line: 0, column: 62},
-               file: absoluteFrom('/test/file.js'),
-               text: `'b\\\\t'`,
-             },
-             {
-               start: {line: 0, column: 64},
-               end: {line: 0, column: 67},
-               file: absoluteFrom('/test/file.js'),
-               text: `'c'`,
-             },
-           ]);
-         });
+      it('should return an array of string literals and locations from a downleveled tagged template', () => {
+        let localizeCall = getLocalizeCall(
+          `$localize(__makeTemplateObject(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)`,
+        );
+        const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+        expect(parts).toEqual(['a', 'b\t', 'c']);
+        expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
+        expect(locations).toEqual([
+          {
+            start: {line: 0, column: 51},
+            end: {line: 0, column: 54},
+            file: absoluteFrom('/test/file.js'),
+            text: `'a'`,
+          },
+          {
+            start: {line: 0, column: 56},
+            end: {line: 0, column: 62},
+            file: absoluteFrom('/test/file.js'),
+            text: `'b\\\\t'`,
+          },
+          {
+            start: {line: 0, column: 64},
+            end: {line: 0, column: 67},
+            file: absoluteFrom('/test/file.js'),
+            text: `'c'`,
+          },
+        ]);
+      });
 
-      it('should return an array of string literals and locations from a (Babel helper) downleveled tagged template',
-         () => {
-           let localizeCall = getLocalizeCall(
-               `$localize(babelHelpers.taggedTemplateLiteral(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
-           expect(parts).toEqual(['a', 'b\t', 'c']);
-           expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
-           expect(locations).toEqual([
-             {
-               start: {line: 0, column: 65},
-               end: {line: 0, column: 68},
-               file: absoluteFrom('/test/file.js'),
-               text: `'a'`,
-             },
-             {
-               start: {line: 0, column: 70},
-               end: {line: 0, column: 76},
-               file: absoluteFrom('/test/file.js'),
-               text: `'b\\\\t'`,
-             },
-             {
-               start: {line: 0, column: 78},
-               end: {line: 0, column: 81},
-               file: absoluteFrom('/test/file.js'),
-               text: `'c'`,
-             },
-           ]);
-         });
+      it('should return an array of string literals and locations from a (Babel helper) downleveled tagged template', () => {
+        let localizeCall = getLocalizeCall(
+          `$localize(babelHelpers.taggedTemplateLiteral(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)`,
+        );
+        const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+        expect(parts).toEqual(['a', 'b\t', 'c']);
+        expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
+        expect(locations).toEqual([
+          {
+            start: {line: 0, column: 65},
+            end: {line: 0, column: 68},
+            file: absoluteFrom('/test/file.js'),
+            text: `'a'`,
+          },
+          {
+            start: {line: 0, column: 70},
+            end: {line: 0, column: 76},
+            file: absoluteFrom('/test/file.js'),
+            text: `'b\\\\t'`,
+          },
+          {
+            start: {line: 0, column: 78},
+            end: {line: 0, column: 81},
+            file: absoluteFrom('/test/file.js'),
+            text: `'c'`,
+          },
+        ]);
+      });
 
-      it('should return an array of string literals and locations from a memoized downleveled tagged template',
-         () => {
-           let localizeCall = getLocalizeCall(`
+      it('should return an array of string literals and locations from a memoized downleveled tagged template', () => {
+        let localizeCall = getLocalizeCall(`
                 var _templateObject;
                 $localize(_templateObject || (_templateObject = __makeTemplateObject(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c'])), 1, 2)`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
-           expect(parts).toEqual(['a', 'b\t', 'c']);
-           expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
-           expect(locations).toEqual([
-             {
-               start: {line: 2, column: 105},
-               end: {line: 2, column: 108},
-               file: absoluteFrom('/test/file.js'),
-               text: `'a'`,
-             },
-             {
-               start: {line: 2, column: 110},
-               end: {line: 2, column: 116},
-               file: absoluteFrom('/test/file.js'),
-               text: `'b\\\\t'`,
-             },
-             {
-               start: {line: 2, column: 118},
-               end: {line: 2, column: 121},
-               file: absoluteFrom('/test/file.js'),
-               text: `'c'`,
-             },
-           ]);
-         });
+        const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+        expect(parts).toEqual(['a', 'b\t', 'c']);
+        expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
+        expect(locations).toEqual([
+          {
+            start: {line: 2, column: 105},
+            end: {line: 2, column: 108},
+            file: absoluteFrom('/test/file.js'),
+            text: `'a'`,
+          },
+          {
+            start: {line: 2, column: 110},
+            end: {line: 2, column: 116},
+            file: absoluteFrom('/test/file.js'),
+            text: `'b\\\\t'`,
+          },
+          {
+            start: {line: 2, column: 118},
+            end: {line: 2, column: 121},
+            file: absoluteFrom('/test/file.js'),
+            text: `'c'`,
+          },
+        ]);
+      });
 
-      it('should return an array of string literals and locations from a memoized (inlined Babel helper) downleveled tagged template',
-         () => {
-           let localizeCall = getLocalizeCall(`
+      it('should return an array of string literals and locations from a memoized (inlined Babel helper) downleveled tagged template', () => {
+        let localizeCall = getLocalizeCall(`
               var e,t,n;
               $localize(e ||
                 (
@@ -208,63 +220,62 @@ runInNativeFileSystem(() => {
                 ),
                 1,2
               )`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
-           expect(parts).toEqual(['a', 'b\t', 'c']);
-           expect(parts.raw).toEqual(['a', 'b\t', 'c']);
-           expect(locations).toEqual([
-             {
-               start: {line: 4, column: 21},
-               end: {line: 4, column: 24},
-               file: absoluteFrom('/test/file.js'),
-               text: `"a"`,
-             },
-             {
-               start: {line: 4, column: 25},
-               end: {line: 4, column: 29},
-               file: absoluteFrom('/test/file.js'),
-               text: `"b\t"`,
-             },
-             {
-               start: {line: 4, column: 30},
-               end: {line: 4, column: 33},
-               file: absoluteFrom('/test/file.js'),
-               text: `"c"`,
-             },
-           ]);
-         });
+        const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+        expect(parts).toEqual(['a', 'b\t', 'c']);
+        expect(parts.raw).toEqual(['a', 'b\t', 'c']);
+        expect(locations).toEqual([
+          {
+            start: {line: 4, column: 21},
+            end: {line: 4, column: 24},
+            file: absoluteFrom('/test/file.js'),
+            text: `"a"`,
+          },
+          {
+            start: {line: 4, column: 25},
+            end: {line: 4, column: 29},
+            file: absoluteFrom('/test/file.js'),
+            text: `"b\t"`,
+          },
+          {
+            start: {line: 4, column: 30},
+            end: {line: 4, column: 33},
+            file: absoluteFrom('/test/file.js'),
+            text: `"c"`,
+          },
+        ]);
+      });
 
-      it('should return an array of string literals and locations from a lazy load template helper',
-         () => {
-           let localizeCall = getLocalizeCall(`
+      it('should return an array of string literals and locations from a lazy load template helper', () => {
+        let localizeCall = getLocalizeCall(`
         function _templateObject() {
           var e = _taggedTemplateLiteral(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']);
           return _templateObject = function() { return e }, e
         }
         $localize(_templateObject(), 1, 2)`);
-           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
-           expect(parts).toEqual(['a', 'b\t', 'c']);
-           expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
-           expect(locations).toEqual([
-             {
-               start: {line: 2, column: 61},
-               end: {line: 2, column: 64},
-               file: absoluteFrom('/test/file.js'),
-               text: `'a'`,
-             },
-             {
-               start: {line: 2, column: 66},
-               end: {line: 2, column: 72},
-               file: absoluteFrom('/test/file.js'),
-               text: `'b\\\\t'`,
-             },
-             {
-               start: {line: 2, column: 74},
-               end: {line: 2, column: 77},
-               file: absoluteFrom('/test/file.js'),
-               text: `'c'`,
-             },
-           ]);
-         });
+        const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+        expect(parts).toEqual(['a', 'b\t', 'c']);
+        expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
+        expect(locations).toEqual([
+          {
+            start: {line: 2, column: 61},
+            end: {line: 2, column: 64},
+            file: absoluteFrom('/test/file.js'),
+            text: `'a'`,
+          },
+          {
+            start: {line: 2, column: 66},
+            end: {line: 2, column: 72},
+            file: absoluteFrom('/test/file.js'),
+            text: `'b\\\\t'`,
+          },
+          {
+            start: {line: 2, column: 74},
+            end: {line: 2, column: 77},
+            file: absoluteFrom('/test/file.js'),
+            text: `'c'`,
+          },
+        ]);
+      });
 
       it('should remove a lazy load template helper', () => {
         let localizeCall = getLocalizeCall(`
@@ -283,44 +294,44 @@ runInNativeFileSystem(() => {
     });
 
     describe('unwrapSubstitutionsFromLocalizeCall', () => {
-      it('should return the substitutions and locations from a direct call to a tag function',
-         () => {
-           const call = getLocalizeCall(`$localize(['a', 'b\t', 'c'], 1, 2)`);
-           const [substitutions, locations] = unwrapSubstitutionsFromLocalizeCall(call, fs);
-           expect((substitutions as t.NumericLiteral[]).map(s => s.value)).toEqual([1, 2]);
-           expect(locations).toEqual([
-             {
-               start: {line: 0, column: 28},
-               end: {line: 0, column: 29},
-               file: absoluteFrom('/test/file.js'),
-               text: '1'
-             },
-             {
-               start: {line: 0, column: 31},
-               end: {line: 0, column: 32},
-               file: absoluteFrom('/test/file.js'),
-               text: '2'
-             },
-           ]);
-         });
+      it('should return the substitutions and locations from a direct call to a tag function', () => {
+        const call = getLocalizeCall(`$localize(['a', 'b\t', 'c'], 1, 2)`);
+        const [substitutions, locations] = unwrapSubstitutionsFromLocalizeCall(call, fs);
+        expect((substitutions as t.NumericLiteral[]).map((s) => s.value)).toEqual([1, 2]);
+        expect(locations).toEqual([
+          {
+            start: {line: 0, column: 28},
+            end: {line: 0, column: 29},
+            file: absoluteFrom('/test/file.js'),
+            text: '1',
+          },
+          {
+            start: {line: 0, column: 31},
+            end: {line: 0, column: 32},
+            file: absoluteFrom('/test/file.js'),
+            text: '2',
+          },
+        ]);
+      });
 
       it('should return the substitutions and locations from a downleveled tagged template', () => {
         const call = getLocalizeCall(
-            `$localize(__makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']), 1, 2)`);
+          `$localize(__makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']), 1, 2)`,
+        );
         const [substitutions, locations] = unwrapSubstitutionsFromLocalizeCall(call, fs);
-        expect((substitutions as t.NumericLiteral[]).map(s => s.value)).toEqual([1, 2]);
+        expect((substitutions as t.NumericLiteral[]).map((s) => s.value)).toEqual([1, 2]);
         expect(locations).toEqual([
           {
             start: {line: 0, column: 66},
             end: {line: 0, column: 67},
             file: absoluteFrom('/test/file.js'),
-            text: '1'
+            text: '1',
           },
           {
             start: {line: 0, column: 69},
             end: {line: 0, column: 70},
             file: absoluteFrom('/test/file.js'),
-            text: '2'
+            text: '2',
           },
         ]);
       });
@@ -330,8 +341,8 @@ runInNativeFileSystem(() => {
       it('should return a TemplateStringsArray built from the template literal elements', () => {
         const taggedTemplate = getTaggedTemplate('$localize `a${1}b\\t${2}c`;');
         expect(
-            unwrapMessagePartsFromTemplateLiteral(taggedTemplate.get('quasi').get('quasis'), fs)[0])
-            .toEqual(ɵmakeTemplateObject(['a', 'b\t', 'c'], ['a', 'b\\t', 'c']));
+          unwrapMessagePartsFromTemplateLiteral(taggedTemplate.get('quasi').get('quasis'), fs)[0],
+        ).toEqual(ɵmakeTemplateObject(['a', 'b\t', 'c'], ['a', 'b\\t', 'c']));
       });
     });
 
@@ -378,9 +389,9 @@ runInNativeFileSystem(() => {
 
       it('should throw an error if any elements of the array are not literal strings', () => {
         const array = getFirstExpression(`['a', 2, 'c']`);
-        expect(() => unwrapStringLiteralArray(array, fs))
-            .toThrowError(
-                'Unexpected messageParts for `$localize` (expected an array of strings).');
+        expect(() => unwrapStringLiteralArray(array, fs)).toThrowError(
+          'Unexpected messageParts for `$localize` (expected an array of strings).',
+        );
       });
     });
 
@@ -429,8 +440,10 @@ runInNativeFileSystem(() => {
       });
 
       it('should return `undefined` if the NodePath has no filename', () => {
-        const taggedTemplate = getTaggedTemplate(
-            'const x = $localize ``;', {sourceRoot: fs.resolve('/project'), filename: undefined});
+        const taggedTemplate = getTaggedTemplate('const x = $localize ``;', {
+          sourceRoot: fs.resolve('/project'),
+          filename: undefined,
+        });
         const location = getLocation(fs, taggedTemplate);
         expect(location).toBeUndefined();
       });
@@ -439,31 +452,40 @@ runInNativeFileSystem(() => {
 });
 
 function getTaggedTemplate(
-    code: string, options?: TransformOptions): NodePath<t.TaggedTemplateExpression> {
-  return getExpressions<t.TaggedTemplateExpression>(code, options)
-      .find(e => e.isTaggedTemplateExpression())!;
+  code: string,
+  options?: TransformOptions,
+): NodePath<t.TaggedTemplateExpression> {
+  return getExpressions<t.TaggedTemplateExpression>(code, options).find((e) =>
+    e.isTaggedTemplateExpression(),
+  )!;
 }
 
 function getFirstExpression<T extends t.Expression>(
-    code: string, options?: TransformOptions): NodePath<T> {
+  code: string,
+  options?: TransformOptions,
+): NodePath<T> {
   return getExpressions<T>(code, options)[0];
 }
 
 function getExpressions<T extends t.Expression>(
-    code: string, options?: TransformOptions): NodePath<T>[] {
+  code: string,
+  options?: TransformOptions,
+): NodePath<T>[] {
   const expressions: NodePath<t.Expression>[] = [];
   babel.transformSync(code, {
     code: false,
     filename: 'test/file.js',
     cwd: '/',
-    plugins: [{
-      visitor: {
-        Expression: (path: NodePath<t.Expression>) => {
-          expressions.push(path);
-        }
-      }
-    }],
-    ...options
+    plugins: [
+      {
+        visitor: {
+          Expression: (path: NodePath<t.Expression>) => {
+            expressions.push(path);
+          },
+        },
+      },
+    ],
+    ...options,
   });
   return expressions as NodePath<T>[];
 }
@@ -474,17 +496,19 @@ function getLocalizeCall(code: string): NodePath<t.CallExpression> {
     code: false,
     filename: 'test/file.js',
     cwd: '/',
-    plugins: [{
-      visitor: {
-        CallExpression(path) {
-          callPaths.push(path);
-        }
-      }
-    }]
+    plugins: [
+      {
+        visitor: {
+          CallExpression(path) {
+            callPaths.push(path);
+          },
+        },
+      },
+    ],
   });
-  const localizeCall = callPaths.find(p => {
+  const localizeCall = callPaths.find((p) => {
     const callee = p.get('callee');
-    return (callee.isIdentifier() && callee.node.name === '$localize');
+    return callee.isIdentifier() && callee.node.name === '$localize';
   });
   if (!localizeCall) {
     throw new Error(`$localize cannot be found in ${code}`);

@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -6,7 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem, getFileSystem, PathSegment, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  FileSystem,
+  getFileSystem,
+  PathSegment,
+  relativeFrom,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage} from '@angular/localize/private';
 import {transformSync} from '@babel/core';
 
@@ -23,16 +27,15 @@ runInNativeFileSystem(() => {
   });
 
   describe('makeEs5ExtractPlugin()', () => {
-    it('should error with code-frame information if the first argument to `$localize` is not an array',
-       () => {
-         const input = '$localize(null, [])';
-         expect(() => transformCode(input))
-             .toThrowError(
-                 `Cannot create property 'message' on string '${testPath}: ` +
-                 'Unexpected messageParts for `$localize` (expected an array of strings).\n' +
-                 '> 1 | $localize(null, [])\n' +
-                 '    |           ^^^^\'');
-       });
+    it('should error with code-frame information if the first argument to `$localize` is not an array', () => {
+      const input = '$localize(null, [])';
+      expect(() => transformCode(input)).toThrowError(
+        `Cannot create property 'message' on string '${testPath}: ` +
+          'Unexpected messageParts for `$localize` (expected an array of strings).\n' +
+          '> 1 | $localize(null, [])\n' +
+          "    |           ^^^^'",
+      );
+    });
 
     function transformCode(input: string): ɵParsedMessage[] {
       const messages: ɵParsedMessage[] = [];

@@ -24,6 +24,7 @@ export interface OutputPathFn {
  */
 export function getOutputPathFn(fs: PathManipulation, outputFolder: AbsoluteFsPath): OutputPathFn {
   const [pre, post] = outputFolder.split('{{LOCALE}}');
-  return post === undefined ? (_locale, relativePath) => fs.join(pre, relativePath) :
-                              (locale, relativePath) => fs.join(pre + locale + post, relativePath);
+  return post === undefined
+    ? (_locale, relativePath) => fs.join(pre, relativePath)
+    : (locale, relativePath) => fs.join(pre + locale + post, relativePath);
 }
