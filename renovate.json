@@ -107,6 +107,6 @@
 
     {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
 
-    {"matchPaths": ["integration/**", "packages/zone.js/test/typings"], "enabled": false}
+    {"matchPaths": ["integration/**", "packages/zone.js/test/typings/package.json"], "enabled": false}
   ]
 }
