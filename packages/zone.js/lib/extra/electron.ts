@@ -10,7 +10,7 @@ import {ZoneType} from '../zone-impl';
 
 export function patchElectron(Zone: ZoneType): void {
   Zone.__load_patch('electron', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-    function patchArguments(target: any, name: string, source: string): Function|null {
+    function patchArguments(target: any, name: string, source: string): Function | null {
       return api.patchMethod(target, name, (delegate: Function) => (self: any, args: any[]) => {
         return delegate && delegate.apply(self, api.bindArguments(args, source));
       });
@@ -22,9 +22,8 @@ export function patchElectron(Zone: ZoneType): void {
         // since from electron 14+, the CallbacksRegistry is moved to @electron/remote
         // package and not exported to outside, so this is a hack to patch CallbacksRegistry.
         CallbacksRegistry =
-            require('@electron/remote/dist/src/renderer/callbacks-registry').CallbacksRegistry;
-      } catch (err) {
-      }
+          require('@electron/remote/dist/src/renderer/callbacks-registry').CallbacksRegistry;
+      } catch (err) {}
     }
     // patch api in renderer process directly
     // desktopCapturer

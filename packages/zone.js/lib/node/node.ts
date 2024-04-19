@@ -37,7 +37,7 @@ export function patchNode(Zone: ZoneType): void {
         // 2. if global.setTimeout not equal timers.setTimeout, check
         // whether global.setTimeout use timers.setTimeout or not
         const originSetTimeout = timers.setTimeout;
-        timers.setTimeout = function() {
+        timers.setTimeout = function () {
           globalUseTimeoutFromTimer = true;
           return originSetTimeout.apply(this, arguments);
         };
@@ -84,58 +84,57 @@ export function patchNode(Zone: ZoneType): void {
       return {
         name: 'process.nextTick',
         args: args,
-        cbIdx: (args.length > 0 && typeof args[0] === 'function') ? 0 : -1,
-        target: process
+        cbIdx: args.length > 0 && typeof args[0] === 'function' ? 0 : -1,
+        target: process,
       };
     });
   });
 
   Zone.__load_patch(
-      'handleUnhandledPromiseRejection', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-        (Zone as any)[api.symbol('unhandledPromiseRejectionHandler')] =
-            findProcessPromiseRejectionHandler('unhandledRejection');
+    'handleUnhandledPromiseRejection',
+    (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+      (Zone as any)[api.symbol('unhandledPromiseRejectionHandler')] =
+        findProcessPromiseRejectionHandler('unhandledRejection');
 
-        (Zone as any)[api.symbol('rejectionHandledHandler')] =
-            findProcessPromiseRejectionHandler('rejectionHandled');
+      (Zone as any)[api.symbol('rejectionHandledHandler')] =
+        findProcessPromiseRejectionHandler('rejectionHandled');
 
-        // handle unhandled promise rejection
-        function findProcessPromiseRejectionHandler(evtName: string) {
-          return function(e: any) {
-            const eventTasks = findEventTasks(process, evtName);
-            eventTasks.forEach(eventTask => {
-              // process has added unhandledrejection event listener
-              // trigger the event listener
-              if (evtName === 'unhandledRejection') {
-                eventTask.invoke(e.rejection, e.promise);
-              } else if (evtName === 'rejectionHandled') {
-                eventTask.invoke(e.promise);
-              }
-            });
-          };
-        }
-      });
-
+      // handle unhandled promise rejection
+      function findProcessPromiseRejectionHandler(evtName: string) {
+        return function (e: any) {
+          const eventTasks = findEventTasks(process, evtName);
+          eventTasks.forEach((eventTask) => {
+            // process has added unhandledrejection event listener
+            // trigger the event listener
+            if (evtName === 'unhandledRejection') {
+              eventTask.invoke(e.rejection, e.promise);
+            } else if (evtName === 'rejectionHandled') {
+              eventTask.invoke(e.promise);
+            }
+          });
+        };
+      }
+    },
+  );
 
   // Crypto
   Zone.__load_patch('crypto', () => {
     let crypto: any;
     try {
       crypto = require('crypto');
-    } catch (err) {
-    }
+    } catch (err) {}
 
     // use the generic patchMacroTask to patch crypto
     if (crypto) {
       const methodNames = ['randomBytes', 'pbkdf2'];
-      methodNames.forEach(name => {
+      methodNames.forEach((name) => {
         patchMacroTask(crypto, name, (self: any, args: any[]) => {
           return {
             name: 'crypto.' + name,
             args: args,
-            cbIdx: (args.length > 0 && typeof args[args.length - 1] === 'function') ?
-                args.length - 1 :
-                -1,
-            target: crypto
+            cbIdx:
+              args.length > 0 && typeof args[args.length - 1] === 'function' ? args.length - 1 : -1,
+            target: crypto,
           };
         });
       });
@@ -143,12 +142,21 @@ export function patchNode(Zone: ZoneType): void {
   });
 
   Zone.__load_patch('console', (global: any, Zone: ZoneType) => {
-    const consoleMethods =
-        ['dir', 'log', 'info', 'error', 'warn', 'assert', 'debug', 'timeEnd', 'trace'];
+    const consoleMethods = [
+      'dir',
+      'log',
+      'info',
+      'error',
+      'warn',
+      'assert',
+      'debug',
+      'timeEnd',
+      'trace',
+    ];
     consoleMethods.forEach((m: string) => {
-      const originalMethod = (console as any)[Zone.__symbol__(m)] = (console as any)[m];
+      const originalMethod = ((console as any)[Zone.__symbol__(m)] = (console as any)[m]);
       if (originalMethod) {
-        (console as any)[m] = function() {
+        (console as any)[m] = function () {
           const args = ArraySlice.call(arguments);
           if (Zone.current === Zone.root) {
             return originalMethod.apply(this, args);

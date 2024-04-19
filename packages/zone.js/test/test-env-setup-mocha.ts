@@ -11,8 +11,8 @@ declare const global: any;
 
 ((context: any) => {
   context['jasmine'] = context['jasmine'] || {};
-  context['jasmine'].createSpy = function(spyName: string) {
-    let spy: any = function(...params: any[]) {
+  context['jasmine'].createSpy = function (spyName: string) {
+    let spy: any = function (...params: any[]) {
       spy.countCall++;
       spy.callArgs = params;
     };
@@ -64,34 +64,34 @@ declare const global: any;
     return false;
   }
 
-  context['expect'] = function(expected: any) {
+  context['expect'] = function (expected: any) {
     return {
-      toBe: function(actual: any) {
+      toBe: function (actual: any) {
         if (expected !== actual) {
           throw new Error(`Expected ${expected} to be ${actual}`);
         }
       },
-      toEqual: function(actual: any) {
+      toEqual: function (actual: any) {
         if (!eq(expected, actual)) {
           throw new Error(`Expected ${expected} to be ${actual}`);
         }
       },
-      toBeGreaterThan: function(actual: number) {
+      toBeGreaterThan: function (actual: number) {
         if (expected <= actual) {
           throw new Error(`Expected ${expected} to be greater than ${actual}`);
         }
       },
-      toBeLessThan: function(actual: number) {
+      toBeLessThan: function (actual: number) {
         if (expected >= actual) {
           throw new Error(`Expected ${expected} to be lesser than ${actual}`);
         }
       },
-      toBeDefined: function() {
+      toBeDefined: function () {
         if (!expected) {
           throw new Error(`Expected ${expected} to be defined`);
         }
       },
-      toThrow: function() {
+      toThrow: function () {
         try {
           expected();
         } catch (error) {
@@ -100,7 +100,7 @@ declare const global: any;
 
         throw new Error(`Expected ${expected} to throw`);
       },
-      toThrowError: function(errorToBeThrow: any) {
+      toThrowError: function (errorToBeThrow: any) {
         try {
           expected();
         } catch (error) {
@@ -109,78 +109,79 @@ declare const global: any;
 
         throw Error(`Expected ${expected} to throw: ${errorToBeThrow}`);
       },
-      toBeTruthy: function() {
+      toBeTruthy: function () {
         if (!expected) {
           throw new Error(`Expected ${expected} to be truthy`);
         }
       },
-      toBeFalsy: function(actual: any) {
+      toBeFalsy: function (actual: any) {
         if (!!actual) {
           throw new Error(`Expected ${actual} to be falsy`);
         }
       },
-      toContain: function(actual: any) {
+      toContain: function (actual: any) {
         if (expected.indexOf(actual) === -1) {
           throw new Error(`Expected ${expected} to contain ${actual}`);
         }
       },
-      toHaveBeenCalled: function() {
+      toHaveBeenCalled: function () {
         if (expected.countCall === 0) {
           throw new Error(`Expected ${expected} to been called`);
         }
       },
-      toHaveBeenCalledWith: function(...params: any[]) {
+      toHaveBeenCalledWith: function (...params: any[]) {
         if (!eq(expected.callArgs, params)) {
-          throw new Error(`Expected ${expected} to been called with ${
-              expected.callArgs}, called with: ${params}`);
+          throw new Error(
+            `Expected ${expected} to been called with ${expected.callArgs}, called with: ${params}`,
+          );
         }
       },
-      toMatch: function(actual: any) {
+      toMatch: function (actual: any) {
         if (!new RegExp(actual).test(expected)) {
           throw new Error(`Expected ${expected} to match ${actual}`);
         }
       },
       not: {
-        toBe: function(actual: any) {
+        toBe: function (actual: any) {
           if (expected === actual) {
             throw new Error(`Expected ${expected} not to be ${actual}`);
           }
         },
-        toHaveBeenCalled: function() {
+        toHaveBeenCalled: function () {
           if (expected.countCall > 0) {
             throw new Error(`Expected ${expected} to not been called`);
           }
         },
-        toThrow: function() {
+        toThrow: function () {
           try {
             expected();
           } catch (error) {
             throw new Error(`Expected ${expected} to not throw`);
           }
         },
-        toThrowError: function() {
+        toThrowError: function () {
           try {
             expected();
           } catch (error) {
             throw Error(`Expected ${expected} to not throw error`);
           }
         },
-        toBeGreaterThan: function(actual: number) {
+        toBeGreaterThan: function (actual: number) {
           if (expected > actual) {
             throw new Error(`Expected ${expected} not to be greater than ${actual}`);
           }
         },
-        toBeLessThan: function(actual: number) {
+        toBeLessThan: function (actual: number) {
           if (expected < actual) {
             throw new Error(`Expected ${expected} not to be lesser than ${actual}`);
           }
         },
-        toHaveBeenCalledWith: function(params: any[]) {
+        toHaveBeenCalledWith: function (params: any[]) {
           if (!eq(expected.callArgs, params)) {
             throw new Error(`Expected ${expected} to not been called with ${params}`);
           }
-        }
-      }
+        },
+      },
     };
   };
 })(globalThis);

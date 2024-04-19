@@ -25,16 +25,17 @@ describe('Observable.never', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            fail('should not call complete');
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          fail('should not call complete');
+        },
+      );
     });
 
     expect(log).toEqual([7]);

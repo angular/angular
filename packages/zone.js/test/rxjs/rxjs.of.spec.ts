@@ -24,17 +24,18 @@ describe('Observable.of', () => {
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push(result);
-          },
-          () => {
-            fail('should not call error');
-          },
-          () => {
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            log.push('completed');
-          });
+        (result: any) => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push(result);
+        },
+        () => {
+          fail('should not call error');
+        },
+        () => {
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          log.push('completed');
+        },
+      );
     });
 
     expect(log).toEqual([1, 2, 3, 'completed']);

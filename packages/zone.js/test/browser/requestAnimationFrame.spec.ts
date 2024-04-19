@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-describe('requestAnimationFrame', function() {
-  const functions =
-      ['requestAnimationFrame', 'webkitRequestAnimationFrame', 'mozRequestAnimationFrame'];
+describe('requestAnimationFrame', function () {
+  const functions = [
+    'requestAnimationFrame',
+    'webkitRequestAnimationFrame',
+    'mozRequestAnimationFrame',
+  ];
 
-  functions.forEach(function(fnName) {
+  functions.forEach(function (fnName) {
     if ((global as any)[fnName] !== undefined) {
-      describe(fnName, function() {
+      describe(fnName, function () {
         const originalTimeout: number = (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL;
         beforeEach(() => {
           (<any>jasmine).DEFAULT_TIMEOUT_INTERVAL = 10000;
@@ -23,14 +26,14 @@ describe('requestAnimationFrame', function() {
         });
         const requestAnimationFrameFn = (window as any)[fnName];
 
-        it('should be tolerant of invalid arguments', function() {
+        it('should be tolerant of invalid arguments', function () {
           // requestAnimationFrameFn throws an error on invalid arguments, so expect that.
-          expect(function() {
+          expect(function () {
             requestAnimationFrameFn(null);
           }).toThrow();
         });
 
-        it('should bind to same zone when called recursively', function(done) {
+        it('should bind to same zone when called recursively', function (done) {
           Zone.current.fork({name: 'TestZone'}).run(() => {
             let frames = 0;
             let previousTimeStamp = 0;

@@ -7,4 +7,4 @@
  */
 
 process.env['errorpolicy'] = (global as any)['__Zone_Error_ZoneJsInternalStackFrames_policy'] =
-    'lazy';
+  'lazy';

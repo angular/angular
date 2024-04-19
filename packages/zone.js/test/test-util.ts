@@ -32,24 +32,27 @@ export function ifEnvSupports(test: any, block: Function, otherwise?: Function):
 }
 
 export function ifEnvSupportsWithDone(
-    test: any, block: Function, otherwise?: Function): (done: Function) => void {
+  test: any,
+  block: Function,
+  otherwise?: Function,
+): (done: Function) => void {
   return _ifEnvSupports(test, block, otherwise, true);
 }
 
 function _ifEnvSupports(test: any, block: Function, otherwise?: Function, withDone = false) {
   if (withDone) {
-    return function(done?: Function) {
+    return function (done?: Function) {
       _runTest(test, block, otherwise, done);
     };
   } else {
-    return function() {
+    return function () {
       _runTest(test, block, otherwise, undefined);
     };
   }
 }
 
 function _runTest(test: any, block: Function, otherwise?: Function, done?: Function) {
-  const message = (test.message || test.name || test);
+  const message = test.message || test.name || test;
   if (typeof test === 'string' ? !!global[test] : test()) {
     if (done) {
       block(done);
@@ -95,9 +98,15 @@ export function isSupportSetErrorStack() {
 export function asyncTest(this: unknown, testFn: Function, zone: Zone = Zone.current) {
   const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
   return (done: Function) => {
-    let asyncTestZone: Zone = zone.fork(new AsyncTestZoneSpec(() => {}, (error: Error) => {
-      fail(error);
-    }, 'asyncTest'));
+    let asyncTestZone: Zone = zone.fork(
+      new AsyncTestZoneSpec(
+        () => {},
+        (error: Error) => {
+          fail(error);
+        },
+        'asyncTest',
+      ),
+    );
     asyncTestZone.run(testFn, this, [done]);
   };
 }

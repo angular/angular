@@ -28,6 +28,7 @@ export const format: FormatConfig = {
       'packages/router/**/*.{js,ts}',
       'packages/service-worker/**/*.{js,ts}',
       'packages/upgrade/**/*.{js,ts}',
+      'packages/zone.js/**/*.{js,ts}',
 
       // Do not format d.ts files as they are generated
       '!**/*.d.ts',
@@ -82,6 +83,7 @@ export const format: FormatConfig = {
       '!packages/router/**/*.{js,ts}',
       '!packages/service-worker/**/*.{js,ts}',
       '!packages/upgrade/**/*.{js,ts}',
+      '!packages/zone.js/**/*.{js,ts}',
     ],
   },
   'buildifier': true,

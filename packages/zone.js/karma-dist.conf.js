@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-module.exports = function(config) {
+module.exports = function (config) {
   require('./karma-base.conf.js')(config);
   config.files.push('build/test/browser-env-setup.js');
   config.files.push('build/test/wtf_mock.js');

@@ -8,7 +8,7 @@
 
 import {ZoneType} from '../zone-impl';
 
-'use strict';
+('use strict');
 declare let jest: any;
 
 export function patchJest(Zone: ZoneType): void {
@@ -16,7 +16,6 @@ export function patchJest(Zone: ZoneType): void {
     if (typeof jest === 'undefined' || jest['__zone_patch__']) {
       return;
     }
-
 
     // From jest 29 and jest-preset-angular v13, the module transform logic
     // changed, and now jest-preset-angular use the use the tsconfig target
@@ -42,9 +41,9 @@ export function patchJest(Zone: ZoneType): void {
     const proxyZone = rootZone.fork(proxyZoneSpec);
 
     function wrapDescribeFactoryInZone(originalJestFn: Function) {
-      return function(this: unknown, ...tableArgs: any[]) {
+      return function (this: unknown, ...tableArgs: any[]) {
         const originalDescribeFn = originalJestFn.apply(this, tableArgs);
-        return function(this: unknown, ...args: any[]) {
+        return function (this: unknown, ...args: any[]) {
           args[1] = wrapDescribeInZone(args[1]);
           return originalDescribeFn.apply(this, args);
         };
@@ -52,8 +51,8 @@ export function patchJest(Zone: ZoneType): void {
     }
 
     function wrapTestFactoryInZone(originalJestFn: Function) {
-      return function(this: unknown, ...tableArgs: any[]) {
-        return function(this: unknown, ...args: any[]) {
+      return function (this: unknown, ...tableArgs: any[]) {
+        return function (this: unknown, ...args: any[]) {
           args[1] = wrapTestInZone(args[1]);
           return originalJestFn.apply(this, tableArgs).apply(this, args);
         };
@@ -65,7 +64,7 @@ export function patchJest(Zone: ZoneType): void {
      * synchronous-only zone.
      */
     function wrapDescribeInZone(describeBody: Function): Function {
-      return function(this: unknown, ...args: any[]) {
+      return function (this: unknown, ...args: any[]) {
         return syncZone.run(describeBody, this, args);
       };
     }
@@ -79,9 +78,12 @@ export function patchJest(Zone: ZoneType): void {
       if (typeof testBody !== 'function') {
         return testBody;
       }
-      const wrappedFunc = function() {
-        if ((Zone as any)[api.symbol('useFakeTimersCalled')] === true && testBody &&
-            !(testBody as any).isFakeAsync) {
+      const wrappedFunc = function () {
+        if (
+          (Zone as any)[api.symbol('useFakeTimersCalled')] === true &&
+          testBody &&
+          !(testBody as any).isFakeAsync
+        ) {
           // jest.useFakeTimers is called, run into fakeAsyncTest automatically.
           const fakeAsyncModule = (Zone as any)[Zone.__symbol__('fakeAsyncTest')];
           if (fakeAsyncModule && typeof fakeAsyncModule.fakeAsync === 'function') {
@@ -93,19 +95,22 @@ export function patchJest(Zone: ZoneType): void {
       };
       // Update the length of wrappedFunc to be the same as the length of the testBody
       // So jest core can handle whether the test function has `done()` or not correctly
-      Object.defineProperty(
-          wrappedFunc, 'length', {configurable: true, writable: true, enumerable: false});
+      Object.defineProperty(wrappedFunc, 'length', {
+        configurable: true,
+        writable: true,
+        enumerable: false,
+      });
       wrappedFunc.length = testBody.length;
       return wrappedFunc;
     }
 
-    ['describe', 'xdescribe', 'fdescribe'].forEach(methodName => {
+    ['describe', 'xdescribe', 'fdescribe'].forEach((methodName) => {
       let originalJestFn: Function = context[methodName];
       if (context[Zone.__symbol__(methodName)]) {
         return;
       }
       context[Zone.__symbol__(methodName)] = originalJestFn;
-      context[methodName] = function(this: unknown, ...args: any[]) {
+      context[methodName] = function (this: unknown, ...args: any[]) {
         args[1] = wrapDescribeInZone(args[1]);
         return originalJestFn.apply(this, args);
       };
@@ -114,13 +119,13 @@ export function patchJest(Zone: ZoneType): void {
     context.describe.only = context.fdescribe;
     context.describe.skip = context.xdescribe;
 
-    ['it', 'xit', 'fit', 'test', 'xtest'].forEach(methodName => {
+    ['it', 'xit', 'fit', 'test', 'xtest'].forEach((methodName) => {
       let originalJestFn: Function = context[methodName];
       if (context[Zone.__symbol__(methodName)]) {
         return;
       }
       context[Zone.__symbol__(methodName)] = originalJestFn;
-      context[methodName] = function(this: unknown, ...args: any[]) {
+      context[methodName] = function (this: unknown, ...args: any[]) {
         args[1] = wrapTestInZone(args[1], true);
         return originalJestFn.apply(this, args);
       };
@@ -133,13 +138,13 @@ export function patchJest(Zone: ZoneType): void {
     context.test.only = context.fit;
     context.test.skip = context.xit;
 
-    ['beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach(methodName => {
+    ['beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((methodName) => {
       let originalJestFn: Function = context[methodName];
       if (context[Zone.__symbol__(methodName)]) {
         return;
       }
       context[Zone.__symbol__(methodName)] = originalJestFn;
-      context[methodName] = function(this: unknown, ...args: any[]) {
+      context[methodName] = function (this: unknown, ...args: any[]) {
         args[0] = wrapTestInZone(args[0]);
         return originalJestFn.apply(this, args);
       };
@@ -165,145 +170,145 @@ export function patchJest(Zone: ZoneType): void {
 
       Timer[api.symbol('fakeTimers')] = true;
       // patch jest fakeTimer internal method to make sure no console.warn print out
-      api.patchMethod(Timer, '_checkFakeTimers', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, '_checkFakeTimers', (delegate) => {
+        return function (self: any, args: any[]) {
           if (isPatchingFakeTimer()) {
             return true;
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch useFakeTimers(), set useFakeTimersCalled flag, and make test auto run into fakeAsync
-      api.patchMethod(Timer, 'useFakeTimers', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'useFakeTimers', (delegate) => {
+        return function (self: any, args: any[]) {
           (Zone as any)[api.symbol('useFakeTimersCalled')] = true;
           if (isModern || isInTestFunc()) {
             return delegate.apply(self, args);
           }
           return self;
-        }
+        };
       });
 
       // patch useRealTimers(), unset useFakeTimers flag
-      api.patchMethod(Timer, 'useRealTimers', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'useRealTimers', (delegate) => {
+        return function (self: any, args: any[]) {
           (Zone as any)[api.symbol('useFakeTimersCalled')] = false;
           if (isModern || isInTestFunc()) {
             return delegate.apply(self, args);
           }
           return self;
-        }
+        };
       });
 
       // patch setSystemTime(), call setCurrentRealTime() in the fakeAsyncTest
-      api.patchMethod(Timer, 'setSystemTime', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'setSystemTime', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec && isPatchingFakeTimer()) {
             fakeAsyncZoneSpec.setFakeBaseSystemTime(args[0]);
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch getSystemTime(), call getCurrentRealTime() in the fakeAsyncTest
-      api.patchMethod(Timer, 'getRealSystemTime', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'getRealSystemTime', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec && isPatchingFakeTimer()) {
             return fakeAsyncZoneSpec.getRealSystemTime();
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch runAllTicks(), run all microTasks inside fakeAsync
-      api.patchMethod(Timer, 'runAllTicks', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'runAllTicks', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             fakeAsyncZoneSpec.flushMicrotasks();
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch runAllTimers(), run all macroTasks inside fakeAsync
-      api.patchMethod(Timer, 'runAllTimers', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'runAllTimers', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             fakeAsyncZoneSpec.flush(100, true);
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch advanceTimersByTime(), call tick() in the fakeAsyncTest
-      api.patchMethod(Timer, 'advanceTimersByTime', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'advanceTimersByTime', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             fakeAsyncZoneSpec.tick(args[0]);
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch runOnlyPendingTimers(), call flushOnlyPendingTimers() in the fakeAsyncTest
-      api.patchMethod(Timer, 'runOnlyPendingTimers', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'runOnlyPendingTimers', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             fakeAsyncZoneSpec.flushOnlyPendingTimers();
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch advanceTimersToNextTimer(), call tickToNext() in the fakeAsyncTest
-      api.patchMethod(Timer, 'advanceTimersToNextTimer', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'advanceTimersToNextTimer', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             fakeAsyncZoneSpec.tickToNext(args[0]);
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch clearAllTimers(), call removeAllTimers() in the fakeAsyncTest
-      api.patchMethod(Timer, 'clearAllTimers', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'clearAllTimers', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             fakeAsyncZoneSpec.removeAllTimers();
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
 
       // patch getTimerCount(), call getTimerCount() in the fakeAsyncTest
-      api.patchMethod(Timer, 'getTimerCount', delegate => {
-        return function(self: any, args: any[]) {
+      api.patchMethod(Timer, 'getTimerCount', (delegate) => {
+        return function (self: any, args: any[]) {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             return fakeAsyncZoneSpec.getTimerCount();
           } else {
             return delegate.apply(self, args);
           }
-        }
+        };
       });
-    }
+    };
   });
 }

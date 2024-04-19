@@ -16,11 +16,16 @@ export function patchShadyDom(Zone: ZoneType): void {
     // so zone.js need to patch them again.
     const HTMLSlotElement = global.HTMLSlotElement;
     const prototypes = [
-      Object.getPrototypeOf(window), Node.prototype, Text.prototype, Element.prototype,
-      HTMLElement.prototype, HTMLSlotElement && HTMLSlotElement.prototype,
-      DocumentFragment.prototype, Document.prototype
+      Object.getPrototypeOf(window),
+      Node.prototype,
+      Text.prototype,
+      Element.prototype,
+      HTMLElement.prototype,
+      HTMLSlotElement && HTMLSlotElement.prototype,
+      DocumentFragment.prototype,
+      Document.prototype,
     ];
-    prototypes.forEach(function(proto) {
+    prototypes.forEach(function (proto) {
       if (proto && proto.hasOwnProperty('addEventListener')) {
         proto[Zone.__symbol__('addEventListener')] = null;
         proto[Zone.__symbol__('removeEventListener')] = null;

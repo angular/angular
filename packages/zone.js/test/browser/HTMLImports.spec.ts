@@ -13,17 +13,17 @@ function supportsImports() {
 }
 
 if (supportsImports()) {
-  describe('HTML Imports', function() {
+  describe('HTML Imports', function () {
     const testZone = Zone.current.fork({name: 'test'});
 
-    it('should work with addEventListener', function(done) {
+    it('should work with addEventListener', function (done) {
       let link: HTMLLinkElement;
 
-      testZone.run(function() {
+      testZone.run(function () {
         link = document.createElement('link');
         link.rel = 'import';
         link.href = 'someUrl';
-        link.addEventListener('error', function() {
+        link.addEventListener('error', function () {
           expect(Zone.current).toBe(testZone);
           document.head.removeChild(link);
           done();
@@ -40,16 +40,15 @@ if (supportsImports()) {
     }
     (<any>supportsOnEvents).message = 'Supports HTMLLinkElement#onxxx patching';
 
-
-    ifEnvSupports(supportsOnEvents, function() {
-      it('should work with onerror', function(done) {
+    ifEnvSupports(supportsOnEvents, function () {
+      it('should work with onerror', function (done) {
         let link: HTMLLinkElement;
 
-        testZone.run(function() {
+        testZone.run(function () {
           link = document.createElement('link');
           link.rel = 'import';
           link.href = 'anotherUrl';
-          link.onerror = function() {
+          link.onerror = function () {
             expect(Zone.current).toBe(testZone);
             document.head.removeChild(link);
             done();
@@ -59,14 +58,14 @@ if (supportsImports()) {
         document.head.appendChild(link!);
       });
 
-      it('should work with onload', function(done) {
+      it('should work with onload', function (done) {
         let link: HTMLLinkElement;
 
-        testZone.run(function() {
+        testZone.run(function () {
           link = document.createElement('link');
           link.rel = 'import';
           link.href = '/base/angular/packages/zone.js/test/assets/import.html';
-          link.onload = function() {
+          link.onload = function () {
             expect(Zone.current).toBe(testZone);
             document.head.removeChild(link);
             done();

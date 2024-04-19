@@ -10,26 +10,27 @@ import {promisify} from 'util';
 describe('node timer', () => {
   it('util.promisify should work with setTimeout', (done: DoneFn) => {
     const setTimeoutPromise = promisify(setTimeout);
-    setTimeoutPromise(50, 'value')
-        .then(
-            value => {
-              expect(value).toEqual('value');
-              done();
-            },
-            error => {
-              fail(`should not be here with error: ${error}.`);
-            });
+    setTimeoutPromise(50, 'value').then(
+      (value) => {
+        expect(value).toEqual('value');
+        done();
+      },
+      (error) => {
+        fail(`should not be here with error: ${error}.`);
+      },
+    );
   });
 
   it('util.promisify should work with setImmediate', (done: DoneFn) => {
     const setImmediatePromise = promisify(setImmediate);
     setImmediatePromise('value').then(
-        value => {
-          expect(value).toEqual('value');
-          done();
-        },
-        error => {
-          fail(`should not be here with error: ${error}.`);
-        });
+      (value) => {
+        expect(value).toEqual('value');
+        done();
+      },
+      (error) => {
+        fail(`should not be here with error: ${error}.`);
+      },
+    );
   });
 });
