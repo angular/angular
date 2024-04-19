@@ -395,7 +395,6 @@
 
 "@angular/build-tooling@https://github.com/angular/dev-infra-private-build-tooling-builds.git#5b1b7bc36648f4c066d8cf917ea7cc9e7eed2b8f":
   version "0.0.0-f122b83d2a49e24eb9dfcd54fca9fc97612b832d"
-  uid "5b1b7bc36648f4c066d8cf917ea7cc9e7eed2b8f"
   resolved "https://github.com/angular/dev-infra-private-build-tooling-builds.git#5b1b7bc36648f4c066d8cf917ea7cc9e7eed2b8f"
   dependencies:
     "@angular-devkit/build-angular" "17.3.3"
@@ -494,7 +493,6 @@
 
 "@angular/docs@https://github.com/angular/dev-infra-private-docs-builds.git#12016780c96616656ed6667d65860391a5b56c79":
   version "0.0.0-f122b83d2a49e24eb9dfcd54fca9fc97612b832d"
-  uid "12016780c96616656ed6667d65860391a5b56c79"
   resolved "https://github.com/angular/dev-infra-private-docs-builds.git#12016780c96616656ed6667d65860391a5b56c79"
   dependencies:
     "@angular/cdk" "18.0.0-next.5"
@@ -582,7 +580,6 @@
 
 "@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#43caa47b9ea70629976ccbe2b4fb4869f202c080":
   version "0.0.0-f122b83d2a49e24eb9dfcd54fca9fc97612b832d"
-  uid "43caa47b9ea70629976ccbe2b4fb4869f202c080"
   resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#43caa47b9ea70629976ccbe2b4fb4869f202c080"
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
@@ -7879,9 +7876,9 @@ domhandler@^5.0.2, domhandler@^5.0.3:
   dependencies:
     domelementtype "^2.3.0"
 
-"domino@https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658":
+"domino@https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af":
   version "2.1.6"
-  resolved "https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658"
+  resolved "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af"
 
 dompurify@^3.0.5:
   version "3.1.0"
