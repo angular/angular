@@ -4,13 +4,13 @@ Dependency injection, or DI, is one of the fundamental concepts in Angular. DI i
 
 Two main roles exist in the DI system: dependency consumer and dependency provider.
 
-Angular facilitates the interaction between dependency consumers and dependency providers using an abstraction called `Injector`. When a dependency is requested, the injector checks its registry to see if there is an instance already available there. If not, a new instance is created and stored in the registry. Angular creates an application-wide injector (also known as "root" injector) during the application bootstrap process. In most cases you don't need to manually create injectors, but you should know that there is a layer that connects providers and consumers.
+Angular facilitates the interaction between dependency consumers and dependency providers using an abstraction called `Injector`. When a dependency is requested, the injector checks its registry to see if there is an instance already available there. If not, a new instance is created and stored in the registry. Angular creates an application-wide injector (also known as the "root" injector) during the application bootstrap process. In most cases you don't need to manually create injectors, but you should know that there is a layer that connects providers and consumers.
 
 This topic covers basic scenarios of how a class can act as a dependency. Angular also allows you to use functions, objects, primitive types such as string or Boolean, or any other types as dependencies. For more information, see [Dependency providers](guide/di/dependency-injection-providers).
 
-## Providing dependency
+## Providing a dependency
 
-Consider there is a class called `HeroService` that needs to act as a dependency in a component.
+Consider a class called `HeroService` that needs to act as a dependency in a component.
 
 The first step is to add the `@Injectable` decorator to show that the class can be injected.
 
@@ -24,7 +24,7 @@ A dependency can be provided in multiple places:
 
 * [**Preferred**: At the application root level using `providedIn`.](#preferred-at-the-application-root-level-using-providedin)
 * [At the Component level.](#at-the-component-level)
-* [At application root level using `ApplicationConfig`.](#at-application-root-level-using-applicationconfig)
+* [At the application root level using `ApplicationConfig`.](#at-the-application-root-level-using-applicationconfig)
 * [`NgModule` based applications.](#ngmodule-based-applications)
 
 ### **Preferred**: At the application root level using `providedIn`
@@ -64,11 +64,11 @@ When you register a provider at the component level, you get a new instance of t
 
 Note: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
 
-### At application root level using `ApplicationConfig`
+### At the application root level using `ApplicationConfig`
 
 You can use the `providers` field of the `ApplicationConfig` (passed to the `bootstrapApplication` function) to provide a service or other `Injectable` at the application level.
 
-In the example below, the `HeroService` is available to all components, directives, and pipes.
+In the example below, the `HeroService` is available to all components, directives, and pipes:
 
 <docs-code language="typescript" highlight="[3]">
 export const appConfig: ApplicationConfig = {
@@ -136,5 +136,5 @@ style componentConstructor text-align: left
 ## What's next
 
 <docs-pill-row>
-  <docs-pill href="/guide/di/creating-injectable-service" title="Creating and injecting services"/>
+  <docs-pill href="/guide/di/creating-injectable-service" title="Creating an injectable service"/>
 </docs-pill-row>
