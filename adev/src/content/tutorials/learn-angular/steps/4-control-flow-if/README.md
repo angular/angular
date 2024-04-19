@@ -4,7 +4,7 @@ Deciding what to display on the screen for a user is a common task in applicatio
 
 To express conditional displays in templates, Angular uses the `@if` template syntax.
 
-In this activity you'll learn how to use conditionals in templates.
+In this activity, you'll learn how to use conditionals in templates.
 
 <hr/>
 

@@ -2,7 +2,7 @@
 
 In Angular, the component's logic and behavior are defined in the component's TypeScript class.
 
-In this activity you'll learn how to update the component class and how to use [interpolation](guide/templates/interpolation).
+In this activity, you'll learn how to update the component class and how to use [interpolation](/guide/templates/interpolation).
 
 <hr />
 
