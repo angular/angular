@@ -142,18 +142,8 @@ export const APP_INITIALIZER =
  */
 @Injectable({providedIn: 'root'})
 export class ApplicationInitStatus {
-  // Using non null assertion, these fields are defined below
-  // within the `new Promise` callback (synchronously).
-  private resolve!: (...args: any[]) => void;
-  private reject!: (...args: any[]) => void;
-
-  private initialized = false;
+  private initializedPromise: Promise<void>|undefined;
   public readonly done = false;
-  public readonly donePromise: Promise<any> = new Promise((res, rej) => {
-    this.resolve = res;
-    this.reject = rej;
-  });
-
   private readonly appInits = inject(APP_INITIALIZER, {optional: true}) ?? [];
 
   constructor() {
@@ -163,46 +153,33 @@ export class ApplicationInitStatus {
           'Unexpected type of the `APP_INITIALIZER` token value ' +
               `(expected an array, but got ${typeof this.appInits}). ` +
               'Please check that the `APP_INITIALIZER` token is configured as a ' +
-              '`multi: true` provider.');
+              '`multi: true` provider.',
+      );
     }
   }
 
   /** @internal */
-  runInitializers() {
-    if (this.initialized) {
-      return;
+  runInitializers(): Promise<void> {
+    let initializedPromise = this.initializedPromise;
+    if (initializedPromise) {
+      return initializedPromise;
     }
 
-    const asyncInitPromises = [];
+    const asyncInitPromises: Promise<unknown>[] = [];
     for (const appInits of this.appInits) {
       const initResult = appInits();
       if (isPromise(initResult)) {
         asyncInitPromises.push(initResult);
       } else if (isSubscribable(initResult)) {
-        const observableAsPromise = new Promise<void>((resolve, reject) => {
-          initResult.subscribe({complete: resolve, error: reject});
-        });
-        asyncInitPromises.push(observableAsPromise);
+        asyncInitPromises.push(initResult.toPromise());
       }
     }
 
-    const complete = () => {
+    initializedPromise = this.initializedPromise = Promise.all(asyncInitPromises).then(() => {
       // @ts-expect-error overwriting a readonly
       this.done = true;
-      this.resolve();
-    };
+    });
 
-    Promise.all(asyncInitPromises)
-        .then(() => {
-          complete();
-        })
-        .catch(e => {
-          this.reject(e);
-        });
-
-    if (asyncInitPromises.length === 0) {
-      complete();
-    }
-    this.initialized = true;
+    return initializedPromise;
   }
 }

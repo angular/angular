@@ -106,8 +106,7 @@ export class PlatformRef {
       });
       return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
-        initStatus.runInitializers();
-        return initStatus.donePromise.then(() => {
+        return initStatus.runInitializers().then(() => {
           // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
           const localeId = moduleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
           setLocaleId(localeId || DEFAULT_LOCALE_ID);

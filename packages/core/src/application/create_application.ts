@@ -101,9 +101,7 @@ export function internalCreateApplication(config: {
 
       return _callAndReportToErrorHandler(exceptionHandler!, ngZone, () => {
         const initStatus = envInjector.get(ApplicationInitStatus);
-        initStatus.runInitializers();
-
-        return initStatus.donePromise.then(() => {
+        return initStatus.runInitializers().then(() => {
           const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
           setLocaleId(localeId || DEFAULT_LOCALE_ID);
 
