@@ -195,33 +195,3 @@ providers.
 If a component or directive with `hostDirectives` and those host directives both provide the same
 injection token, the providers defined by class with `hostDirectives` take precedence over providers
 defined by the host directives.
-
-### Performance
-
-While the directive composition API offers a powerful tool for reusing common behaviors, excessive
-use of host directives can impact your application's memory use. If you create components or
-directives that use *many* host directives, you may inadvertently balloon the memory used by your
-application.
-
-The following example shows a component that applies several host directives.
-
-```typescript
-@Component({
-  standalone: true,
-  hostDirectives: [
-    DisabledState,
-    RequiredState,
-    ValidationState,
-    ColorState,
-    RippleBehavior,
-  ],
-})
-export class CustomCheckbox { }
-```
-
-This example declares a custom checkbox component that includes five host directives. This
-means that Angular will create six objects each time a `CustomCheckbox` renders— one for the
-component and one for each host directive. For a few checkboxes on a page, this won't pose any
-significant issues. However, if your page renders *hundreds* of checkboxes, such as in a table, then
-you could start to see an impact of the additional object allocations. Always be sure to profile
-your application to determine the right composition pattern for your use case.
