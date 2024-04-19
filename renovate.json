@@ -96,7 +96,7 @@
       "groupName": "scorecard action dependencies",
       "groupSlug": "scorecard-action"
     },
-    
+
     {
       "matchPaths": ["aio/tools/examples/shared/*"],
       "postUpgradeTasks": {
@@ -107,6 +107,6 @@
 
     {"matchCurrentVersion": "0.0.0-PLACEHOLDER", "enabled": false},
 
-    {"matchPaths": ["integration/**"], "enabled": false}
+    {"matchPaths": ["integration/**", "packages/zone.js/test/typings/package.json"], "enabled": false}
   ]
 }
