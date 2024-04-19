@@ -7,9 +7,9 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.74.tgz#af518a0abafe8ab453f04c12ee62cfad75a8ca8d"
   integrity sha512-eEn8RkzZFcT0gb8qyi0CcfSOQnLE+NbGLIIaxGGmjn/N35v/C3M8ohxcpSlNlCv+H8vPpMGmrGDdCkzr8xu2tQ==
 
-"domino@https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658":
+"domino@https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af":
   version "2.1.6"
-  resolved "https://github.com/angular/domino.git#9e7881d2ac1e5977cefbc557f935931ec23f6658"
+  resolved "https://github.com/angular/domino.git#8f228f8862540c6ccd14f76b5a1d9bb5458618af"
 
 tslib@^2.3.0:
   version "2.6.2"
