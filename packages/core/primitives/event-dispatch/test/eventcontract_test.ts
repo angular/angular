@@ -211,10 +211,7 @@ function createEventContract({
   eventTypes: Array<string | [string, string]>;
   dispatcher?: jasmine.Spy<Dispatcher>;
 }): EventContract {
-  const eventContract = new EventContract(
-    eventContractContainerManager,
-    /* stopPropagation= */ false,
-  );
+  const eventContract = new EventContract(eventContractContainerManager);
   if (exportAddA11yClickSupport) {
     eventContract.exportAddA11yClickSupport();
   }
@@ -347,13 +344,8 @@ describe('EventContract', () => {
     const addEventListenerSpy = spyOn(container, 'addEventListener');
     const addEventListenerSpy2 = spyOn(container2, 'addEventListener');
 
-    const eventContractContainerManager = new EventContractMultiContainer(
-      /* stopPropagation= */ false,
-    );
-    const eventContract = new EventContract(
-      eventContractContainerManager,
-      /* stopPropagation= */ false,
-    );
+    const eventContractContainerManager = new EventContractMultiContainer();
+    const eventContract = new EventContract(eventContractContainerManager);
     eventContract.addEvent('click');
 
     expect(addEventListenerSpy).not.toHaveBeenCalled();
@@ -378,13 +370,8 @@ describe('EventContract', () => {
     const addEventListenerSpy = spyOn(container, 'addEventListener');
     const addEventListenerSpy2 = spyOn(container2, 'addEventListener');
 
-    const eventContractContainerManager = new EventContractMultiContainer(
-      /* stopPropagation= */ false,
-    );
-    const eventContract = new EventContract(
-      eventContractContainerManager,
-      /* stopPropagation= */ false,
-    );
+    const eventContractContainerManager = new EventContractMultiContainer();
+    const eventContract = new EventContract(eventContractContainerManager);
     eventContractContainerManager.addContainer(container);
     eventContractContainerManager.addContainer(container2);
 
@@ -408,13 +395,8 @@ describe('EventContract', () => {
     const container = getRequiredElementById('container');
     const addEventListenerSpy = spyOn(container, 'addEventListener');
 
-    const eventContractContainerManager = new EventContractMultiContainer(
-      /* stopPropagation= */ false,
-    );
-    const eventContract = new EventContract(
-      eventContractContainerManager,
-      /* stopPropagation= */ false,
-    );
+    const eventContractContainerManager = new EventContractMultiContainer();
+    const eventContract = new EventContract(eventContractContainerManager);
     eventContract.addEvent('animationend', 'webkitanimationend');
     eventContractContainerManager.addContainer(container);
 
