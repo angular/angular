@@ -1,0 +1,5 @@
+{
+  "name": "example-with-ts-library",
+  "version": "0.0.0-PLACEHOLDER",
+  "schematics": "Custom property that should be preserved."
+}

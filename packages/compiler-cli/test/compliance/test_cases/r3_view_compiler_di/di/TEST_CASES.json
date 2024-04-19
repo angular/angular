@@ -1,0 +1,193 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should create factory methods",
+      "inputFiles": [
+        "component_factory.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect factory",
+          "files": [
+            "component_factory.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should create a factory definition for an injectable",
+      "inputFiles": [
+        "injectable_factory.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect factory definition",
+          "files": [
+            {
+              "expected": "injectable_factory_fac.js",
+              "generated": "injectable_factory.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect injectable definition",
+          "files": [
+            {
+              "expected": "injectable_factory_prov.js",
+              "generated": "injectable_factory.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should create a factory definition for an injectable with an overloaded constructor",
+      "inputFiles": [
+        "ctor_overload.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect factory definition",
+          "files": [
+            {
+              "expected": "ctor_overload_fac.js",
+              "generated": "ctor_overload.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect injectable definition",
+          "files": [
+            {
+              "expected": "ctor_overload_prov.js",
+              "generated": "ctor_overload.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should delegate directly to the alternate factory when setting `useFactory` without `deps`",
+      "inputFiles": [
+        "usefactory_without_deps.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect injectable definition",
+          "files": [
+            "usefactory_without_deps.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not delegate directly to the alternate factory when setting `useFactory` with `deps`",
+      "inputFiles": [
+        "usefactory_with_deps.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect injectable definition",
+          "files": [
+            "usefactory_with_deps.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should delegate directly to the alternate class factory when setting `useClass` without `deps`",
+      "inputFiles": [
+        "useclass_without_deps.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect factory definition",
+          "files": [
+            "useclass_without_deps.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not delegate directly to the alternate class when setting `useClass` with `deps`",
+      "inputFiles": [
+        "useclass_with_deps.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect factory definition",
+          "files": [
+            "useclass_with_deps.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should unwrap forward refs when delegating to a different class",
+      "inputFiles": [
+        "useclass_forwardref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect factory definition",
+          "files": [
+            "useclass_forwardref.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support forward refs in a providedIn clause",
+      "inputFiles": [
+        "providedin_forwardref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect factory definition",
+          "files": [
+            "providedin_forwardref.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should have the pipe factory take precedence over the injectable factory, if a class has multiple decorators",
+      "inputFiles": [
+        "pipe_and_injectable.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid pipe factory function",
+          "files": [
+            {
+              "expected": "pipe_and_injectable_pipe_last.js",
+              "generated": "pipe_and_injectable.js"
+            }
+          ],
+          "extraChecks": [
+            [
+              "verifyUniqueFactory",
+              "MyPipe"
+            ]
+          ]
+        },
+        {
+          "failureMessage": "Invalid pipe factory function",
+          "files": [
+            {
+              "expected": "pipe_and_injectable_pipe_first.js",
+              "generated": "pipe_and_injectable.js"
+            }
+          ],
+          "extraChecks": [
+            [
+              "verifyUniqueFactory",
+              "MyOtherPipe"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

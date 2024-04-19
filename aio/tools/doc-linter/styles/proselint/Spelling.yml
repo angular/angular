@@ -1,0 +1,18 @@
+extends: consistency
+message: "Inconsistent spelling of '%s'."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+level: error
+ignorecase: true
+either:
+  advisor: adviser
+  centre: center
+  colour: color
+  emphasise: emphasize
+  finalise: finalize
+  focussed: focused
+  labour: labor
+  learnt: learned
+  organise: organize
+  organised: organized
+  organising: organizing
+  recognise: recognize

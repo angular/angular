@@ -1,0 +1,4 @@
+exports_files([
+    "tsconfig-build.json",
+    "tsconfig-e2e.json",
+])

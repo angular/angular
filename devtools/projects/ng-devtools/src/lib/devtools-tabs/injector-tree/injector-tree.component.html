@@ -1,0 +1,62 @@
+@if (!diDebugAPIsAvailable) {
+  <p class="not-supported">
+    This feature is only available on version 17.0.0 or higher of Angular.
+  </p>
+}
+<as-split [class.hidden]="!diDebugAPIsAvailable" unit="pixel" direction="vertical" [gutterSize]="9" [disabled]="true">
+  <as-split-area size="50">
+    <mat-checkbox
+      (change)="toggleHideInjectorsWithNoProviders()"
+      >
+      Hide injectors with no providers
+    </mat-checkbox>
+    <mat-checkbox
+      (change)="toggleHideAngularInjectors()"
+      >
+      Hide framework injectors
+    </mat-checkbox>
+  </as-split-area>
+  <as-split-area>
+    <as-split unit="percent" direction="horizontal" [gutterSize]="9">
+      <as-split-area size="60">
+        <as-split unit="percent" direction="vertical" [gutterSize]="9">
+          <as-split-area size="35">
+            <div class="injector-hierarchy">
+              <h2>
+                Environment Hierarchy
+                <a class="hierarchy-ref" href="https://angular.io/guide/hierarchical-dependency-injection#types-of-injector-hierarchies" target="_blank">
+                  <mat-icon matTooltip="Open docs reference"> open_in_new </mat-icon>
+                </a>
+              </h2>
+              <section #injectorTree class="environment-injectors injector-graph">
+                <svg #svgContainer>
+                  <g #mainGroup></g>
+                </svg>
+              </section>
+            </div>
+          </as-split-area>
+          <as-split-area size="65">
+            <div class="injector-hierarchy">
+              <h2>
+                Element Hierarchy
+                <a class="hierarchy-ref" href="https://angular.io/guide/hierarchical-dependency-injection#types-of-injector-hierarchies" target="_blank">
+                  <mat-icon matTooltip="Open docs reference"> open_in_new </mat-icon>
+                </a>
+              </h2>
+              <section #elementInjectorTree class="element-injectors injector-graph">
+                <svg #elementSvgContainer>
+                  <g #elementMainGroup></g>
+                </svg>
+              </section>
+            </div>
+          </as-split-area>
+        </as-split>
+      </as-split-area>
+      @if (selectedNode && providers.length > 0) {
+        <as-split-area size="40" minSize="25">
+          <ng-injector-providers [injector]="selectedNode.data.injector" [providers]="providers"/>
+        </as-split-area>
+      }
+    </as-split>
+  </as-split-area>
+</as-split>

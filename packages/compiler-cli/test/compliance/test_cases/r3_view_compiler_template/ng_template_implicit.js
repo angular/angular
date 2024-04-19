@@ -1,0 +1,19 @@
+MyComponent_ng_template_0_Template(rf, ctx) {
+	if (rf & 1) {
+		i0.ɵɵtext(0);
+	} if (rf & 2) {
+		// NOTE: The fact that `this.` still refers to template context is a TDB and TCB bug; we should fix this eventually.
+		const $a_r1$ = ctx.$implicit;
+		i0.ɵɵtextInterpolate($a_r1$);
+	}
+}
+// ...
+consts: [[3, "ngIf"]]
+// ...
+function MyComponent_Template(rf, ctx) {
+	if (rf & 1) {
+		i0.ɵɵtemplate(0, MyComponent_ng_template_0_Template, 1, 1, "ng-template", 0);
+	} if (rf & 2) {
+		i0.ɵɵproperty("ngIf", true);
+	}
+}

@@ -1,0 +1,1 @@
+__i18nMsg__(' Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}', [['startTagNgContainer', String.raw`\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD`], ['closeTagNgContainer', String.raw`\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD`]], {})

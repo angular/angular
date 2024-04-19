@@ -1,0 +1,10 @@
+extends: existence
+message: "'%s' left in text."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: false
+level: error
+tokens:
+  - XXX
+  - FIXME
+  - TODO
+  - NOTE

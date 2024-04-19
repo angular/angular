@@ -1,0 +1,23 @@
+{%- macro renderDescendantList(descendants, descendantType, recursed, docTypeMatcher) -%}
+{%- if descendants.length %}
+<ul>
+  {%- for descendant in descendants %}
+  <li>
+    <code>{$ descendant.name $}</code>
+    {$ renderDescendantList(descendant.descendants | filterByPropertyValue('docType', docTypeMatcher) | filterByPropertyValue('privateExport', undefined), docType, recursed, docTypeMatcher) $}
+  </li>
+  {%- endfor %}
+</ul>
+{%- endif -%}
+{%- endmacro %}
+
+{%- macro renderDescendants(doc, descendantType, title='', recursed=true, docTypeMatcher=descendantType) -%}
+  {%- set descendants = doc.descendants | filterByPropertyValue('docType', docTypeMatcher) | filterByPropertyValue('privateExport', undefined) -%}
+  {%- if descendants.length %}
+  <div class="descendants {$ descendantType $}">
+    {%- if title %}
+    <h2>{$ title $}</h2>{% endif %}
+    {$ renderDescendantList(descendants, descendantType, recursed, docTypeMatcher) $}
+  </div>
+  {%- endif -%}
+{%- endmacro %}

@@ -1,0 +1,281 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should handle SVG",
+      "inputFiles": [
+        "svg.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "svg_factory.js",
+              "generated": "svg.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated factory."
+        },
+        {
+          "files": [
+            {
+              "expected": "svg_template.js",
+              "generated": "svg.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should handle SVG with an embedded ng-template",
+      "inputFiles": [
+        "svg_embedded_view.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "svg_embedded_view_template.js",
+              "generated": "svg_embedded_view.js"
+            }
+          ],
+          "failureMessage": "Incorrect template."
+        }
+      ]
+    },
+    {
+      "description": "should handle MathML",
+      "inputFiles": [
+        "mathml.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "mathml_factory.js",
+              "generated": "mathml.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated factory."
+        },
+        {
+          "files": [
+            {
+              "expected": "mathml_template.js",
+              "generated": "mathml.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should translate DOM structure",
+      "inputFiles": [
+        "dom.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "dom_factory.js",
+              "generated": "dom.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated factory."
+        },
+        {
+          "files": [
+            {
+              "expected": "dom_template.js",
+              "generated": "dom.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should support namespaced attributes",
+      "inputFiles": [
+        "namespace.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "namespace_factory.js",
+              "generated": "namespace.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated factory."
+        },
+        {
+          "files": [
+            {
+              "expected": "namespace_template.js",
+              "generated": "namespace.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should support <ng-container>",
+      "inputFiles": [
+        "ng-container.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should generate self-closing elementContainer instruction for empty <ng-container>",
+      "inputFiles": [
+        "empty_ng-container.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should bind to element properties",
+      "inputFiles": [
+        "properties.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "properties_factory.js",
+              "generated": "properties.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated factory."
+        },
+        {
+          "files": [
+            {
+              "expected": "properties_template.js",
+              "generated": "properties.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should reserve slots for pure functions",
+      "inputFiles": [
+        "property_pure_functions.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "property_pure_functions_factory.js",
+              "generated": "property_pure_functions.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated factory."
+        },
+        {
+          "files": [
+            {
+              "expected": "property_pure_functions_template.js",
+              "generated": "property_pure_functions.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should reserve slots for pure functions in host binding function",
+      "inputFiles": [
+        "host_binding_pure_functions.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect `hostBindings` function."
+        }
+      ]
+    },
+    {
+      "description": "should bind to class and style names",
+      "inputFiles": [
+        "class_style_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "class_style_bindings_factory.js",
+              "generated": "class_style_bindings.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated factory."
+        },
+        {
+          "files": [
+            {
+              "expected": "class_style_bindings_template.js",
+              "generated": "class_style_bindings.js"
+            }
+          ],
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should de-duplicate attribute arrays",
+      "inputFiles": [
+        "deduplicate_attributes.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should specify security-sensitive constant attributes as template literals",
+      "inputFiles": [
+        "security_sensitive_constant_attributes.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should validate iframe attributes",
+      "inputFiles": [
+        "iframe_attrs.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    },
+    {
+      "description": "should support namespaces on attributes",
+      "inputFiles": [
+        "namespace_attr.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated template."
+        }
+      ]
+    }
+  ]
+}

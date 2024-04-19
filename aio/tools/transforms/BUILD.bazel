@@ -1,0 +1,9 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+
+package(default_visibility = ["//visibility:public"])
+
+js_library(
+    name = "transforms",
+    srcs = ["config.js"],
+    visibility = [":__subpackages__"],
+)

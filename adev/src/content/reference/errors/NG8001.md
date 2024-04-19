@@ -1,0 +1,17 @@
+# Invalid Element
+
+One or more elements cannot be resolved during compilation because the element is not defined by the HTML spec, or there is no component or directive with such element selector.
+
+HELPFUL: This is the compiler equivalent of a common runtime error `NG0304: '${tagName}' is not a known element: ...`.
+
+## Debugging the error
+
+Use the element name in the error to find the file(s) where the element is being used.
+
+Check that the name and selector are correct.
+
+Make sure that the component is correctly imported inside your NgModule or standalone component, by checking its presence in the `imports` field. If the component is declared in an NgModule (meaning that it is not standalone) make sure that it is exported correctly from it, by checking its presence in the `exports` field.
+
+When using custom elements or web components, ensure that you add [`CUSTOM_ELEMENTS_SCHEMA`](api/core/CUSTOM_ELEMENTS_SCHEMA) to the application module.
+
+If this does not resolve the error, check the imported libraries for any recent changes to the exports and properties you are using, and restart your server.

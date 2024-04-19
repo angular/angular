@@ -1,0 +1,56 @@
+load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ng_module(
+    name = "transplanted_views_lib",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/change_detection:util_lib",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+app_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    deps = [
+        ":transplanted_views_lib",
+        "@npm//rxjs",
+    ],
+)
+
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
+    name = "app_bundle",
+    srcs = [":bundle.debug.min.js"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $< $@",
+)
+
+http_server(
+    name = "prodserver",
+    srcs = ["index.html"],
+    deps = [
+        ":app_bundle",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/change_detection:perf_tests_lib"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/change_detection:e2e_tests_lib"],
+)

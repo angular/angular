@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "ts_config")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig.json",
+    "postinstall-patches.js",
+])
+
+ts_config(
+    name = "tsconfig-test",
+    src = "tsconfig-test.json",
+    deps = ["tsconfig.json"],
+)
+
+platform(
+    name = "rbe_ubuntu1604-angular",
+    parents = ["@rbe_ubuntu1604_angular//config:platform"],
+    remote_execution_properties = """
+        {PARENT_REMOTE_EXECUTION_PROPERTIES}
+        properties: {
+            name: "dockerAddCapabilities"
+            value: "SYS_ADMIN"
+        }
+        properties: {
+            name: "dockerNetwork"
+            value: "standard"
+        }
+        properties: {
+            name: "Pool"
+            value: "default"
+        }
+        """,
+)

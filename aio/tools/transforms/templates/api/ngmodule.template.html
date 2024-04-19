@@ -1,0 +1,83 @@
+{% import "lib/memberHelpers.html" as memberHelpers -%}
+{% import "lib/descendants.html" as descendants -%}
+{% import "lib/paramList.html" as params -%}
+{% extends 'export-base.template.html' -%}
+
+{% macro renderTable(items, containerClass, headingText, tableHeading) %}
+<section class="{$ containerClass $}">
+    <h2>{$ headingText $}</h2>
+    <table class="is-full-width list-table property-table">
+      <thead>
+        <tr>
+          <th>{$ tableHeading $}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in items %}
+        <tr>
+          <td>
+            <code-example language="ts" hideCopy="true" class="no-box">
+              {$ item | escape $}
+            </code-example>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endmacro %}
+
+{% macro renderExports(items, cssClass, itemType) %}
+<section class="{$ cssClass $}s">
+  <h2>{$ itemType $}</h2>
+  <table class="is-full-width list-table {$ cssClass $}-table">
+    <thead>
+      <tr><th>Name</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+      <tr>
+        <td>
+          <a href="{$ item.path $}">
+            <code-example language="ts" hideCopy="true" class="no-box{% if item.deprecated !== undefined %} deprecated-api-item{% endif %}">{$ item.name | escape $}</code-example>
+          </a>
+        </td>
+        <td>
+          {% if item.deprecated !== undefined %}{$ ('**Deprecated:** ' + item.deprecated) | marked $}{% endif %}
+          {$ item.shortDescription | marked $}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endmacro %}
+
+{% block overview %}
+  {% include "includes/class-overview.html" %}
+{% endblock %}
+{% block details %}
+  {% block additional %}{% endblock %}
+  {% include "includes/description.html" %}
+  {$ memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static properties') $}
+  {$ memberHelpers.renderMethodDetails(versionInfo, doc.staticMethods, 'static-methods', 'static-method', 'Static methods') $}
+  {% if doc.constructorDoc %}
+  <h2>Constructor</h2>
+  {$ memberHelpers.renderMethodDetail(versionInfo, doc.constructorDoc, 'constructor') $}{% endif %}
+
+  {$ memberHelpers.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
+
+  {$ memberHelpers.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
+
+  {% if doc.providers %}
+  {$ renderTable(doc.providers, 'providers', 'Providers', 'Provider') $}
+  {% endif %}
+
+  {% if doc.directives.length %}
+    {$ renderExports(doc.directives, 'directive', 'Directives') $}
+  {% endif %}
+  {% if doc.pipes.length %}
+    {$ renderExports(doc.pipes, 'pipe', 'Pipes') $}
+  {% endif %}
+
+{% endblock %}

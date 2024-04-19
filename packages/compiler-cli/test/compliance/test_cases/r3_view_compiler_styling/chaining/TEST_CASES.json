@@ -1,0 +1,85 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should chain classProp instruction calls",
+      "inputFiles": ["class_bindings.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["class_bindings.js"]
+        }
+      ]
+    },
+    {
+      "description": "should chain styleProp instruction calls",
+      "inputFiles": ["style_bindings.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["style_bindings.js"]
+        }
+      ]
+    },
+    {
+      "description": "should chain mixed styleProp and classProp calls",
+      "inputFiles": ["mixed_bindings.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["mixed_bindings.js"]
+        }
+      ]
+    },
+    {
+      "description": "should chain style interpolations of the same kind",
+      "inputFiles": ["interpolations_equal_arity.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["interpolations_equal_arity.js"]
+        }
+      ]
+    },
+    {
+      "description": "should chain style interpolations of multiple kinds",
+      "inputFiles": ["interpolations_different_arity.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["interpolations_different_arity.js"]
+        }
+      ]
+    },
+    {
+      "description": "should break into multiple chains if there are other styling instructions in between",
+      "inputFiles": ["break_different_instructions.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["break_different_instructions.js"]
+        }
+      ]
+    },
+    {
+      "description": "should break into multiple chains if there are other styling interpolation instructions in between",
+      "inputFiles": ["break_different_interpolation_instructions.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["break_different_interpolation_instructions.js"]
+        }
+      ]
+    },
+    {
+      "description": "should chain styling instructions inside host bindings",
+      "inputFiles": ["host_bindings.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": ["host_bindings.js"]
+        }
+      ]
+    }
+  ]
+}

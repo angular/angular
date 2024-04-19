@@ -1,0 +1,121 @@
+@use '@angular/docs/styles/media-queries' as mq;
+// Note: cli-reference-details-page is receiving page styles
+// from api-reference-details-page.component.scss
+
+// stylelint-disable-next-line
+::ng-deep {
+  .adev-ref-content {
+    display: flex;
+    padding-block: 1rem;
+    gap: 1rem;
+    &:not(:last-of-type) {
+      border-block-end: 1px solid var(--senary-contrast);
+    }
+  }
+
+  .adev-header-and-tabs {
+    &.adev-cli-content {
+      width: 50%;
+      @include mq.for-desktop-down {
+        width: 100%;
+      }
+    }
+  }
+
+  .adev-cli-members-container {
+    width: 50%;
+    padding: 0 var(--layout-padding) 1rem 0;
+
+    margin-top: 8.3125rem;
+    padding-bottom: 1rem;
+    box-sizing: border-box;
+    max-width: 60ch;
+    @include mq.for-desktop-down {
+      width: 100%;
+      padding: var(--layout-padding);
+      // override js applied margin top
+      margin-block-start: 0 !important;
+      max-width: none;
+    }
+  }
+
+  .adev-ref-option-and-description {
+    flex-grow: 1;
+    max-width: calc(100% - 80px);
+    p {
+      margin-block-end: 0;
+    }
+  }
+
+  .docs-reference-type-and-default {
+    width: 4.375rem;
+    flex-shrink: 0;
+    span {
+      display: block;
+      font-size: 0.875rem;
+      margin-block-end: 0.2rem;
+      white-space: nowrap;
+
+      &:not(:first-child) {
+        margin-block-start: 1rem;
+      }
+    }
+
+    code {
+      font-size: 0.775rem;
+    }
+  }
+
+  .adev-reference-cli-toc {
+    border: 1px solid var(--senary-contrast);
+    border-radius: 0.3rem;
+    position: relative;
+    transition: border 0.3s ease;
+
+    &::before {
+      content: '';
+      inset: -1px;
+      position: absolute;
+      background: transparent;
+      border-radius: 0.35rem;
+      z-index: 0;
+    }
+
+    &:has(.hljs-ln-line-highlighted) {
+      &::before {
+        background: var(--red-to-pink-to-purple-horizontal-gradient);
+      }
+    }
+
+    pre {
+      border-radius: 0.25rem;
+      position: relative;
+      z-index: 100;
+      background: var(--octonary-contrast);
+    }
+  }
+
+  .hljs-ln-line-argument,
+  .hljs-ln-line-option {
+    padding: 0.1rem 0.2rem 0.2rem;
+    margin-inline: 0.1rem;
+    color: var(--quaternary-contrast);
+    background: transparent;
+    border-radius: 0.25rem;
+    position: relative;
+    transition: color 0.3s ease, background 0.3s ease, border 0.3s ease;
+
+    &:hover {
+      color: var(--primary-contrast);
+      background: var(--septenary-contrast);
+    }
+
+    &.hljs-ln-line-highlighted {
+      color: var(--primary-contrast);
+      background: var(--senary-contrast);
+    }
+  }
+  .hljs-ln-line-argument {
+    margin-inline-start: 0.2rem;
+  }
+}

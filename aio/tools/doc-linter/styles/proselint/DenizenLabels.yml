@@ -1,0 +1,51 @@
+extends: substitution
+message: Did you mean '%s'?
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: false
+swap:
+  (?:Afrikaaner|Afrikander): Afrikaner
+  (?:Hong Kongite|Hong Kongian): Hong Konger
+  (?:Indianan|Indianian): Hoosier
+  (?:Michiganite|Michiganian): Michigander
+  (?:New Hampshireite|New Hampshireman): New Hampshirite
+  (?:Newcastlite|Newcastleite): Novocastrian
+  (?:Providencian|Providencer): Providentian
+  (?:Trentian|Trentonian): Tridentine
+  (?:Warsawer|Warsawian): Varsovian
+  (?:Wolverhamptonite|Wolverhamptonian): Wulfrunian
+  Alabaman: Alabamian
+  Albuquerquian: Albuquerquean
+  Anchoragite: Anchorageite
+  Arizonian: Arizonan
+  Arkansawyer: Arkansan
+  Belarusan: Belarusian
+  Cayman Islander: Caymanian
+  Coloradoan: Coloradan
+  Connecticuter: Nutmegger
+  Fairbanksian: Fairbanksan
+  Fort Worther: Fort Worthian
+  Grenadian: Grenadan
+  Halifaxer: Haligonian
+  Hartlepoolian: Hartlepudlian
+  Illinoisian: Illinoisan
+  Iowegian: Iowan
+  Leedsian: Leodenisian
+  Liverpoolian: Liverpudlian
+  Los Angelean: Angeleno
+  Manchesterian: Mancunian
+  Minneapolisian: Minneapolitan
+  Missouran: Missourian
+  Monacan: Monegasque
+  Neopolitan: Neapolitan
+  New Jerseyite: New Jerseyan
+  New Orleansian: New Orleanian
+  Oklahoma Citian: Oklahoma Cityan
+  Oklahomian: Oklahoman
+  Saudi Arabian: Saudi
+  Seattlite: Seattleite
+  Surinamer: Surinamese
+  Tallahassean: Tallahasseean
+  Tennesseean: Tennessean
+  Trois-Rivièrester: Trifluvian
+  Utahan: Utahn
+  Valladolidian: Vallisoletano

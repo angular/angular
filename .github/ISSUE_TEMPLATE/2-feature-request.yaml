@@ -1,0 +1,47 @@
+name: 'Feature Request'
+description: Suggest a feature for Angular Framework
+
+body:
+  - type: dropdown
+    id: affected-packages
+    attributes:
+      label: Which @angular/* package(s) are relevant/related to the feature request?
+      options:
+        - animations
+        - bazel
+        - common
+        - compiler-cli
+        - compiler
+        - core
+        - elements
+        - forms
+        - language-service
+        - localize
+        - platform-browser-dynamic
+        - platform-browser
+        - platform-server
+        - router
+        - service-worker
+        - upgrade
+      multiple: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true

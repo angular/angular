@@ -1,0 +1,41 @@
+load("//tools:defaults.bzl", "generate_api_docs", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_module(
+    name = "rxjs-interop",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+    ]) + ["PACKAGE.md"],
+    visibility = ["//visibility:public"],
+)
+
+generate_api_docs(
+    name = "core_rxjs-interop_docs",
+    srcs = [
+        ":files_for_docgen",
+        "//packages:common_files_and_deps_for_docs",
+        "//packages/common:files_for_docgen",
+        "//packages/common/http:files_for_docgen",
+    ],
+    entry_point = ":index.ts",
+    module_name = "@angular/core/rxjs-interop",
+)

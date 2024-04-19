@@ -1,0 +1,21 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "testing",
+    testonly = True,
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    module_name = "@angular/compiler-cli/src/ngtsc/testing",
+    deps = [
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "@npm//@bazel/runfiles",
+        "@npm//typescript",
+    ],
+)

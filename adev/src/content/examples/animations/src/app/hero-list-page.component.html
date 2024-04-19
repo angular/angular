@@ -1,0 +1,20 @@
+<!-- #docplaster -->
+<h2>Filter/Stagger</h2>
+
+<!-- #docregion filter-animations -->
+<label for="search">Search heroes: </label>
+<input type="text" id="search" #criteria
+       (input)="updateCriteria(criteria.value)"
+       placeholder="Search heroes">
+
+<ul class="heroes" [@filterAnimation]="heroesTotal">
+  @for (hero of heroes; track hero) {
+    <li class="hero">
+      <div class="inner">
+        <span class="badge">{{ hero.id }}</span>
+        <span class="name">{{ hero.name }}</span>
+      </div>
+    </li>
+  }
+</ul>
+<!-- #enddocregion filter-animations -->

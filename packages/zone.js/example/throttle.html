@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Zones throttle</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="../dist/zone.js"></script>
+  <script src="../dist/long-stack-trace-zone.js"></script>
+</head>
+<body>
+  <h1>Throttle Example</h1>
+
+  <button id="b2">Error</button>
+
+  <script>
+  /*
+   * In this example, we have a button that makes some request
+   * to our server. We want to only make the request once per
+   * 1s, so we use a `throttle` helper. If the request fails,
+   * it's difficult to see where the failure originated from.
+   *
+   * Thankfully, we can use zones to preserve the stack even
+   * across async tasks to get a better picture of the control
+   * flow of the app.
+   */
+
+  var throttleMakeRequest;
+
+  /*
+   * Start the app
+   * Bind listeners
+   */
+  function bootstrap () {
+    b2.addEventListener('click', throttleMakeRequest);
+  }
+
+  /*
+   * Makes a request to the server
+   * Will only make the request once every 1000ms
+   */
+  throttleMakeRequest = throttle(function () {
+    makeRequestToServer(handleServerResponse);
+  }, 1000);
+
+
+  /*
+   * Pretend this makes a request to a server
+   */
+  function makeRequestToServer (cb) {
+    setTimeout(cb, 100);
+  }
+
+
+  function handleServerResponse (err, data) {
+    throw new Error('Oops');
+  }
+
+
+  /*
+   * Returns a fn that can only be called once
+   * per `time` milliseconds
+   */
+  function throttle (fn, time) {
+    var id = null;
+    if (typeof time !== 'number') {
+      time = 0;
+    }
+    return function () {
+      if (!id) {
+        id = setTimeout(function () {
+          id = null;
+          fn();
+        }, time);
+      }
+    };
+  }
+
+  /*
+   * Start the application
+   *
+   * If we start the application with `zone.run`, we
+   * get long stack traces in the console!
+   */
+
+  //bootstrap();
+  Zone.current.fork(Zone.longStackTraceZoneSpec).run(bootstrap);
+
+  </script>
+
+</body>
+</html>

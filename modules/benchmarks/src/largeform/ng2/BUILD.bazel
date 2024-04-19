@@ -1,0 +1,45 @@
+load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module")
+load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+# Note that this benchmark has been designed for Angular with ViewEngine, but once ViewEngine is
+# removed, we should keep this benchmark and run it with Ivy (potentially rename it to "render3")
+ng_module(
+    name = "ng2",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/zone.js/lib",
+    ],
+)
+
+esbuild(
+    name = "app_bundle",
+    entry_point = ":index.ts",
+    deps = [":ng2"],
+)
+
+http_server(
+    name = "devserver",
+    srcs = ["index.html"],
+    deps = [":app_bundle"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/largeform:perf_tests_lib"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/largeform:e2e_tests_lib"],
+)

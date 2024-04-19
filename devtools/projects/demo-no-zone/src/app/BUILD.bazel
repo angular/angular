@@ -1,0 +1,17 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "app",
+    srcs = glob(
+        include = ["*.ts"],
+    ),
+    angular_assets = ["app.component.html"],
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)

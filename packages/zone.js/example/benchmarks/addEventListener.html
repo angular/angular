@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Zone.js addEventListenerBenchmark</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../../dist/zone.js"></script>
+</head>
+<body>
+
+  <h1>addEventListener Benchmark</h1>
+
+  <h2>No Zone</h2>
+  <button id="b1">Add/Remove same callback</button>
+  <button id="b2">Add/Remove different callback</button>
+
+  <h2>With Zone</h2>
+  <button id="b3">Add/Remove same callback</button>
+  <button id="b4">Add/Remove different callback</button>
+
+  <div id="rootDiv"></div>
+
+  <script>
+    b1.addEventListener('click', function () { addRemoveCallback(true, false); });
+    b2.addEventListener('click', function () { addRemoveCallback(false, false); });
+    b3.addEventListener('click', function () { addRemoveCallback(true, true); });
+    b4.addEventListener('click', function () { addRemoveCallback(false, true); });
+    var divs = [];
+    var callbacks = [];
+    var size = 100000;
+    for(var i = 0; i < size; i++) {
+        var div = document.createElement("div");
+        var callback = (function(i) { return function() { console.log(i); }; })(i);
+        rootDiv.appendChild(div);
+        divs[i] = div;
+        callbacks[i] = callback;
+    }
+
+    function addRemoveCallback(reuse, useZone) {
+      var start = performance.now();
+      var callback = callbacks[0];
+      for(var i = 0; i < size; i++) {
+        var div = divs[i];
+        if (!reuse) callback = callbacks[i];
+        if (useZone)
+          div.addEventListener('click', callback);
+        else
+          div.__zone_symbol__addEventListener('click', callback);
+      }
+
+      for(var i = 0; i < size; i++) {
+        var div = divs[i];
+        if (!reuse) callback = callbacks[i];
+        if (useZone)
+          div.removeEventListener('click', callback);
+        else
+          div.__zone_symbol__removeEventListener('click', callback);
+      }
+      var end = performance.now();
+      console.log(useZone ? 'use zone': 'native', reuse ? 'reuse' : 'new', end - start, 'ms');
+    }
+
+  </script>
+</body>
+</html>

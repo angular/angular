@@ -1,0 +1,185 @@
+load("@npm//@angular/build-tooling/bazel/remote-execution:index.bzl", "ENABLE_NETWORK")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+load("@npm//@angular-devkit/architect-cli:index.bzl", "architect", "architect_test")
+load("@bazel_skylib//lib:collections.bzl", "collections")
+load("//adev/tools/local_deps:index.bzl", "ensure_local_package_deps", "link_local_packages")
+
+package(default_visibility = ["//visibility:public"])
+
+# All source and configuration files required to build the docs app
+APPLICATION_FILES = [
+    "angular.json",
+    "tsconfig.app.json",
+    "tsconfig.json",
+    "tsconfig.worker.json",
+] + glob(
+    ["src/**/*"],
+    exclude = [
+        "src/**/*.spec.ts",
+        # Temporarily exclude generated sources produced by the non-bazel
+        # build until the whole project is built by bazel and this directory
+        # isn't needed.
+        "src/generated/**/*",
+    ],
+)
+
+TEST_FILES = APPLICATION_FILES + [
+    "karma.conf.js",
+    "tsconfig.spec.json",
+] + glob(
+    ["**/*.spec.ts"],
+)
+
+APPLICATION_ASSETS = [
+    "//adev/src/assets/images",
+    "//adev/src/assets/textures",
+    "//adev/src/assets/previews",
+    "//adev/src/assets:tutorials",
+    "//adev/src/assets/icons",
+    "//adev/src/assets:api",
+    "//adev/src/assets:content",
+]
+
+APPLICATION_DEPS = [
+    "@npm//@angular-devkit/build-angular",
+    "@npm//@angular/animations",
+    "@npm//@angular/cdk",
+    "@npm//@angular/common",
+    "@npm//@angular/compiler",
+    "@npm//@angular/compiler-cli",
+    "@npm//@angular/core",
+    "@npm//@angular/docs",
+    "@npm//@angular/forms",
+    "@npm//@angular/material",
+    "@npm//@angular/platform-browser",
+    "@npm//@angular/platform-server",
+    "@npm//@angular/router",
+    "@npm//gsap",
+    "@npm//marked",
+    "@npm//ngx-progressbar",
+    "@npm//ogl",
+    "@npm//rxjs",
+    "@npm//typescript",
+    "@npm//@typescript/vfs",
+    "@npm//@codemirror/state",
+    "@npm//@codemirror/view",
+    "@npm//@codemirror/language",
+    "@npm//@codemirror/commands",
+    "@npm//@codemirror/search",
+    "@npm//@codemirror/autocomplete",
+    "@npm//@codemirror/lint",
+    "@npm//@codemirror/lang-html",
+    "@npm//@codemirror/lang-angular",
+    "@npm//@codemirror/lang-css",
+    "@npm//@codemirror/lang-sass",
+    "@npm//@codemirror/lang-javascript",
+    "@npm//@lezer/highlight",
+    "@npm//@lezer/javascript",
+    "@npm//@lezer/common",
+    "@npm//@xterm/xterm",
+    "@npm//xterm-addon-fit",
+    "@npm//angular-split",
+]
+
+TEST_DEPS = APPLICATION_DEPS + [
+    "@npm//@angular/platform-browser-dynamic",
+    "@npm//@types/jasmine",
+    "@npm//@types/node",
+    "@npm//assert",
+    "@npm//jasmine",
+    "@npm//jasmine-core",
+    "@npm//karma-chrome-launcher",
+    "@npm//karma-coverage",
+    "@npm//karma-jasmine",
+    "@npm//karma-jasmine-html-reporter",
+]
+
+# Create `npm_link` targets for all dependencies that correspond to a
+# first-party Angular package that can be built from `HEAD`.
+link_local_packages(
+    all_deps = collections.uniq(APPLICATION_DEPS + TEST_DEPS),
+)
+
+copy_to_bin(
+    name = "application_files_bin",
+    srcs = APPLICATION_FILES,
+)
+
+bool_flag(
+    name = "fast_build_mode",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "fast",
+    flag_values = {
+        ":fast_build_mode": "true",
+    },
+)
+
+config_setting(
+    name = "full",
+    flag_values = {
+        ":fast_build_mode": "false",
+    },
+)
+
+config_based_architect_flags = select({
+    ":fast": ["--no-prerender"],
+    ":full": ["--prerender"],
+})
+
+architect(
+    name = "build",
+    args = [
+        "angular-dev:build",
+        "--output-path=build",
+    ] + config_based_architect_flags,
+    chdir = "$(RULEDIR)",
+    data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
+        ":application_files_bin",
+    ],
+    # Network is required to inline fonts.
+    exec_properties = ENABLE_NETWORK,
+    output_dir = True,
+    tags = [
+        "no-remote-exec",
+    ],
+)
+
+architect(
+    name = "serve",
+    args = [
+        "angular-dev:serve",
+        "--poll=1000",
+        "--live-reload",
+        "--watch",
+    ],
+    chdir = package_name(),
+    data = ensure_local_package_deps(APPLICATION_DEPS) + APPLICATION_ASSETS + [
+        ":application_files_bin",
+    ],
+    tags = [
+        "no-remote-exec",
+    ],
+)
+
+architect_test(
+    name = "test",
+    args = [
+        "angular-dev:test",
+        "--no-watch",
+    ],
+    chdir = package_name(),
+    data = ensure_local_package_deps(TEST_DEPS) + TEST_FILES + APPLICATION_ASSETS + [
+        "//aio/tools:windows-chromium-path",
+        "@npm//@angular/build-tooling/bazel/browsers/chromium",
+    ],
+    env = {
+        "CHROME_BIN": "../$(CHROMIUM)",
+    },
+    toolchains = [
+        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
+    ],
+)

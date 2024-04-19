@@ -1,0 +1,47 @@
+<as-split unit="percent" [direction]="splitDirection" [gutterSize]="9">
+  <as-split-area #directiveForestSplitArea size="60">
+    <as-split direction="vertical" [gutterSize]="9" unit="pixel" [disabled]="true">
+      <as-split-area size="*">
+        <ng-directive-forest
+          (selectNode)="handleNodeSelection($event)"
+          (selectDomElement)="handleSelectDomElement($event)"
+          (setParents)="handleSetParents($event)"
+          (highlightComponent)="highlightComponent($event)"
+          (removeComponentHighlight)="removeComponentHighlight()"
+          (toggleInspector)="toggleInspector.emit()"
+          [forest]="forest"
+          [currentSelectedElement]="currentSelectedElement"
+          [showCommentNodes]="showCommentNodes"
+        />
+      </as-split-area>
+      <as-split-area size="22">
+        @if (parents) {
+          <ng-breadcrumbs
+            (mouseLeaveNode)="unhighlight()"
+            (mouseOverNode)="highlight($event)"
+            (handleSelect)="handleSelect($event)"
+            [parents]="parents"
+          />
+        }
+      </as-split-area>
+    </as-split>
+  </as-split-area>
+  <as-split-area size="40" minSize="25" class="prop-split">
+    <div class="property-tab-wrapper">
+      <ng-property-tab
+        [currentSelectedElement]="currentSelectedElement"
+        (inspect)="inspect($event)"
+        (viewSource)="viewSource($event)"
+      />
+    </div>
+    @if(isHydrationEnabled) {
+      <div class="hydration">
+        <mat-slide-toggle
+          [(ngModel)]="showHydrationNodeHighlights"
+          (change)="showHydrationNodeHighlights ? hightlightHydrationNodes() : removeHydrationNodesHightlights()"
+          >Show hydration overlays</mat-slide-toggle
+        >
+      </div>
+    }
+  </as-split-area>
+</as-split>

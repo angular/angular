@@ -1,0 +1,8 @@
+# tests for strings qualified by back-ticks are surrounded by spaces or punctuation
+extends: existence
+message: 'The code term should be followed by a space or punctuation.'
+link: https://angular.io/guide/docs-style-guide#when-to-use-code-font
+level: error
+scope: raw
+tokens:
+  - '\s\x60[^\x60]+\x60[^ .;\n\r]'

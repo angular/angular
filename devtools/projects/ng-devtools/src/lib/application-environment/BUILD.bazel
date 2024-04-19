@@ -1,0 +1,12 @@
+load("//devtools/tools:typescript.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "application-environment",
+    srcs = ["index.ts"],
+    deps = [
+        "//devtools/projects/protocol",
+        "@npm//@types",
+    ],
+)

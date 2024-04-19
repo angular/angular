@@ -1,0 +1,46 @@
+<div class="adev-reference-list-page">
+  <header>
+    <h6>Getting Started</h6>
+    <h1 tabindex="-1">API Reference</h1>
+  </header>
+
+  @if (featuredGroup().items.length) {
+  <adev-api-items-section [group]="featuredGroup()" class="adev-featured-list" />
+  }
+
+  <form class="adev-reference-list-form">
+    <docs-text-field
+      name="query"
+      placeholder="Filter"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+    />
+
+    <div class="adev-reference-list-form-part-two">
+      <docs-slide-toggle
+        buttonId="includeDeprecated"
+        label="Show @deprecated"
+        name="includeDeprecated"
+        [ngModel]="includeDeprecated()"
+        (ngModelChange)="includeDeprecated.set($event)"
+      />
+    </div>
+    <ul class="adev-reference-list-legend">
+      @for (itemType of itemTypes; track itemType) {
+        <li
+          class="adev-reference-list-legend-item"
+          [class.adev-reference-list-legend-item-active]="type() === itemType"
+          (click)="filterByItemType(itemType)"
+        >
+          <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />
+          <span class="docs-api-item-label-full">{{ itemType | adevApiLabel : 'full' }}</span>
+        </li>
+      }
+    </ul>
+  </form>
+
+  @for (group of filteredGroups(); track group) {
+    <adev-api-items-section [group]="group" />
+  }
+
+</div>

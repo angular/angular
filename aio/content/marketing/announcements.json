@@ -1,0 +1,30 @@
+[
+  {
+    "startDate": "2020-01-01",
+    "endDate": "2020-03-31",
+    "message": "Join us for ng-conf<br/>April 1st-3rd, 2020",
+    "imageUrl": "generated/images/marketing/home/ng-conf.png",
+    "linkUrl": "https://ng-conf.org/?utm_source=angular.io&utm_medium=referral"
+  },
+  {
+    "startDate": "2020-04-01",
+    "endDate": "2020-04-03",
+    "message": "ng-conf: Hardwired is happening! <br/>April 1st-3rd, 2020",
+    "imageUrl": "generated/images/marketing/home/ng-conf.png",
+    "linkUrl": "https://www.ng-conf.org"
+  },
+  {
+    "startDate": "2019-05-03",
+    "endDate": "2019-06-01",
+    "message": "Join us for AngularMix<br/>June 11th-13th, 2019",
+    "imageUrl": "generated/images/marketing/home/angular-mix.png",
+    "linkUrl": "https://bit.ly/AngularMix_Reg"
+  },
+  {
+    "startDate": "2019-06-02",
+    "endDate": "2019-09-18",
+    "message": "Join us for Angular Connect<br/>September 19th-20th, 2019",
+    "imageUrl": "generated/images/marketing/home/angular-connect.png",
+    "linkUrl": "https://www.angularconnect.com/?utm_source=angular.io&utm_medium=referral"
+  }
+]

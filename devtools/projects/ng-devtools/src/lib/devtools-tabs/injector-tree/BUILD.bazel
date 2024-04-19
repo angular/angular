@@ -1,0 +1,79 @@
+load("//devtools/tools:ng_module.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//devtools/tools:typescript.bzl", "ts_library", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
+
+package(default_visibility = ["//:__subpackages__"])
+
+sass_binary(
+    name = "injector_tree_styles",
+    src = "injector-tree.component.scss",
+)
+
+ng_module(
+    name = "injector_tree",
+    srcs = [
+        "injector-tree.component.ts",
+    ],
+    angular_assets = [
+        ":injector_tree_styles",
+        "injector-tree.component.html",
+    ],
+    deps = [
+        ":injector_providers",
+        ":injector_tree_fns",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:resolution_path",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split",
+        "//devtools/projects/protocol",
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/material",
+        "@npm//@types",
+        "@npm//d3",
+        "@npm//rxjs",
+    ],
+)
+
+ng_module(
+    name = "injector_providers",
+    srcs = [
+        "injector-providers.component.ts",
+    ],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:resolution_path",
+        "//devtools/projects/protocol",
+        "//packages/animations",
+        "//packages/common",
+        "//packages/core",
+        "@npm//@angular/material",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    deps = [
+        ":injector_tree_fns_test_lib",
+    ],
+)
+
+ts_test_library(
+    name = "injector_tree_fns_test_lib",
+    srcs = [
+        "injector-tree-fns.spec.ts",
+    ],
+    deps = [
+        ":injector_tree_fns",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ts_library(
+    name = "injector_tree_fns",
+    srcs = ["injector-tree-fns.ts"],
+    deps = [
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer",
+        "//devtools/projects/protocol",
+    ],
+)

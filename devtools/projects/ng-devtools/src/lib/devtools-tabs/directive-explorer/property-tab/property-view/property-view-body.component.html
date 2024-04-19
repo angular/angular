@@ -1,0 +1,53 @@
+@if (controlsLoaded) {
+  <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" [multi]="true">
+    @if (controller.directiveMetadata?.dependencies.length > 0) {
+      <div class="mat-accordion-content">
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+            <mat-panel-title>
+              Injected Services
+              <a
+                href="https://angular.io/guide/dependency-injection"
+                target="_blank"
+                class="documentation"
+                matTooltip="Open docs reference"
+                (click)="$event.stopPropagation()"
+                >
+                <mat-icon class="docs-link">open_in_new</mat-icon>
+              </a>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-injected-services [controller]="controller"/>
+        </mat-expansion-panel>
+      </div>
+    }
+    @for (index of categoryOrder; track $index) {
+      <div class="mat-accordion-content" cdkDrag>
+        @if (!panels[index].hidden) {
+          <mat-expansion-panel [class]="panels[index].class" [expanded]="true">
+            <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
+              <mat-panel-title>
+                {{ panels[index].title }}
+                <a
+                  href="{{ panels[index].documentation }}"
+                  target="_blank"
+                  class="documentation"
+                  matTooltip="Open docs reference"
+                  (click)="$event.stopPropagation()"
+                  >
+                  <mat-icon class="docs-link">open_in_new</mat-icon>
+                </a>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-property-view-tree
+              [dataSource]="panels[index].controls.dataSource"
+              [treeControl]="panels[index].controls.treeControl"
+              (updateValue)="updateValue($event)"
+              (inspect)="handleInspect($event)"
+            />
+          </mat-expansion-panel>
+        }
+      </div>
+    }
+  </mat-accordion>
+}

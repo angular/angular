@@ -1,0 +1,58 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "nodejs_test", "ts_library")
+
+ts_library(
+    name = "signal_authoring_signature_test_lib",
+    testonly = True,
+    srcs = [
+        "signal_input_signature_test.ts",
+        "signal_model_signature_test.ts",
+        "signal_queries_signature_test.ts",
+        "unwrap_writable_signal_signature_test.ts",
+    ],
+    deps = ["//packages/core"],
+)
+
+ts_library(
+    name = "type_tester_lib",
+    testonly = True,
+    srcs = ["type_tester.ts"],
+    deps = [
+        "@npm//typescript",
+    ],
+)
+
+nodejs_test(
+    name = "type_test",
+    data = [
+        ":signal_authoring_signature_test_lib",
+        ":type_tester_lib",
+    ],
+    entry_point = ":type_tester.ts",
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = [
+        "input_signal_spec.ts",
+        "model_input_spec.ts",
+    ],
+    deps = [
+        "//packages/core",
+        "//packages/core/primitives/signals",
+        "//packages/core/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node"],
+    deps = [
+        ":test_lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    deps = [":test_lib"],
+)

@@ -1,0 +1,278 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - '[0-9]+.[0-9]+.x'
+      - 'remove-aio-stuff'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+        with:
+          cache-node-modules: true
+          node-module-directories: |
+            ./node_modules
+            ./aio/node_modules
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Install node modules in aio
+        run: yarn install --frozen-lockfile --cwd aio
+      - name: Check code lint
+        run: yarn -s tslint
+      - name: Check for circular dependencies
+        run: yarn -s ts-circular-deps:check
+      - name: Validate pull approve configuration
+        run: yarn -s ng-dev pullapprove verify
+      - name: Validate angular robot configuration
+        run: yarn -s ng-dev ngbot verify
+      - name: Confirm code builds with typescript as expected
+        run: yarn -s check-tooling-setup
+      - name: Check commit message
+        # Commit message validation is only done on pull requests as its too late to validate once
+        # it has been merged.
+        if: github.event_name == 'pull_request'
+        run: yarn ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
+      - name: Check code format
+        # Code formatting checks are only done on pull requests as its too late to validate once
+        # it has been merged.
+        if: github.event_name == 'pull_request'
+        run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
+
+  devtools:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Run unit tests
+        run: yarn devtools:test
+      - name: Test build
+        run: yarn devtools:build:chrome
+
+  test:
+    runs-on: ubuntu-latest-4core
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Install node modules
+        run: yarn install --frozen-lockfile --network-timeout 100000
+      - name: Run CI tests for framework
+        run: yarn test:ci
+
+  adev:
+    runs-on:
+      labels: ubuntu-latest-4core
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Build adev to ensure it continues to work
+        run: yarn bazel test //adev:test
+
+  publish-snapshots:
+    if: github.event_name == 'push'
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+        with:
+          cache-node-modules: true
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - run: echo "https://${{secrets.SNAPSHOT_BUILDS_GITHUB_TOKEN}}:@github.com" > ${HOME}/.git_credentials
+      - run: yarn build
+      - run: ./scripts/ci/publish-build-artifacts.sh
+
+  zone-js:
+    runs-on:
+      labels: ubuntu-latest-4core
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+        with:
+          cache-node-modules: true
+          node-module-directories: |
+            ./node_modules
+            ./packages/zone.js/node_modules
+            ./packages/zone.js/test/typings/node_modules
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - run: |
+          yarn bazel build \
+          //packages/zone.js/bundles:zone.umd.js \
+          //packages/zone.js:npm_package \
+          //packages/zone.js/test/closure:closure_js \
+
+      - run: |
+          rm -Rf packages/zone.js/build
+          rm -Rf packages/zone.js/test/extra/*.umd.js
+
+          mkdir -p packages/zone.js/build/
+          mkdir -p packages/zone.js/build/test/
+
+          cp dist/bin/packages/zone.js/bundles/zone.umd.js packages/zone.js/build/zone.umd.js
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/
+          cp dist/bin/packages/zone.js/test/closure/zone.closure.mjs ./packages/zone.js/build/test/zone.closure.mjs
+
+        # Install
+      - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
+        # Run zone.js tools tests
+      - run: yarn --cwd packages/zone.js promisefinallytest
+      - run: yarn --cwd packages/zone.js jest:test
+      - run: yarn --cwd packages/zone.js jest:nodetest
+      - run: yarn --cwd packages/zone.js electrontest
+      - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
+      - run: yarn --cwd packages/zone.js/test/typings test
+
+  bazel-saucelabs:
+    # TODO: Replace legacy job with Bazel saucelabs job.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest-4core
+    env:
+      JOBS: 2
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+        with:
+          cache-node-modules: true
+          # Checking out the pull request commit is intended here as we need to run the changed code tests.
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel Remote Caching
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Saucelabs Variables
+        uses: angular/dev-infra/github-actions/saucelabs@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Set up Sauce Tunnel Daemon
+        run: yarn bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
+        env:
+          SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
+      - name: Run all saucelabs bazel tests
+        run: |
+          TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
+          yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}
+
+  saucelabs:
+    runs-on: ubuntu-latest-4core
+    env:
+      SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+        with:
+          cache-node-modules: true
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Saucelabs Variables
+        uses: angular/dev-infra/github-actions/saucelabs@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Starting Saucelabs tunnel service
+        run: ./tools/saucelabs/sauce-service.sh run &
+      # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
+      # specific tests which are reliant on such generated fixtures is not an option as SystemJS
+      # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
+      # guarded by an check to skip in the Saucelabs legacy job. We should be good running such
+      # test in all supported browsers on Saucelabs anyway until this job can be removed.
+      - name: Preparing Bazel-generated fixtures required in legacy tests
+        run: |
+          yarn bazel build //packages/core/test:downleveled_es5_fixture //packages/common/locales
+          # Needed for the ES5 downlevel reflector test in `packages/core/test/reflection`.
+          mkdir -p dist/legacy-test-out/core/test/reflection/
+          cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
+            dist/legacy-test-out/core/test/reflection/es5_downleveled_inheritance_fixture.js
+          # Locale files are needed for i18n tests running within Saucelabs. These are added
+          # directly as sources so that the TypeScript compilation of `/packages/tsconfig.json`
+          # can succeed. Note that the base locale and currencies files are checked-in, so
+          # we do not need to re-generate those through Bazel.
+          mkdir -p packages/common/locales/extra
+          cp dist/bin/packages/common/locales/*.ts packages/common/locales
+          cp dist/bin/packages/common/locales/extra/*.ts packages/common/locales/extra
+      - name: Build bundle of tests to run on Saucelabs
+        run: node tools/legacy-saucelabs/build-saucelabs-test-bundle.mjs
+      - name: Wait and confirm Saucelabs tunnel has connected
+        run: ./tools/saucelabs/sauce-service.sh ready-wait
+        timeout-minutes: 3
+      - name: Running tests on Saucelabs.
+        run: KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
+      - name: Stop Saucelabs tunnel service
+        run: ./tools/saucelabs/sauce-service.sh stop
+
+  adev-deploy:
+    needs: [adev]
+    if: needs.adev.result == 'success' && github.event_name == 'push' && github.ref_name == 'main'
+    env:
+      DEPLOY_PROJECT: angular-dev-site
+      DEPLOY_SITE: angular-dev-site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@f122b83d2a49e24eb9dfcd54fca9fc97612b832d
+      - name: Install node modules
+        run: yarn install --frozen-lockfile
+      - name: Build adev to ensure it continues to work
+        run: yarn bazel build //adev:build
+      - name: Move generated project files into deployment directory
+        run: cp -r dist/bin/adev/build adev/build
+      - name: Setup firebase context
+        run: |
+          npx -y firebase-tools@latest target:clear --config adev/firebase.json --project ${{ env.DEPLOY_PROJECT }} hosting angular-docs
+          npx -y firebase-tools@latest target:apply --config adev/firebase.json --project ${{ env.DEPLOY_PROJECT }} hosting angular-docs ${{ env.DEPLOY_SITE }}
+      - name: Deploy to firebase
+        uses: FirebaseExtended/action-hosting-deploy@120e124148ab7016bec2374e5050f15051255ba2 # v0.7.1
+        with:
+          entryPoint: './adev'
+          firebaseServiceAccount: ${{ secrets.ANGULAR_DEV_SITE_DEPLOY }}
+          projectId: ${{ env.DEPLOY_PROJECT }}
+          channelId: live

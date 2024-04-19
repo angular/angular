@@ -1,0 +1,7 @@
+load("//integration:index.bzl", "ng_integration_test")
+
+ng_integration_test(
+    name = "test",
+    setup_chromium = True,
+    track_payload_size = "forms",
+)

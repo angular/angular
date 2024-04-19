@@ -1,0 +1,13 @@
+load("@npm//@angular/docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "errors",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/content/examples/errors:cyclic-imports/child.component.ts",
+        "//adev/src/content/examples/errors:cyclic-imports/parent.component.ts",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

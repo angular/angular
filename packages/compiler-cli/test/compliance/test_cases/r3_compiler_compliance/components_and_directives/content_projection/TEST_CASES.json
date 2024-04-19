@@ -1,0 +1,175 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should support content projection in root template",
+      "inputFiles": [
+        "root_template.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect SimpleComponent definition",
+          "files": [
+            {
+              "expected": "root_template_simple_def.js",
+              "generated": "root_template.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Incorrect ComplexComponent definition",
+          "files": [
+            {
+              "expected": "root_template_complex_def.js",
+              "generated": "root_template.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support multi-slot content projection with multiple wildcard slots",
+      "inputFiles": [
+        "multiple_wildcards.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid content projection instructions generated",
+          "files": [
+            "multiple_wildcards.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support content projection in nested templates",
+      "inputFiles": [
+        "nested_template.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid content projection instructions generated",
+          "files": [
+            "nested_template.js"
+          ]
+        },
+        {
+          "failureMessage": "Invalid content projection instructions generated",
+          "files": [
+            {
+              "expected": "nested_template_consts.js",
+              "generated": "nested_template.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support content projection in both the root and nested templates",
+      "inputFiles": [
+        "root_and_nested.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid content projection instructions generated",
+          "files": [
+            "root_and_nested.js"
+          ]
+        },
+        {
+          "failureMessage": "Invalid content projection instructions generated",
+          "files": [
+            {
+              "expected": "root_and_nested_consts.js",
+              "generated": "root_and_nested.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should parse the selector that is passed into ngProjectAs",
+      "inputFiles": [
+        "ng_project_as_selector.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect SimpleComponent definition",
+          "files": [
+            "ng_project_as_selector.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should take the first selector if multiple values are passed into ngProjectAs",
+      "inputFiles": [
+        "ng_project_as_compound_selector.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect SimpleComponent definition",
+          "files": [
+            "ng_project_as_compound_selector.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should include parsed ngProjectAs selectors into template attrs",
+      "inputFiles": [
+        "ng_project_as_attribute.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect MyApp definition",
+          "files": [
+            "ng_project_as_attribute.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should capture the node name of ng-content with a structural directive",
+      "inputFiles": [
+        "ng_content_with_structural_dir.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect SimpleComponent definition",
+          "files": [
+            "ng_content_with_structural_dir.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "support projectAs on ng-content",
+      "inputFiles": [
+        "project_as_ng_content.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect projection",
+          "files": [
+            "project_as_ng_content.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support fallback content in ng-content",
+      "inputFiles": [
+        "ng_content_fallback.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect projection",
+          "files": [
+            "ng_content_fallback.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

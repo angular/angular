@@ -1,0 +1,75 @@
+
+button {
+	font-size: 100%;
+	margin: 0 2px;
+}
+
+div[ng-reflect-ng-switch], app-unknown-item {
+  margin: .5rem 0;
+  display: block;
+}
+
+#noTrackByCnt,
+#withTrackByCnt {
+	color: darkred;
+	max-width: 450px;
+	margin: 4px;
+}
+
+img {
+	height: 100px;
+}
+
+.box {
+	border: 1px solid black;
+	padding: 6px;
+	max-width: 450px;
+}
+
+.child-div {
+	margin-left: 1em;
+	font-weight: normal;
+}
+
+.context {
+	margin-left: 1em;
+}
+
+.hidden {
+	display: none;
+}
+
+.parent-div {
+	margin-top: 1em;
+	font-weight: bold;
+}
+
+.course {
+	font-weight: bold;
+	font-size: x-large;
+}
+
+.helpful {
+	color: red;
+}
+
+.saveable {
+	color: limegreen;
+}
+
+.study,
+.modified {
+  font-family: "Brush Script MT", cursive;
+  font-size: 2rem;
+}
+
+.toe {
+	margin-left: 1em;
+	font-style: italic;
+}
+
+
+.to-toc {
+	margin-top: 10px;
+	display: block;
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsAngularLocalizeNgAdd",
+  "title": "Angular Localize Ng Add Schema",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the project.",
+      "x-deprecated": "Use the \"project\" option instead."
+    },
+    "useAtRuntime": {
+      "type": "boolean",
+      "description": "If set then `@angular/localize` is included in the `dependencies` section of `package.json`, rather than `devDependencies`, which is the default.",
+      "default": false
+    }
+  },
+  "required": []
+}

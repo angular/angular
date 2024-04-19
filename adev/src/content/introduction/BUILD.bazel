@@ -1,0 +1,12 @@
+load("@npm//@angular/docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "introduction",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/images:what_is_angular.svg",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

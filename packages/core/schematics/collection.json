@@ -1,0 +1,20 @@
+{
+  "schematics": {
+    "standalone-migration": {
+      "description": "Converts the entire application or a part of it to standalone",
+      "factory": "./ng-generate/standalone-migration/bundle",
+      "schema": "./ng-generate/standalone-migration/schema.json",
+      "aliases": [
+        "standalone"
+      ]
+    },
+    "control-flow-migration": {
+      "description": "Converts the entire application to block control flow syntax",
+      "factory": "./ng-generate/control-flow-migration/bundle",
+      "schema": "./ng-generate/control-flow-migration/schema.json",
+      "aliases": [
+        "control-flow"
+      ]
+    }
+  }
+}

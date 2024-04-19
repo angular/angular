@@ -1,0 +1,76 @@
+{
+  "$schema": "../../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should support embedded views in the SVG namespace",
+      "inputFiles": [
+        "for_of.ts",
+        "svg_embedded_view.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "svg_embedded_view.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support a let variable and reference",
+      "inputFiles": [
+        "for_of.ts",
+        "let_variable_and_reference.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "let_variable_and_reference.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support accessing parent template variables",
+      "inputFiles": [
+        "for_of.ts",
+        "parent_template_variable.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid component definition",
+          "files": [
+            "parent_template_variable.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate correct code for for_of directive",
+      "inputFiles": [
+        "for_of.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid directive definition",
+          "files": [
+            {
+              "generated": "for_of.js",
+              "expected": "for_of_def.js"
+            }
+          ]
+        },
+        {
+          "failureMessage": "Invalid directive factory",
+          "files": [
+            {
+              "generated": "for_of.js",
+              "expected": "for_of_fac.js"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+extends: existence
+message: "Incorrect use of symbols in '%s'."
+link: 'https://angular.io/guide/docs-lint-errors#proselint-messages'
+ignorecase: true
+raw:
+  - \$[\d]* ?(?:dollars|usd|us dollars)

@@ -1,0 +1,9 @@
+{
+  "name": "example",
+  "version": "0.0.0-PLACEHOLDER",
+  "exports": {
+    ".": {
+      "sass": "./_index.scss"
+    }
+  }
+}
