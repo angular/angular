@@ -24,11 +24,11 @@ export function patchError(Zone: ZoneType): void {
       /// Skip this frame when printing out stack
       zoneJsInternal,
       /// This frame marks zone transition
-      transition
+      transition,
     }
 
     const zoneJsInternalStackFramesSymbol = api.symbol('zoneJsInternalStackFrames');
-    const NativeError = global[api.symbol('Error')] = global['Error'];
+    const NativeError = (global[api.symbol('Error')] = global['Error']);
     // Store the frames which should be removed from the stack frames
     const zoneJsInternalStackFrames: {[frame: string]: FrameType} = {};
     // We must find the frame where Error was created, otherwise we assume we don't understand stack
@@ -41,10 +41,11 @@ export function patchError(Zone: ZoneType): void {
     global['Error'] = ZoneAwareError;
     const stackRewrite = 'stackRewrite';
 
-    type ZoneJsInternalStackFramesPolicy = 'default'|'disable'|'lazy';
+    type ZoneJsInternalStackFramesPolicy = 'default' | 'disable' | 'lazy';
     const zoneJsInternalStackFramesPolicy: ZoneJsInternalStackFramesPolicy =
-        global['__Zone_Error_BlacklistedStackFrames_policy'] ||
-        global['__Zone_Error_ZoneJsInternalStackFrames_policy'] || 'default';
+      global['__Zone_Error_BlacklistedStackFrames_policy'] ||
+      global['__Zone_Error_ZoneJsInternalStackFrames_policy'] ||
+      'default';
 
     interface ZoneFrameName {
       zoneName: string;
@@ -64,14 +65,23 @@ export function patchError(Zone: ZoneType): void {
     }
 
     function buildZoneAwareStackFrames(
-        originalStack: string, zoneFrame: _ZoneFrame|ZoneFrameName|null, isZoneFrame = true) {
+      originalStack: string,
+      zoneFrame: _ZoneFrame | ZoneFrameName | null,
+      isZoneFrame = true,
+    ) {
       let frames: string[] = originalStack.split('\n');
       let i = 0;
       // Find the first frame
-      while (!(frames[i] === zoneAwareFrame1 || frames[i] === zoneAwareFrame2 ||
-               frames[i] === zoneAwareFrame1WithoutNew || frames[i] === zoneAwareFrame2WithoutNew ||
-               frames[i] === zoneAwareFrame3WithoutNew) &&
-             i < frames.length) {
+      while (
+        !(
+          frames[i] === zoneAwareFrame1 ||
+          frames[i] === zoneAwareFrame2 ||
+          frames[i] === zoneAwareFrame1WithoutNew ||
+          frames[i] === zoneAwareFrame2WithoutNew ||
+          frames[i] === zoneAwareFrame3WithoutNew
+        ) &&
+        i < frames.length
+      ) {
         i++;
       }
       for (; i < frames.length && zoneFrame; i++) {
@@ -93,8 +103,9 @@ export function patchError(Zone: ZoneType): void {
               i--;
               break;
             default:
-              frames[i] += isZoneFrame ? ` [${(zoneFrame as _ZoneFrame).zone.name}]` :
-                                         ` [${(zoneFrame as ZoneFrameName).zoneName}]`;
+              frames[i] += isZoneFrame
+                ? ` [${(zoneFrame as _ZoneFrame).zone.name}]`
+                : ` [${(zoneFrame as ZoneFrameName).zoneName}]`;
           }
         }
       }
@@ -104,11 +115,11 @@ export function patchError(Zone: ZoneType): void {
      * This is ZoneAwareError which processes the stack frame and cleans up extra frames as well as
      * adds zone information to it.
      */
-    function ZoneAwareError(this: unknown|typeof NativeError): Error {
+    function ZoneAwareError(this: unknown | typeof NativeError): Error {
       // We always have to return native error otherwise the browser console will not work.
       let error: Error = NativeError.apply(this, arguments);
       // Save original stack trace
-      const originalStack = (error as any)['originalStack'] = error.stack;
+      const originalStack = ((error as any)['originalStack'] = error.stack);
 
       // Process the stack trace and rewrite the frames.
       if ((ZoneAwareError as any)[stackRewrite] && originalStack) {
@@ -118,8 +129,10 @@ export function patchError(Zone: ZoneType): void {
           (error as any)[api.symbol('zoneFrameNames')] = buildZoneFrameNames(zoneFrame);
         } else if (zoneJsInternalStackFramesPolicy === 'default') {
           try {
-            error.stack = error.zoneAwareStack =
-                buildZoneAwareStackFrames(originalStack, zoneFrame);
+            error.stack = error.zoneAwareStack = buildZoneAwareStackFrames(
+              originalStack,
+              zoneFrame,
+            );
           } catch (e) {
             // ignore as some browsers don't allow overriding of stack
           }
@@ -129,16 +142,18 @@ export function patchError(Zone: ZoneType): void {
       if (this instanceof NativeError && this.constructor != NativeError) {
         // We got called with a `new` operator AND we are subclass of ZoneAwareError
         // in that case we have to copy all of our properties to `this`.
-        Object.keys(error).concat('stack', 'message').forEach((key) => {
-          const value = (error as any)[key];
-          if (value !== undefined) {
-            try {
-              this[key] = value;
-            } catch (e) {
-              // ignore the assignment in case it is a setter and it throws.
+        Object.keys(error)
+          .concat('stack', 'message')
+          .forEach((key) => {
+            const value = (error as any)[key];
+            if (value !== undefined) {
+              try {
+                this[key] = value;
+              } catch (e) {
+                // ignore the assignment in case it is a setter and it throws.
+              }
             }
-          }
-        });
+          });
         return this;
       }
       return error;
@@ -156,18 +171,24 @@ export function patchError(Zone: ZoneType): void {
       Object.defineProperty(ZoneAwareError.prototype, 'zoneAwareStack', {
         configurable: true,
         enumerable: true,
-        get: function() {
+        get: function () {
           if (!this[zoneAwareStackSymbol]) {
             this[zoneAwareStackSymbol] = buildZoneAwareStackFrames(
-                this.originalStack, this[api.symbol('zoneFrameNames')], false);
+              this.originalStack,
+              this[api.symbol('zoneFrameNames')],
+              false,
+            );
           }
           return this[zoneAwareStackSymbol];
         },
-        set: function(newStack: string) {
+        set: function (newStack: string) {
           this.originalStack = newStack;
           this[zoneAwareStackSymbol] = buildZoneAwareStackFrames(
-              this.originalStack, this[api.symbol('zoneFrameNames')], false);
-        }
+            this.originalStack,
+            this[api.symbol('zoneFrameNames')],
+            false,
+          );
+        },
       });
     }
 
@@ -176,15 +197,15 @@ export function patchError(Zone: ZoneType): void {
     // those properties of NativeError should be set to ZoneAwareError
     const nativeErrorProperties = Object.keys(NativeError);
     if (nativeErrorProperties) {
-      nativeErrorProperties.forEach(prop => {
-        if (specialPropertyNames.filter(sp => sp === prop).length === 0) {
+      nativeErrorProperties.forEach((prop) => {
+        if (specialPropertyNames.filter((sp) => sp === prop).length === 0) {
           Object.defineProperty(ZoneAwareError, prop, {
-            get: function() {
+            get: function () {
               return NativeError[prop];
             },
-            set: function(value) {
+            set: function (value) {
               NativeError[prop] = value;
-            }
+            },
           });
         }
       });
@@ -196,12 +217,12 @@ export function patchError(Zone: ZoneType): void {
 
       // make sure that ZoneAwareError has the same property which forwards to NativeError.
       Object.defineProperty(ZoneAwareError, 'stackTraceLimit', {
-        get: function() {
+        get: function () {
           return NativeError.stackTraceLimit;
         },
-        set: function(value) {
-          return NativeError.stackTraceLimit = value;
-        }
+        set: function (value) {
+          return (NativeError.stackTraceLimit = value);
+        },
       });
     }
 
@@ -211,21 +232,23 @@ export function patchError(Zone: ZoneType): void {
         // stack frame when prepareStackTrace below
         value: function zoneCaptureStackTrace(targetObject: Object, constructorOpt?: Function) {
           NativeError.captureStackTrace(targetObject, constructorOpt);
-        }
+        },
       });
     }
 
     const ZONE_CAPTURESTACKTRACE = 'zoneCaptureStackTrace';
     Object.defineProperty(ZoneAwareError, 'prepareStackTrace', {
-      get: function() {
+      get: function () {
         return NativeError.prepareStackTrace;
       },
-      set: function(value) {
+      set: function (value) {
         if (!value || typeof value !== 'function') {
-          return NativeError.prepareStackTrace = value;
+          return (NativeError.prepareStackTrace = value);
         }
-        return NativeError.prepareStackTrace = function(
-                   error: Error, structuredStackTrace: {getFunctionName: Function}[]) {
+        return (NativeError.prepareStackTrace = function (
+          error: Error,
+          structuredStackTrace: {getFunctionName: Function}[],
+        ) {
           // remove additional stack information from ZoneAwareError.captureStackTrace
           if (structuredStackTrace) {
             for (let i = 0; i < structuredStackTrace.length; i++) {
@@ -238,8 +261,8 @@ export function patchError(Zone: ZoneType): void {
             }
           }
           return value.call(this, error, structuredStackTrace);
-        };
-      }
+        });
+      },
     });
 
     if (zoneJsInternalStackFramesPolicy === 'disable') {
@@ -253,11 +276,17 @@ export function patchError(Zone: ZoneType): void {
 
     let detectZone: Zone = Zone.current.fork({
       name: 'detect',
-      onHandleError: function(
-          parentZD: ZoneDelegate, current: Zone, target: Zone, error: any): boolean {
+      onHandleError: function (
+        parentZD: ZoneDelegate,
+        current: Zone,
+        target: Zone,
+        error: any,
+      ): boolean {
         if (error.originalStack && Error === ZoneAwareError) {
           let frames = error.originalStack.split(/\n/);
-          let runFrame = false, runGuardedFrame = false, runTaskFrame = false;
+          let runFrame = false,
+            runGuardedFrame = false,
+            runTaskFrame = false;
           while (frames.length) {
             let frame = frames.shift();
             // On safari it is possible to have stack frame with no line number.
@@ -280,8 +309,10 @@ export function patchError(Zone: ZoneType): void {
                   zoneAwareFrame1WithoutNew = frame;
                   zoneAwareFrame2WithoutNew = frame.replace('Error.', '');
                   if (frame.indexOf('Error.ZoneAwareError') === -1) {
-                    zoneAwareFrame3WithoutNew =
-                        frame.replace('ZoneAwareError', 'Error.ZoneAwareError');
+                    zoneAwareFrame3WithoutNew = frame.replace(
+                      'ZoneAwareError',
+                      'Error.ZoneAwareError',
+                    );
                   }
                 }
                 zoneJsInternalStackFrames[zoneAwareFrame2] = FrameType.zoneJsInternal;
@@ -305,25 +336,25 @@ export function patchError(Zone: ZoneType): void {
           }
         }
         return false;
-      }
+      },
     }) as Zone;
     // carefully constructor a stack frame which contains all of the frames of interest which
     // need to be detected and marked as an internal zoneJs frame.
 
     const childDetectZone = detectZone.fork({
       name: 'child',
-      onScheduleTask: function(delegate, curr, target, task) {
+      onScheduleTask: function (delegate, curr, target, task) {
         return delegate.scheduleTask(target, task);
       },
-      onInvokeTask: function(delegate, curr, target, task, applyThis, applyArgs) {
+      onInvokeTask: function (delegate, curr, target, task, applyThis, applyArgs) {
         return delegate.invokeTask(target, task, applyThis, applyArgs);
       },
-      onCancelTask: function(delegate, curr, target, task) {
+      onCancelTask: function (delegate, curr, target, task) {
         return delegate.cancelTask(target, task);
       },
-      onInvoke: function(delegate, curr, target, callback, applyThis, applyArgs, source) {
+      onInvoke: function (delegate, curr, target, callback, applyThis, applyArgs, source) {
         return delegate.invoke(target, callback, applyThis, applyArgs, source);
-      }
+      },
     });
 
     // we need to detect all zone related frames, it will
@@ -339,45 +370,49 @@ export function patchError(Zone: ZoneType): void {
       childDetectZone.runGuarded(() => {
         const fakeTransitionTo = () => {};
         childDetectZone.scheduleEventTask(
-            zoneJsInternalStackFramesSymbol,
-            () => {
-              childDetectZone.scheduleMacroTask(
+          zoneJsInternalStackFramesSymbol,
+          () => {
+            childDetectZone.scheduleMacroTask(
+              zoneJsInternalStackFramesSymbol,
+              () => {
+                childDetectZone.scheduleMicroTask(
                   zoneJsInternalStackFramesSymbol,
                   () => {
-                    childDetectZone.scheduleMicroTask(
-                        zoneJsInternalStackFramesSymbol,
-                        () => {
-                          throw new Error();
-                        },
-                        undefined,
-                        (t: Task) => {
-                          (t as any)._transitionTo = fakeTransitionTo;
-                          t.invoke();
-                        });
-                    childDetectZone.scheduleMicroTask(
-                        zoneJsInternalStackFramesSymbol,
-                        () => {
-                          throw Error();
-                        },
-                        undefined,
-                        (t: Task) => {
-                          (t as any)._transitionTo = fakeTransitionTo;
-                          t.invoke();
-                        });
+                    throw new Error();
                   },
                   undefined,
-                  (t) => {
+                  (t: Task) => {
                     (t as any)._transitionTo = fakeTransitionTo;
                     t.invoke();
                   },
-                  () => {});
-            },
-            undefined,
-            (t) => {
-              (t as any)._transitionTo = fakeTransitionTo;
-              t.invoke();
-            },
-            () => {});
+                );
+                childDetectZone.scheduleMicroTask(
+                  zoneJsInternalStackFramesSymbol,
+                  () => {
+                    throw Error();
+                  },
+                  undefined,
+                  (t: Task) => {
+                    (t as any)._transitionTo = fakeTransitionTo;
+                    t.invoke();
+                  },
+                );
+              },
+              undefined,
+              (t) => {
+                (t as any)._transitionTo = fakeTransitionTo;
+                t.invoke();
+              },
+              () => {},
+            );
+          },
+          undefined,
+          (t) => {
+            (t as any)._transitionTo = fakeTransitionTo;
+            t.invoke();
+          },
+          () => {},
+        );
       });
     });
 

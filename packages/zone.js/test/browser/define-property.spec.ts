@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-describe('defineProperty', function() {
-  it('should not throw when defining length on an array', function() {
+describe('defineProperty', function () {
+  it('should not throw when defining length on an array', function () {
     const someArray: any[] = [];
-    expect(() => Object.defineProperty(someArray, 'length', {value: 2, writable: false}))
-        .not.toThrow();
+    expect(() =>
+      Object.defineProperty(someArray, 'length', {value: 2, writable: false}),
+    ).not.toThrow();
   });
 
-  it('should not be able to change a frozen desc', function() {
+  it('should not be able to change a frozen desc', function () {
     const obj = {};
     const desc = Object.freeze({value: null, writable: true});
     Object.defineProperty(obj, 'prop', desc);
@@ -21,19 +22,17 @@ describe('defineProperty', function() {
     expect(objDesc.writable).toBeTruthy();
     try {
       Object.defineProperty(obj, 'prop', {configurable: true, writable: true, value: 'test'});
-    } catch (err) {
-    }
+    } catch (err) {}
     objDesc = Object.getOwnPropertyDescriptor(obj, 'prop');
     expect(objDesc.configurable).toBeFalsy();
   });
 
-  it('should not throw error when try to defineProperty with a frozen obj', function() {
+  it('should not throw error when try to defineProperty with a frozen obj', function () {
     const obj = {};
     Object.freeze(obj);
     try {
       Object.defineProperty(obj, 'prop', {configurable: true, writable: true, value: 'value'});
-    } catch (err) {
-    }
+    } catch (err) {}
     expect((obj as any).prop).toBeFalsy();
   });
 });
@@ -47,11 +46,11 @@ describe('defineProperties', () => {
       'property3': {
         enumerable: true,
         get: () => {
-          return obj.p3
+          return obj.p3;
         },
-        set: (val: string) => obj.p3 = val
+        set: (val: string) => (obj.p3 = val),
       },
-      'property4': {enumerable: false, writable: true, value: 'hidden'}
+      'property4': {enumerable: false, writable: true, value: 'hidden'},
     });
     expect(Object.keys(obj).sort()).toEqual(['property1', 'property2', 'property3']);
     expect(obj.property1).toBeTrue();
@@ -60,7 +59,7 @@ describe('defineProperties', () => {
     expect(obj.property4).toEqual('hidden');
     obj.property1 = false;
     expect(obj.property1).toBeFalse();
-    expect(() => obj.property2 = 'new Hello').toThrow();
+    expect(() => (obj.property2 = 'new Hello')).toThrow();
     obj.property3 = 'property3';
     expect(obj.property3).toEqual('property3');
     obj.property4 = 'property4';
@@ -72,7 +71,7 @@ describe('defineProperties', () => {
     const obj: any = {};
     Object.defineProperties(obj, {
       [a]: {value: true, writable: true},
-      [b]: {get: () => obj.b1, set: (val: string) => obj.b1 = val}
+      [b]: {get: () => obj.b1, set: (val: string) => (obj.b1 = val)},
     });
     expect(Object.keys(obj)).toEqual([]);
     expect(obj[a]).toBeTrue();
@@ -130,7 +129,7 @@ describe('defineProperties', () => {
       writable: false,
       enumerable: false,
     });
-    class Test {};
+    class Test {}
     const obj = new Test();
     Object.defineProperties(Test, props);
     expect(Object.keys(obj)).toEqual([]);

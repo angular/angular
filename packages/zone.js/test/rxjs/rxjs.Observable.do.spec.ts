@@ -26,26 +26,29 @@ describe('Observable.tap', () => {
     });
 
     observable1 = doZone1.run(() => {
-      return observable1.pipe(tap((v: any) => {
-        log.push(v);
-        expect(Zone.current.name).toEqual(doZone1.name);
-      }));
+      return observable1.pipe(
+        tap((v: any) => {
+          log.push(v);
+          expect(Zone.current.name).toEqual(doZone1.name);
+        }),
+      );
     });
 
     subscriptionZone.run(() => {
       observable1.subscribe(
-          (result: any) => {
-            log.push('result' + result);
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-          },
-          (err: any) => {
-            fail('should not call error');
-          },
-          () => {
-            log.push('completed');
-            expect(Zone.current.name).toEqual(subscriptionZone.name);
-            expect(log).toEqual([1, 'result1', 'completed']);
-          });
+        (result: any) => {
+          log.push('result' + result);
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+        },
+        (err: any) => {
+          fail('should not call error');
+        },
+        () => {
+          log.push('completed');
+          expect(Zone.current.name).toEqual(subscriptionZone.name);
+          expect(log).toEqual([1, 'result1', 'completed']);
+        },
+      );
     });
   });
 });

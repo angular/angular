@@ -13,7 +13,15 @@
 import {findEventTasks} from '../common/events';
 import {patchQueueMicrotask} from '../common/queue-microtask';
 import {patchTimer} from '../common/timers';
-import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
+import {
+  patchClass,
+  patchMethod,
+  patchPrototype,
+  scheduleMacroTaskWithCurrentZone,
+  ZONE_SYMBOL_ADD_EVENT_LISTENER,
+  ZONE_SYMBOL_REMOVE_EVENT_LISTENER,
+  zoneSymbol,
+} from '../common/utils';
 import {ZoneType} from '../zone-impl';
 
 import {patchCustomElements} from './custom-elements';
@@ -47,7 +55,7 @@ export function patchBrowser(Zone: ZoneType): void {
     for (let i = 0; i < blockingMethods.length; i++) {
       const name = blockingMethods[i];
       patchMethod(global, name, (delegate, symbol, name) => {
-        return function(s: any, args: any[]) {
+        return function (s: any, args: any[]) {
           return Zone.current.run(delegate, global, args, name);
         };
       });
@@ -144,7 +152,7 @@ export function patchBrowser(Zone: ZoneType): void {
         if (listener) {
           oriRemoveListener.call(target, READY_STATE_CHANGE, listener);
         }
-        const newListener = target[XHR_LISTENER] = () => {
+        const newListener = (target[XHR_LISTENER] = () => {
           if (target.readyState === target.DONE) {
             // sometimes on some browsers XMLHttpRequest will fire onreadystatechange with
             // readyState=4 multiple times, so we need to check task state here
@@ -159,7 +167,7 @@ export function patchBrowser(Zone: ZoneType): void {
               const loadTasks = target[Zone.__symbol__('loadfalse')];
               if (target.status !== 0 && loadTasks && loadTasks.length > 0) {
                 const oriInvoke = task.invoke;
-                task.invoke = function() {
+                task.invoke = function () {
                   // need to load the tasks again, because in other
                   // load listener, they may remove themselves
                   const loadTasks = target[Zone.__symbol__('loadfalse')];
@@ -181,7 +189,7 @@ export function patchBrowser(Zone: ZoneType): void {
               target[XHR_ERROR_BEFORE_SCHEDULED] = true;
             }
           }
-        };
+        });
         oriAddListener.call(target, READY_STATE_CHANGE, newListener);
 
         const storedTask: Task = target[XHR_TASK];
@@ -203,18 +211,25 @@ export function patchBrowser(Zone: ZoneType): void {
         return abortNative!.apply(data.target, data.args);
       }
 
-      const openNative =
-          patchMethod(XMLHttpRequestPrototype, 'open', () => function(self: any, args: any[]) {
+      const openNative = patchMethod(
+        XMLHttpRequestPrototype,
+        'open',
+        () =>
+          function (self: any, args: any[]) {
             self[XHR_SYNC] = args[2] == false;
             self[XHR_URL] = args[1];
             return openNative!.apply(self, args);
-          });
+          },
+      );
 
       const XMLHTTPREQUEST_SOURCE = 'XMLHttpRequest.send';
       const fetchTaskAborting = zoneSymbol('fetchTaskAborting');
       const fetchTaskScheduling = zoneSymbol('fetchTaskScheduling');
-      const sendNative: Function|null =
-          patchMethod(XMLHttpRequestPrototype, 'send', () => function(self: any, args: any[]) {
+      const sendNative: Function | null = patchMethod(
+        XMLHttpRequestPrototype,
+        'send',
+        () =>
+          function (self: any, args: any[]) {
             if ((Zone.current as any)[fetchTaskScheduling] === true) {
               // a fetch is scheduling, so we are using xhr to polyfill fetch
               // and because we already schedule macroTask for fetch, we should
@@ -225,22 +240,40 @@ export function patchBrowser(Zone: ZoneType): void {
               // if the XHR is sync there is no task to schedule, just execute the code.
               return sendNative!.apply(self, args);
             } else {
-              const options: XHROptions =
-                  {target: self, url: self[XHR_URL], isPeriodic: false, args: args, aborted: false};
+              const options: XHROptions = {
+                target: self,
+                url: self[XHR_URL],
+                isPeriodic: false,
+                args: args,
+                aborted: false,
+              };
               const task = scheduleMacroTaskWithCurrentZone(
-                  XMLHTTPREQUEST_SOURCE, placeholderCallback, options, scheduleTask, clearTask);
-              if (self && self[XHR_ERROR_BEFORE_SCHEDULED] === true && !options.aborted &&
-                  task.state === SCHEDULED) {
+                XMLHTTPREQUEST_SOURCE,
+                placeholderCallback,
+                options,
+                scheduleTask,
+                clearTask,
+              );
+              if (
+                self &&
+                self[XHR_ERROR_BEFORE_SCHEDULED] === true &&
+                !options.aborted &&
+                task.state === SCHEDULED
+              ) {
                 // xhr request throw error when send
                 // we should invoke task instead of leaving a scheduled
                 // pending macroTask
                 task.invoke();
               }
             }
-          });
+          },
+      );
 
-      const abortNative =
-          patchMethod(XMLHttpRequestPrototype, 'abort', () => function(self: any, args: any[]) {
+      const abortNative = patchMethod(
+        XMLHttpRequestPrototype,
+        'abort',
+        () =>
+          function (self: any, args: any[]) {
             const task: Task = findPendingTask(self);
             if (task && typeof task.type == 'string') {
               // If the XHR has already completed, do nothing.
@@ -258,7 +291,8 @@ export function patchBrowser(Zone: ZoneType): void {
             // Otherwise, we are trying to abort an XHR which has not yet been sent, so there is no
             // task
             // to cancel. Do nothing.
-          });
+          },
+      );
     }
   });
 
@@ -272,15 +306,17 @@ export function patchBrowser(Zone: ZoneType): void {
   Zone.__load_patch('PromiseRejectionEvent', (global: any, Zone: ZoneType) => {
     // handle unhandled promise rejection
     function findPromiseRejectionHandler(evtName: string) {
-      return function(e: any) {
+      return function (e: any) {
         const eventTasks = findEventTasks(global, evtName);
-        eventTasks.forEach(eventTask => {
+        eventTasks.forEach((eventTask) => {
           // windows has added unhandledrejection event listener
           // trigger the event listener
           const PromiseRejectionEvent = global['PromiseRejectionEvent'];
           if (PromiseRejectionEvent) {
-            const evt =
-                new PromiseRejectionEvent(evtName, {promise: e.promise, reason: e.rejection});
+            const evt = new PromiseRejectionEvent(evtName, {
+              promise: e.promise,
+              reason: e.rejection,
+            });
             eventTask.invoke(evt);
           }
         });
@@ -289,10 +325,10 @@ export function patchBrowser(Zone: ZoneType): void {
 
     if (global['PromiseRejectionEvent']) {
       (Zone as any)[zoneSymbol('unhandledPromiseRejectionHandler')] =
-          findPromiseRejectionHandler('unhandledrejection');
+        findPromiseRejectionHandler('unhandledrejection');
 
       (Zone as any)[zoneSymbol('rejectionHandledHandler')] =
-          findPromiseRejectionHandler('rejectionhandled');
+        findPromiseRejectionHandler('rejectionhandled');
     }
   });
 

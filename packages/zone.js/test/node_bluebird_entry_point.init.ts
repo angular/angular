@@ -48,17 +48,17 @@ const globalErrors = (jasmine as any).GlobalErrors;
 const symbol = Zone.__symbol__;
 if (globalErrors && !(jasmine as any)[symbol('GlobalErrors')]) {
   (jasmine as any)[symbol('GlobalErrors')] = globalErrors;
-  (jasmine as any).GlobalErrors = function() {
+  (jasmine as any).GlobalErrors = function () {
     const instance = new globalErrors();
     const originalInstall = instance.install;
     if (originalInstall && !instance[symbol('install')]) {
       instance[symbol('install')] = originalInstall;
-      instance.install = function() {
+      instance.install = function () {
         const originalHandlers = process.listeners('unhandledRejection');
         const r = originalInstall.apply(this, arguments);
         process.removeAllListeners('unhandledRejection');
         if (originalHandlers) {
-          originalHandlers.forEach(h => process.on('unhandledRejection', h));
+          originalHandlers.forEach((h) => process.on('unhandledRejection', h));
         }
         return r;
       };

@@ -607,7 +607,7 @@ declare global {
      * previously. When `__Zone_ignore_on_properties` is setup, we should not see those properties
      * on targets.
      */
-    __Zone_ignore_on_properties?: {target: any; ignoreProperties: string[];}[];
+    __Zone_ignore_on_properties?: {target: any; ignoreProperties: string[]}[];
 
     /**
      * Define the event names of the passive listeners.

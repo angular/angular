@@ -14,9 +14,14 @@ export function patchCustomElements(_global: any, api: _ZonePrivate) {
 
   // https://html.spec.whatwg.org/multipage/custom-elements.html#concept-custom-element-definition-lifecycle-callbacks
   const callbacks = [
-    'connectedCallback', 'disconnectedCallback', 'adoptedCallback', 'attributeChangedCallback',
-    'formAssociatedCallback', 'formDisabledCallback', 'formResetCallback',
-    'formStateRestoreCallback'
+    'connectedCallback',
+    'disconnectedCallback',
+    'adoptedCallback',
+    'attributeChangedCallback',
+    'formAssociatedCallback',
+    'formDisabledCallback',
+    'formResetCallback',
+    'formStateRestoreCallback',
   ];
 
   api.patchCallbacks(api, _global.customElements, 'customElements', 'define', callbacks);

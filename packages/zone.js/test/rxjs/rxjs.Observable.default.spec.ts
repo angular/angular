@@ -18,28 +18,32 @@ describe('Observable.defaultIfEmpty', () => {
     log = [];
   });
 
-  it('defaultIfEmpty func callback should run in the correct zone', asyncTest((done: any) => {
-       const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
-       const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
-       observable1 = constructorZone1.run(() => {
-         return of().pipe(defaultIfEmpty('empty' as any));
-       });
+  it(
+    'defaultIfEmpty func callback should run in the correct zone',
+    asyncTest((done: any) => {
+      const constructorZone1: Zone = Zone.current.fork({name: 'Constructor Zone1'});
+      const subscriptionZone: Zone = Zone.current.fork({name: 'Subscription Zone'});
+      observable1 = constructorZone1.run(() => {
+        return of().pipe(defaultIfEmpty('empty' as any));
+      });
 
-       subscriptionZone.run(() => {
-         observable1.subscribe(
-             (result: any) => {
-               log.push(result);
-               expect(Zone.current.name).toEqual(subscriptionZone.name);
-             },
-             () => {
-               fail('should not call error');
-             },
-             () => {
-               log.push('completed');
-               expect(Zone.current.name).toEqual(subscriptionZone.name);
-               expect(log).toEqual(['empty', 'completed']);
-               done();
-             });
-       });
-     }, Zone.root));
+      subscriptionZone.run(() => {
+        observable1.subscribe(
+          (result: any) => {
+            log.push(result);
+            expect(Zone.current.name).toEqual(subscriptionZone.name);
+          },
+          () => {
+            fail('should not call error');
+          },
+          () => {
+            log.push('completed');
+            expect(Zone.current.name).toEqual(subscriptionZone.name);
+            expect(log).toEqual(['empty', 'completed']);
+            done();
+          },
+        );
+      });
+    }, Zone.root),
+  );
 });

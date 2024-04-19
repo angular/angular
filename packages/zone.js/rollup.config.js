@@ -6,9 +6,9 @@ const MagicString = require('magic-string');
 let version = '<unknown>';
 if (bazel_version_file) {
   const versionTag = require('fs')
-                         .readFileSync(bazel_version_file, {encoding: 'utf-8'})
-                         .split('\n')
-                         .find((s) => s.startsWith('STABLE_PROJECT_VERSION'));
+    .readFileSync(bazel_version_file, {encoding: 'utf-8'})
+    .split('\n')
+    .find((s) => s.startsWith('STABLE_PROJECT_VERSION'));
   // Don't assume STABLE_PROJECT_VERSION exists
   if (versionTag) {
     version = versionTag.split(' ')[1].trim();

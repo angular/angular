@@ -13,7 +13,7 @@
 import {ZoneType} from '../zone-impl';
 
 const _global: any =
-    typeof window === 'object' && window || typeof self === 'object' && self || global;
+  (typeof window === 'object' && window) || (typeof self === 'object' && self) || global;
 
 export function patchWtf(Zone: ZoneType): void {
   interface Wtf {
@@ -36,9 +36,9 @@ export function patchWtf(Zone: ZoneType): void {
   type WtfEventFn = (...args: any[]) => any;
 
   // Detect and setup WTF.
-  let wtfTrace: WtfTrace|null = null;
-  let wtfEvents: WtfEvents|null = null;
-  const wtfEnabled: boolean = (function(): boolean {
+  let wtfTrace: WtfTrace | null = null;
+  let wtfEvents: WtfEvents | null = null;
+  const wtfEnabled: boolean = (function (): boolean {
     const wtf: Wtf = _global['wtf'];
     if (wtf) {
       wtfTrace = wtf.trace;
@@ -53,77 +53,107 @@ export function patchWtf(Zone: ZoneType): void {
   class WtfZoneSpec implements ZoneSpec {
     name: string = 'WTF';
 
-    static forkInstance =
-        wtfEnabled ? wtfEvents!.createInstance('Zone:fork(ascii zone, ascii newZone)') : null;
+    static forkInstance = wtfEnabled
+      ? wtfEvents!.createInstance('Zone:fork(ascii zone, ascii newZone)')
+      : null;
     static scheduleInstance: {[key: string]: WtfEventFn} = {};
     static cancelInstance: {[key: string]: WtfEventFn} = {};
     static invokeScope: {[key: string]: WtfEventFn} = {};
     static invokeTaskScope: {[key: string]: WtfEventFn} = {};
 
     onFork(
-        parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-        zoneSpec: ZoneSpec): Zone {
+      parentZoneDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      zoneSpec: ZoneSpec,
+    ): Zone {
       const retValue = parentZoneDelegate.fork(targetZone, zoneSpec);
       WtfZoneSpec.forkInstance!(zonePathName(targetZone), retValue.name);
       return retValue;
     }
 
     onInvoke(
-        parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
-        applyThis: any, applyArgs?: any[], source?: string): any {
+      parentZoneDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      delegate: Function,
+      applyThis: any,
+      applyArgs?: any[],
+      source?: string,
+    ): any {
       const src = source || 'unknown';
       let scope = WtfZoneSpec.invokeScope[src];
       if (!scope) {
-        scope = WtfZoneSpec.invokeScope[src] =
-            wtfEvents!.createScope(`Zone:invoke:${source}(ascii zone)`);
+        scope = WtfZoneSpec.invokeScope[src] = wtfEvents!.createScope(
+          `Zone:invoke:${source}(ascii zone)`,
+        );
       }
       return wtfTrace!.leaveScope(
-          scope(zonePathName(targetZone)),
-          parentZoneDelegate.invoke(targetZone, delegate, applyThis, applyArgs, source));
+        scope(zonePathName(targetZone)),
+        parentZoneDelegate.invoke(targetZone, delegate, applyThis, applyArgs, source),
+      );
     }
 
-
     onHandleError(
-        parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-        error: any): boolean {
+      parentZoneDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      error: any,
+    ): boolean {
       return parentZoneDelegate.handleError(targetZone, error);
     }
 
     onScheduleTask(
-        parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task): any {
+      parentZoneDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      task: Task,
+    ): any {
       const key = task.type + ':' + task.source;
       let instance = WtfZoneSpec.scheduleInstance[key];
       if (!instance) {
-        instance = WtfZoneSpec.scheduleInstance[key] =
-            wtfEvents!.createInstance(`Zone:schedule:${key}(ascii zone, any data)`);
+        instance = WtfZoneSpec.scheduleInstance[key] = wtfEvents!.createInstance(
+          `Zone:schedule:${key}(ascii zone, any data)`,
+        );
       }
       const retValue = parentZoneDelegate.scheduleTask(targetZone, task);
       instance(zonePathName(targetZone), shallowObj(task.data, 2));
       return retValue;
     }
 
-
     onInvokeTask(
-        parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task,
-        applyThis?: any, applyArgs?: any[]): any {
+      parentZoneDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      task: Task,
+      applyThis?: any,
+      applyArgs?: any[],
+    ): any {
       const source = task.source;
       let scope = WtfZoneSpec.invokeTaskScope[source];
       if (!scope) {
-        scope = WtfZoneSpec.invokeTaskScope[source] =
-            wtfEvents!.createScope(`Zone:invokeTask:${source}(ascii zone)`);
+        scope = WtfZoneSpec.invokeTaskScope[source] = wtfEvents!.createScope(
+          `Zone:invokeTask:${source}(ascii zone)`,
+        );
       }
       return wtfTrace!.leaveScope(
-          scope(zonePathName(targetZone)),
-          parentZoneDelegate.invokeTask(targetZone, task, applyThis, applyArgs));
+        scope(zonePathName(targetZone)),
+        parentZoneDelegate.invokeTask(targetZone, task, applyThis, applyArgs),
+      );
     }
 
-    onCancelTask(parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
-        any {
+    onCancelTask(
+      parentZoneDelegate: ZoneDelegate,
+      currentZone: Zone,
+      targetZone: Zone,
+      task: Task,
+    ): any {
       const key = task.source;
       let instance = WtfZoneSpec.cancelInstance[key];
       if (!instance) {
-        instance = WtfZoneSpec.cancelInstance[key] =
-            wtfEvents!.createInstance(`Zone:cancel:${key}(ascii zone, any options)`);
+        instance = WtfZoneSpec.cancelInstance[key] = wtfEvents!.createInstance(
+          `Zone:cancel:${key}(ascii zone, any options)`,
+        );
       }
       const retValue = parentZoneDelegate.cancelTask(targetZone, task);
       instance(zonePathName(targetZone), shallowObj(task.data, 2));
@@ -131,7 +161,7 @@ export function patchWtf(Zone: ZoneType): void {
     }
   }
 
-  function shallowObj(obj: {[k: string]: any}|undefined, depth: number): any {
+  function shallowObj(obj: {[k: string]: any} | undefined, depth: number): any {
     if (!obj || !depth) return null;
     const out: {[k: string]: any} = {};
     for (const key in obj) {
