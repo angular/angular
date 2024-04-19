@@ -221,7 +221,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
         !(this._parent instanceof FormGroupDirective) &&
         !(this._parent instanceof FormArrayName)
       ) {
-        throw controlParentException();
+        throw controlParentException(this.name);
       }
     }
   }

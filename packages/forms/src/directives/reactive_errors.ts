@@ -17,16 +17,28 @@ import {
   ngModelGroupExample,
 } from './error_examples';
 
-export function controlParentException(): Error {
+export function controlParentException(nameOrIndex: string | number | null): Error {
   return new RuntimeError(
     RuntimeErrorCode.FORM_CONTROL_NAME_MISSING_PARENT,
-    `formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
+    `formControlName must be used with a parent formGroup directive. You'll want to add a formGroup
       directive and pass it an existing FormGroup instance (you can create one in your class).
+
+      ${describeFormControl(nameOrIndex)}
 
     Example:
 
     ${formControlNameExample}`,
   );
+}
+
+function describeFormControl(nameOrIndex: string | number | null): string {
+  if (nameOrIndex == null || nameOrIndex === '') {
+    return '';
+  }
+
+  const valueType = typeof nameOrIndex === 'string' ? 'name' : 'index';
+
+  return `Affected Form Control ${valueType}: "${nameOrIndex}"`;
 }
 
 export function ngModelGroupException(): Error {

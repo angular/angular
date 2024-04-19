@@ -3881,11 +3881,65 @@ describe('reactive forms integration tests', () => {
         `,
         },
       });
-      const fixture = initTest(FormGroupComp);
 
-      expect(() => fixture.detectChanges()).toThrowError(
-        new RegExp(`formControlName must be used with a parent formGroup directive`),
-      );
+      const fixture = initTest(FormGroupComp);
+      expect(() => fixture.detectChanges()).toThrowMatching((e: Error) => {
+        if (!e.message.includes(`formControlName must be used with a parent formGroup directive`)) {
+          return false;
+        }
+
+        if (!e.message.includes(`Affected Form Control name: "login"`)) {
+          return false;
+        }
+
+        return true;
+      });
+    });
+
+    it('should throw if formControlName, with an index, is used without a control container', () => {
+      TestBed.overrideComponent(FormGroupComp, {
+        set: {
+          template: `
+            <input type="text" [formControlName]="0">
+          `,
+        },
+      });
+
+      const fixture = initTest(FormGroupComp);
+      expect(() => fixture.detectChanges()).toThrowMatching((e: Error) => {
+        if (!e.message.includes(`formControlName must be used with a parent formGroup directive`)) {
+          return false;
+        }
+
+        if (!e.message.includes(`Affected Form Control index: "0"`)) {
+          return false;
+        }
+
+        return true;
+      });
+    });
+
+    it('should throw, without indicating the affected form control, if formControlName is used without a control container', () => {
+      TestBed.overrideComponent(FormGroupComp, {
+        set: {
+          template: `
+            <input type="text" formControlName>
+          `,
+        },
+      });
+
+      const fixture = initTest(FormGroupComp);
+      expect(() => fixture.detectChanges()).toThrowMatching((e: Error) => {
+        if (!e.message.includes(`formControlName must be used with a parent formGroup directive`)) {
+          return false;
+        }
+
+        if (e.message.includes(`Affected Form Control`)) {
+          return false;
+        }
+
+        return true;
+      });
     });
 
     it('should throw if formControlName is used with NgForm', () => {
