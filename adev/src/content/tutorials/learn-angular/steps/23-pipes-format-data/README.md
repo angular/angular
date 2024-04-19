@@ -2,7 +2,7 @@
 
 You can take your use of pipes even further by configuring them. Pipes can be configured by passing options to them.
 
-In this activity you will work with some pipes and pipe parameters.
+In this activity, you will work with some pipes and pipe parameters.
 
 <hr>
 

@@ -2,7 +2,7 @@
 
 Event handling enables interactive features on web apps. It gives you the ability as a developer to respond to user actions like button presses, form submissions and more.
 
-In this activity you'll learn how to add an event handler.
+In this activity, you'll learn how to add an event handler.
 
 <hr />
 

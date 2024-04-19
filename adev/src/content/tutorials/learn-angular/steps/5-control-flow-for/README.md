@@ -2,7 +2,7 @@
 
 Often when building web applications, you need to repeat some code a specific number of times - for example, given an array of names, you may want to display each name in a `<p>` tag.
 
-In this activity you'll learn how to use `@for` to repeat elements in a template.
+In this activity, you'll learn how to use `@for` to repeat elements in a template.
 <hr/>
 
 The syntax that enables repeating elements in a template is `@for`.

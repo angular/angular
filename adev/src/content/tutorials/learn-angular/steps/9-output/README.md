@@ -4,7 +4,7 @@ When working with components it may be required to notify other components that 
 
 Angular uses the `@Output` decorator to enable this type of behavior.
 
-In this activity you'll learn how to use the `@Output` decorator and `EventEmitter` to communicate with components.
+In this activity, you'll learn how to use the `@Output` decorator and `EventEmitter` to communicate with components.
 
 <hr />
 

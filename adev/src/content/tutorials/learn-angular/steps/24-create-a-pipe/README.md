@@ -2,7 +2,7 @@
 
 You can create custom pipes in Angular to fit your data transformation needs.
 
-In this activity you will create a custom pipe and use it in your template.
+In this activity, you will create a custom pipe and use it in your template.
 
 <hr>
 
