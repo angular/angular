@@ -22,13 +22,19 @@ describe('profiler', () => {
   beforeEach(() => {
     enableDebugTools({
       injector: Injector.create({
-        providers: [{
-          provide: ApplicationRef,
-          useValue: jasmine.createSpyObj(
-              'ApplicationRef', ['bootstrap', 'tick', 'attachView', 'detachView']),
-          deps: []
-        }]
-      })
+        providers: [
+          {
+            provide: ApplicationRef,
+            useValue: jasmine.createSpyObj('ApplicationRef', [
+              'bootstrap',
+              'tick',
+              'attachView',
+              'detachView',
+            ]),
+            deps: [],
+          },
+        ],
+      }),
     } as ComponentRef<any>);
   });
 

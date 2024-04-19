@@ -9,8 +9,6 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {DebugElement, DebugNode, Predicate, Type} from '@angular/core';
 
-
-
 /**
  * Predicates for use with {@link DebugElement}'s query functions.
  *
@@ -39,9 +37,9 @@ export class By {
    */
   static css(selector: string): Predicate<DebugElement> {
     return (debugElement) => {
-      return debugElement.nativeElement != null ?
-          elementMatches(debugElement.nativeElement, selector) :
-          false;
+      return debugElement.nativeElement != null
+        ? elementMatches(debugElement.nativeElement, selector)
+        : false;
     };
   }
 
@@ -60,9 +58,11 @@ export class By {
 
 function elementMatches(n: any, selector: string): boolean {
   if (getDOM().isElementNode(n)) {
-    return n.matches && n.matches(selector) ||
-        n.msMatchesSelector && n.msMatchesSelector(selector) ||
-        n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
+    return (
+      (n.matches && n.matches(selector)) ||
+      (n.msMatchesSelector && n.msMatchesSelector(selector)) ||
+      (n.webkitMatchesSelector && n.webkitMatchesSelector(selector))
+    );
   }
 
   return false;

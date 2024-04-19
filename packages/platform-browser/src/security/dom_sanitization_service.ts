@@ -7,7 +7,25 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {forwardRef, Inject, Injectable, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵRuntimeError as RuntimeError, ɵunwrapSafeValue as unwrapSafeValue, ɵXSS_SECURITY_URL as XSS_SECURITY_URL} from '@angular/core';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  Sanitizer,
+  SecurityContext,
+  ɵ_sanitizeHtml as _sanitizeHtml,
+  ɵ_sanitizeUrl as _sanitizeUrl,
+  ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow,
+  ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml,
+  ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl,
+  ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript,
+  ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle,
+  ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl,
+  ɵBypassType as BypassType,
+  ɵRuntimeError as RuntimeError,
+  ɵunwrapSafeValue as unwrapSafeValue,
+  ɵXSS_SECURITY_URL as XSS_SECURITY_URL,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -97,7 +115,7 @@ export abstract class DomSanitizer implements Sanitizer {
    * For any other security context, this method throws an error if provided
    * with a plain string.
    */
-  abstract sanitize(context: SecurityContext, value: SafeValue|string|null): string|null;
+  abstract sanitize(context: SecurityContext, value: SafeValue | string | null): string | null;
 
   /**
    * Bypass security and trust the given value to be safe HTML. Only use this when the bound HTML
@@ -150,7 +168,7 @@ export class DomSanitizerImpl extends DomSanitizer {
     super();
   }
 
-  override sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
+  override sanitize(ctx: SecurityContext, value: SafeValue | string | null): string | null {
     if (value == null) return null;
     switch (ctx) {
       case SecurityContext.NONE:
@@ -170,9 +188,10 @@ export class DomSanitizerImpl extends DomSanitizer {
           return unwrapSafeValue(value);
         }
         throw new RuntimeError(
-            RuntimeErrorCode.SANITIZATION_UNSAFE_SCRIPT,
-            (typeof ngDevMode === 'undefined' || ngDevMode) &&
-                'unsafe value used in a script context');
+          RuntimeErrorCode.SANITIZATION_UNSAFE_SCRIPT,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            'unsafe value used in a script context',
+        );
       case SecurityContext.URL:
         if (allowSanitizationBypassOrThrow(value, BypassType.Url)) {
           return unwrapSafeValue(value);
@@ -183,14 +202,16 @@ export class DomSanitizerImpl extends DomSanitizer {
           return unwrapSafeValue(value);
         }
         throw new RuntimeError(
-            RuntimeErrorCode.SANITIZATION_UNSAFE_RESOURCE_URL,
-            (typeof ngDevMode === 'undefined' || ngDevMode) &&
-                `unsafe value used in a resource URL context (see ${XSS_SECURITY_URL})`);
+          RuntimeErrorCode.SANITIZATION_UNSAFE_RESOURCE_URL,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            `unsafe value used in a resource URL context (see ${XSS_SECURITY_URL})`,
+        );
       default:
         throw new RuntimeError(
-            RuntimeErrorCode.SANITIZATION_UNEXPECTED_CTX,
-            (typeof ngDevMode === 'undefined' || ngDevMode) &&
-                `Unexpected SecurityContext ${ctx} (see ${XSS_SECURITY_URL})`);
+          RuntimeErrorCode.SANITIZATION_UNEXPECTED_CTX,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            `Unexpected SecurityContext ${ctx} (see ${XSS_SECURITY_URL})`,
+        );
     }
   }
 

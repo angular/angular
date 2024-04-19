@@ -7,7 +7,13 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {GetTestability, Testability, TestabilityRegistry, ɵglobal as global, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  GetTestability,
+  Testability,
+  TestabilityRegistry,
+  ɵglobal as global,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -17,9 +23,10 @@ export class BrowserGetTestability implements GetTestability {
       const testability = registry.findTestabilityInTree(elem, findInAncestors);
       if (testability == null) {
         throw new RuntimeError(
-            RuntimeErrorCode.TESTABILITY_NOT_FOUND,
-            (typeof ngDevMode === 'undefined' || ngDevMode) &&
-                'Could not find testability for element.');
+          RuntimeErrorCode.TESTABILITY_NOT_FOUND,
+          (typeof ngDevMode === 'undefined' || ngDevMode) &&
+            'Could not find testability for element.',
+        );
       }
       return testability;
     };
@@ -31,7 +38,7 @@ export class BrowserGetTestability implements GetTestability {
     const whenAllStable = (callback: () => void) => {
       const testabilities = global['getAllAngularTestabilities']() as Testability[];
       let count = testabilities.length;
-      const decrement = function() {
+      const decrement = function () {
         count--;
         if (count == 0) {
           callback();
@@ -48,8 +55,11 @@ export class BrowserGetTestability implements GetTestability {
     global['frameworkStabilizers'].push(whenAllStable);
   }
 
-  findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):
-      Testability|null {
+  findTestabilityInTree(
+    registry: TestabilityRegistry,
+    elem: any,
+    findInAncestors: boolean,
+  ): Testability | null {
     if (elem == null) {
       return null;
     }

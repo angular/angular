@@ -24,15 +24,17 @@ const TEXT_NODE_SEPARATOR_REGEXP = new RegExp(`<!--${TEXT_NODE_SEPARATOR_COMMENT
  * so that it's easier to make assertions in tests.
  */
 export function stripUtilAttributes(html: string, keepNgh: boolean): string {
-  html = html.replace(/ ng-version=".*?"/g, '')
-             .replace(/ ng-server-context=".*?"/g, '')
-             .replace(/ ng-reflect-(.*?)=".*?"/g, '')
-             .replace(/ _nghost(.*?)=""/g, '')
-             .replace(/ _ngcontent(.*?)=""/g, '');
+  html = html
+    .replace(/ ng-version=".*?"/g, '')
+    .replace(/ ng-server-context=".*?"/g, '')
+    .replace(/ ng-reflect-(.*?)=".*?"/g, '')
+    .replace(/ _nghost(.*?)=""/g, '')
+    .replace(/ _ngcontent(.*?)=""/g, '');
   if (!keepNgh) {
-    html = html.replace(NGH_ATTR_REGEXP, '')
-               .replace(EMPTY_TEXT_NODE_REGEXP, '')
-               .replace(TEXT_NODE_SEPARATOR_REGEXP, '');
+    html = html
+      .replace(NGH_ATTR_REGEXP, '')
+      .replace(EMPTY_TEXT_NODE_REGEXP, '')
+      .replace(TEXT_NODE_SEPARATOR_REGEXP, '');
   }
   return html;
 }

@@ -19,4 +19,7 @@ export {JitCompilerFactory} from './compiler_factory';
  * @publicApi
  */
 export const platformBrowserDynamic = createPlatformFactory(
-    platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
+  platformCoreDynamic,
+  'browserDynamic',
+  INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS,
+);

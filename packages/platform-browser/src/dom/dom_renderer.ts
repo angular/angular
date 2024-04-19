@@ -7,7 +7,22 @@
  */
 
 import {DOCUMENT, isPlatformServer, ɵgetDOM as getDOM} from '@angular/common';
-import {APP_ID, CSP_NONCE, Inject, Injectable, InjectionToken, NgZone, OnDestroy, PLATFORM_ID, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2, ViewEncapsulation, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {
+  APP_ID,
+  CSP_NONCE,
+  Inject,
+  Injectable,
+  InjectionToken,
+  NgZone,
+  OnDestroy,
+  PLATFORM_ID,
+  Renderer2,
+  RendererFactory2,
+  RendererStyleFlags2,
+  RendererType2,
+  ViewEncapsulation,
+  ɵRuntimeError as RuntimeError,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
 
@@ -41,11 +56,13 @@ const REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT = true;
  * By default, the value is set to `true`.
  * @publicApi
  */
-export const REMOVE_STYLES_ON_COMPONENT_DESTROY =
-    new InjectionToken<boolean>(ngDevMode ? 'RemoveStylesOnCompDestroy' : '', {
-      providedIn: 'root',
-      factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
-    });
+export const REMOVE_STYLES_ON_COMPONENT_DESTROY = new InjectionToken<boolean>(
+  ngDevMode ? 'RemoveStylesOnCompDestroy' : '',
+  {
+    providedIn: 'root',
+    factory: () => REMOVE_STYLES_ON_COMPONENT_DESTROY_DEFAULT,
+  },
+);
 
 export function shimContentAttribute(componentShortId: string): string {
   return CONTENT_ATTR.replace(COMPONENT_REGEX, componentShortId);
@@ -56,32 +73,38 @@ export function shimHostAttribute(componentShortId: string): string {
 }
 
 export function shimStylesContent(compId: string, styles: string[]): string[] {
-  return styles.map(s => s.replace(COMPONENT_REGEX, compId));
+  return styles.map((s) => s.replace(COMPONENT_REGEX, compId));
 }
 
 @Injectable()
 export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
-  private readonly rendererByCompId =
-      new Map<string, EmulatedEncapsulationDomRenderer2|NoneEncapsulationDomRenderer>();
+  private readonly rendererByCompId = new Map<
+    string,
+    EmulatedEncapsulationDomRenderer2 | NoneEncapsulationDomRenderer
+  >();
   private readonly defaultRenderer: Renderer2;
   private readonly platformIsServer: boolean;
 
   constructor(
-      private readonly eventManager: EventManager,
-      private readonly sharedStylesHost: SharedStylesHost,
-      @Inject(APP_ID) private readonly appId: string,
-      @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestroy: boolean,
-      @Inject(DOCUMENT) private readonly doc: Document,
-      @Inject(PLATFORM_ID) readonly platformId: Object,
-      readonly ngZone: NgZone,
-      @Inject(CSP_NONCE) private readonly nonce: string|null = null,
+    private readonly eventManager: EventManager,
+    private readonly sharedStylesHost: SharedStylesHost,
+    @Inject(APP_ID) private readonly appId: string,
+    @Inject(REMOVE_STYLES_ON_COMPONENT_DESTROY) private removeStylesOnCompDestroy: boolean,
+    @Inject(DOCUMENT) private readonly doc: Document,
+    @Inject(PLATFORM_ID) readonly platformId: Object,
+    readonly ngZone: NgZone,
+    @Inject(CSP_NONCE) private readonly nonce: string | null = null,
   ) {
     this.platformIsServer = isPlatformServer(platformId);
-    this.defaultRenderer =
-        new DefaultDomRenderer2(eventManager, doc, ngZone, this.platformIsServer);
+    this.defaultRenderer = new DefaultDomRenderer2(
+      eventManager,
+      doc,
+      ngZone,
+      this.platformIsServer,
+    );
   }
 
-  createRenderer(element: any, type: RendererType2|null): Renderer2 {
+  createRenderer(element: any, type: RendererType2 | null): Renderer2 {
     if (!element || !type) {
       return this.defaultRenderer;
     }
@@ -118,17 +141,37 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       switch (type.encapsulation) {
         case ViewEncapsulation.Emulated:
           renderer = new EmulatedEncapsulationDomRenderer2(
-              eventManager, sharedStylesHost, type, this.appId, removeStylesOnCompDestroy, doc,
-              ngZone, platformIsServer);
+            eventManager,
+            sharedStylesHost,
+            type,
+            this.appId,
+            removeStylesOnCompDestroy,
+            doc,
+            ngZone,
+            platformIsServer,
+          );
           break;
         case ViewEncapsulation.ShadowDom:
           return new ShadowDomRenderer(
-              eventManager, sharedStylesHost, element, type, doc, ngZone, this.nonce,
-              platformIsServer);
+            eventManager,
+            sharedStylesHost,
+            element,
+            type,
+            doc,
+            ngZone,
+            this.nonce,
+            platformIsServer,
+          );
         default:
           renderer = new NoneEncapsulationDomRenderer(
-              eventManager, sharedStylesHost, type, removeStylesOnCompDestroy, doc, ngZone,
-              platformIsServer);
+            eventManager,
+            sharedStylesHost,
+            type,
+            removeStylesOnCompDestroy,
+            doc,
+            ngZone,
+            platformIsServer,
+          );
           break;
       }
 
@@ -153,8 +196,11 @@ class DefaultDomRenderer2 implements Renderer2 {
   throwOnSyntheticProps = true;
 
   constructor(
-      private readonly eventManager: EventManager, private readonly doc: Document,
-      private readonly ngZone: NgZone, private readonly platformIsServer: boolean) {}
+    private readonly eventManager: EventManager,
+    private readonly doc: Document,
+    private readonly ngZone: NgZone,
+    private readonly platformIsServer: boolean,
+  ) {}
 
   destroy(): void {}
 
@@ -203,14 +249,15 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
-    let el: any = typeof selectorOrNode === 'string' ? this.doc.querySelector(selectorOrNode) :
-                                                       selectorOrNode;
+  selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any {
+    let el: any =
+      typeof selectorOrNode === 'string' ? this.doc.querySelector(selectorOrNode) : selectorOrNode;
     if (!el) {
       throw new RuntimeError(
-          RuntimeErrorCode.ROOT_NODE_NOT_FOUND,
-          (typeof ngDevMode === 'undefined' || ngDevMode) &&
-              `The selector "${selectorOrNode}" did not match any elements`);
+        RuntimeErrorCode.ROOT_NODE_NOT_FOUND,
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          `The selector "${selectorOrNode}" did not match any elements`,
+      );
     }
     if (!preserveContent) {
       el.textContent = '';
@@ -283,8 +330,9 @@ class DefaultDomRenderer2 implements Renderer2 {
       return;
     }
 
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.throwOnSyntheticProps &&
-        checkNoSyntheticProp(name, 'property');
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      this.throwOnSyntheticProps &&
+      checkNoSyntheticProp(name, 'property');
     el[name] = value;
   }
 
@@ -292,10 +340,14 @@ class DefaultDomRenderer2 implements Renderer2 {
     node.nodeValue = value;
   }
 
-  listen(target: 'window'|'document'|'body'|any, event: string, callback: (event: any) => boolean):
-      () => void {
-    (typeof ngDevMode === 'undefined' || ngDevMode) && this.throwOnSyntheticProps &&
-        checkNoSyntheticProp(event, 'listener');
+  listen(
+    target: 'window' | 'document' | 'body' | any,
+    event: string,
+    callback: (event: any) => boolean,
+  ): () => void {
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+      this.throwOnSyntheticProps &&
+      checkNoSyntheticProp(event, 'listener');
     if (typeof target === 'string') {
       target = getDOM().getGlobalEventTarget(this.doc, target);
       if (!target) {
@@ -304,7 +356,10 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
 
     return this.eventManager.addEventListener(
-               target, event, this.decoratePreventDefault(callback)) as VoidFunction;
+      target,
+      event,
+      this.decoratePreventDefault(callback),
+    ) as VoidFunction;
   }
 
   private decoratePreventDefault(eventHandler: Function): Function {
@@ -324,9 +379,9 @@ class DefaultDomRenderer2 implements Renderer2 {
 
       // Run the event handler inside the ngZone because event handlers are not patched
       // by Zone on the server. This is required only for tests.
-      const allowDefaultBehavior = this.platformIsServer ?
-          this.ngZone.runGuarded(() => eventHandler(event)) :
-          eventHandler(event);
+      const allowDefaultBehavior = this.platformIsServer
+        ? this.ngZone.runGuarded(() => eventHandler(event))
+        : eventHandler(event);
       if (allowDefaultBehavior === false) {
         event.preventDefault();
       }
@@ -340,14 +395,13 @@ const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
     throw new RuntimeError(
-        RuntimeErrorCode.UNEXPECTED_SYNTHETIC_PROPERTY,
-        `Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
+      RuntimeErrorCode.UNEXPECTED_SYNTHETIC_PROPERTY,
+      `Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
   - Either \`BrowserAnimationsModule\` or \`NoopAnimationsModule\` are imported in your application.
-  - There is corresponding configuration for the animation named \`${
-            name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
+  - There is corresponding configuration for the animation named \`${name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`,
+    );
   }
 }
-
 
 function isTemplateNode(node: any): node is HTMLTemplateElement {
   return node.tagName === 'TEMPLATE' && node.content !== undefined;
@@ -357,14 +411,14 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   private shadowRoot: any;
 
   constructor(
-      eventManager: EventManager,
-      private sharedStylesHost: SharedStylesHost,
-      private hostEl: any,
-      component: RendererType2,
-      doc: Document,
-      ngZone: NgZone,
-      nonce: string|null,
-      platformIsServer: boolean,
+    eventManager: EventManager,
+    private sharedStylesHost: SharedStylesHost,
+    private hostEl: any,
+    component: RendererType2,
+    doc: Document,
+    ngZone: NgZone,
+    nonce: string | null,
+    platformIsServer: boolean,
   ) {
     super(eventManager, doc, ngZone, platformIsServer);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
@@ -410,14 +464,14 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   private readonly styles: string[];
 
   constructor(
-      eventManager: EventManager,
-      private readonly sharedStylesHost: SharedStylesHost,
-      component: RendererType2,
-      private removeStylesOnCompDestroy: boolean,
-      doc: Document,
-      ngZone: NgZone,
-      platformIsServer: boolean,
-      compId?: string,
+    eventManager: EventManager,
+    private readonly sharedStylesHost: SharedStylesHost,
+    component: RendererType2,
+    private removeStylesOnCompDestroy: boolean,
+    doc: Document,
+    ngZone: NgZone,
+    platformIsServer: boolean,
+    compId?: string,
   ) {
     super(eventManager, doc, ngZone, platformIsServer);
     this.styles = compId ? shimStylesContent(compId, component.styles) : component.styles;
@@ -441,13 +495,26 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
   private hostAttr: string;
 
   constructor(
-      eventManager: EventManager, sharedStylesHost: SharedStylesHost, component: RendererType2,
-      appId: string, removeStylesOnCompDestroy: boolean, doc: Document, ngZone: NgZone,
-      platformIsServer: boolean) {
+    eventManager: EventManager,
+    sharedStylesHost: SharedStylesHost,
+    component: RendererType2,
+    appId: string,
+    removeStylesOnCompDestroy: boolean,
+    doc: Document,
+    ngZone: NgZone,
+    platformIsServer: boolean,
+  ) {
     const compId = appId + '-' + component.id;
     super(
-        eventManager, sharedStylesHost, component, removeStylesOnCompDestroy, doc, ngZone,
-        platformIsServer, compId);
+      eventManager,
+      sharedStylesHost,
+      component,
+      removeStylesOnCompDestroy,
+      doc,
+      ngZone,
+      platformIsServer,
+      compId,
+    );
     this.contentAttr = shimContentAttribute(compId);
     this.hostAttr = shimHostAttribute(compId);
   }

@@ -7,13 +7,18 @@
  */
 
 import {PlatformLocation, XhrFactory} from '@angular/common';
-import {HttpEvent, HttpHandlerFn, HttpRequest, ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS} from '@angular/common/http';
+import {
+  HttpEvent,
+  HttpHandlerFn,
+  HttpRequest,
+  ɵHTTP_ROOT_INTERCEPTOR_FNS as HTTP_ROOT_INTERCEPTOR_FNS,
+} from '@angular/common/http';
 import {inject, Injectable, Provider} from '@angular/core';
 import {Observable} from 'rxjs';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
-  private xhrImpl: typeof import('xhr2')|undefined;
+  private xhrImpl: typeof import('xhr2') | undefined;
 
   // The `xhr2` dependency has a side-effect of accessing and modifying a
   // global scope. Loading `xhr2` dynamically allows us to delay the loading
@@ -37,7 +42,9 @@ export class ServerXhr implements XhrFactory {
 }
 
 function relativeUrlsTransformerInterceptorFn(
-    request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
   const platformLocation = inject(PlatformLocation);
   const {href, protocol, hostname, port} = platformLocation;
   if (!protocol.startsWith('http')) {

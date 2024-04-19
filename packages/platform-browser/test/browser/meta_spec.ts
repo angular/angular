@@ -145,7 +145,7 @@ describe('Meta service', () => {
 
     metaService.addTags([
       {name: 'twitter:title', content: 'Content Title'},
-      {property: 'og:title', content: 'Content Title'}
+      {property: 'og:title', content: 'Content Title'},
     ]);
     const twitterMeta = metaService.getTag(nameSelector)!;
     const fbMeta = metaService.getTag(propertySelector)!;
@@ -166,15 +166,14 @@ describe('Meta service', () => {
     expect(metaService.getTags(selector).length).toEqual(1);
   });
 
-  it('should not add meta tag if it is already present on the page, even if the first tag with the same name has different other attributes',
-     () => {
-       metaService.addTag({name: 'description', content: 'aaa'});
-       metaService.addTag({name: 'description', content: 'bbb'});
-       metaService.addTag({name: 'description', content: 'aaa'});
-       metaService.addTag({name: 'description', content: 'bbb'});
+  it('should not add meta tag if it is already present on the page, even if the first tag with the same name has different other attributes', () => {
+    metaService.addTag({name: 'description', content: 'aaa'});
+    metaService.addTag({name: 'description', content: 'bbb'});
+    metaService.addTag({name: 'description', content: 'aaa'});
+    metaService.addTag({name: 'description', content: 'bbb'});
 
-       expect(metaService.getTags('name="description"').length).toEqual(2);
-     });
+    expect(metaService.getTags('name="description"').length).toEqual(2);
+  });
 
   it('should add meta tag if it is already present on the page and but has different attr', () => {
     const selector = 'property="fb:app_id"';
@@ -214,6 +213,6 @@ describe('integration test', () => {
     });
   });
 
-  it('should inject Meta service when using BrowserModule',
-     () => expect(TestBed.inject(DependsOnMeta).meta).toBeInstanceOf(Meta));
+  it('should inject Meta service when using BrowserModule', () =>
+    expect(TestBed.inject(DependsOnMeta).meta).toBeInstanceOf(Meta));
 });

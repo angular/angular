@@ -65,7 +65,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
-  override getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
+  override getGlobalEventTarget(doc: Document, target: string): EventTarget | null {
     if (target === 'window') {
       return doc.defaultView;
     }

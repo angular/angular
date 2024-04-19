@@ -7,7 +7,19 @@
  */
 
 import {HttpTransferCacheOptions, ɵwithHttpTransferCache} from '@angular/common/http';
-import {ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, makeEnvironmentProviders, NgZone, Provider, ɵConsole as Console, ɵformatRuntimeError as formatRuntimeError, ɵwithDomHydration as withDomHydration, ɵwithEventReplay, ɵwithI18nSupport} from '@angular/core';
+import {
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  inject,
+  makeEnvironmentProviders,
+  NgZone,
+  Provider,
+  ɵConsole as Console,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵwithDomHydration as withDomHydration,
+  ɵwithEventReplay,
+  ɵwithI18nSupport,
+} from '@angular/core';
 
 import {RuntimeErrorCode} from './errors';
 
@@ -38,8 +50,10 @@ export interface HydrationFeature<FeatureKind extends HydrationFeatureKind> {
  * Helper function to create an object that represents a Hydration feature.
  */
 function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
-    ɵkind: FeatureKind, ɵproviders: Provider[] = [],
-    ɵoptions: unknown = {}): HydrationFeature<FeatureKind> {
+  ɵkind: FeatureKind,
+  ɵproviders: Provider[] = [],
+  ɵoptions: unknown = {},
+): HydrationFeature<FeatureKind> {
   return {ɵkind, ɵproviders};
 }
 
@@ -49,8 +63,7 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
  *
  * @publicApi
  */
-export function withNoHttpTransferCache():
-    HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
+export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
   // This feature has no providers and acts as a flag that turns off
   // HTTP transfer cache (which otherwise is turned on by default).
   return hydrationFeature(HydrationFeatureKind.NoHttpTransferCache);
@@ -65,11 +78,13 @@ export function withNoHttpTransferCache():
  * @publicApi
  */
 export function withHttpTransferCacheOptions(
-    options: HttpTransferCacheOptions,
-    ): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions> {
+  options: HttpTransferCacheOptions,
+): HydrationFeature<HydrationFeatureKind.HttpTransferCacheOptions> {
   // This feature has no providers and acts as a flag to pass options to the HTTP transfer cache.
   return hydrationFeature(
-      HydrationFeatureKind.HttpTransferCacheOptions, ɵwithHttpTransferCache(options));
+    HydrationFeatureKind.HttpTransferCacheOptions,
+    ɵwithHttpTransferCache(options),
+  );
 }
 
 /**
@@ -98,25 +113,28 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  * and logs a warning in a console if it's not the case.
  */
 function provideZoneJsCompatibilityDetector(): Provider[] {
-  return [{
-    provide: ENVIRONMENT_INITIALIZER,
-    useValue: () => {
-      const ngZone = inject(NgZone);
-      // Checking `ngZone instanceof NgZone` would be insufficient here,
-      // because custom implementations might use NgZone as a base class.
-      if (ngZone.constructor !== NgZone) {
-        const console = inject(Console);
-        const message = formatRuntimeError(
+  return [
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        const ngZone = inject(NgZone);
+        // Checking `ngZone instanceof NgZone` would be insufficient here,
+        // because custom implementations might use NgZone as a base class.
+        if (ngZone.constructor !== NgZone) {
+          const console = inject(Console);
+          const message = formatRuntimeError(
             RuntimeErrorCode.UNSUPPORTED_ZONEJS_INSTANCE,
             'Angular detected that hydration was enabled for an application ' +
-                'that uses a custom or a noop Zone.js implementation. ' +
-                'This is not yet a fully supported configuration.');
-        // tslint:disable-next-line:no-console
-        console.warn(message);
-      }
+              'that uses a custom or a noop Zone.js implementation. ' +
+              'This is not yet a fully supported configuration.',
+          );
+          // tslint:disable-next-line:no-console
+          console.warn(message);
+        }
+      },
+      multi: true,
     },
-    multi: true,
-  }];
+  ];
 }
 
 /**
@@ -163,12 +181,14 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
  *
  * @publicApi
  */
-export function provideClientHydration(...features: HydrationFeature<HydrationFeatureKind>[]):
-    EnvironmentProviders {
+export function provideClientHydration(
+  ...features: HydrationFeature<HydrationFeatureKind>[]
+): EnvironmentProviders {
   const providers: Provider[] = [];
   const featuresKind = new Set<HydrationFeatureKind>();
-  const hasHttpTransferCacheOptions =
-      featuresKind.has(HydrationFeatureKind.HttpTransferCacheOptions);
+  const hasHttpTransferCacheOptions = featuresKind.has(
+    HydrationFeatureKind.HttpTransferCacheOptions,
+  );
 
   for (const {ɵproviders, ɵkind} of features) {
     featuresKind.add(ɵkind);
@@ -178,19 +198,24 @@ export function provideClientHydration(...features: HydrationFeature<HydrationFe
     }
   }
 
-  if (typeof ngDevMode !== 'undefined' && ngDevMode &&
-      featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) && hasHttpTransferCacheOptions) {
+  if (
+    typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
+    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) &&
+    hasHttpTransferCacheOptions
+  ) {
     // TODO: Make this a runtime error
     throw new Error(
-        'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.');
+      'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.',
+    );
   }
 
   return makeEnvironmentProviders([
-    (typeof ngDevMode !== 'undefined' && ngDevMode) ? provideZoneJsCompatibilityDetector() : [],
+    typeof ngDevMode !== 'undefined' && ngDevMode ? provideZoneJsCompatibilityDetector() : [],
     withDomHydration(),
-    ((featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions) ?
-         [] :
-         ɵwithHttpTransferCache({})),
+    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions
+      ? []
+      : ɵwithHttpTransferCache({}),
     providers,
   ]);
 }

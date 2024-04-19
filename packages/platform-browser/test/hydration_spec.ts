@@ -9,7 +9,13 @@
 import {DOCUMENT} from '@angular/common';
 import {HttpClient, HttpTransferCacheOptions, provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Component, Injectable, PLATFORM_ID, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core';
+import {
+  ApplicationRef,
+  Component,
+  Injectable,
+  PLATFORM_ID,
+  ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {withBody} from '@angular/private/testing';
 import {BehaviorSubject} from 'rxjs';
@@ -19,17 +25,21 @@ import {withHttpTransferCacheOptions} from '../src/hydration';
 
 describe('provideClientHydration', () => {
   @Component({selector: 'test-hydrate-app', template: ''})
-  class SomeComponent {
-  }
+  class SomeComponent {}
 
   function makeRequestAndExpectOne(
-      url: string, body: string, options: HttpTransferCacheOptions|boolean = true): void {
+    url: string,
+    body: string,
+    options: HttpTransferCacheOptions | boolean = true,
+  ): void {
     TestBed.inject(HttpClient).get(url, {transferCache: options}).subscribe();
     TestBed.inject(HttpTestingController).expectOne(url).flush(body);
   }
 
   function makeRequestAndExpectNone(
-      url: string, options: HttpTransferCacheOptions|boolean = true): void {
+    url: string,
+    options: HttpTransferCacheOptions | boolean = true,
+  ): void {
     TestBed.inject(HttpClient).get(url, {transferCache: options}).subscribe();
     TestBed.inject(HttpTestingController).expectNone(url);
   }
@@ -40,8 +50,10 @@ describe('provideClientHydration', () => {
   }
 
   describe('default', () => {
-    beforeEach(withBody(
-        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
+    beforeEach(
+      withBody(
+        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`,
+        () => {
           TestBed.resetTestingModule();
 
           TestBed.configureTestingModule({
@@ -58,7 +70,9 @@ describe('provideClientHydration', () => {
 
           const appRef = TestBed.inject(ApplicationRef);
           appRef.bootstrap(SomeComponent);
-        }));
+        },
+      ),
+    );
 
     it(`should use cached HTTP calls`, () => {
       makeRequestAndExpectOne('/test-1', 'foo');
@@ -68,8 +82,10 @@ describe('provideClientHydration', () => {
   });
 
   describe('withNoHttpTransferCache', () => {
-    beforeEach(withBody(
-        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
+    beforeEach(
+      withBody(
+        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`,
+        () => {
           TestBed.resetTestingModule();
 
           TestBed.configureTestingModule({
@@ -86,7 +102,9 @@ describe('provideClientHydration', () => {
 
           const appRef = TestBed.inject(ApplicationRef);
           appRef.bootstrap(SomeComponent);
-        }));
+        },
+      ),
+    );
 
     it(`should not cache HTTP calls`, () => {
       makeRequestAndExpectOne('/test-1', 'foo', false);
@@ -96,8 +114,10 @@ describe('provideClientHydration', () => {
   });
 
   describe('withHttpTransferCacheOptions', () => {
-    beforeEach(withBody(
-        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`, () => {
+    beforeEach(
+      withBody(
+        `<!--${SSR_CONTENT_INTEGRITY_MARKER}--><test-hydrate-app></test-hydrate-app>`,
+        () => {
           TestBed.resetTestingModule();
 
           TestBed.configureTestingModule({
@@ -106,8 +126,9 @@ describe('provideClientHydration', () => {
               {provide: PLATFORM_ID, useValue: 'server'},
               {provide: DOCUMENT, useFactory: () => document},
               {provide: ApplicationRef, useClass: ApplicationRefPatched},
-              provideClientHydration(withHttpTransferCacheOptions(
-                  {includePostRequests: true, includeHeaders: ['foo']})),
+              provideClientHydration(
+                withHttpTransferCacheOptions({includePostRequests: true, includeHeaders: ['foo']}),
+              ),
               provideHttpClient(),
               provideHttpClientTesting(),
             ],
@@ -115,7 +136,9 @@ describe('provideClientHydration', () => {
 
           const appRef = TestBed.inject(ApplicationRef);
           appRef.bootstrap(SomeComponent);
-        }));
+        },
+      ),
+    );
 
     it(`should cache HTTP POST calls`, () => {
       const url = '/test-1';
