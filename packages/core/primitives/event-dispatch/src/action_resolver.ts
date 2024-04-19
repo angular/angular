@@ -9,7 +9,7 @@
 import {Attribute} from './attribute';
 import {Char} from './char';
 import {EventType} from './event_type';
-import {Property} from './property';
+import {OWNER} from './property';
 import * as a11yClick from './a11y_click';
 import * as cache from './cache';
 import * as eventInfoLib from './event_info';
@@ -143,8 +143,8 @@ export class ActionResolver {
         // ancestor chain of the event target node.
         break;
       }
-      if (actionElement[Property.OWNER]) {
-        actionElement = actionElement[Property.OWNER] as Element;
+      if (actionElement[OWNER]) {
+        actionElement = actionElement[OWNER] as Element;
         continue;
       }
       if (actionElement.parentNode?.nodeName !== '#document-fragment') {

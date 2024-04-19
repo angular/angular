@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Property} from './property';
+import {JSACTION, JSNAMESPACE} from './property';
 
 /**
  * Map from jsaction annotation to a parsed map from event name to action name.
@@ -21,7 +21,7 @@ const parseCache: {[key: string]: {[key: string]: string}} = {};
  */
 export function get(element: Element): {[key: string]: string} {
   // @ts-ignore
-  return element[Property.JSACTION];
+  return element[JSACTION];
 }
 
 /**
@@ -33,7 +33,7 @@ export function get(element: Element): {[key: string]: string} {
  */
 export function set(element: Element, actionMap: {[key: string]: string}) {
   // @ts-ignore
-  element[Property.JSACTION] = actionMap;
+  element[JSACTION] = actionMap;
 }
 
 /**
@@ -62,8 +62,8 @@ export function setParsed(text: string, parsed: {[key: string]: string}) {
  * @param element .
  */
 export function clear(element: Element) {
-  if (Property.JSACTION in element) {
-    delete element[Property.JSACTION];
+  if (JSACTION in element) {
+    delete element[JSACTION];
   }
 }
 
@@ -77,7 +77,7 @@ export function clear(element: Element) {
  */
 export function getNamespace(element: Element): string | null | undefined {
   // @ts-ignore
-  return element[Property.JSNAMESPACE];
+  return element[JSNAMESPACE];
 }
 
 /**
@@ -89,7 +89,7 @@ export function getNamespace(element: Element): string | null | undefined {
  */
 export function setNamespace(element: Element, jsnamespace: string | null) {
   // @ts-ignore
-  element[Property.JSNAMESPACE] = jsnamespace;
+  element[JSNAMESPACE] = jsnamespace;
 }
 
 /**
@@ -98,7 +98,7 @@ export function setNamespace(element: Element, jsnamespace: string | null) {
  * @param element .
  */
 export function clearNamespace(element: Element) {
-  if (Property.JSNAMESPACE in element) {
-    delete element[Property.JSNAMESPACE];
+  if (JSNAMESPACE in element) {
+    delete element[JSNAMESPACE];
   }
 }
