@@ -26,6 +26,16 @@ import {platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
 
+/**
+ * Event dispatch (JSAction) script is inlined into the HTML by the build
+ * process to avoid extra blocking request on a page. The script looks like this:
+ * ```
+ * <script type="text/javascript" id="ng-event-dispatch-contract">...</script>
+ * ```
+ * This const represents the "id" attribute value.
+ */
+export const EVENT_DISPATCH_SCRIPT_ID = 'ng-event-dispatch-contract';
+
 interface PlatformOptions {
   document?: string | Document;
   url?: string;
@@ -45,13 +55,21 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
 }
 
 /**
+ * Removes inlined event dispatch script if it exists.
+ * See the `EVENT_DISPATCH_SCRIPT_ID` const docs for additional info.
+ */
+function removeEventDispatchScript(doc: Document) {
+  doc.getElementById(EVENT_DISPATCH_SCRIPT_ID)?.remove();
+}
+
+/**
  * Creates a marker comment node and append it into the `<body>`.
  * Some CDNs have mechanisms to remove all comment node from HTML.
  * This behaviour breaks hydration, so we'll detect on the client side if this
  * marker comment is still available or else throw an error
  */
 function appendSsrContentIntegrityMarker(doc: Document) {
-  // Adding a ng hydration marken comment
+  // Adding a ng hydration marker comment
   const comment = doc.createComment(SSR_CONTENT_INTEGRITY_MARKER);
   doc.body.firstChild
     ? doc.body.insertBefore(comment, doc.body.firstChild)
@@ -101,6 +119,10 @@ async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef)
     const eventTypesToBeReplayed = annotateForHydration(applicationRef, doc);
     if (eventTypesToBeReplayed) {
       insertEventRecordScript(environmentInjector.get(APP_ID), doc, eventTypesToBeReplayed);
+    } else {
+      // No events to replay, we should remove inlined event dispatch script
+      // (which was injected by the build process) from the HTML.
+      removeEventDispatchScript(doc);
     }
   }
 

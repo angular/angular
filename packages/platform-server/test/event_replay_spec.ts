@@ -13,9 +13,25 @@ import {bootstrapApplication, provideClientHydration} from '@angular/platform-br
 import {withEventReplay} from '@angular/platform-browser/src/hydration';
 
 import {provideServerRendering} from '../public_api';
-import {renderApplication} from '../src/utils';
+import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
 
 import {getAppContents} from './dom_utils';
+
+/**
+ * Represents the <script> tag added by the build process to inject
+ * event dispatch (JSAction) logic.
+ */
+const EVENT_DISPATCH_SCRIPT = `<script type="text/javascript" id="${EVENT_DISPATCH_SCRIPT_ID}"></script>`;
+
+/** Checks whether event dispatch script is present in the generated HTML */
+function hasEventDispatchScript(content: string) {
+  return content.includes(EVENT_DISPATCH_SCRIPT_ID);
+}
+
+/** Checks whether there are any `jsaction` attributes present in the generated HTML */
+function hasJSActionAttrs(content: string) {
+  return content.includes('jsaction="');
+}
 
 describe('event replay', () => {
   beforeEach(() => {
@@ -47,16 +63,14 @@ describe('event replay', () => {
      */
     async function ssr(
       component: Type<unknown>,
-      options?: {
-        doc?: string;
-      },
+      options?: {doc?: string; enableEventReplay?: boolean},
     ): Promise<string> {
-      const defaultHtml = '<html><head></head><body><app></app></body></html>';
-      const providers = [
-        provideServerRendering(),
-        // @ts-ignore
-        provideClientHydration(withEventReplay()),
-      ];
+      const enableEventReplay = options?.enableEventReplay ?? true;
+      const defaultHtml = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
+      const hydrationProviders = enableEventReplay
+        ? provideClientHydration(withEventReplay())
+        : provideClientHydration();
+      const providers = [provideServerRendering(), hydrationProviders];
 
       const bootstrap = () => bootstrapApplication(component, {providers});
 
@@ -89,6 +103,63 @@ describe('event replay', () => {
           ),
         ).toBeTrue();
         expect(ssrContents).toContain('<div jsaction="click:"><div jsaction="blur:"></div></div>');
+      });
+
+      describe('event dispatch script', () => {
+        it('should not be present on a page if there are no events to replay', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: 'Some text',
+          })
+          class SimpleComponent {}
+
+          const doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
+          const html = await ssr(SimpleComponent, {doc});
+          const ssrContents = getAppContents(html);
+
+          expect(hasJSActionAttrs(ssrContents)).toBeFalse();
+          expect(hasEventDispatchScript(ssrContents)).toBeFalse();
+        });
+
+        it('should not be present on a page where event replay is not enabled', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: '<input (click)="onClick()" />',
+          })
+          class SimpleComponent {
+            onClick() {}
+          }
+
+          const doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
+          const html = await ssr(SimpleComponent, {doc, enableEventReplay: false});
+          const ssrContents = getAppContents(html);
+
+          // Expect that there are no JSAction artifacts in the HTML
+          // (even though there are events in a template), since event
+          // replay is disabled in the config.
+          expect(hasJSActionAttrs(ssrContents)).toBeFalse();
+          expect(hasEventDispatchScript(ssrContents)).toBeFalse();
+        });
+
+        it('should be retained if there are events to replay', async () => {
+          @Component({
+            standalone: true,
+            selector: 'app',
+            template: '<input (click)="onClick()" />',
+          })
+          class SimpleComponent {
+            onClick() {}
+          }
+
+          const doc = `<html><head></head><body>${EVENT_DISPATCH_SCRIPT}<app></app></body></html>`;
+          const html = await ssr(SimpleComponent, {doc});
+          const ssrContents = getAppContents(html);
+
+          expect(hasJSActionAttrs(ssrContents)).toBeTrue();
+          expect(hasEventDispatchScript(ssrContents)).toBeTrue();
+        });
       });
     });
   });
