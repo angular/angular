@@ -5,7 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, PathSegment, relativeFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  FileSystem,
+  getFileSystem,
+  PathSegment,
+  relativeFrom,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import {Diagnostics as Diagnostics} from '../../src/diagnostics';
@@ -60,7 +67,12 @@ runInEachFileSystem(() => {
         const handler = new MockTranslationHandler(true);
         const translator = new Translator(fs, [handler], diagnostics);
         translator.translateFiles(
-            [file1Path, imgPath], distDirectory, mockOutputPathFn, [], 'en-US');
+          [file1Path, imgPath],
+          distDirectory,
+          mockOutputPathFn,
+          [],
+          'en-US',
+        );
 
         expect(handler.log).toEqual([
           'canTranslate(file1.js, resource file 1)',
@@ -115,11 +127,18 @@ runInEachFileSystem(() => {
     }
 
     translate(
-        _diagnostics: Diagnostics, rootPath: string, relativePath: string, contents: Uint8Array,
-        _outputPathFn: OutputPathFn, _translations: TranslationBundle[], sourceLocale?: string) {
+      _diagnostics: Diagnostics,
+      rootPath: string,
+      relativePath: string,
+      contents: Uint8Array,
+      _outputPathFn: OutputPathFn,
+      _translations: TranslationBundle[],
+      sourceLocale?: string,
+    ) {
       this.log.push(
-          `translate(${rootPath}, ${relativePath}, ${contents}, ...` +
-          (sourceLocale !== undefined ? `, ${sourceLocale})` : ')'));
+        `translate(${rootPath}, ${relativePath}, ${contents}, ...` +
+          (sourceLocale !== undefined ? `, ${sourceLocale})` : ')'),
+      );
     }
   }
 

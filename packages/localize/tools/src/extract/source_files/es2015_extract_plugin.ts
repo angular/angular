@@ -9,26 +9,44 @@ import {PathManipulation} from '@angular/compiler-cli/private/localize';
 import {ɵParsedMessage, ɵparseMessage} from '@angular/localize';
 import {NodePath, PluginObj, types as t} from '@babel/core';
 
-import {getLocation, isGlobalIdentifier, isNamedIdentifier, unwrapExpressionsFromTemplateLiteral, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils';
+import {
+  getLocation,
+  isGlobalIdentifier,
+  isNamedIdentifier,
+  unwrapExpressionsFromTemplateLiteral,
+  unwrapMessagePartsFromTemplateLiteral,
+} from '../../source_file_utils';
 
 export function makeEs2015ExtractPlugin(
-    fs: PathManipulation, messages: ɵParsedMessage[], localizeName = '$localize'): PluginObj {
+  fs: PathManipulation,
+  messages: ɵParsedMessage[],
+  localizeName = '$localize',
+): PluginObj {
   return {
     visitor: {
       TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>) {
         const tag = path.get('tag');
         if (isNamedIdentifier(tag, localizeName) && isGlobalIdentifier(tag)) {
           const quasiPath = path.get('quasi');
-          const [messageParts, messagePartLocations] =
-              unwrapMessagePartsFromTemplateLiteral(quasiPath.get('quasis'), fs);
-          const [expressions, expressionLocations] =
-              unwrapExpressionsFromTemplateLiteral(quasiPath, fs);
+          const [messageParts, messagePartLocations] = unwrapMessagePartsFromTemplateLiteral(
+            quasiPath.get('quasis'),
+            fs,
+          );
+          const [expressions, expressionLocations] = unwrapExpressionsFromTemplateLiteral(
+            quasiPath,
+            fs,
+          );
           const location = getLocation(fs, quasiPath);
           const message = ɵparseMessage(
-              messageParts, expressions, location, messagePartLocations, expressionLocations);
+            messageParts,
+            expressions,
+            location,
+            messagePartLocations,
+            expressionLocations,
+          );
           messages.push(message);
         }
-      }
-    }
+      },
+    },
   };
 }

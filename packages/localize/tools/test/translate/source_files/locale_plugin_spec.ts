@@ -16,19 +16,17 @@ describe('makeLocalePlugin', () => {
     expect(output.code).toEqual('"fr";');
   });
 
-  it('should replace $localize.locale with the locale string in the context of a variable assignment',
-     () => {
-       const input = 'const a = $localize.locale;';
-       const output = transformSync(input, {plugins: [makeLocalePlugin('fr')]})!;
-       expect(output.code).toEqual('const a = "fr";');
-     });
+  it('should replace $localize.locale with the locale string in the context of a variable assignment', () => {
+    const input = 'const a = $localize.locale;';
+    const output = transformSync(input, {plugins: [makeLocalePlugin('fr')]})!;
+    expect(output.code).toEqual('const a = "fr";');
+  });
 
-  it('should replace $localize.locale with the locale string in the context of a binary expression',
-     () => {
-       const input = '$localize.locale || "default";';
-       const output = transformSync(input, {plugins: [makeLocalePlugin('fr')]})!;
-       expect(output.code).toEqual('"fr" || "default";');
-     });
+  it('should replace $localize.locale with the locale string in the context of a binary expression', () => {
+    const input = '$localize.locale || "default";';
+    const output = transformSync(input, {plugins: [makeLocalePlugin('fr')]})!;
+    expect(output.code).toEqual('"fr" || "default";');
+  });
 
   it('should remove reference to `$localize` if used to guard the locale', () => {
     const input = 'typeof $localize !== "undefined" && $localize.locale;';
@@ -36,24 +34,23 @@ describe('makeLocalePlugin', () => {
     expect(output.code).toEqual('"fr";');
   });
 
-  it('should remove reference to `$localize` if used in a longer logical expression to guard the locale',
-     () => {
-       const input1 = 'x || y && typeof $localize !== "undefined" && $localize.locale;';
-       const output1 = transformSync(input1, {plugins: [makeLocalePlugin('fr')]})!;
-       expect(output1.code).toEqual('x || y && "fr";');
+  it('should remove reference to `$localize` if used in a longer logical expression to guard the locale', () => {
+    const input1 = 'x || y && typeof $localize !== "undefined" && $localize.locale;';
+    const output1 = transformSync(input1, {plugins: [makeLocalePlugin('fr')]})!;
+    expect(output1.code).toEqual('x || y && "fr";');
 
-       const input2 = 'x || y && "undefined" !== typeof $localize && $localize.locale;';
-       const output2 = transformSync(input2, {plugins: [makeLocalePlugin('fr')]})!;
-       expect(output2.code).toEqual('x || y && "fr";');
+    const input2 = 'x || y && "undefined" !== typeof $localize && $localize.locale;';
+    const output2 = transformSync(input2, {plugins: [makeLocalePlugin('fr')]})!;
+    expect(output2.code).toEqual('x || y && "fr";');
 
-       const input3 = 'x || y && typeof $localize != "undefined" && $localize.locale;';
-       const output3 = transformSync(input3, {plugins: [makeLocalePlugin('fr')]})!;
-       expect(output3.code).toEqual('x || y && "fr";');
+    const input3 = 'x || y && typeof $localize != "undefined" && $localize.locale;';
+    const output3 = transformSync(input3, {plugins: [makeLocalePlugin('fr')]})!;
+    expect(output3.code).toEqual('x || y && "fr";');
 
-       const input4 = 'x || y && "undefined" != typeof $localize && $localize.locale;';
-       const output4 = transformSync(input4, {plugins: [makeLocalePlugin('fr')]})!;
-       expect(output4.code).toEqual('x || y && "fr";');
-     });
+    const input4 = 'x || y && "undefined" != typeof $localize && $localize.locale;';
+    const output4 = transformSync(input4, {plugins: [makeLocalePlugin('fr')]})!;
+    expect(output4.code).toEqual('x || y && "fr";');
+  });
 
   it('should ignore properties on $localize other than `locale`', () => {
     const input = '$localize.notLocale;';

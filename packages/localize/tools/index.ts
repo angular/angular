@@ -21,7 +21,15 @@ export {LegacyMessageIdMigrationSerializer} from './src/extract/translation_file
 export {Xliff1TranslationSerializer} from './src/extract/translation_files/xliff1_translation_serializer';
 export {Xliff2TranslationSerializer} from './src/extract/translation_files/xliff2_translation_serializer';
 export {XmbTranslationSerializer} from './src/extract/translation_files/xmb_translation_serializer';
-export {buildLocalizeReplacement, isGlobalIdentifier, translate, unwrapExpressionsFromTemplateLiteral, unwrapMessagePartsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, unwrapSubstitutionsFromLocalizeCall} from './src/source_file_utils';
+export {
+  buildLocalizeReplacement,
+  isGlobalIdentifier,
+  translate,
+  unwrapExpressionsFromTemplateLiteral,
+  unwrapMessagePartsFromLocalizeCall,
+  unwrapMessagePartsFromTemplateLiteral,
+  unwrapSubstitutionsFromLocalizeCall,
+} from './src/source_file_utils';
 export {makeEs2015TranslatePlugin} from './src/translate/source_files/es2015_translate_plugin';
 export {makeEs5TranslatePlugin} from './src/translate/source_files/es5_translate_plugin';
 export {makeLocalePlugin} from './src/translate/source_files/locale_plugin';

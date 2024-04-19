@@ -117,10 +117,7 @@ export function unwrapExpressionsFromTemplateLiteral(quasi: NodePath<types.Templ
 export function unwrapMessagePartsFromLocalizeCall(call: NodePath<types.CallExpression>, fs?: PathManipulation): [TemplateStringsArray, (ɵSourceLocation | undefined)[]];
 
 // @public
-export function unwrapMessagePartsFromTemplateLiteral(elements: NodePath<types.TemplateElement>[], fs?: PathManipulation): [
-TemplateStringsArray,
-(ɵSourceLocation | undefined)[]
-];
+export function unwrapMessagePartsFromTemplateLiteral(elements: NodePath<types.TemplateElement>[], fs?: PathManipulation): [TemplateStringsArray, (ɵSourceLocation | undefined)[]];
 
 // @public
 export function unwrapSubstitutionsFromLocalizeCall(call: NodePath<types.CallExpression>, fs?: PathManipulation): [types.Expression[], (ɵSourceLocation | undefined)[]];

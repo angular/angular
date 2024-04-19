@@ -37,11 +37,13 @@ import {consolidateMessages, hasLocation} from './utils';
  */
 export class ArbTranslationSerializer implements TranslationSerializer {
   constructor(
-      private sourceLocale: string, private basePath: AbsoluteFsPath,
-      private fs: PathManipulation) {}
+    private sourceLocale: string,
+    private basePath: AbsoluteFsPath,
+    private fs: PathManipulation,
+  ) {}
 
   serialize(messages: ɵParsedMessage[]): string {
-    const messageGroups = consolidateMessages(messages, message => getMessageId(message));
+    const messageGroups = consolidateMessages(messages, (message) => getMessageId(message));
 
     let output = `{\n  "@@locale": ${JSON.stringify(this.sourceLocale)}`;
 
@@ -50,8 +52,11 @@ export class ArbTranslationSerializer implements TranslationSerializer {
       const id = getMessageId(message);
       output += this.serializeMessage(id, message);
       output += this.serializeMeta(
-          id, message.description, message.meaning,
-          duplicateMessages.filter(hasLocation).map(m => m.location));
+        id,
+        message.description,
+        message.meaning,
+        duplicateMessages.filter(hasLocation).map((m) => m.location),
+      );
     }
 
     output += '\n}';
@@ -64,8 +69,11 @@ export class ArbTranslationSerializer implements TranslationSerializer {
   }
 
   private serializeMeta(
-      id: string, description: string|undefined, meaning: string|undefined,
-      locations: ɵSourceLocation[]): string {
+    id: string,
+    description: string | undefined,
+    meaning: string | undefined,
+    locations: ɵSourceLocation[],
+  ): string {
     const meta: string[] = [];
 
     if (description) {

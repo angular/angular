@@ -91,8 +91,9 @@ describe('$localize tag', () => {
 
     it('should render template literals with expressions reversed', () => {
       const getName = () => 'World';
-      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`)
-          .toEqual('abcWorlddef15 - Hello, 6!');
+      expect($localize`abc${1 + 2 + 3}def${4 + 5 + 6} - Hello, ${getName()}!`).toEqual(
+        'abcWorlddef15 - Hello, 6!',
+      );
     });
   });
 });
@@ -102,23 +103,30 @@ function makeTemplateObject(cooked: string[], raw: string[]): TemplateStringsArr
   return cooked as any;
 }
 
-const identityTranslate: TranslateFn = function(
-    messageParts: TemplateStringsArray, expressions: readonly any[]) {
+const identityTranslate: TranslateFn = function (
+  messageParts: TemplateStringsArray,
+  expressions: readonly any[],
+) {
   return [messageParts, expressions];
 };
 
-const upperCaseTranslate: TranslateFn = function(
-    messageParts: TemplateStringsArray, expressions: readonly any[]) {
+const upperCaseTranslate: TranslateFn = function (
+  messageParts: TemplateStringsArray,
+  expressions: readonly any[],
+) {
   return [
     makeTemplateObject(
-        Array.from(messageParts).map((part: string) => part.toUpperCase()),
-        messageParts.raw.map((part: string) => part.toUpperCase())),
-    expressions
+      Array.from(messageParts).map((part: string) => part.toUpperCase()),
+      messageParts.raw.map((part: string) => part.toUpperCase()),
+    ),
+    expressions,
   ];
 };
 
-const reverseTranslate: TranslateFn = function(
-    messageParts: TemplateStringsArray, expressions: readonly any[]) {
+const reverseTranslate: TranslateFn = function (
+  messageParts: TemplateStringsArray,
+  expressions: readonly any[],
+) {
   expressions = Array.from(expressions).reverse();
   return [messageParts, expressions];
 };

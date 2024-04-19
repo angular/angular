@@ -11,17 +11,15 @@ import {ArbTranslationParser} from '../../../../src/translate/translation_files/
 
 describe('SimpleArbTranslationParser', () => {
   describe('analyze()', () => {
-    it('should return true if the file extension  is `.json` and contains `@@locale` property',
-       () => {
-         const parser = new ArbTranslationParser();
-         expect(parser.analyze('/some/file.xlf', '').canParse).toBeFalse();
-         expect(parser.analyze('/some/file.json', 'xxx').canParse).toBeFalse();
-         expect(parser.analyze('/some/file.json', '{ "someKey": "someValue" }').canParse)
-             .toBeFalse();
-         expect(parser.analyze('/some/file.json', '{ "@@locale": "en", "someKey": "someValue" }')
-                    .canParse)
-             .toBeTrue();
-       });
+    it('should return true if the file extension  is `.json` and contains `@@locale` property', () => {
+      const parser = new ArbTranslationParser();
+      expect(parser.analyze('/some/file.xlf', '').canParse).toBeFalse();
+      expect(parser.analyze('/some/file.json', 'xxx').canParse).toBeFalse();
+      expect(parser.analyze('/some/file.json', '{ "someKey": "someValue" }').canParse).toBeFalse();
+      expect(
+        parser.analyze('/some/file.json', '{ "@@locale": "en", "someKey": "someValue" }').canParse,
+      ).toBeTrue();
+    });
   });
 
   describe('parse()', () => {
@@ -33,14 +31,17 @@ describe('SimpleArbTranslationParser', () => {
 
     it('should extract and process the translations from the JSON contents', () => {
       const parser = new ArbTranslationParser();
-      const result = parser.parse('/some/file.json', `{
+      const result = parser.parse(
+        '/some/file.json',
+        `{
         "@@locale": "fr",
         "customId": "Bonjour, {$ph_1}!",
         "@customId": {
           "type": "text",
           "description": "Some description"
         }
-      }`);
+      }`,
+      );
       expect(result.translations).toEqual({
         'customId': {
           text: 'Bonjour, {$ph_1}!',

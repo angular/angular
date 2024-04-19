@@ -5,7 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Element, LexerRange, Node, ParseError, ParseErrorLevel, ParseSourceSpan, ParseTreeResult, XmlParser} from '@angular/compiler';
+import {
+  Element,
+  LexerRange,
+  Node,
+  ParseError,
+  ParseErrorLevel,
+  ParseSourceSpan,
+  ParseTreeResult,
+  XmlParser,
+} from '@angular/compiler';
 
 import {Diagnostics} from '../../../diagnostics';
 
@@ -16,13 +25,15 @@ export function getAttrOrThrow(element: Element, attrName: string): string {
   const attrValue = getAttribute(element, attrName);
   if (attrValue === undefined) {
     throw new TranslationParseError(
-        element.sourceSpan, `Missing required "${attrName}" attribute:`);
+      element.sourceSpan,
+      `Missing required "${attrName}" attribute:`,
+    );
   }
   return attrValue;
 }
 
-export function getAttribute(element: Element, attrName: string): string|undefined {
-  const attr = element.attrs.find(a => a.name === attrName);
+export function getAttribute(element: Element, attrName: string): string | undefined {
+  const attr = element.attrs.find((a) => a.name === attrName);
   return attr !== undefined ? attr.value : undefined;
 }
 
@@ -38,8 +49,10 @@ export function getAttribute(element: Element, attrName: string): string|undefin
 export function parseInnerRange(element: Element): ParseTreeResult {
   const xmlParser = new XmlParser();
   const xml = xmlParser.parse(
-      element.sourceSpan.start.file.content, element.sourceSpan.start.file.url,
-      {tokenizeExpansionForms: true, range: getInnerRange(element)});
+    element.sourceSpan.start.file.content,
+    element.sourceSpan.start.file.url,
+    {tokenizeExpansionForms: true, range: getInnerRange(element)},
+  );
   return xml;
 }
 
@@ -81,15 +94,20 @@ export interface XmlTranslationParserHint {
  * document has the expected format.
  */
 export function canParseXml(
-    filePath: string, contents: string, rootNodeName: string,
-    attributes: Record<string, string>): ParseAnalysis<XmlTranslationParserHint> {
+  filePath: string,
+  contents: string,
+  rootNodeName: string,
+  attributes: Record<string, string>,
+): ParseAnalysis<XmlTranslationParserHint> {
   const diagnostics = new Diagnostics();
   const xmlParser = new XmlParser();
   const xml = xmlParser.parse(contents, filePath);
 
-  if (xml.rootNodes.length === 0 ||
-      xml.errors.some(error => error.level === ParseErrorLevel.ERROR)) {
-    xml.errors.forEach(e => addParseError(diagnostics, e));
+  if (
+    xml.rootNodes.length === 0 ||
+    xml.errors.some((error) => error.level === ParseErrorLevel.ERROR)
+  ) {
+    xml.errors.forEach((e) => addParseError(diagnostics, e));
     return {canParse: false, diagnostics};
   }
 
@@ -101,22 +119,26 @@ export function canParseXml(
   }
 
   for (const attrKey of Object.keys(attributes)) {
-    const attr = rootElement.attrs.find(attr => attr.name === attrKey);
+    const attr = rootElement.attrs.find((attr) => attr.name === attrKey);
     if (attr === undefined || attr.value !== attributes[attrKey]) {
       addParseDiagnostic(
-          diagnostics, rootElement.sourceSpan,
-          `The <${rootNodeName}> node does not have the required attribute: ${attrKey}="${
-              attributes[attrKey]}".`,
-          ParseErrorLevel.WARNING);
+        diagnostics,
+        rootElement.sourceSpan,
+        `The <${rootNodeName}> node does not have the required attribute: ${attrKey}="${attributes[attrKey]}".`,
+        ParseErrorLevel.WARNING,
+      );
       return {canParse: false, diagnostics};
     }
   }
 
   if (rootElements.length > 1) {
-    xml.errors.push(new ParseError(
+    xml.errors.push(
+      new ParseError(
         xml.rootNodes[1].sourceSpan,
         'Unexpected root node. XLIFF 1.2 files should only have a single <xliff> root node.',
-        ParseErrorLevel.WARNING));
+        ParseErrorLevel.WARNING,
+      ),
+    );
   }
 
   return {canParse: true, diagnostics, hint: {element: rootElement, errors: xml.errors}};
@@ -139,8 +161,11 @@ export function isNamedElement(name: string): (node: Node) => node is Element {
  * Add an XML parser related message to the given `diagnostics` object.
  */
 export function addParseDiagnostic(
-    diagnostics: Diagnostics, sourceSpan: ParseSourceSpan, message: string,
-    level: ParseErrorLevel): void {
+  diagnostics: Diagnostics,
+  sourceSpan: ParseSourceSpan,
+  message: string,
+  level: ParseErrorLevel,
+): void {
   addParseError(diagnostics, new ParseError(sourceSpan, message, level));
 }
 

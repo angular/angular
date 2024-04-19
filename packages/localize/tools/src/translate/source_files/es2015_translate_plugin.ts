@@ -10,7 +10,15 @@ import {ɵParsedTranslation} from '@angular/localize';
 import {NodePath, PluginObj, types as t} from '@babel/core';
 
 import {Diagnostics} from '../../diagnostics';
-import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromTemplateLiteral} from '../../source_file_utils';
+import {
+  buildCodeFrameError,
+  buildLocalizeReplacement,
+  isBabelParseError,
+  isLocalize,
+  translate,
+  TranslatePluginOptions,
+  unwrapMessagePartsFromTemplateLiteral,
+} from '../../source_file_utils';
 
 /**
  * Create a Babel plugin that can be used to do compile-time translation of `$localize` tagged
@@ -19,20 +27,28 @@ import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLoca
  * @publicApi used by CLI
  */
 export function makeEs2015TranslatePlugin(
-    diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
-    {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {},
-    fs: PathManipulation = getFileSystem()): PluginObj {
+  diagnostics: Diagnostics,
+  translations: Record<string, ɵParsedTranslation>,
+  {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {},
+  fs: PathManipulation = getFileSystem(),
+): PluginObj {
   return {
     visitor: {
       TaggedTemplateExpression(path: NodePath<t.TaggedTemplateExpression>, state) {
         try {
           const tag = path.get('tag');
           if (isLocalize(tag, localizeName)) {
-            const [messageParts] =
-                unwrapMessagePartsFromTemplateLiteral(path.get('quasi').get('quasis'), fs);
+            const [messageParts] = unwrapMessagePartsFromTemplateLiteral(
+              path.get('quasi').get('quasis'),
+              fs,
+            );
             const translated = translate(
-                diagnostics, translations, messageParts, path.node.quasi.expressions,
-                missingTranslation);
+              diagnostics,
+              translations,
+              messageParts,
+              path.node.quasi.expressions,
+              missingTranslation,
+            );
             path.replaceWith(buildLocalizeReplacement(translated[0], translated[1]));
           }
         } catch (e) {
@@ -45,7 +61,7 @@ export function makeEs2015TranslatePlugin(
             throw e;
           }
         }
-      }
-    }
+      },
+    },
   };
 }

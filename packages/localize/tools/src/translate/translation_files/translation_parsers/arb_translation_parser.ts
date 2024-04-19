@@ -11,12 +11,12 @@ import {Diagnostics} from '../../../diagnostics';
 
 import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
 
-export interface ArbJsonObject extends Record<MessageId, ɵSourceMessage|ArbMetadata> {
+export interface ArbJsonObject extends Record<MessageId, ɵSourceMessage | ArbMetadata> {
   '@@locale': string;
 }
 
 export interface ArbMetadata {
-  type?: 'text'|'image'|'css';
+  type?: 'text' | 'image' | 'css';
   description?: string;
   ['x-locations']?: ArbLocation[];
 }
@@ -67,8 +67,11 @@ export class ArbTranslationParser implements TranslationParser<ArbJsonObject> {
     }
   }
 
-  parse(_filePath: string, contents: string, arb: ArbJsonObject = this.tryParseArbFormat(contents)):
-      ParsedTranslationBundle {
+  parse(
+    _filePath: string,
+    contents: string,
+    arb: ArbJsonObject = this.tryParseArbFormat(contents),
+  ): ParsedTranslationBundle {
     const bundle: ParsedTranslationBundle = {
       locale: arb['@@locale'],
       translations: {},

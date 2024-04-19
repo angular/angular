@@ -23,7 +23,9 @@ import {isLocalize, TranslatePluginOptions} from '../../source_file_utils';
  * @publicApi used by CLI
  */
 export function makeLocalePlugin(
-    locale: string, {localizeName = '$localize'}: TranslatePluginOptions = {}): PluginObj {
+  locale: string,
+  {localizeName = '$localize'}: TranslatePluginOptions = {},
+): PluginObj {
   return {
     visitor: {
       MemberExpression(expression: NodePath<t.MemberExpression>) {
@@ -35,8 +37,10 @@ export function makeLocalePlugin(
         if (!property.isIdentifier({name: 'locale'})) {
           return;
         }
-        if (expression.parentPath.isAssignmentExpression() &&
-            expression.parentPath.get('left') === expression) {
+        if (
+          expression.parentPath.isAssignmentExpression() &&
+          expression.parentPath.get('left') === expression
+        ) {
           return;
         }
         // Check for the `$localize.locale` being guarded by a check on the existence of
@@ -49,8 +53,9 @@ export function makeLocalePlugin(
             // `$localize.locale`
             parent.replaceWith(expression);
           } else if (
-              left.isLogicalExpression({operator: '&&'}) &&
-              isLocalizeGuard(left.get('right'), localizeName)) {
+            left.isLogicalExpression({operator: '&&'}) &&
+            isLocalizeGuard(left.get('right'), localizeName)
+          ) {
             // The `$localize` is part of a preceding logical AND.
             // Replace XXX && typeof $localize !== "undefined" && $localize.locale` with `XXX &&
             // $localize.locale`
@@ -59,8 +64,8 @@ export function makeLocalePlugin(
         }
         // Replace the `$localize.locale` with the string literal
         expression.replaceWith(t.stringLiteral(locale));
-      }
-    }
+      },
+    },
   };
 }
 
@@ -75,17 +80,21 @@ export function makeLocalePlugin(
  * @param localizeName the name of the `$localize` symbol
  */
 function isLocalizeGuard(expression: NodePath, localizeName: string): boolean {
-  if (!expression.isBinaryExpression() ||
-      !(expression.node.operator === '!==' || expression.node.operator === '!=')) {
+  if (
+    !expression.isBinaryExpression() ||
+    !(expression.node.operator === '!==' || expression.node.operator === '!=')
+  ) {
     return false;
   }
   const left = expression.get('left');
   const right = expression.get('right');
 
-  return (left.isUnaryExpression({operator: 'typeof'}) &&
-          isLocalize(left.get('argument'), localizeName) &&
-          right.isStringLiteral({value: 'undefined'})) ||
-      (right.isUnaryExpression({operator: 'typeof'}) &&
-       isLocalize(right.get('argument'), localizeName) &&
-       left.isStringLiteral({value: 'undefined'}));
+  return (
+    (left.isUnaryExpression({operator: 'typeof'}) &&
+      isLocalize(left.get('argument'), localizeName) &&
+      right.isStringLiteral({value: 'undefined'})) ||
+    (right.isUnaryExpression({operator: 'typeof'}) &&
+      isLocalize(right.get('argument'), localizeName) &&
+      left.isStringLiteral({value: 'undefined'}))
+  );
 }
