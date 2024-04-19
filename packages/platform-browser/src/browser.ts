@@ -6,8 +6,43 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, DOCUMENT, XhrFactory, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationConfig as ApplicationConfigFromCore, ApplicationModule, ApplicationRef, createPlatformFactory, ErrorHandler, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, platformCore, PlatformRef, Provider, RendererFactory2, SkipSelf, StaticProvider, Testability, TestabilityRegistry, Type, ɵINJECTOR_SCOPE as INJECTOR_SCOPE, ɵinternalCreateApplication as internalCreateApplication, ɵRuntimeError as RuntimeError, ɵsetDocument, ɵTESTABILITY as TESTABILITY, ɵTESTABILITY_GETTER as TESTABILITY_GETTER} from '@angular/core';
+import {
+  CommonModule,
+  DOCUMENT,
+  XhrFactory,
+  ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
+} from '@angular/common';
+import {
+  APP_ID,
+  ApplicationConfig as ApplicationConfigFromCore,
+  ApplicationModule,
+  ApplicationRef,
+  createPlatformFactory,
+  ErrorHandler,
+  Inject,
+  InjectionToken,
+  ModuleWithProviders,
+  NgModule,
+  NgZone,
+  Optional,
+  PLATFORM_ID,
+  PLATFORM_INITIALIZER,
+  platformCore,
+  PlatformRef,
+  Provider,
+  RendererFactory2,
+  SkipSelf,
+  StaticProvider,
+  Testability,
+  TestabilityRegistry,
+  Type,
+  ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
+  ɵinternalCreateApplication as internalCreateApplication,
+  ɵRuntimeError as RuntimeError,
+  ɵsetDocument,
+  ɵTESTABILITY as TESTABILITY,
+  ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
+} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from './browser/testability';
@@ -18,7 +53,6 @@ import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {SharedStylesHost} from './dom/shared_styles_host';
 import {RuntimeErrorCode} from './errors';
-
 
 /**
  * Set of config options available during the application bootstrap operation.
@@ -92,7 +126,9 @@ export {ApplicationConfig};
  * @publicApi
  */
 export function bootstrapApplication(
-    rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef> {
+  rootComponent: Type<unknown>,
+  options?: ApplicationConfig,
+): Promise<ApplicationRef> {
   return internalCreateApplication({rootComponent, ...createProvidersConfig(options)});
 }
 
@@ -114,11 +150,8 @@ export function createApplication(options?: ApplicationConfig) {
 
 function createProvidersConfig(options?: ApplicationConfig) {
   return {
-    appProviders: [
-      ...BROWSER_MODULE_PROVIDERS,
-      ...(options?.providers ?? []),
-    ],
-    platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS
+    appProviders: [...BROWSER_MODULE_PROVIDERS, ...(options?.providers ?? [])],
+    platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   };
 }
 
@@ -167,7 +200,7 @@ export const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
  * @publicApi
  */
 export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
-    createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
+  createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
 /**
  * Internal marker to signal whether providers from the `BrowserModule` are already present in DI.
@@ -176,7 +209,8 @@ export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef
  * `BrowserModule` providers without referencing the module itself.
  */
 const BROWSER_MODULE_PROVIDERS_MARKER = new InjectionToken(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'BrowserModule Providers Marker' : '');
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'BrowserModule Providers Marker' : '',
+);
 
 const TESTABILITY_PROVIDERS = [
   {
@@ -187,30 +221,33 @@ const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY,
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER]
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
   {
-    provide: Testability,  // Also provide as `Testability` for backwards-compatibility.
+    provide: Testability, // Also provide as `Testability` for backwards-compatibility.
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER]
-  }
+    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
+  },
 ];
 
 const BROWSER_MODULE_PROVIDERS: Provider[] = [
   {provide: INJECTOR_SCOPE, useValue: 'root'},
-  {provide: ErrorHandler, useFactory: errorHandler, deps: []}, {
+  {provide: ErrorHandler, useFactory: errorHandler, deps: []},
+  {
     provide: EVENT_MANAGER_PLUGINS,
     useClass: DomEventsPlugin,
     multi: true,
-    deps: [DOCUMENT, NgZone, PLATFORM_ID]
+    deps: [DOCUMENT, NgZone, PLATFORM_ID],
   },
   {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
-  DomRendererFactory2, SharedStylesHost, EventManager,
+  DomRendererFactory2,
+  SharedStylesHost,
+  EventManager,
   {provide: RendererFactory2, useExisting: DomRendererFactory2},
   {provide: XhrFactory, useClass: BrowserXhr, deps: []},
-  (typeof ngDevMode === 'undefined' || ngDevMode) ?
-      {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true} :
-      []
+  typeof ngDevMode === 'undefined' || ngDevMode
+    ? {provide: BROWSER_MODULE_PROVIDERS_MARKER, useValue: true}
+    : [],
 ];
 
 /**
@@ -227,13 +264,18 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
   exports: [CommonModule, ApplicationModule],
 })
 export class BrowserModule {
-  constructor(@Optional() @SkipSelf() @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
-              providersAlreadyPresent: boolean|null) {
+  constructor(
+    @Optional()
+    @SkipSelf()
+    @Inject(BROWSER_MODULE_PROVIDERS_MARKER)
+    providersAlreadyPresent: boolean | null,
+  ) {
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && providersAlreadyPresent) {
       throw new RuntimeError(
-          RuntimeErrorCode.BROWSER_MODULE_ALREADY_LOADED,
-          `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
-              `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`);
+        RuntimeErrorCode.BROWSER_MODULE_ALREADY_LOADED,
+        `Providers from the \`BrowserModule\` have already been loaded. If you need access ` +
+          `to common directives such as NgIf and NgFor, import the \`CommonModule\` instead.`,
+      );
     }
   }
 
@@ -250,9 +292,7 @@ export class BrowserModule {
   static withServerTransition(params: {appId: string}): ModuleWithProviders<BrowserModule> {
     return {
       ngModule: BrowserModule,
-      providers: [
-        {provide: APP_ID, useValue: params.appId},
-      ],
+      providers: [{provide: APP_ID, useValue: params.appId}],
     };
   }
 }

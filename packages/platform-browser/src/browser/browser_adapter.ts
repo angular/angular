@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵparseCookieValue as parseCookieValue, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
+import {
+  ɵparseCookieValue as parseCookieValue,
+  ɵsetRootDomAdapter as setRootDomAdapter,
+} from '@angular/common';
 
 import {GenericBrowserDomAdapter} from './generic_browser_adapter';
 
@@ -56,7 +59,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
 
   /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
-  override getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
+  override getGlobalEventTarget(doc: Document, target: string): EventTarget | null {
     if (target === 'window') {
       return window;
     }
@@ -68,7 +71,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     }
     return null;
   }
-  override getBaseHref(doc: Document): string|null {
+  override getBaseHref(doc: Document): string | null {
     const href = getBaseElementHref();
     return href == null ? null : relativePath(href);
   }
@@ -78,13 +81,13 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   override getUserAgent(): string {
     return window.navigator.userAgent;
   }
-  override getCookie(name: string): string|null {
+  override getCookie(name: string): string | null {
     return parseCookieValue(document.cookie, name);
   }
 }
 
-let baseElement: HTMLElement|null = null;
-function getBaseElementHref(): string|null {
+let baseElement: HTMLElement | null = null;
+function getBaseElementHref(): string | null {
   baseElement = baseElement || document.querySelector('base');
   return baseElement ? baseElement.getAttribute('href') : null;
 }

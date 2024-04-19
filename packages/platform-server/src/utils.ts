@@ -6,7 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_ID, ApplicationRef, InjectionToken, PlatformRef, Provider, Renderer2, StaticProvider, Type, ɵannotateForHydration as annotateForHydration, ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED, ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER, ɵwhenStable as whenStable} from '@angular/core';
+import {
+  APP_ID,
+  ApplicationRef,
+  InjectionToken,
+  PlatformRef,
+  Provider,
+  Renderer2,
+  StaticProvider,
+  Type,
+  ɵannotateForHydration as annotateForHydration,
+  ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
+  ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
+  ɵwhenStable as whenStable,
+} from '@angular/core';
 
 import {PlatformState} from './platform_state';
 import {platformServer} from './server';
@@ -14,7 +27,7 @@ import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
 
 interface PlatformOptions {
-  document?: string|Document;
+  document?: string | Document;
   url?: string;
   platformProviders?: Provider[];
 }
@@ -27,7 +40,7 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
   const extraProviders = options.platformProviders ?? [];
   return platformServer([
     {provide: INITIAL_CONFIG, useValue: {document: options.document, url: options.url}},
-    extraProviders
+    extraProviders,
   ]);
 }
 
@@ -40,8 +53,9 @@ function createServerPlatform(options: PlatformOptions): PlatformRef {
 function appendSsrContentIntegrityMarker(doc: Document) {
   // Adding a ng hydration marken comment
   const comment = doc.createComment(SSR_CONTENT_INTEGRITY_MARKER);
-  doc.body.firstChild ? doc.body.insertBefore(comment, doc.body.firstChild) :
-                        doc.body.append(comment);
+  doc.body.firstChild
+    ? doc.body.insertBefore(comment, doc.body.firstChild)
+    : doc.body.append(comment);
 }
 
 /**
@@ -51,7 +65,7 @@ function appendSsrContentIntegrityMarker(doc: Document) {
 function appendServerContextInfo(applicationRef: ApplicationRef) {
   const injector = applicationRef.injector;
   let serverContext = sanitizeServerContext(injector.get(SERVER_CONTEXT, DEFAULT_SERVER_CONTEXT));
-  applicationRef.components.forEach(componentRef => {
+  applicationRef.components.forEach((componentRef) => {
     const renderer = componentRef.injector.get(Renderer2);
     const element = componentRef.location.nativeElement;
     if (element) {
@@ -61,11 +75,15 @@ function appendServerContextInfo(applicationRef: ApplicationRef) {
 }
 
 function insertEventRecordScript(
-    appId: string, doc: Document, eventTypesToBeReplayed: Set<string>) {
+  appId: string,
+  doc: Document,
+  eventTypesToBeReplayed: Set<string>,
+) {
   const events = Array.from(eventTypesToBeReplayed);
   // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
-  const replayScript = `window.__jsaction_bootstrap('ngContracts', document.body, ${
-      JSON.stringify(appId)}, ${JSON.stringify(events)});`;
+  const replayScript = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
+    appId,
+  )}, ${JSON.stringify(events)});`;
   const script = createScript(doc, replayScript);
   doc.body.insertBefore(script, doc.body.firstChild);
 }
@@ -160,11 +178,10 @@ function sanitizeServerContext(serverContext: string): string {
  *
  * @publicApi
  */
-export async function renderModule<T>(moduleType: Type<T>, options: {
-  document?: string|Document,
-  url?: string,
-  extraProviders?: StaticProvider[],
-}): Promise<string> {
+export async function renderModule<T>(
+  moduleType: Type<T>,
+  options: {document?: string | Document; url?: string; extraProviders?: StaticProvider[]},
+): Promise<string> {
   const {document, url, extraProviders: platformProviders} = options;
   const platformRef = createServerPlatform({document, url, platformProviders});
   const moduleRef = await platformRef.bootstrapModule(moduleType);
@@ -192,11 +209,10 @@ export async function renderModule<T>(moduleType: Type<T>, options: {
  *
  * @publicApi
  */
-export async function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
-  document?: string|Document,
-  url?: string,
-  platformProviders?: Provider[],
-}): Promise<string> {
+export async function renderApplication<T>(
+  bootstrap: () => Promise<ApplicationRef>,
+  options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
+): Promise<string> {
   const platformRef = createServerPlatform(options);
   const applicationRef = await bootstrap();
   return _render(platformRef, applicationRef);

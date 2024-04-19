@@ -7,7 +7,14 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ANIMATION_MODULE_TYPE, EnvironmentProviders, makeEnvironmentProviders, NgZone, RendererFactory2, ɵperformanceMarkFeature as performanceMarkFeature} from '@angular/core';
+import {
+  ANIMATION_MODULE_TYPE,
+  EnvironmentProviders,
+  makeEnvironmentProviders,
+  NgZone,
+  RendererFactory2,
+  ɵperformanceMarkFeature as performanceMarkFeature,
+} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
 import {AsyncAnimationRendererFactory} from './async_animation_renderer';
@@ -40,8 +47,9 @@ import {AsyncAnimationRendererFactory} from './async_animation_renderer';
  * @publicApi
  * @developerPreview
  */
-export function provideAnimationsAsync(type: 'animations'|'noop' = 'animations'):
-    EnvironmentProviders {
+export function provideAnimationsAsync(
+  type: 'animations' | 'noop' = 'animations',
+): EnvironmentProviders {
   performanceMarkFeature('NgAsyncAnimations');
   return makeEnvironmentProviders([
     {

@@ -8,7 +8,6 @@
 import {ResourceLoader} from '@angular/compiler';
 import {Injectable} from '@angular/core';
 
-
 @Injectable()
 export class ResourceLoaderImpl extends ResourceLoader {
   override get(url: string): Promise<string> {
@@ -22,7 +21,7 @@ export class ResourceLoaderImpl extends ResourceLoader {
     xhr.open('GET', url, true);
     xhr.responseType = 'text';
 
-    xhr.onload = function() {
+    xhr.onload = function () {
       const response = xhr.response;
 
       let status = xhr.status;
@@ -41,7 +40,7 @@ export class ResourceLoaderImpl extends ResourceLoader {
       }
     };
 
-    xhr.onerror = function() {
+    xhr.onerror = function () {
       reject(`Failed to load ${url}`);
     };
 

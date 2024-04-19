@@ -7,7 +7,11 @@
  */
 
 // Re-export TransferState to the public API of the `platform-browser` for backwards-compatibility.
-import {makeStateKey as makeStateKeyFromCore, StateKey as StateKeyFromCore, TransferState as TransferStateFromCore} from '@angular/core';
+import {
+  makeStateKey as makeStateKeyFromCore,
+  StateKey as StateKeyFromCore,
+  TransferState as TransferStateFromCore,
+} from '@angular/core';
 
 /**
  * Create a `StateKey<T>` that can be used to store value of type T with `TransferState`.
@@ -69,16 +73,45 @@ export const TransferState: {new (): TransferStateFromCore} = TransferStateFromC
 // The below is a workaround to add a deprecated message.
 export type StateKey<T> = StateKeyFromCore<T>;
 
-export {ApplicationConfig, bootstrapApplication, BrowserModule, createApplication, platformBrowser, provideProtractorTestingSupport} from './browser';
+export {
+  ApplicationConfig,
+  bootstrapApplication,
+  BrowserModule,
+  createApplication,
+  platformBrowser,
+  provideProtractorTestingSupport,
+} from './browser';
 export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
 export {By} from './dom/debug/by';
 export {REMOVE_STYLES_ON_COMPONENT_DESTROY} from './dom/dom_renderer';
 export {EVENT_MANAGER_PLUGINS, EventManager, EventManagerPlugin} from './dom/events/event_manager';
-export {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerLoader, HammerModule} from './dom/events/hammer_gestures';
-export {DomSanitizer, SafeHtml, SafeResourceUrl, SafeScript, SafeStyle, SafeUrl, SafeValue} from './security/dom_sanitization_service';
-export {HydrationFeature, HydrationFeatureKind, provideClientHydration, withEventReplay, withHttpTransferCacheOptions, withI18nSupport, withNoHttpTransferCache} from './hydration';
+export {
+  HAMMER_GESTURE_CONFIG,
+  HAMMER_LOADER,
+  HammerGestureConfig,
+  HammerLoader,
+  HammerModule,
+} from './dom/events/hammer_gestures';
+export {
+  DomSanitizer,
+  SafeHtml,
+  SafeResourceUrl,
+  SafeScript,
+  SafeStyle,
+  SafeUrl,
+  SafeValue,
+} from './security/dom_sanitization_service';
+export {
+  HydrationFeature,
+  HydrationFeatureKind,
+  provideClientHydration,
+  withEventReplay,
+  withHttpTransferCacheOptions,
+  withI18nSupport,
+  withNoHttpTransferCache,
+} from './hydration';
 
 export * from './private_export';
 export {VERSION} from './version';

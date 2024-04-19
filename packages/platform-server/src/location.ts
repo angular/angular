@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DOCUMENT, LocationChangeEvent, LocationChangeListener, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
+import {
+  DOCUMENT,
+  LocationChangeEvent,
+  LocationChangeListener,
+  PlatformLocation,
+  ɵgetDOM as getDOM,
+} from '@angular/common';
 import {Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
@@ -15,15 +21,17 @@ import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 const RESOLVE_PROTOCOL = 'resolve:';
 
 function parseUrl(urlStr: string): {
-  hostname: string,
-  protocol: string,
-  port: string,
-  pathname: string,
-  search: string,
-  hash: string,
+  hostname: string;
+  protocol: string;
+  port: string;
+  pathname: string;
+  search: string;
+  hash: string;
 } {
-  const {hostname, protocol, port, pathname, search, hash} =
-      new URL(urlStr, RESOLVE_PROTOCOL + '//');
+  const {hostname, protocol, port, pathname, search, hash} = new URL(
+    urlStr,
+    RESOLVE_PROTOCOL + '//',
+  );
 
   return {
     hostname,
@@ -51,7 +59,9 @@ export class ServerPlatformLocation implements PlatformLocation {
   private _hashUpdate = new Subject<LocationChangeEvent>();
 
   constructor(
-      @Inject(DOCUMENT) private _doc: any, @Optional() @Inject(INITIAL_CONFIG) _config: any) {
+    @Inject(DOCUMENT) private _doc: any,
+    @Optional() @Inject(INITIAL_CONFIG) _config: any,
+  ) {
     const config = _config as PlatformConfig | null;
     if (!config) {
       return;
@@ -94,9 +104,14 @@ export class ServerPlatformLocation implements PlatformLocation {
     }
     (this as Writable<this>).hash = value;
     const newUrl = this.url;
-    queueMicrotask(
-        () => this._hashUpdate.next(
-            {type: 'hashchange', state: null, oldUrl, newUrl} as LocationChangeEvent));
+    queueMicrotask(() =>
+      this._hashUpdate.next({
+        type: 'hashchange',
+        state: null,
+        oldUrl,
+        newUrl,
+      } as LocationChangeEvent),
+    );
   }
 
   replaceState(state: any, title: string, newUrl: string): void {

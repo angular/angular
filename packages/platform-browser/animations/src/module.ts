@@ -5,7 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ModuleWithProviders, NgModule, Provider, ɵperformanceMarkFeature as performanceMarkFeature} from '@angular/core';
+import {
+  ModuleWithProviders,
+  NgModule,
+  Provider,
+  ɵperformanceMarkFeature as performanceMarkFeature,
+} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from './providers';
@@ -48,12 +53,14 @@ export class BrowserAnimationsModule {
    * class MyNgModule {}
    * ```
    */
-  static withConfig(config: BrowserAnimationsModuleConfig):
-      ModuleWithProviders<BrowserAnimationsModule> {
+  static withConfig(
+    config: BrowserAnimationsModuleConfig,
+  ): ModuleWithProviders<BrowserAnimationsModule> {
     return {
       ngModule: BrowserAnimationsModule,
-      providers: config.disableAnimations ? BROWSER_NOOP_ANIMATIONS_PROVIDERS :
-                                            BROWSER_ANIMATIONS_PROVIDERS
+      providers: config.disableAnimations
+        ? BROWSER_NOOP_ANIMATIONS_PROVIDERS
+        : BROWSER_ANIMATIONS_PROVIDERS,
     };
   }
 }
@@ -95,8 +102,7 @@ export function provideAnimations(): Provider[] {
   exports: [BrowserModule],
   providers: BROWSER_NOOP_ANIMATIONS_PROVIDERS,
 })
-export class NoopAnimationsModule {
-}
+export class NoopAnimationsModule {}
 
 /**
  * Returns the set of dependency-injection providers

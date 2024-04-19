@@ -9,7 +9,10 @@
 import {ApplicationRef, ComponentRef} from '@angular/core';
 
 export class ChangeDetectionPerfRecord {
-  constructor(public msPerTick: number, public numTicks: number) {}
+  constructor(
+    public msPerTick: number,
+    public numTicks: number,
+  ) {}
 }
 
 /**
@@ -49,7 +52,7 @@ export class AngularProfiler {
     }
     const start = performance.now();
     let numTicks = 0;
-    while (numTicks < 5 || (performance.now() - start) < 500) {
+    while (numTicks < 5 || performance.now() - start < 500) {
       this.appRef.tick();
       numTicks++;
     }

@@ -7,7 +7,15 @@
  */
 
 import {DOCUMENT, isPlatformServer} from '@angular/common';
-import {APP_ID, CSP_NONCE, Inject, Injectable, OnDestroy, Optional, PLATFORM_ID} from '@angular/core';
+import {
+  APP_ID,
+  CSP_NONCE,
+  Inject,
+  Injectable,
+  OnDestroy,
+  Optional,
+  PLATFORM_ID,
+} from '@angular/core';
 
 /** The style elements attribute name used to set value of `APP_ID` token. */
 const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
@@ -15,20 +23,23 @@ const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
   // Maps all registered host nodes to a list of style nodes that have been added to the host node.
-  private readonly styleRef = new Map < string /** Style string */, {
-    elements: HTMLStyleElement[];
-    usage: number
-  }
-  > ();
+  private readonly styleRef = new Map<
+    string /** Style string */,
+    {
+      elements: HTMLStyleElement[];
+      usage: number;
+    }
+  >();
   private readonly hostNodes = new Set<Node>();
-  private readonly styleNodesInDOM: Map<string, HTMLStyleElement>|null;
+  private readonly styleNodesInDOM: Map<string, HTMLStyleElement> | null;
   private readonly platformIsServer: boolean;
 
   constructor(
-      @Inject(DOCUMENT) private readonly doc: Document,
-      @Inject(APP_ID) private readonly appId: string,
-      @Inject(CSP_NONCE) @Optional() private nonce?: string|null,
-      @Inject(PLATFORM_ID) readonly platformId: object = {}) {
+    @Inject(DOCUMENT) private readonly doc: Document,
+    @Inject(APP_ID) private readonly appId: string,
+    @Inject(CSP_NONCE) @Optional() private nonce?: string | null,
+    @Inject(PLATFORM_ID) readonly platformId: object = {},
+  ) {
     this.styleNodesInDOM = this.collectServerRenderedStyles();
     this.platformIsServer = isPlatformServer(platformId);
     this.resetHostNodes();
@@ -96,9 +107,10 @@ export class SharedStylesHost implements OnDestroy {
     styleRef.delete(style);
   }
 
-  private collectServerRenderedStyles(): Map<string, HTMLStyleElement>|null {
+  private collectServerRenderedStyles(): Map<string, HTMLStyleElement> | null {
     const styles = this.doc.head?.querySelectorAll<HTMLStyleElement>(
-        `style[${APP_ID_ATTRIBUTE_NAME}="${this.appId}"]`);
+      `style[${APP_ID_ATTRIBUTE_NAME}="${this.appId}"]`,
+    );
 
     if (styles?.length) {
       const styleMap = new Map<string, HTMLStyleElement>();

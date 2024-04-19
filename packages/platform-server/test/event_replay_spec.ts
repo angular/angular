@@ -45,9 +45,12 @@ describe('event replay', () => {
      * @param envProviders the environment providers
      * @returns a promise containing the server rendered app as a string
      */
-    async function ssr(component: Type<unknown>, options?: {
-      doc?: string,
-    }): Promise<string> {
+    async function ssr(
+      component: Type<unknown>,
+      options?: {
+        doc?: string;
+      },
+    ): Promise<string> {
       const defaultHtml = '<html><head></head><body><app></app></body></html>';
       const providers = [
         provideServerRendering(),
@@ -81,9 +84,10 @@ describe('event replay', () => {
         const html = await ssr(SimpleComponent, {doc});
         const ssrContents = getAppContents(html);
         expect(
-            ssrContents.startsWith(
-                `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click","blur"]);</script>`))
-            .toBeTrue();
+          ssrContents.startsWith(
+            `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click","blur"]);</script>`,
+          ),
+        ).toBeTrue();
         expect(ssrContents).toContain('<div jsaction="click:"><div jsaction="blur:"></div></div>');
       });
     });
