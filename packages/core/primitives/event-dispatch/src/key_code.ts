@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * If on a Macintosh with an extended keyboard, the Enter key located in the
+ * numeric pad has a different ASCII code.
+ */
+export const MAC_ENTER = 3;
+
+/** The Enter key. */
+export const ENTER = 13;
+
+/** The Space key. */
+export const SPACE = 32;
+
 /** Special keycodes used by jsaction for the generic click action. */
-export enum KeyCode {
-  /**
-   * If on a Macintosh with an extended keyboard, the Enter key located in the
-   * numeric pad has a different ASCII code.
-   */
-  MAC_ENTER = 3,
-
-  /** The Enter key. */
-  ENTER = 13,
-
-  /** The Space key. */
-  SPACE = 32,
-}
+export const KeyCode = {MAC_ENTER, ENTER, SPACE};

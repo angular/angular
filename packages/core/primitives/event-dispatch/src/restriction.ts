@@ -11,5 +11,5 @@
  */
 
 export enum Restriction {
-  I_AM_THE_JSACTION_FRAMEWORK = 1,
+  I_AM_THE_JSACTION_FRAMEWORK,
 }
