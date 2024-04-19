@@ -166,10 +166,7 @@ export class EventContract implements UnrenamedEventContract {
     populateClickOnlyAction: typeof a11yClickLib.populateClickOnlyAction,
   ) => void;
 
-  constructor(
-    containerManager: EventContractContainerManager,
-    private readonly stopPropagation: false = false,
-  ) {
+  constructor(containerManager: EventContractContainerManager) {
     this.containerManager = containerManager;
     if (EventContract.CUSTOM_EVENT_SUPPORT) {
       this.addEvent(EventType.CUSTOM);
@@ -239,34 +236,6 @@ export class EventContract implements UnrenamedEventContract {
       return;
     }
 
-    let stopPropagationAfterDispatch = false;
-    if (
-      this.stopPropagation &&
-      eventInfoLib.getEventType(eventInfo) !== AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE
-    ) {
-      if (
-        eventLib.isGecko &&
-        (eventInfoLib.getTargetElement(eventInfo).tagName === 'INPUT' ||
-          eventInfoLib.getTargetElement(eventInfo).tagName === 'TEXTAREA') &&
-        eventInfoLib.getEventType(eventInfo) === EventType.FOCUS
-      ) {
-        // Do nothing since stopping propagation a focus event on an input
-        // element in Firefox makes the text cursor disappear:
-        // https://bugzilla.mozilla.org/show_bug.cgi?id=509684
-      } else {
-        // Since we found a jsaction, prevent other handlers from seeing
-        // this event.
-        eventLib.stopPropagation(eventInfoLib.getEvent(eventInfo));
-      }
-    } else if (
-      this.stopPropagation &&
-      eventInfoLib.getEventType(eventInfo) === AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE
-    ) {
-      // We first need to let the dispatcher determine whether we can treat
-      // this event as a click event.
-      stopPropagationAfterDispatch = true;
-    }
-
     if (this.dispatcher) {
       if (
         action &&
@@ -282,9 +251,6 @@ export class EventContract implements UnrenamedEventContract {
         // handler again to find keydown actions for it.
         this.handleEventInfo(unresolvedEventInfo, /* allowRehandling= */ false);
         return;
-      }
-      if (stopPropagationAfterDispatch) {
-        eventLib.stopPropagation(eventInfoLib.getEvent(eventInfo));
       }
     }
   }
