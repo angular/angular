@@ -16,6 +16,8 @@ import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
 import {HttpRequest} from './request';
 import {
+  HTTP_STATUS_CODE_NO_CONTENT,
+  HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
   HttpErrorResponse,
   HttpEvent,
@@ -23,7 +25,6 @@ import {
   HttpHeaderResponse,
   HttpJsonParseError,
   HttpResponse,
-  HttpStatusCode,
   HttpUploadProgressEvent,
 } from './response';
 
@@ -162,14 +163,14 @@ export class HttpXhrBackend implements HttpBackend {
             // The body will be read out if present.
             let body: any | null = null;
 
-            if (status !== HttpStatusCode.NoContent) {
+            if (status !== HTTP_STATUS_CODE_NO_CONTENT) {
               // Use XMLHttpRequest.response if set, responseText otherwise.
               body = typeof xhr.response === 'undefined' ? xhr.responseText : xhr.response;
             }
 
             // Normalize another potential bug (this one comes from CORS).
             if (status === 0) {
-              status = !!body ? HttpStatusCode.Ok : 0;
+              status = !!body ? HTTP_STATUS_CODE_OK : 0;
             }
 
             // ok determines whether the response will be transmitted on the event or

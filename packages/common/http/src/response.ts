@@ -199,7 +199,7 @@ export abstract class HttpResponseBase {
       statusText?: string;
       url?: string;
     },
-    defaultStatus: number = HttpStatusCode.Ok,
+    defaultStatus: number = 200,
     defaultStatusText: string = 'OK',
   ) {
     // If the hash has values passed, use them to initialize the response.
@@ -372,6 +372,13 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
 }
 
 /**
+ * We use these constant to prevent pulling the whole HttpStatusCode enum
+ * Those are the only ones referenced directly by the framework
+ */
+export const HTTP_STATUS_CODE_OK = 200;
+export const HTTP_STATUS_CODE_NO_CONTENT = 204;
+
+/**
  * Http status codes.
  * As per https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
  * @publicApi
@@ -382,11 +389,11 @@ export enum HttpStatusCode {
   Processing = 102,
   EarlyHints = 103,
 
-  Ok = 200,
+  Ok = HTTP_STATUS_CODE_OK,
   Created = 201,
   Accepted = 202,
   NonAuthoritativeInformation = 203,
-  NoContent = 204,
+  NoContent = HTTP_STATUS_CODE_NO_CONTENT,
   ResetContent = 205,
   PartialContent = 206,
   MultiStatus = 207,

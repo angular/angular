@@ -13,13 +13,13 @@ import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
 import {HttpRequest} from './request';
 import {
+  HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
   HttpErrorResponse,
   HttpEvent,
   HttpEventType,
   HttpHeaderResponse,
   HttpResponse,
-  HttpStatusCode,
 } from './response';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
@@ -180,7 +180,7 @@ export class FetchBackend implements HttpBackend {
 
     // Same behavior as the XhrBackend
     if (status === 0) {
-      status = body ? HttpStatusCode.Ok : 0;
+      status = body ? HTTP_STATUS_CODE_OK : 0;
     }
 
     // ok determines whether the response will be transmitted on the event or

@@ -198,9 +198,6 @@
     "name": "HttpResponseBase"
   },
   {
-    "name": "HttpStatusCode"
-  },
-  {
     "name": "HydrationFeatureKind"
   },
   {
