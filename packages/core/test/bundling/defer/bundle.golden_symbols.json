@@ -1035,9 +1035,6 @@
     "name": "init_all"
   },
   {
-    "name": "init_annotate"
-  },
-  {
     "name": "init_api"
   },
   {
