@@ -20,11 +20,11 @@ import {HttpBackend, HttpHandler} from './backend';
 import {HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
 import {
+  HTTP_STATUS_CODE_OK,
   HttpErrorResponse,
   HttpEvent,
   HttpEventType,
   HttpResponse,
-  HttpStatusCode,
 } from './response';
 
 // Every request made through JSONP needs a callback name that's unique across the
@@ -205,7 +205,7 @@ export class JsonpClientBackend implements HttpBackend {
           observer.next(
             new HttpResponse({
               body,
-              status: HttpStatusCode.Ok,
+              status: HTTP_STATUS_CODE_OK,
               statusText: 'OK',
               url,
             }),
