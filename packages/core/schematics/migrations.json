@@ -19,6 +19,11 @@
       "version": "17.3.0",
       "description": "Updates two-way bindings that have an invalid expression to use the longform expression instead.",
       "factory": "./migrations/invalid-two-way-bindings/bundle"
+    },
+    "provide-initializer": {
+      "version": "18.0.0",
+      "description": "Replaces `APP_INITIALIZER`, 'ENVIRONMENT_INITIALIZER' & 'PLATFORM_INITIALIZER' respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatormInitializer`.",
+      "factory": "./migrations/provide-initializer/bundle"
     }
   }
 }
