@@ -22,7 +22,7 @@ import {EventContractMultiContainer} from '../src/event_contract_multi_container
 import {EventInfo, EventInfoWrapper} from '../src/event_info';
 import {EventType} from '../src/event_type';
 import {addDeferredA11yClickSupport, Dispatcher, EventContract} from '../src/eventcontract';
-import {Property} from '../src/property';
+import {OWNER} from '../src/property';
 import {Restriction} from '../src/restriction';
 
 import {safeElement, testonlyHtml} from './html';
@@ -515,7 +515,7 @@ describe('EventContract', () => {
     const container = getRequiredElementById('owner-click-container');
     const actionElement = getRequiredElementById('owner-click-action-element');
     const targetElement = getRequiredElementById('owner-click-target-element');
-    targetElement[Property.OWNER] = actionElement;
+    targetElement[OWNER] = actionElement;
 
     const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
     createEventContract({
