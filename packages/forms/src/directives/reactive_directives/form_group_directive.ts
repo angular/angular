@@ -78,7 +78,7 @@ const formDirectiveProvider: Provider = {
 @Directive({
   selector: '[formGroup]',
   providers: [formDirectiveProvider],
-  host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset()'},
+  host: {'(submit)': 'onSubmit($event)', '(reset)': 'onReset($event)'},
   exportAs: 'ngForm',
 })
 export class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
@@ -117,6 +117,12 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * Emits an event when the form submission has been triggered.
    */
   @Output() ngSubmit = new EventEmitter();
+
+  /**
+   * @description
+   * Emits an event when the form reset has been triggered.
+   */
+  @Output() ngReset = new EventEmitter();
 
   constructor(
     @Optional() @Self() @Inject(NG_VALIDATORS) validators: (Validator | ValidatorFn)[],
@@ -311,8 +317,13 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   /**
    * @description
    * Method called when the "reset" event is triggered on the form.
+   * Triggers the `ngReset` emitter to emit the "reset" event as its payload.
+   *
+   * @param $event The "reset" event object
    */
-  onReset(): void {
+  onReset($event: Event): void {
+    syncPendingControls(this.form, this.directives);
+    this.ngReset.emit($event);
     this.resetForm();
   }
 

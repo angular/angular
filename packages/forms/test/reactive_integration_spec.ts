@@ -989,6 +989,19 @@ describe('reactive forms integration tests', () => {
       expect(fixture.componentInstance.event.type).toEqual('submit');
     });
 
+    it('should emit ngReset event with the original reset event on reset', () => {
+      const fixture = initTest(FormGroupComp);
+      fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
+      fixture.componentInstance.event = null!;
+      fixture.detectChanges();
+
+      const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+      dispatchEvent(formEl, 'reset');
+
+      fixture.detectChanges();
+      expect(fixture.componentInstance.event.type).toEqual('reset');
+    });
+
     it('should mark formGroup as submitted on submit event', () => {
       const fixture = initTest(FormGroupComp);
       fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
@@ -5792,7 +5805,7 @@ class FormControlComp {
 @Component({
   selector: 'form-group-comp',
   template: `
-    <form [formGroup]="form" (ngSubmit)="event=$event">
+    <form [formGroup]="form" (ngSubmit)="event=$event" (ngReset)="event=$event">
       <input type="text" formControlName="login">
     </form>`,
 })

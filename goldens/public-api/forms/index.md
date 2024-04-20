@@ -497,8 +497,9 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     ngOnChanges(changes: SimpleChanges): void;
     // (undocumented)
     ngOnDestroy(): void;
+    ngReset: EventEmitter<any>;
     ngSubmit: EventEmitter<any>;
-    onReset(): void;
+    onReset($event: Event): void;
     onSubmit($event: Event): boolean;
     get path(): string[];
     removeControl(dir: FormControlName): void;
@@ -508,7 +509,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     readonly submitted: boolean;
     updateModel(dir: FormControlName, value: any): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": { "alias": "formGroup"; "required": false; }; }, { "ngSubmit": "ngSubmit"; }, never, never, false, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<FormGroupDirective, "[formGroup]", ["ngForm"], { "form": { "alias": "formGroup"; "required": false; }; }, { "ngSubmit": "ngSubmit"; "ngReset": "ngReset"; }, never, never, false, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<FormGroupDirective, [{ optional: true; self: true; }, { optional: true; self: true; }, { optional: true; }]>;
 }
