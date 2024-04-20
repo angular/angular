@@ -27,11 +27,11 @@ control over how and when the content is displayed.
 ### Structural Directives
 
 One of the main uses for `<ng-template>` is to hold template content that will be used
-by [Structural directives](guide/structural-directives). Those directives can add and remove copies
+by [Structural directives](guide/directives/structural-directives). Those directives can add and remove copies
 of the template content based on their own logic.
 
 When using
-the [structural directive shorthand](guide/structural-directives#structural-directive-shorthand),
+the [structural directive shorthand](guide/directives/structural-directives#structural-directive-shorthand),
 Angular creates an `<ng-template>` element behind the scenes.
 
 ### TemplateRef
@@ -44,7 +44,7 @@ method `createEmbeddedView()`.
 ### Template Variables
 
 `<ng-template>` elements can be referenced in templates
-using [standard template variables](guide/template-reference-variables#how-angular-assigns-values-to-template-variables).
+using [standard template variables](guide/templates/reference-variables#how-angular-assigns-values-to-template-variables).
 
 *This is how `<ng-template>` elements are used as `ngIf` else clauses.*
 
