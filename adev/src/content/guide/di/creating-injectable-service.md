@@ -54,7 +54,7 @@ export class HeroService {
 
 ## Creating an injectable service
 
-The Angular CLI provides a command to create a new service. In the following example, you add a new service to an application.
+The Angular CLI provides a command to create a new service. In the following example, you add a new service to an existing application.
 
 To generate a new `HeroService` class in the `src/app/heroes` folder, follow these steps:
 
