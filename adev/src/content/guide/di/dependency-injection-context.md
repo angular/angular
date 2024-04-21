@@ -1,21 +1,21 @@
 # Injection context
 
 The dependency injection (DI) system relies internally on a runtime context where the current injector is available.
-This means that injectors can only work when code is executed in this context.
+This means that injectors can only work when code is executed in such a context.
 
 The injection context is available in these situations:
 
-* Construction (via the `constructor`) of a class being instantiated by the DI system, such as an `@Injectable` or `@Component`.
+* During construction (via the `constructor`) of a class being instantiated by the DI system, such as an `@Injectable` or `@Component`.
 * In the initializer for fields of such classes.
 * In the factory function specified for `useFactory` of a `Provider` or an `@Injectable`.
 * In the `factory` function specified for an `InjectionToken`.
-* Within a stack frame that is run in a injection context.
+* Within a stack frame that runs in an injection context.
 
-Knowing when you are in an injection context, will allow you to use the [`inject`](api/core/inject) function to inject instances.
+Knowing when you are in an injection context will allow you to use the [`inject`](api/core/inject) function to inject instances.
 
 ## Class constructors
 
-Everytime the DI system instantiates a class, this is done in an injection context. This is being handled by the framework itself. The constructor of the class is executed in that runtime context thus allowing to inject a token using the [`inject`](api/core/inject) function.
+Every time the DI system instantiates a class, it does so in an injection context. This is handled by the framework itself. The constructor of the class is executed in that runtime context, which also allows injection of a token using the [`inject`](api/core/inject) function.
 
 <docs-code language="typescript" highlight="[[3],[6]]">
 class MyComponent  {
@@ -30,7 +30,7 @@ class MyComponent  {
 
 ## Stack frame in context
 
-Some APIs are designed to be run in an injection context. This is the case, for example, of the router guards. It allows the use of [`inject`](api/core/inject) to access a service within the guard function.
+Some APIs are designed to be run in an injection context. This is the case, for example, with router guards. This allows the use of [`inject`](api/core/inject) within the guard function to access a service.
 
 Here is an example for `CanActivateFn`
 
@@ -43,8 +43,8 @@ const canActivateTeam: CanActivateFn =
 
 ## Run within an injection context
 
-When you want to run a given function in an injection context without being in one, you can do it with `runInInjectionContext`.
-This requires to have access to a given injector like the `EnvironmentInjector` for example.
+When you want to run a given function in an injection context without already being in one, you can do so with `runInInjectionContext`.
+This requires access to a given injector, like the `EnvironmentInjector`, for example:
 
 <docs-code header="src/app/heroes/hero.service.ts" language="typescript"
            highlight="[9]">
@@ -66,7 +66,7 @@ Note that `inject` will return an instance only if the injector can resolve the 
 
 ## Asserts the context
 
-Angular provides `assertInInjectionContext` helper function to assert that the current context is an injection context.
+Angular provides the `assertInInjectionContext` helper function to assert that the current context is an injection context.
 
 ## Using DI outside of a context
 
