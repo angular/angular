@@ -8,7 +8,7 @@ Angular provides the necessary APIs to make the dependency configuration flexibl
 
 If you specify the service class as the provider token, the default behavior is for the injector to instantiate that class using the `new` operator.
 
-In the following example, the app component provides a `Logger` instance.
+In the following example, the app component provides a `Logger` instance:
 
 <docs-code header="src/app/app.component.ts" language="typescript">
 providers: [Logger],
@@ -33,7 +33,7 @@ The expanded provider configuration is an object literal with two properties:
   - `useFactory` - allows you to define a function that constructs a dependency.
   - `useValue` - provides a static value that should be used as a dependency.
 
-The section below describes how to use the different provider definitions.
+The sections below describe how to use the different provider definitions.
 
 ### Class providers: useClass
 
@@ -42,13 +42,13 @@ The `useClass` provider key lets you create and return a new instance of the spe
 You can use this type of provider to substitute an alternative implementation for a common or default class.
 The alternative implementation can, for example, implement a different strategy, extend the default class, or emulate the behavior of the real class in a test case.
 
-In the following example, `BetterLogger` would be instantiated when the `Logger` dependency is requested in a component or any other class.
+In the following example, `BetterLogger` would be instantiated when the `Logger` dependency is requested in a component or any other class:
 
 <docs-code header="src/app/app.component.ts" language="typescript">
 [{ provide: Logger, useClass: BetterLogger }]
 </docs-code>
 
-If the alternative class providers have their own dependencies, specify both providers in the providers metadata property of the parent module or component.
+If the alternative class providers have their own dependencies, specify both providers in the providers metadata property of the parent module or component:
 
 <docs-code header="src/app/app.component.ts" language="typescript">
 [
@@ -57,7 +57,7 @@ If the alternative class providers have their own dependencies, specify both pro
 ]
 </docs-code>
 
-In this example, `EvenBetterLogger` displays the user name in the log message. This logger gets the user from an injected `UserService` instance.
+In this example, `EvenBetterLogger` displays the user name in the log message. This logger gets the user from an injected `UserService` instance:
 
 <docs-code header="src/app/even-better-logger.component.ts" language="typescript"
            highlight="[[3],[6]]">
@@ -79,7 +79,7 @@ Angular DI knows how to construct the `UserService` dependency, since it has bee
 The `useExisting` provider key lets you map one token to another.
 In effect, the first token is an alias for the service associated with the second token, creating two ways to access the same service object.
 
-In the following example, the injector injects the singleton instance of `NewLogger` when the component asks for either the new or the old logger.
+In the following example, the injector injects the singleton instance of `NewLogger` when the component asks for either the new or the old logger:
 In this way, `OldLogger` is an alias for `NewLogger`.
 
 <docs-code header="src/app/app.component.ts" language="typescript" highlight="[4]">
@@ -95,12 +95,12 @@ Note: Ensure you do not alias `OldLogger` to `NewLogger` with `useClass`, as thi
 ### Factory providers: useFactory
 
 The `useFactory` provider key lets you create a dependency object by calling a factory function.
-With this approach you can create a dynamic value based on information available in the DI and elsewhere in the app.
+With this approach, you can create a dynamic value based on information available in the DI and elsewhere in the app.
 
 In the following example, only authorized users should see secret heroes in the `HeroService`.
 Authorization can change during the course of a single application session, as when a different user logs in .
 
-To keep security-sensitive information in `UserService` and out of `HeroService`, give the `HeroService` constructor a boolean flag to control display of secret heroes.
+To keep security-sensitive information in `UserService` and out of `HeroService`, give the `HeroService` constructor a boolean flag to control display of secret heroes:
 
 <docs-code header="src/app/heroes/hero.service.ts" language="typescript"
            highlight="[[4],[7]]">
@@ -118,7 +118,7 @@ class HeroService {
 </docs-code>
 
 To implement the `isAuthorized` flag, use a factory provider to create a new logger instance for `HeroService`.
-This is necessary as we need to manually pass `Logger` when constructing the hero service.
+This is necessary as we need to manually pass `Logger` when constructing the hero service:
 
 <docs-code header="src/app/heroes/hero.service.provider.ts" language="typescript">
 const heroServiceFactory = (logger: Logger, userService: UserService) =>
@@ -126,7 +126,7 @@ const heroServiceFactory = (logger: Logger, userService: UserService) =>
 </docs-code>
 
 The factory function has access to `UserService`.
-You inject both `Logger` and `UserService` into the factory provider so the injector can pass them along to the factory function.
+You inject both `Logger` and `UserService` into the factory provider so the injector can pass them along to the factory function:
 
 <docs-code header="src/app/heroes/hero.service.provider.ts" language="typescript"
            highlight="[3,4]">
@@ -156,7 +156,7 @@ The next section provides more information about the `useValue` key.
 ## Using an `InjectionToken` object
 
 Use an `InjectionToken` object as provider token for non-class dependencies.
-The following example defines a token, `APP_CONFIG` of the type `InjectionToken`.
+The following example defines a token, `APP_CONFIG`. of the type `InjectionToken`:
 
 <docs-code header="src/app/app.config.ts" language="typescript" highlight="[3]">
 import { InjectionToken } from '@angular/core';
@@ -166,13 +166,13 @@ export const APP_CONFIG = new InjectionToken<AppConfig>('app.config description'
 
 The optional type parameter, `<AppConfig>`, and the token description, `app.config description`, specify the token's purpose.
 
-Next, register the dependency provider in the component using the `InjectionToken` object of `APP_CONFIG`.
+Next, register the dependency provider in the component using the `InjectionToken` object of `APP_CONFIG`:
 
 <docs-code header="src/app/app.component.ts" language="typescript">
 providers: [{ provide: APP_CONFIG, useValue: MY_APP_CONFIG_VARIABLE }]
 </docs-code>
 
-Now, inject the configuration object into the constructor with `@Inject()` parameter decorator.
+Now, inject the configuration object into the constructor with the `@Inject()` parameter decorator:
 
 <docs-code header="src/app/app.component.ts" language="typescript" highlight="[2]">
 export class AppComponent {
@@ -187,8 +187,8 @@ export class AppComponent {
 Though the TypeScript `AppConfig` interface supports typing within the class, the `AppConfig` interface plays no role in DI.
 In TypeScript, an interface is a design-time artifact, and does not have a runtime representation, or token, that the DI framework can use.
 
-When the transpiler changes TypeScript to JavaScript, the interface disappears because JavaScript doesn't have interfaces.
-Because there is no interface for Angular to find at runtime, the interface cannot be a token, nor can you inject it.
+When the TypeScript transpiles to JavaScript, the interface disappears because JavaScript doesn't have interfaces.
+Because there is no interface for Angular to find at runtime, the interface cannot be a token, nor can you inject it:
 
 <docs-code header="src/app/app.component.ts" language="typescript">
 // Can't use interface as provider token
