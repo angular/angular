@@ -29,7 +29,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
         {
             "locations": [
                 {
-                    "id": 0,
+                    "id": "0",
                     "name": "Acme Fresh Start Housing",
                     "city": "Chicago",
                     "state": "IL",
@@ -39,7 +39,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": true
                 },
                 {
-                    "id": 1,
+                    "id": "1",
                     "name": "A113 Transitional Housing",
                     "city": "Santa Monica",
                     "state": "CA",
@@ -49,7 +49,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": true
                 },
                 {
-                    "id": 2,
+                    "id": "2",
                     "name": "Warm Beds Housing Support",
                     "city": "Juneau",
                     "state": "AK",
@@ -59,7 +59,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": false
                 },
                 {
-                    "id": 3,
+                    "id": "3",
                     "name": "Homesteady Housing",
                     "city": "Chicago",
                     "state": "IL",
@@ -69,7 +69,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": false
                 },
                 {
-                    "id": 4,
+                    "id": "4",
                     "name": "Happy Homes Group",
                     "city": "Gary",
                     "state": "IN",
@@ -79,7 +79,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": false
                 },
                 {
-                    "id": 5,
+                    "id": "5",
                     "name": "Hopeful Apartment Group",
                     "city": "Oakland",
                     "state": "CA",
@@ -89,7 +89,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": true
                 },
                 {
-                    "id": 6,
+                    "id": "6",
                     "name": "Seriously Safe Towns",
                     "city": "Oakland",
                     "state": "CA",
@@ -99,7 +99,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": true
                 },
                 {
-                    "id": 7,
+                    "id": "7",
                     "name": "Hopeful Housing Solutions",
                     "city": "Oakland",
                     "state": "CA",
@@ -109,7 +109,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": true
                 },
                 {
-                    "id": 8,
+                    "id": "8",
                     "name": "Seriously Safe Towns",
                     "city": "Oakland",
                     "state": "CA",
@@ -119,7 +119,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
                     "laundry": false
                 },
                 {
-                    "id": 9,
+                    "id": "9",
                     "name": "Capital Safe Towns",
                     "city": "Portland",
                     "state": "OR",
