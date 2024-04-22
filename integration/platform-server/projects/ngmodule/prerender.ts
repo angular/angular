@@ -14,7 +14,7 @@ import {readFileSync} from 'node:fs';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
-const indexHtml = readFileSync(join(browserDistFolder, 'index.html'), 'utf-8');
+const indexHtml = readFileSync(join(browserDistFolder, 'index.csr.html'), 'utf-8');
 
 async function runTest() {
   // Test and validate the errors are printed in the console.

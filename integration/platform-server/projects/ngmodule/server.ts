@@ -18,7 +18,7 @@ import './prerender';
 const app = express();
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
-const indexHtml = readFileSync(join(browserDistFolder, 'index.html'), 'utf-8');
+const indexHtml = readFileSync(join(browserDistFolder, 'index.csr.html'), 'utf-8');
 
 // Serve static files from /browser
 app.get(
