@@ -555,7 +555,7 @@ function hasApplyArgsData(applyArgs: unknown, key: string) {
     return false;
   }
 
-  return applyArgs[0].data?.[key] === true;
+  return applyArgs[0]?.data?.[key] === true;
 }
 
 
