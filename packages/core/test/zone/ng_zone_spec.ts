@@ -1192,6 +1192,12 @@ function commonTests() {
              done();
            });
          });
+
+      it('does not throw when apply args array has `undefined`', () => {
+        expect(() => {
+          coalesceZone.run(function(this: any, arg: any) {}, undefined, [undefined]);
+        }).not.toThrow();
+      });
     });
   });
 }
