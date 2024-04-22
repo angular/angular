@@ -266,7 +266,7 @@ Learn about more advanced features in Angular animations under the Animation sec
 ## Animations API summary
 
 The functional API provided by the `@angular/animations` module provides a domain-specific language \(DSL\) for creating and controlling animations in Angular applications.
-See the [API reference](api/animations) for a complete listing and syntax details of the core functions and related data structures.
+See the [API reference](api#animations) for a complete listing and syntax details of the core functions and related data structures.
 
 | Function name                     | What it does                                                                                                                                                                                                |
 |:---                               |:---                                                                                                                                                                                                         |
