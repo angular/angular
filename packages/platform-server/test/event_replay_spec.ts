@@ -8,6 +8,7 @@
 
 import {DOCUMENT} from '@angular/common';
 import {Component, destroyPlatform, getPlatform, Type} from '@angular/core';
+import {bootstrapEventContract, EventContract} from '@angular/core/primitives/event-dispatch';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication, provideClientHydration} from '@angular/platform-browser';
 import {withEventReplay} from '@angular/platform-browser/src/hydration';
@@ -15,7 +16,7 @@ import {withEventReplay} from '@angular/platform-browser/src/hydration';
 import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
 
-import {getAppContents} from './dom_utils';
+import {getAppContents, hydrate, render, resetTViewsFor} from './dom_utils';
 
 /**
  * Represents the <script> tag added by the build process to inject
@@ -42,17 +43,7 @@ describe('event replay', () => {
     destroyPlatform();
   });
 
-  describe('dom serialization', () => {
-    let doc: Document;
-
-    beforeEach(() => {
-      doc = TestBed.inject(DOCUMENT);
-    });
-
-    afterEach(() => {
-      doc.body.textContent = '';
-    });
-
+  describe('event replay', () => {
     /**
      * This renders the application with server side rendering logic.
      *
@@ -80,29 +71,64 @@ describe('event replay', () => {
     }
 
     describe('server rendering', () => {
+      let doc: Document;
+      let eventContract!: EventContract;
+
+      beforeEach(() => {
+        doc = TestBed.inject(DOCUMENT);
+        eventContract = bootstrapEventContract(
+          'ngContracts',
+          doc.body,
+          'ng',
+          ['click', 'blur'],
+          globalThis,
+        );
+      });
+
+      afterEach(() => {
+        doc.body.textContent = '';
+        eventContract.cleanUp();
+      });
       it('should serialize event types to be listened to and jsaction', async () => {
+        const clickSpy = jasmine.createSpy('onClick');
+        const blurSpy = jasmine.createSpy('onBlur');
         @Component({
           standalone: true,
           selector: 'app',
           template: `
-            <div (click)="onClick()">
-                <div (blur)="onClick()"></div>
+            <div (click)="onClick()" id="1">
+                <div (blur)="onClick()" id="2"></div>
             </div>
           `,
         })
         class SimpleComponent {
-          onClick() {}
+          onClick = clickSpy;
+          onBlur = blurSpy;
         }
 
-        const doc = `<html><head></head><body><app></app></body></html>`;
-        const html = await ssr(SimpleComponent, {doc});
+        const docContents = `<html><head></head><body><app></app></body></html>`;
+        const html = await ssr(SimpleComponent, {doc: docContents});
         const ssrContents = getAppContents(html);
         expect(
           ssrContents.startsWith(
             `<script>window.__jsaction_bootstrap('ngContracts', document.body, "ng", ["click","blur"]);</script>`,
           ),
         ).toBeTrue();
-        expect(ssrContents).toContain('<div jsaction="click:"><div jsaction="blur:"></div></div>');
+        expect(ssrContents).toContain(
+          '<div id="1" jsaction="click:"><div id="2" jsaction="blur:"></div></div>',
+        );
+
+        render(doc, ssrContents);
+        const el = doc.getElementById('1')!;
+        const clickEvent = new CustomEvent('click', {bubbles: true});
+        el.dispatchEvent(clickEvent);
+        expect(clickSpy).not.toHaveBeenCalled();
+        resetTViewsFor(SimpleComponent);
+        const appRef = await hydrate(doc, SimpleComponent, {
+          hydrationFeatures: [withEventReplay()],
+        });
+        appRef.tick();
+        expect(clickSpy).toHaveBeenCalled();
       });
 
       it(`should add 'nonce' attribute to event record script when 'ngCspNonce' is provided`, async () => {

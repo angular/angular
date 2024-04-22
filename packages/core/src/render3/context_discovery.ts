@@ -169,6 +169,22 @@ export function getComponentViewByInstance(componentInstance: {}): LView {
  */
 const MONKEY_PATCH_KEY_NAME = '__ngContext__';
 
+export function attachLViewId(target: any, data: LView) {
+  target[MONKEY_PATCH_KEY_NAME] = data[ID];
+}
+
+/**
+ * Returns the monkey-patch value data present on the target (which could be
+ * a component, directive or a DOM node).
+ */
+export function readLView(target: any): LView|null {
+  const data = readPatchedData(target);
+  if (isLView(data)) {
+    return data;
+  }
+  return data ? data.lView : null;
+}
+
 /**
  * Assigns the given data to the given target (which could be a component,
  * directive or DOM node instance) using monkey-patching.

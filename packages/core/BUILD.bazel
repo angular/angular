@@ -30,6 +30,7 @@ ng_module(
     ),
     deps = [
         "//packages:types",
+        "//packages/core/primitives/event-dispatch",
         "//packages/core/primitives/signals",
         "//packages/core/src/compiler",
         "//packages/core/src/di/interface",
@@ -78,6 +79,7 @@ ng_package(
     ],
     deps = [
         ":core",
+        "//packages/core/primitives/event-dispatch",
         "//packages/core/primitives/signals",
         "//packages/core/rxjs-interop",
         "//packages/core/testing",

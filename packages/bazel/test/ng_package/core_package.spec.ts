@@ -67,6 +67,12 @@ describe('@angular/core ng_package', () => {
                 esm: './esm2022/core.mjs',
                 default: './fesm2022/core.mjs',
               },
+              './primitives/event-dispatch': {
+                types: './primitives/event-dispatch/index.d.ts',
+                esm2022: './esm2022/primitives/event-dispatch/index.mjs',
+                esm: './esm2022/primitives/event-dispatch/index.mjs',
+                default: './fesm2022/primitives/event-dispatch.mjs',
+              },
               './primitives/signals': {
                 types: './primitives/signals/index.d.ts',
                 esm2022: './esm2022/primitives/signals/index.mjs',
