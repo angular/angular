@@ -39,7 +39,7 @@
     </ul>
   </form>
 
-  @for (group of filteredGroups(); track group) {
+  @for (group of filteredGroups(); track group.id) {
     <adev-api-items-section [group]="group" />
   }
 
