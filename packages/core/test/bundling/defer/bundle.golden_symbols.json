@@ -234,6 +234,9 @@
     "name": "InputFlags"
   },
   {
+    "name": "KeyCode"
+  },
+  {
     "name": "KeyEventsPlugin"
   },
   {
@@ -1026,6 +1029,12 @@
     "name": "init_UnsubscriptionError"
   },
   {
+    "name": "init_a11y_click"
+  },
+  {
+    "name": "init_accessibility"
+  },
+  {
     "name": "init_advance"
   },
   {
@@ -1092,6 +1101,9 @@
     "name": "init_attribute"
   },
   {
+    "name": "init_attribute2"
+  },
+  {
     "name": "init_attribute_interpolation"
   },
   {
@@ -1105,6 +1117,9 @@
   },
   {
     "name": "init_bypass"
+  },
+  {
+    "name": "init_cache"
   },
   {
     "name": "init_cached_injector_service"
@@ -1126,6 +1141,9 @@
   },
   {
     "name": "init_change_detector_ref"
+  },
+  {
+    "name": "init_char"
   },
   {
     "name": "init_class_differ"
@@ -1239,6 +1257,9 @@
     "name": "init_create_injector"
   },
   {
+    "name": "init_custom_events"
+  },
+  {
     "name": "init_debug_node"
   },
   {
@@ -1302,10 +1323,16 @@
     "name": "init_discovery_utils"
   },
   {
+    "name": "init_dispatcher"
+  },
+  {
     "name": "init_document"
   },
   {
     "name": "init_dom"
+  },
+  {
+    "name": "init_dom2"
   },
   {
     "name": "init_dom_triggers"
@@ -1368,10 +1395,31 @@
     "name": "init_esm"
   },
   {
+    "name": "init_event"
+  },
+  {
+    "name": "init_event_contract_container"
+  },
+  {
+    "name": "init_event_contract_defines"
+  },
+  {
+    "name": "init_event_dispatch"
+  },
+  {
     "name": "init_event_emitter"
   },
   {
+    "name": "init_event_info"
+  },
+  {
     "name": "init_event_replay"
+  },
+  {
+    "name": "init_event_type"
+  },
+  {
+    "name": "init_eventcontract"
   },
   {
     "name": "init_fields"
@@ -1552,6 +1600,9 @@
   },
   {
     "name": "init_jit_options"
+  },
+  {
+    "name": "init_key_code"
   },
   {
     "name": "init_keyvalue_differs"
@@ -1746,6 +1797,9 @@
     "name": "init_property2"
   },
   {
+    "name": "init_property3"
+  },
+  {
     "name": "init_property_interpolation"
   },
   {
@@ -1800,6 +1854,9 @@
     "name": "init_reflection_capabilities"
   },
   {
+    "name": "init_register_events"
+  },
+  {
     "name": "init_render"
   },
   {
@@ -1809,10 +1866,16 @@
     "name": "init_render3"
   },
   {
+    "name": "init_replay"
+  },
+  {
     "name": "init_reportUnhandledError"
   },
   {
     "name": "init_resource_loading"
+  },
+  {
+    "name": "init_restriction"
   },
   {
     "name": "init_sanitization"

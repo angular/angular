@@ -26,6 +26,7 @@ ts_library(
         "//packages/common/testing",
         "//packages/compiler",
         "//packages/core",
+        "//packages/core/primitives/event-dispatch",
         "//packages/core/testing",
         "//packages/localize",
         "//packages/localize/init",
