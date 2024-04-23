@@ -132,12 +132,12 @@ function getDependenciesForTokenInInjector<T>(
   const {resolverToTokenToDependencies} = getFrameworkDIDebugData();
 
   if (!(injector instanceof NodeInjector)) {
-    return resolverToTokenToDependencies.get(injector)?.get?.(token as Type<T>) ?? [];
+    return resolverToTokenToDependencies.get(injector)?.get?.(token)?.deref() ?? [];
   }
 
   const lView = getNodeInjectorLView(injector);
   const tokenDependencyMap = resolverToTokenToDependencies.get(lView);
-  const dependencies = tokenDependencyMap?.get(token as Type<T>) ?? [];
+  const dependencies = tokenDependencyMap?.get(token)?.deref() ?? [];
 
   // In the NodeInjector case, all injections for every node are stored in the same lView.
   // We use the injectedIn field of the dependency to filter out the dependencies that
@@ -207,7 +207,8 @@ function getProviderImportsContainer(injector: Injector): Type<unknown>|null {
 function getNodeInjectorProviders(injector: NodeInjector): ProviderRecord[] {
   const diResolver = getNodeInjectorTNode(injector);
   const {resolverToProviders} = getFrameworkDIDebugData();
-  return resolverToProviders.get(diResolver as TNode) ?? [];
+
+  return resolverToProviders.get(diResolver as TNode)?.deref() ?? [];
 }
 
 /**
@@ -395,7 +396,7 @@ function walkProviderTreeToDiscoverImportPaths(
  */
 function getEnvironmentInjectorProviders(injector: EnvironmentInjector): ProviderRecord[] {
   const providerRecordsWithoutImportPaths =
-      getFrameworkDIDebugData().resolverToProviders.get(injector) ?? [];
+      getFrameworkDIDebugData().resolverToProviders.get(injector)?.deref() ?? [];
 
   // platform injector has no provider imports container so can we skip trying to
   // find import paths

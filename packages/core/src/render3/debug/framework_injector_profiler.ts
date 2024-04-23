@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectionToken} from '../../di';
 import {Injector} from '../../di/injector';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {assertDefined, throwError} from '../../util/assert';
-import {assertTNode, assertTNodeForLView} from '../assert';
+import {assertTNodeForLView} from '../assert';
 import {getComponentDef} from '../definition';
 import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
 import {TNode} from '../interfaces/node';
@@ -54,16 +55,15 @@ import {InjectedService, InjectorCreatedInstance, InjectorProfilerContext, Injec
  *
  */
 class DIDebugData {
-  resolverToTokenToDependencies =
-      new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-  resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
+  resolverToTokenToDependencies = new WeakMap<
+      Injector|LView, WeakMap<Type<unknown>|InjectionToken<unknown>, WeakRef<InjectedService[]>>>();
+  resolverToProviders = new WeakMap<Injector|TNode, WeakRef<ProviderRecord[]>>();
   standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
 
   reset() {
-    this.resolverToTokenToDependencies =
-        new WeakMap<Injector|LView, WeakMap<Type<unknown>, InjectedService[]>>();
-    this.resolverToProviders = new WeakMap<Injector|TNode, ProviderRecord[]>();
-    this.standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
+    this.resolverToTokenToDependencies = new WeakMap();
+    this.resolverToProviders = new WeakMap();
+    this.standaloneInjectorToComponent = new WeakMap();
   }
 }
 
@@ -121,7 +121,7 @@ function handleInjectEvent(context: InjectorProfilerContext, data: InjectedServi
   const diResolverToInstantiatedToken = frameworkDIDebugData.resolverToTokenToDependencies;
 
   if (!diResolverToInstantiatedToken.has(diResolver)) {
-    diResolverToInstantiatedToken.set(diResolver, new WeakMap<Type<unknown>, InjectedService[]>());
+    diResolverToInstantiatedToken.set(diResolver, new WeakMap());
   }
 
   // if token is a primitive type, ignore this event. We do this because we cannot keep track of
@@ -131,17 +131,15 @@ function handleInjectEvent(context: InjectorProfilerContext, data: InjectedServi
   }
 
   const instantiatedTokenToDependencies = diResolverToInstantiatedToken.get(diResolver)!;
-  if (!instantiatedTokenToDependencies.has(context.token!)) {
-    instantiatedTokenToDependencies.set(context.token!, []);
+  assertDefined(context.token, 'Injector profiler context token is undefined.');
+
+  let dependencies = instantiatedTokenToDependencies.get(context.token)?.deref();
+  if (!dependencies) {
+    dependencies = [];
+    instantiatedTokenToDependencies.set(context.token, new WeakRef(dependencies));
   }
 
   const {token, value, flags} = data;
-
-  assertDefined(context.token, 'Injector profiler context token is undefined.');
-
-  const dependencies = instantiatedTokenToDependencies.get(context.token);
-  assertDefined(dependencies, 'Could not resolve dependencies for token.');
-
   if (context.injector instanceof NodeInjector) {
     dependencies.push({token, value, flags, injectedIn: getNodeInjectorContext(context.injector)});
   } else {
@@ -251,11 +249,13 @@ function handleProviderConfiguredEvent(
     throwError('A ProviderConfigured event must be run within an injection context.');
   }
 
-  if (!resolverToProviders.has(diResolver)) {
-    resolverToProviders.set(diResolver, []);
+  let resolverData = resolverToProviders.get(diResolver)?.deref();
+  if (!resolverData) {
+    resolverData = [];
+    resolverToProviders.set(diResolver, new WeakRef(resolverData));
   }
 
-  resolverToProviders.get(diResolver)!.push(data);
+  resolverData.push(data);
 }
 
 function getDIResolver(injector: Injector|undefined): Injector|LView|null {
