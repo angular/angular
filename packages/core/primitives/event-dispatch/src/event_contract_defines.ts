@@ -13,24 +13,10 @@
 export const JSNAMESPACE_SUPPORT = true;
 
 /**
- * @define Handles a11y click casting in the dispatcher rather than
- * the event contract. When enabled, it will enable
- * EventContract.A11Y_CLICK_SUPPORT as well as both are required for this
- * functionality.
- */
-export const A11Y_SUPPORT_IN_DISPATCHER = false;
-
-/**
  * @define Support for accessible click actions.  This flag can be overridden in
  * a build rule.
  */
-const A11Y_CLICK_SUPPORT_FLAG_ENABLED = false;
-
-/**
- * Enables a11y click casting when either A11Y_CLICK_SUPPORT_FLAG_ENABLED or
- * A11Y_SUPPORT_IN_DISPATCHER.
- */
-export const A11Y_CLICK_SUPPORT = A11Y_CLICK_SUPPORT_FLAG_ENABLED || A11Y_SUPPORT_IN_DISPATCHER;
+export const A11Y_CLICK_SUPPORT = false;
 
 /**
  * @define Support for the non-bubbling mouseenter and mouseleave events.  This
