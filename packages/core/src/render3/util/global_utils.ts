@@ -71,8 +71,9 @@ export function publishDefaultGlobalUtils() {
   if (!_published) {
     _published = true;
 
-    if (typeof window !== 'undefined') {
-      // Only configure the injector profiler when running in the browser.
+    // Only configure the injector profiler when running in the browser and WeakRef is defined.
+    // In some G3 tests WeakRef is undefined as they user older (unsupported) browsers to test.
+    if (typeof window !== 'undefined' && typeof WeakRef !== 'undefined') {
       setupFrameworkInjectorProfiler();
     }
 
