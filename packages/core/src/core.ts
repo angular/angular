@@ -29,6 +29,7 @@ export {PlatformRef} from './platform/platform_ref';
 export {createPlatform, createPlatformFactory, assertPlatform, destroyPlatform, getPlatform} from './platform/platform';
 export {provideZoneChangeDetection, NgZoneOptions} from './change_detection/scheduling/ng_zone_scheduling';
 export {provideExperimentalZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling_impl';
+export {ExperimentalPendingTasks} from './pending_tasks';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export {APP_ID, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER, PLATFORM_ID, ANIMATION_MODULE_TYPE, CSP_NONCE} from './application/application_tokens';
 export {APP_INITIALIZER, ApplicationInitStatus} from './application/application_init';
