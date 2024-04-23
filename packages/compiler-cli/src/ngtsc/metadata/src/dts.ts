@@ -9,19 +9,44 @@
 import ts from 'typescript';
 
 import {OwningModule, Reference} from '../../imports';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
+import {
+  ClassDeclaration,
+  isNamedClassDeclaration,
+  ReflectionHost,
+  TypeValueReferenceKind,
+} from '../../reflection';
 import {nodeDebugInfo} from '../../util/src/typescript';
 
-import {DirectiveMeta, HostDirectiveMeta, InputMapping, MatchSource, MetadataReader, MetaKind, NgModuleMeta, PipeMeta} from './api';
+import {
+  DirectiveMeta,
+  HostDirectiveMeta,
+  InputMapping,
+  MatchSource,
+  MetadataReader,
+  MetaKind,
+  NgModuleMeta,
+  PipeMeta,
+} from './api';
 import {ClassPropertyMapping} from './property_mapping';
-import {extractDirectiveTypeCheckMeta, extractReferencesFromType, extraReferenceFromTypeQuery, readBooleanType, readMapType, readStringArrayType, readStringType} from './util';
+import {
+  extractDirectiveTypeCheckMeta,
+  extractReferencesFromType,
+  extraReferenceFromTypeQuery,
+  readBooleanType,
+  readMapType,
+  readStringArrayType,
+  readStringType,
+} from './util';
 
 /**
  * A `MetadataReader` that can read metadata from `.d.ts` files, which have static Ivy properties
  * from an upstream compilation already.
  */
 export class DtsMetadataReader implements MetadataReader {
-  constructor(private checker: ts.TypeChecker, private reflector: ReflectionHost) {}
+  constructor(
+    private checker: ts.TypeChecker,
+    private reflector: ReflectionHost,
+  ) {}
 
   /**
    * Read the metadata from a class that has already been compiled somehow (either it's in a .d.ts
@@ -29,20 +54,23 @@ export class DtsMetadataReader implements MetadataReader {
    *
    * @param ref `Reference` to the class of interest, with the context of how it was obtained.
    */
-  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta|null {
+  getNgModuleMetadata(ref: Reference<ClassDeclaration>): NgModuleMeta | null {
     const clazz = ref.node;
 
     // This operation is explicitly not memoized, as it depends on `ref.ownedByModuleGuess`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
-    const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
-        member => member.name === 'ɵmod' && member.isStatic);
+    const ngModuleDef = this.reflector
+      .getMembersOfClass(clazz)
+      .find((member) => member.name === 'ɵmod' && member.isStatic);
     if (ngModuleDef === undefined) {
       return null;
     } else if (
-        // Validate that the shape of the ngModuleDef type is correct.
-        ngModuleDef.type === null || !ts.isTypeReferenceNode(ngModuleDef.type) ||
-        ngModuleDef.type.typeArguments === undefined ||
-        ngModuleDef.type.typeArguments.length !== 4) {
+      // Validate that the shape of the ngModuleDef type is correct.
+      ngModuleDef.type === null ||
+      !ts.isTypeReferenceNode(ngModuleDef.type) ||
+      ngModuleDef.type.typeArguments === undefined ||
+      ngModuleDef.type.typeArguments.length !== 4
+    ) {
       return null;
     }
 
@@ -51,8 +79,11 @@ export class DtsMetadataReader implements MetadataReader {
     return {
       kind: MetaKind.NgModule,
       ref,
-      declarations:
-          extractReferencesFromType(this.checker, declarationMetadata, ref.bestGuessOwningModule),
+      declarations: extractReferencesFromType(
+        this.checker,
+        declarationMetadata,
+        ref.bestGuessOwningModule,
+      ),
       exports: extractReferencesFromType(this.checker, exportMetadata, ref.bestGuessOwningModule),
       imports: extractReferencesFromType(this.checker, importMetadata, ref.bestGuessOwningModule),
       schemas: [],
@@ -69,16 +100,20 @@ export class DtsMetadataReader implements MetadataReader {
   /**
    * Read directive (or component) metadata from a referenced class in a .d.ts file.
    */
-  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
+  getDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta | null {
     const clazz = ref.node;
-    const def = this.reflector.getMembersOfClass(clazz).find(
-        field => field.isStatic && (field.name === 'ɵcmp' || field.name === 'ɵdir'));
+    const def = this.reflector
+      .getMembersOfClass(clazz)
+      .find((field) => field.isStatic && (field.name === 'ɵcmp' || field.name === 'ɵdir'));
     if (def === undefined) {
       // No definition could be found.
       return null;
     } else if (
-        def.type === null || !ts.isTypeReferenceNode(def.type) ||
-        def.type.typeArguments === undefined || def.type.typeArguments.length < 2) {
+      def.type === null ||
+      !ts.isTypeReferenceNode(def.type) ||
+      def.type.typeArguments === undefined ||
+      def.type.typeArguments.length < 2
+    ) {
       // The type metadata was the wrong shape.
       return null;
     }
@@ -90,27 +125,34 @@ export class DtsMetadataReader implements MetadataReader {
     // A directive is considered to be structural if:
     // 1) it's a directive, not a component, and
     // 2) it injects `TemplateRef`
-    const isStructural = !isComponent && ctorParams !== null && ctorParams.some(param => {
-      return param.typeValueReference.kind === TypeValueReferenceKind.IMPORTED &&
+    const isStructural =
+      !isComponent &&
+      ctorParams !== null &&
+      ctorParams.some((param) => {
+        return (
+          param.typeValueReference.kind === TypeValueReferenceKind.IMPORTED &&
           param.typeValueReference.moduleName === '@angular/core' &&
-          param.typeValueReference.importedName === 'TemplateRef';
-    });
+          param.typeValueReference.importedName === 'TemplateRef'
+        );
+      });
 
     const ngContentSelectors =
-        def.type.typeArguments.length > 6 ? readStringArrayType(def.type.typeArguments[6]) : null;
+      def.type.typeArguments.length > 6 ? readStringArrayType(def.type.typeArguments[6]) : null;
 
     const isStandalone =
-        def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
+      def.type.typeArguments.length > 7 && (readBooleanType(def.type.typeArguments[7]) ?? false);
 
     const inputs = ClassPropertyMapping.fromMappedObject(readInputsType(def.type.typeArguments[3]));
     const outputs = ClassPropertyMapping.fromMappedObject(
-        readMapType(def.type.typeArguments[4], readStringType));
+      readMapType(def.type.typeArguments[4], readStringType),
+    );
 
-    const hostDirectives = def.type.typeArguments.length > 8 ?
-        readHostDirectivesType(this.checker, def.type.typeArguments[8], ref.bestGuessOwningModule) :
-        null;
+    const hostDirectives =
+      def.type.typeArguments.length > 8
+        ? readHostDirectivesType(this.checker, def.type.typeArguments[8], ref.bestGuessOwningModule)
+        : null;
     const isSignal =
-        def.type.typeArguments.length > 9 && (readBooleanType(def.type.typeArguments[9]) ?? false);
+      def.type.typeArguments.length > 9 && (readBooleanType(def.type.typeArguments[9]) ?? false);
 
     return {
       kind: MetaKind.Directive,
@@ -151,15 +193,19 @@ export class DtsMetadataReader implements MetadataReader {
   /**
    * Read pipe metadata from a referenced class in a .d.ts file.
    */
-  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta|null {
-    const def = this.reflector.getMembersOfClass(ref.node).find(
-        field => field.isStatic && field.name === 'ɵpipe');
+  getPipeMetadata(ref: Reference<ClassDeclaration>): PipeMeta | null {
+    const def = this.reflector
+      .getMembersOfClass(ref.node)
+      .find((field) => field.isStatic && field.name === 'ɵpipe');
     if (def === undefined) {
       // No definition could be found.
       return null;
     } else if (
-        def.type === null || !ts.isTypeReferenceNode(def.type) ||
-        def.type.typeArguments === undefined || def.type.typeArguments.length < 2) {
+      def.type === null ||
+      !ts.isTypeReferenceNode(def.type) ||
+      def.type.typeArguments === undefined ||
+      def.type.typeArguments.length < 2
+    ) {
       // The type metadata was the wrong shape.
       return null;
     }
@@ -171,7 +217,7 @@ export class DtsMetadataReader implements MetadataReader {
     const name = type.literal.text;
 
     const isStandalone =
-        def.type.typeArguments.length > 2 && (readBooleanType(def.type.typeArguments[2]) ?? false);
+      def.type.typeArguments.length > 2 && (readBooleanType(def.type.typeArguments[2]) ?? false);
 
     return {
       kind: MetaKind.Pipe,
@@ -190,9 +236,12 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
 
   if (ts.isTypeLiteralNode(type)) {
     for (const member of type.members) {
-      if (!ts.isPropertySignature(member) || member.type === undefined ||
-          member.name === undefined ||
-          (!ts.isStringLiteral(member.name) && !ts.isIdentifier(member.name))) {
+      if (
+        !ts.isPropertySignature(member) ||
+        member.type === undefined ||
+        member.name === undefined ||
+        (!ts.isStringLiteral(member.name) && !ts.isIdentifier(member.name))
+      ) {
         continue;
       }
 
@@ -214,9 +263,9 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
           transform: null,
         };
       } else {
-        const config = readMapType(member.type, innerValue => {
-                         return readStringType(innerValue) ?? readBooleanType(innerValue);
-                       }) as {alias: string, required: boolean, isSignal?: boolean};
+        const config = readMapType(member.type, (innerValue) => {
+          return readStringType(innerValue) ?? readBooleanType(innerValue);
+        }) as {alias: string; required: boolean; isSignal?: boolean};
 
         inputsMap[classPropertyName] = {
           classPropertyName,
@@ -235,8 +284,11 @@ function readInputsType(type: ts.TypeNode): Record<string, InputMapping> {
   return inputsMap;
 }
 
-function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflector: ReflectionHost):
-    Reference<ClassDeclaration>|'dynamic'|null {
+function readBaseClass(
+  clazz: ClassDeclaration,
+  checker: ts.TypeChecker,
+  reflector: ReflectionHost,
+): Reference<ClassDeclaration> | 'dynamic' | null {
   if (!isNamedClassDeclaration(clazz)) {
     // Technically this is an error in a .d.ts file, but for the purposes of finding the base class
     // it's ignored.
@@ -253,8 +305,10 @@ function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflect
         } else if (symbol.flags & ts.SymbolFlags.Alias) {
           symbol = checker.getAliasedSymbol(symbol);
         }
-        if (symbol.valueDeclaration !== undefined &&
-            isNamedClassDeclaration(symbol.valueDeclaration)) {
+        if (
+          symbol.valueDeclaration !== undefined &&
+          isNamedClassDeclaration(symbol.valueDeclaration)
+        ) {
           return new Reference(symbol.valueDeclaration);
         } else {
           return 'dynamic';
@@ -265,10 +319,11 @@ function readBaseClass(clazz: ClassDeclaration, checker: ts.TypeChecker, reflect
   return null;
 }
 
-
 function readHostDirectivesType(
-    checker: ts.TypeChecker, type: ts.TypeNode,
-    bestGuessOwningModule: OwningModule|null): HostDirectiveMeta[]|null {
+  checker: ts.TypeChecker,
+  type: ts.TypeNode,
+  bestGuessOwningModule: OwningModule | null,
+): HostDirectiveMeta[] | null {
   if (!ts.isTupleTypeNode(type) || type.elements.length === 0) {
     return null;
   }
@@ -276,7 +331,7 @@ function readHostDirectivesType(
   const result: HostDirectiveMeta[] = [];
 
   for (const hostDirectiveType of type.elements) {
-    const {directive, inputs, outputs} = readMapType(hostDirectiveType, type => type);
+    const {directive, inputs, outputs} = readMapType(hostDirectiveType, (type) => type);
 
     if (directive) {
       if (!ts.isTypeQueryNode(directive)) {
@@ -287,7 +342,7 @@ function readHostDirectivesType(
         directive: extraReferenceFromTypeQuery(checker, directive, type, bestGuessOwningModule),
         isForwardReference: false,
         inputs: readMapType(inputs, readStringType),
-        outputs: readMapType(outputs, readStringType)
+        outputs: readMapType(outputs, readStringType),
       });
     }
   }

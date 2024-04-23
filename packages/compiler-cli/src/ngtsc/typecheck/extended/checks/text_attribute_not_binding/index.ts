@@ -20,19 +20,18 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * is likely not the intent of the developer. Instead, the intent is likely to have the `id` be set
  * to 'my-id'.
  */
-class TextAttributeNotBindingSpec extends
-    TemplateCheckWithVisitor<ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING> {
+class TextAttributeNotBindingSpec extends TemplateCheckWithVisitor<ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING> {
   override code = ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING as const;
 
   override visitNode(
-      ctx: TemplateContext<ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING>,
-      component: ts.ClassDeclaration,
-      node: TmplAstNode|AST,
-      ): NgTemplateDiagnostic<ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING>[] {
+    ctx: TemplateContext<ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING>,
+    component: ts.ClassDeclaration,
+    node: TmplAstNode | AST,
+  ): NgTemplateDiagnostic<ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING>[] {
     if (!(node instanceof TmplAstTextAttribute)) return [];
 
     const name = node.name;
-    if ((!name.startsWith('attr.') && !name.startsWith('style.') && !name.startsWith('class.'))) {
+    if (!name.startsWith('attr.') && !name.startsWith('style.') && !name.startsWith('class.')) {
       return [];
     }
 
@@ -46,9 +45,9 @@ class TextAttributeNotBindingSpec extends
     } else {
       const expectedKey = `[${name}]`;
       const expectedValue =
-          // true/false are special cases because we don't want to convert them to strings but
-          // rather maintain the logical true/false when bound.
-          (node.value === 'true' || node.value === 'false') ? node.value : `'${node.value}'`;
+        // true/false are special cases because we don't want to convert them to strings but
+        // rather maintain the logical true/false when bound.
+        node.value === 'true' || node.value === 'false' ? node.value : `'${node.value}'`;
       errorString = 'Attribute, style, and class bindings should be enclosed with square braces.';
       if (node.value) {
         errorString += ` For example, '${expectedKey}="${expectedValue}"'.`;
@@ -60,8 +59,9 @@ class TextAttributeNotBindingSpec extends
 }
 
 export const factory: TemplateCheckFactory<
-    ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING,
-    ExtendedTemplateDiagnosticName.TEXT_ATTRIBUTE_NOT_BINDING> = {
+  ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING,
+  ExtendedTemplateDiagnosticName.TEXT_ATTRIBUTE_NOT_BINDING
+> = {
   code: ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING,
   name: ExtendedTemplateDiagnosticName.TEXT_ATTRIBUTE_NOT_BINDING,
   create: () => new TextAttributeNotBindingSpec(),

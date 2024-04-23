@@ -19,10 +19,12 @@ export class FlatIndexGenerator implements TopLevelShimGenerator {
   readonly shouldEmit = true;
 
   constructor(
-      readonly entryPoint: AbsoluteFsPath, relativeFlatIndexPath: string,
-      readonly moduleName: string|null) {
+    readonly entryPoint: AbsoluteFsPath,
+    relativeFlatIndexPath: string,
+    readonly moduleName: string | null,
+  ) {
     this.flatIndexPath =
-        join(dirname(entryPoint), relativeFlatIndexPath).replace(/\.js$/, '') + '.ts';
+      join(dirname(entryPoint), relativeFlatIndexPath).replace(/\.js$/, '') + '.ts';
   }
 
   makeTopLevelShim(): ts.SourceFile {
@@ -34,7 +36,12 @@ export class FlatIndexGenerator implements TopLevelShimGenerator {
 export * from '${relativeEntryPoint}';
 `;
     const genFile = ts.createSourceFile(
-        this.flatIndexPath, contents, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TS);
+      this.flatIndexPath,
+      contents,
+      ts.ScriptTarget.ES2015,
+      true,
+      ts.ScriptKind.TS,
+    );
     if (this.moduleName !== null) {
       genFile.moduleName = this.moduleName;
     }

@@ -19,25 +19,23 @@ import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './tr
  * It is useful for JIT environments where models can't be recognized based on the initializer.
  */
 export const signalModelTransform: PropertyTransform = (
-    member,
-    host,
-    factory,
-    importTracker,
-    importManager,
-    classDecorator,
-    isCore,
-    ) => {
-  if (host.getDecoratorsOfDeclaration(member.node)?.some(d => {
-        return isAngularDecorator(d, 'Input', isCore) || isAngularDecorator(d, 'Output', isCore);
-      })) {
+  member,
+  host,
+  factory,
+  importTracker,
+  importManager,
+  classDecorator,
+  isCore,
+) => {
+  if (
+    host.getDecoratorsOfDeclaration(member.node)?.some((d) => {
+      return isAngularDecorator(d, 'Input', isCore) || isAngularDecorator(d, 'Output', isCore);
+    })
+  ) {
     return member.node;
   }
 
-  const modelMapping = tryParseSignalModelMapping(
-      member,
-      host,
-      importTracker,
-  );
+  const modelMapping = tryParseSignalModelMapping(member, host, importTracker);
 
   if (modelMapping === null) {
     return member.node;
@@ -45,42 +43,69 @@ export const signalModelTransform: PropertyTransform = (
 
   const inputConfig = factory.createObjectLiteralExpression([
     factory.createPropertyAssignment(
-        'isSignal', modelMapping.input.isSignal ? factory.createTrue() : factory.createFalse()),
+      'isSignal',
+      modelMapping.input.isSignal ? factory.createTrue() : factory.createFalse(),
+    ),
     factory.createPropertyAssignment(
-        'alias', factory.createStringLiteral(modelMapping.input.bindingPropertyName)),
+      'alias',
+      factory.createStringLiteral(modelMapping.input.bindingPropertyName),
+    ),
     factory.createPropertyAssignment(
-        'required', modelMapping.input.required ? factory.createTrue() : factory.createFalse()),
+      'required',
+      modelMapping.input.required ? factory.createTrue() : factory.createFalse(),
+    ),
   ]);
 
   const sourceFile = member.node.getSourceFile();
   const inputDecorator = createDecorator(
-      'Input',
-      // Config is cast to `any` because `isSignal` will be private, and in case this
-      // transform is used directly as a pre-compilation step, the decorator should
-      // not fail. It is already validated now due to us parsing the input metadata.
-      factory.createAsExpression(
-          inputConfig, factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
-      classDecorator, factory, sourceFile, importManager);
+    'Input',
+    // Config is cast to `any` because `isSignal` will be private, and in case this
+    // transform is used directly as a pre-compilation step, the decorator should
+    // not fail. It is already validated now due to us parsing the input metadata.
+    factory.createAsExpression(
+      inputConfig,
+      factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+    ),
+    classDecorator,
+    factory,
+    sourceFile,
+    importManager,
+  );
 
   const outputDecorator = createDecorator(
-      'Output', factory.createStringLiteral(modelMapping.output.bindingPropertyName),
-      classDecorator, factory, sourceFile, importManager);
+    'Output',
+    factory.createStringLiteral(modelMapping.output.bindingPropertyName),
+    classDecorator,
+    factory,
+    sourceFile,
+    importManager,
+  );
 
   return factory.updatePropertyDeclaration(
-      member.node,
-      [inputDecorator, outputDecorator, ...(member.node.modifiers ?? [])],
-      member.node.name,
-      member.node.questionToken,
-      member.node.type,
-      member.node.initializer,
+    member.node,
+    [inputDecorator, outputDecorator, ...(member.node.modifiers ?? [])],
+    member.node.name,
+    member.node.questionToken,
+    member.node.type,
+    member.node.initializer,
   );
 };
 
 function createDecorator(
-    name: string, config: ts.Expression, classDecorator: Decorator, factory: ts.NodeFactory,
-    sourceFile: ts.SourceFile, importManager: ImportManager): ts.Decorator {
+  name: string,
+  config: ts.Expression,
+  classDecorator: Decorator,
+  factory: ts.NodeFactory,
+  sourceFile: ts.SourceFile,
+  importManager: ImportManager,
+): ts.Decorator {
   const callTarget = createSyntheticAngularCoreDecoratorAccess(
-      factory, importManager, classDecorator, sourceFile, name);
+    factory,
+    importManager,
+    classDecorator,
+    sourceFile,
+    name,
+  );
 
   return factory.createDecorator(factory.createCallExpression(callTarget, undefined, [config]));
 }

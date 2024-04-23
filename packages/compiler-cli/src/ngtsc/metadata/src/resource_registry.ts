@@ -19,7 +19,7 @@ import {ClassDeclaration} from '../../reflection';
  * If the resource is inline, the `path` will be `null`.
  */
 export interface Resource {
-  path: AbsoluteFsPath|null;
+  path: AbsoluteFsPath | null;
   expression: ts.Expression;
 }
 
@@ -82,7 +82,7 @@ export class ResourceRegistry {
     this.componentToTemplateMap.set(component, templateResource);
   }
 
-  getTemplate(component: ClassDeclaration): Resource|null {
+  getTemplate(component: ClassDeclaration): Resource | null {
     if (!this.componentToTemplateMap.has(component)) {
       return null;
     }

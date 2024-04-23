@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, LiteralPrimitive, ParseSourceSpan, PropertyRead, SafePropertyRead, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {
+  AST,
+  LiteralPrimitive,
+  ParseSourceSpan,
+  PropertyRead,
+  SafePropertyRead,
+  TmplAstElement,
+  TmplAstNode,
+  TmplAstReference,
+  TmplAstTemplate,
+  TmplAstTextAttribute,
+  TmplAstVariable,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
@@ -37,7 +49,7 @@ export interface TemplateTypeChecker {
   /**
    * Retrieve the template in use for the given component.
    */
-  getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null;
+  getTemplate(component: ts.ClassDeclaration): TmplAstNode[] | null;
 
   /**
    * Get all `ts.Diagnostic`s currently available for the given `ts.SourceFile`.
@@ -59,7 +71,7 @@ export interface TemplateTypeChecker {
    * Given a `shim` and position within the file, returns information for mapping back to a template
    * location.
    */
-  getTemplateMappingAtTcbLocation(tcbLocation: TcbLocation): FullTemplateMapping|null;
+  getTemplateMappingAtTcbLocation(tcbLocation: TcbLocation): FullTemplateMapping | null;
 
   /**
    * Get all `ts.Diagnostic`s currently available that pertain to the given component.
@@ -88,7 +100,7 @@ export interface TemplateTypeChecker {
    *
    * This method always runs in `OptimizeFor.SingleFile` mode.
    */
-  getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node|null;
+  getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node | null;
 
   /**
    * Retrieves a `Symbol` for the node in a component's template.
@@ -97,9 +109,9 @@ export interface TemplateTypeChecker {
    *
    * @see Symbol
    */
-  getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol|null;
-  getSymbolOfNode(node: TmplAstTemplate, component: ts.ClassDeclaration): TemplateSymbol|null;
-  getSymbolOfNode(node: AST|TmplAstNode, component: ts.ClassDeclaration): Symbol|null;
+  getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol | null;
+  getSymbolOfNode(node: TmplAstTemplate, component: ts.ClassDeclaration): TemplateSymbol | null;
+  getSymbolOfNode(node: AST | TmplAstNode, component: ts.ClassDeclaration): Symbol | null;
 
   /**
    * Get "global" `Completion`s in the given context.
@@ -111,16 +123,19 @@ export interface TemplateTypeChecker {
    * template variables which are in scope for that expression.
    */
   getGlobalCompletions(
-      context: TmplAstTemplate|null, component: ts.ClassDeclaration,
-      node: AST|TmplAstNode): GlobalCompletion|null;
-
+    context: TmplAstTemplate | null,
+    component: ts.ClassDeclaration,
+    node: AST | TmplAstNode,
+  ): GlobalCompletion | null;
 
   /**
    * For the given expression node, retrieve a `TcbLocation` that can be used to perform
    * autocompletion at that point in the expression, if such a location exists.
    */
   getExpressionCompletionLocation(
-      expr: PropertyRead|SafePropertyRead, component: ts.ClassDeclaration): TcbLocation|null;
+    expr: PropertyRead | SafePropertyRead,
+    component: ts.ClassDeclaration,
+  ): TcbLocation | null;
 
   /**
    * For the given node represents a `LiteralPrimitive`(the `TextAttribute` represents a string
@@ -128,8 +143,9 @@ export interface TemplateTypeChecker {
    * the node, if such a location exists.
    */
   getLiteralCompletionLocation(
-      strNode: LiteralPrimitive|TmplAstTextAttribute, component: ts.ClassDeclaration): TcbLocation
-      |null;
+    strNode: LiteralPrimitive | TmplAstTextAttribute,
+    component: ts.ClassDeclaration,
+  ): TcbLocation | null;
 
   /**
    * Get basic metadata on the directives which are in scope or can be imported for the given
@@ -147,26 +163,28 @@ export interface TemplateTypeChecker {
    * declares them (if the tag is from a directive/component), or `null` if the tag originates from
    * the DOM schema.
    */
-  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective|null>;
+  getPotentialElementTags(component: ts.ClassDeclaration): Map<string, PotentialDirective | null>;
 
   /**
    * In the context of an Angular trait, generate potential imports for a directive.
    */
   getPotentialImportsFor(
-      toImport: Reference<ClassDeclaration>, inComponent: ts.ClassDeclaration,
-      importMode: PotentialImportMode): ReadonlyArray<PotentialImport>;
+    toImport: Reference<ClassDeclaration>,
+    inComponent: ts.ClassDeclaration,
+    importMode: PotentialImportMode,
+  ): ReadonlyArray<PotentialImport>;
 
   /**
    * Get the primary decorator for an Angular class (such as @Component). This does not work for
    * `@Injectable`.
    */
-  getPrimaryAngularDecorator(target: ts.ClassDeclaration): ts.Decorator|null;
+  getPrimaryAngularDecorator(target: ts.ClassDeclaration): ts.Decorator | null;
 
   /**
    * Get the class of the NgModule that owns this Angular trait. If the result is `null`, that
    * probably means the provided component is standalone.
    */
-  getOwningNgModule(component: ts.ClassDeclaration): ts.ClassDeclaration|null;
+  getOwningNgModule(component: ts.ClassDeclaration): ts.ClassDeclaration | null;
 
   /**
    * Retrieve any potential DOM bindings for the given element.
@@ -175,7 +193,7 @@ export interface TemplateTypeChecker {
    * binding, which are usually identical but can vary if the HTML attribute name is for example a
    * reserved keyword in JS, like the `for` attribute which corresponds to the `htmlFor` property.
    */
-  getPotentialDomBindings(tagName: string): {attribute: string, property: string}[];
+  getPotentialDomBindings(tagName: string): {attribute: string; property: string}[];
 
   /**
    * Retrieve any potential DOM events.
@@ -185,27 +203,27 @@ export interface TemplateTypeChecker {
   /**
    * Retrieve the type checking engine's metadata for the given directive class, if available.
    */
-  getDirectiveMetadata(dir: ts.ClassDeclaration): TypeCheckableDirectiveMeta|null;
+  getDirectiveMetadata(dir: ts.ClassDeclaration): TypeCheckableDirectiveMeta | null;
 
   /**
    * Retrieve the type checking engine's metadata for the given NgModule class, if available.
    */
-  getNgModuleMetadata(module: ts.ClassDeclaration): NgModuleMeta|null;
+  getNgModuleMetadata(module: ts.ClassDeclaration): NgModuleMeta | null;
 
   /**
    * Retrieve the type checking engine's metadata for the given pipe class, if available.
    */
-  getPipeMetadata(pipe: ts.ClassDeclaration): PipeMeta|null;
+  getPipeMetadata(pipe: ts.ClassDeclaration): PipeMeta | null;
 
   /**
    * Gets the directives that have been used in a component's template.
    */
-  getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[]|null;
+  getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[] | null;
 
   /**
    * Gets the pipes that have been used in a component's template.
    */
-  getUsedPipes(component: ts.ClassDeclaration): string[]|null;
+  getUsedPipes(component: ts.ClassDeclaration): string[] | null;
 
   /**
    * Reset the `TemplateTypeChecker`'s state for the given class, so that it will be recomputed on
@@ -217,20 +235,27 @@ export interface TemplateTypeChecker {
    * Gets the target of a template expression, if possible.
    * See `BoundTarget.getExpressionTarget` for more information.
    */
-  getExpressionTarget(expression: AST, clazz: ts.ClassDeclaration): TmplAstReference|TmplAstVariable
-      |null;
+  getExpressionTarget(
+    expression: AST,
+    clazz: ts.ClassDeclaration,
+  ): TmplAstReference | TmplAstVariable | null;
 
   /**
    * Constructs a `ts.Diagnostic` for a given `ParseSourceSpan` within a template.
    */
   makeTemplateDiagnostic<T extends ErrorCode>(
-      clazz: ts.ClassDeclaration, sourceSpan: ParseSourceSpan, category: ts.DiagnosticCategory,
-      errorCode: T, message: string, relatedInformation?: {
-        text: string,
-        start: number,
-        end: number,
-        sourceFile: ts.SourceFile,
-      }[]): NgTemplateDiagnostic<T>;
+    clazz: ts.ClassDeclaration,
+    sourceSpan: ParseSourceSpan,
+    category: ts.DiagnosticCategory,
+    errorCode: T,
+    message: string,
+    relatedInformation?: {
+      text: string;
+      start: number;
+      end: number;
+      sourceFile: ts.SourceFile;
+    }[],
+  ): NgTemplateDiagnostic<T>;
 }
 
 /**

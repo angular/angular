@@ -8,7 +8,12 @@
 
 import ts from 'typescript';
 
-import {TypeValueReference, TypeValueReferenceKind, UnavailableTypeValueReference, ValueUnavailableKind} from './host';
+import {
+  TypeValueReference,
+  TypeValueReferenceKind,
+  UnavailableTypeValueReference,
+  ValueUnavailableKind,
+} from './host';
 
 /**
  * Potentially convert a `ts.TypeNode` to a `TypeValueReference`, which indicates how to use the
@@ -18,8 +23,10 @@ import {TypeValueReference, TypeValueReferenceKind, UnavailableTypeValueReferenc
  * declaration, or if it is not possible to statically understand.
  */
 export function typeToValue(
-    typeNode: ts.TypeNode|null, checker: ts.TypeChecker,
-    isLocalCompilation: boolean): TypeValueReference {
+  typeNode: ts.TypeNode | null,
+  checker: ts.TypeChecker,
+  isLocalCompilation: boolean,
+): TypeValueReference {
   // It's not possible to get a value expression if the parameter doesn't even have a type.
   if (typeNode === null) {
     return missingType();
@@ -40,17 +47,22 @@ export function typeToValue(
   // has a value declaration associated with it. Note that const enums are an exception,
   // because while they do have a value declaration, they don't exist at runtime.
   if (decl.valueDeclaration === undefined || decl.flags & ts.SymbolFlags.ConstEnum) {
-    let typeOnlyDecl: ts.Declaration|null = null;
+    let typeOnlyDecl: ts.Declaration | null = null;
     if (decl.declarations !== undefined && decl.declarations.length > 0) {
       typeOnlyDecl = decl.declarations[0];
     }
 
     // In local compilation mode a declaration is considered invalid only if it is a type related
     // declaration.
-    if (!isLocalCompilation || (typeOnlyDecl && [
-          ts.SyntaxKind.TypeParameter, ts.SyntaxKind.TypeAliasDeclaration,
-          ts.SyntaxKind.InterfaceDeclaration
-        ].includes(typeOnlyDecl.kind))) {
+    if (
+      !isLocalCompilation ||
+      (typeOnlyDecl &&
+        [
+          ts.SyntaxKind.TypeParameter,
+          ts.SyntaxKind.TypeAliasDeclaration,
+          ts.SyntaxKind.InterfaceDeclaration,
+        ].includes(typeOnlyDecl.kind))
+    ) {
       return noValueDeclaration(typeNode, typeOnlyDecl);
     }
   }
@@ -107,7 +119,7 @@ export function typeToValue(
         valueDeclaration: decl.valueDeclaration ?? null,
         moduleName,
         importedName,
-        nestedPath
+        nestedPath,
       };
     } else if (ts.isNamespaceImport(firstDecl)) {
       // The import is a namespace import
@@ -134,7 +146,7 @@ export function typeToValue(
         valueDeclaration: decl.valueDeclaration ?? null,
         moduleName,
         importedName,
-        nestedPath
+        nestedPath,
       };
     }
   }
@@ -160,15 +172,19 @@ function unsupportedType(typeNode: ts.TypeNode): UnavailableTypeValueReference {
 }
 
 function noValueDeclaration(
-    typeNode: ts.TypeNode, decl: ts.Declaration|null): UnavailableTypeValueReference {
+  typeNode: ts.TypeNode,
+  decl: ts.Declaration | null,
+): UnavailableTypeValueReference {
   return {
     kind: TypeValueReferenceKind.UNAVAILABLE,
     reason: {kind: ValueUnavailableKind.NO_VALUE_DECLARATION, typeNode, decl},
   };
 }
 
-function typeOnlyImport(typeNode: ts.TypeNode, node: ts.ImportClause|ts.ImportSpecifier):
-    UnavailableTypeValueReference {
+function typeOnlyImport(
+  typeNode: ts.TypeNode,
+  node: ts.ImportClause | ts.ImportSpecifier,
+): UnavailableTypeValueReference {
   return {
     kind: TypeValueReferenceKind.UNAVAILABLE,
     reason: {kind: ValueUnavailableKind.TYPE_ONLY_IMPORT, typeNode, node},
@@ -183,7 +199,9 @@ function unknownReference(typeNode: ts.TypeNode): UnavailableTypeValueReference 
 }
 
 function namespaceImport(
-    typeNode: ts.TypeNode, importClause: ts.ImportClause): UnavailableTypeValueReference {
+  typeNode: ts.TypeNode,
+  importClause: ts.ImportClause,
+): UnavailableTypeValueReference {
   return {
     kind: TypeValueReferenceKind.UNAVAILABLE,
     reason: {kind: ValueUnavailableKind.NAMESPACE, typeNode, importClause},
@@ -203,7 +221,7 @@ function missingType(): UnavailableTypeValueReference {
  *
  * This will return `null` if an equivalent expression cannot be constructed.
  */
-export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
+export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression | null {
   if (ts.isTypeReferenceNode(node)) {
     return entityNameToValue(node.typeName);
   } else {
@@ -222,11 +240,13 @@ export function typeNodeToValueExpr(node: ts.TypeNode): ts.Expression|null {
  * All symbol names that make up the type reference are returned left-to-right into the
  * `symbolNames` array, which is guaranteed to include at least one entry.
  */
-function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeChecker):
-    {local: ts.Symbol, decl: ts.Symbol, symbolNames: string[]}|null {
+function resolveTypeSymbols(
+  typeRef: ts.TypeReferenceNode,
+  checker: ts.TypeChecker,
+): {local: ts.Symbol; decl: ts.Symbol; symbolNames: string[]} | null {
   const typeName = typeRef.typeName;
   // typeRefSymbol is the ts.Symbol of the entire type reference.
-  const typeRefSymbol: ts.Symbol|undefined = checker.getSymbolAtLocation(typeName);
+  const typeRefSymbol: ts.Symbol | undefined = checker.getSymbolAtLocation(typeName);
   if (typeRefSymbol === undefined) {
     return null;
   }
@@ -272,7 +292,7 @@ function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeCheck
   return {local, decl, symbolNames};
 }
 
-export function entityNameToValue(node: ts.EntityName): ts.Expression|null {
+export function entityNameToValue(node: ts.EntityName): ts.Expression | null {
   if (ts.isQualifiedName(node)) {
     const left = entityNameToValue(node.left);
     return left !== null ? ts.factory.createPropertyAccessExpression(left, node.right) : null;

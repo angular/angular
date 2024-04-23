@@ -33,8 +33,13 @@ import {SourceFileLoader} from '../../../src/ngtsc/sourcemaps';
  * @returns The content of the expected source file, stripped of the mapping information.
  */
 export function stripAndCheckMappings(
-    fs: ReadonlyFileSystem, generated: string, generatedPath: AbsoluteFsPath,
-    expectedSource: string, expectedPath: AbsoluteFsPath, skipMappingCheck: boolean): string {
+  fs: ReadonlyFileSystem,
+  generated: string,
+  generatedPath: AbsoluteFsPath,
+  expectedSource: string,
+  expectedPath: AbsoluteFsPath,
+  skipMappingCheck: boolean,
+): string {
   // Generate the candidate source maps.
   const actualMappings = getMappedSegments(fs, generatedPath, generated);
 
@@ -55,9 +60,10 @@ export function stripAndCheckMappings(
 
   if (failures.length > 0) {
     throw new Error(
-        `When checking mappings for ${generatedPath} against ${expectedPath} expected...\n\n` +
+      `When checking mappings for ${generatedPath} against ${expectedPath} expected...\n\n` +
         `${failures.join('\n\n')}\n\n` +
-        `All the mappings:\n\n${dumpMappings(actualMappings)}`);
+        `All the mappings:\n\n${dumpMappings(actualMappings)}`,
+    );
   }
 
   return expected;
@@ -83,31 +89,34 @@ interface SegmentMapping {
  * @param expected The content of the expected file containing source-map information.
  */
 function extractMappings(
-    fs: ReadonlyFileSystem, expected: string): {expected: string, mappings: SegmentMapping[]} {
+  fs: ReadonlyFileSystem,
+  expected: string,
+): {expected: string; mappings: SegmentMapping[]} {
   const mappings: SegmentMapping[] = [];
   // capture and remove source mapping info
   // Any newline at the end of an expectation line is removed, as a mapping expectation for a
   // segment within a template literal would otherwise force a newline to be matched in the template
   // literal.
   expected = expected.replace(
-      /^(.*?) \/\/ SOURCE: "([^"]*?)" "(.*?)"(?:\n|$)/gm,
-      (_, rawGenerated: string, rawSourceUrl: string, rawSource: string) => {
-        // Since segments need to appear on a single line in the expected file, any newlines in the
-        // segment being checked must be escaped in the expected file and then unescaped here before
-        // being checked.
-        const generated = unescape(rawGenerated);
-        const source = unescape(rawSource);
-        const sourceUrl = fs.resolve(rawSourceUrl);
+    /^(.*?) \/\/ SOURCE: "([^"]*?)" "(.*?)"(?:\n|$)/gm,
+    (_, rawGenerated: string, rawSourceUrl: string, rawSource: string) => {
+      // Since segments need to appear on a single line in the expected file, any newlines in the
+      // segment being checked must be escaped in the expected file and then unescaped here before
+      // being checked.
+      const generated = unescape(rawGenerated);
+      const source = unescape(rawSource);
+      const sourceUrl = fs.resolve(rawSourceUrl);
 
-        mappings.push({generated, sourceUrl, source});
-        return generated;
-      });
+      mappings.push({generated, sourceUrl, source});
+      return generated;
+    },
+  );
   return {expected, mappings};
 }
 
 function unescape(str: string): string {
-  const replacements: Record<any, string> = {'\\n': '\n', '\\r': '\r', '\\\\': '\\', '\\"': '\"'};
-  return str.replace(/\\[rn"\\]/g, match => replacements[match]);
+  const replacements: Record<any, string> = {'\\n': '\n', '\\r': '\r', '\\\\': '\\', '\\"': '"'};
+  return str.replace(/\\[rn"\\]/g, (match) => replacements[match]);
 }
 
 /**
@@ -122,8 +131,10 @@ function unescape(str: string): string {
  *     empty array is returned if there is no source-map file found.
  */
 function getMappedSegments(
-    fs: ReadonlyFileSystem, generatedPath: AbsoluteFsPath,
-    generatedContents: string): SegmentMapping[] {
+  fs: ReadonlyFileSystem,
+  generatedPath: AbsoluteFsPath,
+  generatedContents: string,
+): SegmentMapping[] {
   const logger = new ConsoleLogger(LogLevel.debug);
   const loader = new SourceFileLoader(fs, logger, {});
   const generatedFile = loader.loadSourceFile(generatedPath, generatedContents);
@@ -140,8 +151,11 @@ function getMappedSegments(
     const originalStart = mapping.originalSegment;
     let originalEnd = originalStart.next;
     // Skip until we find an end segment that is after the start segment
-    while (originalEnd !== undefined && originalEnd.next !== originalEnd &&
-           originalEnd.position === originalStart.position) {
+    while (
+      originalEnd !== undefined &&
+      originalEnd.next !== originalEnd &&
+      originalEnd.position === originalStart.position
+    ) {
       originalEnd = originalEnd.next;
     }
     if (originalEnd === undefined || originalEnd.next === originalEnd) {
@@ -151,7 +165,7 @@ function getMappedSegments(
     const segment = {
       generated: generatedFile.contents.substring(generatedStart.position, generatedEnd.position),
       source: originalFile.contents.substring(originalStart.position, originalEnd!.position),
-      sourceUrl: originalFile.sourcePath
+      sourceUrl: originalFile.sourcePath,
     };
     segments.push(segment);
   }
@@ -164,14 +178,19 @@ function getMappedSegments(
  *
  * @returns An error message if a matching segment cannot be found, or null if it can.
  */
-function checkMapping(mappings: SegmentMapping[], expected: SegmentMapping): string|null {
-  if (mappings.some(
-          m => m.generated === expected.generated && m.source === expected.source &&
-              m.sourceUrl === expected.sourceUrl)) {
+function checkMapping(mappings: SegmentMapping[], expected: SegmentMapping): string | null {
+  if (
+    mappings.some(
+      (m) =>
+        m.generated === expected.generated &&
+        m.source === expected.source &&
+        m.sourceUrl === expected.sourceUrl,
+    )
+  ) {
     return null;
   }
-  const matchingGenerated = mappings.filter(m => m.generated === expected.generated);
-  const matchingSource = mappings.filter(m => m.source === expected.source);
+  const matchingGenerated = mappings.filter((m) => m.generated === expected.generated);
+  const matchingSource = mappings.filter((m) => m.source === expected.source);
 
   const message = [
     'Expected mappings to contain the following mapping',
@@ -180,12 +199,12 @@ function checkMapping(mappings: SegmentMapping[], expected: SegmentMapping): str
   if (matchingGenerated.length > 0) {
     message.push('');
     message.push('There are the following mappings that match the generated text:');
-    matchingGenerated.forEach(m => message.push(prettyPrintMapping(m)));
+    matchingGenerated.forEach((m) => message.push(prettyPrintMapping(m)));
   }
   if (matchingSource.length > 0) {
     message.push('');
     message.push('There are the following mappings that match the source text:');
-    matchingSource.forEach(m => message.push(prettyPrintMapping(m)));
+    matchingSource.forEach((m) => message.push(prettyPrintMapping(m)));
   }
 
   return message.join('\n');
@@ -207,16 +226,19 @@ function prettyPrintMapping(mapping: SegmentMapping): string {
  */
 function dumpMappings(mappings: SegmentMapping[]): string {
   return mappings
-      .map(
-          mapping => padValue(mapping.sourceUrl, 20, 0) + ' : ' +
-              padValue(JSON.stringify(mapping.source), 100, 23) + ' : ' +
-              JSON.stringify(mapping.generated))
-      .join('\n');
+    .map(
+      (mapping) =>
+        padValue(mapping.sourceUrl, 20, 0) +
+        ' : ' +
+        padValue(JSON.stringify(mapping.source), 100, 23) +
+        ' : ' +
+        JSON.stringify(mapping.generated),
+    )
+    .join('\n');
 }
 
 function padValue(value: string, max: number, start: number): string {
-  const padding = value.length > max ? ('\n' +
-                                        ' '.repeat(max + start)) :
-                                       ' '.repeat(max - value.length);
+  const padding =
+    value.length > max ? '\n' + ' '.repeat(max + start) : ' '.repeat(max - value.length);
   return value + padding;
 }

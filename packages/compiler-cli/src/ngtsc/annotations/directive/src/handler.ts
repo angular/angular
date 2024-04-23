@@ -6,88 +6,161 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, FactoryTarget, makeBindingParser, R3ClassMetadata, R3DirectiveMetadata, WrappedNodeExpr} from '@angular/compiler';
+import {
+  compileClassMetadata,
+  compileDeclareClassMetadata,
+  compileDeclareDirectiveFromMetadata,
+  compileDirectiveFromMetadata,
+  ConstantPool,
+  FactoryTarget,
+  makeBindingParser,
+  R3ClassMetadata,
+  R3DirectiveMetadata,
+  WrappedNodeExpr,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {ImportedSymbolsTracker, Reference, ReferenceEmitter} from '../../../imports';
-import {extractSemanticTypeParameters, SemanticDepGraphUpdater} from '../../../incremental/semantic_graph';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, HostDirectiveMeta, InputMapping, MatchSource, MetadataReader, MetadataRegistry, MetaKind} from '../../../metadata';
+import {
+  extractSemanticTypeParameters,
+  SemanticDepGraphUpdater,
+} from '../../../incremental/semantic_graph';
+import {
+  ClassPropertyMapping,
+  DirectiveTypeCheckMeta,
+  extractDirectiveTypeCheckMeta,
+  HostDirectiveMeta,
+  InputMapping,
+  MatchSource,
+  MetadataReader,
+  MetadataRegistry,
+  MetaKind,
+} from '../../../metadata';
 import {PartialEvaluator} from '../../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../../perf';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost} from '../../../reflection';
+import {
+  ClassDeclaration,
+  ClassMember,
+  ClassMemberKind,
+  Decorator,
+  ReflectionHost,
+} from '../../../reflection';
 import {LocalModuleScopeRegistry} from '../../../scope';
-import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../../transform';
-import {compileDeclareFactory, compileInputTransformFields, compileNgFactoryDefField, compileResults, extractClassMetadata, findAngularDecorator, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic, InjectableClassRegistry, isAngularDecorator, readBaseClass, ReferencesRegistry, resolveProvidersRequiringFactory, toFactoryMetadata, validateHostDirectives} from '../../common';
+import {
+  AnalysisOutput,
+  CompilationMode,
+  CompileResult,
+  DecoratorHandler,
+  DetectResult,
+  HandlerPrecedence,
+  ResolveResult,
+} from '../../../transform';
+import {
+  compileDeclareFactory,
+  compileInputTransformFields,
+  compileNgFactoryDefField,
+  compileResults,
+  extractClassMetadata,
+  findAngularDecorator,
+  getDirectiveDiagnostics,
+  getProviderDiagnostics,
+  getUndecoratedClassWithAngularFeaturesDiagnostic,
+  InjectableClassRegistry,
+  isAngularDecorator,
+  readBaseClass,
+  ReferencesRegistry,
+  resolveProvidersRequiringFactory,
+  toFactoryMetadata,
+  validateHostDirectives,
+} from '../../common';
 
 import {extractDirectiveMetadata} from './shared';
 import {DirectiveSymbol} from './symbol';
 
 const FIELD_DECORATORS = [
-  'Input', 'Output', 'ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren', 'HostBinding',
-  'HostListener'
+  'Input',
+  'Output',
+  'ViewChild',
+  'ViewChildren',
+  'ContentChild',
+  'ContentChildren',
+  'HostBinding',
+  'HostListener',
 ];
 const LIFECYCLE_HOOKS = new Set([
-  'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
-  'ngAfterContentInit', 'ngAfterContentChecked'
+  'ngOnChanges',
+  'ngOnInit',
+  'ngOnDestroy',
+  'ngDoCheck',
+  'ngAfterViewInit',
+  'ngAfterViewChecked',
+  'ngAfterContentInit',
+  'ngAfterContentChecked',
 ]);
 
 export interface DirectiveHandlerData {
-  baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+  baseClass: Reference<ClassDeclaration> | 'dynamic' | null;
   typeCheckMeta: DirectiveTypeCheckMeta;
   meta: R3DirectiveMetadata;
-  classMetadata: R3ClassMetadata|null;
-  providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
+  classMetadata: R3ClassMetadata | null;
+  providersRequiringFactory: Set<Reference<ClassDeclaration>> | null;
   inputs: ClassPropertyMapping<InputMapping>;
   outputs: ClassPropertyMapping;
   isPoisoned: boolean;
   isStructural: boolean;
-  decorator: ts.Decorator|null;
-  hostDirectives: HostDirectiveMeta[]|null;
-  rawHostDirectives: ts.Expression|null;
+  decorator: ts.Decorator | null;
+  hostDirectives: HostDirectiveMeta[] | null;
+  rawHostDirectives: ts.Expression | null;
 }
 
-export class DirectiveDecoratorHandler implements
-    DecoratorHandler<Decorator|null, DirectiveHandlerData, DirectiveSymbol, unknown> {
+export class DirectiveDecoratorHandler
+  implements DecoratorHandler<Decorator | null, DirectiveHandlerData, DirectiveSymbol, unknown>
+{
   constructor(
-      private reflector: ReflectionHost,
-      private evaluator: PartialEvaluator,
-      private metaRegistry: MetadataRegistry,
-      private scopeRegistry: LocalModuleScopeRegistry,
-      private metaReader: MetadataReader,
-      private injectableRegistry: InjectableClassRegistry,
-      private refEmitter: ReferenceEmitter,
-      private referencesRegistry: ReferencesRegistry,
-      private isCore: boolean,
-      private strictCtorDeps: boolean,
-      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
-      private annotateForClosureCompiler: boolean,
-      private perf: PerfRecorder,
-      private importTracker: ImportedSymbolsTracker,
-      private includeClassMetadata: boolean,
-      private readonly compilationMode: CompilationMode,
-      private readonly generateExtraImportsInLocalMode: boolean,
+    private reflector: ReflectionHost,
+    private evaluator: PartialEvaluator,
+    private metaRegistry: MetadataRegistry,
+    private scopeRegistry: LocalModuleScopeRegistry,
+    private metaReader: MetadataReader,
+    private injectableRegistry: InjectableClassRegistry,
+    private refEmitter: ReferenceEmitter,
+    private referencesRegistry: ReferencesRegistry,
+    private isCore: boolean,
+    private strictCtorDeps: boolean,
+    private semanticDepGraphUpdater: SemanticDepGraphUpdater | null,
+    private annotateForClosureCompiler: boolean,
+    private perf: PerfRecorder,
+    private importTracker: ImportedSymbolsTracker,
+    private includeClassMetadata: boolean,
+    private readonly compilationMode: CompilationMode,
+    private readonly generateExtraImportsInLocalMode: boolean,
   ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'DirectiveDecoratorHandler';
 
-  detect(node: ClassDeclaration, decorators: Decorator[]|null):
-      DetectResult<Decorator|null>|undefined {
+  detect(
+    node: ClassDeclaration,
+    decorators: Decorator[] | null,
+  ): DetectResult<Decorator | null> | undefined {
     // If a class is undecorated but uses Angular features, we detect it as an
     // abstract directive. This is an unsupported pattern as of v10, but we want
     // to still detect these patterns so that we can report diagnostics.
     if (!decorators) {
       const angularField = this.findClassFieldWithAngularFeatures(node);
-      return angularField ? {trigger: angularField.node, decorator: null, metadata: null} :
-                            undefined;
+      return angularField
+        ? {trigger: angularField.node, decorator: null, metadata: null}
+        : undefined;
     } else {
       const decorator = findAngularDecorator(decorators, 'Directive', this.isCore);
       return decorator ? {trigger: decorator.node, decorator, metadata: decorator} : undefined;
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Readonly<Decorator|null>):
-      AnalysisOutput<DirectiveHandlerData> {
+  analyze(
+    node: ClassDeclaration,
+    decorator: Readonly<Decorator | null>,
+  ): AnalysisOutput<DirectiveHandlerData> {
     // Skip processing of the class declaration if compilation of undecorated classes
     // with Angular features is disabled. Previously in ngtsc, such classes have always
     // been processed, but we want to enforce a consistent decorator mental model.
@@ -104,18 +177,30 @@ export class DirectiveDecoratorHandler implements
     this.perf.eventCount(PerfEvent.AnalyzeDirective);
 
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.reflector, this.importTracker, this.evaluator, this.refEmitter,
-        this.referencesRegistry, this.isCore, this.annotateForClosureCompiler, this.compilationMode,
-        /* defaultSelector */ null);
+      node,
+      decorator,
+      this.reflector,
+      this.importTracker,
+      this.evaluator,
+      this.refEmitter,
+      this.referencesRegistry,
+      this.isCore,
+      this.annotateForClosureCompiler,
+      this.compilationMode,
+      /* defaultSelector */ null,
+    );
     if (directiveResult === undefined) {
       return {};
     }
     const analysis = directiveResult.metadata;
 
-    let providersRequiringFactory: Set<Reference<ClassDeclaration>>|null = null;
+    let providersRequiringFactory: Set<Reference<ClassDeclaration>> | null = null;
     if (directiveResult !== undefined && directiveResult.decorator.has('providers')) {
       providersRequiringFactory = resolveProvidersRequiringFactory(
-          directiveResult.decorator.get('providers')!, this.reflector, this.evaluator);
+        directiveResult.decorator.get('providers')!,
+        this.reflector,
+        this.evaluator,
+      );
     }
 
     return {
@@ -125,17 +210,16 @@ export class DirectiveDecoratorHandler implements
         meta: analysis,
         hostDirectives: directiveResult.hostDirectives,
         rawHostDirectives: directiveResult.rawHostDirectives,
-        classMetadata: this.includeClassMetadata ?
-            extractClassMetadata(
-                node, this.reflector, this.isCore, this.annotateForClosureCompiler) :
-            null,
+        classMetadata: this.includeClassMetadata
+          ? extractClassMetadata(node, this.reflector, this.isCore, this.annotateForClosureCompiler)
+          : null,
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, directiveResult.inputs, this.reflector),
         providersRequiringFactory,
         isPoisoned: false,
         isStructural: directiveResult.isStructural,
-        decorator: decorator?.node as ts.Decorator | null ?? null,
-      }
+        decorator: (decorator?.node as ts.Decorator | null) ?? null,
+      },
     };
   }
 
@@ -143,8 +227,14 @@ export class DirectiveDecoratorHandler implements
     const typeParameters = extractSemanticTypeParameters(node);
 
     return new DirectiveSymbol(
-        node, analysis.meta.selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
-        analysis.typeCheckMeta, typeParameters);
+      node,
+      analysis.meta.selector,
+      analysis.inputs,
+      analysis.outputs,
+      analysis.meta.exportAs,
+      analysis.typeCheckMeta,
+      typeParameters,
+    );
   }
 
   register(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): void {
@@ -160,7 +250,7 @@ export class DirectiveDecoratorHandler implements
       exportAs: analysis.meta.exportAs,
       inputs: analysis.inputs,
       outputs: analysis.outputs,
-      queries: analysis.meta.queries.map(query => query.propertyName),
+      queries: analysis.meta.queries.map((query) => query.propertyName),
       isComponent: false,
       baseClass: analysis.baseClass,
       hostDirectives: analysis.hostDirectives,
@@ -187,8 +277,11 @@ export class DirectiveDecoratorHandler implements
     });
   }
 
-  resolve(node: ClassDeclaration, analysis: DirectiveHandlerData, symbol: DirectiveSymbol):
-      ResolveResult<unknown> {
+  resolve(
+    node: ClassDeclaration,
+    analysis: DirectiveHandlerData,
+    symbol: DirectiveSymbol,
+  ): ResolveResult<unknown> {
     if (this.compilationMode === CompilationMode.LOCAL) {
       return {};
     }
@@ -198,25 +291,39 @@ export class DirectiveDecoratorHandler implements
     }
 
     const diagnostics: ts.Diagnostic[] = [];
-    if (analysis.providersRequiringFactory !== null &&
-        analysis.meta.providers instanceof WrappedNodeExpr) {
+    if (
+      analysis.providersRequiringFactory !== null &&
+      analysis.meta.providers instanceof WrappedNodeExpr
+    ) {
       const providerDiagnostics = getProviderDiagnostics(
-          analysis.providersRequiringFactory, analysis.meta.providers!.node,
-          this.injectableRegistry);
+        analysis.providersRequiringFactory,
+        analysis.meta.providers!.node,
+        this.injectableRegistry,
+      );
       diagnostics.push(...providerDiagnostics);
     }
 
     const directiveDiagnostics = getDirectiveDiagnostics(
-        node, this.injectableRegistry, this.evaluator, this.reflector, this.scopeRegistry,
-        this.strictCtorDeps, 'Directive');
+      node,
+      this.injectableRegistry,
+      this.evaluator,
+      this.reflector,
+      this.scopeRegistry,
+      this.strictCtorDeps,
+      'Directive',
+    );
     if (directiveDiagnostics !== null) {
       diagnostics.push(...directiveDiagnostics);
     }
 
-    const hostDirectivesDiagnotics = analysis.hostDirectives && analysis.rawHostDirectives ?
-        validateHostDirectives(
-            analysis.rawHostDirectives, analysis.hostDirectives, this.metaReader) :
-        null;
+    const hostDirectivesDiagnotics =
+      analysis.hostDirectives && analysis.rawHostDirectives
+        ? validateHostDirectives(
+            analysis.rawHostDirectives,
+            analysis.hostDirectives,
+            this.metaReader,
+          )
+        : null;
     if (hostDirectivesDiagnotics !== null) {
       diagnostics.push(...hostDirectivesDiagnotics);
     }
@@ -225,43 +332,72 @@ export class DirectiveDecoratorHandler implements
   }
 
   compileFull(
-      node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
-      resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
+    node: ClassDeclaration,
+    analysis: Readonly<DirectiveHandlerData>,
+    resolution: Readonly<unknown>,
+    pool: ConstantPool,
+  ): CompileResult[] {
     const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
-    const classMetadata = analysis.classMetadata !== null ?
-        compileClassMetadata(analysis.classMetadata).toStmt() :
-        null;
+    const classMetadata =
+      analysis.classMetadata !== null
+        ? compileClassMetadata(analysis.classMetadata).toStmt()
+        : null;
     return compileResults(
-        fac, def, classMetadata, 'ɵdir', inputTransformFields, null /* deferrableImports */);
+      fac,
+      def,
+      classMetadata,
+      'ɵdir',
+      inputTransformFields,
+      null /* deferrableImports */,
+    );
   }
 
   compilePartial(
-      node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
-      resolution: Readonly<unknown>): CompileResult[] {
+    node: ClassDeclaration,
+    analysis: Readonly<DirectiveHandlerData>,
+    resolution: Readonly<unknown>,
+  ): CompileResult[] {
     const fac = compileDeclareFactory(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDeclareDirectiveFromMetadata(analysis.meta);
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
-    const classMetadata = analysis.classMetadata !== null ?
-        compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
-        null;
+    const classMetadata =
+      analysis.classMetadata !== null
+        ? compileDeclareClassMetadata(analysis.classMetadata).toStmt()
+        : null;
 
     return compileResults(
-        fac, def, classMetadata, 'ɵdir', inputTransformFields, null /* deferrableImports */);
+      fac,
+      def,
+      classMetadata,
+      'ɵdir',
+      inputTransformFields,
+      null /* deferrableImports */,
+    );
   }
 
   compileLocal(
-      node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
-      resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
+    node: ClassDeclaration,
+    analysis: Readonly<DirectiveHandlerData>,
+    resolution: Readonly<unknown>,
+    pool: ConstantPool,
+  ): CompileResult[] {
     const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
     const inputTransformFields = compileInputTransformFields(analysis.inputs);
-    const classMetadata = analysis.classMetadata !== null ?
-        compileClassMetadata(analysis.classMetadata).toStmt() :
-        null;
+    const classMetadata =
+      analysis.classMetadata !== null
+        ? compileClassMetadata(analysis.classMetadata).toStmt()
+        : null;
     return compileResults(
-        fac, def, classMetadata, 'ɵdir', inputTransformFields, null /* deferrableImports */);
+      fac,
+      def,
+      classMetadata,
+      'ɵdir',
+      inputTransformFields,
+      null /* deferrableImports */,
+    );
   }
 
   /**
@@ -270,16 +406,21 @@ export class DirectiveDecoratorHandler implements
    * contain class members that are either decorated with a known Angular decorator,
    * or if they correspond to a known Angular lifecycle hook.
    */
-  private findClassFieldWithAngularFeatures(node: ClassDeclaration): ClassMember|undefined {
-    return this.reflector.getMembersOfClass(node).find(member => {
-      if (!member.isStatic && member.kind === ClassMemberKind.Method &&
-          LIFECYCLE_HOOKS.has(member.name)) {
+  private findClassFieldWithAngularFeatures(node: ClassDeclaration): ClassMember | undefined {
+    return this.reflector.getMembersOfClass(node).find((member) => {
+      if (
+        !member.isStatic &&
+        member.kind === ClassMemberKind.Method &&
+        LIFECYCLE_HOOKS.has(member.name)
+      ) {
         return true;
       }
       if (member.decorators) {
-        return member.decorators.some(
-            decorator => FIELD_DECORATORS.some(
-                decoratorName => isAngularDecorator(decorator, decoratorName, this.isCore)));
+        return member.decorators.some((decorator) =>
+          FIELD_DECORATORS.some((decoratorName) =>
+            isAngularDecorator(decorator, decoratorName, this.isCore),
+          ),
+        );
       }
       return false;
     });

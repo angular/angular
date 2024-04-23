@@ -36,9 +36,7 @@ describe('EmitScope', () => {
 
       const def = emitScope.translateDefinition({
         expression: o.fn([], [], null, null, 'foo'),
-        statements: [
-          o.variable('testFn').callFn([]).toStmt(),
-        ],
+        statements: [o.variable('testFn').callFn([]).toStmt()],
       });
       expect(generate(def)).toEqual('function () { testFn(); return function foo() { }; }()');
     });

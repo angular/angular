@@ -18,7 +18,7 @@ type AssumeEager = typeof AssumeEager;
  * Maps imported symbol name to a set of locations where the symbols is used
  * in a source file.
  */
-type SymbolMap = Map<string, Set<ts.Identifier>|AssumeEager>;
+type SymbolMap = Map<string, Set<ts.Identifier> | AssumeEager>;
 
 /**
  * Allows to register a symbol as deferrable and keep track of its usage.
@@ -37,8 +37,9 @@ export class DeferredSymbolTracker {
   private readonly explicitlyDeferredImports = new Map<ClassDeclaration, ts.ImportDeclaration[]>();
 
   constructor(
-      private readonly typeChecker: ts.TypeChecker,
-      private onlyExplicitDeferDependencyImports: boolean) {}
+    private readonly typeChecker: ts.TypeChecker,
+    private onlyExplicitDeferDependencyImports: boolean,
+  ) {}
 
   /**
    * Given an import declaration node, extract the names of all imported symbols
@@ -91,8 +92,10 @@ export class DeferredSymbolTracker {
    * can not be removed, since there are other symbols imported alongside deferred
    * components.
    */
-  getNonRemovableDeferredImports(sourceFile: ts.SourceFile, classDecl: ClassDeclaration):
-      ts.ImportDeclaration[] {
+  getNonRemovableDeferredImports(
+    sourceFile: ts.SourceFile,
+    classDecl: ClassDeclaration,
+  ): ts.ImportDeclaration[] {
     const affectedImports: ts.ImportDeclaration[] = [];
     const importDecls = this.explicitlyDeferredImports.get(classDecl) ?? [];
     for (const importDecl of importDecls) {
@@ -108,8 +111,11 @@ export class DeferredSymbolTracker {
    * for defer loading.
    */
   markAsDeferrableCandidate(
-      identifier: ts.Identifier, importDecl: ts.ImportDeclaration,
-      componentClassDecl: ClassDeclaration, isExplicitlyDeferred: boolean): void {
+    identifier: ts.Identifier,
+    importDecl: ts.ImportDeclaration,
+    componentClassDecl: ClassDeclaration,
+    isExplicitlyDeferred: boolean,
+  ): void {
     if (this.onlyExplicitDeferDependencyImports && !isExplicitlyDeferred) {
       // Ignore deferrable candidates when only explicit deferred imports mode is enabled.
       // In that mode only dependencies from the `@Component.deferredImports` field are
@@ -135,14 +141,17 @@ export class DeferredSymbolTracker {
 
     if (!symbolMap.has(identifier.text)) {
       throw new Error(
-          `The '${identifier.text}' identifier doesn't belong ` +
-          `to the provided import declaration.`);
+        `The '${identifier.text}' identifier doesn't belong ` +
+          `to the provided import declaration.`,
+      );
     }
 
     if (symbolMap.get(identifier.text) === AssumeEager) {
       // We process this symbol for the first time, populate references.
       symbolMap.set(
-          identifier.text, this.lookupIdentifiersInSourceFile(identifier.text, importDecl));
+        identifier.text,
+        this.lookupIdentifiersInSourceFile(identifier.text, importDecl),
+      );
     }
 
     const identifiers = symbolMap.get(identifier.text) as Set<ts.Identifier>;
@@ -186,8 +195,10 @@ export class DeferredSymbolTracker {
     return deferrableDecls;
   }
 
-  private lookupIdentifiersInSourceFile(name: string, importDecl: ts.ImportDeclaration):
-      Set<ts.Identifier> {
+  private lookupIdentifiersInSourceFile(
+    name: string,
+    importDecl: ts.ImportDeclaration,
+  ): Set<ts.Identifier> {
     const results = new Set<ts.Identifier>();
     const visit = (node: ts.Node): void => {
       if (node === importDecl) {

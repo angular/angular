@@ -5,7 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {createMayBeForwardRefExpression, ForwardRefHandling, MaybeForwardRefExpression, outputAst as o, R3DeclareDependencyMetadata, R3DependencyMetadata, R3Reference} from '@angular/compiler';
+import {
+  createMayBeForwardRefExpression,
+  ForwardRefHandling,
+  MaybeForwardRefExpression,
+  outputAst as o,
+  R3DeclareDependencyMetadata,
+  R3DependencyMetadata,
+  R3Reference,
+} from '@angular/compiler';
 
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
@@ -20,7 +28,9 @@ export function wrapReference<TExpression>(wrapped: o.WrappedNodeExpr<TExpressio
  * Parses the value of an enum from the AST value's symbol name.
  */
 export function parseEnum<TExpression, TEnum>(
-    value: AstValue<unknown, TExpression>, Enum: TEnum): TEnum[keyof TEnum] {
+  value: AstValue<unknown, TExpression>,
+  Enum: TEnum,
+): TEnum[keyof TEnum] {
   const symbolName = value.getSymbolName();
   if (symbolName === null) {
     throw new FatalLinkerError(value.expression, 'Expected value to have a symbol name');
@@ -36,7 +46,8 @@ export function parseEnum<TExpression, TEnum>(
  * Parse a dependency structure from an AST object.
  */
 export function getDependency<TExpression>(
-    depObj: AstObject<R3DeclareDependencyMetadata, TExpression>): R3DependencyMetadata {
+  depObj: AstObject<R3DeclareDependencyMetadata, TExpression>,
+): R3DependencyMetadata {
   const isAttribute = depObj.has('attribute') && depObj.getBoolean('attribute');
   const token = depObj.getOpaque('token');
   // Normally `attribute` is a string literal and so its `attributeNameType` is the same string
@@ -56,7 +67,6 @@ export function getDependency<TExpression>(
   };
 }
 
-
 /**
  * Return an `R3ProviderExpression` that represents either the extracted type reference expression
  * from a `forwardRef` function call, or the type itself.
@@ -67,8 +77,9 @@ export function getDependency<TExpression>(
  *
  * If there is no forwardRef call expression then we just return the opaque type.
  */
-export function extractForwardRef<TExpression>(expr: AstValue<unknown, TExpression>):
-    MaybeForwardRefExpression<o.WrappedNodeExpr<TExpression>> {
+export function extractForwardRef<TExpression>(
+  expr: AstValue<unknown, TExpression>,
+): MaybeForwardRefExpression<o.WrappedNodeExpr<TExpression>> {
   if (!expr.isCallExpression()) {
     return createMayBeForwardRefExpression(expr.getOpaque(), ForwardRefHandling.None);
   }
@@ -76,22 +87,29 @@ export function extractForwardRef<TExpression>(expr: AstValue<unknown, TExpressi
   const callee = expr.getCallee();
   if (callee.getSymbolName() !== 'forwardRef') {
     throw new FatalLinkerError(
-        callee.expression,
-        'Unsupported expression, expected a `forwardRef()` call or a type reference');
+      callee.expression,
+      'Unsupported expression, expected a `forwardRef()` call or a type reference',
+    );
   }
 
   const args = expr.getArguments();
   if (args.length !== 1) {
     throw new FatalLinkerError(
-        expr, 'Unsupported `forwardRef(fn)` call, expected a single argument');
+      expr,
+      'Unsupported `forwardRef(fn)` call, expected a single argument',
+    );
   }
 
   const wrapperFn = args[0] as AstValue<Function, TExpression>;
   if (!wrapperFn.isFunction()) {
     throw new FatalLinkerError(
-        wrapperFn, 'Unsupported `forwardRef(fn)` call, expected its argument to be a function');
+      wrapperFn,
+      'Unsupported `forwardRef(fn)` call, expected its argument to be a function',
+    );
   }
 
   return createMayBeForwardRefExpression(
-      wrapperFn.getFunctionReturnValue().getOpaque(), ForwardRefHandling.Unwrapped);
+    wrapperFn.getFunctionReturnValue().getOpaque(),
+    ForwardRefHandling.Unwrapped,
+  );
 }

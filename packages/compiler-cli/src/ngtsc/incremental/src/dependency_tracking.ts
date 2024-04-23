@@ -23,8 +23,9 @@ import {DependencyTracker} from '../api';
  * 2. One of its dependencies has physically changed.
  * 3. One of its resource dependencies has physically changed.
  */
-export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> implements
-    DependencyTracker<T> {
+export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile>
+  implements DependencyTracker<T>
+{
   private nodes = new Map<T, FileNode>();
 
   addDependency(from: T, on: T): void {
@@ -67,9 +68,11 @@ export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> i
    * P(n) = the physically changed files from build n - 1 to build n.
    */
   updateWithPhysicalChanges(
-      previous: FileDependencyGraph<T>, changedTsPaths: Set<AbsoluteFsPath>,
-      deletedTsPaths: Set<AbsoluteFsPath>,
-      changedResources: Set<AbsoluteFsPath>): Set<AbsoluteFsPath> {
+    previous: FileDependencyGraph<T>,
+    changedTsPaths: Set<AbsoluteFsPath>,
+    deletedTsPaths: Set<AbsoluteFsPath>,
+    changedResources: Set<AbsoluteFsPath>,
+  ): Set<AbsoluteFsPath> {
     const logicallyChanged = new Set<AbsoluteFsPath>();
 
     for (const sf of previous.nodes.keys()) {
@@ -106,9 +109,12 @@ export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> i
  * changed files and resources.
  */
 function isLogicallyChanged<T extends {fileName: string}>(
-    sf: T, node: FileNode, changedTsPaths: ReadonlySet<AbsoluteFsPath>,
-    deletedTsPaths: ReadonlySet<AbsoluteFsPath>,
-    changedResources: ReadonlySet<AbsoluteFsPath>): boolean {
+  sf: T,
+  node: FileNode,
+  changedTsPaths: ReadonlySet<AbsoluteFsPath>,
+  deletedTsPaths: ReadonlySet<AbsoluteFsPath>,
+  changedResources: ReadonlySet<AbsoluteFsPath>,
+): boolean {
   // A file is assumed to have logically changed if its dependencies could not be determined
   // accurately.
   if (node.failedAnalysis) {

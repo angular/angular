@@ -17,9 +17,7 @@ runInEachFileSystem(() => {
         id: 'binding via attribute',
         inputs: {'show': {type: 'InputSignal<boolean>', isSignal: true}},
         template: `<div dir show="works">`,
-        expected: [
-          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'explicit inline true binding',
@@ -52,7 +50,8 @@ runInEachFileSystem(() => {
         template: `<div dir [show]="{works: true, extraField: true}">`,
         expected: [
           jasmine.stringContaining(
-              `Object literal may only specify known properties, and '"extraField"' does not exist in type '{ works: boolean; }'.`)
+            `Object literal may only specify known properties, and '"extraField"' does not exist in type '{ works: boolean; }'.`,
+          ),
         ],
       },
       {
@@ -60,7 +59,7 @@ runInEachFileSystem(() => {
         inputs: {'show': {type: 'InputSignal<{works: boolean}>', isSignal: true}},
         template: `<div dir [show]="{}">`,
         expected: [
-          `TestComponent.html(1, 11): Property 'works' is missing in type '{}' but required in type '{ works: boolean; }'.`
+          `TestComponent.html(1, 11): Property 'works' is missing in type '{}' but required in type '{ works: boolean; }'.`,
         ],
       },
       // mixing cases
@@ -71,7 +70,7 @@ runInEachFileSystem(() => {
           signalProp: {type: 'InputSignal<string>', isSignal: true},
         },
         template: `<div dir [zoneProp]="'works'" [signalProp]="'stringVal'">`,
-        expected: []
+        expected: [],
       },
       {
         id: 'mixing zone and signal inputs, invalid zone binding',
@@ -80,7 +79,7 @@ runInEachFileSystem(() => {
           signalProp: {type: 'InputSignal<string>', isSignal: true},
         },
         template: `<div dir [zoneProp]="false" [signalProp]="'stringVal'">`,
-        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`]
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'mixing zone and signal inputs, invalid signal binding',
@@ -89,7 +88,7 @@ runInEachFileSystem(() => {
           signalProp: {type: 'InputSignal<string>', isSignal: true},
         },
         template: `<div dir [zoneProp]="'works'" [signalProp]="{}">`,
-        expected: [`TestComponent.html(1, 32): Type '{}' is not assignable to type 'string'.`]
+        expected: [`TestComponent.html(1, 32): Type '{}' is not assignable to type 'string'.`],
       },
       {
         id: 'mixing zone and signal inputs, both invalid',
@@ -100,28 +99,28 @@ runInEachFileSystem(() => {
         template: `<div dir [zoneProp]="false" [signalProp]="{}">`,
         expected: [
           `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-          `TestComponent.html(1, 30): Type '{}' is not assignable to type 'string'.`
-        ]
+          `TestComponent.html(1, 30): Type '{}' is not assignable to type 'string'.`,
+        ],
       },
       // restricted fields
       {
         id: 'disallows access to private input',
         inputs: {
-          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'}
+          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'},
         },
         template: `<div dir [pattern]="'works'">`,
         expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is private and only accessible within class 'Dir'.`
+          `TestComponent.html(1, 11): Property 'pattern' is private and only accessible within class 'Dir'.`,
         ],
       },
       {
         id: 'disallows access to protected input',
         inputs: {
-          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'protected'}
+          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'protected'},
         },
         template: `<div dir [pattern]="'works'">`,
         expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is protected and only accessible within class 'Dir' and its subclasses.`
+          `TestComponent.html(1, 11): Property 'pattern' is protected and only accessible within class 'Dir' and its subclasses.`,
         ],
       },
       {
@@ -130,7 +129,7 @@ runInEachFileSystem(() => {
         // be perfectly fine to keep the `input()` member as readonly.
         id: 'allows access to readonly input',
         inputs: {
-          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'readonly'}
+          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'readonly'},
         },
         template: `<div dir [pattern]="'works'">`,
         expected: [],
@@ -139,7 +138,7 @@ runInEachFileSystem(() => {
       {
         id: 'allow access to private input if modifiers are explicitly ignored',
         inputs: {
-          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'}
+          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'},
         },
         template: `<div dir [pattern]="'works'">`,
         expected: [],
@@ -150,7 +149,7 @@ runInEachFileSystem(() => {
       {
         id: 'allow access to protected input if modifiers are explicitly ignored',
         inputs: {
-          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'protected'}
+          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'protected'},
         },
         template: `<div dir [pattern]="'works'">`,
         expected: [],
@@ -161,7 +160,7 @@ runInEachFileSystem(() => {
       {
         id: 'allow access to readonly input if modifiers are explicitly ignored',
         inputs: {
-          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'readonly'}
+          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'readonly'},
         },
         template: `<div dir [pattern]="'works'">`,
         expected: [],
@@ -172,12 +171,10 @@ runInEachFileSystem(() => {
       {
         id: 'allow access to private input if modifiers are explicitly ignored, but error if not assignable',
         inputs: {
-          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'}
+          pattern: {type: 'InputSignal<string>', isSignal: true, restrictionModifier: 'private'},
         },
         template: `<div dir [pattern]="false">`,
-        expected: [
-          `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
         options: {
           honorAccessModifiersForInputBindings: false,
         },
@@ -191,13 +188,9 @@ runInEachFileSystem(() => {
             isSignal: true,
           },
         },
-        extraDirectiveMembers: [
-          'static ngAcceptInputType_pattern: string|boolean',
-        ],
+        extraDirectiveMembers: ['static ngAcceptInputType_pattern: string|boolean'],
         template: `<div dir [pattern]="false">`,
-        expected: [
-          `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
       },
       // transforms
       {
@@ -222,13 +215,11 @@ runInEachFileSystem(() => {
           other: {
             type: 'InputSignal<T>',
             isSignal: true,
-          }
+          },
         },
         directiveGenerics: '<T>',
         template: `<div dir [gen]="false" [other]="'invalid'">`,
-        expected: [
-          `TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'generic inference and binding to directive, mix of zone and signal',
@@ -240,13 +231,11 @@ runInEachFileSystem(() => {
           other: {
             type: 'T',
             isSignal: false,
-          }
+          },
         },
         directiveGenerics: '<T>',
         template: `<div dir [gen]="false" [other]="'invalid'">`,
-        expected: [
-          `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'generic inference and binding to directive (with `extends boolean`), all signal inputs',
@@ -258,7 +247,7 @@ runInEachFileSystem(() => {
           other: {
             type: 'InputSignal<T>',
             isSignal: true,
-          }
+          },
         },
         directiveGenerics: '<T extends boolean>',
         template: `<div dir [gen]="false" [other]="'invalid'">`,
@@ -276,13 +265,11 @@ runInEachFileSystem(() => {
           other: {
             type: 'T',
             isSignal: false,
-          }
+          },
         },
         directiveGenerics: '<T extends boolean>',
         template: `<div dir [gen]="false" [other]="'invalid'">`,
-        expected: [
-          `TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'generic multi-inference and bindings to directive, all signal inputs',
@@ -294,11 +281,9 @@ runInEachFileSystem(() => {
           other: {
             type: 'InputSignal<U>',
             isSignal: true,
-          }
+          },
         },
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [gen]="false" [other]="'text'"
@@ -318,11 +303,9 @@ runInEachFileSystem(() => {
           other: {
             type: 'U',
             isSignal: false,
-          }
+          },
         },
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [gen]="false" [other]="'text'"
@@ -342,11 +325,9 @@ runInEachFileSystem(() => {
           other: {
             type: 'InputSignal<{u: U}>',
             isSignal: true,
-          }
+          },
         },
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [gen]="false" [other]="{u: null}"
@@ -401,9 +382,7 @@ runInEachFileSystem(() => {
           },
         },
         template: `<div dir [bla]="true">`,
-        expected: [
-          `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'differing WriteT and ReadT, generic ctor inference',
@@ -413,9 +392,7 @@ runInEachFileSystem(() => {
             isSignal: true,
           },
         },
-        extraDirectiveMembers: [
-          `tester: {t: T, blaValue: never} = null!`,
-        ],
+        extraDirectiveMembers: [`tester: {t: T, blaValue: never} = null!`],
         directiveGenerics: '<T>',
         template: `
               <div dir [bla]="prop" #ref="dir"
@@ -439,9 +416,7 @@ runInEachFileSystem(() => {
         extraFileContent: `
               class SomeNonExportedClass {}
             `,
-        extraDirectiveMembers: [
-          `tester: {t: T} = null!`,
-        ],
+        extraDirectiveMembers: [`tester: {t: T} = null!`],
         directiveGenerics: '<T extends SomeNonExportedClass>',
         template: `<div dir [bla]="prop" #ref="dir" (click)="ref.tester = {t: 0}">`,
         component: `prop: HTMLElement = null!`,

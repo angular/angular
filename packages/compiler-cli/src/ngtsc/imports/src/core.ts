@@ -83,8 +83,9 @@ export class R3SymbolsImportRewriter implements ImportRewriter {
 
     const relativePathToR3Symbols = relativePathBetween(inContextOfFile, this.r3SymbolsPath);
     if (relativePathToR3Symbols === null) {
-      throw new Error(`Failed to rewrite import inside ${CORE_MODULE}: ${inContextOfFile} -> ${
-          this.r3SymbolsPath}`);
+      throw new Error(
+        `Failed to rewrite import inside ${CORE_MODULE}: ${inContextOfFile} -> ${this.r3SymbolsPath}`,
+      );
     }
 
     return relativePathToR3Symbols;

@@ -36,17 +36,26 @@ export {getInitializerApiJitTransform} from './initializer_api_transforms/transf
  *    metadata
  */
 export function angularJitApplicationTransform(
-    program: ts.Program, isCore = false): ts.TransformerFactory<ts.SourceFile> {
+  program: ts.Program,
+  isCore = false,
+): ts.TransformerFactory<ts.SourceFile> {
   const typeChecker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(typeChecker);
   const importTracker = new ImportedSymbolsTracker();
 
   const downlevelDecoratorTransform = getDownlevelDecoratorsTransform(
-      typeChecker, reflectionHost, [], isCore,
-      /* enableClosureCompiler */ false);
+    typeChecker,
+    reflectionHost,
+    [],
+    isCore,
+    /* enableClosureCompiler */ false,
+  );
 
-  const initializerApisJitTransform =
-      getInitializerApiJitTransform(reflectionHost, importTracker, isCore);
+  const initializerApisJitTransform = getInitializerApiJitTransform(
+    reflectionHost,
+    importTracker,
+    isCore,
+  );
 
   return (ctx) => {
     return (sourceFile) => {

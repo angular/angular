@@ -16,15 +16,19 @@ import {DynamicValue} from './dynamic';
 import {StaticInterpreter} from './interpreter';
 import {ResolvedValue} from './result';
 
-export type ForeignFunctionResolver =
-    (fn: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-     callExpr: ts.CallExpression, resolve: (expr: ts.Expression) => ResolvedValue,
-     unresolvable: DynamicValue) => ResolvedValue;
+export type ForeignFunctionResolver = (
+  fn: Reference<ts.FunctionDeclaration | ts.MethodDeclaration | ts.FunctionExpression>,
+  callExpr: ts.CallExpression,
+  resolve: (expr: ts.Expression) => ResolvedValue,
+  unresolvable: DynamicValue,
+) => ResolvedValue;
 
 export class PartialEvaluator {
   constructor(
-      private host: ReflectionHost, private checker: ts.TypeChecker,
-      private dependencyTracker: DependencyTracker|null) {}
+    private host: ReflectionHost,
+    private checker: ts.TypeChecker,
+    private dependencyTracker: DependencyTracker | null,
+  ) {}
 
   evaluate(expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver): ResolvedValue {
     const interpreter = new StaticInterpreter(this.host, this.checker, this.dependencyTracker);

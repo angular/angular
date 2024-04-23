@@ -20,15 +20,19 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * This check should only be use if `strictNullChecks` is enabled,
  * otherwise it would produce inaccurate results.
  */
-class OptionalChainNotNullableCheck extends
-    TemplateCheckWithVisitor<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE> {
+class OptionalChainNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE> {
   override code = ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE as const;
 
   override visitNode(
-      ctx: TemplateContext<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE>, component: ts.ClassDeclaration,
-      node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE>[] {
-    if (!(node instanceof SafeCall) && !(node instanceof SafePropertyRead) &&
-        !(node instanceof SafeKeyedRead))
+    ctx: TemplateContext<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE>,
+    component: ts.ClassDeclaration,
+    node: TmplAstNode | AST,
+  ): NgTemplateDiagnostic<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE>[] {
+    if (
+      !(node instanceof SafeCall) &&
+      !(node instanceof SafePropertyRead) &&
+      !(node instanceof SafeKeyedRead)
+    )
       return [];
 
     const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
@@ -51,31 +55,34 @@ class OptionalChainNotNullableCheck extends
     if (symbol.kind !== SymbolKind.Expression) {
       return [];
     }
-    const templateMapping =
-        ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(symbol.tcbLocation);
+    const templateMapping = ctx.templateTypeChecker.getTemplateMappingAtTcbLocation(
+      symbol.tcbLocation,
+    );
     if (templateMapping === null) {
       return [];
     }
-    const advice = node instanceof SafePropertyRead ?
-        `the '?.' operator can be replaced with the '.' operator` :
-        `the '?.' operator can be safely removed`;
+    const advice =
+      node instanceof SafePropertyRead
+        ? `the '?.' operator can be replaced with the '.' operator`
+        : `the '?.' operator can be safely removed`;
     const diagnostic = ctx.makeTemplateDiagnostic(
-        templateMapping.span,
-        `The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore ${
-            advice}.`);
+      templateMapping.span,
+      `The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore ${advice}.`,
+    );
     return [diagnostic];
   }
 }
 
 export const factory: TemplateCheckFactory<
-    ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE,
-    ExtendedTemplateDiagnosticName.OPTIONAL_CHAIN_NOT_NULLABLE> = {
+  ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE,
+  ExtendedTemplateDiagnosticName.OPTIONAL_CHAIN_NOT_NULLABLE
+> = {
   code: ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE,
   name: ExtendedTemplateDiagnosticName.OPTIONAL_CHAIN_NOT_NULLABLE,
   create: (options: NgCompilerOptions) => {
     // Require `strictNullChecks` to be enabled.
     const strictNullChecks =
-        options.strictNullChecks === undefined ? !!options.strict : !!options.strictNullChecks;
+      options.strictNullChecks === undefined ? !!options.strict : !!options.strictNullChecks;
     if (!strictNullChecks) {
       return null;
     }

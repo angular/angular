@@ -21,23 +21,30 @@ runInEachFileSystem(() => {
   describe('SuffixNotSupportedCheck', () => {
     it('binds the error code to its extended template diagnostic name', () => {
       expect(suffixNotSupportedFactory.code).toBe(ErrorCode.SUFFIX_NOT_SUPPORTED);
-      expect(suffixNotSupportedFactory.name)
-          .toBe(ExtendedTemplateDiagnosticName.SUFFIX_NOT_SUPPORTED);
+      expect(suffixNotSupportedFactory.name).toBe(
+        ExtendedTemplateDiagnosticName.SUFFIX_NOT_SUPPORTED,
+      );
     });
 
     it('should produce suffix not supported warning', () => {
       const fileName = absoluteFrom('/main.ts');
-      const {program, templateTypeChecker} = setup([{
-        fileName,
-        templates: {
-          'TestCmp': `<div [attr.width.px]="1"></div>`,
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div [attr.width.px]="1"></div>`,
+          },
+          source: 'export class TestCmp {}',
         },
-        source: 'export class TestCmp {}'
-      }]);
+      ]);
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [suffixNotSupportedFactory], {});
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [suffixNotSupportedFactory],
+        {},
+      );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(1);
       expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
@@ -47,17 +54,23 @@ runInEachFileSystem(() => {
 
     it('should not produce suffix not supported warning on a style binding', () => {
       const fileName = absoluteFrom('/main.ts');
-      const {program, templateTypeChecker} = setup([{
-        fileName,
-        templates: {
-          'TestCmp': `<div [style.width.px]="1"></div>`,
+      const {program, templateTypeChecker} = setup([
+        {
+          fileName,
+          templates: {
+            'TestCmp': `<div [style.width.px]="1"></div>`,
+          },
+          source: 'export class TestCmp {}',
         },
-        source: 'export class TestCmp {}'
-      }]);
+      ]);
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [suffixNotSupportedFactory], {});
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [suffixNotSupportedFactory],
+        {},
+      );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });
@@ -76,7 +89,11 @@ runInEachFileSystem(() => {
       const sf = getSourceFileOrError(program, fileName);
       const component = getClass(sf, 'TestCmp');
       const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
-          templateTypeChecker, program.getTypeChecker(), [suffixNotSupportedFactory], {});
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [suffixNotSupportedFactory],
+        {},
+      );
       const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
       expect(diags.length).toBe(0);
     });

@@ -45,7 +45,7 @@ export interface TestCase {
   /** Test component class code. */
   component?: string;
   /** Expected diagnostics. */
-  expected: (string|jasmine.AsymmetricMatcher<string>)[];
+  expected: (string | jasmine.AsymmetricMatcher<string>)[];
   /** Additional type checking options to be used. */
   options?: Partial<TypeCheckingConfig>;
   /** Whether the test case should exclusively run. */
@@ -61,11 +61,13 @@ export function typeCheckDiagnose(c: TestCase, compilerOptions?: ts.CompilerOpti
   const outputs = c.outputs ?? {};
 
   const inputFields = Object.keys(inputs).map(
-      inputName =>
-          `${inputs[inputName].restrictionModifier ?? ''} ${inputName}: ${inputs[inputName].type}`);
+    (inputName) =>
+      `${inputs[inputName].restrictionModifier ?? ''} ${inputName}: ${inputs[inputName].type}`,
+  );
 
   const outputFields = Object.keys(outputs).map(
-      name => `${outputs[name].restrictionModifier ?? ''} ${name}: ${outputs[name].type}`);
+    (name) => `${outputs[name].restrictionModifier ?? ''} ${name}: ${outputs[name].type}`,
+  );
 
   const testComponent = `
       import {
@@ -111,22 +113,26 @@ export function typeCheckDiagnose(c: TestCase, compilerOptions?: ts.CompilerOpti
   }, {});
 
   const messages = diagnose(
-      c.template, testComponent,
-      [
-        {
-          type: 'directive',
-          name: 'Dir',
-          selector: '[dir]',
-          exportAs: ['dir'],
-          isGeneric: c.directiveGenerics !== undefined,
-          outputs: outputDeclarations,
-          inputs: inputDeclarations,
-          restrictedInputFields: Object.entries(inputs)
-                                     .filter(([_, i]) => i.restrictionModifier !== undefined)
-                                     .map(([name]) => name),
-        },
-      ],
-      undefined, c.options, compilerOptions);
+    c.template,
+    testComponent,
+    [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        exportAs: ['dir'],
+        isGeneric: c.directiveGenerics !== undefined,
+        outputs: outputDeclarations,
+        inputs: inputDeclarations,
+        restrictedInputFields: Object.entries(inputs)
+          .filter(([_, i]) => i.restrictionModifier !== undefined)
+          .map(([name]) => name),
+      },
+    ],
+    undefined,
+    c.options,
+    compilerOptions,
+  );
 
   expect(messages).toEqual(c.expected);
 }

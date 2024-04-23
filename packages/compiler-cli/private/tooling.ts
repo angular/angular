@@ -37,7 +37,9 @@ export const GLOBAL_DEFS_FOR_TERSER_WITH_AOT = {
  * NOTE: Signature is explicitly captured here to highlight the
  * contract various Angular CLI versions are relying on.
  */
-export const constructorParametersDownlevelTransform =
-    (program: ts.Program, isCore = false): ts.TransformerFactory<ts.SourceFile> => {
-      return angularJitApplicationTransform(program, isCore);
-    };
+export const constructorParametersDownlevelTransform = (
+  program: ts.Program,
+  isCore = false,
+): ts.TransformerFactory<ts.SourceFile> => {
+  return angularJitApplicationTransform(program, isCore);
+};

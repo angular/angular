@@ -21,11 +21,13 @@ runInEachFileSystem(() => {
   describe('template type-checking program', () => {
     it('should not be created if no components need to be checked', () => {
       const fileName = absoluteFrom('/main.ts');
-      const {program, templateTypeChecker, programStrategy} = setup([{
-        fileName,
-        templates: {},
-        source: `export class NotACmp {}`,
-      }]);
+      const {program, templateTypeChecker, programStrategy} = setup([
+        {
+          fileName,
+          templates: {},
+          source: `export class NotACmp {}`,
+        },
+      ]);
       const sf = getSourceFileOrError(program, fileName);
 
       templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
@@ -42,8 +44,9 @@ runInEachFileSystem(() => {
       // Update /main.ngtypecheck.ts without changing its shape. Verify that the old program was
       // reused completely.
       programStrategy.updateFiles(
-          new Map([[typecheckPath, createUpdate('export const VERSION = 2;')]]),
-          UpdateMode.Complete);
+        new Map([[typecheckPath, createUpdate('export const VERSION = 2;')]]),
+        UpdateMode.Complete,
+      );
 
       expectCompleteReuse(programStrategy.getProgram());
     });
@@ -55,8 +58,9 @@ runInEachFileSystem(() => {
       // Update /main.ts without changing its shape. Verify that the old program was reused
       // completely.
       programStrategy.updateFiles(
-          new Map([[mainPath, createUpdate('export const STILL_NOT_A_COMPONENT = true;')]]),
-          UpdateMode.Complete);
+        new Map([[mainPath, createUpdate('export const STILL_NOT_A_COMPONENT = true;')]]),
+        UpdateMode.Complete,
+      );
 
       expectCompleteReuse(programStrategy.getProgram());
     });
@@ -71,11 +75,11 @@ function createUpdate(text: string): FileUpdate {
 }
 
 function makeSingleFileProgramWithTypecheckShim(): {
-  program: ts.Program,
-  host: ts.CompilerHost,
-  options: ts.CompilerOptions,
-  mainPath: AbsoluteFsPath,
-  typecheckPath: AbsoluteFsPath,
+  program: ts.Program;
+  host: ts.CompilerHost;
+  options: ts.CompilerOptions;
+  mainPath: AbsoluteFsPath;
+  typecheckPath: AbsoluteFsPath;
 } {
   const mainPath = absoluteFrom('/main.ts');
   const typecheckPath = absoluteFrom('/main.ngtypecheck.ts');
@@ -87,7 +91,7 @@ function makeSingleFileProgramWithTypecheckShim(): {
     {
       name: typecheckPath,
       contents: 'export const VERSION = 1;',
-    }
+    },
   ]);
 
   const sf = getSourceFileOrError(program, mainPath);

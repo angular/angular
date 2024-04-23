@@ -25,14 +25,17 @@ runInEachFileSystem(() => {
     });
 
     it('should handle a basic viewChild', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, viewChild} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           el = viewChild('myLocator');
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -42,7 +45,9 @@ runInEachFileSystem(() => {
 
     it('should support viewChild with `read` options', () => {
       env.write('other-file.ts', `export class X {}`);
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, viewChild} from '@angular/core';
         import * as fromOtherFile from './other-file';
 
@@ -53,7 +58,8 @@ runInEachFileSystem(() => {
           el = viewChild('myLocator', {read: X});
           el2 = viewChild('myLocator', {read: fromOtherFile.X});
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -63,14 +69,17 @@ runInEachFileSystem(() => {
     });
 
     it('should support viewChild with `read` pointing to an expression with a generic', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, viewChild, ElementRef} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           el = viewChild('myLocator', {read: ElementRef<HTMLElement>});
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -79,14 +88,17 @@ runInEachFileSystem(() => {
     });
 
     it('should support viewChild with `read` pointing to a parenthesized expression', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, viewChild, ElementRef} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           el = viewChild('myLocator', {read: ((((ElementRef))))});
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -95,14 +107,17 @@ runInEachFileSystem(() => {
     });
 
     it('should support viewChild with `read` pointing to an `as` expression', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, viewChild, ElementRef} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           el = viewChild('myLocator', {read: ElementRef as any});
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -111,14 +126,17 @@ runInEachFileSystem(() => {
     });
 
     it('should handle a basic viewChildren', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, viewChildren} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           el = viewChildren('myLocator');
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -127,14 +145,17 @@ runInEachFileSystem(() => {
     });
 
     it('should handle a basic contentChild', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, contentChild} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           el = contentChild('myLocator');
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -143,14 +164,17 @@ runInEachFileSystem(() => {
     });
 
     it('should handle a basic contentChildren', () => {
-      env.write('test.ts', `
+      env.write(
+        'test.ts',
+        `
         import {Component, contentChildren} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           el = contentChildren('myLocator');
         }
-      `);
+      `,
+      );
       env.driveMain();
 
       const js = env.getContents('test.js');
@@ -160,39 +184,51 @@ runInEachFileSystem(() => {
 
     describe('diagnostics', () => {
       it('should report an error when used with query decorator', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, viewChild, ViewChild} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           @ViewChild('myLocator') el = viewChild('myLocator');
         }
-      `);
+      `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining({
-          messageText: `Using @ViewChild with a signal-based query is not allowed.`,
-        })]);
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining({
+            messageText: `Using @ViewChild with a signal-based query is not allowed.`,
+          }),
+        ]);
       });
 
       it('should report an error when used on a static field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, viewChild} from '@angular/core';
 
         @Component({selector: 'test', template: ''})
         export class TestDir {
           static el = viewChild('myLocator');
         }
-      `);
+      `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining({
-          messageText: `Query is incorrectly declared on a static class member.`,
-        })]);
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining({
+            messageText: `Query is incorrectly declared on a static class member.`,
+          }),
+        ]);
       });
 
       it('should report an error when declared in @Directive metadata', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Directive, ViewChild, viewChild} from '@angular/core';
 
         @Directive({
@@ -204,17 +240,21 @@ runInEachFileSystem(() => {
         export class TestDir {
           el = viewChild('myLocator');
         }
-      `);
+      `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining({
-          messageText:
-              `Query is declared multiple times. "@Directive" declares a query for the same property.`,
-        })]);
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining({
+            messageText: `Query is declared multiple times. "@Directive" declares a query for the same property.`,
+          }),
+        ]);
       });
 
       it('should report an error when declared in @Component metadata', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
         import {Component, ViewChild, viewChild} from '@angular/core';
 
         @Component({
@@ -227,17 +267,21 @@ runInEachFileSystem(() => {
         export class TestComp {
           el = viewChild('myLocator');
         }
-      `);
+      `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining({
-          messageText:
-              `Query is declared multiple times. "@Component" declares a query for the same property.`,
-        })]);
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining({
+            messageText: `Query is declared multiple times. "@Component" declares a query for the same property.`,
+          }),
+        ]);
       });
 
       it('should report an error when a signal-based query function is used in metadata', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Component, viewChild} from '@angular/core';
 
           @Component({
@@ -249,17 +293,22 @@ runInEachFileSystem(() => {
             },
           })
           export class TestComp {}
-        `);
+        `,
+        );
 
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining({
-          messageText: `Decorator query metadata must be an instance of a query type`,
-        })]);
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining({
+            messageText: `Decorator query metadata must be an instance of a query type`,
+          }),
+        ]);
       });
 
       it('should report an error when `read` option is complex', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Directive, viewChild} from '@angular/core';
 
           @Directive({
@@ -269,16 +318,21 @@ runInEachFileSystem(() => {
             something = null!;
             el = viewChild('myLocator', {read: this.something});
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining({
-          messageText: `Query "read" option expected a literal class reference.`,
-        })]);
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining({
+            messageText: `Query "read" option expected a literal class reference.`,
+          }),
+        ]);
       });
 
       it('should error when a query is declared using an ES private field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Directive, viewChild} from '@angular/core';
 
           @Directive({
@@ -287,18 +341,23 @@ runInEachFileSystem(() => {
           export class TestDir {
             #el = viewChild('myLocator');
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(1);
-        expect(diagnostics).toEqual([jasmine.objectContaining<ts.Diagnostic>({
-          messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
-            messageText: `Cannot use "viewChild" on a class member that is declared as ES private.`,
+        expect(diagnostics).toEqual([
+          jasmine.objectContaining<ts.Diagnostic>({
+            messageText: jasmine.objectContaining<ts.DiagnosticMessageChain>({
+              messageText: `Cannot use "viewChild" on a class member that is declared as ES private.`,
+            }),
           }),
-        })]);
+        ]);
       });
 
       it('should allow query is declared on a `private` field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Directive, viewChild} from '@angular/core';
 
           @Directive({
@@ -307,13 +366,16 @@ runInEachFileSystem(() => {
           export class TestDir {
             private el = viewChild('myLocator');
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(0);
       });
 
       it('should allow query is declared on a `protected` field', () => {
-        env.write('test.ts', `
+        env.write(
+          'test.ts',
+          `
           import {Directive, viewChild} from '@angular/core';
 
           @Directive({
@@ -322,7 +384,8 @@ runInEachFileSystem(() => {
           export class TestDir {
             protected el = viewChild('myLocator');
           }
-        `);
+        `,
+        );
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(0);
       });

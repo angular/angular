@@ -13,21 +13,27 @@ import {extractGenerics} from './generics_extractor';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
 import {extractResolvedTypeString} from './type_extractor';
 
-export type FunctionLike = ts.FunctionDeclaration|ts.MethodDeclaration|ts.MethodSignature|
-                           ts.CallSignatureDeclaration|ts.ConstructSignatureDeclaration;
+export type FunctionLike =
+  | ts.FunctionDeclaration
+  | ts.MethodDeclaration
+  | ts.MethodSignature
+  | ts.CallSignatureDeclaration
+  | ts.ConstructSignatureDeclaration;
 
 export class FunctionExtractor {
   constructor(
-      private name: string, private declaration: FunctionLike,
-      private typeChecker: ts.TypeChecker) {}
+    private name: string,
+    private declaration: FunctionLike,
+    private typeChecker: ts.TypeChecker,
+  ) {}
 
   extract(): FunctionEntry {
     // TODO: is there any real situation in which the signature would not be available here?
     //     Is void a better type?
     const signature = this.typeChecker.getSignatureFromDeclaration(this.declaration);
-    const returnType = signature ?
-        this.typeChecker.typeToString(this.typeChecker.getReturnTypeOfSignature(signature)) :
-        'unknown';
+    const returnType = signature
+      ? this.typeChecker.typeToString(this.typeChecker.getReturnTypeOfSignature(signature))
+      : 'unknown';
 
     return {
       params: extractAllParams(this.declaration.parameters, this.typeChecker),
@@ -59,8 +65,11 @@ export class FunctionExtractor {
         // Skip the declaration we started with.
         if (overloadDeclaration?.pos === this.declaration.pos) continue;
 
-        if (overloadDeclaration && ts.isFunctionDeclaration(overloadDeclaration) &&
-            overloadDeclaration.modifiers?.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
+        if (
+          overloadDeclaration &&
+          ts.isFunctionDeclaration(overloadDeclaration) &&
+          overloadDeclaration.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.ExportKeyword)
+        ) {
           overloads.push(overloadDeclaration);
         }
       }
@@ -69,20 +78,23 @@ export class FunctionExtractor {
     return overloads;
   }
 
-  private getSymbol(): ts.Symbol|undefined {
-    return this.typeChecker.getSymbolsInScope(this.declaration, ts.SymbolFlags.Function)
-        .find(s => s.name === this.declaration.name?.getText());
+  private getSymbol(): ts.Symbol | undefined {
+    return this.typeChecker
+      .getSymbolsInScope(this.declaration, ts.SymbolFlags.Function)
+      .find((s) => s.name === this.declaration.name?.getText());
   }
 }
 
 /** Extracts parameters of the given parameter declaration AST nodes. */
 export function extractAllParams(
-    params: ts.NodeArray<ts.ParameterDeclaration>, typeChecker: ts.TypeChecker): ParameterEntry[] {
-  return params.map(param => ({
-                      name: param.name.getText(),
-                      description: extractJsDocDescription(param),
-                      type: extractResolvedTypeString(param, typeChecker),
-                      isOptional: !!(param.questionToken || param.initializer),
-                      isRestParam: !!param.dotDotDotToken,
-                    }));
+  params: ts.NodeArray<ts.ParameterDeclaration>,
+  typeChecker: ts.TypeChecker,
+): ParameterEntry[] {
+  return params.map((param) => ({
+    name: param.name.getText(),
+    description: extractJsDocDescription(param),
+    type: extractResolvedTypeString(param, typeChecker),
+    isOptional: !!(param.questionToken || param.initializer),
+    isRestParam: !!param.dotDotDotToken,
+  }));
 }

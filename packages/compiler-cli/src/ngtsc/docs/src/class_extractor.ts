@@ -9,10 +9,28 @@
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, InputMapping, InputOrOutput, MetadataReader, NgModuleMeta, PipeMeta,} from '../../metadata';
+import {
+  DirectiveMeta,
+  InputMapping,
+  InputOrOutput,
+  MetadataReader,
+  NgModuleMeta,
+  PipeMeta,
+} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {ClassEntry, DirectiveEntry, EntryType, InterfaceEntry, MemberEntry, MemberTags, MemberType, MethodEntry, PipeEntry, PropertyEntry,} from './entities';
+import {
+  ClassEntry,
+  DirectiveEntry,
+  EntryType,
+  InterfaceEntry,
+  MemberEntry,
+  MemberTags,
+  MemberType,
+  MethodEntry,
+  PipeEntry,
+  PropertyEntry,
+} from './entities';
 import {isAngularPrivateName} from './filters';
 import {FunctionExtractor} from './function_extractor';
 import {extractGenerics} from './generics_extractor';
@@ -23,35 +41,35 @@ import {extractResolvedTypeString} from './type_extractor';
 // For the purpose of extraction, we can largely treat properties and accessors the same.
 
 /** A class member declaration that is *like* a property (including accessors) */
-type PropertyDeclarationLike = ts.PropertyDeclaration|ts.AccessorDeclaration;
+type PropertyDeclarationLike = ts.PropertyDeclaration | ts.AccessorDeclaration;
 
 // For the purposes of extraction, we can treat interfaces as identical to classes
 // with a couple of shorthand types to normalize over the differences between them.
 
 /** Type representing either a class declaration ro an interface declaration. */
-type ClassDeclarationLike = ts.ClassDeclaration|ts.InterfaceDeclaration;
+type ClassDeclarationLike = ts.ClassDeclaration | ts.InterfaceDeclaration;
 
 /** Type representing either a class or interface member. */
-type MemberElement = ts.ClassElement|ts.TypeElement;
+type MemberElement = ts.ClassElement | ts.TypeElement;
 
 /** Type representing a signature element of an interface. */
-type SignatureElement = ts.CallSignatureDeclaration|ts.ConstructSignatureDeclaration;
+type SignatureElement = ts.CallSignatureDeclaration | ts.ConstructSignatureDeclaration;
 
 /**
  * Type representing either:
  */
-type MethodLike = ts.MethodDeclaration|ts.MethodSignature;
+type MethodLike = ts.MethodDeclaration | ts.MethodSignature;
 
 /**
  * Type representing either a class property declaration or an interface property signature.
  */
-type PropertyLike = PropertyDeclarationLike|ts.PropertySignature;
+type PropertyLike = PropertyDeclarationLike | ts.PropertySignature;
 
 /** Extractor to pull info for API reference documentation for a TypeScript class or interface. */
 class ClassExtractor {
   constructor(
-      protected declaration: ClassDeclaration&ClassDeclarationLike,
-      protected typeChecker: ts.TypeChecker,
+    protected declaration: ClassDeclaration & ClassDeclarationLike,
+    protected typeChecker: ts.TypeChecker,
   ) {}
 
   /** Extract docs info specific to classes. */
@@ -59,8 +77,9 @@ class ClassExtractor {
     return {
       name: this.declaration.name.text,
       isAbstract: this.isAbstract(),
-      entryType: ts.isInterfaceDeclaration(this.declaration) ? EntryType.Interface :
-                                                               EntryType.UndecoratedClass,
+      entryType: ts.isInterfaceDeclaration(this.declaration)
+        ? EntryType.Interface
+        : EntryType.UndecoratedClass,
       members: this.extractSignatures().concat(this.extractAllClassMembers()),
       generics: extractGenerics(this.declaration),
       description: extractJsDocDescription(this.declaration),
@@ -86,7 +105,7 @@ class ClassExtractor {
   }
 
   /** Extract docs for a class's members (methods and properties).  */
-  protected extractClassMember(memberDeclaration: MemberElement): MemberEntry|undefined {
+  protected extractClassMember(memberDeclaration: MemberElement): MemberEntry | undefined {
     if (this.isMethod(memberDeclaration) && !this.isImplementationForOverload(memberDeclaration)) {
       return this.extractMethod(memberDeclaration);
     } else if (this.isProperty(memberDeclaration)) {
@@ -108,9 +127,9 @@ class ClassExtractor {
   /** Extracts docs for a class method. */
   protected extractMethod(methodDeclaration: MethodLike): MethodEntry {
     const functionExtractor = new FunctionExtractor(
-        methodDeclaration.name.getText(),
-        methodDeclaration,
-        this.typeChecker,
+      methodDeclaration.name.getText(),
+      methodDeclaration,
+      this.typeChecker,
     );
     return {
       ...functionExtractor.extract(),
@@ -125,9 +144,9 @@ class ClassExtractor {
     // For construct signatures we are using `new` as the name of the function for now.
     // TODO: Consider exposing a new entry type for signature types.
     const functionExtractor = new FunctionExtractor(
-        ts.isConstructSignatureDeclaration(signature) ? 'new' : '',
-        signature,
-        this.typeChecker,
+      ts.isConstructSignatureDeclaration(signature) ? 'new' : '',
+      signature,
+      this.typeChecker,
     );
     return {
       ...functionExtractor.extract(),
@@ -157,7 +176,7 @@ class ClassExtractor {
   }
 
   /** Gets the tags for a member (protected, readonly, static, etc.) */
-  protected getMemberTags(member: MethodLike|PropertyLike): MemberTags[] {
+  protected getMemberTags(member: MethodLike | PropertyLike): MemberTags[] {
     const tags: MemberTags[] = this.getMemberTagsFromModifiers(member.modifiers ?? []);
 
     if (member.questionToken) {
@@ -225,7 +244,7 @@ class ClassExtractor {
   }
 
   /** Gets the doc tag corresponding to a class member modifier (readonly, protected, etc.). */
-  private getTagForMemberModifier(mod: ts.ModifierLike): MemberTags|undefined {
+  private getTagForMemberModifier(mod: ts.ModifierLike): MemberTags | undefined {
     switch (mod.kind) {
       case ts.SyntaxKind.StaticKeyword:
         return MemberTags.Static;
@@ -251,14 +270,17 @@ class ClassExtractor {
    */
   private isMemberExcluded(member: MemberElement): boolean {
     return (
-        !member.name || !this.isDocumentableMember(member) ||
-        !!member.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.PrivateKeyword) ||
-        member.name.getText() === 'prototype' || isAngularPrivateName(member.name.getText()) ||
-        isInternal(member));
+      !member.name ||
+      !this.isDocumentableMember(member) ||
+      !!member.modifiers?.some((mod) => mod.kind === ts.SyntaxKind.PrivateKeyword) ||
+      member.name.getText() === 'prototype' ||
+      isAngularPrivateName(member.name.getText()) ||
+      isInternal(member)
+    );
   }
 
   /** Gets whether a class member is a method, property, or accessor. */
-  private isDocumentableMember(member: ts.Node): member is MethodLike|PropertyLike {
+  private isDocumentableMember(member: ts.Node): member is MethodLike | PropertyLike {
     return this.isMethod(member) || this.isProperty(member) || ts.isAccessor(member);
   }
 
@@ -275,10 +297,12 @@ class ClassExtractor {
   }
 
   /** Gets whether the given signature declaration is documentable. */
-  private isDocumentableSignature(signature: ts.SignatureDeclaration):
-      signature is SignatureElement {
+  private isDocumentableSignature(
+    signature: ts.SignatureDeclaration,
+  ): signature is SignatureElement {
     return (
-        ts.isConstructSignatureDeclaration(signature) || ts.isCallSignatureDeclaration(signature));
+      ts.isConstructSignatureDeclaration(signature) || ts.isCallSignatureDeclaration(signature)
+    );
   }
 
   /** Gets whether the declaration for this extractor is abstract. */
@@ -288,25 +312,25 @@ class ClassExtractor {
   }
 
   /** Gets whether a method is the concrete implementation for an overloaded function. */
-  private isImplementationForOverload(method: MethodLike): boolean|undefined {
+  private isImplementationForOverload(method: MethodLike): boolean | undefined {
     // Method signatures (in an interface) are never implementations.
     if (method.kind === ts.SyntaxKind.MethodSignature) return false;
 
     const signature = this.typeChecker.getSignatureFromDeclaration(method);
     return (
-        signature &&
-        this.typeChecker.isImplementationOfOverload(
-            signature.declaration as ts.SignatureDeclaration));
+      signature &&
+      this.typeChecker.isImplementationOfOverload(signature.declaration as ts.SignatureDeclaration)
+    );
   }
 }
 
 /** Extractor to pull info for API reference documentation for an Angular directive. */
 class DirectiveExtractor extends ClassExtractor {
   constructor(
-      declaration: ClassDeclaration&ts.ClassDeclaration,
-      protected reference: Reference,
-      protected metadata: DirectiveMeta,
-      checker: ts.TypeChecker,
+    declaration: ClassDeclaration & ts.ClassDeclaration,
+    protected reference: Reference,
+    protected metadata: DirectiveMeta,
+    checker: ts.TypeChecker,
   ) {
     super(declaration, checker);
   }
@@ -343,13 +367,13 @@ class DirectiveExtractor extends ClassExtractor {
   }
 
   /** Gets the input metadata for a directive property. */
-  private getInputMetadata(prop: ts.PropertyDeclaration): InputMapping|undefined {
+  private getInputMetadata(prop: ts.PropertyDeclaration): InputMapping | undefined {
     const propName = prop.name.getText();
     return this.metadata.inputs?.getByClassPropertyName(propName) ?? undefined;
   }
 
   /** Gets the output metadata for a directive property. */
-  private getOutputMetadata(prop: ts.PropertyDeclaration): InputOrOutput|undefined {
+  private getOutputMetadata(prop: ts.PropertyDeclaration): InputOrOutput | undefined {
     const propName = prop.name.getText();
     return this.metadata?.outputs?.getByClassPropertyName(propName) ?? undefined;
   }
@@ -358,10 +382,10 @@ class DirectiveExtractor extends ClassExtractor {
 /** Extractor to pull info for API reference documentation for an Angular pipe. */
 class PipeExtractor extends ClassExtractor {
   constructor(
-      declaration: ClassDeclaration&ts.ClassDeclaration,
-      protected reference: Reference,
-      private metadata: PipeMeta,
-      typeChecker: ts.TypeChecker,
+    declaration: ClassDeclaration & ts.ClassDeclaration,
+    protected reference: Reference,
+    private metadata: PipeMeta,
+    typeChecker: ts.TypeChecker,
   ) {
     super(declaration, typeChecker);
   }
@@ -379,10 +403,10 @@ class PipeExtractor extends ClassExtractor {
 /** Extractor to pull info for API reference documentation for an Angular pipe. */
 class NgModuleExtractor extends ClassExtractor {
   constructor(
-      declaration: ClassDeclaration&ts.ClassDeclaration,
-      protected reference: Reference,
-      private metadata: NgModuleMeta,
-      typeChecker: ts.TypeChecker,
+    declaration: ClassDeclaration & ts.ClassDeclaration,
+    protected reference: Reference,
+    private metadata: NgModuleMeta,
+    typeChecker: ts.TypeChecker,
   ) {
     super(declaration, typeChecker);
   }
@@ -397,10 +421,10 @@ class NgModuleExtractor extends ClassExtractor {
 
 /** Extracts documentation info for a class, potentially including Angular-specific info.  */
 export function extractClass(
-    classDeclaration: ClassDeclaration&ts.ClassDeclaration,
-    metadataReader: MetadataReader,
-    typeChecker: ts.TypeChecker,
-    ): ClassEntry {
+  classDeclaration: ClassDeclaration & ts.ClassDeclaration,
+  metadataReader: MetadataReader,
+  typeChecker: ts.TypeChecker,
+): ClassEntry {
   const ref = new Reference(classDeclaration);
 
   let extractor: ClassExtractor;
@@ -424,9 +448,9 @@ export function extractClass(
 
 /** Extracts documentation info for an interface. */
 export function extractInterface(
-    declaration: ts.InterfaceDeclaration,
-    typeChecker: ts.TypeChecker,
-    ): InterfaceEntry {
+  declaration: ts.InterfaceDeclaration,
+  typeChecker: ts.TypeChecker,
+): InterfaceEntry {
   const extractor = new ClassExtractor(declaration, typeChecker);
   return extractor.extract();
 }

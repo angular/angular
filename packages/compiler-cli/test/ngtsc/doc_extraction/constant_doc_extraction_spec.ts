@@ -7,7 +7,11 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ConstantEntry, EntryType, EnumEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {
+  ConstantEntry,
+  EntryType,
+  EnumEntry,
+} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -25,9 +29,12 @@ runInEachFileSystem(() => {
     });
 
     it('should extract constants', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export const VERSION = '16.0.0';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -39,9 +46,12 @@ runInEachFileSystem(() => {
     });
 
     it('should extract multiple constant declarations in a single statement', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export const PI = 3.14, VERSION = '16.0.0';
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
@@ -58,11 +68,14 @@ runInEachFileSystem(() => {
     });
 
     it('should extract non-primitive constants', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {InjectionToken} from '@angular/core';
         export const SOME_TOKEN = new InjectionToken('something');
         export const TYPED_TOKEN = new InjectionToken<string>();
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
@@ -79,7 +92,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract an object literal marked as an enum', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         /**
          * Toppings for your pizza.
          * @object-literal-as-enum
@@ -91,7 +106,8 @@ runInEachFileSystem(() => {
           /** Or "tomato" if you are British */
           Tomato: "tomato",
         };
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -117,7 +133,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract an object literal cast to a const and marked as an enum', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         /**
          * Toppings for your pizza.
          * @object-literal-as-enum
@@ -129,7 +147,8 @@ runInEachFileSystem(() => {
           /** Or "tomato" if you are British */
           Tomato: "tomato",
         } as const;
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

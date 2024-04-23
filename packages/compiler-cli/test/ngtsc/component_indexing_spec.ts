@@ -5,9 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {
+  AbsoluteFsPath,
+  getFileSystem,
+  PathManipulation,
+} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {AbsoluteSourceSpan, IdentifierKind, IndexedComponent, TopLevelIdentifier} from '@angular/compiler-cli/src/ngtsc/indexer';
+import {
+  AbsoluteSourceSpan,
+  IdentifierKind,
+  IndexedComponent,
+  TopLevelIdentifier,
+} from '@angular/compiler-cli/src/ngtsc/indexer';
 import {ParseSourceFile} from '@angular/compiler/src/compiler';
 
 import {NgtscTestEnvironment} from './env';
@@ -45,11 +54,13 @@ runInEachFileSystem(() => {
         const [[decl, indexedComp]] = Array.from(indexed.entries());
 
         expect(decl.getText()).toContain('export class TestCmp {}');
-        expect(indexedComp).toEqual(jasmine.objectContaining<IndexedComponent>({
-          name: 'TestCmp',
-          selector: 'test-cmp',
-          file: new ParseSourceFile(componentContent, testSourceFile),
-        }));
+        expect(indexedComp).toEqual(
+          jasmine.objectContaining<IndexedComponent>({
+            name: 'TestCmp',
+            selector: 'test-cmp',
+            file: new ParseSourceFile(componentContent, testSourceFile),
+          }),
+        );
       });
 
       it('should index inline templates', () => {
@@ -68,12 +79,14 @@ runInEachFileSystem(() => {
         const template = indexedComp.template;
 
         expect(template).toEqual({
-          identifiers: new Set<TopLevelIdentifier>([{
-            name: 'foo',
-            kind: IdentifierKind.Property,
-            span: new AbsoluteSourceSpan(127, 130),
-            target: null,
-          }]),
+          identifiers: new Set<TopLevelIdentifier>([
+            {
+              name: 'foo',
+              kind: IdentifierKind.Property,
+              span: new AbsoluteSourceSpan(127, 130),
+              target: null,
+            },
+          ]),
           usedComponents: new Set(),
           isInline: true,
           file: new ParseSourceFile(componentContent, testSourceFile),
@@ -81,7 +94,9 @@ runInEachFileSystem(() => {
       });
 
       it('should index external templates', () => {
-        env.write(testSourceFile, `
+        env.write(
+          testSourceFile,
+          `
         import {Component} from '@angular/core';
 
         @Component({
@@ -89,19 +104,22 @@ runInEachFileSystem(() => {
           templateUrl: './test.html',
         })
         export class TestCmp { foo = 0; }
-      `);
+      `,
+        );
         env.write(testTemplateFile, '{{foo}}');
         const indexed = env.driveIndexer();
         const [[_, indexedComp]] = Array.from(indexed.entries());
         const template = indexedComp.template;
 
         expect(template).toEqual({
-          identifiers: new Set<TopLevelIdentifier>([{
-            name: 'foo',
-            kind: IdentifierKind.Property,
-            span: new AbsoluteSourceSpan(2, 5),
-            target: null,
-          }]),
+          identifiers: new Set<TopLevelIdentifier>([
+            {
+              name: 'foo',
+              kind: IdentifierKind.Property,
+              span: new AbsoluteSourceSpan(2, 5),
+              target: null,
+            },
+          ]),
           usedComponents: new Set(),
           isInline: false,
           file: new ParseSourceFile('{{foo}}', testTemplateFile),
@@ -113,7 +131,9 @@ runInEachFileSystem(() => {
           preserveWhitespaces: false,
         });
 
-        env.write(testSourceFile, `
+        env.write(
+          testSourceFile,
+          `
         import {Component} from '@angular/core';
 
         @Component({
@@ -121,19 +141,22 @@ runInEachFileSystem(() => {
           templateUrl: './test.html',
         })
         export class TestCmp { foo = 0; }
-      `);
+      `,
+        );
         env.write(testTemplateFile, '  \n  {{foo}}');
         const indexed = env.driveIndexer();
         const [[_, indexedComp]] = Array.from(indexed.entries());
         const template = indexedComp.template;
 
         expect(template).toEqual({
-          identifiers: new Set<TopLevelIdentifier>([{
-            name: 'foo',
-            kind: IdentifierKind.Property,
-            span: new AbsoluteSourceSpan(7, 10),
-            target: null,
-          }]),
+          identifiers: new Set<TopLevelIdentifier>([
+            {
+              name: 'foo',
+              kind: IdentifierKind.Property,
+              span: new AbsoluteSourceSpan(7, 10),
+              target: null,
+            },
+          ]),
           usedComponents: new Set(),
           isInline: false,
           file: new ParseSourceFile('  \n  {{foo}}', testTemplateFile),
@@ -141,7 +164,9 @@ runInEachFileSystem(() => {
       });
 
       it('should generate information about used components', () => {
-        env.write(testSourceFile, `
+        env.write(
+          testSourceFile,
+          `
         import {Component} from '@angular/core';
 
         @Component({
@@ -149,9 +174,12 @@ runInEachFileSystem(() => {
           templateUrl: './test.html',
         })
         export class TestCmp {}
-      `);
+      `,
+        );
         env.write(testTemplateFile, '<div></div>');
-        env.write('test_import.ts', `
+        env.write(
+          'test_import.ts',
+          `
         import {Component, NgModule} from '@angular/core';
         import {TestCmp} from './test';
 
@@ -168,14 +196,15 @@ runInEachFileSystem(() => {
           bootstrap: [TestImportCmp]
         })
         export class TestModule {}
-      `);
+      `,
+        );
         env.write('test_import.html', '<test-cmp></test-cmp>');
         const indexed = env.driveIndexer();
         expect(indexed.size).toBe(2);
 
         const indexedComps = Array.from(indexed.values());
-        const testComp = indexedComps.find(comp => comp.name === 'TestCmp');
-        const testImportComp = indexedComps.find(cmp => cmp.name === 'TestImportCmp');
+        const testComp = indexedComps.find((comp) => comp.name === 'TestCmp');
+        const testImportComp = indexedComps.find((cmp) => cmp.name === 'TestImportCmp');
         expect(testComp).toBeDefined();
         expect(testImportComp).toBeDefined();
 

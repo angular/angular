@@ -25,19 +25,21 @@ export function getAngularPackagesFromRunfiles() {
   if (!runfilesManifestPath) {
     const packageRunfilesDir = path.join(process.env['RUNFILES']!, 'angular/packages');
 
-    return fs.readdirSync(packageRunfilesDir)
-        .map(name => ({name, pkgPath: path.join(packageRunfilesDir, name, 'npm_package/')}))
-        .filter(({pkgPath}) => fs.existsSync(pkgPath));
+    return fs
+      .readdirSync(packageRunfilesDir)
+      .map((name) => ({name, pkgPath: path.join(packageRunfilesDir, name, 'npm_package/')}))
+      .filter(({pkgPath}) => fs.existsSync(pkgPath));
   }
 
-  return fs.readFileSync(runfilesManifestPath, 'utf8')
-      .split('\n')
-      .map(mapping => mapping.split(' '))
-      .filter(([runfilePath]) => runfilePath.match(/^angular\/packages\/[\w-]+\/npm_package$/))
-      .map(([runfilePath, realPath]) => ({
-             name: path.relative('angular/packages', runfilePath).split(path.sep)[0],
-             pkgPath: realPath,
-           }));
+  return fs
+    .readFileSync(runfilesManifestPath, 'utf8')
+    .split('\n')
+    .map((mapping) => mapping.split(' '))
+    .filter(([runfilePath]) => runfilePath.match(/^angular\/packages\/[\w-]+\/npm_package$/))
+    .map(([runfilePath, realPath]) => ({
+      name: path.relative('angular/packages', runfilePath).split(path.sep)[0],
+      pkgPath: realPath,
+    }));
 }
 
 /** Resolves a file or directory from the Bazel runfiles. */

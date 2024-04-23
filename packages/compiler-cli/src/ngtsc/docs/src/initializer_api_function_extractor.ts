@@ -8,7 +8,12 @@
 
 import ts from 'typescript';
 
-import {EntryType, FunctionWithOverloads, InitializerApiFunctionEntry, JsDocTagEntry} from './entities';
+import {
+  EntryType,
+  FunctionWithOverloads,
+  InitializerApiFunctionEntry,
+  JsDocTagEntry,
+} from './entities';
 import {extractAllParams} from './function_extractor';
 import {extractGenerics} from './generics_extractor';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
@@ -25,8 +30,10 @@ const initializerApiTag = 'initializerApiFunction';
  * Note: The node may be a function overload signature that is automatically
  * resolved to its implementation to detect the JSDoc tag.
  */
-export function isInitializerApiFunction(node: ts.Node, typeChecker: ts.TypeChecker):
-    node is ts.VariableDeclaration|ts.FunctionDeclaration {
+export function isInitializerApiFunction(
+  node: ts.Node,
+  typeChecker: ts.TypeChecker,
+): node is ts.VariableDeclaration | ts.FunctionDeclaration {
   // If this is matching an overload signature, resolve to the implementation
   // as it would hold the `@initializerApiFunction` tag.
   if (ts.isFunctionDeclaration(node) && node.name !== undefined && node.body === undefined) {
@@ -45,7 +52,7 @@ export function isInitializerApiFunction(node: ts.Node, typeChecker: ts.TypeChec
     return false;
   }
   const tags = ts.getJSDocTags(tagContainer);
-  return tags.some(t => t.tagName.text === initializerApiTag);
+  return tags.some((t) => t.tagName.text === initializerApiTag);
 }
 
 /**
@@ -53,8 +60,9 @@ export function isInitializerApiFunction(node: ts.Node, typeChecker: ts.TypeChec
  * a docs entry that can be rendered to represent the API function.
  */
 export function extractInitializerApiFunction(
-    node: ts.VariableDeclaration|ts.FunctionDeclaration,
-    typeChecker: ts.TypeChecker): InitializerApiFunctionEntry {
+  node: ts.VariableDeclaration | ts.FunctionDeclaration,
+  typeChecker: ts.TypeChecker,
+): InitializerApiFunctionEntry {
   if (node.name === undefined || !ts.isIdentifier(node.name)) {
     throw new Error(`Initializer API: Expected literal variable name.`);
   }
@@ -68,8 +76,11 @@ export function extractInitializerApiFunction(
   const type = typeChecker.getTypeAtLocation(node);
 
   // Top-level call signatures. E.g. `input()`, `input<ReadT>(initialValue: ReadT)`. etc.
-  const callFunction: FunctionWithOverloads =
-      extractFunctionWithOverloads(name, type.getCallSignatures(), typeChecker);
+  const callFunction: FunctionWithOverloads = extractFunctionWithOverloads(
+    name,
+    type.getCallSignatures(),
+    typeChecker,
+  );
   // Sub-functions like `input.required()`.
   const subFunctions: FunctionWithOverloads[] = [];
 
@@ -78,12 +89,14 @@ export function extractInitializerApiFunction(
     const subDecl = property.getDeclarations()?.[0];
     if (subDecl === undefined || !ts.isPropertySignature(subDecl)) {
       throw new Error(
-          `Initializer API: Could not resolve declaration of sub-property: ${name}.${subName}`);
+        `Initializer API: Could not resolve declaration of sub-property: ${name}.${subName}`,
+      );
     }
 
     const subType = typeChecker.getTypeAtLocation(subDecl);
     subFunctions.push(
-        extractFunctionWithOverloads(subName, subType.getCallSignatures(), typeChecker));
+      extractFunctionWithOverloads(subName, subType.getCallSignatures(), typeChecker),
+    );
   }
 
   let jsdocTags: JsDocTagEntry[];
@@ -109,8 +122,11 @@ export function extractInitializerApiFunction(
       jsdocTags: extractJsDocTags(implementation),
       params: extractAllParams(implementation.parameters, typeChecker),
       rawComment: extractRawJsDoc(implementation),
-      returnType: typeChecker.typeToString(typeChecker.getReturnTypeOfSignature(
-          typeChecker.getSignatureFromDeclaration(implementation)!)),
+      returnType: typeChecker.typeToString(
+        typeChecker.getReturnTypeOfSignature(
+          typeChecker.getSignatureFromDeclaration(implementation)!,
+        ),
+      ),
     };
 
     jsdocTags = callFunction.implementation.jsdocTags;
@@ -123,11 +139,12 @@ export function extractInitializerApiFunction(
   }
 
   // Extract additional docs metadata from the initializer API JSDoc tag.
-  const metadataTag = jsdocTags.find(t => t.name === initializerApiTag);
+  const metadataTag = jsdocTags.find((t) => t.name === initializerApiTag);
   if (metadataTag === undefined) {
     throw new Error(
-        'Initializer API: Detected initializer API function does ' +
-        `not have "@initializerApiFunction" tag: ${name}`);
+      'Initializer API: Detected initializer API function does ' +
+        `not have "@initializerApiFunction" tag: ${name}`,
+    );
   }
 
   let parsedMetadata: InitializerApiFunctionEntry['__docsMetadata__'] = undefined;
@@ -158,7 +175,7 @@ export function extractInitializerApiFunction(
  * but the JSDoc tag is not attached to the node, but to the containing variable
  * statement.
  */
-function getContainerVariableStatement(node: ts.VariableDeclaration): ts.VariableStatement|null {
+function getContainerVariableStatement(node: ts.VariableDeclaration): ts.VariableStatement | null {
   if (!ts.isVariableDeclarationList(node.parent)) {
     return null;
   }
@@ -170,7 +187,7 @@ function getContainerVariableStatement(node: ts.VariableDeclaration): ts.Variabl
 
 /** Filters the list signatures to valid initializer API signatures. */
 function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
-  const result: Array<ts.FunctionDeclaration|ts.CallSignatureDeclaration> = [];
+  const result: Array<ts.FunctionDeclaration | ts.CallSignatureDeclaration> = [];
   for (const signature of signatures) {
     const decl = signature.getDeclaration();
     if (ts.isFunctionDeclaration(decl) || ts.isCallSignatureDeclaration(decl)) {
@@ -190,24 +207,25 @@ function filterSignatureDeclarations(signatures: readonly ts.Signature[]) {
  * that is statically retrievable. The constant holds the overall API description.
  */
 function extractFunctionWithOverloads(
-    name: string, signatures: readonly ts.Signature[],
-    typeChecker: ts.TypeChecker): FunctionWithOverloads {
+  name: string,
+  signatures: readonly ts.Signature[],
+  typeChecker: ts.TypeChecker,
+): FunctionWithOverloads {
   return {
     name,
-    signatures:
-        filterSignatureDeclarations(signatures)
-            .map(s => ({
-                   name,
-                   entryType: EntryType.Function,
-                   description: extractJsDocDescription(s),
-                   generics: extractGenerics(s),
-                   isNewType: false,
-                   jsdocTags: extractJsDocTags(s),
-                   params: extractAllParams(s.parameters, typeChecker),
-                   rawComment: extractRawJsDoc(s),
-                   returnType: typeChecker.typeToString(typeChecker.getReturnTypeOfSignature(
-                       typeChecker.getSignatureFromDeclaration(s)!)),
-                 })),
+    signatures: filterSignatureDeclarations(signatures).map((s) => ({
+      name,
+      entryType: EntryType.Function,
+      description: extractJsDocDescription(s),
+      generics: extractGenerics(s),
+      isNewType: false,
+      jsdocTags: extractJsDocTags(s),
+      params: extractAllParams(s.parameters, typeChecker),
+      rawComment: extractRawJsDoc(s),
+      returnType: typeChecker.typeToString(
+        typeChecker.getReturnTypeOfSignature(typeChecker.getSignatureFromDeclaration(s)!),
+      ),
+    })),
     // Implementation may be populated later.
     implementation: null,
   };
@@ -215,12 +233,15 @@ function extractFunctionWithOverloads(
 
 /** Finds the implementation of the given function declaration overload signature. */
 function findImplementationOfFunction(
-    node: ts.FunctionDeclaration, typeChecker: ts.TypeChecker): ts.FunctionDeclaration|undefined {
+  node: ts.FunctionDeclaration,
+  typeChecker: ts.TypeChecker,
+): ts.FunctionDeclaration | undefined {
   if (node.body !== undefined || node.name === undefined) {
     return node;
   }
 
   const symbol = typeChecker.getSymbolAtLocation(node.name);
   return symbol?.declarations?.find(
-      (s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.body !== undefined);
+    (s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.body !== undefined,
+  );
 }

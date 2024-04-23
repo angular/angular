@@ -23,7 +23,7 @@ import {generate} from './helpers';
 
 describe('FileLinker', () => {
   let factory: TypeScriptAstFactory;
-  beforeEach(() => factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false));
+  beforeEach(() => (factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false)));
 
   describe('isPartialDeclaration()', () => {
     it('should return true if the callee is recognized', () => {
@@ -48,10 +48,9 @@ describe('FileLinker', () => {
         {propertyName: 'version', quoted: false, value: version},
         {propertyName: 'ngImport', quoted: false, value: ngImport},
       ]);
-      expect(
-          () => fileLinker.linkPartialDeclaration(
-              'foo', [declarationArg], new MockDeclarationScope()))
-          .toThrowError('Unknown partial declaration function foo.');
+      expect(() =>
+        fileLinker.linkPartialDeclaration('foo', [declarationArg], new MockDeclarationScope()),
+      ).toThrowError('Unknown partial declaration function foo.');
     });
 
     it('should throw an error if the metadata object does not have a `minVersion` property', () => {
@@ -62,10 +61,13 @@ describe('FileLinker', () => {
         {propertyName: 'version', quoted: false, value: version},
         {propertyName: 'ngImport', quoted: false, value: ngImport},
       ]);
-      expect(
-          () => fileLinker.linkPartialDeclaration(
-              'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope()))
-          .toThrowError(`Expected property 'minVersion' to be present.`);
+      expect(() =>
+        fileLinker.linkPartialDeclaration(
+          'ɵɵngDeclareDirective',
+          [declarationArg],
+          new MockDeclarationScope(),
+        ),
+      ).toThrowError(`Expected property 'minVersion' to be present.`);
     });
 
     it('should throw an error if the metadata object does not have a `version` property', () => {
@@ -76,10 +78,13 @@ describe('FileLinker', () => {
         {propertyName: 'minVersion', quoted: false, value: version},
         {propertyName: 'ngImport', quoted: false, value: ngImport},
       ]);
-      expect(
-          () => fileLinker.linkPartialDeclaration(
-              'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope()))
-          .toThrowError(`Expected property 'version' to be present.`);
+      expect(() =>
+        fileLinker.linkPartialDeclaration(
+          'ɵɵngDeclareDirective',
+          [declarationArg],
+          new MockDeclarationScope(),
+        ),
+      ).toThrowError(`Expected property 'version' to be present.`);
     });
 
     it('should throw an error if the metadata object does not have a `ngImport` property', () => {
@@ -89,19 +94,24 @@ describe('FileLinker', () => {
         {propertyName: 'minVersion', quoted: false, value: version},
         {propertyName: 'version', quoted: false, value: version},
       ]);
-      expect(
-          () => fileLinker.linkPartialDeclaration(
-              'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope()))
-          .toThrowError(`Expected property 'ngImport' to be present.`);
+      expect(() =>
+        fileLinker.linkPartialDeclaration(
+          'ɵɵngDeclareDirective',
+          [declarationArg],
+          new MockDeclarationScope(),
+        ),
+      ).toThrowError(`Expected property 'ngImport' to be present.`);
     });
 
     it('should call `linkPartialDeclaration()` on the appropriate partial compiler', () => {
       const {fileLinker} = createFileLinker();
-      const compileSpy = spyOn(PartialDirectiveLinkerVersion1.prototype, 'linkPartialDeclaration')
-                             .and.returnValue({
-                               expression: o.literal('compilation result'),
-                               statements: [],
-                             });
+      const compileSpy = spyOn(
+        PartialDirectiveLinkerVersion1.prototype,
+        'linkPartialDeclaration',
+      ).and.returnValue({
+        expression: o.literal('compilation result'),
+        statements: [],
+      });
 
       const ngImport = factory.createIdentifier('core');
       const version = factory.createLiteral('0.0.0-PLACEHOLDER');
@@ -112,7 +122,10 @@ describe('FileLinker', () => {
       ]);
 
       const compilationResult = fileLinker.linkPartialDeclaration(
-          'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope());
+        'ɵɵngDeclareDirective',
+        [declarationArg],
+        new MockDeclarationScope(),
+      );
 
       expect(compilationResult).toEqual(factory.createLiteral('compilation result'));
       expect(compileSpy).toHaveBeenCalled();
@@ -139,10 +152,13 @@ describe('FileLinker', () => {
       // the template string to have offsets which synthetic nodes do not.
       const {fileLinker} = createFileLinker(source);
       const sourceFile = ts.createSourceFile('', source, ts.ScriptTarget.Latest, true);
-      const call =
-          (sourceFile.statements[0] as ts.ExpressionStatement).expression as ts.CallExpression;
+      const call = (sourceFile.statements[0] as ts.ExpressionStatement)
+        .expression as ts.CallExpression;
       const result = fileLinker.linkPartialDeclaration(
-          'ɵɵngDeclareComponent', [call.arguments[0]], new MockDeclarationScope());
+        'ɵɵngDeclareComponent',
+        [call.arguments[0]],
+        new MockDeclarationScope(),
+      );
       return ts.createPrinter().printNode(ts.EmitHint.Unspecified, result, sourceFile);
     }
 
@@ -157,8 +173,9 @@ describe('FileLinker', () => {
     });
 
     it('should not enable block syntax if compiled with a version older than 17', () => {
-      expect(linkComponentWithTemplate('16.2.0', '@Input() is a decorator. This is a brace }'))
-          .toContain('@Input() is a decorator. This is a brace }');
+      expect(
+        linkComponentWithTemplate('16.2.0', '@Input() is a decorator. This is a brace }'),
+      ).toContain('@Input() is a decorator. This is a brace }');
     });
   });
 
@@ -174,13 +191,16 @@ describe('FileLinker', () => {
         {
           propertyName: 'minVersion',
           quoted: false,
-          value: factory.createLiteral('0.0.0-PLACEHOLDER')
+          value: factory.createLiteral('0.0.0-PLACEHOLDER'),
         },
         {propertyName: 'version', quoted: false, value: factory.createLiteral('0.0.0-PLACEHOLDER')},
       ]);
 
       const replacement = fileLinker.linkPartialDeclaration(
-          'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope());
+        'ɵɵngDeclareDirective',
+        [declarationArg],
+        new MockDeclarationScope(),
+      );
       expect(generate(replacement)).toEqual('"REPLACEMENT"');
 
       const results = fileLinker.getConstantStatements();
@@ -190,52 +210,61 @@ describe('FileLinker', () => {
       expect(statements.map(generate)).toEqual(['const _c0 = [1];']);
     });
 
-    it('should be no shared constant statements to capture when they are emitted into the replacement IIFE',
-       () => {
-         const {fileLinker} = createFileLinker();
-         spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
+    it('should be no shared constant statements to capture when they are emitted into the replacement IIFE', () => {
+      const {fileLinker} = createFileLinker();
+      spyOnLinkPartialDeclarationWithConstants(o.literal('REPLACEMENT'));
 
-         // Here we use a string literal `"not-a-module"` for `ngImport` to cause constant
-         // statements to be emitted in an IIFE rather than added to the shared constant scope.
-         const declarationArg = factory.createObjectLiteral([
-           {propertyName: 'ngImport', quoted: false, value: factory.createLiteral('not-a-module')},
-           {
-             propertyName: 'minVersion',
-             quoted: false,
-             value: factory.createLiteral('0.0.0-PLACEHOLDER')
-           },
-           {
-             propertyName: 'version',
-             quoted: false,
-             value: factory.createLiteral('0.0.0-PLACEHOLDER')
-           },
-         ]);
+      // Here we use a string literal `"not-a-module"` for `ngImport` to cause constant
+      // statements to be emitted in an IIFE rather than added to the shared constant scope.
+      const declarationArg = factory.createObjectLiteral([
+        {propertyName: 'ngImport', quoted: false, value: factory.createLiteral('not-a-module')},
+        {
+          propertyName: 'minVersion',
+          quoted: false,
+          value: factory.createLiteral('0.0.0-PLACEHOLDER'),
+        },
+        {
+          propertyName: 'version',
+          quoted: false,
+          value: factory.createLiteral('0.0.0-PLACEHOLDER'),
+        },
+      ]);
 
-         const replacement = fileLinker.linkPartialDeclaration(
-             'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope());
-         expect(generate(replacement))
-             .toEqual('function () { const _c0 = [1]; return "REPLACEMENT"; }()');
+      const replacement = fileLinker.linkPartialDeclaration(
+        'ɵɵngDeclareDirective',
+        [declarationArg],
+        new MockDeclarationScope(),
+      );
+      expect(generate(replacement)).toEqual(
+        'function () { const _c0 = [1]; return "REPLACEMENT"; }()',
+      );
 
-         const results = fileLinker.getConstantStatements();
-         expect(results.length).toEqual(0);
-       });
+      const results = fileLinker.getConstantStatements();
+      expect(results.length).toEqual(0);
+    });
   });
 
   function createFileLinker(code = '// test code'): {
-    host: AstHost<ts.Expression>,
-    fileLinker: FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>,
+    host: AstHost<ts.Expression>;
+    fileLinker: FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>;
   } {
     const fs = new MockFileSystemNative();
     const logger = new MockLogger();
     const linkerEnvironment = LinkerEnvironment.create<ts.Statement, ts.Expression>(
-        fs, logger, new TypeScriptAstHost(),
-        new TypeScriptAstFactory(/* annotateForClosureCompiler */ false), DEFAULT_LINKER_OPTIONS);
+      fs,
+      logger,
+      new TypeScriptAstHost(),
+      new TypeScriptAstFactory(/* annotateForClosureCompiler */ false),
+      DEFAULT_LINKER_OPTIONS,
+    );
     const fileLinker = new FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>(
-        linkerEnvironment, fs.resolve('/test.js'), code);
+      linkerEnvironment,
+      fs.resolve('/test.js'),
+      code,
+    );
     return {host: linkerEnvironment.host, fileLinker};
   }
 });
-
 
 /**
  * This mock implementation of `DeclarationScope` will return a singleton instance of
@@ -244,7 +273,7 @@ describe('FileLinker', () => {
  * This way we can simulate whether the constants will be shared or inlined into an IIFE.
  */
 class MockDeclarationScope implements DeclarationScope<MockConstantScopeRef, ts.Expression> {
-  getConstantScopeRef(expression: ts.Expression): MockConstantScopeRef|null {
+  getConstantScopeRef(expression: ts.Expression): MockConstantScopeRef | null {
     if (ts.isIdentifier(expression)) {
       return MockConstantScopeRef.singleton;
     } else {
@@ -264,15 +293,16 @@ class MockConstantScopeRef {
  */
 function spyOnLinkPartialDeclarationWithConstants(replacement: o.Expression) {
   let callCount = 0;
-  spyOn(PartialDirectiveLinkerVersion1.prototype, 'linkPartialDeclaration')
-      .and.callFake((constantPool => {
-                      const constArray = o.literalArr([o.literal(++callCount)]);
-                      // We have to add the constant twice or it will not create a shared statement
-                      constantPool.getConstLiteral(constArray);
-                      constantPool.getConstLiteral(constArray);
-                      return {
-                        expression: replacement,
-                        statements: [],
-                      };
-                    }) as typeof PartialDirectiveLinkerVersion1.prototype.linkPartialDeclaration);
+  spyOn(PartialDirectiveLinkerVersion1.prototype, 'linkPartialDeclaration').and.callFake(((
+    constantPool,
+  ) => {
+    const constArray = o.literalArr([o.literal(++callCount)]);
+    // We have to add the constant twice or it will not create a shared statement
+    constantPool.getConstLiteral(constArray);
+    constantPool.getConstLiteral(constArray);
+    return {
+      expression: replacement,
+      statements: [],
+    };
+  }) as typeof PartialDirectiveLinkerVersion1.prototype.linkPartialDeclaration);
 }

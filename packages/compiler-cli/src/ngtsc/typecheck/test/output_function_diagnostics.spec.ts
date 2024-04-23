@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {runInEachFileSystem} from '../../file_system/testing';
 
 import {generateDiagnoseJasmineSpecs, TestCase} from './test_case_helper';
@@ -18,17 +17,13 @@ runInEachFileSystem(() => {
         id: 'basic output',
         outputs: {'evt': {type: 'OutputEmitterRef<string>'}},
         template: `<div dir (evt)="$event.bla">`,
-        expected: [
-          `TestComponent.html(1, 24): Property 'bla' does not exist on type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 24): Property 'bla' does not exist on type 'string'.`],
       },
       {
         id: 'output with void type',
         outputs: {'evt': {type: 'OutputEmitterRef<void>'}},
         template: `<div dir (evt)="$event.x">`,
-        expected: [
-          `TestComponent.html(1, 24): Property 'x' does not exist on type 'void'.`,
-        ],
+        expected: [`TestComponent.html(1, 24): Property 'x' does not exist on type 'void'.`],
       },
       {
         id: 'two way data binding, invalid',
@@ -36,9 +31,7 @@ runInEachFileSystem(() => {
         outputs: {'valueChange': {type: 'OutputEmitterRef<string>'}},
         template: `<div dir [(value)]="bla">`,
         component: `bla = true;`,
-        expected: [
-          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'two way data binding, valid',
@@ -52,10 +45,8 @@ runInEachFileSystem(() => {
         id: 'complex output object',
         outputs: {'evt': {type: 'OutputEmitterRef<{works: boolean}>'}},
         template: `<div dir (evt)="x = $event.works">`,
-        component: `x: never = null!`,  // to raise a diagnostic to check the type.
-        expected: [
-          `TestComponent.html(1, 17): Type 'boolean' is not assignable to type 'never'.`,
-        ],
+        component: `x: never = null!`, // to raise a diagnostic to check the type.
+        expected: [`TestComponent.html(1, 17): Type 'boolean' is not assignable to type 'never'.`],
       },
       // mixing cases
       {
@@ -72,7 +63,7 @@ runInEachFileSystem(() => {
         expected: [
           `TestComponent.html(1, 18): Type 'string' is not assignable to type 'never'.`,
           `TestComponent.html(1, 39): Type 'string' is not assignable to type 'never'.`,
-        ]
+        ],
       },
       // restricted fields
       {

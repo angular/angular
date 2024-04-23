@@ -7,7 +7,13 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, DirectiveEntry, EntryType, MemberTags, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {
+  ClassEntry,
+  DirectiveEntry,
+  EntryType,
+  MemberTags,
+  PropertyEntry,
+} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -25,7 +31,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract standalone directive info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Directive} from '@angular/core';
         @Directive({
           standalone: true,
@@ -33,7 +41,8 @@ runInEachFileSystem(() => {
           exportAs: 'userProfile',
         })
         export class UserProfile { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -47,7 +56,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract standalone component info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Component} from '@angular/core';
         @Component({
           standalone: true,
@@ -56,7 +67,8 @@ runInEachFileSystem(() => {
           template: '',
         })
         export class UserProfile { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -70,7 +82,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract NgModule directive info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Directive, NgModule} from '@angular/core';
 
         @NgModule({declarations: [UserProfile]})
@@ -82,7 +96,8 @@ runInEachFileSystem(() => {
           exportAs: 'userProfile',
         })
         export class UserProfile { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -96,7 +111,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract NgModule component info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Component, NgModule} from '@angular/core';
 
         @NgModule({declarations: [UserProfile]})
@@ -109,7 +126,8 @@ runInEachFileSystem(() => {
           template: '',
         })
         export class UserProfile { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -123,7 +141,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract input and output info for a directive', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Directive, EventEmitter, Input, Output} from '@angular/core';
         @Directive({
           standalone: true,
@@ -137,7 +157,8 @@ runInEachFileSystem(() => {
           @Output() saved = new EventEmitter();
           @Output('onReset') reset = new EventEmitter();
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -147,7 +168,8 @@ runInEachFileSystem(() => {
       const directiveEntry = docs[0] as DirectiveEntry;
       expect(directiveEntry.members.length).toBe(5);
 
-      const [nameEntry, firstNameEntry, middleNameEntry, savedEntry, resetEntry,] = directiveEntry.members as PropertyEntry[];
+      const [nameEntry, firstNameEntry, middleNameEntry, savedEntry, resetEntry] =
+        directiveEntry.members as PropertyEntry[];
 
       expect(nameEntry.memberTags).toEqual([MemberTags.Input]);
       expect(nameEntry.inputAlias).toBe('name');
@@ -176,7 +198,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract input and output info for a component', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Component, EventEmitter, Input, Output} from '@angular/core';
         @Component({
           standalone: true,
@@ -190,7 +214,8 @@ runInEachFileSystem(() => {
           @Output() saved = new EventEmitter();
           @Output('onReset') reset = new EventEmitter();
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -200,7 +225,7 @@ runInEachFileSystem(() => {
       const componentEntry = docs[0] as DirectiveEntry;
       expect(componentEntry.members.length).toBe(4);
 
-      const [nameEntry, firstNameEntry, savedEntry, resetEntry, ] = componentEntry.members;
+      const [nameEntry, firstNameEntry, savedEntry, resetEntry] = componentEntry.members;
 
       expect(nameEntry.memberTags).toEqual([MemberTags.Input]);
       expect((nameEntry as PropertyEntry).inputAlias).toBe('name');
@@ -221,7 +246,9 @@ runInEachFileSystem(() => {
 
     it('should extract getters and setters as inputs', () => {
       // Test getter-only, a getter + setter, and setter-only.
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Component, EventEmitter, Input, Output} from '@angular/core';
         @Component({
           standalone: true,
@@ -240,7 +267,8 @@ runInEachFileSystem(() => {
           @Input()
           set isAdmin(value: boolean) { }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
@@ -248,7 +276,7 @@ runInEachFileSystem(() => {
 
       expect(classEntry.members.length).toBe(4);
 
-      const [userIdGetter, userNameGetter, userNameSetter, isAdminSetter, ] = classEntry.members;
+      const [userIdGetter, userNameGetter, userNameSetter, isAdminSetter] = classEntry.members;
 
       expect(userIdGetter.name).toBe('userId');
       expect(userIdGetter.memberTags).toContain(MemberTags.Input);

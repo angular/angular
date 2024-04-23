@@ -10,7 +10,10 @@ import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../src/ngtsc/imports';
 import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform, getInitializerApiJitTransform} from '../src/transformers/jit_transforms';
+import {
+  getDownlevelDecoratorsTransform,
+  getInitializerApiJitTransform,
+} from '../src/transformers/jit_transforms';
 
 import {MockAotContext, MockCompilerHost} from './mocks';
 
@@ -37,42 +40,52 @@ describe('initializer API metadata transform', () => {
     context.writeFile(TEST_FILE_INPUT, contents);
 
     const program = ts.createProgram(
-        [TEST_FILE_INPUT], {
-          module: ts.ModuleKind.ESNext,
-          lib: ['dom', 'es2022'],
-          target: ts.ScriptTarget.ES2022,
-          traceResolution: true,
-          experimentalDecorators: true,
-          paths: {
-            '@angular/core': ['./core.d.ts'],
-          },
+      [TEST_FILE_INPUT],
+      {
+        module: ts.ModuleKind.ESNext,
+        lib: ['dom', 'es2022'],
+        target: ts.ScriptTarget.ES2022,
+        traceResolution: true,
+        experimentalDecorators: true,
+        paths: {
+          '@angular/core': ['./core.d.ts'],
         },
-        host);
+      },
+      host,
+    );
 
     const testFile = program.getSourceFile(TEST_FILE_INPUT);
     const typeChecker = program.getTypeChecker();
     const reflectionHost = new TypeScriptReflectionHost(typeChecker);
     const importTracker = new ImportedSymbolsTracker();
     const transformers: ts.CustomTransformers = {
-      before: [
-        getInitializerApiJitTransform(reflectionHost, importTracker, /* isCore */ false),
-      ]
+      before: [getInitializerApiJitTransform(reflectionHost, importTracker, /* isCore */ false)],
     };
 
     if (postDownlevelDecoratorsTransform) {
-      transformers.before!.push(getDownlevelDecoratorsTransform(
-          typeChecker, reflectionHost, [], /* isCore */ false,
-          /* isClosureCompilerEnabled */ false));
+      transformers.before!.push(
+        getDownlevelDecoratorsTransform(
+          typeChecker,
+          reflectionHost,
+          [],
+          /* isCore */ false,
+          /* isClosureCompilerEnabled */ false,
+        ),
+      );
     }
 
-    let output: string|null = null;
+    let output: string | null = null;
     const emitResult = program.emit(
-        testFile, ((fileName, outputText) => {
-          if (fileName === TEST_FILE_OUTPUT) {
-            output = outputText;
-          }
-        }),
-        undefined, undefined, transformers);
+      testFile,
+      (fileName, outputText) => {
+        if (fileName === TEST_FILE_OUTPUT) {
+          output = outputText;
+        }
+      },
+      undefined,
+      undefined,
+      transformers,
+    );
 
     expect(emitResult.diagnostics.length).toBe(0);
     expect(output).not.toBeNull();
@@ -91,11 +104,13 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "someInput", required: false, transform: undefined })
           ], MyDir.prototype, "someInput", void 0);
-      `));
+      `),
+      );
     });
 
     it('should add `@Input` decorator for a required signal input', () => {
@@ -108,11 +123,13 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "someInput", required: true, transform: undefined })
           ], MyDir.prototype, "someInput", void 0);
-      `));
+      `),
+      );
     });
 
     it('should add `@Input` decorator for signal inputs with alias options', () => {
@@ -126,14 +143,16 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "public1", required: false, transform: undefined })
           ], MyDir.prototype, "someInput", void 0);
         __decorate([
           i0.Input({ isSignal: true, alias: "public2", required: true, transform: undefined })
           ], MyDir.prototype, "someInput2", void 0);
-      `));
+      `),
+      );
     });
 
     it('should add `@Input` decorator for signal inputs with transforms', () => {
@@ -149,14 +168,16 @@ describe('initializer API metadata transform', () => {
 
       // Transform functions are never captured because the input signal already captures
       // them and will run these independently of whether a `transform` is specified here.
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "someInput", required: false, transform: undefined })
           ], MyDir.prototype, "someInput", void 0);
         __decorate([
           i0.Input({ isSignal: true, alias: "someInput2", required: true, transform: undefined })
           ], MyDir.prototype, "someInput2", void 0);
-      `));
+      `),
+      );
     });
 
     it('should not transform `@Input` decorator for non-signal inputs', () => {
@@ -170,14 +191,16 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "someInput", required: true, transform: undefined })
           ], MyDir.prototype, "someInput", void 0);
         __decorate([
           Input({ someOptionIndicatingThatNothingChanged: true })
           ], MyDir.prototype, "nonSignalInput", void 0);
-      `));
+      `),
+      );
     });
 
     it('should not transform signal inputs with an existing `@Input` decorator', () => {
@@ -194,11 +217,13 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           Input()
           ], MyDir.prototype, "someInput", void 0);
-      `));
+      `),
+      );
     });
 
     it('should preserve existing decorators applied on signal inputs fields', () => {
@@ -213,17 +238,19 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
       __decorate([
         i0.Input({ isSignal: true, alias: "someInput", required: true, transform: undefined }),
         MyCustomDecorator()
         ], MyDir.prototype, "someInput", void 0);
-      `));
+      `),
+      );
     });
 
     it('should work with decorator downleveling post-transform', () => {
       const result = transform(
-          `
+        `
             import {input, Directive} from '@angular/core';
 
             @Directive({})
@@ -231,13 +258,16 @@ describe('initializer API metadata transform', () => {
               someInput = input(0);
             }
           `,
-          /* postDownlevelDecoratorsTransform */ true);
+        /* postDownlevelDecoratorsTransform */ true,
+      );
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         static propDecorators = {
           someInput: [{ type: i0.Input, args: [{ isSignal: true, alias: "someInput", required: false, transform: undefined },] }]
         };
-      `));
+      `),
+      );
     });
   });
 
@@ -252,12 +282,14 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "value", required: false }),
           i0.Output("valueChange")
         ], MyDir.prototype, "value", void 0);
-      `));
+      `),
+      );
     });
 
     it('should add `@Input` and `@Output` decorators for a required model input', () => {
@@ -270,12 +302,14 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "value", required: true }),
           i0.Output("valueChange")
         ], MyDir.prototype, "value", void 0);
-      `));
+      `),
+      );
     });
 
     it('should add `@Input` and `@Output` decorators for an aliased model input', () => {
@@ -289,7 +323,8 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "alias", required: false }),
           i0.Output("aliasChange")
@@ -298,7 +333,8 @@ describe('initializer API metadata transform', () => {
           i0.Input({ isSignal: true, alias: "alias2", required: true }),
           i0.Output("alias2Change")
         ], MyDir.prototype, "value2", void 0);
-      `));
+      `),
+      );
     });
 
     it('should not transform model inputs with an existing `@Input` decorator', () => {
@@ -311,11 +347,13 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           Input()
           ], MyDir.prototype, "value", void 0);
-      `));
+      `),
+      );
     });
 
     it('should not transform model inputs with an existing `@Output` decorator', () => {
@@ -328,11 +366,13 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           Output()
           ], MyDir.prototype, "value", void 0);
-      `));
+      `),
+      );
     });
 
     it('should preserve existing decorators applied on model input fields', () => {
@@ -347,18 +387,20 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Input({ isSignal: true, alias: "value", required: true }),
           i0.Output("valueChange"),
           MyCustomDecorator()
         ], MyDir.prototype, "value", void 0);
-      `));
+      `),
+      );
     });
 
     it('should work with decorator downleveling post-transform', () => {
       const result = transform(
-          `
+        `
             import {model, Directive} from '@angular/core';
 
             @Directive({})
@@ -366,13 +408,16 @@ describe('initializer API metadata transform', () => {
               someInput = model(0);
             }
           `,
-          /* postDownlevelDecoratorsTransform */ true);
+        /* postDownlevelDecoratorsTransform */ true,
+      );
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         static propDecorators = {
           someInput: [{ type: i0.Input, args: [{ isSignal: true, alias: "someInput", required: false },] }, { type: i0.Output, args: ["someInputChange",] }]
         };
-      `));
+      `),
+      );
     });
   });
 
@@ -387,11 +432,13 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Output("someInput")
           ], MyDir.prototype, "someInput", void 0);
-      `));
+      `),
+      );
     });
 
     it('should insert an `@Output` decorator with aliases', () => {
@@ -404,11 +451,13 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           i0.Output("someAlias")
           ], MyDir.prototype, "someInput", void 0);
-      `));
+      `),
+      );
     });
 
     it('should not change an existing `@Output` decorator', () => {
@@ -423,11 +472,13 @@ describe('initializer API metadata transform', () => {
         }
       `);
 
-      expect(result).toContain(omitLeadingWhitespace(`
+      expect(result).toContain(
+        omitLeadingWhitespace(`
         __decorate([
           Output(bla)
           ], MyDir.prototype, "someInput", void 0);
-      `));
+      `),
+      );
     });
   });
 });

@@ -18,7 +18,7 @@ export interface IncrementalBuildStrategy {
   /**
    * Determine the Angular `IncrementalState` for the given `ts.Program`, if one is available.
    */
-  getIncrementalState(program: ts.Program): IncrementalState|null;
+  getIncrementalState(program: ts.Program): IncrementalState | null;
 
   /**
    * Associate the given `IncrementalState` with the given `ts.Program` and make it available to
@@ -53,10 +53,10 @@ export class NoopIncrementalBuildStrategy implements IncrementalBuildStrategy {
  * Tracks an `IncrementalState` within the strategy itself.
  */
 export class TrackedIncrementalBuildStrategy implements IncrementalBuildStrategy {
-  private state: IncrementalState|null = null;
+  private state: IncrementalState | null = null;
   private isSet: boolean = false;
 
-  getIncrementalState(): IncrementalState|null {
+  getIncrementalState(): IncrementalState | null {
     return this.state;
   }
 
@@ -78,7 +78,7 @@ export class TrackedIncrementalBuildStrategy implements IncrementalBuildStrategy
  * program under `SYM_INCREMENTAL_STATE`.
  */
 export class PatchedProgramIncrementalBuildStrategy implements IncrementalBuildStrategy {
-  getIncrementalState(program: ts.Program): IncrementalState|null {
+  getIncrementalState(program: ts.Program): IncrementalState | null {
     const state = (program as MayHaveIncrementalState)[SYM_INCREMENTAL_STATE];
     if (state === undefined) {
       return null;
@@ -94,7 +94,6 @@ export class PatchedProgramIncrementalBuildStrategy implements IncrementalBuildS
     return this;
   }
 }
-
 
 /**
  * Symbol under which the `IncrementalState` is stored on a `ts.Program`.

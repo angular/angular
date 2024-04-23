@@ -24,9 +24,10 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * `CommonModule` is included, the `ngSwitch` would also be covered.
  */
 export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Map([
-  ['ngIf', {directive: 'NgIf', builtIn: '@if'}], ['ngFor', {directive: 'NgFor', builtIn: '@for'}],
+  ['ngIf', {directive: 'NgIf', builtIn: '@if'}],
+  ['ngFor', {directive: 'NgFor', builtIn: '@for'}],
   ['ngSwitchCase', {directive: 'NgSwitchCase', builtIn: '@switch with @case'}],
-  ['ngSwitchDefault', {directive: 'NgSwitchDefault', builtIn: '@switch with @default'}]
+  ['ngSwitchDefault', {directive: 'NgSwitchDefault', builtIn: '@switch with @default'}],
 ]);
 
 /**
@@ -38,13 +39,14 @@ export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Map([
  * Regular binding syntax (e.g. `[ngIf]`) is handled separately in type checker and treated as a
  * hard error instead of a warning.
  */
-class MissingControlFlowDirectiveCheck extends
-    TemplateCheckWithVisitor<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE> {
+class MissingControlFlowDirectiveCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE> {
   override code = ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE as const;
 
   override run(
-      ctx: TemplateContext<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE>,
-      component: ts.ClassDeclaration, template: TmplAstNode[]) {
+    ctx: TemplateContext<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE>,
+    component: ts.ClassDeclaration,
+    template: TmplAstNode[],
+  ) {
     const componentMetadata = ctx.templateTypeChecker.getDirectiveMetadata(component);
     // Avoid running this check for non-standalone components.
     if (!componentMetadata || !componentMetadata.isStandalone) {
@@ -54,13 +56,15 @@ class MissingControlFlowDirectiveCheck extends
   }
 
   override visitNode(
-      ctx: TemplateContext<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE>,
-      component: ts.ClassDeclaration,
-      node: TmplAstNode|AST): NgTemplateDiagnostic<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE>[] {
+    ctx: TemplateContext<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE>,
+    component: ts.ClassDeclaration,
+    node: TmplAstNode | AST,
+  ): NgTemplateDiagnostic<ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE>[] {
     if (!(node instanceof TmplAstTemplate)) return [];
 
-    const controlFlowAttr =
-        node.templateAttrs.find(attr => KNOWN_CONTROL_FLOW_DIRECTIVES.has(attr.name));
+    const controlFlowAttr = node.templateAttrs.find((attr) =>
+      KNOWN_CONTROL_FLOW_DIRECTIVES.has(attr.name),
+    );
     if (!controlFlowAttr) return [];
 
     const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
@@ -71,21 +75,20 @@ class MissingControlFlowDirectiveCheck extends
     const sourceSpan = controlFlowAttr.keySpan || controlFlowAttr.sourceSpan;
     const directiveAndBuiltIn = KNOWN_CONTROL_FLOW_DIRECTIVES.get(controlFlowAttr.name);
     const errorMessage =
-        `The \`*${controlFlowAttr.name}\` directive was used in the template, ` +
-        `but neither the \`${
-            directiveAndBuiltIn?.directive}\` directive nor the \`CommonModule\` was imported. ` +
-        `Use Angular's built-in control flow ${directiveAndBuiltIn?.builtIn} or ` +
-        `make sure that either the \`${
-            directiveAndBuiltIn?.directive}\` directive or the \`CommonModule\` ` +
-        `is included in the \`@Component.imports\` array of this component.`;
+      `The \`*${controlFlowAttr.name}\` directive was used in the template, ` +
+      `but neither the \`${directiveAndBuiltIn?.directive}\` directive nor the \`CommonModule\` was imported. ` +
+      `Use Angular's built-in control flow ${directiveAndBuiltIn?.builtIn} or ` +
+      `make sure that either the \`${directiveAndBuiltIn?.directive}\` directive or the \`CommonModule\` ` +
+      `is included in the \`@Component.imports\` array of this component.`;
     const diagnostic = ctx.makeTemplateDiagnostic(sourceSpan, errorMessage);
     return [diagnostic];
   }
 }
 
 export const factory: TemplateCheckFactory<
-    ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE,
-    ExtendedTemplateDiagnosticName.MISSING_CONTROL_FLOW_DIRECTIVE> = {
+  ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE,
+  ExtendedTemplateDiagnosticName.MISSING_CONTROL_FLOW_DIRECTIVE
+> = {
   code: ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE,
   name: ExtendedTemplateDiagnosticName.MISSING_CONTROL_FLOW_DIRECTIVE,
   create: (options: NgCompilerOptions) => {

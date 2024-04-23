@@ -25,7 +25,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract standalone pipe info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Pipe} from '@angular/core';
         @Pipe({
           standalone: true,
@@ -34,7 +36,8 @@ runInEachFileSystem(() => {
         export class ShortenPipe {
           transform(value: string): string { return ''; }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -48,7 +51,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract NgModule pipe info', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         import {Pipe, NgModule} from '@angular/core';
         @Pipe({name: 'shorten'})
         export class ShortenPipe {
@@ -57,7 +62,8 @@ runInEachFileSystem(() => {
 
         @NgModule({declarations: [ShortenPipe]})
         export class PipeModule { }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 

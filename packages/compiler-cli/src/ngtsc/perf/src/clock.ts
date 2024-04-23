@@ -17,5 +17,5 @@ export function mark(): HrTime {
 
 export function timeSinceInMicros(mark: HrTime): number {
   const delta = process.hrtime(mark);
-  return (delta[0] * 1000000) + Math.floor(delta[1] / 1000);
+  return delta[0] * 1000000 + Math.floor(delta[1] / 1000);
 }

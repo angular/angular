@@ -18,9 +18,7 @@ runInEachFileSystem(() => {
         inputs: {show: {type: 'ModelSignal<boolean>', isSignal: true}},
         outputs: {showChange: {type: 'ModelSignal<boolean>'}},
         template: `<div dir show="works">`,
-        expected: [
-          `TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 10): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'one-way property binding',
@@ -44,7 +42,8 @@ runInEachFileSystem(() => {
         template: `<div dir [show]="{works: true, extraField: true}">`,
         expected: [
           jasmine.stringContaining(
-              `Object literal may only specify known properties, and '"extraField"' does not exist in type '{ works: boolean; }'.`)
+            `Object literal may only specify known properties, and '"extraField"' does not exist in type '{ works: boolean; }'.`,
+          ),
         ],
       },
       {
@@ -53,7 +52,7 @@ runInEachFileSystem(() => {
         outputs: {showChange: {type: 'ModelSignal<boolean>'}},
         template: `<div dir [show]="{}">`,
         expected: [
-          `TestComponent.html(1, 11): Property 'works' is missing in type '{}' but required in type '{ works: boolean; }'.`
+          `TestComponent.html(1, 11): Property 'works' is missing in type '{}' but required in type '{ works: boolean; }'.`,
         ],
       },
       // mixing cases
@@ -65,7 +64,7 @@ runInEachFileSystem(() => {
         },
         outputs: {signalPropChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [zoneProp]="'works'" [signalProp]="'stringVal'">`,
-        expected: []
+        expected: [],
       },
       {
         id: 'mixing zone input and model, invalid zone binding',
@@ -75,7 +74,7 @@ runInEachFileSystem(() => {
         },
         outputs: {signalPropChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [zoneProp]="false" [signalProp]="'stringVal'">`,
-        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`]
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'mixing zone input and model, invalid signal binding',
@@ -85,7 +84,7 @@ runInEachFileSystem(() => {
         },
         outputs: {signalPropChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [zoneProp]="'works'" [signalProp]="{}">`,
-        expected: [`TestComponent.html(1, 32): Type '{}' is not assignable to type 'string'.`]
+        expected: [`TestComponent.html(1, 32): Type '{}' is not assignable to type 'string'.`],
       },
       {
         id: 'mixing zone input and model, both invalid',
@@ -97,36 +96,36 @@ runInEachFileSystem(() => {
         template: `<div dir [zoneProp]="false" [signalProp]="{}">`,
         expected: [
           `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-          `TestComponent.html(1, 30): Type '{}' is not assignable to type 'string'.`
-        ]
+          `TestComponent.html(1, 30): Type '{}' is not assignable to type 'string'.`,
+        ],
       },
       // restricted fields
       {
         id: 'disallows access to private model',
         inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'}
+          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
         expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is private and only accessible within class 'Dir'.`
+          `TestComponent.html(1, 11): Property 'pattern' is private and only accessible within class 'Dir'.`,
         ],
       },
       {
         id: 'disallows access to protected model',
         inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'protected'}
+          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'protected'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
         expected: [
-          `TestComponent.html(1, 11): Property 'pattern' is protected and only accessible within class 'Dir' and its subclasses.`
+          `TestComponent.html(1, 11): Property 'pattern' is protected and only accessible within class 'Dir' and its subclasses.`,
         ],
       },
       {
         id: 'allows access to readonly model by default',
         inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'readonly'}
+          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'readonly'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
@@ -136,7 +135,7 @@ runInEachFileSystem(() => {
       {
         id: 'allow access to private input if modifiers are explicitly ignored',
         inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'}
+          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
@@ -148,7 +147,7 @@ runInEachFileSystem(() => {
       {
         id: 'allow access to protected model if modifiers are explicitly ignored',
         inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'protected'}
+          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'protected'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
@@ -160,7 +159,7 @@ runInEachFileSystem(() => {
       {
         id: 'allow access to readonly input if modifiers are explicitly ignored',
         inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'readonly'}
+          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'readonly'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="'works'">`,
@@ -172,13 +171,11 @@ runInEachFileSystem(() => {
       {
         id: 'allow access to private model if modifiers are explicitly ignored, but error if not assignable',
         inputs: {
-          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'}
+          pattern: {type: 'ModelSignal<string>', isSignal: true, restrictionModifier: 'private'},
         },
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [pattern]="false">`,
-        expected: [
-          `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
         options: {
           honorAccessModifiersForInputBindings: false,
         },
@@ -188,13 +185,9 @@ runInEachFileSystem(() => {
         id: 'coercion members are not respected',
         inputs: {pattern: {type: 'ModelSignal<string>', isSignal: true}},
         outputs: {patternChange: {type: 'ModelSignal<string>'}},
-        extraDirectiveMembers: [
-          'static ngAcceptInputType_pattern: string|boolean',
-        ],
+        extraDirectiveMembers: ['static ngAcceptInputType_pattern: string|boolean'],
         template: `<div dir [pattern]="false">`,
-        expected: [
-          `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
       },
       // with generics (type constructor tests)
       {
@@ -207,7 +200,7 @@ runInEachFileSystem(() => {
           other: {
             type: 'ModelSignal<T>',
             isSignal: true,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
@@ -215,9 +208,7 @@ runInEachFileSystem(() => {
         },
         directiveGenerics: '<T>',
         template: `<div dir [gen]="false" [other]="'invalid'">`,
-        expected: [
-          `TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'generic inference and one-way binding to directive, mix of zone input and model',
@@ -229,14 +220,12 @@ runInEachFileSystem(() => {
           other: {
             type: 'T',
             isSignal: false,
-          }
+          },
         },
         outputs: {genChange: {type: 'ModelSignal<T>'}},
         directiveGenerics: '<T>',
         template: `<div dir [gen]="false" [other]="'invalid'">`,
-        expected: [
-          `TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 11): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'generic inference and one-way binding to directive (with `extends boolean`), all model inputs',
@@ -248,7 +237,7 @@ runInEachFileSystem(() => {
           other: {
             type: 'ModelSignal<T>',
             isSignal: true,
-          }
+          },
         },
         outputs: {genChange: {type: 'ModelSignal<T>'}, otherChange: {type: 'ModelSignal<T>'}},
         directiveGenerics: '<T extends boolean>',
@@ -267,14 +256,12 @@ runInEachFileSystem(() => {
           other: {
             type: 'T',
             isSignal: false,
-          }
+          },
         },
         outputs: {genChange: {type: 'ModelSignal<T>'}},
         directiveGenerics: '<T extends boolean>',
         template: `<div dir [gen]="false" [other]="'invalid'">`,
-        expected: [
-          `TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 25): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'generic multi-inference and one-way bindings to directive, all model inputs',
@@ -286,15 +273,13 @@ runInEachFileSystem(() => {
           other: {
             type: 'ModelSignal<U>',
             isSignal: true,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
           otherChange: {type: 'ModelSignal<U>'},
         },
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [gen]="false" [other]="'text'"
@@ -314,12 +299,10 @@ runInEachFileSystem(() => {
           other: {
             type: 'U',
             isSignal: false,
-          }
+          },
         },
         outputs: {genChange: {type: 'ModelSignal<T>'}},
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [gen]="false" [other]="'text'"
@@ -339,15 +322,13 @@ runInEachFileSystem(() => {
           other: {
             type: 'ModelSignal<{u: U}>',
             isSignal: true,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
           otherChange: {type: 'ModelSignal<{u: U}>'},
         },
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [gen]="false" [other]="{u: null}"
@@ -369,9 +350,7 @@ runInEachFileSystem(() => {
         extraFileContent: `
           class SomeNonExportedClass {}
         `,
-        extraDirectiveMembers: [
-          `tester: {t: T} = null!`,
-        ],
+        extraDirectiveMembers: [`tester: {t: T} = null!`],
         directiveGenerics: '<T extends SomeNonExportedClass>',
         template: `<div dir [bla]="prop" #ref="dir" (click)="ref.tester = {t: 0}">`,
         component: `prop: HTMLElement = null!`,
@@ -390,7 +369,7 @@ runInEachFileSystem(() => {
           other: {
             type: 'ModelSignal<T>',
             isSignal: true,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
@@ -402,9 +381,7 @@ runInEachFileSystem(() => {
           otherVal!: string;
         `,
         template: `<div dir [(gen)]="genVal" [(other)]="otherVal">`,
-        expected: [
-          `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'generic inference and two-way binding to directive, mix of zone input and model',
@@ -416,7 +393,7 @@ runInEachFileSystem(() => {
           other: {
             type: 'T',
             isSignal: false,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
@@ -428,9 +405,7 @@ runInEachFileSystem(() => {
           genVal!: boolean;
           otherVal!: string;
         `,
-        expected: [
-          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'generic inference and two-way binding to directive (with `extends boolean`), all model inputs',
@@ -442,7 +417,7 @@ runInEachFileSystem(() => {
           other: {
             type: 'ModelSignal<T>',
             isSignal: true,
-          }
+          },
         },
         outputs: {genChange: {type: 'ModelSignal<T>'}, otherChange: {type: 'ModelSignal<T>'}},
         directiveGenerics: '<T extends boolean>',
@@ -451,9 +426,7 @@ runInEachFileSystem(() => {
           genVal!: boolean;
           otherVal!: string;
         `,
-        expected: [
-          `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'generic inference and two-way binding to directive (with `extends boolean`), mix of zone inputs and model',
@@ -465,7 +438,7 @@ runInEachFileSystem(() => {
           other: {
             type: 'T',
             isSignal: false,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
@@ -477,9 +450,7 @@ runInEachFileSystem(() => {
           genVal!: boolean;
           otherVal!: string;
         `,
-        expected: [
-          `TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 29): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'generic multi-inference and two-way bindings to directive, all model inputs',
@@ -491,15 +462,13 @@ runInEachFileSystem(() => {
           other: {
             type: 'ModelSignal<U>',
             isSignal: true,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
           otherChange: {type: 'ModelSignal<U>'},
         },
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [(gen)]="genVal" [(other)]="otherVal"
@@ -523,15 +492,13 @@ runInEachFileSystem(() => {
           other: {
             type: 'U',
             isSignal: false,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
           otherChange: {type: 'EventEmitter<U>'},
         },
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [(gen)]="genVal" [(other)]="otherVal"
@@ -555,15 +522,13 @@ runInEachFileSystem(() => {
           other: {
             type: 'ModelSignal<{u: U}>',
             isSignal: true,
-          }
+          },
         },
         outputs: {
           genChange: {type: 'ModelSignal<T>'},
           otherChange: {type: 'ModelSignal<{u: U}>'},
         },
-        extraDirectiveMembers: [
-          'tester: {t: T, u: U} = null!',
-        ],
+        extraDirectiveMembers: ['tester: {t: T, u: U} = null!'],
         directiveGenerics: '<T, U>',
         template: `
               <div dir [(gen)]="genVal" [(other)]="otherVal"
@@ -589,9 +554,7 @@ runInEachFileSystem(() => {
         extraFileContent: `
           class SomeNonExportedClass {}
         `,
-        extraDirectiveMembers: [
-          `tester: {t: T} = null!`,
-        ],
+        extraDirectiveMembers: [`tester: {t: T} = null!`],
         directiveGenerics: '<T extends SomeNonExportedClass>',
         template: `<div dir [(bla)]="prop" #ref="dir" (click)="ref.tester = {t: 0}">`,
         component: `prop: HTMLElement = null!`,
@@ -605,18 +568,14 @@ runInEachFileSystem(() => {
         inputs: {evt: {type: 'ModelSignal<string>', isSignal: true}},
         outputs: {evtChange: {type: 'ModelSignal<string>'}},
         template: `<div dir (evtChange)="$event.bla">`,
-        expected: [
-          `TestComponent.html(1, 30): Property 'bla' does not exist on type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 30): Property 'bla' does not exist on type 'string'.`],
       },
       {
         id: 'one-way output to a model with a void type',
         inputs: {evt: {type: 'ModelSignal<string>', isSignal: true}},
         outputs: {evtChange: {type: 'ModelSignal<void>'}},
         template: `<div dir (evtChange)="$event.x">`,
-        expected: [
-          `TestComponent.html(1, 30): Property 'x' does not exist on type 'void'.`,
-        ],
+        expected: [`TestComponent.html(1, 30): Property 'x' does not exist on type 'void'.`],
       },
       {
         id: 'two-way binding to primitive, invalid',
@@ -624,9 +583,7 @@ runInEachFileSystem(() => {
         outputs: {valueChange: {type: 'ModelSignal<string>'}},
         template: `<div dir [(value)]="bla">`,
         component: `bla = true;`,
-        expected: [
-          `TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`,
-        ],
+        expected: [`TestComponent.html(1, 12): Type 'boolean' is not assignable to type 'string'.`],
       },
       {
         id: 'two-way binding to primitive, valid',
@@ -652,7 +609,7 @@ runInEachFileSystem(() => {
         expected: [
           `TestComponent.html(1, 24): Type 'string' is not assignable to type 'never'.`,
           `TestComponent.html(1, 45): Type 'string' is not assignable to type 'never'.`,
-        ]
+        ],
       },
       // restricted fields
       {
@@ -662,7 +619,7 @@ runInEachFileSystem(() => {
             type: 'ModelSignal<string>',
             isSignal: true,
             restrictionModifier: 'private',
-          }
+          },
         },
         outputs: {evtChange: {type: 'ModelSignal<string>', restrictionModifier: 'private'}},
         template: `<div dir (evtChange)="true">`,
@@ -675,7 +632,7 @@ runInEachFileSystem(() => {
             type: 'ModelSignal<string>',
             isSignal: true,
             restrictionModifier: 'protected',
-          }
+          },
         },
         outputs: {evt: {type: 'ModelSignal<string>', restrictionModifier: 'protected'}},
         template: `<div dir (evtChange)="true">`,
@@ -695,9 +652,7 @@ runInEachFileSystem(() => {
         outputs: {valueChange: {type: 'ModelSignal<boolean>'}},
         template: `<div dir [(value)]="val">`,
         component: `val!: WritableSignal<string>;`,
-        expected: [
-          `TestComponent.html(1, 12): Type 'string' is not assignable to type 'boolean'.`,
-        ],
+        expected: [`TestComponent.html(1, 12): Type 'string' is not assignable to type 'boolean'.`],
       },
       {
         id: 'non-writable signal binding',
@@ -725,7 +680,8 @@ runInEachFileSystem(() => {
         component: `val!: (v: string) => number;`,
         expected: [
           jasmine.stringContaining(
-              `TestComponent.html(1, 12): Type '(v: string) => number' is not assignable to type '(v: number) => number`),
+            `TestComponent.html(1, 12): Type '(v: string) => number' is not assignable to type '(v: number) => number`,
+          ),
         ],
       },
     ];

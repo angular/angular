@@ -12,7 +12,6 @@ import {FatalLinkerError} from '../../fatal_linker_error';
 import {AstHost, Range} from '../ast_host';
 import {assert} from '../utils';
 
-
 /**
  * This implementation of `AstHost` is able to get information from TypeScript AST nodes.
  *
@@ -23,7 +22,7 @@ import {assert} from '../utils';
  * do linking in the future.
  */
 export class TypeScriptAstHost implements AstHost<ts.Expression> {
-  getSymbolName(node: ts.Expression): string|null {
+  getSymbolName(node: ts.Expression): string | null {
     if (ts.isIdentifier(node)) {
       return node.text;
     } else if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.name)) {
@@ -59,7 +58,7 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
     if (isBooleanLiteral(bool)) {
       return bool.kind === ts.SyntaxKind.TrueKeyword;
     } else if (isMinifiedBooleanLiteral(bool)) {
-      return !(+bool.operand.text);
+      return !+bool.operand.text;
     } else {
       throw new FatalLinkerError(bool, 'Unsupported syntax, expected a boolean literal.');
     }
@@ -69,7 +68,7 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
 
   parseArrayLiteral(array: ts.Expression): ts.Expression[] {
     assert(array, this.isArrayLiteral, 'an array literal');
-    return array.elements.map(element => {
+    return array.elements.map((element) => {
       assert(element, isNotEmptyElement, 'element in array not to be empty');
       assert(element, isNotSpreadElement, 'element in array not to use spread syntax');
       return element;
@@ -90,7 +89,7 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
     return result;
   }
 
-  isFunctionExpression(node: ts.Expression): node is ts.FunctionExpression|ts.ArrowFunction {
+  isFunctionExpression(node: ts.Expression): node is ts.FunctionExpression | ts.ArrowFunction {
     return ts.isFunctionExpression(node) || ts.isArrowFunction(node);
   }
 
@@ -107,7 +106,9 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
 
     if (fn.body.statements.length !== 1) {
       throw new FatalLinkerError(
-          fn.body, 'Unsupported syntax, expected a function body with a single return statement.');
+        fn.body,
+        'Unsupported syntax, expected a function body with a single return statement.',
+      );
     }
     const stmt = fn.body.statements[0];
     assert(stmt, ts.isReturnStatement, 'a function body with a single return statement');
@@ -120,7 +121,7 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
 
   parseParameters(fn: ts.Expression): ts.Expression[] {
     assert(fn, this.isFunctionExpression, 'a function');
-    return fn.parameters.map(param => {
+    return fn.parameters.map((param) => {
       assert(param.name, ts.isIdentifier, 'an identifier');
       if (param.dotDotDotToken) {
         throw new FatalLinkerError(fn.body, 'Unsupported syntax, expected an identifier.');
@@ -138,7 +139,7 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
 
   parseArguments(call: ts.Expression): ts.Expression[] {
     assert(call, ts.isCallExpression, 'a call expression');
-    return call.arguments.map(arg => {
+    return call.arguments.map((arg) => {
       assert(arg, isNotSpreadElement, 'argument not to use spread syntax');
       return arg;
     });
@@ -148,7 +149,9 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
     const file = node.getSourceFile();
     if (file === undefined) {
       throw new FatalLinkerError(
-          node, 'Unable to read range for node - it is missing parent information.');
+        node,
+        'Unable to read range for node - it is missing parent information.',
+      );
     }
     const startPos = node.getStart();
     const endPos = node.getEnd();
@@ -161,8 +164,9 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
  * Return true if the expression does not represent an empty element in an array literal.
  * For example in `[,foo]` the first element is "empty".
  */
-function isNotEmptyElement(e: ts.Expression|ts.SpreadElement|
-                           ts.OmittedExpression): e is ts.Expression|ts.SpreadElement {
+function isNotEmptyElement(
+  e: ts.Expression | ts.SpreadElement | ts.OmittedExpression,
+): e is ts.Expression | ts.SpreadElement {
   return !ts.isOmittedExpression(e);
 }
 
@@ -170,30 +174,36 @@ function isNotEmptyElement(e: ts.Expression|ts.SpreadElement|
  * Return true if the expression is not a spread element of an array literal.
  * For example in `[x, ...rest]` the `...rest` expression is a spread element.
  */
-function isNotSpreadElement(e: ts.Expression|ts.SpreadElement): e is ts.Expression {
+function isNotSpreadElement(e: ts.Expression | ts.SpreadElement): e is ts.Expression {
   return !ts.isSpreadElement(e);
 }
 
 /**
  * Return true if the expression can be considered a text based property name.
  */
-function isPropertyName(e: ts.PropertyName): e is ts.Identifier|ts.StringLiteral|ts.NumericLiteral {
+function isPropertyName(
+  e: ts.PropertyName,
+): e is ts.Identifier | ts.StringLiteral | ts.NumericLiteral {
   return ts.isIdentifier(e) || ts.isStringLiteral(e) || ts.isNumericLiteral(e);
 }
 
 /**
  * Return true if the node is either `true` or `false` literals.
  */
-function isBooleanLiteral(node: ts.Expression): node is ts.TrueLiteral|ts.FalseLiteral {
+function isBooleanLiteral(node: ts.Expression): node is ts.TrueLiteral | ts.FalseLiteral {
   return node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword;
 }
 
-type MinifiedBooleanLiteral = ts.PrefixUnaryExpression&{operand: ts.NumericLiteral};
+type MinifiedBooleanLiteral = ts.PrefixUnaryExpression & {operand: ts.NumericLiteral};
 
 /**
  * Return true if the node is either `!0` or `!1`.
  */
 function isMinifiedBooleanLiteral(node: ts.Expression): node is MinifiedBooleanLiteral {
-  return ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken &&
-      ts.isNumericLiteral(node.operand) && (node.operand.text === '0' || node.operand.text === '1');
+  return (
+    ts.isPrefixUnaryExpression(node) &&
+    node.operator === ts.SyntaxKind.ExclamationToken &&
+    ts.isNumericLiteral(node.operand) &&
+    (node.operand.text === '0' || node.operand.text === '1')
+  );
 }

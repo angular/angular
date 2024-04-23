@@ -6,10 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExpressionType, ExternalExpr, TransplantedType, Type, TypeModifier} from '@angular/compiler';
+import {
+  ExpressionType,
+  ExternalExpr,
+  TransplantedType,
+  Type,
+  TypeModifier,
+} from '@angular/compiler';
 import ts from 'typescript';
 
-import {assertSuccessfulReferenceEmit, ImportFlags, Reference, ReferenceEmitKind, ReferenceEmitter} from '../../imports';
+import {
+  assertSuccessfulReferenceEmit,
+  ImportFlags,
+  Reference,
+  ReferenceEmitKind,
+  ReferenceEmitter,
+} from '../../imports';
 import {ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateType} from '../../translator';
 
@@ -21,13 +33,18 @@ import {ImportManager, translateExpression, translateType} from '../../translato
  */
 export class ReferenceEmitEnvironment {
   constructor(
-      readonly importManager: ImportManager, protected refEmitter: ReferenceEmitter,
-      readonly reflector: ReflectionHost, public contextFile: ts.SourceFile) {}
+    readonly importManager: ImportManager,
+    protected refEmitter: ReferenceEmitter,
+    readonly reflector: ReflectionHost,
+    public contextFile: ts.SourceFile,
+  ) {}
 
   canReferenceType(
-      ref: Reference,
-      flags: ImportFlags = ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
-          ImportFlags.AllowRelativeDtsImports): boolean {
+    ref: Reference,
+    flags: ImportFlags = ImportFlags.NoAliasing |
+      ImportFlags.AllowTypeImports |
+      ImportFlags.AllowRelativeDtsImports,
+  ): boolean {
     const result = this.refEmitter.emit(ref, this.contextFile, flags);
     return result.kind === ReferenceEmitKind.Success;
   }
@@ -38,17 +55,23 @@ export class ReferenceEmitEnvironment {
    * This may involve importing the node into the file if it's not declared there already.
    */
   referenceType(
-      ref: Reference,
-      flags: ImportFlags = ImportFlags.NoAliasing | ImportFlags.AllowTypeImports |
-          ImportFlags.AllowRelativeDtsImports): ts.TypeNode {
+    ref: Reference,
+    flags: ImportFlags = ImportFlags.NoAliasing |
+      ImportFlags.AllowTypeImports |
+      ImportFlags.AllowRelativeDtsImports,
+  ): ts.TypeNode {
     const ngExpr = this.refEmitter.emit(ref, this.contextFile, flags);
     assertSuccessfulReferenceEmit(ngExpr, this.contextFile, 'symbol');
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
     // TODO(alxhub): support references to types with generic arguments in a clean way.
     return translateType(
-        new ExpressionType(ngExpr.expression), this.contextFile, this.reflector, this.refEmitter,
-        this.importManager);
+      new ExpressionType(ngExpr.expression),
+      this.contextFile,
+      this.reflector,
+      this.refEmitter,
+      this.importManager,
+    );
   }
 
   /**
@@ -69,8 +92,12 @@ export class ReferenceEmitEnvironment {
   referenceExternalType(moduleName: string, name: string, typeParams?: Type[]): ts.TypeNode {
     const external = new ExternalExpr({moduleName, name});
     return translateType(
-        new ExpressionType(external, TypeModifier.None, typeParams), this.contextFile,
-        this.reflector, this.refEmitter, this.importManager);
+      new ExpressionType(external, TypeModifier.None, typeParams),
+      this.contextFile,
+      this.reflector,
+      this.refEmitter,
+      this.importManager,
+    );
   }
 
   /**
@@ -80,6 +107,11 @@ export class ReferenceEmitEnvironment {
    */
   referenceTransplantedType(type: TransplantedType<Reference<ts.TypeNode>>): ts.TypeNode {
     return translateType(
-        type, this.contextFile, this.reflector, this.refEmitter, this.importManager);
+      type,
+      this.contextFile,
+      this.reflector,
+      this.refEmitter,
+      this.importManager,
+    );
   }
 }
