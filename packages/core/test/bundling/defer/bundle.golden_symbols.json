@@ -1032,9 +1032,6 @@
     "name": "init_a11y_click"
   },
   {
-    "name": "init_accessibility"
-  },
-  {
     "name": "init_advance"
   },
   {
@@ -1258,9 +1255,6 @@
   },
   {
     "name": "init_create_injector"
-  },
-  {
-    "name": "init_custom_events"
   },
   {
     "name": "init_debug_node"
@@ -1867,9 +1861,6 @@
   },
   {
     "name": "init_render3"
-  },
-  {
-    "name": "init_replay"
   },
   {
     "name": "init_reportUnhandledError"
