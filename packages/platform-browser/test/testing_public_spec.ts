@@ -21,6 +21,7 @@ import {
   NgModule,
   Optional,
   Pipe,
+  TransferState,
   SkipSelf,
   Type,
 } from '@angular/core';
@@ -34,8 +35,6 @@ import {
   withModule,
 } from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-
-import {TransferState} from '../public_api';
 
 // Services, and components for the tests.
 
