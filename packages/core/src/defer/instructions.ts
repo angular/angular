@@ -480,8 +480,10 @@ export function renderDeferBlockState(
 
   if (isValidStateChange(currentState, newState) &&
       isValidStateChange(lDetails[NEXT_DEFER_BLOCK_STATE] ?? -1, newState)) {
+    const injector = hostLView[INJECTOR]!;
     const tDetails = getTDeferBlockDetails(hostTView, tNode);
-    const needsScheduling = !skipTimerScheduling &&
+    // Skips scheduling on the server since it can delay the server response.
+    const needsScheduling = !skipTimerScheduling && isPlatformBrowser(injector) &&
         (getLoadingBlockAfter(tDetails) !== null ||
          getMinimumDurationForState(tDetails, DeferBlockState.Loading) !== null ||
          getMinimumDurationForState(tDetails, DeferBlockState.Placeholder));
