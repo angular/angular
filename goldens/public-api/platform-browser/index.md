@@ -14,7 +14,6 @@ import { HttpTransferCacheOptions } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
-import { makeStateKey as makeStateKey_2 } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
@@ -22,9 +21,7 @@ import { Predicate } from '@angular/core';
 import { Provider } from '@angular/core';
 import { Sanitizer } from '@angular/core';
 import { SecurityContext } from '@angular/core';
-import { StateKey as StateKey_2 } from '@angular/core';
 import { StaticProvider } from '@angular/core';
-import { TransferState as TransferState_2 } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
@@ -164,9 +161,6 @@ export enum HydrationFeatureKind {
     NoHttpTransferCache = 0
 }
 
-// @public @deprecated
-export const makeStateKey: typeof makeStateKey_2;
-
 // @public
 export class Meta {
     constructor(_doc: any);
@@ -234,9 +228,6 @@ export interface SafeUrl extends SafeValue {
 export interface SafeValue {
 }
 
-// @public @deprecated
-export type StateKey<T> = StateKey_2<T>;
-
 // @public
 export class Title {
     constructor(_doc: any);
@@ -247,14 +238,6 @@ export class Title {
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<Title>;
 }
-
-// @public @deprecated
-export type TransferState = TransferState_2;
-
-// @public (undocumented)
-export const TransferState: {
-    new (): TransferState_2;
-};
 
 // @public (undocumented)
 export const VERSION: Version;
