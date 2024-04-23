@@ -10,7 +10,14 @@ import {CssSelector, SchemaMetadata, SelectorMatcher} from '@angular/compiler';
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {DirectiveMeta, flattenInheritedDirectiveMetadata, HostDirectivesResolver, MetadataReader, MetaKind, PipeMeta} from '../../metadata';
+import {
+  DirectiveMeta,
+  flattenInheritedDirectiveMetadata,
+  HostDirectivesResolver,
+  MetadataReader,
+  MetaKind,
+  PipeMeta,
+} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 import {ComponentScopeKind, ComponentScopeReader} from './api';
@@ -63,8 +70,10 @@ export class TypeCheckScopeRegistry {
   private scopeCache = new Map<ClassDeclaration, TypeCheckScope>();
 
   constructor(
-      private scopeReader: ComponentScopeReader, private metaReader: MetadataReader,
-      private hostDirectivesResolver: HostDirectivesResolver) {}
+    private scopeReader: ComponentScopeReader,
+    private metaReader: MetadataReader,
+    private hostDirectivesResolver: HostDirectivesResolver,
+  ) {}
 
   /**
    * Computes the type-check scope information for the component declaration. If the NgModule
@@ -96,8 +105,11 @@ export class TypeCheckScopeRegistry {
     }
 
     let allDependencies = dependencies;
-    if (!isNgModuleScope && Array.isArray(scope.deferredDependencies) &&
-        scope.deferredDependencies.length > 0) {
+    if (
+      !isNgModuleScope &&
+      Array.isArray(scope.deferredDependencies) &&
+      scope.deferredDependencies.length > 0
+    ) {
       allDependencies = [...allDependencies, ...scope.deferredDependencies];
     }
     for (const meta of allDependencies) {
@@ -109,15 +121,19 @@ export class TypeCheckScopeRegistry {
 
         // Carry over the `isExplicitlyDeferred` flag from the dependency info.
         const directiveMeta = this.applyExplicitlyDeferredFlag(extMeta, meta.isExplicitlyDeferred);
-        matcher.addSelectables(
-            CssSelector.parse(meta.selector),
-            [...this.hostDirectivesResolver.resolve(directiveMeta), directiveMeta]);
+        matcher.addSelectables(CssSelector.parse(meta.selector), [
+          ...this.hostDirectivesResolver.resolve(directiveMeta),
+          directiveMeta,
+        ]);
 
         directives.push(directiveMeta);
       } else if (meta.kind === MetaKind.Pipe) {
         if (!ts.isClassDeclaration(meta.ref.node)) {
-          throw new Error(`Unexpected non-class declaration ${
-              ts.SyntaxKind[meta.ref.node.kind]} for pipe ${meta.ref.debugName}`);
+          throw new Error(
+            `Unexpected non-class declaration ${
+              ts.SyntaxKind[meta.ref.node.kind]
+            } for pipe ${meta.ref.debugName}`,
+          );
         }
         pipes.set(meta.name, meta);
       }
@@ -128,15 +144,16 @@ export class TypeCheckScopeRegistry {
       directives,
       pipes,
       schemas: scope.schemas,
-      isPoisoned: scope.kind === ComponentScopeKind.NgModule ?
-          scope.compilation.isPoisoned || scope.exported.isPoisoned :
-          scope.isPoisoned,
+      isPoisoned:
+        scope.kind === ComponentScopeKind.NgModule
+          ? scope.compilation.isPoisoned || scope.exported.isPoisoned
+          : scope.isPoisoned,
     };
     this.scopeCache.set(cacheKey, typeCheckScope);
     return typeCheckScope;
   }
 
-  getTypeCheckDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta|null {
+  getTypeCheckDirectiveMetadata(ref: Reference<ClassDeclaration>): DirectiveMeta | null {
     const clazz = ref.node;
     if (this.flattenedDirectiveMetaCache.has(clazz)) {
       return this.flattenedDirectiveMetaCache.get(clazz)!;
@@ -150,8 +167,10 @@ export class TypeCheckScopeRegistry {
     return meta;
   }
 
-  private applyExplicitlyDeferredFlag<T extends DirectiveMeta|PipeMeta>(
-      meta: T, isExplicitlyDeferred: boolean): T {
+  private applyExplicitlyDeferredFlag<T extends DirectiveMeta | PipeMeta>(
+    meta: T,
+    isExplicitlyDeferred: boolean,
+  ): T {
     return isExplicitlyDeferred === true ? {...meta, isExplicitlyDeferred} : meta;
   }
 }

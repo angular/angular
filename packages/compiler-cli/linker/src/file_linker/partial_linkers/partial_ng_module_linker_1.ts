@@ -5,7 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileNgModule, ConstantPool, outputAst as o, R3DeclareNgModuleMetadata, R3NgModuleMetadata, R3NgModuleMetadataKind, R3PartialDeclaration, R3Reference, R3SelectorScopeMode} from '@angular/compiler';
+import {
+  compileNgModule,
+  ConstantPool,
+  outputAst as o,
+  R3DeclareNgModuleMetadata,
+  R3NgModuleMetadata,
+  R3NgModuleMetadataKind,
+  R3PartialDeclaration,
+  R3Reference,
+  R3SelectorScopeMode,
+} from '@angular/compiler';
 
 import {AstObject, AstValue} from '../../ast/ast_value';
 
@@ -17,15 +27,17 @@ import {wrapReference} from './util';
  */
 export class PartialNgModuleLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
   constructor(
-      /**
-       * If true then emit the additional declarations, imports, exports, etc in the NgModule
-       * definition. These are only used by JIT compilation.
-       */
-      private emitInline: boolean) {}
+    /**
+     * If true then emit the additional declarations, imports, exports, etc in the NgModule
+     * definition. These are only used by JIT compilation.
+     */
+    private emitInline: boolean,
+  ) {}
 
   linkPartialDeclaration(
-      constantPool: ConstantPool,
-      metaObj: AstObject<R3PartialDeclaration, TExpression>): LinkedDefinition {
+    constantPool: ConstantPool,
+    metaObj: AstObject<R3PartialDeclaration, TExpression>,
+  ): LinkedDefinition {
     const meta = toR3NgModuleMeta(metaObj, this.emitInline);
     return compileNgModule(meta);
   }
@@ -35,8 +47,9 @@ export class PartialNgModuleLinkerVersion1<TExpression> implements PartialLinker
  * Derives the `R3NgModuleMetadata` structure from the AST object.
  */
 export function toR3NgModuleMeta<TExpression>(
-    metaObj: AstObject<R3DeclareNgModuleMetadata, TExpression>,
-    supportJit: boolean): R3NgModuleMetadata {
+  metaObj: AstObject<R3DeclareNgModuleMetadata, TExpression>,
+  supportJit: boolean,
+): R3NgModuleMetadata {
   const wrappedType = metaObj.getOpaque('type');
 
   const meta: R3NgModuleMetadata = {
@@ -69,8 +82,7 @@ export function toR3NgModuleMeta<TExpression>(
     if (bootstrap.isFunction()) {
       meta.containsForwardDecls = true;
       meta.bootstrap = wrapReferences(unwrapForwardRefs(bootstrap));
-    } else
-      meta.bootstrap = wrapReferences(bootstrap as AstValue<TExpression[], TExpression>);
+    } else meta.bootstrap = wrapReferences(bootstrap as AstValue<TExpression[], TExpression>);
   }
 
   if (metaObj.has('declarations')) {
@@ -78,8 +90,7 @@ export function toR3NgModuleMeta<TExpression>(
     if (declarations.isFunction()) {
       meta.containsForwardDecls = true;
       meta.declarations = wrapReferences(unwrapForwardRefs(declarations));
-    } else
-      meta.declarations = wrapReferences(declarations as AstValue<TExpression[], TExpression>);
+    } else meta.declarations = wrapReferences(declarations as AstValue<TExpression[], TExpression>);
   }
 
   if (metaObj.has('imports')) {
@@ -87,8 +98,7 @@ export function toR3NgModuleMeta<TExpression>(
     if (imports.isFunction()) {
       meta.containsForwardDecls = true;
       meta.imports = wrapReferences(unwrapForwardRefs(imports));
-    } else
-      meta.imports = wrapReferences(imports as AstValue<TExpression[], TExpression>);
+    } else meta.imports = wrapReferences(imports as AstValue<TExpression[], TExpression>);
   }
 
   if (metaObj.has('exports')) {
@@ -96,8 +106,7 @@ export function toR3NgModuleMeta<TExpression>(
     if (exports.isFunction()) {
       meta.containsForwardDecls = true;
       meta.exports = wrapReferences(unwrapForwardRefs(exports));
-    } else
-      meta.exports = wrapReferences(exports as AstValue<TExpression[], TExpression>);
+    } else meta.exports = wrapReferences(exports as AstValue<TExpression[], TExpression>);
   }
 
   if (metaObj.has('schemas')) {
@@ -114,8 +123,9 @@ export function toR3NgModuleMeta<TExpression>(
  * If `field` is `function() { return [exp1, exp2, exp3]; }` then we return `[exp1, exp2, exp3]`.
  *
  */
-function unwrapForwardRefs<TExpression>(field: AstValue<unknown, TExpression>):
-    AstValue<TExpression[], TExpression> {
+function unwrapForwardRefs<TExpression>(
+  field: AstValue<unknown, TExpression>,
+): AstValue<TExpression[], TExpression> {
   return (field as AstValue<Function, TExpression>).getFunctionReturnValue();
 }
 
@@ -123,5 +133,5 @@ function unwrapForwardRefs<TExpression>(field: AstValue<unknown, TExpression>):
  * Wrap the array of expressions into an array of R3 references.
  */
 function wrapReferences<TExpression>(values: AstValue<TExpression[], TExpression>): R3Reference[] {
-  return values.getArray().map(i => wrapReference(i.getOpaque()));
+  return values.getArray().map((i) => wrapReference(i.getOpaque()));
 }

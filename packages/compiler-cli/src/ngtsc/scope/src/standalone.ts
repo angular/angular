@@ -10,7 +10,13 @@ import {Reference} from '../../imports';
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
-import {ComponentScopeKind, ComponentScopeReader, ExportScope, RemoteScope, StandaloneScope} from './api';
+import {
+  ComponentScopeKind,
+  ComponentScopeReader,
+  ExportScope,
+  RemoteScope,
+  StandaloneScope,
+} from './api';
 import {DtsModuleScopeResolver} from './dependency';
 import {LocalModuleScopeRegistry} from './local';
 
@@ -19,13 +25,15 @@ import {LocalModuleScopeRegistry} from './local';
  * scopes where necessary.
  */
 export class StandaloneComponentScopeReader implements ComponentScopeReader {
-  private cache = new Map<ClassDeclaration, StandaloneScope|null>();
+  private cache = new Map<ClassDeclaration, StandaloneScope | null>();
 
   constructor(
-      private metaReader: MetadataReader, private localModuleReader: LocalModuleScopeRegistry,
-      private dtsModuleReader: DtsModuleScopeResolver) {}
+    private metaReader: MetadataReader,
+    private localModuleReader: LocalModuleScopeRegistry,
+    private dtsModuleReader: DtsModuleScopeResolver,
+  ) {}
 
-  getScopeForComponent(clazz: ClassDeclaration): StandaloneScope|null {
+  getScopeForComponent(clazz: ClassDeclaration): StandaloneScope | null {
     if (!this.cache.has(clazz)) {
       const clazzRef = new Reference(clazz);
       const clazzMeta = this.metaReader.getDirectiveMetadata(clazzRef);
@@ -37,8 +45,8 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
 
       // A standalone component always has itself in scope, so add `clazzMeta` during
       // initialization.
-      const dependencies = new Set<DirectiveMeta|PipeMeta|NgModuleMeta>([clazzMeta]);
-      const deferredDependencies = new Set<DirectiveMeta|PipeMeta>();
+      const dependencies = new Set<DirectiveMeta | PipeMeta | NgModuleMeta>([clazzMeta]);
+      const deferredDependencies = new Set<DirectiveMeta | PipeMeta>();
       const seen = new Set<ClassDeclaration>([clazz]);
       let isPoisoned = clazzMeta.isPoisoned;
 
@@ -67,7 +75,7 @@ export class StandaloneComponentScopeReader implements ComponentScopeReader {
           if (ngModuleMeta !== null) {
             dependencies.add({...ngModuleMeta, ref});
 
-            let ngModuleScope: ExportScope|null;
+            let ngModuleScope: ExportScope | null;
             if (ref.node.getSourceFile().isDeclarationFile) {
               ngModuleScope = this.dtsModuleReader.resolve(ref);
             } else {

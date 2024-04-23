@@ -15,7 +15,9 @@ import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeKind, ComponentScopeReader} from './api';
 
 export function getDiagnosticNode(
-    ref: Reference<ClassDeclaration>, rawExpr: ts.Expression|null): ts.Expression {
+  ref: Reference<ClassDeclaration>,
+  rawExpr: ts.Expression | null,
+): ts.Expression {
   // Show the diagnostic on the node within `rawExpr` which references the declaration
   // in question. `rawExpr` represents the raw expression from which `ref` was partially evaluated,
   // so use that to find the right node. Note that by the type system, `rawExpr` might be `null`, so
@@ -25,21 +27,22 @@ export function getDiagnosticNode(
 }
 
 export function makeNotStandaloneDiagnostic(
-    scopeReader: ComponentScopeReader, ref: Reference<ClassDeclaration>,
-    rawExpr: ts.Expression|null, kind: 'component'|'directive'|'pipe'): ts.Diagnostic {
+  scopeReader: ComponentScopeReader,
+  ref: Reference<ClassDeclaration>,
+  rawExpr: ts.Expression | null,
+  kind: 'component' | 'directive' | 'pipe',
+): ts.Diagnostic {
   const scope = scopeReader.getScopeForComponent(ref.node);
 
-  let message = `The ${kind} '${
-      ref.node.name
-          .text}' appears in 'imports', but is not standalone and cannot be imported directly.`;
-  let relatedInformation: ts.DiagnosticRelatedInformation[]|undefined = undefined;
+  let message = `The ${kind} '${ref.node.name.text}' appears in 'imports', but is not standalone and cannot be imported directly.`;
+  let relatedInformation: ts.DiagnosticRelatedInformation[] | undefined = undefined;
   if (scope !== null && scope.kind === ComponentScopeKind.NgModule) {
     // The directive/pipe in question is declared in an NgModule. Check if it's also exported.
-    const isExported = scope.exported.dependencies.some(dep => dep.ref.node === ref.node);
-    const relatedInfoMessageText = isExported ?
-        `It can be imported using its '${scope.ngModule.name.text}' NgModule instead.` :
-        `It's declared in the '${scope.ngModule.name.text}' NgModule, but is not exported. ` +
-            'Consider exporting it and importing the NgModule instead.';
+    const isExported = scope.exported.dependencies.some((dep) => dep.ref.node === ref.node);
+    const relatedInfoMessageText = isExported
+      ? `It can be imported using its '${scope.ngModule.name.text}' NgModule instead.`
+      : `It's declared in the '${scope.ngModule.name.text}' NgModule, but is not exported. ` +
+        'Consider exporting it and importing the NgModule instead.';
     relatedInformation = [makeRelatedInformation(scope.ngModule.name, relatedInfoMessageText)];
   } else {
     // TODO(alxhub): the above case handles directives/pipes in NgModules that are declared in the
@@ -52,20 +55,31 @@ export function makeNotStandaloneDiagnostic(
     message += ' It must be imported via an NgModule.';
   }
   return makeDiagnostic(
-      ErrorCode.COMPONENT_IMPORT_NOT_STANDALONE, getDiagnosticNode(ref, rawExpr), message,
-      relatedInformation);
+    ErrorCode.COMPONENT_IMPORT_NOT_STANDALONE,
+    getDiagnosticNode(ref, rawExpr),
+    message,
+    relatedInformation,
+  );
 }
 
 export function makeUnknownComponentImportDiagnostic(
-    ref: Reference<ClassDeclaration>, rawExpr: ts.Expression) {
+  ref: Reference<ClassDeclaration>,
+  rawExpr: ts.Expression,
+) {
   return makeDiagnostic(
-      ErrorCode.COMPONENT_UNKNOWN_IMPORT, getDiagnosticNode(ref, rawExpr),
-      `Component imports must be standalone components, directives, pipes, or must be NgModules.`);
+    ErrorCode.COMPONENT_UNKNOWN_IMPORT,
+    getDiagnosticNode(ref, rawExpr),
+    `Component imports must be standalone components, directives, pipes, or must be NgModules.`,
+  );
 }
 
 export function makeUnknownComponentDeferredImportDiagnostic(
-    ref: Reference<ClassDeclaration>, rawExpr: ts.Expression) {
+  ref: Reference<ClassDeclaration>,
+  rawExpr: ts.Expression,
+) {
   return makeDiagnostic(
-      ErrorCode.COMPONENT_UNKNOWN_DEFERRED_IMPORT, getDiagnosticNode(ref, rawExpr),
-      `Component deferred imports must be standalone components, directives or pipes.`);
+    ErrorCode.COMPONENT_UNKNOWN_DEFERRED_IMPORT,
+    getDiagnosticNode(ref, rawExpr),
+    `Component deferred imports must be standalone components, directives or pipes.`,
+  );
 }

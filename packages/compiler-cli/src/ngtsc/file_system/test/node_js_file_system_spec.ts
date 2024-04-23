@@ -12,7 +12,11 @@ import realFs from 'fs';
 import os from 'os';
 import url from 'url';
 
-import {NodeJSFileSystem, NodeJSPathManipulation, NodeJSReadonlyFileSystem} from '../src/node_js_file_system';
+import {
+  NodeJSFileSystem,
+  NodeJSPathManipulation,
+  NodeJSReadonlyFileSystem,
+} from '../src/node_js_file_system';
 import {AbsoluteFsPath, PathSegment} from '../src/types';
 
 describe('NodeJSPathManipulation', () => {

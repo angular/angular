@@ -36,21 +36,22 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
     fileSystem,
     logger,
     sourceMapping: test.compilerOptions?.['sourceMap'] === true,
-    ...test.angularCompilerOptions
+    ...test.angularCompilerOptions,
   });
   const goldenPartialPath = fileSystem.resolve('/GOLDEN_PARTIAL.js');
   if (!fileSystem.exists(goldenPartialPath)) {
     throw new Error(
-        'Golden partial does not exist for this test\n' +
+      'Golden partial does not exist for this test\n' +
         'Try generating it by running:\n' +
-        `bazel run //packages/compiler-cli/test/compliance/test_cases:${
-            test.relativePath}.golden.update`);
+        `bazel run //packages/compiler-cli/test/compliance/test_cases:${test.relativePath}.golden.update`,
+    );
   }
   const partialFile = fileSystem.readFile(goldenPartialPath);
   const partialFiles = parseGoldenPartial(partialFile);
 
-  partialFiles.forEach(
-      f => safeWrite(fileSystem, fileSystem.resolve(builtDirectory, f.path), f.content));
+  partialFiles.forEach((f) =>
+    safeWrite(fileSystem, fileSystem.resolve(builtDirectory, f.path), f.content),
+  );
 
   for (const expectation of test.expectations) {
     for (const {generated} of expectation.files) {
@@ -60,11 +61,16 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
       }
       const source = fileSystem.readFile(fileName);
       const sourceMapPath = fileSystem.resolve(fileName + '.map');
-      const sourceMap = fileSystem.exists(sourceMapPath) ?
-          JSON.parse(fileSystem.readFile(sourceMapPath)) as RawSourceMap :
-          undefined;
-      const {linkedSource, linkedSourceMap} =
-          applyLinker(builtDirectory, fileName, source, sourceMap, linkerPlugin);
+      const sourceMap = fileSystem.exists(sourceMapPath)
+        ? (JSON.parse(fileSystem.readFile(sourceMapPath)) as RawSourceMap)
+        : undefined;
+      const {linkedSource, linkedSourceMap} = applyLinker(
+        builtDirectory,
+        fileName,
+        source,
+        sourceMap,
+        linkerPlugin,
+      );
 
       if (linkedSourceMap !== undefined) {
         const mapAndPath: MapAndPath = {map: linkedSourceMap, mapPath: sourceMapPath};
@@ -87,8 +93,12 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
  * @returns The file's source content, which has been transformed using the linker if necessary.
  */
 function applyLinker(
-    cwd: string, filename: string, source: string, sourceMap: RawSourceMap|undefined,
-    linkerPlugin: PluginObj): {linkedSource: string, linkedSourceMap: RawSourceMap|undefined} {
+  cwd: string,
+  filename: string,
+  source: string,
+  sourceMap: RawSourceMap | undefined,
+  linkerPlugin: PluginObj,
+): {linkedSource: string; linkedSourceMap: RawSourceMap | undefined} {
   if (!filename.endsWith('.js') || !needsLinking(filename, source)) {
     return {linkedSource: source, linkedSourceMap: sourceMap};
   }

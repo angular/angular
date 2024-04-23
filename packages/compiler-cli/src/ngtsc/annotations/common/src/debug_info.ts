@@ -12,8 +12,11 @@ import * as path from 'path';
 import {DeclarationNode, ReflectionHost} from '../../../reflection';
 
 export function extractClassDebugInfo(
-    clazz: DeclarationNode, reflection: ReflectionHost, rootDirs: ReadonlyArray<string>,
-    forbidOrphanRendering: boolean): R3ClassDebugInfo|null {
+  clazz: DeclarationNode,
+  reflection: ReflectionHost,
+  rootDirs: ReadonlyArray<string>,
+  forbidOrphanRendering: boolean,
+): R3ClassDebugInfo | null {
   if (!reflection.isClass(clazz)) {
     return null;
   }
@@ -34,8 +37,10 @@ export function extractClassDebugInfo(
  * Computes a source file path relative to the project root folder if possible, otherwise returns
  * null.
  */
-function computeRelativePathIfPossible(filePath: string, rootDirs: ReadonlyArray<string>): string|
-    null {
+function computeRelativePathIfPossible(
+  filePath: string,
+  rootDirs: ReadonlyArray<string>,
+): string | null {
   for (const rootDir of rootDirs) {
     const rel = path.relative(rootDir, filePath);
     if (!rel.startsWith('..')) {

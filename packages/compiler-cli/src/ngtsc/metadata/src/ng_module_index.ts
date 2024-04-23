@@ -15,7 +15,10 @@ import {MetadataReader, MetadataReaderWithIndex, MetaKind, NgModuleIndex} from '
  * An index of all NgModules that export or re-export a given trait.
  */
 export class NgModuleIndexImpl implements NgModuleIndex {
-  constructor(private metaReader: MetadataReader, private localReader: MetadataReaderWithIndex) {}
+  constructor(
+    private metaReader: MetadataReader,
+    private localReader: MetadataReaderWithIndex,
+  ) {}
 
   // A map from an NgModule's Class Declaration to the "main" reference to that module, aka the one
   // present in the reader metadata object
@@ -50,8 +53,9 @@ export class NgModuleIndexImpl implements NgModuleIndex {
   }
 
   private indexTrait(
-      ref: Reference<ClassDeclaration>,
-      seenTypesWithReexports: Map<ClassDeclaration, Set<ClassDeclaration>>): void {
+    ref: Reference<ClassDeclaration>,
+    seenTypesWithReexports: Map<ClassDeclaration, Set<ClassDeclaration>>,
+  ): void {
     if (seenTypesWithReexports.has(ref.node)) {
       // We've processed this type before.
       return;
@@ -59,7 +63,7 @@ export class NgModuleIndexImpl implements NgModuleIndex {
     seenTypesWithReexports.set(ref.node, new Set());
 
     const meta =
-        this.metaReader.getDirectiveMetadata(ref) ?? this.metaReader.getNgModuleMetadata(ref);
+      this.metaReader.getDirectiveMetadata(ref) ?? this.metaReader.getNgModuleMetadata(ref);
     if (meta === null) {
       return;
     }
@@ -79,9 +83,10 @@ export class NgModuleIndexImpl implements NgModuleIndex {
       for (const childRef of meta.exports) {
         this.indexTrait(childRef, seenTypesWithReexports);
 
-        const childMeta = this.metaReader.getDirectiveMetadata(childRef) ??
-            this.metaReader.getPipeMetadata(childRef) ??
-            this.metaReader.getNgModuleMetadata(childRef);
+        const childMeta =
+          this.metaReader.getDirectiveMetadata(childRef) ??
+          this.metaReader.getPipeMetadata(childRef) ??
+          this.metaReader.getNgModuleMetadata(childRef);
         if (childMeta === null) {
           continue;
         }

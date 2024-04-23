@@ -12,7 +12,11 @@ import {absoluteFrom, getSourceFileOrError} from '../../../file_system';
 import {runInEachFileSystem, TestFile} from '../../../file_system/testing';
 import {TypeScriptReflectionHost} from '../../../reflection';
 import {getDeclaration, makeProgram} from '../../../testing';
-import {ImportManager, presetImportManagerForceNamespaceImports, translateStatement} from '../../../translator';
+import {
+  ImportManager,
+  presetImportManagerForceNamespaceImports,
+  translateStatement,
+} from '../../../translator';
 import {extractClassMetadata} from '../src/metadata';
 
 runInEachFileSystem(() => {
@@ -24,7 +28,8 @@ runInEachFileSystem(() => {
     @Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-          `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`);
+        `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: Component, args: ['metadata'] }], null, null); })();`,
+      );
     });
 
     it('should convert namespaced decorated class metadata', () => {
@@ -34,7 +39,8 @@ runInEachFileSystem(() => {
     @core.Component('metadata') class Target {}
     `);
       expect(res).toEqual(
-          `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`);
+        `(() => { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Target, [{ type: core.Component, args: ['metadata'] }], null, null); })();`,
+      );
     });
 
     it('should convert decorated class constructor parameter metadata', () => {
@@ -47,7 +53,8 @@ runInEachFileSystem(() => {
     }
     `);
       expect(res).toContain(
-          `() => [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }], null);`);
+        `() => [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }], null);`,
+      );
     });
 
     it('should convert decorated field metadata', () => {
@@ -101,7 +108,8 @@ runInEachFileSystem(() => {
         }
       `);
       expect(res).toContain(
-          `{ 'has-dashes-in-name': [{ type: Input }], noDashesInName: [{ type: Input }] })`);
+        `{ 'has-dashes-in-name': [{ type: Input }], noDashesInName: [{ type: Input }] })`,
+      );
     });
   });
 
@@ -114,17 +122,19 @@ runInEachFileSystem(() => {
       export declare function Inject(...args: any[]): any;
       export declare function Component(...args: any[]): any;
       export declare class Injector {}
-    `
+    `,
     };
 
     const {program} = makeProgram(
-        [
-          CORE, {
-            name: _('/index.ts'),
-            contents,
-          }
-        ],
-        {target: ts.ScriptTarget.ES2015});
+      [
+        CORE,
+        {
+          name: _('/index.ts'),
+          contents,
+        },
+      ],
+      {target: ts.ScriptTarget.ES2015},
+    );
     const host = new TypeScriptReflectionHost(program.getTypeChecker());
     const target = getDeclaration(program, _('/index.ts'), 'Target', ts.isClassDeclaration);
     const call = extractClassMetadata(target, host, false);

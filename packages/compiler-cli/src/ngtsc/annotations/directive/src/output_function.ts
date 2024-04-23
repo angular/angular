@@ -39,7 +39,7 @@ export const OUTPUT_INITIALIZER_FNS: InitializerApiFunction[] = [
   {
     functionName: 'outputFromObservable',
     owningModule: '@angular/core/rxjs-interop',
-    allowedAccessLevels
+    allowedAccessLevels,
   },
 ];
 
@@ -48,33 +48,40 @@ export const OUTPUT_INITIALIZER_FNS: InitializerApiFunction[] = [
  * input mapping if possible.
  */
 export function tryParseInitializerBasedOutput(
-    member: Pick<ClassMember, 'name'|'value'|'accessLevel'>, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker): {call: ts.CallExpression, metadata: InputOrOutput}|
-    null {
+  member: Pick<ClassMember, 'name' | 'value' | 'accessLevel'>,
+  reflector: ReflectionHost,
+  importTracker: ImportedSymbolsTracker,
+): {call: ts.CallExpression; metadata: InputOrOutput} | null {
   if (member.value === null) {
     return null;
   }
 
-  const output =
-      tryParseInitializerApi(OUTPUT_INITIALIZER_FNS, member.value, reflector, importTracker);
+  const output = tryParseInitializerApi(
+    OUTPUT_INITIALIZER_FNS,
+    member.value,
+    reflector,
+    importTracker,
+  );
   if (output === null) {
     return null;
   }
   if (output.isRequired) {
     throw new FatalDiagnosticError(
-        ErrorCode.INITIALIZER_API_NO_REQUIRED_FUNCTION, output.call,
-        `Output does not support ".required()".`);
+      ErrorCode.INITIALIZER_API_NO_REQUIRED_FUNCTION,
+      output.call,
+      `Output does not support ".required()".`,
+    );
   }
 
   validateAccessOfInitializerApiMember(output, member);
 
   // Options are the first parameter for `output()`, while for
   // the interop `outputFromObservable()` they are the second argument.
-  const optionsNode = (output.api.functionName === 'output' ?
-                           output.call.arguments[0] :
-                           output.call.arguments[1]) as (ts.Expression | undefined);
+  const optionsNode = (
+    output.api.functionName === 'output' ? output.call.arguments[0] : output.call.arguments[1]
+  ) as ts.Expression | undefined;
   const options =
-      optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
+    optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
   const classPropertyName = member.name;
 
   return {
@@ -84,6 +91,6 @@ export function tryParseInitializerBasedOutput(
       isSignal: false,
       classPropertyName,
       bindingPropertyName: options?.alias ?? classPropertyName,
-    }
+    },
   };
 }

@@ -31,7 +31,7 @@ export interface NgModuleMeta {
    * If this is `null`, then either no declarations exist, or no expression was available (likely
    * because the module came from a .d.ts file).
    */
-  rawDeclarations: ts.Expression|null;
+  rawDeclarations: ts.Expression | null;
 
   /**
    * The raw `ts.Expression` which gave rise to `imports`, if one exists.
@@ -39,7 +39,7 @@ export interface NgModuleMeta {
    * If this is `null`, then either no imports exist, or no expression was available (likely
    * because the module came from a .d.ts file).
    */
-  rawImports: ts.Expression|null;
+  rawImports: ts.Expression | null;
 
   /**
    * The raw `ts.Expression` which gave rise to `exports`, if one exists.
@@ -47,14 +47,14 @@ export interface NgModuleMeta {
    * If this is `null`, then either no exports exist, or no expression was available (likely
    * because the module came from a .d.ts file).
    */
-  rawExports: ts.Expression|null;
+  rawExports: ts.Expression | null;
 
   /**
    * The primary decorator associated with this `ngModule`.
    *
    * If this is `null`, no decorator exists, meaning it's probably from a .d.ts file.
    */
-  decorator: ts.Decorator|null;
+  decorator: ts.Decorator | null;
 
   /**
    * Whether this NgModule may declare providers.
@@ -132,7 +132,7 @@ export enum MatchSource {
 }
 
 /** Metadata for a single input mapping. */
-export type InputMapping = InputOrOutput&{
+export type InputMapping = InputOrOutput & {
   required: boolean;
 
   /**
@@ -147,7 +147,7 @@ export type InputMapping = InputOrOutput&{
    * write type needs to be captured in a coercion member as the decorator information
    * is lost in the `.d.ts` for type-checking.
    */
-  transform: DecoratorInputTransform|null
+  transform: DecoratorInputTransform | null;
 };
 
 /** Metadata for a model mapping. */
@@ -191,7 +191,7 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
-  selector: string|null;
+  selector: string | null;
   queries: string[];
 
   /**
@@ -210,7 +210,7 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    * A value of `'dynamic'` indicates that while the analyzer detected that this directive extends
    * another type, it could not statically determine the base class.
    */
-  baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+  baseClass: Reference<ClassDeclaration> | 'dynamic' | null;
 
   /**
    * Whether the directive had some issue with its declaration that means it might not have complete
@@ -236,28 +236,28 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   /**
    * For standalone components, the list of imported types.
    */
-  imports: Reference<ClassDeclaration>[]|null;
+  imports: Reference<ClassDeclaration>[] | null;
 
   /**
    * For standalone components, the list of imported types that can be used
    * in `@defer` blocks (when only explicit dependencies are allowed).
    */
-  deferredImports: Reference<ClassDeclaration>[]|null;
+  deferredImports: Reference<ClassDeclaration>[] | null;
 
   /**
    * For standalone components, the list of schemas declared.
    */
-  schemas: SchemaMetadata[]|null;
+  schemas: SchemaMetadata[] | null;
 
   /**
    * The primary decorator associated with this directive.
    *
    * If this is `null`, no decorator exists, meaning it's probably from a .d.ts file.
    */
-  decorator: ts.Decorator|null;
+  decorator: ts.Decorator | null;
 
   /** Additional directives applied to the directive host. */
-  hostDirectives: HostDirectiveMeta[]|null;
+  hostDirectives: HostDirectiveMeta[] | null;
 
   /**
    * Whether the directive should be assumed to export providers if imported as a standalone type.
@@ -280,16 +280,16 @@ export interface HostDirectiveMeta {
    * which indicates the expression could not be resolved due to being imported from some external
    * file. In this case, the expression is the raw expression as appears in the decorator.
    */
-  directive: Reference<ClassDeclaration>|Expression;
+  directive: Reference<ClassDeclaration> | Expression;
 
   /** Whether the reference to the host directive is a forward reference. */
   isForwardReference: boolean;
 
   /** Inputs from the host directive that have been exposed. */
-  inputs: {[publicName: string]: string}|null;
+  inputs: {[publicName: string]: string} | null;
 
   /** Outputs from the host directive that have been exposed. */
-  outputs: {[publicName: string]: string}|null;
+  outputs: {[publicName: string]: string} | null;
 }
 
 /**
@@ -324,7 +324,7 @@ export interface TemplateGuardMeta {
    *   type can result in narrowing of the input type.
    * - 'binding' means that the input binding expression itself is used as template guard.
    */
-  type: 'invocation'|'binding';
+  type: 'invocation' | 'binding';
 }
 
 /**
@@ -334,9 +334,9 @@ export interface PipeMeta {
   kind: MetaKind.Pipe;
   ref: Reference<ClassDeclaration>;
   name: string;
-  nameExpr: ts.Expression|null;
+  nameExpr: ts.Expression | null;
   isStandalone: boolean;
-  decorator: ts.Decorator|null;
+  decorator: ts.Decorator | null;
   isExplicitlyDeferred: boolean;
 }
 
@@ -345,9 +345,9 @@ export interface PipeMeta {
  * or a registry.
  */
 export interface MetadataReader {
-  getDirectiveMetadata(node: Reference<ClassDeclaration>): DirectiveMeta|null;
-  getNgModuleMetadata(node: Reference<ClassDeclaration>): NgModuleMeta|null;
-  getPipeMetadata(node: Reference<ClassDeclaration>): PipeMeta|null;
+  getDirectiveMetadata(node: Reference<ClassDeclaration>): DirectiveMeta | null;
+  getNgModuleMetadata(node: Reference<ClassDeclaration>): NgModuleMeta | null;
+  getPipeMetadata(node: Reference<ClassDeclaration>): PipeMeta | null;
 }
 
 /**

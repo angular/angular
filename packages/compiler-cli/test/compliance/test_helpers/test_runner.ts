@@ -10,20 +10,24 @@ import {FileSystem} from '../../../src/ngtsc/file_system';
 import {checkErrors, checkNoUnexpectedErrors} from './check_errors';
 import {checkExpectations} from './check_expectations';
 import {CompileResult, initMockTestFileSystem} from './compile_test';
-import {CompilationMode, ComplianceTest, Expectation, getAllComplianceTests} from './get_compliance_tests';
+import {
+  CompilationMode,
+  ComplianceTest,
+  Expectation,
+  getAllComplianceTests,
+} from './get_compliance_tests';
 
 function transformExpectation(expectation: Expectation, isLocalCompilation: boolean): void {
-  expectation.files = expectation.files.map(pair => ({
-                                              expected: pair.expected,
-                                              generated: pair.generated,
-                                            }));
+  expectation.files = expectation.files.map((pair) => ({
+    expected: pair.expected,
+    generated: pair.generated,
+  }));
 
   if (isLocalCompilation) {
-    expectation.files =
-        expectation.files.map(pair => ({
-                                expected: getFilenameForLocalCompilation(pair.expected),
-                                generated: pair.generated,
-                              }));
+    expectation.files = expectation.files.map((pair) => ({
+      expected: getFilenameForLocalCompilation(pair.expected),
+      generated: pair.generated,
+    }));
   }
 }
 
@@ -41,8 +45,10 @@ function getFilenameForLocalCompilation(fileName: string): string {
  *     indicates whether we are testing in local compilation mode.
  */
 export function runTests(
-    type: CompilationMode, compileFn: (fs: FileSystem, test: ComplianceTest) => CompileResult,
-    options: {isLocalCompilation?: boolean, skipMappingChecks?: boolean} = {}) {
+  type: CompilationMode,
+  compileFn: (fs: FileSystem, test: ComplianceTest) => CompileResult,
+  options: {isLocalCompilation?: boolean; skipMappingChecks?: boolean} = {},
+) {
   describe(`compliance tests (${type})`, () => {
     for (const test of getAllComplianceTests()) {
       if (!test.compilationModeFilter.includes(type)) {
@@ -57,9 +63,9 @@ export function runTests(
         itFn(test.description, () => {
           if (type === 'linked compile' && test.compilerOptions?.['target'] === 'ES5') {
             throw new Error(
-                `The "${type}" scenario does not support ES5 output.\n` +
-                `Did you mean to set \`"compilationModeFilter": ["full compile"]\` in "${
-                    test.relativePath}"?`);
+              `The "${type}" scenario does not support ES5 output.\n` +
+                `Did you mean to set \`"compilationModeFilter": ["full compile"]\` in "${test.relativePath}"?`,
+            );
           }
 
           const fs = initMockTestFileSystem(test.realTestPath);
@@ -68,13 +74,21 @@ export function runTests(
             transformExpectation(expectation, !!options.isLocalCompilation);
             if (expectation.expectedErrors.length > 0) {
               checkErrors(
-                  test.relativePath, expectation.failureMessage, expectation.expectedErrors,
-                  errors);
+                test.relativePath,
+                expectation.failureMessage,
+                expectation.expectedErrors,
+                errors,
+              );
             } else {
               checkNoUnexpectedErrors(test.relativePath, errors);
               checkExpectations(
-                  fs, test.relativePath, expectation.failureMessage, expectation.files,
-                  expectation.extraChecks, options.skipMappingChecks);
+                fs,
+                test.relativePath,
+                expectation.failureMessage,
+                expectation.files,
+                expectation.extraChecks,
+                options.skipMappingChecks,
+              );
             }
           }
         });

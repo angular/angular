@@ -17,24 +17,24 @@ runInEachFileSystem(() => {
   describe('incremental reconciliation', () => {
     it('should treat source files with changed versions as changed', () => {
       const FOO_PATH = absoluteFrom('/foo.ts');
-      const {program} = makeProgram([
-        {name: FOO_PATH, contents: `export const FOO = true;`},
-      ]);
+      const {program} = makeProgram([{name: FOO_PATH, contents: `export const FOO = true;`}]);
       const fooSf = getSourceFileOrError(program, FOO_PATH);
       const traitCompiler = {getAnalyzedRecords: () => new Map()} as TraitCompiler;
 
       const versionMapFirst = new Map([[FOO_PATH, 'version.1']]);
-      const firstCompilation = IncrementalCompilation.fresh(
-          program,
-          versionMapFirst,
-      );
+      const firstCompilation = IncrementalCompilation.fresh(program, versionMapFirst);
       firstCompilation.recordSuccessfulAnalysis(traitCompiler);
       firstCompilation.recordSuccessfulEmit(fooSf);
 
       const versionMapSecond = new Map([[FOO_PATH, 'version.2']]);
       const secondCompilation = IncrementalCompilation.incremental(
-          program, versionMapSecond, program, firstCompilation.state, new Set(),
-          NOOP_PERF_RECORDER);
+        program,
+        versionMapSecond,
+        program,
+        firstCompilation.state,
+        new Set(),
+        NOOP_PERF_RECORDER,
+      );
 
       secondCompilation.recordSuccessfulAnalysis(traitCompiler);
       expect(secondCompilation.safeToSkipEmit(fooSf)).toBeFalse();

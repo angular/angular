@@ -20,14 +20,18 @@ runInEachFileSystem(() => {
       const file2 = absoluteFrom('/file2.ts');
       const {program, templateTypeChecker, programStrategy} = setup([
         {fileName: file1, templates: {'Cmp1': '<div></div>'}},
-        {fileName: file2, templates: {'Cmp2': '<span></span>'}}
+        {fileName: file2, templates: {'Cmp2': '<span></span>'}},
       ]);
 
       templateTypeChecker.getDiagnosticsForFile(
-          getSourceFileOrError(program, file1), OptimizeFor.WholeProgram);
+        getSourceFileOrError(program, file1),
+        OptimizeFor.WholeProgram,
+      );
       const ttcProgram1 = programStrategy.getProgram();
       templateTypeChecker.getDiagnosticsForFile(
-          getSourceFileOrError(program, file2), OptimizeFor.WholeProgram);
+        getSourceFileOrError(program, file2),
+        OptimizeFor.WholeProgram,
+      );
       const ttcProgram2 = programStrategy.getProgram();
 
       expect(ttcProgram1).toBe(ttcProgram2);
@@ -38,11 +42,13 @@ runInEachFileSystem(() => {
       const file2 = absoluteFrom('/file2.ts');
       const {program, templateTypeChecker, programStrategy} = setup([
         {fileName: file1, templates: {'Cmp1': '<div></div>'}},
-        {fileName: file2, templates: {'Cmp2': '<span></span>'}}
+        {fileName: file2, templates: {'Cmp2': '<span></span>'}},
       ]);
 
       templateTypeChecker.getDiagnosticsForFile(
-          getSourceFileOrError(program, file1), OptimizeFor.SingleFile);
+        getSourceFileOrError(program, file1),
+        OptimizeFor.SingleFile,
+      );
       const ttcProgram1 = programStrategy.getProgram();
 
       // ttcProgram1 should not contain a type check block for Cmp2.
@@ -50,7 +56,9 @@ runInEachFileSystem(() => {
       expect(ttcSf2Before.text).not.toContain('Cmp2');
 
       templateTypeChecker.getDiagnosticsForFile(
-          getSourceFileOrError(program, file2), OptimizeFor.SingleFile);
+        getSourceFileOrError(program, file2),
+        OptimizeFor.SingleFile,
+      );
       const ttcProgram2 = programStrategy.getProgram();
 
       // ttcProgram2 should now contain a type check block for Cmp2.
@@ -65,7 +73,7 @@ runInEachFileSystem(() => {
       const file2 = absoluteFrom('/file2.ts');
       const {program, templateTypeChecker, programStrategy} = setup([
         {fileName: file1, templates: {'Cmp1': '<div>{{value}}</div>'}},
-        {fileName: file2, templates: {'Cmp2': '<span></span>'}}
+        {fileName: file2, templates: {'Cmp2': '<span></span>'}},
       ]);
 
       const cmp1 = getClass(getSourceFileOrError(program, file1), 'Cmp1');
@@ -130,25 +138,28 @@ runInEachFileSystem(() => {
         const fileName = absoluteFrom('/main.ts');
         const dirFile = absoluteFrom('/dir.ts');
         const {program, templateTypeChecker} = setup(
-            [
-              {
-                fileName,
-                source: `export class Cmp {}`,
-                templates: {'Cmp': '<div dir></div>'},
-                declarations: [{
+          [
+            {
+              fileName,
+              source: `export class Cmp {}`,
+              templates: {'Cmp': '<div dir></div>'},
+              declarations: [
+                {
                   name: 'TestDir',
                   selector: '[dir]',
                   file: dirFile,
                   type: 'directive',
-                }]
-              },
-              {
-                fileName: dirFile,
-                source: `export class TestDir {}`,
-                templates: {},
-              }
-            ],
-            {inlining: false});
+                },
+              ],
+            },
+            {
+              fileName: dirFile,
+              source: `export class TestDir {}`,
+              templates: {},
+            },
+          ],
+          {inlining: false},
+        );
         const sf = getSourceFileOrError(program, fileName);
         const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
         expect(diags.length).toBe(0);
@@ -157,12 +168,15 @@ runInEachFileSystem(() => {
       it('should produce errors for components that require TCB inlining', () => {
         const fileName = absoluteFrom('/main.ts');
         const {program, templateTypeChecker} = setup(
-            [{
+          [
+            {
               fileName,
               source: `abstract class Cmp {} // not exported, so requires inline`,
-              templates: {'Cmp': '<div></div>'}
-            }],
-            {inlining: false});
+              templates: {'Cmp': '<div></div>'},
+            },
+          ],
+          {inlining: false},
+        );
         const sf = getSourceFileOrError(program, fileName);
         const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
         expect(diags.length).toBe(1);
@@ -171,14 +185,16 @@ runInEachFileSystem(() => {
     });
 
     describe('getTemplateOfComponent()', () => {
-      it('should provide access to a component\'s real template', () => {
+      it("should provide access to a component's real template", () => {
         const fileName = absoluteFrom('/main.ts');
-        const {program, templateTypeChecker} = setup([{
-          fileName,
-          templates: {
-            'Cmp': '<div>Template</div>',
+        const {program, templateTypeChecker} = setup([
+          {
+            fileName,
+            templates: {
+              'Cmp': '<div>Template</div>',
+            },
           },
-        }]);
+        ]);
         const cmp = getClass(getSourceFileOrError(program, fileName), 'Cmp');
 
         const nodes = templateTypeChecker.getTemplate(cmp)!;

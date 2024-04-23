@@ -16,41 +16,56 @@ describe('LinkerImportGenerator<TExpression>', () => {
   describe('generateNamespaceImport()', () => {
     it('should error if the import is not `@angular/core`', () => {
       const generator = new LinkerImportGenerator<ts.Statement, ts.Expression>(
-          new TypeScriptAstFactory(false), ngImport);
+        new TypeScriptAstFactory(false),
+        ngImport,
+      );
 
-      expect(
-          () => generator.addImport(
-              {exportModuleSpecifier: 'other/import', exportSymbolName: null, requestedFile: null}))
-          .toThrowError(`Unable to import from anything other than '@angular/core'`);
+      expect(() =>
+        generator.addImport({
+          exportModuleSpecifier: 'other/import',
+          exportSymbolName: null,
+          requestedFile: null,
+        }),
+      ).toThrowError(`Unable to import from anything other than '@angular/core'`);
     });
 
     it('should return the ngImport expression for `@angular/core`', () => {
       const generator = new LinkerImportGenerator<ts.Statement, ts.Expression>(
-          new TypeScriptAstFactory(false), ngImport);
+        new TypeScriptAstFactory(false),
+        ngImport,
+      );
 
-      expect(generator.addImport({
-        exportModuleSpecifier: '@angular/core',
-        exportSymbolName: null,
-        requestedFile: null
-      })).toBe(ngImport);
+      expect(
+        generator.addImport({
+          exportModuleSpecifier: '@angular/core',
+          exportSymbolName: null,
+          requestedFile: null,
+        }),
+      ).toBe(ngImport);
     });
   });
 
   describe('generateNamedImport()', () => {
     it('should error if the import is not `@angular/core`', () => {
       const generator = new LinkerImportGenerator<ts.Statement, ts.Expression>(
-          new TypeScriptAstFactory(false), ngImport);
+        new TypeScriptAstFactory(false),
+        ngImport,
+      );
 
-      expect(() => generator.addImport({
-        exportModuleSpecifier: 'other/import',
-        exportSymbolName: 'someSymbol',
-        requestedFile: null,
-      })).toThrowError(`Unable to import from anything other than '@angular/core'`);
+      expect(() =>
+        generator.addImport({
+          exportModuleSpecifier: 'other/import',
+          exportSymbolName: 'someSymbol',
+          requestedFile: null,
+        }),
+      ).toThrowError(`Unable to import from anything other than '@angular/core'`);
     });
 
     it('should return a `NamedImport` object containing the ngImport expression', () => {
       const generator = new LinkerImportGenerator<ts.Statement, ts.Expression>(
-          new TypeScriptAstFactory(false), ngImport);
+        new TypeScriptAstFactory(false),
+        ngImport,
+      );
 
       const result = generator.addImport({
         exportModuleSpecifier: '@angular/core',

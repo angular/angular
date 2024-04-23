@@ -10,7 +10,10 @@ import ts from 'typescript';
 
 import {ImportedSymbolsTracker} from '../src/ngtsc/imports';
 import {TypeScriptReflectionHost} from '../src/ngtsc/reflection';
-import {getDownlevelDecoratorsTransform, getInitializerApiJitTransform} from '../src/transformers/jit_transforms';
+import {
+  getDownlevelDecoratorsTransform,
+  getInitializerApiJitTransform,
+} from '../src/transformers/jit_transforms';
 
 import {MockAotContext, MockCompilerHost} from './mocks';
 
@@ -44,42 +47,52 @@ describe('signal queries metadata transform', () => {
     context.writeFile(TEST_FILE_INPUT, contents);
 
     const program = ts.createProgram(
-        [TEST_FILE_INPUT], {
-          module: ts.ModuleKind.ESNext,
-          lib: ['dom', 'es2022'],
-          target: ts.ScriptTarget.ES2022,
-          traceResolution: true,
-          experimentalDecorators: true,
-          paths: {
-            '@angular/core': ['./core.d.ts'],
-          },
+      [TEST_FILE_INPUT],
+      {
+        module: ts.ModuleKind.ESNext,
+        lib: ['dom', 'es2022'],
+        target: ts.ScriptTarget.ES2022,
+        traceResolution: true,
+        experimentalDecorators: true,
+        paths: {
+          '@angular/core': ['./core.d.ts'],
         },
-        host);
+      },
+      host,
+    );
 
     const testFile = program.getSourceFile(TEST_FILE_INPUT);
     const typeChecker = program.getTypeChecker();
     const reflectionHost = new TypeScriptReflectionHost(typeChecker);
     const importTracker = new ImportedSymbolsTracker();
     const transformers: ts.CustomTransformers = {
-      before: [
-        getInitializerApiJitTransform(reflectionHost, importTracker, /* isCore */ false),
-      ]
+      before: [getInitializerApiJitTransform(reflectionHost, importTracker, /* isCore */ false)],
     };
 
     if (postDownlevelDecoratorsTransform) {
-      transformers.before!.push(getDownlevelDecoratorsTransform(
-          typeChecker, reflectionHost, [], /* isCore */ false,
-          /* isClosureCompilerEnabled */ false));
+      transformers.before!.push(
+        getDownlevelDecoratorsTransform(
+          typeChecker,
+          reflectionHost,
+          [],
+          /* isCore */ false,
+          /* isClosureCompilerEnabled */ false,
+        ),
+      );
     }
 
-    let output: string|null = null;
+    let output: string | null = null;
     const emitResult = program.emit(
-        testFile, ((fileName, outputText) => {
-          if (fileName === TEST_FILE_OUTPUT) {
-            output = outputText;
-          }
-        }),
-        undefined, undefined, transformers);
+      testFile,
+      (fileName, outputText) => {
+        if (fileName === TEST_FILE_OUTPUT) {
+          output = outputText;
+        }
+      },
+      undefined,
+      undefined,
+      transformers,
+    );
 
     expect(emitResult.diagnostics.length).toBe(0);
     expect(output).not.toBeNull();
@@ -97,11 +110,13 @@ describe('signal queries metadata transform', () => {
       }
     `);
 
-    expect(result).toContain(omitLeadingWhitespace(`
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       __decorate([
         i0.ViewChild('el', { isSignal: true })
       ], MyDir.prototype, "el", void 0);
-    `));
+    `),
+    );
   });
 
   it('should add `@ViewChild` decorator for a required `viewChild`', () => {
@@ -114,11 +129,13 @@ describe('signal queries metadata transform', () => {
       }
     `);
 
-    expect(result).toContain(omitLeadingWhitespace(`
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       __decorate([
         i0.ViewChild('el', { isSignal: true })
       ], MyDir.prototype, "el", void 0);
-    `));
+    `),
+    );
   });
 
   it('should add `@ViewChild` decorator for `viewChild` with read option', () => {
@@ -135,16 +152,20 @@ describe('signal queries metadata transform', () => {
       }
     `);
 
-    expect(result).toContain(omitLeadingWhitespace(`
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       __decorate([
         bla.ViewChild('el', { ...{ read: SomeToken }, isSignal: true })
         ], MyDir.prototype, "el", void 0);
-    `));
-    expect(result).toContain(omitLeadingWhitespace(`
+    `),
+    );
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       __decorate([
         bla.ViewChild('el', { ...{ read: bla.Component }, isSignal: true })
         ], MyDir.prototype, "el2", void 0);
-  `));
+  `),
+    );
   });
 
   it('should add `@ContentChild` decorator for signal queries with `descendants` option', () => {
@@ -159,11 +180,13 @@ describe('signal queries metadata transform', () => {
       }
     `);
 
-    expect(result).toContain(omitLeadingWhitespace(`
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       __decorate([
         i0.ContentChild(X, { ...{ descendants: true }, isSignal: true })
       ], MyDir.prototype, "el", void 0);
-    `));
+    `),
+    );
   });
 
   it('should not transform decorators for non-signal queries', () => {
@@ -177,14 +200,16 @@ describe('signal queries metadata transform', () => {
       }
     `);
 
-    expect(result).toContain(omitLeadingWhitespace(`
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       __decorate([
         i0.ViewChild('el', { isSignal: true })
         ], MyDir.prototype, "el", void 0);
       __decorate([
         ViewChild('el', { someOptionIndicatingThatNothingChanged: true })
         ], MyDir.prototype, "nonSignalQuery", void 0);
-    `));
+    `),
+    );
   });
 
   it('should not transform signal queries with an existing decorator', () => {
@@ -201,11 +226,13 @@ describe('signal queries metadata transform', () => {
         }
       `);
 
-    expect(result).toContain(omitLeadingWhitespace(`
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       __decorate([
         ContentChildren('els', { isSignal: true })
         ], MyDir.prototype, "els", void 0);
-      `));
+      `),
+    );
   });
 
   it('should preserve existing decorators applied on signal inputs fields', () => {
@@ -220,17 +247,19 @@ describe('signal queries metadata transform', () => {
         }
       `);
 
-    expect(result).toContain(omitLeadingWhitespace(`
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       __decorate([
         i0.ContentChild('el', { ...{ descendants: false }, isSignal: true }),
         MyCustomDecorator()
         ], MyDir.prototype, "bla", void 0);
-      `));
+      `),
+    );
   });
 
   it('should work with decorator downleveling post-transform', () => {
     const result = transform(
-        `
+      `
       import {viewChild, Component} from '@angular/core';
 
       class X {}
@@ -240,13 +269,16 @@ describe('signal queries metadata transform', () => {
         el = viewChild('el', {read: X});
       }
     `,
-        /* postDownlevelDecoratorsTransform */ true);
+      /* postDownlevelDecoratorsTransform */ true,
+    );
 
-    expect(result).toContain(omitLeadingWhitespace(`
+    expect(result).toContain(
+      omitLeadingWhitespace(`
       static propDecorators = {
         el: [{ type: i0.ViewChild, args: ['el', { ...{ read: X }, isSignal: true },] }]
       };
-    `));
+    `),
+    );
   });
 });
 

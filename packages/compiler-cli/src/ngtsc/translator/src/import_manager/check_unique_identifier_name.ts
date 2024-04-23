@@ -20,8 +20,7 @@ interface SourceFileWithIdentifiers extends ts.SourceFile {
  * Generates a helper for `ImportManagerConfig` to generate unique identifiers
  * for a given source file.
  */
-export function createGenerateUniqueIdentifierHelper():
-    ImportManagerConfig['generateUniqueIdentifier'] {
+export function createGenerateUniqueIdentifierHelper(): ImportManagerConfig['generateUniqueIdentifier'] {
   const generatedIdentifiers = new Set<string>();
 
   return (sourceFile: ts.SourceFile, symbolName: string) => {
@@ -31,7 +30,7 @@ export function createGenerateUniqueIdentifierHelper():
     }
 
     const isUniqueIdentifier = (name: string) =>
-        !sf.identifiers!.has(name) && !generatedIdentifiers.has(name);
+      !sf.identifiers!.has(name) && !generatedIdentifiers.has(name);
 
     if (isUniqueIdentifier(symbolName)) {
       generatedIdentifiers.add(symbolName);

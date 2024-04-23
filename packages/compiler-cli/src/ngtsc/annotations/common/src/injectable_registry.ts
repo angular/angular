@@ -12,9 +12,8 @@ import {ClassDeclaration, ReflectionHost} from '../../../reflection';
 
 import {getConstructorDependencies, unwrapConstructorDependencies} from './di';
 
-
 export interface InjectableMeta {
-  ctorDeps: R3DependencyMetadata[]|'invalid'|null;
+  ctorDeps: R3DependencyMetadata[] | 'invalid' | null;
 }
 
 /**
@@ -24,13 +23,16 @@ export interface InjectableMeta {
 export class InjectableClassRegistry {
   private classes = new Map<ClassDeclaration, InjectableMeta>();
 
-  constructor(private host: ReflectionHost, private isCore: boolean) {}
+  constructor(
+    private host: ReflectionHost,
+    private isCore: boolean,
+  ) {}
 
   registerInjectable(declaration: ClassDeclaration, meta: InjectableMeta): void {
     this.classes.set(declaration, meta);
   }
 
-  getInjectableMeta(declaration: ClassDeclaration): InjectableMeta|null {
+  getInjectableMeta(declaration: ClassDeclaration): InjectableMeta | null {
     // Figure out whether the class is injectable based on the registered classes, otherwise
     // fall back to looking at its members since we might not have been able to register the class
     // if it was compiled in another compilation unit.

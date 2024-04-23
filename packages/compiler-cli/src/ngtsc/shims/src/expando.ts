@@ -20,17 +20,17 @@ export const NgExtension = Symbol('NgExtension');
  */
 export interface NgExtensionData {
   isTopLevelShim: boolean;
-  fileShim: NgFileShimData|null;
+  fileShim: NgFileShimData | null;
 
   /**
    * The contents of the `referencedFiles` array, before modification by a `ShimReferenceTagger`.
    */
-  originalReferencedFiles: ReadonlyArray<ts.FileReference>|null;
+  originalReferencedFiles: ReadonlyArray<ts.FileReference> | null;
 
   /**
    * The contents of the `referencedFiles` array, after modification by a `ShimReferenceTagger`.
    */
-  taggedReferenceFiles: ReadonlyArray<ts.FileReference>|null;
+  taggedReferenceFiles: ReadonlyArray<ts.FileReference> | null;
 }
 
 /**
@@ -92,8 +92,8 @@ export interface NgFileShimData {
  * An `NgExtendedSourceFile` that is a per-file shim and has `NgFileShimData`.
  */
 export interface NgFileShimSourceFile extends NgExtendedSourceFile {
-  [NgExtension]: NgExtensionData&{
-    fileShim: NgFileShimData,
+  [NgExtension]: NgExtensionData & {
+    fileShim: NgFileShimData;
   };
 }
 

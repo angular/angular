@@ -20,24 +20,31 @@ describe('LocalEmitScope', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope =
-          new LocalEmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new LocalEmitScope<ts.Statement, ts.Expression>(
+        ngImport,
+        translator,
+        factory,
+      );
       addSharedStatement(emitScope.constantPool);
 
       const def = emitScope.translateDefinition({
         expression: o.fn([], [], null, null, 'foo'),
         statements: [],
       });
-      expect(generate(def))
-          .toEqual('function () { const _c0 = ["CONST"]; return function foo() { }; }()');
+      expect(generate(def)).toEqual(
+        'function () { const _c0 = ["CONST"]; return function foo() { }; }()',
+      );
     });
 
     it('should use the `ngImport` identifier for imports when translating', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope =
-          new LocalEmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new LocalEmitScope<ts.Statement, ts.Expression>(
+        ngImport,
+        translator,
+        factory,
+      );
       addSharedStatement(emitScope.constantPool);
 
       const coreImportRef = new o.ExternalReference('@angular/core', 'foo');
@@ -45,16 +52,20 @@ describe('LocalEmitScope', () => {
         expression: o.importExpr(coreImportRef).prop('bar').callFn([]),
         statements: [],
       });
-      expect(generate(def))
-          .toEqual('function () { const _c0 = ["CONST"]; return core.foo.bar(); }()');
+      expect(generate(def)).toEqual(
+        'function () { const _c0 = ["CONST"]; return core.foo.bar(); }()',
+      );
     });
 
     it('should not emit an IIFE if there are no shared constants', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope =
-          new LocalEmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new LocalEmitScope<ts.Statement, ts.Expression>(
+        ngImport,
+        translator,
+        factory,
+      );
 
       const def = emitScope.translateDefinition({
         expression: o.fn([], [], null, null, 'foo'),
@@ -69,8 +80,11 @@ describe('LocalEmitScope', () => {
       const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
-      const emitScope =
-          new LocalEmitScope<ts.Statement, ts.Expression>(ngImport, translator, factory);
+      const emitScope = new LocalEmitScope<ts.Statement, ts.Expression>(
+        ngImport,
+        translator,
+        factory,
+      );
       expect(() => emitScope.getConstantStatements()).toThrowError();
     });
   });

@@ -14,7 +14,7 @@ export interface ImportRequest<TFile> {
    * Name of the export to be imported.
    * May be `null` if a namespace import is requested.
    */
-  exportSymbolName: string|null;
+  exportSymbolName: string | null;
 
   /**
    * Module specifier to be imported.

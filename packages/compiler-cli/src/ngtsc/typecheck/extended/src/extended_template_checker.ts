@@ -12,25 +12,36 @@ import ts from 'typescript';
 import {DiagnosticCategoryLabel, NgCompilerOptions} from '../../../core/api';
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../diagnostics';
 import {NgTemplateDiagnostic, TemplateDiagnostic, TemplateTypeChecker} from '../../api';
-import {ExtendedTemplateChecker, TemplateCheck, TemplateCheckFactory, TemplateContext} from '../api';
+import {
+  ExtendedTemplateChecker,
+  TemplateCheck,
+  TemplateCheckFactory,
+  TemplateContext,
+} from '../api';
 
 export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
   private readonly partialCtx: Omit<TemplateContext<ErrorCode>, 'makeTemplateDiagnostic'>;
   private readonly templateChecks: Map<TemplateCheck<ErrorCode>, ts.DiagnosticCategory>;
 
   constructor(
-      templateTypeChecker: TemplateTypeChecker, typeChecker: ts.TypeChecker,
-      templateCheckFactories:
-          readonly TemplateCheckFactory<ErrorCode, ExtendedTemplateDiagnosticName>[],
-      options: NgCompilerOptions) {
+    templateTypeChecker: TemplateTypeChecker,
+    typeChecker: ts.TypeChecker,
+    templateCheckFactories: readonly TemplateCheckFactory<
+      ErrorCode,
+      ExtendedTemplateDiagnosticName
+    >[],
+    options: NgCompilerOptions,
+  ) {
     this.partialCtx = {templateTypeChecker, typeChecker};
     this.templateChecks = new Map<TemplateCheck<ErrorCode>, ts.DiagnosticCategory>();
 
     for (const factory of templateCheckFactories) {
       // Read the diagnostic category from compiler options.
       const category = diagnosticLabelToCategory(
-          options?.extendedDiagnostics?.checks?.[factory.name] ??
-          options?.extendedDiagnostics?.defaultCategory ?? DiagnosticCategoryLabel.Warning);
+        options?.extendedDiagnostics?.checks?.[factory.name] ??
+          options?.extendedDiagnostics?.defaultCategory ??
+          DiagnosticCategoryLabel.Warning,
+      );
 
       // Skip the diagnostic if suppressed via compiler options.
       if (category === null) {
@@ -67,14 +78,24 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
         ...this.partialCtx,
         // Wrap `templateTypeChecker.makeTemplateDiagnostic()` to implicitly provide all the known
         // options.
-        makeTemplateDiagnostic: (span: ParseSourceSpan, message: string, relatedInformation?: {
-          text: string,
-          start: number,
-          end: number,
-          sourceFile: ts.SourceFile,
-        }[]): NgTemplateDiagnostic<ErrorCode> => {
+        makeTemplateDiagnostic: (
+          span: ParseSourceSpan,
+          message: string,
+          relatedInformation?: {
+            text: string;
+            start: number;
+            end: number;
+            sourceFile: ts.SourceFile;
+          }[],
+        ): NgTemplateDiagnostic<ErrorCode> => {
           return this.partialCtx.templateTypeChecker.makeTemplateDiagnostic(
-              component, span, category, check.code, message, relatedInformation);
+            component,
+            span,
+            category,
+            check.code,
+            message,
+            relatedInformation,
+          );
         },
       };
 
@@ -89,7 +110,7 @@ export class ExtendedTemplateCheckerImpl implements ExtendedTemplateChecker {
  * Converts a `DiagnosticCategoryLabel` to its equivalent `ts.DiagnosticCategory` or `null` if
  * the label is `DiagnosticCategoryLabel.Suppress`.
  */
-function diagnosticLabelToCategory(label: DiagnosticCategoryLabel): ts.DiagnosticCategory|null {
+function diagnosticLabelToCategory(label: DiagnosticCategoryLabel): ts.DiagnosticCategory | null {
   switch (label) {
     case DiagnosticCategoryLabel.Warning:
       return ts.DiagnosticCategory.Warning;

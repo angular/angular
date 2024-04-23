@@ -17,7 +17,7 @@ import {getAngularPackagesFromRunfiles, resolveFromRunfiles} from './runfile_hel
 
 export function loadTestFiles(files: TestFile[]) {
   const fs = getFileSystem();
-  files.forEach(file => {
+  files.forEach((file) => {
     fs.ensureDir(fs.dirname(file.name));
     fs.writeFile(file.name, file.contents);
   });
@@ -27,7 +27,7 @@ export function loadTestFiles(files: TestFile[]) {
  * A folder that is lazily loaded upon first access and then cached.
  */
 class CachedFolder {
-  private folder: Folder|null = null;
+  private folder: Folder | null = null;
 
   constructor(private loader: () => Folder) {}
 
@@ -39,13 +39,16 @@ class CachedFolder {
   }
 }
 
-const typescriptFolder =
-    new CachedFolder(() => loadFolder(resolveFromRunfiles('npm/node_modules/typescript')));
+const typescriptFolder = new CachedFolder(() =>
+  loadFolder(resolveFromRunfiles('npm/node_modules/typescript')),
+);
 const angularFolder = new CachedFolder(loadAngularFolder);
 const rxjsFolder = new CachedFolder(() => loadFolder(resolveFromRunfiles('npm/node_modules/rxjs')));
 
-export function loadStandardTestFiles(
-    {fakeCommon = false, rxjs = false}: {fakeCommon?: boolean, rxjs?: boolean} = {}): Folder {
+export function loadStandardTestFiles({
+  fakeCommon = false,
+  rxjs = false,
+}: {fakeCommon?: boolean; rxjs?: boolean} = {}): Folder {
   const tmpFs = new MockFileSystemPosix(true);
   const basePath = '/' as AbsoluteFsPath;
 
@@ -68,22 +71,26 @@ export function loadStandardTestFiles(
 
 export function loadTsLib(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
-      fs, resolveFromRunfiles('npm/node_modules/tslib'),
-      fs.resolve(basePath, 'node_modules/tslib'));
+    fs,
+    resolveFromRunfiles('npm/node_modules/tslib'),
+    fs.resolve(basePath, 'node_modules/tslib'),
+  );
 }
 
 export function loadFakeCommon(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
-      fs,
-      resolveFromRunfiles(
-          'angular/packages/compiler-cli/src/ngtsc/testing/fake_common/npm_package'),
-      fs.resolve(basePath, 'node_modules/@angular/common'));
+    fs,
+    resolveFromRunfiles('angular/packages/compiler-cli/src/ngtsc/testing/fake_common/npm_package'),
+    fs.resolve(basePath, 'node_modules/@angular/common'),
+  );
 }
 
 export function loadAngularCore(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
-      fs, resolveFromRunfiles('angular/packages/core/npm_package'),
-      fs.resolve(basePath, 'node_modules/@angular/core'));
+    fs,
+    resolveFromRunfiles('angular/packages/core/npm_package'),
+    fs.resolve(basePath, 'node_modules/@angular/core'),
+  );
 }
 
 function loadFolder(path: string): Folder {
@@ -114,8 +121,11 @@ function loadAngularFolder(): Folder {
  * @param mockPath the path within the mock file-system where the directory is to be loaded.
  */
 export function loadTestDirectory(
-    fs: FileSystem, directoryPath: string, mockPath: AbsoluteFsPath): void {
-  readdirSync(directoryPath).forEach(item => {
+  fs: FileSystem,
+  directoryPath: string,
+  mockPath: AbsoluteFsPath,
+): void {
+  readdirSync(directoryPath).forEach((item) => {
     const srcPath = resolve(directoryPath, item);
     const targetPath = fs.resolve(mockPath, item);
     try {

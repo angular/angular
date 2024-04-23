@@ -22,19 +22,17 @@ const statement = template.statement;
 
 describe('BabelAstFactory', () => {
   let factory: BabelAstFactory;
-  beforeEach(() => factory = new BabelAstFactory('/original.ts'));
+  beforeEach(() => (factory = new BabelAstFactory('/original.ts')));
 
   describe('attachComments()', () => {
     it('should add the comments to the given statement', () => {
       const stmt = statement.ast`x = 10;`;
-      factory.attachComments(
-          stmt, [leadingComment('comment 1', true), leadingComment('comment 2', false)]);
+      factory.attachComments(stmt, [
+        leadingComment('comment 1', true),
+        leadingComment('comment 2', false),
+      ]);
 
-      expect(generate(stmt).code).toEqual([
-        '/* comment 1 */',
-        '//comment 2',
-        'x = 10;',
-      ].join('\n'));
+      expect(generate(stmt).code).toEqual(['/* comment 1 */', '//comment 2', 'x = 10;'].join('\n'));
     });
   });
 
@@ -79,12 +77,7 @@ describe('BabelAstFactory', () => {
       const stmt1 = statement.ast`x = 10`;
       const stmt2 = statement.ast`y = 20`;
       const block = factory.createBlock([stmt1, stmt2]);
-      expect(generate(block).code).toEqual([
-        '{',
-        '  x = 10;',
-        '  y = 20;',
-        '}',
-      ].join('\n'));
+      expect(generate(block).code).toEqual(['{', '  x = 10;', '  y = 20;', '}'].join('\n'));
     });
   });
 
@@ -135,76 +128,54 @@ describe('BabelAstFactory', () => {
   });
 
   describe('createFunctionDeclaration()', () => {
-    it('should create a function declaration node with the given name, parameters and body statements',
-       () => {
-         const stmts = statement.ast`{x = 10; y = 20;}`;
-         const fn = factory.createFunctionDeclaration('foo', ['arg1', 'arg2'], stmts);
-         expect(generate(fn).code).toEqual([
-           'function foo(arg1, arg2) {',
-           '  x = 10;',
-           '  y = 20;',
-           '}',
-         ].join('\n'));
-       });
+    it('should create a function declaration node with the given name, parameters and body statements', () => {
+      const stmts = statement.ast`{x = 10; y = 20;}`;
+      const fn = factory.createFunctionDeclaration('foo', ['arg1', 'arg2'], stmts);
+      expect(generate(fn).code).toEqual(
+        ['function foo(arg1, arg2) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
+      );
+    });
   });
 
   describe('createFunctionExpression()', () => {
-    it('should create a function expression node with the given name, parameters and body statements',
-       () => {
-         const stmts = statement.ast`{x = 10; y = 20;}`;
-         const fn = factory.createFunctionExpression('foo', ['arg1', 'arg2'], stmts);
-         expect(t.isStatement(fn)).toBe(false);
-         expect(generate(fn).code).toEqual([
-           'function foo(arg1, arg2) {',
-           '  x = 10;',
-           '  y = 20;',
-           '}',
-         ].join('\n'));
-       });
+    it('should create a function expression node with the given name, parameters and body statements', () => {
+      const stmts = statement.ast`{x = 10; y = 20;}`;
+      const fn = factory.createFunctionExpression('foo', ['arg1', 'arg2'], stmts);
+      expect(t.isStatement(fn)).toBe(false);
+      expect(generate(fn).code).toEqual(
+        ['function foo(arg1, arg2) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
+      );
+    });
 
     it('should create an anonymous function expression node if the name is null', () => {
       const stmts = statement.ast`{x = 10; y = 20;}`;
       const fn = factory.createFunctionExpression(null, ['arg1', 'arg2'], stmts);
-      expect(generate(fn).code).toEqual([
-        'function (arg1, arg2) {',
-        '  x = 10;',
-        '  y = 20;',
-        '}',
-      ].join('\n'));
+      expect(generate(fn).code).toEqual(
+        ['function (arg1, arg2) {', '  x = 10;', '  y = 20;', '}'].join('\n'),
+      );
     });
   });
 
   describe('createArrowFunctionExpression()', () => {
-    it('should create an arrow function with an implicit return if a single statement is provided',
-       () => {
-         const expr = expression.ast`arg2 + arg1`;
-         const fn = factory.createArrowFunctionExpression(['arg1', 'arg2'], expr);
-         expect(generate(fn).code).toEqual('(arg1, arg2) => arg2 + arg1');
-       });
+    it('should create an arrow function with an implicit return if a single statement is provided', () => {
+      const expr = expression.ast`arg2 + arg1`;
+      const fn = factory.createArrowFunctionExpression(['arg1', 'arg2'], expr);
+      expect(generate(fn).code).toEqual('(arg1, arg2) => arg2 + arg1');
+    });
 
     it('should create an arrow function with an implicit return object literal', () => {
       const expr = expression.ast`{a: 1, b: 2}`;
       const fn = factory.createArrowFunctionExpression([], expr);
-      expect(generate(fn).code).toEqual([
-        '() => ({',
-        '  a: 1,',
-        '  b: 2',
-        '})',
-      ].join('\n'));
+      expect(generate(fn).code).toEqual(['() => ({', '  a: 1,', '  b: 2', '})'].join('\n'));
     });
 
-    it('should create an arrow function with a body when an array of statements is provided',
-       () => {
-         const stmts = statement.ast`{x = 10; y = 20; return x + y;}`;
-         const fn = factory.createArrowFunctionExpression(['arg1', 'arg2'], stmts);
-         expect(generate(fn).code).toEqual([
-           '(arg1, arg2) => {',
-           '  x = 10;',
-           '  y = 20;',
-           '  return x + y;',
-           '}',
-         ].join('\n'));
-       });
+    it('should create an arrow function with a body when an array of statements is provided', () => {
+      const stmts = statement.ast`{x = 10; y = 20; return x + y;}`;
+      const fn = factory.createArrowFunctionExpression(['arg1', 'arg2'], stmts);
+      expect(generate(fn).code).toEqual(
+        ['(arg1, arg2) => {', '  x = 10;', '  y = 20;', '  return x + y;', '}'].join('\n'),
+      );
+    });
   });
 
   describe('createIdentifier()', () => {
@@ -279,14 +250,13 @@ describe('BabelAstFactory', () => {
   });
 
   describe('createNewExpression()', () => {
-    it('should create a `new` operation on the constructor `expression` with the given `args`',
-       () => {
-         const expr = expression.ast`Foo`;
-         const arg1 = expression.ast`42`;
-         const arg2 = expression.ast`"moo"`;
-         const call = factory.createNewExpression(expr, [arg1, arg2]);
-         expect(generate(call).code).toEqual('new Foo(42, "moo")');
-       });
+    it('should create a `new` operation on the constructor `expression` with the given `args`', () => {
+      const expr = expression.ast`Foo`;
+      const arg1 = expression.ast`42`;
+      const arg2 = expression.ast`"moo"`;
+      const call = factory.createNewExpression(expr, [arg1, arg2]);
+      expect(generate(call).code).toEqual('new Foo(42, "moo")');
+    });
   });
 
   describe('createObjectLiteral()', () => {
@@ -297,12 +267,7 @@ describe('BabelAstFactory', () => {
         {propertyName: 'prop1', value: prop1, quoted: false},
         {propertyName: 'prop2', value: prop2, quoted: true},
       ]);
-      expect(generate(obj).code).toEqual([
-        '{',
-        '  prop1: 42,',
-        '  "prop2": "moo"',
-        '}',
-      ].join('\n'));
+      expect(generate(obj).code).toEqual(['{', '  prop1: 42,', '  "prop2": "moo"', '}'].join('\n'));
     });
   });
 
@@ -342,10 +307,7 @@ describe('BabelAstFactory', () => {
         {raw: 'raw2', cooked: 'cooked2', range: null},
         {raw: 'raw3', cooked: 'cooked3', range: null},
       ];
-      const expressions = [
-        expression.ast`42`,
-        expression.ast`"moo"`,
-      ];
+      const expressions = [expression.ast`42`, expression.ast`"moo"`];
       const tag = expression.ast`tagFn`;
       const template = factory.createTaggedTemplate(tag, {elements, expressions});
       expect(generate(template).code).toEqual('tagFn`raw1${42}raw2${"moo"}raw3`');
@@ -377,32 +339,28 @@ describe('BabelAstFactory', () => {
   });
 
   describe('createVariableDeclaration()', () => {
-    it('should create a variable declaration statement node for the given variable name and initializer',
-       () => {
-         const initializer = expression.ast`42`;
-         const varDecl = factory.createVariableDeclaration('foo', initializer, 'let');
-         expect(generate(varDecl).code).toEqual('let foo = 42;');
-       });
+    it('should create a variable declaration statement node for the given variable name and initializer', () => {
+      const initializer = expression.ast`42`;
+      const varDecl = factory.createVariableDeclaration('foo', initializer, 'let');
+      expect(generate(varDecl).code).toEqual('let foo = 42;');
+    });
 
-    it('should create a constant declaration statement node for the given variable name and initializer',
-       () => {
-         const initializer = expression.ast`42`;
-         const varDecl = factory.createVariableDeclaration('foo', initializer, 'const');
-         expect(generate(varDecl).code).toEqual('const foo = 42;');
-       });
+    it('should create a constant declaration statement node for the given variable name and initializer', () => {
+      const initializer = expression.ast`42`;
+      const varDecl = factory.createVariableDeclaration('foo', initializer, 'const');
+      expect(generate(varDecl).code).toEqual('const foo = 42;');
+    });
 
-    it('should create a downleveled variable declaration statement node for the given variable name and initializer',
-       () => {
-         const initializer = expression.ast`42`;
-         const varDecl = factory.createVariableDeclaration('foo', initializer, 'var');
-         expect(generate(varDecl).code).toEqual('var foo = 42;');
-       });
+    it('should create a downleveled variable declaration statement node for the given variable name and initializer', () => {
+      const initializer = expression.ast`42`;
+      const varDecl = factory.createVariableDeclaration('foo', initializer, 'var');
+      expect(generate(varDecl).code).toEqual('var foo = 42;');
+    });
 
-    it('should create an uninitialized variable declaration statement node for the given variable name and a null initializer',
-       () => {
-         const varDecl = factory.createVariableDeclaration('foo', null, 'let');
-         expect(generate(varDecl).code).toEqual('let foo;');
-       });
+    it('should create an uninitialized variable declaration statement node for the given variable name and a null initializer', () => {
+      const varDecl = factory.createVariableDeclaration('foo', null, 'let');
+      expect(generate(varDecl).code).toEqual('let foo;');
+    });
   });
 
   describe('setSourceMapRange()', () => {
@@ -416,7 +374,7 @@ describe('BabelAstFactory', () => {
         start: {line: 0, column: 1, offset: 1},
         end: {line: 2, column: 3, offset: 15},
         content: '-****\n*****\n****',
-        url: 'other.ts'
+        url: 'other.ts',
       });
 
       // Lines are 1-based in Babel.
@@ -424,7 +382,7 @@ describe('BabelAstFactory', () => {
         filename: 'other.ts',
         start: {line: 1, column: 1},
         end: {line: 3, column: 3},
-      } as any);  // The typings for `loc` do not include `filename`.
+      } as any); // The typings for `loc` do not include `filename`.
       expect(expr.start).toEqual(1);
       expect(expr.end).toEqual(15);
     });
@@ -435,7 +393,7 @@ describe('BabelAstFactory', () => {
         start: {line: 0, column: 1, offset: 1},
         end: {line: 2, column: 3, offset: 15},
         content: '-****\n*****\n****',
-        url: '/original.ts'
+        url: '/original.ts',
       });
 
       // Lines are 1-based in Babel.
@@ -443,7 +401,7 @@ describe('BabelAstFactory', () => {
         filename: undefined,
         start: {line: 1, column: 1},
         end: {line: 3, column: 3},
-      } as any);  // The typings for `loc` do not include `filename`.
+      } as any); // The typings for `loc` do not include `filename`.
     });
   });
 });

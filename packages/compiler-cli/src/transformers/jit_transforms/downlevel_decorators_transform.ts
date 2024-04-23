@@ -51,7 +51,9 @@ const DECORATOR_INVOCATION_JSDOC_TYPE = '!Array<{type: !Function, args: (undefin
  *     { type: decorator, args: [arg1, arg2] }
  */
 function extractMetadataFromSingleDecorator(
-    decorator: ts.Decorator, diagnostics: ts.Diagnostic[]): ts.ObjectLiteralExpression {
+  decorator: ts.Decorator,
+  diagnostics: ts.Diagnostic[],
+): ts.ObjectLiteralExpression {
   const metadataProperties: ts.ObjectLiteralElementLike[] = [];
   const expr = decorator.expression;
   switch (expr.kind) {
@@ -68,8 +70,9 @@ function extractMetadataFromSingleDecorator(
         for (const arg of call.arguments) {
           args.push(arg);
         }
-        const argsArrayLiteral =
-            ts.factory.createArrayLiteralExpression(ts.factory.createNodeArray(args, true));
+        const argsArrayLiteral = ts.factory.createArrayLiteralExpression(
+          ts.factory.createNodeArray(args, true),
+        );
         metadataProperties.push(ts.factory.createPropertyAssignment('args', argsArrayLiteral));
       }
       break;
@@ -78,8 +81,7 @@ function extractMetadataFromSingleDecorator(
         file: decorator.getSourceFile(),
         start: decorator.getStart(),
         length: decorator.getEnd() - decorator.getStart(),
-        messageText:
-            `${ts.SyntaxKind[decorator.kind]} not implemented in gathering decorator metadata.`,
+        messageText: `${ts.SyntaxKind[decorator.kind]} not implemented in gathering decorator metadata.`,
         category: ts.DiagnosticCategory.Error,
         code: 0,
       });
@@ -102,10 +104,11 @@ function extractMetadataFromSingleDecorator(
  *     }];
  */
 function createCtorParametersClassProperty(
-    diagnostics: ts.Diagnostic[],
-    entityNameToExpression: (n: ts.EntityName) => ts.Expression | undefined,
-    ctorParameters: ParameterDecorationInfo[],
-    isClosureCompilerEnabled: boolean): ts.PropertyDeclaration {
+  diagnostics: ts.Diagnostic[],
+  entityNameToExpression: (n: ts.EntityName) => ts.Expression | undefined,
+  ctorParameters: ParameterDecorationInfo[],
+  isClosureCompilerEnabled: boolean,
+): ts.PropertyDeclaration {
   const params: ts.Expression[] = [];
 
   for (const ctorParam of ctorParameters) {
@@ -114,30 +117,46 @@ function createCtorParametersClassProperty(
       continue;
     }
 
-    const paramType = ctorParam.type ?
-        typeReferenceToExpression(entityNameToExpression, ctorParam.type) :
-        undefined;
-    const members = [ts.factory.createPropertyAssignment(
-        'type', paramType || ts.factory.createIdentifier('undefined'))];
+    const paramType = ctorParam.type
+      ? typeReferenceToExpression(entityNameToExpression, ctorParam.type)
+      : undefined;
+    const members = [
+      ts.factory.createPropertyAssignment(
+        'type',
+        paramType || ts.factory.createIdentifier('undefined'),
+      ),
+    ];
 
     const decorators: ts.ObjectLiteralExpression[] = [];
     for (const deco of ctorParam.decorators) {
       decorators.push(extractMetadataFromSingleDecorator(deco, diagnostics));
     }
     if (decorators.length) {
-      members.push(ts.factory.createPropertyAssignment(
-          'decorators', ts.factory.createArrayLiteralExpression(decorators)));
+      members.push(
+        ts.factory.createPropertyAssignment(
+          'decorators',
+          ts.factory.createArrayLiteralExpression(decorators),
+        ),
+      );
     }
     params.push(ts.factory.createObjectLiteralExpression(members));
   }
 
   const initializer = ts.factory.createArrowFunction(
-      undefined, undefined, [], undefined,
-      ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
-      ts.factory.createArrayLiteralExpression(params, true));
+    undefined,
+    undefined,
+    [],
+    undefined,
+    ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
+    ts.factory.createArrayLiteralExpression(params, true),
+  );
   const ctorProp = ts.factory.createPropertyDeclaration(
-      [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)], 'ctorParameters', undefined, undefined,
-      initializer);
+    [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)],
+    'ctorParameters',
+    undefined,
+    undefined,
+    initializer,
+  );
   if (isClosureCompilerEnabled) {
     ts.setSyntheticLeadingComments(ctorProp, [
       {
@@ -169,8 +188,9 @@ function createCtorParametersClassProperty(
  * metadata.
  */
 function typeReferenceToExpression(
-    entityNameToExpression: (n: ts.EntityName) => ts.Expression | undefined,
-    node: ts.TypeNode): ts.Expression|undefined {
+  entityNameToExpression: (n: ts.EntityName) => ts.Expression | undefined,
+  node: ts.TypeNode,
+): ts.Expression | undefined {
   let kind = node.kind;
   if (ts.isLiteralTypeNode(node)) {
     // Treat literal types like their base type (boolean, string, number).
@@ -201,13 +221,12 @@ function typeReferenceToExpression(
       // Ignore any generic types, just return the base type.
       return entityNameToExpression(typeRef.typeName);
     case ts.SyntaxKind.UnionType:
-      const childTypeNodes =
-          (node as ts.UnionTypeNode)
-              .types.filter(
-                  t => !(ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword));
-      return childTypeNodes.length === 1 ?
-          typeReferenceToExpression(entityNameToExpression, childTypeNodes[0]) :
-          undefined;
+      const childTypeNodes = (node as ts.UnionTypeNode).types.filter(
+        (t) => !(ts.isLiteralTypeNode(t) && t.literal.kind === ts.SyntaxKind.NullKeyword),
+      );
+      return childTypeNodes.length === 1
+        ? typeReferenceToExpression(entityNameToExpression, childTypeNodes[0])
+        : undefined;
     default:
       return undefined;
   }
@@ -236,7 +255,7 @@ interface ParameterDecorationInfo {
    * The type declaration for the parameter. Only set if the type is a value (e.g. a class, not an
    * interface).
    */
-  type: ts.TypeNode|null;
+  type: ts.TypeNode | null;
   /** The list of decorators found on the parameter, null if none. */
   decorators: ts.Decorator[];
 }
@@ -254,8 +273,12 @@ interface ParameterDecorationInfo {
  * @param isClosureCompilerEnabled Whether closure annotations need to be added where needed.
  */
 export function getDownlevelDecoratorsTransform(
-    typeChecker: ts.TypeChecker, host: ReflectionHost, diagnostics: ts.Diagnostic[],
-    isCore: boolean, isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
+  typeChecker: ts.TypeChecker,
+  host: ReflectionHost,
+  diagnostics: ts.Diagnostic[],
+  isCore: boolean,
+  isClosureCompilerEnabled: boolean,
+): ts.TransformerFactory<ts.SourceFile> {
   function addJSDocTypeAnnotation(node: ts.Node, jsdocType: string): void {
     if (!isClosureCompilerEnabled) {
       return;
@@ -283,21 +306,30 @@ export function getDownlevelDecoratorsTransform(
    *     };
    */
   function createPropDecoratorsClassProperty(
-      diagnostics: ts.Diagnostic[],
-      properties: Map<string, ts.Decorator[]>): ts.PropertyDeclaration {
+    diagnostics: ts.Diagnostic[],
+    properties: Map<string, ts.Decorator[]>,
+  ): ts.PropertyDeclaration {
     //  `static propDecorators: {[key: string]: ` + {type: Function, args?:
     //  any[]}[] + `} = {\n`);
     const entries: ts.ObjectLiteralElementLike[] = [];
     for (const [name, decorators] of properties.entries()) {
-      entries.push(ts.factory.createPropertyAssignment(
+      entries.push(
+        ts.factory.createPropertyAssignment(
           name,
           ts.factory.createArrayLiteralExpression(
-              decorators.map(deco => extractMetadataFromSingleDecorator(deco, diagnostics)))));
+            decorators.map((deco) => extractMetadataFromSingleDecorator(deco, diagnostics)),
+          ),
+        ),
+      );
     }
     const initializer = ts.factory.createObjectLiteralExpression(entries, true);
     const prop = ts.factory.createPropertyDeclaration(
-        [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)], 'propDecorators', undefined,
-        undefined, initializer);
+      [ts.factory.createToken(ts.SyntaxKind.StaticKeyword)],
+      'propDecorators',
+      undefined,
+      undefined,
+      initializer,
+    );
     addJSDocTypeAnnotation(prop, `!Object<string, ${DECORATOR_INVOCATION_JSDOC_TYPE}>`);
     return prop;
   }
@@ -316,12 +348,16 @@ export function getDownlevelDecoratorsTransform(
      * For a given qualified name, this walks depth first to find the leftmost identifier,
      * and then converts the path into a property access that can be used as expression.
      */
-    function entityNameToExpression(name: ts.EntityName): ts.Expression|undefined {
+    function entityNameToExpression(name: ts.EntityName): ts.Expression | undefined {
       const symbol = typeChecker.getSymbolAtLocation(name);
       // Check if the entity name references a symbol that is an actual value. If it is not, it
       // cannot be referenced by an expression, so return undefined.
-      if (!symbol || !symbolIsRuntimeValue(typeChecker, symbol) || !symbol.declarations ||
-          symbol.declarations.length === 0) {
+      if (
+        !symbol ||
+        !symbolIsRuntimeValue(typeChecker, symbol) ||
+        !symbol.declarations ||
+        symbol.declarations.length === 0
+      ) {
         return undefined;
       }
       // If we deal with a qualified name, build up a property access expression
@@ -364,8 +400,9 @@ export function getDownlevelDecoratorsTransform(
      * decorators found. Returns an undefined name if there are no decorators to lower on the
      * element, or the element has an exotic name.
      */
-    function transformClassElement(element: ts.ClassElement):
-        [string|undefined, ts.ClassElement, ts.Decorator[]] {
+    function transformClassElement(
+      element: ts.ClassElement,
+    ): [string | undefined, ts.ClassElement, ts.Decorator[]] {
       element = ts.visitEachChild(element, decoratorDownlevelVisitor, context);
       const decoratorsToKeep: ts.Decorator[] = [];
       const toLower: ts.Decorator[] = [];
@@ -397,12 +434,13 @@ export function getDownlevelDecoratorsTransform(
       }
 
       const elementModifiers = ts.canHaveModifiers(element) ? ts.getModifiers(element) : undefined;
-      let modifiers: ts.NodeArray<ts.ModifierLike>|undefined;
+      let modifiers: ts.NodeArray<ts.ModifierLike> | undefined;
 
       if (decoratorsToKeep.length || elementModifiers?.length) {
         modifiers = ts.setTextRange(
-            ts.factory.createNodeArray([...decoratorsToKeep, ...(elementModifiers || [])]),
-            (element as ts.HasModifiers).modifiers);
+          ts.factory.createNodeArray([...decoratorsToKeep, ...(elementModifiers || [])]),
+          (element as ts.HasModifiers).modifiers,
+        );
       }
 
       return [element.name.text, cloneClassElementWithModifiers(element, modifiers), toLower];
@@ -412,8 +450,9 @@ export function getDownlevelDecoratorsTransform(
      * Transforms a constructor. Returns the transformed constructor and the list of parameter
      * information collected, consisting of decorators and optional type.
      */
-    function transformConstructor(ctor: ts.ConstructorDeclaration):
-        [ts.ConstructorDeclaration, ParameterDecorationInfo[]] {
+    function transformConstructor(
+      ctor: ts.ConstructorDeclaration,
+    ): [ts.ConstructorDeclaration, ParameterDecorationInfo[]] {
       ctor = ts.visitEachChild(ctor, decoratorDownlevelVisitor, context);
 
       const newParameters: ts.ParameterDeclaration[] = [];
@@ -445,7 +484,7 @@ export function getDownlevelDecoratorsTransform(
         parametersInfo.push(paramInfo);
 
         // Must pass 'undefined' to avoid emitting decorator metadata.
-        let modifiers: ts.ModifierLike[]|undefined;
+        let modifiers: ts.ModifierLike[] | undefined;
         const paramModifiers = ts.getModifiers(param);
 
         if (decoratorsToKeep.length || paramModifiers?.length) {
@@ -453,12 +492,22 @@ export function getDownlevelDecoratorsTransform(
         }
 
         const newParam = ts.factory.updateParameterDeclaration(
-            param, modifiers, param.dotDotDotToken, param.name, param.questionToken, param.type,
-            param.initializer);
+          param,
+          modifiers,
+          param.dotDotDotToken,
+          param.name,
+          param.questionToken,
+          param.type,
+          param.initializer,
+        );
         newParameters.push(newParam);
       }
       const updated = ts.factory.updateConstructorDeclaration(
-          ctor, ts.getModifiers(ctor), newParameters, ctor.body);
+        ctor,
+        ts.getModifiers(ctor),
+        newParameters,
+        ctor.body,
+      );
       return [updated, parametersInfo];
     }
 
@@ -472,7 +521,7 @@ export function getDownlevelDecoratorsTransform(
     function transformClassDeclaration(classDecl: ts.ClassDeclaration): ts.ClassDeclaration {
       const newMembers: ts.ClassElement[] = [];
       const decoratedProperties = new Map<string, ts.Decorator[]>();
-      let classParameters: ParameterDecorationInfo[]|null = null;
+      let classParameters: ParameterDecorationInfo[] | null = null;
 
       for (const member of classDecl.members) {
         switch (member.kind) {
@@ -488,8 +537,9 @@ export function getDownlevelDecoratorsTransform(
           case ts.SyntaxKind.Constructor: {
             const ctor = member as ts.ConstructorDeclaration;
             if (!ctor.body) break;
-            const [newMember, parametersInfo] =
-                transformConstructor(member as ts.ConstructorDeclaration);
+            const [newMember, parametersInfo] = transformConstructor(
+              member as ts.ConstructorDeclaration,
+            );
             classParameters = parametersInfo;
             newMembers.push(newMember);
             continue;
@@ -506,15 +556,22 @@ export function getDownlevelDecoratorsTransform(
 
       // Keep track if we come across an Angular class decorator. This is used
       // to determine whether constructor parameters should be captured or not.
-      const hasAngularDecorator =
-          possibleAngularDecorators.some(d => isAngularDecorator(d, isCore));
+      const hasAngularDecorator = possibleAngularDecorators.some((d) =>
+        isAngularDecorator(d, isCore),
+      );
 
       if (classParameters) {
-        if (hasAngularDecorator || classParameters.some(p => !!p.decorators.length)) {
+        if (hasAngularDecorator || classParameters.some((p) => !!p.decorators.length)) {
           // Capture constructor parameters if the class has Angular decorator applied,
           // or if any of the parameters has decorators applied directly.
-          newMembers.push(createCtorParametersClassProperty(
-              diagnostics, entityNameToExpression, classParameters, isClosureCompilerEnabled));
+          newMembers.push(
+            createCtorParametersClassProperty(
+              diagnostics,
+              entityNameToExpression,
+              classParameters,
+              isClosureCompilerEnabled,
+            ),
+          );
         }
       }
       if (decoratedProperties.size) {
@@ -522,12 +579,18 @@ export function getDownlevelDecoratorsTransform(
       }
 
       const members = ts.setTextRange(
-          ts.factory.createNodeArray(newMembers, classDecl.members.hasTrailingComma),
-          classDecl.members);
+        ts.factory.createNodeArray(newMembers, classDecl.members.hasTrailingComma),
+        classDecl.members,
+      );
 
       return ts.factory.updateClassDeclaration(
-          classDecl, classDecl.modifiers, classDecl.name, classDecl.typeParameters,
-          classDecl.heritageClauses, members);
+        classDecl,
+        classDecl.modifiers,
+        classDecl.name,
+        classDecl.typeParameters,
+        classDecl.heritageClauses,
+        members,
+      );
     }
 
     /**
@@ -552,22 +615,45 @@ export function getDownlevelDecoratorsTransform(
 }
 
 function cloneClassElementWithModifiers(
-    node: ts.ClassElement, modifiers: readonly ts.ModifierLike[]|undefined): ts.ClassElement {
+  node: ts.ClassElement,
+  modifiers: readonly ts.ModifierLike[] | undefined,
+): ts.ClassElement {
   let clone: ts.ClassElement;
 
   if (ts.isMethodDeclaration(node)) {
     clone = ts.factory.createMethodDeclaration(
-        modifiers, node.asteriskToken, node.name, node.questionToken, node.typeParameters,
-        node.parameters, node.type, node.body);
+      modifiers,
+      node.asteriskToken,
+      node.name,
+      node.questionToken,
+      node.typeParameters,
+      node.parameters,
+      node.type,
+      node.body,
+    );
   } else if (ts.isPropertyDeclaration(node)) {
     clone = ts.factory.createPropertyDeclaration(
-        modifiers, node.name, node.questionToken, node.type, node.initializer);
+      modifiers,
+      node.name,
+      node.questionToken,
+      node.type,
+      node.initializer,
+    );
   } else if (ts.isGetAccessor(node)) {
     clone = ts.factory.createGetAccessorDeclaration(
-        modifiers, node.name, node.parameters, node.type, node.body);
+      modifiers,
+      node.name,
+      node.parameters,
+      node.type,
+      node.body,
+    );
   } else if (ts.isSetAccessor(node)) {
-    clone =
-        ts.factory.createSetAccessorDeclaration(modifiers, node.name, node.parameters, node.body);
+    clone = ts.factory.createSetAccessorDeclaration(
+      modifiers,
+      node.name,
+      node.parameters,
+      node.body,
+    );
   } else {
     throw new Error(`Unsupported decorated member with kind ${ts.SyntaxKind[node.kind]}`);
   }

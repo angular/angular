@@ -28,6 +28,8 @@ export interface PartialLinker<TExpression> {
    *     `R3DeclareComponentMetadata` interfaces.
    */
   linkPartialDeclaration(
-      constantPool: ConstantPool, metaObj: AstObject<R3PartialDeclaration, TExpression>,
-      version: string): LinkedDefinition;
+    constantPool: ConstantPool,
+    metaObj: AstObject<R3PartialDeclaration, TExpression>,
+    version: string,
+  ): LinkedDefinition;
 }

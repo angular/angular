@@ -15,7 +15,7 @@ import {ClassDeclaration, DeclarationNode} from '../../reflection';
  */
 export enum IdentifierKind {
   Property,
-  Method,  // TODO: No longer being used. To be removed together with `MethodIdentifier`.
+  Method, // TODO: No longer being used. To be removed together with `MethodIdentifier`.
   Element,
   Template,
   Attribute,
@@ -39,7 +39,7 @@ interface ExpressionIdentifier extends TemplateIdentifier {
    * ReferenceIdentifier or VariableIdentifier in the template that this identifier targets, if
    * any. If the target is `null`, it points to a declaration on the component class.
    * */
-  target: ReferenceIdentifier|VariableIdentifier|null;
+  target: ReferenceIdentifier | VariableIdentifier | null;
 }
 
 /** Describes a property accessed in a template. */
@@ -94,14 +94,14 @@ export interface ReferenceIdentifier extends TemplateIdentifier {
   /** The target of this reference. If the target is not known, this is `null`. */
   target: {
     /** The template AST node that the reference targets. */
-    node: ElementIdentifier|TemplateIdentifier;
+    node: ElementIdentifier | TemplateIdentifier;
 
     /**
      * The directive on `node` that the reference targets. If no directive is targeted, this is
      * `null`.
      */
     directive: ClassDeclaration | null;
-  }|null;
+  } | null;
 }
 
 /** Describes a template variable like "foo" in `<div *ngFor="let foo of foos"></div>`. */
@@ -113,14 +113,22 @@ export interface VariableIdentifier extends TemplateIdentifier {
  * Identifiers recorded at the top level of the template, without any context about the HTML nodes
  * they were discovered in.
  */
-export type TopLevelIdentifier = PropertyIdentifier|ElementIdentifier|TemplateNodeIdentifier|
-    ReferenceIdentifier|VariableIdentifier|MethodIdentifier;
+export type TopLevelIdentifier =
+  | PropertyIdentifier
+  | ElementIdentifier
+  | TemplateNodeIdentifier
+  | ReferenceIdentifier
+  | VariableIdentifier
+  | MethodIdentifier;
 
 /**
  * Describes the absolute byte offsets of a text anchor in a source code.
  */
 export class AbsoluteSourceSpan {
-  constructor(public start: number, public end: number) {}
+  constructor(
+    public start: number,
+    public end: number,
+  ) {}
 }
 
 /**
@@ -128,12 +136,12 @@ export class AbsoluteSourceSpan {
  */
 export interface IndexedComponent {
   name: string;
-  selector: string|null;
+  selector: string | null;
   file: ParseSourceFile;
   template: {
-    identifiers: Set<TopLevelIdentifier>,
-    usedComponents: Set<DeclarationNode>,
-    isInline: boolean,
+    identifiers: Set<TopLevelIdentifier>;
+    usedComponents: Set<DeclarationNode>;
+    isInline: boolean;
     file: ParseSourceFile;
   };
   errors: Error[];

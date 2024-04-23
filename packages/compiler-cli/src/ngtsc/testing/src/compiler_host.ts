@@ -15,8 +15,10 @@ import {getCachedSourceFile} from './cached_source_files';
  * reuse across tests.
  */
 export class NgtscTestCompilerHost extends NgtscCompilerHost {
-  override getSourceFile(fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile
-      |undefined {
+  override getSourceFile(
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+  ): ts.SourceFile | undefined {
     const cachedSf = getCachedSourceFile(fileName, () => this.readFile(fileName));
     if (cachedSf !== null) {
       return cachedSf;

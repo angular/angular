@@ -21,43 +21,49 @@ import {createSyntheticAngularCoreDecoratorAccess, PropertyTransform} from './tr
  * the class needing to be instantiated.
  */
 export const initializerApiOutputTransform: PropertyTransform = (
-    member,
-    host,
-    factory,
-    importTracker,
-    importManager,
-    classDecorator,
-    isCore,
-    ) => {
+  member,
+  host,
+  factory,
+  importTracker,
+  importManager,
+  classDecorator,
+  isCore,
+) => {
   // If the field already is decorated, we handle this gracefully and skip it.
-  if (host.getDecoratorsOfDeclaration(member.node)
-          ?.some(d => isAngularDecorator(d, 'Output', isCore))) {
+  if (
+    host
+      .getDecoratorsOfDeclaration(member.node)
+      ?.some((d) => isAngularDecorator(d, 'Output', isCore))
+  ) {
     return member.node;
   }
 
-  const output = tryParseInitializerBasedOutput(
-      member,
-      host,
-      importTracker,
-  );
+  const output = tryParseInitializerBasedOutput(member, host, importTracker);
   if (output === null) {
     return member.node;
   }
 
   const sourceFile = member.node.getSourceFile();
   const newDecorator = factory.createDecorator(
-      factory.createCallExpression(
-          createSyntheticAngularCoreDecoratorAccess(
-              factory, importManager, classDecorator, sourceFile, 'Output'),
-          undefined, [factory.createStringLiteral(output.metadata.bindingPropertyName)]),
+    factory.createCallExpression(
+      createSyntheticAngularCoreDecoratorAccess(
+        factory,
+        importManager,
+        classDecorator,
+        sourceFile,
+        'Output',
+      ),
+      undefined,
+      [factory.createStringLiteral(output.metadata.bindingPropertyName)],
+    ),
   );
 
   return factory.updatePropertyDeclaration(
-      member.node,
-      [newDecorator, ...(member.node.modifiers ?? [])],
-      member.node.name,
-      member.node.questionToken,
-      member.node.type,
-      member.node.initializer,
+    member.node,
+    [newDecorator, ...(member.node.modifiers ?? [])],
+    member.node.name,
+    member.node.questionToken,
+    member.node.type,
+    member.node.initializer,
   );
 };

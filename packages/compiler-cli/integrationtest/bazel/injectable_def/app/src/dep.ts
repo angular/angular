@@ -11,8 +11,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {ServerModule} from '@angular/platform-server';
 
 @Injectable()
-export class NormalService {
-}
+export class NormalService {}
 
 @Component({
   selector: 'dep-app',
@@ -26,16 +25,12 @@ export class AppComponent {
 }
 
 @NgModule({
-  imports: [
-    BrowserModule,
-    ServerModule,
-  ],
+  imports: [BrowserModule, ServerModule],
   declarations: [AppComponent],
   bootstrap: [AppComponent],
   providers: [NormalService],
 })
-export class DepAppModule {
-}
+export class DepAppModule {}
 
 @Injectable({providedIn: DepAppModule})
 export class ShakeableService {

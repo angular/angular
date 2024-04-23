@@ -14,7 +14,6 @@ import {Reference} from '../../imports';
 import {OptimizeFor, TypeCheckingConfig} from '../api';
 import {ALL_ENABLED_CONFIG, setup, tcb, TestDeclaration, TestDirective} from '../testing';
 
-
 describe('type check blocks', () => {
   beforeEach(() => initMockFileSystem('Native'));
 
@@ -49,36 +48,42 @@ describe('type check blocks', () => {
 
   it('should handle nested ternary expressions', () => {
     const TEMPLATE = `{{a ? b : c ? d : e}}`;
-    expect(tcb(TEMPLATE))
-        .toContain('(((this).a) ? ((this).b) : ((((this).c) ? ((this).d) : (((this).e)))))');
+    expect(tcb(TEMPLATE)).toContain(
+      '(((this).a) ? ((this).b) : ((((this).c) ? ((this).d) : (((this).e)))))',
+    );
   });
 
   it('should handle nullish coalescing operator', () => {
     expect(tcb('{{ a ?? b }}')).toContain('((((this).a)) ?? (((this).b)))');
     expect(tcb('{{ a ?? b ?? c }}')).toContain('(((((this).a)) ?? (((this).b))) ?? (((this).c)))');
-    expect(tcb('{{ (a ?? b) + (c ?? e) }}'))
-        .toContain('(((((this).a)) ?? (((this).b))) + ((((this).c)) ?? (((this).e))))');
+    expect(tcb('{{ (a ?? b) + (c ?? e) }}')).toContain(
+      '(((((this).a)) ?? (((this).b))) + ((((this).c)) ?? (((this).e))))',
+    );
   });
 
   it('should handle attribute values for directive inputs', () => {
     const TEMPLATE = `<div dir inputA="value"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'DirA',
-      selector: '[dir]',
-      inputs: {inputA: 'inputA'},
-    }];
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir]',
+        inputs: {inputA: 'inputA'},
+      },
+    ];
     expect(tcb(TEMPLATE, DIRECTIVES)).toContain('_t1 = null! as i0.DirA; _t1.inputA = ("value");');
   });
 
   it('should handle multiple bindings to the same property', () => {
     const TEMPLATE = `<div dir-a [inputA]="1" [inputA]="2"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'DirA',
-      selector: '[dir-a]',
-      inputs: {inputA: 'inputA'},
-    }];
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        inputs: {inputA: 'inputA'},
+      },
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('_t1.inputA = (1);');
     expect(block).toContain('_t1.inputA = (2);');
@@ -86,23 +91,27 @@ describe('type check blocks', () => {
 
   it('should handle empty bindings', () => {
     const TEMPLATE = `<div dir-a [inputA]=""></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'DirA',
-      selector: '[dir-a]',
-      inputs: {inputA: 'inputA'},
-    }];
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        inputs: {inputA: 'inputA'},
+      },
+    ];
     expect(tcb(TEMPLATE, DIRECTIVES)).toContain('_t1.inputA = (undefined);');
   });
 
   it('should handle bindings without value', () => {
     const TEMPLATE = `<div dir-a [inputA]></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'DirA',
-      selector: '[dir-a]',
-      inputs: {inputA: 'inputA'},
-    }];
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'DirA',
+        selector: '[dir-a]',
+        inputs: {inputA: 'inputA'},
+      },
+    ];
     expect(tcb(TEMPLATE, DIRECTIVES)).toContain('_t1.inputA = (undefined);');
   });
 
@@ -131,51 +140,58 @@ describe('type check blocks', () => {
   describe('type constructors', () => {
     it('should handle missing property bindings', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'Dir',
-        selector: '[dir]',
-        inputs: {
-          fieldA: 'inputA',
-          fieldB: 'inputB',
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          inputs: {
+            fieldA: 'inputA',
+            fieldB: 'inputB',
+          },
+          isGeneric: true,
         },
-        isGeneric: true,
-      }];
+      ];
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-          'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "fieldA" | "fieldB">) => i0.Dir<T> = null!;');
+        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "fieldA" | "fieldB">) => i0.Dir<T> = null!;',
+      );
       expect(actual).toContain(
-          'var _t1 = _ctor1({ "fieldA": (((this).foo)), "fieldB": null as any });');
+        'var _t1 = _ctor1({ "fieldA": (((this).foo)), "fieldB": null as any });',
+      );
     });
 
     it('should handle multiple bindings to the same property', () => {
       const TEMPLATE = `<div dir [inputA]="1" [inputA]="2"></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'Dir',
-        selector: '[dir]',
-        inputs: {
-          fieldA: 'inputA',
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          inputs: {
+            fieldA: 'inputA',
+          },
+          isGeneric: true,
         },
-        isGeneric: true,
-      }];
+      ];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('"fieldA": (1)');
       expect(block).not.toContain('"fieldA": (2)');
     });
 
-
     it('should only apply property bindings to directives', () => {
       const TEMPLATE = `
       <div dir [style.color]="'blue'" [class.strong]="false" [attr.enabled]="true"></div>
     `;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'Dir',
-        selector: '[dir]',
-        inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
-        isGeneric: true,
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
+          isGeneric: true,
+        },
+      ];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).not.toContain('Dir.ngTypeCtor');
       expect(block).toContain('"blue"; false; true;');
@@ -185,22 +201,24 @@ describe('type check blocks', () => {
       const TEMPLATE = `
       <div dir #d="dir" [input]="d"></div>
     `;
-      const DIRECTIVES: TestDirective[] = [{
-        type: 'directive',
-        name: 'Dir',
-        selector: '[dir]',
-        exportAs: ['dir'],
-        inputs: {input: 'input'},
-        isGeneric: true,
-      }];
+      const DIRECTIVES: TestDirective[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          exportAs: ['dir'],
+          inputs: {input: 'input'},
+          isGeneric: true,
+        },
+      ];
 
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-          'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "input">) => i0.Dir<T> = null!;');
+        'const _ctor1: <T extends string = any>(init: Pick<i0.Dir<T>, "input">) => i0.Dir<T> = null!;',
+      );
       expect(actual).toContain(
-          'var _t2 = _ctor1({ "input": (null!) }); ' +
-          'var _t1 = _t2; ' +
-          '_t2.input = (_t1);');
+        'var _t2 = _ctor1({ "input": (null!) }); ' + 'var _t1 = _t2; ' + '_t2.input = (_t1);',
+      );
     });
 
     it('should generate circular references between two directives correctly', () => {
@@ -224,60 +242,67 @@ describe('type check blocks', () => {
           exportAs: ['dirB'],
           inputs: {inputB: 'inputB'},
           isGeneric: true,
-        }
+        },
       ];
       const actual = tcb(TEMPLATE, DIRECTIVES);
       expect(actual).toContain(
-          'const _ctor1: <T extends string = any>(init: Pick<i0.DirA<T>, "inputA">) => i0.DirA<T> = null!; const _ctor2: <T extends string = any>(init: Pick<i0.DirB<T>, "inputB">) => i0.DirB<T> = null!;');
+        'const _ctor1: <T extends string = any>(init: Pick<i0.DirA<T>, "inputA">) => i0.DirA<T> = null!; const _ctor2: <T extends string = any>(init: Pick<i0.DirB<T>, "inputB">) => i0.DirB<T> = null!;',
+      );
       expect(actual).toContain(
-          'var _t4 = _ctor1({ "inputA": (null!) }); ' +
+        'var _t4 = _ctor1({ "inputA": (null!) }); ' +
           'var _t3 = _t4; ' +
           'var _t2 = _ctor2({ "inputB": (_t3) }); ' +
           'var _t1 = _t2; ' +
           '_t4.inputA = (_t1); ' +
-          '_t2.inputB = (_t3);');
+          '_t2.inputB = (_t3);',
+      );
     });
 
     it('should handle empty bindings', () => {
       const TEMPLATE = `<div dir-a [inputA]=""></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'DirA',
-        selector: '[dir-a]',
-        inputs: {inputA: 'inputA'},
-        isGeneric: true,
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          inputs: {inputA: 'inputA'},
+          isGeneric: true,
+        },
+      ];
       expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
     });
 
     it('should handle bindings without value', () => {
       const TEMPLATE = `<div dir-a [inputA]></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'DirA',
-        selector: '[dir-a]',
-        inputs: {inputA: 'inputA'},
-        isGeneric: true,
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          inputs: {inputA: 'inputA'},
+          isGeneric: true,
+        },
+      ];
       expect(tcb(TEMPLATE, DIRECTIVES)).toContain('"inputA": (undefined)');
     });
 
     it('should use coercion types if declared', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'Dir',
-        selector: '[dir]',
-        inputs: {
-          fieldA: 'inputA',
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          inputs: {
+            fieldA: 'inputA',
+          },
+          isGeneric: true,
+          coercedInputFields: ['fieldA'],
         },
-        isGeneric: true,
-        coercedInputFields: ['fieldA'],
-      }];
-      expect(tcb(TEMPLATE, DIRECTIVES))
-          .toContain(
-              'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' +
-              '_t1 = (((this).foo));');
+      ];
+      expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
+        'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' + '_t1 = (((this).foo));',
+      );
     });
   });
 
@@ -289,9 +314,8 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE);
     expect(block).not.toContain('"div"');
     expect(block).toContain(
-        'var _t2 = document.createElement("button"); ' +
-        'var _t1 = _t2; ' +
-        '_t2.addEventListener');
+      'var _t2 = document.createElement("button"); ' + 'var _t1 = _t2; ' + '_t2.addEventListener',
+    );
   });
 
   it('should only generate directive declarations that have bindings or are referenced', () => {
@@ -352,9 +376,9 @@ describe('type check blocks', () => {
       {{ i.value }}
       <input #i>
     `;
-    expect(tcb(TEMPLATE))
-        .toContain(
-            'var _t2 = document.createElement("input"); var _t1 = _t2; "" + (((_t1).value));');
+    expect(tcb(TEMPLATE)).toContain(
+      'var _t2 = document.createElement("input"); var _t1 = _t2; "" + (((_t1).value));',
+    );
   });
 
   it('should generate a forward directive reference correctly', () => {
@@ -362,17 +386,17 @@ describe('type check blocks', () => {
       {{d.value}}
       <div dir #d="dir"></div>
     `;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      exportAs: ['dir'],
-    }];
-    expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain(
-            'var _t2 = null! as i0.Dir; ' +
-            'var _t1 = _t2; ' +
-            '"" + (((_t1).value));');
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        exportAs: ['dir'],
+      },
+    ];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
+      'var _t2 = null! as i0.Dir; ' + 'var _t1 = _t2; ' + '"" + (((_t1).value));',
+    );
   });
 
   it('should handle style and class bindings specially', () => {
@@ -391,12 +415,14 @@ describe('type check blocks', () => {
     const TEMPLATE = `
       <div dir [style.color]="'blue'" [class.strong]="false" [attr.enabled]="true"></div>
     `;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
-    }];
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
+      },
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).not.toContain('var _t1 = null! as Dir;');
     expect(block).not.toContain('"color"');
@@ -409,18 +435,18 @@ describe('type check blocks', () => {
     const TEMPLATE = `
       <div dir #d="dir" [input]="d"></div>
     `;
-    const DIRECTIVES: TestDirective[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      exportAs: ['dir'],
-      inputs: {input: 'input'},
-    }];
-    expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain(
-            'var _t2 = null! as i0.Dir; ' +
-            'var _t1 = _t2; ' +
-            '_t2.input = (_t1);');
+    const DIRECTIVES: TestDirective[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        exportAs: ['dir'],
+        inputs: {input: 'input'},
+      },
+    ];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
+      'var _t2 = null! as i0.Dir; ' + 'var _t1 = _t2; ' + '_t2.input = (_t1);',
+    );
   });
 
   it('should generate circular references between two directives correctly', () => {
@@ -442,29 +468,31 @@ describe('type check blocks', () => {
         selector: '[dir-b]',
         exportAs: ['dirB'],
         inputs: {inputA: 'inputB'},
-      }
+      },
     ];
-    expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain(
-            'var _t2 = null! as i0.DirB; ' +
-            'var _t1 = _t2; ' +
-            'var _t3 = null! as i0.DirA; ' +
-            '_t3.inputA = (_t1); ' +
-            'var _t4 = _t3; ' +
-            '_t2.inputA = (_t4);');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
+      'var _t2 = null! as i0.DirB; ' +
+        'var _t1 = _t2; ' +
+        'var _t3 = null! as i0.DirA; ' +
+        '_t3.inputA = (_t1); ' +
+        'var _t4 = _t3; ' +
+        '_t2.inputA = (_t4);',
+    );
   });
 
   it('should handle undeclared properties', () => {
     const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        fieldA: 'inputA',
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          fieldA: 'inputA',
+        },
+        undeclaredInputFields: ['fieldA'],
       },
-      undeclaredInputFields: ['fieldA']
-    }];
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).not.toContain('var _t1 = null! as Dir;');
     expect(block).toContain('(((this).foo)); ');
@@ -472,163 +500,181 @@ describe('type check blocks', () => {
 
   it('should assign restricted properties to temp variables by default', () => {
     const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        fieldA: 'inputA',
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          fieldA: 'inputA',
+        },
+        restrictedInputFields: ['fieldA'],
       },
-      restrictedInputFields: ['fieldA']
-    }];
-    expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain(
-            'var _t1 = null! as i0.Dir; ' +
-            'var _t2 = null! as (typeof _t1)["fieldA"]; ' +
-            '_t2 = (((this).foo)); ');
+    ];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
+      'var _t1 = null! as i0.Dir; ' +
+        'var _t2 = null! as (typeof _t1)["fieldA"]; ' +
+        '_t2 = (((this).foo)); ',
+    );
   });
 
-  it('should assign properties via element access for field names that are not JS identifiers',
-     () => {
-       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-       const DIRECTIVES: TestDeclaration[] = [{
-         type: 'directive',
-         name: 'Dir',
-         selector: '[dir]',
-         inputs: {
-           'some-input.xs': 'inputA',
-         },
-         stringLiteralInputFields: ['some-input.xs'],
-       }];
-       const block = tcb(TEMPLATE, DIRECTIVES);
-       expect(block).toContain(
-           'var _t1 = null! as i0.Dir; ' +
-           '_t1["some-input.xs"] = (((this).foo)); ');
-     });
+  it('should assign properties via element access for field names that are not JS identifiers', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          'some-input.xs': 'inputA',
+        },
+        stringLiteralInputFields: ['some-input.xs'],
+      },
+    ];
+    const block = tcb(TEMPLATE, DIRECTIVES);
+    expect(block).toContain(
+      'var _t1 = null! as i0.Dir; ' + '_t1["some-input.xs"] = (((this).foo)); ',
+    );
+  });
 
   it('should handle a single property bound to multiple fields', () => {
     const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        field1: 'inputA',
-        field2: 'inputA',
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          field1: 'inputA',
+          field2: 'inputA',
+        },
       },
-    }];
-    expect(tcb(TEMPLATE, DIRECTIVES))
-        .toContain(
-            'var _t1 = null! as i0.Dir; ' +
-            '_t1.field2 = _t1.field1 = (((this).foo));');
+    ];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
+      'var _t1 = null! as i0.Dir; ' + '_t1.field2 = _t1.field1 = (((this).foo));',
+    );
   });
 
-  it('should handle a single property bound to multiple fields, where one of them is coerced',
-     () => {
-       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-       const DIRECTIVES: TestDeclaration[] = [{
-         type: 'directive',
-         name: 'Dir',
-         selector: '[dir]',
-         inputs: {
-           field1: 'inputA',
-           field2: 'inputA',
-         },
-         coercedInputFields: ['field1'],
-       }];
-       expect(tcb(TEMPLATE, DIRECTIVES))
-           .toContain(
-               'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_field1; ' +
-               'var _t2 = null! as i0.Dir; ' +
-               '_t2.field2 = _t1 = (((this).foo));');
-     });
+  it('should handle a single property bound to multiple fields, where one of them is coerced', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          field1: 'inputA',
+          field2: 'inputA',
+        },
+        coercedInputFields: ['field1'],
+      },
+    ];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
+      'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_field1; ' +
+        'var _t2 = null! as i0.Dir; ' +
+        '_t2.field2 = _t1 = (((this).foo));',
+    );
+  });
 
-  it('should handle a single property bound to multiple fields, where one of them is undeclared',
-     () => {
-       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-       const DIRECTIVES: TestDeclaration[] = [{
-         type: 'directive',
-         name: 'Dir',
-         selector: '[dir]',
-         inputs: {
-           field1: 'inputA',
-           field2: 'inputA',
-         },
-         undeclaredInputFields: ['field1'],
-       }];
-       expect(tcb(TEMPLATE, DIRECTIVES))
-           .toContain(
-               'var _t1 = null! as i0.Dir; ' +
-               '_t1.field2 = (((this).foo));');
-     });
+  it('should handle a single property bound to multiple fields, where one of them is undeclared', () => {
+    const TEMPLATE = `<div dir [inputA]="foo"></div>`;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          field1: 'inputA',
+          field2: 'inputA',
+        },
+        undeclaredInputFields: ['field1'],
+      },
+    ];
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain(
+      'var _t1 = null! as i0.Dir; ' + '_t1.field2 = (((this).foo));',
+    );
+  });
 
   it('should use coercion types if declared', () => {
     const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        fieldA: 'inputA',
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          fieldA: 'inputA',
+        },
+        coercedInputFields: ['fieldA'],
       },
-      coercedInputFields: ['fieldA'],
-    }];
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).not.toContain('var _t1 = null! as Dir;');
     expect(block).toContain(
-        'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' +
-        '_t1 = (((this).foo));');
+      'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' + '_t1 = (((this).foo));',
+    );
   });
 
   it('should use coercion types if declared, even when backing field is not declared', () => {
     const TEMPLATE = `<div dir [inputA]="foo"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        fieldA: 'inputA',
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          fieldA: 'inputA',
+        },
+        coercedInputFields: ['fieldA'],
+        undeclaredInputFields: ['fieldA'],
       },
-      coercedInputFields: ['fieldA'],
-      undeclaredInputFields: ['fieldA'],
-    }];
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).not.toContain('var _t1 = null! as Dir;');
     expect(block).toContain(
-        'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' +
-        '_t1 = (((this).foo));');
+      'var _t1 = null! as typeof i0.Dir.ngAcceptInputType_fieldA; ' + '_t1 = (((this).foo));',
+    );
   });
 
   it('should use transform type if an input has one', () => {
     const TEMPLATE = `<div dir [fieldA]="expr"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      inputs: {
-        fieldA: {
-          bindingPropertyName: 'fieldA',
-          classPropertyName: 'fieldA',
-          required: false,
-          isSignal: false,
-          transform: {
-            node: ts.factory.createFunctionDeclaration(
-                undefined, undefined, undefined, undefined, [], undefined, undefined),
-            type: new Reference(ts.factory.createUnionTypeNode([
-              ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
-              ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-            ]))
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        inputs: {
+          fieldA: {
+            bindingPropertyName: 'fieldA',
+            classPropertyName: 'fieldA',
+            required: false,
+            isSignal: false,
+            transform: {
+              node: ts.factory.createFunctionDeclaration(
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                [],
+                undefined,
+                undefined,
+              ),
+              type: new Reference(
+                ts.factory.createUnionTypeNode([
+                  ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+                  ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+                ]),
+              ),
+            },
           },
         },
+        coercedInputFields: ['fieldA'],
       },
-      coercedInputFields: ['fieldA'],
-    }];
+    ];
 
     const block = tcb(TEMPLATE, DIRECTIVES);
 
-    expect(block).toContain(
-        'var _t1 = null! as boolean | string; ' +
-        '_t1 = (((this).expr));');
+    expect(block).toContain('var _t1 = null! as boolean | string; ' + '_t1 = (((this).expr));');
   });
 
   it('should handle $any casts', () => {
@@ -651,13 +697,15 @@ describe('type check blocks', () => {
 
   it('should handle a two-way binding to an input/output pair', () => {
     const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'TwoWay',
-      selector: '[twoWay]',
-      inputs: {input: 'input'},
-      outputs: {inputChange: 'inputChange'},
-    }];
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'TwoWay',
+        selector: '[twoWay]',
+        inputs: {input: 'input'},
+        outputs: {inputChange: 'inputChange'},
+      },
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as i0.TwoWay;');
     expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal((((this).value)));');
@@ -665,70 +713,88 @@ describe('type check blocks', () => {
 
   it('should handle a two-way binding to an input/output pair of a generic directive', () => {
     const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'TwoWay',
-      selector: '[twoWay]',
-      inputs: {input: 'input'},
-      outputs: {inputChange: 'inputChange'},
-      isGeneric: true,
-    }];
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'TwoWay',
+        selector: '[twoWay]',
+        inputs: {input: 'input'},
+        outputs: {inputChange: 'inputChange'},
+        isGeneric: true,
+      },
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain(
-        'const _ctor1: <T extends string = any>(init: Pick<i0.TwoWay<T>, "input">) => i0.TwoWay<T> = null!');
+      'const _ctor1: <T extends string = any>(init: Pick<i0.TwoWay<T>, "input">) => i0.TwoWay<T> = null!',
+    );
     expect(block).toContain(
-        'var _t1 = _ctor1({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });');
+      'var _t1 = _ctor1({ "input": (i1.ɵunwrapWritableSignal(((this).value))) });',
+    );
     expect(block).toContain('_t1.input = i1.ɵunwrapWritableSignal((((this).value)));');
   });
 
   it('should handle a two-way binding to a model()', () => {
     const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'TwoWay',
-      selector: '[twoWay]',
-      inputs: {
-        input: {
-          classPropertyName: 'input',
-          bindingPropertyName: 'input',
-          required: false,
-          isSignal: true,
-          transform: null,
-        }
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'TwoWay',
+        selector: '[twoWay]',
+        inputs: {
+          input: {
+            classPropertyName: 'input',
+            bindingPropertyName: 'input',
+            required: false,
+            isSignal: true,
+            transform: null,
+          },
+        },
+        outputs: {inputChange: 'inputChange'},
       },
-      outputs: {inputChange: 'inputChange'},
-    }];
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as i0.TwoWay;');
     expect(block).toContain(
-        '_t1.input[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((this).value)));');
+      '_t1.input[i1.ɵINPUT_SIGNAL_BRAND_WRITE_TYPE] = i1.ɵunwrapWritableSignal((((this).value)));',
+    );
   });
 
   it('should handle a two-way binding to an input with a transform', () => {
     const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'TwoWay',
-      selector: '[twoWay]',
-      inputs: {
-        input: {
-          classPropertyName: 'input',
-          bindingPropertyName: 'input',
-          required: false,
-          isSignal: false,
-          transform: {
-            node: ts.factory.createFunctionDeclaration(
-                undefined, undefined, undefined, undefined, [], undefined, undefined),
-            type: new Reference(ts.factory.createUnionTypeNode([
-              ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
-              ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-            ]))
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'TwoWay',
+        selector: '[twoWay]',
+        inputs: {
+          input: {
+            classPropertyName: 'input',
+            bindingPropertyName: 'input',
+            required: false,
+            isSignal: false,
+            transform: {
+              node: ts.factory.createFunctionDeclaration(
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                [],
+                undefined,
+                undefined,
+              ),
+              type: new Reference(
+                ts.factory.createUnionTypeNode([
+                  ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+                  ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+                ]),
+              ),
+            },
           },
-        }
+        },
+        outputs: {inputChange: 'inputChange'},
+        coercedInputFields: ['input'],
       },
-      outputs: {inputChange: 'inputChange'},
-      coercedInputFields: ['input'],
-    }];
+    ];
     const block = tcb(TEMPLATE, DIRECTIVES);
     expect(block).toContain('var _t1 = null! as boolean | string;');
     expect(block).toContain('_t1 = i1.ɵunwrapWritableSignal((((this).value)));');
@@ -738,55 +804,68 @@ describe('type check blocks', () => {
     it('should translate unclaimed bindings to their property equivalent', () => {
       const TEMPLATE = `<label [for]="'test'"></label>`;
       const CONFIG = {...ALL_ENABLED_CONFIG, checkTypeOfDomBindings: true};
-      expect(tcb(TEMPLATE, /* declarations */ undefined, CONFIG))
-          .toContain('_t1["htmlFor"] = ("test");');
+      expect(tcb(TEMPLATE, /* declarations */ undefined, CONFIG)).toContain(
+        '_t1["htmlFor"] = ("test");',
+      );
     });
   });
 
   describe('template guards', () => {
     it('should emit invocation guards', () => {
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'NgIf',
-        selector: '[ngIf]',
-        inputs: {'ngIf': 'ngIf'},
-        ngTemplateGuards: [{
-          inputName: 'ngIf',
-          type: 'invocation',
-        }]
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'NgIf',
+          selector: '[ngIf]',
+          inputs: {'ngIf': 'ngIf'},
+          ngTemplateGuards: [
+            {
+              inputName: 'ngIf',
+              type: 'invocation',
+            },
+          ],
+        },
+      ];
       const TEMPLATE = `<div *ngIf="person">{{person.name}}</div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('if (i0.NgIf.ngTemplateGuard_ngIf(_t1, ((this).person)))');
     });
 
     it('should emit binding guards', () => {
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'NgIf',
-        selector: '[ngIf]',
-        inputs: {'ngIf': 'ngIf'},
-        ngTemplateGuards: [{
-          inputName: 'ngIf',
-          type: 'binding',
-        }]
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'NgIf',
+          selector: '[ngIf]',
+          inputs: {'ngIf': 'ngIf'},
+          ngTemplateGuards: [
+            {
+              inputName: 'ngIf',
+              type: 'binding',
+            },
+          ],
+        },
+      ];
       const TEMPLATE = `<div *ngIf="person !== null">{{person.name}}</div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('if ((((this).person)) !== (null))');
     });
 
     it('should not emit guards when the child scope is empty', () => {
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'NgIf',
-        selector: '[ngIf]',
-        inputs: {'ngIf': 'ngIf'},
-        ngTemplateGuards: [{
-          inputName: 'ngIf',
-          type: 'invocation',
-        }]
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'NgIf',
+          selector: '[ngIf]',
+          inputs: {'ngIf': 'ngIf'},
+          ngTemplateGuards: [
+            {
+              inputName: 'ngIf',
+              type: 'invocation',
+            },
+          ],
+        },
+      ];
       const TEMPLATE = `<div *ngIf="person">static</div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).not.toContain('NgIf.ngTemplateGuard_ngIf');
@@ -795,16 +874,19 @@ describe('type check blocks', () => {
 
   describe('outputs', () => {
     it('should emit subscribe calls for directive outputs', () => {
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'Dir',
-        selector: '[dir]',
-        outputs: {'outputField': 'dirOutput'},
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          outputs: {'outputField': 'dirOutput'},
+        },
+      ];
       const TEMPLATE = `<div dir (dirOutput)="foo($event)"></div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain(
-          '_t1["outputField"].subscribe(($event): any => { (this).foo($event); });');
+        '_t1["outputField"].subscribe(($event): any => { (this).foo($event); });',
+      );
     });
 
     it('should emit a listener function with AnimationEvent for animation events', () => {
@@ -817,14 +899,16 @@ describe('type check blocks', () => {
       const TEMPLATE = `<div (event)="foo($event)"></div>`;
       const block = tcb(TEMPLATE);
       expect(block).toContain(
-          '_t1.addEventListener("event", ($event): any => { (this).foo($event); });');
+        '_t1.addEventListener("event", ($event): any => { (this).foo($event); });',
+      );
     });
 
     it('should allow to cast $event using $any', () => {
       const TEMPLATE = `<div (event)="foo($any($event))"></div>`;
       const block = tcb(TEMPLATE);
       expect(block).toContain(
-          '_t1.addEventListener("event", ($event): any => { (this).foo(($event as any)); });');
+        '_t1.addEventListener("event", ($event): any => { (this).foo(($event as any)); });',
+      );
     });
 
     it('should detect writes to template variables', () => {
@@ -838,20 +922,23 @@ describe('type check blocks', () => {
       const block = tcb(TEMPLATE);
 
       expect(block).toContain(
-          '_t1.addEventListener("event", ($event): any => { (this).foo(((this).$event)); });');
+        '_t1.addEventListener("event", ($event): any => { (this).foo(((this).$event)); });',
+      );
     });
   });
 
   describe('config', () => {
-    const DIRECTIVES: TestDeclaration[] = [{
-      type: 'directive',
-      name: 'Dir',
-      selector: '[dir]',
-      exportAs: ['dir'],
-      inputs: {'dirInput': 'dirInput'},
-      outputs: {'outputField': 'dirOutput'},
-      hasNgTemplateContextGuard: true,
-    }];
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'Dir',
+        selector: '[dir]',
+        exportAs: ['dir'],
+        inputs: {'dirInput': 'dirInput'},
+        outputs: {'outputField': 'dirOutput'},
+        hasNgTemplateContextGuard: true,
+      },
+    ];
     const BASE_CONFIG: TypeCheckingConfig = {
       applyTemplateContextGuards: true,
       checkQueries: false,
@@ -888,8 +975,10 @@ describe('type check blocks', () => {
         expect(block).toContain(GUARD_APPLIED);
       });
       it('should not apply template context guards when disabled', () => {
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, applyTemplateContextGuards: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          applyTemplateContextGuards: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).not.toContain(GUARD_APPLIED);
       });
@@ -929,8 +1018,10 @@ describe('type check blocks', () => {
         expect(block).toContain('((this).b);');
       });
       it('should use the non-null assertion operator when disabled', () => {
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, strictNullInputBindings: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          strictNullInputBindings: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('_t1.dirInput = (((this).a)!);');
         expect(block).toContain('((this).b)!;');
@@ -947,8 +1038,10 @@ describe('type check blocks', () => {
 
       it('should not check types of bindings when disabled', () => {
         const TEMPLATE = `<div dir [dirInput]="a" [nonDirInput]="b"></div>`;
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfInputBindings: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          checkTypeOfInputBindings: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('_t1.dirInput = ((((this).a) as any));');
         expect(block).toContain('(((this).b) as any);');
@@ -956,8 +1049,10 @@ describe('type check blocks', () => {
 
       it('should wrap the cast to any in parentheses when required', () => {
         const TEMPLATE = `<div dir [dirInput]="a === b"></div>`;
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfInputBindings: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          checkTypeOfInputBindings: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('_t1.dirInput = ((((((this).a)) === (((this).b))) as any));');
       });
@@ -969,18 +1064,23 @@ describe('type check blocks', () => {
       it('should check types of directive outputs when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '_t1["outputField"].subscribe(($event): any => { (this).foo($event); });');
+          '_t1["outputField"].subscribe(($event): any => { (this).foo($event); });',
+        );
         expect(block).toContain(
-            '_t2.addEventListener("nonDirOutput", ($event): any => { (this).foo($event); });');
+          '_t2.addEventListener("nonDirOutput", ($event): any => { (this).foo($event); });',
+        );
       });
       it('should not check types of directive outputs when disabled', () => {
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfOutputEvents: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          checkTypeOfOutputEvents: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('($event: any): any => { (this).foo($event); }');
         // Note that DOM events are still checked, that is controlled by `checkTypeOfDomEvents`
         expect(block).toContain(
-            'addEventListener("nonDirOutput", ($event): any => { (this).foo($event); });');
+          'addEventListener("nonDirOutput", ($event): any => { (this).foo($event); });',
+        );
       });
     });
 
@@ -992,8 +1092,10 @@ describe('type check blocks', () => {
         expect(block).toContain('($event: i1.AnimationEvent): any => { (this).foo($event); }');
       });
       it('should not check types of animation events when disabled', () => {
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfAnimationEvents: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          checkTypeOfAnimationEvents: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('($event: any): any => { (this).foo($event); }');
       });
@@ -1005,9 +1107,11 @@ describe('type check blocks', () => {
       it('should check types of DOM events when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '_t1["outputField"].subscribe(($event): any => { (this).foo($event); });');
+          '_t1["outputField"].subscribe(($event): any => { (this).foo($event); });',
+        );
         expect(block).toContain(
-            '_t2.addEventListener("nonDirOutput", ($event): any => { (this).foo($event); });');
+          '_t2.addEventListener("nonDirOutput", ($event): any => { (this).foo($event); });',
+        );
       });
       it('should not check types of DOM events when disabled', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfDomEvents: false};
@@ -1015,7 +1119,8 @@ describe('type check blocks', () => {
         // Note that directive outputs are still checked, that is controlled by
         // `checkTypeOfOutputEvents`
         expect(block).toContain(
-            '_t1["outputField"].subscribe(($event): any => { (this).foo($event); });');
+          '_t1["outputField"].subscribe(($event): any => { (this).foo($event); });',
+        );
         expect(block).toContain('($event: any): any => { (this).foo($event); }');
       });
     });
@@ -1029,27 +1134,28 @@ describe('type check blocks', () => {
       });
 
       it('should use any for reference types when disabled', () => {
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfDomReferences: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          checkTypeOfDomReferences: false,
+        };
         const block = tcb(TEMPLATE, [], DISABLED_CONFIG);
-        expect(block).toContain(
-            'var _t1 = _t2 as any; ' +
-            '"" + (((_t1).value));');
+        expect(block).toContain('var _t1 = _t2 as any; ' + '"" + (((_t1).value));');
       });
     });
 
     describe('config.checkTypeOfNonDomReferences', () => {
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'Dir',
-        selector: '[dir]',
-        exportAs: ['dir'],
-        inputs: {'dirInput': 'dirInput'},
-        outputs: {'outputField': 'dirOutput'},
-        hasNgTemplateContextGuard: true,
-      }];
-      const TEMPLATE =
-          `<div dir #ref="dir">{{ref.value}}</div><ng-template #ref2></ng-template>{{ref2.value2}}`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          exportAs: ['dir'],
+          inputs: {'dirInput': 'dirInput'},
+          outputs: {'outputField': 'dirOutput'},
+          hasNgTemplateContextGuard: true,
+        },
+      ];
+      const TEMPLATE = `<div dir #ref="dir">{{ref.value}}</div><ng-template #ref2></ng-template>{{ref2.value2}}`;
 
       it('should trace references to a directive when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
@@ -1059,28 +1165,30 @@ describe('type check blocks', () => {
       it('should trace references to an <ng-template> when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            'var _t3 = (_t4 as any as i1.TemplateRef<any>); ' +
-            '"" + (((_t3).value2));');
+          'var _t3 = (_t4 as any as i1.TemplateRef<any>); ' + '"" + (((_t3).value2));',
+        );
       });
 
       it('should use any for reference types when disabled', () => {
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfNonDomReferences: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          checkTypeOfNonDomReferences: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
-        expect(block).toContain(
-            'var _t1 = _t2 as any; ' +
-            '"" + (((_t1).value));');
+        expect(block).toContain('var _t1 = _t2 as any; ' + '"" + (((_t1).value));');
       });
     });
 
     describe('config.checkTypeOfAttributes', () => {
       const TEMPLATE = `<textarea dir disabled cols="3" [rows]="2">{{ref.value}}</textarea>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'Dir',
-        selector: '[dir]',
-        inputs: {'disabled': 'disabled', 'cols': 'cols', 'rows': 'rows'},
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          inputs: {'disabled': 'disabled', 'cols': 'cols', 'rows': 'rows'},
+        },
+      ];
 
       it('should assign string value to the input when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
@@ -1100,11 +1208,13 @@ describe('type check blocks', () => {
 
     describe('config.checkTypeOfPipes', () => {
       const TEMPLATE = `{{a | test:b:c}}`;
-      const PIPES: TestDeclaration[] = [{
-        type: 'pipe',
-        name: 'TestPipe',
-        pipeName: 'test',
-      }];
+      const PIPES: TestDeclaration[] = [
+        {
+          type: 'pipe',
+          name: 'TestPipe',
+          pipeName: 'test',
+        },
+      ];
 
       it('should check types of pipes when enabled', () => {
         const block = tcb(TEMPLATE, PIPES);
@@ -1125,14 +1235,17 @@ describe('type check blocks', () => {
       it('should use undefined for safe navigation operations when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '(null as any ? (null as any ? (((this).a))!.method : undefined)!() : undefined)');
+          '(null as any ? (null as any ? (((this).a))!.method : undefined)!() : undefined)',
+        );
         expect(block).toContain('(null as any ? (((this).a))!.b : undefined)');
         expect(block).toContain('(null as any ? (((this).a))![0] : undefined)');
         expect(block).toContain('(null as any ? (((((this).a)).optionalMethod))!() : undefined)');
       });
-      it('should use an \'any\' type for safe navigation operations when disabled', () => {
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, strictSafeNavigationTypes: false};
+      it("should use an 'any' type for safe navigation operations when disabled", () => {
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          strictSafeNavigationTypes: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('((((((this).a))!.method as any) as any)())');
         expect(block).toContain('((((this).a))!.b as any)');
@@ -1142,20 +1255,23 @@ describe('type check blocks', () => {
     });
 
     describe('config.strictSafeNavigationTypes (View Engine bug emulation)', () => {
-      const TEMPLATE =
-          `{{a.method()?.b}} {{a()?.method()}} {{a.method()?.[0]}} {{a.method()?.otherMethod?.()}}`;
+      const TEMPLATE = `{{a.method()?.b}} {{a()?.method()}} {{a.method()?.[0]}} {{a.method()?.otherMethod?.()}}`;
       it('should check the presence of a property/method on the receiver when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain('(null as any ? ((((this).a)).method())!.b : undefined)');
         expect(block).toContain(
-            '(null as any ? (null as any ? ((this).a())!.method : undefined)!() : undefined)');
+          '(null as any ? (null as any ? ((this).a())!.method : undefined)!() : undefined)',
+        );
         expect(block).toContain('(null as any ? ((((this).a)).method())![0] : undefined)');
         expect(block).toContain(
-            '(null as any ? ((null as any ? ((((this).a)).method())!.otherMethod : undefined))!() : undefined)');
+          '(null as any ? ((null as any ? ((((this).a)).method())!.otherMethod : undefined))!() : undefined)',
+        );
       });
       it('should not check the presence of a property/method on the receiver when disabled', () => {
-        const DISABLED_CONFIG:
-            TypeCheckingConfig = {...BASE_CONFIG, strictSafeNavigationTypes: false};
+        const DISABLED_CONFIG: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          strictSafeNavigationTypes: false,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('(((((this).a)).method()) as any).b');
         expect(block).toContain('(((((this).a()) as any).method as any)())');
@@ -1182,128 +1298,149 @@ describe('type check blocks', () => {
     describe('config.checkAccessModifiersForInputBindings', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
 
-      it('should assign restricted properties via element access for field names that are not JS identifiers',
-         () => {
-           const DIRECTIVES: TestDeclaration[] = [{
-             type: 'directive',
-             name: 'Dir',
-             selector: '[dir]',
-             inputs: {
-               'some-input.xs': 'inputA',
-             },
-             restrictedInputFields: ['some-input.xs'],
-             stringLiteralInputFields: ['some-input.xs'],
-           }];
-           const enableChecks:
-               TypeCheckingConfig = {...BASE_CONFIG, honorAccessModifiersForInputBindings: true};
-           const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
-           expect(block).toContain(
-               'var _t1 = null! as i0.Dir; ' +
-               '_t1["some-input.xs"] = (((this).foo)); ');
-         });
-
-      it('should assign restricted properties via property access', () => {
-        const DIRECTIVES: TestDeclaration[] = [{
-          type: 'directive',
-          name: 'Dir',
-          selector: '[dir]',
-          inputs: {
-            fieldA: 'inputA',
+      it('should assign restricted properties via element access for field names that are not JS identifiers', () => {
+        const DIRECTIVES: TestDeclaration[] = [
+          {
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {
+              'some-input.xs': 'inputA',
+            },
+            restrictedInputFields: ['some-input.xs'],
+            stringLiteralInputFields: ['some-input.xs'],
           },
-          restrictedInputFields: ['fieldA']
-        }];
-        const enableChecks:
-            TypeCheckingConfig = {...BASE_CONFIG, honorAccessModifiersForInputBindings: true};
+        ];
+        const enableChecks: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          honorAccessModifiersForInputBindings: true,
+        };
         const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
         expect(block).toContain(
-            'var _t1 = null! as i0.Dir; ' +
-            '_t1.fieldA = (((this).foo)); ');
+          'var _t1 = null! as i0.Dir; ' + '_t1["some-input.xs"] = (((this).foo)); ',
+        );
+      });
+
+      it('should assign restricted properties via property access', () => {
+        const DIRECTIVES: TestDeclaration[] = [
+          {
+            type: 'directive',
+            name: 'Dir',
+            selector: '[dir]',
+            inputs: {
+              fieldA: 'inputA',
+            },
+            restrictedInputFields: ['fieldA'],
+          },
+        ];
+        const enableChecks: TypeCheckingConfig = {
+          ...BASE_CONFIG,
+          honorAccessModifiersForInputBindings: true,
+        };
+        const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
+        expect(block).toContain('var _t1 = null! as i0.Dir; ' + '_t1.fieldA = (((this).foo)); ');
       });
     });
 
     describe('config.allowSignalsInTwoWayBindings', () => {
       it('should not unwrap signals in two-way binding expressions', () => {
         const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
-        const DIRECTIVES: TestDeclaration[] = [{
-          type: 'directive',
-          name: 'TwoWay',
-          selector: '[twoWay]',
-          inputs: {input: 'input'},
-          outputs: {inputChange: 'inputChange'},
-        }];
-        const block =
-            tcb(TEMPLATE, DIRECTIVES, {...BASE_CONFIG, allowSignalsInTwoWayBindings: false});
+        const DIRECTIVES: TestDeclaration[] = [
+          {
+            type: 'directive',
+            name: 'TwoWay',
+            selector: '[twoWay]',
+            inputs: {input: 'input'},
+            outputs: {inputChange: 'inputChange'},
+          },
+        ];
+        const block = tcb(TEMPLATE, DIRECTIVES, {
+          ...BASE_CONFIG,
+          allowSignalsInTwoWayBindings: false,
+        });
         expect(block).not.toContain('ɵunwrapWritableSignal');
       });
 
       it('should not unwrap signals in two-way bindings to generic directives', () => {
         const TEMPLATE = `<div twoWay [(input)]="value"></div>`;
-        const DIRECTIVES: TestDeclaration[] = [{
-          type: 'directive',
-          name: 'TwoWay',
-          selector: '[twoWay]',
-          inputs: {input: 'input'},
-          outputs: {inputChange: 'inputChange'},
-          isGeneric: true,
-        }];
-        const block =
-            tcb(TEMPLATE, DIRECTIVES, {...BASE_CONFIG, allowSignalsInTwoWayBindings: false});
+        const DIRECTIVES: TestDeclaration[] = [
+          {
+            type: 'directive',
+            name: 'TwoWay',
+            selector: '[twoWay]',
+            inputs: {input: 'input'},
+            outputs: {inputChange: 'inputChange'},
+            isGeneric: true,
+          },
+        ];
+        const block = tcb(TEMPLATE, DIRECTIVES, {
+          ...BASE_CONFIG,
+          allowSignalsInTwoWayBindings: false,
+        });
         expect(block).not.toContain('ɵunwrapWritableSignal');
       });
     });
   });
 
-  it('should use `any` type for type constructors with bound generic params ' +
-         'when `useInlineTypeConstructors` is `false`',
-     () => {
-       const template = `
+  it(
+    'should use `any` type for type constructors with bound generic params ' +
+      'when `useInlineTypeConstructors` is `false`',
+    () => {
+      const template = `
     <div dir
       [inputA]='foo'
       [inputB]='bar'
       ></div>
     `;
-       const declarations: TestDeclaration[] = [{
-         code: `
+      const declarations: TestDeclaration[] = [
+        {
+          code: `
            interface PrivateInterface{};
            export class Dir<T extends PrivateInterface, U extends string> {};
         `,
-         type: 'directive',
-         name: 'Dir',
-         selector: '[dir]',
-         inputs: {
-           inputA: 'inputA',
-           inputB: 'inputB',
-         },
-         isGeneric: true
-       }];
+          type: 'directive',
+          name: 'Dir',
+          selector: '[dir]',
+          inputs: {
+            inputA: 'inputA',
+            inputB: 'inputB',
+          },
+          isGeneric: true,
+        },
+      ];
 
-       const renderedTcb = tcb(template, declarations, {useInlineTypeConstructors: false});
+      const renderedTcb = tcb(template, declarations, {useInlineTypeConstructors: false});
 
-       expect(renderedTcb).toContain(`var _t1 = null! as i0.Dir<any, any>;`);
-       expect(renderedTcb).toContain(`_t1.inputA = (((this).foo));`);
-       expect(renderedTcb).toContain(`_t1.inputB = (((this).bar));`);
-     });
+      expect(renderedTcb).toContain(`var _t1 = null! as i0.Dir<any, any>;`);
+      expect(renderedTcb).toContain(`_t1.inputA = (((this).foo));`);
+      expect(renderedTcb).toContain(`_t1.inputB = (((this).bar));`);
+    },
+  );
 
   describe('host directives', () => {
     it('should generate bindings to host directive inputs/outputs', () => {
       const TEMPLATE = `<div dir-a [hostInput]="1" (hostOutput)="handle($event)"></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'DirA',
-        selector: '[dir-a]',
-        hostDirectives: [{
-          directive: {
-            type: 'directive',
-            name: 'HostDir',
-            selector: '',
-            inputs: {hostInput: 'hostInput'},
-            outputs: {hostOutput: 'hostOutput'},
-            isStandalone: true,
-          },
-          inputs: ['hostInput'],
-          outputs: ['hostOutput']
-        }]
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          hostDirectives: [
+            {
+              directive: {
+                type: 'directive',
+                name: 'HostDir',
+                selector: '',
+                inputs: {hostInput: 'hostInput'},
+                outputs: {hostOutput: 'hostOutput'},
+                isStandalone: true,
+              },
+              inputs: ['hostInput'],
+              outputs: ['hostOutput'],
+            },
+          ],
+        },
+      ];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('var _t1 = null! as i0.HostDir');
       expect(block).toContain('_t1.hostInput = (1)');
@@ -1312,23 +1449,27 @@ describe('type check blocks', () => {
 
     it('should generate bindings to aliased host directive inputs/outputs', () => {
       const TEMPLATE = `<div dir-a [inputAlias]="1" (outputAlias)="handle($event)"></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'DirA',
-        selector: '[dir-a]',
-        hostDirectives: [{
-          directive: {
-            type: 'directive',
-            name: 'HostDir',
-            selector: '',
-            inputs: {hostInput: 'hostInput'},
-            outputs: {hostOutput: 'hostOutput'},
-            isStandalone: true,
-          },
-          inputs: ['hostInput: inputAlias'],
-          outputs: ['hostOutput: outputAlias']
-        }]
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          hostDirectives: [
+            {
+              directive: {
+                type: 'directive',
+                name: 'HostDir',
+                selector: '',
+                inputs: {hostInput: 'hostInput'},
+                outputs: {hostOutput: 'hostOutput'},
+                isStandalone: true,
+              },
+              inputs: ['hostInput: inputAlias'],
+              outputs: ['hostOutput: outputAlias'],
+            },
+          ],
+        },
+      ];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('var _t1 = null! as i0.HostDir');
       expect(block).toContain('_t1.hostInput = (1)');
@@ -1337,29 +1478,35 @@ describe('type check blocks', () => {
 
     it('should generate bindings to an input from a multi-level host directive', () => {
       const TEMPLATE = `<div dir-a [multiLevelHostInput]="1"></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'DirA',
-        selector: '[dir-a]',
-        hostDirectives: [{
-          directive: {
-            type: 'directive',
-            name: 'HostDir',
-            selector: '',
-            isStandalone: true,
-            hostDirectives: [{
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          hostDirectives: [
+            {
               directive: {
                 type: 'directive',
-                name: 'MultiLevelHostDir',
+                name: 'HostDir',
                 selector: '',
                 isStandalone: true,
-                inputs: {'multiLevelHostInput': 'multiLevelHostInput'}
+                hostDirectives: [
+                  {
+                    directive: {
+                      type: 'directive',
+                      name: 'MultiLevelHostDir',
+                      selector: '',
+                      isStandalone: true,
+                      inputs: {'multiLevelHostInput': 'multiLevelHostInput'},
+                    },
+                    inputs: ['multiLevelHostInput'],
+                  },
+                ],
               },
-              inputs: ['multiLevelHostInput']
-            }]
-          },
-        }]
-      }];
+            },
+          ],
+        },
+      ];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('var _t1 = null! as i0.MultiLevelHostDir;');
       expect(block).toContain('_t1.multiLevelHostInput = (1)');
@@ -1367,31 +1514,33 @@ describe('type check blocks', () => {
 
     it('should generate references to host directives', () => {
       const TEMPLATE = `<div dir-a #a="hostA" #b="hostB">{{a.propA}} {{b.propB}}</div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'DirA',
-        selector: '[dir-a]',
-        hostDirectives: [
-          {
-            directive: {
-              type: 'directive',
-              name: 'HostA',
-              selector: '',
-              isStandalone: true,
-              exportAs: ['hostA'],
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          hostDirectives: [
+            {
+              directive: {
+                type: 'directive',
+                name: 'HostA',
+                selector: '',
+                isStandalone: true,
+                exportAs: ['hostA'],
+              },
             },
-          },
-          {
-            directive: {
-              type: 'directive',
-              name: 'HostB',
-              selector: '',
-              isStandalone: true,
-              exportAs: ['hostB'],
+            {
+              directive: {
+                type: 'directive',
+                name: 'HostB',
+                selector: '',
+                isStandalone: true,
+                exportAs: ['hostB'],
+              },
             },
-          }
-        ]
-      }];
+          ],
+        },
+      ];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('var _t2 = null! as i0.HostA;');
       expect(block).toContain('var _t4 = null! as i0.HostB;');
@@ -1400,22 +1549,26 @@ describe('type check blocks', () => {
 
     it('should generate bindings to the same input both from the host and host input', () => {
       const TEMPLATE = `<div dir-a [input]="1"></div>`;
-      const DIRECTIVES: TestDeclaration[] = [{
-        type: 'directive',
-        name: 'DirA',
-        selector: '[dir-a]',
-        inputs: {input: 'input'},
-        hostDirectives: [{
-          directive: {
-            type: 'directive',
-            name: 'HostDir',
-            selector: '',
-            inputs: {input: 'input'},
-            isStandalone: true,
-          },
-          inputs: ['input']
-        }]
-      }];
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          inputs: {input: 'input'},
+          hostDirectives: [
+            {
+              directive: {
+                type: 'directive',
+                name: 'HostDir',
+                selector: '',
+                inputs: {input: 'input'},
+                isStandalone: true,
+              },
+              inputs: ['input'],
+            },
+          ],
+        },
+      ];
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain('var _t1 = null! as i0.HostDir');
       expect(block).toContain('var _t2 = null! as i0.DirA;');
@@ -1423,59 +1576,65 @@ describe('type check blocks', () => {
       expect(block).toContain('_t2.input = (1)');
     });
 
-    it('should not generate bindings to host directive inputs/outputs that have not been exposed',
-       () => {
-         const TEMPLATE = `<div dir-a [hostInput]="1" (hostOutput)="handle($event)"></div>`;
-         const DIRECTIVES: TestDeclaration[] = [{
-           type: 'directive',
-           name: 'DirA',
-           selector: '[dir-a]',
-           hostDirectives: [{
-             directive: {
-               type: 'directive',
-               name: 'HostDir',
-               selector: '',
-               inputs: {hostInput: 'hostInput'},
-               outputs: {hostOutput: 'hostOutput'},
-               isStandalone: true,
-             },
-             // Intentionally left blank.
-             inputs: [],
-             outputs: []
-           }]
-         }];
-         const block = tcb(TEMPLATE, DIRECTIVES);
-         expect(block).not.toContain('var _t1 = null! i0.HostDir');
-         expect(block).not.toContain('_t1.hostInput = (1)');
-         expect(block).not.toContain('_t1["hostOutput"].subscribe');
-         expect(block).toContain('_t1.addEventListener("hostOutput"');
-       });
+    it('should not generate bindings to host directive inputs/outputs that have not been exposed', () => {
+      const TEMPLATE = `<div dir-a [hostInput]="1" (hostOutput)="handle($event)"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          hostDirectives: [
+            {
+              directive: {
+                type: 'directive',
+                name: 'HostDir',
+                selector: '',
+                inputs: {hostInput: 'hostInput'},
+                outputs: {hostOutput: 'hostOutput'},
+                isStandalone: true,
+              },
+              // Intentionally left blank.
+              inputs: [],
+              outputs: [],
+            },
+          ],
+        },
+      ];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).not.toContain('var _t1 = null! i0.HostDir');
+      expect(block).not.toContain('_t1.hostInput = (1)');
+      expect(block).not.toContain('_t1["hostOutput"].subscribe');
+      expect(block).toContain('_t1.addEventListener("hostOutput"');
+    });
 
-    it('should generate bindings to aliased host directive inputs/outputs on a host with its own aliases',
-       () => {
-         const TEMPLATE = `<div dir-a [inputAlias]="1" (outputAlias)="handle($event)"></div>`;
-         const DIRECTIVES: TestDeclaration[] = [{
-           type: 'directive',
-           name: 'DirA',
-           selector: '[dir-a]',
-           hostDirectives: [{
-             directive: {
-               type: 'directive',
-               name: 'HostDir',
-               selector: '',
-               inputs: {hostInput: 'hostInputAlias'},
-               outputs: {hostOutput: 'hostOutputAlias'},
-               isStandalone: true,
-             },
-             inputs: ['hostInputAlias: inputAlias'],
-             outputs: ['hostOutputAlias: outputAlias']
-           }]
-         }];
-         const block = tcb(TEMPLATE, DIRECTIVES);
-         expect(block).toContain('var _t1 = null! as i0.HostDir');
-         expect(block).toContain('_t1.hostInput = (1)');
-         expect(block).toContain('_t1["hostOutput"].subscribe');
-       });
+    it('should generate bindings to aliased host directive inputs/outputs on a host with its own aliases', () => {
+      const TEMPLATE = `<div dir-a [inputAlias]="1" (outputAlias)="handle($event)"></div>`;
+      const DIRECTIVES: TestDeclaration[] = [
+        {
+          type: 'directive',
+          name: 'DirA',
+          selector: '[dir-a]',
+          hostDirectives: [
+            {
+              directive: {
+                type: 'directive',
+                name: 'HostDir',
+                selector: '',
+                inputs: {hostInput: 'hostInputAlias'},
+                outputs: {hostOutput: 'hostOutputAlias'},
+                isStandalone: true,
+              },
+              inputs: ['hostInputAlias: inputAlias'],
+              outputs: ['hostOutputAlias: outputAlias'],
+            },
+          ],
+        },
+      ];
+      const block = tcb(TEMPLATE, DIRECTIVES);
+      expect(block).toContain('var _t1 = null! as i0.HostDir');
+      expect(block).toContain('_t1.hostInput = (1)');
+      expect(block).toContain('_t1["hostOutput"].subscribe');
+    });
   });
 
   describe('deferred blocks', () => {
@@ -1492,9 +1651,9 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE))
-          .toContain(
-              '"" + ((this).main()); "" + ((this).placeholder()); "" + ((this).loading()); "" + ((this).error());');
+      expect(tcb(TEMPLATE)).toContain(
+        '"" + ((this).main()); "" + ((this).placeholder()); "" + ((this).loading()); "" + ((this).error());',
+      );
     });
 
     it('should generate `when` trigger', () => {
@@ -1532,12 +1691,12 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE))
-          .toContain(
-              'if ((((this).expr)) === (0)) { "" + ((this).main()); } ' +
-              'else if ((((this).expr1)) === (1)) { "" + ((this).one()); } ' +
-              'else if ((((this).expr2)) === (2)) { "" + ((this).two()); } ' +
-              'else { "" + ((this).other()); }');
+      expect(tcb(TEMPLATE)).toContain(
+        'if ((((this).expr)) === (0)) { "" + ((this).main()); } ' +
+          'else if ((((this).expr1)) === (1)) { "" + ((this).one()); } ' +
+          'else if ((((this).expr2)) === (2)) { "" + ((this).two()); } ' +
+          'else { "" + ((this).other()); }',
+      );
     });
 
     it('should generate a guard expression for listener inside conditional', () => {
@@ -1557,11 +1716,14 @@ describe('type check blocks', () => {
 
       expect(result).toContain(`if ((((this).expr)) === (0)) (this).zero();`);
       expect(result).toContain(
-          `if (!((((this).expr)) === (0)) && (((this).expr)) === (1)) (this).one();`);
+        `if (!((((this).expr)) === (0)) && (((this).expr)) === (1)) (this).one();`,
+      );
       expect(result).toContain(
-          `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && (((this).expr)) === (2)) (this).two();`);
+        `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && (((this).expr)) === (2)) (this).two();`,
+      );
       expect(result).toContain(
-          `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && !((((this).expr)) === (2))) (this).otherwise();`);
+        `if (!((((this).expr)) === (0)) && !((((this).expr)) === (1)) && !((((this).expr)) === (2))) (this).otherwise();`,
+      );
     });
 
     it('should generate an if block with an `as` expression', () => {
@@ -1569,13 +1731,13 @@ describe('type check blocks', () => {
         {{alias}}
       }`;
 
-      expect(tcb(TEMPLATE))
-          .toContain('var _t1 = ((((this).expr)) === (1)); if (_t1) { "" + (_t1); } } }');
+      expect(tcb(TEMPLATE)).toContain(
+        'var _t1 = ((((this).expr)) === (1)); if (_t1) { "" + (_t1); } } }',
+      );
     });
 
-    it('should not generate the body of if blocks when `checkControlFlowBodies` is disabled',
-       () => {
-         const TEMPLATE = `
+    it('should not generate the body of if blocks when `checkControlFlowBodies` is disabled', () => {
+      const TEMPLATE = `
           @if (expr === 0) {
             {{main()}}
           } @else if (expr1 === 1) {
@@ -1587,13 +1749,13 @@ describe('type check blocks', () => {
           }
         `;
 
-         expect(tcb(TEMPLATE, undefined, {checkControlFlowBodies: false}))
-             .toContain(
-                 'if ((((this).expr)) === (0)) { } ' +
-                 'else if ((((this).expr1)) === (1)) { } ' +
-                 'else if ((((this).expr2)) === (2)) { } ' +
-                 'else { }');
-       });
+      expect(tcb(TEMPLATE, undefined, {checkControlFlowBodies: false})).toContain(
+        'if ((((this).expr)) === (0)) { } ' +
+          'else if ((((this).expr1)) === (1)) { } ' +
+          'else if ((((this).expr2)) === (2)) { } ' +
+          'else { }',
+      );
+    });
 
     it('should generate a switch block', () => {
       const TEMPLATE = `
@@ -1610,12 +1772,12 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE))
-          .toContain(
-              'switch (((this).expr)) { ' +
-              'case 1: "" + ((this).one()); break; ' +
-              'case 2: "" + ((this).two()); break; ' +
-              'default: "" + ((this).default()); break; }');
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { ' +
+          'case 1: "" + ((this).one()); break; ' +
+          'case 2: "" + ((this).two()); break; ' +
+          'default: "" + ((this).default()); break; }',
+      );
     });
 
     it('should generate a switch block that only has a default case', () => {
@@ -1627,8 +1789,9 @@ describe('type check blocks', () => {
         }
       `;
 
-      expect(tcb(TEMPLATE))
-          .toContain('switch (((this).expr)) { default: "" + ((this).default()); break; }');
+      expect(tcb(TEMPLATE)).toContain(
+        'switch (((this).expr)) { default: "" + ((this).default()); break; }',
+      );
     });
 
     it('should generate a guard expression for a listener inside a switch case', () => {
@@ -1670,21 +1833,20 @@ describe('type check blocks', () => {
         </ng-template>
       `;
 
-      expect(tcb(TEMPLATE))
-          .toContain(
-              'var _t1 = null! as any; { var _t2 = (_t1.exp); switch (_t2()) { ' +
-              'case "one": "" + ((this).one()); break; ' +
-              'case "two": "" + ((this).two()); break; ' +
-              'default: "" + ((this).default()); break; } }');
+      expect(tcb(TEMPLATE)).toContain(
+        'var _t1 = null! as any; { var _t2 = (_t1.exp); switch (_t2()) { ' +
+          'case "one": "" + ((this).one()); break; ' +
+          'case "two": "" + ((this).two()); break; ' +
+          'default: "" + ((this).default()); break; } }',
+      );
     });
 
     it('should handle an empty switch block', () => {
       expect(tcb('@switch (expr) {}')).toContain('if (true) { switch (((this).expr)) { } }');
     });
 
-    it('should not generate the body of a switch block if checkControlFlowBodies is disabled',
-       () => {
-         const TEMPLATE = `
+    it('should not generate the body of a switch block if checkControlFlowBodies is disabled', () => {
+      const TEMPLATE = `
           @switch (expr) {
             @case (1) {
               {{one()}}
@@ -1698,13 +1860,10 @@ describe('type check blocks', () => {
           }
         `;
 
-         expect(tcb(TEMPLATE, undefined, {checkControlFlowBodies: false}))
-             .toContain(
-                 'switch (((this).expr)) { ' +
-                 'case 1: break; ' +
-                 'case 2: break; ' +
-                 'default: break; }');
-       });
+      expect(tcb(TEMPLATE, undefined, {checkControlFlowBodies: false})).toContain(
+        'switch (((this).expr)) { ' + 'case 1: break; ' + 'case 2: break; ' + 'default: break; }',
+      );
+    });
   });
 
   describe('for loop blocks', () => {
@@ -1795,9 +1954,8 @@ describe('type check blocks', () => {
       expect(result).toContain('(this).trackingFn(_t2, _t1, ((this).prop));');
     });
 
-    it('should not generate the body of a for block when checkControlFlowBodies is disabled',
-       () => {
-         const TEMPLATE = `
+    it('should not generate the body of a for block when checkControlFlowBodies is disabled', () => {
+      const TEMPLATE = `
             @for (item of items; track item) {
               {{main(item)}}
             } @empty {
@@ -1805,11 +1963,11 @@ describe('type check blocks', () => {
             }
           `;
 
-         const result = tcb(TEMPLATE, undefined, {checkControlFlowBodies: false});
-         expect(result).toContain('for (const _t1 of ((this).items)!) {');
-         expect(result).not.toContain('.main');
-         expect(result).not.toContain('.empty');
-       });
+      const result = tcb(TEMPLATE, undefined, {checkControlFlowBodies: false});
+      expect(result).toContain('for (const _t1 of ((this).items)!) {');
+      expect(result).not.toContain('.main');
+      expect(result).not.toContain('.empty');
+    });
   });
 
   describe('import generation', () => {
@@ -1825,8 +1983,8 @@ describe('type check blocks', () => {
           classPropertyName: 'test',
           required: true,
           transform: null,
-        }
-      }
+        },
+      },
     };
 
     it('should prefer namespace imports in type check files for new imports', () => {
@@ -1839,26 +1997,30 @@ describe('type check blocks', () => {
     it('should re-use existing imports from original source files', () => {
       // This is especially important for inline type check blocks.
       // See: https://github.com/angular/angular/pull/53521#pullrequestreview-1778130879.
-      const {templateTypeChecker, program, programStrategy} = setup([{
-        fileName: absoluteFrom('/test.ts'),
-        templates: {'AppComponent': TEMPLATE},
-        declarations: [DIRECTIVE],
-        source: `
+      const {templateTypeChecker, program, programStrategy} = setup([
+        {
+          fileName: absoluteFrom('/test.ts'),
+          templates: {'AppComponent': TEMPLATE},
+          declarations: [DIRECTIVE],
+          source: `
           import {Component} from '@angular/core'; // should be re-used
 
           class AppComponent {}
           export class Dir {}
         `,
-      }]);
+        },
+      ]);
 
       // Trigger type check block generation.
       templateTypeChecker.getDiagnosticsForFile(
-          getSourceFileOrError(program, absoluteFrom('/test.ts')), OptimizeFor.SingleFile);
+        getSourceFileOrError(program, absoluteFrom('/test.ts')),
+        OptimizeFor.SingleFile,
+      );
 
       const testSf = getSourceFileOrError(programStrategy.getProgram(), absoluteFrom('/test.ts'));
-      expect(testSf.text)
-          .toContain(
-              `import { Component, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE } from '@angular/core'; // should be re-used`);
+      expect(testSf.text).toContain(
+        `import { Component, ɵINPUT_SIGNAL_BRAND_WRITE_TYPE } from '@angular/core'; // should be re-used`,
+      );
       expect(testSf.text).toContain(`[ɵINPUT_SIGNAL_BRAND_WRITE_TYPE]`);
     });
   });

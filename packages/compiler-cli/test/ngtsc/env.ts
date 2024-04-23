@@ -14,7 +14,13 @@ import ts from 'typescript';
 import {createCompilerHost, createProgram} from '../../index';
 import {mainXi18n} from '../../src/extract_i18n';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relativeFrom} from '../../src/ngtsc/file_system';
+import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  FileSystem,
+  getFileSystem,
+  relativeFrom,
+} from '../../src/ngtsc/file_system';
 import {Folder, MockFileSystem} from '../../src/ngtsc/file_system/testing';
 import {IndexedComponent} from '../../src/ngtsc/indexer';
 import {NgtscProgram} from '../../src/ngtsc/program';
@@ -24,7 +30,12 @@ import {TemplateTypeChecker} from '../../src/ngtsc/typecheck/api';
 import {setWrapHostForTest} from '../../src/transformers/compiler_host';
 
 type TsConfigOptionsValue =
-    string|boolean|number|null|TsConfigOptionsValue[]|{[key: string]: TsConfigOptionsValue};
+  | string
+  | boolean
+  | number
+  | null
+  | TsConfigOptionsValue[]
+  | {[key: string]: TsConfigOptionsValue};
 export type TsConfigOptions = {
   [key: string]: TsConfigOptionsValue;
 };
@@ -34,13 +45,16 @@ export type TsConfigOptions = {
  * TypeScript code.
  */
 export class NgtscTestEnvironment {
-  private multiCompileHostExt: MultiCompileHostExt|null = null;
-  private oldProgram: Program|null = null;
-  private changedResources: Set<string>|null = null;
+  private multiCompileHostExt: MultiCompileHostExt | null = null;
+  private oldProgram: Program | null = null;
+  private changedResources: Set<string> | null = null;
   private commandLineArgs = ['-p', this.basePath];
 
   private constructor(
-      private fs: FileSystem, readonly outDir: AbsoluteFsPath, readonly basePath: AbsoluteFsPath) {}
+    private fs: FileSystem,
+    readonly outDir: AbsoluteFsPath,
+    readonly basePath: AbsoluteFsPath,
+  ) {}
 
   /**
    * Set up a new testing environment.
@@ -58,7 +72,9 @@ export class NgtscTestEnvironment {
     const env = new NgtscTestEnvironment(fs, fs.resolve('/built'), workingDir);
     fs.chdir(workingDir);
 
-    env.write(absoluteFrom('/tsconfig-base.json'), `{
+    env.write(
+      absoluteFrom('/tsconfig-base.json'),
+      `{
       "compilerOptions": {
         "emitDecoratorMetadata": false,
         "experimentalDecorators": true,
@@ -81,7 +97,8 @@ export class NgtscTestEnvironment {
       "exclude": [
         "built"
       ]
-    }`);
+    }`,
+    );
 
     return env;
   }
@@ -158,7 +175,7 @@ export class NgtscTestEnvironment {
       throw new Error(`Not tracking written files - call enableMultipleCompilations()`);
     }
     const writtenFiles = new Set<string>();
-    this.multiCompileHostExt.getFilesWrittenSinceLastFlush().forEach(rawFile => {
+    this.multiCompileHostExt.getFilesWrittenSinceLastFlush().forEach((rawFile) => {
       if (rawFile.startsWith(this.outDir)) {
         writtenFiles.add(rawFile.slice(this.outDir.length));
       }
@@ -204,8 +221,10 @@ export class NgtscTestEnvironment {
     }
     this.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
 
-    if (extraOpts['_useHostForImportGeneration'] ||
-        extraOpts['_useHostForImportAndAliasGeneration']) {
+    if (
+      extraOpts['_useHostForImportGeneration'] ||
+      extraOpts['_useHostForImportAndAliasGeneration']
+    ) {
       setWrapHostForTest(makeWrapHost(new FileNameToModuleNameHost(this.fs)));
     }
   }
@@ -215,15 +234,20 @@ export class NgtscTestEnvironment {
    */
   driveMain(customTransformers?: CustomTransformers): void {
     const errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    let reuseProgram: {program: Program|undefined}|undefined = undefined;
+    let reuseProgram: {program: Program | undefined} | undefined = undefined;
     if (this.multiCompileHostExt !== null) {
       reuseProgram = {
         program: this.oldProgram || undefined,
       };
     }
     const exitCode = main(
-        this.commandLineArgs, errorSpy, undefined, customTransformers, reuseProgram,
-        this.changedResources);
+      this.commandLineArgs,
+      errorSpy,
+      undefined,
+      customTransformers,
+      reuseProgram,
+      this.changedResources,
+    );
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
     if (this.multiCompileHostExt !== null) {
@@ -236,7 +260,7 @@ export class NgtscTestEnvironment {
    */
   driveDiagnostics(expectedExitCode?: number): ReadonlyArray<ts.Diagnostic> {
     // ngtsc only produces ts.Diagnostic messages.
-    let reuseProgram: {program: Program|undefined}|undefined = undefined;
+    let reuseProgram: {program: Program | undefined} | undefined = undefined;
     if (this.multiCompileHostExt !== null) {
       reuseProgram = {
         program: this.oldProgram || undefined,
@@ -244,12 +268,17 @@ export class NgtscTestEnvironment {
     }
 
     const {exitCode, diagnostics} = mainDiagnosticsForTest(
-        this.commandLineArgs, undefined, reuseProgram, this.changedResources);
+      this.commandLineArgs,
+      undefined,
+      reuseProgram,
+      this.changedResources,
+    );
     if (expectedExitCode !== undefined) {
       expect(exitCode)
-          .withContext(`Expected program to exit with code ${
-              expectedExitCode}, but it actually exited with code ${exitCode}.`)
-          .toBe(expectedExitCode);
+        .withContext(
+          `Expected program to exit with code ${expectedExitCode}, but it actually exited with code ${exitCode}.`,
+        )
+        .toBe(expectedExitCode);
     }
 
     if (this.multiCompileHostExt !== null) {
@@ -270,7 +299,7 @@ export class NgtscTestEnvironment {
     return defaultGatherDiagnostics(program as api.Program) as ts.Diagnostic[];
   }
 
-  driveTemplateTypeChecker(): {program: ts.Program, checker: TemplateTypeChecker} {
+  driveTemplateTypeChecker(): {program: ts.Program; checker: TemplateTypeChecker} {
     const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
@@ -295,13 +324,9 @@ export class NgtscTestEnvironment {
     return (program as NgtscProgram).getApiDocumentation(entryPoint);
   }
 
-  driveXi18n(format: string, outputFileName: string, locale: string|null = null): void {
+  driveXi18n(format: string, outputFileName: string, locale: string | null = null): void {
     const errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    const args = [
-      ...this.commandLineArgs,
-      `--i18nFormat=${format}`,
-      `--outFile=${outputFileName}`,
-    ];
+    const args = [...this.commandLineArgs, `--i18nFormat=${format}`, `--outFile=${outputFileName}`];
     if (locale !== null) {
       args.push(`--locale=${locale}`);
     }
@@ -319,26 +344,34 @@ const ROOT_PREFIX = 'root/';
 
 class FileNameToModuleNameHost extends AugmentedCompilerHost {
   fileNameToModuleName(importedFilePath: string): string {
-    const relativeFilePath =
-        relativeFrom(this.fs.relative(this.fs.pwd(), this.fs.resolve(importedFilePath)));
+    const relativeFilePath = relativeFrom(
+      this.fs.relative(this.fs.pwd(), this.fs.resolve(importedFilePath)),
+    );
     const rootedPath = this.fs.join('root', relativeFilePath);
     return rootedPath.replace(/(\.d)?.ts$/, '');
   }
 
   resolveModuleNames(
-      moduleNames: string[], containingFile: string, reusedNames: string[]|undefined,
-      redirectedReference: ts.ResolvedProjectReference|undefined,
-      options: ts.CompilerOptions): (ts.ResolvedModule|undefined)[] {
-    return moduleNames.map(moduleName => {
+    moduleNames: string[],
+    containingFile: string,
+    reusedNames: string[] | undefined,
+    redirectedReference: ts.ResolvedProjectReference | undefined,
+    options: ts.CompilerOptions,
+  ): (ts.ResolvedModule | undefined)[] {
+    return moduleNames.map((moduleName) => {
       if (moduleName.startsWith(ROOT_PREFIX)) {
         // Strip the artificially added root prefix.
         moduleName = '/' + moduleName.slice(ROOT_PREFIX.length);
       }
 
-      return ts
-          .resolveModuleName(
-              moduleName, containingFile, options, this, /* cache */ undefined, redirectedReference)
-          .resolvedModule;
+      return ts.resolveModuleName(
+        moduleName,
+        containingFile,
+        options,
+        this,
+        /* cache */ undefined,
+        redirectedReference,
+      ).resolvedModule;
     });
   }
 }
@@ -348,8 +381,11 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
   private writtenFiles = new Set<string>();
 
   override getSourceFile(
-      fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void,
-      shouldCreateNewSourceFile?: boolean): ts.SourceFile|undefined {
+    fileName: string,
+    languageVersion: ts.ScriptTarget,
+    onError?: (message: string) => void,
+    shouldCreateNewSourceFile?: boolean,
+  ): ts.SourceFile | undefined {
     if (this.cache.has(fileName)) {
       return this.cache.get(fileName)!;
     }
@@ -365,9 +401,12 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
   }
 
   override writeFile(
-      fileName: string, data: string, writeByteOrderMark: boolean,
-      onError: ((message: string) => void)|undefined,
-      sourceFiles?: ReadonlyArray<ts.SourceFile>): void {
+    fileName: string,
+    data: string,
+    writeByteOrderMark: boolean,
+    onError: ((message: string) => void) | undefined,
+    sourceFiles?: ReadonlyArray<ts.SourceFile>,
+  ): void {
     super.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
     this.writtenFiles.add(fileName);
   }
@@ -382,7 +421,7 @@ class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.Co
 }
 
 class ResourceLoadingCompileHost extends AugmentedCompilerHost implements api.CompilerHost {
-  readResource(fileName: string): Promise<string>|string {
+  readResource(fileName: string): Promise<string> | string {
     const resource = this.readFile(fileName);
     if (resource === undefined) {
       throw new Error(`Resource ${fileName} not found`);
@@ -400,7 +439,7 @@ function makeWrapHost(wrapped: AugmentedCompilerHost): (host: ts.CompilerHost) =
           return (wrapped as any)[name]!.bind(wrapped);
         }
         return (target as any)[name];
-      }
+      },
     });
   };
 }

@@ -13,7 +13,7 @@ import {TcbLocation} from './symbols';
 /**
  * An autocompletion source of any kind.
  */
-export type Completion = ReferenceCompletion|VariableCompletion;
+export type Completion = ReferenceCompletion | VariableCompletion;
 
 /**
  * Discriminant of an autocompletion source (a `Completion`).
@@ -70,11 +70,11 @@ export interface GlobalCompletion {
    * accounted for in the preparation of `templateContext`. Entries here shadow component members of
    * the same name (from the `componentContext` completions).
    */
-  templateContext: Map<string, ReferenceCompletion|VariableCompletion>;
+  templateContext: Map<string, ReferenceCompletion | VariableCompletion>;
 
   /**
    * A location within the type-checking shim where TypeScript's completion APIs can be used to
    * access completions for the AST node of the cursor position (primitive constants).
    */
-  nodeContext: TcbLocation|null;
+  nodeContext: TcbLocation | null;
 }

@@ -35,25 +35,31 @@ export const MODEL_INITIALIZER_FN: InitializerApiFunction = {
  * Attempts to parse a model class member. Returns the parsed model mapping if possible.
  */
 export function tryParseSignalModelMapping(
-    member: Pick<ClassMember, 'name'|'value'|'accessLevel'>, reflector: ReflectionHost,
-    importTracker: ImportedSymbolsTracker): ModelMapping|null {
+  member: Pick<ClassMember, 'name' | 'value' | 'accessLevel'>,
+  reflector: ReflectionHost,
+  importTracker: ImportedSymbolsTracker,
+): ModelMapping | null {
   if (member.value === null) {
     return null;
   }
 
-  const model =
-      tryParseInitializerApi([MODEL_INITIALIZER_FN], member.value, reflector, importTracker);
+  const model = tryParseInitializerApi(
+    [MODEL_INITIALIZER_FN],
+    member.value,
+    reflector,
+    importTracker,
+  );
   if (model === null) {
     return null;
   }
 
   validateAccessOfInitializerApiMember(model, member);
 
-  const optionsNode =
-      (model.isRequired ? model.call.arguments[0] : model.call.arguments[1]) as ts.Expression |
-      undefined;
+  const optionsNode = (model.isRequired ? model.call.arguments[0] : model.call.arguments[1]) as
+    | ts.Expression
+    | undefined;
   const options =
-      optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
+    optionsNode !== undefined ? parseAndValidateInputAndOutputOptions(optionsNode) : null;
   const classPropertyName = member.name;
   const bindingPropertyName = options?.alias ?? classPropertyName;
 
@@ -70,6 +76,6 @@ export function tryParseSignalModelMapping(
       isSignal: false,
       classPropertyName,
       bindingPropertyName: bindingPropertyName + 'Change',
-    }
+    },
   };
 }

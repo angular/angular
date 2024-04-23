@@ -15,8 +15,9 @@ import {extractJsDocTags} from './jsdoc_extractor';
  */
 export function isInternal(member: ts.HasJSDoc): boolean {
   return (
-      extractJsDocTags(member).some((tag) => tag.name === 'internal') ||
-      hasLeadingInternalComment(member));
+    extractJsDocTags(member).some((tag) => tag.name === 'internal') ||
+    hasLeadingInternalComment(member)
+  );
 }
 
 /*
@@ -25,14 +26,14 @@ export function isInternal(member: ts.HasJSDoc): boolean {
 function hasLeadingInternalComment(member: ts.Node): boolean {
   const memberText = member.getSourceFile().text;
   return (
-      ts.reduceEachLeadingCommentRange(
-          memberText,
-          member.getFullStart(),
-          (pos, end, kind, hasTrailingNewLine, containsInternal) => {
-            return containsInternal || memberText.slice(pos, end).includes('@internal');
-          },
-          /* state */ false,
-          /* initial */ false,
-          ) ??
-      false);
+    ts.reduceEachLeadingCommentRange(
+      memberText,
+      member.getFullStart(),
+      (pos, end, kind, hasTrailingNewLine, containsInternal) => {
+        return containsInternal || memberText.slice(pos, end).includes('@internal');
+      },
+      /* state */ false,
+      /* initial */ false,
+    ) ?? false
+  );
 }

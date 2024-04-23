@@ -7,7 +7,14 @@
  */
 
 import {DocEntry} from '@angular/compiler-cli/src/ngtsc/docs';
-import {ClassEntry, EntryType, MemberTags, MemberType, MethodEntry, PropertyEntry} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
+import {
+  ClassEntry,
+  EntryType,
+  MemberTags,
+  MemberType,
+  MethodEntry,
+  PropertyEntry,
+} from '@angular/compiler-cli/src/ngtsc/docs/src/entities';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 
@@ -25,11 +32,14 @@ runInEachFileSystem(() => {
     });
 
     it('should extract classes', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {}
 
         export class CustomSlider {}
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(2);
@@ -46,12 +56,15 @@ runInEachFileSystem(() => {
     });
 
     it('should extract class members', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
           firstName(): string { return 'Morgan'; }
           age: number = 25;
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
@@ -69,7 +82,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract methods with overloads', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
           ident(value: boolean): boolean
           ident(value: number): number
@@ -77,7 +92,8 @@ runInEachFileSystem(() => {
             return 0;
           }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
@@ -97,12 +113,15 @@ runInEachFileSystem(() => {
     });
 
     it('should not extract Angular-internal members', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
           ɵfirstName(): string { return 'Morgan'; }
           _age: number = 25;
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
@@ -110,18 +129,21 @@ runInEachFileSystem(() => {
     });
 
     it('should extract a method with a rest parameter', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
           getNames(prefix: string, ...ids: string[]): string[] {
             return [];
           }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
       const methodEntry = classEntry.members[0] as MethodEntry;
-      const [prefixParamEntry, idsParamEntry, ] = methodEntry.params;
+      const [prefixParamEntry, idsParamEntry] = methodEntry.params;
 
       expect(prefixParamEntry.name).toBe('prefix');
       expect(prefixParamEntry.type).toBe('string');
@@ -133,11 +155,14 @@ runInEachFileSystem(() => {
     });
 
     it('should extract class method params', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
           setPhone(num: string, intl: number = 1, area?: string): void {}
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -164,13 +189,16 @@ runInEachFileSystem(() => {
     });
 
     it('should not extract private class members', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
             private ssn: string;
             private getSsn(): string { return ''; }
             private static printSsn(): void { }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -180,7 +208,9 @@ runInEachFileSystem(() => {
 
     it('should extract member tags', () => {
       // Test both properties and methods with zero, one, and multiple tags.
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
             eyeColor = 'brown';
             protected name: string;
@@ -195,7 +225,8 @@ runInEachFileSystem(() => {
             static getCountry(): string { return 'USA'; }
             protected getBirthday?(): string { return '1/1/2000'; }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -236,7 +267,9 @@ runInEachFileSystem(() => {
 
     it('should extract member tags', () => {
       // Test both properties and methods with zero, one, and multiple tags.
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
             eyeColor = 'brown';
 
@@ -252,7 +285,8 @@ runInEachFileSystem(() => {
             // @internal 
             _doSomethingElse() {}
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
 
@@ -267,7 +301,9 @@ runInEachFileSystem(() => {
 
     it('should extract getters and setters', () => {
       // Test getter-only, a getter + setter, and setter-only.
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
           get userId(): number { return 123; }
 
@@ -276,7 +312,8 @@ runInEachFileSystem(() => {
 
           set isAdmin(value: boolean) { }
         }
-      `);
+      `,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       const classEntry = docs[0] as ClassEntry;
@@ -284,7 +321,7 @@ runInEachFileSystem(() => {
 
       expect(classEntry.members.length).toBe(4);
 
-      const [userIdGetter, userNameGetter, userNameSetter, isAdminSetter, ] = classEntry.members;
+      const [userIdGetter, userNameGetter, userNameSetter, isAdminSetter] = classEntry.members;
 
       expect(userIdGetter.name).toBe('userId');
       expect(userIdGetter.memberType).toBe(MemberType.Getter);
@@ -297,14 +334,17 @@ runInEachFileSystem(() => {
     });
 
     it('should extract abstract classes', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export abstract class UserProfile {
           firstName: string;
           abstract lastName: string;
 
           save(): void { }
           abstract reset(): void;
-        }`);
+        }`,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -329,7 +369,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract class generic parameters', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile<T> {
           constructor(public name: T) { }
         }
@@ -348,7 +390,8 @@ runInEachFileSystem(() => {
 
         export class ExecProfile<W extends String = string> {
           constructor(public name: W) { }
-        }`);
+        }`,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(5);
@@ -397,10 +440,13 @@ runInEachFileSystem(() => {
     });
 
     it('should extract method generic parameters', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         export class UserProfile {
           save<T>(data: T): void { }
-        }`);
+        }`,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -414,7 +460,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract inherited members', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         class Ancestor {
           id: string;
           value: string|number;
@@ -432,7 +480,8 @@ runInEachFileSystem(() => {
 
           save(value: number): number;
           save(value: string|number): string|number { return 0; }
-        }`);
+        }`,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -469,7 +518,9 @@ runInEachFileSystem(() => {
     });
 
     it('should extract inherited getters/setters', () => {
-      env.write('index.ts', `
+      env.write(
+        'index.ts',
+        `
         class Ancestor {
           get name(): string { return ''; }
           set name(v: string) { }
@@ -487,7 +538,8 @@ runInEachFileSystem(() => {
 
         export class Child extends Parent {
           get id(): string { return ''; }
-        }`);
+        }`,
+      );
 
       const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
       expect(docs.length).toBe(1);
@@ -496,7 +548,7 @@ runInEachFileSystem(() => {
       expect(classEntry.members.length).toBe(4);
 
       const [idEntry, nameEntry, ageGetterEntry, ageSetterEntry] =
-          classEntry.members as PropertyEntry[];
+        classEntry.members as PropertyEntry[];
 
       // When the child class overrides an accessor pair with another accessor, it overrides
       // *both* the getter and the setter, resulting (in this case) in just a getter.

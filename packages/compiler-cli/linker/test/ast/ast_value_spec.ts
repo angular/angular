@@ -28,17 +28,20 @@ const nestedObj = factory.createObjectLiteral([
   {propertyName: 'x', quoted: false, value: factory.createLiteral(42)},
   {propertyName: 'y', quoted: false, value: factory.createLiteral('X')},
 ]);
-const nestedArray =
-    factory.createArrayLiteral([factory.createLiteral(1), factory.createLiteral(2)]);
+const nestedArray = factory.createArrayLiteral([
+  factory.createLiteral(1),
+  factory.createLiteral(2),
+]);
 const obj = AstObject.parse<TestObject, ts.Expression>(
-    factory.createObjectLiteral([
-      {propertyName: 'a', quoted: false, value: factory.createLiteral(42)},
-      {propertyName: 'b', quoted: false, value: factory.createLiteral('X')},
-      {propertyName: 'c', quoted: false, value: factory.createLiteral(true)},
-      {propertyName: 'd', quoted: false, value: nestedObj},
-      {propertyName: 'e', quoted: false, value: nestedArray},
-    ]),
-    host);
+  factory.createObjectLiteral([
+    {propertyName: 'a', quoted: false, value: factory.createLiteral(42)},
+    {propertyName: 'b', quoted: false, value: factory.createLiteral('X')},
+    {propertyName: 'c', quoted: false, value: factory.createLiteral(true)},
+    {propertyName: 'd', quoted: false, value: nestedObj},
+    {propertyName: 'e', quoted: false, value: nestedArray},
+  ]),
+  host,
+);
 
 describe('AstObject', () => {
   describe('has()', () => {
@@ -59,8 +62,9 @@ describe('AstObject', () => {
 
     it('should throw an error if the property is not a number', () => {
       // @ts-expect-error
-      expect(() => obj.getNumber('b'))
-          .toThrowError('Unsupported syntax, expected a numeric literal.');
+      expect(() => obj.getNumber('b')).toThrowError(
+        'Unsupported syntax, expected a numeric literal.',
+      );
     });
   });
 
@@ -71,8 +75,9 @@ describe('AstObject', () => {
 
     it('should throw an error if the property is not a string', () => {
       // @ts-expect-error
-      expect(() => obj.getString('a'))
-          .toThrowError('Unsupported syntax, expected a string literal.');
+      expect(() => obj.getString('a')).toThrowError(
+        'Unsupported syntax, expected a string literal.',
+      );
     });
   });
 
@@ -83,8 +88,9 @@ describe('AstObject', () => {
 
     it('should throw an error if the property is not a boolean', () => {
       // @ts-expect-error
-      expect(() => obj.getBoolean('b'))
-          .toThrowError('Unsupported syntax, expected a boolean literal.');
+      expect(() => obj.getBoolean('b')).toThrowError(
+        'Unsupported syntax, expected a boolean literal.',
+      );
     });
   });
 
@@ -95,24 +101,25 @@ describe('AstObject', () => {
 
     it('should throw an error if the property is not an object expression', () => {
       // @ts-expect-error
-      expect(() => obj.getObject('b'))
-          .toThrowError('Unsupported syntax, expected an object literal.');
+      expect(() => obj.getObject('b')).toThrowError(
+        'Unsupported syntax, expected an object literal.',
+      );
     });
   });
 
   describe('getArray()', () => {
-    it('should return an array of AstValue instances of parsed from the value of the property',
-       () => {
-         expect(obj.getArray('e')).toEqual([
-           new AstValue(factory.createLiteral(1), host),
-           new AstValue(factory.createLiteral(2), host)
-         ]);
-       });
+    it('should return an array of AstValue instances of parsed from the value of the property', () => {
+      expect(obj.getArray('e')).toEqual([
+        new AstValue(factory.createLiteral(1), host),
+        new AstValue(factory.createLiteral(2), host),
+      ]);
+    });
 
     it('should throw an error if the property is not an array of expressions', () => {
       // @ts-expect-error
-      expect(() => obj.getArray('b'))
-          .toThrowError('Unsupported syntax, expected an array literal.');
+      expect(() => obj.getArray('b')).toThrowError(
+        'Unsupported syntax, expected an array literal.',
+      );
     });
   });
 
@@ -123,8 +130,9 @@ describe('AstObject', () => {
     });
 
     it('should throw an error if the property does not exist', () => {
-      expect(() => obj.getOpaque('missing'))
-          .toThrowError(`Expected property 'missing' to be present.`);
+      expect(() => obj.getOpaque('missing')).toThrowError(
+        `Expected property 'missing' to be present.`,
+      );
 
       // @ts-expect-error
       expect(() => obj.getOpaque('x')).toThrowError(`Expected property 'x' to be present.`);
@@ -137,8 +145,9 @@ describe('AstObject', () => {
     });
 
     it('should throw an error if the property does not exist', () => {
-      expect(() => obj.getNode('missing'))
-          .toThrowError(`Expected property 'missing' to be present.`);
+      expect(() => obj.getNode('missing')).toThrowError(
+        `Expected property 'missing' to be present.`,
+      );
 
       // @ts-expect-error
       expect(() => obj.getNode('x')).toThrowError(`Expected property 'x' to be present.`);
@@ -152,8 +161,9 @@ describe('AstObject', () => {
     });
 
     it('should throw an error if the property does not exist', () => {
-      expect(() => obj.getValue('missing'))
-          .toThrowError(`Expected property 'missing' to be present.`);
+      expect(() => obj.getValue('missing')).toThrowError(
+        `Expected property 'missing' to be present.`,
+      );
 
       // @ts-expect-error
       expect(() => obj.getValue('x')).toThrowError(`Expected property 'x' to be present.`);
@@ -162,7 +172,7 @@ describe('AstObject', () => {
 
   describe('toLiteral()', () => {
     it('should convert the AstObject to a raw object with each property mapped', () => {
-      expect(obj.toLiteral(value => value.getOpaque())).toEqual({
+      expect(obj.toLiteral((value) => value.getOpaque())).toEqual({
         a: obj.getOpaque('a'),
         b: obj.getOpaque('b'),
         c: obj.getOpaque('c'),
@@ -174,13 +184,15 @@ describe('AstObject', () => {
 
   describe('toMap()', () => {
     it('should convert the AstObject to a Map with each property mapped', () => {
-      expect(obj.toMap(value => value.getOpaque())).toEqual(new Map([
-        ['a', obj.getOpaque('a')],
-        ['b', obj.getOpaque('b')],
-        ['c', obj.getOpaque('c')],
-        ['d', obj.getOpaque('d')],
-        ['e', obj.getOpaque('e')],
-      ]));
+      expect(obj.toMap((value) => value.getOpaque())).toEqual(
+        new Map([
+          ['a', obj.getOpaque('a')],
+          ['b', obj.getOpaque('b')],
+          ['c', obj.getOpaque('c')],
+          ['d', obj.getOpaque('d')],
+          ['e', obj.getOpaque('e')],
+        ]),
+      );
     });
   });
 });
@@ -197,7 +209,9 @@ describe('AstValue', () => {
 
     it('should return the name of a property access', () => {
       const propertyAccess = factory.createPropertyAccess(
-          factory.createIdentifier('Foo'), factory.createIdentifier('Bar'));
+        factory.createIdentifier('Foo'),
+        factory.createIdentifier('Bar'),
+      );
       expect(createAstValue(propertyAccess).getSymbolName()).toEqual('Bar');
     });
 
@@ -223,8 +237,9 @@ describe('AstValue', () => {
 
     it('should throw an error if the property is not a number', () => {
       // @ts-expect-error
-      expect(() => createAstValue<string>(factory.createLiteral('a')).getNumber())
-          .toThrowError('Unsupported syntax, expected a numeric literal.');
+      expect(() => createAstValue<string>(factory.createLiteral('a')).getNumber()).toThrowError(
+        'Unsupported syntax, expected a numeric literal.',
+      );
     });
   });
 
@@ -245,8 +260,9 @@ describe('AstValue', () => {
 
     it('should throw an error if the property is not a string', () => {
       // @ts-expect-error
-      expect(() => createAstValue<number>(factory.createLiteral(42)).getString())
-          .toThrowError('Unsupported syntax, expected a string literal.');
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getString()).toThrowError(
+        'Unsupported syntax, expected a string literal.',
+      );
     });
   });
 
@@ -267,8 +283,9 @@ describe('AstValue', () => {
 
     it('should throw an error if the property is not a boolean', () => {
       // @ts-expect-error
-      expect(() => createAstValue<number>(factory.createLiteral(42)).getBoolean())
-          .toThrowError('Unsupported syntax, expected a boolean literal.');
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getBoolean()).toThrowError(
+        'Unsupported syntax, expected a boolean literal.',
+      );
     });
   });
 
@@ -284,14 +301,16 @@ describe('AstValue', () => {
 
   describe('getObject', () => {
     it('should return the AstObject value of the AstValue', () => {
-      expect(createAstValue<object>(nestedObj).getObject())
-          .toEqual(AstObject.parse(nestedObj, host));
+      expect(createAstValue<object>(nestedObj).getObject()).toEqual(
+        AstObject.parse(nestedObj, host),
+      );
     });
 
     it('should throw an error if the property is not an object literal', () => {
       // @ts-expect-error
-      expect(() => createAstValue<number>(factory.createLiteral(42)).getObject())
-          .toThrowError('Unsupported syntax, expected an object literal.');
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getObject()).toThrowError(
+        'Unsupported syntax, expected an object literal.',
+      );
     });
   });
 
@@ -315,16 +334,19 @@ describe('AstValue', () => {
 
     it('should throw an error if the property is not an array', () => {
       // @ts-expect-error
-      expect(() => createAstValue<number>(factory.createLiteral(42)).getArray())
-          .toThrowError('Unsupported syntax, expected an array literal.');
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getArray()).toThrowError(
+        'Unsupported syntax, expected an array literal.',
+      );
     });
   });
 
   describe('isFunction', () => {
     it('should return true if the value is a function expression', () => {
       const funcExpr = factory.createFunctionExpression(
-          'foo', [],
-          factory.createBlock([factory.createReturnStatement(factory.createLiteral(42))]));
+        'foo',
+        [],
+        factory.createBlock([factory.createReturnStatement(factory.createLiteral(42))]),
+      );
       expect(createAstValue(funcExpr).isFunction()).toEqual(true);
     });
 
@@ -336,41 +358,49 @@ describe('AstValue', () => {
   describe('getFunctionReturnValue', () => {
     it('should return the "return value" of the function expression', () => {
       const funcExpr = factory.createFunctionExpression(
-          'foo', [],
-          factory.createBlock([factory.createReturnStatement(factory.createLiteral(42))]));
-      expect(createAstValue<Function>(funcExpr).getFunctionReturnValue())
-          .toEqual(createAstValue(factory.createLiteral(42)));
+        'foo',
+        [],
+        factory.createBlock([factory.createReturnStatement(factory.createLiteral(42))]),
+      );
+      expect(createAstValue<Function>(funcExpr).getFunctionReturnValue()).toEqual(
+        createAstValue(factory.createLiteral(42)),
+      );
     });
 
     it('should throw an error if the property is not a function expression', () => {
-      // @ts-expect-error
-      expect(() => createAstValue<number>(factory.createLiteral(42)).getFunctionReturnValue())
-          .toThrowError('Unsupported syntax, expected a function.');
+      expect(() =>
+        // @ts-expect-error
+        createAstValue<number>(factory.createLiteral(42)).getFunctionReturnValue(),
+      ).toThrowError('Unsupported syntax, expected a function.');
     });
 
-    it('should throw an error if the property is a function expression with no return value',
-       () => {
-         const funcExpr = factory.createFunctionExpression(
-             'foo', [], factory.createBlock([factory.createExpressionStatement(
-                            factory.createLiteral('do nothing'))]));
-         expect(() => createAstValue<Function>(funcExpr).getFunctionReturnValue())
-             .toThrowError(
-                 'Unsupported syntax, expected a function body with a single return statement.');
-       });
+    it('should throw an error if the property is a function expression with no return value', () => {
+      const funcExpr = factory.createFunctionExpression(
+        'foo',
+        [],
+        factory.createBlock([
+          factory.createExpressionStatement(factory.createLiteral('do nothing')),
+        ]),
+      );
+      expect(() => createAstValue<Function>(funcExpr).getFunctionReturnValue()).toThrowError(
+        'Unsupported syntax, expected a function body with a single return statement.',
+      );
+    });
   });
 
   describe('getFunctionParameters', () => {
     it('should return the parameters of a function expression', () => {
       const funcExpr = factory.createFunctionExpression('foo', ['a', 'b'], factory.createBlock([]));
-      expect(createAstValue<Function>(funcExpr).getFunctionParameters()).toEqual([
-        'a', 'b'
-      ].map(name => createAstValue(factory.createIdentifier(name))));
+      expect(createAstValue<Function>(funcExpr).getFunctionParameters()).toEqual(
+        ['a', 'b'].map((name) => createAstValue(factory.createIdentifier(name))),
+      );
     });
 
     it('should throw an error if the property is not a function declaration', () => {
-      // @ts-expect-error
-      expect(() => createAstValue<number>(factory.createLiteral(42)).getFunctionParameters())
-          .toThrowError('Unsupported syntax, expected a function.');
+      expect(() =>
+        // @ts-expect-error
+        createAstValue<number>(factory.createLiteral(42)).getFunctionParameters(),
+      ).toThrowError('Unsupported syntax, expected a function.');
     });
   });
 
@@ -389,25 +419,25 @@ describe('AstValue', () => {
   describe('getCallee', () => {
     it('should return the callee expression as a value', () => {
       const callExpr = factory.createCallExpression(factory.createIdentifier('foo'), [], false);
-      expect(createAstValue<Function>(callExpr).getCallee())
-          .toEqual(createAstValue(factory.createIdentifier('foo')));
+      expect(createAstValue<Function>(callExpr).getCallee()).toEqual(
+        createAstValue(factory.createIdentifier('foo')),
+      );
     });
 
     it('should throw an error if the value is not a call expression', () => {
-      expect(() => createAstValue<number>(factory.createLiteral(42)).getCallee())
-          .toThrowError('Unsupported syntax, expected a call expression.');
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getCallee()).toThrowError(
+        'Unsupported syntax, expected a call expression.',
+      );
     });
   });
 
   describe('getArguments', () => {
     it('should return the arguments as an array of values', () => {
       const callExpr = factory.createCallExpression(
-          factory.createIdentifier('foo'),
-          [
-            factory.createLiteral(1),
-            factory.createLiteral(2),
-          ],
-          false);
+        factory.createIdentifier('foo'),
+        [factory.createLiteral(1), factory.createLiteral(2)],
+        false,
+      );
       expect(createAstValue<Function>(callExpr).getArguments()).toEqual([
         createAstValue(factory.createLiteral(1)),
         createAstValue(factory.createLiteral(2)),
@@ -415,34 +445,45 @@ describe('AstValue', () => {
     });
 
     it('should throw an error if the value is not a call expression', () => {
-      expect(() => createAstValue<number>(factory.createLiteral(42)).getArguments())
-          .toThrowError('Unsupported syntax, expected a call expression.');
+      expect(() => createAstValue<number>(factory.createLiteral(42)).getArguments()).toThrowError(
+        'Unsupported syntax, expected a call expression.',
+      );
     });
   });
 
   describe('getOpaque()', () => {
     it('should return the value wrapped in a `WrappedNodeExpr`', () => {
-      expect(createAstValue(factory.createLiteral(42)).getOpaque())
-          .toEqual(jasmine.any(WrappedNodeExpr));
-      expect(createAstValue(factory.createLiteral(42)).getOpaque().node)
-          .toEqual(factory.createLiteral(42));
+      expect(createAstValue(factory.createLiteral(42)).getOpaque()).toEqual(
+        jasmine.any(WrappedNodeExpr),
+      );
+      expect(createAstValue(factory.createLiteral(42)).getOpaque().node).toEqual(
+        factory.createLiteral(42),
+      );
     });
   });
 
   describe('getRange()', () => {
     it('should return the source range of the AST node', () => {
       const file = ts.createSourceFile(
-          'test.ts', '// preamble\nx = \'moo\';', ts.ScriptTarget.ES2015,
-          /* setParentNodes */ true);
+        'test.ts',
+        "// preamble\nx = 'moo';",
+        ts.ScriptTarget.ES2015,
+        /* setParentNodes */ true,
+      );
 
       // Grab the `'moo'` string literal from the generated AST
       const stmt = file.statements[0] as ts.ExpressionStatement;
-      const mooString =
-          (stmt.expression as ts.AssignmentExpression<ts.Token<ts.SyntaxKind.EqualsToken>>).right;
+      const mooString = (
+        stmt.expression as ts.AssignmentExpression<ts.Token<ts.SyntaxKind.EqualsToken>>
+      ).right;
 
       // Check that this string literal has the expected range.
-      expect(createAstValue(mooString).getRange())
-          .toEqual({startLine: 1, startCol: 4, startPos: 16, endPos: 21});
+      expect(createAstValue(mooString).getRange()).toEqual({
+        startLine: 1,
+        startCol: 4,
+        startPos: 16,
+        endPos: 21,
+      });
     });
   });
 });
