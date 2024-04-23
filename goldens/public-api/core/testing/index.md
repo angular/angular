@@ -27,9 +27,6 @@ import { ɵDeferBlockDetails } from '@angular/core';
 // @public
 export const __core_private_testing_placeholder__ = "";
 
-// @public @deprecated (undocumented)
-export function async(fn: Function): (done: any) => any;
-
 // @public
 export abstract class ComponentFixture<T> {
     constructor(componentRef: ComponentRef<T>);

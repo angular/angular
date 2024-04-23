@@ -41,12 +41,3 @@ export function waitForAsync(fn: Function): (done: any) => any {
         'Please make sure that your environment includes zone.js/testing');
   };
 }
-
-/**
- * @deprecated use `waitForAsync()`, (expected removal in v12)
- * @see {@link waitForAsync}
- * @publicApi
- * */
-export function async(fn: Function): (done: any) => any {
-  return waitForAsync(fn);
-}
