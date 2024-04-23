@@ -9,7 +9,7 @@
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
+import {ChangeDetectionScheduler, NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {Injector} from '../di/injector';
 import {convertToBitFlags} from '../di/injector_compatibility';
 import {InjectFlags, InjectOptions} from '../di/interface/injector';
@@ -365,7 +365,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
       setInputsForProperty(lView[TVIEW], lView, dataValue, name, value);
       this.previousInputValues.set(name, value);
       const childComponentLView = getComponentLViewByIndex(this._tNode.index, lView);
-      markViewDirty(childComponentLView);
+      markViewDirty(childComponentLView, NotificationSource.SetInput);
     } else {
       if (ngDevMode) {
         const cmpNameForError = stringifyForError(this.componentType);

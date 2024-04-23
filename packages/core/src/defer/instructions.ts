@@ -9,6 +9,7 @@
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
 import {CachedInjectorService} from '../cached_injector_service';
+import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
 import {EnvironmentInjector, InjectionToken, Injector} from '../di';
 import {internalImportProvidersFrom} from '../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
@@ -590,7 +591,7 @@ function applyDeferBlockState(
         createAndRenderEmbeddedLView(hostLView, activeBlockTNode, null, {dehydratedView, injector});
     addLViewToLContainer(
         lContainer, embeddedLView, viewIndex, shouldAddViewToDom(activeBlockTNode, dehydratedView));
-    markViewDirty(embeddedLView);
+    markViewDirty(embeddedLView, NotificationSource.DeferBlockStateUpdate);
   }
 }
 

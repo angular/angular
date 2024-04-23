@@ -22,6 +22,7 @@ import {
   RendererType2,
   ɵAnimationRendererType as AnimationRendererType,
   ɵChangeDetectionScheduler as ChangeDetectionScheduler,
+  ɵNotificationSource as NotificationSource,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 import {ɵRuntimeErrorCode as RuntimeErrorCode} from '@angular/platform-browser';
@@ -131,6 +132,7 @@ export class AsyncAnimationRendererFactory implements OnDestroy, RendererFactory
           rendererType,
         );
         dynamicRenderer.use(animationRenderer);
+        this.scheduler?.notify(NotificationSource.AsyncAnimationsLoaded);
       })
       .catch((e) => {
         // Permanently use regular renderer when loading fails.
