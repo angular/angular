@@ -69,6 +69,7 @@ export class Dispatcher {
       eventReplayer = undefined,
     }: {stopPropagation?: boolean; eventReplayer?: Replayer} = {},
   ) {
+    this.eventReplayer = eventReplayer;
     this.baseDispatcher = new BaseDispatcher(
       (eventInfoWrapper: EventInfoWrapper, isGlobalDispatch?: boolean) => {
         this.dispatchToHandler(eventInfoWrapper, isGlobalDispatch);
@@ -103,11 +104,9 @@ export class Dispatcher {
    *     queue of events from EventContract.
    * @param isGlobalDispatch If true, dispatches a global event instead of a
    *     regular jsaction handler.
-   * @return An `EventInfo` for the `EventContract` to handle again if the
-   *    `Dispatcher` tried to resolve an a11y event as a click but failed.
    */
-  dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): EventInfo | void {
-    return this.baseDispatcher.dispatch(eventInfo, isGlobalDispatch);
+  dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): void {
+    this.baseDispatcher.dispatch(eventInfo, isGlobalDispatch);
   }
 
   /**
@@ -309,6 +308,6 @@ export function stopPropagation(eventInfoWrapper: EventInfoWrapper) {
  */
 export function registerDispatcher(eventContract: UnrenamedEventContract, dispatcher: Dispatcher) {
   eventContract.ecrd((eventInfo: EventInfo, globalDispatch?: boolean) => {
-    return dispatcher.dispatch(eventInfo, globalDispatch);
+    dispatcher.dispatch(eventInfo, globalDispatch);
   }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
 }

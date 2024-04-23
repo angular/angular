@@ -14,7 +14,7 @@ export class Dispatcher {
         eventReplayer?: Replayer;
     });
     canDispatch(eventInfoWrapper: EventInfoWrapper): boolean;
-    dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): EventInfo | void;
+    dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): void;
     hasAction(name: string): boolean;
     registerEventInfoHandlers<T>(namespace: string, instance: T | null, methods: {
         [key: string]: EventInfoWrapperHandler;
@@ -30,8 +30,6 @@ export class EventContract implements UnrenamedEventContract {
     constructor(containerManager: EventContractContainerManager);
     // (undocumented)
     static A11Y_CLICK_SUPPORT: boolean;
-    // (undocumented)
-    static A11Y_SUPPORT_IN_DISPATCHER: boolean;
     addA11yClickSupport(): void;
     addEvent(eventType: string, prefixedEventType?: string): void;
     cleanUp(): void;

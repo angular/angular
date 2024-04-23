@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute as AccessibilityAttribute} from '../src/accessibility';
 import * as cache from '../src/cache';
 import {fireCustomEvent} from '../src/custom_events';
 import {stopPropagation} from '../src/dispatcher';
@@ -287,7 +286,6 @@ function dispatchKeyboardEvent(
     altKey = false,
     shiftKey = false,
     metaKey = false,
-    skipA11yCheck = false,
   }: {
     type?: string;
     key?: string;
@@ -296,7 +294,6 @@ function dispatchKeyboardEvent(
     altKey?: boolean;
     shiftKey?: boolean;
     metaKey?: boolean;
-    skipA11yCheck?: boolean;
   } = {},
 ) {
   // createEvent/initKeyboardEvent is used to support IE11
@@ -318,9 +315,6 @@ function dispatchKeyboardEvent(
   // This is necessary as Chrome does not respect the key parameter in
   // `initKeyboardEvent`.
   Object.defineProperty(event, 'key', {value: key});
-  if (skipA11yCheck) {
-    event[AccessibilityAttribute.SKIP_A11Y_CHECK] = true;
-  }
   spyOn(event, 'preventDefault').and.callThrough();
   target.dispatchEvent(event);
   return event;
@@ -330,7 +324,6 @@ describe('EventContract', () => {
   beforeEach(() => {
     safeElement.setInnerHtml(document.body, testonlyHtml(domContent));
     EventContract.A11Y_CLICK_SUPPORT = false;
-    EventContract.A11Y_SUPPORT_IN_DISPATCHER = false;
     EventContract.MOUSE_SPECIAL_SUPPORT = false;
     EventContract.CUSTOM_EVENT_SUPPORT = false;
 
@@ -748,64 +741,6 @@ describe('EventContract', () => {
     expect(eventInfoWrapper.getAction()).toBeUndefined();
   });
 
-  it('re-dispatches if dispatcher returns an `EventInfo`', () => {
-    const container = getRequiredElementById('a11y-click-keydown-container');
-    const actionElement = getRequiredElementById('a11y-click-keydown-action-element');
-    const targetElement = getRequiredElementById('a11y-click-keydown-target-element');
-
-    const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-    createEventContract({
-      eventContractContainerManager: new EventContractContainer(container),
-      eventTypes: ['click'],
-      dispatcher,
-    });
-
-    dispatcher.and.callFake((eventInfo: EventInfo) => {
-      const eventInfoWrapper = new EventInfoWrapper(eventInfo);
-      if (eventInfoWrapper.getEventType() === 'click') {
-        eventInfoWrapper.setEventType('keydown');
-        eventInfoWrapper.setAction(undefined);
-        return eventInfoWrapper.eventInfo;
-      }
-      return;
-    });
-
-    const clickEvent = dispatchMouseEvent(targetElement);
-
-    expect(dispatcher).toHaveBeenCalledTimes(4);
-    const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-    expect(eventInfoWrapper.getEventType()).toBe('keydown');
-    expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-    expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()?.name).toBe('handleKeydown');
-    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-  });
-
-  it('re-dispatches only once if dispatcher returns an `EventInfo`', () => {
-    const container = getRequiredElementById('click-container');
-    const actionElement = getRequiredElementById('click-action-element');
-    const targetElement = getRequiredElementById('click-target-element');
-
-    const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-    createEventContract({
-      eventContractContainerManager: new EventContractContainer(container),
-      eventTypes: ['click'],
-      dispatcher,
-    });
-
-    dispatcher.and.callFake((eventInfo: EventInfo) => eventInfo);
-
-    const clickEvent = dispatchMouseEvent(targetElement);
-
-    expect(dispatcher).toHaveBeenCalledTimes(4);
-    const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-    expect(eventInfoWrapper.getEventType()).toBe('click');
-    expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-    expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-    expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
-    expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-  });
-
   it('dispatches event from shadow dom', () => {
     const container = getRequiredElementById('shadow-dom-container');
     const actionElement = getRequiredElementById('shadow-dom-action-element');
@@ -1114,161 +1049,6 @@ describe('EventContract', () => {
       const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
       createEventContract({
         eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-        dispatcher,
-      });
-
-      const clickEvent = dispatchMouseEvent(targetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('clickonly');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name).toBe('handleClickOnly');
-      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-    });
-
-    it('dispatches click event to click handler rather than clickonly', () => {
-      const container = getRequiredElementById('a11y-click-clickonly-container');
-      const actionElement = getRequiredElementById('a11y-click-clickonly-action-element');
-      const targetElement = getRequiredElementById('a11y-click-clickonly-target-element');
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-        dispatcher,
-      });
-
-      const clickEvent = dispatchMouseEvent(targetElement);
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('click');
-      expect(eventInfoWrapper.getEvent()).toBe(clickEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
-      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-    });
-  });
-
-  describe('a11y click in dispatcher', () => {
-    beforeEach(() => {
-      EventContract.A11Y_SUPPORT_IN_DISPATCHER = true;
-    });
-
-    it('dispatches a11y keydown as maybe click event', () => {
-      const container = getRequiredElementById('a11y-click-container');
-      const actionElement = getRequiredElementById('a11y-click-action-element');
-      const targetElement = getRequiredElementById('a11y-click-target-element');
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-        dispatcher,
-      });
-
-      const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe(AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE);
-      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
-      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-    });
-
-    it('dispatches non-a11y keydown as maybe click event', () => {
-      const container = getRequiredElementById('a11y-click-keydown-container');
-      const actionElement = getRequiredElementById('a11y-click-keydown-action-element');
-      const targetElement = getRequiredElementById('a11y-click-keydown-target-element');
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click', 'keydown'],
-        dispatcher,
-      });
-
-      // Pressing the 'a' key is not an a11y click.
-      const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'a'});
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe(AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE);
-      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
-      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-    });
-
-    it('dispatches a11y keydown with SKIP_A11Y_CHECK as click', () => {
-      const container = getRequiredElementById('a11y-click-keydown-container');
-      const actionElement = getRequiredElementById('a11y-click-keydown-action-element');
-      const targetElement = getRequiredElementById('a11y-click-keydown-target-element');
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click', 'keydown'],
-        dispatcher,
-      });
-
-      const keydownEvent = dispatchKeyboardEvent(targetElement, {
-        key: 'Enter',
-        skipA11yCheck: true,
-      });
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe('keydown');
-      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name).toBe('handleKeydown');
-      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-    });
-
-    it('does not prevent default for enter key on anchor child', () => {
-      const container = getRequiredElementById('a11y-anchor-click-container');
-      const actionElement = getRequiredElementById('a11y-anchor-click-action-element');
-      const targetElement = getRequiredElementById('a11y-anchor-click-target-element');
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        eventTypes: ['click'],
-        dispatcher,
-      });
-
-      const keydownEvent = dispatchKeyboardEvent(targetElement, {key: 'Enter'});
-
-      expect(dispatcher).toHaveBeenCalledTimes(2);
-      const eventInfoWrapper = getLastDispatchedEventInfoWrapper(dispatcher);
-      expect(eventInfoWrapper.getEventType()).toBe(AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE);
-      expect(eventInfoWrapper.getEvent()).toBe(keydownEvent);
-      expect(eventInfoWrapper.getTargetElement()).toBe(targetElement);
-      expect(eventInfoWrapper.getAction()?.name).toBe('handleClick');
-      expect(eventInfoWrapper.getAction()?.element).toBe(actionElement);
-
-      expect(keydownEvent.defaultPrevented).toBe(false);
-    });
-
-    it('dispatches clickonly event', () => {
-      const container = getRequiredElementById('a11y-clickonly-container');
-      const actionElement = getRequiredElementById('a11y-clickonly-action-element');
-      const targetElement = getRequiredElementById('a11y-clickonly-target-element');
-
-      const dispatcher = jasmine.createSpy<Dispatcher>('dispatcher');
-      createEventContract({
-        eventContractContainerManager: new EventContractContainer(container),
-        exportAddA11yClickSupport: true,
         eventTypes: ['click'],
         dispatcher,
       });

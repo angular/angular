@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute as AccessibilityAttribute} from './accessibility';
-import * as eventLib from './event';
 import {EventInfo, EventInfoWrapper} from './event_info';
-import {EventType} from './event_type';
 import {UnrenamedEventContract} from './eventcontract';
-import {replayEvent} from './replay';
 import {Restriction} from './restriction';
 /**
  * A replayer is a function that is called when there are queued events,
@@ -73,35 +69,16 @@ export class BaseDispatcher {
    *     queue of events from EventContract.
    * @param isGlobalDispatch If true, dispatches a global event instead of a
    *     regular jsaction handler.
-   * @return An `EventInfo` for the `EventContract` to handle again if the
-   *    `Dispatcher` tried to resolve an a11y event as a click but failed.
    */
-  dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): EventInfo | void {
+  dispatch(eventInfo: EventInfo, isGlobalDispatch?: boolean): void {
     const eventInfoWrapper = new EventInfoWrapper(eventInfo);
     if (eventInfoWrapper.getIsReplay()) {
       if (isGlobalDispatch || !this.eventReplayer) {
         return;
       }
-      const resolved = resolveA11yEvent(eventInfoWrapper, isGlobalDispatch);
-      if (!resolved) {
-        // Send the event back through the `EventContract` by dispatching to
-        // the browser.
-        replayEvent(
-          eventInfoWrapper.getEvent(),
-          eventInfoWrapper.getTargetElement(),
-          eventInfoWrapper.getEventType(),
-        );
-        return;
-      }
       this.queueEventInfoWrapper(eventInfoWrapper);
       this.scheduleEventReplay();
       return;
-    }
-    const resolved = resolveA11yEvent(eventInfoWrapper, isGlobalDispatch);
-    if (!resolved) {
-      // Reset action information.
-      eventInfoWrapper.setAction(undefined);
-      return eventInfoWrapper.eventInfo;
     }
     this.dispatchDelegate(eventInfoWrapper, isGlobalDispatch);
   }
@@ -133,91 +110,6 @@ export class BaseDispatcher {
 }
 
 /**
- * If a 'MAYBE_CLICK_EVENT_TYPE' event was dispatched, updates the eventType
- * to either click or keydown based on whether the keydown action can be
- * treated as a click. For MAYBE_CLICK_EVENT_TYPE events that are just
- * keydowns, we set flags on the event object so that the event contract
- * does't try to dispatch it as a MAYBE_CLICK_EVENT_TYPE again.
- *
- * @param isGlobalDispatch Whether the eventInfo is meant to be dispatched to
- *     the global handlers.
- * @return Returns false if the a11y event could not be resolved and should
- *    be re-dispatched.
- */
-function resolveA11yEvent(eventInfoWrapper: EventInfoWrapper, isGlobalDispatch = false): boolean {
-  if (eventInfoWrapper.getEventType() !== AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE) {
-    return true;
-  }
-  if (isA11yClickEvent(eventInfoWrapper, isGlobalDispatch)) {
-    if (shouldPreventDefault(eventInfoWrapper)) {
-      eventLib.preventDefault(eventInfoWrapper.getEvent());
-    }
-    // If the keydown event can be treated as a click, we change the eventType
-    // to 'click' so that the dispatcher can retrieve the right handler for
-    // it. Even though EventInfo['action'] corresponds to the click action,
-    // the global handler and any custom 'getHandler' implementations may rely
-    // on the eventType instead.
-    eventInfoWrapper.setEventType(EventType.CLICK);
-  } else {
-    // Otherwise, if the keydown can't be treated as a click, we need to
-    // retrigger it because now we need to look for 'keydown' actions instead.
-    eventInfoWrapper.setEventType(EventType.KEYDOWN);
-    if (!isGlobalDispatch) {
-      // This prevents the event contract from setting the
-      // AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE type for Keydown
-      // events.
-      eventInfoWrapper.getEvent()[AccessibilityAttribute.SKIP_A11Y_CHECK] = true;
-      // Since globally dispatched events will get handled by the dispatcher,
-      // don't have the event contract dispatch it again.
-      eventInfoWrapper.getEvent()[AccessibilityAttribute.SKIP_GLOBAL_DISPATCH] = true;
-      return false;
-    }
-  }
-  return true;
-}
-
-/**
- * Returns true if the default action for this event should be prevented
- * before the event handler is envoked.
- */
-function shouldPreventDefault(eventInfoWrapper: EventInfoWrapper): boolean {
-  const actionElement = eventInfoWrapper.getAction()?.element;
-  // For parity with no-a11y-support behavior.
-  if (!actionElement) {
-    return false;
-  }
-  // Prevent scrolling if the Space key was pressed
-  if (eventLib.isSpaceKeyEvent(eventInfoWrapper.getEvent())) {
-    return true;
-  }
-  // or prevent the browser's default action for native HTML controls.
-  if (eventLib.shouldCallPreventDefaultOnNativeHtmlControl(eventInfoWrapper.getEvent())) {
-    return true;
-  }
-  // Prevent browser from following <a> node links if a jsaction is present
-  // and we are dispatching the action now. Note that the targetElement may be
-  // a child of an anchor that has a jsaction attached. For that reason, we
-  // need to check the actionElement rather than the targetElement.
-  if (actionElement.tagName === 'A') {
-    return true;
-  }
-  return false;
-}
-
-/**
- * Returns true if the given key event can be treated as a 'click'.
- *
- * @param isGlobalDispatch Whether the eventInfo is meant to be dispatched to
- *     the global handlers.
- */
-function isA11yClickEvent(eventInfoWrapper: EventInfoWrapper, isGlobalDispatch?: boolean): boolean {
-  return (
-    (isGlobalDispatch || eventInfoWrapper.getAction() !== undefined) &&
-    eventLib.isActionKeyEvent(eventInfoWrapper.getEvent())
-  );
-}
-
-/**
  * Registers deferred functionality for an EventContract and a Jsaction
  * Dispatcher.
  */
@@ -226,6 +118,6 @@ export function registerDispatcher(
   dispatcher: BaseDispatcher,
 ) {
   eventContract.ecrd((eventInfo: EventInfo, globalDispatch?: boolean) => {
-    return dispatcher.dispatch(eventInfo, globalDispatch);
+    dispatcher.dispatch(eventInfo, globalDispatch);
   }, Restriction.I_AM_THE_JSACTION_FRAMEWORK);
 }

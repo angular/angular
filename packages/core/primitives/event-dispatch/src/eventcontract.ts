@@ -31,7 +31,6 @@
  */
 
 import * as a11yClickLib from './a11y_click';
-import {Attribute as AccessibilityAttribute} from './accessibility';
 import {Attribute} from './attribute';
 import * as cache from './cache';
 import {Char} from './char';
@@ -40,7 +39,6 @@ import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
 import {
   A11Y_CLICK_SUPPORT,
-  A11Y_SUPPORT_IN_DISPATCHER,
   CUSTOM_EVENT_SUPPORT,
   JSNAMESPACE_SUPPORT,
   MOUSE_SPECIAL_SUPPORT,
@@ -66,10 +64,7 @@ export declare interface UnrenamedEventContract {
 }
 
 /** A function that is called to handle events captured by the EventContract. */
-export type Dispatcher = (
-  eventInfo: eventInfoLib.EventInfo,
-  globalDispatch?: boolean,
-) => eventInfoLib.EventInfo | void;
+export type Dispatcher = (eventInfo: eventInfoLib.EventInfo, globalDispatch?: boolean) => void;
 
 /**
  * A function that handles an event dispatched from the browser.
@@ -112,7 +107,6 @@ const REGEXP_SEMICOLON = /\s*;\s*/;
 export class EventContract implements UnrenamedEventContract {
   static CUSTOM_EVENT_SUPPORT = CUSTOM_EVENT_SUPPORT;
   static STOP_PROPAGATION = STOP_PROPAGATION;
-  static A11Y_SUPPORT_IN_DISPATCHER = A11Y_SUPPORT_IN_DISPATCHER;
   static A11Y_CLICK_SUPPORT = A11Y_CLICK_SUPPORT;
   static MOUSE_SPECIAL_SUPPORT = MOUSE_SPECIAL_SUPPORT;
   static JSNAMESPACE_SUPPORT = JSNAMESPACE_SUPPORT;
@@ -148,7 +142,7 @@ export class EventContract implements UnrenamedEventContract {
   /** Whether a11y click support has been loaded or not. */
   private hasA11yClickSupport = false;
   /** Whether to add an a11y click listener. */
-  private addA11yClickListener = EventContract.A11Y_SUPPORT_IN_DISPATCHER;
+  private addA11yClickListener = false;
 
   private updateEventInfoForA11yClick?: (eventInfo: eventInfoLib.EventInfo) => void = undefined;
 
@@ -190,10 +184,8 @@ export class EventContract implements UnrenamedEventContract {
 
   /**
    * Handle an `EventInfo`.
-   * @param allowRehandling Used in the case of a11y click casting to prevent
-   * us from trying to rehandle in an infinite loop.
    */
-  private handleEventInfo(eventInfo: eventInfoLib.EventInfo, allowRehandling = true) {
+  private handleEventInfo(eventInfo: eventInfoLib.EventInfo) {
     if (!this.dispatcher) {
       // All events are queued when the dispatcher isn't yet loaded.
       eventInfoLib.setIsReplay(eventInfo, true);
@@ -215,44 +207,29 @@ export class EventContract implements UnrenamedEventContract {
 
     this.populateAction(eventInfo);
 
-    if (
-      this.dispatcher &&
-      !eventInfoLib.getEvent(eventInfo)[AccessibilityAttribute.SKIP_GLOBAL_DISPATCH]
-    ) {
-      const globalEventInfo: eventInfoLib.EventInfo = eventInfoLib.cloneEventInfo(eventInfo);
-
-      // In some cases, `populateAction` will rewrite `click` events to
-      // `clickonly`. Revert back to a regular click, otherwise we won't be able
-      // to execute global event handlers registered on click events.
-      if (eventInfoLib.getEventType(globalEventInfo) === EventType.CLICKONLY) {
-        eventInfoLib.setEventType(globalEventInfo, EventType.CLICK);
-      }
-
-      this.dispatcher(globalEventInfo, /* dispatch global event */ true);
-    }
-
-    const action = eventInfoLib.getAction(eventInfo);
-    if (!action && !checkDispatcherForA11yClick(eventInfo)) {
+    if (!this.dispatcher) {
       return;
     }
+    const globalEventInfo: eventInfoLib.EventInfo = eventInfoLib.cloneEventInfo(eventInfo);
 
-    if (this.dispatcher) {
-      if (
-        action &&
-        shouldPreventDefaultBeforeDispatching(eventInfoLib.getActionElement(action), eventInfo)
-      ) {
-        eventLib.preventDefault(eventInfoLib.getEvent(eventInfo));
-      }
-
-      const unresolvedEventInfo = this.dispatcher(eventInfo);
-      if (unresolvedEventInfo && allowRehandling) {
-        // The dispatcher only returns an event for MAYBE_CLICK_EVENT_TYPE
-        // events that can't be casted to a click. We run it through the
-        // handler again to find keydown actions for it.
-        this.handleEventInfo(unresolvedEventInfo, /* allowRehandling= */ false);
-        return;
-      }
+    // In some cases, `populateAction` will rewrite `click` events to
+    // `clickonly`. Revert back to a regular click, otherwise we won't be able
+    // to execute global event handlers registered on click events.
+    if (eventInfoLib.getEventType(globalEventInfo) === EventType.CLICKONLY) {
+      eventInfoLib.setEventType(globalEventInfo, EventType.CLICK);
     }
+
+    this.dispatcher(globalEventInfo, /* dispatch global event */ true);
+
+    const action = eventInfoLib.getAction(eventInfo);
+    if (!action) {
+      return;
+    }
+    if (shouldPreventDefaultBeforeDispatching(eventInfoLib.getActionElement(action), eventInfo)) {
+      eventLib.preventDefault(eventInfoLib.getEvent(eventInfo));
+    }
+
+    this.dispatcher(eventInfo);
   }
 
   /**
@@ -308,14 +285,6 @@ export class EventContract implements UnrenamedEventContract {
       eventInfoLib.setEventType(eventInfo, EventType.CLICKMOD);
     } else if (this.hasA11yClickSupport) {
       this.updateEventInfoForA11yClick!(eventInfo);
-    } else if (
-      EventContract.A11Y_SUPPORT_IN_DISPATCHER &&
-      eventInfoLib.getEventType(eventInfo) === EventType.KEYDOWN &&
-      !eventInfoLib.getEvent(eventInfo)[AccessibilityAttribute.SKIP_A11Y_CHECK]
-    ) {
-      // We use a string literal as this value needs to be referenced in the
-      // dispatcher's binary.
-      eventInfoLib.setEventType(eventInfo, AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE);
     }
 
     // Walk to the parent node, unless the node has a different owner in
@@ -416,25 +385,6 @@ export class EventContract implements UnrenamedEventContract {
 
     if (this.hasA11yClickSupport) {
       this.populateClickOnlyAction!(actionElement, eventInfo, actionMap);
-    }
-    if (EventContract.A11Y_SUPPORT_IN_DISPATCHER) {
-      if (
-        eventInfoLib.getEventType(eventInfo) === AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE &&
-        actionMap[EventType.CLICK] !== undefined
-      ) {
-        // We'll take the first CLICK action we find and have the dispatcher
-        // check if the keydown event can be used as a CLICK. If not, the
-        // dispatcher will retrigger the event so that we can find a keydown
-        // event instead.
-        // When we get MAYBE_CLICK_EVENT_TYPE as an eventType, we want to
-        // retrieve the action corresponding to CLICK, but still keep the
-        // eventInfoLib.getEventType(eventInfo, ) as MAYBE_CLICK_EVENT_TYPE. The
-        // dispatcher uses this event type to determine if it should get the
-        // handler for the action.
-        eventInfoLib.setAction(eventInfo, actionMap[EventType.CLICK], actionElement);
-      } else {
-        a11yClickLib.populateClickOnlyAction(actionElement, eventInfo, actionMap);
-      }
     }
   }
 
@@ -644,17 +594,6 @@ export function addDeferredA11yClickSupport(eventContract: EventContract) {
     a11yClickLib.updateEventInfoForA11yClick,
     a11yClickLib.preventDefaultForA11yClick,
     a11yClickLib.populateClickOnlyAction,
-  );
-}
-
-/**
- * Determines whether or not the `EventContract` needs to check with the
- * dispatcher even if there's no action.
- */
-function checkDispatcherForA11yClick(eventInfo: eventInfoLib.EventInfo): boolean {
-  return (
-    EventContract.A11Y_SUPPORT_IN_DISPATCHER &&
-    eventInfoLib.getEventType(eventInfo) === AccessibilityAttribute.MAYBE_CLICK_EVENT_TYPE
   );
 }
 
