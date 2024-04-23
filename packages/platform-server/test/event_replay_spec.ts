@@ -105,6 +105,27 @@ describe('event replay', () => {
         expect(ssrContents).toContain('<div jsaction="click:"><div jsaction="blur:"></div></div>');
       });
 
+      it(`should add 'nonce' attribute to event record script when 'ngCspNonce' is provided`, async () => {
+        @Component({
+          standalone: true,
+          selector: 'app',
+          template: `
+            <div (click)="onClick()">
+                <div (blur)="onClick()"></div>
+            </div>
+          `,
+        })
+        class SimpleComponent {
+          onClick() {}
+        }
+
+        const doc = `<html><head></head><body><app ngCspNonce="{{nonce}}"></app></body></html>`;
+        const html = await ssr(SimpleComponent, {doc});
+        expect(getAppContents(html)).toContain(
+          '<script nonce="{{nonce}}">window.__jsaction_bootstrap',
+        );
+      });
+
       describe('event dispatch script', () => {
         it('should not be present on a page if there are no events to replay', async () => {
           @Component({

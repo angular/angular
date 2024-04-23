@@ -19,6 +19,7 @@ import {
   ɵIS_HYDRATION_DOM_REUSE_ENABLED as IS_HYDRATION_DOM_REUSE_ENABLED,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵwhenStable as whenStable,
+  CSP_NONCE,
 } from '@angular/core';
 
 import {PlatformState} from './platform_state';
@@ -96,13 +97,14 @@ function insertEventRecordScript(
   appId: string,
   doc: Document,
   eventTypesToBeReplayed: Set<string>,
-) {
+  nonce: string | null,
+): void {
   const events = Array.from(eventTypesToBeReplayed);
   // This is defined in packages/core/primitives/event-dispatch/contract_binary.ts
   const replayScript = `window.__jsaction_bootstrap('ngContracts', document.body, ${JSON.stringify(
     appId,
   )}, ${JSON.stringify(events)});`;
-  const script = createScript(doc, replayScript);
+  const script = createScript(doc, replayScript, nonce);
   doc.body.insertBefore(script, doc.body.firstChild);
 }
 
@@ -113,12 +115,17 @@ async function _render(platformRef: PlatformRef, applicationRef: ApplicationRef)
   await whenStable(applicationRef);
 
   const platformState = platformRef.injector.get(PlatformState);
-  if (applicationRef.injector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
+  if (environmentInjector.get(IS_HYDRATION_DOM_REUSE_ENABLED, false)) {
     const doc = platformState.getDocument();
     appendSsrContentIntegrityMarker(doc);
     const eventTypesToBeReplayed = annotateForHydration(applicationRef, doc);
     if (eventTypesToBeReplayed) {
-      insertEventRecordScript(environmentInjector.get(APP_ID), doc, eventTypesToBeReplayed);
+      insertEventRecordScript(
+        environmentInjector.get(APP_ID),
+        doc,
+        eventTypesToBeReplayed,
+        environmentInjector.get(CSP_NONCE, null),
+      );
     } else {
       // No events to replay, we should remove inlined event dispatch script
       // (which was injected by the build process) from the HTML.
