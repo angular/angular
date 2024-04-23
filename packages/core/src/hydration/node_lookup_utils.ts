@@ -8,7 +8,13 @@
 
 import {TNode, TNodeType} from '../render3/interfaces/node';
 import {RElement, RNode} from '../render3/interfaces/renderer_dom';
-import {DECLARATION_COMPONENT_VIEW, HEADER_OFFSET, HOST, LView, TView} from '../render3/interfaces/view';
+import {
+  DECLARATION_COMPONENT_VIEW,
+  HEADER_OFFSET,
+  HOST,
+  LView,
+  TView,
+} from '../render3/interfaces/view';
 import {getFirstNativeNode} from '../render3/node_manipulation';
 import {ɵɵresolveBody} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
@@ -16,10 +22,19 @@ import {getNativeByTNode, unwrapRNode} from '../render3/util/view_utils';
 import {assertDefined} from '../util/assert';
 
 import {compressNodeLocation, decompressNodeLocation} from './compression';
-import {nodeNotFoundAtPathError, nodeNotFoundError, validateSiblingNodeExists} from './error_handling';
-import {DehydratedView, NodeNavigationStep, NODES, REFERENCE_NODE_BODY, REFERENCE_NODE_HOST} from './interfaces';
+import {
+  nodeNotFoundAtPathError,
+  nodeNotFoundError,
+  validateSiblingNodeExists,
+} from './error_handling';
+import {
+  DehydratedView,
+  NodeNavigationStep,
+  NODES,
+  REFERENCE_NODE_BODY,
+  REFERENCE_NODE_HOST,
+} from './interfaces';
 import {calcSerializedContainerSize, getSegmentHead} from './utils';
-
 
 /** Whether current TNode is a first node in an <ng-container>. */
 function isFirstElementInNgContainer(tNode: TNode): boolean {
@@ -39,8 +54,11 @@ function getNoOffsetIndex(tNode: TNode): number {
  * only use internal data structures and state to compute this information.
  */
 export function isDisconnectedNode(tNode: TNode, lView: LView) {
-  return !(tNode.type & TNodeType.Projection) && !!lView[tNode.index] &&
-      !(unwrapRNode(lView[tNode.index]) as Node)?.isConnected;
+  return (
+    !(tNode.type & TNodeType.Projection) &&
+    !!lView[tNode.index] &&
+    !(unwrapRNode(lView[tNode.index]) as Node)?.isConnected
+  );
 }
 
 /**
@@ -51,7 +69,9 @@ export function isDisconnectedNode(tNode: TNode, lView: LView) {
  * @returns an RNode that corresponds to the instruction index
  */
 export function locateI18nRNodeByIndex<T extends RNode>(
-    hydrationInfo: DehydratedView, noOffsetIndex: number): T|null|undefined {
+  hydrationInfo: DehydratedView,
+  noOffsetIndex: number,
+): T | null | undefined {
   const i18nNodes = hydrationInfo.i18nNodes;
   if (i18nNodes) {
     return i18nNodes.get(noOffsetIndex) as T | null | undefined;
@@ -68,7 +88,10 @@ export function locateI18nRNodeByIndex<T extends RNode>(
  * @returns an RNode that corresponds to the instruction index or null if no path exists
  */
 export function tryLocateRNodeByPath(
-    hydrationInfo: DehydratedView, lView: LView<unknown>, noOffsetIndex: number): RNode|null {
+  hydrationInfo: DehydratedView,
+  lView: LView<unknown>,
+  noOffsetIndex: number,
+): RNode | null {
   const nodes = hydrationInfo.data[NODES];
   const path = nodes?.[noOffsetIndex];
   return path ? locateRNodeByPath(path, lView) : null;
@@ -84,7 +107,11 @@ export function tryLocateRNodeByPath(
  * @returns an RNode that represents a given tNode
  */
 export function locateNextRNode<T extends RNode>(
-    hydrationInfo: DehydratedView, tView: TView, lView: LView<unknown>, tNode: TNode): T|null {
+  hydrationInfo: DehydratedView,
+  tView: TView,
+  lView: LView<unknown>,
+  tNode: TNode,
+): T | null {
   const noOffsetIndex = getNoOffsetIndex(tNode);
   let native = locateI18nRNodeByIndex(hydrationInfo, noOffsetIndex);
 
@@ -102,10 +129,11 @@ export function locateNextRNode<T extends RNode>(
       const previousTNodeParent = tNode.prev === null;
       const previousTNode = (tNode.prev ?? tNode.parent)!;
       ngDevMode &&
-          assertDefined(
-              previousTNode,
-              'Unexpected state: current TNode does not have a connection ' +
-                  'to the previous node or a parent node.');
+        assertDefined(
+          previousTNode,
+          'Unexpected state: current TNode does not have a connection ' +
+            'to the previous node or a parent node.',
+        );
       if (isFirstElementInNgContainer(tNode)) {
         const noOffsetParentIndex = getNoOffsetIndex(tNode.parent!);
         native = getSegmentHead(hydrationInfo, noOffsetParentIndex);
@@ -122,8 +150,10 @@ export function locateNextRNode<T extends RNode>(
           const noOffsetPrevSiblingIndex = getNoOffsetIndex(previousTNode);
           const segmentHead = getSegmentHead(hydrationInfo, noOffsetPrevSiblingIndex);
           if (previousTNode.type === TNodeType.Element && segmentHead) {
-            const numRootNodesToSkip =
-                calcSerializedContainerSize(hydrationInfo, noOffsetPrevSiblingIndex);
+            const numRootNodesToSkip = calcSerializedContainerSize(
+              hydrationInfo,
+              noOffsetPrevSiblingIndex,
+            );
             // `+1` stands for an anchor comment node after all the views in this container.
             const nodesToSkip = numRootNodesToSkip + 1;
             // First node after this segment.
@@ -141,7 +171,7 @@ export function locateNextRNode<T extends RNode>(
 /**
  * Skips over a specified number of nodes and returns the next sibling node after that.
  */
-export function siblingAfter<T extends RNode>(skip: number, from: RNode): T|null {
+export function siblingAfter<T extends RNode>(skip: number, from: RNode): T | null {
   let currentNode = from;
   for (let i = 0; i < skip; i++) {
     ngDevMode && validateSiblingNodeExists(currentNode);
@@ -155,7 +185,7 @@ export function siblingAfter<T extends RNode>(skip: number, from: RNode): T|null
  * (in terms of `nextSibling` and `firstChild` navigations). Used in error
  * messages in dev mode.
  */
-function stringifyNavigationInstructions(instructions: (number|NodeNavigationStep)[]): string {
+function stringifyNavigationInstructions(instructions: (number | NodeNavigationStep)[]): string {
   const container = [];
   for (let i = 0; i < instructions.length; i += 2) {
     const step = instructions[i];
@@ -171,7 +201,7 @@ function stringifyNavigationInstructions(instructions: (number|NodeNavigationSte
  * Helper function that navigates from a starting point node (the `from` node)
  * using provided set of navigation instructions (within `path` argument).
  */
-function navigateToNode(from: Node, instructions: (number|NodeNavigationStep)[]): RNode {
+function navigateToNode(from: Node, instructions: (number | NodeNavigationStep)[]): RNode {
   let node = from;
   for (let i = 0; i < instructions.length; i += 2) {
     const step = instructions[i];
@@ -207,7 +237,8 @@ function locateRNodeByPath(path: string, lView: LView): RNode {
     ref = lView[DECLARATION_COMPONENT_VIEW][HOST] as unknown as Element;
   } else if (referenceNode === REFERENCE_NODE_BODY) {
     ref = ɵɵresolveBody(
-        lView[DECLARATION_COMPONENT_VIEW][HOST] as RElement & {ownerDocument: Document});
+      lView[DECLARATION_COMPONENT_VIEW][HOST] as RElement & {ownerDocument: Document},
+    );
   } else {
     const parentElementId = Number(referenceNode);
     ref = unwrapRNode((lView as any)[parentElementId + HEADER_OFFSET]) as Element;
@@ -222,7 +253,7 @@ function locateRNodeByPath(path: string, lView: LView): RNode {
  * tree. That is, we should be able to get from `start` to `finish` purely by using `.firstChild`
  * and `.nextSibling` operations.
  */
-export function navigateBetween(start: Node, finish: Node): NodeNavigationStep[]|null {
+export function navigateBetween(start: Node, finish: Node): NodeNavigationStep[] | null {
   if (start === finish) {
     return [];
   } else if (start.parentElement == null || finish.parentElement == null) {
@@ -252,9 +283,9 @@ export function navigateBetween(start: Node, finish: Node): NodeNavigationStep[]
  * Calculates a path between 2 sibling nodes (generates a number of `NextSibling` navigations).
  * Returns `null` if no such path exists between the given nodes.
  */
-function navigateBetweenSiblings(start: Node, finish: Node): NodeNavigationStep[]|null {
+function navigateBetweenSiblings(start: Node, finish: Node): NodeNavigationStep[] | null {
   const nav: NodeNavigationStep[] = [];
-  let node: Node|null = null;
+  let node: Node | null = null;
   for (node = start; node != null && node !== finish; node = node.nextSibling) {
     nav.push(NodeNavigationStep.NextSibling);
   }
@@ -272,7 +303,7 @@ function navigateBetweenSiblings(start: Node, finish: Node): NodeNavigationStep[
  * - the `to` node is a node that the runtime logic would be looking up,
  *   using the path generated by this function.
  */
-export function calcPathBetween(from: Node, to: Node, fromNodeName: string): string|null {
+export function calcPathBetween(from: Node, to: Node, fromNodeName: string): string | null {
   const path = navigateBetween(from, to);
   return path === null ? null : compressNodeLocation(fromNodeName, path);
 }
@@ -282,9 +313,12 @@ export function calcPathBetween(from: Node, to: Node, fromNodeName: string): str
  * instructions needs to be generated for a TNode.
  */
 export function calcPathForNode(
-    tNode: TNode, lView: LView, excludedParentNodes: Set<number>|null): string {
+  tNode: TNode,
+  lView: LView,
+  excludedParentNodes: Set<number> | null,
+): string {
   let parentTNode = tNode.parent;
-  let parentIndex: number|string;
+  let parentIndex: number | string;
   let parentRNode: RNode;
   let referenceNodeName: string;
 
@@ -300,8 +334,9 @@ export function calcPathForNode(
   // because it belongs to an i18n block, which requires paths which aren't
   // relative to other views in an i18n block.
   while (
-      parentTNode !== null &&
-      (isDisconnectedNode(parentTNode, lView) || (excludedParentNodes?.has(parentTNode.index)))) {
+    parentTNode !== null &&
+    (isDisconnectedNode(parentTNode, lView) || excludedParentNodes?.has(parentTNode.index))
+  ) {
     parentTNode = parentTNode.parent;
   }
 
@@ -331,7 +366,7 @@ export function calcPathForNode(
       rNode = firstRNode;
     }
   }
-  let path: string|null = calcPathBetween(parentRNode as Node, rNode as Node, referenceNodeName);
+  let path: string | null = calcPathBetween(parentRNode as Node, rNode as Node, referenceNodeName);
   if (path === null && parentRNode !== rNode) {
     // Searching for a path between elements within a host node failed.
     // Trying to find a path to an element starting from the `document.body` instead.

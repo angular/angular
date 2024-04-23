@@ -9,9 +9,9 @@
 import {stringify} from '../src/util/stringify';
 
 describe('stringify', () => {
-  it('should return string undefined when toString returns undefined',
-     () => expect(stringify({toString: (): any => undefined})).toBe('undefined'));
+  it('should return string undefined when toString returns undefined', () =>
+    expect(stringify({toString: (): any => undefined})).toBe('undefined'));
 
-  it('should return string null when toString returns null',
-     () => expect(stringify({toString: (): any => null})).toBe('null'));
+  it('should return string null when toString returns null', () =>
+    expect(stringify({toString: (): any => null})).toBe('null'));
 });

@@ -8,7 +8,11 @@
 
 import {Directive, HostListener, Input} from '@angular/core';
 
-import {convertToR3QueryMetadata, directiveMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
+import {
+  convertToR3QueryMetadata,
+  directiveMetadata,
+  extendsDirectlyFromObject,
+} from '../../../src/render3/jit/directive';
 import {setClassMetadata} from '../../../src/render3/metadata';
 
 describe('jit directive helper functions', () => {
@@ -20,7 +24,7 @@ describe('jit directive helper functions', () => {
     // Inheritance Example using Function
     const Parent5 = function Parent5() {} as any as {new (): {}};
     const Child5 = function Child5() {} as any as {new (): {}};
-    Child5.prototype = new Parent5;
+    Child5.prototype = new Parent5();
     Child5.prototype.constructor = Child5;
 
     it('should correctly behave with instanceof', () => {
@@ -44,15 +48,17 @@ describe('jit directive helper functions', () => {
 
   describe('convertToR3QueryMetadata', () => {
     it('should convert decorator with a single string selector', () => {
-      expect(convertToR3QueryMetadata('propName', {
-        selector: 'localRef',
-        descendants: false,
-        first: false,
-        isViewQuery: false,
-        read: undefined,
-        static: false,
-        emitDistinctChangesOnly: false,
-      })).toEqual({
+      expect(
+        convertToR3QueryMetadata('propName', {
+          selector: 'localRef',
+          descendants: false,
+          first: false,
+          isViewQuery: false,
+          read: undefined,
+          static: false,
+          emitDistinctChangesOnly: false,
+        }),
+      ).toEqual({
         propertyName: 'propName',
         predicate: ['localRef'],
         descendants: false,
@@ -65,15 +71,17 @@ describe('jit directive helper functions', () => {
     });
 
     it('should convert decorator with multiple string selectors', () => {
-      expect(convertToR3QueryMetadata('propName', {
-        selector: 'foo, bar,baz',
-        descendants: true,
-        first: true,
-        isViewQuery: true,
-        read: undefined,
-        static: false,
-        emitDistinctChangesOnly: false,
-      })).toEqual({
+      expect(
+        convertToR3QueryMetadata('propName', {
+          selector: 'foo, bar,baz',
+          descendants: true,
+          first: true,
+          isViewQuery: true,
+          read: undefined,
+          static: false,
+          emitDistinctChangesOnly: false,
+        }),
+      ).toEqual({
         propertyName: 'propName',
         predicate: ['foo', 'bar', 'baz'],
         descendants: true,
@@ -106,9 +114,9 @@ describe('jit directive helper functions', () => {
   describe('directiveMetadata', () => {
     it('should not inherit propMetadata from super class', () => {
       class SuperDirective {}
-      setClassMetadata(
-          SuperDirective, [{type: Directive, args: []}], null,
-          {handleClick: [{type: HostListener, args: ['click']}]});
+      setClassMetadata(SuperDirective, [{type: Directive, args: []}], null, {
+        handleClick: [{type: HostListener, args: ['click']}],
+      });
 
       class SubDirective extends SuperDirective {}
       setClassMetadata(SubDirective, [{type: Directive, args: []}], null, null);
@@ -119,9 +127,9 @@ describe('jit directive helper functions', () => {
 
     it('should not inherit propMetadata from grand super class', () => {
       class SuperSuperDirective {}
-      setClassMetadata(
-          SuperSuperDirective, [{type: Directive, args: []}], null,
-          {handleClick: [{type: HostListener, args: ['click']}]});
+      setClassMetadata(SuperSuperDirective, [{type: Directive, args: []}], null, {
+        handleClick: [{type: HostListener, args: ['click']}],
+      });
 
       class SuperDirective {}
       setClassMetadata(SuperDirective, [{type: Directive, args: []}], null, null);
@@ -135,27 +143,25 @@ describe('jit directive helper functions', () => {
       expect(directiveMetadata(SubDirective, {}).propMetadata['handleClick']).toBeFalsy();
     });
 
-    it('should not inherit propMetadata from super class when sub class has its own propMetadata',
-       () => {
-         class SuperDirective {}
-         setClassMetadata(SuperDirective, [{type: Directive}], null, {
-           someInput: [{type: Input}],
-           handleClick: [{type: HostListener, args: ['click', ['$event']]}]
-         });
+    it('should not inherit propMetadata from super class when sub class has its own propMetadata', () => {
+      class SuperDirective {}
+      setClassMetadata(SuperDirective, [{type: Directive}], null, {
+        someInput: [{type: Input}],
+        handleClick: [{type: HostListener, args: ['click', ['$event']]}],
+      });
 
-         class SubDirective extends SuperDirective {}
-         setClassMetadata(
-             SubDirective, [{type: Directive}], null, {someOtherInput: [{type: Input}]});
+      class SubDirective extends SuperDirective {}
+      setClassMetadata(SubDirective, [{type: Directive}], null, {someOtherInput: [{type: Input}]});
 
-         const superPropMetadata = directiveMetadata(SuperDirective, {}).propMetadata;
-         const subPropMetadata = directiveMetadata(SubDirective, {}).propMetadata;
+      const superPropMetadata = directiveMetadata(SuperDirective, {}).propMetadata;
+      const subPropMetadata = directiveMetadata(SubDirective, {}).propMetadata;
 
-         expect(superPropMetadata['handleClick']).toBeTruthy();
-         expect(superPropMetadata['someInput']).toBeTruthy();
+      expect(superPropMetadata['handleClick']).toBeTruthy();
+      expect(superPropMetadata['someInput']).toBeTruthy();
 
-         expect(subPropMetadata['handleClick']).toBeFalsy();
-         expect(subPropMetadata['someInput']).toBeFalsy();
-         expect(subPropMetadata['someOtherInput']).toBeTruthy();
-       });
+      expect(subPropMetadata['handleClick']).toBeFalsy();
+      expect(subPropMetadata['someInput']).toBeFalsy();
+      expect(subPropMetadata['someOtherInput']).toBeTruthy();
+    });
   });
 });

@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithSource, BindingType, ParsedEventType, parseTemplate, ReadKeyExpr, ReadPropExpr, TmplAstBoundAttribute, TmplAstElement, TmplAstNode, TmplAstRecursiveVisitor, TmplAstTemplate} from '@angular/compiler';
+import {
+  ASTWithSource,
+  BindingType,
+  ParsedEventType,
+  parseTemplate,
+  ReadKeyExpr,
+  ReadPropExpr,
+  TmplAstBoundAttribute,
+  TmplAstElement,
+  TmplAstNode,
+  TmplAstRecursiveVisitor,
+  TmplAstTemplate,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 /**
@@ -14,13 +26,13 @@ import ts from 'typescript';
  * Returns null if no changes had to be made to the file.
  * @param template Template to be migrated.
  */
-export function migrateTemplate(template: string): string|null {
+export function migrateTemplate(template: string): string | null {
   // Don't attempt to parse templates that don't contain two-way bindings.
   if (!template.includes(')]=')) {
     return null;
   }
 
-  let rootNodes: TmplAstNode[]|null = null;
+  let rootNodes: TmplAstNode[] | null = null;
 
   try {
     const parsed = parseTemplate(template, '', {allowInvalidAssignmentEvents: true});
@@ -28,8 +40,7 @@ export function migrateTemplate(template: string): string|null {
     if (parsed.errors === null) {
       rootNodes = parsed.nodes;
     }
-  } catch {
-  }
+  } catch {}
 
   // Don't migrate invalid templates.
   if (rootNodes === null) {
@@ -37,8 +48,9 @@ export function migrateTemplate(template: string): string|null {
   }
 
   const visitor = new InvalidTwoWayBindingCollector();
-  const bindings = visitor.collectInvalidBindings(rootNodes).sort(
-      (a, b) => b.sourceSpan.start.offset - a.sourceSpan.start.offset);
+  const bindings = visitor
+    .collectInvalidBindings(rootNodes)
+    .sort((a, b) => b.sourceSpan.start.offset - a.sourceSpan.start.offset);
 
   if (bindings.length === 0) {
     return null;
@@ -79,7 +91,10 @@ function migrateTwoWayInput(binding: TmplAstBoundAttribute, value: string): stri
  * @param value String value of the binding.
  */
 function migrateTwoWayEvent(
-    value: string, binding: TmplAstBoundAttribute, printer: ts.Printer): string|null {
+  value: string,
+  binding: TmplAstBoundAttribute,
+  printer: ts.Printer,
+): string | null {
   // Note that we use the TypeScript parser, as opposed to our own, because even though we have
   // an expression AST here already, our AST is harder to work with in a migration context.
   // To use it here, we would have to solve the following:
@@ -93,15 +108,15 @@ function migrateTwoWayEvent(
   // we can get away with using the TypeScript AST instead.
   const sourceFile = ts.createSourceFile('temp.ts', value, ts.ScriptTarget.Latest);
   const expression =
-      sourceFile.statements.length === 1 && ts.isExpressionStatement(sourceFile.statements[0]) ?
-      sourceFile.statements[0].expression :
-      null;
+    sourceFile.statements.length === 1 && ts.isExpressionStatement(sourceFile.statements[0])
+      ? sourceFile.statements[0].expression
+      : null;
 
   if (expression === null) {
     return null;
   }
 
-  let migrated: ts.Expression|null = null;
+  let migrated: ts.Expression | null = null;
 
   // Historically the expression parser was handling two-way events by appending `=$event`
   // to the raw string before attempting to parse it. This has led to bugs over the years (see
@@ -113,13 +128,21 @@ function migrateTwoWayEvent(
   if (ts.isBinaryExpression(expression) && isReadExpression(expression.right)) {
     // `a && b` -> `a && (b = $event)`
     migrated = ts.factory.updateBinaryExpression(
-        expression, expression.left, expression.operatorToken,
-        wrapInEventAssignment(expression.right));
+      expression,
+      expression.left,
+      expression.operatorToken,
+      wrapInEventAssignment(expression.right),
+    );
   } else if (ts.isConditionalExpression(expression) && isReadExpression(expression.whenFalse)) {
     // `a ? b : c` -> `a ? b : c = $event`
     migrated = ts.factory.updateConditionalExpression(
-        expression, expression.condition, expression.questionToken, expression.whenTrue,
-        expression.colonToken, wrapInEventAssignment(expression.whenFalse));
+      expression,
+      expression.condition,
+      expression.questionToken,
+      expression.whenTrue,
+      expression.colonToken,
+      wrapInEventAssignment(expression.whenFalse),
+    );
   } else if (isPrefixNot(expression)) {
     // `!!a` -> `a = $event`
     let innerExpression = expression.operand;
@@ -147,18 +170,24 @@ function migrateTwoWayEvent(
 /** Wraps an expression in an assignment to `$event`, e.g. `foo.bar = $event`. */
 function wrapInEventAssignment(node: ts.Expression): ts.Expression {
   return ts.factory.createBinaryExpression(
-      node, ts.factory.createToken(ts.SyntaxKind.EqualsToken),
-      ts.factory.createIdentifier('$event'));
+    node,
+    ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+    ts.factory.createIdentifier('$event'),
+  );
 }
 
 /**
  * Checks whether an expression is a valid read expression. Note that identifiers
  * are considered read expressions in Angular templates as well.
  */
-function isReadExpression(node: ts.Expression): node is ts.Identifier|ts.PropertyAccessExpression|
-    ts.ElementAccessExpression {
-  return ts.isIdentifier(node) || ts.isPropertyAccessExpression(node) ||
-      ts.isElementAccessExpression(node);
+function isReadExpression(
+  node: ts.Expression,
+): node is ts.Identifier | ts.PropertyAccessExpression | ts.ElementAccessExpression {
+  return (
+    ts.isIdentifier(node) ||
+    ts.isPropertyAccessExpression(node) ||
+    ts.isElementAccessExpression(node)
+  );
 }
 
 /** Checks whether an expression is in the form of `!x`. */
@@ -168,11 +197,11 @@ function isPrefixNot(node: ts.Expression): node is ts.PrefixUnaryExpression {
 
 /** Traverses a template AST and collects any invalid two-way bindings. */
 class InvalidTwoWayBindingCollector extends TmplAstRecursiveVisitor {
-  private invalidBindings: TmplAstBoundAttribute[]|null = null;
+  private invalidBindings: TmplAstBoundAttribute[] | null = null;
 
   collectInvalidBindings(rootNodes: TmplAstNode[]): TmplAstBoundAttribute[] {
-    const result = this.invalidBindings = [];
-    rootNodes.forEach(node => node.visit(this));
+    const result = (this.invalidBindings = []);
+    rootNodes.forEach((node) => node.visit(this));
     this.invalidBindings = null;
     return result;
   }
@@ -187,7 +216,7 @@ class InvalidTwoWayBindingCollector extends TmplAstRecursiveVisitor {
     super.visitTemplate(template);
   }
 
-  private visitNodeWithBindings(node: TmplAstElement|TmplAstTemplate) {
+  private visitNodeWithBindings(node: TmplAstElement | TmplAstTemplate) {
     const seenOneWayBindings = new Set<string>();
 
     // Collect all of the regular event and input binding
@@ -211,8 +240,11 @@ class InvalidTwoWayBindingCollector extends TmplAstRecursiveVisitor {
       // something like `[(ngModel)]="invalid" (ngModelChange)="foo()"` to
       // `[ngModel]="invalid" (ngModelChange)="invalid = $event" (ngModelChange)="foo()"` which
       // would break the app.
-      if (input.type !== BindingType.TwoWay || seenOneWayBindings.has(input.name) ||
-          seenOneWayBindings.has(input.name + 'Change')) {
+      if (
+        input.type !== BindingType.TwoWay ||
+        seenOneWayBindings.has(input.name) ||
+        seenOneWayBindings.has(input.name + 'Change')
+      ) {
         continue;
       }
 

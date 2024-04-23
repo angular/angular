@@ -16,7 +16,7 @@ describe('NgOptimizedImage directive', () => {
   it('should log a warning when a `priority` is missing on an LCP image', async () => {
     await browser.get('/e2e/lcp-check');
     // Wait for ngSrc to be modified
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 600));
     // Verify that both images were rendered.
     const imgs = element.all(by.css('img'));
     let srcB = await imgs.get(0).getAttribute('src');

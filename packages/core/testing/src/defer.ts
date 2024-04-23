@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵCONTAINER_HEADER_OFFSET as CONTAINER_HEADER_OFFSET, ɵDeferBlockDetails as DeferBlockDetails, ɵDeferBlockState as DeferBlockState, ɵgetDeferBlocks as getDeferBlocks, ɵrenderDeferBlockState as renderDeferBlockState, ɵtriggerResourceLoading as triggerResourceLoading} from '@angular/core';
+import {
+  ɵCONTAINER_HEADER_OFFSET as CONTAINER_HEADER_OFFSET,
+  ɵDeferBlockDetails as DeferBlockDetails,
+  ɵDeferBlockState as DeferBlockState,
+  ɵgetDeferBlocks as getDeferBlocks,
+  ɵrenderDeferBlockState as renderDeferBlockState,
+  ɵtriggerResourceLoading as triggerResourceLoading,
+} from '@angular/core';
 
 import type {ComponentFixture} from './component_fixture';
 
@@ -19,7 +26,9 @@ import type {ComponentFixture} from './component_fixture';
 export class DeferBlockFixture {
   /** @nodoc */
   constructor(
-      private block: DeferBlockDetails, private componentFixture: ComponentFixture<unknown>) {}
+    private block: DeferBlockDetails,
+    private componentFixture: ComponentFixture<unknown>,
+  ) {}
 
   /**
    * Renders the specified state of the defer fixture.
@@ -29,8 +38,9 @@ export class DeferBlockFixture {
     if (!hasStateTemplate(state, this.block)) {
       const stateAsString = getDeferBlockStateNameFromEnum(state);
       throw new Error(
-          `Tried to render this defer block in the \`${stateAsString}\` state, ` +
-          `but there was no @${stateAsString.toLowerCase()} block defined in a template.`);
+        `Tried to render this defer block in the \`${stateAsString}\` state, ` +
+          `but there was no @${stateAsString.toLowerCase()} block defined in a template.`,
+      );
     }
     if (state === DeferBlockState.Complete) {
       await triggerResourceLoading(this.block.tDetails, this.block.lView, this.block.tNode);

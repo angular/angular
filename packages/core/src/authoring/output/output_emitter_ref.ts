@@ -30,7 +30,7 @@ import {OutputRef, OutputRefSubscription} from './output_ref';
  */
 export class OutputEmitterRef<T> implements OutputRef<T> {
   private destroyed = false;
-  private listeners: Array<(value: T) => void>|null = null;
+  private listeners: Array<(value: T) => void> | null = null;
   private errorHandler = inject(ErrorHandler, {optional: true});
 
   /** @internal */
@@ -47,10 +47,11 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
   subscribe(callback: (value: T) => void): OutputRefSubscription {
     if (this.destroyed) {
       throw new RuntimeError(
-          RuntimeErrorCode.OUTPUT_REF_DESTROYED,
-          ngDevMode &&
-              'Unexpected subscription to destroyed `OutputRef`. ' +
-                  'The owning directive/component is destroyed.');
+        RuntimeErrorCode.OUTPUT_REF_DESTROYED,
+        ngDevMode &&
+          'Unexpected subscription to destroyed `OutputRef`. ' +
+            'The owning directive/component is destroyed.',
+      );
     }
 
     (this.listeners ??= []).push(callback);
@@ -61,7 +62,7 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
         if (idx !== undefined && idx !== -1) {
           this.listeners?.splice(idx, 1);
         }
-      }
+      },
     };
   }
 
@@ -69,10 +70,11 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
   emit(value: T): void {
     if (this.destroyed) {
       throw new RuntimeError(
-          RuntimeErrorCode.OUTPUT_REF_DESTROYED,
-          ngDevMode &&
-              'Unexpected emit for destroyed `OutputRef`. ' +
-                  'The owning directive/component is destroyed.');
+        RuntimeErrorCode.OUTPUT_REF_DESTROYED,
+        ngDevMode &&
+          'Unexpected emit for destroyed `OutputRef`. ' +
+            'The owning directive/component is destroyed.',
+      );
     }
 
     if (this.listeners === null) {
@@ -95,6 +97,6 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
 }
 
 /** Gets the owning `DestroyRef` for the given output. */
-export function getOutputDestroyRef(ref: OutputRef<unknown>): DestroyRef|undefined {
+export function getOutputDestroyRef(ref: OutputRef<unknown>): DestroyRef | undefined {
   return ref.destroyRef;
 }

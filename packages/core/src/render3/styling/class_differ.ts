@@ -9,7 +9,6 @@
 import {assertNotEqual} from '../../util/assert';
 import {CharCode} from '../../util/char_code';
 
-
 /**
  * Returns an index of `classToSearch` in `className` taking token boundaries into account.
  *
@@ -21,7 +20,10 @@ import {CharCode} from '../../util/char_code';
  * @returns an index of the located class (or -1 if not found)
  */
 export function classIndexOf(
-    className: string, classToSearch: string, startingIndex: number): number {
+  className: string,
+  classToSearch: string,
+  startingIndex: number,
+): number {
   ngDevMode && assertNotEqual(classToSearch, '', 'can not look for "" string.');
   let end = className.length;
   while (true) {
@@ -30,8 +32,10 @@ export function classIndexOf(
     if (foundIndex === 0 || className.charCodeAt(foundIndex - 1) <= CharCode.SPACE) {
       // Ensure that it has leading whitespace
       const length = classToSearch.length;
-      if (foundIndex + length === end ||
-          className.charCodeAt(foundIndex + length) <= CharCode.SPACE) {
+      if (
+        foundIndex + length === end ||
+        className.charCodeAt(foundIndex + length) <= CharCode.SPACE
+      ) {
         // Ensure that it has trailing whitespace
         return foundIndex;
       }

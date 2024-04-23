@@ -8,14 +8,20 @@
 
 import {Type} from '../../interface/type';
 import {NgModuleType} from '../../metadata/ng_module_def';
-import {ComponentType, DependencyTypeList, DirectiveType, NgModuleScopeInfoFromDecorator, PipeType} from '../interfaces/definition';
+import {
+  ComponentType,
+  DependencyTypeList,
+  DirectiveType,
+  NgModuleScopeInfoFromDecorator,
+  PipeType,
+} from '../interfaces/definition';
 
 /**
  * Represents the set of dependencies of a type in a certain context.
  */
 interface ScopeData {
   pipes: Set<PipeType<any>>;
-  directives: Set<DirectiveType<any>|ComponentType<any>|Type<any>>;
+  directives: Set<DirectiveType<any> | ComponentType<any> | Type<any>>;
 
   /**
    * If true it indicates that calculating this scope somehow was not successful. The consumers
@@ -75,8 +81,10 @@ export interface DepsTrackerApi {
    * The implementation is expected to use some caching mechanism in order to optimize the resources
    * needed to do this computation.
    */
-  getComponentDependencies(cmp: ComponentType<any>, rawImports?: (Type<any>|(() => Type<any>))[]):
-      ComponentDependencies;
+  getComponentDependencies(
+    cmp: ComponentType<any>,
+    rawImports?: (Type<any> | (() => Type<any>))[],
+  ): ComponentDependencies;
 
   /**
    * Registers an NgModule into the tracker with the given scope info.
@@ -115,8 +123,9 @@ export interface DepsTrackerApi {
    * `clearScopeCacheFor` method.
    */
   getStandaloneComponentScope(
-      type: ComponentType<any>,
-      rawImports: (Type<any>|(() => Type<any>))[]): StandaloneComponentScope;
+    type: ComponentType<any>,
+    rawImports: (Type<any> | (() => Type<any>))[],
+  ): StandaloneComponentScope;
 
   /**
    * Checks if the NgModule declaring the component is not loaded into the browser yet. Always

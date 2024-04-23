@@ -16,7 +16,11 @@
  * @publicApi
  */
 export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
+  constructor(
+    public previousValue: any,
+    public currentValue: any,
+    public firstChange: boolean,
+  ) {}
   /**
    * Check whether the new value is the first value assigned.
    */

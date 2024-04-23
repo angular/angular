@@ -12,8 +12,23 @@ import {getLContext} from '../render3/context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
-import {DECLARATION_COMPONENT_VIEW, LView, PARENT, T_HOST, TData, TVIEW} from '../render3/interfaces/view';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent} from '../render3/util/discovery_utils';
+import {
+  DECLARATION_COMPONENT_VIEW,
+  LView,
+  PARENT,
+  T_HOST,
+  TData,
+  TVIEW,
+} from '../render3/interfaces/view';
+import {
+  getComponent,
+  getContext,
+  getInjectionTokens,
+  getInjector,
+  getListeners,
+  getLocalRefs,
+  getOwningComponent,
+} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
@@ -23,7 +38,10 @@ import {assertDomNode} from '../util/assert';
  * @publicApi
  */
 export class DebugEventListener {
-  constructor(public name: string, public callback: Function) {}
+  constructor(
+    public name: string,
+    public callback: Function,
+  ) {}
 }
 
 /**
@@ -49,7 +67,7 @@ export class DebugNode {
   /**
    * The `DebugElement` parent. Will be `null` if this is the root element.
    */
-  get parent(): DebugElement|null {
+  get parent(): DebugElement | null {
     const parent = this.nativeNode.parentNode as Element;
     return parent ? new DebugElement(parent) : null;
   }
@@ -66,8 +84,9 @@ export class DebugNode {
    */
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
-    return nativeElement &&
-        (getComponent(nativeElement as Element) || getOwningComponent(nativeElement));
+    return (
+      nativeElement && (getComponent(nativeElement as Element) || getOwningComponent(nativeElement))
+    );
   }
 
   /**
@@ -87,7 +106,7 @@ export class DebugNode {
    * properties.
    */
   get listeners(): DebugEventListener[] {
-    return getListeners(this.nativeNode as Element).filter(listener => listener.type === 'dom');
+    return getListeners(this.nativeNode as Element).filter((listener) => listener.type === 'dom');
   }
 
   /**
@@ -124,7 +143,7 @@ export class DebugElement extends DebugNode {
    * The underlying DOM element at the root of the component.
    */
   get nativeElement(): any {
-    return this.nativeNode.nodeType == Node.ELEMENT_NODE ? this.nativeNode as Element : null;
+    return this.nativeNode.nodeType == Node.ELEMENT_NODE ? (this.nativeNode as Element) : null;
   }
 
   /**
@@ -155,7 +174,7 @@ export class DebugElement extends DebugNode {
    *  - input property bindings (e.g. `[myCustomInput]="value"`)
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
-  get properties(): {[key: string]: any;} {
+  get properties(): {[key: string]: any} {
     const context = getLContext(this.nativeNode)!;
     const lView = context ? context.lView : null;
 
@@ -179,8 +198,8 @@ export class DebugElement extends DebugNode {
    *  A map of attribute names to attribute values for an element.
    */
   // TODO: replace null by undefined in the return type
-  get attributes(): {[key: string]: string|null} {
-    const attributes: {[key: string]: string|null} = {};
+  get attributes(): {[key: string]: string | null} {
+    const attributes: {[key: string]: string | null} = {};
     const element = this.nativeElement as Element | undefined;
 
     if (!element) {
@@ -236,7 +255,7 @@ export class DebugElement extends DebugNode {
    * The inline styles of the DOM element.
    */
   // TODO: replace null by undefined in the return type
-  get styles(): {[key: string]: string|null} {
+  get styles(): {[key: string]: string | null} {
     const element = this.nativeElement as HTMLElement | null;
     return (element?.style ?? {}) as {[key: string]: string | null};
   }
@@ -258,9 +277,9 @@ export class DebugElement extends DebugNode {
     // SVG elements return an `SVGAnimatedString` instead of a plain string for the `className`.
     const className = element.className as string | SVGAnimatedString;
     const classes =
-        typeof className !== 'string' ? className.baseVal.split(' ') : className.split(' ');
+      typeof className !== 'string' ? className.baseVal.split(' ') : className.split(' ');
 
-    classes.forEach((value: string) => result[value] = true);
+    classes.forEach((value: string) => (result[value] = true));
 
     return result;
   }
@@ -337,7 +356,7 @@ export class DebugElement extends DebugNode {
     const node = this.nativeNode as any;
     const invokedListeners: Function[] = [];
 
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       if (listener.name === eventName) {
         const callback = listener.callback;
         callback.call(node, eventObj);
@@ -360,15 +379,17 @@ export class DebugElement extends DebugNode {
         // strip the name, turning the condition in to ("" === "") and always returning true.
         if (listener.toString().indexOf('__ngUnwrap__') !== -1) {
           const unwrappedListener = listener('__ngUnwrap__');
-          return invokedListeners.indexOf(unwrappedListener) === -1 &&
-              unwrappedListener.call(node, eventObj);
+          return (
+            invokedListeners.indexOf(unwrappedListener) === -1 &&
+            unwrappedListener.call(node, eventObj)
+          );
         }
       });
     }
   }
 }
 
-function copyDomProperties(element: Element|null, properties: {[name: string]: string}): void {
+function copyDomProperties(element: Element | null, properties: {[name: string]: string}): void {
   if (element) {
     // Skip own properties (as those are patched)
     let obj = Object.getPrototypeOf(element);
@@ -392,8 +413,12 @@ function copyDomProperties(element: Element|null, properties: {[name: string]: s
 }
 
 function isPrimitiveValue(value: any): boolean {
-  return typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number' ||
-      value === null;
+  return (
+    typeof value === 'string' ||
+    typeof value === 'boolean' ||
+    typeof value === 'number' ||
+    value === null
+  );
 }
 
 /**
@@ -405,20 +430,35 @@ function isPrimitiveValue(value: any): boolean {
  * @param elementsOnly whether only elements should be searched
  */
 function _queryAll(
-    parentElement: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[],
-    elementsOnly: true): void;
+  parentElement: DebugElement,
+  predicate: Predicate<DebugElement>,
+  matches: DebugElement[],
+  elementsOnly: true,
+): void;
 function _queryAll(
-    parentElement: DebugElement, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: false): void;
+  parentElement: DebugElement,
+  predicate: Predicate<DebugNode>,
+  matches: DebugNode[],
+  elementsOnly: false,
+): void;
 function _queryAll(
-    parentElement: DebugElement, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
-    matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
+  parentElement: DebugElement,
+  predicate: Predicate<DebugElement> | Predicate<DebugNode>,
+  matches: DebugElement[] | DebugNode[],
+  elementsOnly: boolean,
+) {
   const context = getLContext(parentElement.nativeNode)!;
   const lView = context ? context.lView : null;
   if (lView !== null) {
     const parentTNode = lView[TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildren(
-        parentTNode, lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+      parentTNode,
+      lView,
+      predicate,
+      matches,
+      elementsOnly,
+      parentElement.nativeNode,
+    );
   } else {
     // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
     // APIs.
@@ -437,8 +477,13 @@ function _queryAll(
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _queryNodeChildren(
-    tNode: TNode, lView: LView, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
-    matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+  tNode: TNode,
+  lView: LView,
+  predicate: Predicate<DebugElement> | Predicate<DebugNode>,
+  matches: DebugElement[] | DebugNode[],
+  elementsOnly: boolean,
+  rootNativeNode: any,
+) {
   ngDevMode && assertTNodeForLView(tNode, lView);
   const nativeNode = getNativeByTNodeOrNull(tNode, lView);
   // For each type of TNode, specific logic is executed.
@@ -452,8 +497,13 @@ function _queryNodeChildren(
       const componentView = getComponentLViewByIndex(tNode.index, lView);
       if (componentView && componentView[TVIEW].firstChild) {
         _queryNodeChildren(
-            componentView[TVIEW].firstChild!, componentView, predicate, matches, elementsOnly,
-            rootNativeNode);
+          componentView[TVIEW].firstChild!,
+          componentView,
+          predicate,
+          matches,
+          elementsOnly,
+          rootNativeNode,
+        );
       }
     } else {
       if (tNode.child) {
@@ -475,7 +525,12 @@ function _queryNodeChildren(
     const nodeOrContainer = lView[tNode.index];
     if (isLContainer(nodeOrContainer)) {
       _queryNodeChildrenInContainer(
-          nodeOrContainer, predicate, matches, elementsOnly, rootNativeNode);
+        nodeOrContainer,
+        predicate,
+        matches,
+        elementsOnly,
+        rootNativeNode,
+      );
     }
   } else if (tNode.type & TNodeType.Container) {
     // Case 2: the TNode is a container
@@ -489,8 +544,9 @@ function _queryNodeChildren(
     // The nodes projected at this location all need to be processed.
     const componentView = lView![DECLARATION_COMPONENT_VIEW];
     const componentHost = componentView[T_HOST] as TElementNode;
-    const head: TNode|null =
-        (componentHost.projection as (TNode | null)[])[tNode.projection as number];
+    const head: TNode | null = (componentHost.projection as (TNode | null)[])[
+      tNode.projection as number
+    ];
 
     if (Array.isArray(head)) {
       for (let nativeNode of head) {
@@ -510,7 +566,7 @@ function _queryNodeChildren(
   if (rootNativeNode !== nativeNode) {
     // To determine the next node to be processed, we need to use the next or the projectionNext
     // link, depending on whether the current node has been projected.
-    const nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
+    const nextTNode = tNode.flags & TNodeFlags.isProjected ? tNode.projectionNext : tNode.next;
     if (nextTNode) {
       _queryNodeChildren(nextTNode, lView, predicate, matches, elementsOnly, rootNativeNode);
     }
@@ -527,8 +583,12 @@ function _queryNodeChildren(
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _queryNodeChildrenInContainer(
-    lContainer: LContainer, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
-    matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+  lContainer: LContainer,
+  predicate: Predicate<DebugElement> | Predicate<DebugNode>,
+  matches: DebugElement[] | DebugNode[],
+  elementsOnly: boolean,
+  rootNativeNode: any,
+) {
   for (let i = CONTAINER_HEADER_OFFSET; i < lContainer.length; i++) {
     const childView = lContainer[i] as LView;
     const firstChild = childView[TVIEW].firstChild;
@@ -548,8 +608,12 @@ function _queryNodeChildrenInContainer(
  * @param rootNativeNode the root native node on which predicate should not be matched
  */
 function _addQueryMatch(
-    nativeNode: any, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
-    matches: DebugElement[]|DebugNode[], elementsOnly: boolean, rootNativeNode: any) {
+  nativeNode: any,
+  predicate: Predicate<DebugElement> | Predicate<DebugNode>,
+  matches: DebugElement[] | DebugNode[],
+  elementsOnly: boolean,
+  rootNativeNode: any,
+) {
   if (rootNativeNode !== nativeNode) {
     const debugNode = getDebugNode(nativeNode);
     if (!debugNode) {
@@ -558,12 +622,18 @@ function _addQueryMatch(
     // Type of the "predicate and "matches" array are set based on the value of
     // the "elementsOnly" parameter. TypeScript is not able to properly infer these
     // types with generics, so we manually cast the parameters accordingly.
-    if (elementsOnly && (debugNode instanceof DebugElement) && predicate(debugNode) &&
-        matches.indexOf(debugNode) === -1) {
+    if (
+      elementsOnly &&
+      debugNode instanceof DebugElement &&
+      predicate(debugNode) &&
+      matches.indexOf(debugNode) === -1
+    ) {
       matches.push(debugNode);
     } else if (
-        !elementsOnly && (predicate as Predicate<DebugNode>)(debugNode) &&
-        (matches as DebugNode[]).indexOf(debugNode) === -1) {
+      !elementsOnly &&
+      (predicate as Predicate<DebugNode>)(debugNode) &&
+      (matches as DebugNode[]).indexOf(debugNode) === -1
+    ) {
       (matches as DebugNode[]).push(debugNode);
     }
   }
@@ -578,8 +648,11 @@ function _addQueryMatch(
  * @param elementsOnly whether only elements should be searched
  */
 function _queryNativeNodeDescendants(
-    parentNode: any, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
-    matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
+  parentNode: any,
+  predicate: Predicate<DebugElement> | Predicate<DebugNode>,
+  matches: DebugElement[] | DebugNode[],
+  elementsOnly: boolean,
+) {
   const nodes = parentNode.childNodes;
   const length = nodes.length;
 
@@ -588,12 +661,18 @@ function _queryNativeNodeDescendants(
     const debugNode = getDebugNode(node);
 
     if (debugNode) {
-      if (elementsOnly && (debugNode instanceof DebugElement) && predicate(debugNode) &&
-          matches.indexOf(debugNode) === -1) {
+      if (
+        elementsOnly &&
+        debugNode instanceof DebugElement &&
+        predicate(debugNode) &&
+        matches.indexOf(debugNode) === -1
+      ) {
         matches.push(debugNode);
       } else if (
-          !elementsOnly && (predicate as Predicate<DebugNode>)(debugNode) &&
-          (matches as DebugNode[]).indexOf(debugNode) === -1) {
+        !elementsOnly &&
+        (predicate as Predicate<DebugNode>)(debugNode) &&
+        (matches as DebugNode[]).indexOf(debugNode) === -1
+      ) {
         (matches as DebugNode[]).push(debugNode);
       }
 
@@ -608,7 +687,11 @@ function _queryNativeNodeDescendants(
  * defined in templates, not in host bindings.
  */
 function collectPropertyBindings(
-    properties: {[key: string]: string}, tNode: TNode, lView: LView, tData: TData): void {
+  properties: {[key: string]: string},
+  tNode: TNode,
+  lView: LView,
+  tData: TData,
+): void {
   let bindingIndexes = tNode.propertyBindings;
 
   if (bindingIndexes !== null) {
@@ -630,7 +713,6 @@ function collectPropertyBindings(
   }
 }
 
-
 // Need to keep the nodes in a global Map so that multiple angular apps are supported.
 const _nativeNodeToDebugNode = new Map<any, DebugNode>();
 
@@ -639,12 +721,13 @@ const NG_DEBUG_PROPERTY = '__ng_debug__';
 /**
  * @publicApi
  */
-export function getDebugNode(nativeNode: any): DebugNode|null {
+export function getDebugNode(nativeNode: any): DebugNode | null {
   if (nativeNode instanceof Node) {
-    if (!(nativeNode.hasOwnProperty(NG_DEBUG_PROPERTY))) {
-      (nativeNode as any)[NG_DEBUG_PROPERTY] = nativeNode.nodeType == Node.ELEMENT_NODE ?
-          new DebugElement(nativeNode as Element) :
-          new DebugNode(nativeNode);
+    if (!nativeNode.hasOwnProperty(NG_DEBUG_PROPERTY)) {
+      (nativeNode as any)[NG_DEBUG_PROPERTY] =
+        nativeNode.nodeType == Node.ELEMENT_NODE
+          ? new DebugElement(nativeNode as Element)
+          : new DebugNode(nativeNode);
     }
     return (nativeNode as any)[NG_DEBUG_PROPERTY];
   }

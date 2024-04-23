@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, inject, tick} from '@angular/core/testing';
+import {
+  discardPeriodicTasks,
+  fakeAsync,
+  flush,
+  flushMicrotasks,
+  inject,
+  tick,
+} from '@angular/core/testing';
 import {Log} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 
@@ -30,9 +37,11 @@ describe('fake async', () => {
     })('foo', 'bar');
   });
 
-  it('should work with inject()', fakeAsync(inject([EventManager], (eventManager: EventManager) => {
-       expect(eventManager).toBeInstanceOf(EventManager);
-     })));
+  it('should work with inject()', fakeAsync(
+    inject([EventManager], (eventManager: EventManager) => {
+      expect(eventManager).toBeInstanceOf(EventManager);
+    }),
+  ));
 
   it('should throw on nested calls', () => {
     expect(() => {
@@ -46,7 +55,7 @@ describe('fake async', () => {
     let thenRan = false;
 
     fakeAsync(() => {
-      resolvedPromise.then(_ => {
+      resolvedPromise.then((_) => {
         thenRan = true;
       });
     })();
@@ -54,48 +63,47 @@ describe('fake async', () => {
     expect(thenRan).toEqual(true);
   });
 
-
   it('should propagate the return value', () => {
     expect(fakeAsync(() => 'foo')()).toEqual('foo');
   });
 
   describe('Promise', () => {
     it('should run asynchronous code', fakeAsync(() => {
-         let thenRan = false;
-         resolvedPromise.then((_) => {
-           thenRan = true;
-         });
+      let thenRan = false;
+      resolvedPromise.then((_) => {
+        thenRan = true;
+      });
 
-         expect(thenRan).toEqual(false);
+      expect(thenRan).toEqual(false);
 
-         flushMicrotasks();
-         expect(thenRan).toEqual(true);
-       }));
+      flushMicrotasks();
+      expect(thenRan).toEqual(true);
+    }));
 
     it('should run chained thens', fakeAsync(() => {
-         const log = new Log<number>();
+      const log = new Log<number>();
 
-         resolvedPromise.then((_) => log.add(1)).then((_) => log.add(2));
+      resolvedPromise.then((_) => log.add(1)).then((_) => log.add(2));
 
-         expect(log.result()).toEqual('');
+      expect(log.result()).toEqual('');
 
-         flushMicrotasks();
-         expect(log.result()).toEqual('1; 2');
-       }));
+      flushMicrotasks();
+      expect(log.result()).toEqual('1; 2');
+    }));
 
     it('should run Promise created in Promise', fakeAsync(() => {
-         const log = new Log<number>();
+      const log = new Log<number>();
 
-         resolvedPromise.then((_) => {
-           log.add(1);
-           resolvedPromise.then((_) => log.add(2));
-         });
+      resolvedPromise.then((_) => {
+        log.add(1);
+        resolvedPromise.then((_) => log.add(2));
+      });
 
-         expect(log.result()).toEqual('');
+      expect(log.result()).toEqual('');
 
-         flushMicrotasks();
-         expect(log.result()).toEqual('1; 2');
-       }));
+      flushMicrotasks();
+      expect(log.result()).toEqual('1; 2');
+    }));
 
     it('should complain if the test throws an exception during async calls', () => {
       expect(() => {
@@ -119,82 +127,80 @@ describe('fake async', () => {
 
   describe('timers', () => {
     it('should run queued zero duration timer on zero tick', fakeAsync(() => {
-         let ran = false;
-         setTimeout(() => {
-           ran = true;
-         }, 0);
+      let ran = false;
+      setTimeout(() => {
+        ran = true;
+      }, 0);
 
-         expect(ran).toEqual(false);
+      expect(ran).toEqual(false);
 
-         tick();
-         expect(ran).toEqual(true);
-       }));
-
+      tick();
+      expect(ran).toEqual(true);
+    }));
 
     it('should run queued timer after sufficient clock ticks', fakeAsync(() => {
-         let ran = false;
-         setTimeout(() => {
-           ran = true;
-         }, 10);
+      let ran = false;
+      setTimeout(() => {
+        ran = true;
+      }, 10);
 
-         tick(6);
-         expect(ran).toEqual(false);
+      tick(6);
+      expect(ran).toEqual(false);
 
-         tick(6);
-         expect(ran).toEqual(true);
-       }));
+      tick(6);
+      expect(ran).toEqual(true);
+    }));
 
     it('should run new macro tasks created by timer callback', fakeAsync(() => {
-         function nestedTimer(callback: () => any): void {
-           setTimeout(() => setTimeout(() => callback()));
-         }
-         const callback = jasmine.createSpy('callback');
-         nestedTimer(callback);
-         expect(callback).not.toHaveBeenCalled();
-         tick(0);
-         expect(callback).toHaveBeenCalled();
-       }));
+      function nestedTimer(callback: () => any): void {
+        setTimeout(() => setTimeout(() => callback()));
+      }
+      const callback = jasmine.createSpy('callback');
+      nestedTimer(callback);
+      expect(callback).not.toHaveBeenCalled();
+      tick(0);
+      expect(callback).toHaveBeenCalled();
+    }));
 
-    it('should not queue nested timer on tick with processNewMacroTasksSynchronously=false',
-       fakeAsync(() => {
-         function nestedTimer(callback: () => any): void {
-           setTimeout(() => setTimeout(() => callback()));
-         }
-         const callback = jasmine.createSpy('callback');
-         nestedTimer(callback);
-         expect(callback).not.toHaveBeenCalled();
-         tick(0, {processNewMacroTasksSynchronously: false});
-         expect(callback).not.toHaveBeenCalled();
-         flush();
-         expect(callback).toHaveBeenCalled();
-       }));
+    it('should not queue nested timer on tick with processNewMacroTasksSynchronously=false', fakeAsync(() => {
+      function nestedTimer(callback: () => any): void {
+        setTimeout(() => setTimeout(() => callback()));
+      }
+      const callback = jasmine.createSpy('callback');
+      nestedTimer(callback);
+      expect(callback).not.toHaveBeenCalled();
+      tick(0, {processNewMacroTasksSynchronously: false});
+      expect(callback).not.toHaveBeenCalled();
+      flush();
+      expect(callback).toHaveBeenCalled();
+    }));
 
     it('should run queued timer only once', fakeAsync(() => {
-         let cycles = 0;
-         setTimeout(() => {
-           cycles++;
-         }, 10);
+      let cycles = 0;
+      setTimeout(() => {
+        cycles++;
+      }, 10);
 
-         tick(10);
-         expect(cycles).toEqual(1);
+      tick(10);
+      expect(cycles).toEqual(1);
 
-         tick(10);
-         expect(cycles).toEqual(1);
+      tick(10);
+      expect(cycles).toEqual(1);
 
-         tick(10);
-         expect(cycles).toEqual(1);
-       }));
+      tick(10);
+      expect(cycles).toEqual(1);
+    }));
 
     it('should not run cancelled timer', fakeAsync(() => {
-         let ran = false;
-         const id = setTimeout(() => {
-           ran = true;
-         }, 10);
-         clearTimeout(id);
+      let ran = false;
+      const id = setTimeout(() => {
+        ran = true;
+      }, 10);
+      clearTimeout(id);
 
-         tick(10);
-         expect(ran).toEqual(false);
-       }));
+      tick(10);
+      expect(ran).toEqual(false);
+    }));
 
     it('should throw an error on dangling timers', () => {
       expect(() => {
@@ -213,154 +219,153 @@ describe('fake async', () => {
     });
 
     it('should run periodic timers', fakeAsync(() => {
-         let cycles = 0;
-         const id = setInterval(() => {
-           cycles++;
-         }, 10);
+      let cycles = 0;
+      const id = setInterval(() => {
+        cycles++;
+      }, 10);
 
-         tick(10);
-         expect(cycles).toEqual(1);
+      tick(10);
+      expect(cycles).toEqual(1);
 
-         tick(10);
-         expect(cycles).toEqual(2);
+      tick(10);
+      expect(cycles).toEqual(2);
 
-         tick(10);
-         expect(cycles).toEqual(3);
-         clearInterval(id);
-       }));
+      tick(10);
+      expect(cycles).toEqual(3);
+      clearInterval(id);
+    }));
 
     it('should not run cancelled periodic timer', fakeAsync(() => {
-         let ran = false;
-         const id = setInterval(() => {
-           ran = true;
-         }, 10);
-         clearInterval(id);
+      let ran = false;
+      const id = setInterval(() => {
+        ran = true;
+      }, 10);
+      clearInterval(id);
 
-         tick(10);
-         expect(ran).toEqual(false);
-       }));
+      tick(10);
+      expect(ran).toEqual(false);
+    }));
 
     it('should be able to cancel periodic timers from a callback', fakeAsync(() => {
-         let cycles = 0;
-         const id = setInterval(() => {
-           cycles++;
-           clearInterval(id);
-         }, 10);
+      let cycles = 0;
+      const id = setInterval(() => {
+        cycles++;
+        clearInterval(id);
+      }, 10);
 
-         tick(10);
-         expect(cycles).toEqual(1);
+      tick(10);
+      expect(cycles).toEqual(1);
 
-         tick(10);
-         expect(cycles).toEqual(1);
-       }));
+      tick(10);
+      expect(cycles).toEqual(1);
+    }));
 
     it('should clear periodic timers', fakeAsync(() => {
-         let cycles = 0;
-         setInterval(() => {
-           cycles++;
-         }, 10);
+      let cycles = 0;
+      setInterval(() => {
+        cycles++;
+      }, 10);
 
-         tick(10);
-         expect(cycles).toEqual(1);
+      tick(10);
+      expect(cycles).toEqual(1);
 
-         discardPeriodicTasks();
+      discardPeriodicTasks();
 
-         // Tick once to clear out the timer which already started.
-         tick(10);
-         expect(cycles).toEqual(2);
+      // Tick once to clear out the timer which already started.
+      tick(10);
+      expect(cycles).toEqual(2);
 
-         tick(10);
-         // Nothing should change
-         expect(cycles).toEqual(2);
-       }));
+      tick(10);
+      // Nothing should change
+      expect(cycles).toEqual(2);
+    }));
 
     it('should process microtasks before timers', fakeAsync(() => {
-         const log = new Log();
+      const log = new Log();
 
-         resolvedPromise.then((_) => log.add('microtask'));
+      resolvedPromise.then((_) => log.add('microtask'));
 
-         setTimeout(() => log.add('timer'), 9);
+      setTimeout(() => log.add('timer'), 9);
 
-         const id = setInterval(() => log.add('periodic timer'), 10);
+      const id = setInterval(() => log.add('periodic timer'), 10);
 
-         expect(log.result()).toEqual('');
+      expect(log.result()).toEqual('');
 
-         tick(10);
-         expect(log.result()).toEqual('microtask; timer; periodic timer');
-         clearInterval(id);
-       }));
+      tick(10);
+      expect(log.result()).toEqual('microtask; timer; periodic timer');
+      clearInterval(id);
+    }));
 
     it('should process micro-tasks created in timers before next timers', fakeAsync(() => {
-         const log = new Log();
+      const log = new Log();
 
-         resolvedPromise.then((_) => log.add('microtask'));
+      resolvedPromise.then((_) => log.add('microtask'));
 
-         setTimeout(() => {
-           log.add('timer');
-           resolvedPromise.then((_) => log.add('t microtask'));
-         }, 9);
+      setTimeout(() => {
+        log.add('timer');
+        resolvedPromise.then((_) => log.add('t microtask'));
+      }, 9);
 
-         const id = setInterval(() => {
-           log.add('periodic timer');
-           resolvedPromise.then((_) => log.add('pt microtask'));
-         }, 10);
+      const id = setInterval(() => {
+        log.add('periodic timer');
+        resolvedPromise.then((_) => log.add('pt microtask'));
+      }, 10);
 
-         tick(10);
-         expect(log.result())
-             .toEqual('microtask; timer; t microtask; periodic timer; pt microtask');
+      tick(10);
+      expect(log.result()).toEqual('microtask; timer; t microtask; periodic timer; pt microtask');
 
-         tick(10);
-         expect(log.result())
-             .toEqual(
-                 'microtask; timer; t microtask; periodic timer; pt microtask; periodic timer; pt microtask');
-         clearInterval(id);
-       }));
+      tick(10);
+      expect(log.result()).toEqual(
+        'microtask; timer; t microtask; periodic timer; pt microtask; periodic timer; pt microtask',
+      );
+      clearInterval(id);
+    }));
 
     it('should flush tasks', fakeAsync(() => {
-         let ran = false;
-         setTimeout(() => {
-           ran = true;
-         }, 10);
+      let ran = false;
+      setTimeout(() => {
+        ran = true;
+      }, 10);
 
-         flush();
-         expect(ran).toEqual(true);
-       }));
+      flush();
+      expect(ran).toEqual(true);
+    }));
 
     it('should flush multiple tasks', fakeAsync(() => {
-         let ran = false;
-         let ran2 = false;
-         setTimeout(() => {
-           ran = true;
-         }, 10);
-         setTimeout(() => {
-           ran2 = true;
-         }, 30);
+      let ran = false;
+      let ran2 = false;
+      setTimeout(() => {
+        ran = true;
+      }, 10);
+      setTimeout(() => {
+        ran2 = true;
+      }, 30);
 
-         let elapsed = flush();
+      let elapsed = flush();
 
-         expect(ran).toEqual(true);
-         expect(ran2).toEqual(true);
-         expect(elapsed).toEqual(30);
-       }));
+      expect(ran).toEqual(true);
+      expect(ran2).toEqual(true);
+      expect(elapsed).toEqual(30);
+    }));
 
     it('should move periodic tasks', fakeAsync(() => {
-         let ran = false;
-         let count = 0;
-         setInterval(() => {
-           count++;
-         }, 10);
-         setTimeout(() => {
-           ran = true;
-         }, 35);
+      let ran = false;
+      let count = 0;
+      setInterval(() => {
+        count++;
+      }, 10);
+      setTimeout(() => {
+        ran = true;
+      }, 35);
 
-         let elapsed = flush();
+      let elapsed = flush();
 
-         expect(count).toEqual(3);
-         expect(ran).toEqual(true);
-         expect(elapsed).toEqual(35);
+      expect(count).toEqual(3);
+      expect(ran).toEqual(true);
+      expect(elapsed).toEqual(35);
 
-         discardPeriodicTasks();
-       }));
+      discardPeriodicTasks();
+    }));
   });
 
   describe('outside of the fakeAsync zone', () => {
@@ -397,9 +402,9 @@ describe('fake async', () => {
     }));
 
     it('should use the same zone as in beforeEach', fakeAsync(() => {
-         zoneInTest1 = Zone.current;
-         expect(zoneInTest1).toBe(zoneInBeforeEach);
-       }));
+      zoneInTest1 = Zone.current;
+      expect(zoneInTest1).toBe(zoneInBeforeEach);
+    }));
   });
 });
 
@@ -416,14 +421,14 @@ describe('ProxyZone', () => {
     ProxyZoneSpec.assertPresent();
     let state: string = 'not run';
     const testZone = Zone.current.fork({name: 'test-zone'});
-    (fakeAsync(() => {
+    fakeAsync(() => {
       testZone.run(() => {
-        Promise.resolve('works').then((v) => state = v);
+        Promise.resolve('works').then((v) => (state = v));
         expect(state).toEqual('not run');
         flushMicrotasks();
         expect(state).toEqual('works');
       });
-    }))();
+    })();
     expect(state).toEqual('works');
   });
 });

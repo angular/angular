@@ -8,7 +8,12 @@
 import {validateMatchingNode, validateNodeExists} from '../../hydration/error_handling';
 import {TEMPLATES} from '../../hydration/interfaces';
 import {locateNextRNode, siblingAfter} from '../../hydration/node_lookup_utils';
-import {calcSerializedContainerSize, isDisconnectedNode, markRNodeAsClaimedByHydration, setSegmentHead} from '../../hydration/utils';
+import {
+  calcSerializedContainerSize,
+  isDisconnectedNode,
+  markRNodeAsClaimedByHydration,
+  setSegmentHead,
+} from '../../hydration/utils';
 import {isDetachedByI18n} from '../../i18n/utils';
 import {populateDehydratedViewsInLContainer} from '../../linker/view_container_ref';
 import {assertEqual} from '../../util/assert';
@@ -21,15 +26,37 @@ import {RComment} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TView, TViewType} from '../interfaces/view';
 import {appendChild} from '../node_manipulation';
-import {getLView, getTView, isInSkipHydrationBlock, lastNodeWasCreated, setCurrentTNode, wasLastNodeCreated} from '../state';
+import {
+  getLView,
+  getTView,
+  isInSkipHydrationBlock,
+  lastNodeWasCreated,
+  setCurrentTNode,
+  wasLastNodeCreated,
+} from '../state';
 import {getConstant} from '../util/view_utils';
 
-import {addToViewTree, createDirectivesInstances, createLContainer, createTView, getOrCreateTNode, resolveDirectives, saveResolvedLocalsInData} from './shared';
+import {
+  addToViewTree,
+  createDirectivesInstances,
+  createLContainer,
+  createTView,
+  getOrCreateTNode,
+  resolveDirectives,
+  saveResolvedLocalsInData,
+} from './shared';
 
 function templateFirstCreatePass(
-    index: number, tView: TView, lView: LView, templateFn: ComponentTemplate<any>|null,
-    decls: number, vars: number, tagName?: string|null, attrs?: TAttributes|null,
-    localRefsIndex?: number|null): TContainerNode {
+  index: number,
+  tView: TView,
+  lView: LView,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrs?: TAttributes | null,
+  localRefsIndex?: number | null,
+): TContainerNode {
   ngDevMode && assertFirstCreatePass(tView);
   ngDevMode && ngDevMode.firstCreatePass++;
   const tViewConsts = tView.consts;
@@ -40,9 +67,19 @@ function templateFirstCreatePass(
   resolveDirectives(tView, lView, tNode, getConstant<string[]>(tViewConsts, localRefsIndex));
   registerPostOrderHooks(tView, tNode);
 
-  const embeddedTView = tNode.tView = createTView(
-      TViewType.Embedded, tNode, templateFn, decls, vars, tView.directiveRegistry,
-      tView.pipeRegistry, null, tView.schemas, tViewConsts, null /* ssrId */);
+  const embeddedTView = (tNode.tView = createTView(
+    TViewType.Embedded,
+    tNode,
+    templateFn,
+    decls,
+    vars,
+    tView.directiveRegistry,
+    tView.pipeRegistry,
+    null,
+    tView.schemas,
+    tViewConsts,
+    null /* ssrId */,
+  ));
 
   if (tView.queries !== null) {
     tView.queries.template(tView, tNode);
@@ -68,20 +105,39 @@ function templateFirstCreatePass(
  *        Defaults to the current element associated with the local-ref.
  */
 export function declareTemplate(
-    declarationLView: LView, declarationTView: TView, index: number,
-    templateFn: ComponentTemplate<any>|null, decls: number, vars: number, tagName?: string|null,
-    attrs?: TAttributes|null, localRefsIndex?: number|null,
-    localRefExtractor?: LocalRefExtractor): TNode {
+  declarationLView: LView,
+  declarationTView: TView,
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrs?: TAttributes | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): TNode {
   const adjustedIndex = index + HEADER_OFFSET;
-  const tNode = declarationTView.firstCreatePass ?
-      templateFirstCreatePass(
-          adjustedIndex, declarationTView, declarationLView, templateFn, decls, vars, tagName,
-          attrs, localRefsIndex) :
-      declarationTView.data[adjustedIndex] as TContainerNode;
+  const tNode = declarationTView.firstCreatePass
+    ? templateFirstCreatePass(
+        adjustedIndex,
+        declarationTView,
+        declarationLView,
+        templateFn,
+        decls,
+        vars,
+        tagName,
+        attrs,
+        localRefsIndex,
+      )
+    : (declarationTView.data[adjustedIndex] as TContainerNode);
   setCurrentTNode(tNode, false);
 
-  const comment =
-      _locateOrCreateContainerAnchor(declarationTView, declarationLView, tNode, index) as RComment;
+  const comment = _locateOrCreateContainerAnchor(
+    declarationTView,
+    declarationLView,
+    tNode,
+    index,
+  ) as RComment;
 
   if (wasLastNodeCreated()) {
     appendChild(declarationTView, declarationLView, comment, tNode);
@@ -128,15 +184,30 @@ export function declareTemplate(
  * @codeGenApi
  */
 export function ɵɵtemplate(
-    index: number, templateFn: ComponentTemplate<any>|null, decls: number, vars: number,
-    tagName?: string|null, attrsIndex?: number|null, localRefsIndex?: number|null,
-    localRefExtractor?: LocalRefExtractor): typeof ɵɵtemplate {
+  index: number,
+  templateFn: ComponentTemplate<any> | null,
+  decls: number,
+  vars: number,
+  tagName?: string | null,
+  attrsIndex?: number | null,
+  localRefsIndex?: number | null,
+  localRefExtractor?: LocalRefExtractor,
+): typeof ɵɵtemplate {
   const lView = getLView();
   const tView = getTView();
   const attrs = getConstant<TAttributes>(tView.consts, attrsIndex);
   declareTemplate(
-      lView, tView, index, templateFn, decls, vars, tagName, attrs, localRefsIndex,
-      localRefExtractor);
+    lView,
+    tView,
+    index,
+    templateFn,
+    decls,
+    vars,
+    tagName,
+    attrs,
+    localRefsIndex,
+    localRefExtractor,
+  );
   return ɵɵtemplate;
 }
 
@@ -146,7 +217,11 @@ let _locateOrCreateContainerAnchor = createContainerAnchorImpl;
  * Regular creation mode for LContainers and their anchor (comment) nodes.
  */
 function createContainerAnchorImpl(
-    tView: TView, lView: LView, tNode: TNode, index: number): RComment {
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  index: number,
+): RComment {
   lastNodeWasCreated(true);
   return lView[RENDERER].createComment(ngDevMode ? 'container' : '');
 }
@@ -157,10 +232,17 @@ function createContainerAnchorImpl(
  * anchor (comment) nodes.
  */
 function locateOrCreateContainerAnchorImpl(
-    tView: TView, lView: LView, tNode: TNode, index: number): RComment {
+  tView: TView,
+  lView: LView,
+  tNode: TNode,
+  index: number,
+): RComment {
   const hydrationInfo = lView[HYDRATION];
-  const isNodeCreationMode = !hydrationInfo || isInSkipHydrationBlock() ||
-      isDetachedByI18n(tNode) || isDisconnectedNode(hydrationInfo, index);
+  const isNodeCreationMode =
+    !hydrationInfo ||
+    isInSkipHydrationBlock() ||
+    isDetachedByI18n(tNode) ||
+    isDisconnectedNode(hydrationInfo, index);
   lastNodeWasCreated(isNodeCreationMode);
 
   // Regular creation mode.
@@ -183,7 +265,7 @@ function locateOrCreateContainerAnchorImpl(
       tNode.tView.ssrId = ssrId;
     } else {
       ngDevMode &&
-          assertEqual(tNode.tView.ssrId, ssrId, 'Unexpected value of the `ssrId` for this TView');
+        assertEqual(tNode.tView.ssrId, ssrId, 'Unexpected value of the `ssrId` for this TView');
     }
   }
 

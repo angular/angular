@@ -13,6 +13,6 @@ import {getCurrentTNode} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵinjectAttribute(attrNameToInject: string): string|null {
+export function ɵɵinjectAttribute(attrNameToInject: string): string | null {
   return injectAttributeImpl(getCurrentTNode()!, attrNameToInject);
 }

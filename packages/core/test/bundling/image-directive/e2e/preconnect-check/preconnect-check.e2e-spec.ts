@@ -38,14 +38,13 @@ describe('NgOptimizedImage directive', () => {
     expect(logs[0].message).toMatch(/NG02956.*?a\.png/);
   });
 
-  it('should not produce any warnings in the console when a preconnect tag is present',
-     async () => {
-       await browser.get('/e2e/preconnect-check?preconnect');
+  it('should not produce any warnings in the console when a preconnect tag is present', async () => {
+    await browser.get('/e2e/preconnect-check?preconnect');
 
-       await verifyImagesPresent(element);
+    await verifyImagesPresent(element);
 
-       // Make sure there are no browser logs.
-       const logs = await collectBrowserLogs(logging.Level.WARNING);
-       expect(logs.length).toEqual(0);
-     });
+    // Make sure there are no browser logs.
+    const logs = await collectBrowserLogs(logging.Level.WARNING);
+    expect(logs.length).toEqual(0);
+  });
 });

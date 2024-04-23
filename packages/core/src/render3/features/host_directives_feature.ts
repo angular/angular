@@ -11,14 +11,22 @@ import {Type} from '../../interface/type';
 import {assertEqual} from '../../util/assert';
 import {EMPTY_OBJ} from '../../util/empty';
 import {getComponentDef, getDirectiveDef} from '../definition';
-import {DirectiveDef, DirectiveDefFeature, HostDirectiveBindingMap, HostDirectiveDef, HostDirectiveDefs} from '../interfaces/definition';
+import {
+  DirectiveDef,
+  DirectiveDefFeature,
+  HostDirectiveBindingMap,
+  HostDirectiveDef,
+  HostDirectiveDefs,
+} from '../interfaces/definition';
 
 /** Values that can be used to define a host directive through the `HostDirectivesFeature`. */
-type HostDirectiveConfig = Type<unknown>|{
-  directive: Type<unknown>;
-  inputs?: string[];
-  outputs?: string[];
-};
+type HostDirectiveConfig =
+  | Type<unknown>
+  | {
+      directive: Type<unknown>;
+      inputs?: string[];
+      outputs?: string[];
+    };
 
 /**
  * This feature adds the host directives behavior to a directive definition by patching a
@@ -40,19 +48,21 @@ type HostDirectiveConfig = Type<unknown>|{
  *
  * @codeGenApi
  */
-export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig[]|
-                                        (() => HostDirectiveConfig[])) {
+export function ɵɵHostDirectivesFeature(
+  rawHostDirectives: HostDirectiveConfig[] | (() => HostDirectiveConfig[]),
+) {
   const feature: DirectiveDefFeature = (definition: DirectiveDef<unknown>) => {
-    const resolved =
-        (Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives()).map(dir => {
-          return typeof dir === 'function' ?
-              {directive: resolveForwardRef(dir), inputs: EMPTY_OBJ, outputs: EMPTY_OBJ} :
-              {
-                directive: resolveForwardRef(dir.directive),
-                inputs: bindingArrayToMap(dir.inputs),
-                outputs: bindingArrayToMap(dir.outputs)
-              };
-        });
+    const resolved = (
+      Array.isArray(rawHostDirectives) ? rawHostDirectives : rawHostDirectives()
+    ).map((dir) => {
+      return typeof dir === 'function'
+        ? {directive: resolveForwardRef(dir), inputs: EMPTY_OBJ, outputs: EMPTY_OBJ}
+        : {
+            directive: resolveForwardRef(dir.directive),
+            inputs: bindingArrayToMap(dir.inputs),
+            outputs: bindingArrayToMap(dir.outputs),
+          };
+    });
     if (definition.hostDirectives === null) {
       definition.findHostDirectiveDefs = findHostDirectiveDefs;
       definition.hostDirectives = resolved;
@@ -65,8 +75,10 @@ export function ɵɵHostDirectivesFeature(rawHostDirectives: HostDirectiveConfig
 }
 
 function findHostDirectiveDefs(
-    currentDef: DirectiveDef<unknown>, matchedDefs: DirectiveDef<unknown>[],
-    hostDirectiveDefs: HostDirectiveDefs): void {
+  currentDef: DirectiveDef<unknown>,
+  matchedDefs: DirectiveDef<unknown>[],
+  hostDirectiveDefs: HostDirectiveDefs,
+): void {
   if (currentDef.hostDirectives !== null) {
     for (const hostDirectiveConfig of currentDef.hostDirectives) {
       const hostDirectiveDef = getDirectiveDef(hostDirectiveConfig.directive)!;
@@ -91,7 +103,7 @@ function findHostDirectiveDefs(
  * Converts an array in the form of `['publicName', 'alias', 'otherPublicName', 'otherAlias']` into
  * a map in the form of `{publicName: 'alias', otherPublicName: 'otherAlias'}`.
  */
-function bindingArrayToMap(bindings: string[]|undefined): HostDirectiveBindingMap {
+function bindingArrayToMap(bindings: string[] | undefined): HostDirectiveBindingMap {
   if (bindings === undefined || bindings.length === 0) {
     return EMPTY_OBJ;
   }
@@ -125,7 +137,9 @@ function bindingArrayToMap(bindings: string[]|undefined): HostDirectiveBindingMa
  * `SimpleChanges` object which won't be reached if an input doesn't exist.
  */
 function patchDeclaredInputs(
-    declaredInputs: Record<string, string>, exposedInputs: HostDirectiveBindingMap): void {
+  declaredInputs: Record<string, string>,
+  exposedInputs: HostDirectiveBindingMap,
+): void {
   for (const publicName in exposedInputs) {
     if (exposedInputs.hasOwnProperty(publicName)) {
       const remappedPublicName = exposedInputs[publicName];
@@ -135,11 +149,15 @@ function patchDeclaredInputs(
       // inputs on the same property and we have validations against conflicting aliases in
       // `validateMappings`. If we somehow did, it would lead to `ngOnChanges` being invoked
       // with the wrong name so we have a non-user-friendly assertion here just in case.
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
-          declaredInputs.hasOwnProperty(remappedPublicName)) {
+      if (
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        declaredInputs.hasOwnProperty(remappedPublicName)
+      ) {
         assertEqual(
-            declaredInputs[remappedPublicName], declaredInputs[publicName],
-            `Conflicting host directive input alias ${publicName}.`);
+          declaredInputs[remappedPublicName],
+          declaredInputs[publicName],
+          `Conflicting host directive input alias ${publicName}.`,
+        );
       }
 
       declaredInputs[remappedPublicName] = privateName;
@@ -153,27 +171,31 @@ function patchDeclaredInputs(
  * @param directiveDef Directive definition of the host directive.
  */
 function validateHostDirective(
-    hostDirectiveConfig: HostDirectiveDef<unknown>,
-    directiveDef: DirectiveDef<any>|null): asserts directiveDef is DirectiveDef<unknown> {
+  hostDirectiveConfig: HostDirectiveDef<unknown>,
+  directiveDef: DirectiveDef<any> | null,
+): asserts directiveDef is DirectiveDef<unknown> {
   const type = hostDirectiveConfig.directive;
 
   if (directiveDef === null) {
     if (getComponentDef(type) !== null) {
       throw new RuntimeError(
-          RuntimeErrorCode.HOST_DIRECTIVE_COMPONENT,
-          `Host directive ${type.name} cannot be a component.`);
+        RuntimeErrorCode.HOST_DIRECTIVE_COMPONENT,
+        `Host directive ${type.name} cannot be a component.`,
+      );
     }
 
     throw new RuntimeError(
-        RuntimeErrorCode.HOST_DIRECTIVE_UNRESOLVABLE,
-        `Could not resolve metadata for host directive ${type.name}. ` +
-            `Make sure that the ${type.name} class is annotated with an @Directive decorator.`);
+      RuntimeErrorCode.HOST_DIRECTIVE_UNRESOLVABLE,
+      `Could not resolve metadata for host directive ${type.name}. ` +
+        `Make sure that the ${type.name} class is annotated with an @Directive decorator.`,
+    );
   }
 
   if (!directiveDef.standalone) {
     throw new RuntimeError(
-        RuntimeErrorCode.HOST_DIRECTIVE_NOT_STANDALONE,
-        `Host directive ${directiveDef.type.name} must be standalone.`);
+      RuntimeErrorCode.HOST_DIRECTIVE_NOT_STANDALONE,
+      `Host directive ${directiveDef.type.name} must be standalone.`,
+    );
   }
 
   validateMappings('input', directiveDef, hostDirectiveConfig.inputs);
@@ -187,8 +209,10 @@ function validateHostDirective(
  * @param hostDirectiveBindings Host directive mapping object that shold be validated.
  */
 function validateMappings<T>(
-    bindingType: 'input'|'output', def: DirectiveDef<T>,
-    hostDirectiveBindings: HostDirectiveBindingMap) {
+  bindingType: 'input' | 'output',
+  def: DirectiveDef<T>,
+  hostDirectiveBindings: HostDirectiveBindingMap,
+) {
   const className = def.type.name;
   const bindings = bindingType === 'input' ? def.inputs : def.outputs;
 
@@ -196,19 +220,18 @@ function validateMappings<T>(
     if (hostDirectiveBindings.hasOwnProperty(publicName)) {
       if (!bindings.hasOwnProperty(publicName)) {
         throw new RuntimeError(
-            RuntimeErrorCode.HOST_DIRECTIVE_UNDEFINED_BINDING,
-            `Directive ${className} does not have an ${bindingType} with a public name of ${
-                publicName}.`);
+          RuntimeErrorCode.HOST_DIRECTIVE_UNDEFINED_BINDING,
+          `Directive ${className} does not have an ${bindingType} with a public name of ${publicName}.`,
+        );
       }
 
       const remappedPublicName = hostDirectiveBindings[publicName];
 
       if (bindings.hasOwnProperty(remappedPublicName) && remappedPublicName !== publicName) {
         throw new RuntimeError(
-            RuntimeErrorCode.HOST_DIRECTIVE_CONFLICTING_ALIAS,
-            `Cannot alias ${bindingType} ${publicName} of host directive ${className} to ${
-                remappedPublicName}, because it already has a different ${
-                bindingType} with the same public name.`);
+          RuntimeErrorCode.HOST_DIRECTIVE_CONFLICTING_ALIAS,
+          `Cannot alias ${bindingType} ${publicName} of host directive ${className} to ${remappedPublicName}, because it already has a different ${bindingType} with the same public name.`,
+        );
       }
     }
   }

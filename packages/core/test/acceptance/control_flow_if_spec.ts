@@ -6,9 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {NgFor} from '@angular/common';
-import {ChangeDetectorRef, Component, Directive, inject, Input, OnInit, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Directive,
+  inject,
+  Input,
+  OnInit,
+  Pipe,
+  PipeTransform,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 // Basic shared pipe used during testing.
@@ -152,18 +162,26 @@ describe('control flow - if', () => {
     const fixture = TestBed.createComponent(TestComponent);
     fixture.detectChanges();
     const buttons = Array.from<HTMLButtonElement>(fixture.nativeElement.querySelectorAll('button'));
-    buttons.forEach(button => button.click());
+    buttons.forEach((button) => button.click());
     fixture.detectChanges();
 
-    expect(logs).toEqual([['Root', 1, 2], ['Inner', 1, 2, 3], ['Innermost', 1, 2, 3, 4]]);
+    expect(logs).toEqual([
+      ['Root', 1, 2],
+      ['Inner', 1, 2, 3],
+      ['Innermost', 1, 2, 3, 4],
+    ]);
 
     logs = [];
     fixture.componentInstance.value = 2;
     fixture.detectChanges();
 
-    buttons.forEach(button => button.click());
+    buttons.forEach((button) => button.click());
     fixture.detectChanges();
-    expect(logs).toEqual([['Root', 2, 4], ['Inner', 2, 4, 6], ['Innermost', 2, 4, 6, 8]]);
+    expect(logs).toEqual([
+      ['Root', 2, 4],
+      ['Inner', 2, 4, 6],
+      ['Innermost', 2, 4, 6, 8],
+    ]);
   });
 
   it('should expose expression value passed through a pipe in context', () => {
@@ -266,8 +284,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -276,10 +293,9 @@ describe('control flow - if', () => {
         <test>Before @if (true) {
           <span foo>foo</span>
         } After</test>
-      `
+      `,
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -304,8 +320,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -314,7 +329,7 @@ describe('control flow - if', () => {
         <test>Before @if (true) {
           <span [foo]="value">foo</span>
         } After</test>
-      `
+      `,
       })
       class App {
         value = 1;
@@ -333,8 +348,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -344,10 +358,9 @@ describe('control flow - if', () => {
           <span foo>one</span>
           <div foo>two</div>
         } After</test>
-      `
+      `,
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -361,8 +374,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -374,10 +386,9 @@ describe('control flow - if', () => {
             <span>bar</span>
           </ng-container>
         } After</test>
-      `
+      `,
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -393,8 +404,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -405,10 +415,9 @@ describe('control flow - if', () => {
           <span foo>foo</span>
           <!-- after -->
         } After</test>
-      `
+      `,
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -421,10 +430,9 @@ describe('control flow - if', () => {
         standalone: true,
         selector: 'test',
         template:
-            'if: (<ng-content select="[if_case]"/>),  else: (<ng-content select="[else_case]"/>)',
+          'if: (<ng-content select="[if_case]"/>),  else: (<ng-content select="[else_case]"/>)',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -437,7 +445,7 @@ describe('control flow - if', () => {
             <span else_case>else content</span>
           }
         </test>
-      `
+      `,
       })
       class App {
         value = true;
@@ -456,20 +464,18 @@ describe('control flow - if', () => {
       expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
     });
 
-    it('should project @if an @else content into separate slots when if has default content',
-       () => {
-         @Component({
-           standalone: true,
-           selector: 'test',
-           template: 'if: (<ng-content />),  else: (<ng-content select="[else_case]"/>)',
-         })
-         class TestComponent {
-         }
+    it('should project @if an @else content into separate slots when if has default content', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'if: (<ng-content />),  else: (<ng-content select="[else_case]"/>)',
+      })
+      class TestComponent {}
 
-         @Component({
-           standalone: true,
-           imports: [TestComponent],
-           template: `
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
               <test>
                 @if (value) {
                   <span>if content</span>
@@ -477,39 +483,37 @@ describe('control flow - if', () => {
                   <span else_case>else content</span>
                 }
               </test>
-            `
-         })
-         class App {
-           value = true;
-         }
+            `,
+      })
+      class App {
+        value = true;
+      }
 
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
 
-         fixture.componentInstance.value = false;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
+      fixture.componentInstance.value = false;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
 
-         fixture.componentInstance.value = true;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
-       });
+      fixture.componentInstance.value = true;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+    });
 
-    it('should project @if an @else content into separate slots when else has default content',
-       () => {
-         @Component({
-           standalone: true,
-           selector: 'test',
-           template: 'if: (<ng-content select="[if_case]"/>),  else: (<ng-content/>)',
-         })
-         class TestComponent {
-         }
+    it('should project @if an @else content into separate slots when else has default content', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'if: (<ng-content select="[if_case]"/>),  else: (<ng-content/>)',
+      })
+      class TestComponent {}
 
-         @Component({
-           standalone: true,
-           imports: [TestComponent],
-           template: `
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        template: `
         <test>
           @if (value) {
             <span if_case>if content</span>
@@ -517,77 +521,71 @@ describe('control flow - if', () => {
             <span>else content</span>
           }
         </test>
-      `
-         })
-         class App {
-           value = true;
-         }
+      `,
+      })
+      class App {
+        value = true;
+      }
 
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
 
-         fixture.componentInstance.value = false;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
+      fixture.componentInstance.value = false;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('if: (), else: (else content)');
 
-         fixture.componentInstance.value = true;
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
-       });
+      fixture.componentInstance.value = true;
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('if: (if content), else: ()');
+    });
 
-    it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes',
-       () => {
-         @Component({
-           standalone: true,
-           selector: 'test',
-           template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
-         })
-         class TestComponent {
-         }
+    it('should project the root node when preserveWhitespaces is enabled and there are no whitespace nodes', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {}
 
-         @Component({
-           standalone: true,
-           imports: [TestComponent],
-           preserveWhitespaces: true,
-           template: '<test>Before @if (true) {<span foo>one</span>} After</test>'
-         })
-         class App {
-         }
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        preserveWhitespaces: true,
+        template: '<test>Before @if (true) {<span foo>one</span>} After</test>',
+      })
+      class App {}
 
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: one');
-       });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: one');
+    });
 
-    it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes',
-       () => {
-         @Component({
-           standalone: true,
-           selector: 'test',
-           template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
-         })
-         class TestComponent {
-         }
+    it('should not project the root node when preserveWhitespaces is enabled and there are whitespace nodes', () => {
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
+      })
+      class TestComponent {}
 
-         @Component({
-           standalone: true,
-           imports: [TestComponent],
-           preserveWhitespaces: true,
-           // Note the whitespace due to the indentation inside @if.
-           template: `
+      @Component({
+        standalone: true,
+        imports: [TestComponent],
+        preserveWhitespaces: true,
+        // Note the whitespace due to the indentation inside @if.
+        template: `
             <test>Before @if (true) {
               <span foo>one</span>
             } After</test>
-          `
-         })
-         class App {
-         }
+          `,
+      })
+      class App {}
 
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
-         expect(fixture.nativeElement.textContent).toMatch(/Main: Before\s+one\s+After Slot:/);
-       });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toMatch(/Main: Before\s+one\s+After Slot:/);
+    });
 
     it('should not project the root node across multiple layers of @if', () => {
       @Component({
@@ -595,8 +593,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
@@ -607,10 +604,9 @@ describe('control flow - if', () => {
             <span foo>one</span>
           }
         } After</test>
-      `
+      `,
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -623,15 +619,14 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Component({
         standalone: true,
         imports: [TestComponent, NgFor],
         template: `<test>Before @if (true) {
         <span *ngFor="let item of items" foo>{{item}}</span>
-      } After</test>`
+      } After</test>`,
       })
       class App {
         items = [1, 2];
@@ -654,8 +649,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Directive({
         selector: '[foo]',
@@ -673,10 +667,9 @@ describe('control flow - if', () => {
         template: `<test>Before @if (true) {
         <span foo>foo</span>
       } After</test>
-      `
+      `,
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -693,8 +686,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Directive({
         selector: '[templateDir]',
@@ -702,8 +694,8 @@ describe('control flow - if', () => {
       })
       class TemplateDirective implements OnInit {
         constructor(
-            private viewContainerRef: ViewContainerRef,
-            private templateRef: TemplateRef<any>,
+          private viewContainerRef: ViewContainerRef,
+          private templateRef: TemplateRef<any>,
         ) {
           directiveCount++;
         }
@@ -720,10 +712,9 @@ describe('control flow - if', () => {
         template: `<test>Before @if (true) {
         <span *templateDir foo>foo</span>
       } After</test>
-      `
+      `,
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -740,8 +731,7 @@ describe('control flow - if', () => {
         selector: 'test',
         template: 'Main: <ng-content/> Slot: <ng-content select="[foo]"/>',
       })
-      class TestComponent {
-      }
+      class TestComponent {}
 
       @Directive({
         selector: '[templateDir]',
@@ -749,8 +739,8 @@ describe('control flow - if', () => {
       })
       class TemplateDirective implements OnInit {
         constructor(
-            private viewContainerRef: ViewContainerRef,
-            private templateRef: TemplateRef<any>,
+          private viewContainerRef: ViewContainerRef,
+          private templateRef: TemplateRef<any>,
         ) {
           directiveCount++;
         }
@@ -767,10 +757,9 @@ describe('control flow - if', () => {
         template: `<test>Before @if (true) {
           <ng-template templateDir foo>foo</ng-template>
       } After</test>
-      `
+      `,
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
@@ -779,51 +768,49 @@ describe('control flow - if', () => {
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
     });
 
-    it('should not match a directive with a class-based selector only meant for content projection',
-       () => {
-         let directiveCount = 0;
+    it('should not match a directive with a class-based selector only meant for content projection', () => {
+      let directiveCount = 0;
 
-         @Component({
-           standalone: true,
-           selector: 'test',
-           template: 'Main: <ng-content/> Slot: <ng-content select=".foo"/>',
-         })
-         class TestComponent {
-         }
+      @Component({
+        standalone: true,
+        selector: 'test',
+        template: 'Main: <ng-content/> Slot: <ng-content select=".foo"/>',
+      })
+      class TestComponent {}
 
-         @Directive({
-           selector: '.foo',
-           standalone: true,
-         })
-         class TemplateDirective {
-           constructor() {
-             directiveCount++;
-           }
-         }
+      @Directive({
+        selector: '.foo',
+        standalone: true,
+      })
+      class TemplateDirective {
+        constructor() {
+          directiveCount++;
+        }
+      }
 
-         @Component({
-           standalone: true,
-           imports: [TestComponent, TemplateDirective],
-           template: `<test>Before @if (condition) {
+      @Component({
+        standalone: true,
+        imports: [TestComponent, TemplateDirective],
+        template: `<test>Before @if (condition) {
           <div class="foo">foo</div>
       } After</test>
-      `
-         })
-         class App {
-           condition = false;
-         }
+      `,
+      })
+      class App {
+        condition = false;
+      }
 
-         const fixture = TestBed.createComponent(App);
-         fixture.detectChanges();
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
 
-         expect(directiveCount).toBe(0);
-         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: ');
+      expect(directiveCount).toBe(0);
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: ');
 
-         fixture.componentInstance.condition = true;
-         fixture.detectChanges();
+      fixture.componentInstance.condition = true;
+      fixture.detectChanges();
 
-         expect(directiveCount).toBe(1);
-         expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
-       });
+      expect(directiveCount).toBe(1);
+      expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: foo');
+    });
   });
 });

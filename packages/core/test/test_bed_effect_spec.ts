@@ -61,9 +61,12 @@ describe('effects in TestBed', () => {
       }
 
       ngOnInit() {
-        effect(() => {
-          log.push('Effect');
-        }, {injector: this.injector});
+        effect(
+          () => {
+            log.push('Effect');
+          },
+          {injector: this.injector},
+        );
       }
 
       ngDoCheck() {

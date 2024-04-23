@@ -6,7 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import type {TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstBoundText, TmplAstContent, TmplAstDeferredBlock, TmplAstDeferredBlockError, TmplAstDeferredBlockLoading, TmplAstDeferredBlockPlaceholder, TmplAstDeferredTrigger, TmplAstElement, TmplAstIfBlockBranch, TmplAstForLoopBlock, TmplAstForLoopBlockEmpty, TmplAstIcu, TmplAstIfBlock, TmplAstNode, TmplAstRecursiveVisitor, TmplAstReference, TmplAstSwitchBlock, TmplAstSwitchBlockCase, TmplAstTemplate, TmplAstText, TmplAstTextAttribute, TmplAstVariable, TmplAstUnknownBlock} from '@angular/compiler';
+import type {
+  TmplAstBoundAttribute,
+  TmplAstBoundEvent,
+  TmplAstBoundText,
+  TmplAstContent,
+  TmplAstDeferredBlock,
+  TmplAstDeferredBlockError,
+  TmplAstDeferredBlockLoading,
+  TmplAstDeferredBlockPlaceholder,
+  TmplAstDeferredTrigger,
+  TmplAstElement,
+  TmplAstIfBlockBranch,
+  TmplAstForLoopBlock,
+  TmplAstForLoopBlockEmpty,
+  TmplAstIcu,
+  TmplAstIfBlock,
+  TmplAstNode,
+  TmplAstRecursiveVisitor,
+  TmplAstReference,
+  TmplAstSwitchBlock,
+  TmplAstSwitchBlockCase,
+  TmplAstTemplate,
+  TmplAstText,
+  TmplAstTextAttribute,
+  TmplAstVariable,
+  TmplAstUnknownBlock,
+} from '@angular/compiler';
 
 /**
  * A base class that can be used to implement a Render3 Template AST visitor.

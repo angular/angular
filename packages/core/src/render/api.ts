@@ -13,7 +13,6 @@ import {getComponentLViewByIndex} from '../render3/util/view_utils';
 
 import {RendererStyleFlags2, RendererType2} from './api_flags';
 
-
 /**
  * Creates and initializes a custom renderer that implements the `Renderer2` base class.
  *
@@ -26,7 +25,7 @@ export abstract class RendererFactory2 {
    * @param type The base class to implement.
    * @returns The new custom renderer instance.
    */
-  abstract createRenderer(hostElement: any, type: RendererType2|null): Renderer2;
+  abstract createRenderer(hostElement: any, type: RendererType2 | null): Renderer2;
   /**
    * A callback invoked when rendering has begun.
    */
@@ -41,7 +40,6 @@ export abstract class RendererFactory2 {
    */
   abstract whenRenderingDone?(): Promise<any>;
 }
-
 
 /**
  * Extend this base class to implement custom rendering. By default, Angular
@@ -76,7 +74,7 @@ export abstract class Renderer2 {
    * @param namespace The namespace for the new element.
    * @returns The new element.
    */
-  abstract createElement(name: string, namespace?: string|null): any;
+  abstract createElement(name: string, namespace?: string | null): any;
   /**
    * Implement this callback to add a comment to the DOM of the host element.
    * @param value The comment text.
@@ -94,7 +92,7 @@ export abstract class Renderer2 {
    * If null or undefined, the view engine won't call it.
    * This is used as a performance optimization for production mode.
    */
-  destroyNode: ((node: any) => void)|null = null;
+  destroyNode: ((node: any) => void) | null = null;
   /**
    * Appends a child to a given parent node in the host element DOM.
    * @param parent The parent node.
@@ -132,7 +130,7 @@ export abstract class Renderer2 {
    * content projection via `<slot>` elements.
    * @returns The root element.
    */
-  abstract selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any;
+  abstract selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any;
   /**
    * Implement this callback to get the parent of a given node
    * in the host element's DOM.
@@ -157,7 +155,7 @@ export abstract class Renderer2 {
    * @param value The new value.
    * @param namespace The namespace.
    */
-  abstract setAttribute(el: any, name: string, value: string, namespace?: string|null): void;
+  abstract setAttribute(el: any, name: string, value: string, namespace?: string | null): void;
 
   /**
    * Implement this callback to remove an attribute from an element in the DOM.
@@ -165,7 +163,7 @@ export abstract class Renderer2 {
    * @param name The attribute name.
    * @param namespace The namespace.
    */
-  abstract removeAttribute(el: any, name: string, namespace?: string|null): void;
+  abstract removeAttribute(el: any, name: string, namespace?: string | null): void;
   /**
    * Implement this callback to add a class to an element in the DOM.
    * @param el The element.
@@ -222,8 +220,10 @@ export abstract class Renderer2 {
    * @returns An "unlisten" function for disposing of this handler.
    */
   abstract listen(
-      target: 'window'|'document'|'body'|any, eventName: string,
-      callback: (event: any) => boolean | void): () => void;
+    target: 'window' | 'document' | 'body' | any,
+    eventName: string,
+    callback: (event: any) => boolean | void,
+  ): () => void;
 
   /**
    * @internal

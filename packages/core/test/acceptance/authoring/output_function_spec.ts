@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, effect, ErrorHandler, EventEmitter, output, signal} from '@angular/core';
+import {
+  Component,
+  Directive,
+  effect,
+  ErrorHandler,
+  EventEmitter,
+  output,
+  signal,
+} from '@angular/core';
 import {outputFromObservable} from '@angular/core/rxjs-interop';
 import {TestBed} from '@angular/core/testing';
 import {BehaviorSubject, Observable, share, Subject} from 'rxjs';
@@ -145,8 +153,9 @@ describe('output() function', () => {
     fixture.componentInstance.show = false;
     fixture.detectChanges();
 
-    expect(() => dir.onBla.subscribe(() => {}))
-        .toThrowError(/Unexpected subscription to destroyed `OutputRef`/);
+    expect(() => dir.onBla.subscribe(() => {})).toThrowError(
+      /Unexpected subscription to destroyed `OutputRef`/,
+    );
   });
 
   it('should run listeners outside of `emit` reactive context', () => {
@@ -186,7 +195,7 @@ describe('output() function', () => {
     fixture.detectChanges();
 
     expect(dir.effectCount).toEqual(1);
-    fixture.componentInstance.signalUnrelatedToDir.update(v => v + 1);
+    fixture.componentInstance.signalUnrelatedToDir.update((v) => v + 1);
     fixture.detectChanges();
 
     expect(dir.effectCount).toEqual(1);
@@ -293,10 +302,10 @@ describe('output() function', () => {
       })
       class Dir {
         streamStarted = false;
-        onBla$ = new Observable(obs => {
-                   this.streamStarted = true;
-                   obs.next(1);
-                 }).pipe(share());
+        onBla$ = new Observable((obs) => {
+          this.streamStarted = true;
+          obs.next(1);
+        }).pipe(share());
 
         onBla = outputFromObservable(this.onBla$);
       }
@@ -309,8 +318,7 @@ describe('output() function', () => {
         standalone: true,
         imports: [Dir],
       })
-      class App {
-      }
+      class App {}
 
       const fixture = TestBed.createComponent(App);
       const dir = fixture.debugElement.children[0].injector.get(Dir);
@@ -338,18 +346,20 @@ describe('output() function', () => {
         standalone: true,
         imports: [Dir],
       })
-      class App {
-      }
+      class App {}
 
       let handledErrors: unknown[] = [];
       TestBed.configureTestingModule({
-        providers: [{
-          provide: ErrorHandler, useClass: class Handler extends ErrorHandler {
-            override handleError(error: unknown): void {
-              handledErrors.push(error);
-            }
-          }
-        }],
+        providers: [
+          {
+            provide: ErrorHandler,
+            useClass: class Handler extends ErrorHandler {
+              override handleError(error: unknown): void {
+                handledErrors.push(error);
+              }
+            },
+          },
+        ],
       });
 
       const fixture = TestBed.createComponent(App);

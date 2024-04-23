@@ -6,10 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, IterableDiffer, IterableDifferFactory, IterableDiffers, NgModule, TrackByFunction} from '@angular/core';
+import {
+  Injector,
+  IterableDiffer,
+  IterableDifferFactory,
+  IterableDiffers,
+  NgModule,
+  TrackByFunction,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-describe('IterableDiffers', function() {
+describe('IterableDiffers', function () {
   let factory1: jasmine.SpyObj<IterableDifferFactory>;
   let factory2: jasmine.SpyObj<IterableDifferFactory>;
   let factory3: jasmine.SpyObj<IterableDifferFactory>;
@@ -23,8 +30,9 @@ describe('IterableDiffers', function() {
 
   it('should throw when no suitable implementation found', () => {
     const differs = new IterableDiffers([]);
-    expect(() => differs.find('some object'))
-        .toThrowError(/Cannot find a differ supporting object 'some object'/);
+    expect(() => differs.find('some object')).toThrowError(
+      /Cannot find a differ supporting object 'some object'/,
+    );
   });
 
   it('should return the first suitable implementation', () => {
@@ -51,15 +59,18 @@ describe('IterableDiffers', function() {
     it('should extend di-inherited differs', () => {
       const differ = new IterableDiffers([factory1]);
       const injector = Injector.create({providers: [{provide: IterableDiffers, useValue: differ}]});
-      const childInjector =
-          Injector.create({providers: [IterableDiffers.extend([factory2])], parent: injector});
+      const childInjector = Injector.create({
+        providers: [IterableDiffers.extend([factory2])],
+        parent: injector,
+      });
 
       // @ts-expect-error factories is a private member
       expect(injector.get<IterableDiffers>(IterableDiffers).factories).toEqual([factory1]);
 
       // @ts-expect-error factories is a private member
       expect(childInjector.get<IterableDiffers>(IterableDiffers).factories).toEqual([
-        factory2, factory1
+        factory2,
+        factory1,
       ]);
     });
 
@@ -77,10 +88,8 @@ describe('IterableDiffers', function() {
         }
       }
 
-
       @NgModule({providers: [IterableDiffers.extend([new MyIterableDifferFactory()])]})
-      class MyModule {
-      }
+      class MyModule {}
 
       TestBed.configureTestingModule({imports: [MyModule]});
       const differs = TestBed.inject(IterableDiffers);

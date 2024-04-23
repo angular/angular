@@ -16,7 +16,7 @@ describe('Image performance warnings', () => {
   it('should warn if rendered image size is much smaller than intrinsic size', async () => {
     await browser.get('/e2e/image-perf-warnings-oversized');
     // Wait for load event
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 600));
     const logs = await collectBrowserLogs(logging.Level.WARNING);
 
     expect(logs.length).toEqual(1);

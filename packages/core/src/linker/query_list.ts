@@ -48,7 +48,7 @@ export class QueryList<T> implements Iterable<T> {
   private _onDirty?: () => void = undefined;
   private _results: Array<T> = [];
   private _changesDetected: boolean = false;
-  private _changes: EventEmitter<QueryList<T>>|undefined = undefined;
+  private _changes: EventEmitter<QueryList<T>> | undefined = undefined;
 
   readonly length: number = 0;
   readonly first: T = undefined!;
@@ -58,7 +58,7 @@ export class QueryList<T> implements Iterable<T> {
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
    */
   get changes(): Observable<any> {
-    return this._changes ??= new EventEmitter();
+    return (this._changes ??= new EventEmitter());
   }
 
   /**
@@ -78,7 +78,7 @@ export class QueryList<T> implements Iterable<T> {
   /**
    * Returns the QueryList entry at `index`.
    */
-  get(index: number): T|undefined {
+  get(index: number): T | undefined {
     return this._results[index];
   }
 
@@ -104,7 +104,7 @@ export class QueryList<T> implements Iterable<T> {
    * See
    * [Array.find](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
    */
-  find(fn: (item: T, index: number, array: T[]) => boolean): T|undefined {
+  find(fn: (item: T, index: number, array: T[]) => boolean): T | undefined {
     return this._results.find(fn);
   }
 
@@ -155,10 +155,10 @@ export class QueryList<T> implements Iterable<T> {
    *    function) to detect if the lists are different. If the function is not provided, elements
    *    are compared as is (without any pre-processing).
    */
-  reset(resultsTree: Array<T|any[]>, identityAccessor?: (value: T) => unknown): void {
+  reset(resultsTree: Array<T | any[]>, identityAccessor?: (value: T) => unknown): void {
     (this as {dirty: boolean}).dirty = false;
     const newResultFlat = flatten(resultsTree);
-    if (this._changesDetected = !arrayEquals(this._results, newResultFlat, identityAccessor)) {
+    if ((this._changesDetected = !arrayEquals(this._results, newResultFlat, identityAccessor))) {
       this._results = newResultFlat;
       (this as Writable<this>).length = newResultFlat.length;
       (this as Writable<this>).last = newResultFlat[this.length - 1];

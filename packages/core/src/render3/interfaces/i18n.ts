@@ -8,7 +8,6 @@
 
 import {SanitizerFn} from './sanitization';
 
-
 /**
  * Stores a list of nodes which need to be removed.
  *
@@ -75,7 +74,6 @@ export const enum IcuCreateOpCode {
   Attr = 0b1,
 }
 
-
 /**
  * Array storing OpCode for dynamically creating `i18n` blocks.
  *
@@ -121,8 +119,9 @@ export const enum IcuCreateOpCode {
  * ];
  * ```
  */
-export interface IcuCreateOpCodes extends Array<number|string|ELEMENT_MARKER|ICU_MARKER|null>,
-                                          I18nDebug {
+export interface IcuCreateOpCodes
+  extends Array<number | string | ELEMENT_MARKER | ICU_MARKER | null>,
+    I18nDebug {
   __brand__: 'I18nCreateOpCodes';
 }
 
@@ -160,7 +159,7 @@ export const enum I18nUpdateOpCode {
  * See `I18nMutateOpCodes` documentation.
  */
 export const ELEMENT_MARKER: ELEMENT_MARKER = {
-  marker: 'element'
+  marker: 'element',
 };
 export interface ELEMENT_MARKER {
   marker: 'element';
@@ -172,7 +171,7 @@ export interface ELEMENT_MARKER {
  * See `I18nMutateOpCodes` documentation.
  */
 export const ICU_MARKER: ICU_MARKER = {
-  marker: 'ICU'
+  marker: 'ICU',
 };
 
 export interface ICU_MARKER {
@@ -223,7 +222,7 @@ export interface I18nDebug {
  * }
  * ```
  */
-export interface I18nCreateOpCodes extends Array<number|string>, I18nDebug {
+export interface I18nCreateOpCodes extends Array<number | string>, I18nDebug {
   __brand__: 'I18nCreateOpCodes';
 }
 
@@ -247,7 +246,6 @@ export enum I18nCreateOpCode {
    */
   COMMENT = 0b10,
 }
-
 
 /**
  * Stores DOM operations which need to be applied to update DOM render tree due to changes in
@@ -321,7 +319,7 @@ export enum I18nCreateOpCode {
  * ```
  *
  */
-export interface I18nUpdateOpCodes extends Array<string|number|SanitizerFn|null>, I18nDebug {
+export interface I18nUpdateOpCodes extends Array<string | number | SanitizerFn | null>, I18nDebug {
   __brand__: 'I18nUpdateOpCodes';
 }
 
@@ -412,11 +410,11 @@ export interface IcuExpression {
   type: IcuType;
   mainBinding: number;
   cases: string[];
-  values: (string|IcuExpression)[][];
+  values: (string | IcuExpression)[][];
 }
 
 // A parsed I18n AST Node
-export type I18nNode = I18nTextNode|I18nElementNode|I18nICUNode|I18nPlaceholderNode;
+export type I18nNode = I18nTextNode | I18nElementNode | I18nICUNode | I18nPlaceholderNode;
 
 /**
  * Represents a block of text in a translation, such as `Hello, {{ name }}!`.

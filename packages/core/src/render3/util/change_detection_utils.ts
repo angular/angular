@@ -27,7 +27,7 @@ import {getRootComponents} from './discovery_utils';
 export function applyChanges(component: {}): void {
   ngDevMode && assertDefined(component, 'component');
   markViewDirty(getComponentViewByInstance(component), NotificationSource.DebugApplyChanges);
-  getRootComponents(component).forEach(rootComponent => detectChanges(rootComponent));
+  getRootComponents(component).forEach((rootComponent) => detectChanges(rootComponent));
 }
 
 /**

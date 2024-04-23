@@ -15,11 +15,19 @@ import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {PendingTasks} from '../../pending_tasks';
-import {scheduleCallbackWithMicrotask, scheduleCallbackWithRafRace} from '../../util/callback_scheduler';
+import {
+  scheduleCallbackWithMicrotask,
+  scheduleCallbackWithRafRace,
+} from '../../util/callback_scheduler';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NoopNgZone} from '../../zone/ng_zone';
 
-import {ChangeDetectionScheduler, NotificationSource, ZONELESS_ENABLED, ZONELESS_SCHEDULER_DISABLED} from './zoneless_scheduling';
+import {
+  ChangeDetectionScheduler,
+  NotificationSource,
+  ZONELESS_ENABLED,
+  ZONELESS_SCHEDULER_DISABLED,
+} from './zoneless_scheduling';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -36,10 +44,11 @@ function trackMicrotaskNotificationForDebugging() {
 
   if (consecutiveMicrotaskNotifications === CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT) {
     throw new RuntimeError(
-        RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
-        'Angular could not stabilize because there were endless change notifications within the browser event loop. ' +
-            'The stack from the last several notifications: \n' +
-            stackFromLastFewNotifications.join('\n'));
+      RuntimeErrorCode.INFINITE_CHANGE_DETECTION,
+      'Angular could not stabilize because there were endless change notifications within the browser event loop. ' +
+        'The stack from the last several notifications: \n' +
+        stackFromLastFewNotifications.join('\n'),
+    );
   }
 }
 
@@ -50,42 +59,47 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly ngZone = inject(NgZone);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly disableScheduling =
-      inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
+    inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
 
-  private cancelScheduledCallback: null|(() => void) = null;
+  private cancelScheduledCallback: null | (() => void) = null;
   private shouldRefreshViews = false;
-  private pendingRenderTaskId: number|null = null;
+  private pendingRenderTaskId: number | null = null;
   private useMicrotaskScheduler = false;
   runningTick = false;
 
   constructor() {
-    this.subscriptions.add(this.appRef.afterTick.subscribe(() => {
-      // If the scheduler isn't running a tick but the application ticked, that means
-      // someone called ApplicationRef.tick manually. In this case, we should cancel
-      // any change detections that had been scheduled so we don't run an extra one.
-      if (!this.runningTick) {
-        this.cleanup();
-      }
-    }));
-    this.subscriptions.add(this.ngZone.onUnstable.subscribe(() => {
-      // If the zone becomes unstable when we're not running tick (this happens from the zone.run),
-      // we should cancel any scheduled change detection here because at this point we
-      // know that the zone will stabilize at some point and run change detection itself.
-      if (!this.runningTick) {
-        this.cleanup();
-      }
-    }));
+    this.subscriptions.add(
+      this.appRef.afterTick.subscribe(() => {
+        // If the scheduler isn't running a tick but the application ticked, that means
+        // someone called ApplicationRef.tick manually. In this case, we should cancel
+        // any change detections that had been scheduled so we don't run an extra one.
+        if (!this.runningTick) {
+          this.cleanup();
+        }
+      }),
+    );
+    this.subscriptions.add(
+      this.ngZone.onUnstable.subscribe(() => {
+        // If the zone becomes unstable when we're not running tick (this happens from the zone.run),
+        // we should cancel any scheduled change detection here because at this point we
+        // know that the zone will stabilize at some point and run change detection itself.
+        if (!this.runningTick) {
+          this.cleanup();
+        }
+      }),
+    );
 
     // TODO(atscott): These conditions will need to change when zoneless is the default
     // Instead, they should flip to checking if ZoneJS scheduling is provided
-    this.disableScheduling ||= !this.zonelessEnabled &&
-        // NoopNgZone without enabling zoneless means no scheduling whatsoever
-        (this.ngZone instanceof NoopNgZone ||
-         // The same goes for the lack of Zone without enabling zoneless scheduling
-         !this.zoneIsDefined);
+    this.disableScheduling ||=
+      !this.zonelessEnabled &&
+      // NoopNgZone without enabling zoneless means no scheduling whatsoever
+      (this.ngZone instanceof NoopNgZone ||
+        // The same goes for the lack of Zone without enabling zoneless scheduling
+        !this.zoneIsDefined);
   }
 
   notify(source: NotificationSource): void {
@@ -126,7 +140,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       return;
     }
 
-    if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (this.useMicrotaskScheduler) {
         trackMicrotaskNotificationForDebugging();
       } else {
@@ -135,8 +149,9 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       }
     }
 
-    const scheduleCallback =
-        this.useMicrotaskScheduler ? scheduleCallbackWithMicrotask : scheduleCallbackWithRafRace;
+    const scheduleCallback = this.useMicrotaskScheduler
+      ? scheduleCallbackWithMicrotask
+      : scheduleCallbackWithRafRace;
     this.pendingRenderTaskId = this.taskService.add();
     if (this.zoneIsDefined) {
       Zone.root.run(() => {
@@ -187,10 +202,14 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 
     const task = this.taskService.add();
     try {
-      this.ngZone.run(() => {
-        this.runningTick = true;
-        this.appRef._tick(shouldRefreshViews);
-      }, undefined, this.schedulerTickApplyArgs);
+      this.ngZone.run(
+        () => {
+          this.runningTick = true;
+          this.appRef._tick(shouldRefreshViews);
+        },
+        undefined,
+        this.schedulerTickApplyArgs,
+      );
     } catch (e: unknown) {
       this.taskService.remove(task);
       throw e;
@@ -233,7 +252,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
   }
 }
-
 
 /**
  * Provides change detection without ZoneJS for the application bootstrapped using

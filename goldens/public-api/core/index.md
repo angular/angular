@@ -1205,7 +1205,7 @@ export class NgProbeToken {
 
 // @public
 export class NgZone {
-    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection, shouldCoalesceRunChangeDetection }: {
+    constructor({ enableLongStackTrace, shouldCoalesceEventChangeDetection, shouldCoalesceRunChangeDetection, }: {
         enableLongStackTrace?: boolean | undefined;
         shouldCoalesceEventChangeDetection?: boolean | undefined;
         shouldCoalesceRunChangeDetection?: boolean | undefined;

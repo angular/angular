@@ -15,7 +15,7 @@ import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/com
 import {analyze, AnalyzedFile} from './analysis';
 import {migrateTemplate} from './migration';
 
-export default function(): Rule {
+export default function (): Rule {
   return async (tree: Tree) => {
     const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
@@ -23,7 +23,8 @@ export default function(): Rule {
 
     if (!allPaths.length) {
       throw new SchematicsException(
-          'Could not find any tsconfig file. Cannot run the invalid two-way bindings migration.');
+        'Could not find any tsconfig file. Cannot run the invalid two-way bindings migration.',
+      );
     }
 
     for (const tsconfigPath of allPaths) {
@@ -34,8 +35,9 @@ export default function(): Rule {
 
 function runInvalidTwoWayBindingsMigration(tree: Tree, tsconfigPath: string, basePath: string) {
   const program = createMigrationProgram(tree, tsconfigPath, basePath);
-  const sourceFiles =
-      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
+  const sourceFiles = program
+    .getSourceFiles()
+    .filter((sourceFile) => canMigrateFile(basePath, sourceFile, program));
   const analysis = new Map<string, AnalyzedFile>();
 
   for (const sourceFile of sourceFiles) {

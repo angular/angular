@@ -7,7 +7,29 @@
  */
 
 import {PLATFORM_BROWSER_ID, PLATFORM_SERVER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, afterRender, AfterRenderPhase, AfterRenderRef, ApplicationRef, ChangeDetectorRef, Component, computed, createComponent, effect, ErrorHandler, inject, Injector, NgZone, PLATFORM_ID, signal, Type, untracked, ViewContainerRef, ɵinternalAfterNextRender as internalAfterNextRender, ɵqueueStateUpdate as queueStateUpdate} from '@angular/core';
+import {
+  afterNextRender,
+  afterRender,
+  AfterRenderPhase,
+  AfterRenderRef,
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  createComponent,
+  effect,
+  ErrorHandler,
+  inject,
+  Injector,
+  NgZone,
+  PLATFORM_ID,
+  signal,
+  Type,
+  untracked,
+  ViewContainerRef,
+  ɵinternalAfterNextRender as internalAfterNextRender,
+  ɵqueueStateUpdate as queueStateUpdate,
+} from '@angular/core';
 import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {TestBed} from '@angular/core/testing';
 import {bootstrapApplication} from '@angular/platform-browser';
@@ -17,8 +39,9 @@ import {destroyPlatform} from '../../src/core';
 import {EnvironmentInjector} from '../../src/di';
 
 function createAndAttachComponent<T>(component: Type<T>) {
-  const componentRef =
-      createComponent(component, {environmentInjector: TestBed.inject(EnvironmentInjector)});
+  const componentRef = createComponent(component, {
+    environmentInjector: TestBed.inject(EnvironmentInjector),
+  });
   TestBed.inject(ApplicationRef).attachView(componentRef.hostView);
   return componentRef;
 }
@@ -26,7 +49,7 @@ function createAndAttachComponent<T>(component: Type<T>) {
 describe('after render hooks', () => {
   describe('browser', () => {
     const COMMON_CONFIGURATION = {
-      providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]
+      providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}],
     };
 
     describe('internalAfterNextRender', () => {
@@ -50,17 +73,27 @@ describe('after render hooks', () => {
               log.push('internalAfterNextRender #1');
             });
 
-            forEachPhase(phase => afterRender(() => {
-                           log.push(`afterRender (${AfterRenderPhase[phase]})`);
-                         }, {phase}));
+            forEachPhase((phase) =>
+              afterRender(
+                () => {
+                  log.push(`afterRender (${AfterRenderPhase[phase]})`);
+                },
+                {phase},
+              ),
+            );
 
             internalAfterNextRender(() => {
               log.push('internalAfterNextRender #2');
             });
 
-            forEachPhase(phase => afterNextRender(() => {
-                           log.push(`afterNextRender (${AfterRenderPhase[phase]})`);
-                         }, {phase}));
+            forEachPhase((phase) =>
+              afterNextRender(
+                () => {
+                  log.push(`afterNextRender (${AfterRenderPhase[phase]})`);
+                },
+                {phase},
+              ),
+            );
 
             internalAfterNextRender(() => {
               log.push('internalAfterNextRender #3');
@@ -105,8 +138,8 @@ describe('after render hooks', () => {
       });
 
       it('should refresh views if state changed before user-defined render hooks', () => {
-        let stateInAfterNextRender: number|null = null;
-        let stateInAfterRender: number|null = null;
+        let stateInAfterNextRender: number | null = null;
+        let stateInAfterRender: number | null = null;
         let afterRenderRuns = 0;
         TestBed.configureTestingModule({
           ...COMMON_CONFIGURATION,
@@ -138,33 +171,37 @@ describe('after render hooks', () => {
         expect(stateInAfterRender!).toEqual(2);
       });
 
-      it('does not execute queueStateUpdate if application is destroyed',
-         withBody('<app></app>', async () => {
-           destroyPlatform();
-           let executedCallback = false;
-           TestBed.configureTestingModule({
-             ...COMMON_CONFIGURATION,
-           });
-           @Component({
-             template: '',
-             selector: 'app',
-             standalone: true,
-           })
-           class App {
-           }
+      it(
+        'does not execute queueStateUpdate if application is destroyed',
+        withBody('<app></app>', async () => {
+          destroyPlatform();
+          let executedCallback = false;
+          TestBed.configureTestingModule({
+            ...COMMON_CONFIGURATION,
+          });
+          @Component({
+            template: '',
+            selector: 'app',
+            standalone: true,
+          })
+          class App {}
 
-           const app = await bootstrapApplication(App);
-           queueStateUpdate(() => {
-             executedCallback = true;
-           }, {injector: app.injector});
-           app.destroy();
+          const app = await bootstrapApplication(App);
+          queueStateUpdate(
+            () => {
+              executedCallback = true;
+            },
+            {injector: app.injector},
+          );
+          app.destroy();
 
-           // wait a macrotask - at this point the Promise in queueStateUpdate will have been
-           // resolved
-           await new Promise(resolve => setTimeout(resolve));
-           expect(executedCallback).toBeFalse();
-           destroyPlatform();
-         }));
+          // wait a macrotask - at this point the Promise in queueStateUpdate will have been
+          // resolved
+          await new Promise((resolve) => setTimeout(resolve));
+          expect(executedCallback).toBeFalse();
+          destroyPlatform();
+        }),
+      );
     });
 
     describe('afterRender', () => {
@@ -220,7 +257,6 @@ describe('after render hooks', () => {
         TestBed.inject(ApplicationRef).tick();
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
         expect(compInstance.afterRenderCount).toBe(1);
-
 
         // Running change detection after removing view.
         viewContainerRef.remove();
@@ -280,7 +316,6 @@ describe('after render hooks', () => {
         expect(dynamicCompRef.instance.afterRenderCount).toBe(1);
         expect(compInstance.afterRenderCount).toBe(2);
 
-
         // Running change detection after removing view.
         viewContainerRef.remove();
         fixture.detectChanges();
@@ -331,7 +366,6 @@ describe('after render hooks', () => {
         expect(log).toEqual(['pre-cd', 'post-cd', 'parent-comp', 'child-comp']);
       });
 
-
       it('should run hooks once after tick even if there are multiple root views', () => {
         let log: string[] = [];
 
@@ -361,7 +395,7 @@ describe('after render hooks', () => {
       });
 
       it('should unsubscribe when calling destroy', () => {
-        let hookRef: AfterRenderRef|null = null;
+        let hookRef: AfterRenderRef | null = null;
         let afterRenderCount = 0;
 
         @Component({selector: 'comp'})
@@ -402,9 +436,12 @@ describe('after render hooks', () => {
           constructor() {
             afterRender(() => {
               outerHookCount++;
-              afterNextRender(() => {
-                innerHookCount++;
-              }, {injector: this.injector});
+              afterNextRender(
+                () => {
+                  innerHookCount++;
+                },
+                {injector: this.injector},
+              );
             });
           }
         }
@@ -469,7 +506,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp',
-          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}]
+          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}],
         })
         class Comp {
           constructor() {
@@ -506,48 +543,71 @@ describe('after render hooks', () => {
         const log: string[] = [];
 
         @Component({selector: 'root', template: `<comp-a></comp-a><comp-b></comp-b>`})
-        class Root {
-        }
+        class Root {}
 
         @Component({selector: 'comp-a'})
         class CompA {
           constructor() {
-            afterRender(() => {
-              log.push('early-read-1');
-            }, {phase: AfterRenderPhase.EarlyRead});
+            afterRender(
+              () => {
+                log.push('early-read-1');
+              },
+              {phase: AfterRenderPhase.EarlyRead},
+            );
 
-            afterRender(() => {
-              log.push('write-1');
-            }, {phase: AfterRenderPhase.Write});
+            afterRender(
+              () => {
+                log.push('write-1');
+              },
+              {phase: AfterRenderPhase.Write},
+            );
 
-            afterRender(() => {
-              log.push('mixed-read-write-1');
-            }, {phase: AfterRenderPhase.MixedReadWrite});
+            afterRender(
+              () => {
+                log.push('mixed-read-write-1');
+              },
+              {phase: AfterRenderPhase.MixedReadWrite},
+            );
 
-            afterRender(() => {
-              log.push('read-1');
-            }, {phase: AfterRenderPhase.Read});
+            afterRender(
+              () => {
+                log.push('read-1');
+              },
+              {phase: AfterRenderPhase.Read},
+            );
           }
         }
 
         @Component({selector: 'comp-b'})
         class CompB {
           constructor() {
-            afterRender(() => {
-              log.push('read-2');
-            }, {phase: AfterRenderPhase.Read});
+            afterRender(
+              () => {
+                log.push('read-2');
+              },
+              {phase: AfterRenderPhase.Read},
+            );
 
-            afterRender(() => {
-              log.push('mixed-read-write-2');
-            }, {phase: AfterRenderPhase.MixedReadWrite});
+            afterRender(
+              () => {
+                log.push('mixed-read-write-2');
+              },
+              {phase: AfterRenderPhase.MixedReadWrite},
+            );
 
-            afterRender(() => {
-              log.push('write-2');
-            }, {phase: AfterRenderPhase.Write});
+            afterRender(
+              () => {
+                log.push('write-2');
+              },
+              {phase: AfterRenderPhase.Write},
+            );
 
-            afterRender(() => {
-              log.push('early-read-2');
-            }, {phase: AfterRenderPhase.EarlyRead});
+            afterRender(
+              () => {
+                log.push('early-read-2');
+              },
+              {phase: AfterRenderPhase.EarlyRead},
+            );
           }
         }
 
@@ -560,8 +620,14 @@ describe('after render hooks', () => {
         expect(log).toEqual([]);
         TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([
-          'early-read-1', 'early-read-2', 'write-1', 'write-2', 'mixed-read-write-1',
-          'mixed-read-write-2', 'read-1', 'read-2'
+          'early-read-1',
+          'early-read-2',
+          'write-1',
+          'write-2',
+          'mixed-read-write-1',
+          'mixed-read-write-2',
+          'read-1',
+          'read-2',
         ]);
       });
 
@@ -575,8 +641,9 @@ describe('after render hooks', () => {
           }
 
           const fixture = TestBed.createComponent(TestCmp);
-          expect(() => fixture.detectChanges())
-              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+          expect(() => fixture.detectChanges()).toThrowError(
+            /afterRender\(\) cannot be called from within a reactive context/,
+          );
         });
 
         it('inside computed', () => {
@@ -584,8 +651,9 @@ describe('after render hooks', () => {
             afterRender(() => {});
           });
 
-          expect(() => testComputed())
-              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+          expect(() => testComputed()).toThrowError(
+            /afterRender\(\) cannot be called from within a reactive context/,
+          );
         });
 
         it('inside effect', () => {
@@ -605,18 +673,20 @@ describe('after render hooks', () => {
           TestBed.configureTestingModule({
             providers: [
               {
-                provide: ErrorHandler, useClass: class extends ErrorHandler{
+                provide: ErrorHandler,
+                useClass: class extends ErrorHandler {
                   override handleError(e: Error) {
                     throw e;
                   }
                 },
               },
-            ]
+            ],
           });
           const fixture = TestBed.createComponent(TestCmp);
 
-          expect(() => fixture.detectChanges())
-              .toThrowError(/afterRender\(\) cannot be called from within a reactive context/);
+          expect(() => fixture.detectChanges()).toThrowError(
+            /afterRender\(\) cannot be called from within a reactive context/,
+          );
         });
       });
     });
@@ -726,7 +796,7 @@ describe('after render hooks', () => {
       });
 
       it('should unsubscribe when calling destroy', () => {
-        let hookRef: AfterRenderRef|null = null;
+        let hookRef: AfterRenderRef | null = null;
         let afterRenderCount = 0;
 
         @Component({selector: 'comp'})
@@ -765,9 +835,12 @@ describe('after render hooks', () => {
           injector = inject(EnvironmentInjector);
 
           ngOnInit() {
-            afterNextRender(() => {
-              this.appRef.tick();
-            }, {injector: this.injector});
+            afterNextRender(
+              () => {
+                this.appRef.tick();
+              },
+              {injector: this.injector},
+            );
           }
         }
 
@@ -776,12 +849,13 @@ describe('after render hooks', () => {
           ...COMMON_CONFIGURATION,
           providers: [
             {provide: ErrorHandler, useClass: RethrowErrorHandler},
-            ...COMMON_CONFIGURATION.providers
-          ]
+            ...COMMON_CONFIGURATION.providers,
+          ],
         });
         createAndAttachComponent(Comp);
-        expect(() => TestBed.inject(ApplicationRef).tick())
-            .toThrowError(/ApplicationRef.tick is called recursively/);
+        expect(() => TestBed.inject(ApplicationRef).tick()).toThrowError(
+          /ApplicationRef.tick is called recursively/,
+        );
       });
 
       it('should defer nested hooks to the next cycle', () => {
@@ -796,9 +870,12 @@ describe('after render hooks', () => {
             afterNextRender(() => {
               outerHookCount++;
 
-              afterNextRender(() => {
-                innerHookCount++;
-              }, {injector: this.injector});
+              afterNextRender(
+                () => {
+                  innerHookCount++;
+                },
+                {injector: this.injector},
+              );
             });
           }
         }
@@ -863,7 +940,7 @@ describe('after render hooks', () => {
 
         @Component({
           selector: 'comp',
-          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}]
+          providers: [{provide: ErrorHandler, useFactory: () => new FakeErrorHandler()}],
         })
         class Comp {
           constructor() {
@@ -900,48 +977,71 @@ describe('after render hooks', () => {
         const log: string[] = [];
 
         @Component({selector: 'root', template: `<comp-a></comp-a><comp-b></comp-b>`})
-        class Root {
-        }
+        class Root {}
 
         @Component({selector: 'comp-a'})
         class CompA {
           constructor() {
-            afterNextRender(() => {
-              log.push('early-read-1');
-            }, {phase: AfterRenderPhase.EarlyRead});
+            afterNextRender(
+              () => {
+                log.push('early-read-1');
+              },
+              {phase: AfterRenderPhase.EarlyRead},
+            );
 
-            afterNextRender(() => {
-              log.push('write-1');
-            }, {phase: AfterRenderPhase.Write});
+            afterNextRender(
+              () => {
+                log.push('write-1');
+              },
+              {phase: AfterRenderPhase.Write},
+            );
 
-            afterNextRender(() => {
-              log.push('mixed-read-write-1');
-            }, {phase: AfterRenderPhase.MixedReadWrite});
+            afterNextRender(
+              () => {
+                log.push('mixed-read-write-1');
+              },
+              {phase: AfterRenderPhase.MixedReadWrite},
+            );
 
-            afterNextRender(() => {
-              log.push('read-1');
-            }, {phase: AfterRenderPhase.Read});
+            afterNextRender(
+              () => {
+                log.push('read-1');
+              },
+              {phase: AfterRenderPhase.Read},
+            );
           }
         }
 
         @Component({selector: 'comp-b'})
         class CompB {
           constructor() {
-            afterNextRender(() => {
-              log.push('read-2');
-            }, {phase: AfterRenderPhase.Read});
+            afterNextRender(
+              () => {
+                log.push('read-2');
+              },
+              {phase: AfterRenderPhase.Read},
+            );
 
-            afterNextRender(() => {
-              log.push('mixed-read-write-2');
-            }, {phase: AfterRenderPhase.MixedReadWrite});
+            afterNextRender(
+              () => {
+                log.push('mixed-read-write-2');
+              },
+              {phase: AfterRenderPhase.MixedReadWrite},
+            );
 
-            afterNextRender(() => {
-              log.push('write-2');
-            }, {phase: AfterRenderPhase.Write});
+            afterNextRender(
+              () => {
+                log.push('write-2');
+              },
+              {phase: AfterRenderPhase.Write},
+            );
 
-            afterNextRender(() => {
-              log.push('early-read-2');
-            }, {phase: AfterRenderPhase.EarlyRead});
+            afterNextRender(
+              () => {
+                log.push('early-read-2');
+              },
+              {phase: AfterRenderPhase.EarlyRead},
+            );
           }
         }
 
@@ -954,8 +1054,14 @@ describe('after render hooks', () => {
         expect(log).toEqual([]);
         TestBed.inject(ApplicationRef).tick();
         expect(log).toEqual([
-          'early-read-1', 'early-read-2', 'write-1', 'write-2', 'mixed-read-write-1',
-          'mixed-read-write-2', 'read-1', 'read-2'
+          'early-read-1',
+          'early-read-2',
+          'write-1',
+          'write-2',
+          'mixed-read-write-1',
+          'mixed-read-write-2',
+          'read-1',
+          'read-2',
         ]);
       });
     });
@@ -972,13 +1078,17 @@ describe('after render hooks', () => {
         counter = counter;
         injector = inject(EnvironmentInjector);
         ngOnInit() {
-          afterNextRender(() => {
-            this.counter.set(1);
-          }, {injector: this.injector});
+          afterNextRender(
+            () => {
+              this.counter.set(1);
+            },
+            {injector: this.injector},
+          );
         }
       }
-      TestBed.configureTestingModule(
-          {providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]});
+      TestBed.configureTestingModule({
+        providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}],
+      });
 
       const fixture = TestBed.createComponent(TestCmp);
       const appRef = TestBed.inject(ApplicationRef);
@@ -998,14 +1108,18 @@ describe('after render hooks', () => {
         injector = inject(EnvironmentInjector);
         cdr = inject(ChangeDetectorRef);
         ngOnInit() {
-          afterNextRender(() => {
-            this.counter = 1;
-            this.cdr.markForCheck();
-          }, {injector: this.injector});
+          afterNextRender(
+            () => {
+              this.counter = 1;
+              this.cdr.markForCheck();
+            },
+            {injector: this.injector},
+          );
         }
       }
-      TestBed.configureTestingModule(
-          {providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}]});
+      TestBed.configureTestingModule({
+        providers: [{provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID}],
+      });
 
       const fixture = TestBed.createComponent(TestCmp);
       const appRef = TestBed.inject(ApplicationRef);
@@ -1026,22 +1140,26 @@ describe('after render hooks', () => {
         counter = counter;
         injector = inject(EnvironmentInjector);
         ngOnInit() {
-          afterRender(() => {
-            this.counter.update(v => v + 1);
-          }, {injector: this.injector});
+          afterRender(
+            () => {
+              this.counter.update((v) => v + 1);
+            },
+            {injector: this.injector},
+          );
         }
       }
       TestBed.configureTestingModule({
         providers: [
           {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
           {
-            provide: ErrorHandler, useClass: class extends ErrorHandler {
+            provide: ErrorHandler,
+            useClass: class extends ErrorHandler {
               override handleError(error: any) {
                 throw error;
               }
-            }
+            },
           },
-        ]
+        ],
       });
 
       const fixture = TestBed.createComponent(TestCmp);
@@ -1055,7 +1173,7 @@ describe('after render hooks', () => {
 
   describe('server', () => {
     const COMMON_CONFIGURATION = {
-      providers: [{provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}]
+      providers: [{provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID}],
     };
 
     describe('afterRender', () => {

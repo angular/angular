@@ -6,17 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, Component, Directive, ElementRef, HostBinding, HostListener, NgModule} from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  Directive,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  NgModule,
+} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Directive({
   selector: '[make-color-grey]',
   exportAs: 'makeColorGrey',
-  host: {'style': 'font-family: Times New Roman;'}
+  host: {'style': 'font-family: Times New Roman;'},
 })
 class MakeColorGreyDirective {
-  @HostBinding('style.background-color') private _backgroundColor: string|null = null;
-  @HostBinding('style.color') private _textColor: string|null = null;
+  @HostBinding('style.background-color') private _backgroundColor: string | null = null;
+  @HostBinding('style.color') private _textColor: string | null = null;
 
   on() {
     this._backgroundColor = 'grey';
@@ -96,14 +105,23 @@ class AnimationWorldComponent {
   @HostBinding('class') classVal = 'border';
 
   items: any[] = [
-    {value: 1, active: false}, {value: 2, active: false}, {value: 3, active: false},
-    {value: 4, active: false}, {value: 5, active: false}, {value: 6, active: false},
-    {value: 7, active: false}, {value: 8, active: false}, {value: 9, active: false}
+    {value: 1, active: false},
+    {value: 2, active: false},
+    {value: 3, active: false},
+    {value: 4, active: false},
+    {value: 5, active: false},
+    {value: 6, active: false},
+    {value: 7, active: false},
+    {value: 8, active: false},
+    {value: 9, active: false},
   ];
   private _hostElement: HTMLElement;
-  public styles: {[key: string]: any}|null = null;
+  public styles: {[key: string]: any} | null = null;
 
-  constructor(element: ElementRef, private readonly cdr: ChangeDetectorRef) {
+  constructor(
+    element: ElementRef,
+    private readonly cdr: ChangeDetectorRef,
+  ) {
     this._hostElement = element.nativeElement;
   }
 

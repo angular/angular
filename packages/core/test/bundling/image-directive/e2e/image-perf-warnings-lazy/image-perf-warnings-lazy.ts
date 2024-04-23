@@ -24,5 +24,4 @@ import {Component} from '@angular/core';
     <img src="/e2e/b.png" width="10" height="10">
   `,
 })
-export class ImagePerfWarningsLazyComponent {
-}
+export class ImagePerfWarningsLazyComponent {}

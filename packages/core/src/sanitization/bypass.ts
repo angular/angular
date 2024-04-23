@@ -58,15 +58,16 @@ export interface SafeUrl extends SafeValue {}
  */
 export interface SafeResourceUrl extends SafeValue {}
 
-
 abstract class SafeValueImpl implements SafeValue {
   constructor(public changingThisBreaksApplicationSecurity: string) {}
 
   abstract getTypeName(): string;
 
   toString() {
-    return `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}` +
-        ` (see ${XSS_SECURITY_URL})`;
+    return (
+      `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}` +
+      ` (see ${XSS_SECURITY_URL})`
+    );
   }
 }
 
@@ -98,20 +99,28 @@ class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
 
 export function unwrapSafeValue(value: SafeValue): string;
 export function unwrapSafeValue<T>(value: T): T;
-export function unwrapSafeValue<T>(value: T|SafeValue): T {
-  return value instanceof SafeValueImpl ? value.changingThisBreaksApplicationSecurity as any as T :
-                                          value as any as T;
+export function unwrapSafeValue<T>(value: T | SafeValue): T {
+  return value instanceof SafeValueImpl
+    ? (value.changingThisBreaksApplicationSecurity as any as T)
+    : (value as any as T);
 }
 
-
 export function allowSanitizationBypassAndThrow(
-    value: any, type: BypassType.Html): value is SafeHtml;
+  value: any,
+  type: BypassType.Html,
+): value is SafeHtml;
 export function allowSanitizationBypassAndThrow(
-    value: any, type: BypassType.ResourceUrl): value is SafeResourceUrl;
+  value: any,
+  type: BypassType.ResourceUrl,
+): value is SafeResourceUrl;
 export function allowSanitizationBypassAndThrow(
-    value: any, type: BypassType.Script): value is SafeScript;
+  value: any,
+  type: BypassType.Script,
+): value is SafeScript;
 export function allowSanitizationBypassAndThrow(
-    value: any, type: BypassType.Style): value is SafeStyle;
+  value: any,
+  type: BypassType.Style,
+): value is SafeStyle;
 export function allowSanitizationBypassAndThrow(value: any, type: BypassType.Url): value is SafeUrl;
 export function allowSanitizationBypassAndThrow(value: any, type: BypassType): boolean;
 export function allowSanitizationBypassAndThrow(value: any, type: BypassType): boolean {
@@ -124,8 +133,8 @@ export function allowSanitizationBypassAndThrow(value: any, type: BypassType): b
   return actualType === type;
 }
 
-export function getSanitizationBypassType(value: any): BypassType|null {
-  return value instanceof SafeValueImpl && value.getTypeName() as BypassType || null;
+export function getSanitizationBypassType(value: any): BypassType | null {
+  return (value instanceof SafeValueImpl && (value.getTypeName() as BypassType)) || null;
 }
 
 /**

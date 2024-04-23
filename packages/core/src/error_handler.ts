@@ -50,7 +50,7 @@ export class ErrorHandler {
   }
 
   /** @internal */
-  _findOriginalError(error: any): Error|null {
+  _findOriginalError(error: any): Error | null {
     let e = error && getOriginalError(error);
     while (e && getOriginalError(e)) {
       e = getOriginalError(e);
@@ -67,10 +67,12 @@ export class ErrorHandler {
  * is calling `ErrorHandler.handleError` outside of the Angular zone.
  */
 export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) => void>(
-    (typeof ngDevMode === 'undefined' || ngDevMode) ? 'internal error handler' : '', {
-      providedIn: 'root',
-      factory: () => {
-        const userErrorHandler = inject(ErrorHandler);
-        return userErrorHandler.handleError.bind(this);
-      }
-    });
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'internal error handler' : '',
+  {
+    providedIn: 'root',
+    factory: () => {
+      const userErrorHandler = inject(ErrorHandler);
+      return userErrorHandler.handleError.bind(this);
+    },
+  },
+);

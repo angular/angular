@@ -37,8 +37,6 @@ export function getNgModuleById<T>(id: string): Type<T> {
   return type;
 }
 
-function noModuleError(
-    id: string,
-    ): Error {
+function noModuleError(id: string): Error {
   return new Error(`No module with ID ${id} loaded`);
 }

@@ -67,14 +67,14 @@ describe('QueryList', () => {
   it('should support forEach', () => {
     queryList.reset(['one', 'two']);
     let join = '';
-    queryList.forEach((x) => join = join + x);
+    queryList.forEach((x) => (join = join + x));
     expect(join).toEqual('onetwo');
   });
 
   it('should support forEach with index', () => {
     queryList.reset(['one', 'two']);
     let join = '';
-    queryList.forEach((x, i) => join = join + x + i);
+    queryList.forEach((x, i) => (join = join + x + i));
     expect(join).toEqual('one0two1');
   });
 
@@ -105,8 +105,9 @@ describe('QueryList', () => {
 
   it('should support reduce with index', () => {
     queryList.reset(['one', 'two']);
-    expect(queryList.reduce((a: string, x: string, i: number) => a + x + i, 'start:'))
-        .toEqual('start:one0two1');
+    expect(queryList.reduce((a: string, x: string, i: number) => a + x + i, 'start:')).toEqual(
+      'start:one0two1',
+    );
   });
 
   it('should support toArray', () => {
@@ -134,12 +135,12 @@ describe('QueryList', () => {
 
   it('should support some', () => {
     queryList.reset(['one', 'two', 'three']);
-    expect(queryList.some(item => item === 'one')).toEqual(true);
-    expect(queryList.some(item => item === 'four')).toEqual(false);
+    expect(queryList.some((item) => item === 'one')).toEqual(true);
+    expect(queryList.some((item) => item === 'four')).toEqual(false);
   });
 
   it('should support guards on filter', () => {
-    const qList = new QueryList<'foo'|'bar'>();
+    const qList = new QueryList<'foo' | 'bar'>();
     qList.reset(['foo']);
     const foos: Array<'foo'> = queryList.filter((item): item is 'foo' => item === 'foo');
     expect(qList.length).toEqual(1);
@@ -164,38 +165,38 @@ describe('QueryList', () => {
   if (getDOM().supportsDOMEvents) {
     describe('simple observable interface', () => {
       it('should fire callbacks on change', fakeAsync(() => {
-           let fires = 0;
-           queryList.changes.subscribe({
-             next: (_) => {
-               fires += 1;
-             }
-           });
+        let fires = 0;
+        queryList.changes.subscribe({
+          next: (_) => {
+            fires += 1;
+          },
+        });
 
-           queryList.notifyOnChanges();
-           tick();
+        queryList.notifyOnChanges();
+        tick();
 
-           expect(fires).toEqual(1);
+        expect(fires).toEqual(1);
 
-           queryList.notifyOnChanges();
-           tick();
+        queryList.notifyOnChanges();
+        tick();
 
-           expect(fires).toEqual(2);
-         }));
+        expect(fires).toEqual(2);
+      }));
 
       it('should provides query list as an argument', fakeAsync(() => {
-           let recorded!: QueryList<string>;
-           queryList.changes.subscribe({
-             next: (v: QueryList<string>) => {
-               recorded = v;
-             }
-           });
+        let recorded!: QueryList<string>;
+        queryList.changes.subscribe({
+          next: (v: QueryList<string>) => {
+            recorded = v;
+          },
+        });
 
-           queryList.reset(['one']);
-           queryList.notifyOnChanges();
-           tick();
+        queryList.reset(['one']);
+        queryList.notifyOnChanges();
+        tick();
 
-           expect(recorded).toBe(queryList);
-         }));
+        expect(recorded).toBe(queryList);
+      }));
     });
   }
 });

@@ -43,10 +43,11 @@ export const HOST_TAG_NAME = new InjectionToken<string>(ngDevMode ? 'HOST_TAG_NA
   const tNode = getCurrentTNode();
   if (tNode === null) {
     throw new RuntimeError(
-        RuntimeErrorCode.INVALID_INJECTION_TOKEN,
-        ngDevMode &&
-            'HOST_TAG_NAME can only be injected in directives and components ' +
-                'during construction time (in a class constructor or as a class field initializer)');
+      RuntimeErrorCode.INVALID_INJECTION_TOKEN,
+      ngDevMode &&
+        'HOST_TAG_NAME can only be injected in directives and components ' +
+          'during construction time (in a class constructor or as a class field initializer)',
+    );
   }
   if (tNode.type & TNodeType.Element) {
     return tNode.value;
@@ -55,11 +56,13 @@ export const HOST_TAG_NAME = new InjectionToken<string>(ngDevMode ? 'HOST_TAG_NA
     return null;
   }
   throw new RuntimeError(
-      RuntimeErrorCode.INVALID_INJECTION_TOKEN,
-      ngDevMode &&
-          `HOST_TAG_NAME was used on ${
-              getDevModeNodeName(tNode)} which doesn't have an underlying element in the DOM. ` +
-              `This is invalid, and so the dependency should be marked as optional.`);
+    RuntimeErrorCode.INVALID_INJECTION_TOKEN,
+    ngDevMode &&
+      `HOST_TAG_NAME was used on ${getDevModeNodeName(
+        tNode,
+      )} which doesn't have an underlying element in the DOM. ` +
+        `This is invalid, and so the dependency should be marked as optional.`,
+  );
 };
 
 function getDevModeNodeName(tNode: TNode) {

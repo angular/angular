@@ -72,13 +72,17 @@ export class InjectionToken<T> {
    *                it should but does not need to be unique
    * @param options Options for the token's usage, as described above
    */
-  constructor(protected _desc: string, options?: {
-    providedIn?: Type<any>|'root'|'platform'|'any'|null, factory: () => T
-  }) {
+  constructor(
+    protected _desc: string,
+    options?: {
+      providedIn?: Type<any> | 'root' | 'platform' | 'any' | null;
+      factory: () => T;
+    },
+  ) {
     this.ɵprov = undefined;
     if (typeof options == 'number') {
       (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          assertLessThan(options, 0, 'Only negative numbers are supported here');
+        assertLessThan(options, 0, 'Only negative numbers are supported here');
       // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
       // See `InjectorMarkers`
       (this as any).__NG_ELEMENT_ID__ = options;

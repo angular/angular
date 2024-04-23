@@ -6,7 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FactoryTarget, getCompilerFacade, JitCompilerUsage, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade';
+import {
+  FactoryTarget,
+  getCompilerFacade,
+  JitCompilerUsage,
+  R3DeclareComponentFacade,
+  R3DeclareDirectiveFacade,
+  R3DeclareFactoryFacade,
+  R3DeclareInjectableFacade,
+  R3DeclareInjectorFacade,
+  R3DeclareNgModuleFacade,
+  R3DeclarePipeFacade,
+} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {setClassMetadata, setClassMetadataAsync} from '../metadata';
 
@@ -18,10 +29,16 @@ import {angularCoreEnv} from './environment';
  * @codeGenApi
  */
 export function ɵɵngDeclareDirective(decl: R3DeclareDirectiveFacade): unknown {
-  const compiler = getCompilerFacade(
-      {usage: JitCompilerUsage.PartialDeclaration, kind: 'directive', type: decl.type});
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.PartialDeclaration,
+    kind: 'directive',
+    type: decl.type,
+  });
   return compiler.compileDirectiveDeclaration(
-      angularCoreEnv, `ng:///${decl.type.name}/ɵfac.js`, decl);
+    angularCoreEnv,
+    `ng:///${decl.type.name}/ɵfac.js`,
+    decl,
+  );
 }
 
 /**
@@ -30,12 +47,17 @@ export function ɵɵngDeclareDirective(decl: R3DeclareDirectiveFacade): unknown 
  * @codeGenApi
  */
 export function ɵɵngDeclareClassMetadata(decl: {
-  type: Type<any>; decorators: any[];
+  type: Type<any>;
+  decorators: any[];
   ctorParameters?: () => any[];
   propDecorators?: {[field: string]: any};
 }): void {
   setClassMetadata(
-      decl.type, decl.decorators, decl.ctorParameters ?? null, decl.propDecorators ?? null);
+    decl.type,
+    decl.decorators,
+    decl.ctorParameters ?? null,
+    decl.propDecorators ?? null,
+  );
 }
 
 /**
@@ -44,13 +66,13 @@ export function ɵɵngDeclareClassMetadata(decl: {
  * @codeGenApi
  */
 export function ɵɵngDeclareClassMetadataAsync(decl: {
-  type: Type<any>,
-  resolveDeferredDeps: () => Promise<Type<unknown>>[],
+  type: Type<any>;
+  resolveDeferredDeps: () => Promise<Type<unknown>>[];
   resolveMetadata: (...types: Type<unknown>[]) => {
     decorators: any[];
-    ctorParameters: (() => any[])|null;
-    propDecorators: ({[field: string]: any})|null;
-  },
+    ctorParameters: (() => any[]) | null;
+    propDecorators: {[field: string]: any} | null;
+  };
 }): void {
   setClassMetadataAsync(decl.type, decl.resolveDeferredDeps, (...types: Type<unknown>[]) => {
     const meta = decl.resolveMetadata(...types);
@@ -64,10 +86,16 @@ export function ɵɵngDeclareClassMetadataAsync(decl: {
  * @codeGenApi
  */
 export function ɵɵngDeclareComponent(decl: R3DeclareComponentFacade): unknown {
-  const compiler = getCompilerFacade(
-      {usage: JitCompilerUsage.PartialDeclaration, kind: 'component', type: decl.type});
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.PartialDeclaration,
+    kind: 'component',
+    type: decl.type,
+  });
   return compiler.compileComponentDeclaration(
-      angularCoreEnv, `ng:///${decl.type.name}/ɵcmp.js`, decl);
+    angularCoreEnv,
+    `ng:///${decl.type.name}/ɵcmp.js`,
+    decl,
+  );
 }
 
 /**
@@ -79,10 +107,13 @@ export function ɵɵngDeclareFactory(decl: R3DeclareFactoryFacade): unknown {
   const compiler = getCompilerFacade({
     usage: JitCompilerUsage.PartialDeclaration,
     kind: getFactoryKind(decl.target),
-    type: decl.type
+    type: decl.type,
   });
   return compiler.compileFactoryDeclaration(
-      angularCoreEnv, `ng:///${decl.type.name}/ɵfac.js`, decl);
+    angularCoreEnv,
+    `ng:///${decl.type.name}/ɵfac.js`,
+    decl,
+  );
 }
 
 function getFactoryKind(target: FactoryTarget) {
@@ -106,10 +137,16 @@ function getFactoryKind(target: FactoryTarget) {
  * @codeGenApi
  */
 export function ɵɵngDeclareInjectable(decl: R3DeclareInjectableFacade): unknown {
-  const compiler = getCompilerFacade(
-      {usage: JitCompilerUsage.PartialDeclaration, kind: 'injectable', type: decl.type});
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.PartialDeclaration,
+    kind: 'injectable',
+    type: decl.type,
+  });
   return compiler.compileInjectableDeclaration(
-      angularCoreEnv, `ng:///${decl.type.name}/ɵprov.js`, decl);
+    angularCoreEnv,
+    `ng:///${decl.type.name}/ɵprov.js`,
+    decl,
+  );
 }
 
 /**
@@ -123,10 +160,16 @@ export {FactoryTarget} from '../../compiler/compiler_facade';
  * @codeGenApi
  */
 export function ɵɵngDeclareInjector(decl: R3DeclareInjectorFacade): unknown {
-  const compiler = getCompilerFacade(
-      {usage: JitCompilerUsage.PartialDeclaration, kind: 'NgModule', type: decl.type});
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.PartialDeclaration,
+    kind: 'NgModule',
+    type: decl.type,
+  });
   return compiler.compileInjectorDeclaration(
-      angularCoreEnv, `ng:///${decl.type.name}/ɵinj.js`, decl);
+    angularCoreEnv,
+    `ng:///${decl.type.name}/ɵinj.js`,
+    decl,
+  );
 }
 
 /**
@@ -135,10 +178,16 @@ export function ɵɵngDeclareInjector(decl: R3DeclareInjectorFacade): unknown {
  * @codeGenApi
  */
 export function ɵɵngDeclareNgModule(decl: R3DeclareNgModuleFacade): unknown {
-  const compiler = getCompilerFacade(
-      {usage: JitCompilerUsage.PartialDeclaration, kind: 'NgModule', type: decl.type});
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.PartialDeclaration,
+    kind: 'NgModule',
+    type: decl.type,
+  });
   return compiler.compileNgModuleDeclaration(
-      angularCoreEnv, `ng:///${decl.type.name}/ɵmod.js`, decl);
+    angularCoreEnv,
+    `ng:///${decl.type.name}/ɵmod.js`,
+    decl,
+  );
 }
 
 /**
@@ -147,7 +196,10 @@ export function ɵɵngDeclareNgModule(decl: R3DeclareNgModuleFacade): unknown {
  * @codeGenApi
  */
 export function ɵɵngDeclarePipe(decl: R3DeclarePipeFacade): unknown {
-  const compiler = getCompilerFacade(
-      {usage: JitCompilerUsage.PartialDeclaration, kind: 'pipe', type: decl.type});
+  const compiler = getCompilerFacade({
+    usage: JitCompilerUsage.PartialDeclaration,
+    kind: 'pipe',
+    type: decl.type,
+  });
   return compiler.compilePipeDeclaration(angularCoreEnv, `ng:///${decl.type.name}/ɵpipe.js`, decl);
 }

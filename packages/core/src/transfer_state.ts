@@ -25,9 +25,9 @@ import {getDocument} from './render3/interfaces/document';
  *
  * @publicApi
  */
-export type StateKey<T> = string&{
-  __not_a_string: never,
-  __value_type?: T,
+export type StateKey<T> = string & {
+  __not_a_string: never;
+  __value_type?: T;
 };
 
 /**
@@ -74,15 +74,14 @@ function initTransferState(): TransferState {
  */
 export class TransferState {
   /** @nocollapse */
-  static ɵprov =
-      /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
-        token: TransferState,
-        providedIn: 'root',
-        factory: initTransferState,
-      });
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
+    token: TransferState,
+    providedIn: 'root',
+    factory: initTransferState,
+  });
 
   /** @internal */
-  store: Record<string, unknown|undefined> = {};
+  store: Record<string, unknown | undefined> = {};
 
   private onSerializeCallbacks: {[k: string]: () => unknown | undefined} = {};
 
@@ -90,7 +89,7 @@ export class TransferState {
    * Get the value corresponding to a key. Return `defaultValue` if key is not found.
    */
   get<T>(key: StateKey<T>, defaultValue: T): T {
-    return this.store[key] !== undefined ? this.store[key] as T : defaultValue;
+    return this.store[key] !== undefined ? (this.store[key] as T) : defaultValue;
   }
 
   /**
@@ -149,7 +148,10 @@ export class TransferState {
   }
 }
 
-function retrieveTransferredState(doc: Document, appId: string): Record<string, unknown|undefined> {
+function retrieveTransferredState(
+  doc: Document,
+  appId: string,
+): Record<string, unknown | undefined> {
   // Locate the script tag with the JSON data transferred from the server.
   // The id of the script tag is set to the Angular appId + 'state'.
   const script = doc.getElementById(appId + '-state');

@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createSignal, SIGNAL, SignalGetter, SignalNode, signalSetFn, signalUpdateFn} from '@angular/core/primitives/signals';
+import {
+  createSignal,
+  SIGNAL,
+  SignalGetter,
+  SignalNode,
+  signalSetFn,
+  signalUpdateFn,
+} from '@angular/core/primitives/signals';
 
 import {performanceMarkFeature} from '../../util/performance';
 
@@ -44,7 +51,7 @@ export interface WritableSignal<T> extends Signal<T> {
  * Utility function used during template type checking to extract the value from a `WritableSignal`.
  * @codeGenApi
  */
-export function ɵunwrapWritableSignal<T>(value: T|{[ɵWRITABLE_SIGNAL]: T}): T {
+export function ɵunwrapWritableSignal<T>(value: T | {[ɵWRITABLE_SIGNAL]: T}): T {
   // Note: the function uses `WRITABLE_SIGNAL` as a brand instead of `WritableSignal<T>`,
   // because the latter incorrectly unwraps non-signal getter functions.
   return null!;
@@ -65,7 +72,7 @@ export interface CreateSignalOptions<T> {
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
   performanceMarkFeature('NgSignals');
-  const signalFn = createSignal(initialValue) as SignalGetter<T>& WritableSignal<T>;
+  const signalFn = createSignal(initialValue) as SignalGetter<T> & WritableSignal<T>;
   const node = signalFn[SIGNAL];
   if (options?.equal) {
     node.equal = options.equal;
@@ -81,7 +88,7 @@ export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): Wr
 }
 
 export function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
-  const node = this[SIGNAL] as SignalNode<T>& {readonlyFn?: Signal<T>};
+  const node = this[SIGNAL] as SignalNode<T> & {readonlyFn?: Signal<T>};
   if (node.readonlyFn === undefined) {
     const readonlyFn = () => this();
     (readonlyFn as any)[SIGNAL] = node;

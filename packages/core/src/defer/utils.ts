@@ -13,8 +13,14 @@ import {HEADER_OFFSET, LView, TVIEW, TView} from '../render3/interfaces/view';
 import {getTNode} from '../render3/util/view_utils';
 import {assertEqual, throwError} from '../util/assert';
 
-import {DeferBlockState, DeferDependenciesLoadingState, LDeferBlockDetails, LOADING_AFTER_SLOT, MINIMUM_SLOT, TDeferBlockDetails} from './interfaces';
-
+import {
+  DeferBlockState,
+  DeferDependenciesLoadingState,
+  LDeferBlockDetails,
+  LOADING_AFTER_SLOT,
+  MINIMUM_SLOT,
+  TDeferBlockDetails,
+} from './interfaces';
 
 /**
  * Calculates a data slot index for defer block info (either static or
@@ -36,7 +42,10 @@ export function getLDeferBlockDetails(lView: LView, tNode: TNode): LDeferBlockDe
 
 /** Stores a defer block instance state in LView. */
 export function setLDeferBlockDetails(
-    lView: LView, deferBlockIndex: number, lDetails: LDeferBlockDetails) {
+  lView: LView,
+  deferBlockIndex: number,
+  lDetails: LDeferBlockDetails,
+) {
   const tView = lView[TVIEW];
   const slotIndex = getDeferBlockDataIndex(deferBlockIndex);
   ngDevMode && assertIndexInDeclRange(tView, slotIndex);
@@ -52,14 +61,20 @@ export function getTDeferBlockDetails(tView: TView, tNode: TNode): TDeferBlockDe
 
 /** Stores a defer block static info in `TView.data`. */
 export function setTDeferBlockDetails(
-    tView: TView, deferBlockIndex: number, deferBlockConfig: TDeferBlockDetails) {
+  tView: TView,
+  deferBlockIndex: number,
+  deferBlockConfig: TDeferBlockDetails,
+) {
   const slotIndex = getDeferBlockDataIndex(deferBlockIndex);
   ngDevMode && assertIndexInDeclRange(tView, slotIndex);
   tView.data[slotIndex] = deferBlockConfig;
 }
 
 export function getTemplateIndexForState(
-    newState: DeferBlockState, hostLView: LView, tNode: TNode): number|null {
+  newState: DeferBlockState,
+  hostLView: LView,
+  tNode: TNode,
+): number | null {
   const tView = hostLView[TVIEW];
   const tDetails = getTDeferBlockDetails(tView, tNode);
 
@@ -84,7 +99,9 @@ export function getTemplateIndexForState(
  * not specified - returns `null`.
  */
 export function getMinimumDurationForState(
-    tDetails: TDeferBlockDetails, currentState: DeferBlockState): number|null {
+  tDetails: TDeferBlockDetails,
+  currentState: DeferBlockState,
+): number | null {
   if (currentState === DeferBlockState.Placeholder) {
     return tDetails.placeholderBlockConfig?.[MINIMUM_SLOT] ?? null;
   } else if (currentState === DeferBlockState.Loading) {
@@ -94,7 +111,7 @@ export function getMinimumDurationForState(
 }
 
 /** Retrieves the value of the `after` parameter on the @loading block. */
-export function getLoadingBlockAfter(tDetails: TDeferBlockDetails): number|null {
+export function getLoadingBlockAfter(tDetails: TDeferBlockDetails): number | null {
   return tDetails.loadingBlockConfig?.[LOADING_AFTER_SLOT] ?? null;
 }
 
@@ -102,7 +119,7 @@ export function getLoadingBlockAfter(tDetails: TDeferBlockDetails): number|null 
  * Adds downloaded dependencies into a directive or a pipe registry,
  * making sure that a dependency doesn't yet exist in the registry.
  */
-export function addDepsToRegistry<T extends DependencyDef[]>(currentDeps: T|null, newDeps: T): T {
+export function addDepsToRegistry<T extends DependencyDef[]>(currentDeps: T | null, newDeps: T): T {
   if (!currentDeps || currentDeps.length === 0) {
     return newDeps;
   }
@@ -114,7 +131,7 @@ export function addDepsToRegistry<T extends DependencyDef[]>(currentDeps: T|null
 
   // If `currentDeps` is the same length, there were no new deps and can
   // return the original array.
-  return (currentDeps.length === currentDepSet.size) ? currentDeps : Array.from(currentDepSet) as T;
+  return currentDeps.length === currentDepSet.size ? currentDeps : (Array.from(currentDepSet) as T);
 }
 
 /** Retrieves a TNode that represents main content of a defer block. */
@@ -130,8 +147,10 @@ export function getPrimaryBlockTNode(tView: TView, tDetails: TDeferBlockDetails)
  */
 export function assertDeferredDependenciesLoaded(tDetails: TDeferBlockDetails) {
   assertEqual(
-      tDetails.loadingState, DeferDependenciesLoadingState.COMPLETE,
-      'Expecting all deferred dependencies to be loaded.');
+    tDetails.loadingState,
+    DeferDependenciesLoadingState.COMPLETE,
+    'Expecting all deferred dependencies to be loaded.',
+  );
 }
 
 /**
@@ -141,6 +160,9 @@ export function assertDeferredDependenciesLoaded(tDetails: TDeferBlockDetails) {
  * that a primary template exists. All the other template options are optional.
  */
 export function isTDeferBlockDetails(value: unknown): value is TDeferBlockDetails {
-  return value !== null && (typeof value === 'object') &&
-      (typeof (value as TDeferBlockDetails).primaryTmplIndex === 'number');
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    typeof (value as TDeferBlockDetails).primaryTmplIndex === 'number'
+  );
 }

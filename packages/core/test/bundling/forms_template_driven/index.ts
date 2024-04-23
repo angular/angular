@@ -36,7 +36,7 @@ import {BrowserModule, platformBrowser} from '@angular/platform-browser';
         <button (click)="addCity()">Add City</button>
       </div>
     </form>
-  `
+  `,
 })
 class TemplateFormsComponent {
   name = {first: 'Nancy', last: 'Drew', subscribed: true};
@@ -55,10 +55,9 @@ class TemplateFormsComponent {
   selector: 'app-root',
   template: `
     <app-template-forms></app-template-forms>
-  `
+  `,
 })
-class RootComponent {
-}
+class RootComponent {}
 
 @NgModule({
   declarations: [RootComponent, TemplateFormsComponent],

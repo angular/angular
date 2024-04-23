@@ -28,9 +28,12 @@ describe('static styling', () => {
 
   it('should initialize from attrs', () => {
     const tAttrs: TAttributes = [
-      'ignore',                               //
-      AttributeMarker.Classes, 'my-class',    //
-      AttributeMarker.Styles, 'color', 'red'  //
+      'ignore', //
+      AttributeMarker.Classes,
+      'my-class', //
+      AttributeMarker.Styles,
+      'color',
+      'red', //
     ];
     computeStaticStyling(tNode, tAttrs, true);
     expect(tNode.classes).toEqual('my-class');
@@ -39,9 +42,15 @@ describe('static styling', () => {
 
   it('should initialize from attrs when multiple', () => {
     const tAttrs: TAttributes = [
-      'ignore',                                                 //
-      AttributeMarker.Classes, 'my-class', 'other',             //
-      AttributeMarker.Styles, 'color', 'red', 'width', '100px'  //
+      'ignore', //
+      AttributeMarker.Classes,
+      'my-class',
+      'other', //
+      AttributeMarker.Styles,
+      'color',
+      'red',
+      'width',
+      '100px', //
     ];
     computeStaticStyling(tNode, tAttrs, true);
     expect(tNode.classes).toEqual('my-class other');

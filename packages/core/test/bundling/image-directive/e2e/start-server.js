@@ -13,7 +13,7 @@ const protractor = require('protractor');
  * Helper function to start up a server for testing using Protractor utils.
  * Used as a part of the `protractor_web_test_suite` rule configuration.
  */
-module.exports = async function(config) {
+module.exports = async function (config) {
   const {port} = await protractorUtils.runServer(config.workspace, config.server, '--port', []);
   const serverUrl = `http://localhost:${port}`;
 

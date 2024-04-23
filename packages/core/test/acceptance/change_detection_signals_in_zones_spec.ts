@@ -8,7 +8,23 @@
 
 import {NgFor, NgIf} from '@angular/common';
 import {PLATFORM_BROWSER_ID} from '@angular/common/src/platform_id';
-import {afterNextRender, ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, Directive, EnvironmentInjector, inject, Input, PLATFORM_ID, signal, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  afterNextRender,
+  ApplicationRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  Directive,
+  EnvironmentInjector,
+  inject,
+  Input,
+  PLATFORM_ID,
+  signal,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import {ReactiveNode, SIGNAL} from '@angular/core/primitives/signals';
 import {TestBed} from '@angular/core/testing';
 
@@ -78,10 +94,9 @@ describe('CheckAlways components', () => {
       template: `<check-always />`,
       standalone: true,
       imports: [CheckAlwaysCmp],
-      changeDetection: ChangeDetectionStrategy.OnPush
+      changeDetection: ChangeDetectionStrategy.OnPush,
     })
-    class OnPushParent {
-    }
+    class OnPushParent {}
     const fixture = TestBed.createComponent(OnPushParent);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent.trim()).toEqual('initial');
@@ -121,8 +136,7 @@ describe('CheckAlways components', () => {
     }
 
     @Component({template: '<a-comp />-<b-comp />', standalone: true, imports: [A, B]})
-    class App {
-    }
+    class App {}
 
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
@@ -151,7 +165,7 @@ describe('CheckAlways components', () => {
         // Update signal in parent view every time we check the child view
         // (ExpressionChangedAfterItWasCheckedError but not for signals)
         if (val() < incrementAfterCheckedUntil) {
-          val.update(v => ++v);
+          val.update((v) => ++v);
         }
       }
     }
@@ -181,7 +195,7 @@ describe('CheckAlways components', () => {
     class App {
       val = val;
       ngOnInit() {
-        this.val.update(v => v + 1);
+        this.val.update((v) => v + 1);
       }
     }
     const fixture = TestBed.createComponent(App);
@@ -195,7 +209,6 @@ describe('CheckAlways components', () => {
     expect(fixture2.nativeElement.innerText).toEqual('2');
   });
 });
-
 
 describe('OnPush components with signals', () => {
   it('marks view dirty', () => {
@@ -229,7 +242,7 @@ describe('OnPush components with signals', () => {
     expect(instance.value()).toBe('new');
   });
 
-  it('does not refresh a component when a signal notifies but isn\'t actually updated', () => {
+  it("does not refresh a component when a signal notifies but isn't actually updated", () => {
     @Component({
       template: `{{memo()}}{{incrementTemplateExecutions()}}`,
       changeDetection: ChangeDetectionStrategy.OnPush,
@@ -251,114 +264,112 @@ describe('OnPush components with signals', () => {
     expect(instance.numTemplateExecutions).toBe(1);
     expect(fixture.nativeElement.textContent.trim()).toEqual('initial');
 
-    instance.value.update(v => ({...v}));
+    instance.value.update((v) => ({...v}));
     fixture.detectChanges();
     expect(instance.numTemplateExecutions).toBe(1);
 
-    instance.value.update(v => ({value: 'new'}));
+    instance.value.update((v) => ({value: 'new'}));
     fixture.detectChanges();
     expect(instance.numTemplateExecutions).toBe(2);
     expect(fixture.nativeElement.textContent.trim()).toEqual('new');
   });
 
-  it('should not mark components as dirty when signal is read in a constructor of a child component',
-     () => {
-       const state = signal('initial');
+  it('should not mark components as dirty when signal is read in a constructor of a child component', () => {
+    const state = signal('initial');
 
-       @Component({
-         selector: 'child',
-         template: `child`,
-         changeDetection: ChangeDetectionStrategy.OnPush,
-         standalone: true,
-       })
-       class ChildReadingSignalCmp {
-         constructor() {
-           state();
-         }
-       }
+    @Component({
+      selector: 'child',
+      template: `child`,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+    })
+    class ChildReadingSignalCmp {
+      constructor() {
+        state();
+      }
+    }
 
-       @Component({
-         template: `
+    @Component({
+      template: `
             {{incrementTemplateExecutions()}}
             <!-- Template constructed to execute child component constructor in the update pass of a host component -->
             <ng-template [ngIf]="true"><child></child></ng-template>
           `,
-         changeDetection: ChangeDetectionStrategy.OnPush,
-         standalone: true,
-         imports: [NgIf, ChildReadingSignalCmp],
-       })
-       class OnPushCmp {
-         numTemplateExecutions = 0;
-         incrementTemplateExecutions() {
-           this.numTemplateExecutions++;
-           return '';
-         }
-       }
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      imports: [NgIf, ChildReadingSignalCmp],
+    })
+    class OnPushCmp {
+      numTemplateExecutions = 0;
+      incrementTemplateExecutions() {
+        this.numTemplateExecutions++;
+        return '';
+      }
+    }
 
-       const fixture = TestBed.createComponent(OnPushCmp);
-       const instance = fixture.componentInstance;
+    const fixture = TestBed.createComponent(OnPushCmp);
+    const instance = fixture.componentInstance;
 
-       fixture.detectChanges();
-       expect(instance.numTemplateExecutions).toBe(1);
-       expect(fixture.nativeElement.textContent.trim()).toEqual('child');
+    fixture.detectChanges();
+    expect(instance.numTemplateExecutions).toBe(1);
+    expect(fixture.nativeElement.textContent.trim()).toEqual('child');
 
-       // The "state" signal is not accesses in the template's update function anywhere so it
-       // shouldn't mark components as dirty / impact change detection.
-       state.set('new');
-       fixture.detectChanges();
-       expect(instance.numTemplateExecutions).toBe(1);
-     });
+    // The "state" signal is not accesses in the template's update function anywhere so it
+    // shouldn't mark components as dirty / impact change detection.
+    state.set('new');
+    fixture.detectChanges();
+    expect(instance.numTemplateExecutions).toBe(1);
+  });
 
-  it('should not mark components as dirty when signal is read in an input of a child component',
-     () => {
-       const state = signal('initial');
+  it('should not mark components as dirty when signal is read in an input of a child component', () => {
+    const state = signal('initial');
 
-       @Component({
-         selector: 'with-input-setter',
-         standalone: true,
-         template: '{{test}}',
-       })
-       class WithInputSetter {
-         test = '';
+    @Component({
+      selector: 'with-input-setter',
+      standalone: true,
+      template: '{{test}}',
+    })
+    class WithInputSetter {
+      test = '';
 
-         @Input()
-         set testInput(newValue: string) {
-           this.test = state() + ':' + newValue;
-         }
-       }
+      @Input()
+      set testInput(newValue: string) {
+        this.test = state() + ':' + newValue;
+      }
+    }
 
-       @Component({
-         template: `
+    @Component({
+      template: `
             {{incrementTemplateExecutions()}}
             <!-- Template constructed to execute child component constructor in the update pass of a host component -->
             <ng-template [ngIf]="true"><with-input-setter [testInput]="'input'" /></ng-template>
           `,
-         changeDetection: ChangeDetectionStrategy.OnPush,
-         standalone: true,
-         imports: [NgIf, WithInputSetter],
-       })
-       class OnPushCmp {
-         numTemplateExecutions = 0;
-         incrementTemplateExecutions() {
-           this.numTemplateExecutions++;
-           return '';
-         }
-       }
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      standalone: true,
+      imports: [NgIf, WithInputSetter],
+    })
+    class OnPushCmp {
+      numTemplateExecutions = 0;
+      incrementTemplateExecutions() {
+        this.numTemplateExecutions++;
+        return '';
+      }
+    }
 
-       const fixture = TestBed.createComponent(OnPushCmp);
-       const instance = fixture.componentInstance;
+    const fixture = TestBed.createComponent(OnPushCmp);
+    const instance = fixture.componentInstance;
 
-       fixture.detectChanges();
-       expect(instance.numTemplateExecutions).toBe(1);
-       expect(fixture.nativeElement.textContent.trim()).toEqual('initial:input');
+    fixture.detectChanges();
+    expect(instance.numTemplateExecutions).toBe(1);
+    expect(fixture.nativeElement.textContent.trim()).toEqual('initial:input');
 
-       // The "state" signal is not accesses in the template's update function anywhere so it
-       // shouldn't mark components as dirty / impact change detection.
-       state.set('new');
-       fixture.detectChanges();
-       expect(instance.numTemplateExecutions).toBe(1);
-       expect(fixture.nativeElement.textContent.trim()).toEqual('initial:input');
-     });
+    // The "state" signal is not accesses in the template's update function anywhere so it
+    // shouldn't mark components as dirty / impact change detection.
+    state.set('new');
+    fixture.detectChanges();
+    expect(instance.numTemplateExecutions).toBe(1);
+    expect(fixture.nativeElement.textContent.trim()).toEqual('initial:input');
+  });
 
   it('should not mark components as dirty when signal is read in a query result setter', () => {
     const state = signal('initial');
@@ -465,10 +476,9 @@ describe('OnPush components with signals', () => {
       imports: [ChildCmp],
       standalone: true,
     })
-    class ParentCmp {
-    }
+    class ParentCmp {}
     const fixture = TestBed.createComponent(ParentCmp);
-    const child = fixture.debugElement.query(p => p.componentInstance instanceof ChildCmp);
+    const child = fixture.debugElement.query((p) => p.componentInstance instanceof ChildCmp);
     const childInstance = child.componentInstance as ChildCmp;
 
     fixture.detectChanges();
@@ -512,14 +522,13 @@ describe('OnPush components with signals', () => {
       imports: [ParentCmp],
       standalone: true,
     })
-    class TestWrapper {
-    }
+    class TestWrapper {}
 
     const fixture = TestBed.createComponent(TestWrapper);
-    const parent = fixture.debugElement.query(p => p.componentInstance instanceof ParentCmp)
-                       .componentInstance as ParentCmp;
-    const child = fixture.debugElement.query(p => p.componentInstance instanceof ChildCmp)
-                      .componentInstance as ChildCmp;
+    const parent = fixture.debugElement.query((p) => p.componentInstance instanceof ParentCmp)
+      .componentInstance as ParentCmp;
+    const child = fixture.debugElement.query((p) => p.componentInstance instanceof ChildCmp)
+      .componentInstance as ChildCmp;
 
     fixture.detectChanges();
     expect(fixture.nativeElement.outerHTML).toContain('initial');
@@ -540,39 +549,38 @@ describe('OnPush components with signals', () => {
     expect(fixture.nativeElement.outerHTML).not.toContain('blue');
   });
 
-  it('should be able to write to signals during change-detecting a given template, in advance()',
-     () => {
-       const counter = signal(0);
+  it('should be able to write to signals during change-detecting a given template, in advance()', () => {
+    const counter = signal(0);
 
-       @Directive({
-         standalone: true,
-         selector: '[misunderstood]',
-       })
-       class MisunderstoodDir {
-         ngOnInit(): void {
-           counter.update((c) => c + 1);
-         }
-       }
+    @Directive({
+      standalone: true,
+      selector: '[misunderstood]',
+    })
+    class MisunderstoodDir {
+      ngOnInit(): void {
+        counter.update((c) => c + 1);
+      }
+    }
 
-       @Component({
-         selector: 'test-component',
-         standalone: true,
-         imports: [MisunderstoodDir],
-         template: `
+    @Component({
+      selector: 'test-component',
+      standalone: true,
+      imports: [MisunderstoodDir],
+      template: `
           {{counter()}}<div misunderstood></div>{{ 'force advance()' }}
         `,
-       })
-       class TestCmp {
-         counter = counter;
-       }
+    })
+    class TestCmp {
+      counter = counter;
+    }
 
-       const fixture = TestBed.createComponent(TestCmp);
-       // CheckNoChanges should not throw ExpressionChanged error
-       // and signal value is updated to latest value with 1 `detectChanges`
-       fixture.detectChanges();
-       expect(fixture.nativeElement.innerText).toContain('1');
-       expect(fixture.nativeElement.innerText).toContain('force advance()');
-     });
+    const fixture = TestBed.createComponent(TestCmp);
+    // CheckNoChanges should not throw ExpressionChanged error
+    // and signal value is updated to latest value with 1 `detectChanges`
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerText).toContain('1');
+    expect(fixture.nativeElement.innerText).toContain('force advance()');
+  });
 
   it('should allow writing to signals during change-detecting a given template, at the end', () => {
     const counter = signal(0);
@@ -737,7 +745,6 @@ describe('OnPush components with signals', () => {
       expect(trim(fixture.nativeElement.textContent)).toEqual('new new new');
     });
 
-
     it('refreshes entire component, including embedded views, when signal updates', () => {
       @Component({
         selector: 'signal-component',
@@ -768,7 +775,6 @@ describe('OnPush components with signals', () => {
       // OnPush/Default components are checked as a whole so the embedded view is also checked again
       expect(fixture.componentInstance.embeddedViewExecutions).toEqual(2);
     });
-
 
     it('re-executes deep embedded template if signal updates', () => {
       @Component({
@@ -868,18 +874,17 @@ describe('OnPush components with signals', () => {
     // Note: Design decision for signals because that's how the hooks work today
     // We have considered actually running a component's `afterViewChecked` hook if it's refreshed
     // in targeted mode (meaning the parent did not refresh) and could change this decision.
-    it('does not run afterViewChecked hooks because parent view was not dirty (those hooks are executed by the parent)',
-       () => {
-         const fixture = TestBed.createComponent(OnPushParent);
-         fixture.detectChanges();
-         // hook run once on initialization
-         expect(fixture.componentInstance.signalChild.afterViewCheckedRuns).toBe(1);
-         fixture.componentInstance.signalChild.value.set('new');
-         fixture.detectChanges();
-         expect(trim(fixture.nativeElement.textContent)).toEqual('new');
-         // hook did not run again because host view was not refreshed
-         expect(fixture.componentInstance.signalChild.afterViewCheckedRuns).toBe(1);
-       });
+    it('does not run afterViewChecked hooks because parent view was not dirty (those hooks are executed by the parent)', () => {
+      const fixture = TestBed.createComponent(OnPushParent);
+      fixture.detectChanges();
+      // hook run once on initialization
+      expect(fixture.componentInstance.signalChild.afterViewCheckedRuns).toBe(1);
+      fixture.componentInstance.signalChild.value.set('new');
+      fixture.detectChanges();
+      expect(trim(fixture.nativeElement.textContent)).toEqual('new');
+      // hook did not run again because host view was not refreshed
+      expect(fixture.componentInstance.signalChild.afterViewCheckedRuns).toBe(1);
+    });
   });
 
   it('can refresh the root of change detection if updated after checked', () => {
@@ -958,7 +963,6 @@ describe('OnPush components with signals', () => {
   });
 });
 
-
-function trim(text: string|null): string {
+function trim(text: string | null): string {
   return text ? text.replace(/[\s\n]+/gm, ' ').trim() : '';
 }

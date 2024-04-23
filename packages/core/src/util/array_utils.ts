@@ -39,8 +39,8 @@ export function flatten(list: any[]): any[] {
   return list.flat(Number.POSITIVE_INFINITY);
 }
 
-export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
-  input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value));
+export function deepForEach<T>(input: (T | any[])[], fn: (value: T) => void): void {
+  input.forEach((value) => (Array.isArray(value) ? deepForEach(value, fn) : fn(value)));
 }
 
 export function addToArray(arr: any[], index: number, value: any): void {
@@ -91,7 +91,7 @@ export function arraySplice(array: any[], index: number, count: number): void {
     index++;
   }
   while (count--) {
-    array.pop();  // shrink the array
+    array.pop(); // shrink the array
   }
 }
 
@@ -107,7 +107,7 @@ export function arraySplice(array: any[], index: number, count: number): void {
  * @param value Value to add to array.
  */
 export function arrayInsert(array: any[], index: number, value: any): void {
-  ngDevMode && assertLessThanOrEqual(index, array.length, 'Can\'t insert past array end.');
+  ngDevMode && assertLessThanOrEqual(index, array.length, "Can't insert past array end.");
   let end = array.length;
   while (end > index) {
     const previousEnd = end - 1;
@@ -130,7 +130,7 @@ export function arrayInsert(array: any[], index: number, value: any): void {
  * @param value2 Value to add to array.
  */
 export function arrayInsert2(array: any[], index: number, value1: any, value2: any): void {
-  ngDevMode && assertLessThanOrEqual(index, array.length, 'Can\'t insert past array end.');
+  ngDevMode && assertLessThanOrEqual(index, array.length, "Can't insert past array end.");
   let end = array.length;
   if (end == index) {
     // inserting at the end.
@@ -152,7 +152,6 @@ export function arrayInsert2(array: any[], index: number, value1: any, value2: a
   }
 }
 
-
 /**
  * Get an index of an `value` in a sorted `array`.
  *
@@ -170,7 +169,6 @@ export function arrayIndexOfSorted(array: string[], value: string): number {
   return _arrayIndexOfSorted(array, value, 0);
 }
 
-
 /**
  * `KeyValueArray` is an array where even positions contain keys and odd positions contain values.
  *
@@ -183,7 +181,7 @@ export function arrayIndexOfSorted(array: string[], value: string): number {
  *
  * See: `keyValueArraySet`, `keyValueArrayGet`, `keyValueArrayIndexOf`, `keyValueArrayDelete`.
  */
-export interface KeyValueArray<VALUE> extends Array<VALUE|string> {
+export interface KeyValueArray<VALUE> extends Array<VALUE | string> {
   __brand__: 'array-map';
 }
 
@@ -196,7 +194,10 @@ export interface KeyValueArray<VALUE> extends Array<VALUE|string> {
  * @returns index (always even) of where the value vas set.
  */
 export function keyValueArraySet<V>(
-    keyValueArray: KeyValueArray<V>, key: string, value: V): number {
+  keyValueArray: KeyValueArray<V>,
+  key: string,
+  value: V,
+): number {
   let index = keyValueArrayIndexOf(keyValueArray, key);
   if (index >= 0) {
     // if we found it set it.
@@ -215,7 +216,7 @@ export function keyValueArraySet<V>(
  * @param key The key to locate.
  * @return The `value` stored at the `key` location or `undefined if not found.
  */
-export function keyValueArrayGet<V>(keyValueArray: KeyValueArray<V>, key: string): V|undefined {
+export function keyValueArrayGet<V>(keyValueArray: KeyValueArray<V>, key: string): V | undefined {
   const index = keyValueArrayIndexOf(keyValueArray, key);
   if (index >= 0) {
     // if we found it retrieve it.
@@ -257,7 +258,6 @@ export function keyValueArrayDelete<V>(keyValueArray: KeyValueArray<V>, key: str
   return index;
 }
 
-
 /**
  * INTERNAL: Get an index of an `value` in a sorted `array` by grouping search by `shift`.
  *
@@ -280,14 +280,14 @@ function _arrayIndexOfSorted(array: string[], value: string, shift: number): num
   let start = 0;
   let end = array.length >> shift;
   while (end !== start) {
-    const middle = start + ((end - start) >> 1);  // find the middle.
+    const middle = start + ((end - start) >> 1); // find the middle.
     const current = array[middle << shift];
     if (value === current) {
-      return (middle << shift);
+      return middle << shift;
     } else if (current > value) {
       end = middle;
     } else {
-      start = middle + 1;  // We already searched middle so make it non-inclusive by adding 1
+      start = middle + 1; // We already searched middle so make it non-inclusive by adding 1
     }
   }
   return ~(end << shift);

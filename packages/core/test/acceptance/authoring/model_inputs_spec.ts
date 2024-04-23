@@ -6,7 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, EventEmitter, Input, model, OnChanges, Output, signal, SimpleChange, SimpleChanges, ViewChild} from '@angular/core';
+import {
+  Component,
+  Directive,
+  EventEmitter,
+  Input,
+  model,
+  OnChanges,
+  Output,
+  signal,
+  SimpleChange,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('model inputs', () => {
@@ -194,7 +206,7 @@ describe('model inputs', () => {
     fixture.detectChanges();
     expect(emittedValues).toEqual([1]);
 
-    host.dir.value.update(value => value * 5);
+    host.dir.value.update((value) => value * 5);
     fixture.detectChanges();
     expect(emittedValues).toEqual([1, 5]);
   });
@@ -373,8 +385,9 @@ describe('model inputs', () => {
       value = 1;
     }
 
-    expect(() => TestBed.createComponent(App))
-        .toThrowError(/Model is required but no value is available yet/);
+    expect(() => TestBed.createComponent(App)).toThrowError(
+      /Model is required but no value is available yet/,
+    );
   });
 
   it('should throw if a required model input is updated too early', () => {
@@ -383,7 +396,7 @@ describe('model inputs', () => {
       value = model.required<number>();
 
       constructor() {
-        this.value.update(prev => prev * 2);
+        this.value.update((prev) => prev * 2);
       }
     }
 
@@ -396,8 +409,9 @@ describe('model inputs', () => {
       value = 1;
     }
 
-    expect(() => TestBed.createComponent(App))
-        .toThrowError(/Model is required but no value is available yet/);
+    expect(() => TestBed.createComponent(App)).toThrowError(
+      /Model is required but no value is available yet/,
+    );
   });
 
   it('should stop emitting to the output on destroy', () => {
@@ -443,8 +457,7 @@ describe('model inputs', () => {
     }
 
     @Directive({selector: '[dir]', standalone: true})
-    class Dir extends BaseDir {
-    }
+    class Dir extends BaseDir {}
 
     @Component({
       template: '<div [(value)]="value" dir></div>',
@@ -483,13 +496,13 @@ describe('model inputs', () => {
       standalone: true,
       host: {
         '(click)': 'increment()',
-      }
+      },
     })
     class Dir {
       value = model(0);
 
       increment() {
-        this.value.update(previous => previous + 1);
+        this.value.update((previous) => previous + 1);
       }
     }
 
@@ -542,11 +555,13 @@ describe('model inputs', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
-    expect(changes).toEqual([jasmine.objectContaining({
-      previousValue: undefined,
-      currentValue: 1,
-      firstChange: true,
-    })]);
+    expect(changes).toEqual([
+      jasmine.objectContaining({
+        previousValue: undefined,
+        currentValue: 1,
+        firstChange: true,
+      }),
+    ]);
 
     fixture.componentInstance.value.set(2);
     fixture.detectChanges();

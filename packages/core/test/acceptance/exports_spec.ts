@@ -6,16 +6,28 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, DoCheck, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
+import {
+  Component,
+  Directive,
+  DoCheck,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  Type,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
 describe('exports', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppComp, ComponentToReference, DirToReference, DirToReferenceWithPreOrderHooks,
-        DirWithCompInput
-      ]
+        AppComp,
+        ComponentToReference,
+        DirToReference,
+        DirToReferenceWithPreOrderHooks,
+        DirWithCompInput,
+      ],
     });
   });
 
@@ -27,8 +39,10 @@ describe('exports', () => {
   });
 
   it('should support basic export of component', () => {
-    const fixture =
-        initWithTemplate(AppComp, '<comp-to-ref #myComp></comp-to-ref> {{ myComp.name }}');
+    const fixture = initWithTemplate(
+      AppComp,
+      '<comp-to-ref #myComp></comp-to-ref> {{ myComp.name }}',
+    );
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML).toEqual('<comp-to-ref></comp-to-ref> Nancy');
   });
@@ -42,36 +56,43 @@ describe('exports', () => {
   describe('input changes in hooks', () => {
     it('should support forward reference', () => {
       const fixture = initWithTemplate(
-          AppComp, '<div dir-on-change #myDir="dirOnChange" [in]="true"></div> {{ myDir.name }}');
+        AppComp,
+        '<div dir-on-change #myDir="dirOnChange" [in]="true"></div> {{ myDir.name }}',
+      );
       fixture.detectChanges();
-      expect(fixture.nativeElement.firstChild.title).toBe('Drew!?@');            // div element
-      expect(fixture.nativeElement.lastChild.textContent).toContain('Drew!?@');  // text node
+      expect(fixture.nativeElement.firstChild.title).toBe('Drew!?@'); // div element
+      expect(fixture.nativeElement.lastChild.textContent).toContain('Drew!?@'); // text node
     });
 
     it('should not support backward reference', () => {
       expect(() => {
         const fixture = initWithTemplate(
-            AppComp, '{{ myDir.name }} <div dir-on-change #myDir="dirOnChange" [in]="true"></div>');
+          AppComp,
+          '{{ myDir.name }} <div dir-on-change #myDir="dirOnChange" [in]="true"></div>',
+        );
         fixture.detectChanges();
-      })
-          .toThrowError(
-              /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.*AppComp/);
+      }).toThrowError(
+        /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.*AppComp/,
+      );
     });
 
     it('should not support reference on the same node', () => {
       expect(() => {
         const fixture = initWithTemplate(
-            AppComp,
-            '<div dir-on-change #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>');
+          AppComp,
+          '<div dir-on-change #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>',
+        );
         fixture.detectChanges();
-      })
-          .toThrowError(
-              /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.*AppComp/);
+      }).toThrowError(
+        /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked.*AppComp/,
+      );
     });
 
     it('should support input referenced by host binding on that directive', () => {
-      const fixture =
-          initWithTemplate(AppComp, '<div dir-on-change #myDir="dirOnChange" [in]="true"></div>');
+      const fixture = initWithTemplate(
+        AppComp,
+        '<div dir-on-change #myDir="dirOnChange" [in]="true"></div>',
+      );
       fixture.detectChanges();
       expect(fixture.nativeElement.firstChild.title).toBe('Drew!?@');
     });
@@ -86,7 +107,9 @@ describe('exports', () => {
 
   it('should support component instance fed into directive', () => {
     const fixture = initWithTemplate(
-        AppComp, '<comp-to-ref #myComp></comp-to-ref> <div [dirWithInput]="myComp"></div>');
+      AppComp,
+      '<comp-to-ref #myComp></comp-to-ref> <div [dirWithInput]="myComp"></div>',
+    );
     fixture.detectChanges();
 
     const myComp = fixture.debugElement.children[0].injector.get(ComponentToReference);
@@ -96,14 +119,17 @@ describe('exports', () => {
   });
 
   it('should point to the first declared ref', () => {
-    const fixture = initWithTemplate(AppComp, `
+    const fixture = initWithTemplate(
+      AppComp,
+      `
           <div>
             <input value="First" #ref />
             <input value="Second" #ref />
             <input value="Third" #ref />
             <span>{{ ref.value }}</span>
           </div>
-        `);
+        `,
+    );
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('span').innerHTML).toBe('First');
   });
@@ -118,7 +144,9 @@ describe('exports', () => {
 
     it('should work with element properties', () => {
       const fixture = initWithTemplate(
-          AppComp, '<div [title]="myInput.value"></div> <input value="one" #myInput>');
+        AppComp,
+        '<div [title]="myInput.value"></div> <input value="one" #myInput>',
+      );
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toEqual('<div title="one"></div><input value="one">');
@@ -126,17 +154,21 @@ describe('exports', () => {
 
     it('should work with element attrs', () => {
       const fixture = initWithTemplate(
-          AppComp, '<div [attr.aria-label]="myInput.value"></div> <input value="one" #myInput>');
+        AppComp,
+        '<div [attr.aria-label]="myInput.value"></div> <input value="one" #myInput>',
+      );
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.innerHTML)
-          .toEqual('<div aria-label="one"></div><input value="one">');
+      expect(fixture.nativeElement.innerHTML).toEqual(
+        '<div aria-label="one"></div><input value="one">',
+      );
     });
 
     it('should work with element classes', () => {
       const fixture = initWithTemplate(
-          AppComp,
-          '<div [class.red]="myInput.checked"></div> <input type="checkbox" checked #myInput>');
+        AppComp,
+        '<div [class.red]="myInput.checked"></div> <input type="checkbox" checked #myInput>',
+      );
       fixture.detectChanges();
 
       expect(fixture.nativeElement.innerHTML).toContain('<div class="red"></div>');
@@ -144,7 +176,9 @@ describe('exports', () => {
 
     it('should work with component refs', () => {
       const fixture = initWithTemplate(
-          AppComp, '<div [dirWithInput]="myComp"></div><comp-to-ref #myComp></comp-to-ref>');
+        AppComp,
+        '<div [dirWithInput]="myComp"></div><comp-to-ref #myComp></comp-to-ref>',
+      );
       fixture.detectChanges();
 
       const dirWithInput = fixture.debugElement.children[0].injector.get(DirWithCompInput);
@@ -155,16 +189,20 @@ describe('exports', () => {
 
     it('should work with multiple forward refs', () => {
       const fixture = initWithTemplate(
-          AppComp,
-          '{{ myInput.value }} {{ myComp.name }} <comp-to-ref #myComp></comp-to-ref> <input value="one" #myInput>');
+        AppComp,
+        '{{ myInput.value }} {{ myComp.name }} <comp-to-ref #myComp></comp-to-ref> <input value="one" #myInput>',
+      );
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.innerHTML)
-          .toEqual('one Nancy <comp-to-ref></comp-to-ref><input value="one">');
+      expect(fixture.nativeElement.innerHTML).toEqual(
+        'one Nancy <comp-to-ref></comp-to-ref><input value="one">',
+      );
     });
 
     it('should support local refs in nested dynamic views', () => {
-      const fixture = initWithTemplate(AppComp, `
+      const fixture = initWithTemplate(
+        AppComp,
+        `
         <input value="one" #outerInput>
         <div *ngIf="outer">
           {{ outerInput.value }}
@@ -173,7 +211,8 @@ describe('exports', () => {
                 {{ outerInput.value }} - {{ innerInput.value}}
             </div>
         </div>
-      `);
+      `,
+      );
       fixture.detectChanges();
       fixture.componentInstance.outer = true;
       fixture.componentInstance.inner = true;
@@ -212,12 +251,12 @@ class DirToReference {
 
 @Directive({selector: '[dirWithInput]'})
 class DirWithCompInput {
-  @Input('dirWithInput') comp: ComponentToReference|null = null;
+  @Input('dirWithInput') comp: ComponentToReference | null = null;
 }
 
 @Directive({selector: '[dir-on-change]', exportAs: 'dirOnChange', host: {'[title]': 'name'}})
 class DirToReferenceWithPreOrderHooks implements OnInit, OnChanges, DoCheck {
-  @Input() in : any = null;
+  @Input() in: any = null;
   name = 'Drew';
   ngOnChanges(changes: SimpleChanges) {
     this.name += '!';
